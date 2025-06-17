@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/bwg_ui_utils.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -18,15 +19,12 @@ namespace {
 
 // Main Stack view insets and spacing.
 const CGFloat kMainStackHorizontalInset = 20.0;
-const CGFloat kMainStackTopInset = 24.0;
 const CGFloat kMainStackSpacing = 16.0;
 
 // Icons size and names.
 const CGFloat kIconSize = 16.0;
 // TODO(crbug.com/414777888): Change info circle fill icon to page spark icon.
 constexpr NSString* const kInfoIconName = @"info.circle.fill";
-constexpr NSString* const kClockIconName =
-    @"clock.arrow.trianglehead.counterclockwise.rotate.90";
 const CGFloat kIconImageViewTopPadding = 18.0;
 const CGFloat kIconImageViewWidth = 32.0;
 
@@ -38,12 +36,27 @@ const CGFloat kBoxesStackViewCornerRadius = 16.0;
 const CGFloat kInnerStackViewSpacing = 6.0;
 const CGFloat kInnerStackViewPadding = 12.0;
 
-// Line height multiple.
-const CGFloat kLineHeightMultiple = 18.0 / 14.0;
+// TODO(crbug.com/414778685): Add strings.
+// String constants for UI elements.
+NSString* const kBWGConsentFirstBoxTitleText =
+    @"Lorem ipsum dolor sit amet, consecte tur adipiscing elit.";
+NSString* const kBWGConsentFirstBoxBodyText =
+    @"Sed do eiusmod tempor incididunt. Sed do eiusmod tempor incididunt. Sed "
+    @"do eiusmod tempor incididunt";
+NSString* const kBWGConsentSecondBoxTitleText = @"Lorem ipsum dolor sit amet";
+NSString* const kBWGConsentSecondBoxBodyText =
+    @"Lorem ipsum dolor sit amet, consecte tur adipiscing purposes. Sed do "
+    @"eiusmod tempor incididunt ut labore et dolore magna ali. eiusmod tempor ";
+NSString* const kBWGConsentFootnoteText =
+    @"Google terms dolor sit amet, Apps Privacy Notice tur adipiscing "
+    @"purposes.";
+
+// Action identifier on a tap on links in the footnote.
+NSString* const kFootnoteLinkAction = @"footnoteLinkAction";
 
 }  // namespace
 
-@interface BWGConsentViewController () <PromoStyleViewControllerDelegate>
+@interface BWGConsentViewController () <UITextViewDelegate>
 @end
 
 @implementation BWGConsentViewController {
@@ -55,98 +68,104 @@ const CGFloat kLineHeightMultiple = 18.0 / 14.0;
 
 // TODO(crbug.com/414777915): Implement a basic UI.
 - (void)viewDidLoad {
-  self.navigationItem.hidesBackButton = YES;
-  [self configurePromoStyleProperties];
-  [self setupStackView];
   [super viewDidLoad];
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.navigationItem.hidesBackButton = YES;
+  [self configureMainStackView];
+}
+
+#pragma mark - Public
+
+- (CGFloat)contentHeight {
+  return
+      [_mainStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+          .height;
 }
 
 #pragma mark - Private
 
-// Configure all the stacks.
-- (void)setupStackView {
-  [self configureMainStackView];
-  [_mainStackView addArrangedSubview:[self createBoxesStackView]];
-  [_mainStackView addArrangedSubview:[self createFootNoteLabel]];
+// Creates an attributed string for the footnote with hyperlinks.
+- (NSAttributedString*)createFootnoteAttributedText {
+  NSString* text = kBWGConsentFootnoteText;
+
+  NSMutableParagraphStyle* centeredTextStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  centeredTextStyle.alignment = NSTextAlignmentCenter;
+  NSDictionary* textAttributes = @{
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2],
+    NSParagraphStyleAttributeName : centeredTextStyle,
+  };
+
+  NSMutableAttributedString* attributedText =
+      [[NSMutableAttributedString alloc] initWithString:text
+                                             attributes:textAttributes];
+
+  NSDictionary* linkAttributes = @{
+    NSLinkAttributeName : kFootnoteLinkAction,
+  };
+
+  // TODO(crbug.com/414778685): Add strings.
+  NSRange firstLinkRange = [text rangeOfString:@"Google terms"];
+  [attributedText addAttributes:linkAttributes range:firstLinkRange];
+  NSRange secondLinkRange = [text rangeOfString:@"Apps Privacy Notice"];
+  [attributedText addAttributes:linkAttributes range:secondLinkRange];
+  return attributedText;
 }
 
-// Configure promo style properties to add buttons. Ignores header image type.
-- (void)configurePromoStyleProperties {
-  self.layoutBehindNavigationBar = YES;
-  self.shouldHideBanner = YES;
-  self.headerImageType = PromoStyleImageType::kNone;
-
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
-  self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_BWG_FIRST_RUN_SECONDARY_BUTTON);
-}
-
-// Configure the main stack view.
+// Configures the main stack view.
 - (void)configureMainStackView {
   _mainStackView = [[UIStackView alloc] init];
   _mainStackView.axis = UILayoutConstraintAxisVertical;
-  _mainStackView.distribution = UIStackViewDistributionFill;
-  _mainStackView.alignment = UIStackViewAlignmentFill;
   _mainStackView.spacing = kMainStackSpacing;
 
   _mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   [self.view addSubview:_mainStackView];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_mainStackView.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor
-                       constant:kMainStackHorizontalInset],
-    [_mainStackView.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor
-                       constant:-kMainStackHorizontalInset],
-    [_mainStackView.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
-                       constant:kMainStackTopInset],
-    [_mainStackView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
-                                              .bottomAnchor]
-  ]];
+  AddSameConstraintsWithInsets(
+      _mainStackView, self.view.safeAreaLayoutGuide,
+      NSDirectionalEdgeInsetsMake(0, kMainStackHorizontalInset, 0,
+                                  kMainStackHorizontalInset));
+  [_mainStackView addArrangedSubview:[self createBoxesStackView]];
+  [_mainStackView addArrangedSubview:[self createFootnoteView]];
+  UIView* primaryButtonView = [self createPrimaryButton];
+  [_mainStackView addArrangedSubview:primaryButtonView];
+  [_mainStackView setCustomSpacing:0.0 afterView:primaryButtonView];
+  [_mainStackView addArrangedSubview:[self createSecondaryButton]];
 }
 
-// Create the 2 horizontal boxes stack view.
+// Creates the 2 horizontal boxes stack view.
 - (UIStackView*)createBoxesStackView {
   UIStackView* boxesStackView = [[UIStackView alloc] init];
   boxesStackView.axis = UILayoutConstraintAxisVertical;
-  boxesStackView.distribution = UIStackViewDistributionFill;
-  boxesStackView.alignment = UIStackViewAlignmentFill;
+  boxesStackView.distribution = UIStackViewDistributionFillProportionally;
   boxesStackView.spacing = kBoxesStackViewSpacing;
   boxesStackView.layer.cornerRadius = kBoxesStackViewCornerRadius;
   boxesStackView.clipsToBounds = YES;
   boxesStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  UIView* box1 = [self
-      createHorizontalBoxWithIcon:kInfoIconName
-                          boxView:
-                              [self createBoxWithTitle:
-                                        kBWGConsentFirstBoxTitleText
-                                              bodyText:
-                                                  kBWGConsentFirstBoxBodyText]];
-  [boxesStackView addArrangedSubview:box1];
+  NSString* firstTitle = kBWGConsentFirstBoxTitleText;
+  NSString* firstBody = kBWGConsentFirstBoxBodyText;
+  UIView* firstBox =
+      [self createHorizontalBoxWithIcon:kInfoIconName
+                                boxView:[self createBoxWithTitle:firstTitle
+                                                        bodyText:firstBody]];
+  [boxesStackView addArrangedSubview:firstBox];
 
-  UIView* box2 = [self
-      createHorizontalBoxWithIcon:kClockIconName
-                          boxView:
-                              [self
-                                  createBoxWithTitle:
-                                      kBWGConsentSecondBoxTitleText
-                                            bodyText:
-                                                kBWGConsentSecondBoxBodyText]];
-  [boxesStackView addArrangedSubview:box2];
+  NSString* secondTitle = kBWGConsentSecondBoxTitleText;
+  NSString* secondBody = kBWGConsentSecondBoxBodyText;
+  UIView* secondBox =
+      [self createHorizontalBoxWithIcon:kCounterCloseWiseSymbol
+                                boxView:[self createBoxWithTitle:secondTitle
+                                                        bodyText:secondBody]];
+  [boxesStackView addArrangedSubview:secondBox];
   return boxesStackView;
 }
 
-// Create horizontal stack view with icon and box view.
+// Creates horizontal stack view with icon and box view.
 - (UIView*)createHorizontalBoxWithIcon:(NSString*)iconName
                                boxView:(UIView*)boxView {
   UIStackView* horizontalStackView = [[UIStackView alloc] init];
-  horizontalStackView.axis = UILayoutConstraintAxisHorizontal;
   horizontalStackView.distribution = UIStackViewDistributionFillProportionally;
   horizontalStackView.alignment = UIStackViewAlignmentTop;
   horizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -184,7 +203,7 @@ const CGFloat kLineHeightMultiple = 18.0 / 14.0;
   return horizontalStackView;
 }
 
-// Create the bow view containing the text and the title.
+// Creates the bow view containing the text and the title.
 - (UIView*)createBoxWithTitle:(NSString*)titleText
                      bodyText:(NSString*)bodyText {
   UIView* boxView = [[UIView alloc] init];
@@ -192,7 +211,6 @@ const CGFloat kLineHeightMultiple = 18.0 / 14.0;
 
   UIStackView* innerStackView = [[UIStackView alloc] init];
   innerStackView.axis = UILayoutConstraintAxisVertical;
-  innerStackView.distribution = UIStackViewDistributionFill;
   innerStackView.alignment = UIStackViewAlignmentLeading;
   innerStackView.spacing = kInnerStackViewSpacing;
 
@@ -202,30 +220,20 @@ const CGFloat kLineHeightMultiple = 18.0 / 14.0;
   CGFloat innerPadding = kInnerStackViewPadding;
   AddSameConstraintsWithInsets(
       innerStackView, boxView,
-      NSDirectionalEdgeInsetsMake(innerPadding, innerPadding, innerPadding,
-                                  innerPadding));
+      NSDirectionalEdgeInsetsMake(innerPadding, 0, innerPadding, innerPadding));
 
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.text = titleText;
-  titleLabel.font = PreferredFontForTextStyle(UIFontTextStyleTitle3,
-                                              UIFontWeightSemibold, 14);
+  titleLabel.font =
+      PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightSemibold);
 
-  NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:titleText];
-  NSMutableParagraphStyle* paragraphStyle =
-      [[NSMutableParagraphStyle alloc] init];
-  paragraphStyle.lineHeightMultiple = kLineHeightMultiple;
-  [attributedText addAttribute:NSParagraphStyleAttributeName
-                         value:paragraphStyle
-                         range:NSMakeRange(0, [titleText length])];
-  titleLabel.attributedText = attributedText;
   titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.numberOfLines = 0;
   [innerStackView addArrangedSubview:titleLabel];
 
   UILabel* bodyLabel = [[UILabel alloc] init];
   bodyLabel.text = bodyText;
-  bodyLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  bodyLabel.font = PreferredFontForTextStyle(UIFontTextStyleBody);
   bodyLabel.adjustsFontForContentSizeCategory = YES;
   bodyLabel.numberOfLines = 0;
   bodyLabel.textColor = [UIColor colorNamed:kGrey700Color];
@@ -234,25 +242,69 @@ const CGFloat kLineHeightMultiple = 18.0 / 14.0;
   return boxView;
 }
 
-// Create the foot note label.
-- (UILabel*)createFootNoteLabel {
-  UILabel* footNoteLabel = [[UILabel alloc] init];
-  footNoteLabel.text = kBWGConsentFootNoteText;
-  footNoteLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
-  footNoteLabel.numberOfLines = 2;
-  footNoteLabel.textAlignment = NSTextAlignmentCenter;
-  return footNoteLabel;
+// Creates the foot note view.
+- (UITextView*)createFootnoteView {
+  UITextView* footNoteTextView = [[UITextView alloc] init];
+  footNoteTextView.scrollEnabled = NO;
+  footNoteTextView.editable = NO;
+
+  footNoteTextView.delegate = self;
+  footNoteTextView.textContainerInset = UIEdgeInsetsZero;
+  footNoteTextView.linkTextAttributes =
+      @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
+  footNoteTextView.attributedText = [self createFootnoteAttributedText];
+  return footNoteTextView;
 }
 
-#pragma mark - PromoStyleViewControllerDelegate
+// Creates the primary button.
+- (UIButton*)createPrimaryButton {
+  UIButton* primaryButton = [BWGUIUtils
+      createPrimaryButtonWithTitle:l10n_util::GetNSString(
+                                       IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON)];
+  [primaryButton addTarget:self
+                    action:@selector(didTapPrimaryButton:)
+          forControlEvents:UIControlEventTouchUpInside];
+  primaryButton.accessibilityLabel = @"Consent Primary Action";
+  return primaryButton;
+}
 
-- (void)didTapPrimaryActionButton {
+// Creates the secondary button.
+- (UIButton*)createSecondaryButton {
+  UIButton* secondaryButton = [BWGUIUtils
+      createSecondaryButtonWithTitle:
+          l10n_util::GetNSString(IDS_IOS_BWG_FIRST_RUN_SECONDARY_BUTTON)];
+  [secondaryButton addTarget:self
+                      action:@selector(didTapSecondaryButton:)
+            forControlEvents:UIControlEventTouchUpInside];
+  // TODO(crbug.com/420643840): Add a11y labels.
+  return secondaryButton;
+}
+
+// Did tap the primary button.
+- (void)didTapPrimaryButton:(UIButton*)sender {
   [self.mutator didConsentBWG];
 }
 
-- (void)didTapSecondaryActionButton {
-  [self.mutator didRefuseBWGConsent];
+// Did tap the secondary button.
+- (void)didTapSecondaryButton:(UIButton*)sender {
+  [self.mutator didConsentBWG];
+}
+
+#pragma mark - UITextViewDelegate
+
+// Handles tap on UITextView.
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction {
+  if (textItem.link &&
+      [textItem.link.absoluteString isEqualToString:kFootnoteLinkAction]) {
+    __weak __typeof(self) weakSelf = self;
+    return [UIAction actionWithHandler:^(UIAction* action) {
+      [weakSelf.mutator handleLearnAboutYourChoicesTapped];
+    }];
+  }
+
+  return defaultAction;
 }
 
 @end

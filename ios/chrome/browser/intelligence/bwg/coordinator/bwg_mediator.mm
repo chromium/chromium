@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
@@ -17,6 +18,16 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "url/gurl.h"
+
+namespace {
+// TODO(crbug.com/423816346): Change link when clicking on the attributed
+// strings.
+const char kFootnoteLinkURL[] = "https://google.com";
+}  // namespace
 
 @interface BWGMediator ()
 
@@ -89,6 +100,14 @@
 // Did close BWG Promo UI.
 - (void)didCloseBWGPromo {
   [_delegate dismissBWGFlow];
+}
+
+// Handles tap on learn about your choices.
+- (void)handleLearnAboutYourChoicesTapped {
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:GURL(kFootnoteLinkURL)];
+  [HandlerForProtocol(_browser->GetCommandDispatcher(), ApplicationCommands)
+      openURLInNewTab:command];
 }
 
 #pragma mark - Private

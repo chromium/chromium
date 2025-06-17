@@ -87,6 +87,7 @@
   _mediator = nil;
   _prefService = nil;
   _tracker = nil;
+  [self dismissPresentedViewWithCompletion:nil];
   [super stop];
 }
 

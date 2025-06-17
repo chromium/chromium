@@ -23,6 +23,17 @@ const CGFloat kBWGConsentMainStackSpacing = 5.0;
 const CGFloat kMainTitleLabelSpacing = 8.0;
 const CGFloat kSubTitleLabelSpacing = 12.0;
 
+// TODO(crbug.com/414778685): Add strings.
+// String constants for UI elements.
+NSString* const kBWGPromoMainTitleText = @"Lorem ipsum dolor sit amet.";
+NSString* const kBWGPromoSubTitleText =
+    @"Lorem ipsum dolor sit amet, consecte tur adipiscing purposes. Sed do.";
+NSString* const kBWGPromoFirstBoxTitleText = @"Sed do.";
+NSString* const kBWGPromoFirstBoxBodyText =
+    @"Lorem ipsum dolor sit amet, consecte tur adipiscing purposes.";
+NSString* const kBWGPromoSecondBoxTitleText = @"consecte tur adipiscing";
+NSString* const kBWGPromoSecondBoxBodyText = @"orem ipsum dolor sit amet..";
+
 }  // namespace
 
 @interface BWGPromoViewController () <PromoStyleViewControllerDelegate>
@@ -46,6 +57,14 @@ const CGFloat kSubTitleLabelSpacing = 12.0;
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
   [self.BWGPromoDelegate promoViewControllerWasDismissed];
+}
+
+#pragma mark - Public
+
+- (CGFloat)contentHeight {
+  return
+      [_mainStackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+          .height;
 }
 
 #pragma mark - Private

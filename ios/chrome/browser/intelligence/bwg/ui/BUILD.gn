@@ -14,10 +14,13 @@ source_set("ui") {
     "bwg_promo_view_controller.h",
     "bwg_promo_view_controller.mm",
     "bwg_promo_view_controller_delegate.h",
+    "bwg_ui_utils.h",
+    "bwg_ui_utils.mm",
   ]
   deps = [
     ":constants",
     "//base",
+    "//build:branding_buildflags",
     "//components/feature_engagement/public",
     "//components/feature_engagement/public:feature_constants",
     "//ios/chrome/app/strings:ios_strings_grit",
@@ -29,7 +32,9 @@ source_set("ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
   ]
+  public_deps = [ ":bwg_lottie_resources" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -38,4 +43,9 @@ source_set("constants") {
     "bwg_constants.h",
     "bwg_constants.mm",
   ]
+}
+
+bundle_data("bwg_lottie_resources") {
+  sources = [ "resources/FRE_Banner.json" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }

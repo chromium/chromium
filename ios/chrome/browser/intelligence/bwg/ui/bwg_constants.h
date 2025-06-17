@@ -12,19 +12,7 @@
 extern NSString* const kBWGPromoConsentPartialDetentIdentifier;
 extern NSString* const kBWGPromoConsentFullDetentIdentifier;
 
-// Promo style strings.
-extern NSString* const kBWGPromoPrimaryAction;
-extern NSString* const kBWGConsentPrimaryAction;
-extern NSString* const kBWGPromoConsentSecondaryAction;
-
-// Text constants.
-extern NSString* const kBWGPromoMainTitleText;
-extern NSString* const kBWGPromoSubTitleText;
-
-extern NSString* const kBWGConsentFirstBoxTitleText;
-extern NSString* const kBWGConsentFirstBoxBodyText;
-extern NSString* const kBWGConsentSecondBoxTitleText;
-extern NSString* const kBWGConsentSecondBoxBodyText;
-extern NSString* const kBWGConsentFootNoteText;
+// Lottie Animation for FRE Banner.
+extern NSString* const kLottieAnimationFREBannerName;
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_CONSTANTS_H_

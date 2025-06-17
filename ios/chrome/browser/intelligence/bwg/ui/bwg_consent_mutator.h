@@ -18,6 +18,9 @@
 // Did close BWG Promo UI.
 - (void)didCloseBWGPromo;
 
+// Handles tap on learn about your choices.
+- (void)handleLearnAboutYourChoicesTapped;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_CONSENT_MUTATOR_H_
