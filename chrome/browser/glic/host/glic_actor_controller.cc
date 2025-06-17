@@ -48,10 +48,12 @@ void PostTaskForActCallback(
 }
 
 void OnGetContextFromFocusedTab(
+    std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry,
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
     base::WeakPtr<actor::ExecutionEngine> execution_engine,
     mojom::GetContextResultPtr tab_context_result) {
   if (tab_context_result->is_error_reason()) {
+    journal_entry->EndEntry(tab_context_result->get_error_reason());
     mojom::ActInFocusedTabResultPtr result = MakeActErrorResult(
         mojom::ActInFocusedTabErrorReason::kGetContextFailed);
     std::move(callback).Run(std::move(result));
@@ -65,6 +67,13 @@ void OnGetContextFromFocusedTab(
     execution_engine->DidObserveContext(
         tab_context_result->get_tab_context()
             ->annotated_page_data->annotated_page_content.value());
+  }
+
+  if (tab_context_result->get_tab_context()->viewport_screenshot) {
+    journal_entry->GetJournal().LogScreenshot(
+        GURL::EmptyGURL(), journal_entry->GetTaskId(),
+        tab_context_result->get_tab_context()->viewport_screenshot->mime_type,
+        tab_context_result->get_tab_context()->viewport_screenshot->data);
   }
 
   mojom::ActInFocusedTabResultPtr result =
@@ -252,15 +261,16 @@ void GlicActorController::ActImpl(
     const optimization_guide::proto::BrowserAction& action,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback) const {
-  actor::ExecutionEngine::ActionResultCallback action_callback =
-      base::BindOnce(&GlicActorController::OnActionFinished, GetWeakPtr(), tab,
-                     options, std::move(callback));
+  actor::ExecutionEngine::ActionResultCallback action_callback = base::BindOnce(
+      &GlicActorController::OnActionFinished, GetWeakPtr(), tab,
+      actor::TaskId(action.task_id()), options, std::move(callback));
 
   GetExecutionEngine()->Act(action, std::move(action_callback));
 }
 
 void GlicActorController::OnActionFinished(
     base::WeakPtr<tabs::TabInterface> tab,
+    actor::TaskId task_id,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
     actor::mojom::ActionResultPtr result) const {
@@ -276,9 +286,16 @@ void GlicActorController::OnActionFinished(
   // with GlicKeyedService::GetContextFromFocusedTab(). It's not clear yet if
   // the same permission checks, etc. should apply here.
   if (tab) {
+    actor::AggregatedJournal& journal =
+        actor::ActorKeyedService::Get(profile_.get())->GetJournal();
+    auto journal_entry = journal.CreatePendingAsyncEntry(
+        tab->GetContents()->GetLastCommittedURL(), task_id, "FetchPageContext",
+        "");
+
     FetchPageContext(
         tab.get(), options, /*include_actionable_data=*/true,
-        base::BindOnce(OnGetContextFromFocusedTab, std::move(callback),
+        base::BindOnce(OnGetContextFromFocusedTab, std::move(journal_entry),
+                       std::move(callback),
                        this->GetExecutionEngine()->GetWeakPtr()));
   } else {
     PostTaskForActCallback(std::move(callback),

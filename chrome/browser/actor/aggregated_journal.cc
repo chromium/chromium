@@ -138,9 +138,9 @@ void AggregatedJournal::Log(const GURL& url,
   ACTOR_LOG() << event_name << ": " << details;
   AddEntry(std::make_unique<Entry>(
       url.possibly_invalid_spec(),
-      mojom::JournalEntry::New(mojom::JournalEntryType::kInstant,
-                               task_id.GetUnsafeValue(), 0, base::Time::Now(),
-                               std::string(event_name), std::string(details))));
+      mojom::JournalEntry::New(
+          mojom::JournalEntryType::kInstant, task_id.GetUnsafeValue(), /*id=*/0,
+          base::Time::Now(), std::string(event_name), std::string(details))));
 }
 
 void AggregatedJournal::EnsureJournalBound(content::RenderFrameHost& rfh) {
@@ -183,6 +183,20 @@ void AggregatedJournal::AddEndEvent(base::PassKey<AggregatedJournal> pass_key,
       mojom::JournalEntry::New(
           mojom::JournalEntryType::kEnd, task_id.GetUnsafeValue(), trace_id,
           base::Time::Now(), event_name, std::string(details))));
+}
+
+void AggregatedJournal::LogScreenshot(const GURL& url,
+                                      TaskId task_id,
+                                      std::string_view mime_type,
+                                      const std::vector<uint8_t>& data) {
+  CHECK_EQ(mime_type, "image/jpeg");
+  auto entry = std::make_unique<Entry>(
+      url.possibly_invalid_spec(),
+      mojom::JournalEntry::New(
+          mojom::JournalEntryType::kInstant, task_id.GetUnsafeValue(), /*id=*/0,
+          base::Time::Now(), "Screenshot", /*details=*/std::string()));
+  entry->jpg_screenshot.emplace(data);
+  AddEntry(std::move(entry));
 }
 
 void AggregatedJournal::AddEntry(std::unique_ptr<Entry> new_entry) {

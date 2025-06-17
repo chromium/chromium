@@ -87,6 +87,7 @@ class GlicActorController {
   // Handles the result of the action, returning new page context if necessary.
   void OnActionFinished(
       base::WeakPtr<tabs::TabInterface> tab,
+      actor::TaskId task_id,
       const mojom::GetTabContextOptions& options,
       mojom::WebClientHandler::ActInFocusedTabCallback callback,
       actor::mojom::ActionResultPtr result) const;

@@ -15,6 +15,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/perfetto/tracing_service_event.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/debug_annotation.pbzero.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/screenshot.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
 
 namespace actor {
@@ -108,7 +109,12 @@ void AggregatedJournalSerializer::WillAddJournalEntry(
   track_event->set_name(entry.data->event);
   // TODO(dtapuska): We likely want to set the track UUID to be the task.
   // track_event->set_track_uuid(entry.data->task_id);
-  track_event->add_categories("actor");
+
+  // For Perfetto to read screenshots we need to have the category as
+  // "android_screenshot". See
+  // https://github.com/google/perfetto/blob/891351c7233523c01dc0e58ac8650df47fad9ab5/src/trace_processor/perfetto_sql/stdlib/android/screenshots.sql#L37
+  track_event->add_categories(
+      entry.jpg_screenshot.has_value() ? "android_screenshot" : "actor");
   auto* annotation = track_event->add_debug_annotations();
   if (!entry.data->details.empty()) {
     annotation->set_name(
@@ -117,6 +123,13 @@ void AggregatedJournalSerializer::WillAddJournalEntry(
             : "details");
     annotation->set_string_value(entry.data->details);
   }
+
+  if (entry.jpg_screenshot.has_value()) {
+    auto* screenshot = track_event->set_screenshot();
+    screenshot->set_jpg_image(entry.jpg_screenshot->data(),
+                              entry.jpg_screenshot->size());
+  }
+
   WriteTracePacket(msg.SerializeAsArray());
 }
 
