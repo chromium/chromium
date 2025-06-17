@@ -1534,7 +1534,6 @@ transforms/3d/general/perspective-units.html
 transforms/3d/hit-testing/backface-hit-test.html
 transforms/3d/point-mapping/3d-point-mapping-3.html
 transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html
-transforms/3d/point-mapping/3d-point-mapping.html
 transforms/combine-transforms-properties-transform.html
 transforms/perspective-fixed-pos-descendant.html
 transforms/svg-vs-css.xhtml
