@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.notifications;
 
+import static org.chromium.components.browser_ui.notifications.BitmapUtils.resizeBitmap;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -16,6 +18,7 @@ import android.os.Bundle;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.Log;
@@ -288,10 +291,13 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
 
     @Override
     public NotificationWrapperBuilder setBigPictureStyle(
-            Bitmap bigPicture, @Nullable CharSequence summaryText) {
+            @NonNull Bitmap bigPicture, @Nullable CharSequence summaryText) {
+        if (bigPicture.getAllocationByteCount() / 1000 > BIG_PICTURE_BITMAP_MAX_SIZE_IN_KB) {
+            bigPicture = resizeBitmap(bigPicture, BIG_PICTURE_BITMAP_MAX_SIZE_IN_KB);
+        }
+
         Notification.BigPictureStyle style =
                 new Notification.BigPictureStyle().bigPicture(bigPicture);
-
         // Android N doesn't show content text when expanded, so duplicate body text as a
         // summary for the big picture.
         style.setSummaryText(summaryText);

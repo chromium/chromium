@@ -22,6 +22,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/notifications/AsyncNotificationManagerProxyImpl.java",
     "java/src/org/chromium/components/browser_ui/notifications/BaseNotificationManagerProxy.java",
     "java/src/org/chromium/components/browser_ui/notifications/BaseNotificationManagerProxyFactory.java",
+    "java/src/org/chromium/components/browser_ui/notifications/BitmapUtils.java",
     "java/src/org/chromium/components/browser_ui/notifications/ForegroundServiceUtils.java",
     "java/src/org/chromium/components/browser_ui/notifications/NotificationManagerProxy.java",
     "java/src/org/chromium/components/browser_ui/notifications/NotificationManagerProxyImpl.java",

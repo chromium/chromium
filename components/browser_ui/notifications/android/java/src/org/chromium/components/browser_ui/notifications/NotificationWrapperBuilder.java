@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import org.chromium.build.annotations.NullMarked;
@@ -21,6 +22,10 @@ import org.chromium.build.annotations.Nullable;
 /** Abstraction over Notification.Builder and NotificationCompat.Builder interfaces. */
 @NullMarked
 public interface NotificationWrapperBuilder {
+    // Android strips images > ~5mb (crbug.com/390677997), so resize bitmaps to be smaller than
+    // this to reduce memory and to avoid them from getting stripped.
+    public static final int BIG_PICTURE_BITMAP_MAX_SIZE_IN_KB = 4500;
+
     NotificationWrapperBuilder setAutoCancel(boolean autoCancel);
 
     @Deprecated
@@ -112,7 +117,7 @@ public interface NotificationWrapperBuilder {
     NotificationWrapperBuilder setContent(RemoteViews views);
 
     NotificationWrapperBuilder setBigPictureStyle(
-            Bitmap bigPicture, @Nullable CharSequence summaryText);
+            @NonNull Bitmap bigPicture, @Nullable CharSequence summaryText);
 
     NotificationWrapperBuilder setBigTextStyle(@Nullable CharSequence bigText);
 
