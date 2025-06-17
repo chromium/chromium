@@ -51,6 +51,7 @@ import org.chromium.url.Origin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -750,6 +751,11 @@ public class TabModelImpl extends TabModelJniBridge {
         if (tab == null) return INVALID_TAB_INDEX;
         int retVal = mTabs.indexOf(tab);
         return retVal == -1 ? INVALID_TAB_INDEX : retVal;
+    }
+
+    @Override
+    public Iterator<Tab> iterator() {
+        return ReadOnlyIterator.maybeCreate(mTabs.iterator());
     }
 
     // TODO(aurimas): Move this method to TabModelSelector when notifications move there.

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -31,6 +33,7 @@ import org.chromium.url.Origin;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -142,6 +145,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         assert tab.isInitialized();
         return TabCollectionTabModelImplJni.get()
                 .getIndexOfTabRecursive(mNativeTabCollectionTabModelImplPtr, tab);
+    }
+
+    @Override
+    public Iterator<Tab> iterator() {
+        return assumeNonNull(null);
     }
 
     // SupportsTabModelObserver overrides.

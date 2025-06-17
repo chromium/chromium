@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -165,10 +166,15 @@ public class PendingTabClosureManager {
             return mRewoundTabs.indexOf(tab);
         }
 
+        @Override
+        public Iterator<Tab> iterator() {
+            return ReadOnlyIterator.maybeCreate(mRewoundList.iterator());
+        }
+
         /**
-         * Resets this list to match the original {@link TabList}.  Note that if the
-         * {@link TabList} doesn't support pending closures this model will be empty.  This should
-         * be called whenever {@link TabList}'s list of tabs changes.
+         * Resets this list to match the original {@link TabList}. Note that if the {@link TabList}
+         * doesn't support pending closures this model will be empty. This should be called whenever
+         * {@link TabList}'s list of tabs changes.
          */
         public void resetRewoundState() {
             mRewoundTabs.clear();

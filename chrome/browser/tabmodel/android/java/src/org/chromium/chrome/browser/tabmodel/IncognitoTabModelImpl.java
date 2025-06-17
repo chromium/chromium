@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
+import java.util.Iterator;
+
 /**
  * A TabModel implementation that handles off the record tabs.
  *
@@ -221,6 +223,12 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     @Override
     public int indexOf(@Nullable Tab tab) {
         return mDelegateModel.indexOf(tab);
+    }
+
+    @Override
+    public Iterator<Tab> iterator() {
+        // The underlying model already returns a read-only iterator.
+        return mDelegateModel.iterator();
     }
 
     @Override

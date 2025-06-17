@@ -240,6 +240,33 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    public void testIterator() {
+        RegularNewTabPageStation secondTab = mPage.openNewTabFast();
+        secondTab.openNewTabFast();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelJniBridge tabModel =
+                            (TabModelJniBridge)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabModelSelector()
+                                            .getModel(false);
+
+                    assertEquals(3, tabModel.getCount());
+                    Tab[] tabs = tabModel.getAllTabs();
+                    assertEquals(3, tabs.length);
+
+                    int i = 0;
+                    for (Tab tab : tabModel) {
+                        assertEquals(tabs[i], tab);
+                        i++;
+                    }
+                });
+    }
+
+    @Test
+    @SmallTest
     public void testFreezeTabOnCloseIfCapturingForMedia() {
         MediaCaptureDevicesDispatcherAndroidJni.setInstanceForTesting(
                 mMediaCaptureDevicesDispatcherAndroidJni);

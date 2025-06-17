@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.tab.Tab;
  */
 @MockedInTests // Needed due to R8's computeDelayedInterfaceMethodSyntheticBridges. b/147584922
 @NullMarked
-public interface TabList {
+public interface TabList extends Iterable<Tab> {
     // Keep this in sync with chrome/browser/ui/android/tab_model/tab_model.cc
     int INVALID_TAB_INDEX = -1;
 
