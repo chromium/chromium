@@ -84,12 +84,6 @@ EntitiesLabels GetLabelsForEntities(
     }
   }
 
-  // If every attribute was excluded, due to `attribute_types_to_exclude`,
-  // return early.
-  if (entities_attributes_and_values.empty()) {
-    return EntitiesLabels(std::vector<std::vector<std::u16string>>());
-  }
-
   // Step 2#
   // Stores for all entities all of its attributes, sorted based on their
   // disambiguation order.
