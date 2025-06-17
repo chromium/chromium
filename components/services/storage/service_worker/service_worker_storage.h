@@ -66,7 +66,8 @@ class ServiceWorkerStorage {
       : public base::RefCountedThreadSafe<StorageSharedBuffer> {
    public:
     StorageSharedBuffer();
-    explicit StorageSharedBuffer(bool enable_registered_storage_keys);
+    StorageSharedBuffer(bool enable_registered_storage_keys,
+                        bool enable_registration_scopes);
     StorageSharedBuffer(const StorageSharedBuffer&) = delete;
     StorageSharedBuffer& operator=(const StorageSharedBuffer&) = delete;
 
@@ -76,13 +77,22 @@ class ServiceWorkerStorage {
     std::optional<std::vector<blink::StorageKey>> TakeRegisteredKeys()
         LOCKS_EXCLUDED(lock_);
 
+    void PutRegistrationScopes(const blink::StorageKey& storage_key,
+                               const std::vector<GURL>& scopes)
+        LOCKS_EXCLUDED(lock_);
+    std::map<blink::StorageKey, std::vector<GURL>> TakeRegistrationScopes()
+        LOCKS_EXCLUDED(lock_);
+
    private:
     friend class base::RefCountedThreadSafe<StorageSharedBuffer>;
     ~StorageSharedBuffer();
 
     const bool enable_registered_storage_keys_;
+    const bool enable_registration_scopes_;
     std::optional<std::vector<blink::StorageKey>> GUARDED_BY(lock_)
         registered_keys_;
+    std::map<blink::StorageKey, std::vector<GURL>> GUARDED_BY(lock_)
+        registration_scopes_;
     base::Lock lock_;
   };
 

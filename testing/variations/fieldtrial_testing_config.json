@@ -22605,7 +22605,11 @@
                 {
                     "name": "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys",
                     "enable_features": [
-                        "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys"
+                        "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys",
+                        "ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache"
+                    ],
+                    "disable_features": [
+                        "ServiceWorkerMergeFindRegistrationForClientUrl"
                     ]
                 }
             ]

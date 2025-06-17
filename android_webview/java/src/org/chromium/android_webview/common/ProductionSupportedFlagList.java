@@ -1058,6 +1058,7 @@ public final class ProductionSupportedFlagList {
                 "Enables SpeculationRules prefetch to ServiceWorker-controlled URLs."),
         Flag.baseFeature("TimedHTMLParserBudget"),
         Flag.baseFeature("ServiceWorkerBackgroundUpdateForRegisteredStorageKeys"),
+        Flag.baseFeature("ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache"),
         Flag.baseFeature(
                 "ServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled"),
         Flag.baseFeature(

@@ -85,8 +85,7 @@ class ServiceWorkerStorageTest : public testing::Test {
 
   void SetUp() override {
     storage_shared_buffer_ =
-        base::MakeRefCounted<ServiceWorkerStorage::StorageSharedBuffer>(
-            /*enable_registered_storage_keys=*/true);
+        base::MakeRefCounted<ServiceWorkerStorage::StorageSharedBuffer>();
     storage_ = ServiceWorkerStorage::Create(user_data_directory_path_,
                                             storage_shared_buffer_);
   }

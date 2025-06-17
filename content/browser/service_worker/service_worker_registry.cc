@@ -53,6 +53,10 @@ BASE_FEATURE(
     "ServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled",
     base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kServiceWorkerBackgroundUpdateForServiceWorkerScopeCache,
+             "ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kReduceCallingServiceWorkerRegisteredStorageKeysOnStartup,
              "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -237,16 +241,16 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
     storage::SpecialStoragePolicy* special_storage_policy,
     base::TimeTicks start_time)
     : context_(context),
-      storage_shared_buffer_(
+      storage_shared_buffer_(base::MakeRefCounted<
+                             storage::ServiceWorkerStorage::
+                                 StorageSharedBuffer>(
           base::FeatureList::IsEnabled(
               features::
                   kServiceWorkerBackgroundUpdateForRegisteredStorageKeys) &&
-                  base::FeatureList::IsEnabled(
-                      kServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled)
-              ? base::MakeRefCounted<
-                    storage::ServiceWorkerStorage::StorageSharedBuffer>(
-                    /*enable_registered_storage_keys=*/true)
-              : nullptr),
+              base::FeatureList::IsEnabled(
+                  kServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled),
+          base::FeatureList::IsEnabled(
+              kServiceWorkerBackgroundUpdateForServiceWorkerScopeCache))),
       quota_manager_proxy_(quota_manager_proxy),
       special_storage_policy_(special_storage_policy),
       registration_scope_cache_(kServiceWorkerScopeCacheLimitSize),
@@ -331,7 +335,28 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
     const GURL& client_url,
     const blink::StorageKey& key,
     FindRegistrationCallback callback) {
+  // To connect this TRACE_EVENT with the callback, Time::Now() is used as a
+  // trace event id.
+  int64_t trace_event_id =
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
+  TRACE_EVENT_WITH_FLOW1(
+      "ServiceWorker", "ServiceWorkerRegistry::FindRegistrationForClientUrl",
+      TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry", trace_event_id),
+      TRACE_EVENT_FLAG_FLOW_OUT, "URL", client_url.spec());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // The following code implements a performance optimization: it retrieves the
+  // registration scopes from the `ServiceWorkerStorage` in the thread pool
+  // without waiting for `DidFindRegistrationForClientUrl()` to be called.
+  if (storage_shared_buffer_) {
+    for (const auto& [storage_key, scopes] :
+         storage_shared_buffer_->TakeRegistrationScopes()) {
+      // Although StorageSharedBuffer ignores the ordering of the
+      // FindRegistrationForClientUrl mojo calls, we believe this
+      // is fine since `registration_scope_cache_` is a large enough cache.
+      registration_scope_cache_.Put(
+          storage_key, std::set<GURL>(scopes.begin(), scopes.end()));
+    }
+  }
   // `registration_scope_cache_` provides a full list of scope URLs for the
   // given blink::StorageKey if the matched entry exists. There are the
   // following two scenarios after running the ServiceWorkerLongestScopeMatcher
@@ -369,14 +394,6 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
   base::UmaHistogramBoolean(
       "ServiceWorker.FindRegistrationForClientUrl.IsCalledForNavigation",
       purpose == Purpose::kNavigation);
-  // To connect this TRACE_EVENT with the callback, Time::Now() is used as a
-  // trace event id.
-  int64_t trace_event_id =
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-  TRACE_EVENT_WITH_FLOW1(
-      "ServiceWorker", "ServiceWorkerRegistry::FindRegistrationForClientUrl",
-      TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry", trace_event_id),
-      TRACE_EVENT_FLAG_FLOW_OUT, "URL", client_url.spec());
   if (matched_scope) {
     auto it = registration_id_cache_.Get(std::make_pair(*matched_scope, key));
     if (it != registration_id_cache_.end()) {
@@ -1321,6 +1338,10 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
       TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry", trace_event_id),
       TRACE_EVENT_FLAG_FLOW_IN);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Discard RegistrationScopes from storage_shared_buffer.
+  if (storage_shared_buffer_) {
+    storage_shared_buffer_->TakeRegistrationScopes();
+  }
   if (database_status != storage::mojom::ServiceWorkerDatabaseStatus::kOk &&
       database_status !=
           storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound) {

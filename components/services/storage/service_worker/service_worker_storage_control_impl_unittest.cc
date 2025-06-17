@@ -193,8 +193,7 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
 
   void SetUpStorage() {
     storage_shared_buffer_ =
-        base::MakeRefCounted<ServiceWorkerStorage::StorageSharedBuffer>(
-            /*enable_registered_storage_keys=*/true);
+        base::MakeRefCounted<ServiceWorkerStorage::StorageSharedBuffer>();
     storage_impl_ = std::make_unique<ServiceWorkerStorageControlImpl>(
         user_data_directory_.GetPath(), storage_shared_buffer_,
         remote_.BindNewPipeAndPassReceiver());
@@ -796,6 +795,13 @@ TEST_F(ServiceWorkerStorageControlImplTest, FindRegistration_NoRegistration) {
     FindRegistrationResult result =
         FindRegistrationForClientUrl(kClientUrl, kKey);
     EXPECT_EQ(result.status, DatabaseStatus::kErrorNotFound);
+    std::map<blink::StorageKey, std::vector<GURL>> registration_scopes =
+        storage_shared_buffer()->TakeRegistrationScopes();
+    EXPECT_EQ(registration_scopes.size(), 1UL);
+    EXPECT_TRUE(registration_scopes.contains(kKey));
+    EXPECT_TRUE(registration_scopes[kKey].empty());
+    // The 2nd call of TakeRegistrationScopes() returns an empty map.
+    EXPECT_TRUE(storage_shared_buffer()->TakeRegistrationScopes().empty());
   }
 
   {
@@ -888,6 +894,14 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndDeleteRegistration) {
     EXPECT_EQ(result.status, DatabaseStatus::kOk);
     result = FindRegistrationForId(kRegistrationId, std::nullopt);
     EXPECT_EQ(result.status, DatabaseStatus::kOk);
+
+    std::map<blink::StorageKey, std::vector<GURL>> registration_scopes =
+        storage_shared_buffer()->TakeRegistrationScopes();
+    EXPECT_EQ(registration_scopes.size(), 1UL);
+    EXPECT_TRUE(registration_scopes.contains(kKey));
+    EXPECT_EQ(registration_scopes[kKey], std::vector<GURL>({kScope}));
+    // The 2nd call of TakeRegistrationScopes() returns an empty map.
+    EXPECT_TRUE(storage_shared_buffer()->TakeRegistrationScopes().empty());
   }
 
   // Delete the registration.
@@ -908,6 +922,14 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndDeleteRegistration) {
     EXPECT_EQ(result.status, DatabaseStatus::kErrorNotFound);
     result = FindRegistrationForId(kRegistrationId, kKey);
     EXPECT_EQ(result.status, DatabaseStatus::kErrorNotFound);
+
+    std::map<blink::StorageKey, std::vector<GURL>> registration_scopes =
+        storage_shared_buffer()->TakeRegistrationScopes();
+    EXPECT_EQ(registration_scopes.size(), 1UL);
+    EXPECT_TRUE(registration_scopes.contains(kKey));
+    EXPECT_TRUE(registration_scopes[kKey].empty());
+    // The 2nd call of TakeRegistrationScopes() returns an empty map.
+    EXPECT_TRUE(storage_shared_buffer()->TakeRegistrationScopes().empty());
   }
 }
 
