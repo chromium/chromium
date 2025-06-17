@@ -1536,6 +1536,15 @@ class CONTENT_EXPORT NavigationRequest
     return was_reset_for_cross_document_restart_;
   }
 
+  // Returns the document sequence number from the associated
+  // FrameNavigationEntry, if this NavigationRequest corresponds to a session
+  // history navigation. The value is cleared if the navigation performs a
+  // redirect or results in an origin change, in which case the
+  // NavigationRequest is no longer tied to the original entry.
+  int64_t frame_entry_document_sequence_number() const {
+    return frame_entry_document_sequence_number_;
+  }
+
   // Called when the browser process is about to process beforeunload handlers
   // for this navigation, including sending an IPC to the renderer process to
   // run beforeunload handlers when necessary.
