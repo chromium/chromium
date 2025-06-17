@@ -1317,6 +1317,58 @@ TEST_F(SecurePaymentConfirmationAppFactoryFallbackTest,
   ASSERT_TRUE(secure_payment_confirmation_app);
   EXPECT_FALSE(secure_payment_confirmation_app->HasEnrolledInstrument());
 }
+
+class SecurePaymentConfirmationAppFactoryUxRefreshTest
+    : public SecurePaymentConfirmationAppFactoryTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kSecurePaymentConfirmationUxRefresh};
+};
+
+// Test that the SecurePaymentConfirmationApp can be created without credentials
+// for the fallback flow, with HasEnrolledInstrument false.
+TEST_F(SecurePaymentConfirmationAppFactoryUxRefreshTest,
+       Fallback_NoCredentials) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+  GURL icon = method_data->secure_payment_confirmation->instrument->icon;
+
+  std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator =
+      CreateMockInternalAuthenticator(
+          {.response_to_get_matching_credential_ids =
+               std::vector<std::vector<uint8_t>>()});
+
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
+
+  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
+      base::MakeRefCounted<MockPaymentManifestWebDataService>();
+  EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
+      .WillOnce(Return(ByMove(std::move(mock_authenticator))));
+  EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
+      .WillRepeatedly(Return(mock_service));
+  url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
+  EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
+      .WillOnce(ReturnRef(caller_origin));
+  std::unique_ptr<PaymentApp> secure_payment_confirmation_app;
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
+      .WillOnce(MoveArg<0>(&secure_payment_confirmation_app));
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _)).Times(0);
+  EXPECT_CALL(*mock_delegate, OnDoneCreatingPaymentApps()).Times(1);
+
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+  std::vector<gfx::Size> icon_sizes({{32, 32}});
+  std::vector<SkBitmap> icon_bitmaps(1);
+  icon_bitmaps[0].allocN32Pixels(/*width=*/32, /*height=*/32);
+  static_cast<content::TestWebContents*>(web_contents_.get())
+      ->TestDidDownloadImage(icon, /*http_status_code=*/200,
+                             std::move(icon_bitmaps), std::move(icon_sizes));
+
+  ASSERT_TRUE(secure_payment_confirmation_app);
+  EXPECT_FALSE(secure_payment_confirmation_app->HasEnrolledInstrument());
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace

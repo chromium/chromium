@@ -446,6 +446,41 @@ Matcher<blink::mojom::ShownPaymentEntityLogoPtr> IsShownPaymentEntityLogo(
       Field("label", &blink::mojom::ShownPaymentEntityLogo::label, label)));
 }
 
+TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest, NoCredentials) {
+  SecurePaymentConfirmationApp app(
+      web_contents_, "effective_rp.example", payment_instrument_label_,
+      payment_instrument_details_,
+      /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
+      /*credential_id=*/std::vector<uint8_t>(),
+      /*passkey_browser_binder=*/nullptr,
+      /*device_supports_browser_bound_keys_in_hardware=*/false,
+      url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
+      MakeRequest(), /*authenticator=*/nullptr,
+      /*payment_entities_logos=*/{});
+
+  EXPECT_FALSE(app.HasEnrolledInstrument());
+  EXPECT_EQ(app.GetId(), "spc");
+}
+
+// Test that the SPC app returns HasEnrolledInstrument true when the ux refresh
+// feature is enabled but there are credentials (i.e. no fallback).
+TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest, WithCredentials) {
+  std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
+                                     credential_id_bytes_.end());
+  SecurePaymentConfirmationApp app(
+      web_contents_, "effective_rp.example", payment_instrument_label_,
+      payment_instrument_details_,
+      /*payment_instrument_icon=*/std::make_unique<SkBitmap>(), credential_id,
+      /*passkey_browser_binder=*/nullptr,
+      /*device_supports_browser_bound_keys_in_hardware=*/false,
+      url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
+      MakeRequest(),
+      std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_),
+      /*payment_entities_logos=*/{});
+
+  EXPECT_TRUE(app.HasEnrolledInstrument());
+  EXPECT_EQ(app.GetId(), base::Base64Encode(credential_id));
+}
 TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
        AddsPaymentEntitiesLogosAndDetailsToPaymentOptions) {
   std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),

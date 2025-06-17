@@ -17,11 +17,13 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
@@ -691,8 +693,10 @@ public class PaymentRequestService
             // credentials to do that.
             if (obscureRealError
                     && reason == PaymentErrorReason.USER_CANCEL
-                    && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                            PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)) {
+                    && (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                                    PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)
+                            || ContentFeatureMap.isEnabled(
+                                    BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH))) {
                 obscureRealError = false;
             }
 
@@ -984,8 +988,10 @@ public class PaymentRequestService
     }
 
     private boolean shouldShowSecurePaymentConfirmationFallback() {
-        if (!PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)) {
+        if (!(PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)
+                || ContentFeatureMap.isEnabled(
+                        BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH))) {
             return false;
         }
         assert mSpec.isSecurePaymentConfirmationRequested();

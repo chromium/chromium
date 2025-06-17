@@ -190,8 +190,10 @@ bool SecurePaymentConfirmationApp::HasEnrolledInstrument() const {
   // app if the authenticator and credentials were available. Therefore, this
   // function can always return true with the fallback feature disabled.
   return (authenticator_ && !credential_id_.empty()) ||
-         !PaymentsExperimentalFeatures::IsEnabled(
-             features::kSecurePaymentConfirmationFallback);
+         !(PaymentsExperimentalFeatures::IsEnabled(
+               features::kSecurePaymentConfirmationFallback) ||
+           base::FeatureList::IsEnabled(
+               blink::features::kSecurePaymentConfirmationUxRefresh));
 }
 
 bool SecurePaymentConfirmationApp::NeedsInstallation() const {
@@ -201,7 +203,9 @@ bool SecurePaymentConfirmationApp::NeedsInstallation() const {
 std::string SecurePaymentConfirmationApp::GetId() const {
   if (credential_id_.empty()) {
     CHECK(PaymentsExperimentalFeatures::IsEnabled(
-        features::kSecurePaymentConfirmationFallback));
+              features::kSecurePaymentConfirmationFallback) ||
+          base::FeatureList::IsEnabled(
+              blink::features::kSecurePaymentConfirmationUxRefresh));
     // Since there is no credential_id_ in the fallback flow, we still must
     // return a non-empty app ID.
     return "spc";
