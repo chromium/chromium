@@ -228,5 +228,11 @@ int StarboardAudioDecoder::GetStartThresholdInFrames() {
   return 0;
 }
 
+// This must return false, so that AudioPipelineImpl does not clear the
+// encryption field of the audio config.
+bool MediaPipelineBackend::AudioDecoder::RequiresDecryption() {
+  return false;
+}
+
 }  // namespace media
 }  // namespace chromecast
