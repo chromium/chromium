@@ -714,10 +714,9 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
       performAction:grey_tap()];
 
   // Tap on kPrimaryIdentity confirm remove button.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_REMOVE_ACCOUNT_LABEL)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_REMOVE_ACCOUNT_LABEL)] performAction:grey_tap()];
 
   [SigninEarlGrey verifySignedOut];
 

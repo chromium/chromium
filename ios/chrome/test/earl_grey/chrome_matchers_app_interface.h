@@ -57,6 +57,10 @@
 // corresponding to `messageID`.
 + (id<GREYMatcher>)contextMenuItemWithAccessibilityLabelID:(int)messageID;
 
+// Matcher for action sheet items with accessibility label
+// corresponding to `messageID`.
++ (id<GREYMatcher>)actionSheetItemWithAccessibilityLabelID:(int)messageID;
+
 // Matcher for element with an image corresponding to `image`.
 + (id<GREYMatcher>)imageViewWithImage:(UIImage*)image;
 
