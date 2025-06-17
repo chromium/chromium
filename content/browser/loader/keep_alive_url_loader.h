@@ -335,6 +335,8 @@ class CONTENT_EXPORT KeepAliveURLLoader
                            ExceededRedirectLimitWillNotBeRetried);
   FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
                            SelfDeletionOnMaxAge);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           ErrorCodeRetryEligibility_OnlyIfServerUnreached);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -459,6 +461,9 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Decremented on every redirect received, across all retries. The request
   // will fail and won't be retriable if we reached 0.
   size_t redirect_limit_ = net::URLRequest::kMaxRedirects;
+
+  // Whether the request encountered any redirect at all, across all retries.
+  bool did_encounter_redirect_ = false;
 
   // The number of retries already scheduled for this request .
   size_t retry_count_ = 0;
