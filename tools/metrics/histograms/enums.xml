@@ -9933,6 +9933,7 @@ from previous Chrome versions.
       label="kFileSystemAccessPersistentPermissions:enabled"/>
   <int value="-1493308731" label="WebIdentityDigitalCredentials:disabled"/>
   <int value="-1492934655" label="TabSwitcherOnReturn:enabled"/>
+  <int value="-1492650356" label="LensOverlayPermissionBubbleAlt:enabled"/>
   <int value="-1492609320"
       label="TurnOffStreamingMediaCachingOnBattery:disabled"/>
   <int value="-1492589689" label="ContentSuggestionsCategories:enabled"/>
@@ -16695,6 +16696,7 @@ from previous Chrome versions.
   <int value="1036958177"
       label="enable-experimental-accessibility-dictation-extension"/>
   <int value="1037038569" label="OriginAgentClusterDefaultEnable:enabled"/>
+  <int value="1037598194" label="LensOverlayPermissionBubbleAlt:disabled"/>
   <int value="1037961753" label="CCTIncognito:disabled"/>
   <int value="1038264914" label="PerDeskShelf:enabled"/>
   <int value="1038408747"

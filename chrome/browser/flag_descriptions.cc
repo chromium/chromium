@@ -2670,6 +2670,11 @@ const char kLensOverlaySidePanelOpenInNewTabName[] =
 const char kLensOverlaySidePanelOpenInNewTabDescription[] =
     "Enables open in new tab in the Lens overlay side panel.";
 
+const char kLensOverlayPermissionBubbleAltName[] =
+    "Lens overlay permission bubble alt appearance";
+const char kLensOverlayPermissionBubbleAltDescription[] =
+    "Enables Lens overlay permission bubble alt appearance.";
+
 const char kLensOverlaySimplifiedSelectionName[] =
     "Lens overlay simplified selection";
 const char kLensOverlaySimplifiedSelectionDescription[] =

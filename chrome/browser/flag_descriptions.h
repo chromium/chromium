@@ -1531,6 +1531,9 @@ extern const char kLensOverlayImageContextMenuActionsDescription[];
 extern const char kLensOverlayOmniboxEntryPointName[];
 extern const char kLensOverlayOmniboxEntryPointDescription[];
 
+extern const char kLensOverlayPermissionBubbleAltName[];
+extern const char kLensOverlayPermissionBubbleAltDescription[];
+
 extern const char kLensOverlaySidePanelOpenInNewTabName[];
 extern const char kLensOverlaySidePanelOpenInNewTabDescription[];
 

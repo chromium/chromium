@@ -131,6 +131,10 @@ BASE_FEATURE(kLensOverlayKeyboardSelection,
              "LensOverlayKeyboardSelection",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayPermissionBubbleAlt,
+             "LensOverlayPermissionBubbleAlt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -1294,6 +1298,10 @@ int GetLensSearchSidePanelDefaultWidth() {
 
 bool IsLensOverlayKeyboardSelectionEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayKeyboardSelection);
+}
+
+bool IsLensOverlayPermissionBubbleAltEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayPermissionBubbleAlt);
 }
 
 }  // namespace lens::features

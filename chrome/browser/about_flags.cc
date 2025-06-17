@@ -12954,6 +12954,13 @@ BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"lens-overlay-permission-bubble-alt",
+     flag_descriptions::kLensOverlayPermissionBubbleAltName,
+     flag_descriptions::kLensOverlayPermissionBubbleAltDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlayPermissionBubbleAlt)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

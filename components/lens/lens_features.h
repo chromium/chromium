@@ -132,6 +132,10 @@ BASE_DECLARE_FEATURE(kLensSearchSidePanelDefaultWidthChange);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayKeyboardSelection);
 
+// Use alternate appearance for permission bubble.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayPermissionBubbleAlt);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -977,6 +981,10 @@ int GetLensSearchSidePanelDefaultWidth();
 // Whether to enable keyboard selection in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayKeyboardSelectionEnabled();
+
+// Whether to use alternate appearance for permission bubble.
+COMPONENT_EXPORT(LENS_FEATURES)
+bool IsLensOverlayPermissionBubbleAltEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_
