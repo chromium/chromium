@@ -1890,17 +1890,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram name="PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures"
-    enum="PrivacySandboxCctAdsNoticeSurveyFailures" expires_after="2026-05-07">
-  <owner>alvingo@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records failures when attempting to surface the survey for the Privacy
-    Sandbox Ads notice/consent on CCT. A non-zero value in any bucket is an
-    indication of either a bug or misconfiguration.
-  </summary>
-</histogram>
-
 <histogram name="PrivacySandbox.Surveys.SurfaceAttempts"
     enum="PrivacySandboxSurveyTypes" expires_after="2026-05-07">
   <owner>alvingo@google.com</owner>

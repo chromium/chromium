@@ -309,22 +309,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Downloaded"/>
 </enum>
 
-<!-- LINT.IfChange(PrivacySandboxCctAdsNoticeSurveyFailures) -->
-
-<enum name="PrivacySandboxCctAdsNoticeSurveyFailures">
-  <int value="0" label="Feature not enabled"/>
-  <int value="1" label="App ID mismatch"/>
-  <int value="2" label="No notice interaction found"/>
-  <int value="3" label="Invalid prompt type found"/>
-  <int value="4" label="Failed to find survey config for EEA accepted"/>
-  <int value="5" label="Failed to find survey config for EEA declined"/>
-  <int value="6" label="Failed to find survey config for EEA control"/>
-  <int value="7" label="Failed to find survey config for ROW acknowledged"/>
-  <int value="8" label="Failed to find survey config for ROW control"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyController.java:PrivacySandboxCctAdsNoticeSurveyFailures) -->
-
 <!-- LINT.IfChange(PrivacySandboxDialogCallbackState) -->
 
 <enum name="PrivacySandboxDialogCallbackState">
@@ -494,11 +478,6 @@ chromium-metrics-reviews@google.com.
 <enum name="PrivacySandboxSurveyTypes">
   <int value="0" label="Unknown Survey"/>
   <int value="1" label="Sentiment Survey"/>
-  <int value="2" label="Accepted EEA Survey"/>
-  <int value="3" label="Declined EEA Survey"/>
-  <int value="4" label="Control EEA Survey"/>
-  <int value="5" label="Acknowledged ROW Survey"/>
-  <int value="6" label="Control ROW Survey"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyController.java:PrivacySandboxSurveyTypes) -->

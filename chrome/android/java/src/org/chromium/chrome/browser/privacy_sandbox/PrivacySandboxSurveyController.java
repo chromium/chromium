@@ -15,8 +15,6 @@ import com.google.common.collect.ImmutableMap;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.Channel;
 import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
@@ -50,7 +48,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 /** Class that controls and manages when and if surveys should be shown. */
 @NullMarked
@@ -60,86 +57,22 @@ public class PrivacySandboxSurveyController {
     @IntDef({
         PrivacySandboxSurveyType.UNKNOWN,
         PrivacySandboxSurveyType.SENTIMENT_SURVEY,
-        PrivacySandboxSurveyType.CCT_EEA_ACCEPTED,
-        PrivacySandboxSurveyType.CCT_EEA_DECLINED,
-        PrivacySandboxSurveyType.CCT_EEA_CONTROL,
-        PrivacySandboxSurveyType.CCT_ROW_ACKNOWLEDGED,
-        PrivacySandboxSurveyType.CCT_ROW_CONTROL,
         PrivacySandboxSurveyType.MAX_VALUE,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PrivacySandboxSurveyType {
-        // Default survey type if we don't surey type not explicitly defined.
+        // Default survey type if we don't survey type not explicitly defined.
         int UNKNOWN = 0;
         // Represents the always on sentiment survey.
         int SENTIMENT_SURVEY = 1;
-        // Represents the surveys for the Ads CCT notice.
-        int CCT_EEA_ACCEPTED = 2;
-        int CCT_EEA_DECLINED = 3;
-        int CCT_EEA_CONTROL = 4;
-        int CCT_ROW_ACKNOWLEDGED = 5;
-        int CCT_ROW_CONTROL = 6;
-
-        int MAX_VALUE = 7;
+        int MAX_VALUE = 2;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxSurveyTypesEnums)
 
-    // LINT.IfChange(PrivacySandboxCctAdsNoticeSurveyFailures)
-    /** Represents the possible failures when attempting to surface a CCT ads notice survey. */
-    @IntDef({
-        CctAdsNoticeSurveyFailures.FEATURE_NOT_ENABLED,
-        CctAdsNoticeSurveyFailures.APP_ID_MISMATCH,
-        CctAdsNoticeSurveyFailures.USER_INTERACTION_NOT_FOUND,
-        CctAdsNoticeSurveyFailures.INVALID_PROMPT_TYPE,
-        CctAdsNoticeSurveyFailures.INVALID_EEA_ACCEPTED_SURVEY_CONFIG,
-        CctAdsNoticeSurveyFailures.INVALID_EEA_DECLINED_SURVEY_CONFIG,
-        CctAdsNoticeSurveyFailures.INVALID_EEA_CONTROL_SURVEY_CONFIG,
-        CctAdsNoticeSurveyFailures.INVALID_ROW_ACKNOWLEDGED_SURVEY_CONFIG,
-        CctAdsNoticeSurveyFailures.INVALID_ROW_CONTROL_SURVEY_CONFIG,
-        CctAdsNoticeSurveyFailures.MAX_VALUE,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface CctAdsNoticeSurveyFailures {
-        // Feature was disabled.
-        int FEATURE_NOT_ENABLED = 0;
-        // App-id value did not match.
-        int APP_ID_MISMATCH = 1;
-        // No interaction was found for a client in the treatment group.
-        // Those in the treatment group should have seen and interacted
-        // with a consent/notice before we attempt to surface a survey.
-        int USER_INTERACTION_NOT_FOUND = 2;
-        // We received an invalid prompt type for a client in the control group.
-        int INVALID_PROMPT_TYPE = 3;
-        // Invalid survey config.
-        int INVALID_EEA_ACCEPTED_SURVEY_CONFIG = 4;
-        int INVALID_EEA_DECLINED_SURVEY_CONFIG = 5;
-        int INVALID_EEA_CONTROL_SURVEY_CONFIG = 6;
-        int INVALID_ROW_ACKNOWLEDGED_SURVEY_CONFIG = 7;
-        int INVALID_ROW_CONTROL_SURVEY_CONFIG = 8;
-        int MAX_VALUE = INVALID_ROW_CONTROL_SURVEY_CONFIG;
-    }
-
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxCctAdsNoticeSurveyFailures)
-
     // Maps {@link PrivacySandboxSurveyType} to their survey triggerid.
     private static final Map<Integer, String> sSurveyTriggers =
             ImmutableMap.<Integer, String>builder()
-                    .put(
-                            PrivacySandboxSurveyType.CCT_EEA_ACCEPTED,
-                            "privacy-sandbox-cct-ads-notice-eea-accepted")
-                    .put(
-                            PrivacySandboxSurveyType.CCT_EEA_DECLINED,
-                            "privacy-sandbox-cct-ads-notice-eea-declined")
-                    .put(
-                            PrivacySandboxSurveyType.CCT_EEA_CONTROL,
-                            "privacy-sandbox-cct-ads-notice-eea-control")
-                    .put(
-                            PrivacySandboxSurveyType.CCT_ROW_ACKNOWLEDGED,
-                            "privacy-sandbox-cct-ads-notice-row-acknowledged")
-                    .put(
-                            PrivacySandboxSurveyType.CCT_ROW_CONTROL,
-                            "privacy-sandbox-cct-ads-notice-row-control")
                     .put(
                             PrivacySandboxSurveyType.SENTIMENT_SURVEY,
                             "privacy-sandbox-sentiment-survey")
@@ -155,7 +88,6 @@ public class PrivacySandboxSurveyController {
     private boolean mHasSeenNtp;
     private boolean mOverrideChannelForTesting;
     private int mChannelForTesting;
-    private static final int DEFAULT_ADS_CCT_DELAY_MS = 20_000;
 
     private static boolean sEnableForTesting;
 
@@ -207,122 +139,6 @@ public class PrivacySandboxSurveyController {
                 messageDispatcher,
                 activityTabProvider,
                 profile);
-    }
-
-    private boolean shouldLaunchAdsCctSurvey(String appId) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY)) {
-            recordCctAdsNoticeSurveyFailures(CctAdsNoticeSurveyFailures.FEATURE_NOT_ENABLED);
-            return false;
-        }
-        String paramAdsNoticeAppId =
-                ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY, "survey-app-id");
-        if (!paramAdsNoticeAppId.isEmpty() && !paramAdsNoticeAppId.equals(appId)) {
-            recordCctAdsNoticeSurveyFailures(CctAdsNoticeSurveyFailures.APP_ID_MISMATCH);
-            return false;
-        }
-        return true;
-    }
-
-    @VisibleForTesting
-    public long getAdsCctDelayMilliseconds() {
-        // Use the 20 second default if the conversion of the parameter fails.
-        return Long.valueOf(
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY,
-                        "survey-delay-ms",
-                        DEFAULT_ADS_CCT_DELAY_MS));
-    }
-
-    // Attempts to schedule the launch of an Ads CCT Treatment survey.
-    // Should only be invoked after the closure of either the EEA or ROW notice.
-    public void maybeScheduleAdsCctTreatmentSurveyLaunch(String appId) {
-        if (!shouldLaunchAdsCctSurvey(appId)) {
-            return;
-        }
-        PostTask.postDelayedTask(
-                TaskTraits.UI_DEFAULT,
-                () -> maybeLaunchAdsCctTreatmentSurvey(),
-                getAdsCctDelayMilliseconds());
-    }
-
-    // Does a local random roll to determine if a EEA survey should be shown based on the trigger
-    // rate
-    private boolean isSelectedForEeaSurvey(@PrivacySandboxSurveyType int surveyType) {
-        switch (surveyType) {
-            case PrivacySandboxSurveyType.CCT_EEA_ACCEPTED:
-                return new Random().nextFloat()
-                        < ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                                ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY,
-                                "accepted-trigger-rate",
-                                0.0);
-            case PrivacySandboxSurveyType.CCT_EEA_DECLINED:
-                return new Random().nextFloat()
-                        < ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                                ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY,
-                                "declined-trigger-rate",
-                                0.0);
-            default:
-                return false;
-        }
-    }
-
-    // Determines the appropriate survey to launch based on the user interaction with either the EEA
-    // consent or the ROW notice and launches the survey.
-    private void maybeLaunchAdsCctTreatmentSurvey() {
-        @PrivacySandboxSurveyType int surveyType = PrivacySandboxSurveyType.UNKNOWN;
-        PrefService prefs = UserPrefs.get(mProfile);
-        // Check if the EEA consent was shown.
-        if (prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_CONSENT_DECISION_MADE)) {
-            if (prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED)) {
-                surveyType = PrivacySandboxSurveyType.CCT_EEA_ACCEPTED;
-            } else {
-                surveyType = PrivacySandboxSurveyType.CCT_EEA_DECLINED;
-            }
-            if (!isSelectedForEeaSurvey(surveyType)) {
-                return;
-            }
-            // Check if the ROW notice was acknowledged.
-        } else if (prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_ROW_NOTICE_ACKNOWLEDGED)) {
-            surveyType = PrivacySandboxSurveyType.CCT_ROW_ACKNOWLEDGED;
-        }
-
-        if (surveyType == PrivacySandboxSurveyType.UNKNOWN) {
-            recordCctAdsNoticeSurveyFailures(CctAdsNoticeSurveyFailures.USER_INTERACTION_NOT_FOUND);
-            return;
-        }
-        showSurvey(surveyType);
-    }
-
-    // Attempts to schedule the launch of an Ads CCT control survey.
-    // Clients expected to see a control survey will not see any Ads CCT dialogs.
-    public void maybeScheduleAdsCctControlSurveyLaunch(String appId, @PromptType int promptType) {
-        if (!shouldLaunchAdsCctSurvey(appId)) {
-            return;
-        }
-        PostTask.postDelayedTask(
-                TaskTraits.UI_DEFAULT,
-                () -> maybeLaunchAdsCctControlSurvey(promptType),
-                getAdsCctDelayMilliseconds());
-    }
-
-    // Determines the appropriate survey to launch based on the prompt type.
-    private void maybeLaunchAdsCctControlSurvey(@PromptType int promptType) {
-        switch (promptType) {
-            case PromptType.M1_CONSENT:
-                // Case where we expected the client to see the EEA consent.
-                showSurvey(PrivacySandboxSurveyType.CCT_EEA_CONTROL);
-                break;
-            case PromptType.M1_NOTICE_ROW:
-                // Case where we expected the client to see the ROW notice.
-                showSurvey(PrivacySandboxSurveyType.CCT_ROW_CONTROL);
-                break;
-            case PromptType.NONE:
-            case PromptType.M1_NOTICE_EEA:
-            case PromptType.M1_NOTICE_RESTRICTED:
-                recordCctAdsNoticeSurveyFailures(CctAdsNoticeSurveyFailures.INVALID_PROMPT_TYPE);
-                return;
-        }
     }
 
     private @Nullable SurveyClient constructSurveyClient(@PrivacySandboxSurveyType int survey) {
@@ -446,10 +262,6 @@ public class PrivacySandboxSurveyController {
     }
 
     private static boolean shouldInitializeForActiveStudy() {
-        // Ads CCT notice survey.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY)) {
-            return true;
-        }
         // Sentiment survey should be checked last as it should always be on.
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SENTIMENT_SURVEY)) {
             recordSentimentSurveyStatus(PrivacySandboxSentimentSurveyStatus.FEATURE_DISABLED);
@@ -467,38 +279,11 @@ public class PrivacySandboxSurveyController {
                 PrivacySandboxSentimentSurveyStatus.MAX_VALUE);
     }
 
-    private static void recordCctAdsNoticeSurveyFailures(@CctAdsNoticeSurveyFailures int failure) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "PrivacySandbox.Surveys.CctAdsNoticeSurvey.Failures",
-                failure,
-                CctAdsNoticeSurveyFailures.MAX_VALUE);
-    }
-
     private static void emitInvalidSurveyConfigHistogram(@PrivacySandboxSurveyType int surveyType) {
         switch (surveyType) {
             case PrivacySandboxSurveyType.SENTIMENT_SURVEY:
                 recordSentimentSurveyStatus(
                         PrivacySandboxSentimentSurveyStatus.INVALID_SURVEY_CONFIG);
-                return;
-            case PrivacySandboxSurveyType.CCT_EEA_ACCEPTED:
-                recordCctAdsNoticeSurveyFailures(
-                        CctAdsNoticeSurveyFailures.INVALID_EEA_ACCEPTED_SURVEY_CONFIG);
-                return;
-            case PrivacySandboxSurveyType.CCT_EEA_DECLINED:
-                recordCctAdsNoticeSurveyFailures(
-                        CctAdsNoticeSurveyFailures.INVALID_EEA_DECLINED_SURVEY_CONFIG);
-                return;
-            case PrivacySandboxSurveyType.CCT_EEA_CONTROL:
-                recordCctAdsNoticeSurveyFailures(
-                        CctAdsNoticeSurveyFailures.INVALID_EEA_CONTROL_SURVEY_CONFIG);
-                return;
-            case PrivacySandboxSurveyType.CCT_ROW_ACKNOWLEDGED:
-                recordCctAdsNoticeSurveyFailures(
-                        CctAdsNoticeSurveyFailures.INVALID_ROW_ACKNOWLEDGED_SURVEY_CONFIG);
-                return;
-            case PrivacySandboxSurveyType.CCT_ROW_CONTROL:
-                recordCctAdsNoticeSurveyFailures(
-                        CctAdsNoticeSurveyFailures.INVALID_ROW_CONTROL_SURVEY_CONFIG);
                 return;
             default:
                 return;

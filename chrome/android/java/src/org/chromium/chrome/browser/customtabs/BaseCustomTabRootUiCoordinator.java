@@ -75,7 +75,6 @@ import org.chromium.chrome.browser.pdf.PdfPageIphController;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSurveyController;
 import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -903,14 +902,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                         "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT",
                                         shouldShowPrivacySandboxDialog);
                             }
-                            PrivacySandboxSurveyController surveyController =
-                                    PrivacySandboxSurveyController.initialize(
-                                            mTabModelSelectorSupplier.get(),
-                                            mActivityLifecycleDispatcher,
-                                            mActivity,
-                                            mMessageDispatcher,
-                                            mActivityTabProvider,
-                                            profile);
                             String appId = mIntentDataProvider.get().getClientPackageName();
                             // TODO(crbug.com/390429345): Refactor Ads CCT Notice logic into the PS
                             // dialog controller
@@ -931,13 +922,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                         "Startup.Android.PrivacySandbox.AdsNoticeCCTAppIDCheck",
                                         shouldShowPrivacySandboxDialogAppIdCheck);
                                 if (shouldShowPrivacySandboxDialogAppIdCheck) {
-                                    if (surveyController != null) {
-                                        PrivacySandboxDialogController.setOnDialogDismissRunnable(
-                                                () ->
-                                                        surveyController
-                                                                .maybeScheduleAdsCctTreatmentSurveyLaunch(
-                                                                        appId));
-                                    }
                                     didShowPrompt =
                                             PrivacySandboxDialogController
                                                     .maybeLaunchPrivacySandboxDialog(
@@ -946,15 +930,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                             SurfaceType.AGACCT,
                                                             mWindowAndroid);
                                 }
-                            } else if (surveyController != null
-                                    && !ChromeFeatureList.isEnabled(
-                                            ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT)
-                                    && shouldShowPrivacySandboxDialog
-                                    && isCustomTab) {
-                                surveyController.maybeScheduleAdsCctControlSurveyLaunch(
-                                        appId,
-                                        new PrivacySandboxBridge(currentModelProfile)
-                                                .getRequiredPromptType(SurfaceType.AGACCT));
                             }
 
                             if (!didShowPrompt) {
