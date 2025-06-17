@@ -85,6 +85,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
     "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/variations/service:service",
     "//content/public/browser",
     "//net",
@@ -163,6 +164,7 @@ source_set("browser_tests") {
     "//components/optimization_guide/core:bloomfilter",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//testing/gtest",
   ]
 

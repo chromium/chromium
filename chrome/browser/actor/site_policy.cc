@@ -34,6 +34,7 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #endif
 
 namespace actor {
@@ -116,6 +117,18 @@ void MayActOnUrl(const GURL& url,
 
   if (!url.SchemeIs(url::kHttpsScheme) || url.HostIsIPAddress()) {
     decision_wrapper->Reject("Wrong scheme");
+    return;
+  }
+
+  bool is_safe_browsing_enabled = false;
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  is_safe_browsing_enabled =
+      safe_browsing::IsSafeBrowsingEnabled(*profile->GetPrefs());
+#endif
+  if (!is_safe_browsing_enabled) {
+    // We don't want to risk acting on dangerous sites, so we require
+    // SafeBrowsing.
+    decision_wrapper->Reject("Safebrowsing unavailable");
     return;
   }
 

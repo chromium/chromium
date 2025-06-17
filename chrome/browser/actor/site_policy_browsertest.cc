@@ -31,11 +31,14 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #endif
 
 namespace actor {
 
 namespace {
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
  public:
@@ -138,8 +141,6 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicyBrowserTest,
   CheckUrl(blocked_url, false);
 }
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
 class ActorSitePolicySafeBrowsingBrowserTest
     : public ActorSitePolicyBrowserTest {
  public:
@@ -206,6 +207,20 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicyDelayedWarningBrowserTest,
       embedded_https_test_server().GetURL("c.com", "/title1.html");
   AddPhishingUrl(phishing_url);
   CheckUrl(phishing_url, false);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorSitePolicySafeBrowsingBrowserTest,
+                       RequireSafeBrowsing) {
+  // Disable SafeBrowsing.
+  safe_browsing::SetSafeBrowsingState(
+      browser()->profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+
+  // This would otherwise be allowed, but since we don't have SafeBrowsing to
+  // check if it's dangerous, we assume it is unsafe.
+  const GURL normally_allowed_url =
+      embedded_https_test_server().GetURL("a.com", "/title1.html");
+  CheckUrl(normally_allowed_url, false);
 }
 
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
