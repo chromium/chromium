@@ -380,7 +380,15 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
 // integration to verify an item "Use enhanced spell check" is checked. (This
 // test does not actually send JSON-RPC requests to the service because it makes
 // this test flaky.)
-IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, EnableSpellingService) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_EnableSpellingService DISABLED_EnableSpellingService
+#else
+#define MAYBE_EnableSpellingService EnableSpellingService
+#endif
+IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
+                       MAYBE_EnableSpellingService) {
   menu()->GetPrefs()->SetBoolean(
       spellcheck::prefs::kSpellCheckUseSpellingService, true);
   base::Value::List dictionary;
