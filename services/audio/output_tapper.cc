@@ -48,11 +48,11 @@ void OutputTapper::SetOutputDeviceForAec(const std::string& output_device_id) {
     StartListening();
 }
 
-void OutputTapper::Start() {
+ReferenceSignalProvider::ReferenceOpenOutcome OutputTapper::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(!active_);
   active_ = true;
-  StartListening();
+  return StartListening();
 }
 
 void OutputTapper::Stop() {
@@ -63,12 +63,13 @@ void OutputTapper::Stop() {
   active_ = false;
 }
 
-void OutputTapper::StartListening() {
+ReferenceSignalProvider::ReferenceOpenOutcome OutputTapper::StartListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(active_);
   log_callback_.Run(base::StrCat(
       {"OutputTapper: listening to output device: ", output_device_id_}));
-  reference_signal_provider_->StartListening(listener_, output_device_id_);
+  return reference_signal_provider_->StartListening(listener_,
+                                                    output_device_id_);
 }
 
 }  // namespace audio

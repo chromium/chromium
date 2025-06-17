@@ -52,6 +52,29 @@ using OpenOutcome = media::AudioInputStream::OpenOutcome;
 const int kMaxInputChannels = 3;
 constexpr base::TimeDelta kCheckMutedStateInterval = base::Seconds(1);
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+using ReferenceOpenOutcome = ReferenceSignalProvider::ReferenceOpenOutcome;
+
+InputController::ErrorCode MapReferenceOpenOutcomeToInputErrorCode(
+    ReferenceOpenOutcome open_outcome) {
+  CHECK(open_outcome != ReferenceOpenOutcome::SUCCESS);
+  switch (open_outcome) {
+    case ReferenceOpenOutcome::STREAM_CREATE_ERROR:
+      return InputController::REFERENCE_STREAM_CREATE_ERROR;
+    case ReferenceOpenOutcome::STREAM_OPEN_ERROR:
+      return InputController::REFERENCE_STREAM_OPEN_ERROR;
+    case ReferenceOpenOutcome::STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR:
+      return InputController::REFERENCE_STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR;
+    case ReferenceOpenOutcome::STREAM_OPEN_DEVICE_IN_USE_ERROR:
+      return InputController::REFERENCE_STREAM_OPEN_DEVICE_IN_USE_ERROR;
+    case ReferenceOpenOutcome::STREAM_PREVIOUS_ERROR:
+      return InputController::REFERENCE_STREAM_ERROR;
+    default:
+      NOTREACHED();
+  }
+}
+#endif
+
 #if defined(AUDIO_POWER_MONITORING)
 // Time in seconds between two successive measurements of audio power levels.
 constexpr base::TimeDelta kPowerMonitorLogInterval = base::Seconds(15);
@@ -248,6 +271,9 @@ void InputController::MaybeSetUpAudioProcessing(
                           base::Unretained(event_handler_)),
       base::BindRepeating(&InputController::DeliverProcessedAudio,
                           base::Unretained(this)),
+      // AudioProcessorHandler delivers errors on the main thread.
+      base::BindRepeating(&InputController::DoReportError, weak_this_,
+                          REFERENCE_STREAM_ERROR),
       std::move(processing_config->controls_receiver),
       aecdump_recording_manager);
 
@@ -328,6 +354,22 @@ void InputController::Record() {
 
   event_handler_->OnLog("AIC::Record()");
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (output_tapper_) {
+    ReferenceOpenOutcome reference_open_outcome = output_tapper_->Start();
+    if (reference_open_outcome != ReferenceOpenOutcome::SUCCESS) {
+      // The AEC reference stream failed to start.
+      DoReportError(
+          MapReferenceOpenOutcomeToInputErrorCode(reference_open_outcome));
+      return;
+    }
+  }
+
+  if (processing_fifo_) {
+    processing_fifo_->Start();
+  }
+#endif
+
   stream_create_time_ = base::TimeTicks::Now();
 
   // Unretained() is safe, since |this| outlives |audio_callback_|.
@@ -342,20 +384,11 @@ void InputController::Record() {
           task_runner_,
           base::BindOnce(&InputController::ReportIsAlive, weak_this_)),
       /*on_error_callback=*/
-      base::BindPostTask(
-          task_runner_,
-          base::BindRepeating(&InputController::DoReportError, weak_this_)));
-
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (processing_fifo_)
-    processing_fifo_->Start();
-
-  if (output_tapper_)
-    output_tapper_->Start();
-#endif
+      base::BindPostTask(task_runner_,
+                         base::BindRepeating(&InputController::DoReportError,
+                                             weak_this_, STREAM_ERROR)));
 
   stream_->Start(audio_callback_.get());
-  return;
 }
 
 void InputController::Close() {
@@ -560,9 +593,9 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
   DCHECK(check_muted_state_timer_.IsRunning());
 }
 
-void InputController::DoReportError() {
+void InputController::DoReportError(ErrorCode error_code) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  event_handler_->OnError(STREAM_ERROR);
+  event_handler_->OnError(error_code);
 }
 
 void InputController::DoLogAudioLevels(float level_dbfs,

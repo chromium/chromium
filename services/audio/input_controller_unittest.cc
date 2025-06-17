@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "input_controller.h"
 #include "media/audio/aecdump_recording_manager.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
@@ -26,6 +27,7 @@
 #include "media/base/audio_processing.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/audio/audio_processor_handler.h"
 #include "services/audio/processing_audio_fifo.h"
 #include "services/audio/reference_output.h"
 #include "services/audio/reference_signal_provider.h"
@@ -38,6 +40,7 @@ using ::testing::Exactly;
 using ::testing::InvokeWithoutArgs;
 using ::testing::NiceMock;
 using ::testing::NotNull;
+using ::testing::Return;
 using ::testing::StrictMock;
 
 namespace audio {
@@ -385,6 +388,15 @@ class InputControllerTestHelper {
     return controller_->processing_fifo_->fifo_size();
   }
 
+  // Simulates the AudioProcessorHandler receiving an error.
+  void CallOnReferenceStreamError() {
+    // Cast to ReferenceOutput::Listener* to get public access to
+    // OnReferenceStreamError.
+    static_cast<ReferenceOutput::Listener*>(
+        controller_->audio_processor_handler_.get())
+        ->OnReferenceStreamError();
+  }
+
  private:
   raw_ptr<InputController> controller_;
 };
@@ -447,6 +459,11 @@ class TimeSourceInputControllerTestWithDeviceListener
     processing_config_ = media::mojom::AudioProcessingConfig::New(
         remote_controls_.BindNewPipeAndPassReceiver(), settings);
   }
+
+  // Used for testing that a specific OpenOutcome is translated to a specific
+  // ErrorCode.
+  void TestReferenceOpenError(ReferenceOpenOutcome reference_open_outcome,
+                              InputController::ErrorCode expected_error_code);
 
   // The MockReferenceSignalProvider will be destroyed automatically when the
   // InputController is destroyed. We retain a pointer to it to be able to
@@ -560,9 +577,12 @@ TEST_P(InputControllerTestWithDeviceListener, RecordBeforeSetOutputForAec) {
   const std::string kOutputDeviceId = "0x123";
 
   // Calling Record() will start listening to the "" device by default.
-  EXPECT_CALL(*reference_signal_provider_, StartListening(_, "")).Times(1);
+  EXPECT_CALL(*reference_signal_provider_, StartListening(_, ""))
+      .Times(1)
+      .WillOnce(Return(ReferenceOpenOutcome::SUCCESS));
   EXPECT_CALL(*reference_signal_provider_, StartListening(_, kOutputDeviceId))
-      .Times(1);
+      .Times(1)
+      .WillOnce(Return(ReferenceOpenOutcome::SUCCESS));
   EXPECT_CALL(*reference_signal_provider_, StopListening(_)).Times(1);
 
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
@@ -585,7 +605,8 @@ TEST_P(InputControllerTestWithDeviceListener, RecordBeforeSetOutputForAec) {
 TEST_P(InputControllerTestWithDeviceListener, RecordAfterSetOutputForAec) {
   const std::string kOutputDeviceId = "0x123";
   EXPECT_CALL(*reference_signal_provider_, StartListening(_, kOutputDeviceId))
-      .Times(1);
+      .Times(1)
+      .WillOnce(Return(ReferenceOpenOutcome::SUCCESS));
   EXPECT_CALL(*reference_signal_provider_, StopListening(_)).Times(1);
 
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
@@ -608,7 +629,8 @@ TEST_P(InputControllerTestWithDeviceListener, RecordAfterSetOutputForAec) {
 TEST_P(InputControllerTestWithDeviceListener, FifoSize) {
   const std::string kOutputDeviceId = "0x123";
   EXPECT_CALL(*reference_signal_provider_, StartListening(_, kOutputDeviceId))
-      .Times(1);
+      .Times(1)
+      .WillOnce(Return(ReferenceOpenOutcome::SUCCESS));
   EXPECT_CALL(*reference_signal_provider_, StopListening(_)).Times(1);
 
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
@@ -640,10 +662,12 @@ TEST_P(InputControllerTestWithDeviceListener, ChangeOutputForAec) {
 
   // Each output ID should receive one call to StartListening().
   EXPECT_CALL(*reference_signal_provider_, StartListening(_, kOutputDeviceId))
-      .Times(1);
+      .Times(1)
+      .WillOnce(Return(ReferenceOpenOutcome::SUCCESS));
   EXPECT_CALL(*reference_signal_provider_,
               StartListening(_, kOtherOutputDeviceId))
-      .Times(1);
+      .Times(1)
+      .WillOnce(Return(ReferenceOpenOutcome::SUCCESS));
 
   // StopListening() should be called once, regardless of how many ID changes.
   EXPECT_CALL(*reference_signal_provider_, StopListening(_)).Times(1);
@@ -715,6 +739,94 @@ TEST_P(SystemTimeInputControllerTestWithDeviceListener, CreateRecordAndClose) {
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(data_processed_by_fifo, IsProcessingFifoEnabled());
+}
+
+TEST_P(InputControllerTestWithDeviceListener, ReferenceStreamError) {
+  // This test is only relevant when using ChromeWideEchoCancellation.
+  if (GetChromeWideEchoCancellationSetting() ==
+      ChromeWideEchoCancellationSetting::kDisabled) {
+    return;
+  }
+  const std::string kOutputDeviceId = "0x123";
+  EXPECT_CALL(*reference_signal_provider_, StartListening(_, kOutputDeviceId))
+      .Times(1)
+      .WillOnce(Return(ReferenceOpenOutcome::SUCCESS));
+  EXPECT_CALL(*reference_signal_provider_, StopListening(_)).Times(1);
+
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+  CreateAudioController();
+
+  ASSERT_TRUE(controller_.get());
+
+  controller_->SetOutputDeviceForAec(kOutputDeviceId);
+  controller_->Record();
+  EXPECT_TRUE(helper_->IsUsingProcessingThread());
+
+  // Sending a ReferenceStreamError should result in an error being sent to the
+  // EventHandler.
+  EXPECT_CALL(event_handler_, OnError(InputController::REFERENCE_STREAM_ERROR));
+  helper_->CallOnReferenceStreamError();
+
+  controller_->Close();
+}
+
+template <>
+void InputControllerTestWithDeviceListener::TestReferenceOpenError(
+    ReferenceOpenOutcome reference_open_outcome,
+    InputController::ErrorCode expected_error_code) {
+  // This test is only relevant when using ChromeWideEchoCancellation.
+  if (GetChromeWideEchoCancellationSetting() ==
+      ChromeWideEchoCancellationSetting::kDisabled) {
+    return;
+  }
+  const std::string kOutputDeviceId = "0x123";
+  // Make StartListening return an error.
+  EXPECT_CALL(*reference_signal_provider_, StartListening(_, kOutputDeviceId))
+      .Times(1)
+      .WillOnce(Return(reference_open_outcome));
+  EXPECT_CALL(*reference_signal_provider_, StopListening(_)).Times(1);
+
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+  CreateAudioController();
+
+  ASSERT_TRUE(controller_.get());
+
+  controller_->SetOutputDeviceForAec(kOutputDeviceId);
+
+  // Since StartListening will fail with an error, we should get an error on
+  // Record().
+  EXPECT_CALL(event_handler_, OnError(expected_error_code));
+  controller_->Record();
+  controller_->Close();
+}
+
+TEST_P(InputControllerTestWithDeviceListener, ReferenceStreamOpenError) {
+  TestReferenceOpenError(ReferenceOpenOutcome::STREAM_OPEN_ERROR,
+                         InputController::REFERENCE_STREAM_OPEN_ERROR);
+}
+
+TEST_P(InputControllerTestWithDeviceListener, ReferenceStreamPreviousError) {
+  TestReferenceOpenError(ReferenceOpenOutcome::STREAM_PREVIOUS_ERROR,
+                         InputController::REFERENCE_STREAM_ERROR);
+}
+
+TEST_P(InputControllerTestWithDeviceListener, ReferenceStreamCreateError) {
+  TestReferenceOpenError(ReferenceOpenOutcome::STREAM_CREATE_ERROR,
+                         InputController::REFERENCE_STREAM_CREATE_ERROR);
+}
+
+TEST_P(InputControllerTestWithDeviceListener,
+       ReferenceStreamOpenDeviceInUseError) {
+  TestReferenceOpenError(
+      ReferenceOpenOutcome::STREAM_OPEN_DEVICE_IN_USE_ERROR,
+      InputController::REFERENCE_STREAM_OPEN_DEVICE_IN_USE_ERROR);
+}
+
+TEST_P(InputControllerTestWithDeviceListener,
+       ReferenceStreamOpenSystemPermissionsError) {
+  TestReferenceOpenError(
+      ReferenceOpenOutcome::STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR,
+      InputController::REFERENCE_STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR);
 }
 
 INSTANTIATE_TEST_SUITE_P(InputControllerTestWithDeviceListener,

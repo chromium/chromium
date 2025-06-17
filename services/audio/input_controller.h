@@ -107,6 +107,22 @@ class InputController final {
 
     // Open failed due to device in use by another app.
     STREAM_OPEN_DEVICE_IN_USE_ERROR,  // = 5
+
+    // Native input stream reports an error. Exact reason differs between
+    // platforms.
+    REFERENCE_STREAM_ERROR,  // = 6
+
+    // Failed to create aec reference stream.
+    REFERENCE_STREAM_CREATE_ERROR,  // = 7
+
+    // Failed to open aec reference stream.
+    REFERENCE_STREAM_OPEN_ERROR,  // = 8
+
+    // Failed to open aec reference stream due to lack of system permissions.
+    REFERENCE_STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR,  // = 9
+
+    // Failed to open aec reference stream due to device in use by another app.
+    REFERENCE_STREAM_OPEN_DEVICE_IN_USE_ERROR,  // = 10
   };
 
 #if defined(AUDIO_POWER_MONITORING)
@@ -243,7 +259,7 @@ class InputController final {
                 const media::AudioParameters& params,
                 const std::string& device_id,
                 bool enable_agc);
-  void DoReportError();
+  void DoReportError(ErrorCode error_code);
   void DoLogAudioLevels(float level_dbfs, int microphone_volume_percent);
 
 #if defined(AUDIO_POWER_MONITORING)

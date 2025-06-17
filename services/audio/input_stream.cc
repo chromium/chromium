@@ -44,6 +44,16 @@ const char* ErrorCodeToString(InputController::ErrorCode error) {
       return "STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR";
     case (InputController::STREAM_OPEN_DEVICE_IN_USE_ERROR):
       return "STREAM_OPEN_DEVICE_IN_USE_ERROR";
+    case (InputController::REFERENCE_STREAM_ERROR):
+      return "REFERENCE_STREAM_ERROR";
+    case (InputController::REFERENCE_STREAM_CREATE_ERROR):
+      return "REFERENCE_STREAM_CREATE_ERROR";
+    case (InputController::REFERENCE_STREAM_OPEN_ERROR):
+      return "REFERENCE_STREAM_OPEN_ERROR";
+    case (InputController::REFERENCE_STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR):
+      return "REFERENCE_STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR";
+    case (InputController::REFERENCE_STREAM_OPEN_DEVICE_IN_USE_ERROR):
+      return "REFERENCE_STREAM_OPEN_DEVICE_IN_USE_ERROR";
     default:
       NOTREACHED();
   }

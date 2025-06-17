@@ -12,9 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "services/audio/reference_output.h"
+#include "services/audio/reference_signal_provider.h"
 
 namespace audio {
-class ReferenceSignalProvider;
 
 class OutputTapper {
  public:
@@ -29,11 +29,11 @@ class OutputTapper {
   ~OutputTapper();
 
   void SetOutputDeviceForAec(const std::string& output_device_id);
-  void Start();
+  ReferenceSignalProvider::ReferenceOpenOutcome Start();
   void Stop();
 
  private:
-  void StartListening();
+  ReferenceSignalProvider::ReferenceOpenOutcome StartListening();
 
   SEQUENCE_CHECKER(owning_sequence_);
   bool active_ = false;
