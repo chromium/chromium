@@ -59,7 +59,6 @@ from typing import (
 )
 
 import six
-from six.moves import zip_longest
 
 from urllib.parse import urljoin
 

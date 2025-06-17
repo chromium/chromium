@@ -35,7 +35,6 @@ from blinkpy.common.host_mock import MockHost
 from blinkpy.web_tests.models.test_expectations import (
     TestExpectations, SystemConfigurationEditor, ParseError)
 from blinkpy.web_tests.models.typ_types import ResultType, Expectation
-from six.moves import range
 from functools import reduce
 
 

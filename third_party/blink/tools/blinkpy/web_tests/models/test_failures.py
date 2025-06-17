@@ -25,9 +25,10 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+import pickle
 import re
 import six
-from six.moves import cPickle
 from typing import ClassVar
 
 from blinkpy.web_tests.controllers import repaint_overlay
@@ -146,7 +147,7 @@ class AbstractTestResultType(object):
     @staticmethod
     def loads(s):
         """Creates a AbstractTestResultType object from the specified string."""
-        return cPickle.loads(s)
+        return pickle.loads(s)
 
     def message(self):
         """Returns a string describing the failure in more detail."""
@@ -187,7 +188,7 @@ class AbstractTestResultType(object):
 
     def dumps(self):
         """Returns the string/JSON representation of a AbstractTestResultType."""
-        return cPickle.dumps(self)
+        return pickle.dumps(self)
 
     def driver_needs_restart(self):
         """Returns True if we should kill the driver before the next test."""

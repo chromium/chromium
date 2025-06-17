@@ -28,8 +28,6 @@
 
 from __future__ import print_function
 import re
-from six.moves import range
-from six.moves import filter
 
 
 class ProfilerFactory(object):

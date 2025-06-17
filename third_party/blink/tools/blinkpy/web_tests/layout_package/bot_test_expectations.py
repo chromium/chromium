@@ -32,8 +32,7 @@ corresponding to the give port.
 import json
 import logging
 import os.path
-
-from six.moves import urllib
+import urllib
 
 from blinkpy.web_tests.models.typ_types import Expectation, ResultType
 

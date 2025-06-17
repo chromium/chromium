@@ -31,11 +31,11 @@
 
 import csv
 import datetime
+import io
 import json
 import optparse
-from six import StringIO
 import sys
-from six.moves import urllib
+import urllib
 
 from blinkpy.common.host import Host
 # pylint: disable=no-name-in-module
@@ -82,7 +82,7 @@ class StaleTestPrinter(object):
             self.write_csv(csv_rows)
 
     def write_csv(self, rows):
-        out = StringIO.StringIO()
+        out = io.StringIO()
         writer = csv.writer(out)
         writer.writerow(CSV_ROW_HEADERS)
         for row in rows:

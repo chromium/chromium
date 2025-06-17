@@ -27,7 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Generic routines to convert platform-specific paths to URIs."""
 
-from six.moves import urllib
+import urllib
 
 
 def abspath_to_uri(platform, path):

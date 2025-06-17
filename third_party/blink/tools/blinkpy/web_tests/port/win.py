@@ -35,7 +35,7 @@ import tempfile
 # The _winreg library is only available on Windows.
 # https://docs.python.org/2/library/_winreg.html
 try:
-    import six.moves.winreg as _winreg  # pylint: disable=import-error
+    import winreg as _winreg
 except ImportError:
     _winreg = None  # pylint: disable=invalid-name
 

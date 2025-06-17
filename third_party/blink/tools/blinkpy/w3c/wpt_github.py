@@ -7,11 +7,11 @@ import datetime
 import json
 import logging
 import re
+from urllib.parse import quote
 
 from collections import namedtuple
 from requests.exceptions import HTTPError
 from requests.exceptions import InvalidURL
-from six.moves.urllib.parse import quote
 
 from blinkpy.common.memoized import memoized
 from blinkpy.w3c.common import (

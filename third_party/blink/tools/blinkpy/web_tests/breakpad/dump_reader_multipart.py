@@ -28,9 +28,8 @@
 
 import cgi
 import logging
+from queue import Queue
 import threading
-
-from six.moves import queue as Queue
 
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.breakpad.dump_reader import DumpReader
@@ -140,7 +139,7 @@ class DumpReaderMultipart(DumpReader):
         self._generated_symbols = True
 
         _log.debug('Generating breakpad symbols')
-        queue = Queue.Queue()
+        queue = Queue()
         thread = threading.Thread(target=_symbolize_keepalive, args=(queue, ))
         thread.start()
         try:
