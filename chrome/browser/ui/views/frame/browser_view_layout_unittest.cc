@@ -75,7 +75,6 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
     return content_separator_enabled_;
   }
   bool IsActiveTabSplit() const override { return false; }
-  void UpdateSplitViewInsets() override {}
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override {
     return nullptr;
   }
@@ -245,6 +244,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         /*web_app_frame_toolbar=*/nullptr,
         /*web_app_window_title=*/nullptr, tab_strip_region_view, tab_strip_,
         toolbar_, infobar_container_, contents_container_,
+        /*multi_contents_view=*/nullptr,
         /*left_aligned_side_panel_separator=*/nullptr,
         /*unified_side_panel=*/nullptr,
         /*right_aligned_side_panel_separator=*/nullptr,

@@ -833,30 +833,6 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     return active_tab && active_tab->IsSplit();
   }
 
-  void UpdateSplitViewInsets() override {
-    CHECK(browser_view_->multi_contents_view());
-
-    bool side_panel_visible = browser_view_->unified_side_panel()->GetVisible();
-    bool right_aligned = browser_view_->unified_side_panel()->IsRightAligned();
-    bool infobar_visible = browser_view_->infobar_container()->GetVisible();
-
-    browser_view_->multi_contents_view()
-        ->start_contents_view_inset()
-        .set_left(side_panel_visible && !right_aligned
-                      ? 0
-                      : MultiContentsView::kSplitViewContentInset)
-        .set_top(!infobar_visible ? 0
-                                  : MultiContentsView::kSplitViewContentInset);
-
-    browser_view_->multi_contents_view()
-        ->end_contents_view_inset()
-        .set_right(side_panel_visible && right_aligned
-                       ? 0
-                       : MultiContentsView::kSplitViewContentInset)
-        .set_top(!infobar_visible ? 0
-                                  : MultiContentsView::kSplitViewContentInset);
-  }
-
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override {
     return browser_view_->exclusive_access_bubble();
   }
@@ -5353,7 +5329,7 @@ void BrowserView::AddedToWidget() {
           std::make_unique<BrowserViewLayoutDelegateImpl>(this), this,
           window_scrim_view_, top_container_, web_app_frame_toolbar_,
           web_app_window_title_, tab_strip_region_view_, tabstrip_, toolbar_,
-          infobar_container_, contents_container_,
+          infobar_container_, contents_container_, multi_contents_view_,
           left_aligned_side_panel_separator_, unified_side_panel_,
           right_aligned_side_panel_separator_, side_panel_rounded_corner_,
           immersive_mode_controller_.get(), contents_separator_));

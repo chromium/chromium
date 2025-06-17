@@ -32,7 +32,6 @@ class BrowserViewLayoutDelegate {
   virtual bool IsBookmarkBarVisible() const = 0;
   virtual bool IsContentsSeparatorEnabled() const = 0;
   virtual bool IsActiveTabSplit() const = 0;
-  virtual void UpdateSplitViewInsets() = 0;
   virtual ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const = 0;
   virtual bool IsTopControlsSlideBehaviorEnabled() const = 0;
   virtual float GetTopControlsSlideBehaviorShownRatio() const = 0;
