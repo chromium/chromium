@@ -464,7 +464,6 @@ void ProfileImportProcess::CollectMetrics(
 
   // For an import process that involves prompting the user, record the
   // decision.
-  // TODO(crbug.com/421353034): Add H/W import metrics.
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
     autofill_metrics::LogNewProfileImportDecision(
         user_decision_, existing_profiles,
@@ -475,6 +474,8 @@ void ProfileImportProcess::CollectMetrics(
       autofill_metrics::LogNewProfileStorageLocation(
           *confirmed_import_candidate_);
     }
+  } else if (import_type_ == AutofillProfileImportType::kHomeAndWorkSuperset) {
+    autofill_metrics::LogHomeWorkSupersetImportDecision(user_decision_);
   } else if (is_confirmable_update()) {
     autofill_metrics::LogProfileUpdateImportDecision(
         user_decision_, existing_profiles,

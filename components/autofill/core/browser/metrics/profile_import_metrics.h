@@ -186,6 +186,10 @@ void LogProfileUpdateImportDecision(
     const AutofillProfile& import_candidate,
     std::string_view app_locale);
 
+// Logs the user decision for saving a home/work profile superset.
+void LogHomeWorkSupersetImportDecision(
+    AutofillClient::AddressPromptUserDecision decision);
+
 // Logs if at least one setting-inaccessible field was removed on import.
 void LogRemovedSettingInaccessibleFields(bool did_remove);
 

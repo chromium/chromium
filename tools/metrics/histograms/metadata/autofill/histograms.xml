@@ -5059,6 +5059,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.ProfileImport.HomeWorkSupersetProfileDecision"
+    enum="AutofillProfileImportDecision" expires_after="2025-12-16">
+  <owner>jsobiech@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the user's decision for saving a home/work profile superset. This
+    metric is emitted at the end of an import process once the user-provided
+    import decision is final.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileImport.InaccessibleFieldsRemoved.ByFieldType"
     enum="AutofillSettingsVisibleTypes" expires_after="2025-11-02">
   <owner>fleimgruber@google.com</owner>
