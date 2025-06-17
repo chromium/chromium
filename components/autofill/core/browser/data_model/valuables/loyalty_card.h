@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_VALUABLES_LOYALTY_CARD_H_
 
 #include <string>
+#include <vector>
 
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "url/gurl.h"

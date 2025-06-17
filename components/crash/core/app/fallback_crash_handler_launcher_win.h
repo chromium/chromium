@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/win/scoped_handle.h"

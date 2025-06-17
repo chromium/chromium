@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SAVED_TAB_GROUPS_INTERNAL_VERSIONING_MESSAGE_CONTROLLER_IMPL_H_
 #define COMPONENTS_SAVED_TAB_GROUPS_INTERNAL_VERSIONING_MESSAGE_CONTROLLER_IMPL_H_
 
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"

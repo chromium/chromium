@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_BROWSING_TOPICS_EPOCH_TOPICS_H_
 #define COMPONENTS_BROWSING_TOPICS_EPOCH_TOPICS_H_
 
+#include <vector>
+
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "base/values.h"

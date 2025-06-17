@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_FAKE_TAB_MATCHER_H_
 
 #include <string>
+#include <vector>
 
 #include "components/omnibox/browser/tab_matcher.h"
 

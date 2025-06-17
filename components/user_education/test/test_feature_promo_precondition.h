@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"

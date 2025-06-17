@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_PASSWORD_PROTECTION_PASSWORD_PROTECTION_SERVICE_BASE_H_
 
 #include <set>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"

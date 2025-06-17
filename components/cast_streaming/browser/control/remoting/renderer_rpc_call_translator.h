@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_CONTROL_REMOTING_RENDERER_RPC_CALL_TRANSLATOR_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"

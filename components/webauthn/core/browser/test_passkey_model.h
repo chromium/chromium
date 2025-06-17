@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_TEST_PASSKEY_MODEL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/observer_list.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"

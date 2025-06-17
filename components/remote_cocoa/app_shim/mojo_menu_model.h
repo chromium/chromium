@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_MOJO_MENU_MODEL_H_
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_MOJO_MENU_MODEL_H_
 
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/common/menu.mojom.h"
 #include "ui/base/models/menu_model.h"

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_EXPORT_LOGIN_DB_DEPRECATION_PASSWORD_EXPORTER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_EXPORT_LOGIN_DB_DEPRECATION_PASSWORD_EXPORTER_H_
 
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "components/password_manager/core/browser/export/login_db_deprecation_password_exporter_interface.h"

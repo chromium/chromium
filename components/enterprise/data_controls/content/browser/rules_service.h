@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONTENT_BROWSER_RULES_SERVICE_H_
 #define COMPONENTS_ENTERPRISE_DATA_CONTROLS_CONTENT_BROWSER_RULES_SERVICE_H_
 
+#include <vector>
+
 #include "components/enterprise/data_controls/core/browser/rule.h"
 #include "components/enterprise/data_controls/core/browser/verdict.h"
 #include "components/keyed_service/core/keyed_service.h"

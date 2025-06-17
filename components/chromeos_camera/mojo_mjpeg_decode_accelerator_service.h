@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PUSH_NOTIFICATION_PUSH_NOTIFICATION_CLIENT_MANAGER_H_
 #define COMPONENTS_PUSH_NOTIFICATION_PUSH_NOTIFICATION_CLIENT_MANAGER_H_
 
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"

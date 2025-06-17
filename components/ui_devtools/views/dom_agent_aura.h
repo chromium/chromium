@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_VIEWS_DOM_AGENT_AURA_H_
 #define COMPONENTS_UI_DEVTOOLS_VIEWS_DOM_AGENT_AURA_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "components/ui_devtools/views/dom_agent_views.h"
-
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
 

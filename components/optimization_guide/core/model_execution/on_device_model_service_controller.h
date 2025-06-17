@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"

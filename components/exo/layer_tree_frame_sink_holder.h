@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"

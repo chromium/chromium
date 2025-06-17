@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"

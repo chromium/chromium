@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_VIEWS_DOM_AGENT_MAC_H_
 #define COMPONENTS_UI_DEVTOOLS_VIEWS_DOM_AGENT_MAC_H_
 
+#include <vector>
+
 #include "base/callback_list.h"
 #include "components/ui_devtools/views/dom_agent_views.h"
 #include "ui/views/widget/widget_observer.h"

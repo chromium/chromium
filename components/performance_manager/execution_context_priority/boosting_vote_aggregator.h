@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/task_traits.h"

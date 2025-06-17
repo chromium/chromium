@@ -8,6 +8,7 @@
 #include <deque>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"

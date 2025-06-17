@@ -6,6 +6,7 @@
 #define COMPONENTS_PDF_BROWSER_PDF_DOCUMENT_HELPER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"

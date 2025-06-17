@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DATA_SHARING_INTERNAL_GROUP_DATA_MODEL_H_
 #define COMPONENTS_DATA_SHARING_INTERNAL_GROUP_DATA_MODEL_H_
 
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"

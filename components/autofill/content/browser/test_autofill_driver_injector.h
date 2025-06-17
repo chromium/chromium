@@ -8,6 +8,7 @@
 #include <concepts>
 #include <map>
 #include <memory>
+#include <vector>
 
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SERVICE_H_
 #define COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SERVICE_H_
 
+#include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/commerce/core/commerce_types.h"

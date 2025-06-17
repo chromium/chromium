@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_URL_CHECKER_HOLDER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"

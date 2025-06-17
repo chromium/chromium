@@ -6,6 +6,7 @@
 #define COMPONENTS_AFFILIATIONS_CORE_BROWSER_FAKE_AFFILIATION_FETCHER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"

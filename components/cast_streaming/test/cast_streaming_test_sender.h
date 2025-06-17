@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_TEST_CAST_STREAMING_TEST_SENDER_H_
 
 #include <optional>
+#include <vector>
 
 #include "components/cast/message_port/message_port.h"
 #include "components/openscreen_platform/task_runner.h"

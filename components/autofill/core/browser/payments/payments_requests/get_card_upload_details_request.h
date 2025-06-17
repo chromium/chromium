@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_GET_CARD_UPLOAD_DETAILS_REQUEST_H_
 
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/values.h"

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_USER_EDUCATION_WEBUI_WHATS_NEW_REGISTRY_H_
 #define COMPONENTS_USER_EDUCATION_WEBUI_WHATS_NEW_REGISTRY_H_
 
+#include <vector>
+
 #include "base/feature_list.h"
 #include "components/user_education/webui/whats_new_storage_service.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_CONTENT_CAPTURE_BROWSER_CONTENT_CAPTURE_TEST_HELPER_H_
 #define COMPONENTS_CONTENT_CAPTURE_BROWSER_CONTENT_CAPTURE_TEST_HELPER_H_
 
+#include <vector>
+
 #include "components/content_capture/browser/content_capture_consumer.h"
 #include "components/content_capture/browser/content_capture_receiver.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"

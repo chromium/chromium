@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_TASK_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_TASK_H_
 
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_data_fetcher.h"

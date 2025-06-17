@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_RESPONSE_HOLDER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_RESPONSE_HOLDER_H_
 
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"

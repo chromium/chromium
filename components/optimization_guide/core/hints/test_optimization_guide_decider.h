@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_TEST_OPTIMIZATION_GUIDE_DECIDER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_TEST_OPTIMIZATION_GUIDE_DECIDER_H_
 
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"

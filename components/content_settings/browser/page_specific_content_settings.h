@@ -12,6 +12,7 @@
 #include <set>
 #include <string>
 #include <variant>
+#include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"

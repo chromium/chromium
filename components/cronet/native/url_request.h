@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"

@@ -6,6 +6,7 @@
 #define COMPONENTS_AFFILIATIONS_CORE_BROWSER_HASH_AFFILIATION_FETCHER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"

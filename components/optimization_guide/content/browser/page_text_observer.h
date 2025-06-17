@@ -6,7 +6,9 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_TEXT_OBSERVER_H_
 
 #include <stdint.h>
+
 #include <set>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"

@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"

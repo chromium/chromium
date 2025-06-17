@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/lru_cache.h"

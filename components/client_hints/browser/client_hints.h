@@ -6,6 +6,7 @@
 #define COMPONENTS_CLIENT_HINTS_BROWSER_CLIENT_HINTS_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"

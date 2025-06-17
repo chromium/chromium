@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VARIATIONS_FEATURE_OVERRIDES_H_
 #define COMPONENTS_VARIATIONS_FEATURE_OVERRIDES_H_
 
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"

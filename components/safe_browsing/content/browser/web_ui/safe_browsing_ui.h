@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_H_
 
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"

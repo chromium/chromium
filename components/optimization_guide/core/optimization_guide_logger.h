@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_LOGGER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"

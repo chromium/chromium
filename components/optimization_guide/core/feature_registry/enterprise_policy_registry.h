@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_FEATURE_REGISTRY_ENTERPRISE_POLICY_REGISTRY_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_FEATURE_REGISTRY_ENTERPRISE_POLICY_REGISTRY_H_
 
+#include <vector>
+
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 
 class PrefService;

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_UI_DEVTOOLS_UNITTEST_UTILS_H_
 #define COMPONENTS_UI_DEVTOOLS_UI_DEVTOOLS_UNITTEST_UTILS_H_
 
+#include <vector>
+
 #include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_element.h"
 #include "components/ui_devtools/ui_element_delegate.h"

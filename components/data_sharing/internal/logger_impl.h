@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DATA_SHARING_INTERNAL_LOGGER_IMPL_H_
 #define COMPONENTS_DATA_SHARING_INTERNAL_LOGGER_IMPL_H_
 
+#include <vector>
+
 #include "components/data_sharing/public/logger.h"
 
 namespace data_sharing {

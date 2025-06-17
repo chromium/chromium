@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_UPDATED_VIEW_H_
 #define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_UPDATED_VIEW_H_
 
+#include <vector>
+
 #include "components/global_media_controls/public/media_item_ui.h"
 #include "components/global_media_controls/public/views/media_action_button.h"
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"

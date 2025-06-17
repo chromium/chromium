@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"

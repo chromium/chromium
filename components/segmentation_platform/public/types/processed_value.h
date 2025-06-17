@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <vector>
 
 #include "base/time/time.h"
 #include "url/gurl.h"

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CONTENT_BROWSER_TEST_DISTILLABILITY_OBSERVER_H_
 #define COMPONENTS_DOM_DISTILLER_CONTENT_BROWSER_TEST_DISTILLABILITY_OBSERVER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"

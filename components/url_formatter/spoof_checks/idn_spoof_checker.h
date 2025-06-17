@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"

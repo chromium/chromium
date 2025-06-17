@@ -11,6 +11,7 @@
 #include <tuple>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"

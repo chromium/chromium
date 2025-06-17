@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_NOTIFICATION_CONTENT_DETECTION_TEST_NOTIFICATION_CONTENT_DETECTION_MODEL_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_NOTIFICATION_CONTENT_DETECTION_TEST_NOTIFICATION_CONTENT_DETECTION_MODEL_H_
 
+#include <vector>
+
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_model.h"
 

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_PAGE_DATA_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_PAGE_DATA_H_
 
+#include <vector>
+
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"

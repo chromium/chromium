@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_ANDROID_APP_COMMUNICATION_TEST_SUPPORT_CHROME_OS_H_
 #define COMPONENTS_PAYMENTS_CONTENT_ANDROID_APP_COMMUNICATION_TEST_SUPPORT_CHROME_OS_H_
 
+#include <vector>
+
 #include "chromeos/components/payments/mock_payment_app_instance.h"
 #include "components/payments/content/android_app_communication_test_support.h"
 

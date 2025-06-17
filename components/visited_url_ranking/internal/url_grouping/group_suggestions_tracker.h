@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_INTERNAL_URL_GROUPING_GROUP_SUGGESTIONS_TRACKER_H_
 #define COMPONENTS_VISITED_URL_RANKING_INTERNAL_URL_GROUPING_GROUP_SUGGESTIONS_TRACKER_H_
 
+#include <vector>
+
 #include "base/containers/flat_set.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"

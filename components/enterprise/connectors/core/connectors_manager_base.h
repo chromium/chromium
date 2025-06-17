@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONNECTORS_MANAGER_BASE_H_
 
 #include <optional>
+#include <vector>
 
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"

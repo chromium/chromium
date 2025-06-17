@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERMISSIONS_TEST_MOCK_PERMISSION_REQUEST_H_
 #define COMPONENTS_PERMISSIONS_TEST_MOCK_PERMISSION_REQUEST_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/permissions/permission_request.h"

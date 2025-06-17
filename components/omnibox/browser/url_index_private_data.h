@@ -10,6 +10,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/containers/stack.h"
 #include "base/files/file_path.h"

@@ -6,6 +6,7 @@
 #define COMPONENTS_LANGUAGE_DETECTION_CORE_LANGUAGE_DETECTION_MODEL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/files/file.h"

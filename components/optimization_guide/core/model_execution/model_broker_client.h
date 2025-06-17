@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_BROKER_CLIENT_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"

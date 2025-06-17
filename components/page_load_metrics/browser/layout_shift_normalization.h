@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_LAYOUT_SHIFT_NORMALIZATION_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_LAYOUT_SHIFT_NORMALIZATION_H_
 
+#include <vector>
+
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 

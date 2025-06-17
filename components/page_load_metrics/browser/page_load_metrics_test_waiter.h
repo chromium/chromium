@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <unordered_set>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
