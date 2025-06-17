@@ -104,9 +104,7 @@
       <template is="dom-repeat"
           items="[[expandedBrowsingDataTypeOptionsList_]]">
         <settings-checkbox pref="[[item.pref]]" no-set-pref
-            sub-label-html="[[item.subLabel]]"
-            disabled="[[isDeletionInProgress_]]"
-            on-sub-label-link-clicked="onCheckboxSubLabelLinkClick_">
+            sub-label="[[item.subLabel]]" disabled="[[isDeletionInProgress_]]">
           <div class="checkbox-title">[[item.label]]</div>
         </settings-checkbox>
       </template>
@@ -115,9 +113,8 @@
           <template is="dom-repeat"
               items="[[moreBrowsingDataTypeOptionsList_]]">
             <settings-checkbox pref="[[item.pref]]" no-set-pref
-                sub-label-html="[[item.subLabel]]"
-                disabled="[[isDeletionInProgress_]]"
-                on-sub-label-link-clicked="onCheckboxSubLabelLinkClick_">
+                sub-label="[[item.subLabel]]"
+                disabled="[[isDeletionInProgress_]]">
               <div class="checkbox-title">[[item.label]]</div>
             </settings-checkbox>
           </template>

@@ -9,7 +9,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 #include "chrome/browser/browsing_data/counters/signin_data_counter.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/browsing_data/core/features.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -341,9 +339,8 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
   };
 
   struct TestCase {
-    int num_sites;
     SigninState signin_state = SigninState::kSignedOut;
-    std::string expected_output;
+    bool expects_exception_text = false;
   };
 
   void SetSignedOutState(syncer::TestSyncService* test_sync_service) {
@@ -412,8 +409,7 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
   }
 
   void VerifyTestCase(const TestCase& test_case) {
-    SCOPED_TRACE(base::StringPrintf("Test params: %d site(s), %d signin_state.",
-                                    test_case.num_sites,
+    SCOPED_TRACE(base::StringPrintf("Test params: %d signin_state.",
                                     static_cast<int>(test_case.signin_state)));
     // Setup the signin state.
     std::unique_ptr<TestingProfile> testing_profile =
@@ -468,69 +464,56 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
                  browsing_data::ClearBrowsingDataTab::ADVANCED,
                  browsing_data::BrowsingDataCounter::ResultCallback());
 
-    browsing_data::BrowsingDataCounter::FinishedResult result(
-        &counter, test_case.num_sites);
-    std::u16string output =
-        GetChromeCounterTextFromResult(&result, testing_profile.get());
-    EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
+    browsing_data::BrowsingDataCounter::FinishedResult result0(&counter, 0);
+    EXPECT_EQ(GetChromeCounterTextFromResult(&result0, testing_profile.get()),
+              u"None");
+
+    browsing_data::BrowsingDataCounter::FinishedResult result1(&counter, 1);
+    browsing_data::BrowsingDataCounter::FinishedResult result42(&counter, 42);
+    std::u16string output1 =
+        GetChromeCounterTextFromResult(&result1, testing_profile.get());
+    std::u16string output42 =
+        GetChromeCounterTextFromResult(&result42, testing_profile.get());
+    if (test_case.expects_exception_text) {
+      EXPECT_EQ(output1,
+                u"From 1 site (you'll stay signed in to your Google Account)");
+      EXPECT_EQ(
+          output42,
+          u"From 42 sites (you'll stay signed in to your Google Account)");
+    } else {
+      EXPECT_EQ(output1, u"From 1 site ");
+      EXPECT_EQ(output42, u"From 42 sites ");
+    }
   }
 };
 
+
 TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult) {
-  // This test assumes that the strings are served exactly as defined, i.e. that
-  // the locale is set to the default "en".
+  // This test assumes that the strings are served exactly as defined,
+  // i.e. that the locale is set to the default "en".
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
 
   // Test the output for various forms of cookie results.
   const struct TestCase kTestCases[] = {
-      {/*num_sites= */ 0, SigninState::kSignedOut, "None"},
-      {/*num_sites= */ 1, SigninState::kSignedOut, "From 1 site"},
-      {/*num_sites= */ 42, SigninState::kAccountAware, "From 42 sites"},
-      {/*num_sites= */ 1, SigninState::kImplicitSignin, "From 1 site"},
-      {/*num_sites= */ 5, SigninState::kSigninPending, "From 5 sites"},
-      {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"},
-      {/*num_sites= */ 1, SigninState::kExplicitSignin,
-       "From 1 site (you'll stay signed in to your Google Account)"},
-      {/*num_sites= */ 42, SigninState::kSyncing,
-       "From 42 sites (you'll stay signed in to your Google Account)"},
-      {/*num_sites= */ 0, SigninState::kSyncing, "None"},
+      {.signin_state = SigninState::kSignedOut,
+       .expects_exception_text = false},
+      {.signin_state = SigninState::kAccountAware,
+       .expects_exception_text = false},
+      {.signin_state = SigninState::kImplicitSignin,
+       .expects_exception_text = false},
+      {.signin_state = SigninState::kExplicitSignin,
+       .expects_exception_text = true},
+      {.signin_state = SigninState::kSigninPending,
+       .expects_exception_text = false},
+      {.signin_state = SigninState::kSyncing, .expects_exception_text = true},
+      {.signin_state = SigninState::kSyncPaused,
+       .expects_exception_text = false},
   };
 
   for (const TestCase& test_case : kTestCases) {
     VerifyTestCase(test_case);
   }
 }
-
-TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult_RevampEnabled) {
-  base::test::ScopedFeatureList feature(
-      browsing_data::features::kDbdRevampDesktop);
-  // This test assumes that the strings are served exactly as defined, i.e. that
-  // the locale is set to the default "en".
-  ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
-
-  // Test the output for various forms of cookie results.
-  const struct TestCase kTestCases[] = {
-      {/*num_sites= */ 0, SigninState::kSignedOut, "None"},
-      {/*num_sites= */ 1, SigninState::kSignedOut, "From 1 site"},
-      {/*num_sites= */ 42, SigninState::kAccountAware, "From 42 sites"},
-      {/*num_sites= */ 1, SigninState::kImplicitSignin, "From 1 site"},
-      {/*num_sites= */ 5, SigninState::kSigninPending, "From 5 sites"},
-      {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"},
-      {/*num_sites= */ 1, SigninState::kExplicitSignin,
-       "From 1 site. To delete Google cookies from this device, <a href=\"#\" "
-       "target=\"_blank\" id=\"signOutLink\">sign out of Chrome</a>."},
-      {/*num_sites= */ 42, SigninState::kSyncing,
-       "From 42 sites. To delete Google cookies from this device, <a "
-       "href=\"#\" target=\"_blank\" id=\"signOutLink\">sign out of "
-       "Chrome</a>."},
-      {/*num_sites= */ 0, SigninState::kSyncing, "None"},
-  };
-
-  for (const TestCase& test_case : kTestCases) {
-    VerifyTestCase(test_case);
-  }
-}
-
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace browsing_data_counter_utils

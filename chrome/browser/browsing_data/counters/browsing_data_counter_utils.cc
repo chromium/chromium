@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/browsing_data/core/features.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -30,10 +28,6 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-#include "ui/strings/grit/ui_strings.h"
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/browsing_data/counters/tabs_counter.h"
@@ -177,26 +171,6 @@ std::u16string GetChromeCounterTextFromResult(
         is_signed_in = true;
       }
     }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-    if (base::FeatureList::IsEnabled(
-            browsing_data::features::kDbdRevampDesktop)) {
-      std::u16string cookies_counter_text = l10n_util::GetPluralStringFUTF16(
-          IDS_DEL_COOKIES_COUNTER_ADVANCED, origins);
-
-      if (origins > 0 &&
-          (ShouldShowCookieException(profile) ||
-           (is_signed_in &&
-            signin::AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
-                *identity_manager, *profile->GetPrefs())))) {
-        cookies_counter_text +=
-            (l10n_util::GetStringUTF16(IDS_SENTENCE_END) + u" " +
-             l10n_util::GetStringUTF16(IDS_DEL_GOOGLE_COOKIES_SIGNOUT_LINK));
-      }
-      return cookies_counter_text;
-    }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
     int del_cookie_counter_msg_id =
         ShouldShowCookieException(profile) ||
                 (is_signed_in &&

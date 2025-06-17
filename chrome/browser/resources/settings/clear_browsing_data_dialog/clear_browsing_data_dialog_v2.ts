@@ -25,7 +25,7 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -467,16 +467,6 @@ export class SettingsClearBrowsingDataDialogV2Element extends
       this.$.cancelButton.focus();
       this.setFocusOutlineToVisible_();
     });
-  }
-
-  private onCheckboxSubLabelLinkClick_(e: CustomEvent<{id: string}>) {
-    // <if expr="not is_chromeos">
-    if (e.detail.id === 'signOutLink') {
-      this.syncBrowserProxy_.signOut(/*delete_profile=*/ false);
-      return;
-    }
-    // </if>
-    assertNotReached(`Invalid sub-label link with id: ${e.detail.id}`);
   }
 }
 
