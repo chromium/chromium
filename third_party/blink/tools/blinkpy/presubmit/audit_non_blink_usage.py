@@ -737,6 +737,7 @@ _CONFIG = [
             'svg_path_parser::.+',
             'touch_action_util::.+',
             'trace_event::.+',
+            'uchar::.+',
             'unicode::.+',
             'v8_compile_hints::.+',
             'vector_math::.+',

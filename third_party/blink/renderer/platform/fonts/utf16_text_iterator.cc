@@ -51,7 +51,7 @@ bool UTF16TextIterator::ConsumeSurrogatePair(UChar32& character) {
   DCHECK(U16_IS_SURROGATE(character));
 
   if (!IsValidSurrogatePair(character)) {
-    character = WTF::unicode::kReplacementCharacter;
+    character = uchar::kReplacementCharacter;
     return true;
   }
 

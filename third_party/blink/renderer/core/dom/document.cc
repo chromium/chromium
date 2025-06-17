@@ -1983,9 +1983,8 @@ static inline String CanonicalizedTitle(
   bool pending_whitespace = false;
   for (size_t i = 0; i < characters.size(); ++i) {
     UChar32 c = characters[i];
-    if ((c <= WTF::unicode::kSpaceCharacter &&
-         c != WTF::unicode::kLineTabulationCharacter) ||
-        c == WTF::unicode::kDeleteCharacter) {
+    if ((c <= uchar::kSpaceCharacter && c != uchar::kLineTabulationCharacter) ||
+        c == uchar::kDeleteCharacter) {
       if (builder_index != 0)
         pending_whitespace = true;
     } else {

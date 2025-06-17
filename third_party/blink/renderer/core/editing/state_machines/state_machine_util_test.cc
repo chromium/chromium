@@ -12,7 +12,7 @@ namespace blink {
 
 TEST(StateMachineUtilTest, IsGraphmeBreak_LineBreak) {
   // U+000AD (SOFT HYPHEN) has Control grapheme property.
-  const UChar32 kControl = WTF::unicode::kSoftHyphenCharacter;
+  const UChar32 kControl = uchar::kSoftHyphenCharacter;
 
   // Grapheme Cluster Boundary Rule GB3: CR x LF
   EXPECT_FALSE(IsGraphemeBreak('\r', '\n'));
@@ -82,14 +82,12 @@ TEST(StateMachineUtilTest, IsGraphmeBreak_Extend_or_ZWJ) {
   const UChar32 kExtend = 0x0300;
   // Grapheme Cluster Boundary Rule GB9: x (Extend | ZWJ)
   EXPECT_FALSE(IsGraphemeBreak('a', kExtend));
-  EXPECT_FALSE(IsGraphemeBreak('a', WTF::unicode::kZeroWidthJoinerCharacter));
+  EXPECT_FALSE(IsGraphemeBreak('a', uchar::kZeroWidthJoinerCharacter));
   EXPECT_FALSE(IsGraphemeBreak(kExtend, kExtend));
-  EXPECT_FALSE(IsGraphemeBreak(WTF::unicode::kZeroWidthJoinerCharacter,
-                               WTF::unicode::kZeroWidthJoinerCharacter));
-  EXPECT_FALSE(
-      IsGraphemeBreak(kExtend, WTF::unicode::kZeroWidthJoinerCharacter));
-  EXPECT_FALSE(
-      IsGraphemeBreak(WTF::unicode::kZeroWidthJoinerCharacter, kExtend));
+  EXPECT_FALSE(IsGraphemeBreak(uchar::kZeroWidthJoinerCharacter,
+                               uchar::kZeroWidthJoinerCharacter));
+  EXPECT_FALSE(IsGraphemeBreak(kExtend, uchar::kZeroWidthJoinerCharacter));
+  EXPECT_FALSE(IsGraphemeBreak(uchar::kZeroWidthJoinerCharacter, kExtend));
 }
 
 TEST(StateMachineUtilTest, IsGraphmeBreak_SpacingMark) {
@@ -137,17 +135,15 @@ TEST(StateMachineUtilTest, IsGraphmeBreak_ZWJSequecne) {
 
   // Grapheme Cluster Boundary Rule GB11: ZWJ x (Glue_After_Zwj | EBG)
   EXPECT_FALSE(
-      IsGraphemeBreak(WTF::unicode::kZeroWidthJoinerCharacter, kGlueAfterZwj));
-  EXPECT_FALSE(
-      IsGraphemeBreak(WTF::unicode::kZeroWidthJoinerCharacter, kEBaseGAZ));
-  EXPECT_FALSE(
-      IsGraphemeBreak(WTF::unicode::kZeroWidthJoinerCharacter, kEmoji));
+      IsGraphemeBreak(uchar::kZeroWidthJoinerCharacter, kGlueAfterZwj));
+  EXPECT_FALSE(IsGraphemeBreak(uchar::kZeroWidthJoinerCharacter, kEBaseGAZ));
+  EXPECT_FALSE(IsGraphemeBreak(uchar::kZeroWidthJoinerCharacter, kEmoji));
 
   EXPECT_TRUE(IsGraphemeBreak(kGlueAfterZwj, kEBaseGAZ));
   EXPECT_TRUE(IsGraphemeBreak(kGlueAfterZwj, kGlueAfterZwj));
   EXPECT_TRUE(IsGraphemeBreak(kEBaseGAZ, kGlueAfterZwj));
 
-  EXPECT_TRUE(IsGraphemeBreak(WTF::unicode::kZeroWidthJoinerCharacter, 'a'));
+  EXPECT_TRUE(IsGraphemeBreak(uchar::kZeroWidthJoinerCharacter, 'a'));
 }
 
 TEST(StateMachineUtilTest, IsGraphmeBreak_IndicSyllabicCategoryVirama) {

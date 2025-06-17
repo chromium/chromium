@@ -79,7 +79,7 @@ inline bool IsSpace(UChar c) {
 
 inline bool IsSpaceForFirstLetter(UChar c, bool preserve_breaks) {
   return (preserve_breaks ? IsSpace(c) : unicode::IsSpaceOrNewline(c)) ||
-         c == WTF::unicode::kNoBreakSpaceCharacter;
+         c == uchar::kNoBreakSpaceCharacter;
 }
 
 bool IsParentInlineLayoutObject(const LayoutObject* layout_object) {

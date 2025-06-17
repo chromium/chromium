@@ -16,7 +16,7 @@
 namespace blink {
 
 namespace {
-const UChar32 kInvalidCodePoint = WTF::unicode::kMaxCodepoint + 1;
+const UChar32 kInvalidCodePoint = uchar::kMaxCodepoint + 1;
 }  // namespace
 
 #define FOR_EACH_BACKWARD_GRAPHEME_BOUNDARY_STATE(V)                         \
