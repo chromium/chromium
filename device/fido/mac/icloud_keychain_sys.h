@@ -27,6 +27,14 @@ namespace device::fido::icloud_keychain {
 class COMPONENT_EXPORT(DEVICE_FIDO) API_AVAILABLE(macos(13.3)) SystemInterface
     : public base::RefCounted<SystemInterface> {
  public:
+  struct LargeBlobAssertionInputs {
+    LargeBlobAssertionInputs();
+    ~LargeBlobAssertionInputs();
+    LargeBlobAssertionInputs(const LargeBlobAssertionInputs&);
+    bool read = false;
+    std::optional<std::vector<uint8_t>> write;
+  };
+
   // IsAvailable returns true if the other functions in this interface can be
   // called.
   virtual bool IsAvailable() const = 0;
@@ -65,6 +73,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) API_AVAILABLE(macos(13.3)) SystemInterface
   virtual void GetAssertion(
       NSWindow* window,
       CtapGetAssertionRequest request,
+      LargeBlobAssertionInputs large_blob_inputs,
       base::OnceCallback<void(ASAuthorization*, NSError*)> callback) = 0;
 
   virtual void Cancel() = 0;

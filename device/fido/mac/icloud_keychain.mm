@@ -64,6 +64,15 @@ bool SupportsLargeBlob() {
   return false;
 }
 
+API_AVAILABLE(macos(13.3))
+SystemInterface::LargeBlobAssertionInputs GetLargeBlobAssertionInputs(
+    const CtapGetAssertionOptions& options) {
+  SystemInterface::LargeBlobAssertionInputs large_blob_inputs;
+  large_blob_inputs.read = options.large_blob_read;
+  large_blob_inputs.write = options.large_blob_write;
+  return large_blob_inputs;
+}
+
 AuthenticatorSupportedOptions AuthenticatorOptions() {
   AuthenticatorSupportedOptions options;
   options.is_platform_device =
@@ -220,6 +229,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
             base::BindOnce(&Authenticator::OnGetAssertionComplete,
                            weak_factory_.GetWeakPtr(), std::move(callback));
         sys_interface->GetAssertion(window_, std::move(request),
+                                    GetLargeBlobAssertionInputs(options),
                                     std::move(continuation));
         break;
     }
@@ -242,6 +252,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
         base::BindOnce(&Authenticator::OnGetAssertionComplete,
                        weak_factory_.GetWeakPtr(), std::move(callback));
     sys_interface->GetAssertion(window_, std::move(request),
+                                GetLargeBlobAssertionInputs(options),
                                 std::move(continuation));
   }
 
@@ -529,6 +540,22 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
             (ASAuthorizationPlatformPublicKeyCredentialAssertion*)result;
         if (platform_result.prf != nil) {
           response.hmac_secret = PrfOutputToBytes(platform_result.prf);
+        }
+      }
+    }
+    if (@available(macOS 14.0, *)) {
+      if ([result
+              isKindOfClass:[ASAuthorizationPlatformPublicKeyCredentialAssertion
+                                class]]) {
+        ASAuthorizationPlatformPublicKeyCredentialAssertion* platform_result =
+            (ASAuthorizationPlatformPublicKeyCredentialAssertion*)result;
+        if (platform_result.largeBlob != nil) {
+          auto* large_blob_out = platform_result.largeBlob;
+          if (large_blob_out.readData != nil) {
+            response.large_blob = fido_parsing_utils::Materialize(
+                NSDataToSpan(large_blob_out.readData));
+          }
+          response.large_blob_written = large_blob_out.didWrite;
         }
       }
     }

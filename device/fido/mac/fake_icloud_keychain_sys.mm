@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/sys_string_conversions.h"
+#include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_parsing_utils.h"
 
@@ -27,6 +28,20 @@ API_AVAILABLE(macos(14.0))
 - (BOOL)isSupported {
   return _isSupported;
 }
+@end
+
+// Fake subclass to simulate a largeBlob assertion output.
+
+API_AVAILABLE(macos(14.0))
+@interface FakeLargeBlobAssertionOutput
+    : ASAuthorizationPublicKeyCredentialLargeBlobAssertionOutput
+@property(nonatomic) BOOL didWrite;
+@property(nonatomic, copy) NSData* readData;
+@end
+
+@implementation FakeLargeBlobAssertionOutput
+@synthesize didWrite = _didWrite;
+@synthesize readData = _readData;
 @end
 
 // A number of AuthenticationServices objects are subclassed so that the
@@ -94,12 +109,14 @@ API_AVAILABLE(macos(13.3))
 
 API_AVAILABLE(macos(13.3))
 @interface FakeASAuthorizationPublicKeyCredentialAssertion
-    : NSObject <ASAuthorizationPublicKeyCredentialAssertion>
+    : ASAuthorizationPlatformPublicKeyCredentialAssertion
 @property(nonatomic, copy) NSData* rawAuthenticatorData;
 @property(nonatomic, copy) NSData* signature;
 @property(nonatomic, copy) NSData* userID;
 @property(nonatomic, copy) NSData* credentialID;
 @property(nonatomic, copy) NSData* rawClientDataJSON;
+@property(nonatomic, strong) API_AVAILABLE(macos(14.0))
+    FakeLargeBlobAssertionOutput* largeBlob;
 @end
 
 @implementation FakeASAuthorizationPublicKeyCredentialAssertion
@@ -108,6 +125,7 @@ API_AVAILABLE(macos(13.3))
 @synthesize userID = _userID;
 @synthesize credentialID = _credentialID;
 @synthesize rawClientDataJSON = _rawClientDataJSON;
+@synthesize largeBlob = _largeBlob;
 
 + (BOOL)supportsSecureCoding {
   return NO;
@@ -283,6 +301,7 @@ void FakeSystemInterface::MakeCredential(
 void FakeSystemInterface::GetAssertion(
     NSWindow* window,
     CtapGetAssertionRequest request,
+    LargeBlobAssertionInputs large_blob_inputs,
     base::OnceCallback<void(ASAuthorization*, NSError*)> callback) {
   if (get_callback_) {
     get_callback_.Run(request);
@@ -309,12 +328,30 @@ void FakeSystemInterface::GetAssertion(
   }
 
   FakeASAuthorizationPublicKeyCredentialAssertion* result =
-      [[FakeASAuthorizationPublicKeyCredentialAssertion alloc] init];
+      [FakeASAuthorizationPublicKeyCredentialAssertion alloc];
   result.rawAuthenticatorData = ToNSData(*get_assertion_authenticator_data_);
   result.signature = ToNSData(*get_assertion_signature_);
   result.userID = ToNSData(*get_assertion_user_id_);
   result.credentialID = ToNSData(*get_assertion_credential_id_);
 
+  CHECK(!large_blob_inputs.read || !large_blob_inputs.write);
+  if (@available(macOS 14.0, *)) {
+    if (large_blob_inputs.read || large_blob_inputs.write) {
+      FakeLargeBlobAssertionOutput* large_blob_out =
+          [FakeLargeBlobAssertionOutput alloc];
+
+      if (large_blob_inputs.write) {
+        large_blob_out.didWrite = large_blob_write_success_;
+      }
+
+      if (large_blob_inputs.read && large_blob_read_data_) {
+        large_blob_out.readData = ToNSData(*large_blob_read_data_);
+      }
+      result.largeBlob = large_blob_out;
+    }
+  }
+
+  large_blob_read_data_.reset();
   get_assertion_authenticator_data_.reset();
   get_assertion_signature_.reset();
   get_assertion_user_id_.reset();
@@ -328,6 +365,10 @@ void FakeSystemInterface::GetAssertion(
 
 void FakeSystemInterface::Cancel() {
   cancel_count_++;
+}
+
+void FakeSystemInterface::set_large_blob_read_data(std::vector<uint8_t> data) {
+  large_blob_read_data_ = std::move(data);
 }
 
 FakeSystemInterface::~FakeSystemInterface() = default;

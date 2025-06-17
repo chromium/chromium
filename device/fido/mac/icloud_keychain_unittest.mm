@@ -637,6 +637,94 @@ TEST_F(iCloudKeychainTest, AuthenticatorOptionsLargeBlob) {
   }
 }
 
+TEST_F(iCloudKeychainTest, LargeBlobRWForICloudKeychain) {
+  if (@available(macOS 14.0, *)) {
+    static const uint8_t kAuthenticatorData[] = {
+        0x26, 0xbd, 0x72, 0x78, 0xbe, 0x46, 0x37, 0x61, 0xf1, 0xfa,
+        0xa1, 0xb1, 0x0a, 0xb4, 0xc4, 0xf8, 0x26, 0x70, 0x26, 0x9c,
+        0x41, 0x0c, 0x72, 0x6a, 0x1f, 0xd6, 0xe0, 0x58, 0x55, 0xe1,
+        0x9b, 0x46, 0x01, 0x00, 0x00, 0x0f, 0xdd,
+    };
+    static const uint8_t kSignature[] = {1, 2, 3, 4};
+    static const uint8_t kUserID[] = {5, 6, 7, 8};
+
+    CtapGetAssertionRequest request("rp.id", "{}");
+    CtapGetAssertionOptions options;
+
+    auto run_get =
+        [&](GetAssertionStatus& status_out, std::optional<bool>& written_out,
+            std::optional<std::vector<uint8_t>>* read_blob_out = nullptr) {
+          base::test::TestFuture<GetAssertionStatus,
+                                 std::vector<AuthenticatorGetAssertionResponse>>
+              future;
+          authenticator_->GetAssertion(request, options, future.GetCallback());
+          ASSERT_TRUE(future.Wait());
+          auto [status, responses] = future.Take();
+          status_out = status;
+          if (!responses.empty()) {
+            if (status == GetAssertionStatus::kSuccess && !responses.empty()) {
+              written_out = responses[0].large_blob_written;
+              if (read_blob_out) {
+                *read_blob_out = responses[0].large_blob;
+              }
+            }
+          }
+        };
+    // Empty large blob write.
+    {
+      std::vector<uint8_t> small_blob = {0xA, 0xB, 0xC};
+      options.large_blob_write = small_blob;
+      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
+                                   kCredentialID);
+      fake_->set_large_blob_write_success(false);
+
+      GetAssertionStatus status;
+      std::optional<bool> written;
+      run_get(status, written);
+      EXPECT_EQ(status, GetAssertionStatus::kSuccess);
+      ASSERT_TRUE(written.has_value());
+      EXPECT_FALSE(*written);
+    }
+    // Attempted large blob write when large blob is not supported.
+    {
+      fake_->set_large_blob_support_state(
+          FakeSystemInterface::LargeBlobSupportState::kNotSupported);
+      std::vector<uint8_t> small_blob = {1, 2, 3};
+      options.large_blob_write = small_blob;
+      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
+                                   kCredentialID);
+      fake_->set_large_blob_write_success(false);
+
+      GetAssertionStatus status;
+      std::optional<bool> written;
+      run_get(status, written);
+      EXPECT_EQ(status, GetAssertionStatus::kSuccess);
+      ASSERT_TRUE(written.has_value());
+      EXPECT_FALSE(*written);
+    }
+    // Read a large blob.
+    {
+      options.large_blob_write.reset();
+      options.large_blob_read = true;
+      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
+                                   kCredentialID);
+      std::vector<uint8_t> kReadBlob = {0xDE, 0xAD, 0xBE, 0xEF};
+      fake_->set_large_blob_read_data(kReadBlob);
+      fake_->set_large_blob_write_success(false);
+
+      GetAssertionStatus status;
+      std::optional<bool> written;
+      std::optional<std::vector<uint8_t>> read_blob;
+      run_get(status, written, &read_blob);
+      EXPECT_EQ(status, GetAssertionStatus::kSuccess);
+      ASSERT_TRUE(written.has_value());
+      EXPECT_FALSE(*written);
+      ASSERT_TRUE(read_blob.has_value());
+      EXPECT_EQ(*read_blob, kReadBlob);
+    }
+  }
+}
+
 TEST_F(iCloudKeychainTest, FetchCredentialMetadata) {
   if (@available(macOS 13.5, *)) {
     const std::vector<DiscoverableCredentialMetadata> creds = {

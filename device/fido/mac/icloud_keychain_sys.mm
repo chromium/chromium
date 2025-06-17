@@ -213,6 +213,11 @@ API_AVAILABLE(macos(13.3))
 @end
 
 namespace device::fido::icloud_keychain {
+SystemInterface::LargeBlobAssertionInputs::LargeBlobAssertionInputs() = default;
+SystemInterface::LargeBlobAssertionInputs::~LargeBlobAssertionInputs() =
+    default;
+SystemInterface::LargeBlobAssertionInputs::LargeBlobAssertionInputs(
+    const LargeBlobAssertionInputs&) = default;
 namespace {
 
 API_AVAILABLE(macos(13.3))
@@ -370,6 +375,7 @@ class API_AVAILABLE(macos(13.3)) NativeSystemInterface
   void GetAssertion(
       NSWindow* window,
       CtapGetAssertionRequest request,
+      LargeBlobAssertionInputs large_blob_inputs,
       base::OnceCallback<void(ASAuthorization*, NSError*)> callback) override {
     DCHECK(!create_controller_);
     DCHECK(!get_controller_);
@@ -406,6 +412,22 @@ class API_AVAILABLE(macos(13.3)) NativeSystemInterface
             [[ASAuthorizationPublicKeyCredentialPRFAssertionInput alloc]
                      initWithInputValues:default_values
                 perCredentialInputValues:ToPerCredValues(request.prf_inputs)];
+      }
+    }
+    if (@available(macOS 14.0, *)) {
+      if (large_blob_inputs.read) {
+        auto* large_blob_input =
+            [[ASAuthorizationPublicKeyCredentialLargeBlobAssertionInput alloc]
+                initWithOperation:
+                    ASAuthorizationPublicKeyCredentialLargeBlobAssertionOperationRead];
+        get_request.largeBlob = large_blob_input;
+      } else if (large_blob_inputs.write) {
+        auto* large_blob_input =
+            [[ASAuthorizationPublicKeyCredentialLargeBlobAssertionInput alloc]
+                initWithOperation:
+                    ASAuthorizationPublicKeyCredentialLargeBlobAssertionOperationWrite];
+        large_blob_input.dataToWrite = ToNSData(*large_blob_inputs.write);
+        get_request.largeBlob = large_blob_input;
       }
     }
     get_controller_ = [[ICloudKeychainGetController alloc]

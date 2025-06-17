@@ -79,6 +79,12 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
   // the requested RP ID so all credentials specified here will be returned.)
   void SetCredentials(std::vector<DiscoverableCredentialMetadata> creds);
 
+  void set_large_blob_write_success(bool did_write) {
+    large_blob_write_success_ = did_write;
+  }
+
+  void set_large_blob_read_data(std::vector<uint8_t> data);
+
   // SystemInterface:
   bool IsAvailable() const override;
 
@@ -100,6 +106,7 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
   void GetAssertion(
       NSWindow* window,
       CtapGetAssertionRequest request,
+      LargeBlobAssertionInputs large_blob_inputs,
       base::OnceCallback<void(ASAuthorization*, NSError*)> callback) override;
 
   void Cancel() override;
@@ -136,6 +143,9 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
 
   LargeBlobSupportState large_blob_support_state_ =
       LargeBlobSupportState::kNotSupported;
+
+  bool large_blob_write_success_ = false;
+  std::optional<std::vector<uint8_t>> large_blob_read_data_;
 };
 
 }  // namespace device::fido::icloud_keychain
