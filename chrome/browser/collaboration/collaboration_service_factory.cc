@@ -69,7 +69,7 @@ CollaborationServiceFactory::BuildServiceInstanceForBrowserContext(
 
   auto service = std::make_unique<CollaborationServiceImpl>(
       tab_group_sync_service, data_sharing_service, identity_manager,
-      profile_prefs);
+      profile_prefs, /*local_prefs=*/nullptr);
 
   return service;
 }

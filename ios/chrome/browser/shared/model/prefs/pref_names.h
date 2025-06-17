@@ -618,10 +618,6 @@ inline constexpr char kLastBackgroundedTime[] = "ios.last_backgrounded_time";
 // browser policy.
 inline constexpr char kLastSigninTimestamp[] = "signin.last_signin_timestamp";
 
-// Integer that represents the value of BrowserSigninPolicy. Values are defined
-// in ios/chrome/browser/policy/model/policy_util.h.
-inline constexpr char kBrowserSigninPolicy[] = "signin.browser_signin_policy";
-
 // Bool that represents whether iCloud backups are allowed by policy.
 inline constexpr char kAllowChromeDataInBackups[] =
     "ios.allow_chrome_data_in_backups";

@@ -18,6 +18,7 @@
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/base/pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"

@@ -9,8 +9,10 @@
 #import "components/collaboration/internal/collaboration_service_impl.h"
 #import "components/collaboration/internal/empty_collaboration_service.h"
 #import "components/data_sharing/public/features.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
@@ -55,10 +57,10 @@ CollaborationServiceFactory::BuildServiceInstanceFor(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto* profile_prefs = profile->GetPrefs();
-
+  auto* local_prefs = GetApplicationContext()->GetLocalState();
   return std::make_unique<CollaborationServiceImpl>(
       tab_group_sync_service, data_sharing_service, identity_manager,
-      profile_prefs);
+      profile_prefs, local_prefs);
 }
 
 }  // namespace collaboration

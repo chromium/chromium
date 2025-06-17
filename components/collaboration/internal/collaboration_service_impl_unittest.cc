@@ -67,7 +67,13 @@ class CollaborationServiceImplTest : public testing::Test {
     }
 #endif
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
-    pref_service_.registry()->RegisterBooleanPref(prefs::kSigninAllowed, true);
+    profile_pref_service_.registry()->RegisterBooleanPref(prefs::kSigninAllowed,
+                                                          true);
+#if BUILDFLAG(IS_IOS)
+    local_pref_service_.registry()->RegisterIntegerPref(
+        prefs::kBrowserSigninPolicy,
+        static_cast<int>(BrowserSigninMode::kEnabled));
+#endif
     InitService();
   }
 
@@ -76,13 +82,15 @@ class CollaborationServiceImplTest : public testing::Test {
   void InitService() {
     service_ = std::make_unique<CollaborationServiceImpl>(
         &mock_tab_group_sync_service_, &mock_data_sharing_service_,
-        identity_test_env_.identity_manager(), &pref_service_);
+        identity_test_env_.identity_manager(), &profile_pref_service_,
+        &local_pref_service_);
     service_->OnSyncServiceInitialized(test_sync_service_.get());
   }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  sync_preferences::TestingPrefServiceSyncable profile_pref_service_;
+  sync_preferences::TestingPrefServiceSyncable local_pref_service_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<syncer::TestSyncService> test_sync_service_;
   tab_groups::MockTabGroupSyncService mock_tab_group_sync_service_;
@@ -171,7 +179,8 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_SigninDisabled) {
       data_sharing::features::kDataSharingFeature);
 
   // Set signin preference to disable signin.
-  pref_service_.SetBoolean(prefs::kSigninAllowed, false);
+  profile_pref_service_.SetBoolean(prefs::kSigninAllowed, false);
+
   InitService();
 
   EXPECT_EQ(service_->GetServiceStatus().signin_status,
@@ -181,9 +190,12 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_SigninDisabled) {
   EXPECT_EQ(service_->GetServiceStatus().IsAllowedToJoin(), true);
   EXPECT_EQ(service_->GetServiceStatus().IsAllowedToCreate(), false);
 
-  pref_service_.SetManagedPref(prefs::kSigninAllowed, base::Value(false));
+#if !BUILDFLAG(IS_IOS)
+  profile_pref_service_.SetManagedPref(prefs::kSigninAllowed,
+                                       base::Value(false));
   EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
             CollaborationStatus::kDisabledForPolicy);
+#endif
 }
 
 TEST_F(CollaborationServiceImplTest, GetServiceStatus_ManagedAccount) {

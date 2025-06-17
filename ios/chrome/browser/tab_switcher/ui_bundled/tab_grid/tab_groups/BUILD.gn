@@ -333,6 +333,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars:toolbars_ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/test:fakes",
     "//ios/chrome/browser/tab_switcher/ui_bundled/test:fakes",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

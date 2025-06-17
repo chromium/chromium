@@ -7,13 +7,16 @@
 
 class PrefService;
 
+// TODO(crbug.com/424385780): Move this enum to components/.
 // Values for the BrowserSignin policy.
 // VALUES MUST COINCIDE WITH THE BrowserSignin POLICY DEFINITION.
+// LINT.IfChange(BrowserSigninMode)
 enum class BrowserSigninMode {
   kDisabled = 0,
   kEnabled = 1,
   kForced = 2,
 };
+// LINT.ThenChange(//components/collaboration/internal/collaboration_service_impl.h:BrowserSigninMode)
 
 // The enum class for IncognitoModeAvalibility pref value, explains the meaning
 // of each value.

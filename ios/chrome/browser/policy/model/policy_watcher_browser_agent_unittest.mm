@@ -13,6 +13,7 @@
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/base/pref_names.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"

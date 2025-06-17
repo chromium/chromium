@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/url_loading/model/test_scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -200,6 +201,7 @@ class TabStripMediatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   FakeTabStripHandler* tab_strip_handler_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;

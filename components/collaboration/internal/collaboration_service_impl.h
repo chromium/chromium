@@ -35,16 +35,33 @@ class TabGroupSyncService;
 
 namespace collaboration {
 
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/424385780): Clean this duplicate.
+// Values for the BrowserSignin policy.
+// VALUES MUST COINCIDE WITH THE BrowserSignin POLICY DEFINITION.
+// LINT.IfChange(BrowserSigninMode)
+enum class BrowserSigninMode {
+  kDisabled = 0,
+  kEnabled = 1,
+  kForced = 2,
+};
+// LINT.ThenChange(//ios/chrome/browser/policy/model/policy_util.h:BrowserSigninMode)
+#endif
+
 // The internal implementation of the CollaborationService.
 class CollaborationServiceImpl : public CollaborationService,
                                  public syncer::SyncServiceObserver,
                                  public signin::IdentityManager::Observer {
  public:
+  // `local_prefs` is specific to iOS, providing access to device-level
+  // preferences. It will be `nullptr` on other platforms where these
+  // preferences are managed differently.
   CollaborationServiceImpl(
       tab_groups::TabGroupSyncService* tab_group_sync_service,
       data_sharing::DataSharingService* data_sharing_service,
       signin::IdentityManager* identity_manager,
-      PrefService* profile_prefs);
+      PrefService* profile_prefs,
+      PrefService* local_prefs);
   ~CollaborationServiceImpl() override;
 
   // CollaborationService implementation.
@@ -140,6 +157,7 @@ class CollaborationServiceImpl : public CollaborationService,
   PrefChangeRegistrar registrar_;
 
   raw_ptr<PrefService> profile_prefs_;
+  raw_ptr<PrefService> local_prefs_;
 
   // Started flows.
   // Join controllers: <GroupId, CollaborationController>

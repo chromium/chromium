@@ -53,6 +53,7 @@ source_set("model") {
     "//ios/chrome/browser/data_sharing/model",
     "//ios/chrome/browser/data_sharing/model:context",
     "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile",

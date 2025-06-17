@@ -12,6 +12,7 @@
 #import "components/enterprise/idle/metrics.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_observer_bridge.h"

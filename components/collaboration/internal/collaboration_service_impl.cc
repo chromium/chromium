@@ -44,11 +44,16 @@ CollaborationServiceImpl::CollaborationServiceImpl(
     tab_groups::TabGroupSyncService* tab_group_sync_service,
     data_sharing::DataSharingService* data_sharing_service,
     signin::IdentityManager* identity_manager,
-    PrefService* profile_prefs)
+    PrefService* profile_prefs,
+    PrefService* local_prefs)
     : tab_group_sync_service_(tab_group_sync_service),
       data_sharing_service_(data_sharing_service),
       identity_manager_(identity_manager),
-      profile_prefs_(profile_prefs) {
+      profile_prefs_(profile_prefs),
+      local_prefs_(local_prefs) {
+#if BUILDFLAG(IS_IOS)
+  CHECK(local_prefs_);
+#endif
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Initialize ServiceStatus.
   current_status_.sync_status = SyncStatus::kNotSyncing;
@@ -403,16 +408,32 @@ SigninStatus CollaborationServiceImpl::GetSigninStatus() {
     status = SigninStatus::kSigninDisabled;
   }
 
+#if BUILDFLAG(IS_IOS)
+  BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
+      local_prefs_->GetInteger(::prefs::kBrowserSigninPolicy));
+  if (policy_mode == BrowserSigninMode::kDisabled) {
+    status = SigninStatus::kSigninDisabled;
+  }
+#endif
+
   return status;
 }
 
 CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Check if device policy allow signin.
+#if BUILDFLAG(IS_IOS)
+  BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
+      local_prefs_->GetInteger(::prefs::kBrowserSigninPolicy));
+  if (policy_mode == BrowserSigninMode::kDisabled) {
+    return CollaborationStatus::kDisabledForPolicy;
+  }
+#else
   if (!profile_prefs_->GetBoolean(::prefs::kSigninAllowed) &&
       profile_prefs_->IsManagedPreference(::prefs::kSigninAllowed)) {
     return CollaborationStatus::kDisabledForPolicy;
   }
+#endif
 
   // Disable for automotive users.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_AUTOMOTIVE &&

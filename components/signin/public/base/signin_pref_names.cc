@@ -153,6 +153,11 @@ const char kRestrictAccountsToPatterns[] =
 // multi profiles but not exposed to the user, so we should treat this setting
 // as affecting all profiles.
 const char kSigninAllowedOnDevice[] = "signin.allowed_on_device";
+
+// TODO(crbug.com/424385780): Update this comment.
+// Integer that represents the value of BrowserSigninPolicy. Values are defined
+// in ios/chrome/browser/policy/model/policy_util.h.
+const char kBrowserSigninPolicy[] = "signin.browser_signin_policy";
 #endif  // BUILDFLAG(IS_IOS)
 
 // Boolean which indicates if the user is allowed to sign into Chrome on the
