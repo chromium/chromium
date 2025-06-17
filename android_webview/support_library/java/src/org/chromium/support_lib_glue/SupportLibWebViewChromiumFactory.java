@@ -115,7 +115,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.WEBVIEW_BUILDER + Features.DEV_SUFFIX,
                 Features.COOKIE_INTERCEPT,
                 Features.WARM_UP_RENDERER_PROCESS,
-                Features.EXTRA_HEADER_FOR_ORIGINS + Features.DEV_SUFFIX,
+                Features.EXTRA_HEADER_FOR_ORIGINS,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
