@@ -2431,6 +2431,13 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="WebView light, night mode off"/>
 </enum>
 
+<enum name="WebViewLayoutAlgorithm">
+  <int value="0" label="NORMAL"/>
+  <int value="1" label="SINGLE_COLUMN"/>
+  <int value="2" label="NARROW_COLUMNS"/>
+  <int value="3" label="TEXT_AUTOSIZING"/>
+</enum>
+
 <enum name="WebViewMixedContentMode">
   <int value="0" label="Always allow"/>
   <int value="1" label="Never allow"/>

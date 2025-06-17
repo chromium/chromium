@@ -8121,6 +8121,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.SetLayoutAlgorithm"
+    enum="WebViewLayoutAlgorithm" expires_after="2027-12-01">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the layout algorithm requested in each call to
+    WebSettings.setLayoutAlgorithm().
+  </summary>
+</histogram>
+
 <histogram
     name="Android.WebView.ShouldInterceptRequest.Async.CallbackLeakedWithoutResponse"
     enum="Boolean" expires_after="2026-03-10">
