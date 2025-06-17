@@ -8,7 +8,14 @@ assert(is_linux || is_chromeos)
 
 if (use_bundled_fontconfig) {
   config("fontconfig_config") {
-    include_dirs = [ "src" ]
+    include_dirs = [
+      "src",
+      "include/fc-lang/",
+    ]
+
+    # TODO(drott): Remove after the fix MR lands:
+    # https://gitlab.freedesktop.org/fontconfig/fontconfig/-/merge_requests/433
+    cflags = [ "-Wno-unused-label" ]
   }
 
   component("fontconfig") {
