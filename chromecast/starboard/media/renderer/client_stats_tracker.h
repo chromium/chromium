@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "media/base/renderer_client.h"
@@ -37,7 +38,7 @@ class ClientStatsTracker {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  ::media::RendererClient* client_ = nullptr;
+  raw_ptr<::media::RendererClient> client_ = nullptr;
   uint32_t total_video_frames_decoded_ = 0;
   uint32_t total_video_frames_dropped_ = 0;
 };

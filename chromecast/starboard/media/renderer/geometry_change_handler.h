@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromecast/media/service/mojom/video_geometry_setter.mojom.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
@@ -62,11 +63,11 @@ class GeometryChangeHandler : public mojom::VideoGeometryChangeClient {
   mojo::Receiver<mojom::VideoGeometryChangeClient>
       geometry_change_client_receiver_{this};
 
-  StarboardApiWrapper* starboard_ = nullptr;
+  raw_ptr<StarboardApiWrapper> starboard_ = nullptr;
   // This is nullopt if a geometry has not yet been set.
   std::optional<gfx::RectF> current_geometry_;
 
-  void* sb_player_ = nullptr;
+  raw_ptr<void> sb_player_ = nullptr;
 };
 
 }  // namespace media

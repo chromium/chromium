@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -101,9 +102,9 @@ class DemuxerStreamReader {
   ConvertAudioFn convert_audio_fn_;
   HandleBufferCb handle_buffer_cb_;
   HandleEosCb handle_eos_cb_;
-  ::media::RendererClient* client_;
-  ::media::DemuxerStream* audio_stream_ = nullptr;
-  ::media::DemuxerStream* video_stream_ = nullptr;
+  raw_ptr<::media::RendererClient> client_;
+  raw_ptr<::media::DemuxerStream> audio_stream_ = nullptr;
+  raw_ptr<::media::DemuxerStream> video_stream_ = nullptr;
 
   // StarboardAudioSampleInfo contains a const void* audio_specific_config. That
   // field can point to the extra data of this config, so we should ensure that

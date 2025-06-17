@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -149,8 +150,8 @@ class StarboardPlayerManager {
   };
   StarboardApiWrapper* starboard_ = nullptr;
   // This class owns the SbPlayer.
-  void* player_ = nullptr;
-  ::media::RendererClient* client_ = nullptr;
+  raw_ptr<void> player_ = nullptr;
+  raw_ptr<::media::RendererClient> client_ = nullptr;
   ClientStatsTracker stats_tracker_;
   bool flushing_ = false;
   double playback_rate_ = 0.0;
@@ -160,7 +161,7 @@ class StarboardPlayerManager {
   DemuxerStreamReader demuxer_stream_reader_;
   // Maps from a buffer address to the scoped_refptr managing the buffer's
   // lifetime.
-  base::flat_map<const void*, scoped_refptr<::media::DecoderBuffer>>
+  base::flat_map<raw_ptr<const void>, scoped_refptr<::media::DecoderBuffer>>
       addr_to_buffer_;
 
   // This should be destructed first, to invalidate any weak ptrs.

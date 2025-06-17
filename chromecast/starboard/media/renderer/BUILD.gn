@@ -82,11 +82,9 @@ source_set("chromium_starboard_conversions") {
 }
 
 source_set("client_stats_tracker") {
-  sources = [
-    "client_stats_tracker.cc",
-    "client_stats_tracker.h",
-  ]
-  deps = [
+  public = [ "client_stats_tracker.h" ]
+  sources = [ "client_stats_tracker.cc" ]
+  public_deps = [
     "//base",
     "//chromecast/starboard/media/media:starboard_api_wrapper",
     "//media",
