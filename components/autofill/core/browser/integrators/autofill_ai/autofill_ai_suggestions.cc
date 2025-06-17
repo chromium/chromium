@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
@@ -158,33 +159,29 @@ std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
   // Get the list of disambiguating labels. The list is created for the entities
   // used to build the suggestions, but it also uses other entities that can
   // fill a field in the form.
-  std::vector<EntityLabel> suggestions_labels =
+  std::vector<EntityLabel> labels =
       GetLabelsForSuggestions(suggestions_with_metadata,
                               other_entities_that_can_fill_section, app_locale);
 
-  for (size_t i = 0; i < num_suggestions; i++) {
+  for (auto [suggestion_with_metadata, label] :
+       base::zip(suggestions_with_metadata, labels)) {
     // Do not assign labels that are identical or derived from the triggering
     // field, as they are redundant.
-    const EntityInstance& entity = *suggestions_with_metadata[i].entity;
+    const EntityInstance& entity = *suggestion_with_metadata.entity;
     base::optional_ref<const AttributeInstance> attribute =
         entity.attribute(trigger_attribute);
     // The entity used to build the suggestion must be able to fill the
     // triggering field.
     CHECK(attribute);
 
-    EntityLabel& disambiguating_labels = suggestions_labels[i];
-    std::erase_if(disambiguating_labels, [&](const std::u16string& label) {
-      return label == attribute->GetCompleteInfo(app_locale);
-    });
+    std::erase(label, attribute->GetCompleteInfo(app_locale));
 
-    disambiguating_labels.insert(
-        disambiguating_labels.begin(),
-        std::u16string(entity.type().GetNameForI18n()));
+    label.insert(label.begin(), std::u16string(entity.type().GetNameForI18n()));
   }
 
   // Step #3:
   // Assign the labels.
-  return AssignLabelsToSuggestions(std::move(suggestions_labels),
+  return AssignLabelsToSuggestions(std::move(labels),
                                    std::move(suggestions_with_labels));
 }
 
