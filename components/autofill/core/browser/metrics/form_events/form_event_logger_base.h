@@ -153,7 +153,7 @@ class FormEventLoggerBase {
 
   // Whether a user accepted a filling suggestion they saw for a form that
   // was later submitted.
-  void RecordFillingAcceptance(LogBuffer& logs) const;
+  virtual void RecordFillingAcceptance(LogBuffer& logs) const;
 
   // Whether a filled form and submitted form required no fixes to filled
   // fields.

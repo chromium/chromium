@@ -878,6 +878,15 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           query_form_, query_field_, suggestion.main_text.value,
           SuggestionType::kLoyaltyCardEntry, LOYALTY_MEMBERSHIP_ID);
+      ValuablesDataManager* vdm = manager_->client().GetValuablesDataManager();
+      CHECK(vdm);
+      const std::string guid =
+          std::get<Suggestion::Guid>(suggestion.payload).value();
+      if (std::optional<LoyaltyCard> loyaty_card =
+              vdm->GetLoyaltyCardById(ValuableId(guid))) {
+        manager_->LogAndRecordLoyaltyCardFill(
+            *loyaty_card, query_form_.global_id(), query_field_.global_id());
+      }
       break;
     }
     case SuggestionType::kTitle:

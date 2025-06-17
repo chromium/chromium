@@ -15,6 +15,14 @@ namespace autofill {
 // Represents a loyalty card coming from the Google Wallet.
 class LoyaltyCard final {
  public:
+  // A loyalty card is considered `kAffiliated` with a specific URL if any of
+  // its merchant domains match the URL.
+  enum class AffiliationCategory {
+    kNonAffiliated = 0,
+    kAffiliated = 1,
+    kMaxValue = kAffiliated
+  };
+
   LoyaltyCard(ValuableId loyalty_card_id,
               std::string merchant_name,
               std::string program_name,
@@ -68,7 +76,13 @@ class LoyaltyCard final {
 
   // Returns true if any of the merchant domains matches the provided `url`.
   // URLs are compared using their public suffix domains.
+  // TODO(crbug.com/422366498) Remove this method in favor of
+  // `GetAffiliationCategory`.
   bool HasMatchingMerchantDomain(const GURL& url) const;
+
+  // Returns whether the card is an affiliated card i.e. whether any of its
+  // merchang domains matches `url`.
+  AffiliationCategory GetAffiliationCategory(const GURL& url) const;
 
   friend bool operator==(const LoyaltyCard&, const LoyaltyCard&) = default;
   friend auto operator<=>(const LoyaltyCard&, const LoyaltyCard&) = default;

@@ -230,6 +230,8 @@ class AutofillMetricsBaseTest {
         form, form.fields()[field_index],
         base::UTF8ToUTF16(card.loyalty_card_number()),
         SuggestionType::kLoyaltyCardEntry, LOYALTY_MEMBERSHIP_ID);
+    autofill_manager().LogAndRecordLoyaltyCardFill(
+        card, form.global_id(), form.fields()[field_index].global_id());
   }
 
   void UndoAutofill(const FormData& form) {

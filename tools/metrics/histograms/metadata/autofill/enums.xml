@@ -2296,6 +2296,13 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Suggestion Selected"/>
 </enum>
 
+<enum name="AutofillLoyaltyCardAffiliationCategoryFillingReadiness">
+  <int value="0" label="No loyalty cards available"/>
+  <int value="1" label="Only affiliated loyalty cards available"/>
+  <int value="2" label="Only non-affiliated loyalty cards available"/>
+  <int value="3" label="Loyalty cards from different categories available."/>
+</enum>
+
 <enum name="AutofillManageCardsPrompt">
   <int value="0" label="Shown"/>
   <int value="1" label="Done button pressed"/>

@@ -1740,11 +1740,6 @@ void BrowserAutofillManager::FillOrPreviewField(
       type == SuggestionType::kAddressFieldByFieldFilling) {
     metrics_->address_form_event_logger.OnFilledByFieldByFieldFilling(type);
   }
-  if (action_persistence == mojom::ActionPersistence::kFill &&
-      type == SuggestionType::kLoyaltyCardEntry) {
-    metrics_->loyalty_card_form_event_logger.OnDidFillSuggestion(
-        *form_structure, *autofill_field);
-  }
 }
 
 void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
@@ -2524,7 +2519,8 @@ void BrowserAutofillManager::UpdateLoggersReadinessData() {
           client().GetValuablesDataManager()) {
     metrics_->loyalty_card_form_event_logger
         .UpdateLoyaltyCardsAvailabilityForReadiness(
-            valuables_manager->GetLoyaltyCards());
+            valuables_manager->GetLoyaltyCards(),
+            client().GetLastCommittedPrimaryMainFrameURL());
   }
 }
 
@@ -2700,6 +2696,23 @@ void BrowserAutofillManager::LogAndRecordProfileFill(
     client().GetPersonalDataManager().address_data_manager().RecordUseOf(
         filled_profile);
   }
+}
+
+void BrowserAutofillManager::LogAndRecordLoyaltyCardFill(
+    const LoyaltyCard& loyalty_card,
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id) {
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  std::ignore = GetCachedFormAndField(form_id, field_id, &form_structure,
+                                      &autofill_field);
+  if (!autofill_field) {
+    return;
+  }
+  // TODO(crbug.com/422366498): Move the Onfill event to `FillOrPreviewField`.
+  metrics_->loyalty_card_form_event_logger.OnDidFillSuggestion(
+      *form_structure, *autofill_field, loyalty_card,
+      client().GetLastCommittedPrimaryMainFrameURL());
 }
 
 void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(

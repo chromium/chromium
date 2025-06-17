@@ -43,4 +43,10 @@ bool LoyaltyCard::HasMatchingMerchantDomain(const GURL& url) const {
       });
 }
 
+LoyaltyCard::AffiliationCategory LoyaltyCard::GetAffiliationCategory(
+    const GURL& url) const {
+  return HasMatchingMerchantDomain(url) ? AffiliationCategory::kAffiliated
+                                        : AffiliationCategory::kNonAffiliated;
+}
+
 }  // namespace autofill

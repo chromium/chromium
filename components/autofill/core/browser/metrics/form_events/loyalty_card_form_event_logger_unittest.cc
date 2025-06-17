@@ -584,4 +584,195 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
   VerifyInteractedWithFormUkmMetric();
 }
 
+// Parameterized AffiliationTypeKeyMetricsEditTest that edits a field depending
+// on the parameter. This is used to test the correctness metric, which depends
+// on whether autofilled fields have been edited. Additionally, these tests
+// verify that the category-resolved assistance, acceptance and readiness
+// metrics are correctly emitted.
+class AffiliationTypeKeyMetricsEditTest
+    : public LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool ShouldEditField() const { return GetParam(); }
+
+  void FillAndSubmitForm(int selected_suggestion) {
+    SeeForm(form_);
+    autofill_manager().OnAskForValuesToFillTest(form_,
+                                                form_.fields()[1].global_id());
+    DidShowAutofillSuggestions(form_, /*field_index=*/1);
+    FillLoyaltyCard(
+        form_, valuables_data_manager().GetLoyaltyCards()[selected_suggestion],
+        /*field_index=*/1);
+
+    if (ShouldEditField()) {
+      SimulateUserChangedField(form_, form_.fields()[1]);
+    }
+    SubmitForm(form_);
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+INSTANTIATE_TEST_SUITE_P(, AffiliationTypeKeyMetricsEditTest, testing::Bool());
+
+// Tests the scenario where only affiliated cards are offered to the user.
+// Validates affiliation key metrics when an affiliated card is available and
+// selected.
+TEST_P(AffiliationTypeKeyMetricsEditTest, Affiliated) {
+  // Make sure that the card is an affiliated card.
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("https://affiliated.com"));
+  const LoyaltyCard card1 = LoyaltyCard(
+      /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
+      /*merchant_name=*/"CVS Pharmacy",
+      /*program_name=*/"CVS Extra",
+      /*program_logo=*/GURL(""),
+      /*loyalty_card_number=*/"987654321987654321",
+      {GURL("https://affiliated.com")});
+  test_api(valuables_data_manager()).SetLoyaltyCards({card1});
+
+  FillAndSubmitForm(/*selected_suggestion=*/0);
+
+  ResetDriverToCommitMetrics();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.FillingReadinessAffiliationCategory",
+      AffiliationCategoryMetricBucket::kAffiliated, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.LoyaltyCard.FillingAssistance.Affiliated", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.FillingCorrectness.Affiliated", !ShouldEditField(),
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.LoyaltyCard.FillingCorrectness.NonAffiliated", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.LoyaltyCard.FillingCorrectness.Mixed", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.LoyaltyCard.FillingAcceptance.Affiliated", 1);
+}
+
+// Tests the scenario where only non-affiliated cards are offered to the user.
+// Validates affiliation key metrics when non-affiliated card is available and
+// selected.
+TEST_P(AffiliationTypeKeyMetricsEditTest, NonAffiliated) {
+  // Make sure that the card is a non-affiliated card.
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("https://non-affiliated.com"));
+  const LoyaltyCard card1 = LoyaltyCard(
+      /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
+      /*merchant_name=*/"CVS Pharmacy",
+      /*program_name=*/"CVS Extra",
+      /*program_logo=*/GURL(""),
+      /*loyalty_card_number=*/"987654321987654321",
+      {GURL("https://affiliated.com")});
+  test_api(valuables_data_manager()).SetLoyaltyCards({card1});
+
+  FillAndSubmitForm(/*selected_suggestion=*/0);
+
+  ResetDriverToCommitMetrics();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.FillingReadinessAffiliationCategory",
+      AffiliationCategoryMetricBucket::kNonAffiliated, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.LoyaltyCard.FillingAssistance.Affiliated", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.LoyaltyCard.FillingCorrectness.Affiliated", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.FillingCorrectness.NonAffiliated",
+      !ShouldEditField(), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.LoyaltyCard.FillingCorrectness.Mixed", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.LoyaltyCard.FillingAcceptance.Affiliated", 0);
+}
+
+// Tests the scenario where both affiliated and non-affiliated cards are offered
+// to the user. Validates affiliation key metrics when the affiliated card is
+// selected by the user.
+TEST_P(AffiliationTypeKeyMetricsEditTest, MixedAvailabilityAffiliatedSelected) {
+  // Make sure that at least one card is an affiliated card.
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("https://affiliated.com"));
+  const LoyaltyCard card1 = LoyaltyCard(
+      /*loyalty_card_id=*/ValuableId("1"),
+      /*merchant_name=*/"CVS Pharmacy",
+      /*program_name=*/"CVS Extra",
+      /*program_logo=*/GURL(""),
+      /*loyalty_card_number=*/"98765432198", {GURL("https://affiliated.com")});
+  const LoyaltyCard card2 = LoyaltyCard(
+      /*loyalty_card_id=*/ValuableId("2"),
+      /*merchant_name=*/"Walgreens",
+      /*program_name=*/"CustomerCard",
+      /*program_logo=*/GURL(""),
+      /*loyalty_card_number=*/"998766823", {GURL("https://example.com")});
+  test_api(valuables_data_manager()).SetLoyaltyCards({card1, card2});
+
+  // Selects the affiliated card.
+  FillAndSubmitForm(/*selected_suggestion=*/0);
+
+  ResetDriverToCommitMetrics();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.FillingReadinessAffiliationCategory",
+      AffiliationCategoryMetricBucket::kMixed, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.FillingAssistance.Affiliated", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.FillingCorrectness.Affiliated", !ShouldEditField(),
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.LoyaltyCard.FillingCorrectness.NonAffiliated", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.LoyaltyCard.FillingCorrectness.Mixed", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.FillingAcceptance.Affiliated", true, 1);
+}
+
+// Tests the scenario where both affiliated and non-affiliated cards are offered
+// to the user. Validates affiliation key metrics when the non-affiliated card
+// is selected by the user.
+TEST_P(AffiliationTypeKeyMetricsEditTest,
+       MixedAvailabilityNonAffiliatedSelected) {
+  base::HistogramTester histogram_tester;
+  // Make sure that at least one card is an affiliated card.
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("https://affiliated.com"));
+  const LoyaltyCard card1 = LoyaltyCard(
+      /*loyalty_card_id=*/ValuableId("1"),
+      /*merchant_name=*/"CVS Pharmacy",
+      /*program_name=*/"CVS Extra",
+      /*program_logo=*/GURL(""),
+      /*loyalty_card_number=*/"987654321987654321",
+      {GURL("https://affiliated.com")});
+  const LoyaltyCard card2 = LoyaltyCard(
+      /*loyalty_card_id=*/ValuableId("2"),
+      /*merchant_name=*/"Walgreens",
+      /*program_name=*/"CustomerCard",
+      /*program_logo=*/GURL(""),
+      /*loyalty_card_number=*/"998766823", {GURL("https://example.com")});
+  test_api(valuables_data_manager()).SetLoyaltyCards({card1, card2});
+
+  // Selects the non-affiliated card.
+  FillAndSubmitForm(/*selected_suggestion=*/1);
+
+  ResetDriverToCommitMetrics();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.FillingReadinessAffiliationCategory",
+      AffiliationCategoryMetricBucket::kMixed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.FillingAssistance.Affiliated", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.LoyaltyCard.FillingCorrectness.Affiliated", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.FillingCorrectness.NonAffiliated",
+      !ShouldEditField(), 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.LoyaltyCard.FillingCorrectness.Mixed", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.FillingAcceptance.Affiliated", false, 1);
+}
+
 }  // namespace autofill::autofill_metrics

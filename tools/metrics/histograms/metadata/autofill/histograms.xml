@@ -4070,6 +4070,78 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.LoyaltyCard.FillingAcceptance.Affiliated"
+    enum="BooleanAutofillFillingAcceptance" expires_after="2025-12-12">
+  <owner>vizcay@google.com</owner>
+  <owner>tchudakov@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Like Autofill.KeyMetrics.FillingAcceptance.Address, but for affiliated
+    loyalty cards.
+
+    Counts for submitted forms whether users accepted the suggestion to fill
+    values. This is counted as 'yes' if the user accepted such a suggestion at
+    any time, regardless whether other suggestions were ignored or whether the
+    accepted suggestion was reverted afterwards.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.LoyaltyCard.FillingAssistance.Affiliated"
+    enum="BooleanAutofillFillingAssistance" expires_after="2025-12-12">
+  <owner>vizcay@google.com</owner>
+  <owner>tchudakov@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Like Autofill.KeyMetrics.FillingAssistance.Address, but for affiliated
+    loyalty cards.
+
+    Counts for submitted forms whether the user filled any fields via Autofill.
+    If the user reverts the filling, the form is still counted as filled. This
+    metric is different from Autofill.KeyMetrics.FillingAcceptance in the sense
+    that the latter is only recorded if the user has actually seen a prompt to
+    fill data.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.LoyaltyCard.FillingCorrectness.{Category}"
+    enum="BooleanAutofillFillingCorrectness" expires_after="2025-12-12">
+  <owner>vizcay@google.com</owner>
+  <owner>tchudakov@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Like Autofill.KeyMetrics.FillingCorrectness.Address, but split by
+    affiliation category.
+
+    Counts for submitted and autofilled forms whether users edited at least one
+    filled value before submitting the form.
+  </summary>
+  <token key="Category">
+    <variant name="Affiliated"
+        summary="Only affiliated loyalty cards were used"/>
+    <variant name="Mixed"
+        summary="Multiple profiles of mixed categories were used"/>
+    <variant name="NonAffiliated"
+        summary="Only non-affiliated loyalty cards were used"/>
+  </token>
+</histogram>
+
+<histogram name="Autofill.LoyaltyCard.FillingReadinessAffiliationCategory"
+    enum="AutofillLoyaltyCardAffiliationCategoryFillingReadiness"
+    expires_after="2025-12-12">
+  <owner>vizcay@google.com</owner>
+  <owner>tchudakov@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Like Autofill.KeyMetrics.FillingReadiness.Address, but split by affiliation
+    category.
+
+    Counts for submitted forms whether Chromium had any loyalty card data to
+    fill. It does not matter whether the user actually requested to fill the
+    data. It does not matter either whether the data available for filling
+    corresponded to the submitted data.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ManageCardsPrompt" enum="AutofillManageCardsPrompt"
     expires_after="2026-06-01">
   <owner>jsaul@google.com</owner>
