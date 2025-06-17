@@ -926,7 +926,7 @@ const HALF_STEP = Math.pow(2.0, 1.0 / HALF_STEPS_PER_OCTAVE);
 const A3_HZ = 220;
 
 /** The base url for earcon sound resources. */
-const BASE_URL = chrome.runtime.getURL('chromevox/mv3/earcons/');
+const BASE_URL = chrome.runtime.getURL('common/earcons/');
 
 /**The maximum value to pass to PannerNode.setPosition. */
 const MAX_PAN_ABS_X_POSITION = 4;

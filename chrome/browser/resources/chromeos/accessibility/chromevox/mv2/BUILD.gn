@@ -311,15 +311,6 @@ run_jsbundler("copied_files") {
 
   sources = [
     "background/background.html",
-    "earcons/chromevox_loaded.ogg",
-    "earcons/chromevox_loading.ogg",
-    "earcons/control.wav",
-    "earcons/invalid_keypress.ogg",
-    "earcons/selection.ogg",
-    "earcons/selection_reverse.ogg",
-    "earcons/skim.wav",
-    "earcons/small_room_2.wav",
-    "earcons/static.wav",
     "images/chromevox.svg",
     "images/close-36.png",
     "images/close-hover-36.png",
