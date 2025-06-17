@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(PreloadingDeciderBrowserTest,
       PredictorConfusionMatrix::kFalseNegative, 1);
 }
 
-class PreloadingDeciderNonEagerBrowserTest
+class PreloadingDeciderNonImmediateBrowserTest
     : public PreloadingDeciderBrowserTest,
       public ::testing::WithParamInterface<
           ::testing::tuple<PreloadingPredictor, PreloadingType>> {
@@ -120,7 +120,7 @@ class PreloadingDeciderNonEagerBrowserTest
         std::string(PreloadingTypeToString(type)).c_str());
   }
 
-  static constexpr PreloadingPredictor kNonEagerPredictors[] = {
+  static constexpr PreloadingPredictor kNonImmediatePredictors[] = {
       preloading_predictor::kUrlPointerDownOnAnchor,
       preloading_predictor::kUrlPointerHoverOnAnchor,
       preloading_predictor::kPreloadingHeuristicsMLModel,
@@ -140,15 +140,15 @@ class PreloadingDeciderNonEagerBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    PreloadingDeciderNonEagerBrowserTest,
+    PreloadingDeciderNonImmediateBrowserTest,
     ::testing::Combine(
         ::testing::ValuesIn(
-            PreloadingDeciderNonEagerBrowserTest::kNonEagerPredictors),
+            PreloadingDeciderNonImmediateBrowserTest::kNonImmediatePredictors),
         ::testing::ValuesIn(
-            PreloadingDeciderNonEagerBrowserTest::kPreloadingTypes)),
-    PreloadingDeciderNonEagerBrowserTest::DescribeParams);
+            PreloadingDeciderNonImmediateBrowserTest::kPreloadingTypes)),
+    PreloadingDeciderNonImmediateBrowserTest::DescribeParams);
 
-IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
+IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonImmediateBrowserTest,
                        EnactModerateCandidate) {
   base::ScopedMockElapsedTimersForTest mock_elapsed_timer;
   base::HistogramTester histogram_tester;
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
       FAIL();
   }
 
-  // Trigger the non-eager predictor.
+  // Trigger the non-immediate predictor.
   auto* preloading_decider = PreloadingDecider::GetOrCreateForCurrentDocument(
       web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
   const std::string type_str{PreloadingTypeToString(type())};
   const char* type_cstr = type_str.c_str();
 
-  // For non-eager predictors, there are two PreloadingPredictors that
+  // For non-immediate predictors, there are two PreloadingPredictors that
   // contribute to a preloading attempt. One creates a candidate, but does not
   // start the preloading attempt. The other starts the attempt. We assert below
   // that both predictors have appropriate attribution in the recorded metrics.
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
         content_preloading_predictor::kSpeculationRules.name()};
     const char* rule_predictor_cstr = rule_predictor_str.c_str();
 
-    // We intentionally don't record a prediction for non-eager speculation
+    // We intentionally don't record a prediction for non-immediate speculation
     // rules. They aren't predictions per se, but a declaration to the browser
     // that preloading would be safe.
     histogram_tester.ExpectTotalCount(
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(PreloadingDeciderBrowserTest,
         content_preloading_predictor::kSpeculationRules.name()};
     const char* rule_predictor_cstr = rule_predictor_str.c_str();
 
-    // We intentionally don't record a prediction for non-eager speculation
+    // We intentionally don't record a prediction for non-immediate speculation
     // rules. They aren't predictions per se, but a declaration to the browser
     // that preloading would be safe.
     histogram_tester.ExpectTotalCount(

@@ -42,20 +42,20 @@ chromium-metrics-reviews@google.com.
   <variant name="Embedder_WebView" summary="Embedder trigger, WebView"/>
   <variant name="SpeculationRule_Conservative"
       summary="SpeculationRules trigger, Conservative"/>
-  <variant name="SpeculationRule_Eager"
-      summary="SpeculationRules trigger, Eager"/>
+  <variant name="SpeculationRule_Immediate"
+      summary="SpeculationRules trigger, Immediate"/>
   <variant name="SpeculationRule_Moderate"
       summary="SpeculationRules trigger, Moderate"/>
   <variant name="SpeculationRuleFromAutoSpeculationRules_Conservative"
       summary="SpeculationRulesFromAutoSpeculationRules trigger, Conservative"/>
-  <variant name="SpeculationRuleFromAutoSpeculationRules_Eager"
-      summary="SpeculationRulesFromAutoSpeculationRules trigger, Eager"/>
+  <variant name="SpeculationRuleFromAutoSpeculationRules_Immediate"
+      summary="SpeculationRulesFromAutoSpeculationRules trigger, Immediate"/>
   <variant name="SpeculationRuleFromAutoSpeculationRules_Moderate"
       summary="SpeculationRulesFromAutoSpeculationRules trigger, Moderate"/>
   <variant name="SpeculationRuleFromIsolatedWorld_Conservative"
       summary="SpeculationRulesFromIsolatedWorld trigger, Conservative"/>
-  <variant name="SpeculationRuleFromIsolatedWorld_Eager"
-      summary="SpeculationRulesFromIsolatedWorld trigger, Eager"/>
+  <variant name="SpeculationRuleFromIsolatedWorld_Immediate"
+      summary="SpeculationRulesFromIsolatedWorld trigger, Immediate"/>
   <variant name="SpeculationRuleFromIsolatedWorld_Moderate"
       summary="SpeculationRulesFromIsolatedWorld trigger, Moderate"/>
 </variants>

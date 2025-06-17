@@ -1739,7 +1739,7 @@ void PrefetchContainer::MakeResourceRequest(
 
   auto priority = [&] {
     if (IsSpeculationRuleType(prefetch_type_.trigger_type())) {
-      // This may seem inverted (surely eager prefetches would be higher
+      // This may seem inverted (surely immediate prefetches would be higher
       // priority), but the fact that we're doing this at all for more
       // conservative candidates suggests a strong engagement signal.
       //
@@ -1754,7 +1754,7 @@ void PrefetchContainer::MakeResourceRequest(
           return net::RequestPriority::MEDIUM;
         case blink::mojom::SpeculationEagerness::kModerate:
           return net::RequestPriority::LOW;
-        case blink::mojom::SpeculationEagerness::kEager:
+        case blink::mojom::SpeculationEagerness::kImmediate:
           return net::RequestPriority::IDLE;
       }
     } else {

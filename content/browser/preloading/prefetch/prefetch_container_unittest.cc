@@ -331,7 +331,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
       *main_rfhi(), document_token, GURL("https://test.com"),
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/true,
-                   blink::mojom::SpeculationEagerness::kEager),
+                   blink::mojom::SpeculationEagerness::kImmediate),
       blink::mojom::Referrer(),
       std::make_optional(SpeculationRulesTags({"example"})),
       /*no_vary_search_hint=*/std::nullopt,
@@ -345,7 +345,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
   EXPECT_EQ(prefetch_container.GetPrefetchType(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/true,
-                         blink::mojom::SpeculationEagerness::kEager));
+                         blink::mojom::SpeculationEagerness::kImmediate));
   EXPECT_TRUE(
       prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
@@ -941,7 +941,7 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
           .prefetch_type =
               PrefetchType(PreloadingTriggerType::kSpeculationRule,
                            /*use_prefetch_proxy=*/true,
-                           blink::mojom::SpeculationEagerness::kEager),
+                           blink::mojom::SpeculationEagerness::kImmediate),
           .is_served = true,
           .is_nav_prerender = false,
           .blocked_duration = std::nullopt,
@@ -993,39 +993,39 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
 
   histogram_tester.ExpectUniqueSample(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
-      "SpeculationRule_Eager",
+      "SpeculationRule_Immediate",
       false, 1);
   histogram_tester.ExpectUniqueSample(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
-      "NonPrerender.SpeculationRule_Eager",
+      "NonPrerender.SpeculationRule_Immediate",
       false, 1);
   histogram_tester.ExpectTotalCount(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
-      "Prerender.SpeculationRule_Eager",
+      "Prerender.SpeculationRule_Immediate",
       0);
   histogram_tester.ExpectUniqueTimeSample(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served."
-      "SpeculationRule_Eager",
+      "SpeculationRule_Immediate",
       base::Milliseconds(0), 1);
   histogram_tester.ExpectTotalCount(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed."
-      "SpeculationRule_Eager",
+      "SpeculationRule_Immediate",
       0);
   histogram_tester.ExpectUniqueTimeSample(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
-      "Served.SpeculationRule_Eager",
+      "Served.SpeculationRule_Immediate",
       base::Milliseconds(0), 1);
   histogram_tester.ExpectTotalCount(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
-      "NotServed.SpeculationRule_Eager",
+      "NotServed.SpeculationRule_Immediate",
       0);
   histogram_tester.ExpectTotalCount(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender.Served."
-      "SpeculationRule_Eager",
+      "SpeculationRule_Immediate",
       0);
   histogram_tester.ExpectTotalCount(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender."
-      "NotServed.SpeculationRule_Eager",
+      "NotServed.SpeculationRule_Immediate",
       0);
 
   histogram_tester.ExpectUniqueSample(
@@ -1034,7 +1034,7 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
       true, 1);
   histogram_tester.ExpectUniqueSample(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
-      "NonPrerender.SpeculationRule_Eager",
+      "NonPrerender.SpeculationRule_Immediate",
       false, 1);
   histogram_tester.ExpectTotalCount(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
@@ -1153,9 +1153,10 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms_Prerender) {
   };
 
   TestCase test_case = {
-      .prefetch_type = PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                                    /*use_prefetch_proxy=*/true,
-                                    blink::mojom::SpeculationEagerness::kEager),
+      .prefetch_type =
+          PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                       /*use_prefetch_proxy=*/true,
+                       blink::mojom::SpeculationEagerness::kImmediate),
       .is_served = true,
       .is_nav_prerender = true,
       .blocked_duration = base::Milliseconds(100),
@@ -1180,39 +1181,39 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms_Prerender) {
 
   histogram_tester.ExpectUniqueSample(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
-      "SpeculationRule_Eager",
+      "SpeculationRule_Immediate",
       true, 1);
   histogram_tester.ExpectTotalCount(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
-      "NonPrerender.SpeculationRule_Eager",
+      "NonPrerender.SpeculationRule_Immediate",
       0);
   histogram_tester.ExpectUniqueSample(
       "Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate."
-      "Prerender.SpeculationRule_Eager",
+      "Prerender.SpeculationRule_Immediate",
       true, 1);
   histogram_tester.ExpectUniqueTimeSample(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served."
-      "SpeculationRule_Eager",
+      "SpeculationRule_Immediate",
       test_case.blocked_duration.value_or(base::Seconds(0)), 1);
   histogram_tester.ExpectTotalCount(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed."
-      "SpeculationRule_Eager",
+      "SpeculationRule_Immediate",
       0);
   histogram_tester.ExpectTotalCount(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
-      "Served.SpeculationRule_Eager",
+      "Served.SpeculationRule_Immediate",
       0);
   histogram_tester.ExpectTotalCount(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
-      "NotServed.SpeculationRule_Eager",
+      "NotServed.SpeculationRule_Immediate",
       0);
   histogram_tester.ExpectUniqueTimeSample(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender.Served."
-      "SpeculationRule_Eager",
+      "SpeculationRule_Immediate",
       test_case.blocked_duration.value_or(base::Seconds(0)), 1);
   histogram_tester.ExpectTotalCount(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender."
-      "NotServed.SpeculationRule_Eager",
+      "NotServed.SpeculationRule_Immediate",
       0);
 }
 

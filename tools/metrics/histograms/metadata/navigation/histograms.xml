@@ -3434,7 +3434,7 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
   <token key="EagernessCategory">
     <variant name=".Conservative"/>
-    <variant name=".Eager"/>
+    <variant name=".Immediate"/>
     <variant name=".Moderate"/>
   </token>
 </histogram>

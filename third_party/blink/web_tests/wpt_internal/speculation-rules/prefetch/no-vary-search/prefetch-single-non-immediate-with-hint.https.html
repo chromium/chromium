@@ -55,7 +55,7 @@ async function prefetchAndNavigate(test, remoteAgent, noVarySearchHeaderValue, n
   eagerness, prefetchQuery, navigateQuery, shouldUsePrefetch, noPointerdownForConservativeEagerness){
     /*
     Flow:
-      * set up non-eager prefetch prefetch_nvs_hint.py?uuid=...&nvs_header=...&otherqueryparams
+      * set up non-immediate prefetch prefetch_nvs_hint.py?uuid=...&nvs_header=...&otherqueryparams
       * the prefetch above includes no_vary_search_hint in the speculation
         rules
       * the prefetch request is triggered by on-hover or pointerdown
@@ -83,7 +83,7 @@ async function prefetchAndNavigate(test, remoteAgent, noVarySearchHeaderValue, n
     prefetchUrl.searchParams.append(key, value);
   });
 
-  // Add speculation rules to non-eagerly prefetch the URL above
+  // Add speculation rules to non-immediately prefetch the URL above
   // when matching via No-Vary-Search hint.
   await remoteAgent.forceSinglePrefetch(prefetchUrl,
       {expects_no_vary_search:noVarySearchHintValue, eagerness:eagerness}, false);
@@ -98,15 +98,15 @@ async function prefetchAndNavigate(test, remoteAgent, noVarySearchHeaderValue, n
 
   const link_id = "target";
   await remoteAgent.execute_script(async (link_id, navigateToUrl) => {
-    // Set up a link to a URL we want to non-eagerly prefetch.
+    // Set up a link to a URL we want to non-immediately prefetch.
     add_link(link_id, navigateToUrl);
   }, [link_id, navigateToUrl]);
 
   await remoteAgent.execute_script(async (link_id, eagerness, noPointerdownForConservativeEagerness, EAGERNESS_CONSERVATIVE) => {
     if(eagerness == EAGERNESS_CONSERVATIVE && !noPointerdownForConservativeEagerness) {
-      await start_non_eager_prefetch_on_pointerdown(link_id);
+      await start_non_immediate_prefetch_on_pointerdown(link_id);
     } else {
-      await start_non_eager_prefetch_on_hover(link_id);
+      await start_non_immediate_prefetch_on_hover(link_id);
     }
   }, [link_id, eagerness, noPointerdownForConservativeEagerness, EAGERNESS_CONSERVATIVE]);
 
@@ -139,7 +139,7 @@ async function prefetchAndNavigate(test, remoteAgent, noVarySearchHeaderValue, n
 function prefetch_no_vary_search_test_func(description, noVarySearch, noVarySearchHint, eagerness, prefetchQuery, navigateQuery, shouldUsePrefetch, noPointerdownForConservativeEagerness){
     promise_test(async t => {
       assert_not_equals(window.eventSender, undefined, 'This test requires eventSender.');
-      const agent_window_pair = await spawnWindowWithReference(t, {executor:new URL("../resources/executor-non-eager.html", document.baseURI)});
+      const agent_window_pair = await spawnWindowWithReference(t, {executor:new URL("../resources/executor-non-immediate.html", document.baseURI)});
       const agent = agent_window_pair.agent;
       input_window = agent_window_pair.window;
 

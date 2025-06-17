@@ -94,8 +94,8 @@ class CONTENT_EXPORT PreloadingDataImpl
 
   // A version of `AddPreloadingAttempt` which takes two PreloadingPredictors in
   // the case where one predictor creates a preloading candidate which is
-  // enacted by another predictor (e.g. a non-eager speculation rule creates a
-  // candidate which is enacted by a pointer down heuristic).
+  // enacted by another predictor (e.g. a non-immediate speculation rule creates
+  // a candidate which is enacted by a pointer down heuristic).
   PreloadingAttemptImpl* AddPreloadingAttempt(
       const PreloadingPredictor& creating_predictor,
       const PreloadingPredictor& enacting_predictor,

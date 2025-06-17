@@ -773,7 +773,9 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   if (eagerness_set.Has(SpeculationEagerness::kModerate)) {
     UseCounter::Count(document, WebFeature::kSpeculationRulesEagernessModerate);
   }
-  if (eagerness_set.Has(SpeculationEagerness::kEager)) {
+  // Record "immediate" as "eager" for historical reasons: see
+  // crbug.com/40287486
+  if (eagerness_set.Has(SpeculationEagerness::kImmediate)) {
     UseCounter::Count(document, WebFeature::kSpeculationRulesEagernessEager);
   }
 

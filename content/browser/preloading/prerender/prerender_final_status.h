@@ -147,8 +147,8 @@ enum class PrerenderFinalStatus {
   // status is specified.
   kActivatedWithAuxiliaryBrowsingContexts = 72,
 
-  kMaxNumOfRunningEagerPrerendersExceeded = 73,
-  kMaxNumOfRunningNonEagerPrerendersExceeded = 74,
+  kMaxNumOfRunningImmediatePrerendersExceeded = 73,
+  kMaxNumOfRunningNonImmediatePrerendersExceeded = 74,
   kMaxNumOfRunningEmbedderPrerendersExceeded = 75,
 
   kPrerenderingUrlHasEffectiveUrl = 76,

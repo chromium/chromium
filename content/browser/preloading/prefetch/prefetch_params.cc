@@ -216,7 +216,7 @@ base::TimeDelta PrefetchBlockUntilHeadTimeout(
   int timeout_in_milliseconds = 0;
   if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
     switch (prefetch_type.GetEagerness()) {
-      case blink::mojom::SpeculationEagerness::kEager:
+      case blink::mojom::SpeculationEagerness::kImmediate:
         timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
             features::kPrefetchUseContentRefactor,
             "block_until_head_timeout_eager_prefetch", 1000);
@@ -248,8 +248,8 @@ std::string GetMetricsSuffixTriggerTypeAndEagerness(
   switch (prefetch_type.trigger_type()) {
     case PreloadingTriggerType::kSpeculationRule:
       switch (prefetch_type.GetEagerness()) {
-        case blink::mojom::SpeculationEagerness::kEager:
-          return "SpeculationRule_Eager";
+        case blink::mojom::SpeculationEagerness::kImmediate:
+          return "SpeculationRule_Immediate";
         case blink::mojom::SpeculationEagerness::kModerate:
           return "SpeculationRule_Moderate";
         case blink::mojom::SpeculationEagerness::kConservative:
@@ -257,8 +257,8 @@ std::string GetMetricsSuffixTriggerTypeAndEagerness(
       }
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
       switch (prefetch_type.GetEagerness()) {
-        case blink::mojom::SpeculationEagerness::kEager:
-          return "SpeculationRuleFromIsolatedWorld_Eager";
+        case blink::mojom::SpeculationEagerness::kImmediate:
+          return "SpeculationRuleFromIsolatedWorld_Immediate";
         case blink::mojom::SpeculationEagerness::kModerate:
           return "SpeculationRuleFromIsolatedWorld_Moderate";
         case blink::mojom::SpeculationEagerness::kConservative:
@@ -266,8 +266,8 @@ std::string GetMetricsSuffixTriggerTypeAndEagerness(
       }
     case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       switch (prefetch_type.GetEagerness()) {
-        case blink::mojom::SpeculationEagerness::kEager:
-          return "SpeculationRuleFromAutoSpeculationRules_Eager";
+        case blink::mojom::SpeculationEagerness::kImmediate:
+          return "SpeculationRuleFromAutoSpeculationRules_Immediate";
         case blink::mojom::SpeculationEagerness::kModerate:
           return "SpeculationRuleFromAutoSpeculationRules_Moderate";
         case blink::mojom::SpeculationEagerness::kConservative:

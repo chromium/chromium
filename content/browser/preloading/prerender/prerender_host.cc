@@ -1278,8 +1278,8 @@ void PrerenderHost::SetFailureReason(
     case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
     case PrerenderFinalStatus::kPrerenderingDisabledByDevTools:
     case PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts:
-    case PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded:
-    case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningImmediatePrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningNonImmediatePrerendersExceeded:
     case PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded:
     case PrerenderFinalStatus::kPrerenderingUrlHasEffectiveUrl:
     case PrerenderFinalStatus::kRedirectedPrerenderingUrlHasEffectiveUrl:
@@ -1443,7 +1443,7 @@ base::TimeDelta PrerenderHost::WaitUntilHeadTimeout() {
   if (IsSpeculationRuleType(attributes_.trigger_type)) {
     CHECK(eagerness().has_value());
     switch (eagerness().value()) {
-      case blink::mojom::SpeculationEagerness::kEager:
+      case blink::mojom::SpeculationEagerness::kImmediate:
         timeout_in_milliseconds =
             features::kPrerender2NoVarySearchWaitForHeadersTimeoutEagerPrerender
                 .Get();

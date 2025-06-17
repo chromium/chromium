@@ -65,7 +65,7 @@ class NavPrefetchBrowserTest : public ContentBrowserTest,
     auto candidate = blink::mojom::SpeculationCandidate::New();
     candidate->url = url;
     candidate->action = blink::mojom::SpeculationAction::kPrefetch;
-    candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
+    candidate->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
     candidate->referrer = Referrer::SanitizeForRequest(
         url, blink::mojom::Referrer(
                  shell()->web_contents()->GetURL(),
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, ServedToRedirectionChain) {
           PreloadingFailureReason::kUnspecified,
           /*accurate=*/true,
           base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
-          blink::mojom::SpeculationEagerness::kEager)});
+          blink::mojom::SpeculationEagerness::kImmediate)});
 }
 
 // TODO(crbug.com/345352974): Make it a web platform test instead.
@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, AuthRequested) {
           ToPreloadingFailureReason(PrefetchStatus::kPrefetchFailedNon2XX),
           /*accurate=*/true,
           /*ready_time=*/std::nullopt,
-          blink::mojom::SpeculationEagerness::kEager)});
+          blink::mojom::SpeculationEagerness::kImmediate)});
 }
 
 // Tests that prefetch fails when client cert is requested.
@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, ClientCertRequested) {
           ToPreloadingFailureReason(PrefetchStatus::kPrefetchFailedNetError),
           /*accurate=*/true,
           /*ready_time=*/std::nullopt,
-          blink::mojom::SpeculationEagerness::kEager)});
+          blink::mojom::SpeculationEagerness::kImmediate)});
 }
 
 // Tests that prefetch fails when cert is expired.
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, CertExpired) {
           ToPreloadingFailureReason(PrefetchStatus::kPrefetchFailedNetError),
           /*accurate=*/true,
           /*ready_time=*/std::nullopt,
-          blink::mojom::SpeculationEagerness::kEager)});
+          blink::mojom::SpeculationEagerness::kImmediate)});
 }
 
 }  // namespace

@@ -50,7 +50,7 @@ enum SpeculationTargetHint {
 enum SpeculationEagerness {
   kConservative = 0,
   kModerate = 1,
-  kEager = 2,
+  kImmediate = 2,
 };
 
 // Specifies the way in which speculation rules were injected.

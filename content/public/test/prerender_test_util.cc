@@ -55,8 +55,8 @@ constexpr char kAddSpeculationRuleWithRulesetTagScript[] = R"({
 std::string ConvertEagernessToString(
     blink::mojom::SpeculationEagerness eagerness) {
   switch (eagerness) {
-    case blink::mojom::SpeculationEagerness::kEager:
-      return "eager";
+    case blink::mojom::SpeculationEagerness::kImmediate:
+      return "immediate";
     case blink::mojom::SpeculationEagerness::kModerate:
       return "moderate";
     case blink::mojom::SpeculationEagerness::kConservative:

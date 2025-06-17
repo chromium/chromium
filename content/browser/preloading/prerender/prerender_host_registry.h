@@ -83,8 +83,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
       base::Seconds(19);
   static constexpr base::TimeDelta kTimeToLiveInBackgroundForSpeculationRules =
       base::Seconds(600);
-  static constexpr int kMaxRunningSpeculationRulesEagerPrerenders = 10;
-  static constexpr int kMaxRunningSpeculationRulesNonEagerPrerenders = 2;
+  static constexpr int kMaxRunningSpeculationRulesImmediatePrerenders = 10;
+  static constexpr int kMaxRunningSpeculationRulesNonImmediatePrerenders = 2;
 
   using PassKey = base::PassKey<PrerenderHostRegistry>;
 
@@ -243,8 +243,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // Represents the group of prerender limit calculated by PreloadingTriggerType
   // and SpeculationEagerness on GetPrerenderLimitGroup.
   enum class PrerenderLimitGroup {
-    kSpeculationRulesEager,
-    kSpeculationRulesNonEager,
+    kSpeculationRulesImmediate,
+    kSpeculationRulesNonImmediate,
     kEmbedder,
   };
 
@@ -374,10 +374,10 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   base::flat_map<FrameTreeNodeId, std::unique_ptr<PrerenderHost>>
       prerender_host_by_frame_tree_node_id_;
 
-  // Holds the host id of non-eager prerenders by their arrival order. It is
+  // Holds the host id of non-immediate prerenders by their arrival order. It is
   // used to calculate the oldest prerender on GetOldestHostPerLimitGroup.
   base::circular_deque<FrameTreeNodeId>
-      non_eager_prerender_host_id_by_arrival_order_;
+      non_immediate_prerender_host_id_by_arrival_order_;
 
   // The host that is reserved for activation.
   std::unique_ptr<PrerenderHost> reserved_prerender_host_;

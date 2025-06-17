@@ -129,7 +129,7 @@ class PrerendererImplBrowserTestBase : public ContentBrowserTest {
         /*requires_anonymous_client_ip_when_cross_origin=*/false,
         /*target_browsing_context_name_hint=*/
         blink::mojom::SpeculationTargetHint::kNoHint,
-        /*eagerness=*/blink::mojom::SpeculationEagerness::kEager,
+        /*eagerness=*/blink::mojom::SpeculationEagerness::kImmediate,
         /*no_vary_search_hint=*/nullptr,
         /*injection_type=*/blink::mojom::SpeculationInjectionType::kNone,
         /*tags=*/std::vector<std::optional<std::string>>{std::nullopt});

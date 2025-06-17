@@ -68,7 +68,7 @@ class PrerendererTest : public RenderViewHostTestHarness {
     candidate->action = blink::mojom::SpeculationAction::kPrerender;
     candidate->url = url;
     candidate->referrer = blink::mojom::Referrer::New();
-    candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
+    candidate->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
     candidate->tags = {std::nullopt};
     return candidate;
   }
@@ -228,8 +228,8 @@ TEST_F(PrerendererTest, RemoveRendererHostAfterCandidateRemoved) {
 }
 
 // Tests that Prerenderer will remove the host if the host is canceled with
-// non-eager limit, and the canceled host can be reprocessed.
-TEST_F(PrerendererTest, RemoveRendererHostAfterNonEagerLimitCancel) {
+// non-immediate limit, and the canceled host can be reprocessed.
+TEST_F(PrerendererTest, RemoveRendererHostAfterNonImmediateLimitCancel) {
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
   PrerendererImpl prerenderer(*GetRenderFrameHost());
 
@@ -238,8 +238,9 @@ TEST_F(PrerendererTest, RemoveRendererHostAfterNonEagerLimitCancel) {
   // Prerender as many times as limit + 1. All prerenders should be started
   // once.
   for (int i = 0;
-       i <
-       PrerenderHostRegistry::kMaxRunningSpeculationRulesNonEagerPrerenders + 1;
+       i < PrerenderHostRegistry::
+                   kMaxRunningSpeculationRulesNonImmediatePrerenders +
+               1;
        i++) {
     const GURL url = GetSameOriginUrl("/empty.html?" + base::ToString(i));
     urls.push_back(url);
@@ -254,8 +255,9 @@ TEST_F(PrerendererTest, RemoveRendererHostAfterNonEagerLimitCancel) {
   }
 
   for (int i = 0;
-       i <
-       PrerenderHostRegistry::kMaxRunningSpeculationRulesNonEagerPrerenders + 1;
+       i < PrerenderHostRegistry::
+                   kMaxRunningSpeculationRulesNonImmediatePrerenders +
+               1;
        i++) {
     if (i == 0) {
       // The first (= oldest) prerender should be removed since the (limit +
@@ -275,8 +277,9 @@ TEST_F(PrerendererTest, RemoveRendererHostAfterNonEagerLimitCancel) {
                              preloading_predictor::kUnspecified,
                              PreloadingConfidence{100});
   for (int i = 0;
-       i <
-       PrerenderHostRegistry::kMaxRunningSpeculationRulesNonEagerPrerenders + 1;
+       i < PrerenderHostRegistry::
+                   kMaxRunningSpeculationRulesNonImmediatePrerenders +
+               1;
        i++) {
     if (i == 1) {
       EXPECT_FALSE(registry->FindHostByUrlForTesting(urls[i]));

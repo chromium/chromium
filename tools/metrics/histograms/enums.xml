@@ -22768,8 +22768,8 @@ Called by update_net_error_codes.py.-->
   <int value="70" label="kResourceLoadBlockedByClient (obsoleted)"/>
   <int value="71" label="kSpeculationRuleRemoved"/>
   <int value="72" label="kActivatedWithAuxiliaryBrowsingContexts"/>
-  <int value="73" label="kMaxNumOfRunningEagerPrerendersExceeded"/>
-  <int value="74" label="kMaxNumOfRunningNonEagerPrerendersExceeded"/>
+  <int value="73" label="kMaxNumOfRunningImmediatePrerendersExceeded"/>
+  <int value="74" label="kMaxNumOfRunningNonImmediatePrerendersExceeded"/>
   <int value="75" label="kMaxNumOfRunningEmbedderPrerendersExceeded"/>
   <int value="76" label="kPrerenderingUrlHasEffectiveUrl"/>
   <int value="77" label="kRedirectedPrerenderingUrlHasEffectiveUrl"/>
@@ -24589,7 +24589,7 @@ Called by update_net_error_codes.py.-->
 <enum name="SpeculationEagerness">
   <int value="0" label="Conservative"/>
   <int value="1" label="Moderate"/>
-  <int value="2" label="Eager"/>
+  <int value="2" label="Immediate"/>
 </enum>
 
 <enum name="SpeechRecognitionErrorCode">

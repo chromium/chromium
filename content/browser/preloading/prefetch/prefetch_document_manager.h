@@ -151,12 +151,13 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // Stores whether or not canary checks have been started for this page.
   bool have_canary_checks_started_{false};
 
-  // A list of eager prefetch requests (from this page) that have completed
+  // A list of immediate prefetch requests (from this page) that have completed
   // (oldest to newest).
-  std::vector<base::WeakPtr<PrefetchContainer>> completed_eager_prefetches_;
-  // A list of non-eager prefetch requests (from this page) that have completed
-  // (oldest to newest).
-  std::vector<base::WeakPtr<PrefetchContainer>> completed_non_eager_prefetches_;
+  std::vector<base::WeakPtr<PrefetchContainer>> completed_immediate_prefetches_;
+  // A list of non-immediate prefetch requests (from this page) that have
+  // completed (oldest to newest).
+  std::vector<base::WeakPtr<PrefetchContainer>>
+      completed_non_immediate_prefetches_;
 
   // Metrics related to the prefetches requested by this page load.
   PrefetchReferringPageMetrics referring_page_metrics_;

@@ -94,7 +94,7 @@ class ContaminationDelayBrowserTest : public ContentBrowserTest {
     auto candidate = blink::mojom::SpeculationCandidate::New();
     candidate->url = url;
     candidate->action = blink::mojom::SpeculationAction::kPrefetch;
-    candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
+    candidate->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
     candidate->referrer = Referrer::SanitizeForRequest(
         url, blink::mojom::Referrer(
                  shell()->web_contents()->GetURL(),

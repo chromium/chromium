@@ -111,8 +111,8 @@ bool ShouldFireErrorCallback(PrerenderFinalStatus status) {
       return true;
 
     // These are used for speculation rules, not for embedder triggers.
-    case PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded:
-    case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningImmediatePrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningNonImmediatePrerendersExceeded:
       NOTREACHED();
 
     case PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded:

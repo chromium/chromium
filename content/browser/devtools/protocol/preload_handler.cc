@@ -159,10 +159,10 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     case PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts:
       return Preload::PrerenderFinalStatusEnum::
           ActivatedWithAuxiliaryBrowsingContexts;
-    case PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningImmediatePrerendersExceeded:
       return Preload::PrerenderFinalStatusEnum::
           MaxNumOfRunningEagerPrerendersExceeded;
-    case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningNonImmediatePrerendersExceeded:
       return Preload::PrerenderFinalStatusEnum::
           MaxNumOfRunningNonEagerPrerendersExceeded;
     case PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded:

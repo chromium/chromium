@@ -103,7 +103,7 @@ class CONTENT_EXPORT PreloadingDecider
   // `GetMatchedPreloadingCandidate` to reduce redundant code. 2. Support NVS
   // matching logic.
   // Returns a vector of std::optional<string> of candidates which will be
-  // enacted by the given parameter. This function is used for non-eager
+  // enacted by the given parameter. This function is used for non-immediate
   // candidates only.
   std::vector<std::optional<std::string>>
   GetMergedSpeculationTagsFromSuitableCandidates(
@@ -174,17 +174,17 @@ class CONTENT_EXPORT PreloadingDecider
       PreloadingConfidence confidence) const;
 
   // |on_standby_candidates_| stores preloading candidates for each target URL,
-  // action pairs that are safe to perform but are not marked as |kEager| and
-  // should be performed when we are confident enough that the user will most
-  // likely navigate to the target URL.
+  // action pairs that are safe to perform but are not marked as |kImmediate|
+  // and should be performed when we are confident enough that the user will
+  // most likely navigate to the target URL.
   std::map<SpeculationCandidateKey,
            std::vector<blink::mojom::SpeculationCandidatePtr>>
       on_standby_candidates_;
 
   // |nvs_hint_on_standby_candidates_| stores for a URL without query and
   // fragment, action pairs that are safe to perform but are not marked as
-  // |kEager| and should be performed when we are confident enough that the user
-  // will most likely navigate to a URL that matches based on the presence
+  // |kImmediate| and should be performed when we are confident enough that the
+  // user will most likely navigate to a URL that matches based on the presence
   // of No-Vary-Search hint the candidate's URL.
   // This map needs to be kept in sync with the |on_standby_candidates_| map.
   std::map<SpeculationCandidateKey, std::set<SpeculationCandidateKey>>

@@ -3991,23 +3991,23 @@ TEST_F(SpeculationRuleSetTest, Eagerness) {
               HasURL(kUrl1),
               HasEagerness(blink::mojom::SpeculationEagerness::kConservative)),
           AllOf(HasURL(kUrl2),
-                HasEagerness(blink::mojom::SpeculationEagerness::kEager)),
+                HasEagerness(blink::mojom::SpeculationEagerness::kImmediate)),
           AllOf(HasURL(kUrl3),
                 HasEagerness(blink::mojom::SpeculationEagerness::kModerate)),
           AllOf(HasURL(kUrl4),
-                HasEagerness(blink::mojom::SpeculationEagerness::kEager)),
+                HasEagerness(blink::mojom::SpeculationEagerness::kImmediate)),
           AllOf(HasURL(kUrl5),
-                HasEagerness(blink::mojom::SpeculationEagerness::kEager)),
+                HasEagerness(blink::mojom::SpeculationEagerness::kImmediate)),
           AllOf(
               HasURL(kUrl6),
               HasEagerness(blink::mojom::SpeculationEagerness::kConservative)),
           AllOf(HasURL(kUrl7),
-                HasEagerness(blink::mojom::SpeculationEagerness::kEager)),
+                HasEagerness(blink::mojom::SpeculationEagerness::kImmediate)),
           AllOf(
               HasURL(kUrl8),
               HasEagerness(blink::mojom::SpeculationEagerness::kConservative)),
           AllOf(HasURL(kUrl9),
-                HasEagerness(blink::mojom::SpeculationEagerness::kEager))));
+                HasEagerness(blink::mojom::SpeculationEagerness::kImmediate))));
 }
 
 TEST_F(SpeculationRuleSetTest, InvalidUseOfEagerness1) {

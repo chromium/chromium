@@ -208,7 +208,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     PreloadingTriggerType trigger_type =
         PreloadingTriggerTypeFromSpeculationInjectionType(
             candidate->injection_type);
-    // Eager candidates are enacted by the same predictor that creates them.
+    // Immediate candidates are enacted by the same predictor that creates them.
     PreloadingPredictor enacting_predictor =
         GetPredictorForPreloadingTriggerType(trigger_type);
     MaybePrerender(candidate, enacting_predictor, PreloadingConfidence{100});
@@ -400,7 +400,7 @@ void PrerendererImpl::OnCancel(FrameTreeNodeId host_frame_tree_node_id,
   switch (reason.final_status()) {
     // TODO(crbug.com/40275452): Support other final status cases.
     case PrerenderFinalStatus::kTimeoutBackgrounded:
-    case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningNonImmediatePrerendersExceeded:
     case PrerenderFinalStatus::kSpeculationRuleRemoved: {
       auto erasing_prerender_it = std::find_if(
           started_prerenders_.begin(), started_prerenders_.end(),
@@ -474,9 +474,9 @@ void PrerendererImpl::RecordReceivedPrerendersCountToMetrics() {
     int moderate =
         received_prerenders_by_eagerness_[trigger_type][static_cast<size_t>(
             blink::mojom::SpeculationEagerness::kModerate)];
-    int eager =
+    int immediate =
         received_prerenders_by_eagerness_[trigger_type][static_cast<size_t>(
-            blink::mojom::SpeculationEagerness::kEager)];
+            blink::mojom::SpeculationEagerness::kImmediate)];
 
     // This will record zero when
     //  1) there are no started prerenders eventually. Also noted that if
@@ -490,7 +490,7 @@ void PrerendererImpl::RecordReceivedPrerendersCountToMetrics() {
     //     function will be called per PrimaryPageChanged).
     //
     // Avoids recording these cases uniformly.
-    if (conservative + moderate + eager == 0) {
+    if (conservative + moderate + immediate == 0) {
       continue;
     }
 
@@ -499,8 +499,8 @@ void PrerendererImpl::RecordReceivedPrerendersCountToMetrics() {
         conservative, trigger_type, "Conservative");
     RecordReceivedPrerendersPerPrimaryPageChangedCount(moderate, trigger_type,
                                                        "Moderate");
-    RecordReceivedPrerendersPerPrimaryPageChangedCount(eager, trigger_type,
-                                                       "Eager");
+    RecordReceivedPrerendersPerPrimaryPageChangedCount(immediate, trigger_type,
+                                                       "Immediate");
   }
 }
 

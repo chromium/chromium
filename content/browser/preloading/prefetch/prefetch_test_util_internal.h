@@ -227,7 +227,7 @@ class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
       const base::HistogramTester& histogram_tester,
       int expected_net_error_code,
       blink::mojom::SpeculationEagerness eagerness =
-          blink::mojom::SpeculationEagerness::kEager,
+          blink::mojom::SpeculationEagerness::kImmediate,
       bool is_accurate_triggering = false,
       bool browser_initiated_prefetch = false);
 
@@ -242,7 +242,7 @@ class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
   void ExpectPrefetchSuccess(const base::HistogramTester& histogram_tester,
                              int expected_body_length,
                              blink::mojom::SpeculationEagerness eagerness =
-                                 blink::mojom::SpeculationEagerness::kEager,
+                                 blink::mojom::SpeculationEagerness::kImmediate,
                              bool is_accurate = false);
 
   // `navigate_url` is used as `MockNavigationHandle`'s URL to simulate a
@@ -258,7 +258,7 @@ class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
     bool is_accurate = false;
     bool expect_ready_time = false;
     blink::mojom::SpeculationEagerness eagerness =
-        blink::mojom::SpeculationEagerness::kEager;
+        blink::mojom::SpeculationEagerness::kImmediate;
   };
   void ExpectCorrectUkmLogs(
       ExpectCorrectUkmLogsArgs args,

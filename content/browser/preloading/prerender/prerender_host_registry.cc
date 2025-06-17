@@ -317,8 +317,8 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
       return PreloadingEligibility::kPreloadingDisabledByDevTools;
     case PrerenderFinalStatus::kSpeculationRuleRemoved:
     case PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts:
-    case PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded:
-    case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningImmediatePrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningNonImmediatePrerendersExceeded:
     case PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded:
       NOTREACHED();
     case PrerenderFinalStatus::kPrerenderingUrlHasEffectiveUrl:
@@ -779,13 +779,13 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
       // learn more.
       PrerenderFinalStatus final_status;
       switch (GetPrerenderLimitGroup(attributes.trigger_type, eagerness)) {
-        case PrerenderLimitGroup::kSpeculationRulesEager:
+        case PrerenderLimitGroup::kSpeculationRulesImmediate:
           final_status =
-              PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded;
+              PrerenderFinalStatus::kMaxNumOfRunningImmediatePrerendersExceeded;
           break;
-        case PrerenderLimitGroup::kSpeculationRulesNonEager:
-          final_status =
-              PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded;
+        case PrerenderLimitGroup::kSpeculationRulesNonImmediate:
+          final_status = PrerenderFinalStatus::
+              kMaxNumOfRunningNonImmediatePrerendersExceeded;
           break;
         case PrerenderLimitGroup::kEmbedder:
           final_status =
@@ -805,8 +805,8 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
         std::move(prerender_host);
 
     if (GetPrerenderLimitGroup(attributes.trigger_type, eagerness) ==
-        PrerenderLimitGroup::kSpeculationRulesNonEager) {
-      non_eager_prerender_host_id_by_arrival_order_.push_back(
+        PrerenderLimitGroup::kSpeculationRulesNonImmediate) {
+      non_immediate_prerender_host_id_by_arrival_order_.push_back(
           frame_tree_node_id);
     }
   }
@@ -881,8 +881,9 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHostForNewTab(
 
   if (GetPrerenderLimitGroup(attributes.trigger_type,
                              attributes.GetEagerness()) ==
-      PrerenderLimitGroup::kSpeculationRulesNonEager) {
-    non_eager_prerender_host_id_by_arrival_order_.push_back(prerender_host_id);
+      PrerenderLimitGroup::kSpeculationRulesNonImmediate) {
+    non_immediate_prerender_host_id_by_arrival_order_.push_back(
+        prerender_host_id);
   }
   return prerender_host_id;
 }
@@ -1870,16 +1871,16 @@ PrerenderHostRegistry::GetPrerenderLimitGroup(
     case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       CHECK(eagerness.has_value());
       switch (eagerness.value()) {
-        // Separate the limits of speculation rules into two categories: eager,
-        // which are triggered immediately after adding the rule, and
-        // non-eager(moderate, conservative), which wait for a specific user
+        // Separate the limits of speculation rules into two categories:
+        // immediate, which are triggered immediately after adding the rule, and
+        // non-immediate(moderate, conservative), which wait for a specific user
         // action to trigger, aiming to apply the appropriate corresponding
         // limits for these attributes.
-        case blink::mojom::SpeculationEagerness::kEager:
-          return PrerenderLimitGroup::kSpeculationRulesEager;
+        case blink::mojom::SpeculationEagerness::kImmediate:
+          return PrerenderLimitGroup::kSpeculationRulesImmediate;
         case blink::mojom::SpeculationEagerness::kModerate:
         case blink::mojom::SpeculationEagerness::kConservative:
-          return PrerenderLimitGroup::kSpeculationRulesNonEager;
+          return PrerenderLimitGroup::kSpeculationRulesNonImmediate;
       }
     case PreloadingTriggerType::kEmbedder:
       return PrerenderLimitGroup::kEmbedder;
@@ -1918,23 +1919,24 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
   // Apply the limit of maximum number of running prerenders per
   // PrerenderLimitGroup.
   switch (limit_group) {
-    case PrerenderLimitGroup::kSpeculationRulesEager: {
+    case PrerenderLimitGroup::kSpeculationRulesImmediate: {
       int host_count = GetHostCountByLimitGroup(limit_group);
-      return host_count < kMaxRunningSpeculationRulesEagerPrerenders;
+      return host_count < kMaxRunningSpeculationRulesImmediatePrerenders;
     }
-    case PrerenderLimitGroup::kSpeculationRulesNonEager: {
+    case PrerenderLimitGroup::kSpeculationRulesNonImmediate: {
       int host_count = GetHostCountByLimitGroup(limit_group);
 
-      // When the limit on non-eager speculation rules is reached, cancel the
-      // oldest host to allow a newly incoming trigger to start.
-      if (host_count >= kMaxRunningSpeculationRulesNonEagerPrerenders) {
+      // When the limit on non-immediate speculation rules is reached, cancel
+      // the oldest host to allow a newly incoming trigger to start.
+      if (host_count >= kMaxRunningSpeculationRulesNonImmediatePrerenders) {
         FrameTreeNodeId oldest_prerender_host_id;
 
-        // Find the oldest non-eager prerender that has not been canceled yet.
+        // Find the oldest non-immediate prerender that has not been canceled
+        // yet.
         do {
           oldest_prerender_host_id =
-              non_eager_prerender_host_id_by_arrival_order_.front();
-          non_eager_prerender_host_id_by_arrival_order_.pop_front();
+              non_immediate_prerender_host_id_by_arrival_order_.front();
+          non_immediate_prerender_host_id_by_arrival_order_.pop_front();
         } while (
             base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)
                 ? !prerender_host_by_frame_tree_node_id_.contains(
@@ -1944,12 +1946,12 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
                 : !prerender_host_by_frame_tree_node_id_.contains(
                       oldest_prerender_host_id));
 
-        CHECK(CancelHost(
-            oldest_prerender_host_id,
-            PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded));
+        CHECK(CancelHost(oldest_prerender_host_id,
+                         PrerenderFinalStatus::
+                             kMaxNumOfRunningNonImmediatePrerendersExceeded));
 
         CHECK_LT(GetHostCountByLimitGroup(limit_group),
-                 kMaxRunningSpeculationRulesNonEagerPrerenders);
+                 kMaxRunningSpeculationRulesNonImmediatePrerenders);
       }
 
       return true;

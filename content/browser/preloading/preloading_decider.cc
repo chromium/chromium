@@ -449,10 +449,11 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   // to |on_standby_candidates_| to be later considered by the heuristics logic.
   auto should_mark_as_on_standby = [&](const auto& candidate) {
     SpeculationCandidateKey key{candidate->url, candidate->action};
-    if (candidate->eagerness != blink::mojom::SpeculationEagerness::kEager &&
+    if (candidate->eagerness !=
+            blink::mojom::SpeculationEagerness::kImmediate &&
         processed_candidates_.find(key) == processed_candidates_.end()) {
       // A PreloadingPrediction is intentionally not created for these
-      // candidates. Non-eager rules aren't predictions per se, but a
+      // candidates. Non-immediate rules aren't predictions per se, but a
       // declaration to the browser that preloading would be safe.
       AddStandbyCandidate(candidate);
       // TODO(isaboori) In current implementation, after calling prefetcher
@@ -482,7 +483,8 @@ void PreloadingDecider::UpdateSpeculationCandidates(
       PreloadingTriggerType trigger_type =
           PreloadingTriggerTypeFromSpeculationInjectionType(
               candidate->injection_type);
-      // Eager candidates are enacted by the same predictor that creates them.
+      // Immediate candidates are enacted by the same predictor that creates
+      // them.
       PreloadingPredictor enacting_predictor =
           GetPredictorForPreloadingTriggerType(trigger_type);
       AddPreloadingPrediction(candidate->url, std::move(enacting_predictor),
@@ -500,42 +502,45 @@ void PreloadingDecider::UpdateSpeculationCandidates(
     entry.second.clear();
   }
 
-  // Move eager candidates to the front. This will avoid unnecessarily
-  // marking some non-eager candidates as on-standby when there is an eager
-  // candidate with the same URL that will be processed immediately.
+  // Move immediage candidates to the front. This will avoid unnecessarily
+  // marking some non-immediate candidates as on-standby when there is an
+  // immediate candidate with the same URL that will be processed immediately.
   std::ranges::stable_partition(candidates, [&](const auto& candidate) {
-    return candidate->eagerness == blink::mojom::SpeculationEagerness::kEager;
+    return candidate->eagerness ==
+           blink::mojom::SpeculationEagerness::kImmediate;
   });
 
-  // The candidates remaining after this call will be all eager candidates,
-  // and all non-eager candidates whose (url, action) pair has already been
+  // The candidates remaining after this call will be all immediate candidates,
+  // and all non-immediate candidates whose (url, action) pair has already been
   // processed.
   std::erase_if(candidates, should_mark_as_on_standby);
 
   // TODO(crbug.com/381687257): Combine all speculation rules tags merging logic
   // in PreloadingDecider to reduce code redundancy.
-  // Aggregate all tags for eager candidates.
+  // Aggregate all tags for immediate candidates.
   std::map<SpeculationCandidateKey, std::vector<std::optional<std::string>>>
-      tags_map_for_eager_preloading;
+      tags_map_for_immediate_preloading;
   for (auto& candidate : candidates) {
-    if (candidate->eagerness != blink::mojom::SpeculationEagerness::kEager) {
+    if (candidate->eagerness !=
+        blink::mojom::SpeculationEagerness::kImmediate) {
       continue;
     }
 
     SpeculationCandidateKey key{candidate->url, candidate->action};
     for (const auto& tag : candidate->tags) {
-      tags_map_for_eager_preloading[key].push_back(tag);
+      tags_map_for_immediate_preloading[key].push_back(tag);
     }
   }
 
   for (auto& candidate : candidates) {
-    if (candidate->eagerness != blink::mojom::SpeculationEagerness::kEager) {
+    if (candidate->eagerness !=
+        blink::mojom::SpeculationEagerness::kImmediate) {
       continue;
     }
 
     SpeculationCandidateKey key{candidate->url, candidate->action};
-    if (tags_map_for_eager_preloading.count(key) != 0) {
-      candidate->tags = tags_map_for_eager_preloading[key];
+    if (tags_map_for_immediate_preloading.count(key) != 0) {
+      candidate->tags = tags_map_for_immediate_preloading[key];
     }
   }
 
@@ -810,21 +815,22 @@ void PreloadingDecider::OnPreloadDiscarded(SpeculationCandidateKey key) {
       std::move(it->second);
   processed_candidates_.erase(it);
   for (const auto& candidate : candidates) {
-    if (candidate->eagerness != blink::mojom::SpeculationEagerness::kEager) {
+    if (candidate->eagerness !=
+        blink::mojom::SpeculationEagerness::kImmediate) {
       AddStandbyCandidate(candidate);
     }
     // TODO(crbug.com/40064525): Add support for the case where |candidate|'s
-    // eagerness is kEager. In a scenario where the prefetch evicted is a
-    // non-eager prefetch, we could theoretically reprefetch using the eager
-    // candidate (and have it use the eager prefetch quota). In that scenario,
-    // perhaps not evicting and just making the prefetch use the eager limit
-    // might be a better option too. In the case where an eager prefetch is
-    // evicted, we don't want to immediately try and reprefetch the candidate;
-    // it would defeat the purpose of evicting in the first place, and due to a
-    // possible-rentrancy into PrefetchService::Prefetch(), it could cause us to
-    // exceed the limit.
+    // eagerness is kImmediate. In a scenario where the prefetch evicted is a
+    // non-immediate prefetch, we could theoretically reprefetch using the
+    // immediate candidate (and have it use the immediate prefetch quota). In
+    // that scenario, perhaps not evicting and just making the prefetch use the
+    // immediate limit might be a better option too. In the case where an
+    // immediate prefetch is evicted, we don't want to immediately try and
+    // reprefetch the candidate; it would defeat the purpose of evicting in the
+    // first place, and due to a possible-rentrancy into
+    // PrefetchService::Prefetch(), it could cause us to exceed the limit.
 
-    // TODO(crbug.com/40275452): Add implementation for the kEager case for
+    // TODO(crbug.com/40275452): Add implementation for the kImmediate case for
     // prerender.
   }
 }
