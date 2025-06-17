@@ -826,10 +826,6 @@ const char kLensClearcutBackgroundUploadEnabledName[] =
 const char kLensClearcutBackgroundUploadEnabledDescription[] =
     "Enables uploading of clearcut logs in the background.";
 
-const char kLensClearcutLoggerFastQosEnabledName[] =
-    "Lens clearcut logger fast QOS";
-const char kLensClearcutLoggerFastQosEnabledDescription[] = "Enables fast QOS.";
-
 const char kLensExactMatchesEnabledName[] = "Lens exact matches enabled";
 const char kLensExactMatchesEnabledDescription[] =
     "Enables exact matches in the Lens results.";

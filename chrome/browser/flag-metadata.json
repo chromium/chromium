@@ -6269,11 +6269,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "lens-clearcut-logger-fast-qos-enabled",
-    "owners": ["cmyang@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "lens-exact-matches-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 145

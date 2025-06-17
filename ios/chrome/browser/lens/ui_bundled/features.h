@@ -40,9 +40,6 @@ BASE_DECLARE_FEATURE(kLensUnaryApiSalientTextEnabled);
 // Whether to enable background uploading for clearcut logs.
 BASE_DECLARE_FEATURE(kLensClearcutBackgroundUploadEnabled);
 
-// Whether to use fast QOS for clearcut logging.
-BASE_DECLARE_FEATURE(kLensClearcutLoggerFastQosEnabled);
-
 // Whether to disable single tap text selection.
 BASE_DECLARE_FEATURE(kLensSingleTapTextSelectionDisabled);
 

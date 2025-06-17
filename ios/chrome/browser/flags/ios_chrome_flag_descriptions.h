@@ -475,9 +475,6 @@ extern const char
 extern const char kLensClearcutBackgroundUploadEnabledName[];
 extern const char kLensClearcutBackgroundUploadEnabledDescription[];
 
-extern const char kLensClearcutLoggerFastQosEnabledName[];
-extern const char kLensClearcutLoggerFastQosEnabledDescription[];
-
 extern const char kLensExactMatchesEnabledName[];
 extern const char kLensExactMatchesEnabledDescription[];
 
