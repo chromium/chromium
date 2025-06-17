@@ -2986,6 +2986,7 @@ test("content_unittests") {
     "../common/input/synthetic_pointer_action_unittest.cc",
     "../common/pseudonymization_salt_unittest.cc",
     "../common/service_worker/race_network_request_read_buffer_manager_unittest.cc",
+    "../common/service_worker/race_network_request_simple_buffer_manager_unittest.cc",
     "../common/service_worker/race_network_request_url_loader_client_unittest.cc",
     "../common/service_worker/race_network_request_write_buffer_manager_unittest.cc",
     "../common/service_worker/service_worker_router_evaluator_unittest.cc",

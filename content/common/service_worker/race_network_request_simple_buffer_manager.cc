@@ -23,9 +23,7 @@ RaceNetworkRequestSimpleBufferManager::
 void RaceNetworkRequestSimpleBufferManager::OnDataAvailable(
     base::span<const uint8_t> data) {
   buffered_body_.append(base::as_string_view(data));
-  if (producer_handle_.is_valid()) {
-    MaybeWriteData();
-  }
+  MaybeWriteData();
 }
 
 void RaceNetworkRequestSimpleBufferManager::OnDataComplete() {
@@ -68,6 +66,13 @@ void RaceNetworkRequestSimpleBufferManager::Finish() {
 }
 
 void RaceNetworkRequestSimpleBufferManager::MaybeWriteData() {
+  if (!producer_handle_.is_valid()) {
+    // A producer handle may not be valid here. For example, a teeing clone
+    // operation for the body has just finished, and the manager is waiting for
+    // the next clone operation to start. A redundant OnDataComplete() call from
+    // the drainer in this intermediate state could lead to a crash.
+    return;
+  }
   while (true) {
     std::string_view data = GetDataFromBuffer();
     if (data.empty()) {
@@ -77,7 +82,6 @@ void RaceNetworkRequestSimpleBufferManager::MaybeWriteData() {
       break;
     }
     size_t actual_written_bytes = 0;
-    CHECK(producer_handle_);
     MojoResult result = producer_handle_->WriteData(base::as_byte_span(data),
                                                     MOJO_WRITE_DATA_FLAG_NONE,
                                                     actual_written_bytes);
