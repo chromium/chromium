@@ -20,7 +20,8 @@ int64_t SqlBackendImpl::MaxFileSize() const {
   return net::ERR_NOT_IMPLEMENTED;
 }
 
-int32_t SqlBackendImpl::GetEntryCount() const {
+int32_t SqlBackendImpl::GetEntryCount(
+    net::Int32CompletionOnceCallback callback) const {
   // TODO(crbug.com/422065015): Implement this method.
   NOTIMPLEMENTED();
   return net::ERR_NOT_IMPLEMENTED;

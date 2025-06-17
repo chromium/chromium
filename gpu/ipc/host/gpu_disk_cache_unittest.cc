@@ -59,6 +59,11 @@ class GpuDiskCacheTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  int32_t GetCacheSize(GpuDiskCache* cache) {
+    net::TestInt32CompletionCallback cb;
+    return cb.GetResult(cache->Size(cb.callback()));
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   raw_ptr<GpuDiskCacheFactory> factory_;
@@ -74,20 +79,20 @@ TEST_F(GpuDiskCacheTest, ClearsCache) {
   net::TestCompletionCallback available_cb;
   int rv = cache->SetAvailableCallback(available_cb.callback());
   ASSERT_EQ(net::OK, available_cb.GetResult(rv));
-  EXPECT_EQ(0, cache->Size());
+  EXPECT_EQ(0, GetCacheSize(cache.get()));
 
   cache->Cache(kCacheKey, kCacheValue);
 
   net::TestCompletionCallback complete_cb;
   rv = cache->SetCacheCompleteCallback(complete_cb.callback());
   ASSERT_EQ(net::OK, complete_cb.GetResult(rv));
-  EXPECT_EQ(1, cache->Size());
+  EXPECT_EQ(1, GetCacheSize(cache.get()));
 
   base::Time time;
   net::TestCompletionCallback clear_cb;
   rv = cache->Clear(time, time, clear_cb.callback());
   ASSERT_EQ(net::OK, clear_cb.GetResult(rv));
-  EXPECT_EQ(0, cache->Size());
+  EXPECT_EQ(0, GetCacheSize(cache.get()));
 }
 
 TEST_F(GpuDiskCacheTest, ClearByPathTriggersCallback) {
@@ -133,7 +138,7 @@ TEST_F(GpuDiskCacheTest, SafeToDeleteCacheMidEntryOpen) {
   net::TestCompletionCallback available_cb;
   int rv = cache->SetAvailableCallback(available_cb.callback());
   ASSERT_EQ(net::OK, available_cb.GetResult(rv));
-  EXPECT_EQ(0, cache->Size());
+  EXPECT_EQ(0, GetCacheSize(cache.get()));
 
   // Start writing an entry to the cache but delete it before the backend has
   // finished opening the entry. There is a race here, so this usually (but not
@@ -158,7 +163,7 @@ TEST_F(GpuDiskCacheTest, MultipleLoaderCallbacks) {
   net::TestCompletionCallback available_cb;
   int rv = cache->SetAvailableCallback(available_cb.callback());
   ASSERT_EQ(net::OK, available_cb.GetResult(rv));
-  EXPECT_EQ(0, cache->Size());
+  EXPECT_EQ(0, GetCacheSize(cache.get()));
 
   // Write two entries, wait for them to complete.
   const int32_t count = 2;
@@ -167,7 +172,7 @@ TEST_F(GpuDiskCacheTest, MultipleLoaderCallbacks) {
   net::TestCompletionCallback complete_cb;
   rv = cache->SetCacheCompleteCallback(complete_cb.callback());
   ASSERT_EQ(net::OK, complete_cb.GetResult(rv));
-  EXPECT_EQ(count, cache->Size());
+  EXPECT_EQ(count, GetCacheSize(cache.get()));
 
   // Close, re-open, and verify that two entries were loaded.
   cache = nullptr;
@@ -195,7 +200,7 @@ TEST_F(GpuDiskCacheTest, ModifyExistingKey) {
     int rv = cache->SetAvailableCallback(available_cb.callback());
     ASSERT_EQ(net::OK, available_cb.GetResult(rv));
   }
-  EXPECT_EQ(0, cache->Size());
+  EXPECT_EQ(0, GetCacheSize(cache.get()));
 
   cache->Cache(kCacheKey, kCacheValue2);
 
@@ -204,7 +209,7 @@ TEST_F(GpuDiskCacheTest, ModifyExistingKey) {
     int rv = cache->SetCacheCompleteCallback(complete_cb.callback());
     ASSERT_EQ(net::OK, complete_cb.GetResult(rv));
   }
-  EXPECT_EQ(1, cache->Size());
+  EXPECT_EQ(1, GetCacheSize(cache.get()));
 
   // Cache a different value to the same key. The new value should be smaller
   // than old value to ensure the old value is fully removed from cache.
@@ -217,7 +222,7 @@ TEST_F(GpuDiskCacheTest, ModifyExistingKey) {
     int rv = cache->SetCacheCompleteCallback(complete_cb.callback());
     ASSERT_EQ(net::OK, complete_cb.GetResult(rv));
   }
-  EXPECT_EQ(1, cache->Size());
+  EXPECT_EQ(1, GetCacheSize(cache.get()));
 
   // Close, re-open, and verify that the second Cache() modified the value on
   // disk.

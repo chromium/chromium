@@ -146,6 +146,7 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   // Utility methods to access the cache and wait for each operation to finish.
   // Also closer to legacy API.
   // TODO(morlovich): Port all the tests to EntryResult.
+  int32_t GetEntryCount();
   disk_cache::EntryResult OpenOrCreateEntry(const std::string& key);
   disk_cache::EntryResult OpenOrCreateEntryWithPriority(
       const std::string& key,

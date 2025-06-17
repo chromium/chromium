@@ -54,7 +54,10 @@ class PnaclHostTest : public testing::Test {
     disk_cache::FlushCacheThreadForTesting();
     EXPECT_EQ(PnaclHost::CacheUninitialized, host_->cache_state_);
   }
-  int GetCacheSize() { return host_->disk_cache_->Size(); }
+  int32_t GetCacheSize() {
+    net::TestInt32CompletionCallback cb;
+    return cb.GetResult(host_->disk_cache_->Size(cb.callback()));
+  }
   int CacheIsInitialized() {
     return host_->cache_state_ == PnaclHost::CacheReady;
   }

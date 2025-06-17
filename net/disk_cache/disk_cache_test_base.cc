@@ -111,7 +111,7 @@ void DiskCacheTestWithCache::InitCache() {
 
   ASSERT_TRUE(nullptr != cache_);
   if (first_cleanup_)
-    ASSERT_EQ(0, cache_->GetEntryCount());
+    ASSERT_EQ(0, GetEntryCount());
 }
 
 // We are expected to leak memory when simulating crashes.
@@ -138,6 +138,11 @@ void DiskCacheTestWithCache::SetMaxSize(int64_t size) {
   // Cache size should not generally be changed dynamically; it takes
   // backend-specific knowledge to make it even semi-reasonable to do.
   DCHECK(!cache_);
+}
+
+int32_t DiskCacheTestWithCache::GetEntryCount() {
+  net::TestInt32CompletionCallback cb;
+  return cb.GetResult(cache_->GetEntryCount(cb.callback()));
 }
 
 disk_cache::EntryResult DiskCacheTestWithCache::OpenOrCreateEntry(

@@ -45,6 +45,11 @@ class PnaclTranslationCacheTest : public testing::Test {
   void StoreNexe(const std::string& key, const std::string& nexe);
   std::string GetNexe(const std::string& key);
 
+  int32_t GetCacheSize() {
+    net::TestInt32CompletionCallback cb;
+    return cb.GetResult(cache_->Size(cb.callback()));
+  }
+
   std::unique_ptr<PnaclTranslationCache> cache_;
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
@@ -63,7 +68,7 @@ void PnaclTranslationCacheTest::InitBackend(bool in_mem) {
   if (in_mem)
     ASSERT_EQ(net::OK, rv);
   ASSERT_EQ(net::OK, init_cb.GetResult(rv));
-  ASSERT_EQ(0, cache_->Size());
+  ASSERT_EQ(0, GetCacheSize());
 }
 
 void PnaclTranslationCacheTest::StoreNexe(const std::string& key,
@@ -215,14 +220,14 @@ TEST_F(PnaclTranslationCacheTest, StoreSmallInMem) {
   // Test that a single store puts something in the mem backend
   InitBackend(true);
   StoreNexe(test_key, test_store_val);
-  EXPECT_EQ(1, cache_->Size());
+  EXPECT_EQ(1, GetCacheSize());
 }
 
 TEST_F(PnaclTranslationCacheTest, StoreSmallOnDisk) {
   // Test that a single store puts something in the disk backend
   InitBackend(false);
   StoreNexe(test_key, test_store_val);
-  EXPECT_EQ(1, cache_->Size());
+  EXPECT_EQ(1, GetCacheSize());
 }
 
 TEST_F(PnaclTranslationCacheTest, StoreLargeOnDisk) {
@@ -230,7 +235,7 @@ TEST_F(PnaclTranslationCacheTest, StoreLargeOnDisk) {
   InitBackend(false);
   const std::string large_buffer(kLargeNexeSize, 'a');
   StoreNexe(test_key, large_buffer);
-  EXPECT_EQ(1, cache_->Size());
+  EXPECT_EQ(1, GetCacheSize());
 }
 
 TEST_F(PnaclTranslationCacheTest, InMemSizeLimit) {
@@ -244,20 +249,20 @@ TEST_F(PnaclTranslationCacheTest, InMemSizeLimit) {
   cache_->StoreNexe(test_key, large_buffer.get(), store_cb.callback());
   EXPECT_EQ(net::ERR_FAILED, store_cb.GetResult(net::ERR_IO_PENDING));
   base::RunLoop().RunUntilIdle();  // Ensure the entry is closed.
-  EXPECT_EQ(0, cache_->Size());
+  EXPECT_EQ(0, GetCacheSize());
 }
 
 TEST_F(PnaclTranslationCacheTest, GetOneInMem) {
   InitBackend(true);
   StoreNexe(test_key, test_store_val);
-  EXPECT_EQ(1, cache_->Size());
+  EXPECT_EQ(1, GetCacheSize());
   EXPECT_EQ(0, GetNexe(test_key).compare(test_store_val));
 }
 
 TEST_F(PnaclTranslationCacheTest, GetOneOnDisk) {
   InitBackend(false);
   StoreNexe(test_key, test_store_val);
-  EXPECT_EQ(1, cache_->Size());
+  EXPECT_EQ(1, GetCacheSize());
   EXPECT_EQ(0, GetNexe(test_key).compare(test_store_val));
 }
 
@@ -265,7 +270,7 @@ TEST_F(PnaclTranslationCacheTest, GetLargeOnDisk) {
   InitBackend(false);
   const std::string large_buffer(kLargeNexeSize, 'a');
   StoreNexe(test_key, large_buffer);
-  EXPECT_EQ(1, cache_->Size());
+  EXPECT_EQ(1, GetCacheSize());
   EXPECT_EQ(0, GetNexe(test_key).compare(large_buffer));
 }
 
@@ -274,7 +279,7 @@ TEST_F(PnaclTranslationCacheTest, StoreTwice) {
   InitBackend(true);
   StoreNexe(test_key, test_store_val);
   StoreNexe(test_key, test_store_val + "aaa");
-  EXPECT_EQ(1, cache_->Size());
+  EXPECT_EQ(1, GetCacheSize());
   EXPECT_EQ(0, GetNexe(test_key).compare(test_store_val + "aaa"));
 }
 
@@ -282,7 +287,7 @@ TEST_F(PnaclTranslationCacheTest, StoreTwo) {
   InitBackend(true);
   StoreNexe(test_key, test_store_val);
   StoreNexe(test_key + "a", test_store_val + "aaa");
-  EXPECT_EQ(2, cache_->Size());
+  EXPECT_EQ(2, GetCacheSize());
   EXPECT_EQ(0, GetNexe(test_key).compare(test_store_val));
   EXPECT_EQ(0, GetNexe(test_key + "a").compare(test_store_val + "aaa"));
 }

@@ -119,7 +119,11 @@ class DelayableBackend : public disk_cache::Backend {
         delay_open_entry_(false) {}
 
   // disk_cache::Backend overrides
-  int32_t GetEntryCount() const override { return backend_->GetEntryCount(); }
+  int32_t GetEntryCount(
+      net::Int32CompletionOnceCallback callback) const override {
+    return backend_->GetEntryCount(std::move(callback));
+  }
+
   EntryResult OpenEntry(const std::string& key,
                         net::RequestPriority request_priority,
                         EntryResultCallback callback) override {
@@ -278,7 +282,10 @@ class FailableBackend : public disk_cache::Backend {
         stage_(stage) {}
 
   // disk_cache::Backend overrides
-  int32_t GetEntryCount() const override { return backend_->GetEntryCount(); }
+  int32_t GetEntryCount(
+      net::Int32CompletionOnceCallback callback) const override {
+    return backend_->GetEntryCount(std::move(callback));
+  }
 
   EntryResult OpenOrCreateEntry(const std::string& key,
                                 net::RequestPriority request_priority,

@@ -32,7 +32,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
 
   // Backend interface.
   int64_t MaxFileSize() const override;
-  int32_t GetEntryCount() const override;
+  int32_t GetEntryCount(
+      net::Int32CompletionOnceCallback callback) const override;
   EntryResult OpenOrCreateEntry(const std::string& key,
                                 net::RequestPriority priority,
                                 EntryResultCallback callback) override;

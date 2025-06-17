@@ -118,8 +118,7 @@ class HttpCacheDataRemoverTest : public testing::Test {
       entry->Close();
       task_environment_.RunUntilIdle();
     }
-    ASSERT_EQ(std::size(kCacheEntries),
-              static_cast<size_t>(backend_->GetEntryCount()));
+    ASSERT_EQ(std::size(kCacheEntries), static_cast<size_t>(GetEntryCount()));
   }
 
   std::string ComputeCacheKey(const std::string& url_string) {
@@ -174,6 +173,11 @@ class HttpCacheDataRemoverTest : public testing::Test {
         std::move(context_params));
   }
 
+  int32_t GetEntryCount() {
+    net::TestInt32CompletionCallback cb;
+    return cb.GetResult(backend_->GetEntryCount(cb.callback()));
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<NetworkService> network_service_;
   std::unique_ptr<NetworkContext> network_context_;
@@ -200,9 +204,9 @@ class HttpCacheDataRemoverSplitCacheTest : public HttpCacheDataRemoverTest {
 };
 
 TEST_F(HttpCacheDataRemoverTest, ClearAll) {
-  EXPECT_NE(0, backend_->GetEntryCount());
+  EXPECT_NE(0, GetEntryCount());
   RemoveData(/*url_filter=*/nullptr, base::Time(), base::Time());
-  EXPECT_EQ(0, backend_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverTest, FilterDeleteByDomain) {
@@ -215,7 +219,7 @@ TEST_F(HttpCacheDataRemoverTest, FilterDeleteByDomain) {
   EXPECT_FALSE(HasEntry(kCacheEntries[1].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[2].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[3].url));
-  EXPECT_EQ(4, backend_->GetEntryCount());
+  EXPECT_EQ(4, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverTest, FilterKeepByDomain) {
@@ -228,7 +232,7 @@ TEST_F(HttpCacheDataRemoverTest, FilterKeepByDomain) {
   EXPECT_TRUE(HasEntry(kCacheEntries[1].url));
   EXPECT_TRUE(HasEntry(kCacheEntries[2].url));
   EXPECT_TRUE(HasEntry(kCacheEntries[3].url));
-  EXPECT_EQ(4, backend_->GetEntryCount());
+  EXPECT_EQ(4, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverTest, FilterDeleteByOrigin) {
@@ -239,7 +243,7 @@ TEST_F(HttpCacheDataRemoverTest, FilterDeleteByOrigin) {
   RemoveData(std::move(filter), base::Time(), base::Time());
   EXPECT_FALSE(HasEntry(kCacheEntries[0].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[4].url));
-  EXPECT_EQ(6, backend_->GetEntryCount());
+  EXPECT_EQ(6, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverTest, FilterKeepByOrigin) {
@@ -250,7 +254,7 @@ TEST_F(HttpCacheDataRemoverTest, FilterKeepByOrigin) {
   RemoveData(std::move(filter), base::Time(), base::Time());
   EXPECT_TRUE(HasEntry(kCacheEntries[0].url));
   EXPECT_TRUE(HasEntry(kCacheEntries[4].url));
-  EXPECT_EQ(2, backend_->GetEntryCount());
+  EXPECT_EQ(2, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverTest, FilterDeleteByDomainAndOrigin) {
@@ -262,7 +266,7 @@ TEST_F(HttpCacheDataRemoverTest, FilterDeleteByDomainAndOrigin) {
   EXPECT_FALSE(HasEntry(kCacheEntries[2].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[3].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[4].url));
-  EXPECT_EQ(5, backend_->GetEntryCount());
+  EXPECT_EQ(5, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverTest, FilterKeepByDomainAndOrigin) {
@@ -274,7 +278,7 @@ TEST_F(HttpCacheDataRemoverTest, FilterKeepByDomainAndOrigin) {
   EXPECT_TRUE(HasEntry(kCacheEntries[2].url));
   EXPECT_TRUE(HasEntry(kCacheEntries[3].url));
   EXPECT_TRUE(HasEntry(kCacheEntries[4].url));
-  EXPECT_EQ(3, backend_->GetEntryCount());
+  EXPECT_EQ(3, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverTest, FilterByDateFromUnbounded) {
@@ -284,7 +288,7 @@ TEST_F(HttpCacheDataRemoverTest, FilterByDateFromUnbounded) {
   EXPECT_TRUE(HasEntry(kCacheEntries[5].url));
   EXPECT_TRUE(HasEntry(kCacheEntries[6].url));
   EXPECT_TRUE(HasEntry(kCacheEntries[7].url));
-  EXPECT_EQ(3, backend_->GetEntryCount());
+  EXPECT_EQ(3, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverTest, FilterByDateToUnbounded) {
@@ -294,7 +298,7 @@ TEST_F(HttpCacheDataRemoverTest, FilterByDateToUnbounded) {
   EXPECT_FALSE(HasEntry(kCacheEntries[5].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[6].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[7].url));
-  EXPECT_EQ(5, backend_->GetEntryCount());
+  EXPECT_EQ(5, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverTest, FilterByDateRange) {
@@ -308,7 +312,7 @@ TEST_F(HttpCacheDataRemoverTest, FilterByDateRange) {
   EXPECT_FALSE(HasEntry(kCacheEntries[3].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[4].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[5].url));
-  EXPECT_EQ(3, backend_->GetEntryCount());
+  EXPECT_EQ(3, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverTest, FilterDeleteByDomainAndDate) {
@@ -326,7 +330,7 @@ TEST_F(HttpCacheDataRemoverTest, FilterDeleteByDomainAndDate) {
   EXPECT_FALSE(HasEntry(kCacheEntries[1].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[2].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[3].url));
-  EXPECT_EQ(5, backend_->GetEntryCount());
+  EXPECT_EQ(5, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverTest, FilterKeepByDomainAndDate) {
@@ -343,7 +347,7 @@ TEST_F(HttpCacheDataRemoverTest, FilterKeepByDomainAndDate) {
   RemoveData(std::move(filter), start_time, end_time);
   EXPECT_FALSE(HasEntry(kCacheEntries[4].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[5].url));
-  EXPECT_EQ(6, backend_->GetEntryCount());
+  EXPECT_EQ(6, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverTest, DeleteHttpRemover) {
@@ -393,7 +397,7 @@ TEST_F(HttpCacheDataRemoverSplitCacheTest, FilterDeleteByDomain) {
   EXPECT_FALSE(HasEntry(kCacheEntries[1].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[2].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[3].url));
-  EXPECT_EQ(4, backend_->GetEntryCount());
+  EXPECT_EQ(4, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverSplitCacheTest, FilterKeepByDomain) {
@@ -406,7 +410,7 @@ TEST_F(HttpCacheDataRemoverSplitCacheTest, FilterKeepByDomain) {
   EXPECT_TRUE(HasEntry(kCacheEntries[1].url));
   EXPECT_TRUE(HasEntry(kCacheEntries[2].url));
   EXPECT_TRUE(HasEntry(kCacheEntries[3].url));
-  EXPECT_EQ(4, backend_->GetEntryCount());
+  EXPECT_EQ(4, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverSplitCacheTest, FilterDeleteByOrigin) {
@@ -417,7 +421,7 @@ TEST_F(HttpCacheDataRemoverSplitCacheTest, FilterDeleteByOrigin) {
   RemoveData(std::move(filter), base::Time(), base::Time());
   EXPECT_FALSE(HasEntry(kCacheEntries[0].url));
   EXPECT_FALSE(HasEntry(kCacheEntries[4].url));
-  EXPECT_EQ(6, backend_->GetEntryCount());
+  EXPECT_EQ(6, GetEntryCount());
 }
 
 TEST_F(HttpCacheDataRemoverSplitCacheTest, FilterKeepByOrigin) {
@@ -428,7 +432,7 @@ TEST_F(HttpCacheDataRemoverSplitCacheTest, FilterKeepByOrigin) {
   RemoveData(std::move(filter), base::Time(), base::Time());
   EXPECT_TRUE(HasEntry(kCacheEntries[0].url));
   EXPECT_TRUE(HasEntry(kCacheEntries[4].url));
-  EXPECT_EQ(2, backend_->GetEntryCount());
+  EXPECT_EQ(2, GetEntryCount());
 }
 
 }  // namespace

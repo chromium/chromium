@@ -161,7 +161,8 @@ class MockDiskCache : public disk_cache::Backend {
   MockDiskCache();
   ~MockDiskCache() override;
 
-  int32_t GetEntryCount() const override;
+  int32_t GetEntryCount(
+      net::Int32CompletionOnceCallback callback) const override;
   EntryResult OpenOrCreateEntry(const std::string& key,
                                 RequestPriority request_priority,
                                 EntryResultCallback callback) override;

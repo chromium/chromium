@@ -334,8 +334,10 @@ void StressTheCache(int iteration) {
     printf("Unable to initialize cache.\n");
     return;
   }
+  net::TestInt32CompletionCallback entry_count_cb;
   printf("Iteration %d, initial entries: %d\n", iteration,
-         g_data->cache->GetEntryCount());
+         entry_count_cb.GetResult(
+             g_data->cache->GetEntryCount(entry_count_cb.callback())));
 
   int seed = static_cast<int>(Time::Now().ToInternalValue());
   srand(seed);

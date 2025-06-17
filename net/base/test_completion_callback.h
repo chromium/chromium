@@ -125,6 +125,9 @@ typedef internal::TestCompletionCallbackTemplate<int>
 typedef internal::TestCompletionCallbackTemplate<int64_t>
     TestInt64CompletionCallbackBase;
 
+typedef internal::TestCompletionCallbackTemplate<int32_t>
+    TestInt32CompletionCallbackBase;
+
 class TestCompletionCallback : public TestCompletionCallbackBase {
  public:
   TestCompletionCallback() = default;
@@ -148,6 +151,20 @@ class TestInt64CompletionCallback : public TestInt64CompletionCallbackBase {
 
   Int64CompletionOnceCallback callback() {
     return base::BindOnce(&TestInt64CompletionCallback::SetResult,
+                          base::Unretained(this));
+  }
+};
+
+class TestInt32CompletionCallback : public TestInt32CompletionCallbackBase {
+ public:
+  TestInt32CompletionCallback() = default;
+  TestInt32CompletionCallback(const TestInt32CompletionCallback&) = delete;
+  TestInt32CompletionCallback& operator=(const TestInt32CompletionCallback&) =
+      delete;
+  ~TestInt32CompletionCallback() override;
+
+  Int32CompletionOnceCallback callback() {
+    return base::BindOnce(&TestInt32CompletionCallback::SetResult,
                           base::Unretained(this));
   }
 };

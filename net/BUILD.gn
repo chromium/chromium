@@ -2526,6 +2526,7 @@ if (is_android || is_linux || is_chromeos) {
     sources = [ "tools/disk_cache_memory_test/disk_cache_memory_test.cc" ]
     deps = [
       ":net",
+      ":test_support",
       "//base",
     ]
   }

@@ -428,7 +428,8 @@ MockDiskCache::~MockDiskCache() {
   ReleaseAll();
 }
 
-int32_t MockDiskCache::GetEntryCount() const {
+int32_t MockDiskCache::GetEntryCount(
+    net::Int32CompletionOnceCallback callback) const {
   return static_cast<int32_t>(entries_.size());
 }
 

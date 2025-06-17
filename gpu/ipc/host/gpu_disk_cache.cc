@@ -705,10 +705,11 @@ int GpuDiskCache::Clear(base::Time begin_time,
   return rv;
 }
 
-int32_t GpuDiskCache::Size() {
-  if (!cache_available_)
-    return -1;
-  return backend_->GetEntryCount();
+int32_t GpuDiskCache::Size(net::CompletionOnceCallback callback) {
+  if (!cache_available_) {
+    return net::ERR_FAILED;
+  }
+  return backend_->GetEntryCount(std::move(callback));
 }
 
 int GpuDiskCache::SetAvailableCallback(net::CompletionOnceCallback callback) {

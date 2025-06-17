@@ -977,8 +977,9 @@ bool BackendImpl::ShouldUpdateStats() {
 
 void BackendImpl::FirstEviction() {
   DCHECK(data_->header.create_time);
-  if (!GetEntryCount())
+  if (!GetEntryCountSync()) {
     return;  // This is just for unit tests.
+  }
 
   stats_.ResetRatios();
 }
@@ -1157,7 +1158,12 @@ void BackendImpl::FlushIndex() {
 
 // ------------------------------------------------------------------------
 
-int32_t BackendImpl::GetEntryCount() const {
+int32_t BackendImpl::GetEntryCount(
+    net::Int32CompletionOnceCallback callback) const {
+  return GetEntryCountSync();
+}
+
+int32_t BackendImpl::GetEntryCountSync() const {
   if (!index_.get() || disabled_)
     return 0;
   // num_entries includes entries already evicted.
@@ -1860,8 +1866,9 @@ void BackendImpl::UpdateStats() {
   if (use_hours)
     use_hours = total_hours - use_hours;
 
-  if (!use_hours || !GetEntryCount() || !data_->header.num_bytes)
+  if (!use_hours || !GetEntryCountSync() || !data_->header.num_bytes) {
     return;
+  }
 
   stats_.ResetRatios();
   stats_.SetCounter(Stats::TRIM_ENTRY, 0);

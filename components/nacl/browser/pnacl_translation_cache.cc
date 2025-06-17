@@ -402,8 +402,9 @@ int PnaclTranslationCache::InitInMemory(CompletionOnceCallback callback) {
               std::move(callback));
 }
 
-int PnaclTranslationCache::Size() {
-  return disk_cache_ ? disk_cache_->GetEntryCount() : -1;
+int32_t PnaclTranslationCache::Size(net::CompletionOnceCallback callback) {
+  return disk_cache_ ? disk_cache_->GetEntryCount(std::move(callback))
+                     : net::ERR_FAILED;
 }
 
 // Beware that any changes to this function or to PnaclCacheInfo will

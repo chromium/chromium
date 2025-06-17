@@ -92,7 +92,8 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   void SetClockForTesting(base::Clock* clock);  // doesn't take ownership.
 
   // Backend interface.
-  int32_t GetEntryCount() const override;
+  int32_t GetEntryCount(
+      net::Int32CompletionOnceCallback callback) const override;
   EntryResult OpenOrCreateEntry(const std::string& key,
                                 net::RequestPriority request_priority,
                                 EntryResultCallback callback) override;

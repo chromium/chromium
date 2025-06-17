@@ -154,7 +154,8 @@ void MemBackendImpl::SetClockForTesting(base::Clock* clock) {
   custom_clock_for_testing_ = clock;
 }
 
-int32_t MemBackendImpl::GetEntryCount() const {
+int32_t MemBackendImpl::GetEntryCount(
+    net::Int32CompletionOnceCallback callback) const {
   return static_cast<int32_t>(entries_.size());
 }
 

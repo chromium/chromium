@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/cache_type.h"
+#include "net/base/completion_once_callback.h"
 
 namespace disk_cache {
 class Backend;
@@ -67,8 +68,10 @@ class PnaclTranslationCache final {
   // and a DrainableIOBuffer with the data.
   void GetNexe(const std::string& key, GetNexeCallback callback);
 
-  // Return the number of entries in the cache backend.
-  int Size();
+  // Returns the entry count synchronously if available, or
+  // net::ERR_IO_PENDING for asynchronous completion via `callback`. Returns
+  // net::ERR_FAILED if the cache is not yet available.
+  int32_t Size(net::CompletionOnceCallback callback);
 
   // Return the cache key for |info|
   static std::string GetKey(const nacl::PnaclCacheInfo& info);

@@ -26,6 +26,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_errors.h"
+#include "net/base/test_completion_callback.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/simple_backend_impl.h"
 #include "net/disk_cache/simple/simple_index.h"
@@ -217,6 +218,11 @@ uint64_t GetMemoryConsumption() {
   }
 }
 
+int32_t GetCacheEntryCount(disk_cache::Backend* cache) {
+  net::TestInt32CompletionCallback cb;
+  return cb.GetResult(cache->GetEntryCount(cb.callback()));
+}
+
 bool CacheMemTest(const std::vector<std::unique_ptr<CacheSpec>>& specs) {
   std::vector<std::unique_ptr<Backend>> backends;
   for (const auto& it : specs) {
@@ -224,7 +230,7 @@ bool CacheMemTest(const std::vector<std::unique_ptr<CacheSpec>>& specs) {
     if (!backend)
       return false;
     std::cout << "Number of entries in " << it->path.LossyDisplayName() << " : "
-              << backend->GetEntryCount() << std::endl;
+              << GetCacheEntryCount(backend.get()) << std::endl;
     backends.push_back(std::move(backend));
   }
   const uint64_t memory_consumption = GetMemoryConsumption();

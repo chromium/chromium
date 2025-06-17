@@ -365,7 +365,7 @@ void DiskCacheBackendTest::InitSparseCache(base::Time* doomed_start,
 bool DiskCacheBackendTest::CreateSetOfRandomEntries(
     std::set<std::string>* key_pool) {
   const int kNumEntries = 10;
-  const int initial_entry_count = cache_->GetEntryCount();
+  const int initial_entry_count = GetEntryCount();
 
   for (int i = 0; i < kNumEntries; ++i) {
     std::string key = GenerateKey(true);
@@ -377,7 +377,7 @@ bool DiskCacheBackendTest::CreateSetOfRandomEntries(
     entry->Close();
   }
   return key_pool->size() ==
-         static_cast<size_t>(cache_->GetEntryCount() - initial_entry_count);
+         static_cast<size_t>(GetEntryCount() - initial_entry_count);
 }
 
 // Performs iteration over the backend and checks that the keys of entries
@@ -447,7 +447,7 @@ void DiskCacheBackendTest::BackendBasics() {
   ASSERT_THAT(CreateEntry("some other key", &entry2), IsOk());
   ASSERT_TRUE(nullptr != entry1);
   ASSERT_TRUE(nullptr != entry2);
-  EXPECT_EQ(2, cache_->GetEntryCount());
+  EXPECT_EQ(2, GetEntryCount());
 
   disk_cache::Entry* entry3 = nullptr;
   ASSERT_THAT(OpenEntry("some other key", &entry3), IsOk());
@@ -455,20 +455,20 @@ void DiskCacheBackendTest::BackendBasics() {
   EXPECT_TRUE(entry2 == entry3);
 
   EXPECT_THAT(DoomEntry("some other key"), IsOk());
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
   entry1->Close();
   entry2->Close();
   entry3->Close();
 
   EXPECT_THAT(DoomEntry("the first key"), IsOk());
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 
   ASSERT_THAT(CreateEntry("the first key", &entry1), IsOk());
   ASSERT_THAT(CreateEntry("some other key", &entry2), IsOk());
   entry1->Doom();
   entry1->Close();
   EXPECT_THAT(DoomEntry("some other key"), IsOk());
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
   entry2->Close();
 }
 
@@ -1223,7 +1223,7 @@ void DiskCacheBackendTest::BackendLoad() {
     std::string key = GenerateKey(true);
     ASSERT_THAT(CreateEntry(key, &entry), IsOk());
   }
-  EXPECT_EQ(kLargeNumEntries, cache_->GetEntryCount());
+  EXPECT_EQ(kLargeNumEntries, GetEntryCount());
 
   for (int i = 0; i < kLargeNumEntries; i++) {
     int source1 = rand() % kLargeNumEntries;
@@ -1242,7 +1242,7 @@ void DiskCacheBackendTest::BackendLoad() {
     entry->Close();
   }
   FlushQueueForTest();
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 TEST_P(DiskCacheGenericBackendTest, Load) {
@@ -1382,7 +1382,7 @@ void DiskCacheBackendTest::BackendInvalidEntry() {
   SimulateCrash();
 
   EXPECT_NE(net::OK, OpenEntry(key, &entry));
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 #if !defined(LEAK_SANITIZER)
@@ -1433,11 +1433,11 @@ void DiskCacheBackendTest::BackendInvalidEntryRead() {
   if (type_ == net::APP_CACHE) {
     // Reading an entry and crashing should not make it dirty.
     ASSERT_THAT(OpenEntry(key, &entry), IsOk());
-    EXPECT_EQ(1, cache_->GetEntryCount());
+    EXPECT_EQ(1, GetEntryCount());
     entry->Close();
   } else {
     EXPECT_NE(net::OK, OpenEntry(key, &entry));
-    EXPECT_EQ(0, cache_->GetEntryCount());
+    EXPECT_EQ(0, GetEntryCount());
   }
 }
 
@@ -1480,7 +1480,7 @@ void DiskCacheBackendTest::BackendInvalidEntryWithLoad() {
     std::string key = GenerateKey(true);
     ASSERT_THAT(CreateEntry(key, &entry), IsOk());
   }
-  EXPECT_EQ(kNumEntries, cache_->GetEntryCount());
+  EXPECT_EQ(kNumEntries, GetEntryCount());
 
   for (int i = 0; i < kNumEntries; i++) {
     int source1 = rand() % kNumEntries;
@@ -1510,7 +1510,7 @@ void DiskCacheBackendTest::BackendInvalidEntryWithLoad() {
     entry->Close();
   }
 
-  EXPECT_EQ(kNumEntries / 2, cache_->GetEntryCount());
+  EXPECT_EQ(kNumEntries / 2, GetEntryCount());
 }
 
 // We'll be leaking memory from this test.
@@ -1557,7 +1557,7 @@ void DiskCacheBackendTest::BackendTrimInvalidEntry() {
   ASSERT_THAT(CreateEntry(second, &entry), IsOk());
   EXPECT_EQ(kSize, WriteData(entry, 0, 0, buffer.get(), kSize, false));
 
-  EXPECT_EQ(2, cache_->GetEntryCount());
+  EXPECT_EQ(2, GetEntryCount());
   cache_impl_->SetMaxSize(kSize);
   entry->Close();  // Trim the cache.
   FlushQueueForTest();
@@ -1571,7 +1571,7 @@ void DiskCacheBackendTest::BackendTrimInvalidEntry() {
   // ThreadSanitizer annotations to ignore data races on cache_.
   // See http://crbug.com/55970
   ABSL_ANNOTATE_IGNORE_READS_BEGIN();
-  EXPECT_GE(1, cache_->GetEntryCount());
+  EXPECT_GE(1, GetEntryCount());
   ABSL_ANNOTATE_IGNORE_READS_END();
 
   EXPECT_NE(net::OK, OpenEntry(first, &entry));
@@ -1617,7 +1617,7 @@ void DiskCacheBackendTest::BackendTrimInvalidEntry2() {
   EXPECT_EQ(kSize, WriteData(entry, 0, 0, buffer.get(), kSize, false));
 
   FlushQueueForTest();
-  EXPECT_EQ(33, cache_->GetEntryCount());
+  EXPECT_EQ(33, GetEntryCount());
   cache_impl_->SetMaxSize(kSize);
 
   // For the new eviction code, all corrupt entries are on the second list so
@@ -1635,7 +1635,7 @@ void DiskCacheBackendTest::BackendTrimInvalidEntry2() {
   // If it's not clear enough: we may still have eviction tasks running at this
   // time, so the number of entries is changing while we read it.
   ABSL_ANNOTATE_IGNORE_READS_AND_WRITES_BEGIN();
-  EXPECT_GE(30, cache_->GetEntryCount());
+  EXPECT_GE(30, GetEntryCount());
   ABSL_ANNOTATE_IGNORE_READS_AND_WRITES_END();
 
   // For extra messiness, the integrity check for the cache can actually cause
@@ -1667,7 +1667,7 @@ void DiskCacheBackendTest::BackendEnumerations() {
     ASSERT_THAT(CreateEntry(key, &entry), IsOk());
     entry->Close();
   }
-  EXPECT_EQ(kNumEntries, cache_->GetEntryCount());
+  EXPECT_EQ(kNumEntries, GetEntryCount());
 
   disk_cache::Entry* entry;
   std::unique_ptr<TestIterator> iter = CreateIterator();
@@ -1815,7 +1815,7 @@ void DiskCacheBackendTest::BackendDoomMidEnumeration() {
     count++;
   };
 
-  EXPECT_EQ(kNumEntries - 1, cache_->GetEntryCount());
+  EXPECT_EQ(kNumEntries - 1, GetEntryCount());
   EXPECT_EQ(0u, keys.size());
 }
 
@@ -1896,7 +1896,7 @@ void DiskCacheBackendTest::BackendInvalidEntryEnumeration() {
   std::string key2("Another key");
   ASSERT_THAT(CreateEntry(key2, &entry2), IsOk());
   entry2->Close();
-  ASSERT_EQ(2, cache_->GetEntryCount());
+  ASSERT_EQ(2, GetEntryCount());
 
   SimulateCrash();
 
@@ -1909,7 +1909,7 @@ void DiskCacheBackendTest::BackendInvalidEntryEnumeration() {
     count++;
   };
   EXPECT_EQ(1, count);
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
 }
 
 // We'll be leaking memory from this test.
@@ -1939,7 +1939,7 @@ void DiskCacheBackendTest::BackendFixEnumerators() {
     ASSERT_THAT(CreateEntry(key, &entry), IsOk());
     entry->Close();
   }
-  EXPECT_EQ(kNumEntries, cache_->GetEntryCount());
+  EXPECT_EQ(kNumEntries, GetEntryCount());
 
   disk_cache::Entry *entry1, *entry2;
   std::unique_ptr<TestIterator> iter1 = CreateIterator(),
@@ -2008,12 +2008,12 @@ void DiskCacheBackendTest::BackendDoomRecent() {
   AddDelay();
   Time final = Time::Now();
 
-  ASSERT_EQ(4, cache_->GetEntryCount());
+  ASSERT_EQ(4, GetEntryCount());
   EXPECT_THAT(DoomEntriesSince(final), IsOk());
-  ASSERT_EQ(4, cache_->GetEntryCount());
+  ASSERT_EQ(4, GetEntryCount());
 
   EXPECT_THAT(DoomEntriesSince(middle), IsOk());
-  ASSERT_EQ(2, cache_->GetEntryCount());
+  ASSERT_EQ(2, GetEntryCount());
 
   ASSERT_THAT(OpenEntry("second", &entry), IsOk());
   entry->Close();
@@ -2033,7 +2033,7 @@ TEST_F(DiskCacheBackendTest, MemoryOnlyDoomEntriesSinceSparse) {
   base::Time start;
   InitSparseCache(&start, nullptr);
   DoomEntriesSince(start);
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
 }
 
 TEST_F(DiskCacheBackendTest, DoomEntriesSinceSparse) {
@@ -2043,13 +2043,13 @@ TEST_F(DiskCacheBackendTest, DoomEntriesSinceSparse) {
   // NOTE: BackendImpl counts child entries in its GetEntryCount(), while
   // MemBackendImpl does not. Thats why expected value differs here from
   // MemoryOnlyDoomEntriesSinceSparse.
-  EXPECT_EQ(3, cache_->GetEntryCount());
+  EXPECT_EQ(3, GetEntryCount());
 }
 
 TEST_P(DiskCacheGenericBackendTest, DoomAllSparse) {
   InitSparseCache(nullptr, nullptr);
   EXPECT_THAT(DoomAllEntries(), IsOk());
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 // This test is for https://crbug.com/827492.
@@ -2120,15 +2120,15 @@ void DiskCacheBackendTest::BackendDoomBetween() {
   AddDelay();
   Time final = Time::Now();
 
-  ASSERT_EQ(4, cache_->GetEntryCount());
+  ASSERT_EQ(4, GetEntryCount());
   EXPECT_THAT(DoomEntriesBetween(middle_start, middle_end), IsOk());
-  ASSERT_EQ(2, cache_->GetEntryCount());
+  ASSERT_EQ(2, GetEntryCount());
 
   ASSERT_THAT(OpenEntry("fourth", &entry), IsOk());
   entry->Close();
 
   EXPECT_THAT(DoomEntriesBetween(middle_start, final), IsOk());
-  ASSERT_EQ(1, cache_->GetEntryCount());
+  ASSERT_EQ(1, GetEntryCount());
 
   ASSERT_THAT(OpenEntry("first", &entry), IsOk());
   entry->Close();
@@ -2148,24 +2148,24 @@ TEST_F(DiskCacheBackendTest, MemoryOnlyDoomEntriesBetweenSparse) {
   base::Time start, end;
   InitSparseCache(&start, &end);
   DoomEntriesBetween(start, end);
-  EXPECT_EQ(3, cache_->GetEntryCount());
+  EXPECT_EQ(3, GetEntryCount());
 
   start = end;
   end = base::Time::Now();
   DoomEntriesBetween(start, end);
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
 }
 
 TEST_F(DiskCacheBackendTest, DoomEntriesBetweenSparse) {
   base::Time start, end;
   InitSparseCache(&start, &end);
   DoomEntriesBetween(start, end);
-  EXPECT_EQ(9, cache_->GetEntryCount());
+  EXPECT_EQ(9, GetEntryCount());
 
   start = end;
   end = base::Time::Now();
   DoomEntriesBetween(start, end);
-  EXPECT_EQ(3, cache_->GetEntryCount());
+  EXPECT_EQ(3, GetEntryCount());
 }
 
 void DiskCacheBackendTest::BackendCalculateSizeOfAllEntries() {
@@ -2271,7 +2271,7 @@ void DiskCacheBackendTest::BackendCalculateSizeOfEntriesBetween(
   int size_2 = GetRoundedSize(GetEntryMetadataSize("second"));
   int size_3 = GetRoundedSize(GetEntryMetadataSize("third_entry"));
 
-  ASSERT_EQ(3, cache_->GetEntryCount());
+  ASSERT_EQ(3, GetEntryCount());
   ASSERT_EQ(CalculateSizeOfAllEntries(),
             CalculateSizeOfEntriesBetween(base::Time(), base::Time::Max()));
 
@@ -2333,13 +2333,13 @@ void DiskCacheBackendTest::BackendTransaction(const std::string& name,
   SetMask(mask);
 
   InitCache();
-  ASSERT_EQ(num_entries + 1, cache_->GetEntryCount());
+  ASSERT_EQ(num_entries + 1, GetEntryCount());
 
   std::string key("the first key");
   disk_cache::Entry* entry1;
   ASSERT_NE(net::OK, OpenEntry(key, &entry1));
 
-  int actual = cache_->GetEntryCount();
+  int actual = GetEntryCount();
   if (num_entries != actual) {
     ASSERT_TRUE(load);
     // If there is a heavy load, inserting an entry will make another entry
@@ -2617,7 +2617,7 @@ TEST_F(DiskCacheBackendTest, BadNextEntry1) {
   TrimForTest(false);
   ASSERT_THAT(OpenEntry("The first key", &entry), IsOk());
   entry->Close();
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
 }
 
 // Tests that we don't hang when there is a loop on the hash collision list.
@@ -2677,17 +2677,17 @@ void DiskCacheBackendTest::BackendInvalidEntry7() {
   entry_impl->rankings()->Store();
   entry->Close();
   FlushQueueForTest();
-  EXPECT_EQ(2, cache_->GetEntryCount());
+  EXPECT_EQ(2, GetEntryCount());
 
   // This should detect the bad entry.
   EXPECT_NE(net::OK, OpenEntry(second, &entry));
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
 
   // We should delete the cache. The list still has a corrupt node.
   std::unique_ptr<TestIterator> iter = CreateIterator();
   EXPECT_NE(net::OK, iter->OpenNextEntry(&entry));
   FlushQueueForTest();
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 TEST_F(DiskCacheBackendTest, InvalidEntry7) {
@@ -2721,18 +2721,18 @@ void DiskCacheBackendTest::BackendInvalidEntry8() {
   entry_impl->rankings()->Store();
   entry->Close();
   FlushQueueForTest();
-  EXPECT_EQ(2, cache_->GetEntryCount());
+  EXPECT_EQ(2, GetEntryCount());
 
   // This should detect the bad entry.
   EXPECT_NE(net::OK, OpenEntry(second, &entry));
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
 
   // We should not delete the cache.
   std::unique_ptr<TestIterator> iter = CreateIterator();
   ASSERT_THAT(iter->OpenNextEntry(&entry), IsOk());
   entry->Close();
   EXPECT_NE(net::OK, iter->OpenNextEntry(&entry));
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
 }
 
 TEST_F(DiskCacheBackendTest, InvalidEntry8) {
@@ -2768,13 +2768,13 @@ void DiskCacheBackendTest::BackendInvalidEntry9(bool eviction) {
   entry_impl->entry()->Store();
   entry->Close();
   FlushQueueForTest();
-  EXPECT_EQ(2, cache_->GetEntryCount());
+  EXPECT_EQ(2, GetEntryCount());
 
   if (eviction) {
     TrimForTest(false);
-    EXPECT_EQ(1, cache_->GetEntryCount());
+    EXPECT_EQ(1, GetEntryCount());
     TrimForTest(false);
-    EXPECT_EQ(1, cache_->GetEntryCount());
+    EXPECT_EQ(1, GetEntryCount());
   } else {
     // We should detect the problem through the list, but we should not delete
     // the entry, just fail the iteration.
@@ -2788,7 +2788,7 @@ void DiskCacheBackendTest::BackendInvalidEntry9(bool eviction) {
 
     // This should detect what's left of the bad entry.
     EXPECT_NE(net::OK, OpenEntry(second, &entry));
-    EXPECT_EQ(2, cache_->GetEntryCount());
+    EXPECT_EQ(2, GetEntryCount());
   }
   DisableIntegrityCheck();
 }
@@ -2837,7 +2837,7 @@ void DiskCacheBackendTest::BackendInvalidEntry10(bool eviction) {
   entry->Close();
   ASSERT_THAT(CreateEntry("third", &entry), IsOk());
   entry->Close();
-  EXPECT_EQ(3, cache_->GetEntryCount());
+  EXPECT_EQ(3, GetEntryCount());
 
   // We have:
   // List 0: third -> second (bad).
@@ -2846,11 +2846,11 @@ void DiskCacheBackendTest::BackendInvalidEntry10(bool eviction) {
   if (eviction) {
     // Detection order: second -> first -> third.
     TrimForTest(false);
-    EXPECT_EQ(3, cache_->GetEntryCount());
+    EXPECT_EQ(3, GetEntryCount());
     TrimForTest(false);
-    EXPECT_EQ(2, cache_->GetEntryCount());
+    EXPECT_EQ(2, GetEntryCount());
     TrimForTest(false);
-    EXPECT_EQ(1, cache_->GetEntryCount());
+    EXPECT_EQ(1, GetEntryCount());
   } else {
     // Detection order: third -> second -> first.
     // We should detect the problem through the list, but we should not delete
@@ -2904,7 +2904,7 @@ void DiskCacheBackendTest::BackendInvalidEntry11(bool eviction) {
   ASSERT_THAT(CreateEntry("third", &entry), IsOk());
   entry->Close();
   FlushQueueForTest();
-  EXPECT_EQ(3, cache_->GetEntryCount());
+  EXPECT_EQ(3, GetEntryCount());
 
   // We have:
   // List 0: third.
@@ -2913,11 +2913,11 @@ void DiskCacheBackendTest::BackendInvalidEntry11(bool eviction) {
   if (eviction) {
     // Detection order: third -> first -> second.
     TrimForTest(false);
-    EXPECT_EQ(2, cache_->GetEntryCount());
+    EXPECT_EQ(2, GetEntryCount());
     TrimForTest(false);
-    EXPECT_EQ(1, cache_->GetEntryCount());
+    EXPECT_EQ(1, GetEntryCount());
     TrimForTest(false);
-    EXPECT_EQ(1, cache_->GetEntryCount());
+    EXPECT_EQ(1, GetEntryCount());
   } else {
     // Detection order: third -> second.
     // We should detect the problem through the list, but we should not delete
@@ -2969,7 +2969,7 @@ void DiskCacheBackendTest::BackendTrimInvalidEntry12() {
   entry->Close();
   ASSERT_THAT(CreateEntry("fourth", &entry), IsOk());
   TrimForTest(true);
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
   entry->Close();
   DisableIntegrityCheck();
 }
@@ -3013,11 +3013,11 @@ void DiskCacheBackendTest::BackendInvalidRankings() {
   std::unique_ptr<TestIterator> iter = CreateIterator();
   ASSERT_THAT(iter->OpenNextEntry(&entry), IsOk());
   entry->Close();
-  EXPECT_EQ(2, cache_->GetEntryCount());
+  EXPECT_EQ(2, GetEntryCount());
 
   EXPECT_NE(net::OK, iter->OpenNextEntry(&entry));
   FlushQueueForTest();  // Allow the restart to finish.
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 TEST_F(DiskCacheBackendTest, InvalidRankingsSuccess) {
@@ -3059,14 +3059,14 @@ void DiskCacheBackendTest::BackendDisable() {
   ASSERT_THAT(iter->OpenNextEntry(&entry1), IsOk());
 
   EXPECT_NE(net::OK, iter->OpenNextEntry(&entry2));
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
   EXPECT_NE(net::OK, CreateEntry("Something new", &entry2));
 
   entry1->Close();
   FlushQueueForTest();  // Flushing the Close posts a task to restart the cache.
   FlushQueueForTest();  // This one actually allows that task to complete.
 
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 TEST_F(DiskCacheBackendTest, DisableSuccess) {
@@ -3103,7 +3103,7 @@ TEST_F(DiskCacheBackendTest, NewEvictionDisableFailure) {
 
 // This is another type of corruption on the LRU; disable the cache.
 void DiskCacheBackendTest::BackendDisable2() {
-  EXPECT_EQ(8, cache_->GetEntryCount());
+  EXPECT_EQ(8, GetEntryCount());
 
   disk_cache::Entry* entry;
   std::unique_ptr<TestIterator> iter = CreateIterator();
@@ -3116,7 +3116,7 @@ void DiskCacheBackendTest::BackendDisable2() {
   };
 
   FlushQueueForTest();
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 TEST_F(DiskCacheBackendTest, DisableSuccess2) {
@@ -3155,7 +3155,7 @@ TEST_F(DiskCacheBackendTest, NewEvictionDisableFailure2) {
 void DiskCacheBackendTest::BackendDisable3() {
   disk_cache::Entry *entry1, *entry2;
   std::unique_ptr<TestIterator> iter = CreateIterator();
-  EXPECT_EQ(2, cache_->GetEntryCount());
+  EXPECT_EQ(2, GetEntryCount());
   ASSERT_THAT(iter->OpenNextEntry(&entry1), IsOk());
   entry1->Close();
 
@@ -3165,7 +3165,7 @@ void DiskCacheBackendTest::BackendDisable3() {
   ASSERT_THAT(CreateEntry("Something new", &entry2), IsOk());
   entry2->Close();
 
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
 }
 
 TEST_F(DiskCacheBackendTest, DisableSuccess3) {
@@ -3208,7 +3208,7 @@ void DiskCacheBackendTest::BackendDisable4() {
 
   // This line should disable the cache but not delete it.
   EXPECT_NE(net::OK, iter->OpenNextEntry(&entry4));
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 
   EXPECT_NE(net::OK, CreateEntry("cache is disabled", &entry4));
 
@@ -3231,7 +3231,7 @@ void DiskCacheBackendTest::BackendDisable4() {
   FlushQueueForTest();  // Flushing the Close posts a task to restart the cache.
   FlushQueueForTest();  // This one actually allows that task to complete.
 
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
 }
 
 TEST_F(DiskCacheBackendTest, DisableSuccess4) {
@@ -3255,7 +3255,7 @@ void DiskCacheBackendTest::BackendDisabledAPI() {
 
   disk_cache::Entry *entry1, *entry2;
   std::unique_ptr<TestIterator> iter = CreateIterator();
-  EXPECT_EQ(2, cache_->GetEntryCount());
+  EXPECT_EQ(2, GetEntryCount());
   ASSERT_THAT(iter->OpenNextEntry(&entry1), IsOk());
   entry1->Close();
   EXPECT_NE(net::OK, iter->OpenNextEntry(&entry2));
@@ -3263,7 +3263,7 @@ void DiskCacheBackendTest::BackendDisabledAPI() {
   // The cache should be disabled.
 
   EXPECT_EQ(net::DISK_CACHE, cache_->GetCacheType());
-  EXPECT_EQ(0, cache_->GetEntryCount());
+  EXPECT_EQ(0, GetEntryCount());
   EXPECT_NE(net::OK, OpenEntry("First", &entry2));
   EXPECT_NE(net::OK, CreateEntry("Something new", &entry2));
   EXPECT_NE(net::OK, DoomEntry("First"));
@@ -3483,7 +3483,7 @@ TEST_F(DiskCacheBackendTest, Backend_UsageStats) {
   // Now open the cache and verify that the stats are still there.
   DisableFirstCleanup();
   InitCache();
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
 
   stats.clear();
   cache_->GetStats(&stats);
@@ -3504,9 +3504,9 @@ void DiskCacheBackendTest::BackendDoomAll() {
   ASSERT_THAT(CreateEntry("third", &entry1), IsOk());
   ASSERT_THAT(CreateEntry("fourth", &entry2), IsOk());
 
-  ASSERT_EQ(4, cache_->GetEntryCount());
+  ASSERT_EQ(4, GetEntryCount());
   EXPECT_THAT(DoomAllEntries(), IsOk());
-  ASSERT_EQ(0, cache_->GetEntryCount());
+  ASSERT_EQ(0, GetEntryCount());
 
   // We should stop posting tasks at some point (if we post any).
   base::RunLoop().RunUntilIdle();
@@ -3517,7 +3517,7 @@ void DiskCacheBackendTest::BackendDoomAll() {
   ASSERT_THAT(CreateEntry("fourth", &entry4), IsOk());
 
   EXPECT_THAT(DoomAllEntries(), IsOk());
-  ASSERT_EQ(0, cache_->GetEntryCount());
+  ASSERT_EQ(0, GetEntryCount());
 
   entry1->Close();
   entry2->Close();
@@ -3531,9 +3531,9 @@ void DiskCacheBackendTest::BackendDoomAll() {
   entry1->Close();
   entry2->Close();
 
-  ASSERT_EQ(2, cache_->GetEntryCount());
+  ASSERT_EQ(2, GetEntryCount());
   EXPECT_THAT(DoomAllEntries(), IsOk());
-  ASSERT_EQ(0, cache_->GetEntryCount());
+  ASSERT_EQ(0, GetEntryCount());
 
   EXPECT_THAT(DoomAllEntries(), IsOk());
 }
@@ -3559,14 +3559,14 @@ TEST_P(DiskCacheGenericBackendTest, ShaderCacheOnlyDoomAll) {
 
 // If the index size changes when we doom the cache, we should not crash.
 void DiskCacheBackendTest::BackendDoomAll2() {
-  EXPECT_EQ(2, cache_->GetEntryCount());
+  EXPECT_EQ(2, GetEntryCount());
   EXPECT_THAT(DoomAllEntries(), IsOk());
 
   disk_cache::Entry* entry;
   ASSERT_THAT(CreateEntry("Something new", &entry), IsOk());
   entry->Close();
 
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
 }
 
 TEST_F(DiskCacheBackendTest, DoomAll2) {
@@ -3875,7 +3875,7 @@ TEST_F(DiskCacheBackendTest, UpdateRankForExternalCacheHit) {
   TrimForTest(false);
 
   // Make sure the older key remains.
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
   ASSERT_THAT(OpenEntry("key0", &entry), IsOk());
   entry->Close();
 }
@@ -3898,7 +3898,7 @@ TEST_F(DiskCacheBackendTest, ShaderCacheUpdateRankForExternalCacheHit) {
   TrimForTest(false);
 
   // Make sure the older key remains.
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
   ASSERT_THAT(OpenEntry("key0", &entry), IsOk());
   entry->Close();
 }
@@ -4107,7 +4107,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheEnumerationCorruption) {
 
   EXPECT_TRUE(
       disk_cache::simple_util::CreateCorruptFileForTests(key, cache_path_));
-  EXPECT_EQ(key_pool.size() + 1, static_cast<size_t>(cache_->GetEntryCount()));
+  EXPECT_EQ(key_pool.size() + 1, static_cast<size_t>(GetEntryCount()));
 
   // Check that enumeration returns all entries but the corrupt one.
   std::set<std::string> keys_to_match(key_pool);
@@ -4583,7 +4583,7 @@ void DiskCacheBackendTest::BackendOpenOrCreateEntry() {
   ASSERT_NE(e4, e3);
 
   // Verify the expected number of entries
-  ASSERT_EQ(2, cache_->GetEntryCount());
+  ASSERT_EQ(2, GetEntryCount());
 
   e1->Close();
   e2->Close();
@@ -5210,7 +5210,7 @@ void DiskCacheBackendTest::BackendValidateMigrated() {
   // The total size comes straight from the headers, and is expected to be 1258
   // for either set of testdata.
   EXPECT_EQ(1258, CalculateSizeOfAllEntries());
-  EXPECT_EQ(1, cache_->GetEntryCount());
+  EXPECT_EQ(1, GetEntryCount());
 
   disk_cache::Entry* entry = nullptr;
   ASSERT_THAT(OpenEntry("https://example.org/data", &entry), IsOk());
@@ -5346,7 +5346,7 @@ TEST_F(DiskCacheBackendTest, SimpleOpenIter) {
       entry->Close();
     }
     RunUntilIdle();  // Make sure close completes.
-    EXPECT_EQ(kEntries, cache_->GetEntryCount());
+    EXPECT_EQ(kEntries, GetEntryCount());
 
     // Iterate once to get the order.
     std::list<std::string> keys;
@@ -5437,7 +5437,7 @@ TEST_F(DiskCacheBackendTest, SimpleOpenIter) {
     run_loop2.Run();
 
     // Should not have eaten any entries, if not corrupting them.
-    EXPECT_EQ(do_corrupt ? 0 : kEntries, cache_->GetEntryCount());
+    EXPECT_EQ(do_corrupt ? 0 : kEntries, GetEntryCount());
   }
 }
 

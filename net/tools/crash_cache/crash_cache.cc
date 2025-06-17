@@ -136,6 +136,11 @@ void FlushQueue(disk_cache::Backend* cache) {
   cb.GetResult(rv);  // Ignore the result;
 }
 
+int32_t GetCacheEntryCount(disk_cache::Backend* cache) {
+  net::TestInt32CompletionCallback cb;
+  return cb.GetResult(cache->GetEntryCount(cb.callback()));
+}
+
 bool CreateCache(const base::FilePath& path,
                  base::Thread* thread,
                  disk_cache::Backend** cache,
@@ -148,7 +153,7 @@ bool CreateCache(const base::FilePath& path,
   backend->SetFlags(disk_cache::kNoRandom);
   backend->Init(cb->callback());
   *cache = backend;
-  return (cb->WaitForResult() == net::OK && !(*cache)->GetEntryCount());
+  return (cb->WaitForResult() == net::OK && !GetCacheEntryCount(*cache));
 }
 
 // Generates the files for an empty and one item cache.
@@ -287,8 +292,9 @@ int LoadOperations(const base::FilePath& path, RankCrashes action,
   cache->SetFlags(disk_cache::kNoRandom);
   net::TestCompletionCallback cb;
   cache->Init(cb.callback());
-  if (cb.WaitForResult() != net::OK || cache->GetEntryCount())
+  if (cb.WaitForResult() != net::OK || GetCacheEntryCount(cache)) {
     return GENERIC;
+  }
 
   int seed = static_cast<int>(Time::Now().ToInternalValue());
   srand(seed);

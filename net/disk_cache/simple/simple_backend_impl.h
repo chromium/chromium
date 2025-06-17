@@ -97,7 +97,8 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
                    CompletionOnceCallback callback) override;
 
   // Backend:
-  int32_t GetEntryCount() const override;
+  int32_t GetEntryCount(
+      net::Int32CompletionOnceCallback callback) const override;
   EntryResult OpenEntry(const std::string& key,
                         net::RequestPriority request_priority,
                         EntryResultCallback callback) override;

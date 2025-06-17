@@ -358,7 +358,8 @@ void SimpleBackendImpl::DoomEntries(std::vector<uint64_t>* entry_hashes,
                      std::move(mass_doom_entry_hashes), barrier_callback));
 }
 
-int32_t SimpleBackendImpl::GetEntryCount() const {
+int32_t SimpleBackendImpl::GetEntryCount(
+    net::Int32CompletionOnceCallback callback) const {
   // TODO(pasko): Use directory file count when index is not ready.
   return index_->GetEntryCount();
 }

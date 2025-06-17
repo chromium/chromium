@@ -35,7 +35,9 @@ TEST_F(SqlBackendImplTest, MaxFileSize) {
 TEST_F(SqlBackendImplTest, GetEntryCount) {
   auto backend = CreateBackend();
   // TODO(crbug.com/422065015): Implement this method.
-  EXPECT_EQ(backend->GetEntryCount(), net::ERR_NOT_IMPLEMENTED);
+  EXPECT_EQ(backend->GetEntryCount(
+                base::BindRepeating([](int32_t result) { NOTREACHED(); })),
+            net::ERR_NOT_IMPLEMENTED);
 }
 
 TEST_F(SqlBackendImplTest, OpenOrCreateEntry) {

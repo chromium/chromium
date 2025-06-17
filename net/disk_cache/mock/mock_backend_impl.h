@@ -15,7 +15,10 @@ class BackendMock : public Backend {
   explicit BackendMock(net::CacheType cache_type);
   ~BackendMock() override;
 
-  MOCK_METHOD(int32_t, GetEntryCount, (), (const, override));
+  MOCK_METHOD(int32_t,
+              GetEntryCount,
+              (net::Int32CompletionOnceCallback callback),
+              (const, override));
   MOCK_METHOD(EntryResult,
               OpenOrCreateEntry,
               (const std::string& key,

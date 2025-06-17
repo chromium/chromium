@@ -204,8 +204,10 @@ class NET_EXPORT Backend {
   // Returns the type of this cache.
   net::CacheType GetCacheType() const { return cache_type_; }
 
-  // Returns the number of entries in the cache.
-  virtual int32_t GetEntryCount() const = 0;
+  // Returns the entry count synchronously if available, or
+  // net::ERR_IO_PENDING for asynchronous completion via `callback`.
+  virtual int32_t GetEntryCount(
+      net::Int32CompletionOnceCallback callback) const = 0;
 
   // Atomically attempts to open an existing entry based on |key| or, if none
   // already exists, to create a new entry. Returns an EntryResult object,

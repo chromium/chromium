@@ -55,8 +55,10 @@ class GpuDiskCache : public base::RefCounted<GpuDiskCache> {
   // will be executed when the cache is available.
   int SetAvailableCallback(net::CompletionOnceCallback callback);
 
-  // Returns the number of elements currently in the cache.
-  int32_t Size();
+  // Returns the element count synchronously if available, or
+  // net::ERR_IO_PENDING for asynchronous completion via `callback`. Returns
+  // net::ERR_FAILED if the cache is not yet available.
+  int32_t Size(net::CompletionOnceCallback callback);
 
   // Set a callback notification for when all current entries have been
   // written to the cache.

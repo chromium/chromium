@@ -273,7 +273,8 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   static void FlushAsynchronouslyForTesting(base::OnceClosure callback);
 
   // Backend implementation.
-  int32_t GetEntryCount() const override;
+  int32_t GetEntryCount(
+      net::Int32CompletionOnceCallback callback) const override;
   EntryResult OpenOrCreateEntry(const std::string& key,
                                 net::RequestPriority request_priority,
                                 EntryResultCallback callback) override;
@@ -387,6 +388,9 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
 
   // Part of the self test. Returns false if the entry is corrupt.
   bool CheckEntry(EntryImpl* cache_entry);
+
+  // Returns the entry count synchronously.
+  int32_t GetEntryCountSync() const;
 
   // Returns the maximum total memory for the memory buffers.
   static int MaxBuffersSize();
