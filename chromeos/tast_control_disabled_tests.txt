@@ -98,6 +98,6 @@ inputs.VirtualKeyboardMultipaste
 inputs.VirtualKeyboardSpeech
 
 # b/424789710
-tast.apps.LaunchGalleryFromNotifications.stable
+apps.LaunchGalleryFromNotifications.stable
 
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
