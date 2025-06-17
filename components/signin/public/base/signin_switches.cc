@@ -231,6 +231,14 @@ BASE_FEATURE(kDeferWebSigninTrackerCreation,
              "DeferWebSigninTrackerCreation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kSignInPromoMaterialNextUI,
+             "SignInPromoMaterialNextUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace switches
 
 #if BUILDFLAG(IS_CHROMEOS)

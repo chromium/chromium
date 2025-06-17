@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/signin_promo.h"
 
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -17,6 +18,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -72,6 +74,7 @@ GURL GetEmbeddedReauthURLWithEmail(signin_metrics::AccessPoint access_point,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args) {
   GURL url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
   if (!args.email.empty()) {
@@ -94,8 +97,12 @@ GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args) {
       url = net::AppendQueryParameter(url, "flow", "embedded_promo");
       break;
   }
+  if (base::FeatureList::IsEnabled(switches::kSignInPromoMaterialNextUI)) {
+    url = net::AppendQueryParameter(url, "theme", "mn");
+  }
   return url;
 }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 GURL GetChromeReauthURL(ChromeSyncUrlArgs args) {
   GURL url = GaiaUrls::GetInstance()->reauth_chrome_dice();

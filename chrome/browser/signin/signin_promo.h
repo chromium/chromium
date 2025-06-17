@@ -8,6 +8,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "url/gurl.h"
 
@@ -87,9 +88,11 @@ struct ChromeSyncUrlArgs {
   Flow flow = Flow::NONE;
 };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Returns the URL to be used to signin and turn on Sync when DICE is enabled.
 // See `ChromeSyncUrlArgs` docs for details on the arguments.
 GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Returns the URL to be used to reauth.
 // As part of `args` only `email` and `continue_url` are used:
