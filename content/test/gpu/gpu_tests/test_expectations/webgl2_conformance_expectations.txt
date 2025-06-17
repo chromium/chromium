@@ -486,7 +486,7 @@ crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/textures/vid
 # the default 15 second heartbeat timeout because of that.
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/functional/gles3/uniformapi/random.html [ Slow ]
 
-[ win intel-0x4680 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Slow ]
+[ win intel-0x4680 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 
 ###################
 # Failures/Flakes #
