@@ -22,7 +22,6 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/features.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
-#import "components/password_manager/ios/shared_password_controller.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -451,11 +450,6 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 - (std::optional<password_manager::CredentialUIEntry>)
     getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion {
   NSString* username = formSuggestion.value;
-  if ([username containsString:kPasswordFormSuggestionSuffix]) {
-    username = [username
-        stringByReplacingOccurrencesOfString:kPasswordFormSuggestionSuffix
-                                  withString:@""];
-  }
   auto it = std::ranges::find_if(
       _credentials,
       [username](const password_manager::CredentialUIEntry& credential) {

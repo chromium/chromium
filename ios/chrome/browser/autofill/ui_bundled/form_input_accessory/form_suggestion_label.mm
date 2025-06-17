@@ -24,7 +24,12 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using autofill::FillingProduct;
+
 namespace {
+
+// The string ' ••••••••' appended to the username of a password suggestion.
+constexpr NSString* kPasswordFormSuggestionSuffix = @" ••••••••";
 
 // Font size of button titles.
 constexpr CGFloat kIpadFontSize = 15;
@@ -172,7 +177,7 @@ UILabel* AttributedTextLabel(NSString* suggestion_text,
 // Splits a credit card label into 2 labels, with one being an incompressible
 // credit card number label. Returns the label as is if this is not a credit
 // card.
-UIView* splitLabel(UILabel* label, BOOL is_credit_card) {
+UIView* SplitLabel(UILabel* label, BOOL is_credit_card) {
   if (!is_credit_card) {
     return label;
   }
@@ -220,22 +225,57 @@ NSArray<UIView*>* TextViews(NSString* suggestion_text,
   UILabel* value_label =
       TextLabel(suggestion_text, [UIColor colorNamed:kTextPrimaryColor],
                 /*bold=*/YES, /*is_title=*/YES);
-  [views addObject:splitLabel(value_label, is_credit_card)];
+  [views addObject:SplitLabel(value_label, is_credit_card)];
 
   if ([minor_value length] > 0) {
     UILabel* minor_value_label =
         TextLabel(minor_value, [UIColor colorNamed:kTextPrimaryColor],
                   /*bold=*/YES, /*is_title=*/NO);
-    [views addObject:splitLabel(minor_value_label, is_credit_card)];
+    [views addObject:SplitLabel(minor_value_label, is_credit_card)];
   }
 
   if ([display_description length] > 0) {
     UILabel* description =
         TextLabel(display_description, [UIColor colorNamed:kTextSecondaryColor],
                   /*bold=*/NO, /*is_title=*/NO);
-    [views addObject:splitLabel(description, is_credit_card)];
+    [views addObject:SplitLabel(description, is_credit_card)];
   }
   return views;
+}
+
+// Returns whether the provided `suggestion` is a password suggestion.
+bool IsPasswordSuggestion(FormSuggestion* suggestion) {
+  switch (GetFillingProductFromSuggestionType(suggestion.type)) {
+    case FillingProduct::kPassword:
+      return true;
+    case FillingProduct::kAddress:
+    case FillingProduct::kCreditCard:
+    case FillingProduct::kNone:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kIban:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kCompose:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kAutofillAi:
+    case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kIdentityCredential:
+    case FillingProduct::kDataList:
+      return false;
+  }
+}
+
+// Returns the text to display for a password suggestion.
+NSString* PasswordSuggestionDisplayText(NSString* suggestion_value) {
+  if (!IsKeyboardAccessoryUpgradeEnabled()) {
+    return [suggestion_value
+        stringByAppendingString:kPasswordFormSuggestionSuffix];
+  }
+
+  if ([suggestion_value length] == 0) {
+    return l10n_util::GetNSString(IDS_IOS_AUTOFILL_PASSWORD_NO_USERNAME);
+  }
+
+  return suggestion_value;
 }
 
 }  // namespace
@@ -281,8 +321,12 @@ NSArray<UIView*>* TextViews(NSString* suggestion_text,
       [stackView addArrangedSubview:iconView];
     }
 
+    NSString* suggestionText =
+        IsPasswordSuggestion(suggestion)
+            ? PasswordSuggestionDisplayText(suggestion.value)
+            : suggestion.value;
+
     BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-    NSString* suggestionText = suggestion.value;
     if (IsKeyboardAccessoryUpgradeEnabled()) {
       // On phones, store the suggestion information in a stack view so that it
       // can be selectively truncated if necessary.
@@ -299,16 +343,6 @@ NSArray<UIView*>* TextViews(NSString* suggestion_text,
 
         // Insert the next subviews vertically instead of horizonatally.
         stackView = verticalStackView;
-      }
-
-      if ([suggestionText hasSuffix:kPasswordFormSuggestionSuffix]) {
-        suggestionText = [suggestionText
-            substringToIndex:suggestionText.length -
-                             kPasswordFormSuggestionSuffix.length];
-        if ([suggestionText length] == 0) {
-          suggestionText =
-              l10n_util::GetNSString(IDS_IOS_AUTOFILL_PASSWORD_NO_USERNAME);
-        }
       }
     }
 

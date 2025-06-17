@@ -44,15 +44,6 @@ CGFloat const kSpacingBetweenCellLabels = 2;
 // Returns the username to display for the given `suggestion`.
 NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
   NSString* username = suggestion.value;
-
-  // If present, remove the ' ••••••••' suffix appended to the username in the
-  // suggestion.
-  if ([username containsString:kPasswordFormSuggestionSuffix]) {
-    username = [username
-        stringByReplacingOccurrencesOfString:kPasswordFormSuggestionSuffix
-                                  withString:@""];
-  }
-
   return ([username length] == 0)
              ? l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME)
              : username;

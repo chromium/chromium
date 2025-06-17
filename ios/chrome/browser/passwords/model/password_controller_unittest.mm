@@ -586,10 +586,8 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
                frameID:SysUTF8ToNSString(frame->GetFrameId())
           onlyPassword:NO];
 
-  NSString* suggestion_text = [NSString
-      stringWithFormat:@"%@ ••••••••",
-                       [NSString stringWithUTF8String:test_data.user_value]];
-
+  NSString* suggestion_text =
+      [NSString stringWithUTF8String:test_data.user_value];
   [passwordController_.sharedPasswordController
       retrieveSuggestionsForForm:form_query
                         webState:web_state()
@@ -600,7 +598,7 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
                    [suggestion_values addObject:suggestion.value];
                  }
                  EXPECT_NSEQ((@[
-                               @"user0 ••••••••",
+                               @"user0",
                                suggestion_text,
                              ]),
                              suggestion_values);
@@ -1117,7 +1115,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
       @[(@"var evt = document.createEvent('Events');"
          "username_.focus();"),
         @";"],
-      @[@"user0 ••••••••", @"abc ••••••••"],
+      @[@"user0", @"abc"],
       @"[]=, onkeyup=false, onchange=false"
     },
     {
@@ -1125,7 +1123,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
       @[(@"var evt = document.createEvent('Events');"
          "password_.focus();"),
         @";"],
-      @[@"user0 ••••••••", @"abc ••••••••"],
+      @[@"user0", @"abc"],
       @"[]=, onkeyup=false, onchange=false"
     },
     {
@@ -1133,7 +1131,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
       @[(@"username_.value='ab';"
          "username_.focus();"),
         @";"],
-      @[@"user0 ••••••••", @"abc ••••••••"],
+      @[@"user0", @"abc"],
       @"ab[]=, onkeyup=false, onchange=false"
     },
     {
@@ -1144,7 +1142,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
          "var ev = new KeyboardEvent('keyup', {bubbles:true});"
          "username_.dispatchEvent(ev);"),
         @";"],
-      @[@"abc ••••••••"],
+      @[@"abc"],
       @"ab[]=, onkeyup=true, onchange=false"
     },
     {
@@ -1633,7 +1631,7 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
       @[(@"var evt = document.createEvent('Events');"
          "username_.focus();"),
         @";"],
-      @[@"user0 ••••••••", @"abc ••••••••"],
+      @[@"user0", @"abc"],
       @"[]=, onkeyup=false, onchange=false"
     },
     {
@@ -1641,7 +1639,7 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
       @[(@"var evt = document.createEvent('Events');"
          "password_.focus();"),
         @";"],
-      @[@"user0 ••••••••", @"abc ••••••••", @"Suggest strong password"],
+      @[@"user0", @"abc", @"Suggest strong password"],
       @"[]=, onkeyup=false, onchange=false"
     },
   };

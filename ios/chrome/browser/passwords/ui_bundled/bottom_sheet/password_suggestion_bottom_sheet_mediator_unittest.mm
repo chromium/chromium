@@ -502,9 +502,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, SuggestionUsernameHasSuffix) {
   [mediator_ setCredentialsForTesting:{expectedCredential}];
 
   FormSuggestion* suggestion = [FormSuggestion
-      suggestionWithValue:[NSString
-                              stringWithFormat:@"%@%@", @"test1",
-                                               kPasswordFormSuggestionSuffix]
+      suggestionWithValue:@"test1"
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kAutocompleteEntry
