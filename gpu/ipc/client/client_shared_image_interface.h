@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/client/gpu_ipc_client_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -22,7 +22,8 @@ class GpuChannelHost;
 
 // Tracks shared images created by a single context and ensures they are deleted
 // if the context is lost.
-class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
+class GPU_IPC_CLIENT_EXPORT ClientSharedImageInterface
+    : public SharedImageInterface {
  public:
   ClientSharedImageInterface(SharedImageInterfaceProxy* proxy,
                              scoped_refptr<gpu::GpuChannelHost> channel);

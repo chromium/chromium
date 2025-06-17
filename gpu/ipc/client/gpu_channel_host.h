@@ -21,8 +21,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
-#include "gpu/gpu_export.h"
 #include "gpu/ipc/client/gpu_channel_observer.h"
+#include "gpu/ipc/client/gpu_ipc_client_export.h"
 #include "gpu/ipc/client/image_decode_accelerator_proxy.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
@@ -43,7 +43,7 @@ class GpuChannelHost;
 using GpuChannelEstablishedCallback =
     base::OnceCallback<void(scoped_refptr<GpuChannelHost>)>;
 
-class GPU_EXPORT GpuChannelEstablishFactory {
+class GPU_IPC_CLIENT_EXPORT GpuChannelEstablishFactory {
  public:
   virtual ~GpuChannelEstablishFactory() = default;
 
@@ -55,7 +55,7 @@ class GPU_EXPORT GpuChannelEstablishFactory {
 // On the GPU process side there's a corresponding GpuChannel.
 // Every method can be called on any thread with a message loop, except for the
 // IO thread.
-class GPU_EXPORT GpuChannelHost
+class GPU_IPC_CLIENT_EXPORT GpuChannelHost
     : public base::RefCountedThreadSafe<GpuChannelHost> {
  public:
   GpuChannelHost(
@@ -232,7 +232,7 @@ class GPU_EXPORT GpuChannelHost
   // A filter used internally to route incoming messages from the IO thread
   // to the correct message loop. It also maintains some shared state between
   // all the contexts.
-  class GPU_EXPORT Listener : public IPC::Listener {
+  class GPU_IPC_CLIENT_EXPORT Listener : public IPC::Listener {
    public:
     Listener();
     ~Listener() override;

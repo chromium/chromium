@@ -9,7 +9,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "gpu/command_buffer/client/image_decode_accelerator_interface.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/client/gpu_ipc_client_export.h"
 
 namespace gpu {
 class GpuChannelHost;
@@ -46,7 +46,7 @@ class GpuChannelHost;
 // Objects of this class are thread-safe.
 //
 // TODO(andrescj): actually put the decoder's capabilities in GpuInfo.
-class GPU_EXPORT ImageDecodeAcceleratorProxy
+class GPU_IPC_CLIENT_EXPORT ImageDecodeAcceleratorProxy
     : public ImageDecodeAcceleratorInterface {
  public:
   ImageDecodeAcceleratorProxy(GpuChannelHost* host, int32_t route_id);
