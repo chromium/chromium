@@ -182,16 +182,6 @@ if (is_castos || is_cast_android) {
     "//third_party/webrtc/modules/video_coding:codec_globals_headers",
   ]
 }
-if (is_castos || is_cast_android || is_nacl) {
-  # For chromecast and NaCL, provide a default field trial implementation.
-  webrtc_public_deps += [ "//third_party/webrtc/system_wrappers:field_trial" ]
-} else {
-  # Other Chromium flavors get a custom implementation.
-  # See the default value of "rtc_exclude_field_trial_default"
-  # in https://cs.chromium.org/chromium/src/third_party/webrtc/webrtc.gni
-  # for how that is done.
-  webrtc_public_deps += [ ":field_trial" ]
-}
 if ((is_linux || is_chromeos) && rtc_use_pipewire) {
   webrtc_public_deps += [
     "//third_party/webrtc/modules/portal",
@@ -243,10 +233,24 @@ source_set("metrics") {
 }
 
 source_set("field_trial") {
-  # TODO(mbonadei): Migrate WebRTC deps to webrtc_component and uncomment.
-  # visibility = [ ":*" ]
-  sources = [ "field_trial.cc" ]
-  deps = [ "//base" ]
+  visibility = [
+    ":environment",
+    "//third_party/webrtc/test/fuzzers:webrtc_fuzzer_main",
+  ]
+  sources = [
+    "field_trial.cc",
+    "field_trial.h",
+  ]
+  configs += [ "//third_party/webrtc:library_impl_config" ]
+  deps = [
+    "//base",
+    "//third_party/webrtc/api:field_trials_view",
+    "//third_party/webrtc/rtc_base/system:rtc_export",
+  ]
+
+  if (!is_castos && !is_cast_android && !is_nacl) {
+    sources += [ "field_trial_legacy.cc" ]
+  }
 }
 
 # If you want to depend on this target you should depend on :webrtc_component
@@ -296,6 +300,7 @@ source_set("environment") {
   ]
   configs += [ "//third_party/webrtc:library_impl_config" ]
   deps = [
+    ":field_trial",
     ":task_queue_factory",
     "//third_party/webrtc/api/environment",
     "//third_party/webrtc/api/environment:environment_factory",
