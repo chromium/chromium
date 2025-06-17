@@ -234,13 +234,23 @@ void RecordNavigationScheme(const GURL& url,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+bool ShouldOpenInTab(const Extension* extension) {
+// We always open the options page in new tab on android. Embedding the page on
+// chrome://extensions is done with guest_view, but it's not enabled on android.
+#if BUILDFLAG(IS_ANDROID)
+  return true;
+#else
+  return OptionsPageInfo::ShouldOpenInTab(extension);
+#endif
+}
+
 // Returns the URL to the extension's options page, if any.
 std::optional<GURL> GetOptionsPageUrlToNavigate(const Extension* extension) {
   if (!OptionsPageInfo::HasOptionsPage(extension)) {
     return std::nullopt;
   }
-  const bool open_in_tab = OptionsPageInfo::ShouldOpenInTab(extension);
-  if (open_in_tab) {
+
+  if (ShouldOpenInTab(extension)) {
     // Options page tab is simply e.g. chrome-extension://.../options.html.
     return OptionsPageInfo::GetOptionsPage(extension);
   } else {
@@ -1321,7 +1331,7 @@ bool ExtensionTabUtil::OpenOptionsPageFromWebContents(
   if (!url) {
     return false;
   }
-  const bool open_in_tab = OptionsPageInfo::ShouldOpenInTab(extension);
+  const bool open_in_tab = ShouldOpenInTab(extension);
 // Opens the url as instructed by `open_in_tab`. On android we take a different
 // path because the `Browser` object is not available.
 // TODO(crbug.com/392777363): Unify the path on android after browser
@@ -1378,7 +1388,7 @@ bool ExtensionTabUtil::OpenOptionsPage(const Extension* extension,
   if (!url) {
     return false;
   }
-  const bool open_in_tab = OptionsPageInfo::ShouldOpenInTab(extension);
+  const bool open_in_tab = ShouldOpenInTab(extension);
   return WindowControllerFromBrowser(browser)->OpenOptionsPage(extension, *url,
                                                                open_in_tab);
 }
