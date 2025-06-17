@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Scheduling.ThreadController.ActiveIntervalDuration.{Length}.{NamedThread}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>olivierli@google.com</owner>
   <owner>etienneb@google.com</owner>
   <summary>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Scheduling.ThreadController.ActiveIntervalOffCpuDuration.{Length}.{NamedThread}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>olivierli@google.com</owner>
   <owner>etienneb@google.com</owner>
   <summary>
@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Scheduling.ThreadController.ActiveIntervalOnCpuDuration.{Length}.{NamedThread}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>olivierli@google.com</owner>
   <owner>etienneb@google.com</owner>
   <summary>
@@ -271,7 +271,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Scheduling.ThreadController.ActiveIntervalOnCpuPercentage.{Length}.{NamedThread}"
-    units="%" expires_after="2025-10-12">
+    units="%" expires_after="2025-12-14">
   <owner>olivierli@google.com</owner>
   <owner>etienneb@google.com</owner>
   <summary>
@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Scheduling.ThreadController.IdleDuration.{Length}.{NamedThread}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>olivierli@google.com</owner>
   <owner>etienneb@google.com</owner>
   <summary>
@@ -396,7 +396,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ThreadPool.UnnecessaryWakeup.{ThreadPoolName}.{WorkerGroup}"
-    enum="BooleanHit" expires_after="2025-10-12">
+    enum="BooleanHit" expires_after="2025-12-14">
   <owner>spvm@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

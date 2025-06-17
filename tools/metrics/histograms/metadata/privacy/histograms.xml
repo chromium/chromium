@@ -342,7 +342,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="Privacy.DeleteBrowsingData.Duration.TabsClosureAnimationDuration"
-    units="microseconds" expires_after="2025-10-12">
+    units="microseconds" expires_after="2025-12-14">
   <owner>fsenra@chromium.org</owner>
   <owner>alimariam@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -357,7 +357,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="Privacy.DeleteBrowsingData.Duration.TabsClosureAnimationStartDelay"
-    units="microseconds" expires_after="2025-10-12">
+    units="microseconds" expires_after="2025-12-14">
   <owner>fsenra@chromium.org</owner>
   <owner>alimariam@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -389,7 +389,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
-    enum="DIPSRedirectCategory" expires_after="2025-10-12">
+    enum="DIPSRedirectCategory" expires_after="2025-12-14">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -406,7 +406,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.BounceStatusCode.{DIPSCachedResponseStatus}"
-    enum="HttpResponseCode" expires_after="2025-10-12">
+    enum="HttpResponseCode" expires_after="2025-12-14">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -470,7 +470,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseErrors" enum="SqliteLoggedResultCode"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -535,7 +535,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.DeletionLatency2" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -580,7 +580,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.ServerBounceChainDelay" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -591,7 +591,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.ServerBounceDelay" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
@@ -915,7 +915,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.ScheduledRequests.DelayFromOriginalReportTime"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>dmcardle@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -957,7 +957,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.ScheduledRequests.Status"
-    enum="AggregationServiceObserverReportStatus" expires_after="2025-10-12">
+    enum="AggregationServiceObserverReportStatus" expires_after="2025-12-14">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1493,7 +1493,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.PrivacyPolicy.FailedLoadErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-10-12">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-12-14">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.BrowserProcessCreationReason"
-    enum="ProcessCreationReason" expires_after="2025-10-12">
+    enum="ProcessCreationReason" expires_after="2025-12-14">
   <owner>mthiesse@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -392,7 +392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.{StartupType}.TimeSpentInBinder"
-    units="ms" expires_after="2025-10-14">
+    units="ms" expires_after="2025-12-14">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -424,7 +424,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Experimental.{name}.Tabbed.ColdStartTracker"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>pasko@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -558,7 +558,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2025-12-14">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -568,7 +568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Warm.MainIntentTimeToFirstDraw" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>nafisabedin@google.com</owner>
   <owner>mthiesse@chromium.org</owner>
   <summary>

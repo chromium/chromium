@@ -344,7 +344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DangerousDialog.Events"
-    enum="DangerousDownloadDialogEvent" expires_after="2025-10-12">
+    enum="DangerousDownloadDialogEvent" expires_after="2025-12-14">
   <owner>qinmin@chromium.org</owner>
   <summary>
     Records user interactions with the dangerous download dialog on Android.
@@ -411,7 +411,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DuplicatePdfDownloadTriggered"
-    enum="BooleanOpenInline" expires_after="2025-10-12">
+    enum="BooleanOpenInline" expires_after="2025-12-14">
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -611,7 +611,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUI" enum="DownloadFileUI"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -634,7 +634,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadMimeType" enum="DownloadMimeTypeResult"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -1204,7 +1204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Start.ContentType.{TransientType}"
-    enum="DownloadContentType" expires_after="2025-10-12">
+    enum="DownloadContentType" expires_after="2025-12-14">
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -1240,7 +1240,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.UserValidatedDangerousDownload.DownloadsPage"
-    enum="DownloadItem.DangerType" expires_after="2025-10-12">
+    enum="DownloadItem.DangerType" expires_after="2025-12-14">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

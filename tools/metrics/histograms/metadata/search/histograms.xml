@@ -379,7 +379,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.ChoiceReprompt{Category}"
-    enum="SearchEngineChoiceReprompt" expires_after="2025-10-12">
+    enum="SearchEngineChoiceReprompt" expires_after="2025-12-14">
   <owner>droger@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -917,7 +917,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.DefaultSearchProviderType2{Population}"
-    enum="OmniboxSearchEngineType" expires_after="2025-10-12">
+    enum="OmniboxSearchEngineType" expires_after="2025-12-14">
   <owner>mpearson@chromium.org</owner>
   <owner>ftirelo@chromium.org</owner>
   <summary>

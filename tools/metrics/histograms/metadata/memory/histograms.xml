@@ -1961,7 +1961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Gpu.SharedMemoryFootprint" units="MB"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -2296,7 +2296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.Decompression.Latency"
-    units="microseconds" expires_after="2025-10-12">
+    units="microseconds" expires_after="2025-12-14">
   <owner>lizeb@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -2665,7 +2665,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.RenderProcessHost.Count2.All" units="processes"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -2685,7 +2685,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.RenderProcessHost.Count2.InitializedAndNotDead"
-    units="processes" expires_after="2025-10-12">
+    units="processes" expires_after="2025-12-14">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -2778,7 +2778,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.StackSamplingProfiler.StackSampleSize2" units="KB"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>iby@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
@@ -3037,7 +3037,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Total.SharedMemoryFootprint" units="MB"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>

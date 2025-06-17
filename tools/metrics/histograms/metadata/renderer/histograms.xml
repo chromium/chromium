@@ -500,7 +500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Preload.UnusedResource2{Trigger}" enum="ResourceType"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -529,7 +529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.ProcessLifetime3{RendererHostedContentType}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>fdoray@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -564,7 +564,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Unresponsive.Reason{WidgetVisibility}"
-    enum="RendererIsUnresponsiveReason" expires_after="2025-10-12">
+    enum="RendererIsUnresponsiveReason" expires_after="2025-12-14">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -590,7 +590,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.Unresponsive.{UIElementVisible}.RenderProcessHostPriority"
-    enum="RenderProcessHostPriority" expires_after="2025-10-12">
+    enum="RenderProcessHostPriority" expires_after="2025-12-14">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

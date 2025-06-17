@@ -801,7 +801,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.ContextualSearchSuggestion.Precision" enum="Boolean"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>khalidpeer@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -864,7 +864,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.CutOrCopyAllText" units="count"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -2454,7 +2454,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SearchSuggest.Requests"
-    enum="SearchSuggestRequestEvent" expires_after="2025-10-12">
+    enum="SearchSuggestRequestEvent" expires_after="2025-12-14">
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>cch@chromium.org</owner>
@@ -2936,7 +2936,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SuggestRequestsSent" enum="RemoteRequestType"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -2952,7 +2952,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.SuggestRequestsSent.HttpResponseCode.{OmniboxPageContext}{RemoteRequestType}"
-    enum="HttpResponseCode" expires_after="2025-10-12">
+    enum="HttpResponseCode" expires_after="2025-12-14">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -2968,7 +2968,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.SuggestRequestsSent.HttpResponseCode{RemoteRequestType}"
-    enum="HttpResponseCode" expires_after="2025-10-12">
+    enum="HttpResponseCode" expires_after="2025-12-14">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -3068,7 +3068,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SuggestRequestsSent.{OmniboxPageContext}"
-    enum="RemoteRequestType" expires_after="2025-10-12">
+    enum="RemoteRequestType" expires_after="2025-12-14">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -3114,7 +3114,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SuggestTiles.SelectedTileIndex" units="position"
-    expires_after="2025-09-01">
+    expires_after="2025-12-14">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
   <summary>
@@ -3552,7 +3552,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.ZeroSuggest.Precision" enum="Boolean"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>khalidpeer@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>

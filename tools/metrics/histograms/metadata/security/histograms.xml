@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.GwpAsan.Activated.{Allocator}.{Process}"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2025-12-14">
   <owner>mpdenton@chromium.org</owner>
   <owner>kdlee@chromium.org</owner>
   <owner>memory-safety-dev@chromium.org</owner>
@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.GwpAsan.AllocatorOom.{Allocator}.{Process}"
-    units="allocations" expires_after="2025-10-12">
+    units="allocations" expires_after="2025-12-14">
   <owner>mpdenton@chromium.org</owner>
   <owner>kdlee@chromium.org</owner>
   <owner>memory-safety-dev@chromium.org</owner>
@@ -418,7 +418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AdPersonalizationRowShown" enum="Boolean"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>dullweber@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <summary>

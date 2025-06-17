@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Favicons.FallbackToHostSuccess" enum="BooleanSuccess"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>mfacey@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
   <summary>
@@ -46,7 +46,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Favicons.IconSuccess.{IconSizes}" enum="BooleanSuccess"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>mastiz@chromium.org</owner>
   <owner>pkotwicz@chromium.org</owner>
   <summary>

@@ -570,7 +570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.FetchCapabilitiesTime2" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -627,7 +627,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.InitialDisplayTimeFirstPrint" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>

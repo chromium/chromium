@@ -719,7 +719,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SafetyCheck.UnusedSitePermissionsMigrationFail"
-    units="type" expires_after="2025-10-12">
+    units="type" expires_after="2025-12-14">
   <owner>alimariam@google.com</owner>
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -804,7 +804,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 <histogram
     name="Settings.SafetyHub.AbusiveNotificationPermissionRevocation.Interactions"
     enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -816,7 +816,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SafetyHub.AutorevokeUnusedSitePermissions.Changed"
-    enum="BooleanEnabled" expires_after="2025-10-12">
+    enum="BooleanEnabled" expires_after="2025-12-14">
   <owner>rubindl@google.com</owner>
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -840,7 +840,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SafetyHub.Dashboard.Interactions"
-    enum="SafetyHubDashboardInteractions" expires_after="2025-10-12">
+    enum="SafetyHubDashboardInteractions" expires_after="2025-12-14">
   <owner>rubindl@google.com</owner>
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -1125,7 +1125,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SafetyHub.ExternalInteractions"
-    enum="SafetyHubExternalInteractions" expires_after="2025-10-12">
+    enum="SafetyHubExternalInteractions" expires_after="2025-12-14">
   <owner>rubindl@google.com</owner>
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -1295,7 +1295,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SafetyHub.{ModuleType}.{LifecycleEvent}"
-    enum="SafetyHubModuleState" expires_after="2025-10-12">
+    enum="SafetyHubModuleState" expires_after="2025-12-14">
   <owner>rubindl@google.com</owner>
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -1344,7 +1344,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.StartupPageLoadSettings2" enum="SessionStartupPref"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>mpearson@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

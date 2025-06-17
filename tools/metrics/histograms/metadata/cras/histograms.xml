@@ -171,14 +171,14 @@ This collects each top-level device metric type. For example,
   </summary>
 </histogram>
 
-<histogram name="Cras.AstRuntime" units="seconds" expires_after="2025-10-12">
+<histogram name="Cras.AstRuntime" units="seconds" expires_after="2025-12-14">
   <owner>cranelw@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>Tracks the runtime of the APM when AST is active.</summary>
 </histogram>
 
 <histogram name="Cras.AstStartStatus" enum="CrasEffectStartStatus"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>cranelw@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -456,7 +456,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.DlcManagerStatus.ElapsedTimeHistogramOnFailure.{DlcType}"
-    units="seconds" expires_after="2025-10-12">
+    units="seconds" expires_after="2025-12-14">
   <owner>cranelw@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -643,7 +643,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.InputGainChanged" enum="AudioSettingsChangeSource"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>eddyhsu@chromium.org</owner>
   <owner>chromeos-audio-sw@google.com</owner>
   <summary>

@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}HeaderSize" units="bytes"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>

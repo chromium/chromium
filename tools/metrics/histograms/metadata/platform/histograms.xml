@@ -762,7 +762,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DlcService.InstallResult"
-    enum="DlcService.InstallResult" expires_after="2025-10-12">
+    enum="DlcService.InstallResult" expires_after="2025-12-14">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -1040,7 +1040,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FlexPageFlipFlakes" units="flakes"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>andrebraga@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -1057,7 +1057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FlexPartitionSize.{Partition}" units="MiB"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>nicholasbishop@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -1796,7 +1796,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.KeyDeliveryResult"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2025-10-12">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2025-12-14">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>

@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.FirstRun.SeedFetchTime" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -206,7 +206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.ForcedFieldTrialsAtStartupForInternalsPage"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2025-12-14">
   <owner>harringtond@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

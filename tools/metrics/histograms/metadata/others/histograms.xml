@@ -530,7 +530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.AtAuctionTotalSize.{Type}" units="KB"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>caraitto@chromium.org</owner>
   <owner>pauljensen@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
@@ -667,7 +667,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.BidderWorkletIsolateUsedHeapSizeKilobytes"
-    units="KB" expires_after="2025-10-12">
+    units="KB" expires_after="2025-12-14">
   <owner>abigailkatcoff@google.com</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -682,7 +682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.Auction.BiddingSignalsResponseDownloadTime"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -697,7 +697,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.BiddingSignalsResponseDownloadTimeAfterOneDownloadTimePerIG"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -714,7 +714,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.BiddingSignalsResponseDownloadTimePerIG"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -2025,7 +2025,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.NumSelectableBuyerAndSellerReportingIds"
-    units="reporting_ids" expires_after="2025-10-12">
+    units="reporting_ids" expires_after="2025-12-14">
   <owner>orrb@google.com</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -5268,7 +5268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstPartySets.Initialization.SitesToClear.Count"
-    units="sites" expires_after="2025-10-12">
+    units="sites" expires_after="2025-12-14">
   <owner>cfredric@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -5404,7 +5404,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.Sentinel.Created" enum="FirstRunSentinelResult"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -5543,7 +5543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gamepad.KnownGamepadConnectedWithId"
-    enum="GamepadVendorProduct" expires_after="2025-08-10">
+    enum="GamepadVendorProduct" expires_after="2025-12-14">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -5703,7 +5703,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImportantFile.FileReplaceResult{ImportantFileClients}"
-    enum="ImportantFileReplaceResult" expires_after="2025-10-12">
+    enum="ImportantFileReplaceResult" expires_after="2025-12-14">
   <owner>etienneb@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <summary>
@@ -5728,7 +5728,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImportantFile.FileReplaceRetryCount2{ImportantFileClients}"
-    units="attempt count" expires_after="2025-10-12">
+    units="attempt count" expires_after="2025-12-14">
   <owner>etienneb@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <summary>
@@ -5945,7 +5945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LoadingPredictor.IsSlowNetwork" enum="Boolean"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -6626,7 +6626,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.Embedding.LoadDlcStatus"
-    enum="EmbeddingModelLoadDlcStatus" expires_after="2025-10-15">
+    enum="EmbeddingModelLoadDlcStatus" expires_after="2025-12-14">
   <owner>jmpollock@chromium.org</owner>
   <owner>yich@google.com</owner>
   <owner>zuan@chromium.org</owner>
@@ -6638,7 +6638,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.Embedding.LoadEmbeddingStatus"
-    enum="EmbeddingModelLoadEmbeddingStatus" expires_after="2025-10-15">
+    enum="EmbeddingModelLoadEmbeddingStatus" expires_after="2025-12-14">
   <owner>jmpollock@chromium.org</owner>
   <owner>yich@google.com</owner>
   <owner>zuan@chromium.org</owner>
@@ -6649,7 +6649,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.Embedding.TfliteRunnerLoadStatus"
-    enum="EmbeddingModelTfliteRunnerLoadStatus" expires_after="2025-10-15">
+    enum="EmbeddingModelTfliteRunnerLoadStatus" expires_after="2025-12-14">
   <owner>jmpollock@chromium.org</owner>
   <owner>yich@google.com</owner>
   <owner>zuan@chromium.org</owner>
@@ -6661,7 +6661,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.Embedding.TfliteRunnerRunStatus"
-    enum="EmbeddingModelTfliteRunnerRunStatus" expires_after="2025-10-15">
+    enum="EmbeddingModelTfliteRunnerRunStatus" expires_after="2025-12-14">
   <owner>jmpollock@chromium.org</owner>
   <owner>yich@google.com</owner>
   <owner>zuan@chromium.org</owner>
@@ -7500,7 +7500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageImageService.Backend.OptimizationGuide.Result{ClientId}"
-    enum="PageImageServiceResult" expires_after="2025-10-10">
+    enum="PageImageServiceResult" expires_after="2025-12-14">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1456757</component>
@@ -7515,7 +7515,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageImageService.Backend.Suggest.Result{ClientId}"
-    enum="PageImageServiceResult" expires_after="2025-10-10">
+    enum="PageImageServiceResult" expires_after="2025-12-14">
   <owner>wylieb@google.com</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
@@ -7529,7 +7529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageImageService.Backend{ClientId}"
-    enum="PageImageServiceBackend" expires_after="2025-10-12">
+    enum="PageImageServiceBackend" expires_after="2025-12-14">
   <owner>wylieb@google.com</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
@@ -7592,7 +7592,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaintHolding.InputTiming4" enum="PaintHoldingInputTiming"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -8105,7 +8105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.WebUI.LoadCompletedTime" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -8311,7 +8311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReportingAndNEL.UnresponsiveRenderer.CrashReportOutcome"
-    enum="CrashRepHandlingOutcome" expires_after="2025-10-12">
+    enum="CrashRepHandlingOutcome" expires_after="2025-12-14">
   <owner>iclelland@chromium.org</owner>
   <owner>issackjohn@microsoft.com</owner>
   <owner>src/net/reporting/OWNERS</owner>
@@ -10238,7 +10238,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebContentsObserver.{Method}{FrameType}" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>cduvall@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>

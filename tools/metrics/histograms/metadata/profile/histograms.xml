@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.GaiaNameShareStatus" enum="ProfileGaiaNameShareStatus"
-    expires_after="2025-10-11">
+    expires_after="2025-12-14">
   <owner>droger@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -622,7 +622,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.{Database}Size" units="MB" expires_after="2025-10-12">
+<histogram name="Profile.{Database}Size" units="MB" expires_after="2025-12-14">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

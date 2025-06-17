@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.ChromeApp.PrimaryAppUpdateResult"
-    enum="KioskPrimaryAppDownloadResult" expires_after="2025-10-12">
+    enum="KioskPrimaryAppDownloadResult" expires_after="2025-12-14">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>

@@ -1140,7 +1140,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   <token key="RequestType" variants="ProtoFetcherRequestType"/>
 </histogram>
 
-<histogram name="{RequestType}.Latency" units="ms" expires_after="2025-10-12">
+<histogram name="{RequestType}.Latency" units="ms" expires_after="2025-12-14">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -1154,7 +1154,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="{RequestType}.Status" enum="SupervisedUserProtoFetcherStatus"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>The status of the fetch in calls to {RequestType}.</summary>

@@ -137,7 +137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DecodeLCPCandidateImage.{DecodeMethod}"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2025-12-14">
   <owner>mmocny@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -231,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.PartialSwap.TotalDamage" units="%"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>vasilyt@chromium.org</owner>
   <owner>petermcneeley@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.RenderPassDrawnRectMatch"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2025-12-14">
   <owner>petermcneeley@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.{FocusType}" units="pixels"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>petermcneeley@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -286,7 +286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.Draw.AverageOverdraw2" units="units"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>zoraiznaeem@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -696,7 +696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.LCDTextDisallowedReasonKPixels2.{DPI}"
-    enum="LCDTextDisallowedReason" expires_after="2025-10-12">
+    enum="LCDTextDisallowedReason" expires_after="2025-12-14">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -845,7 +845,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.TileManager.RasterTasksDuration"
-    units="microseconds" expires_after="2025-10-12">
+    units="microseconds" expires_after="2025-12-14">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -855,7 +855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.TileManager.TileInvalidationArea" units="%"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>petermcneeley@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1023,7 +1023,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.CheckerboardingNeedRaster4.AllSequences"
-    units="%" expires_after="2025-10-12">
+    units="%" expires_after="2025-12-14">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1071,7 +1071,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.Checkerboarding{Version}.AllSequences"
-    units="%" expires_after="2025-10-12">
+    units="%" expires_after="2025-12-14">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1119,7 +1119,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Graphics.Smoothness.Checkerboarding{Version}.{Thread}{Sequence}"
-    units="%" expires_after="2025-10-12">
+    units="%" expires_after="2025-12-14">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1291,7 +1291,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Graphics.Smoothness.PercentDroppedFrames3.{Sequence}.1MinAfterResume"
-    units="%" expires_after="2025-10-12">
+    units="%" expires_after="2025-12-14">
   <owner>kawasin@google.com</owner>
   <owner>baseos-perf@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>

@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManPrepareRequest"
-    enum="CredManPrepareRequestEnum" expires_after="2025-10-12">
+    enum="CredManPrepareRequestEnum" expires_after="2025-12-14">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAuthentication.Android.Fido2VsPasskeyCache.CredentialCountDifference"
-    units="passkeys" expires_after="2025-10-12">
+    units="passkeys" expires_after="2025-12-14">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAuthentication.Android.Fido2VsPasskeyCache.CredentialCountDifference.{RpType}"
-    units="passkeys" expires_after="2025-10-12">
+    units="passkeys" expires_after="2025-12-14">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.Fido2VsPasskeyCache.SuccessState"
-    enum="SuccessState" expires_after="2025-10-12">
+    enum="SuccessState" expires_after="2025-12-14">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAuthentication.Android.Fido2VsPasskeyCache.{RequestType}FasterMs"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAuthentication.Android.Fido2VsPasskeyCache.{RequestType}FasterMs.{RpType}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -188,7 +188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.NonDiscoverableCredentialsFound"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2025-12-14">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -247,7 +247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.ConditionalUiPasskeyCount" units="passkeys"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>kenrb@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -439,7 +439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.IsUVPlatformAuthenticatorAvailable2"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2025-12-14">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>

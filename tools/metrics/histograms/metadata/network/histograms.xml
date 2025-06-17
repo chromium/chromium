@@ -1793,7 +1793,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.ContentDecodingInterceptor.CreateDataPipeSuccess.{ContentDecodingInterceptorClientType}"
-    enum="Boolean" expires_after="2025-10-10">
+    enum="Boolean" expires_after="2025-12-14">
   <owner>horo@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5178,7 +5178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.GeoChangeTokenPresence"
-    enum="BooleanAvailable" expires_after="2025-10-12">
+    enum="BooleanAvailable" expires_after="2025-12-14">
   <owner>abhipatel@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
@@ -5205,7 +5205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.GetAuthTokenResult"
-    enum="BooleanSuccess" expires_after="2025-10-12">
+    enum="BooleanSuccess" expires_after="2025-12-14">
   <owner>djmitche@chromium.org</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -5219,7 +5219,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.GetAuthTokenResultForGeo"
-    enum="IpProtectionGetAuthTokenResultForGeo" expires_after="2025-10-12">
+    enum="IpProtectionGetAuthTokenResultForGeo" expires_after="2025-12-14">
   <owner>abhipatel@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
@@ -5387,7 +5387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.ProxyAllowList.UpdateProcessTime"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>aakallam@chromium.org</owner>
   <owner>abhijithnair@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -5401,7 +5401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.ProxyAllowList.UpdateSuccess"
-    enum="BooleanSuccess" expires_after="2025-10-12">
+    enum="BooleanSuccess" expires_after="2025-12-14">
   <owner>aakallam@chromium.org</owner>
   <owner>abhijithnair@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -5414,7 +5414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.ProxyChainFallback"
-    enum="IpProtectionProxyChainId" expires_after="2025-10-12">
+    enum="IpProtectionProxyChainId" expires_after="2025-12-14">
   <owner>djmitche@chromium.org</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -5537,7 +5537,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.TokenBatchRequestTime" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>djmitche@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
@@ -5645,7 +5645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.MaskedDomainList.EstimatedMemoryUsage"
-    units="KB" expires_after="2025-10-12">
+    units="KB" expires_after="2025-12-14">
   <owner>aakallam@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
@@ -5692,7 +5692,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.MaskedDomainList.Size2" units="KB"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>aakallam@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>

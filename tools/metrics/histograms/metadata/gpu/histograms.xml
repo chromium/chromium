@@ -450,7 +450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.CanvasOopRaster.OopRasterAndGpuAcceleration"
-    enum="CanvasOopRasterAndGpuAcceleration" expires_after="2025-10-12">
+    enum="CanvasOopRasterAndGpuAcceleration" expires_after="2025-12-14">
   <owner>vasilyt@chromium.org</owner>
   <owner>nazabris@microsoft.com</owner>
   <owner>jochin@microsoft.com</owner>
@@ -639,7 +639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.HardwareOverlaysSupported"
-    enum="BooleanOverlaySupported" expires_after="2025-10-12">
+    enum="BooleanOverlaySupported" expires_after="2025-12-14">
   <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1071,7 +1071,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.IntelGpuSeriesType" enum="IntelGpuSeriesType"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1206,7 +1206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.PaintOpReader.DeserializationError"
-    enum="PaintOpDeserializationError" expires_after="2025-10-12">
+    enum="PaintOpDeserializationError" expires_after="2025-12-14">
   <owner>junov@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1218,7 +1218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.Presentation.VSyncCallbackDelay" units="microseconds"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>magchen@chromium.org</owner>
   <owner>vmiura@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -1277,7 +1277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ShaderLoadPrefixOK" enum="BooleanMatched"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>vikassoni@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
   <summary>
@@ -1307,7 +1307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.SkiaBackendType" enum="SkiaBackendType"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
   <summary>
@@ -1430,7 +1430,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WebGLDisplayType" enum="EGLDisplayType"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>geofflang@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1658,7 +1658,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Exo.Surface.{ExoSurfaceCodePaths}" enum="Boolean"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>fangzhoug@chromium.org</owner>
   <owner>petermcneeley@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
@@ -1792,7 +1792,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.BeginFrameSource.VSyncCallbackDelay" units="microseconds"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>magchen@chromium.org</owner>
   <owner>vmiura@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>

@@ -265,7 +265,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="TrustedVault.SecurityDomainServiceURLFetchResponse{Reason}{SecurityDomainId}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-10-12">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-12-14">
   <owner>mastiz@chromium.org</owner>
   <owner>mmoskvitin@chromium.org</owner>
   <owner>martinkr@google.com</owner>

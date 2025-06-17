@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.Icon.CTR2" enum="PageActionCTREvent"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -316,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.Icon.NumberActionsShownWhenClicked"
-    units="actions" expires_after="2025-10-12">
+    units="actions" expires_after="2025-12-14">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -326,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.NumberActionsShown2" units="actions"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -349,7 +349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.PagesWithActionsShown2"
-    enum="PageActionPageEvent" expires_after="2025-10-12">
+    enum="PageActionPageEvent" expires_after="2025-12-14">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -388,7 +388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.{PageActionType}.Icon.CTR2"
-    enum="PageActionCTREvent" expires_after="2025-10-12">
+    enum="PageActionCTREvent" expires_after="2025-12-14">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -1065,7 +1065,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleHomepage.ParseTiming.NavigationToParseStart.{NavigationCountType}{BrowserInitializationStatus}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1114,7 +1114,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.ConnectTiming.FinalRequestDomainLookupDelay"
-    units="ms" expires_after="2025-08-24">
+    units="ms" expires_after="2025-12-14">
   <owner>horo@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1266,7 +1266,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.Leakage2.{NavigationMilestone}ToAbandon{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{RTTBucketSuffix}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>sisidovski@chromium.org</owner>
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1338,7 +1338,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.FirstFetchStartToFirstRequestStart"
-    units="ms" expires_after="2025-10-01">
+    units="ms" expires_after="2025-12-14">
   <owner>hayato@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1484,7 +1484,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
@@ -2287,7 +2287,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.PrivacySandboxAds.InteractiveTiming.FirstInputDelay4.{PrivacySandboxAdsApi}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -2323,7 +2323,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.PrivacySandboxAds.PaintTiming.NavigationToLargestContentfulPaint2.{PrivacySandboxAdsApi}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -2606,7 +2606,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.{Origin}.{MetricName}" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>chikamune@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -2631,7 +2631,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients{ObservedNavigation}.Leakage2.AbandonReasonAt.{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{IncognitoSuffix}{RTTBucketSuffix}"
-    enum="NavigationAbandonReasonEnum" expires_after="2025-10-12">
+    enum="NavigationAbandonReasonEnum" expires_after="2025-12-14">
   <owner>sisidovski@chromium.org</owner>
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -2653,7 +2653,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients{ObservedNavigation}.Leakage2.LastMilestoneBeforeAbandon{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{IncognitoSuffix}{RTTBucketSuffix}"
-    enum="NavigationMilestoneEnum2" expires_after="2025-10-12">
+    enum="NavigationMilestoneEnum2" expires_after="2025-12-14">
   <owner>sisidovski@chromium.org</owner>
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -2674,7 +2674,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients{ObservedNavigation}.Leakage2.NavigationStartToRendererProcessInit{BackgroundSuffix}{HiddenSuffix}{IncognitoSuffix}{RTTBucketSuffix}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2694,7 +2694,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients{ObservedNavigation}.Leakage2.NavigationStartTo{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{IncognitoSuffix}{RTTBucketSuffix}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2720,7 +2720,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients{ObservedNavigation}.Leakage2.NavigationStart{BackgroundSuffix}{HiddenSuffix}{IncognitoSuffix}{RTTBucketSuffix}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2738,7 +2738,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients{ObservedNavigation}.Leakage2.NetError{BackgroundSuffix}{HiddenSuffix}{IncognitoSuffix}{RTTBucketSuffix}{AbandonedTimeBucket}"
-    enum="NetErrorCodes" expires_after="2025-10-12">
+    enum="NetErrorCodes" expires_after="2025-12-14">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -3109,7 +3109,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.NavigationTiming.NavigationStartToFirstResponseStart"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -3171,7 +3171,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.PageTiming.ResourceLoadTime.{RequestDestination}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -3209,7 +3209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Experimental.PageVisitType2" enum="PageVisitType"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -3408,7 +3408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.InteractiveTiming.FirstInputTimestamp4" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3471,7 +3471,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.InteractiveTiming.NumInteractions{PageLoadType}"
-    units="Count" expires_after="2025-10-12">
+    units="Count" expires_after="2025-12-14">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3496,7 +3496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.InteractiveTiming.TimeToNextPaint" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3617,7 +3617,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Internal.PaintTiming.LargestContentfulPaint.ContentType"
-    enum="LargestContentType" expires_after="2025-10-12">
+    enum="LargestContentType" expires_after="2025-12-14">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3773,7 +3773,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.SuppressedEventsBeforeMissingFirstPaint"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2025-12-14">
   <owner>mustaq@chromium.org</owner>
   <owner>blink-interactions-team@google.com</owner>
   <summary>
@@ -3783,7 +3783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.SuppressedEventsCountBeforePaint3"
-    units="count" expires_after="2025-10-12">
+    units="count" expires_after="2025-12-14">
   <owner>mustaq@chromium.org</owner>
   <owner>blink-interactions-team@google.com</owner>
   <summary>
@@ -3803,7 +3803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.SuppressedEventsTimingBeforePaint3"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>mustaq@chromium.org</owner>
   <owner>blink-interactions-team@google.com</owner>
   <summary>
@@ -3829,7 +3829,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.SuppressedInteractionsCountBeforePaint3"
-    units="count" expires_after="2025-10-12">
+    units="count" expires_after="2025-12-14">
   <owner>mustaq@chromium.org</owner>
   <owner>blink-interactions-team@google.com</owner>
   <summary>
@@ -4177,7 +4177,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI{WebUIName}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -4410,7 +4410,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NonTabWebUI{WebUIName}"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

@@ -1187,7 +1187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BrowsingDataModel.ModelDestructionTime" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>alimariam@google.com</owner>
   <owner>dullweber@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -1464,7 +1464,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DefaultBrowserPromo.Outcome.{CurrentState}"
-    enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2025-10-12">
+    enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2025-12-14">
   <owner>lazzzis@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1935,7 +1935,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DynamicTopChrome.TabStripTransition.Finished"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2025-12-14">
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -2363,7 +2363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Hub.PaneFocused.PaneSwitcher" enum="HubPaneId"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-hub-dev@google.com</owner>
   <summary>
@@ -2389,7 +2389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.HubSearch.SearchBoxEntrypointV2"
-    enum="HubSearchEntrypoint" expires_after="2025-10-12">
+    enum="HubSearchEntrypoint" expires_after="2025-12-14">
   <owner>bjfong@google.com</owner>
   <owner>wylieb@google.com</owner>
   <owner>clank-hub-dev@google.com</owner>
@@ -2401,7 +2401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.IncognitoNotification.FileNotDeleted" enum="Boolean"
-    expires_after="2025-10-13">
+    expires_after="2025-12-14">
   <owner>arabm@google.com</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -2480,7 +2480,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputDevice.Keyboard.Active" enum="Boolean"
-    expires_after="2025-10-13">
+    expires_after="2025-12-14">
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -2489,14 +2489,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputDevice.Mouse.Active" enum="Boolean"
-    expires_after="2025-10-13">
+    expires_after="2025-12-14">
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>Emitted when a mouse is connected or disconnected.</summary>
 </histogram>
 
 <histogram name="Android.InputHintChecker.InitializationResult"
-    enum="InputHintInitializationResult" expires_after="2025-10-12">
+    enum="InputHintInitializationResult" expires_after="2025-12-14">
   <owner>pasko@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
   <summary>
@@ -2539,7 +2539,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputOnViz.Browser.EventTypesInDroppedSequence"
-    enum="MotionEventAction" expires_after="2025-10-12">
+    enum="MotionEventAction" expires_after="2025-12-14">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -2550,7 +2550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputOnViz.Browser.NumEventsInDroppedSequence"
-    units="counts" expires_after="2025-10-12">
+    units="counts" expires_after="2025-12-14">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -2561,7 +2561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputOnViz.Browser.SequenceDroppedReason"
-    enum="InputOnVizSequenceDroppedReason" expires_after="2025-10-12">
+    enum="InputOnVizSequenceDroppedReason" expires_after="2025-12-14">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -4691,7 +4691,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.PredictiveGestureNavigation{Transition}"
-    enum="PredictiveNavTransitionPhase" expires_after="2025-10-12">
+    enum="PredictiveNavTransitionPhase" expires_after="2025-12-14">
   <owner>lazzzis@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -4732,7 +4732,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.PredictiveNavigationTransition.NTPFeedRestorationDuration"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>lazzzis@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -4743,7 +4743,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.PredictiveNavigationTransition.NTPSmoothTransitionByFallback"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2025-12-14">
   <owner>lazzzis@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -4839,7 +4839,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RequestDesktopSite.UserSwitchToDesktop" enum="Boolean"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>gangwu@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <summary>
@@ -5083,7 +5083,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SelectFileDialogContentSelected"
-    enum="SelectFileDialogContent" expires_after="2025-10-12">
+    enum="SelectFileDialogContent" expires_after="2025-12-14">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -5563,7 +5563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabStrip.TimeToSwitchTab" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>gauravjj@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>

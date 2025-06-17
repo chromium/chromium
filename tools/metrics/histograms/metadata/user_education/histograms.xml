@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.MessageShown.TimeInQueue" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

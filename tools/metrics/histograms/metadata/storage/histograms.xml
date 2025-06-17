@@ -277,7 +277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DOMStorage.CommitMeasuredDelay" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -313,7 +313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.BackingStoreCloseDuration" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -583,7 +583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LevelDBEnv.LockFileInUseByThisProcess" enum="Boolean"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -946,7 +946,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.ConfirmSensitiveEntryAccessDuration"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>leimy@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
@@ -1490,7 +1490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.AsyncIterator.IteratedEntriesBenchmarks"
-    units="BenchmarksMet" expires_after="2025-10-12">
+    units="BenchmarksMet" expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1502,7 +1502,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.AsyncIterator.ReceivedEntriesBenchmarks"
-    units="BenchmarksMet" expires_after="2025-10-12">
+    units="BenchmarksMet" expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1668,7 +1668,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Database.FileBacked.FileSize.KB"
-    units="KB" expires_after="2025-10-12">
+    units="KB" expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1809,7 +1809,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Document.Timing.AddModule" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1900,7 +1900,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Document.Timing.Run.ExecutedInWorklet"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1913,7 +1913,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Document.Timing.SelectURL" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1928,7 +1928,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1968,7 +1968,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Storage.SharedStorage.HeaderObserver.CreatedOpaqueOriginForPrefsCheck"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -2054,7 +2054,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.OnShutdown.NumSqlErrors" units="Errors"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -2067,7 +2067,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Storage.SharedStorage.OnShutdown.RecoveryFromInitFailureAttempted"
-    enum="BooleanAttempted" expires_after="2025-10-12">
+    enum="BooleanAttempted" expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -2207,7 +2207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Worklet.DestroyedStatus"
-    enum="SharedStorageWorkletDestroyedStatus" expires_after="2025-10-12">
+    enum="SharedStorageWorkletDestroyedStatus" expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -2220,7 +2220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Worklet.Error.Type"
-    enum="SharedStorageWorkletErrorType" expires_after="2025-10-12">
+    enum="SharedStorageWorkletErrorType" expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -2245,7 +2245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Worklet.NumPerPage"
-    units="WorkletsCreated" expires_after="2025-10-12">
+    units="WorkletsCreated" expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -2340,7 +2340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Worklet.Timing.Delete" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -2367,7 +2367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Worklet.Timing.Get" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -2382,7 +2382,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Storage.SharedStorage.Worklet.Timing.KeepAliveEndedDueToOperationsFinished.KeepAliveDuration"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -2439,7 +2439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SharedStorage.Worklet.Timing.Set" units="ms"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>cammie@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>

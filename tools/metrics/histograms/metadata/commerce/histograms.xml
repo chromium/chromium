@@ -303,7 +303,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.Discounts.DiscountsPageActionIconIsExpandedWhenClicked"
-    enum="BooleanYesNo" expires_after="2025-10-05">
+    enum="BooleanYesNo" expires_after="2025-12-14">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -323,7 +323,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.PageActionIcon.TypeOnClick"
-    enum="DiscountClusterType" expires_after="2025-10-05">
+    enum="DiscountClusterType" expires_after="2025-12-14">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -685,7 +685,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceInsights.PriceTracking.{Action}"
-    enum="PriceInsightsPriceBucket" expires_after="2025-10-12">
+    enum="PriceInsightsPriceBucket" expires_after="2025-12-14">
   <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>qib@google.com</owner>
@@ -712,7 +712,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.DanglingUserSubscriptionCountAtStartup"
-    units="subscriptions" expires_after="2025-10-12">
+    units="subscriptions" expires_after="2025-12-14">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.org</owner>
@@ -917,7 +917,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Subscriptions.UntrackResult"
-    enum="ShoppingSubscriptionsRequestStatus" expires_after="2025-10-12">
+    enum="ShoppingSubscriptionsRequestStatus" expires_after="2025-12-14">
   <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

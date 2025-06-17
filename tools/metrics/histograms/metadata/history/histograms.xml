@@ -316,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.ImportantDialogShown"
-    enum="BooleanShown" expires_after="2025-10-12">
+    enum="BooleanShown" expires_after="2025-12-14">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>1456716</component>
@@ -2443,7 +2443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.StaleComputedEmbeddings" units="counts"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>wittman@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2626,7 +2626,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InitializationFailureStep" enum="HistoryInitStep"
-    expires_after="2025-08-10">
+    expires_after="2025-12-14">
   <owner>sky@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>1456716</component>
@@ -2639,7 +2639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InMemoryDBItemCount" units="typed URLs"
-    expires_after="2025-10-12">
+    expires_after="2025-12-14">
   <owner>sky@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <component>1456716</component>
