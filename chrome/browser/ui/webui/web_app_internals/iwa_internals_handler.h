@@ -22,7 +22,6 @@
 namespace web_app {
 
 class IwaSourceDevModeWithFileOp;
-class ScopedTempWebBundleFile;
 class WebAppInternalsIwaInstallationBrowserTest;
 struct InstallIsolatedWebAppCommandSuccess;
 
@@ -96,18 +95,6 @@ class IwaInternalsHandler {
   friend class web_app::WebAppInternalsIwaInstallationBrowserTest;
 
   Profile* profile() { return &profile_.get(); }
-
-  void DownloadWebBundleToFile(
-      const GURL& web_bundle_url,
-      ::mojom::UpdateInfoPtr update_info,
-      Handler::InstallIsolatedWebAppFromBundleUrlCallback callback,
-      web_app::ScopedTempWebBundleFile file);
-
-  void OnWebBundleDownloaded(
-      ::mojom::UpdateInfoPtr update_info,
-      Handler::InstallIsolatedWebAppFromBundleUrlCallback callback,
-      web_app::ScopedTempWebBundleFile bundle,
-      int32_t result);
 
   void OnIsolatedWebAppDevModeBundleSelected(
       Handler::SelectFileAndInstallIsolatedWebAppFromDevBundleCallback callback,

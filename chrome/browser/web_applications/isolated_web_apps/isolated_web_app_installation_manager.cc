@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/garbage_collect_storage_partitions_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
@@ -40,6 +42,7 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -143,6 +146,51 @@ MaybeIwaInstallSource GetProxyUrlFromCommandLine(
       });
 }
 
+constexpr auto kDownloadAnnotationDevToolsProtocol =
+    net::DefinePartialNetworkTrafficAnnotation(
+        "iwa_dev_tools_installation_web_bundle",
+        "iwa_bundle_downloader",
+        R"(
+    semantics {
+      sender: "DevTools PWA.install"
+      description:
+        "Downloads a Signed Web Bundle of an Isolated Web App which contains "
+        "code and other resources of this app."
+      trigger:
+        "User triggers PWA.install CDT command."
+    }
+    policy {
+      setting: "This feature cannot be disabled in settings."
+      policy_exception_justification: "Not implemented."
+    })");
+
+constexpr auto kDownloadAnnotationDevUi =
+    net::DefinePartialNetworkTrafficAnnotation(
+        "iwa_web_app_internals_web_bundle",
+        "iwa_bundle_downloader",
+        R"(
+    semantics {
+      sender: "Web App Internals page"
+      description:
+        "Downloads a Signed Web Bundle of an Isolated Web App which contains "
+        "code and other resources of this app."
+      trigger:
+        "User accepts the installation dialog in chrome://web-app-internals."
+    }
+    policy {
+      setting: "This feature cannot be disabled in settings."
+      policy_exception_justification: "Not implemented."
+    })");
+
+net::PartialNetworkTrafficAnnotationTag GetDownloadAnnotationTag(
+    IsolatedWebAppInstallationManager::InstallSurface install_surface) {
+  switch (install_surface) {
+    case IsolatedWebAppInstallationManager::InstallSurface::kDevUi:
+      return kDownloadAnnotationDevUi;
+    case IsolatedWebAppInstallationManager::InstallSurface::kDevToolsProtocol:
+      return kDownloadAnnotationDevToolsProtocol;
+  }
+}
 }  // namespace
 
 IsolatedWebAppInstallationManager::IsolatedWebAppInstallationManager(
@@ -189,10 +237,16 @@ void IsolatedWebAppInstallationManager::Start() {
 void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeProxy(
     const GURL& gurl,
     InstallSurface install_surface,
-    base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
-        callback) {
+    base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)> callback,
+    std::optional<web_package::SignedWebBundleId> explicit_bundle_id) {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   CHECK(!callback.is_null());
+  if (explicit_bundle_id && !explicit_bundle_id->is_for_proxy_mode()) {
+    std::move(callback).Run(
+          base::unexpected("The bundle_id for devModeProxy installation must "
+                           "be of proxy_mode type"));
+      return;
+  }
 
   // Ensure the URL we're given is okay.
   base::expected<url::Origin, std::string> proxy_origin =
@@ -203,31 +257,53 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeProxy(
   }
 
   InstallIsolatedWebAppFromInstallSource(
-      CreateInstallSource(*proxy_origin, install_surface), std::move(callback));
+      CreateInstallSource(
+          IwaSourceProxy(*proxy_origin, std::move(explicit_bundle_id)),
+          install_surface),
+      /*expected_bundle_id=*/std::nullopt, std::move(callback));
 }
 
 void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeBundle(
     const base::FilePath& path,
     InstallSurface install_surface,
-    base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
-        callback) {
+    base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)> callback,
+    std::optional<web_package::SignedWebBundleId> expected_bundle_id) {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   CHECK(!callback.is_null());
 
   InstallIsolatedWebAppFromInstallSource(
-      CreateInstallSource(path, install_surface), std::move(callback));
+      CreateInstallSource(path, install_surface), std::move(expected_bundle_id),
+      std::move(callback));
 }
 
 void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeBundle(
     const base::ScopedTempFile* file,
     InstallSurface install_surface,
-    base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
-        callback) {
+    base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)> callback,
+    std::optional<web_package::SignedWebBundleId> expected_bundle_id) {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   CHECK(!callback.is_null());
 
   InstallIsolatedWebAppFromInstallSource(
-      CreateInstallSource(file, install_surface), std::move(callback));
+      CreateInstallSource(file, install_surface), std::move(expected_bundle_id),
+      std::move(callback));
+}
+
+void IsolatedWebAppInstallationManager::
+    DownloadAndInstallIsolatedWebAppFromDevModeBundle(
+        const GURL& url,
+        InstallSurface install_surface,
+        base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
+            callback,
+        std::optional<web_package::SignedWebBundleId> expected_bundle_id) {
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!callback.is_null());
+  CHECK(url.SchemeIsHTTPOrHTTPS());
+
+  ScopedTempWebBundleFile::Create(base::BindOnce(
+      &IsolatedWebAppInstallationManager::DownloadWebBundleToFile,
+      weak_ptr_factory_.GetWeakPtr(), url, std::move(install_surface),
+      std::move(callback), std::move(expected_bundle_id)));
 }
 
 // static
@@ -309,11 +385,12 @@ void IsolatedWebAppInstallationManager::
 // static
 IsolatedWebAppInstallSource
 IsolatedWebAppInstallationManager::CreateInstallSource(
-    std::variant<base::FilePath, const base::ScopedTempFile*, url::Origin>
+    std::variant<base::FilePath, const base::ScopedTempFile*, IwaSourceProxy>
         source,
     InstallSurface surface) {
   switch (surface) {
     case InstallSurface::kDevUi:
+    case InstallSurface::kDevToolsProtocol:
       return IsolatedWebAppInstallSource::FromDevUi(std::visit(
           absl::Overload{
               [](base::FilePath path) -> IwaSourceDevModeWithFileOp {
@@ -325,8 +402,8 @@ IsolatedWebAppInstallationManager::CreateInstallSource(
                 return IwaSourceBundleDevModeWithFileOp(
                     temp_file->path(), IwaSourceBundleDevFileOp::kMove);
               },
-              [](url::Origin proxy_url) -> IwaSourceDevModeWithFileOp {
-                return IwaSourceProxy(std::move(proxy_url));
+              [](IwaSourceProxy proxy) -> IwaSourceDevModeWithFileOp {
+                return proxy;
               }},
           std::move(source)));
   }
@@ -356,6 +433,7 @@ void IsolatedWebAppInstallationManager::InstallFromCommandLine(
 
 void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromInstallSource(
     MaybeIwaInstallSource install_source,
+    std::optional<web_package::SignedWebBundleId> expected_bundle_id,
     base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
         callback) {
   if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
@@ -376,14 +454,15 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromInstallSource(
       KeepAliveRestartOption::DISABLED);
   auto optional_profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
       &profile_.get(), ProfileKeepAliveOrigin::kIsolatedWebAppInstall);
-  InstallIsolatedWebAppFromInstallSource(std::move(keep_alive),
-                                         std::move(optional_profile_keep_alive),
-                                         install_source, std::move(callback));
+  InstallIsolatedWebAppFromInstallSource(
+      std::move(keep_alive), std::move(optional_profile_keep_alive),
+      std::move(expected_bundle_id), install_source, std::move(callback));
 }
 
 void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromInstallSource(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+    std::optional<web_package::SignedWebBundleId> expected_bundle_id,
     MaybeIwaInstallSource install_source,
     base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
         callback) {
@@ -407,8 +486,8 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromInstallSource(
       base::BindOnce(
           &IsolatedWebAppInstallationManager::OnGetIsolatedWebAppUrlInfo,
           weak_ptr_factory_.GetWeakPtr(), std::move(keep_alive),
-          std::move(optional_profile_keep_alive), *optional_install_source,
-          std::move(callback)));
+          std::move(optional_profile_keep_alive), std::move(expected_bundle_id),
+          *optional_install_source, std::move(callback)));
 }
 
 void IsolatedWebAppInstallationManager::
@@ -418,7 +497,7 @@ void IsolatedWebAppInstallationManager::
         MaybeIwaInstallSource install_source) {
   InstallIsolatedWebAppFromInstallSource(
       std::move(keep_alive), std::move(optional_profile_keep_alive),
-      std::move(install_source),
+      /*expected_bundle_id=*/std::nullopt, std::move(install_source),
       base::BindOnce(
           &IsolatedWebAppInstallationManager::ReportInstallationResult,
           weak_ptr_factory_.GetWeakPtr()));
@@ -427,6 +506,7 @@ void IsolatedWebAppInstallationManager::
 void IsolatedWebAppInstallationManager::OnGetIsolatedWebAppUrlInfo(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+    std::optional<web_package::SignedWebBundleId> expected_bundle_id,
     const IsolatedWebAppInstallSource& install_source,
     base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)> callback,
     base::expected<IsolatedWebAppUrlInfo, std::string> url_info) {
@@ -434,6 +514,14 @@ void IsolatedWebAppInstallationManager::OnGetIsolatedWebAppUrlInfo(
     std::move(callback).Run(
         base::unexpected("Failed to get IsolationInfo: " + std::move(error)));
   });
+
+  if (expected_bundle_id.has_value() &&
+      url_info->web_bundle_id() != expected_bundle_id) {
+    std::move(callback).Run(base::unexpected(base::StringPrintf(
+        "Web bundle id mismatch. Expected = %s. Actual = %s",
+        expected_bundle_id->id(), url_info->web_bundle_id().id())));
+    return;
+  }
 
   provider_->scheduler().InstallIsolatedWebApp(
       url_info.value(), install_source,
@@ -482,6 +570,54 @@ void IsolatedWebAppInstallationManager::MaybeScheduleGarbageCollection() {
                 },
                 weak_ptr_factory_.GetWeakPtr())));
   }
+}
+
+void IsolatedWebAppInstallationManager::DownloadWebBundleToFile(
+    const GURL& web_bundle_url,
+    InstallSurface install_surface,
+    base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)> callback,
+    std::optional<web_package::SignedWebBundleId> expected_bundle_id,
+    ScopedTempWebBundleFile bundle) {
+  base::FilePath path = bundle.path();
+  auto downloader = std::make_unique<IsolatedWebAppDownloader>(
+      profile()->GetURLLoaderFactory());
+  auto* downloader_ptr = downloader.get();
+  base::OnceClosure downloader_keep_alive =
+      base::DoNothingWithBoundArgs(std::move(downloader));
+
+  downloader_ptr->DownloadSignedWebBundle(
+      web_bundle_url, std::move(path),
+      GetDownloadAnnotationTag(install_surface),
+      base::BindOnce(&IsolatedWebAppInstallationManager::OnWebBundleDownloaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(install_surface),
+                     std::move(callback), std::move(expected_bundle_id),
+                     std::move(bundle))
+          .Then(std::move(downloader_keep_alive)));
+}
+
+void IsolatedWebAppInstallationManager::OnWebBundleDownloaded(
+    InstallSurface install_surface,
+    base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)> callback,
+    std::optional<web_package::SignedWebBundleId> expected_bundle_id,
+    ScopedTempWebBundleFile bundle,
+    int32_t result) {
+  if (result != net::OK) {
+    std::move(callback).Run(base::unexpected(
+        base::StrCat({"Network error while downloading bundle file: ",
+                      base::ToString(result)})));
+    return;
+  }
+
+  const base::ScopedTempFile* file = bundle.file();
+  base::OnceClosure bundle_keep_alive =
+      base::DoNothingWithBoundArgs(std::move(bundle));
+
+  WebAppProvider::GetForWebApps(profile())
+      ->isolated_web_app_installation_manager()
+      .InstallIsolatedWebAppFromDevModeBundle(
+          file, std::move(install_surface),
+          std::move(callback).Then(std::move(bundle_keep_alive)),
+          std::move(expected_bundle_id));
 }
 
 }  // namespace web_app

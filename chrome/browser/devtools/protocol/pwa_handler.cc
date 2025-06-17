@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -36,11 +37,13 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/url_constants.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/filename_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
@@ -130,6 +133,20 @@ base::expected<std::string, protocol::Response> GetTargetIdFromLaunch(
   return base::unexpected(protocol::Response::InvalidRequest(msg));
 }
 
+void OnWebBundleInstalled(
+    std::unique_ptr<PWAHandler::InstallCallback> callback,
+    const GURL& manifest_url,
+    const GURL& web_bundle_url,
+    base::expected<web_app::InstallIsolatedWebAppCommandSuccess, std::string>
+        result) {
+  if (result.has_value()) {
+    std::move(callback)->sendSuccess();
+  } else {
+    std::move(callback)->sendFailure(protocol::Response::InvalidRequest(
+        base::StrCat({"Failed to install ", manifest_url.spec(), " from ",
+                      web_bundle_url.spec(), ": ", result.error()})));
+  }
+}
 }  // namespace
 
 PWAHandler::PWAHandler(protocol::UberDispatcher* dispatcher,
@@ -282,7 +299,19 @@ void PWAHandler::InstallFromUrl(const std::string& in_manifest_id,
             {"Invalid installUrlOrBundleUrl ", in_install_url_or_bundle_url})));
     return;
   }
-  // TODO(crbug.com/337872319): Support installing isolated apps on chrome-os.
+  const auto manifest_id_url = GURL{in_manifest_id};
+  if (!manifest_id_url.is_valid()) {
+    std::move(callback)->sendFailure(protocol::Response::InvalidParams(
+        base::StrCat({"Invalid manifestId ", in_manifest_id})));
+    return;
+  }
+
+  // This is isolated web app.
+  if (manifest_id_url.SchemeIs(chrome::kIsolatedAppScheme)) {
+    InstallWebBundleFromUrl(manifest_id_url, url, std::move(callback));
+    return;
+  }
+
   if (!url.SchemeIsHTTPOrHTTPS()) {
     std::move(callback)->sendFailure(
         protocol::Response::MethodNotFound(base::StrCat(
@@ -296,10 +325,72 @@ void PWAHandler::InstallFromUrl(const std::string& in_manifest_id,
     return;
   }
   scheduler->FetchInstallInfoFromInstallUrl(
-      GURL{in_manifest_id}, url,
+      manifest_id_url, url,
       base::BindOnce(&PWAHandler::InstallFromInstallInfo,
                      weak_ptr_factory_.GetWeakPtr(), in_manifest_id,
                      in_install_url_or_bundle_url, std::move(callback)));
+}
+
+void PWAHandler::InstallWebBundleFromUrl(
+    const GURL& manifest_url,
+    const GURL& web_bundle_url,
+    std::unique_ptr<InstallCallback> callback) {
+  base::expected<web_package::SignedWebBundleId, std::string>
+      expected_bundle_id =
+          web_package::SignedWebBundleId::Create(manifest_url.host());
+
+  if (!expected_bundle_id.has_value()) {
+    std::move(callback)->sendFailure(protocol::Response::InvalidParams(
+        base::StrCat({"manifestId=[", manifest_url.spec(),
+                      "] must be a valid signed web bundle id. Parse error: ",
+                      expected_bundle_id.error()})));
+    return;
+  }
+  auto& installation_manager =
+      web_app::WebAppProvider::GetForWebApps(GetProfile())
+          ->isolated_web_app_installation_manager();
+
+  if (web_bundle_url.SchemeIsFile()) {
+    base::FilePath file_path;
+    if (!net::FileURLToFilePath(web_bundle_url, &file_path)) {
+      std::move(callback)->sendFailure(protocol::Response::InvalidParams(
+          base::StrCat({"installUrlOrBundleUrl should be a valid file path ",
+                        web_bundle_url.spec()})));
+      return;
+    }
+
+    installation_manager.InstallIsolatedWebAppFromDevModeBundle(
+        file_path,
+        web_app::IsolatedWebAppInstallationManager::InstallSurface::
+            kDevToolsProtocol,
+        base::BindOnce(&OnWebBundleInstalled, std::move(callback), manifest_url,
+                       web_bundle_url),
+        std::move(expected_bundle_id.value()));
+
+  } else if (web_bundle_url.SchemeIsHTTPOrHTTPS()) {
+    if (expected_bundle_id->is_for_proxy_mode()) {
+      installation_manager.InstallIsolatedWebAppFromDevModeProxy(
+          web_bundle_url,
+          web_app::IsolatedWebAppInstallationManager::InstallSurface::
+              kDevToolsProtocol,
+          base::BindOnce(&OnWebBundleInstalled, std::move(callback),
+                         manifest_url, web_bundle_url),
+          expected_bundle_id.value());
+    } else {
+      installation_manager.DownloadAndInstallIsolatedWebAppFromDevModeBundle(
+          web_bundle_url,
+          web_app::IsolatedWebAppInstallationManager::InstallSurface::
+              kDevToolsProtocol,
+          base::BindOnce(&OnWebBundleInstalled, std::move(callback),
+                         manifest_url, web_bundle_url),
+          std::move(expected_bundle_id.value()));
+    }
+  } else {
+    std::move(callback)->sendFailure(protocol::Response::MethodNotFound(
+        base::StrCat({"Installing webapp from url ", web_bundle_url.spec(),
+                      " with scheme [", web_bundle_url.scheme(),
+                      "] is not supported yet."})));
+  }
 }
 
 void PWAHandler::InstallFromInstallInfo(

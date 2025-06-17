@@ -68,17 +68,13 @@ class PWAProtocolTestWithoutApp : public DevToolsProtocolTestBase {
     Attach();
   }
 
-  bool ErrorMessageContains(std::initializer_list<std::string> pieces) const {
-    if (!error()) {
-      return false;
-    }
+  void AssertErrorMessageContains(
+      std::initializer_list<std::string> pieces) const {
+    ASSERT_TRUE(error());
     const std::string& message = *error()->FindString("message");
     for (const auto& piece : pieces) {
-      if (message.find(piece) == std::string::npos) {
-        return false;
-      }
+      EXPECT_THAT(message, testing::HasSubstr(piece));
     }
-    return true;
   }
 };
 
@@ -261,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTestWithoutApp, GetOsAppState_CannotFindApp) {
       "PWA.getOsAppState",
       base::Value::Dict{}.Set("manifestId", "ThisIsNotAValidManifestId")));
   // Expect the input manifestId to be carried over by the error message.
-  ASSERT_TRUE(ErrorMessageContains({"ThisIsNotAValidManifestId"}));
+  AssertErrorMessageContains({"ThisIsNotAValidManifestId"});
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetOsAppState) {
@@ -345,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetProcessedManifest_CannotFindApp) {
   ASSERT_FALSE(SendCommandSync(
       "Page.getAppManifest",
       base::Value::Dict{}.Set("manifestId", "ThisIsNotAValidManifestId")));
-  ASSERT_TRUE(ErrorMessageContains({"Page.getAppManifest"}));
+  AssertErrorMessageContains({"Page.getAppManifest"});
   // The error message should also carry the input manifest id, but now the API
   // won't work on browser target at all.
 }
@@ -412,8 +408,8 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetProcessedManifest_MismatchId) {
       base::Value::Dict{}.Set("manifestId", "ThisIsNotAValidManifestId")));
   // Expect the input manifest id and original manifest id to be carried over by
   // the error message.
-  ASSERT_TRUE(ErrorMessageContains(
-      {InstallableWebAppUrl().spec(), "ThisIsNotAValidManifestId"}));
+  AssertErrorMessageContains(
+      {InstallableWebAppUrl().spec(), "ThisIsNotAValidManifestId"});
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
@@ -422,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
       SendCommandSync("Page.getAppManifest",
                       base::Value::Dict{}.Set(
                           "manifestId", InstallableWebAppManifestId().spec())));
-  ASSERT_TRUE(ErrorMessageContains({"Page.getAppManifest"}));
+  AssertErrorMessageContains({"Page.getAppManifest"});
   // The error message should also carry the input manifest id, but now the API
   // won't work on browser target at all.
 }
@@ -491,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromManifest_NoWebContents) {
   ASSERT_FALSE(SendCommandSync(
       "PWA.install", base::Value::Dict{}.Set(
                          "manifestId", InstallableWebAppManifestId().spec())));
-  ASSERT_TRUE(ErrorMessageContains({InstallableWebAppUrl().spec()}));
+  AssertErrorMessageContains({InstallableWebAppUrl().spec()});
   ASSERT_FALSE(AppExists(InstallableWebAppManifestId()));
 }
 
@@ -500,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromManifest_InvalidStartUrl) {
   ReattachToWebContents(url);
   ASSERT_FALSE(SendCommandSync(
       "PWA.install", base::Value::Dict{}.Set("manifestId", url.spec())));
-  ASSERT_TRUE(ErrorMessageContains({url.spec()}));
+  AssertErrorMessageContains({url.spec()});
   ASSERT_FALSE(AppExists(url));
   ASSERT_FALSE(AppExists(ManifestId{"http://different.origin/is-invalid"}));
 }
@@ -511,8 +507,8 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
   ReattachToWebContents(url);
   ASSERT_FALSE(SendCommandSync(
       "PWA.install", base::Value::Dict{}.Set("manifestId", url.spec())));
-  ASSERT_TRUE(ErrorMessageContains(
-      {url.spec(), GetInstallableSiteWithManifest("basic.json").spec()}));
+  AssertErrorMessageContains(
+      {url.spec(), GetInstallableSiteWithManifest("basic.json").spec()});
   ASSERT_FALSE(AppExists(url));
   ASSERT_FALSE(AppExists(InstallableWebAppManifestId()));
 }
@@ -533,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
   ASSERT_FALSE(SendCommandSync(
       "PWA.install",
       base::Value::Dict{}.Set("manifestId", HasManifestIdWebAppUrl().spec())));
-  ASSERT_TRUE(ErrorMessageContains({HasManifestIdWebAppUrl().spec()}));
+  AssertErrorMessageContains({HasManifestIdWebAppUrl().spec()});
   ASSERT_FALSE(AppExists(HasManifestIdWebAppManifestId()));
   ASSERT_FALSE(AppExists(HasManifestIdWebAppUrl()));
 }
@@ -581,8 +577,8 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromUrl_Unreachable) {
       base::Value::Dict{}
           .Set("manifestId", InstallableWebAppManifestId().spec())
           .Set("installUrlOrBundleUrl", "http://hello/this/is/not/existing")));
-  ASSERT_TRUE(ErrorMessageContains(
-      {InstallableWebAppUrl().spec(), "http://hello/this/is/not/existing"}));
+  AssertErrorMessageContains(
+      {InstallableWebAppUrl().spec(), "http://hello/this/is/not/existing"});
   ASSERT_FALSE(AppExists(InstallableWebAppManifestId()));
 }
 
@@ -592,8 +588,19 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromUrl_UnmatchManifestId) {
       base::Value::Dict{}
           .Set("manifestId", NotInstallableWebAppUrl().spec())
           .Set("installUrlOrBundleUrl", InstallableWebAppUrl().spec())));
-  ASSERT_TRUE(ErrorMessageContains(
-      {InstallableWebAppUrl().spec(), NotInstallableWebAppUrl().spec()}));
+  AssertErrorMessageContains(
+      {InstallableWebAppUrl().spec(), NotInstallableWebAppUrl().spec()});
+  ASSERT_FALSE(AppExists(InstallableWebAppManifestId()));
+  ASSERT_FALSE(AppExists(NotInstallableWebAppManifestId()));
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromUrl_InvalidManifestId) {
+  ASSERT_FALSE(SendCommandSync(
+      "PWA.install",
+      base::Value::Dict{}
+          .Set("manifestId", "bad_id 😝")
+          .Set("installUrlOrBundleUrl", InstallableWebAppUrl().spec())));
+  AssertErrorMessageContains({"bad_id 😝", "Invalid manifestId"});
   ASSERT_FALSE(AppExists(InstallableWebAppManifestId()));
   ASSERT_FALSE(AppExists(NotInstallableWebAppManifestId()));
 }
@@ -620,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromUrl_InconsistentAppId) {
       base::Value::Dict{}
           .Set("manifestId", url.spec())
           .Set("installUrlOrBundleUrl", InstallableWebAppUrl().spec())));
-  ASSERT_TRUE(ErrorMessageContains({url.spec()}));
+  AssertErrorMessageContains({url.spec()});
   ASSERT_FALSE(AppExists(url));
   ASSERT_FALSE(AppExists(InstallableWebAppManifestId()));
 }
@@ -631,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromUrl_NoScheme) {
       base::Value::Dict{}
           .Set("manifestId", InstallableWebAppManifestId().spec())
           .Set("installUrlOrBundleUrl", "localhost/")));
-  ASSERT_TRUE(ErrorMessageContains({"localhost/"}));
+  AssertErrorMessageContains({"localhost/"});
   ASSERT_FALSE(AppExists(InstallableWebAppManifestId()));
 }
 
@@ -641,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromUrl_UnsupportedScheme) {
       base::Value::Dict{}
           .Set("manifestId", InstallableWebAppManifestId().spec())
           .Set("installUrlOrBundleUrl", "ftp://localhost/")));
-  ASSERT_TRUE(ErrorMessageContains({"ftp", "ftp://localhost/"}));
+  AssertErrorMessageContains({"ftp", "ftp://localhost/"});
   ASSERT_FALSE(AppExists(InstallableWebAppManifestId()));
 }
 
@@ -725,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_NoApp) {
   ASSERT_FALSE(SendCommandSync(
       "PWA.launch", base::Value::Dict{}.Set(
                         "manifestId", InstallableWebAppManifestId().spec())));
-  ASSERT_TRUE(ErrorMessageContains({InstallableWebAppManifestId().spec()}));
+  AssertErrorMessageContains({InstallableWebAppManifestId().spec()});
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_InFullScreenMode) {
@@ -765,8 +772,8 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_FromUrl_NoApp) {
       "PWA.launch", base::Value::Dict{}
                         .Set("manifestId", InstallableWebAppManifestId().spec())
                         .Set("url", InstallableWebAppUrl().spec())));
-  ASSERT_TRUE(ErrorMessageContains(
-      {InstallableWebAppManifestId().spec(), InstallableWebAppUrl().spec()}));
+  AssertErrorMessageContains(
+      {InstallableWebAppManifestId().spec(), InstallableWebAppUrl().spec()});
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_FromUrl_InvalidUrl) {
@@ -775,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_FromUrl_InvalidUrl) {
       "PWA.launch", base::Value::Dict{}
                         .Set("manifestId", InstallableWebAppManifestId().spec())
                         .Set("url", "invalid-url@@@invalid/url")));
-  ASSERT_TRUE(ErrorMessageContains({"invalid-url@@@invalid/url"}));
+  AssertErrorMessageContains({"invalid-url@@@invalid/url"});
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_FromUrl_OutOfScopeUrl) {
@@ -784,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_FromUrl_OutOfScopeUrl) {
       "PWA.launch", base::Value::Dict{}
                         .Set("manifestId", InstallableWebAppManifestId().spec())
                         .Set("url", "https://www.google.com/")));
-  ASSERT_TRUE(ErrorMessageContains({"https://www.google.com/"}));
+  AssertErrorMessageContains({"https://www.google.com/"});
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp) {
@@ -934,7 +941,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_NoFileHandlers) {
       base::Value::Dict{}
           .Set("manifestId", InstallableWebAppManifestId().spec())
           .Set("files", AbsolutePaths({"cors-ok.txt"}))));
-  ASSERT_TRUE(ErrorMessageContains({InstallableWebAppManifestId().spec()}));
+  AssertErrorMessageContains({InstallableWebAppManifestId().spec()});
 }
 
 // This scenario does not reach the handler itself, but it's worth ensuring that
@@ -957,7 +964,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_NoFile) {
                                base::Value::Dict{}
                                    .Set("manifestId", url.spec())
                                    .Set("files", base::Value::List{})));
-  ASSERT_TRUE(ErrorMessageContains({url.spec()}));
+  AssertErrorMessageContains({url.spec()});
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_UnsupportedFile) {
@@ -967,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_UnsupportedFile) {
                                base::Value::Dict{}
                                    .Set("manifestId", url.spec())
                                    .Set("files", AbsolutePaths({"file.png"}))));
-  ASSERT_TRUE(ErrorMessageContains({url.spec()}));
+  AssertErrorMessageContains({url.spec()});
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, OpenCurrentPageInApp) {
@@ -988,7 +995,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, OpenCurrentPageInApp_NoWebContents) {
       SendCommandSync("PWA.openCurrentPageInApp",
                       base::Value::Dict{}.Set(
                           "manifestId", InstallableWebAppManifestId().spec())));
-  ASSERT_TRUE(ErrorMessageContains({InstallableWebAppManifestId().spec()}));
+  AssertErrorMessageContains({InstallableWebAppManifestId().spec()});
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, OpenCurrentPageInApp_NotInstalled) {
@@ -997,7 +1004,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, OpenCurrentPageInApp_NotInstalled) {
       SendCommandSync("PWA.openCurrentPageInApp",
                       base::Value::Dict{}.Set(
                           "manifestId", InstallableWebAppManifestId().spec())));
-  ASSERT_TRUE(ErrorMessageContains({InstallableWebAppManifestId().spec()}));
+  AssertErrorMessageContains({InstallableWebAppManifestId().spec()});
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
@@ -1029,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
   ASSERT_FALSE(SendCommandSync(
       "PWA.openCurrentPageInApp",
       base::Value::Dict{}.Set("manifestId", manifest_id.spec())));
-  ASSERT_TRUE(ErrorMessageContains({manifest_id.spec(), url.spec()}));
+  AssertErrorMessageContains({manifest_id.spec(), url.spec()});
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
@@ -1069,7 +1076,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, OpenCurrentPageInApp_NoShortcut) {
       SendCommandSync("PWA.openCurrentPageInApp",
                       base::Value::Dict{}.Set(
                           "manifestId", InstallableWebAppManifestId().spec())));
-  ASSERT_TRUE(ErrorMessageContains({InstallableWebAppManifestId().spec()}));
+  AssertErrorMessageContains({InstallableWebAppManifestId().spec()});
 }
 #endif
 
@@ -1101,7 +1108,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
           .Set("manifestId", InstallableWebAppManifestId().spec())
           .Set("linkCapturing", true)
           .Set("displayMode", "standalone")));
-  EXPECT_TRUE(ErrorMessageContains({InstallableWebAppManifestId().spec()}));
+  AssertErrorMessageContains({InstallableWebAppManifestId().spec()});
 }
 
 // Unlike the NoApp test above, even without changes, the API should check the
@@ -1111,7 +1118,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, ChangeAppUserSettings_NoAppNoChange) {
       SendCommandSync("PWA.changeAppUserSettings",
                       base::Value::Dict{}.Set(
                           "manifestId", InstallableWebAppManifestId().spec())));
-  EXPECT_TRUE(ErrorMessageContains({InstallableWebAppManifestId().spec()}));
+  AssertErrorMessageContains({InstallableWebAppManifestId().spec()});
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1166,8 +1173,8 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
           .Set("manifestId", InstallableWebAppManifestId().spec())
           .Set("linkCapturing", true)
           .Set("displayMode", "hello")));
-  EXPECT_TRUE(ErrorMessageContains(
-      {InstallableWebAppManifestId().spec(), "displayMode", "hello"}));
+  AssertErrorMessageContains(
+      {InstallableWebAppManifestId().spec(), "displayMode", "hello"});
   EXPECT_EQ(user_settings_before_change,
             GetAppUserSettings(InstallableWebAppManifestId()));
 }

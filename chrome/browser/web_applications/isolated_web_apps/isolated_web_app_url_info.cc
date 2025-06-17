@@ -100,16 +100,24 @@ void IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
     base::OnceCallback<void(base::expected<IsolatedWebAppUrlInfo, std::string>)>
         callback) {
   std::visit(
-      absl::Overload{[&](const IwaSourceBundle& bundle) {
-                       GetSignedWebBundleIdByPath(bundle.path(),
-                                                  std::move(callback));
-                     },
-                     [&](const IwaSourceProxy&) {
-                       std::move(callback).Run(
-                           IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-                               web_package::SignedWebBundleId::
-                                   CreateRandomForProxyMode()));
-                     }},
+      absl::Overload{
+          [&](const IwaSourceBundle& bundle) {
+            GetSignedWebBundleIdByPath(bundle.path(), std::move(callback));
+          },
+          [&](const IwaSourceProxy& proxy) {
+            const web_package::SignedWebBundleId bundle_id = [&] {
+              if (proxy.explicit_bundle_id()) {
+                CHECK(proxy.explicit_bundle_id()->is_for_proxy_mode());
+                return *proxy.explicit_bundle_id();
+              } else {
+                return web_package::SignedWebBundleId::
+                    CreateRandomForProxyMode();
+              }
+            }();
+
+            std::move(callback).Run(
+                IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id));
+          }},
       source.variant());
 }
 

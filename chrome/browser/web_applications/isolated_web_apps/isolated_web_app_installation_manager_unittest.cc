@@ -25,6 +25,7 @@
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -39,7 +40,11 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -130,12 +135,12 @@ base::CommandLine CreateCommandLine(
   }
   return command_line;
 }
-
 }  // namespace
 
 class IsolatedWebAppInstallationManagerTest : public WebAppTest {
  public:
-  IsolatedWebAppInstallationManagerTest() {
+  IsolatedWebAppInstallationManagerTest()
+      : WebAppTest(WebAppTest::WithTestUrlLoaderFactory()) {
     scoped_feature_list_.InitWithFeatures(
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
   }
@@ -157,6 +162,7 @@ class IsolatedWebAppInstallationManagerTest : public WebAppTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(IsolatedWebAppInstallationManagerTest,
@@ -276,6 +282,36 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
   EXPECT_THAT(
       future.Take(),
       ErrorIs(HasSubstr("Isolated Web App Developer Mode is not enabled")));
+}
+
+TEST_F(IsolatedWebAppInstallationManagerTest, DownloadAndInstallSucceeds) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> bundle =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  profile_url_loader_factory().AddResponse("https://example.com",
+                                           bundle->GetBundleData());
+
+  base::test::TestFuture<MaybeInstallIsolatedWebAppCommandSuccess> future;
+  manager().DownloadAndInstallIsolatedWebAppFromDevModeBundle(
+      GURL{"https://example.com"},
+      IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+      future.GetCallback());
+
+  EXPECT_THAT(future.Take(), HasValue());
+}
+
+TEST_F(IsolatedWebAppInstallationManagerTest, DownloadAndInstallFailsWrongUrl) {
+  profile_url_loader_factory().AddResponse("https://example.com", "",
+                                           net::HTTP_FORBIDDEN);
+
+  base::test::TestFuture<MaybeInstallIsolatedWebAppCommandSuccess> future;
+  manager().DownloadAndInstallIsolatedWebAppFromDevModeBundle(
+      GURL{"https://example.com"},
+      IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+      future.GetCallback());
+
+  EXPECT_THAT(
+      future.Take(),
+      ErrorIs(HasSubstr("Network error while downloading bundle file")));
 }
 
 class IsolatedWebAppInstallationManagerCommandLineTest

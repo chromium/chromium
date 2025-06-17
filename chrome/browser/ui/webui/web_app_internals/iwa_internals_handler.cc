@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
@@ -56,24 +55,6 @@ constexpr auto kUpdateManifestFetchAnnotation =
         "version."
       trigger:
         "User clicks on the discover button in chrome://web-app-internals."
-    }
-    policy {
-      setting: "This feature cannot be disabled in settings."
-      policy_exception_justification: "Not implemented."
-    })");
-
-constexpr auto kDownloadWebBundleAnnotation =
-    net::DefinePartialNetworkTrafficAnnotation(
-        "iwa_web_app_internals_web_bundle",
-        "iwa_bundle_downloader",
-        R"(
-    semantics {
-      sender: "Web App Internals page"
-      description:
-        "Downloads a Signed Web Bundle of an Isolated Web App which contains "
-        "code and other resources of this app."
-      trigger:
-        "User accepts the installation dialog in chrome://web-app-internals."
     }
     policy {
       setting: "This feature cannot be disabled in settings."
@@ -346,10 +327,16 @@ void IwaInternalsHandler::InstallIsolatedWebAppFromBundleUrl(
               "Update channel is required for this operation.");
     return;
   }
-  ScopedTempWebBundleFile::Create(
-      base::BindOnce(&IwaInternalsHandler::DownloadWebBundleToFile,
-                     weak_ptr_factory_.GetWeakPtr(), params->web_bundle_url,
-                     std::move(params->update_info), std::move(callback)));
+
+  WebAppProvider::GetForWebApps(profile())
+      ->isolated_web_app_installation_manager()
+      .DownloadAndInstallIsolatedWebAppFromDevModeBundle(
+          params->web_bundle_url,
+          IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+          base::BindOnce(&IwaInternalsHandler::
+                             OnInstalledIsolatedWebAppInDevModeFromWebBundle,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(params->update_info), std::move(callback)));
 }
 
 void IwaInternalsHandler::SelectFileAndInstallIsolatedWebAppFromDevBundle(
@@ -672,59 +659,6 @@ void IwaInternalsHandler::SetAllowDowngradesForIsolatedWebApp(
     return;
   }
   app_ids_allowing_downgrades_.insert(app_id);
-}
-
-void IwaInternalsHandler::DownloadWebBundleToFile(
-    const GURL& web_bundle_url,
-    ::mojom::UpdateInfoPtr update_info,
-    Handler::InstallIsolatedWebAppFromBundleUrlCallback callback,
-    ScopedTempWebBundleFile file) {
-  if (!file) {
-    std::move(callback).Run(::mojom::InstallIsolatedWebAppResult::NewError(
-        "Couldn't create file."));
-    return;
-  }
-  auto path = file.path();
-
-  auto downloader = std::make_unique<IsolatedWebAppDownloader>(
-      profile()->GetURLLoaderFactory());
-  auto* downloader_ptr = downloader.get();
-  base::OnceClosure downloader_keep_alive =
-      base::DoNothingWithBoundArgs(std::move(downloader));
-
-  downloader_ptr->DownloadSignedWebBundle(
-      web_bundle_url, std::move(path), kDownloadWebBundleAnnotation,
-      base::BindOnce(&IwaInternalsHandler::OnWebBundleDownloaded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(update_info),
-                     std::move(callback), std::move(file))
-          .Then(std::move(downloader_keep_alive)));
-}
-
-void IwaInternalsHandler::OnWebBundleDownloaded(
-    ::mojom::UpdateInfoPtr update_info,
-    Handler::InstallIsolatedWebAppFromBundleUrlCallback callback,
-    ScopedTempWebBundleFile bundle,
-    int32_t result) {
-  if (result != net::OK) {
-    std::move(callback).Run(::mojom::InstallIsolatedWebAppResult::NewError(
-        base::StrCat({"Network error while downloading bundle file: ",
-                      base::ToString(result)})));
-    return;
-  }
-
-  const base::ScopedTempFile* file = bundle.file();
-  base::OnceClosure bundle_keep_alive =
-      base::DoNothingWithBoundArgs(std::move(bundle));
-
-  WebAppProvider::GetForWebApps(profile())
-      ->isolated_web_app_installation_manager()
-      .InstallIsolatedWebAppFromDevModeBundle(
-          file, IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
-          base::BindOnce(
-              &IwaInternalsHandler::
-                  OnInstalledIsolatedWebAppInDevModeFromWebBundle,
-              weak_ptr_factory_.GetWeakPtr(), std::move(update_info),
-              std::move(callback).Then(std::move(bundle_keep_alive))));
 }
 
 void IwaInternalsHandler::OnInstalledIsolatedWebAppInDevModeFromWebBundle(

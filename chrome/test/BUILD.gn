@@ -3087,6 +3087,7 @@ if (!is_android) {
       "../browser/devtools/global_confirm_info_bar_browsertest.cc",
       "../browser/devtools/protocol/devtools_autofill_browsertest.cc",
       "../browser/devtools/protocol/devtools_extensions_browsertest.cc",
+      "../browser/devtools/protocol/devtools_iwa_browsertest.cc",
       "../browser/devtools/protocol/devtools_pwa_browsertest.cc",
       "../browser/devtools/protocol/form_devtools_issues_browsertest.cc",
       "../browser/devtools/protocol/user_reidentification_issues_browsertest.cc",

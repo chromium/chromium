@@ -40,9 +40,19 @@ IwaSourceBundleModeAndFileOp ToBundleModeAndFileOp(
 
 }  // namespace
 
-IwaSourceProxy::IwaSourceProxy(url::Origin proxy_url)
-    : proxy_url_(std::move(proxy_url)) {}
+IwaSourceProxy::IwaSourceProxy(
+    url::Origin proxy_url,
+    std::optional<web_package::SignedWebBundleId> explicit_bundle_id)
+    : proxy_url_(std::move(proxy_url)),
+      explicit_bundle_id_(std::move(explicit_bundle_id)) {
+  CHECK(!explicit_bundle_id_ || explicit_bundle_id_->is_for_proxy_mode());
+}
 IwaSourceProxy::~IwaSourceProxy() = default;
+
+IwaSourceProxy::IwaSourceProxy(const IwaSourceProxy&) = default;
+IwaSourceProxy& IwaSourceProxy::operator=(const IwaSourceProxy&) = default;
+IwaSourceProxy::IwaSourceProxy(IwaSourceProxy&&) = default;
+IwaSourceProxy& IwaSourceProxy::operator=(IwaSourceProxy&&) = default;
 
 bool IwaSourceProxy::operator==(const IwaSourceProxy& other) const = default;
 

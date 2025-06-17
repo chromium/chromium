@@ -17,6 +17,7 @@
 #include "base/one_shot_event.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 
@@ -58,33 +59,53 @@ class IsolatedWebAppInstallationManager {
 
   void Start();
 
-  enum class InstallSurface {
-    kDevUi,
-  };
+  enum class InstallSurface { kDevUi, kDevToolsProtocol };
 
+  // `explicit_bundle_id` will be used as bundle id for this Web App,
+  // instead of randomly generated one. Must be type proxy.
   void InstallIsolatedWebAppFromDevModeProxy(
       const GURL& gurl,
       InstallSurface install_surface,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
-          callback);
+          callback,
+      std::optional<web_package::SignedWebBundleId> explicit_bundle_id =
+          std::nullopt);
 
+  // if `expected_bundle_id` is non null, then the installation
+  // will fail if the actual bundle id is different.
   void InstallIsolatedWebAppFromDevModeBundle(
       const base::FilePath& path,
       InstallSurface install_surface,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
-          callback);
+          callback,
+      std::optional<web_package::SignedWebBundleId> expected_bundle_id =
+          std::nullopt);
 
+  // if `expected_bundle_id` is non null, then the installation
+  // will fail if the actual bundle id is different.
   void InstallIsolatedWebAppFromDevModeBundle(
       const base::ScopedTempFile* file,
       InstallSurface install_surface,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
-          callback);
+          callback,
+      std::optional<web_package::SignedWebBundleId> expected_bundle_id =
+          std::nullopt);
 
   void OnReportInstallationResultForTesting(
       base::RepeatingCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           on_report_installation_result) {
     on_report_installation_result_ = std::move(on_report_installation_result);
   }
+
+  // if `expected_bundle_id` is non null, then the installation
+  // will fail if the actual bundle id is different.
+  void DownloadAndInstallIsolatedWebAppFromDevModeBundle(
+      const GURL& url,
+      InstallSurface install_surface,
+      base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
+          callback,
+      std::optional<web_package::SignedWebBundleId> expected_bundle_id =
+          std::nullopt);
 
   static bool HasIwaInstallSwitch(const base::CommandLine& command_line);
 
@@ -115,7 +136,7 @@ class IsolatedWebAppInstallationManager {
                            NoInstallationWhenDevModePolicyDisabled);
 
   static IsolatedWebAppInstallSource CreateInstallSource(
-      std::variant<base::FilePath, const base::ScopedTempFile*, url::Origin>
+      std::variant<base::FilePath, const base::ScopedTempFile*, IwaSourceProxy>
           source,
       InstallSurface surface);
 
@@ -129,12 +150,14 @@ class IsolatedWebAppInstallationManager {
 
   void InstallIsolatedWebAppFromInstallSource(
       MaybeIwaInstallSource install_source,
+      std::optional<web_package::SignedWebBundleId> expected_bundle_id,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback);
 
   void InstallIsolatedWebAppFromInstallSource(
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+      std::optional<web_package::SignedWebBundleId> expected_bundle_id,
       MaybeIwaInstallSource install_source,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback);
@@ -147,6 +170,7 @@ class IsolatedWebAppInstallationManager {
   void OnGetIsolatedWebAppUrlInfo(
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+      std::optional<web_package::SignedWebBundleId> expected_bundle_id,
       const IsolatedWebAppInstallSource& install_source,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback,
@@ -162,6 +186,24 @@ class IsolatedWebAppInstallationManager {
       MaybeInstallIsolatedWebAppCommandSuccess result);
 
   void MaybeScheduleGarbageCollection();
+
+  void DownloadWebBundleToFile(
+      const GURL& web_bundle_url,
+      InstallSurface install_surface,
+      base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
+          callback,
+      std::optional<web_package::SignedWebBundleId> expected_bundle_id,
+      ScopedTempWebBundleFile bundle);
+
+  void OnWebBundleDownloaded(
+      InstallSurface install_surface,
+      base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
+          callback,
+      std::optional<web_package::SignedWebBundleId> expected_bundle_id,
+      ScopedTempWebBundleFile bundle,
+      int32_t result);
+
+  Profile* profile() { return &profile_.get(); }
 
   raw_ref<Profile> profile_;
 

@@ -334,6 +334,7 @@ static_library("devtools") {
       "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/security_state/content",
       "//components/subresource_filter/content/browser:browser",
+      "//components/web_package:web_package",
       "//components/webapps/browser",
       "//third_party/blink/public/common:headers",
       "//third_party/inspector_protocol:crdtp",

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_SOURCE_H_
 
 #include <iosfwd>
+#include <optional>
 #include <type_traits>
 #include <variant>
 
@@ -13,6 +14,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -60,18 +62,34 @@ class IwaSourceProxy;
 
 class IwaSourceProxy {
  public:
-  explicit IwaSourceProxy(url::Origin proxy_url);
+  // `explicit_bundle_id` will be used as bundle id for this Web App,
+  // instead of randomly generated one. Must be type proxy.
+  explicit IwaSourceProxy(url::Origin proxy_url,
+                          std::optional<web_package::SignedWebBundleId>
+                              explicit_bundle_id = std::nullopt);
   ~IwaSourceProxy();
+
+  IwaSourceProxy(const IwaSourceProxy&);
+  IwaSourceProxy& operator=(const IwaSourceProxy&);
+  IwaSourceProxy(IwaSourceProxy&&);
+  IwaSourceProxy& operator=(IwaSourceProxy&&);
 
   bool operator==(const IwaSourceProxy&) const;
 
   const url::Origin proxy_url() const { return proxy_url_; }
+  const std::optional<web_package::SignedWebBundleId>& explicit_bundle_id()
+      const {
+    return explicit_bundle_id_;
+  }
   bool dev_mode() const { return true; }
 
   base::Value ToDebugValue() const;
 
  private:
   url::Origin proxy_url_;
+  // Optionally a bundle_id can be provided. Otherwise
+  // this IWA would have a randomly generated one.
+  std::optional<web_package::SignedWebBundleId> explicit_bundle_id_;
 };
 std::ostream& operator<<(std::ostream& os, const IwaSourceProxy& source);
 

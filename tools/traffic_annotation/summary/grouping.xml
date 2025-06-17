@@ -327,6 +327,7 @@ after discussions on the right group.
       <annotation id="lens_overlay_save"/>
       <annotation id="iwa_web_app_internals_update_manifest"/>
       <annotation id="iwa_web_app_internals_web_bundle"/>
+      <annotation id="iwa_dev_tools_installation_web_bundle"/>
       <annotation id="digital_asset_links_include"/>
       <annotation id="remoting_cloud_send_heartbeat"/>
       <annotation id="remoting_cloud_update_remote_access_host"/>
