@@ -80,13 +80,31 @@ std::vector<AttributeType> GetDisambiguatingTypes(
     }
   }
 
+  if (return_at_least_one_label) {
+    // We fill up `types` with types so that every EntityInstance defines a
+    // value for at least one AttributeType.
+    DenseSet<EntityType> missing_entity_types = DenseSet<EntityType>(
+        entities, [](const EntityInstance* entity) { return entity->type(); });
+    missing_entity_types.erase_all(DenseSet<EntityType>(
+        types,
+        [](AttributeType attribute) { return attribute.entity_type(); }));
+    for (const EntityInstance* entity : entities) {
+      if (!missing_entity_types.contains(entity->type())) {
+        continue;
+      }
+      if (auto attributes = entity->attributes(); !attributes.empty()) {
+        AttributeType type = attributes[0].type();
+        if ((!allow_only_disambiguating_types ||
+             type.is_disambiguation_type()) &&
+            seen.insert(type).second) {
+          types.push_back(type);
+        }
+      }
+    }
+  }
+
   // Highest priority first.
   std::ranges::sort(types, AttributeType::DisambiguationOrder);
-
-  if (types.empty() && return_at_least_one_label) {
-    // Take the attribute with highest priority for the entity instance type.
-    types.push_back(attributes_of_all_entities[0][0].first);
-  }
   return types;
 }
 
