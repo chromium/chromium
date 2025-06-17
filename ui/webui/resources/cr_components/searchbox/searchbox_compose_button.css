@@ -7,17 +7,27 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host{
+  --cr-hover-background-color:#DEE1E3;
+  --cr-button-height: 32px;
+}
+
 #composeButton {
   background-color: #F3F5F6;
   color: #1F1F1F;
   font-weight: 400;
+  font-family: inherit;
+  font-size: inherit;
   border: none;
   position: relative;
+  gap: 0px;
 }
 
 .compose-container {
   z-index: 100;
   position: relative;
+  padding-inline-end: 12px;
+  padding-inline-start: 8px;
 }
 
 .compose-icon {
@@ -94,13 +104,13 @@
  * sits on the border of the button.
  */
 .glow-container {
-  height: 40px;
+  height: 36px;
   padding: 0 2px;
   display: flex;
   align-items: center;
   border-radius: 100px;
   position: absolute;
-  right: 6px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 100;
@@ -112,6 +122,13 @@
   position: absolute;
   inset: 0;
   border-radius: 100px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.play .gradient-and-mask-wrapper {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* The outer blurred glow. */
