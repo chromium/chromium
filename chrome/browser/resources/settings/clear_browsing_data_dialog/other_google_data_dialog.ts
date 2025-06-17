@@ -41,6 +41,22 @@ export class SettingsOtherGoogleDataDialogElement extends PolymerElement {
   static get template() {
     return getTemplate();
   }
+  static get properties() {
+    return {
+      isGoogleDse: {
+        type: Boolean,
+        value: false,
+      },
+
+      isSignedIn: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  declare isGoogleDse: boolean;
+  declare isSignedIn: boolean;
 
   private onBackOrCancelClick_() {
     this.$.dialog.cancel();
@@ -59,6 +75,14 @@ export class SettingsOtherGoogleDataDialogElement extends PolymerElement {
   private onSearchHistoryClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('deleteBrowsingDataSearchHistoryUrl'));
+  }
+
+  private shouldShowMyActivityLink_() {
+    return this.isSignedIn;
+  }
+
+  private shouldShowSearchHistoryLink_() {
+    return this.isSignedIn || !this.isGoogleDse;
   }
 }
 

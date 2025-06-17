@@ -76,11 +76,13 @@
       </cr-link-row>
       <cr-link-row sub-label="$i18n{manageInYourGoogleAccount}"
           id="myActivityLink" on-click="onMyActivityClick_" external
-          using-slotted-label>
+          using-slotted-label
+          hidden="[[!shouldShowMyActivityLink_(isSignedIn)]]">
         <div slot="label">$i18n{myActivity}</div>
       </cr-link-row>
       <cr-link-row id="searchHistoryLink" on-click="onSearchHistoryClick_"
-          external using-slotted-label>
+          external using-slotted-label
+          hidden="[[!shouldShowSearchHistoryLink_(isGoogleDse, isSignedIn)]]">
         <div slot="label">$i18n{searchHistory}</div>
       </cr-link-row>
     </div>

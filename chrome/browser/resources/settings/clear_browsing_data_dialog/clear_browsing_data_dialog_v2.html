@@ -161,6 +161,9 @@
 </template>
 
 <template is="dom-if" if="[[showOtherGoogleDataDialog_]]" restamp>
-  <settings-other-google-data-dialog on-cancel="onOtherGoogleDataDialogClose_">
+  <settings-other-google-data-dialog
+      is-signed-in="[[isSignedIn_(syncStatus_.signedInState)]]"
+      is-google-dse="[[isGoogleDse_]]"
+      on-cancel="onOtherGoogleDataDialogClose_">
   </settings-other-google-data-dialog>
 </template>

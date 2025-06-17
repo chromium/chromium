@@ -31,10 +31,10 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import type {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
 import {loadTimeData} from '../i18n_setup.js';
 
-import type {ClearBrowsingDataBrowserProxy} from './clear_browsing_data_browser_proxy.js';
+import type {ClearBrowsingDataBrowserProxy, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, TimePeriod} from './clear_browsing_data_browser_proxy.js';
 import {getTemplate} from './clear_browsing_data_dialog_v2.html.js';
-import {canDeleteAccountData} from './clear_browsing_data_signin_util.js';
+import {canDeleteAccountData, isSignedIn} from './clear_browsing_data_signin_util.js';
 import type {SettingsClearBrowsingDataTimePicker} from './clear_browsing_data_time_picker.js';
 import {getTimePeriodString} from './clear_browsing_data_time_picker.js';
 
@@ -166,6 +166,11 @@ export class SettingsClearBrowsingDataDialogV2Element extends
         value: false,
       },
 
+      isGoogleDse_: {
+        type: Boolean,
+        value: false,
+      },
+
       showHistoryDeletionDialog_: {
         type: Boolean,
         value: false,
@@ -188,6 +193,7 @@ export class SettingsClearBrowsingDataDialogV2Element extends
   declare private deleteButtonLabel_: string;
   declare private isDeletionInProgress_: boolean;
   declare private isNoDatatypeSelected_: boolean;
+  declare private isGoogleDse_: boolean;
   declare private showHistoryDeletionDialog_: boolean;
   declare private showOtherGoogleDataDialog_: boolean;
   declare private expandedBrowsingDataTypeOptionsList_:
@@ -217,9 +223,22 @@ export class SettingsClearBrowsingDataDialogV2Element extends
     this.addEventListener(
         'settings-boolean-control-change',
         this.updateDeleteButtonState_.bind(this));
+
+    this.addWebUiListener(
+        'update-sync-state',
+        (event: UpdateSyncStateEvent) =>
+            this.updateDseStatus_(event.isNonGoogleDse));
+    this.clearBrowsingDataBrowserProxy_.getSyncState().then(
+        (event: UpdateSyncStateEvent) =>
+            this.updateDseStatus_(event.isNonGoogleDse));
+
     // afterNextRender is needed to wait for checkbox lists to be populated via
     // dom-repeat before checking if the delete button should be disabled.
     afterNextRender(this, () => this.updateDeleteButtonState_());
+  }
+
+  private updateDseStatus_(isNonGoogleDse: boolean) {
+    this.isGoogleDse_ = !isNonGoogleDse;
   }
 
   private handleSyncStatus_(syncStatus: SyncStatus) {
@@ -282,6 +301,10 @@ export class SettingsClearBrowsingDataDialogV2Element extends
     assert(moreListIndex !== -1);
     this.set(
         `moreBrowsingDataTypeOptionsList_.${moreListIndex}.subLabel`, text);
+  }
+
+  private isSignedIn_() {
+    return isSignedIn(this.syncStatus_);
   }
 
   private shouldDataTypeBeExpanded_(datatype: BrowsingDataType) {

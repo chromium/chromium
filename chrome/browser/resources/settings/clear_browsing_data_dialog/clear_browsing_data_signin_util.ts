@@ -13,18 +13,24 @@ import {SignedInState} from '/shared/settings/people_page/sync_browser_proxy.js'
  * in paused state), then account data will not be deleted.
  */
 export function canDeleteAccountData(syncStatus: SyncStatus|undefined) {
+  return isSignedIn(syncStatus) &&
+      syncStatus!.signedInState !== SignedInState.SIGNED_IN_PAUSED;
+}
+
+/** Returns true if the user is signed in to a Google account on Chrome. */
+export function isSignedIn(syncStatus: SyncStatus|undefined) {
   if (!syncStatus) {
     return false;
   }
 
   switch (syncStatus.signedInState) {
-    case SignedInState.SIGNED_OUT:
     case SignedInState.SIGNED_IN_PAUSED:
-    case SignedInState.WEB_ONLY_SIGNED_IN:
-      return false;
     case SignedInState.SIGNED_IN:
     case SignedInState.SYNCING:
       return true;
+    case SignedInState.WEB_ONLY_SIGNED_IN:
+    case SignedInState.SIGNED_OUT:
+      return false;
   }
 
   assertNotReached('Invalid SignedInState');

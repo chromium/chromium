@@ -16,6 +16,7 @@ export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy
   constructor() {
     super([
       'initialize',
+      'getSyncState',
       'clearBrowsingData',
       'restartCounters',
       'recordSettingsClearBrowsingDataBasicTimePeriodHistogram',
