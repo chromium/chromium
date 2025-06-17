@@ -257,7 +257,7 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability,
 
 // Returns whether persistent-license session can be supported.
 bool CanSupportPersistentLicense() {
-  if (!base::FeatureList::IsEnabled(media::kWidvinePersistentLicenseSupport)) {
+  if (!base::FeatureList::IsEnabled(media::kWidevinePersistentLicenseSupport)) {
     return false;
   }
 

@@ -860,7 +860,7 @@ class EncryptedMediaSupportedTypesWidevinePersistentLicenseNotSupported
     : public EncryptedMediaSupportedTypesWidevineTest {
  protected:
   EncryptedMediaSupportedTypesWidevinePersistentLicenseNotSupported() {
-    DisableFeature(media::kWidvinePersistentLicenseSupport);
+    DisableFeature(media::kWidevinePersistentLicenseSupport);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

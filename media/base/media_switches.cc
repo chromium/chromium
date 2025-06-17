@@ -398,8 +398,8 @@ BASE_FEATURE(kWebrtcMediaCapabilitiesParameters,
 
 // Controls the persistent license support for protected media that uses
 // widevine.
-BASE_FEATURE(kWidvinePersistentLicenseSupport,
-             "WidvinePersistentLicenseSupport",
+BASE_FEATURE(kWidevinePersistentLicenseSupport,
+             "WidevinePersistentLicenseSupport",
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
              // TODO(crbug.com/423458074): This will rollout slowly as an
              // experiment eventually becoming disabled by default.
