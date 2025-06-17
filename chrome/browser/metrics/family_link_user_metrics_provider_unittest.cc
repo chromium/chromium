@@ -11,7 +11,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -29,6 +28,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace supervised_user {
 namespace {
 constexpr char kTestEmail[] = "test@gmail.com";
 constexpr char kTestEmail1[] = "test1@gmail.com";
@@ -37,7 +37,6 @@ constexpr char kTestProfile[] = "profile";
 constexpr char kTestProfile1[] = "profile1";
 constexpr char kTestProfile2[] = "profile2";
 
-}  // namespace
 class FamilyLinkUserMetricsProviderTest : public testing::Test {
  protected:
   FamilyLinkUserMetricsProviderTest()
@@ -63,16 +62,13 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
                                 bool is_subject_to_parental_controls,
                                 bool is_opted_in_to_parental_supervision) {
     Profile* profile = test_profile_manager()->CreateTestingProfile(
-        test_profile, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-        base::UTF8ToUTF16(test_profile), /*avatar_id=*/0,
+        test_profile, /*prefs=*/nullptr, base::UTF8ToUTF16(test_profile),
+        /*avatar_id=*/0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories(),
         /*is_supervised_profile=*/is_subject_to_parental_controls,
         /*is_new_profile=*/std::nullopt,
         /*policy_service=*/std::nullopt, /*shared_url_loader_factory=*/nullptr);
-
-    // Ensure that lazy service is loaded and available.
-    CHECK(SupervisedUserServiceFactory::GetForProfile(profile));
 
     AccountInfo account = signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(profile), test_email,
@@ -87,29 +83,21 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForProfile(profile), account);
 
-    if (is_subject_to_parental_controls) {
-      supervised_user::EnableParentalControls(*profile->GetPrefs());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+    if (is_subject_to_parental_controls) {
       // Set Family Link `Permissions` switch (and its dependencies) to the default value.
       // Mimics the assignment by the `SupervisedUserPrefStore`.
       supervised_user_test_util::
           SetSupervisedUserExtensionsMayRequestPermissionsPref(profile, true);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
     return profile;
   }
 
   void SetFamilyRole(Profile* profile, kidsmanagement::FamilyRole family_role) {
-    profile->GetPrefs()->SetString(
-        prefs::kFamilyLinkUserMemberRole,
-        supervised_user::FamilyRoleToString(family_role));
-  }
-
-  void AllowUnsafeSitesForSupervisedUser(Profile* profile) {
-    // Note: overrides the setting in the user pref store in the context of user
-    // managed by family link. In true environment, for these users, this
-    // happens in the supervised user pref store.
-    profile->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, false);
+    profile->GetPrefs()->SetString(prefs::kFamilyLinkUserMemberRole,
+                                   FamilyRoleToString(family_role));
   }
 
   void SetPermissionsToggleForSupervisedUser(Profile* profile, bool enabled) {
@@ -135,9 +123,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
-  histogram_tester.ExpectTotalCount(
-      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(kFamilyLinkUserLogSegmentHistogramName,
+                                    /*expected_count=*/0);
 }
 
 TEST_F(FamilyLinkUserMetricsProviderTest,
@@ -151,9 +138,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
-      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::
-          kSupervisionEnabledByFamilyLinkPolicy,
+      kFamilyLinkUserLogSegmentHistogramName,
+      FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkPolicy,
       /*expected_bucket_count=*/1);
 }
 
@@ -168,9 +154,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
-      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::
-          kSupervisionEnabledByFamilyLinkUser,
+      kFamilyLinkUserLogSegmentHistogramName,
+      FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkUser,
       /*expected_bucket_count=*/1);
 }
 
@@ -185,8 +170,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
-      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kUnsupervised,
+      kFamilyLinkUserLogSegmentHistogramName,
+      FamilyLinkUserLogRecord::Segment::kUnsupervised,
       /*expected_bucket_count=*/1);
 }
 
@@ -205,12 +190,12 @@ TEST_F(
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
-      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
+      kFamilyLinkUserLogSegmentHistogramName,
+      FamilyLinkUserLogRecord::Segment::kMixedProfile,
       /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
-      supervised_user::WebFilterType::kTryToBlockMatureSites,
+      kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      WebFilterType::kTryToBlockMatureSites,
       /*expected_bucket_count=*/1);
 }
 
@@ -235,12 +220,12 @@ TEST_F(
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
-      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
+      kFamilyLinkUserLogSegmentHistogramName,
+      FamilyLinkUserLogRecord::Segment::kMixedProfile,
       /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
-      supervised_user::WebFilterType::kTryToBlockMatureSites,
+      kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      WebFilterType::kTryToBlockMatureSites,
       /*expected_bucket_count=*/1);
 }
 
@@ -250,20 +235,19 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       CreateTestingProfile(kTestEmail1, kTestProfile1,
                            /*is_subject_to_parental_controls=*/true,
                            /*is_opted_in_to_parental_supervision=*/false);
-  AllowUnsafeSitesForSupervisedUser(profile1);
-
+  supervised_user_test_util::SetWebFilterType(profile1,
+                                              WebFilterType::kAllowAllSites);
   Profile* profile2 =
       CreateTestingProfile(kTestEmail2, kTestProfile2,
                            /*is_subject_to_parental_controls=*/true,
                            /*is_opted_in_to_parental_supervision=*/false);
-  supervised_user_test_util::SetWebFilterType(
-      profile2, supervised_user::WebFilterType::kCertainSites);
+  supervised_user_test_util::SetWebFilterType(profile2,
+                                              WebFilterType::kCertainSites);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
-      supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
-      supervised_user::WebFilterType::kMixed,
+      kFamilyLinkUserLogSegmentWebFilterHistogramName, WebFilterType::kMixed,
       /*expected_bucket_count=*/1);
 }
 
@@ -276,9 +260,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
-      supervised_user::kSitesMayRequestCameraMicLocationHistogramName,
-      supervised_user::ToggleState::kDisabled,
-      /*expected_bucket_count=*/0);
+      kSitesMayRequestCameraMicLocationHistogramName, ToggleState::kDisabled,
+      /*expected_count=*/0);
 }
 
 TEST_F(FamilyLinkUserMetricsProviderTest,
@@ -292,8 +275,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
-      supervised_user::kSitesMayRequestCameraMicLocationHistogramName,
-      supervised_user::ToggleState::kDisabled,
+      kSitesMayRequestCameraMicLocationHistogramName, ToggleState::kDisabled,
       /*expected_bucket_count=*/1);
 }
 
@@ -308,8 +290,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
-      supervised_user::kSitesMayRequestCameraMicLocationHistogramName,
-      supervised_user::ToggleState::kEnabled,
+      kSitesMayRequestCameraMicLocationHistogramName, ToggleState::kEnabled,
       /*expected_bucket_count=*/1);
 }
 
@@ -335,8 +316,8 @@ TEST_F(FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled,
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
-      supervised_user::kSkipParentApprovalToInstallExtensionsHistogramName,
-      supervised_user::ToggleState::kDisabled,
+      kSkipParentApprovalToInstallExtensionsHistogramName,
+      ToggleState::kDisabled,
       /*expected_bucket_count=*/1);
 }
 
@@ -351,8 +332,8 @@ TEST_F(FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled,
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
-      supervised_user::kSkipParentApprovalToInstallExtensionsHistogramName,
-      supervised_user::ToggleState::kDisabled,
+      kSkipParentApprovalToInstallExtensionsHistogramName,
+      ToggleState::kDisabled,
       /*expected_bucket_count=*/1);
 }
 
@@ -367,8 +348,8 @@ TEST_F(FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled,
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
-      supervised_user::kSkipParentApprovalToInstallExtensionsHistogramName,
-      supervised_user::ToggleState::kEnabled,
+      kSkipParentApprovalToInstallExtensionsHistogramName,
+      ToggleState::kEnabled,
       /*expected_bucket_count=*/1);
 }
 
@@ -389,8 +370,7 @@ TEST_F(FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled,
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectUniqueSample(
-      supervised_user::kSkipParentApprovalToInstallExtensionsHistogramName,
-      supervised_user::ToggleState::kMixed,
+      kSkipParentApprovalToInstallExtensionsHistogramName, ToggleState::kMixed,
       /*expected_bucket_count=*/1);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -401,8 +381,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
-      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
+      kFamilyLinkUserLogSegmentHistogramName,
+      FamilyLinkUserLogRecord::Segment::kMixedProfile,
       /*expected_count=*/0);
 }
 
@@ -415,8 +395,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
-      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kUnsupervised,
+      kFamilyLinkUserLogSegmentHistogramName,
+      FamilyLinkUserLogRecord::Segment::kUnsupervised,
       /*expected_count=*/1);
 }
 
@@ -429,10 +409,9 @@ TEST_F(FamilyLinkUserMetricsProviderTest, ParentProfileLoggedAsParent) {
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
-  histogram_tester.ExpectBucketCount(
-      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kParent,
-      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kFamilyLinkUserLogSegmentHistogramName,
+                                     FamilyLinkUserLogRecord::Segment::kParent,
+                                     /*expected_count=*/1);
 }
 
 TEST_F(FamilyLinkUserMetricsProviderTest, FamilyManagerProfileLoggedAsParent) {
@@ -444,10 +423,9 @@ TEST_F(FamilyLinkUserMetricsProviderTest, FamilyManagerProfileLoggedAsParent) {
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
-  histogram_tester.ExpectBucketCount(
-      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kParent,
-      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kFamilyLinkUserLogSegmentHistogramName,
+                                     FamilyLinkUserLogRecord::Segment::kParent,
+                                     /*expected_count=*/1);
 }
 
 TEST_F(FamilyLinkUserMetricsProviderTest, ParentAndChildProfileLoggedAsMixed) {
@@ -464,8 +442,8 @@ TEST_F(FamilyLinkUserMetricsProviderTest, ParentAndChildProfileLoggedAsMixed) {
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
-      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile,
+      kFamilyLinkUserLogSegmentHistogramName,
+      FamilyLinkUserLogRecord::Segment::kMixedProfile,
       /*expected_count=*/1);
 }
 
@@ -484,10 +462,9 @@ TEST_F(FamilyLinkUserMetricsProviderTest, TwoParentProfilesLoggedAsParent) {
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
-  histogram_tester.ExpectBucketCount(
-      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kParent,
-      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kFamilyLinkUserLogSegmentHistogramName,
+                                     FamilyLinkUserLogRecord::Segment::kParent,
+                                     /*expected_count=*/1);
 }
 
 TEST_F(FamilyLinkUserMetricsProviderTest,
@@ -510,8 +487,10 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
-  histogram_tester.ExpectBucketCount(
-      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
-      supervised_user::FamilyLinkUserLogRecord::Segment::kParent,
-      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kFamilyLinkUserLogSegmentHistogramName,
+                                     FamilyLinkUserLogRecord::Segment::kParent,
+                                     /*expected_count=*/1);
 }
+
+}  // namespace
+}  // namespace supervised_user
