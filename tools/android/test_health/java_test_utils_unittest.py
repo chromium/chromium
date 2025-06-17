@@ -51,6 +51,8 @@ class TestJavaTestHealthStats(unittest.TestCase):
         self.assertEqual(_JAVA_PACKAGE_HEALTHY_TESTS, test_health.java_package)
         self.assertEqual(0, test_health.disabled_tests_count)
         self.assertEqual(0, test_health.disable_if_tests_count)
+        self.assertEqual(1, test_health.tests_count)
+
     def test_get_java_test_health_stats_healthy_tests_no_java_package(self):
         test_health = java_test_utils.get_java_test_health(
             _HEALTHY_NO_PKG_TEST_PATH)
@@ -58,6 +60,7 @@ class TestJavaTestHealthStats(unittest.TestCase):
         self.assertIsNone(test_health.java_package)
         self.assertEqual(0, test_health.disabled_tests_count)
         self.assertEqual(0, test_health.disable_if_tests_count)
+        self.assertEqual(1, test_health.tests_count)
 
     def test_get_java_test_health_stats_unhealthy_tests(self):
         test_health = java_test_utils.get_java_test_health(
@@ -67,6 +70,7 @@ class TestJavaTestHealthStats(unittest.TestCase):
                          test_health.java_package)
         self.assertEqual(1, test_health.disabled_tests_count)
         self.assertEqual(1, test_health.disable_if_tests_count)
+        self.assertEqual(4, test_health.tests_count)
 
     def test_get_java_test_health_stats_disabled_tests(self):
         test_health = java_test_utils.get_java_test_health(_DISABLED_TEST_PATH)
@@ -75,6 +79,7 @@ class TestJavaTestHealthStats(unittest.TestCase):
                          test_health.java_package)
         self.assertEqual(2, test_health.disabled_tests_count)
         self.assertEqual(0, test_health.disable_if_tests_count)
+        self.assertEqual(2, test_health.tests_count)
 
     def test_get_java_test_health_stats_disable_if_tests(self):
         test_health = java_test_utils.get_java_test_health(
@@ -84,14 +89,17 @@ class TestJavaTestHealthStats(unittest.TestCase):
                          test_health.java_package)
         self.assertEqual(0, test_health.disabled_tests_count)
         self.assertEqual(2, test_health.disable_if_tests_count)
+        self.assertEqual(2, test_health.tests_count)
 
     def test_get_java_test_health_stats_whole_class_disabled_tests(self):
-        test_health = java_test_utils.get_java_test_health(_WHOLE_CLASS_DISABLED_TEST_PATH)
+        test_health = java_test_utils.get_java_test_health(
+            _WHOLE_CLASS_DISABLED_TEST_PATH)
 
         self.assertEqual(_JAVA_PACKAGE_DISABLED_TESTS,
                          test_health.java_package)
         self.assertEqual(2, test_health.disabled_tests_count)
         self.assertEqual(0, test_health.disable_if_tests_count)
+        self.assertEqual(2, test_health.tests_count)
 
     def test_get_java_test_health_invalid_test_syntax(self):
         expected_filename = str(

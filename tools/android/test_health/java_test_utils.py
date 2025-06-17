@@ -133,6 +133,7 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
         if any(annotation.name == _DISABLED_TEST_ANNOTATION
                for annotation in java_class.annotations):
             all_test_methods = _collect_all_test_methods(java_class)
+            annotation_counter[_TEST_ANNOTATION] += len(all_test_methods)
             annotation_counter[_DISABLED_TEST_ANNOTATION] += len(
                 all_test_methods)
             for test_method in all_test_methods:
@@ -145,6 +146,7 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
                 re.fullmatch(_DISABLE_IF_TEST_PATTERN, annotation.name)
                 for annotation in java_class.annotations):
             all_test_methods = _collect_all_test_methods(java_class)
+            annotation_counter[_TEST_ANNOTATION] += len(all_test_methods)
             annotation_counter[_DISABLE_IF_TEST_ANNOTATION] += len(
                 all_test_methods)
             for test_method in all_test_methods:
