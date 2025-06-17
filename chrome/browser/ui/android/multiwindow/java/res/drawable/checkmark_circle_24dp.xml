@@ -5,7 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- TODO(crbug.com/424858397): Update icon color to secondaryContainer -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
@@ -13,7 +12,7 @@ found in the LICENSE file.
     android:viewportHeight="24">
   <path
       android:pathData="M12,0L12,0A12,12 0,0 1,24 12L24,12A12,12 0,0 1,12 24L12,24A12,12 0,0 1,0 12L0,12A12,12 0,0 1,12 0z"
-      android:fillColor="@macro/default_icon_color_accent1"/>
+      android:fillColor="@macro/checkmark_icon_bg_color"/>
   <group>
     <clip-path
         android:pathData="M4,4h16v16h-16z"/>

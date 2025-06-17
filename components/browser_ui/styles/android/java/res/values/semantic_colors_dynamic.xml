@@ -51,6 +51,8 @@ found in the LICENSE file.
 
     <macro name="filled_button_bg_color" tools:ignore="UnusedResources">?attr/colorPrimary</macro>
 
+    <macro name="checkmark_icon_bg_color">?attr/colorOnSecondaryContainer</macro>
+
     <!-- Gated by full dynamic colors param, no fallback needed. -->
     <macro name="circular_progress_icon_color_small_large">?attr/colorPrimary</macro>
     <macro name="circular_progress_outer_circle_progress_color_small">?attr/colorPrimary</macro>

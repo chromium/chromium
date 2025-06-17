@@ -8,7 +8,7 @@ found in the LICENSE file.
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
   <item
       android:state_selected="true"
-      android:color="?attr/colorPrimaryContainer" />
+      android:color="?attr/colorSecondaryContainer" />
   <item
       android:color="?attr/colorSurfaceContainer" />
 </selector>
