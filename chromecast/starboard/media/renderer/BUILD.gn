@@ -35,6 +35,19 @@ source_set("starboard_player_manager") {
   deps = [ ":chromium_starboard_conversions" ]
 }
 
+source_set("starboard_renderer") {
+  public = [ "starboard_renderer.h" ]
+  sources = [ "starboard_renderer.cc" ]
+  public_deps = [
+    ":geometry_change_handler",
+    ":starboard_player_manager",
+    "//base",
+    "//chromecast/media/service:video_geometry_setter_service",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//media",
+  ]
+}
+
 source_set("demuxer_stream_reader") {
   public = [ "demuxer_stream_reader.h" ]
   sources = [ "demuxer_stream_reader.cc" ]
@@ -87,6 +100,7 @@ test("starboard_renderer_unittests") {
     "demuxer_stream_reader_test.cc",
     "geometry_change_handler_test.cc",
     "starboard_player_manager_test.cc",
+    "starboard_renderer_test.cc",
   ]
   deps = [
     ":chromium_starboard_conversions",
@@ -94,10 +108,12 @@ test("starboard_renderer_unittests") {
     ":demuxer_stream_reader",
     ":geometry_change_handler",
     ":starboard_player_manager",
+    ":starboard_renderer",
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//chromecast/media/service:video_geometry_setter_service",
+    "//chromecast/media/service/mojom",
     "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
     "//chromecast/starboard/media/cdm:starboard_drm_wrapper",
     "//chromecast/starboard/media/media:mock_starboard_api_wrapper",
