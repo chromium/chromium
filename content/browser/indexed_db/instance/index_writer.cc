@@ -89,10 +89,10 @@ bool IndexWriter::AddingKeyAllowed(BackingStore::Transaction* transaction,
     return true;
   }
 
-  ASSIGN_OR_RETURN(
-      IndexedDBKey found_primary_key,
-      transaction->KeyExistsInIndex(object_store_id, index_id, index_key),
-      [](Status) { return false; });
+  ASSIGN_OR_RETURN(IndexedDBKey found_primary_key,
+                   transaction->GetFirstPrimaryKeyForIndexKey(
+                       object_store_id, index_id, index_key),
+                   [](Status) { return false; });
   const bool found = found_primary_key.IsValid();
   if (!found ||
       (primary_key.IsValid() && found_primary_key.Equals(primary_key))) {

@@ -468,7 +468,7 @@ Status Database::GetOperation(int64_t object_store_id,
   // From here we are dealing only with indexes.
   ASSIGN_OR_RETURN(
       IndexedDBKey primary_key,
-      transaction->BackingStoreTransaction()->GetPrimaryKeyViaIndex(
+      transaction->BackingStoreTransaction()->GetFirstPrimaryKeyForIndexKey(
           object_store_id, index_id, key),
       [&callback, transaction](const Status& status) {
         std::move(callback).Run(

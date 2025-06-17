@@ -2947,11 +2947,11 @@ Status BackingStore::Transaction::FindKeyInIndex(
   }
 }
 
-StatusOr<IndexedDBKey> BackingStore::Transaction::GetPrimaryKeyViaIndex(
+StatusOr<IndexedDBKey> BackingStore::Transaction::GetFirstPrimaryKeyForIndexKey(
     int64_t object_store_id,
     int64_t index_id,
     const IndexedDBKey& key) {
-  TRACE_EVENT0("IndexedDB", "BackingStore::GetPrimaryKeyViaIndex");
+  TRACE_EVENT0("IndexedDB", "BackingStore::GetFirstPrimaryKeyForIndexKey");
 
   if (!KeyPrefix::ValidIds(database_id(), object_store_id, index_id)) {
     return base::unexpected(InvalidDBKeyStatus());
@@ -2970,41 +2970,6 @@ StatusOr<IndexedDBKey> BackingStore::Transaction::GetPrimaryKeyViaIndex(
   }
   if (found_encoded_primary_key.empty()) {
     INTERNAL_READ_ERROR(GET_PRIMARY_KEY_VIA_INDEX);
-    return base::unexpected(InvalidDBKeyStatus());
-  }
-
-  std::string_view slice(found_encoded_primary_key);
-  if (IndexedDBKey primary_key = DecodeIDBKey(&slice);
-      primary_key.IsValid() && slice.empty()) {
-    return primary_key;
-  }
-
-  return base::unexpected(InvalidDBKeyStatus());
-}
-
-StatusOr<IndexedDBKey> BackingStore::Transaction::KeyExistsInIndex(
-    int64_t object_store_id,
-    int64_t index_id,
-    const IndexedDBKey& index_key) {
-  TRACE_EVENT0("IndexedDB", "BackingStore::KeyExistsInIndex");
-
-  if (!KeyPrefix::ValidIds(database_id(), object_store_id, index_id)) {
-    return base::unexpected(InvalidDBKeyStatus());
-  }
-
-  bool exists = false;
-  std::string found_encoded_primary_key;
-  Status s = FindKeyInIndex(object_store_id, index_id, index_key,
-                            &found_encoded_primary_key, &exists);
-  if (!s.ok()) {
-    INTERNAL_READ_ERROR(KEY_EXISTS_IN_INDEX);
-    return base::unexpected(s);
-  }
-  if (!exists) {
-    return IndexedDBKey();
-  }
-  if (found_encoded_primary_key.empty()) {
-    INTERNAL_READ_ERROR(KEY_EXISTS_IN_INDEX);
     return base::unexpected(InvalidDBKeyStatus());
   }
 

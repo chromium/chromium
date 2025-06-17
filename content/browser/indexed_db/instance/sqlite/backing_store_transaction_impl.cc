@@ -140,20 +140,12 @@ Status BackingStoreTransactionImpl::PutIndexDataForRecord(
 }
 
 StatusOr<blink::IndexedDBKey>
-BackingStoreTransactionImpl::GetPrimaryKeyViaIndex(
+BackingStoreTransactionImpl::GetFirstPrimaryKeyForIndexKey(
     int64_t object_store_id,
     int64_t index_id,
     const blink::IndexedDBKey& key) {
   NOTIMPLEMENTED();
   return base::unexpected(Status::InvalidArgument("not implemented"));
-}
-
-StatusOr<blink::IndexedDBKey> BackingStoreTransactionImpl::KeyExistsInIndex(
-    int64_t object_store_id,
-    int64_t index_id,
-    const blink::IndexedDBKey& key) {
-  NOTIMPLEMENTED();
-  return base::unexpected(Status::InvalidArgument("Not implemented"));
 }
 
 StatusOr<uint32_t> BackingStoreTransactionImpl::GetObjectStoreKeyCount(

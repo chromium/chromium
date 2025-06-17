@@ -190,11 +190,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                                  int64_t index_id,
                                  const blink::IndexedDBKey& key,
                                  const RecordIdentifier& record) override;
-    StatusOr<blink::IndexedDBKey> GetPrimaryKeyViaIndex(
-        int64_t object_store_id,
-        int64_t index_id,
-        const blink::IndexedDBKey& key) override;
-    StatusOr<blink::IndexedDBKey> KeyExistsInIndex(
+    StatusOr<blink::IndexedDBKey> GetFirstPrimaryKeyForIndexKey(
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKey& key) override;

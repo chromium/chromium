@@ -1229,13 +1229,14 @@ TEST_F(BackingStoreTest, CreateAndDeleteIndex) {
         transaction
             ->PutIndexDataForRecord(object_store_id, index_id, key2_, *record)
             .ok());
-    auto pk =
-        transaction->GetPrimaryKeyViaIndex(object_store_id, index_id, key2_);
+    auto pk = transaction->GetFirstPrimaryKeyForIndexKey(object_store_id,
+                                                         index_id, key2_);
     EXPECT_TRUE(pk.has_value());
     EXPECT_TRUE(pk->IsValid());
 
     EXPECT_TRUE(transaction->DeleteIndex(object_store_id, index_id).ok());
-    pk = transaction->GetPrimaryKeyViaIndex(object_store_id, index_id, key2_);
+    pk = transaction->GetFirstPrimaryKeyForIndexKey(object_store_id, index_id,
+                                                    key2_);
     EXPECT_TRUE(pk.has_value());
     EXPECT_FALSE(pk->IsValid());
 
@@ -1302,11 +1303,11 @@ TEST_F(BackingStoreTest, HighIds) {
     EXPECT_EQ(value1.bits, result->bits);
 
     EXPECT_FALSE(transaction2
-                     .GetPrimaryKeyViaIndex(high_object_store_id,
-                                            invalid_high_index_id, index_key)
+                     .GetFirstPrimaryKeyForIndexKey(
+                         high_object_store_id, invalid_high_index_id, index_key)
                      .has_value());
 
-    auto new_primary_key = transaction2.GetPrimaryKeyViaIndex(
+    auto new_primary_key = transaction2.GetFirstPrimaryKeyForIndexKey(
         high_object_store_id, high_index_id, index_key);
     ASSERT_TRUE(new_primary_key.has_value());
     EXPECT_TRUE(new_primary_key->Equals(key1));
@@ -1369,24 +1370,26 @@ TEST_F(BackingStoreTest, InvalidIds) {
   EXPECT_FALSE(result.has_value());
 
   db.metadata().id = database_id;
+  EXPECT_FALSE(transaction1
+                   .GetFirstPrimaryKeyForIndexKey(object_store_id,
+                                                  KeyPrefix::kInvalidId, key)
+                   .has_value());
+  EXPECT_FALSE(transaction1
+                   .GetFirstPrimaryKeyForIndexKey(object_store_id,
+                                                  invalid_low_index_id, key)
+                   .has_value());
   EXPECT_FALSE(
-      transaction1
-          .GetPrimaryKeyViaIndex(object_store_id, KeyPrefix::kInvalidId, key)
+      transaction1.GetFirstPrimaryKeyForIndexKey(object_store_id, 0, key)
           .has_value());
-  EXPECT_FALSE(
-      transaction1
-          .GetPrimaryKeyViaIndex(object_store_id, invalid_low_index_id, key)
-          .has_value());
-  EXPECT_FALSE(
-      transaction1.GetPrimaryKeyViaIndex(object_store_id, 0, key).has_value());
 
   db.metadata().id = KeyPrefix::kInvalidId;
   EXPECT_FALSE(
-      transaction1.GetPrimaryKeyViaIndex(object_store_id, index_id, key)
+      transaction1.GetFirstPrimaryKeyForIndexKey(object_store_id, index_id, key)
           .has_value());
   db.metadata().id = database_id;
   EXPECT_FALSE(
-      transaction1.GetPrimaryKeyViaIndex(KeyPrefix::kInvalidId, index_id, key)
+      transaction1
+          .GetFirstPrimaryKeyForIndexKey(KeyPrefix::kInvalidId, index_id, key)
           .has_value());
 }
 
