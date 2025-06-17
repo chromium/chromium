@@ -4,22 +4,27 @@
 
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_function_dispatcher.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/extension_function.h"
-#include "extensions/browser/extension_function_dispatcher.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 ChromeExtensionFunctionDetails::ChromeExtensionFunctionDetails(
     ExtensionFunction* function)
@@ -27,6 +32,7 @@ ChromeExtensionFunctionDetails::ChromeExtensionFunctionDetails(
 
 ChromeExtensionFunctionDetails::~ChromeExtensionFunctionDetails() = default;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 extensions::WindowController*
 ChromeExtensionFunctionDetails::GetCurrentWindowController() const {
   // If the delegate has an associated window controller, return it.
@@ -67,8 +73,12 @@ ChromeExtensionFunctionDetails::GetCurrentWindowController() const {
   // is available. http://code.google.com/p/chromium/issues/detail?id=13284
   return nullptr;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 gfx::NativeWindow ChromeExtensionFunctionDetails::GetNativeWindowForUI() {
+  // TODO(crbug.com/423725749): Enable this logic on Android once
+  // BrowserExtensionWindowController is ported.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Try to use WindowControllerList first because WebContents's
   // GetTopLevelNativeWindow() can't return the top level window when the tab
   // is not focused.
@@ -77,16 +87,25 @@ gfx::NativeWindow ChromeExtensionFunctionDetails::GetNativeWindowForUI() {
           function_);
   if (controller)
     return controller->window()->GetNativeWindow();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Next, check the sender web contents for if it supports modal dialogs.
   // TODO(devlin): This seems weird. Why wouldn't we check this first?
   content::WebContents* sender_web_contents = function_->GetSenderWebContents();
-  if (sender_web_contents &&
-      web_modal::WebContentsModalDialogManager::FromWebContents(
-           sender_web_contents)) {
-    return sender_web_contents->GetTopLevelNativeWindow();
+  if (sender_web_contents) {
+#if BUILDFLAG(IS_ANDROID)
+    bool supports_modal = !!sender_web_contents->GetTopLevelNativeWindow();
+#else
+    bool supports_modal =
+        web_modal::WebContentsModalDialogManager::FromWebContents(
+            sender_web_contents);
+#endif
+    if (supports_modal) {
+      return sender_web_contents->GetTopLevelNativeWindow();
+    }
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   // Then, check for any app windows that are open.
   if (function_->extension() &&
       function_->extension()->is_app()) {
@@ -96,15 +115,19 @@ gfx::NativeWindow ChromeExtensionFunctionDetails::GetNativeWindowForUI() {
     if (window)
       return window->web_contents()->GetTopLevelNativeWindow();
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+  // TODO(crbug.com/419057482): Enable this logic on Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // As a last resort, find a browser.
   Browser* browser = chrome::FindBrowserWithProfile(
       Profile::FromBrowserContext(function_->browser_context()));
   // If there are no browser windows open, no window is available.
   // This could happen e.g. if extension launches a long process or simple
   // sleep() in the background script, during which browser is closed.
-  if (!browser) {
-    return gfx::NativeWindow();
+  if (browser) {
+    return browser->window()->GetNativeWindow();
   }
-  return browser->window()->GetNativeWindow();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  return gfx::NativeWindow();
 }
