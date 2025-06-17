@@ -155,6 +155,18 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
     // still work when kIdentityDiscAccountMenu is enabled.
     config.features_disabled.push_back(kIdentityDiscAccountMenu);
   }
+  // TODO(crbug.com/425606651): When kTabGroupSync is launched, remove the two
+  // tests below and OpenSigninMethodFromTabSwitcher.
+  if ([self isRunningTest:@selector(testDismissSigninFromTabSwitcher)] ||
+      [self isRunningTest:@selector
+            (testDismissSigninFromTabSwitcherFromIdentityPicker)]) {
+    // Once kIdentityDiscAccountMenu is launched, the ADP will open the account
+    // menu instead of settings view. It will be safe to remove this test at
+    // that point. The new flow is covered in testViewAccountMenu. Note:
+    // testOpenManageSyncSettingsFromNTPWhenSigninIsNotAllowedByPolicy should
+    // still work when kIdentityDiscAccountMenu is enabled.
+    config.features_disabled.push_back(kTabGroupSync);
+  }
 
   return config;
 }
@@ -419,11 +431,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Sign-in opened from: tab switcher.
 // Interrupted at: user consent.
 - (void)testDismissSigninFromTabSwitcher {
-  // TODO(crbug.com/422731851): Test is failing on iPad. Re-enable when fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Failing on iPad.");
-  }
-
   // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
   // Recent Tabs is not reachable from the Tab Grid. So the sign-in flow is not
   // supported with Tab Group Sync enabled.
@@ -439,11 +446,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Sign-in opened from: tab switcher.
 // Interrupted at: identity picker.
 - (void)testDismissSigninFromTabSwitcherFromIdentityPicker {
-  // TODO(crbug.com/422731851): Test is failing on iPad. Re-enable when fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Failing on iPad.");
-  }
-
   // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
   // Recent Tabs is not reachable from the Tab Grid. So the sign-in flow is not
   // supported with Tab Group Sync enabled.
