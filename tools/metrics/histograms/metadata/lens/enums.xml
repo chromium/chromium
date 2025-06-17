@@ -152,6 +152,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_metrics.h:LensOverlaySpeedbumpMenuSelection) -->
 
+<!-- LINT.IfChange(LensOverlayTextDirectiveResult) -->
+
+<enum name="LensOverlayTextDirectiveResult">
+  <summary>
+    The result of handling a text directive in the Lens Overlay.
+  </summary>
+  <int value="0" label="Found on page"/>
+  <int value="1" label="Opened in new tab"/>
+  <int value="2" label="Not found on page"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_metrics.h:LensOverlayTextDirectiveResult) -->
+
 <!-- LINT.IfChange(LensOverlayUserAction) -->
 
 <enum name="LensOverlayUserAction">

@@ -72,6 +72,19 @@ struct ContextualSearchboxSessionEndMetrics {
   bool searchbox_shown_ = false;
 };
 
+// LINT.IfChange(LensOverlayTextDirectiveResult)
+enum class LensOverlayTextDirectiveResult {
+  // The text directive was found on the page.
+  kFoundOnPage = 0,
+  // The URL with a text directive was opened in a new tab because it did not
+  // match the current page.
+  kOpenedInNewTab = 1,
+  // The text directive was not found on the page.
+  kNotFoundOnPage = 2,
+  kMaxValue = kNotFoundOnPage,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayTextDirectiveResult)
+
 // Returns the string representation of the invocation source.
 std::string InvocationSourceToString(
     LensOverlayInvocationSource invocation_source);
@@ -190,6 +203,10 @@ void RecordSidePanelResultStatus(SidePanelResultStatus status);
 // Records that a side panel menu option has been selected.
 void RecordSidePanelMenuOptionSelected(
     lens::LensOverlaySidePanelMenuOption menu_option);
+
+// Records the result of handling a text directive in the Lens Overlay.
+void RecordHandleTextDirectiveResult(
+    lens::LensOverlayTextDirectiveResult result);
 
 }  // namespace lens
 

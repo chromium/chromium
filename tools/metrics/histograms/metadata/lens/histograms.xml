@@ -741,6 +741,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.TextDirectiveResult"
+    enum="LensOverlayTextDirectiveResult" expires_after="2026-01-31">
+  <owner>juanmojica@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once whenever the text finder is invoked on the Lens overlay.
+    Indicates whether the text finder was successful in finding text in the
+    page.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.TimeToFirstInteraction" units="ms"
     expires_after="2025-11-09">
   <owner>jdonnelly@chromium.org</owner>
