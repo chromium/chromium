@@ -2649,15 +2649,6 @@ if (!is_ios) {
       "//third_party/protobuf:protobuf_lite",
     ]
   }
-  executable("crypto_message_printer") {
-    testonly = true
-    sources = [ "tools/quic/crypto_message_printer_bin.cc" ]
-    deps = [
-      ":net",
-      "//base",
-      "//build/win:default_exe_manifest",
-    ]
-  }
 }
 
 if (is_ios) {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // This command-line program converts an effective-TLD data file in UTF-8 from
 // the format provided by Mozilla to the format expected by Chrome.  This
 // program generates an intermediate file which is then used by gperf to
@@ -29,6 +24,8 @@
 //  * Marks entries in the file between "// ===BEGIN PRIVATE DOMAINS==="
 //    and "// ===END PRIVATE DOMAINS===" as private.
 
+#include <iostream>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -42,8 +39,8 @@
 int main(int argc, const char* argv[]) {
   base::EnableTerminationOnHeapCorruption();
   if (argc != 1) {
-    fprintf(stderr, "Normalizes and verifies UTF-8 TLD data files\n");
-    fprintf(stderr, "Usage: %s\n", argv[0]);
+    std::cerr << "Normalizes and verifies UTF-8 TLD data files\n";
+    std::cerr << "Usage: " << argv[0] << "\n";
     return 1;
   }
 
