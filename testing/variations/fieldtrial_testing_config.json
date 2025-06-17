@@ -724,6 +724,21 @@
             ]
         }
     ],
+    "AndroidNativePagesInNewTab": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidNativePagesInNewTab"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidPdfSummarization": [
         {
             "platforms": [
