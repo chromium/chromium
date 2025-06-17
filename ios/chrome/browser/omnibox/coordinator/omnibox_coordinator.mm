@@ -215,7 +215,8 @@
 
   _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
       initWithOmniboxController:_omniboxController.get()
-               omniboxEditModel:_omniboxEditModel.get()];
+               omniboxEditModel:_omniboxEditModel.get()
+               omniboxTextModel:_omniboxTextModel.get()];
 
   _omniboxTextController = [[OmniboxTextController alloc]
       initWithOmniboxController:_omniboxController.get()
@@ -231,6 +232,8 @@
   _omniboxAutocompleteController.omniboxTextController = _omniboxTextController;
 
   _omniboxEditModel->set_text_controller(_omniboxTextController);
+  _omniboxEditModel->set_omnibox_autocomplete_controller(
+      _omniboxAutocompleteController);
 
   mediator.omniboxTextController = _omniboxTextController;
   _omniboxView->SetOmniboxTextController(_omniboxTextController);

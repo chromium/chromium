@@ -66,6 +66,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_starter_pack_data.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
@@ -216,24 +217,15 @@ void OmniboxEditModelIOS::StartAutocomplete(bool has_selected_text,
   size_t start, cursor_position;
   [text_controller_ getSelectionBounds:&start end:&cursor_position];
 
-  text_model_->input = AutocompleteInput(
-      input_text, cursor_position, GetPageClassification(),
-      controller_->client()->GetSchemeClassifier(),
-      controller_->client()->ShouldDefaultTypedNavigationsToHttps(),
-      controller_->client()->GetHttpsPortForTesting(),
-      controller_->client()->IsUsingFakeHttpsForHttpsUpgradeTesting());
-  text_model_->input.set_current_url(controller_->client()->GetURL());
-  text_model_->input.set_current_title(controller_->client()->GetTitle());
-  text_model_->input.set_prevent_inline_autocomplete(
+  prevent_inline_autocomplete =
       prevent_inline_autocomplete || text_model_->just_deleted_text ||
       (has_selected_text && text_model_->inline_autocompletion.empty()) ||
-      text_model_->paste_state != OmniboxPasteState::kNone);
-  if (std::optional<lens::proto::LensOverlaySuggestInputs> suggest_inputs =
-          controller_->client()->GetLensOverlaySuggestInputs()) {
-    text_model_->input.set_lens_overlay_suggest_inputs(*suggest_inputs);
-  }
+      text_model_->paste_state != OmniboxPasteState::kNone;
 
-  controller_->StartAutocomplete(text_model_->input);
+  [omnibox_autocomplete_controller_
+      startAutocompleteWithText:input_text
+                 cursorPosition:cursor_position
+      preventInlineAutocomplete:prevent_inline_autocomplete];
 }
 
 void OmniboxEditModelIOS::OpenSelection(OmniboxPopupSelection selection,

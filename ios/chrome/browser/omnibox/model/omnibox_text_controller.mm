@@ -347,7 +347,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 
   [self onBeforePossibleChange];
 
-  if (_omniboxEditModel) {
+  if (_omniboxEditModel && _omniboxTextModel) {
     _omniboxTextModel->OnSetFocus();
 
     if (_inLensOverlay) {

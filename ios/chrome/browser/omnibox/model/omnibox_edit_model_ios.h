@@ -29,6 +29,7 @@
 #import "ui/base/window_open_disposition.h"
 #import "url/gurl.h"
 
+@class OmniboxAutocompleteController;
 class OmniboxControllerIOS;
 class OmniboxPopupViewIOS;
 @class OmniboxTextController;
@@ -45,6 +46,11 @@ class OmniboxEditModelIOS {
   void set_popup_view(OmniboxPopupViewIOS* popup_view);
   OmniboxPopupViewIOS* get_popup_view() { return popup_view_; }
   const OmniboxPopupViewIOS* get_popup_view() const { return popup_view_; }
+
+  void set_omnibox_autocomplete_controller(
+      OmniboxAutocompleteController* omnibox_autocomplete_controller) {
+    omnibox_autocomplete_controller_ = omnibox_autocomplete_controller;
+  }
 
   metrics::OmniboxEventProto::PageClassification GetPageClassification() const;
 
@@ -291,6 +297,9 @@ class OmniboxEditModelIOS {
 
   // The text controller.
   __weak OmniboxTextController* text_controller_ = nil;
+
+  // The autocomplete controller.
+  __weak OmniboxAutocompleteController* omnibox_autocomplete_controller_ = nil;
 
   // The initial text representing the current URL suitable for editing.
   std::u16string url_for_editing_;

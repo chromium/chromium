@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string>
+
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
 #import "ui/base/window_open_disposition.h"
 
@@ -19,6 +21,7 @@ class AutocompleteResult;
 class OmniboxControllerIOS;
 class OmniboxEditModelIOS;
 @class OmniboxTextController;
+struct OmniboxTextModel;
 
 /// Controller for the omnibox autocomplete system. Handles interactions with
 /// the autocomplete system and dispatches results.
@@ -46,6 +49,7 @@ class OmniboxEditModelIOS;
 - (instancetype)initWithOmniboxController:
                     (OmniboxControllerIOS*)omniboxController
                          omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
+                         omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -83,6 +87,11 @@ class OmniboxEditModelIOS;
             isFirstUpdate:(BOOL)isFirstUpdate;
 
 #pragma mark - OmniboxText events
+
+/// Starts autocomplete with `text`.
+- (void)startAutocompleteWithText:(const std::u16string&)text
+                   cursorPosition:(size_t)cursorPosition
+        preventInlineAutocomplete:(bool)preventInlineAutocomplete;
 
 /// Closes the omnibox popup.
 - (void)closeOmniboxPopup;

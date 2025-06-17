@@ -131,8 +131,11 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
 
     controller_ = [[OmniboxAutocompleteController alloc]
         initWithOmniboxController:omnibox_controller_.get()
-                 omniboxEditModel:omnibox_edit_model_.get()];
+                 omniboxEditModel:omnibox_edit_model_.get()
+                 omniboxTextModel:omnibox_text_model_.get()];
     controller_.delegate = controller_delegate_;
+
+    omnibox_edit_model_->set_omnibox_autocomplete_controller(controller_);
   }
 
   ~OmniboxAutocompleteControllerTest() override {
