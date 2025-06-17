@@ -775,6 +775,11 @@ inline constexpr char kIOSBWGManualPromo[] = "ios.bwg.manual_promo";
 inline constexpr char kWaitingForMultiProfileForcedMigrationTimestamp[] =
     "ios.waiting_for_multi_profile_forced_migration_timestamp";
 
+// A time object storing when the sign-in promo should be displayed again.
+// The value is set on the first cold start to make sure sign-in promo is not
+// triggered right after the FRE.
+inline constexpr char kNextSSORecallTime[] = "ios.next_sso_recall_time";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

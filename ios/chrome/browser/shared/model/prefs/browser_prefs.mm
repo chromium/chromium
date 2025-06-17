@@ -612,6 +612,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(
       prefs::kWaitingForMultiProfileForcedMigrationTimestamp, base::Time());
 
+  registry->RegisterTimePref(prefs::kNextSSORecallTime, base::Time());
+
   // Deprecated 07/2024 (migrated to profile prefs).
   registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
   registry->RegisterStringPref(prefs::kTabPickupLastDisplayedURL,
