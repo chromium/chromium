@@ -9,9 +9,9 @@ enum DeletedAccountUIConstants {
   static let cornerRadius: CGFloat = 22
   static let smallWidgetHeight: CGFloat = 140
   static let smallWidgetWidth: CGFloat = 140
-  static let mediumWidgetHeight: CGFloat = 130
-  static let mediumWidgetWidth: CGFloat = 310
-  static let padding: CGFloat = 8
+  static let mediumWidgetHeight: CGFloat = 140
+  static let mediumWidgetWidth: CGFloat = 320
+  static let padding: CGFloat = 7
 }
 
 // Store in NSUserDefaults that the deleted account view appeared.
@@ -63,7 +63,7 @@ func MediumWidgetDeletedAccountView() -> some View {
               .font(.subheadline)
               .foregroundColor(Color("widget_text_color"))
               .multilineTextAlignment(.center)
-              .padding(DeletedAccountUIConstants.padding)
+              .padding(.top, DeletedAccountUIConstants.padding)
           }
         )
     }
