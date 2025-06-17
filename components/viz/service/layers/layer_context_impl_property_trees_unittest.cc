@@ -444,6 +444,21 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
   EXPECT_EQ(result.error(), "Invalid anchor_position_scroll_data_id");
 }
 
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       InvalidParentIdForNonRootTransformNode) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::TransformNode::New();
+  // Use an ID that is not a root ID.
+  node_update->id = AddTransformNode(update.get(), cc::kRootPropertyNodeId);
+  node_update->parent_id = cc::kInvalidPropertyNodeId;  // Invalid parent
+  update->transform_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid parent_id for non-root property tree node");
+}
+
 class LayerContextImplUpdateDisplayTreeClipNodeTest
     : public LayerContextImplTest {
  protected:
@@ -566,6 +581,21 @@ TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest,
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), "Invalid transform_id for clip node");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeClipNodeTest,
+       InvalidParentIdForNonRootClipNode) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::ClipNode::New();
+  node_update->id = AddClipNode(update.get(), cc::kRootPropertyNodeId);
+  node_update->parent_id = cc::kInvalidPropertyNodeId;  // Invalid parent
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  update->clip_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid parent_id for non-root property tree node");
 }
 
 class LayerContextImplUpdateDisplayTreeEffectNodeTest
@@ -826,6 +856,23 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest, InvalidBlendMode) {
   EXPECT_EQ(result.error(), "Invalid blend_mode for effect node");
 }
 
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       InvalidParentIdForNonRootEffectNode) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = AddEffectNode(update.get(), cc::kRootPropertyNodeId);
+  node_update->parent_id = cc::kInvalidPropertyNodeId;  // Invalid parent
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  node_update->clip_id = cc::kRootPropertyNodeId;
+  node_update->target_id = cc::kRootPropertyNodeId;
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid parent_id for non-root property tree node");
+}
+
 class LayerContextImplUpdateDisplayTreeScrollNodeTest
     : public LayerContextImplTest {
  protected:
@@ -1006,6 +1053,21 @@ TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
                   ->scroll_tree()
                   .scrolling_contents_cull_rects()
                   .empty());
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
+       InvalidParentIdForNonRootScrollNode) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::ScrollNode::New();
+  node_update->id = AddScrollNode(update.get(), cc::kRootPropertyNodeId);
+  node_update->parent_id = cc::kInvalidPropertyNodeId;  // Invalid parent
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  update->scroll_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid parent_id for non-root property tree node");
 }
 
 class LayerContextImplUpdateDisplayTreePageScaleFactorTest
