@@ -18,5 +18,8 @@ per-file chrome_content_browser_client_extensions_part_bindings.cc=file://ipc/SE
 per-file BUILD.gn=stevenjb@chromium.org
 per-file BUILD.gn=tbarzic@chromium.org
 
+# For developer_private changes.
+per-file BUILD.gn=file://chrome/browser/extensions/api/developer_private/OWNERS
+
 # Prefer rsult over directory owners.
 per-file *browser_context_keyed_service_factories*=rsult@google.com
