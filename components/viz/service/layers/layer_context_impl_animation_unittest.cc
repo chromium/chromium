@@ -1234,5 +1234,123 @@ TEST_F(LayerContextImplAnimationTest,
   EXPECT_EQ(result.error(), "Invalid keyframe type");
 }
 
+struct AnimationDirectionTestData {
+  mojom::AnimationDirection mojom_direction;
+  cc::KeyframeModel::Direction expected_cc_direction;
+};
+
+class LayerContextImplAnimationDirectionTest
+    : public LayerContextImplAnimationTest,
+      public testing::WithParamInterface<AnimationDirectionTestData> {};
+
+TEST_P(LayerContextImplAnimationDirectionTest, Deserialize) {
+  const auto& param = GetParam();
+  constexpr int kTimelineId = 24;  // Ensure unique IDs
+  constexpr int kAnimationId = 240;
+  constexpr int kKeyframeModelId = 2400;
+  constexpr int kGroupId = 24;
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom =
+      CreateDefaultMojomAnimation(kAnimationId, kKeyframeModelId, kGroupId);
+  animation_mojom->keyframe_models[0]->direction = param.mojom_direction;
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  const cc::AnimationHost* host = GetAnimationHost();
+  const cc::AnimationTimeline* timeline_impl =
+      host->GetTimelineById(kTimelineId);
+  ASSERT_NE(nullptr, timeline_impl);
+  const cc::Animation* animation_impl =
+      timeline_impl->GetAnimationById(kAnimationId);
+  ASSERT_NE(nullptr, animation_impl);
+  const cc::KeyframeEffect* effect_impl = animation_impl->keyframe_effect();
+  ASSERT_NE(nullptr, effect_impl);
+  ASSERT_EQ(effect_impl->keyframe_models().size(), 1u);
+  const gfx::KeyframeModel* gfx_model_impl =
+      effect_impl->keyframe_models()[0].get();
+  ASSERT_NE(nullptr, gfx_model_impl);
+  EXPECT_EQ(gfx_model_impl->direction(), param.expected_cc_direction);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LayerContextImplAnimationDirectionTest,
+    testing::Values(
+        AnimationDirectionTestData{mojom::AnimationDirection::kNormal,
+                                   cc::KeyframeModel::Direction::NORMAL},
+        AnimationDirectionTestData{mojom::AnimationDirection::kReverse,
+                                   cc::KeyframeModel::Direction::REVERSE},
+        AnimationDirectionTestData{
+            mojom::AnimationDirection::kAlternateNormal,
+            cc::KeyframeModel::Direction::ALTERNATE_NORMAL},
+        AnimationDirectionTestData{
+            mojom::AnimationDirection::kAlternateReverse,
+            cc::KeyframeModel::Direction::ALTERNATE_REVERSE}));
+
+struct AnimationFillModeTestData {
+  mojom::AnimationFillMode mojom_fill_mode;
+  cc::KeyframeModel::FillMode expected_cc_fill_mode;
+};
+
+class LayerContextImplAnimationFillModeTest
+    : public LayerContextImplAnimationTest,
+      public testing::WithParamInterface<AnimationFillModeTestData> {};
+
+TEST_P(LayerContextImplAnimationFillModeTest, Deserialize) {
+  const auto& param = GetParam();
+  constexpr int kTimelineId = 25;  // Ensure unique IDs
+  constexpr int kAnimationId = 250;
+  constexpr int kKeyframeModelId = 2500;
+  constexpr int kGroupId = 25;
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom =
+      CreateDefaultMojomAnimation(kAnimationId, kKeyframeModelId, kGroupId);
+  animation_mojom->keyframe_models[0]->fill_mode = param.mojom_fill_mode;
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  const cc::AnimationHost* host = GetAnimationHost();
+  const cc::AnimationTimeline* timeline_impl =
+      host->GetTimelineById(kTimelineId);
+  ASSERT_NE(nullptr, timeline_impl);
+  const cc::Animation* animation_impl =
+      timeline_impl->GetAnimationById(kAnimationId);
+  ASSERT_NE(nullptr, animation_impl);
+  const cc::KeyframeEffect* effect_impl = animation_impl->keyframe_effect();
+  ASSERT_NE(nullptr, effect_impl);
+  ASSERT_EQ(effect_impl->keyframe_models().size(), 1u);
+  const gfx::KeyframeModel* gfx_model_impl =
+      effect_impl->keyframe_models()[0].get();
+  ASSERT_NE(nullptr, gfx_model_impl);
+  EXPECT_EQ(gfx_model_impl->fill_mode(), param.expected_cc_fill_mode);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LayerContextImplAnimationFillModeTest,
+    testing::Values(
+        AnimationFillModeTestData{mojom::AnimationFillMode::kNone,
+                                  cc::KeyframeModel::FillMode::NONE},
+        AnimationFillModeTestData{mojom::AnimationFillMode::kForwards,
+                                  cc::KeyframeModel::FillMode::FORWARDS},
+        AnimationFillModeTestData{mojom::AnimationFillMode::kBackwards,
+                                  cc::KeyframeModel::FillMode::BACKWARDS},
+        AnimationFillModeTestData{mojom::AnimationFillMode::kBoth,
+                                  cc::KeyframeModel::FillMode::BOTH},
+        AnimationFillModeTestData{mojom::AnimationFillMode::kAuto,
+                                  cc::KeyframeModel::FillMode::AUTO}));
+
 }  // namespace
 }  // namespace viz
