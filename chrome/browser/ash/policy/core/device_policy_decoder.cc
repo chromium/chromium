@@ -2289,17 +2289,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  if (policy.has_devicenativeclientforceallowed()) {
-    const em::BooleanPolicyProto& container(
-        policy.devicenativeclientforceallowed());
-    if (container.has_value()) {
-      policies->Set(policy::key::kDeviceNativeClientForceAllowed,
-                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
-                    nullptr);
-    }
-  }
-
   if (policy.has_device_dlc_predownload_list()) {
     SetDeviceDlcPredownloadListPolicy(
         policy.device_dlc_predownload_list().value().entries(), policies);

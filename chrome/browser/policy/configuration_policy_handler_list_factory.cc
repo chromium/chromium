@@ -2136,11 +2136,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
     prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
     base::Value::Type::BOOLEAN },
-  // We avoid checking for BUILDFLAG(ENABLE_NACL) since we may want the policy
-  // to exist (deprecated) even if NACL is no longer being built.
-  { key::kDeviceNativeClientForceAllowed,
-    prefs::kDeviceNativeClientForceAllowed,
-    base::Value::Type::BOOLEAN },
   { key::kKioskActiveWiFiCredentialsScopeChangeEnabled,
     prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled,
     base::Value::Type::BOOLEAN },

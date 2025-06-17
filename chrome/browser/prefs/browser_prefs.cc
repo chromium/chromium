@@ -1140,6 +1140,16 @@ inline constexpr char kVariationsLimitedEntropySyntheticTrialSeed[] =
 inline constexpr char kVariationsLimitedEntropySyntheticTrialSeedV2[] =
     "variations_limited_entropy_synthetic_trial_seed_v2";
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 06/2025.
+inline constexpr char kNativeClientForceAllowed[] =
+    "native_client_force_allowed";
+inline constexpr char kDeviceNativeClientForceAllowed[] =
+    "device_native_client_force_allowed";
+inline constexpr char kDeviceNativeClientForceAllowedCache[] =
+    "device_native_client_force_allowed_cache";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1260,6 +1270,13 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterUint64Pref(kVariationsLimitedEntropySyntheticTrialSeed, 0);
   registry->RegisterUint64Pref(kVariationsLimitedEntropySyntheticTrialSeedV2,
                                0);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 06/2025
+  registry->RegisterBooleanPref(kNativeClientForceAllowed, false);
+  registry->RegisterBooleanPref(kDeviceNativeClientForceAllowed, false);
+  registry->RegisterBooleanPref(kDeviceNativeClientForceAllowedCache, false);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2551,6 +2568,13 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 06/2025.
   local_state->ClearPref(kVariationsLimitedEntropySyntheticTrialSeed);
   local_state->ClearPref(kVariationsLimitedEntropySyntheticTrialSeedV2);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 06/2025
+  local_state->ClearPref(kNativeClientForceAllowed);
+  local_state->ClearPref(kDeviceNativeClientForceAllowed);
+  local_state->ClearPref(kDeviceNativeClientForceAllowedCache);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

@@ -3812,10 +3812,6 @@ if (!is_android) {
       ]
     }
 
-    if (enable_nacl) {
-      sources += [ "../browser/chrome_browser_main_extra_parts_nacl_deprecation_browsertest.cc" ]
-    }
-
     if (is_chrome_for_testing) {
       sources += [ "../browser/chrome_for_testing/chrome_for_testing_info_bar_browsertest.cc" ]
     }
