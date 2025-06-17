@@ -12,8 +12,15 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/linux/scoped_gbm_device.h"
+
+namespace base {
+namespace trace_event {
+class ProcessMemoryDump;
+class MemoryAllocatorDumpGuid;
+}  // namespace trace_event
+}  // namespace base
 
 namespace gfx {
 class GpuMemoryBuffer;
@@ -22,6 +29,8 @@ class Size;
 }  // namespace gfx
 
 namespace media {
+
+class GpuMemoryBufferImplGbm;
 
 // A local, as opposed to the default IPC-based, implementation of
 // gfx::GpuMemoryBufferManager which interacts with the DRM render node device
@@ -37,7 +46,7 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager {
 
   ~LocalGpuMemoryBufferManager();
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
+  std::unique_ptr<GpuMemoryBufferImplGbm> CreateGpuMemoryBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
@@ -48,7 +57,7 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager {
   // GBM_BO_USE_SW_READ_OFTEN usage is specified so that the user of the
   // returned GpuMemoryBuffer is guaranteed to have a linear view when mapping
   // it.
-  std::unique_ptr<gfx::GpuMemoryBuffer> ImportDmaBuf(
+  std::unique_ptr<GpuMemoryBufferImplGbm> ImportDmaBuf(
       const gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
       gfx::BufferFormat format);
@@ -62,7 +71,7 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager {
   ui::ScopedGbmDevice gbm_device_;
 };
 
-class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
+class GpuMemoryBufferImplGbm {
  public:
   GpuMemoryBufferImplGbm() = delete;
 
@@ -71,23 +80,23 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
   GpuMemoryBufferImplGbm(const GpuMemoryBufferImplGbm&) = delete;
   GpuMemoryBufferImplGbm& operator=(const GpuMemoryBufferImplGbm&) = delete;
 
-  ~GpuMemoryBufferImplGbm() override;
+  ~GpuMemoryBufferImplGbm();
 
   // gfx::GpuMemoryBuffer:
-  bool Map() override;
-  void* memory(size_t plane) override;
-  void Unmap() override;
-  gfx::Size GetSize() const override;
-  gfx::BufferFormat GetFormat() const override;
-  int stride(size_t plane) const override;
-  gfx::GpuMemoryBufferId GetId() const override;
-  gfx::GpuMemoryBufferType GetType() const override;
-  gfx::GpuMemoryBufferHandle CloneHandle() const override;
+  bool Map();
+  void* memory(size_t plane);
+  void Unmap();
+  gfx::Size GetSize() const;
+  gfx::BufferFormat GetFormat() const;
+  int stride(size_t plane) const;
+  gfx::GpuMemoryBufferId GetId() const;
+  gfx::GpuMemoryBufferType GetType() const;
+  gfx::GpuMemoryBufferHandle CloneHandle() const;
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
       uint64_t tracing_process_id,
-      int importance) const override;
+      int importance) const;
 
  private:
   struct MappedPlane {

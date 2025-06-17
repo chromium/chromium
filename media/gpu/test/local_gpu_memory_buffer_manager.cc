@@ -221,7 +221,7 @@ LocalGpuMemoryBufferManager::LocalGpuMemoryBufferManager()
     : gbm_device_(CreateGbmDevice()) {}
 LocalGpuMemoryBufferManager::~LocalGpuMemoryBufferManager() = default;
 
-std::unique_ptr<gfx::GpuMemoryBuffer>
+std::unique_ptr<GpuMemoryBufferImplGbm>
 LocalGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
@@ -261,10 +261,10 @@ LocalGpuMemoryBufferManager::CreateGpuMemoryBuffer(
   return std::make_unique<GpuMemoryBufferImplGbm>(format, buffer_object);
 }
 
-std::unique_ptr<gfx::GpuMemoryBuffer> LocalGpuMemoryBufferManager::ImportDmaBuf(
-    const gfx::NativePixmapHandle& handle,
-    const gfx::Size& size,
-    gfx::BufferFormat format) {
+std::unique_ptr<GpuMemoryBufferImplGbm>
+LocalGpuMemoryBufferManager::ImportDmaBuf(const gfx::NativePixmapHandle& handle,
+                                          const gfx::Size& size,
+                                          gfx::BufferFormat format) {
   if (handle.planes.size() !=
       gfx::NumberOfPlanesForLinearBufferFormat(format)) {
     // This could happen if e.g., we get a compressed RGBA buffer where one
