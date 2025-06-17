@@ -22,10 +22,6 @@ namespace autofill {
 
 namespace {
 
-// Arbitrary delimiter to user when concatenating labels to decide whether
-// a series of labels for different entities are unique.
-constexpr char16_t kLabelsDelimiter[] = u" - - ";
-
 // Returns the types for which the given entities differ.
 //
 // The returned types are sorted so that the attributes with the highest
@@ -105,6 +101,23 @@ std::vector<AttributeType> GetDisambiguatingTypes(
   return vec;
 }
 
+size_t CountUniqueNonEmptyLabels(const EntitiesLabels& labels) {
+  // During label computation, every entity's label is a vector of non-empty
+  // strings (which the UI later concatenates).
+  using EntityLabel = std::vector<std::u16string>;
+
+  // For space efficiency, we only store pointers (but compare the pointees).
+  auto set = base::MakeFlatSet<const EntityLabel*>(
+      *labels,
+      [](const EntityLabel* lhs, const EntityLabel* rhs) {
+        return *lhs < *rhs;
+      },
+      [](const EntityLabel& label) { return &label; });
+
+  const EntityLabel empty_label;
+  return set.size() - set.count(&empty_label);
+}
+
 }  // namespace
 
 bool IsFormEligibleForFilling(const FormStructure& form) {
@@ -144,13 +157,11 @@ EntitiesLabels GetLabelsForEntities(base::span<const EntityInstance*> entities,
   // Go over the list of disambiguating attributes and use their values to
   // generate labels for each entity. Stop when the concatenation of labels for
   // each entity is unique.
-  size_t max_number_of_labels =
+  const size_t max_number_of_labels =
       std::min(kMaxNumberOfLabels, entities_labels_output->size());
   for (AttributeType attribute_type_to_use_as_label :
        GetDisambiguatingTypes(entities, allow_only_disambiguating_types,
                               return_at_least_one_label, app_locale)) {
-    // Used to check whether the list of labels for the entities is unique.
-    std::set<std::u16string> current_labels;
     for (size_t i = 0; i < entities_labels_output->size(); i++) {
       const EntityInstance& entity = *entities[i];
       std::vector<std::u16string>& entity_labels_output =
@@ -165,18 +176,11 @@ EntitiesLabels GetLabelsForEntities(base::span<const EntityInstance*> entities,
       if (!label_value.empty()) {
         entity_labels_output.push_back(label_value);
       }
-
-      current_labels.insert(
-          base::JoinString(entity_labels_output, kLabelsDelimiter));
     }
-    // Label uniqueness was reached if the number of unique labels
-    // concatenated strings is same as the entities size, however we do not
-    // take empty labels into account.
-    const size_t non_empty_labels_count = std::ranges::count_if(
-        current_labels,
-        [](std::u16string_view label) { return !label.empty(); });
-    if (non_empty_labels_count == entities.size()) {
-      return entities_labels_output;
+
+    // If every EntityInstance has a unique non-empty label, we're done.
+    if (CountUniqueNonEmptyLabels(entities_labels_output) == entities.size()) {
+      break;
     }
   }
   return entities_labels_output;

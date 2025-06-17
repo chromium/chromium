@@ -25,7 +25,12 @@ inline constexpr char16_t kLabelSeparator[] = u" · ";
 // settings page.
 inline constexpr size_t kMaxNumberOfLabels = 2;
 
-// Alias defining a list of labels available for each AutofillAi entity.
+// An EntitiesLabels object is always implicitly associated with a list of
+// EntityInstances: the `i`th element of the EntitiesLabels represents the
+// label of the `i`the entity.
+//
+// Every label of an individual entity is represented as a (potentially empty)
+// vector of non-empty strings.
 using EntitiesLabels =
     base::StrongAlias<class EntitiesLabelsTag,
                       std::vector<std::vector<std::u16string>>>;
