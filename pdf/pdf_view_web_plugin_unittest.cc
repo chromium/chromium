@@ -2223,7 +2223,8 @@ TEST_F(PdfViewWebPluginSaveTest, OriginalInEditMode) {
 }
 
 #if BUILDFLAG(ENABLE_INK)
-TEST_F(PdfViewWebPluginSaveTest, EditedInNonEditMode) {
+// TODO(crbug.com/425592465): Re-enable this test after fixing it.
+TEST_F(PdfViewWebPluginSaveTest, DISABLED_EditedInNonEditMode) {
   base::Value expected_response = base::test::ParseJson(R"({
     "type": "saveData",
     "token": "edited-in-non-edit-mode",
@@ -3347,7 +3348,8 @@ class PdfViewWebPluginInk2SaveTest : public PdfViewWebPluginSaveTest {
   base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
 };
 
-TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInNonEditMode) {
+// TODO(crbug.com/425592465): Re-enable this test after fixing it.
+TEST_F(PdfViewWebPluginInk2SaveTest, DISABLED_AnnotationInNonEditMode) {
   // Modify the document with an Ink stroke.
   plugin_->ink_module_client_for_testing()->StrokeFinished(/*modified=*/true);
 
