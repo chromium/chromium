@@ -4314,7 +4314,10 @@ crbug.com/1160916 external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ 
 
 # This test is flaky on certain platforms, but we don't want to modify the test as it's testing an internal maximum value.
 crbug.com/365589062 fast/css-grid-layout/grid-auto-repeat-huge-grid-004.html [ Failure Pass Timeout ]
+crbug.com/365589062 fast/css-grid-layout/grid-auto-repeat-huge-grid-006.html [ Failure Pass Timeout ]
+crbug.com/365589062 fast/css-grid-layout/grid-auto-repeat-huge-grid-008.html [ Failure Pass Timeout ]
 crbug.com/365589062 fast/css-grid-layout/grid-auto-repeat-huge-grid-010.html [ Failure Pass Timeout ]
+crbug.com/365589062 fast/css-grid-layout/grid-auto-repeat-huge-grid-012.html [ Failure Pass Timeout ]
 crbug.com/365589062 fast/css-grid-layout/grid-auto-repeat-huge-grid-013.html [ Failure Pass Timeout ]
 
 # Baseline Content-Alignment is not implemented yet for CSS Grid Layout
