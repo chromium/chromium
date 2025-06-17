@@ -224,6 +224,8 @@ class ExtensionService : public ExtensionServiceInterface,
 
   void UninstallMigratedExtensionsForTest();
 
+  bool HasShutDownExecutedForTest() const { return is_shut_down_executed_; }
+
 #if defined(UNIT_TEST)
   void FinishInstallationForTest(const Extension* extension) {
     extension_registrar_->FinishInstallation(extension);
@@ -349,6 +351,10 @@ class ExtensionService : public ExtensionServiceInterface,
   // Used for specially handling external extensions that are installed the
   // first time.
   bool is_first_run_ = false;
+
+  // Set to true if the ExtensionService::Shutdown() has been executed.
+  // Used in test to ensure the service's shutdown method has been called.
+  bool is_shut_down_executed_ = false;
 
   // The controller for the UI that alerts the user about any blocklisted
   // extensions. Not owned.

@@ -314,6 +314,8 @@ void ExtensionService::Shutdown() {
   external_install_manager_ = nullptr;
   updater_ = nullptr;
   component_loader_ = nullptr;
+  host_observation_.RemoveAllObservations();
+  is_shut_down_executed_ = true;
 }
 
 void ExtensionService::Init() {
