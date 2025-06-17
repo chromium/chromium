@@ -29,10 +29,8 @@ WatermarkView::WatermarkView() : background_color_(SkColorSetARGB(0, 0, 0, 0)) {
   SetCanProcessEventsWithinSubtree(false);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  SetString(
-      /*text=*/std::string(""),
-      /*fill_color=*/SkColorSetARGB(0xb, 0x00, 0x00, 0x00),
-      /*outline_color=*/SkColorSetARGB(0x11, 0xff, 0xff, 0xff));
+  SetString(/*text=*/std::string(""), GetDefaultFillColor(),
+            GetDefaultOutlineColor());
   GetViewAccessibility().SetIsInvisible(true);
 }
 

@@ -6510,9 +6510,10 @@ bool BrowserView::IsBrowserAWebApp() const {
 
 void BrowserView::ApplyWatermarkSettings(const std::string& watermark_text) {
   if (watermark_view_) {
+    PrefService* prefs = browser_->profile()->GetPrefs();
     watermark_view_->SetString(watermark_text,
-                               enterprise_watermark::GetFillColor(),
-                               enterprise_watermark::GetOutlineColor());
+                               enterprise_watermark::GetFillColor(prefs),
+                               enterprise_watermark::GetOutlineColor(prefs));
   }
 }
 
