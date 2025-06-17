@@ -353,10 +353,6 @@ vars = {
   # and whatever else without interference from each other.
   'freetype_revision': '738905b34bd1f5a8ff51bd2bc8e38a2d8be9bfd6',
   # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling freetype
-  # and whatever else without interference from each other.
-  'freetype_testing_revision': '04fa94191645af39750f5eff0a66c49c5cb2c2cc',
-  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling HarfBuzz
   # and whatever else without interference from each other.
   'harfbuzz_revision': '9f83bbbe64654b45ba5bb06927ff36c2e7588495',
@@ -2085,9 +2081,6 @@ deps = {
 
   'src/third_party/freetype/src':
     Var('chromium_git') + '/chromium/src/third_party/freetype2.git' + '@' + Var('freetype_revision'),
-
-  'src/third_party/freetype-testing/src':
-    Var('chromium_git') + '/external/github.com/freetype/freetype2-testing.git' + '@' + Var('freetype_testing_revision'),
 
   'src/third_party/fxdiv/src':
     Var('chromium_git') + '/external/github.com/Maratyszcza/FXdiv.git' + '@' + '63058eff77e11aa15bf531df5dd34395ec3017c8',

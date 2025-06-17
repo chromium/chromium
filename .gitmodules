@@ -260,9 +260,6 @@
 [submodule "third_party/freetype/src"]
 	path = third_party/freetype/src
 	url = https://chromium.googlesource.com/chromium/src/third_party/freetype2
-[submodule "third_party/freetype-testing/src"]
-	path = third_party/freetype-testing/src
-	url = https://chromium.googlesource.com/external/github.com/freetype/freetype2-testing
 [submodule "third_party/fxdiv/src"]
 	path = third_party/fxdiv/src
 	url = https://chromium.googlesource.com/external/github.com/Maratyszcza/FXdiv

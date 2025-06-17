@@ -1,6 +1,0 @@
-bungeman@chromium.org
-drott@chromium.org
-
-# To ease rolling.
-per-file README.chromium=file://skia/OWNERS
-per-file README.chromium=file://third_party/blink/renderer/platform/OWNERS
