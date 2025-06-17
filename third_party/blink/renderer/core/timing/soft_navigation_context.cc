@@ -27,19 +27,13 @@ SoftNavigationContext::SoftNavigationContext(
 void SoftNavigationContext::AddModifiedNode(Node* node) {
   auto add_result = modified_nodes_.insert(node);
   if (add_result.is_new_entry) {
-    // If this is the first mod this animation frame, trace it.
-    if (num_modified_dom_nodes_ ==
-        num_modified_dom_nodes_last_animation_frame_) {
-      // TODO(crbug.com/353218760): Add support for reporting every single
-      // modification. Perhaps changing this to FirstModifiedNodeInFrame, and
-      // then having all modifications in an even noisier trace category. Or
-      // based on a chrome feature flag, for testing?
-      TRACE_EVENT_INSTANT(
-          TRACE_DISABLED_BY_DEFAULT("loading"),
-          "SoftNavigationContext::FirstAddedModifiedNodeInAnimationFrame",
-          "context", this);
-    }
     ++num_modified_dom_nodes_;
+    TRACE_EVENT_INSTANT(
+        "loading", "SoftNavigationContext::AddedModifiedNodeInAnimationFrame",
+        perfetto::Track::FromPointer(this), "context", this, "nodeId",
+        node->GetDomNodeId(), "nodeDebugName", node->DebugName(),
+        "domModificationsThisAnimationFrame",
+        num_modified_dom_nodes_ - num_modified_dom_nodes_last_animation_frame_);
   }
 }
 
@@ -116,16 +110,14 @@ bool SoftNavigationContext::AddPaintedAreaInternal(Node* node,
   }
 
   already_painted_modified_nodes_.insert(node);
-  // If this is the first paint this animation frame, trace it.
-  if (painted_area_ == painted_area_last_animation_frame_) {
-    // TODO(crbug.com/353218760): Add support for reporting every single
-    // paint.
-    TRACE_EVENT_INSTANT(
-        TRACE_DISABLED_BY_DEFAULT("loading"),
-        "SoftNavigationContext::FirstAttributablePaintInAnimationFrame",
-        "context", this);
-  }
   painted_area_ += painted_area;
+  TRACE_EVENT_INSTANT(
+      "loading", "SoftNavigationContext::AttributablePaintInAnimationFrame",
+      perfetto::Track::FromPointer(this), "context", this, "nodeId",
+      node->GetDomNodeId(), "nodeDebugName", node->DebugName(), "rect_x",
+      rect.x(), "rect_y", rect.y(), "rect_width", rect.width(), "rect_height",
+      rect.height(), "paintedAreaThisAnimationFrame",
+      painted_area_ - painted_area_last_animation_frame_);
   return true;
 }
 
@@ -154,9 +146,9 @@ bool SoftNavigationContext::OnPaintFinished() {
   // TODO(crbug.com/353218760): Consider reporting if any of the values change
   // if we have an extra loud tracing debug mode.
   if (num_modded_new_nodes || new_painted_area) {
-    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
-                        "SoftNavigationContext::OnPaintFinished", "context",
-                        this, "numModdenNewNodes", num_modded_new_nodes,
+    TRACE_EVENT_INSTANT("loading", "SoftNavigationContext::OnPaintFinished",
+                        perfetto::Track::FromPointer(this), "context", this,
+                        "numModdenNewNodes", num_modded_new_nodes,
                         "numGcedOldNodes", num_gced_old_nodes, "newPaintedArea",
                         new_painted_area, "newRepaintedArea",
                         new_repainted_area);

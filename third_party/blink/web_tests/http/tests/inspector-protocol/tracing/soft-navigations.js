@@ -90,7 +90,9 @@
 
   // Stop tracing and log the SoftNavigation event.
   testRunner.log('\nStopping tracing and analyzing events.');
-  const unfilteredEvents = await tracingHelper.stopTracing();
+  let unfilteredEvents = await tracingHelper.stopTracing();
+  unfilteredEvents.sort((a, b) => a.ts - b.ts);
+
 
   // Maps timestamps (monotonically increasing double) to a counter.
   class TimestampMapper {
@@ -133,7 +135,7 @@
   const softNavs = [];
   const lcpCandidates = [];
   for (const event of unfilteredEvents) {
-    if (event.name === 'SoftNavigationHeuristics_SoftNavigationDetected') {
+    if (event.name === 'SoftNavigationHeuristics::EmitSoftNavigationEntry') {
       testRunner.log('-> SoftNavigation event');
       testRunner.log(
           '   interactionTimestamp: ' +

@@ -81,9 +81,10 @@ void OnSoftNavigationContextWasExhausted(const SoftNavigationContext& context,
                                          uint64_t viewport_area,
                                          uint64_t required_paint_area) {
   TRACE_EVENT_INSTANT(
-      TRACE_DISABLED_BY_DEFAULT("loading"),
-      "SoftNavigationHeuristics::SoftNavigationContextWasExhausted", "context",
-      context);
+      "loading", "SoftNavigationHeuristics::SoftNavigationContextWasExhausted",
+      perfetto::Track::FromPointer(&context), "context", context);
+
+  TRACE_EVENT_END("loading", perfetto::Track::FromPointer(&context));
 
   // Don't bother to log if the URL was never set.  That means it was just a
   // normal interaction.
@@ -302,7 +303,7 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
   if (!context && !context_for_current_url_) {
     // If we don't have a context for this task, and we haven't had a context
     // for a recent URL change, then this URL change is not a soft-navigation.
-    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+    TRACE_EVENT_INSTANT("loading",
                         "SoftNavigationHeuristics::"
                         "SameDocumentNavigationCommittedWithoutContext",
                         "url", url);
@@ -317,11 +318,12 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     // limits to how long we will keep the current context as active.
     context_for_current_url_->AddUrl(url);
 
-    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+    TRACE_EVENT_INSTANT("loading",
                         "SoftNavigationHeuristics::"
                         "SameDocumentNavigationCommittedWithoutContextButMerg"
                         "edIntoPreviousContext",
-                        "context", *context_for_current_url_, "url", url);
+                        perfetto::Track::FromPointer(context), "context",
+                        *context_for_current_url_, "url", url);
     base::UmaHistogramEnumeration(
         kPageLoadInternalSoftNavigationOutcome,
         SoftNavigationOutcome::
@@ -336,9 +338,8 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     context_for_current_url_ = context;
 
     TRACE_EVENT_INSTANT(
-        TRACE_DISABLED_BY_DEFAULT("loading"),
-        "SoftNavigationHeuristics::SameDocumentNavigationCommitted", "context",
-        *context);
+        "loading", "SoftNavigationHeuristics::SameDocumentNavigationCommitted",
+        perfetto::Track::FromPointer(context), "context", *context);
 
     EmitSoftNavigationEntryIfAllConditionsMet(context);
   }
@@ -402,8 +403,9 @@ bool SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
   ReportSoftNavigationToMetrics(frame, context);
 
   TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
-                      "SoftNavigationHeuristics_SoftNavigationDetected",
-                      "context", *context, "frame", GetFrameIdForTracing(frame),
+                      "SoftNavigationHeuristics::EmitSoftNavigationEntry",
+                      perfetto::Track::FromPointer(context), "context",
+                      *context, "frame", GetFrameIdForTracing(frame),
                       "navigationId", window_->GetNavigationId());
 
   return true;
@@ -506,9 +508,9 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
 
   // TODO(crbug.com/40942324): Replace task_id with either an id for the
   // `SoftNavigationContext` or a serialized version of the object.
-  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
-                      "SoftNavigationHeuristics::OnCreateTaskScope", "context",
-                      active_interaction_context_.Get(), "task_id",
+  TRACE_EVENT_INSTANT("loading", "SoftNavigationHeuristics::OnCreateTaskScope",
+                      perfetto::Track::FromPointer(active_interaction_context_),
+                      "context", active_interaction_context_.Get(), "task_id",
                       task_state.Id().value());
 
   SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
@@ -584,9 +586,13 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
       active_interaction_context_ = MakeGarbageCollected<SoftNavigationContext>(
           *window_, paint_attribution_mode_);
       potential_soft_navigations_.push_back(active_interaction_context_);
-      TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
-                          "SoftNavigationHeuristics::CreateNewContext",
-                          "context", *active_interaction_context_);
+      TRACE_EVENT_BEGIN(
+          "loading", "SoftNavigationHeuristics::SoftNavigation",
+          perfetto::Track::FromPointer(active_interaction_context_));
+      TRACE_EVENT_INSTANT(
+          "loading", "SoftNavigationHeuristics::CreateNewContext",
+          perfetto::Track::FromPointer(active_interaction_context_), "context",
+          *active_interaction_context_);
     }
   }
   CHECK(active_interaction_context_.Get());

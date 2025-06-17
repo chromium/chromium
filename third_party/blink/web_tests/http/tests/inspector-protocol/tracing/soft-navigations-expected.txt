@@ -43,10 +43,12 @@ Object: {
 		navigationId: string
 	}
 	cat: string
+	id2: {
+		local: string
+	}
 	name: string
 	ph: string
 	pid: number
-	s: string
 	tid: number
 	ts: number
 }
