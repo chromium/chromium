@@ -311,8 +311,8 @@ void ModelExecutionFetcher::ExecuteModel(
   std::string serialized_request;
   execute_request.SerializeToString(&serialized_request);
 
-  RequestAccessToken(
-      identity_manager,
+  HandleTokenRequestFlow(
+      /*require_token=*/true, identity_manager,
       {GaiaConstants::kOptimizationGuideServiceModelExecutionOAuth2Scope},
       base::BindOnce(&ModelExecutionFetcher::OnAccessTokenReceived,
                      weak_ptr_factory_.GetWeakPtr(), serialized_request,

@@ -50,10 +50,16 @@ void OnAccessTokenRequestCompleted(
 
 }  // namespace
 
-void RequestAccessToken(signin::IdentityManager* identity_manager,
-                        const std::set<std::string>& oauth_scopes,
-                        AccessTokenReceivedCallback callback) {
+void HandleTokenRequestFlow(bool require_token,
+                            signin::IdentityManager* identity_manager,
+                            const std::set<std::string>& oauth_scopes,
+                            AccessTokenReceivedCallback callback) {
   DCHECK(!oauth_scopes.empty());
+  if (!require_token) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+
   if (!identity_manager) {
     RecordAccessTokenResultHistogram(
         OptimizationGuideAccessTokenResult::kUserNotSignedIn);
