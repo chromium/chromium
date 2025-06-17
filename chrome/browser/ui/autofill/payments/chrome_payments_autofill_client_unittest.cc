@@ -17,9 +17,11 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/touch_to_fill/autofill/android/mock_touch_to_fill_payment_method_controller.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_bottom_sheet_bridge.h"
@@ -212,6 +214,16 @@ class ChromePaymentsAutofillClientTest
         std::make_unique<MockAutofillMessageController>(web_contents());
     MockAutofillMessageController* pointer = mock.get();
     chrome_payments_client()->SetAutofillMessageControllerForTesting(
+        std::move(mock));
+    return pointer;
+  }
+
+  MockTouchToFillPaymentMethodController*
+  InjectMockTouchToFillPaymentMethodController() {
+    std::unique_ptr<MockTouchToFillPaymentMethodController> mock =
+        std::make_unique<MockTouchToFillPaymentMethodController>();
+    MockTouchToFillPaymentMethodController* pointer = mock.get();
+    chrome_payments_client()->SetTouchToFillPaymentMethodControllerForTesting(
         std::move(mock));
     return pointer;
   }
@@ -515,6 +527,42 @@ TEST_F(
               Show(AutofillSnackbarType::kSaveServerIbanSuccess, _));
   chrome_payments_client()->IbanUploadCompleted(/*iban_saved=*/true,
                                                 /*max_strikes=*/false);
+}
+
+// Test that calling `ShowLoyaltyCards` passes the correct lists of loyalty
+// cards.
+TEST_F(ChromePaymentsAutofillClientTest, ShowTouchToFillLoyaltyCard) {
+  MockTouchToFillPaymentMethodController* ttf_payment_method_controller =
+      InjectMockTouchToFillPaymentMethodController();
+
+  const LoyaltyCard card1 = LoyaltyCard(
+      /*loyalty_card_id=*/ValuableId("id_1"),
+      /*merchant_name=*/"CVS Pharmacy",
+      /*program_name=*/"CVS Extra",
+      /*program_logo=*/GURL(""),
+      /*loyalty_card_number=*/"987654321987654321", {GURL("https://test.com")});
+  const LoyaltyCard card2 = LoyaltyCard(
+      /*loyalty_card_id=*/ValuableId("id_2"),
+      /*merchant_name=*/"Walgreens",
+      /*program_name=*/"CustomerCard",
+      /*program_logo=*/GURL(""),
+      /*loyalty_card_number=*/"998766823", {GURL("https://example.com")});
+  const LoyaltyCard card3 =
+      LoyaltyCard(/*loyalty_card_id=*/ValuableId("id_3"),
+                  /*merchant_name=*/"Ticket Maester",
+                  /*program_name=*/"TourLoyal",
+                  /*program_logo=*/GURL(""),
+                  /*loyalty_card_number=*/"37262999281",
+                  {GURL("https://affiliated.example.com")});
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://example.com"));
+
+  const std::vector<LoyaltyCard> cards = {card1, card2, card3};
+  EXPECT_CALL(*ttf_payment_method_controller,
+              ShowLoyaltyCards(_, _, testing::ElementsAre(card2, card3),
+                               testing::ElementsAreArray(cards), _));
+
+  chrome_payments_client()->ShowTouchToFillLoyaltyCard(nullptr, cards);
 }
 
 #else   // !BUILDFLAG(IS_ANDROID)

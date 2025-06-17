@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 source_set("public") {
   sources = [
+    "touch_to_fill_payment_method_controller.h",
     "touch_to_fill_payment_method_view.h",
     "touch_to_fill_payment_method_view_controller.h",
   ]
@@ -31,6 +32,26 @@ source_set("android") {
     "//content/public/browser:browser",
     "//third_party/libaddressinput:util",
     "//ui/android",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_touch_to_fill_payment_method_controller.cc",
+    "mock_touch_to_fill_payment_method_controller.h",
+  ]
+
+  public_deps = [
+    ":public",
+    "//base",
+    "//components/autofill/core/browser:test_support",
+  ]
+
+  deps = [
+    ":android",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }
 

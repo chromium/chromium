@@ -10,13 +10,13 @@
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
-#include "components/autofill/core/browser/suggestions/suggestion.h"
 
 namespace autofill {
 
 class ContentAutofillClient;
 class Iban;
 class LoyaltyCard;
+struct Suggestion;
 class TouchToFillDelegate;
 class TouchToFillPaymentMethodView;
 

@@ -1093,6 +1093,14 @@ void ChromePaymentsAutofillClient::SetAutofillMessageControllerForTesting(
     std::unique_ptr<AutofillMessageController> autofill_message_controller) {
   autofill_message_controller_ = std::move(autofill_message_controller);
 }
+
+void ChromePaymentsAutofillClient::
+    SetTouchToFillPaymentMethodControllerForTesting(
+        std::unique_ptr<TouchToFillPaymentMethodController>
+            touch_to_fill_payment_method_controller) {
+  touch_to_fill_payment_method_controller_ =
+      std::move(touch_to_fill_payment_method_controller);
+}
 #endif  // #if BUILDFLAG(IS_ANDROID)
 
 std::u16string ChromePaymentsAutofillClient::GetAccountHolderName() const {

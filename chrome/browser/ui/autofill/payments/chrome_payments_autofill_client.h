@@ -255,6 +255,11 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   void SetAutofillMessageControllerForTesting(
       std::unique_ptr<AutofillMessageController> autofill_message_controller);
+
+  void SetTouchToFillPaymentMethodControllerForTesting(
+      std::unique_ptr<TouchToFillPaymentMethodController>
+          touch_to_fill_payment_method_controller);
+
 #endif
   void SetRiskDataForTesting(const std::string& risk_data);
 

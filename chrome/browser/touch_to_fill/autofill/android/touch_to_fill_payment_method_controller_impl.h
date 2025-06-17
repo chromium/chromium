@@ -72,11 +72,11 @@ class TouchToFillPaymentMethodControllerImpl
   void ShowPaymentMethodSettings(JNIEnv* env) override;
   void CreditCardSuggestionSelected(
       JNIEnv* env,
-      base::android::JavaParamRef<jstring> unique_id,
+      const base::android::JavaParamRef<jstring>& unique_id,
       bool is_virtual) override;
   void LocalIbanSuggestionSelected(
       JNIEnv* env,
-      base::android::JavaParamRef<jstring> guid) override;
+      const base::android::JavaParamRef<jstring>& guid) override;
   void ServerIbanSuggestionSelected(JNIEnv* env, long instrument_id) override;
   void LoyaltyCardSuggestionSelected(
       JNIEnv* env,

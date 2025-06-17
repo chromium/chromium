@@ -3315,7 +3315,6 @@ static_library("browser") {
       # TODO(crbug.com/40261269): Move to its own target in touch_to_fill/.
       "touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.cc",
       "touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h",
-      "touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h",
       "touch_to_fill/autofill/android/touch_to_fill_payment_method_controller_impl.cc",
       "touch_to_fill/autofill/android/touch_to_fill_payment_method_controller_impl.h",
       "touch_to_fill/password_manager/touch_to_fill_controller.cc",
