@@ -107,10 +107,6 @@ $.contextAccessIndicator.addEventListener('click', () => {
   getBrowser()!.setContextAccessIndicator!($.contextAccessIndicator.checked);
 });
 
-$.contextAccessIndicatorV2.addEventListener('click', () => {
-  getBrowser()!.setContextAccessIndicator!($.contextAccessIndicatorV2.checked);
-});
-
 $.closebn.addEventListener('click', () => {
   getBrowser()!.closePanel!();
 });

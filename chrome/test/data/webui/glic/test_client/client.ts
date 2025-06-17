@@ -54,7 +54,7 @@ async function focusedTabChangedV2(focusedTabData: FocusedTabData|undefined) {
 
   if (focusedTabData.hasNoFocus) {
     $.focusedTabLogsV2.innerText = `No focus reason: ${
-        focusedTabData.hasNoFocus.noFocusReason} active tab url: ${
+        focusedTabData.hasNoFocus.noFocusReason}\n Active tab url: ${
         focusedTabData.hasNoFocus.tabFocusCandidateData?.url}`;
     return;
   }
@@ -189,8 +189,7 @@ class WebClient implements GlicWebClient {
     delete (panelOpeningData as Partial<PanelState>).kind;
     delete (panelOpeningData as Partial<PanelState>).windowId;
     logMessage(`notifyPanelWillOpen(${JSON.stringify(panelOpeningData)})`);
-    this.browser!.setContextAccessIndicator!
-        ($.contextAccessIndicatorV2.checked);
+    this.browser!.setContextAccessIndicator!($.contextAccessIndicator.checked);
 
     return {
       startingMode: WebClientMode.TEXT,

@@ -277,30 +277,25 @@ found in the LICENSE file.
 </div>
 <div class="section">
   <h1>State</h1>
-  <label>panelActive
-    <input id="panelActiveCheckbox" type="checkbox" disabled />
-  </label>
+  <div>
+    <label>panelActive
+      <input id="panelActiveCheckbox" type="checkbox" disabled />
+    </label>
+    <br />
+    <label>Enable tab context access indicator UI:
+      <input id="contextAccessIndicator" type="checkbox">
+    </label>
+  </div>
   <div>
     <h4>Focused Tab V1</h4>
     <label>Focused Tab Url: </label><input id="focusedUrl" type="text" /> <br />
     <label>Favicon: </label><img class="favicon" id="focusedFavicon" />
-    <span id="focusedTabLogs"></span>
-    <div>
-      <label>Enable setContextAccessIndicator
-        <input id="contextAccessIndicator" type="checkbox">
-      </label>
-    </div>
   </div>
   <div>
     <h4>Focused Tab V2</h4>
     <label>Focused Tab Url: </label><input id="focusedUrlV2" type="text" /> <br />
-    <label>Favicon: </label><img class="favicon" id="focusedFaviconV2" />
+    <label>Favicon: </label><img class="favicon" id="focusedFaviconV2" /> <br />
     <span id="focusedTabLogsV2"></span>
-    <div>
-      <label>Enable setContextAccessIndicator
-        <input id="contextAccessIndicatorV2" type="checkbox">
-      </label>
-    </div>
   </div>
 </div>
 <div class="section">

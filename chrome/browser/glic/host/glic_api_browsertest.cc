@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <deque>
+#include <memory>
 #include <ranges>
 
 #include "base/command_line.h"
@@ -245,10 +246,7 @@ class GlicApiTest : public NonInteractiveGlicTest {
           return;
         }
       }
-      base::RunLoop run_loop;
-      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
-      run_loop.Run();
+      sleepWithRunLoop(base::Milliseconds(200));
     }
     FAIL() << "Timed out waiting for guest frame. Guest frame: "
            << (frame ? frame->GetLastCommittedURL().spec() : "not found");
@@ -301,6 +299,13 @@ class GlicApiTest : public NonInteractiveGlicTest {
     embedded_test_server_requests_.push_back(request);
   }
 
+  void sleepWithRunLoop(base::TimeDelta sleepDuration) {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), sleepDuration);
+    run_loop.Run();
+  }
+
   std::vector<net::test_server::HttpRequest> embedded_test_server_requests_;
   bool next_step_required_ = false;
   std::optional<base::Value> step_data_;
@@ -313,6 +318,7 @@ class GlicApiTestWithOneTab : public GlicApiTest {
     GlicApiTest::SetUpOnMainThread();
 
     // Load the test page in a tab, so that there is some page context.
+    histogram_tester = std::make_unique<base::HistogramTester>();
     RunTestSequence(InstrumentTab(kFirstTab),
                     NavigateWebContents(kFirstTab, page_url()),
                     OpenGlicWindow(GlicWindowMode::kDetached,
@@ -323,6 +329,8 @@ class GlicApiTestWithOneTab : public GlicApiTest {
     return InProcessBrowserTest::embedded_test_server()->GetURL(
         "/glic/test.html");
   }
+
+  std::unique_ptr<base::HistogramTester> histogram_tester;
 };
 
 class GlicApiTestWithOneTabAndPreloading : public GlicApiTestWithOneTab {
@@ -1039,6 +1047,9 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPermissionAccess) {
   ExecuteJsTest();
+  histogram_tester->ExpectUniqueSample(
+      "Glic.FocusedTab.SharingState.OnTabContextPermissionGranted",
+      ActiveTabFocusState::kActiveTabIsFocused, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testClosedCaptioning) {
@@ -1091,6 +1102,12 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetDisplayMedia) {
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testMetrics) {
   ExecuteJsTest();
+  // Sleeping here is needed so that the calls made from the web client are
+  // handled by the browser before the check below.
+  sleepWithRunLoop(base::Milliseconds(100));
+  histogram_tester->ExpectUniqueSample(
+      "Glic.FocusedTab.SharingState.OnUserInputSubmitted",
+      ActiveTabFocusState::kTabContextPermissionNotGranted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testScrollToFindsText) {
@@ -1153,6 +1170,9 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testCloseAndOpenWhileOpening) {
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testNotifyPanelWillOpenIsCalledOnce) {
   ExecuteJsTest();
+  histogram_tester->ExpectUniqueSample(
+      "Glic.FocusedTab.SharingState.OnPanelOpenAndReady",
+      ActiveTabFocusState::kTabContextPermissionNotGranted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetOsHotkeyState) {

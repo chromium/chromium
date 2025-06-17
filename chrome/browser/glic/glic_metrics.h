@@ -120,7 +120,6 @@ enum class ResponseSegmentation {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 
 // LINT.IfChange(GlicInputModesUsed)
-
 enum class InputModesUsed {
   kNone = 0,
   kOnlyText = 1,
@@ -129,11 +128,9 @@ enum class InputModesUsed {
 
   kMaxValue = kTextAndAudio,
 };
-
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInputModesUsed)
 
 // LINT.IfChange(AttachChangeReason)
-
 enum class AttachChangeReason {
   // Attach state changed because of a drag gesture.
   kDrag = 0,
@@ -144,11 +141,10 @@ enum class AttachChangeReason {
 
   kMaxValue = kInit,
 };
-
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicAttachChangeReason)
 
-// LINT.IfChange(GlicRequestEvent)
 // Events related to requests to the Glic API from the web client.
+// LINT.IfChange(GlicRequestEvent)
 enum class GlicRequestEvent {
   kRequestReceived = 0,
   kRequestSent = 1,
@@ -157,6 +153,17 @@ enum class GlicRequestEvent {
   kMaxValue = kRequestReceivedWhileHidden,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequestEvent)
+
+// The possible states of tab focus.
+// LINT.IfChange(ActiveTabFocusState)
+enum class ActiveTabFocusState {
+  kActiveTabIsFocused = 0,
+  kCannotFocusActiveTab = 1,
+  kNoActiveTabCanBeFocused = 2,
+  kTabContextPermissionNotGranted = 3,
+  kMaxValue = kTabContextPermissionNotGranted
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ActiveTabFocusState)
 
 class GlicEnabling;
 class GlicSharingManager;
@@ -178,6 +185,7 @@ class GlicMetrics {
     virtual bool IsWindowShowing() const = 0;
     virtual bool IsWindowAttached() const = 0;
     virtual content::WebContents* GetContents() = 0;
+    virtual ActiveTabFocusState GetActiveTabFocusState() = 0;
   };
 
   GlicMetrics(Profile* profile, GlicEnabling* enabling);
@@ -199,11 +207,11 @@ class GlicMetrics {
   // ----Public API called by other glic classes-----
   // Called when the glic window starts to open.
   void OnGlicWindowOpen(bool attached, mojom::InvocationSource source);
-  // Called when the glic window is open and ready.
-  void OnGlicWindowOpenAndReady();
   // Called just after the the glic window has been loaded into the UI.
   void OnGlicWindowShown(std::optional<display::Display> display,
                          const gfx::Point& glic_center_point);
+  // Called when the glic window has been opened and is ready.
+  void OnGlicWindowOpenAndReady();
   // Called when the glic window is resized.
   void OnGlicWindowResize();
   // Called when the glic window starts being resized by the user.
@@ -248,6 +256,9 @@ class GlicMetrics {
 
   // Called when kGlicPinnedToTabstrip changes.
   void OnPinningPrefChanged();
+
+  // Called when kGlicTabContextEnabled changes.
+  void OnTabContextEnabledPrefChanged();
 
   // Resets the window timing state variables.
   void ResetGlicWindowPresentationTimingState();

@@ -760,6 +760,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.SharedTabs.ActiveTabFocusState.{Event}"
+    enum="ActiveTabFocusState" expires_after="2026-01-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the active tab's focus state at the moment when {Event}.
+  </summary>
+  <token key="Event">
+    <variant name="OnPanelOpenAndReady"
+        summary="the Glic panel has been opened and is ready to receive user
+                 input"/>
+    <variant name="OnTabContextPermissionGranted"
+        summary="the user grants tab context access to Glic while the panel
+                 is open"/>
+    <variant name="OnUserInputSubmitted"
+        summary="the user submits their input"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.ShouldPreload" enum="Boolean" expires_after="2026-01-15">
   <owner>dullweber@chromium.org</owner>
   <owner>vollick@chromium.org</owner>

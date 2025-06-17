@@ -122,7 +122,8 @@ class InteractiveGlicTestT : public T {
     Test::embedded_test_server()->ServeFilesFromSourceDirectory(
         "chrome/test/data/webui/glic/");
 
-    ASSERT_TRUE(Test::embedded_test_server()->Start());
+    ASSERT_TRUE(test_server_handle_ =
+                    Test::embedded_test_server()->StartAndReturnHandle());
 
     // Need to set this here rather than in SetUpCommandLine because we need to
     // use the embedded test server to get the right URL and it's not started
@@ -469,6 +470,7 @@ class InteractiveGlicTestT : public T {
 
   base::WeakPtr<Browser> active_browser_;
   glic::GlicTestEnvironment glic_test_environment_;
+  net::test_server::EmbeddedTestServerHandle test_server_handle_;
   // This is the default test file. Tests can override with a different path.
   std::string glic_page_path_ = "/glic/test_client/index.html";
   GURL guest_url_;

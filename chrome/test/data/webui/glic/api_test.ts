@@ -556,11 +556,11 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(!!this.host.getTabContextPermissionState);
 
     const microphoneState =
-        observeSequence(this.host.getMicrophonePermissionState());
+        observeSequence<boolean>(this.host.getMicrophonePermissionState());
     const locationState =
-        observeSequence(this.host.getLocationPermissionState());
+        observeSequence<boolean>(this.host.getLocationPermissionState());
     const tabContextState =
-        observeSequence(this.host.getTabContextPermissionState());
+        observeSequence<boolean>(this.host.getTabContextPermissionState());
 
     assertFalse(await microphoneState.next());
     assertFalse(await locationState.next());

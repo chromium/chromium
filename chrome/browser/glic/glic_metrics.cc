@@ -41,9 +41,11 @@ bool CheckFreStatus(Profile* profile, prefs::FreStatus status) {
 class DelegateImpl : public GlicMetrics::Delegate {
  public:
   explicit DelegateImpl(GlicWindowController* window_controller,
-                        GlicSharingManager* sharing_manager)
+                        GlicSharingManager* sharing_manager,
+                        PrefService* pref_service)
       : window_controller_(window_controller),
-        sharing_manager_(sharing_manager) {}
+        sharing_manager_(sharing_manager),
+        pref_service_(pref_service) {}
   gfx::Size GetWindowSize() const override {
     return window_controller_->GetSize();
   }
@@ -54,14 +56,26 @@ class DelegateImpl : public GlicMetrics::Delegate {
     return window_controller_->IsAttached();
   }
   content::WebContents* GetContents() override {
-    return sharing_manager_->GetFocusedTabData().is_focus()
-               ? sharing_manager_->GetFocusedTabData().focus()->GetContents()
-               : nullptr;
+    FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
+    return ftd.is_focus() ? ftd.focus()->GetContents() : nullptr;
+  }
+  ActiveTabFocusState GetActiveTabFocusState() override {
+    if (!pref_service_->GetBoolean(prefs::kGlicTabContextEnabled)) {
+      return ActiveTabFocusState::kTabContextPermissionNotGranted;
+    }
+    FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
+    if (ftd.is_focus()) {
+      return ActiveTabFocusState::kActiveTabIsFocused;
+    } else if (ftd.unfocused_tab()) {
+      return ActiveTabFocusState::kCannotFocusActiveTab;
+    }
+    return ActiveTabFocusState::kNoActiveTabCanBeFocused;
   }
 
  private:
   raw_ptr<GlicWindowController> window_controller_;
   raw_ptr<GlicSharingManager> sharing_manager_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 constexpr char kHistogramGlicPanelPresentationTime[] =
@@ -220,6 +234,10 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
   pref_registrar_.Add(prefs::kGlicPinnedToTabstrip,
                       base::BindRepeating(&GlicMetrics::OnPinningPrefChanged,
                                           base::Unretained(this)));
+  pref_registrar_.Add(
+      prefs::kGlicTabContextEnabled,
+      base::BindRepeating(&GlicMetrics::OnTabContextEnabledPrefChanged,
+                          base::Unretained(this)));
 }
 GlicMetrics::~GlicMetrics() = default;
 
@@ -228,6 +246,9 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
       "Glic.Session.InputSubmit.BrowserActiveState",
       browser_activity_observer_->GetBrowserActiveState());
   base::RecordAction(base::UserMetricsAction("GlicResponseInputSubmit"));
+  base::UmaHistogramEnumeration(
+      "Glic.FocusedTab.SharingState.OnUserInputSubmitted",
+      delegate_->GetActiveTabFocusState());
   input_submitted_time_ = base::TimeTicks::Now();
   input_mode_ = mode;
   inputs_modes_used_.insert(mode);
@@ -369,6 +390,10 @@ void GlicMetrics::OnGlicWindowOpenAndReady() {
     return;
   }
 
+  base::UmaHistogramEnumeration(
+      "Glic.FocusedTab.SharingState.OnPanelOpenAndReady",
+      delegate_->GetActiveTabFocusState());
+
   // Record the presentation time of showing the glic panel in an UMA histogram.
   std::string input_mode;
   if (starting_mode_ == mojom::WebClientMode::kText) {
@@ -506,8 +531,8 @@ void GlicMetrics::OnGlicScrollComplete(bool success) {
 
 void GlicMetrics::SetControllers(GlicWindowController* window_controller,
                                  GlicSharingManager* sharing_manager) {
-  delegate_ =
-      std::make_unique<DelegateImpl>(window_controller, sharing_manager);
+  delegate_ = std::make_unique<DelegateImpl>(window_controller, sharing_manager,
+                                             profile_->GetPrefs());
 }
 
 void GlicMetrics::SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {
@@ -616,6 +641,17 @@ void GlicMetrics::OnPinningPrefChanged() {
     base::RecordAction(base::UserMetricsAction("Glic.Pinned"));
   } else {
     base::RecordAction(base::UserMetricsAction("Glic.Unpinned"));
+  }
+}
+
+void GlicMetrics::OnTabContextEnabledPrefChanged() {
+  bool is_panel_open = !session_start_time_.is_null();
+  bool is_enabled =
+      profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled);
+  if (is_panel_open && is_enabled) {
+    base::UmaHistogramEnumeration(
+        "Glic.FocusedTab.SharingState.OnTabContextPermissionGranted",
+        delegate_->GetActiveTabFocusState());
   }
 }
 

@@ -38,6 +38,31 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:ActInFocusedTabErrorReason) -->
 
+<!-- LINT.IfChange(ActiveTabFocusState) -->
+
+<enum name="ActiveTabFocusState">
+  <int value="0" label="Active tab is focused">
+    There is an active tab that is focused and shared with the web client. Tab
+    context permission is granted. The web client may apply additional
+    restrictions that could still block the tab from being actually focused.
+  </int>
+  <int value="1" label="Cannot focus the active tab">
+    The web client has no focused tab. There is a candidate tab that cannot be
+    focused by the web client as determined by the browser. Tab context
+    permission is granted.
+  </int>
+  <int value="2" label="No active tab can be focused">
+    The web client has no focused tab. There's no browser tab that could be
+    focused. Tab context permission is granted.
+  </int>
+  <int value="3" label="Tab access permission not granted">
+    The user did not grant permission for Glic to access tab context. This state
+    precludes all other states.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//cchrome/browser/glic/glic_metrics.h:ActiveTabFocusState) -->
+
 <!-- LINT.IfChange(DeepScanAccessPoint) -->
 
 <enum name="DeepScanAccessPoint">

@@ -10,10 +10,8 @@ export interface PageElementTypes {
   focusedUrl: HTMLInputElement;
   contextAccessIndicator: HTMLInputElement;
   panelActiveCheckbox: HTMLInputElement;
-  focusedTabLogs: HTMLSpanElement;
   focusedFaviconV2: HTMLImageElement;
   focusedUrlV2: HTMLInputElement;
-  contextAccessIndicatorV2: HTMLInputElement;
   focusedTabLogsV2: HTMLSpanElement;
   syncCookiesBn: HTMLButtonElement;
   testLogsBn: HTMLButtonElement;
