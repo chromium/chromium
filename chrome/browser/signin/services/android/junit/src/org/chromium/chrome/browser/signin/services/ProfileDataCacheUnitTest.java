@@ -20,10 +20,10 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManagerJni;
+import org.chromium.google_apis.gaia.GaiaId;
 
 /** Unit tests for {@link ProfileDataCache} */
 @RunWith(BaseRobolectricTestRunner.class)

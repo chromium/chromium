@@ -10,8 +10,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
-import org.chromium.components.signin.base.CoreAccountId;
-import org.chromium.components.signin.base.GaiaId;
+import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.google_apis.gaia.GaiaId;
 
 /**
  * Helper to serialize/deserialize (@link FullscreenSigninAndHistorySyncConfig} and {@link

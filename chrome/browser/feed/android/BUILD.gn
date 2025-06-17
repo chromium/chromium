@@ -132,6 +132,7 @@ android_library("java") {
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
     "//content/public/android:content_main_dex_java",
+    "//google_apis/gaia/android:java",
     "//net/android:net_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",

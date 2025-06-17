@@ -36,8 +36,8 @@ import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.sync.SyncService;
+import org.chromium.google_apis.gaia.GaiaId;
 
 /** Unit tests for {@link SyncErrorNotifier}. */
 @RunWith(BaseRobolectricTestRunner.class)

@@ -291,6 +291,7 @@ if (is_android) {
       "//components/saved_tab_groups/public:java",
       "//components/signin/public/android:java",
       "//components/tab_groups:tab_groups_java",
+      "//google_apis/gaia/android:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",

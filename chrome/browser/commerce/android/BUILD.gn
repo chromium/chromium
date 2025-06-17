@@ -120,6 +120,7 @@ android_library("javatests") {
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
     "//content/public/android:content_full_java",
+    "//google_apis/gaia/android:java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

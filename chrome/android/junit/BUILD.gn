@@ -340,6 +340,7 @@ if (is_android) {
       "//content/public/android:public_common_jni_java",
       "//content/public/common:common_java",
       "//content/public/test/android:content_java_test_support",
+      "//google_apis/gaia/android:java",
       "//mojo/public/java:bindings_java",
       "//mojo/public/java:system_java",
       "//mojo/public/mojom/base:base_java",

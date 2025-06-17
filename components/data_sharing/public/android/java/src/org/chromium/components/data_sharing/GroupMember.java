@@ -11,7 +11,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.signin.base.GaiaId;
+import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.url.GURL;
 
 import java.util.Objects;

@@ -129,6 +129,7 @@ if (is_android) {
       "//components/data_sharing/public/protocol:proto_java",
       "//components/signin/public/android:java",
       "//components/sync/protocol:protocol_java",
+      "//google_apis/gaia/android:java",
       "//net/android:net_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

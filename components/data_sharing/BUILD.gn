@@ -68,6 +68,7 @@ if (is_android) {
       "//components/data_sharing/public:logger_java",
       "//components/data_sharing/public:public_java",
       "//components/signin/public/android:java",
+      "//google_apis/gaia/android:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/mockito:mockito_java",

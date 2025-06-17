@@ -74,6 +74,7 @@ include_rules = [
   "+components/webapk/android",
   "+components/webapps/browser/android/java",
   "+components/webrtc/android",
+  "+google_apis/gaia/android/java",
   "+jni",
   "+media/base/android/java",
   "+services/device/public",

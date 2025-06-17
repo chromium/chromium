@@ -16,7 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorBridge;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.signin.base.GaiaId;
+import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.ArrayList;
 import java.util.HashMap;

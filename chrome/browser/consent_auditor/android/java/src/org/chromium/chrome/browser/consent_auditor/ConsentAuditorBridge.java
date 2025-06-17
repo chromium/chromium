@@ -13,7 +13,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.signin.base.GaiaId;
+import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.List;
 

@@ -75,6 +75,7 @@ robolectric_library("junit") {
     "//components/sync/android:sync_java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
+    "//google_apis/gaia/android:java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",

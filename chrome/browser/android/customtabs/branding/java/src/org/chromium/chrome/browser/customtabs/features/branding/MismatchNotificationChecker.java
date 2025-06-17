@@ -16,9 +16,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.HashUtil;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.google_apis.gaia.GaiaId;
 
 /**
  * Class that drives the account mismatch notification flow. Works in conjunction with {@link

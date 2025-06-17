@@ -576,6 +576,7 @@ android_library("chrome_java_test_support_common") {
     "//components/webapps/browser/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
+    "//google_apis/gaia/android:java",
     "//services/device/public/mojom:mojom_java",
     "//third_party/android_deps:chromium_play_services_availability_java",
     "//third_party/android_deps:espresso_java",

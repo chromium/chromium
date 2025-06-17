@@ -12,12 +12,15 @@ import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.google_apis.gaia.GaiaId;
 
 /**
  * Structure storing the core information about a Google account that is always known. The {@link
  * CoreAccountInfo} for a given user is almost always the same but it may change in some rare cases.
  * For example, the email will change if the user changes email.
- * This class has a native counterpart called CoreAccountInfo.
+ *
+ * <p>This class has a native counterpart called CoreAccountInfo.
  */
 @NullMarked
 public class CoreAccountInfo {

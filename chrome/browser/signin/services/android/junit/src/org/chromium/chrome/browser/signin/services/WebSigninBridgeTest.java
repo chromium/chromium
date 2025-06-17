@@ -20,8 +20,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
+import org.chromium.google_apis.gaia.GaiaId;
 
 /** Unit tests for {@link WebSigninBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)

@@ -14,6 +14,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountEmailDisplayHook;
 import org.chromium.components.signin.SigninConstants;
 import org.chromium.components.signin.Tribool;
+import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.HashMap;
 

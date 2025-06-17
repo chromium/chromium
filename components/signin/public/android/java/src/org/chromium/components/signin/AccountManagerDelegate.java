@@ -18,7 +18,7 @@ import androidx.annotation.WorkerThread;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.signin.base.GaiaId;
+import org.chromium.google_apis.gaia.GaiaId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

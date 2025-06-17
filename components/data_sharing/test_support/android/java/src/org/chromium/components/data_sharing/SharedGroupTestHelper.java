@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.signin.base.GaiaId;
+import org.chromium.google_apis.gaia.GaiaId;
 
 /**
  * Test helpers for creating data_sharing objects and mocking calls to {@link DataSharingService}.
