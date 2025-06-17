@@ -194,6 +194,7 @@ if (current_toolchain == default_toolchain) {
       "protocol_handler.icon",
       "protocol_handler_chrome_refresh.icon",
       "protocol_handler_off_chrome_refresh.icon",
+      "qwac_status.icon",
       "radio_button_checked.icon",
       "receipt_long.icon",
       "reload.icon",

@@ -151,9 +151,8 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
       std::u16string qwac_title =
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_QWAC_STATUS_TITLE);
-      // TODO(crbug.com/392934324): import & use correct icon.
       const ui::ImageModel qwac_icon =
-          PageInfoViewFactory::GetImageModel(vector_icons::kCertificateIcon);
+          PageInfoViewFactory::GetImageModel(vector_icons::kQwacStatusIcon);
       // If QWAC info line has been added previously, remove the old one before
       // recreating it. Re-adding it bumps it to the bottom of the
       // container, but its unlikely that the user will notice, since other
