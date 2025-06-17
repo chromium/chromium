@@ -80,78 +80,36 @@ source_set("client_stats_tracker") {
   ]
 }
 
-test("client_stats_tracker_test") {
-  sources = [ "client_stats_tracker_test.cc" ]
-  deps = [
-    ":client_stats_tracker",
-    "//base",
-    "//base/test:run_all_unittests",
-    "//chromecast/starboard/media/media:starboard_api_wrapper",
-    "//media:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
+test("starboard_renderer_unittests") {
+  sources = [
+    "chromium_starboard_conversions_test.cc",
+    "client_stats_tracker_test.cc",
+    "demuxer_stream_reader_test.cc",
+    "geometry_change_handler_test.cc",
+    "starboard_player_manager_test.cc",
   ]
-}
-
-test("demuxer_stream_reader_test") {
-  sources = [ "demuxer_stream_reader_test.cc" ]
-  deps = [
-    ":demuxer_stream_reader",
-    "//base",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
-    "//chromecast/starboard/media/media:starboard_api_wrapper",
-    "//chromecast/starboard/media/media:test_matchers",
-    "//media",
-    "//media:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-test("chromium_starboard_conversions_test") {
-  sources = [ "chromium_starboard_conversions_test.cc" ]
   deps = [
     ":chromium_starboard_conversions",
-    "//base/test:run_all_unittests",
-    "//chromecast/starboard/media/media:test_matchers",
-    "//media",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//ui/gfx/geometry",
-  ]
-}
-
-test("geometry_change_handler_test") {
-  sources = [ "geometry_change_handler_test.cc" ]
-  deps = [
+    ":client_stats_tracker",
+    ":demuxer_stream_reader",
     ":geometry_change_handler",
-    "//base",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//chromecast/media/service:video_geometry_setter_service",
-    "//chromecast/starboard/media/media:mock_starboard_api_wrapper",
-    "//mojo/core/embedder",
-    "//ui/display:test_support",
-    "//ui/gfx:memory_buffer",
-    "//ui/gfx/geometry",
-  ]
-}
-
-test("starboard_player_manager_test") {
-  sources = [ "starboard_player_manager_test.cc" ]
-  deps = [
     ":starboard_player_manager",
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//chromecast/media/service:video_geometry_setter_service",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
     "//chromecast/starboard/media/cdm:starboard_drm_wrapper",
     "//chromecast/starboard/media/media:mock_starboard_api_wrapper",
     "//chromecast/starboard/media/media:starboard_api_wrapper",
     "//chromecast/starboard/media/media:test_matchers",
     "//media",
     "//media:test_support",
+    "//mojo/core/embedder",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/display:test_support",
+    "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
   ]
 }

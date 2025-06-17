@@ -15,9 +15,8 @@ if (!remove_starboard_headers) {
 # This is necessary until code under //chromecast/starboard/media/renderer is
 # hooked up to production code. This way, gn can find those test targets.
 cast_test_group("starboard_renderer_tests") {
-  tests = [
-    "//chromecast/starboard/media/renderer:chromium_starboard_conversions_test",
-  ]
+  tests =
+      [ "//chromecast/starboard/media/renderer:starboard_renderer_unittests" ]
 }
 
 source_set("starboard") {
