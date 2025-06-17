@@ -7,12 +7,26 @@
 
 #import <string>
 
+#import "base/memory/raw_ptr.h"
 #import "base/time/time.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
+
+// Represents the changes between two OmniboxTextState objects. This is used by
+// the controller to determine how its internal state should be updated after
+// the view state changes.
+struct OmniboxStateChanges {
+  // `old_text` and `new_text` are not owned.
+  raw_ptr<const std::u16string> old_text;
+  raw_ptr<const std::u16string> new_text;
+  size_t new_sel_start;
+  size_t new_sel_end;
+  bool selection_differs;
+  bool text_differs;
+  bool just_deleted_text;
+};
 
 enum class OmniboxPasteState {
   kNone,     // Most recent edit was not a paste.
@@ -55,8 +69,11 @@ struct OmniboxTextModel {
 
   // Updates the model state and returns true if possible state changes occur,
   // returns false otherwise.
-  bool UpdateStateAfterPossibleChange(
-      const OmniboxViewIOS::StateChanges& state_changes);
+  bool UpdateStateAfterPossibleChange(const OmniboxStateChanges& state_changes);
+
+  // Computes the State changes between two OmniboxTextState objects.
+  OmniboxStateChanges GetStateChanges(const OmniboxTextState& before,
+                                      const OmniboxTextState& after) const;
 
   // The Omnibox client.
   raw_ptr<OmniboxClient> omnibox_client;

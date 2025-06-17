@@ -51,8 +51,8 @@ using base::UserMetricsAction;
 /// The placeholder text used in search-only mode.
 @property(nonatomic, copy) NSString* searchOnlyPlaceholderText;
 
-// YES if we are already forwarding an OnDidChange() message to the edit view.
-// Needed to prevent infinite recursion.
+// YES if we are already forwarding an textDidChangeWithUserEvent message to the
+// omnibox text controller. Needed to prevent infinite recursion.
 // TODO(crbug.com/40103694): There must be a better way.
 @property(nonatomic, assign) BOOL forwardingOnDidChange;
 

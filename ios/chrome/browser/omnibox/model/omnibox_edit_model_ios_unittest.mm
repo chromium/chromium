@@ -127,8 +127,8 @@ TEST_F(OmniboxEditModelIOSTest, DISABLED_InlineAutocompleteText) {
 
   std::u16string text_before = u"he";
   std::u16string text_after = u"hel";
-  OmniboxViewIOS::StateChanges state_changes{&text_before, &text_after, 3,    3,
-                                             false,        true,        false};
+  OmniboxStateChanges state_changes{&text_before, &text_after, 3,    3,
+                                    false,        true,        false};
   model()->OnAfterPossibleChange(state_changes);
   EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
   model()->OnPopupDataChanged(u"lo", std::u16string(), {});

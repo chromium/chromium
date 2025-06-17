@@ -215,7 +215,7 @@ source_set("unit_tests") {
     "omnibox_controller_ios_unittest.mm",
     "omnibox_edit_model_ios_unittest.mm",
     "omnibox_pedal_annotator_unittest.mm",
-    "omnibox_view_ios_unittest.mm",
+    "omnibox_text_model_unittest.mm",
     "pedal_section_extractor_unittest.mm",
     "placeholder_service_unittest.mm",
   ]

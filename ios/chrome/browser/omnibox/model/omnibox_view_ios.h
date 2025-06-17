@@ -22,20 +22,6 @@ class OmniboxEditModelIOS;
 // Wraps a UITextField and interfaces with the rest of the autocomplete system.
 class OmniboxViewIOS {
  public:
-  // Represents the changes between two State objects. This is used by the
-  // model to determine how its internal state should be updated after the view
-  // state changes. See OmniboxEditModelIOS::OnAfterPossibleChange().
-  struct StateChanges {
-    // `old_text` and `new_text` are not owned.
-    raw_ptr<const std::u16string> old_text;
-    raw_ptr<const std::u16string> new_text;
-    size_t new_sel_start;
-    size_t new_sel_end;
-    bool selection_differs;
-    bool text_differs;
-    bool just_deleted_text;
-  };
-
   // Retains `field`.
   OmniboxViewIOS(OmniboxTextFieldIOS* field);
   OmniboxViewIOS(const OmniboxViewIOS&) = delete;
@@ -49,9 +35,6 @@ class OmniboxViewIOS {
   void SetOmniboxTextController(OmniboxTextController* controller) {
     omnibox_text_controller_ = controller;
   }
-
-  // Returns the current selection.
-  NSRange GetCurrentSelection() const { return current_selection_; }
 
   // Returns the current text of the edit control, which could be the
   // "temporary" text set by the popup, the "permanent" text set by the
@@ -95,67 +78,21 @@ class OmniboxViewIOS {
       const std::u16string& user_text,
       const std::u16string& inline_autocompletion);
 
-  // Checkpoints the current edit state before an operation that might trigger
-  // a new autocomplete run to open or modify the popup. Call this before
-  // user-initiated edit actions that trigger autocomplete, but *not* for
-  // automatic changes to the textfield that should not affect autocomplete.
-  virtual void OnBeforePossibleChange();
-
-  // OnAfterPossibleChange() returns true if there was a change that caused it
-  // to call UpdatePopup().
-  virtual bool OnAfterPossibleChange();
-
   // Sets the omnibox adjacent additional text label in the location bar view.
   virtual void SetAdditionalText(const std::u16string& text);
 
-  // Fills `start` and `end` with the indexes of the current selection's bounds.
-  // It is not guaranteed that `*start < *end`, as the selection can be
-  // directed. If there is no selection, `start` and `end` will both be equal
-  // to the current cursor position.
-  virtual void GetSelectionBounds(std::u16string::size_type* start,
-                                  std::u16string::size_type* end) const;
-
-  // OmniboxTextChange methods.
-
-  // Called before the Omnibox text field changes. `new_text` will replace the
-  // text currently in `range`. This should return true if the text change
-  // should happen and false otherwise.
-  // See -textField:shouldChangeCharactersInRange:replacementString: for more
-  // details.
-  bool OnWillChange(NSRange range, NSString* new_text);
-  // Called after the Omnibox text field changes. `processing_user_input` holds
-  // whether the change was user-initiated or programmatic.
-  void OnDidChange(bool processing_user_input);
   // Called when autocomplete text is accepted. (e.g. tap on autocomplete text,
   // tap on left/right arrow key).
   void OnAcceptAutocomplete();
 
  private:
   friend class TestOmniboxViewIOS;
-  // Tracks important state that may change between OnBeforePossibleChange() and
-  // OnAfterPossibleChange().
-  struct State {
-    std::u16string text;
-    size_t sel_start;
-    size_t sel_end;
-  };
-
-  // Fills `state` with the current text state.
-  void GetState(State* state);
-
-  // Returns the delta between `before` and `after`.
-  StateChanges GetStateChanges(const State& before, const State& after);
 
   // Internally invoked whenever the text changes in some way.
   virtual void TextChanged();
 
   base::WeakPtr<OmniboxControllerIOS> controller_;
   OmniboxTextFieldIOS* field_;
-
-  State state_before_change_;
-  NSString* marked_text_before_change_;
-  NSRange current_selection_;
-  NSRange old_selection_;
 
   // TODO(crbug.com/379693750): This is a monster hack, needed because closing
   // the popup ends up inadvertently triggering a new round of autocomplete. Fix

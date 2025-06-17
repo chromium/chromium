@@ -9,6 +9,8 @@
 
 #import <string>
 
+#import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
+
 @protocol AutocompleteSuggestion;
 @class OmniboxAutocompleteController;
 class OmniboxControllerIOS;
@@ -16,7 +18,6 @@ class OmniboxEditModelIOS;
 @protocol OmniboxFocusDelegate;
 @protocol OmniboxTextControllerDelegate;
 @class OmniboxTextFieldIOS;
-struct OmniboxTextModel;
 class OmniboxViewIOS;
 
 /// Controller of the omnibox text.
@@ -34,6 +35,9 @@ class OmniboxViewIOS;
 
 /// Omnibox textfield.
 @property(nonatomic, weak) OmniboxTextFieldIOS* textField;
+
+/// Returns the current selection range.
+@property(nonatomic, assign, readonly) NSRange currentSelection;
 
 /// Temporary initializer, used during the refactoring. crbug.com/390409559
 - (instancetype)initWithOmniboxController:
@@ -63,8 +67,11 @@ class OmniboxViewIOS;
 /// Inserts text into the omnibox without triggering autocomplete.
 - (void)insertTextToOmnibox:(NSString*)text;
 
-// Notifies the client about input changes.
+/// Notifies the client about input changes.
 - (void)notifyClientOnUserInputInProgressChange:(BOOL)changedToUserInProgress;
+
+/// Retrieves the current textfield selection bounds.
+- (void)getSelectionBounds:(size_t*)start end:(size_t*)end;
 
 #pragma mark - Autocomplete event
 

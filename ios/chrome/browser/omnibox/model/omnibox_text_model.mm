@@ -6,6 +6,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/trace_event/trace_event.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 
 OmniboxTextModel::OmniboxTextModel(OmniboxClient* client)
     : omnibox_client(client),
@@ -78,7 +79,7 @@ void OmniboxTextModel::UpdateUserText(const std::u16string& text) {
 }
 
 bool OmniboxTextModel::UpdateStateAfterPossibleChange(
-    const OmniboxViewIOS::StateChanges& state_changes) {
+    const OmniboxStateChanges& state_changes) {
   // Update the paste state as appropriate: if we're just finishing a paste
   // that replaced all the text, preserve that information; otherwise, if we've
   // made some other edit, clear paste tracking.
@@ -112,4 +113,31 @@ bool OmniboxTextModel::UpdateStateAfterPossibleChange(
   just_deleted_text = state_changes.just_deleted_text;
 
   return true;
+}
+
+OmniboxStateChanges OmniboxTextModel::GetStateChanges(
+    const OmniboxTextState& before,
+    const OmniboxTextState& after) const {
+  OmniboxStateChanges state_changes;
+  state_changes.old_text = &before.text;
+  state_changes.new_text = &after.text;
+  state_changes.new_sel_start = after.sel_start;
+  state_changes.new_sel_end = after.sel_end;
+  const bool old_sel_empty = before.sel_start == before.sel_end;
+  const bool new_sel_empty = after.sel_start == after.sel_end;
+  const bool sel_same_ignoring_direction =
+      std::min(before.sel_start, before.sel_end) ==
+          std::min(after.sel_start, after.sel_end) &&
+      std::max(before.sel_start, before.sel_end) ==
+          std::max(after.sel_start, after.sel_end);
+  state_changes.selection_differs =
+      (!old_sel_empty || !new_sel_empty) && !sel_same_ignoring_direction;
+  state_changes.text_differs = before.text != after.text;
+  state_changes.just_deleted_text =
+      before.text.length() > after.text.length() &&
+      // Check that the cursor is at or before the start of the old selection.
+      // This ensures that if the user selected text and typed, it's not
+      // considered a deletion even if the new text is shorter.
+      after.sel_start <= std::min(before.sel_start, before.sel_end);
+  return state_changes;
 }

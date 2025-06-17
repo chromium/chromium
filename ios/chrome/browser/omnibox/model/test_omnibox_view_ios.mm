@@ -10,17 +10,6 @@
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "ui/gfx/native_widget_types.h"
 
-// static
-OmniboxViewIOS::State TestOmniboxViewIOS::CreateState(std::string text,
-                                                      size_t sel_start,
-                                                      size_t sel_end) {
-  OmniboxViewIOS::State state;
-  state.text = base::UTF8ToUTF16(text);
-  state.sel_start = sel_start;
-  state.sel_end = sel_end;
-  return state;
-}
-
 std::u16string TestOmniboxViewIOS::GetText() const {
   return text_;
 }
@@ -31,11 +20,6 @@ void TestOmniboxViewIOS::SetWindowTextAndCaretPos(const std::u16string& text,
                                                   bool notify_text_changed) {
   text_ = text;
   selection_ = gfx::Range(caret_pos);
-}
-
-void TestOmniboxViewIOS::GetSelectionBounds(size_t* start, size_t* end) const {
-  *start = selection_.start();
-  *end = selection_.end();
 }
 
 void TestOmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
@@ -51,8 +35,4 @@ void TestOmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
   if (text_changed) {
     selection_ = gfx::Range(text_.size(), inline_autocompletion.size());
   }
-}
-
-bool TestOmniboxViewIOS::OnAfterPossibleChange() {
-  return false;
 }

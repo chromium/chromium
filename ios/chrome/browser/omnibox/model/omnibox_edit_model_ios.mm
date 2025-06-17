@@ -194,8 +194,8 @@ void OmniboxEditModelIOS::Revert() {
   text_model_->paste_state = OmniboxPasteState::kNone;
   text_model_->UpdateUserText(std::u16string());
   size_t start, end;
-  if (view_) {
-    view_->GetSelectionBounds(&start, &end);
+  if (text_controller_) {
+    [text_controller_ getSelectionBounds:&start end:&end];
   }
   current_match_ = AutocompleteMatch();
   // First home the cursor, so view of text is scrolled to left, then correct
@@ -214,10 +214,7 @@ void OmniboxEditModelIOS::StartAutocomplete(bool has_selected_text,
   const std::u16string input_text = text_model_->user_text;
 
   size_t start, cursor_position;
-  // This method currently only works when there's a view, but ideally the
-  // model should be primary for determining such state.
-  CHECK(view_);
-  view_->GetSelectionBounds(&start, &cursor_position);
+  [text_controller_ getSelectionBounds:&start end:&cursor_position];
 
   text_model_->input = AutocompleteInput(
       input_text, cursor_position, GetPageClassification(),
@@ -359,7 +356,7 @@ void OmniboxEditModelIOS::OnPopupDataChanged(
 }
 
 bool OmniboxEditModelIOS::OnAfterPossibleChange(
-    const OmniboxViewIOS::StateChanges& state_changes) {
+    const OmniboxStateChanges& state_changes) {
   bool state_changed =
       text_model_->UpdateStateAfterPossibleChange(state_changes);
 

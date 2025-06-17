@@ -24,7 +24,6 @@ class TestOmniboxViewIOS : public OmniboxViewIOS {
     return inline_autocompletion_;
   }
 
-  static State CreateState(std::string text, size_t sel_start, size_t sel_end);
 
   // OmniboxViewIOS:
   std::u16string GetText() const override;
@@ -34,14 +33,10 @@ class TestOmniboxViewIOS : public OmniboxViewIOS {
                                 bool notify_text_changed) override;
   void SetCaretPos(size_t caret_pos) override {}
   void SetAdditionalText(const std::u16string& text) override {}
-  void GetSelectionBounds(size_t* start, size_t* end) const override;
   void UpdatePopup() override {}
   void OnInlineAutocompleteTextMaybeChanged(
       const std::u16string& user_text,
       const std::u16string& inline_autocompletion) override;
-  void OnBeforePossibleChange() override {}
-  bool OnAfterPossibleChange() override;
-  using OmniboxViewIOS::GetStateChanges;
 
  private:
   std::u16string text_;
