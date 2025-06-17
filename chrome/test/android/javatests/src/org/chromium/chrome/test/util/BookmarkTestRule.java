@@ -16,7 +16,7 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
@@ -25,15 +25,10 @@ import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.url.GURL;
-
-import java.util.concurrent.TimeoutException;
 
 /**
  * This test rule destroys BookmarkActivity opened with showBookmarkManager on phone. On tablet, the
@@ -69,25 +64,30 @@ public class BookmarkTestRule implements TestRule {
     }
 
     /**
-     * Shows the bookmark manager on screen. On tablets, it should only be called if there's an
-     * active tab to load the bookmarks manager in. Does not load the bookmark model, either use
+     * Shows the bookmark manager on screen. Does not load the bookmark model, either use
      * #showBookmarkManagerAndLoadModel to group the operations, or use #loadModel separately.
+     *
+     * <p>On tablets, this method looks for the bookmark manager in the current tab.
+     * On phones, it launches a new {@link BookmarkActivity}
      */
     public BookmarkManagerCoordinator showBookmarkManager(ChromeActivity chromeActivity) {
         mHostActivity = chromeActivity;
         // BookmarkActivity is only opened on phone, it is a native page on tablet.
         if (chromeActivity.isTablet()) {
+            showBookmarkManagerInternal(chromeActivity);
+            // Poll until the bookmark page is loaded in the current tab.
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        Tab tab = mHostActivity.getActivityTabProvider().get();
+                        return tab != null
+                                && tab.getUrl() != null
+                                && UrlConstants.BOOKMARKS_HOST.equals(tab.getUrl().getHost());
+                    },
+                    "Bookmark page never loaded",
+                    CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL,
+                    CriteriaHelper.DEFAULT_POLLING_INTERVAL);
             Tab tab = chromeActivity.getActivityTab();
             assert tab != null;
-            // Wait for the bookmark native page to load to make sure that the reference to
-            // BookmarkManagerCoordinator is valid.
-            CallbackHelper callbackHelper = setupBookmarkTabletWaitCondition();
-            showBookmarkManagerInternal(chromeActivity);
-            try {
-                callbackHelper.waitForNext();
-            } catch (TimeoutException e) {
-                throw new RuntimeException(e);
-            }
             mCoordinator = ((BookmarkPage) tab.getNativePage()).getManagerForTesting();
         } else {
             mBookmarkActivity =
@@ -115,17 +115,7 @@ public class BookmarkTestRule implements TestRule {
 
     /** Opens the given folder and waits for it to load. */
     public void openFolder(BookmarkId folder) {
-        if (mHostActivity.isTablet()) {
-            CallbackHelper callbackHelper = setupBookmarkTabletWaitCondition();
-            runOnUiThreadBlocking(() -> mDelegate.openFolder(folder));
-            try {
-                callbackHelper.waitForNext();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            runOnUiThreadBlocking(() -> mDelegate.openFolder(folder));
-        }
+        runOnUiThreadBlocking(() -> mDelegate.openFolder(folder));
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(mItemsContainer);
     }
 
@@ -177,25 +167,5 @@ public class BookmarkTestRule implements TestRule {
         if (mBookmarkActivity != null) {
             ApplicationTestUtils.finishActivity(mBookmarkActivity);
         }
-    }
-
-    private CallbackHelper setupBookmarkTabletWaitCondition() {
-        CallbackHelper callbackHelper = new CallbackHelper();
-        Tab tab = mHostActivity.getActivityTab();
-        assert tab != null;
-        EmptyTabObserver obs =
-                new EmptyTabObserver() {
-                    @Override
-                    public void onPageLoadFinished(Tab tab, GURL url) {
-                        NativePage nativePage = tab.getNativePage();
-                        if (nativePage != null
-                                && nativePage.getHost().equals(UrlConstants.BOOKMARKS_HOST)) {
-                            callbackHelper.notifyCalled();
-                            tab.removeObserver(this);
-                        }
-                    }
-                };
-        runOnUiThreadBlocking(() -> tab.addObserver(obs));
-        return callbackHelper;
     }
 }
