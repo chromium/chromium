@@ -1195,10 +1195,12 @@ void ChromeBrowserMainParts::PreProfileInit() {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kViewsJSAppModalDialog))
+  if (base::FeatureList::IsEnabled(features::kViewsJSAppModalDialog) ||
+      headless::IsHeadlessMode()) {
     InstallChromeJavaScriptAppModalDialogViewFactory();
-  else
+  } else {
     InstallChromeJavaScriptAppModalDialogViewCocoaFactory();
+  }
 #else
   InstallChromeJavaScriptAppModalDialogViewFactory();
 #endif
