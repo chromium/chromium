@@ -180,6 +180,13 @@ class WebAppUiManager {
       const webapps::AppId& app_id,
       WebAppLaunchAcceptanceCallback launch_callback) = 0;
 
+  // Shows the pre-launch dialog for a protocol web app launch. The user can
+  // allow or block the launch.
+  virtual void ShowWebAppProtocolLaunchDialog(
+      const GURL& protocol_url,
+      const webapps::AppId& app_id,
+      WebAppLaunchAcceptanceCallback launch_callback) = 0;
+
   virtual void ShowWebAppIdentityUpdateDialog(
       const std::string& app_id,
       bool title_change,

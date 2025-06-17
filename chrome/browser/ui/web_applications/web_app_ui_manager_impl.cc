@@ -321,6 +321,14 @@ void WebAppUiManagerImpl::ShowWebAppFileLaunchDialog(
                                         std::move(launch_callback));
 }
 
+void WebAppUiManagerImpl::ShowWebAppProtocolLaunchDialog(
+    const GURL& protocol_url,
+    const webapps::AppId& app_id,
+    WebAppLaunchAcceptanceCallback launch_callback) {
+  ::web_app::ShowWebAppProtocolLaunchDialog(protocol_url, profile_, app_id,
+                                            std::move(launch_callback));
+}
+
 void WebAppUiManagerImpl::ShowWebAppIdentityUpdateDialog(
     const std::string& app_id,
     bool title_change,

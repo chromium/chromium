@@ -76,6 +76,10 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const std::vector<base::FilePath>& file_paths,
       const webapps::AppId& app_id,
       WebAppLaunchAcceptanceCallback launch_callback) override {}
+  void ShowWebAppProtocolLaunchDialog(
+      const GURL& protocol_url,
+      const webapps::AppId& app_id,
+      WebAppLaunchAcceptanceCallback launch_callback) override {}
   void ShowWebAppIdentityUpdateDialog(
       const std::string& app_id,
       bool title_change,
