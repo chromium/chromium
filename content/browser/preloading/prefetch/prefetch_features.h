@@ -70,10 +70,6 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
 // if the relevant cookie values have changed.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCookieIndices);
 
-// Does not enable any new behaviour; is only used to parameterize prefetch
-// limit values (see content/browser/preloading/prefetch/prefetch_params.cc).
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNewLimits);
-
 // Fix for prefetching a URL controlled by a ServiceWorker without fetch
 // handler. Currently this stops prefetching for such cases
 // (https://crbug.com/379076354).

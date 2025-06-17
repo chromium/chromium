@@ -280,18 +280,6 @@ std::string GetMetricsSuffixTriggerTypeAndEagerness(
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/prefetch/histograms.xml:TriggerTypeAndEagerness)
 
-size_t MaxNumberOfEagerPrefetchesPerPage() {
-  int max = base::GetFieldTrialParamByFeatureAsInt(features::kPrefetchNewLimits,
-                                                   "max_eager_prefetches", 50);
-  return std::max(0, max);
-}
-
-size_t MaxNumberOfNonEagerPrefetchesPerPage() {
-  int max = base::GetFieldTrialParamByFeatureAsInt(
-      features::kPrefetchNewLimits, "max_non_eager_prefetches", 2);
-  return std::max(0, max);
-}
-
 bool PrefetchNIKScopeEnabled() {
   return base::FeatureList::IsEnabled(features::kPrefetchNIKScope);
 }

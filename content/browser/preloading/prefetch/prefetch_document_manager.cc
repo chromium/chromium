@@ -352,12 +352,12 @@ PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
   }
   if (prefetch->GetPrefetchType().GetEagerness() ==
       blink::mojom::SpeculationEagerness::kEager) {
-    return std::make_tuple(completed_eager_prefetches_.size() <
-                               MaxNumberOfEagerPrefetchesPerPage(),
-                           nullptr);
+    return std::make_tuple(
+        completed_eager_prefetches_.size() < kMaxNumberOfEagerPrefetchesPerPage,
+        nullptr);
   } else {
     if (completed_non_eager_prefetches_.size() <
-        MaxNumberOfNonEagerPrefetchesPerPage()) {
+        kMaxNumberOfNonEagerPrefetchesPerPage) {
       return std::make_tuple(true, nullptr);
     }
     // We are at capacity, and now need to evict the oldest non-eager prefetch

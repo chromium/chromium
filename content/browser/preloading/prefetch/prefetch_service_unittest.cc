@@ -5824,20 +5824,16 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionWhenHoldback) {
   }
 }
 
-class PrefetchServiceNewLimitsTest
+class PrefetchServiceLimitsTest
     : public PrefetchServiceTestBase,
       public WithPrefetchServiceRearchParam,
       public ::testing::WithParamInterface<PrefetchServiceRearchParam::Arg> {
  public:
-  PrefetchServiceNewLimitsTest() : WithPrefetchServiceRearchParam(GetParam()) {}
+  PrefetchServiceLimitsTest() : WithPrefetchServiceRearchParam(GetParam()) {}
 
   void InitScopedFeatureList() override {
     InitBaseParams();
     InitRearchFeatures();
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrefetchNewLimits,
-          {{"max_eager_prefetches", "2"}, {"max_non_eager_prefetches", "2"}}}},
-        {});
   }
 
   PrefetchContainer::Reader CompletePrefetch(
@@ -5863,66 +5859,70 @@ class PrefetchServiceNewLimitsTest
     NavigateInitiatedByRenderer(url);
     return GetPrefetchToServe(url);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     ParametrizedTests,
-    PrefetchServiceNewLimitsTest,
+    PrefetchServiceLimitsTest,
     testing::ValuesIn(PrefetchServiceRearchParam::Params()));
 
-TEST_P(PrefetchServiceNewLimitsTest,
+TEST_P(PrefetchServiceLimitsTest,
        NonEagerPrefetchAllowedWhenEagerLimitIsReached) {
-  const GURL url_1 = GURL("https://example.com/one");
-  const GURL url_2 = GURL("https://example.com/two");
-  const GURL url_3 = GURL("https://example.com/three");
-  const GURL url_4 = GURL("https://example.com/four");
+  const GURL url_over_limit = GURL("https://example.com/over_limit");
+  const GURL url_conservative = GURL("https://example.com/conservative");
 
   NavigateAndCommit(GURL("https://example.com"));
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
-          /*num_on_prefetch_likely_calls=*/4));
+          /*num_on_prefetch_likely_calls=*/kMaxNumberOfEagerPrefetchesPerPage +
+          2));
 
-  ASSERT_TRUE(
-      CompletePrefetch(url_1, blink::mojom::SpeculationEagerness::kEager));
-  ASSERT_TRUE(
-      CompletePrefetch(url_2, blink::mojom::SpeculationEagerness::kEager));
+  for (int i = 0; i < kMaxNumberOfEagerPrefetchesPerPage; ++i) {
+    const GURL url("https://example.com/" + base::NumberToString(i));
+    ASSERT_TRUE(
+        CompletePrefetch(url, blink::mojom::SpeculationEagerness::kEager));
+  }
 
-  // Note: |url_3| is not prefetched as the limit for eager prefetches has been
-  // reached.
+  // Note: |url_over_limit| is not prefetched as the limit for eager prefetches
+  // has been reached.
   MakePrefetchOnMainFrame(
-      url_3, PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                          /*use_prefetch_proxy=*/false,
-                          blink::mojom::SpeculationEagerness::kEager));
+      url_over_limit, PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                                   /*use_prefetch_proxy=*/false,
+                                   blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
   EXPECT_EQ(RequestCount(), 0);
-  NavigateInitiatedByRenderer(url_3);
-  ASSERT_FALSE(GetPrefetchToServe(url_3));
+  NavigateInitiatedByRenderer(url_over_limit);
+  ASSERT_FALSE(GetPrefetchToServe(url_over_limit));
 
-  // We can still prefetch |url_4| as it is a conservative prefetch.
+  // We can still prefetch |url_conservative| as it is a conservative prefetch.
   auto non_eager_prefetch = CompletePrefetch(
-      url_4, blink::mojom::SpeculationEagerness::kConservative);
+      url_conservative, blink::mojom::SpeculationEagerness::kConservative);
   ASSERT_TRUE(non_eager_prefetch);
   EXPECT_EQ(non_eager_prefetch.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
 
   std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
-  EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 4);
-  EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 4);
-  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 3);
+  EXPECT_EQ(referring_page_metrics->prefetch_attempted_count,
+            kMaxNumberOfEagerPrefetchesPerPage + 2);
+  EXPECT_EQ(referring_page_metrics->prefetch_eligible_count,
+            kMaxNumberOfEagerPrefetchesPerPage + 2);
+  EXPECT_EQ(referring_page_metrics->prefetch_successful_count,
+            kMaxNumberOfEagerPrefetchesPerPage + 1);
 }
 
-TEST_P(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
+TEST_P(PrefetchServiceLimitsTest, NonEagerPrefetchEvictedAtLimit) {
   const GURL url_1 = GURL("https://example.com/one");
   const GURL url_2 = GURL("https://example.com/two");
   const GURL url_3 = GURL("https://example.com/three");
   const GURL url_4 = GURL("https://example.com/four");
 
   NavigateAndCommit(GURL("https://example.com"));
+
+  // This test is written to assume this specific limit and will need
+  // modification if it changes.
+  ASSERT_EQ(kMaxNumberOfNonEagerPrefetchesPerPage, 2);
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
@@ -6026,7 +6026,7 @@ TEST_P(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
   }
 }
 
-TEST_P(PrefetchServiceNewLimitsTest, PrefetchWithNoCandidateIsNotStarted) {
+TEST_P(PrefetchServiceLimitsTest, PrefetchWithNoCandidateIsNotStarted) {
   const GURL url_1 = GURL("https://example.com/one");
   const GURL url_2 = GURL("https://example.com/two");
   const GURL url_3 = GURL("https://example.com/three");
@@ -6087,7 +6087,7 @@ TEST_P(PrefetchServiceNewLimitsTest, PrefetchWithNoCandidateIsNotStarted) {
   EXPECT_EQ(RequestCount(), 0);
 }
 
-TEST_P(PrefetchServiceNewLimitsTest,
+TEST_P(PrefetchServiceLimitsTest,
        InProgressPrefetchWithNoCandidateIsCancelled) {
   const GURL url_1 = GURL("https://example.com/one");
   const GURL url_2 = GURL("https://example.com/two");
@@ -6148,8 +6148,7 @@ TEST_P(PrefetchServiceNewLimitsTest,
   EXPECT_FALSE(serveable_reader);
 }
 
-TEST_P(PrefetchServiceNewLimitsTest,
-       CompletedPrefetchWithNoCandidateIsEvicted) {
+TEST_P(PrefetchServiceLimitsTest, CompletedPrefetchWithNoCandidateIsEvicted) {
   const GURL url_1 = GURL("https://example.com/one");
   const GURL url_2 = GURL("https://example.com/two");
   const GURL url_3 = GURL("https://example.com/three");
@@ -6201,7 +6200,7 @@ TEST_P(PrefetchServiceNewLimitsTest,
 }
 
 // Test to see if we can re-prefetch a url whose previous prefetch expired.
-TEST_P(PrefetchServiceNewLimitsTest, PrefetchReset) {
+TEST_P(PrefetchServiceLimitsTest, PrefetchReset) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Override `kPrefetchUseContentRefactor`.
   scoped_feature_list.InitWithFeaturesAndParameters(
@@ -6284,61 +6283,78 @@ TEST_P(PrefetchServiceNewLimitsTest, PrefetchReset) {
   }
 }
 
-TEST_P(PrefetchServiceNewLimitsTest, NextPrefetchQueuedImmediatelyAfterReset) {
+TEST_P(PrefetchServiceLimitsTest, NextPrefetchQueuedImmediatelyAfterReset) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Override `kPrefetchUseContentRefactor`.
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{features::kPrefetchUseContentRefactor,
-        {{"ineligible_decoy_request_probability", "0"},
-         {"prefetch_container_lifetime_s", "1"}}},
-       {features::kPrefetchNewLimits, {{"max_eager_prefetches", "1"}}}},
+      {
+          {features::kPrefetchUseContentRefactor,
+           {{"ineligible_decoy_request_probability", "0"},
+            {"prefetch_container_lifetime_s", "1"}}},
+      },
       {});
 
   NavigateAndCommit(GURL("https://example.com"));
+
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
-          /*num_on_prefetch_likely_calls=*/2));
+          /*num_on_prefetch_likely_calls=*/kMaxNumberOfEagerPrefetchesPerPage +
+          1));
 
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
-  const auto url_1 = GURL("https://example.com/one");
-  const auto url_2 = GURL("https://example.com/two");
+
+  // Create kMaxNumberOfEagerPrefetchesPerPage + 1 URLs to exceed the limit
+  std::vector<GURL> urls;
+  for (size_t i = 0; i < kMaxNumberOfEagerPrefetchesPerPage + 1; ++i) {
+    urls.emplace_back("https://example.com/" + base::NumberToString(i));
+  }
 
   base::MockRepeatingCallback<void(const GURL& url)> mock_destruction_callback;
-  EXPECT_CALL(mock_destruction_callback, Run(url_1)).Times(1);
+  // All URLs but the last will expire and be destroyed
+  for (size_t i = 0; i < kMaxNumberOfEagerPrefetchesPerPage; ++i) {
+    EXPECT_CALL(mock_destruction_callback, Run(urls[i])).Times(1);
+  }
   prefetch_document_manager->SetPrefetchDestructionCallback(
       mock_destruction_callback.Get());
 
-  auto candidate_1 = blink::mojom::SpeculationCandidate::New();
-  candidate_1->url = url_1;
-  candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
-  candidate_1->eagerness = blink::mojom::SpeculationEagerness::kEager;
-  candidate_1->referrer = blink::mojom::Referrer::New();
-  auto candidate_2 = candidate_1->Clone();
-  candidate_2->url = url_2;
+  auto base_candidate = blink::mojom::SpeculationCandidate::New();
+  base_candidate->action = blink::mojom::SpeculationAction::kPrefetch;
+  base_candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  base_candidate->referrer = blink::mojom::Referrer::New();
 
-  // Add |candidate_1| and |candidate_2|.
+  // Add all candidates (one more than the limit)
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  candidates.push_back(candidate_1.Clone());
-  candidates.push_back(candidate_2.Clone());
+  for (const auto& url : urls) {
+    auto candidate = base_candidate.Clone();
+    candidate->url = url;
+    candidates.push_back(std::move(candidate));
+  }
   prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
-  // Complete |prefetch| of |url_1|.
-  auto prefetch_1 = CompleteExistingPrefetch(url_1);
-  ASSERT_TRUE(prefetch_1);
-  EXPECT_EQ(prefetch_1.GetPrefetchStatus(),
-            PrefetchStatus::kPrefetchSuccessful);
+  // Complete prefetches up to the limit
+  std::vector<PrefetchContainer::Reader> prefetches;
+  for (size_t i = 0; i < kMaxNumberOfEagerPrefetchesPerPage; ++i) {
+    auto prefetch = CompleteExistingPrefetch(urls[i]);
+    ASSERT_TRUE(prefetch);
+    EXPECT_EQ(prefetch.GetPrefetchStatus(),
+              PrefetchStatus::kPrefetchSuccessful);
+    prefetches.push_back(std::move(prefetch));
+  }
 
-  // Prefetch of |url_2| should not be queued because we are at the limit.
+  // The last URL should not be queued because we are at the limit
   EXPECT_EQ(RequestCount(), 0);
 
-  // Fast forward by a second and expire |prefetch_1|.
+  // Fast forward by a second to expire the kMaxNumberOfEagerPrefetchesPerPage
+  // prefetches
   task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(prefetch_1);
+  for (auto& prefetch : prefetches) {
+    EXPECT_FALSE(prefetch);
+  }
 
-  // Prefetch of |url_2| should now be queued.
-  VerifyCommonRequestState(url_2);
+  // The last URL should now be queued and prefetched
+  VerifyCommonRequestState(urls[kMaxNumberOfEagerPrefetchesPerPage]);
 }
 
 // Tests that the prefetch queue is not stuck when resetting the running
@@ -6384,7 +6400,7 @@ TEST_P(PrefetchServiceTest, PrefetchQueueNotStuckWhenResettingRunningPrefetch) {
             PrefetchContainer::LoadState::kStarted);
 }
 
-TEST_P(PrefetchServiceNewLimitsTest, PrefetchFailsAndIsReset) {
+TEST_P(PrefetchServiceLimitsTest, PrefetchFailsAndIsReset) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   // Override `kPrefetchUseContentRefactor`.
@@ -6436,154 +6452,183 @@ TEST_P(PrefetchServiceNewLimitsTest, PrefetchFailsAndIsReset) {
                                       1);
 }
 
-TEST_P(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
-  const GURL url_1 = GURL("https://example.com/one");
-  const GURL url_2 = GURL("https://example.com/two");
-  const GURL url_3 = GURL("https://example.com/three");
+TEST_P(PrefetchServiceLimitsTest, EagerPrefetchLimitIsDynamic) {
+  // The test only makes sense with limits >=2
+  ASSERT_GE(kMaxNumberOfEagerPrefetchesPerPage, 2u);
+
+  std::vector<GURL> urls;
+  for (size_t i = 0; i < kMaxNumberOfEagerPrefetchesPerPage + 1; ++i) {
+    urls.emplace_back("https://example.com/" + base::NumberToString(i));
+  }
 
   NavigateAndCommit(GURL("https://example.com"));
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
-          /*num_on_prefetch_likely_calls=*/4));
+          /*num_on_prefetch_likely_calls=*/kMaxNumberOfEagerPrefetchesPerPage +
+          2));
 
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
   ASSERT_TRUE(prefetch_document_manager);
 
-  base::MockRepeatingCallback<void(const GURL& url)> mock_destruction_callback;
-  EXPECT_CALL(mock_destruction_callback, Run(url_1)).Times(1);
-  EXPECT_CALL(mock_destruction_callback, Run(url_2)).Times(1);
+  base::MockRepeatingCallback<void(const GURL&)> destruction_cb;
+  EXPECT_CALL(destruction_cb, Run(urls[0])).Times(1);
+  EXPECT_CALL(destruction_cb, Run(urls[1])).Times(1);
   prefetch_document_manager->SetPrefetchDestructionCallback(
-      mock_destruction_callback.Get());
+      destruction_cb.Get());
 
-  auto candidate_1 = blink::mojom::SpeculationCandidate::New();
-  candidate_1->url = url_1;
-  candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
-  candidate_1->eagerness = blink::mojom::SpeculationEagerness::kEager;
-  candidate_1->referrer = blink::mojom::Referrer::New();
-  auto candidate_2 = candidate_1.Clone();
-  candidate_2->url = url_2;
-  auto candidate_3 = candidate_1.Clone();
-  candidate_3->url = url_3;
+  auto base_candidate = blink::mojom::SpeculationCandidate::New();
+  base_candidate->action = blink::mojom::SpeculationAction::kPrefetch;
+  base_candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  base_candidate->referrer = blink::mojom::Referrer::New();
 
-  // Send |candidate_1| and |candidate_2|.
+  // Send candidates up to the limit
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  candidates.push_back(candidate_1.Clone());
-  candidates.push_back(candidate_2.Clone());
+  for (size_t i = 0; i < kMaxNumberOfEagerPrefetchesPerPage; ++i) {
+    auto candidate = base_candidate.Clone();
+    candidate->url = urls[i];
+    candidates.push_back(std::move(candidate));
+  }
   prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
-  auto prefetch_1 = CompleteExistingPrefetch(url_1);
-  ASSERT_TRUE(prefetch_1);
-  EXPECT_EQ(prefetch_1.GetPrefetchStatus(),
-            PrefetchStatus::kPrefetchSuccessful);
-  auto prefetch_2 = CompleteExistingPrefetch(url_2);
-  ASSERT_TRUE(prefetch_2);
-  EXPECT_EQ(prefetch_2.GetPrefetchStatus(),
-            PrefetchStatus::kPrefetchSuccessful);
+  // Complete all prefetches up to the limit
+  std::vector<PrefetchContainer::Reader> prefetches;
+  for (size_t i = 0; i < kMaxNumberOfEagerPrefetchesPerPage; ++i) {
+    auto prefetch = CompleteExistingPrefetch(urls[i]);
+    ASSERT_TRUE(prefetch);
+    EXPECT_EQ(prefetch.GetPrefetchStatus(),
+              PrefetchStatus::kPrefetchSuccessful);
+    prefetches.push_back(std::move(prefetch));
+  }
 
-  // Remove |candidate_1| and add |candidate_3|.
+  // Process candidates for urls[1] through
+  // urls[kMaxNumberOfEagerPrefetchesPerPage]
   candidates.clear();
-  candidates.push_back(candidate_2.Clone());
-  candidates.push_back(candidate_3.Clone());
+  for (size_t i = 1; i < kMaxNumberOfEagerPrefetchesPerPage + 1; ++i) {
+    auto candidate = base_candidate.Clone();
+    candidate->url = urls[i];
+    candidates.push_back(std::move(candidate));
+  }
   prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
-  // Prefetch for |url_3| should succeed, and |prefetch_1| should be evicted.
-  auto prefetch_3 = CompleteExistingPrefetch(url_3);
-  ASSERT_TRUE(prefetch_3);
-  EXPECT_EQ(prefetch_3.GetPrefetchStatus(),
+  // The new prefetch should succeed, and the 0th should be evicted
+  auto prefetch_extra =
+      CompleteExistingPrefetch(urls[kMaxNumberOfEagerPrefetchesPerPage]);
+  ASSERT_TRUE(prefetch_extra);
+  EXPECT_EQ(prefetch_extra.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_FALSE(prefetch_1);
-  EXPECT_TRUE(prefetch_2);
+  EXPECT_FALSE(prefetches[0]);  // 0th prefetch should be evicted
+  for (size_t i = 1; i < kMaxNumberOfEagerPrefetchesPerPage; ++i) {
+    EXPECT_TRUE(prefetches[i]);  // Others should still be valid
+  }
 
-  // Re-add |candidate_1|.
+  // Now process candidates for urls[0] through
+  // urls[kMaxNumberOfEagerPrefetchesPerPage] (which will exceed the limit)
   candidates.clear();
-  candidates.push_back(candidate_1.Clone());
-  candidates.push_back(candidate_2.Clone());
-  candidates.push_back(candidate_3.Clone());
+  for (size_t i = 0; i < kMaxNumberOfEagerPrefetchesPerPage + 1; ++i) {
+    auto candidate = base_candidate.Clone();
+    candidate->url = urls[i];
+    candidates.push_back(std::move(candidate));
+  }
   prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
-  // |url_1| should not be reprefetched because we are at the limit.
+  // Should not reprefetch urls[0] because we are at the limit
   EXPECT_EQ(RequestCount(), 0);
 
-  // Remove |candidate_2|.
+  // Now process candidates for urls[0] plus urls[2] through
+  // urls[kMaxNumberOfEagerPrefetchesPerPage] (back under the limit)
   candidates.clear();
-  candidates.push_back(candidate_1.Clone());
-  candidates.push_back(candidate_3.Clone());
+  for (size_t i = 0; i < kMaxNumberOfEagerPrefetchesPerPage + 1; ++i) {
+    if (i != 1) {
+      auto candidate = base_candidate.Clone();
+      candidate->url = urls[i];
+      candidates.push_back(std::move(candidate));
+    }
+  }
   prefetch_document_manager->ProcessCandidates(candidates);
   task_environment()->RunUntilIdle();
 
-  // Prefetch for |url_1| should succeed, |prefetch_2| will be evicted
-  // (because |candidate_2| was removed).
-  prefetch_1 = CompleteExistingPrefetch(url_1);
-  ASSERT_TRUE(prefetch_1);
-  EXPECT_EQ(prefetch_1.GetPrefetchStatus(),
+  // Now urls[0] should be prefetched successfully, and urls[1] evicted
+  auto prefetch_0_new = CompleteExistingPrefetch(urls[0]);
+  ASSERT_TRUE(prefetch_0_new);
+  EXPECT_EQ(prefetch_0_new.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_FALSE(prefetch_2);
-  EXPECT_TRUE(prefetch_3);
+  EXPECT_FALSE(prefetches[1]);
+  for (size_t i = 2; i < kMaxNumberOfEagerPrefetchesPerPage; ++i) {
+    EXPECT_TRUE(prefetches[i]);  // Others should still be valid
+  }
 
-  // The first and second prefetches should have failure reason set to
-  // 'kPrefetchEvicted', and the fourth prefetch should have failure reason
-  // set to |kPrefetchFailedPerPageLimitExceeded|.
+  // Verify UKM entries
   {
     const auto source_id = ForceLogsUploadAndGetUkmId();
     auto actual_attempts = test_ukm_recorder()->GetEntries(
         ukm::builders::Preloading_Attempt::kEntryName,
         test::kPreloadingAttemptUkmMetrics);
-    EXPECT_EQ(actual_attempts.size(), 4u);
+    EXPECT_EQ(actual_attempts.size(), kMaxNumberOfEagerPrefetchesPerPage + 2);
 
-    std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> expected_attempts =
-        // |url_1|, attempt #1 (evicted)
-        {attempt_entry_builder()->BuildEntry(
-             source_id, PreloadingType::kPrefetch,
-             PreloadingEligibility::kEligible,
-             PreloadingHoldbackStatus::kAllowed,
-             PreloadingTriggeringOutcome::kFailure,
-             ToPreloadingFailureReason(
-                 content::PrefetchStatus::
-                     kPrefetchEvictedAfterCandidateRemoved),
-             /*accurate=*/true,
-             /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
-             blink::mojom::SpeculationEagerness::kEager),
-         // |url_2| (evicted)
-         attempt_entry_builder()->BuildEntry(
-             source_id, PreloadingType::kPrefetch,
-             PreloadingEligibility::kEligible,
-             PreloadingHoldbackStatus::kAllowed,
-             PreloadingTriggeringOutcome::kFailure,
-             ToPreloadingFailureReason(
-                 content::PrefetchStatus::
-                     kPrefetchEvictedAfterCandidateRemoved),
-             /*accurate=*/true,
-             /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
-             blink::mojom::SpeculationEagerness::kEager),
-         // |url_3| (ready)
-         attempt_entry_builder()->BuildEntry(
-             source_id, PreloadingType::kPrefetch,
-             PreloadingEligibility::kEligible,
-             PreloadingHoldbackStatus::kAllowed,
-             PreloadingTriggeringOutcome::kReady,
-             PreloadingFailureReason::kUnspecified,
-             /*accurate=*/true,
-             /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
-             blink::mojom::SpeculationEagerness::kEager),
-         // |url_1|, attempt #2 (ready)
-         attempt_entry_builder()->BuildEntry(
-             source_id, PreloadingType::kPrefetch,
-             PreloadingEligibility::kEligible,
-             PreloadingHoldbackStatus::kAllowed,
-             PreloadingTriggeringOutcome::kReady,
-             PreloadingFailureReason::kUnspecified,
-             /*accurate=*/true,
-             /*ready_time=*/
-             base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
-             blink::mojom::SpeculationEagerness::kEager)};
+    std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> expected_attempts;
+
+    // urls[0], attempt #1 (evicted)
+    expected_attempts.push_back(attempt_entry_builder()->BuildEntry(
+        source_id, PreloadingType::kPrefetch, PreloadingEligibility::kEligible,
+        PreloadingHoldbackStatus::kAllowed,
+        PreloadingTriggeringOutcome::kFailure,
+        ToPreloadingFailureReason(
+            content::PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved),
+        /*accurate=*/true,
+        /*ready_time=*/
+        base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager));
+
+    // urls[1] (evicted)
+    expected_attempts.push_back(attempt_entry_builder()->BuildEntry(
+        source_id, PreloadingType::kPrefetch, PreloadingEligibility::kEligible,
+        PreloadingHoldbackStatus::kAllowed,
+        PreloadingTriggeringOutcome::kFailure,
+        ToPreloadingFailureReason(
+            content::PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved),
+        /*accurate=*/true,
+        /*ready_time=*/
+        base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager));
+
+    // urls[2] through urls[kMaxNumberOfEagerPrefetchesPerPage-1] (ready)
+    for (size_t i = 2; i < kMaxNumberOfEagerPrefetchesPerPage; ++i) {
+      expected_attempts.push_back(attempt_entry_builder()->BuildEntry(
+          source_id, PreloadingType::kPrefetch,
+          PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+          PreloadingTriggeringOutcome::kReady,
+          PreloadingFailureReason::kUnspecified,
+          /*accurate=*/true,
+          /*ready_time=*/
+          base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+          blink::mojom::SpeculationEagerness::kEager));
+    }
+
+    // urls[kMaxNumberOfEagerPrefetchesPerPage] (ready)
+    expected_attempts.push_back(attempt_entry_builder()->BuildEntry(
+        source_id, PreloadingType::kPrefetch, PreloadingEligibility::kEligible,
+        PreloadingHoldbackStatus::kAllowed, PreloadingTriggeringOutcome::kReady,
+        PreloadingFailureReason::kUnspecified,
+        /*accurate=*/true,
+        /*ready_time=*/
+        base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager));
+
+    // urls[0], attempt #2 (ready)
+    expected_attempts.push_back(attempt_entry_builder()->BuildEntry(
+        source_id, PreloadingType::kPrefetch, PreloadingEligibility::kEligible,
+        PreloadingHoldbackStatus::kAllowed, PreloadingTriggeringOutcome::kReady,
+        PreloadingFailureReason::kUnspecified,
+        /*accurate=*/true,
+        /*ready_time=*/
+        base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager));
+
     EXPECT_THAT(actual_attempts,
                 testing::UnorderedElementsAreArray(expected_attempts))
         << test::ActualVsExpectedUkmEntriesToString(actual_attempts,
@@ -6591,7 +6636,7 @@ TEST_P(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
   }
 }
 
-TEST_P(PrefetchServiceNewLimitsTest, RemoveCandidateForFailedPrefetch) {
+TEST_P(PrefetchServiceLimitsTest, RemoveCandidateForFailedPrefetch) {
   const GURL url = GURL("https://example.com/one");
 
   NavigateAndCommit(GURL("https://example.com"));

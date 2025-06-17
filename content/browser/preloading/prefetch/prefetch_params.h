@@ -114,10 +114,10 @@ CONTENT_EXPORT std::string GetMetricsSuffixTriggerTypeAndEagerness(
     const PrefetchType prefetch_type,
     const std::optional<std::string>& embedder_histogram_suffix);
 
-// Returns the max number of eager prefetches allowed.
-size_t MaxNumberOfEagerPrefetchesPerPage();
-// Returns the max number of non-eager prefetches allowed.
-size_t MaxNumberOfNonEagerPrefetchesPerPage();
+// The max number of eager prefetches allowed.
+inline constexpr size_t kMaxNumberOfEagerPrefetchesPerPage = 50;
+// The max number of non-eager prefetches allowed.
+inline constexpr size_t kMaxNumberOfNonEagerPrefetchesPerPage = 2;
 
 // Returns true if NIK prefetch scope is enabled. See crbug.com/1502326
 bool PrefetchNIKScopeEnabled();
