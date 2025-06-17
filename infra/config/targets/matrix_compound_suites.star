@@ -605,7 +605,8 @@ targets.legacy_matrix_compound_suite(
         ),
         "chromeos_chrome_disabled_tast_tests_tfc": targets.legacy_matrix_config(
             mixins = [
-                "skylab-50-tests-per-shard",
+                # Setting smaller max_in_shard to offset tast level retries.
+                "skylab-20-tests-per-shard",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",

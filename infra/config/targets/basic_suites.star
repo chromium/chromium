@@ -154,6 +154,7 @@ targets.legacy_basic_suite(
                 cros_test_tags = ["group:mainline", "dep:chrome", "informational", "group:criticalstaging"],
                 cros_test_tags_exclude = ["dep:lacros", "dep:no_chrome_dcheck"],
             ),
+            experiment_percentage = 100,
         ),
     },
 )
@@ -192,6 +193,7 @@ targets.legacy_basic_suite(
                 timeout_sec = 14400,
                 cros_test_names_from_file = ["chromeos/tast_control_disabled_tests.txt"],
             ),
+            experiment_percentage = 100,
         ),
     },
 )

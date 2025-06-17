@@ -222,6 +222,7 @@
             'chromeos/tast_control_disabled_tests.txt',
           ],
         },
+        'experiment_percentage': 100,
       },
     },
 
@@ -248,6 +249,7 @@
             'chromeos/tast_control_disabled_tests.txt',
           ],
         },
+        'experiment_percentage': 100,
       },
     },
 
@@ -2525,7 +2527,7 @@
       },
       'chromeos_chrome_disabled_tast_tests_tfc': {
         'mixins': [
-          'skylab-50-tests-per-shard',
+          'skylab-20-tests-per-shard',
         ],
         'variants': [
           'CROS_RELEASE_LKGM',
