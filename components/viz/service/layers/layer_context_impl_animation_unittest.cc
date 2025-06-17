@@ -168,9 +168,24 @@ class LayerContextImplAnimationTest : public LayerContextImplTest {
           ops_mojom.push_back(mojom::TransformOperation::NewScale(
               gfx::Vector3dF(op.scale.x, op.scale.y, op.scale.z)));
           break;
-        // Add other cases as needed for tests.
-        default:
+        case gfx::TransformOperation::TRANSFORM_OPERATION_IDENTITY:
+          // Actual bool value true/false is meaningless. It is only important
+          // that the operation has union type 'identity'.
+          ops_mojom.push_back(mojom::TransformOperation::NewIdentity(true));
           break;
+        case gfx::TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE:
+          ops_mojom.push_back(mojom::TransformOperation::NewPerspectiveDepth(
+              op.perspective_m43 ? -1.0f / op.perspective_m43 : 0.0f));
+          break;
+        case gfx::TransformOperation::TRANSFORM_OPERATION_SKEW:
+          ops_mojom.push_back(mojom::TransformOperation::NewSkew(
+              gfx::Vector2dF(op.skew.x, op.skew.y)));
+          break;
+        case gfx::TransformOperation::TRANSFORM_OPERATION_MATRIX:
+          ops_mojom.push_back(mojom::TransformOperation::NewMatrix(op.matrix));
+          break;
+        default:
+          NOTREACHED();
       }
     }
     keyframe->value =
@@ -673,9 +688,15 @@ TEST_F(LayerContextImplAnimationTest, DeserializeTransformAnimationCurve) {
   constexpr int kKeyframeModelId = 1100;
   constexpr int kGroupId = 11;
   gfx::TransformOperations kStartTransform;
-  kStartTransform.AppendTranslate(10.f, 20.f, 30.f);
+  kStartTransform.AppendIdentity();
+  kStartTransform.AppendPerspective(1000.0);
+  kStartTransform.AppendSkew(10.0, 20.0);
+  kStartTransform.AppendTranslate(10.f, 20.f, 30.f);  // Already covered
+
   gfx::TransformOperations kEndTransform;
-  kEndTransform.AppendScale(2.f, 2.f, 1.f);
+  kEndTransform.AppendRotate(1.0, 0.5, 0.25, 45.0);
+  kEndTransform.AppendScale(2.f, 2.f, 1.f);  // Already covered
+  kEndTransform.AppendMatrix(gfx::Transform::MakeScale(3.0));
 
   auto update = CreateDefaultUpdate();
   update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
@@ -728,10 +749,11 @@ TEST_F(LayerContextImplAnimationTest, DeserializeTransformAnimationCurve) {
           gfx_model_impl->curve());
   ASSERT_NE(nullptr, transform_curve);
   ASSERT_EQ(transform_curve->keyframes().size(), 2u);
-  EXPECT_TRUE(transform_curve->keyframes()[0]->Value().ApproximatelyEqual(
-      kStartTransform, 0.0f));
-  EXPECT_TRUE(transform_curve->keyframes()[1]->Value().ApproximatelyEqual(
-      kEndTransform, 0.0f));
+  // Check that the deserialized transform operations match the input.
+  EXPECT_TRUE(gfx::SufficientlyEqual(transform_curve->keyframes()[0]->Value(),
+                                     kStartTransform));
+  EXPECT_TRUE(gfx::SufficientlyEqual(transform_curve->keyframes()[1]->Value(),
+                                     kEndTransform));
 }
 
 TEST_F(LayerContextImplAnimationTest, DeserializeWithLinearTimingFunction) {

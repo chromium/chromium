@@ -442,12 +442,15 @@ DEFINE_ANIMATION_TRAITS(Rect, Rect);
 
 #undef DEFINE_ANIMATION_TRAITS
 
-bool SufficientlyEqual(float lhs, float rhs);
-bool SufficientlyEqual(const TransformOperations& lhs,
-                       const TransformOperations& rhs);
-bool SufficientlyEqual(const SizeF& lhs, const SizeF& rhs);
-bool SufficientlyEqual(SkColor lhs, SkColor rhs);
-bool SufficientlyEqual(const Rect& lhs, const Rect& rhs);
+GFX_KEYFRAME_ANIMATION_EXPORT bool SufficientlyEqual(float lhs, float rhs);
+GFX_KEYFRAME_ANIMATION_EXPORT bool SufficientlyEqual(
+    const TransformOperations& lhs,
+    const TransformOperations& rhs);
+GFX_KEYFRAME_ANIMATION_EXPORT bool SufficientlyEqual(const SizeF& lhs,
+                                                     const SizeF& rhs);
+GFX_KEYFRAME_ANIMATION_EXPORT bool SufficientlyEqual(SkColor lhs, SkColor rhs);
+GFX_KEYFRAME_ANIMATION_EXPORT bool SufficientlyEqual(const Rect& lhs,
+                                                     const Rect& rhs);
 
 }  // namespace gfx
 
