@@ -76,6 +76,9 @@
       "tools/traffic_annotation/scripts/.*",
       "tools/ubsan/.*",
       "ui/webui/resources/.*(css|html|js)"
+    ],
+    "ignores": [
+      "tools/perf/cbb_ref_info/.*"
     ]
   },
   "dawn_chromium_presubmit": {
