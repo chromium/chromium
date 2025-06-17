@@ -3482,21 +3482,6 @@
             ]
         }
     ],
-    "BocaOnTaskMuteArcAudio": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BocaOnTaskMuteArcAudio"
-                    ]
-                }
-            ]
-        }
-    ],
     "BookmarksUseBinaryTreeInTitledUrlIndex": [
         {
             "platforms": [
