@@ -169,7 +169,8 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGL() {
   auto* provider = GetResourceProviderForWebGL();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (IsValidImageSize()) {
-      ReplaceResourceProvider(CreateCanvasResourceProviderWebGL());
+      SetResourceProviderWithoutContextCheck(
+          CreateCanvasResourceProviderWebGL());
       provider = GetResourceProviderForWebGL();
     }
     if (!provider) {
