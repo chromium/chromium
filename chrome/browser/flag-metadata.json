@@ -9581,6 +9581,22 @@
     "expiry_milestone": 150
   },
   {
+    "name": "tab-switcher-group-suggestions-android",
+    "owners": [
+      "mfiaz@google.com",
+      "clank-tab-dev@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "tab-switcher-group-suggestions-test-mode-android",
+    "owners": [
+      "mfiaz@google.com",
+      "clank-tab-dev@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "tablet-tab-strip-animation",
     "owners": [ "jtanaristy@google.org", "wenyufu@chromium.org" ],
     "expiry_milestone": 140

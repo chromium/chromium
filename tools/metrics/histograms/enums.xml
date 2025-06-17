@@ -9699,6 +9699,8 @@ from previous Chrome versions.
   <int value="-1582494945" label="SafeBrowsingGooglePlayProtectPrompt:enabled"/>
   <int value="-1581969217" label="enable-switch-access-point-scanning"/>
   <int value="-1581724231" label="ModalPermissionPrompts:enabled"/>
+  <int value="-1581536170"
+      label="TabSwitcherGroupSuggestionsTestModeAndroid:disabled"/>
   <int value="-1580376019" label="ShowAllDialogsWithViewsToolkit:enabled"/>
   <int value="-1579273370" label="FastPairPwaCompanion:enabled"/>
   <int value="-1578781240" label="QuickAnswersV2:enabled"/>
@@ -16157,6 +16159,7 @@ from previous Chrome versions.
   <int value="821819319" label="NavBarColorAnimation:enabled"/>
   <int value="822352138" label="GameDashboard:enabled"/>
   <int value="823505300" label="LensOnQuickActionSearchWidget:disabled"/>
+  <int value="823700125" label="TabSwitcherGroupSuggestionsAndroid:enabled"/>
   <int value="824022134" label="ShelfGesturesWithVirtualKeyboard:disabled"/>
   <int value="824620391" label="AndroidTabDeclutter:disabled"/>
   <int value="824961931" label="use-simple-cache-backend"/>
@@ -16473,6 +16476,7 @@ from previous Chrome versions.
   <int value="952558794" label="enable-remote-assistance"/>
   <int value="952625847"
       label="AboutThisSitePersistentSidePanelEntry:disabled"/>
+  <int value="952817891" label="TabSwitcherGroupSuggestionsAndroid:disabled"/>
   <int value="954368502" label="AllowWgcWindowCapturer:enabled"/>
   <int value="955200915" label="enable-openxr-android-smooth-depth:disabled"/>
   <int value="955340765" label="ChromeHomeOptOutSnackbar:enabled"/>
@@ -18828,6 +18832,8 @@ from previous Chrome versions.
   <int value="1811744551" label="InterestFeedV2Hearts:enabled"/>
   <int value="1812368073" label="enable-new-app-list-mixer"/>
   <int value="1812954470" label="EnableTouchpadsInDiagnosticsApp:disabled"/>
+  <int value="1813180867"
+      label="TabSwitcherGroupSuggestionsTestModeAndroid:enabled"/>
   <int value="1813205714" label="PageInfoHistoryDesktop:disabled"/>
   <int value="1813370929"
       label="MigrateDefaultChromeAppToWebAppsNonGSuite:enabled"/>

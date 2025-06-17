@@ -2322,6 +2322,12 @@ extern const char kTabCollectionAndroidDescription[];
 extern const char kTabSwitcherDragDropName[];
 extern const char kTabSwitcherDragDropDescription[];
 
+extern const char kTabSwitcherGroupSuggestionsAndroidName[];
+extern const char kTabSwitcherGroupSuggestionsAndroidDescription[];
+
+extern const char kTabSwitcherGroupSuggestionsTestModeAndroidName[];
+extern const char kTabSwitcherGroupSuggestionsTestModeAndroidDescription[];
+
 extern const char kTabGroupEntryPointsAndroidName[];
 extern const char kTabGroupEntryPointsAndroidDescription[];
 
