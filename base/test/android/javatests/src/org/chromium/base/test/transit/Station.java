@@ -119,17 +119,9 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     }
 
     /**
-     * Starts a transition from this origin {@link Station} to another destination {@link Station}.
-     * Runs the transition |trigger|, and blocks until the destination {@link Station} is considered
-     * ACTIVE (enter Conditions are fulfilled), the origin {@link Station} is considered FINISHED
-     * (exit Conditions are fulfilled), and the {@link StationToStationTrip}'s transition conditions
-     * are fulfilled.
-     *
-     * @param destination the {@link Facility} to arrive at.
-     * @param trigger the trigger to start the transition (e.g. clicking a view).
-     * @return the destination {@link Station}, now ACTIVE.
-     * @param <T> the type of the destination {@link Station}.
+     * @deprecated Use {@link TripBuilder#arriveAt(Station, Facility[])} instead.
      */
+    @Deprecated
     public final <T extends Station<?>> T travelToSync(T destination, @Nullable Trigger trigger) {
         destination.requireToBeInSameTask(this);
         StationToStationTrip trip =
@@ -139,7 +131,10 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
         return destination;
     }
 
-    /** Version of #travelToSync() with extra TransitionOptions. */
+    /**
+     * @deprecated Use {@link TripBuilder#arriveAt(Station, Facility[])} instead.
+     */
+    @Deprecated
     public final <T extends Station<?>> T travelToSync(
             T destination, TransitionOptions options, @Nullable Trigger trigger) {
         destination.requireToBeInSameTask(this);
@@ -150,19 +145,17 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     }
 
     /**
-     * Starts a transition into the {@link Facility}, runs the transition |trigger| and blocks until
-     * the facility is considered ACTIVE (enter Conditions are fulfilled).
-     *
-     * @param facility the {@link Facility} to enter.
-     * @param trigger the trigger to start the transition (e.g. clicking a view).
-     * @return the {@link Facility} entered, now ACTIVE.
-     * @param <F> the type of {@link Facility} entered.
+     * @deprecated Use {@link TripBuilder#enterFacility(Facility)} instead.
      */
+    @Deprecated
     public <F extends Facility<?>> F enterFacilitySync(F facility, @Nullable Trigger trigger) {
         return enterFacilitySync(facility, TransitionOptions.DEFAULT, trigger);
     }
 
-    /** Version of {@link #enterFacilitySync(F, Trigger)} with extra TransitionOptions. */
+    /**
+     * @deprecated Use {@link TripBuilder#enterFacility(Facility)} instead.
+     */
+    @Deprecated
     public <F extends Facility<?>> F enterFacilitySync(
             F facility, TransitionOptions options, @Nullable Trigger trigger) {
         registerFacility(facility);
@@ -172,17 +165,17 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     }
 
     /**
-     * Starts a transition into multiple {@link Facility}s, runs the transition |trigger| and blocks
-     * until the facilities are considered ACTIVE (enter Conditions are fulfilled).
-     *
-     * @param facilities the {@link Facility}s to enter.
-     * @param trigger the trigger to start the transition (e.g. clicking a view).
+     * @deprecated Use {@link TripBuilder#enterFacilities(Facility[])} instead.
      */
+    @Deprecated
     public void enterFacilitiesSync(List<Facility<?>> facilities, @Nullable Trigger trigger) {
         enterFacilitiesSync(facilities, TransitionOptions.DEFAULT, trigger);
     }
 
-    /** Version of {@link #enterFacilitiesSync(List, Trigger)} with extra TransitionOptions. */
+    /**
+     * @deprecated Use {@link TripBuilder#enterFacilities(Facility[])} instead.
+     */
+    @Deprecated
     public void enterFacilitiesSync(
             List<Facility<?>> facilities, TransitionOptions options, @Nullable Trigger trigger) {
         for (Facility<?> f : facilities) {
@@ -193,34 +186,34 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     }
 
     /**
-     * Starts a transition out of the {@link Facility}, runs the transition |trigger| and blocks
-     * until the facility is considered FINISHED (exit Conditions are fulfilled).
-     *
-     * @param facility the {@link Facility} to exit.
-     * @param trigger the trigger to start the transition (e.g. clicking a view).
+     * @deprecated Use {@link TripBuilder#exitFacility(Facility)} instead.
      */
+    @Deprecated
     public void exitFacilitySync(Facility<?> facility, @Nullable Trigger trigger) {
         exitFacilitySync(facility, TransitionOptions.DEFAULT, trigger);
     }
 
-    /** Version of {@link #exitFacilitySync(Facility, Trigger)} with extra TransitionOptions. */
+    /**
+     * @deprecated Use {@link TripBuilder#exitFacility(Facility)} instead.
+     */
+    @Deprecated
     public void exitFacilitySync(
             Facility<?> facility, TransitionOptions options, @Nullable Trigger trigger) {
         exitFacilitiesSync(List.of(facility), options, trigger);
     }
 
     /**
-     * Starts a transition out of multiple {@link Facility}s, runs the transition |trigger| and
-     * blocks until the facilities are considered FINISHED (exit Conditions are fulfilled).
-     *
-     * @param facilities the {@link Facility}s to exit.
-     * @param trigger the trigger to start the transition (e.g. clicking a view).
+     * @deprecated Use {@link TripBuilder#exitFacilities(Facility[])} instead.
      */
+    @Deprecated
     public void exitFacilitiesSync(List<Facility<?>> facilities, @Nullable Trigger trigger) {
         exitFacilitiesSync(facilities, TransitionOptions.DEFAULT, trigger);
     }
 
-    /** Version of {@link #exitFacilitiesSync(List, Trigger)} with extra TransitionOptions. */
+    /**
+     * @deprecated Use {@link TripBuilder#exitFacilities(Facility[])} instead.
+     */
+    @Deprecated
     public void exitFacilitiesSync(
             List<Facility<?>> facilities, TransitionOptions options, @Nullable Trigger trigger) {
         assertHasFacilities(facilities);
@@ -229,25 +222,19 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     }
 
     /**
-     * Starts a transition out of a {@link Facility} and into another {@link Facility}.
-     *
-     * <p>Runs the transition |trigger| and blocks until |facilityToExit| is considered FINISHED
-     * (exit Conditions are fulfilled) and |facilityToEnter| is considered ACTIVE (enter Conditions
-     * are fulfilled).
-     *
-     * @param facilityToExit the {@link Facility} to exit.
-     * @param facilityToEnter the {@link Facility} to enter.
-     * @param trigger the trigger to start the transition (e.g. clicking a view).
-     * @return the {@link Facility} entered, now ACTIVE.
-     * @param <F> the type of {@link Facility} entered.
+     * @deprecated Use {@code tripBuilder.exitFacilityAnd(f).enterFacility(g)| instead.
      */
+    @Deprecated
     public <F extends Facility<?>> F swapFacilitySync(
             Facility<?> facilityToExit, F facilityToEnter, @Nullable Trigger trigger) {
         return swapFacilitySync(
                 List.of(facilityToExit), facilityToEnter, TransitionOptions.DEFAULT, trigger);
     }
 
-    /** Version of {@link #swapFacilitySync(Facility, F, Trigger)} with extra TransitionOptions. */
+    /**
+     * @deprecated Use {@code tripBuilder.exitFacilityAnd(f).enterFacility(g)| instead.
+     */
+    @Deprecated
     public <F extends Facility<?>> F swapFacilitySync(
             Facility<?> facilityToExit,
             F facilityToEnter,
@@ -257,25 +244,19 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     }
 
     /**
-     * Starts a transition out of 1+ {@link Facility}s and into another {@link Facility}.
-     *
-     * <p>Runs the transition |trigger| and blocks until all |facilitiesToExit| are considered
-     * FINISHED (exit Conditions are fulfilled) and |facilityToEnter| is considered ACTIVE (enter
-     * Conditions are fulfilled).
-     *
-     * @param facilitiesToExit the {@link Facility}s to exit.
-     * @param facilityToEnter the {@link Facility} to enter.
-     * @param trigger the trigger to start the transition (e.g. clicking a view).
-     * @return the {@link Facility} entered, now ACTIVE.
-     * @param <F> the type of {@link Facility} entered.
+     * @deprecated Use {@code tripBuilder.exitFacilitiesAnd(f, g).enterFacility(h)| instead.
      */
+    @Deprecated
     public <F extends Facility<?>> F swapFacilitySync(
             List<Facility<?>> facilitiesToExit, F facilityToEnter, @Nullable Trigger trigger) {
         return swapFacilitySync(
                 facilitiesToExit, facilityToEnter, TransitionOptions.DEFAULT, trigger);
     }
 
-    /** Version of {@link #swapFacilitySync(List, F, Trigger)} with extra TransitionOptions. */
+    /**
+     * @deprecated Use {@code tripBuilder.exitFacilitiesAnd(f, g).enterFacility(h)| instead.
+     */
+    @Deprecated
     public <F extends Facility<?>> F swapFacilitySync(
             List<Facility<?>> facilitiesToExit,
             F facilityToEnter,
@@ -290,16 +271,9 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     }
 
     /**
-     * Starts a transition out of 1+ {@link Facility}s and into 1+ {@link Facility}s.
-     *
-     * <p>Runs the transition |trigger| and blocks until all |facilitiesToExit| are considered
-     * FINISHED (exit Conditions are fulfilled) and all |facilitiesToEnter| are considered ACTIVE
-     * (enter Conditions are fulfilled).
-     *
-     * @param facilitiesToExit the {@link Facility}s to exit.
-     * @param facilitiesToEnter the {@link Facility}s to enter.
-     * @param trigger the trigger to start the transition (e.g. clicking a view).
+     * @deprecated Use {@code tripBuilder.exitFacilitiesAnd(f, g).enterFacilities(h, i)| instead.
      */
+    @Deprecated
     public void swapFacilitiesSync(
             List<Facility<?>> facilitiesToExit,
             List<Facility<?>> facilitiesToEnter,
@@ -307,7 +281,12 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
         swapFacilitiesSync(facilitiesToExit, facilitiesToEnter, TransitionOptions.DEFAULT, trigger);
     }
 
-    /** Version of {@link #swapFacilitiesSync(List, List, Trigger)} with extra TransitionOptions. */
+    /**
+     * Version of {@link #swapFacilitiesSync(List, List, Trigger)} with extra TransitionOptions.
+     *
+     * @deprecated use {@link TripBuilder} instead.
+     */
+    @Deprecated
     public void swapFacilitiesSync(
             List<Facility<?>> facilitiesToExit,
             List<Facility<?>> facilitiesToEnter,
@@ -322,37 +301,12 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     }
 
     /**
-     * Starts a transition into a {@link Station} without leaving the current one.
-     *
-     * <p>Useful for opening a new window.
-     *
-     * <p>Runs the transition |trigger|, and blocks until the destination {@link Station} is
-     * considered ACTIVE (enter Conditions are fulfilled) and the {@link StationToStationTrip}'s
-     * transition conditions are fulfilled.
-     *
-     * @param destination the {@link Facility} to arrive at.
-     * @param trigger the trigger to start the transition (e.g. clicking a view).
-     * @return the destination {@link Station}, now ACTIVE.
-     * @param <T> the type of the destination {@link Station}.
-     */
-    public static <T extends Station<?>> T spawnSync(T destination, @Nullable Trigger trigger) {
-        return spawnSync(destination, TransitionOptions.DEFAULT, trigger);
-    }
-
-    /** Version of {@link #spawnSync(T, Trigger)} with extra TransitionOptions. */
-    public static <T extends Station<?>> T spawnSync(
-            T destination, TransitionOptions options, @Nullable Trigger trigger) {
-        destination.requireToBeInNewTask();
-        StationToStationTrip trip =
-                new StationToStationTrip(List.of(), List.of(destination), options, trigger);
-        trip.transitionSync();
-        return destination;
-    }
-
-    /**
      * Add a Facility which will be entered together with this Station. Both will become ACTIVE in
      * the same Trip.
+     *
+     * @deprecated Use {@link TripBuilder#arriveAt(Station, Facility[])} instead.
      */
+    @Deprecated
     public <F extends Facility<?>> F addInitialFacility(F facility) {
         assertInPhase(Phase.NEW);
         registerFacility(facility);
