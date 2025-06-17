@@ -8312,7 +8312,6 @@ crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-02
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-035.xht [ Crash Pass Timeout ]
 
 # line-clamp
-crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-abspos-001.tentative.html [ Failure ]
 crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/line-clamp-auto-009.tentative.html [ Failure ]
 crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/line-clamp-with-abspos-017.tentative.html [ Failure ]
 crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/block-ellipsis-001.html [ Failure ]
