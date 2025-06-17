@@ -83,6 +83,7 @@
 #include "content/test/fake_network_url_loader_factory.h"
 #include "net/base/features.h"
 #include "net/base/filename_util.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_connection_info.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -4613,7 +4614,9 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   // navigation to the download.
   net::IsolationInfo expected_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kSubFrame, download_origin,
-      download_origin, net::SiteForCookies::FromOrigin(download_origin));
+      download_origin, net::SiteForCookies::FromOrigin(download_origin),
+      /*nonce=*/std::nullopt, net::NetworkIsolationPartition::kGeneral,
+      net::IsolationInfo::FrameAncestorRelation::kSameOrigin);
 
   GURL frame_url = origin_one.GetURL("/download-attribute.html?target=" +
                                      download_url.spec());

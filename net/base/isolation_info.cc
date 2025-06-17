@@ -407,10 +407,14 @@ std::string IsolationInfo::DebugString() const {
   return s;
 }
 
-IsolationInfo::FrameAncestorRelation
+std::optional<IsolationInfo::FrameAncestorRelation>
 IsolationInfo::OriginRelationToFrameAncestorRelation(
-    OriginRelation origin_relation_value) {
-  switch (origin_relation_value) {
+    std::optional<OriginRelation> origin_relation_value) {
+  if (!origin_relation_value) {
+    return std::nullopt;
+  }
+
+  switch (origin_relation_value.value()) {
     case OriginRelation::kSameOrigin:
       return FrameAncestorRelation::kSameOrigin;
     case OriginRelation::kSameSite:
@@ -433,10 +437,13 @@ IsolationInfo::ComputeNewFrameAncestorRelation(
   if (cur_relation == FrameAncestorRelation::kCrossSite) {
     return FrameAncestorRelation::kCrossSite;
   }
-  FrameAncestorRelation new_relation = OriginRelationToFrameAncestorRelation(
-      GetOriginRelation(frame_origin, top_frame_origin));
+  std::optional<FrameAncestorRelation> new_relation =
+      OriginRelationToFrameAncestorRelation(
+          GetOriginRelation(frame_origin, top_frame_origin));
 
-  return std::max({cur_relation.value(), new_relation});
+  CHECK(new_relation);
+
+  return std::max({cur_relation, new_relation});
 }
 
 std::string_view IsolationInfo::FrameAncestorRelationString(

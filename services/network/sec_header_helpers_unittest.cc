@@ -12,6 +12,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_isolation_partition.h"
+#include "net/base/url_util.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -49,10 +51,22 @@ constexpr char kKnownSecFetchUserHeader[] = "Sec-Fetch-User";
 constexpr char kKnownSecFetchDestHeader[] = "Sec-Fetch-Dest";
 constexpr char kKnownSecFetchStorageAccessHeader[] = "Sec-Fetch-Storage-Access";
 constexpr char kKnownSecFetchFrameTopHeader[] = "Sec-Fetch-Frame-Top";
+constexpr char kKnownSecFetchFrameAncestorsHeader[] =
+    "Sec-Fetch-Frame-Ancestors";
 constexpr char kOtherSecHeader[] = "sec-other-info-header";
 constexpr char kOtherHeader[] = "Other-Header";
 
 constexpr char kHeaderValue[] = "testdata";
+
+struct FrameAncestorTestData {
+  GURL url_request_dest;
+  url::Origin frame_origin;
+  std::optional<std::string> expected_value;
+};
+
+url::Origin secure_site_origin() {
+  return url::Origin::Create(GURL(kSecureSite));
+}
 
 }  // namespace
 
@@ -71,13 +85,12 @@ class SecHeaderHelpersTestBase : public PlatformTest {
                                              TRAFFIC_ANNOTATION_FOR_TESTS)) {
     url_request_->set_initiator(
         url::Origin::Create(GURL(kPrivilegedInitiator)));
+
+    scoped_feature_list_.InitWithFeatures(
+        {features::kFrameTopHeader, features::kFrameAncestorsHeader}, {});
   }
 
   net::URLRequest& url_request() const { return *url_request_; }
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kFrameAncestorHeaders);
-  }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -199,7 +212,10 @@ TEST_F(SecHeaderHelpersTest, UnprivilegedRequestOnExtension) {
   current_url_request.set_isolation_info(net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, url::Origin::Create(url),
       url::Origin::Create(url), net::SiteForCookies(),
-      /*nonce=*/std::nullopt));
+      /*nonce=*/std::nullopt,
+      /*network_isolation_partition=*/net::NetworkIsolationPartition::kGeneral,
+      /*frame_ancestor_relation=*/
+      net::IsolationInfo::FrameAncestorRelation::kSameOrigin));
 
   network::mojom::URLLoaderFactoryParams params;
   params.unsafe_non_webby_initiator = true;
@@ -223,6 +239,8 @@ TEST_F(SecHeaderHelpersTest, UnprivilegedRequestOnExtension) {
                       kKnownSecFetchStorageAccessHeader, "none"},
                   net::HttpRequestHeaders::HeaderKeyValuePair{
                       kKnownSecFetchFrameTopHeader, "same-origin"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchFrameAncestorsHeader, "same-origin"},
               }));
 }
 
@@ -236,7 +254,10 @@ TEST_F(SecHeaderHelpersTest, PrivilegedRequestOnExtension) {
   current_url_request.set_isolation_info(net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, url::Origin::Create(url),
       url::Origin::Create(url), net::SiteForCookies(),
-      /*nonce=*/std::nullopt));
+      /*nonce=*/std::nullopt,
+      /*network_isolation_partition=*/net::NetworkIsolationPartition::kGeneral,
+      /*frame_ancestor_relation=*/
+      net::IsolationInfo::FrameAncestorRelation::kSameOrigin));
 
   network::mojom::URLLoaderFactoryParams params;
   params.unsafe_non_webby_initiator = true;
@@ -270,6 +291,8 @@ TEST_F(SecHeaderHelpersTest, PrivilegedRequestOnExtension) {
                       kKnownSecFetchStorageAccessHeader, "none"},
                   net::HttpRequestHeaders::HeaderKeyValuePair{
                       kKnownSecFetchFrameTopHeader, "same-origin"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchFrameAncestorsHeader, "same-origin"},
               }));
 }
 
@@ -301,7 +324,7 @@ class SecHeaderHelpersFileSchemeTest
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kFrameAncestorHeaders);
+    scoped_feature_list_.InitAndEnableFeature(features::kFrameTopHeader);
     url_request_->set_storage_access_status(net::StorageAccessStatusCache(
         net::cookie_util::StorageAccessStatus::kNone));
   }
@@ -545,7 +568,7 @@ class FrameTopSecHeaderHelpersTest : public PlatformTest,
   net::URLRequest* url_request() const { return url_request_.get(); }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kFrameAncestorHeaders);
+    scoped_feature_list_.InitAndEnableFeature(features::kFrameTopHeader);
   }
 
   // Describes a site's relationship to kSecureSite. kNone represents an
@@ -672,4 +695,150 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::Values(GURL(kSecureSite),
                                          GURL(kSecureSameSite),
                                          GURL(kSecureCrossSite)));
+
+// Parameterized test Suite for the Sec-Fetch-Frame-Ancestors header.
+class FrameAncestorsSecHeaderHelpersTest
+    : public PlatformTest,
+      public testing::WithParamInterface<FrameAncestorTestData> {
+ public:
+  FrameAncestorsSecHeaderHelpersTest()
+      : context_(net::CreateTestURLRequestContextBuilder()->Build()),
+        url_request_(context_->CreateRequest(GetParam().url_request_dest,
+                                             net::DEFAULT_PRIORITY,
+                                             /*delegate=*/nullptr,
+                                             TRAFFIC_ANNOTATION_FOR_TESTS)) {
+    url_request_->set_initiator(
+        url::Origin::Create(GURL(kPrivilegedInitiator)));
+    url_request_->set_storage_access_status(net::StorageAccessStatusCache(
+        net::cookie_util::StorageAccessStatus::kNone));
+    scoped_feature_list_.InitAndEnableFeature(features::kFrameAncestorsHeader);
+  }
+
+  net::URLRequest& url_request() const { return *url_request_; }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<net::URLRequestContext> context_;
+  std::unique_ptr<net::URLRequest> url_request_;
+};
+
+TEST_P(FrameAncestorsSecHeaderHelpersTest, HeaderValuesMatchRelation) {
+  net::URLRequest& current_url_request = url_request();
+  current_url_request.set_isolation_info(net::IsolationInfo::Create(
+      /*request_type=*/net::IsolationInfo::RequestType::kOther,
+      /*top_frame_origin=*/secure_site_origin(),
+      /*frame_origin=*/GetParam().frame_origin,
+      /*site_for_cookies=*/net::SiteForCookies(),
+      /*nonce=*/std::nullopt,
+      /*network_isolation_partition=*/net::NetworkIsolationPartition::kGeneral,
+      /*frame_ancestor_relation=*/
+      net::IsolationInfo::OriginRelationToFrameAncestorRelation(
+          net::GetOriginRelation(GetParam().frame_origin,
+                                 secure_site_origin()))));
+
+  SetFetchMetadataHeaders(
+      current_url_request, network::mojom::RequestMode::kCors,
+      /*has_user_activation=*/false,
+      network::mojom::RequestDestination::kIframe,
+      /*pending_redirect_url=*/std::nullopt,
+      network::mojom::URLLoaderFactoryParams(),
+      /*origin_access_list=*/{}, mojom::CredentialsMode::kInclude);
+
+  EXPECT_EQ(current_url_request.extra_request_headers().GetHeader(
+                kKnownSecFetchFrameAncestorsHeader),
+            GetParam().expected_value);
+}
+
+// Validate that the Sec-Fetch-Frame-Ancestors header is always same-origin for
+// main frame requests.
+TEST_P(FrameAncestorsSecHeaderHelpersTest, SameOriginOnMainFrameRequests) {
+  net::URLRequest& current_url_request = url_request();
+  current_url_request.set_isolation_info(net::IsolationInfo::Create(
+      /*request_type=*/net::IsolationInfo::RequestType::kMainFrame,
+      /*top_frame_origin=*/secure_site_origin(),
+      /*frame_origin=*/GetParam().frame_origin,
+      /*site_for_cookies=*/net::SiteForCookies(),
+      /*nonce=*/std::nullopt,
+      /*network_isolation_partition=*/net::NetworkIsolationPartition::kGeneral,
+      /*frame_ancestor_relation=*/
+      net::IsolationInfo::FrameAncestorRelation::kSameOrigin));
+
+  SetFetchMetadataHeaders(
+      current_url_request, network::mojom::RequestMode::kCors,
+      /*has_user_activation=*/false,
+      network::mojom::RequestDestination::kDocument,
+      /*pending_redirect_url=*/std::nullopt,
+      network::mojom::URLLoaderFactoryParams(),
+      /*origin_access_list=*/{}, mojom::CredentialsMode::kInclude);
+
+  EXPECT_EQ(current_url_request.extra_request_headers()
+                .GetHeader(kKnownSecFetchFrameAncestorsHeader)
+                .value(),
+            net::IsolationInfo::FrameAncestorRelationString(
+                net::IsolationInfo::FrameAncestorRelation::kSameOrigin));
+}
+
+TEST_P(FrameAncestorsSecHeaderHelpersTest, NoHeaderWhenFeatureDisabled) {
+  base::test::ScopedFeatureList local_scoped_feature_list;
+  local_scoped_feature_list.InitAndDisableFeature(
+      features::kFrameAncestorsHeader);
+
+  net::URLRequest& current_url_request = url_request();
+  current_url_request.set_isolation_info(net::IsolationInfo::Create(
+      /*request_type=*/net::IsolationInfo::RequestType::kOther,
+      /*top_frame_origin=*/secure_site_origin(),
+      /*frame_origin=*/GetParam().frame_origin,
+      /*site_for_cookies=*/net::SiteForCookies(),
+      /*nonce=*/std::nullopt,
+      /*network_isolation_partition=*/net::NetworkIsolationPartition::kGeneral,
+      /*frame_ancestor_relation=*/
+      net::IsolationInfo::OriginRelationToFrameAncestorRelation(
+          net::GetOriginRelation(GetParam().frame_origin,
+                                 secure_site_origin()))));
+
+  SetFetchMetadataHeaders(
+      current_url_request, network::mojom::RequestMode::kCors,
+      /*has_user_activation=*/false,
+      network::mojom::RequestDestination::kIframe,
+      /*pending_redirect_url=*/std::nullopt,
+      network::mojom::URLLoaderFactoryParams(),
+      /*origin_access_list=*/{}, mojom::CredentialsMode::kInclude);
+
+  EXPECT_EQ(current_url_request.extra_request_headers().GetHeader(
+                kKnownSecFetchFrameAncestorsHeader),
+            std::nullopt);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FrameAncestorsSecHeaderHelpersTest,
+    testing::Values(
+        FrameAncestorTestData{GURL(kSecureSite),
+                              url::Origin::Create(GURL(kSecureSite)),
+                              "same-origin"},
+        FrameAncestorTestData{GURL(kSecureSite),
+                              url::Origin::Create(GURL(kSecureSameSite)),
+                              "same-site"},
+        FrameAncestorTestData{GURL(kSecureSite),
+                              url::Origin::Create(GURL(kSecureCrossSite)),
+                              "cross-site"},
+        FrameAncestorTestData{GURL(kSecureSameSite),
+                              url::Origin::Create(GURL(kSecureSite)),
+                              "same-site"},
+        FrameAncestorTestData{GURL(kSecureSameSite),
+                              url::Origin::Create(GURL(kSecureSameSite)),
+                              "same-site"},
+        FrameAncestorTestData{GURL(kSecureSameSite),
+                              url::Origin::Create(GURL(kSecureCrossSite)),
+                              "cross-site"},
+        FrameAncestorTestData{GURL(kSecureCrossSite),
+                              url::Origin::Create(GURL(kSecureSite)),
+                              "cross-site"},
+        FrameAncestorTestData{GURL(kSecureCrossSite),
+                              url::Origin::Create(GURL(kSecureSameSite)),
+                              "cross-site"},
+        FrameAncestorTestData{GURL(kSecureCrossSite),
+                              url::Origin::Create(GURL(kSecureCrossSite)),
+                              "cross-site"}));
 }  // namespace network

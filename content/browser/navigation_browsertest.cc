@@ -420,6 +420,216 @@ INSTANTIATE_TEST_SUITE_P(
         network::mojom::ReferrerPolicy::kSameOrigin,
         network::mojom::ReferrerPolicy::kStrictOrigin));
 
+struct FrameAncestorTestData {
+  std::string_view inner_host;
+  std::string_view intermediate_host;
+  std::string_view expected_header_value;
+  std::string_view expected_header_value_for_redirect;
+};
+
+// Parameterized test suite that tests the behavior of IsolationInfo's
+// `frame_ancestor_relation` variable on navigations having multiple frame
+// ancestors. The parameters are `FrameAncetorTestData` objects, which provide
+// strings determining the origins for the innermost iframe, `inner_host`, as
+// well as an `intermediate_host`, which sets the origin of an iframe between
+// the top frame and the innermost frame.
+class FrameAncestorNavigationBrowserTest
+    : public NavigationBrowserTest,
+      public ::testing::WithParamInterface<FrameAncestorTestData> {
+ public:
+  FrameAncestorNavigationBrowserTest() {
+    features_.InitAndEnableFeature(network::features::kFrameAncestorsHeader);
+  }
+
+  void SetUpOnMainThread() override {
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    embedded_https_test_server().RegisterRequestMonitor(
+        base::BindLambdaForTesting(
+            [&](const net::test_server::HttpRequest& request) {
+              base::AutoLock lock(lock_);
+              observed_request_headers_.emplace_back(request.GetURL().path(),
+                                                     request.headers);
+            }));
+    NavigationBaseBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  std::vector<std::pair<std::string, net::test_server::HttpRequest::HeaderMap>>
+  observed_request_headers() const {
+    base::AutoLock lock(lock_);
+    return observed_request_headers_;
+  }
+
+  // Navigates the innermost frame to the given URL. (The web_contents is
+  // assumed to be showing a page containing an iframe that contains another
+  // iframe.)
+  void NavigateNestedFrameTo(const GURL& url) {
+    content::TestNavigationObserver load_observer(web_contents());
+    ASSERT_TRUE(ExecJs(
+        ChildFrameAt(main_frame(), 0),
+        base::StringPrintf("document.body.querySelector('iframe').src = '%s';",
+                           url.spec().c_str())));
+    load_observer.Wait();
+  }
+
+  std::string_view intermediate_host() const {
+    return GetParam().intermediate_host;
+  }
+  std::string_view inner_host() const { return GetParam().inner_host; }
+  std::string_view expected_relation() const {
+    return GetParam().expected_header_value;
+  }
+  std::string_view expected_relation_for_redirect() const {
+    return GetParam().expected_header_value_for_redirect;
+  }
+
+  using HeaderMapMatchers = std::initializer_list<
+      testing::Matcher<std::pair<std::string, std::string>>>;
+
+ private:
+  mutable base::Lock lock_;
+  std::vector<std::pair<std::string, net::test_server::HttpRequest::HeaderMap>>
+      observed_request_headers_ GUARDED_BY(lock_);
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_P(FrameAncestorNavigationBrowserTest,
+                       NestedSubframeFrameAncestorRelation) {
+  GURL starting_page(embedded_https_test_server().GetURL(
+      "a.test", "/page_with_blank_iframe_tree.html"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), starting_page));
+
+  GURL intermediate_url(embedded_https_test_server().GetURL(
+      intermediate_host(), "/page_with_blank_iframe.html"));
+
+  // Perform intermediary navigation.
+  EXPECT_TRUE(NavigateIframeToURL(web_contents(), "f1", intermediate_url));
+
+  GURL inner_url(
+      embedded_https_test_server().GetURL(inner_host(), "/test1.html"));
+  URLLoaderMonitor monitor({inner_url});
+
+  // Navigate inner iframe.
+  NavigateNestedFrameTo(inner_url);
+  monitor.WaitForUrls();
+
+  EXPECT_THAT(
+      observed_request_headers(),
+      Contains(Pair(
+          inner_url.path(),
+          testing::IsSupersetOf<HeaderMapMatchers>({
+              testing::Pair("Sec-Fetch-Frame-Ancestors", expected_relation()),
+          }))));
+}
+
+IN_PROC_BROWSER_TEST_P(FrameAncestorNavigationBrowserTest, SubframeRedirect) {
+  GURL starting_page(
+      embedded_https_test_server().GetURL("a.test", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), starting_page));
+
+  GURL inner_url(
+      embedded_https_test_server().GetURL(inner_host(), "/test2.html"));
+
+  GURL redirecting_url(embedded_https_test_server().GetURL(
+      intermediate_host(), "/server-redirect?" + inner_url.spec()));
+
+  TestNavigationObserver load_observer(web_contents());
+  // Create a subframe that redirects to a page at `inner_host` via
+  // `intermediate_host`.
+  const char subframe_request_script[] = R"(
+    let iframe = document.createElement('iframe');
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+  )";
+  ASSERT_TRUE(ExecJs(main_frame(),
+                     JsReplace(subframe_request_script, redirecting_url)));
+  load_observer.Wait();
+
+  EXPECT_THAT(observed_request_headers(),
+              Contains(Pair(inner_url.path(),
+                            testing::IsSupersetOf<HeaderMapMatchers>({
+                                testing::Pair("Sec-Fetch-Frame-Ancestors",
+                                              expected_relation_for_redirect()),
+                            }))));
+}
+
+IN_PROC_BROWSER_TEST_P(FrameAncestorNavigationBrowserTest, TopFrameRedirect) {
+  GURL inner_url(
+      embedded_https_test_server().GetURL(inner_host(), "/test1.html"));
+
+  GURL redirecting_url(embedded_https_test_server().GetURL(
+      intermediate_host(), "/server-redirect?" + inner_url.spec()));
+
+  TestNavigationObserver load_observer(web_contents());
+  // Navigate the top frame to a page at `inner_host` via a redirect.
+  NavigateToURLBlockUntilNavigationsComplete(
+      web_contents(), redirecting_url, 1,
+      /*ignore_uncommitted_navigations=*/false);
+  load_observer.Wait();
+
+  // The header should use the same-origin value for all main frame requests
+  // since it is same-origin with itself.
+  EXPECT_THAT(observed_request_headers(),
+              Contains(Pair(
+                  inner_url.path(),
+                  testing::IsSupersetOf<HeaderMapMatchers>({
+                      testing::Pair("Sec-Fetch-Frame-Ancestors", "same-origin"),
+                  }))));
+}
+
+IN_PROC_BROWSER_TEST_P(FrameAncestorNavigationBrowserTest,
+                       SubresourceRedirect) {
+  GURL starting_page(
+      embedded_https_test_server().GetURL("a.test", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), starting_page));
+
+  // Create a subresource request to intermediate_host that redirects to an
+  // image hosted at inner_host.
+  GURL inner_url(
+      embedded_https_test_server().GetURL(inner_host(), "/blank.jpg"));
+  GURL redirecting_url(embedded_https_test_server().GetURL(
+      intermediate_host(), "/server-redirect?" + inner_url.spec()));
+
+  const char subresource_request_script[] = R"(
+    new Promise(function (resolve, reject) {
+        var img = document.createElement('img');
+        img.src = $1;
+        img.onload = _ => resolve('OK');
+        img.onerror = e => resolve('ERR: ' + e);
+    });
+  )";
+
+  ASSERT_TRUE(ExecJs(main_frame(),
+                     JsReplace(subresource_request_script, redirecting_url)));
+
+  EXPECT_THAT(observed_request_headers(),
+              Contains(Pair(inner_url.path(),
+                            testing::IsSupersetOf<HeaderMapMatchers>({
+                                testing::Pair("Sec-Fetch-Frame-Ancestors",
+                                              expected_relation_for_redirect()),
+                            }))));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FrameAncestorNavigationBrowserTest,
+    ::testing::Values(
+        FrameAncestorTestData{"a.test", "a.test", "same-origin", "same-origin"},
+        FrameAncestorTestData{"a.test", "other.a.test", "same-site",
+                              "same-origin"},
+        FrameAncestorTestData{"a.test", "b.test", "cross-site", "same-origin"},
+        FrameAncestorTestData{"other.a.test", "a.test", "same-site",
+                              "same-site"},
+        FrameAncestorTestData{"other.a.test", "other.a.test", "same-site",
+                              "same-site"},
+        FrameAncestorTestData{"other.a.test", "b.test", "cross-site",
+                              "same-site"},
+        FrameAncestorTestData{"b.test", "a.test", "cross-site", "cross-site"},
+        FrameAncestorTestData{"b.test", "other.a.test", "cross-site",
+                              "cross-site"},
+        FrameAncestorTestData{"b.test", "b.test", "cross-site", "cross-site"}));
+
 // Ensure that browser initiated basic navigations work.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BrowserInitiatedNavigations) {
   // Perform a navigation with no live renderer.
@@ -966,7 +1176,10 @@ IN_PROC_BROWSER_TEST_F(NetworkIsolationNavigationBrowserTest,
   ASSERT_TRUE(main_frame_request->trusted_params);
   EXPECT_TRUE(net::IsolationInfo::Create(
                   net::IsolationInfo::RequestType::kMainFrame, origin, origin,
-                  net::SiteForCookies::FromOrigin(origin))
+                  net::SiteForCookies::FromOrigin(origin),
+                  /*nonce=*/std::nullopt,
+                  net::NetworkIsolationPartition::kGeneral,
+                  net::IsolationInfo::FrameAncestorRelation::kSameOrigin)
                   .IsEqualForTesting(
                       main_frame_request->trusted_params->isolation_info));
 
@@ -974,9 +1187,11 @@ IN_PROC_BROWSER_TEST_F(NetworkIsolationNavigationBrowserTest,
       monitor.GetRequestInfo(iframe_document);
   ASSERT_TRUE(iframe_request->trusted_params);
   EXPECT_TRUE(
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
-                                 origin, iframe_origin,
-                                 net::SiteForCookies::FromOrigin(origin))
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kSubFrame, origin, iframe_origin,
+          net::SiteForCookies::FromOrigin(origin), /*nonce=*/std::nullopt,
+          net::NetworkIsolationPartition::kGeneral,
+          net::IsolationInfo::FrameAncestorRelation::kSameOrigin)
           .IsEqualForTesting(iframe_request->trusted_params->isolation_info));
 }
 

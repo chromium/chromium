@@ -28,6 +28,7 @@
 #include "content/test/test_web_contents.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/mojom/cors.mojom.h"
@@ -234,7 +235,9 @@ TEST_F(RenderFrameHostImplTest, CrossSiteAncestorInFrameTree) {
       blink::mojom::AncestorChainBit::kCrossSite);
   net::IsolationInfo expected_final_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, expected_final_origin,
-      expected_final_origin, net::SiteForCookies());
+      expected_final_origin, net::SiteForCookies(), /*nonce=*/std::nullopt,
+      net::NetworkIsolationPartition::kGeneral,
+      net::IsolationInfo::FrameAncestorRelation::kCrossSite);
 
   EXPECT_EQ(expected_final_origin, child_rfh_2->GetLastCommittedOrigin());
   EXPECT_EQ(expected_final_storage_key, child_rfh_2->GetStorageKey());
@@ -264,7 +267,9 @@ TEST_F(RenderFrameHostImplTest_NoOriginKeyedProcessesByDefault,
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kOther, expected_initial_origin,
           expected_initial_origin,
-          net::SiteForCookies::FromOrigin(expected_initial_origin));
+          net::SiteForCookies::FromOrigin(expected_initial_origin),
+          /*nonce=*/std::nullopt, net::NetworkIsolationPartition::kGeneral,
+          net::IsolationInfo::FrameAncestorRelation::kSameOrigin);
 
   GURL final_url = GURL("https://final.example.test/");
   url::Origin expected_final_origin = url::Origin::Create(final_url);
@@ -273,8 +278,9 @@ TEST_F(RenderFrameHostImplTest_NoOriginKeyedProcessesByDefault,
   net::IsolationInfo expected_final_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, expected_final_origin,
       expected_final_origin,
-      net::SiteForCookies::FromOrigin(expected_final_origin));
-
+      net::SiteForCookies::FromOrigin(expected_final_origin),
+      /*nonce=*/std::nullopt, net::NetworkIsolationPartition::kGeneral,
+      net::IsolationInfo::FrameAncestorRelation::kSameOrigin);
   // Start the test with a simple navigation.
   {
     std::unique_ptr<NavigationSimulator> simulator =

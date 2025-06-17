@@ -138,8 +138,9 @@ class NET_EXPORT IsolationInfo {
   // OriginRelationValue. The value returned is the same as finding the
   // FrameAncestorRelation for a set of two frame ancestors having the
   // OriginRelationValue of `origin_relation_value`.
-  static FrameAncestorRelation OriginRelationToFrameAncestorRelation(
-      OriginRelation origin_relation_value);
+  static std::optional<FrameAncestorRelation>
+  OriginRelationToFrameAncestorRelation(
+      std::optional<OriginRelation> origin_relation_value);
 
   // Returns the greater value of `cur_relation` and the FrameAncestorRelation
   // corresponding to the set of frame ancestors whose members are

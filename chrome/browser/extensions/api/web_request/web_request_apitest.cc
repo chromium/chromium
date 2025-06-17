@@ -5762,7 +5762,9 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
           net::IsolationInfo::Create(
               net::IsolationInfo::RequestType::kSubFrame, top_level_origin,
               redirected_origin,
-              net::SiteForCookies::FromOrigin(top_level_origin))));
+              net::SiteForCookies::FromOrigin(top_level_origin),
+              /*nonce=*/std::nullopt, net::NetworkIsolationPartition::kGeneral,
+              net::IsolationInfo::FrameAncestorRelation::kSameOrigin)));
 }
 
 // Regression test for crbug.com/1510422 to validate that redirection to an

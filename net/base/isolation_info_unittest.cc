@@ -696,6 +696,21 @@ TEST_F(IsolationInfoTest, DeserializationWithFrameAncestorRelation) {
   EXPECT_EQ(deserialized->frame_ancestor_relation(), std::nullopt);
 }
 
+TEST_F(IsolationInfoTest, OriginRelationToFrameAncestorRelation) {
+  EXPECT_EQ(IsolationInfo::OriginRelationToFrameAncestorRelation(
+                /*origin_relation_value=*/std::nullopt),
+            std::nullopt);
+  EXPECT_EQ(IsolationInfo::OriginRelationToFrameAncestorRelation(
+                OriginRelation::kSameOrigin),
+            IsolationInfo::FrameAncestorRelation::kSameOrigin);
+  EXPECT_EQ(IsolationInfo::OriginRelationToFrameAncestorRelation(
+                OriginRelation::kSameSite),
+            IsolationInfo::FrameAncestorRelation::kSameSite);
+  EXPECT_EQ(IsolationInfo::OriginRelationToFrameAncestorRelation(
+                OriginRelation::kCrossSite),
+            IsolationInfo::FrameAncestorRelation::kCrossSite);
+}
+
 TEST_F(IsolationInfoTest, ComputeNewFrameAncestorRelation) {
   // If cur_relation is nullopt, nullopt should be returned..
   EXPECT_EQ(IsolationInfo::ComputeNewFrameAncestorRelation(
