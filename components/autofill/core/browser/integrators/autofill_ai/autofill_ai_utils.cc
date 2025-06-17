@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -34,48 +35,45 @@ std::vector<AttributeType> GetDisambiguatingTypes(
     bool allow_only_disambiguating_types,
     bool return_at_least_one_label,
     const std::string& app_locale) {
-  // The `i`th element holds the attributes and values of the `i`th element of
-  // `entities`.
-  std::vector<std::vector<std::pair<AttributeType, std::u16string>>>
-      attributes_of_all_entities;
-  attributes_of_all_entities.reserve(entities.size());
+  // Only relevant AttributeTypes are considered for disambiguation.
+  auto is_relevant = [&](AttributeType type) {
+    return !allow_only_disambiguating_types || type.is_disambiguation_type();
+  };
 
-  // Maps attributes and values to the number of times they occur in `entities`.
-  // We do not want to include values in the labels that don't differentiate one
-  // entity from another.
-  std::map<std::pair<AttributeType, std::u16string>, size_t> occurrences;
+  auto get_info = [&app_locale](const EntityInstance& entity,
+                                AttributeType type) {
+    base::optional_ref<const AttributeInstance> attribute =
+        entity.attribute(type);
+    return attribute ? std::optional(attribute->GetCompleteInfo(app_locale))
+                     : std::nullopt;
+  };
 
-  // Go over each entity and its attributes and values.
-  for (const EntityInstance* entity : entities) {
-    attributes_of_all_entities.emplace_back();
-    for (const AttributeInstance& attribute : entity->attributes()) {
-      if (allow_only_disambiguating_types &&
-          !attribute.type().is_disambiguation_type()) {
+  // An AttributeType is disambiguating if two entities disagree on its value.
+  // Ignores entities unrelated to the AttributeType.
+  auto is_disambiguating = [&entities, &get_info](AttributeType type) {
+    std::optional<std::optional<std::u16string>> seen_value;
+    for (const EntityInstance* entity : entities) {
+      if (!entity->type().attributes().contains(type)) {
         continue;
       }
-
-      std::u16string value = attribute.GetCompleteInfo(app_locale);
-      ++occurrences[{attribute.type(), value}];
-      attributes_of_all_entities.back().emplace_back(attribute.type(),
-                                                     std::move(value));
+      std::optional<std::u16string> value = get_info(*entity, type);
+      if (!seen_value) {
+        seen_value = value;
+      } else if (*seen_value != value) {
+        return true;
+      }
     }
-  }
+    return false;
+  };
 
-  // The disambiguation types. The `types` vector must not contain duplicates.
-  std::vector<AttributeType> types;
-  DenseSet<AttributeType> seen;
+  DenseSet<AttributeType> types;
 
-  // Ignore attributes whose value does not differentiate the entity from any
-  // other entity (i.e., all entities have the same value).
-  for (std::vector<std::pair<AttributeType, std::u16string>>& attributes :
-       attributes_of_all_entities) {
-    for (const auto& [attribute_type, value] : attributes) {
-      if (occurrences[{attribute_type, value}] == entities.size()) {
-        continue;
-      }
-
-      if (seen.insert(attribute_type).second) {
-        types.push_back(attribute_type);
+  for (const EntityInstance* entity : entities) {
+    for (const AttributeInstance& attribute : entity->attributes()) {
+      AttributeType type = attribute.type();
+      if (is_relevant(type) && !types.contains(type) &&
+          is_disambiguating(type)) {
+        types.insert(type);
       }
     }
   }
@@ -83,29 +81,28 @@ std::vector<AttributeType> GetDisambiguatingTypes(
   if (return_at_least_one_label) {
     // We fill up `types` with types so that every EntityInstance defines a
     // value for at least one AttributeType.
-    DenseSet<EntityType> missing_entity_types = DenseSet<EntityType>(
+    DenseSet<EntityType> unsatisfied_entity_types = DenseSet<EntityType>(
         entities, [](const EntityInstance* entity) { return entity->type(); });
-    missing_entity_types.erase_all(DenseSet<EntityType>(
+    unsatisfied_entity_types.erase_all(DenseSet<EntityType>(
         types,
         [](AttributeType attribute) { return attribute.entity_type(); }));
     for (const EntityInstance* entity : entities) {
-      if (!missing_entity_types.contains(entity->type())) {
+      if (!unsatisfied_entity_types.contains(entity->type())) {
         continue;
       }
       if (auto attributes = entity->attributes(); !attributes.empty()) {
         AttributeType type = attributes[0].type();
-        if ((!allow_only_disambiguating_types ||
-             type.is_disambiguation_type()) &&
-            seen.insert(type).second) {
-          types.push_back(type);
+        if (is_relevant(type)) {
+          types.insert(type);
         }
       }
     }
   }
 
   // Highest priority first.
-  std::ranges::sort(types, AttributeType::DisambiguationOrder);
-  return types;
+  std::vector<AttributeType> vec = base::ToVector(types);
+  std::ranges::sort(vec, AttributeType::DisambiguationOrder);
+  return vec;
 }
 
 }  // namespace
