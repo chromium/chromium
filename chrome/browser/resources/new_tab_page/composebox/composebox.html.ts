@@ -13,8 +13,9 @@ export function getHtml(this: ComposeboxElement) {
   return html`<!--_html_template_start_-->
   <div id="composebox">
     <div id="inputContainer">
-      <textarea id="input" type="search" autocomplete="off"
-          spellcheck="false" placeholder="Ask Anything"></textarea>
+      <textarea autocomplete="off" id="input"
+          type="search" spellcheck="false"
+          placeholder="$i18n{composeboxPlaceholderText}"></textarea>
       <div id="uploadContainer">
         <cr-icon-button
             class="upload-icon no-overlap"
@@ -32,10 +33,16 @@ export function getHtml(this: ComposeboxElement) {
         </cr-icon-button>
       </div>
     </div>
-    <cr-icon-button id="cancelIcon" class="action-icon icon-clear"
+    <cr-icon-button
+        class="action-icon icon-clear"
+        id="cancelIcon"
+        title="$i18n{composeboxCancelButtonTitle}"
         @click="${this.onCancelClick_}">
     </cr-icon-button>
-    <cr-icon-button id="submitIcon" class="action-icon icon-arrow-upward">
+    <cr-icon-button
+      class="action-icon icon-arrow-upward"
+      id="submitIcon"
+      title="$i18n{composeboxSubmitButtonTitle}">
     </cr-icon-button>
   </div>
   <ntp-composebox-file-carousel

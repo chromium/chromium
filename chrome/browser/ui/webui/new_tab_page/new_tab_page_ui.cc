@@ -464,10 +464,15 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"webstoreThemesToastButtonText", IDS_NTP_WEBSTORE_TOAST_BUTTON_TEXT},
 
       // Composebox.
+      {"composeboxCancelButtonTitle", IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL},
       {"composeboxImageUploadButtonTitle",
        IDS_NTP_COMPOSE_IMAGE_UPLOAD_BUTTON_A11Y_LABEL},
       {"composeboxFileUploadButtonTitle",
-       IDS_NTP_COMPOSE_FILE_UPLOAD_BUTTON_A11Y_LABEL}};
+       IDS_NTP_COMPOSE_FILE_UPLOAD_BUTTON_A11Y_LABEL},
+      {"composeboxPlaceholderText", IDS_NTP_COMPOSE_PLACEHOLDER_TEXT},
+      {"composeboxSubmitButtonTitle", IDS_NTP_COMPOSE_SUBMIT_BUTTON_A11Y_LABEL},
+  };
+
   source->AddLocalizedStrings(kStrings);
 
   source->AddString(

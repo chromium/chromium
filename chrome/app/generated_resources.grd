@@ -8485,11 +8485,20 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_ENTRYPOINT" desc="The text for the compose entrypoint in the searchbox on the New Tab Page." translateable="false">
         AI Mode
       </message>
+      <message name="IDS_NTP_COMPOSE_PLACEHOLDER_TEXT" desc="The placeholder for the input in the compose box.">
+        Ask anything
+      </message>
+      <message name="IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL" desc="The accessibility label for the cancel button on the compose box.">
+        Dismiss
+      </message>
       <message name="IDS_NTP_COMPOSE_IMAGE_UPLOAD_BUTTON_A11Y_LABEL" desc="The accessibility label for the image upload button on the compose box.">
         Upload an image
       </message>
       <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_BUTTON_A11Y_LABEL" desc="The accessibility label for the file upload button on the compose box.">
         Upload a file
+      </message>
+      <message name="IDS_NTP_COMPOSE_SUBMIT_BUTTON_A11Y_LABEL" desc="The accessibility label for the submit button on the compose box.">
+        Send
       </message>
 
       <!-- NTP Modules -->
