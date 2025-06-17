@@ -112,11 +112,11 @@ class CustomTileEditMediator implements ViewToMediator {
 
         if (mOriginalTile != null) {
             // Edit shortcut: Likely this is a name change, so focus on Name input field.
-            mViewDelegate.focusOnName();
+            mViewDelegate.addOnWindowFocusGainedTask(() -> mViewDelegate.focusOnName());
         } else {
             // Add shortcut: Likely pasting / inputting URL first, so focus on URL input field. To
             // make overwriting easier, select existing {@link #DEFAULT_URL_TEXT} text.
-            mViewDelegate.focusOnUrl(true);
+            mViewDelegate.addOnWindowFocusGainedTask(() -> mViewDelegate.focusOnUrl(true));
         }
     }
 

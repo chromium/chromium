@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView.BufferType;
 
@@ -23,15 +24,20 @@ import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileE
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.MediatorToView;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.UrlErrorCode;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditDelegates.ViewToMediator;
+import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** The View of the Custom Tile Edit Dialog. */
 @NullMarked
 class CustomTileEditView extends FrameLayout
         implements ModalDialogProperties.Controller, MediatorToView {
     private final PropertyModel mDialogModel;
+    private final List<Runnable> mOnWindowFocusTasks = new ArrayList<>();
 
     private TextInputEditText mNameField;
     private TextInputEditText mUrlField;
@@ -72,6 +78,17 @@ class CustomTileEditView extends FrameLayout
                 });
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+        if (hasWindowFocus && getVisibility() == View.VISIBLE) {
+            for (Runnable task : mOnWindowFocusTasks) {
+                task.run();
+            }
+            mOnWindowFocusTasks.clear();
+        }
+    }
+
     /**
      * Sets the delegate for handling user interactions.
      *
@@ -101,6 +118,11 @@ class CustomTileEditView extends FrameLayout
     public void onDismiss(PropertyModel modelDialogModel, int dismissalCause) {}
 
     // MediatorToView implementation.
+    @Override
+    public void addOnWindowFocusGainedTask(Runnable task) {
+        mOnWindowFocusTasks.add(task);
+    }
+
     @Override
     public void setDialogMode(@DialogMode int mode) {
         mDialogModel.set(ModalDialogProperties.TITLE, getDialogTitleFromMode(mode));
@@ -135,6 +157,7 @@ class CustomTileEditView extends FrameLayout
     @Override
     public void focusOnName() {
         mNameField.requestFocus();
+        KeyboardUtils.showKeyboard(mNameField);
     }
 
     @Override
@@ -143,6 +166,7 @@ class CustomTileEditView extends FrameLayout
         if (selectAll) {
             mUrlField.selectAll();
         }
+        KeyboardUtils.showKeyboard(mUrlField);
     }
 
     PropertyModel getDialogModel() {

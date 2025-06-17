@@ -80,6 +80,9 @@ class CustomTileEditDelegates {
      * readily updated by user action. Thus the semantics of Model state assignment is tenuous.
      */
     interface MediatorToView {
+        /** Adds a {@param task} to run once the window gains focus. */
+        void addOnWindowFocusGainedTask(Runnable task);
+
         /**
          * Sets the mode under which the dialog is used.
          *
@@ -116,11 +119,12 @@ class CustomTileEditDelegates {
          */
         void toggleSaveButton(boolean enable);
 
-        /** Sets the focus to the Name input field. */
+        /** Sets the focus to the Name input field and shows the soft keyboard. */
         void focusOnName();
 
         /**
-         * Sets the focus to the URL input field and optionally select all text.
+         * Sets the focus to the URL input field, shows the soft keyboard, and optionally selects
+         * all text.
          *
          * @param selectAll Whether to also select all text.
          */
