@@ -172,9 +172,6 @@ class FullscreenControllerStateTest {
   // The state the FullscreenController is expected to be in.
   State state_ = STATE_NORMAL;
 
-  // Human defined |State| that results given each [state][event] pair.
-  State transition_table_[NUM_STATES][NUM_EVENTS];
-
   // Generated information about the transitions between states [from][to].
   // View generated data with: out/Release/unit_tests
   //     --gtest_filter="FullscreenController*DebugLogStateTables"
