@@ -10,7 +10,7 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "crypto/crypto_export.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/boringssl/src/include/openssl/digest.h"
 
 namespace crypto::obsolete {
 class Md5;
