@@ -20,6 +20,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -642,11 +643,9 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersBrowserTest, SpokenFeedback) {
       .WillOnce(base::test::InvokeFuture(on_quick_answers_click_future));
   controller()->SetClient(std::move(mock_quick_answers_client));
 
-  ash::test::SpeechMonitor speech_monitor;
-  speech_monitor.Call(
-      []() { ash::AccessibilityManager::Get()->EnableSpokenFeedback(true); });
-  speech_monitor.ExpectSpeech("ChromeVox spoken feedback is ready");
-  speech_monitor.Call([this]() {
+  ash::ChromeVoxTestUtils chromevox_test_utils;
+  chromevox_test_utils.EnableChromeVox();
+  chromevox_test_utils.sm()->Call([this]() {
     ShowMenuParams params;
     params.selected_text = kTestQuery;
     params.x = kCursorXToOverlapWithANotification;
@@ -658,32 +657,33 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersBrowserTest, SpokenFeedback) {
     // spoken feedback.
     ShowMenu(params);
   });
-  speech_monitor.ExpectSpeech("menu opened");
-  speech_monitor.Call([this]() {
+  chromevox_test_utils.sm()->ExpectSpeech("menu opened");
+  chromevox_test_utils.sm()->Call([this]() {
     controller()->GetQuickAnswersDelegate()->OnQuickAnswerReceived(
         CreateQuickAnswerDefinitionResponse());
   });
-  speech_monitor.ExpectSpeech(
+  chromevox_test_utils.sm()->ExpectSpeech(
       "Info related to your selection available. Use Up arrow key to access.");
-  speech_monitor.Call([]() {
+  chromevox_test_utils.sm()->Call([]() {
     ui::test::EventGenerator event_generator(
         ash::Shell::GetPrimaryRootWindow());
     ui::test::EmulateFullKeyPressReleaseSequence(
         &event_generator, ui::KeyboardCode::VKEY_UP, /*control=*/false,
         /*shift=*/false, /*alt=*/false, /*command=*/false);
   });
-  speech_monitor.ExpectSpeech("Info related to your selection");
-  speech_monitor.ExpectSpeech("Dialog");
-  speech_monitor.ExpectSpeech(expected_result_a11y_text);
-  speech_monitor.ExpectSpeech("Press Search plus Space to activate");
-  speech_monitor.Call([]() {
+  chromevox_test_utils.sm()->ExpectSpeech("Info related to your selection");
+  chromevox_test_utils.sm()->ExpectSpeech("Dialog");
+  chromevox_test_utils.sm()->ExpectSpeech(expected_result_a11y_text);
+  chromevox_test_utils.sm()->ExpectSpeech(
+      "Press Search plus Space to activate");
+  chromevox_test_utils.sm()->Call([]() {
     ui::test::EventGenerator event_generator(
         ash::Shell::GetPrimaryRootWindow());
     ui::test::EmulateFullKeyPressReleaseSequence(
         &event_generator, ui::KeyboardCode::VKEY_SPACE, /*control=*/false,
         /*shift=*/false, /*alt=*/false, /*command=*/true);
   });
-  speech_monitor.Replay();
+  chromevox_test_utils.sm()->Replay();
 
   // Wait after `SpeechMonitor::Replay`. `Replay` can create a message loop. If
   // we wait inside reply, it can create a nested `RunLoop`, which is not
@@ -699,11 +699,9 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersBrowserTest, SpokenFeedbackUserConsent) {
     GTEST_SKIP() << "User consent is handled by Magic Boost if it's on.";
   }
 
-  ash::test::SpeechMonitor speech_monitor;
-  speech_monitor.Call(
-      []() { ash::AccessibilityManager::Get()->EnableSpokenFeedback(true); });
-  speech_monitor.ExpectSpeech("ChromeVox spoken feedback is ready");
-  speech_monitor.Call([this]() {
+  ash::ChromeVoxTestUtils chromevox_test_utils;
+  chromevox_test_utils.EnableChromeVox();
+  chromevox_test_utils.sm()->Call([this]() {
     ShowMenuParams params;
     params.selected_text = kTestQuery;
     params.x = kCursorXToOverlapWithANotification;
@@ -715,41 +713,41 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersBrowserTest, SpokenFeedbackUserConsent) {
     // spoken feedback.
     ShowMenu(params);
   });
-  speech_monitor.ExpectSpeech("menu opened");
+  chromevox_test_utils.sm()->ExpectSpeech("menu opened");
   // message id: IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT
-  speech_monitor.ExpectSpeech(
+  chromevox_test_utils.sm()->ExpectSpeech(
       "New feature available, use Up arrow key to learn more.");
-  speech_monitor.Call([]() {
+  chromevox_test_utils.sm()->Call([]() {
     ui::test::EventGenerator event_generator(
         ash::Shell::GetPrimaryRootWindow());
     ui::test::EmulateFullKeyPressReleaseSequence(
         &event_generator, ui::KeyboardCode::VKEY_UP, /*control=*/false,
         /*shift=*/false, /*alt=*/false, /*command=*/false);
   });
-  speech_monitor.ExpectSpeech("No thanks");
-  speech_monitor.ExpectSpeech("Button");
-  speech_monitor.ExpectSpeech("Get info related to your selection");
-  speech_monitor.ExpectSpeech("Dialog");
-  speech_monitor.ExpectSpeech(
+  chromevox_test_utils.sm()->ExpectSpeech("No thanks");
+  chromevox_test_utils.sm()->ExpectSpeech("Button");
+  chromevox_test_utils.sm()->ExpectSpeech("Get info related to your selection");
+  chromevox_test_utils.sm()->ExpectSpeech("Dialog");
+  chromevox_test_utils.sm()->ExpectSpeech(
       "Right-click or press and hold to get definitions, translations, or unit "
       "conversions Use Left or Right arrow keys to manage this feature.");
-  speech_monitor.Call([]() {
+  chromevox_test_utils.sm()->Call([]() {
     ui::test::EventGenerator event_generator(
         ash::Shell::GetPrimaryRootWindow());
     ui::test::EmulateFullKeyPressReleaseSequence(
         &event_generator, ui::KeyboardCode::VKEY_RIGHT, /*control=*/false,
         /*shift=*/false, /*alt=*/false, /*command=*/false);
   });
-  speech_monitor.ExpectSpeech("Try it");
-  speech_monitor.ExpectSpeech("Button");
-  speech_monitor.Call([]() {
+  chromevox_test_utils.sm()->ExpectSpeech("Try it");
+  chromevox_test_utils.sm()->ExpectSpeech("Button");
+  chromevox_test_utils.sm()->Call([]() {
     ui::test::EventGenerator event_generator(
         ash::Shell::GetPrimaryRootWindow());
     ui::test::EmulateFullKeyPressReleaseSequence(
         &event_generator, ui::KeyboardCode::VKEY_SPACE, /*control=*/false,
         /*shift=*/false, /*alt=*/false, /*command=*/true);
   });
-  speech_monitor.Replay();
+  chromevox_test_utils.sm()->Replay();
 
   // Activation (Search + Space) is done as an async operatnion. Wait for the
   // consent status change.

@@ -129,7 +129,7 @@ void LoggedInSpokenFeedbackTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
   event_generator_ = std::make_unique<ui::test::EventGenerator>(
       Shell::Get()->GetPrimaryRootWindow());
-  chromevox_test_utils_ = std::make_unique<ChromeVoxTestUtils>(GetProfile());
+  chromevox_test_utils_ = std::make_unique<ChromeVoxTestUtils>();
   AccessibilityFeatureBrowserTest::SetUpOnMainThread();
 }
 
@@ -215,7 +215,7 @@ void LoggedInSpokenFeedbackTest::SendKeyPressWithSearchAndControlAndShift(
 
 void LoggedInSpokenFeedbackTest::SendStickyKeyCommand() {
   // To avoid flakes in sending keys, execute the command directly in js.
-  ExecuteCommandHandlerCommand("toggleStickyMode");
+  chromevox_test_utils()->ExecuteCommandHandlerCommand("toggleStickyMode");
 }
 
 void LoggedInSpokenFeedbackTest::SendMouseMoveTo(const gfx::Point& location) {
@@ -237,13 +237,6 @@ void LoggedInSpokenFeedbackTest::StablizeChromeVoxState() {
         <button autofocus>Click me</button>)"));
   });
   sm()->ExpectSpeech("Click me");
-}
-
-void LoggedInSpokenFeedbackTest::ExecuteCommandHandlerCommand(
-    std::string command) {
-  chromevox_test_utils()->GlobalizeModule("CommandHandlerInterface");
-  chromevox_test_utils()->RunJS("CommandHandlerInterface.instance.onCommand('" +
-                                command + "');");
 }
 
 // Flaky test, crbug.com/1081563
@@ -315,7 +308,9 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, ChromeVoxSpeaksIntro) {
 // logged in.
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeHardwareKeys) {
   chromevox_test_utils()->EnableChromeVox();
-  sm()->Call([this]() { ExecuteCommandHandlerCommand("showLearnModePage"); });
+  sm()->Call([this]() {
+    chromevox_test_utils()->ExecuteCommandHandlerCommand("showLearnModePage");
+  });
   sm()->ExpectSpeechPattern(
       "Press a qwerty key, refreshable braille key, or touch gesture to learn "
       "*");
@@ -348,7 +343,9 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeHardwareKeys) {
 
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
   chromevox_test_utils()->EnableChromeVox();
-  sm()->Call([this]() { ExecuteCommandHandlerCommand("showLearnModePage"); });
+  sm()->Call([this]() {
+    chromevox_test_utils()->ExecuteCommandHandlerCommand("showLearnModePage");
+  });
   sm()->ExpectSpeechPattern(
       "Press a qwerty key, refreshable braille key, or touch gesture to learn "
       "*");
@@ -367,7 +364,9 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest,
                        LearnModePressEscapeTwiceToExit) {
   chromevox_test_utils()->EnableChromeVox();
-  sm()->Call([this]() { ExecuteCommandHandlerCommand("showLearnModePage"); });
+  sm()->Call([this]() {
+    chromevox_test_utils()->ExecuteCommandHandlerCommand("showLearnModePage");
+  });
   sm()->ExpectSpeechPattern(
       "Press a qwerty key, refreshable braille key, or touch gesture to learn "
       "*");
@@ -417,20 +416,30 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest,
   base::HistogramTester histogram_tester;
 
   // Command.ANNOUNCE_BATTERY_DESCRIPTION
-  sm()->Call(
-      [this]() { ExecuteCommandHandlerCommand("announceBatteryDescription"); });
+  sm()->Call([this]() {
+    chromevox_test_utils()->ExecuteCommandHandlerCommand(
+        "announceBatteryDescription");
+  });
   sm()->ExpectSpeechPattern("*");
   // Command.NEXT_OBJECT
-  sm()->Call([this]() { ExecuteCommandHandlerCommand("nextObject"); });
+  sm()->Call([this]() {
+    chromevox_test_utils()->ExecuteCommandHandlerCommand("nextObject");
+  });
   sm()->ExpectSpeechPattern("*");
   // Command.DECREASE_TTS_RATE
-  sm()->Call([this]() { ExecuteCommandHandlerCommand("decreaseTtsRate"); });
+  sm()->Call([this]() {
+    chromevox_test_utils()->ExecuteCommandHandlerCommand("decreaseTtsRate");
+  });
   sm()->ExpectSpeechPattern("*");
   // Command.NEXT_BUTTON
-  sm()->Call([this]() { ExecuteCommandHandlerCommand("nextButton"); });
+  sm()->Call([this]() {
+    chromevox_test_utils()->ExecuteCommandHandlerCommand("nextButton");
+  });
   sm()->ExpectSpeechPattern("*");
   // Command.HELP
-  sm()->Call([this]() { ExecuteCommandHandlerCommand("help"); });
+  sm()->Call([this]() {
+    chromevox_test_utils()->ExecuteCommandHandlerCommand("help");
+  });
   sm()->ExpectSpeechPattern("*");
   sm()->Replay();
 
@@ -505,15 +514,16 @@ IN_PROC_BROWSER_TEST_F(CaptionSpokenFeedbackTest, ToggleCaptions) {
                           SetCaptionText("Hello World");
                           change_observer.Remove(::prefs::kLiveCaptionEnabled);
                         }));
-    ExecuteCommandHandlerCommand("toggleCaptions");
+    chromevox_test_utils()->ExecuteCommandHandlerCommand("toggleCaptions");
   });
   sm()->ExpectSpeech("Hello World");
   sm()->Call([this, &change_observer]() {
-    ExecuteCommandHandlerCommand("toggleCaptions");
+    chromevox_test_utils()->ExecuteCommandHandlerCommand("toggleCaptions");
     change_observer.Add(::prefs::kLiveCaptionEnabled,
                         base::BindLambdaForTesting([this]() {
                           SetCaptionText("Goodbye World");
-                          ExecuteCommandHandlerCommand("nextLine");
+                          chromevox_test_utils()->ExecuteCommandHandlerCommand(
+                              "nextLine");
                         }));
   });
   sm()->ExpectNextSpeechIsNotPattern("Goodbye World");
@@ -529,7 +539,9 @@ IN_PROC_BROWSER_TEST_F(CaptionSpokenFeedbackTest, CaptionsNotToggled) {
                         base::BindLambdaForTesting(
                             [this]() { SetCaptionText("Hello World"); }));
   });
-  sm()->Call([this]() { ExecuteCommandHandlerCommand("nextLine"); });
+  sm()->Call([this]() {
+    chromevox_test_utils()->ExecuteCommandHandlerCommand("nextLine");
+  });
   sm()->ExpectNextSpeechIsNotPattern("Hello World");
   sm()->Replay();
 }
@@ -544,14 +556,15 @@ IN_PROC_BROWSER_TEST_F(CaptionSpokenFeedbackTest, CaptionsChanged) {
 
   sm()->Call([this, &change_observer, &captions]() {
     // Use braille captions as an approximation of a braille display.
-    ExecuteCommandHandlerCommand("toggleBrailleCaptions");
+    chromevox_test_utils()->ExecuteCommandHandlerCommand(
+        "toggleBrailleCaptions");
 
     // Set the caption text only once live captions is enabled.
     change_observer.Init(AccessibilityManager::Get()->profile()->GetPrefs());
     change_observer.Add(::prefs::kLiveCaptionEnabled,
                         base::BindLambdaForTesting(
                             [this, &captions]() { SetCaptionText(captions); }));
-    ExecuteCommandHandlerCommand("toggleCaptions");
+    chromevox_test_utils()->ExecuteCommandHandlerCommand("toggleCaptions");
   });
   sm()->ExpectSpeechPattern("To be*");
   sm()->Call([this, &captions, &test_utils]() {
@@ -2382,7 +2395,7 @@ class OobeSpokenFeedbackTest : public OobeBaseTest {
     OobeBaseTest::SetUpOnMainThread();
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         Shell::Get()->GetPrimaryRootWindow());
-    chromevox_test_utils_ = std::make_unique<ChromeVoxTestUtils>(GetProfile());
+    chromevox_test_utils_ = std::make_unique<ChromeVoxTestUtils>();
   }
   void TearDownOnMainThread() override {
     event_generator_.reset();

@@ -33,6 +33,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
@@ -1789,57 +1790,40 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppSingleWindowTest, WindowReuse) {
   EXPECT_EQ(web_contents, LaunchAppWithoutWaiting(std::move(params)));
 }
 
-class SystemWebAppAccessibilityTest : public SystemWebAppSingleWindowTest {
- protected:
-  void EnableChromeVox();
-  test::SpeechMonitor speech_monitor_;
-};
-
-void SystemWebAppAccessibilityTest::EnableChromeVox() {
-  AccessibilityManager::Get()->EnableSpokenFeedback(true);
-  speech_monitor_.ExpectSpeechPattern("*");
-  speech_monitor_.Call([this]() {
-    extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
-        browser()->profile(), extension_misc::kChromeVoxExtensionId, R"JS(
-        (async function() {
-          const imports = TestImportManager.getImports();
-          await imports.ChromeVoxState.ready();
-          window.domAutomationController.send('done');
-        })())JS");
-  });
-}
+class SystemWebAppAccessibilityTest : public SystemWebAppSingleWindowTest {};
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppAccessibilityTest,
                        CanCycleToWindowControlButtons) {
-  EnableChromeVox();
+  ChromeVoxTestUtils chromevox_test_utils;
+  chromevox_test_utils.EnableChromeVox();
   WaitForTestSystemAppInstall();
 
   // Launch the app so it shows up in shelf.
   Browser* app_browser;
   gfx::NativeWindow app_window;
 
-  speech_monitor_.Call([&]() {
+  chromevox_test_utils.sm()->Call([&]() {
     LaunchApp(GetAppType(), &app_browser);
     app_window = app_browser->window()->GetNativeWindow();
     // F6 to switch pane.
     ui::test::EventGenerator generator(app_window->GetRootWindow(), app_window);
     generator.PressAndReleaseKey(ui::VKEY_F6, ui::EF_FINAL);
   });
-  speech_monitor_.ExpectSpeech("Test System App");
-  speech_monitor_.ExpectSpeech("Application");
+  chromevox_test_utils.sm()->ExpectSpeech("Test System App");
+  chromevox_test_utils.sm()->ExpectSpeech("Application");
 
   // Launcher-B to find minimize button.
-  speech_monitor_.Call([&]() {
+  chromevox_test_utils.sm()->Call([&]() {
     // Search+B to switch pane.
     ui::test::EventGenerator generator(app_window->GetRootWindow());
     generator.PressAndReleaseKeyAndModifierKeys(
         ui::VKEY_B, ui::EF_COMMAND_DOWN | ui::EF_FINAL);
   });
-  speech_monitor_.ExpectSpeech("Minimize");
-  speech_monitor_.ExpectSpeech("Button");
+  chromevox_test_utils.sm()->ExpectSpeech("Minimize");
+  chromevox_test_utils.sm()->ExpectSpeech("Button");
 
   // Start the actions.
-  speech_monitor_.Replay();
+  chromevox_test_utils.sm()->Replay();
 }
 
 class SystemWebAppAbortsLaunchTest

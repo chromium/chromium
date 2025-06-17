@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/autoclick_test_utils.h"
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
+#include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
 #include "chrome/browser/ash/accessibility/dictation_test_utils.h"
 #include "chrome/browser/ash/accessibility/select_to_speak_test_utils.h"
@@ -133,10 +134,6 @@ PrefService* GetActiveUserPrefs() {
 
 AccessibilityManager* GetManager() {
   return AccessibilityManager::Get();
-}
-
-void EnableChromeVox() {
-  GetManager()->EnableSpokenFeedback(true);
 }
 
 // A class used to define the parameters of a test case.
@@ -450,7 +447,9 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWhenInputFieldLosesFocus) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
-  EnableChromeVox();
+  ChromeVoxTestUtils chromevox_test_utils;
+  chromevox_test_utils.EnableChromeVox();
+
   EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
   InstallMockInputContextHandler();
 
@@ -461,27 +460,24 @@ IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
   WaitForRecognitionStopped();
 
   WaitForCommitText(kFinalSpeechResult16);
+  chromevox_test_utils.sm()->Replay();
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, ChromeVoxSilencedWhenToggledOn) {
-  // Set up ChromeVox.
-  test::SpeechMonitor sm;
-  EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
-  extensions::ExtensionHostTestHelper host_helper(
-      GetProfile(), extension_misc::kChromeVoxExtensionId);
-  EnableChromeVox();
-  host_helper.WaitForHostCompletedFirstLoad();
+  ChromeVoxTestUtils chromevox_test_utils;
+  chromevox_test_utils.EnableChromeVox();
   EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
 
   // Not yet forced to stop.
-  EXPECT_EQ(0, sm.stop_count());
+  EXPECT_EQ(0, chromevox_test_utils.sm()->stop_count());
 
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
 
   // Assert ChromeVox was asked to stop speaking at the toggle. Note: multiple
   // requests to stop speech can be sent, so we just expect stop_count() > 0.
-  EXPECT_GT(sm.stop_count(), 0);
+  EXPECT_GT(chromevox_test_utils.sm()->stop_count(), 0);
+  chromevox_test_utils.sm()->Replay();
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, WorksWithSelectToSpeak) {
@@ -1554,12 +1550,8 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, StandbyHints) {
 // the Dictation UI.
 IN_PROC_BROWSER_TEST_P(DictationUITest, ChromeVoxAnnouncesHints) {
   // Setup ChromeVox first.
-  test::SpeechMonitor sm;
-  EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
-  extensions::ExtensionHostTestHelper host_helper(
-      GetProfile(), extension_misc::kChromeVoxExtensionId);
-  EnableChromeVox();
-  host_helper.WaitForHostCompletedFirstLoad();
+  ChromeVoxTestUtils chromevox_test_utils;
+  chromevox_test_utils.EnableChromeVox();
   EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
 
   ToggleDictationWithKeystroke();
@@ -1573,14 +1565,15 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, ChromeVoxAnnouncesHints) {
       /*hints=*/std::vector<std::u16string>{kTrySaying, kType, kHelp});
 
   // Assert speech from ChromeVox.
-  sm.ExpectSpeechPattern("Try saying*Type*Help*");
-  sm.Replay();
+  chromevox_test_utils.sm()->ExpectSpeechPattern("Try saying*Type*Help*");
+  chromevox_test_utils.sm()->Replay();
 
   // Check that Chromevox changed to a different pitch to announce hints. Note
   // that only if the whole text pattern used the same parameters this will
   // match.
   auto params =
-      sm.GetParamsForPreviouslySpokenTextPattern("*Try saying*Type*Help*");
+      chromevox_test_utils.sm()->GetParamsForPreviouslySpokenTextPattern(
+          "*Try saying*Type*Help*");
   ASSERT_TRUE(params);
 
   // Note: the Chromevox personality that sets this value has a relative pitch
@@ -2352,13 +2345,10 @@ IN_PROC_BROWSER_TEST_P(DictationKeyboardImprovementsTest,
 IN_PROC_BROWSER_TEST_P(DictationKeyboardImprovementsTest,
                        DISABLED_ToggledWithNoFocusTriggersSpeech) {
   TabAwayFromEditableAndReduceNoFocusedImeTimeout();
+
   // Setup ChromeVox.
-  test::SpeechMonitor sm;
-  EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
-  extensions::ExtensionHostTestHelper host_helper(
-      GetProfile(), extension_misc::kChromeVoxExtensionId);
-  EnableChromeVox();
-  host_helper.WaitForHostCompletedFirstLoad();
+  ChromeVoxTestUtils chromevox_test_utils;
+  chromevox_test_utils.EnableChromeVox();
   EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
 
   // Disable the console observer because toggling Dictation in the following
@@ -2369,8 +2359,9 @@ IN_PROC_BROWSER_TEST_P(DictationKeyboardImprovementsTest,
   WaitForRecognitionStopped();
 
   // Assert speech from ChromeVox.
-  sm.ExpectSpeechPattern("*Go to a text field to use Dictation*");
-  sm.Replay();
+  chromevox_test_utils.sm()->ExpectSpeechPattern(
+      "*Go to a text field to use Dictation*");
+  chromevox_test_utils.sm()->Replay();
 }
 
 }  // namespace ash

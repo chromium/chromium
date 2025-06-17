@@ -31,6 +31,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/common/constants.h"
@@ -92,14 +93,19 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
 
   void EnableScreenReader(bool enabled) {
 #if BUILDFLAG(IS_CHROMEOS)
-    // Enable Chromevox.
-    ash::AccessibilityManager::Get()->EnableSpokenFeedback(enabled);
-    if (enabled) {
-      // Block until Chromevox is fully loaded.
-      speech_monitor_.ExpectSpeechPattern("*");
-      speech_monitor_.Call([this]() { DisableEarcons(); });
-      speech_monitor_.Replay();
+    if (!enabled) {
+      ash::AccessibilityManager::Get()->EnableSpokenFeedback(false);
+      return;
     }
+
+    if (!chromevox_test_utils_) {
+      chromevox_test_utils_ = std::make_unique<ash::ChromeVoxTestUtils>();
+    }
+
+    chromevox_test_utils_->EnableChromeVox();
+    // Note: we can safely call `Replay` here since none of these tests make
+    // speech assertions.
+    chromevox_test_utils_->sm()->Replay();
 #else
     // Spoof a screen reader.
     if (!enabled) {
@@ -114,17 +120,7 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS)
-  void DisableEarcons() {
-    // Playing earcons from within a test is not only annoying if you're
-    // running the test locally, but seems to cause crashes
-    // (http://crbug.com/396507). Work around this by just telling
-    // ChromeVox to not ever play earcons (prerecorded sound effects).
-    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        browser()->profile(), extension_misc::kChromeVoxExtensionId,
-        "ChromeVox.earcons.playEarcon = function() {};");
-  }
-
-  ash::test::SpeechMonitor speech_monitor_;
+  std::unique_ptr<ash::ChromeVoxTestUtils> chromevox_test_utils_;
 #else
   std::optional<content::ScopedAccessibilityModeOverride> ax_mode_override_;
 #endif

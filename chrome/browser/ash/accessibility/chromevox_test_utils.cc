@@ -9,12 +9,18 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/common/constants.h"
 
 namespace ash {
 
-ChromeVoxTestUtils::ChromeVoxTestUtils(Profile* profile) {
-  profile_ = profile;
+namespace {
+Profile* GetProfile() {
+  return AccessibilityManager::Get()->profile();
+}
+}  // namespace
+
+ChromeVoxTestUtils::ChromeVoxTestUtils() {
   sm_ = std::make_unique<test::SpeechMonitor>();
 }
 
@@ -27,11 +33,16 @@ void ChromeVoxTestUtils::EnableChromeVox(bool check_for_intro) {
   // |console_observer_| here.
 
   // Load ChromeVox and block until it's fully loaded.
+  extensions::ExtensionHostTestHelper host_helper(
+      GetProfile(), extension_misc::kChromeVoxExtensionId);
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  host_helper.WaitForHostCompletedFirstLoad();
+
   sm()->ExpectSpeechPattern(
       check_for_intro ? "ChromeVox spoken feedback is ready" : "*");
   sm()->Call([this]() { GlobalizeModule("ChromeVox"); });
   sm()->Call([this]() { DisableEarcons(); });
+  sm()->Call([this]() { WaitForReady(); });
 }
 
 void ChromeVoxTestUtils::GlobalizeModule(const std::string& name) {
@@ -39,7 +50,7 @@ void ChromeVoxTestUtils::GlobalizeModule(const std::string& name) {
       "globalThis." + name + " = TestImportManager.getImports()." + name + ";";
   script += "window.domAutomationController.send('done');";
   extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
-      profile_, extension_misc::kChromeVoxExtensionId, script);
+      GetProfile(), extension_misc::kChromeVoxExtensionId, script);
 }
 
 void ChromeVoxTestUtils::DisableEarcons() {
@@ -48,13 +59,54 @@ void ChromeVoxTestUtils::DisableEarcons() {
   // (http://crbug.com/396507). Work around this by just telling
   // ChromeVox to not ever play earcons (prerecorded sound effects).
   extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      profile_, extension_misc::kChromeVoxExtensionId,
+      GetProfile(), extension_misc::kChromeVoxExtensionId,
       "ChromeVox.earcons.playEarcon = function() {};");
+}
+
+void ChromeVoxTestUtils::WaitForReady() {
+  std::string script(R"JS(
+      (async function() {
+        const imports = TestImportManager.getImports();
+        await imports.ChromeVoxState.ready();
+        window.domAutomationController.send('done');
+      })()
+    )JS");
+
+  RunJS(script);
+}
+
+void ChromeVoxTestUtils::WaitForValidRange() {
+  GlobalizeModule("ChromeVoxRange");
+
+  std::string script(R"JS(
+      if (!ChromeVoxRange.current) {
+        await new Promise(resolve => {
+            new (class {
+                constructor() {
+                  ChromeVoxRange.addObserver(this);
+                }
+                onCurrentRangeChanged(newRange) {
+                  if (newRange) {
+                      ChromeVoxRange.removeObserver(this);
+                      resolve();
+                  }
+                }
+            })();
+        });
+      }
+  )JS");
+
+  RunJS(script);
+}
+
+void ChromeVoxTestUtils::ExecuteCommandHandlerCommand(std::string command) {
+  GlobalizeModule("CommandHandlerInterface");
+  RunJS("CommandHandlerInterface.instance.onCommand('" + command + "');");
 }
 
 void ChromeVoxTestUtils::RunJS(const std::string& script) {
   extensions::BackgroundScriptExecutor::ExecuteScriptAsync(
-      profile_, extension_misc::kChromeVoxExtensionId, script,
+      GetProfile(), extension_misc::kChromeVoxExtensionId, script,
       extensions::browsertest_util::ScriptUserActivation::kDontActivate);
 }
 

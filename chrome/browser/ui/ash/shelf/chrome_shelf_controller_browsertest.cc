@@ -53,6 +53,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -200,17 +201,6 @@ int64_t GetDisplayIdForBrowserWindow(BrowserWindow* window) {
   return display::Screen::GetScreen()
       ->GetDisplayNearestWindow(window->GetNativeWindow())
       .id();
-}
-
-void ExecuteScriptInChromeVox(Browser* browser, const std::string& script) {
-  std::string execute_script = R"JS((async function() {
-      )JS" + script + R"JS(
-      window.domAutomationController.send('done');
-  })())JS";
-
-  extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
-      browser->profile(), extension_misc::kChromeVoxExtensionId,
-      execute_script);
 }
 
 void ExtendHotseat(Browser* browser) {
@@ -2750,46 +2740,13 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest,
 // the accessibility focus.
 IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  ash::test::SpeechMonitor speech_monitor;
-
-  // Enable ChromeVox.
-  ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
-  AccessibilityManager::Get()->EnableSpokenFeedback(true);
-
-  // Wait for ChromeVox to start reading anything.
-  speech_monitor.ExpectSpeechPattern("*");
-  speech_monitor.Call([this]() {
-    // Disable earcons (https://crbug.com/396507).
-    const std::string script(R"JS(
-        const imports = TestImportManager.getImports();
-        imports.ChromeVox.earcons.playEarcon = function() {};
-        let ChromeVoxState = imports.ChromeVoxState;
-        let ChromeVoxRange = imports.ChromeVoxRange;
-
-        await ChromeVoxState.ready();
-
-        // Wait for ChromeVox to have a current range before the test starts
-        // traversal through shelf to ensure that the browser does not show
-        // mid shelf traversal, and causes the a11y focus to unexpectedly
-        // switch to the omnibox mid test.
-        if (!ChromeVoxRange.current) {
-          await new Promise(resolve => {
-              new (class {
-                  constructor() {
-                    ChromeVoxRange.addObserver(this);
-                  }
-                  onCurrentRangeChanged(newRange) {
-                    if (newRange) {
-                        ChromeVoxRange.removeObserver(this);
-                        resolve();
-                    }
-                  }
-              })();
-          });
-        }
-    )JS");
-    ExecuteScriptInChromeVox(browser(), script);
-  });
+  ash::ChromeVoxTestUtils chromevox_test_utils;
+  chromevox_test_utils.EnableChromeVox();
+  // Wait for ChromeVox to have a current range before the test starts
+  // traversal through shelf to ensure that the browser does not show
+  // mid shelf traversal, and causes the a11y focus to unexpectedly
+  // switch to the omnibox mid test.
+  chromevox_test_utils.WaitForValidRange();
 
   ash::RootWindowController* controller =
       ash::Shell::GetRootWindowControllerWithDisplayId(
@@ -2802,7 +2759,7 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
   ui::SetEventTickClockForTesting(clock_ptr);
 
   views::View* home_button = ash::ShelfTestApi().GetHomeButton();
-  speech_monitor.Call([clock_ptr, generator_ptr, home_button]() {
+  chromevox_test_utils.sm()->Call([clock_ptr, generator_ptr, home_button]() {
     // Hover touch over the come button.
     const gfx::Point home_button_center =
         home_button->GetBoundsInScreen().CenterPoint();
@@ -2821,19 +2778,19 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
     generator_ptr->Dispatch(&touch_move);
   });
 
-  speech_monitor.ExpectSpeech("Launcher");
-  speech_monitor.ExpectSpeech("Button");
-  speech_monitor.ExpectSpeech("Shelf");
-  speech_monitor.ExpectSpeech("Tool bar");
-  speech_monitor.ExpectSpeech(", window");
+  chromevox_test_utils.sm()->ExpectSpeech("Launcher");
+  chromevox_test_utils.sm()->ExpectSpeech("Button");
+  chromevox_test_utils.sm()->ExpectSpeech("Shelf");
+  chromevox_test_utils.sm()->ExpectSpeech("Tool bar");
+  chromevox_test_utils.sm()->ExpectSpeech(", window");
 
-  speech_monitor.Call([controller]() {
+  chromevox_test_utils.sm()->Call([controller]() {
     // Hotseat is expected to be hidden (by default).
     ASSERT_EQ(ash::HotseatState::kHidden,
               controller->shelf()->shelf_layout_manager()->hotseat_state());
   });
 
-  speech_monitor.Call([generator_ptr]() {
+  chromevox_test_utils.sm()->Call([generator_ptr]() {
     // Press the search + right. Expects that the browser icon receives the
     // accessibility focus and the hotseat switches to kExtended state.
     generator_ptr->PressKeyAndModifierKeys(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
@@ -2841,9 +2798,9 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
 
   const int browser_index =
       ash::ShelfModel::Get()->GetItemIndexForType(ash::TYPE_BROWSER_SHORTCUT);
-  speech_monitor.ExpectSpeech(
+  chromevox_test_utils.sm()->ExpectSpeech(
       base::UTF16ToASCII(ash::ShelfModel::Get()->items()[browser_index].title));
-  speech_monitor.Replay();
+  chromevox_test_utils.sm()->Replay();
 
   EXPECT_EQ(ash::HotseatState::kExtended,
             controller->shelf()->shelf_layout_manager()->hotseat_state());

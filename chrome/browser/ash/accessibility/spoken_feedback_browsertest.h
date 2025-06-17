@@ -59,8 +59,6 @@ class LoggedInSpokenFeedbackTest : public AccessibilityFeatureBrowserTest {
 
   void StablizeChromeVoxState();
 
-  void ExecuteCommandHandlerCommand(std::string command);
-
   void PressRepeatedlyUntilUtterance(ui::KeyboardCode key,
                                      const std::string& expected_utterance);
 

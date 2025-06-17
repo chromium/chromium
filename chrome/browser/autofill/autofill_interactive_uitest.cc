@@ -105,6 +105,7 @@
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 // Includes for ChromeVox accessibility tests.
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "extensions/browser/browsertest_util.h"
@@ -3197,7 +3198,14 @@ class AutofillInteractiveTestChromeVox : public AutofillInteractiveTestBase {
   AutofillInteractiveTestChromeVox() = default;
   ~AutofillInteractiveTestChromeVox() override = default;
 
+  void SetUpOnMainThread() override {
+    AutofillInteractiveTestBase::SetUpOnMainThread();
+
+    chromevox_test_utils_ = std::make_unique<ash::ChromeVoxTestUtils>();
+  }
+
   void TearDownOnMainThread() override {
+    chromevox_test_utils_.reset();
     // Unload the ChromeVox extension so the browser doesn't try to respond to
     // in-flight requests during test shutdown. https://crbug.com/923090
     ash::AccessibilityManager::Get()->EnableSpokenFeedback(false);
@@ -3205,31 +3213,12 @@ class AutofillInteractiveTestChromeVox : public AutofillInteractiveTestBase {
     AutofillInteractiveTestBase::TearDownOnMainThread();
   }
 
-  void EnableChromeVox() {
-    // Test setup.
-    // Enable ChromeVox, disable earcons and wait for key mappings to be
-    // fetched.
-    ASSERT_FALSE(ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
-    // TODO(accessibility): fix console error/warnings and instantiate
-    // `console_observer_` here.
-
-    // Load ChromeVox and block until it's fully loaded.
-    ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
-    sm_.ExpectSpeechPattern("*");
-    sm_.Call([this] { DisableEarcons(); });
+  ash::ChromeVoxTestUtils* chromevox_test_utils() {
+    return chromevox_test_utils_.get();
   }
+  ash::test::SpeechMonitor* sm() { return chromevox_test_utils()->sm(); }
 
-  void DisableEarcons() {
-    // Playing earcons from within a test is not only annoying if you're
-    // running the test locally, but seems to cause crashes
-    // (http://crbug.com/396507). Work around this by just telling
-    // ChromeVox to not ever play earcons (prerecorded sound effects).
-    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        browser()->profile(), extension_misc::kChromeVoxExtensionId,
-        "ChromeVox.earcons.playEarcon = function() {};");
-  }
-
-  ash::test::SpeechMonitor sm_;
+  std::unique_ptr<ash::ChromeVoxTestUtils> chromevox_test_utils_;
 };
 
 // Ensure that autofill suggestions are properly read out via ChromeVox.
@@ -3248,40 +3237,40 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestChromeVox,
   SetTestUrlResponse(kTestShippingFormString);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  EnableChromeVox();
+  chromevox_test_utils()->EnableChromeVox();
   content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
       web_contents(), ui::kAXModeComplete);
 
   // The following contains a sequence of calls to
-  // sm_.ExpectSpeechPattern() and test_delegate()->Wait(). It is essential
+  // sm()->ExpectSpeechPattern() and test_delegate()->Wait(). It is essential
   // to first flush the expected speech patterns, otherwise the two functions
   // start incompatible RunLoops.
-  sm_.ExpectSpeechPattern("Web Content");
-  sm_.Call([this] {
+  sm()->ExpectSpeechPattern("Web Content");
+  sm()->Call([this] {
     content::WaitForAccessibilityTreeToContainNodeWithName(web_contents(),
                                                            "First name:");
     web_contents()->Focus();
     test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionsShown});
     ASSERT_TRUE(FocusField(GetElementById("firstname"), GetWebContents()));
   });
-  sm_.ExpectSpeechPattern("First name:");
-  sm_.ExpectSpeechPattern("Edit text");
-  sm_.ExpectSpeechPattern("Region");
+  sm()->ExpectSpeechPattern("First name:");
+  sm()->ExpectSpeechPattern("Edit text");
+  sm()->ExpectSpeechPattern("Region");
   // Wait for suggestions popup to show up. This needs to happen before we
   // simulate the cursor down key press.
-  sm_.Call([this] { ASSERT_TRUE(test_delegate()->Wait()); });
-  sm_.Call([this] {
+  sm()->Call([this] { ASSERT_TRUE(test_delegate()->Wait()); });
+  sm()->Call([this] {
     test_delegate()->SetExpectations({ObservedUiEvents::kPreviewFormData});
     ASSERT_TRUE(
         ui_controls::SendKeyPress(browser()->window()->GetNativeWindow(),
                                   ui::VKEY_DOWN, false, false, false, false));
   });
-  sm_.ExpectSpeechPattern("Autofill menu opened");
-  sm_.ExpectSpeechPattern("Milton 4120 Freidrich Lane");
-  sm_.ExpectSpeechPattern("List item");
-  sm_.ExpectSpeechPattern("1 of 2");
-  sm_.Call([this] { ASSERT_TRUE(test_delegate()->Wait()); });
-  sm_.Replay();
+  sm()->ExpectSpeechPattern("Autofill menu opened");
+  sm()->ExpectSpeechPattern("Milton 4120 Freidrich Lane");
+  sm()->ExpectSpeechPattern("List item");
+  sm()->ExpectSpeechPattern("1 of 2");
+  sm()->Call([this] { ASSERT_TRUE(test_delegate()->Wait()); });
+  sm()->Replay();
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
