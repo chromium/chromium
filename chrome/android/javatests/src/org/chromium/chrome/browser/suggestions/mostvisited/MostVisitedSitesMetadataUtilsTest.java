@@ -28,7 +28,8 @@ import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.url.GURL;
 
 import java.io.ByteArrayOutputStream;
@@ -45,13 +46,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class MostVisitedSitesMetadataUtilsTest {
-    @Rule public ChromeTabbedActivityTestRule mTestSetupRule = new ChromeTabbedActivityTestRule();
+    @Rule
+    public FreshCtaTransitTestRule mTestSetupRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private MostVisitedSitesMetadataUtils mMostVisitedSitesMetadataUtils;
 
     @Before
     public void setUp() {
-        mTestSetupRule.startMainActivityOnBlankPage();
+        mTestSetupRule.startOnBlankPage();
         mMostVisitedSitesMetadataUtils = MostVisitedSitesMetadataUtils.getInstance();
     }
 
