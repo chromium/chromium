@@ -166,9 +166,7 @@ public final class AwBrowserProcess {
         final boolean ignoreVisibilityForImportance = true;
         ChildProcessCreationParams.set(
                 getWebViewPackageName(),
-                /* privilegedServicesName= */ null,
                 getWebViewPackageName(),
-                /* sandboxedServicesName= */ null,
                 isExternalService,
                 LibraryProcessType.PROCESS_WEBVIEW_CHILD,
                 bindToCaller,
@@ -187,9 +185,7 @@ public final class AwBrowserProcess {
         final boolean ignoreVisibilityForImportance = false;
         ChildProcessCreationParams.set(
                 ContextUtils.getApplicationContext().getPackageName(),
-                /* privilegedServicesName= */ null,
                 ContextUtils.getApplicationContext().getPackageName(),
-                /* sandboxedServicesName= */ null,
                 isExternalService,
                 LibraryProcessType.PROCESS_WEBVIEW_CHILD,
                 bindToCaller,

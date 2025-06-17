@@ -30,8 +30,6 @@ public class ChildProcessCreationParamsImpl {
     // Use only the explicit WebContents.setImportance signal, and ignore other implicit
     // signals in content.
     private static boolean sIgnoreVisibilityForImportance;
-    private static @Nullable String sPrivilegedServicesName;
-    private static @Nullable String sSandboxedServicesName;
 
     private static boolean sInitialized;
 
@@ -40,20 +38,14 @@ public class ChildProcessCreationParamsImpl {
     /** Set params. This should be called once on start up. */
     public static void set(
             String privilegedPackageName,
-            String privilegedServicesName,
             String sandboxedPackageName,
-            String sandboxedServicesName,
             boolean isExternalSandboxedService,
             int libraryProcessType,
             boolean bindToCallerCheck,
             boolean ignoreVisibilityForImportance) {
         assert !sInitialized;
         sPackageNameForPrivilegedService = privilegedPackageName;
-        sPrivilegedServicesName =
-                privilegedServicesName == null ? PRIVILEGED_SERVICES_NAME : privilegedServicesName;
         sPackageNameForSandboxedService = sandboxedPackageName;
-        sSandboxedServicesName =
-                sandboxedServicesName == null ? SANDBOXED_SERVICES_NAME : sandboxedServicesName;
         sIsSandboxedServiceExternal = isExternalSandboxedService;
         sLibraryProcessType = libraryProcessType;
         sBindToCallerCheck = bindToCallerCheck;
@@ -94,10 +86,10 @@ public class ChildProcessCreationParamsImpl {
     }
 
     public static String getPrivilegedServicesName() {
-        return sPrivilegedServicesName != null ? sPrivilegedServicesName : PRIVILEGED_SERVICES_NAME;
+        return PRIVILEGED_SERVICES_NAME;
     }
 
     public static String getSandboxedServicesName() {
-        return sSandboxedServicesName != null ? sSandboxedServicesName : SANDBOXED_SERVICES_NAME;
+        return SANDBOXED_SERVICES_NAME;
     }
 }

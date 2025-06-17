@@ -68,9 +68,7 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
         boolean ignoreVisibilityForImportance = false;
         ChildProcessCreationParams.set(
                 packageName,
-                /* privilegedServicesName= */ null,
                 packageName,
-                /* sandboxedServicesName= */ null,
                 /* isExternalSandboxedService= */ true,
                 LibraryProcessType.PROCESS_CHILD,
                 bindToCaller,

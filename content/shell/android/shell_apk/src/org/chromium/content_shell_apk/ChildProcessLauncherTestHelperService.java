@@ -76,9 +76,7 @@ public class ChildProcessLauncherTestHelperService extends Service {
         final boolean bindToCaller = true;
         ChildProcessCreationParams.set(
                 getPackageName(),
-                /* privilegedServicesName= */ null,
                 getPackageName(),
-                /* sandboxedServicesName= */ null,
                 false,
                 LibraryProcessType.PROCESS_CHILD,
                 bindToCaller,

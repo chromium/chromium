@@ -163,9 +163,7 @@ public class ChildProcessLauncherHelperTest {
         // will fail to start and the ChildProcessLauncher will retry and use the slot 1.
         ChildProcessCreationParamsImpl.set(
                 context.getPackageName(),
-                /* privilegedServicesName= */ null,
                 context.getPackageName(),
-                /* sandboxedServicesName= */ null,
                 /* isExternalSandboxedService= */ false,
                 LibraryProcessType.PROCESS_CHILD,
                 /* bindToCallerCheck= */ true,
@@ -280,9 +278,7 @@ public class ChildProcessLauncherHelperTest {
         Context context = InstrumentationRegistry.getTargetContext();
         ChildProcessCreationParamsImpl.set(
                 context.getPackageName(),
-                /* privilegedServicesName= */ null,
                 context.getPackageName(),
-                /* sandboxedServicesName= */ null,
                 /* isExternalSandboxedService= */ false,
                 LibraryProcessType.PROCESS_CHILD,
                 /* bindToCallerCheck= */ true,
