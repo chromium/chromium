@@ -119,6 +119,8 @@ crbug.com/40877266 [ android android-shield-android-tv ] ExpectedColor_MediaReco
 crbug.com/416712848 [ sequoia apple-angle-metal-renderer:-apple-m1 ] ExpectedColor_MediaRecorderFrom2DCanvas [ RetryOnFailure ]
 crbug.com/416712848 [ sequoia apple-angle-metal-renderer:-apple-m1 ] ExpectedColor_maps [ RetryOnFailure ]
 
+# Flakes on Intel Mac with a larger shifted image
+crbug.com/425653491 [ mac intel-0x3e9b angle-metal graphite-enabled ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
