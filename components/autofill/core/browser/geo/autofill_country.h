@@ -26,11 +26,11 @@ class AutofillCountry {
  public:
   // Returns country data corresponding to the two-letter ISO code
   // `country_code`.
-  // `locale` is used translate the `name()` appropriately and can be ignored
+  // `locale` is used to translate the `name()` appropriately and can be ignored
   // if the name is not queried.
   explicit AutofillCountry(
       const std::string& country_code,
-      const std::optional<std::string>& locale = std::nullopt);
+      std::optional<std::string_view> locale = std::nullopt);
 
   AutofillCountry(const AutofillCountry&) = delete;
   AutofillCountry& operator=(const AutofillCountry&) = delete;
@@ -58,15 +58,15 @@ class AutofillCountry {
 
   // Returns the likely country code for `locale`, or "US" as a fallback if no
   // mapping from the locale is available.
-  static const std::string CountryCodeForLocale(const std::string& locale);
+  static std::string CountryCodeForLocale(std::string_view locale);
 
   // Returns an uppercase ISO 3166-1 alpha-2 country code, which represents our
   // best guess for the country a user is likely to use when inputting a new
   // address. This is used as the default in settings and on form import, if no
   // country field was observed in the submitted form.
-  static const AddressCountryCode GetDefaultCountryCodeForNewAddress(
+  static AddressCountryCode GetDefaultCountryCodeForNewAddress(
       const GeoIpCountryCode& geo_ip_country_code,
-      const std::string& locale);
+      std::string_view locale);
 
   // Gets all the `AddressFormatExtension`s available for `country_code()`.
   base::span<const AddressFormatExtension> address_format_extensions() const;
@@ -121,11 +121,6 @@ class AutofillCountry {
   }
 
  private:
-  AutofillCountry(const std::string& country_code,
-                  const std::u16string& name,
-                  const std::u16string& postal_code_label,
-                  const std::u16string& state_label);
-
   // The two-letter ISO-3166 country code.
   std::string country_code_;
 

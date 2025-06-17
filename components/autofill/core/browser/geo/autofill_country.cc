@@ -7,6 +7,9 @@
 #include <stddef.h>
 
 #include <array>
+#include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
@@ -48,7 +51,7 @@ constexpr auto kRequiredFieldMapping =
 }  // namespace
 
 AutofillCountry::AutofillCountry(const std::string& country_code,
-                                 const std::optional<std::string>& locale) {
+                                 std::optional<std::string_view> locale) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
 
   // If the country code is an alias (e.g. "GB" for "UK") expand the country
@@ -68,18 +71,17 @@ AutofillCountry::AutofillCountry(const std::string& country_code,
 AutofillCountry::~AutofillCountry() = default;
 
 // static
-const std::string AutofillCountry::CountryCodeForLocale(
-    const std::string& locale) {
+std::string AutofillCountry::CountryCodeForLocale(std::string_view locale) {
   // Add likely subtags to the locale. In particular, add any likely country
   // subtags -- e.g. for locales like "ru" that only include the language.
-  std::string likely_locale;
+  // std::string likely_locale;
   UErrorCode error_ignored = U_ZERO_ERROR;
-  uloc_addLikelySubtags(locale.c_str(),
-                        base::WriteInto(&likely_locale, kLocaleCapacity),
+  std::array<char, kLocaleCapacity> likely_locale = {};
+  uloc_addLikelySubtags(std::string(locale).c_str(), likely_locale.data(),
                         kLocaleCapacity, &error_ignored);
 
   // Extract the country code.
-  std::string country_code = icu::Locale(likely_locale.c_str()).getCountry();
+  std::string country_code = icu::Locale(likely_locale.data()).getCountry();
 
   // Default to the United States if we have no better guess.
   if (!base::Contains(CountryDataMap::GetInstance()->country_codes(),
@@ -91,9 +93,9 @@ const std::string AutofillCountry::CountryCodeForLocale(
 }
 
 // static
-const AddressCountryCode AutofillCountry::GetDefaultCountryCodeForNewAddress(
+AddressCountryCode AutofillCountry::GetDefaultCountryCodeForNewAddress(
     const GeoIpCountryCode& geo_ip_country_code,
-    const std::string& locale) {
+    std::string_view locale) {
   // Capitalize the country code, because some APIs might not allow the usage of
   // lowercase country codes.
   return AddressCountryCode(
@@ -101,12 +103,6 @@ const AddressCountryCode AutofillCountry::GetDefaultCountryCodeForNewAddress(
                              ? AutofillCountry::CountryCodeForLocale(locale)
                              : geo_ip_country_code.value()));
 }
-
-AutofillCountry::AutofillCountry(const std::string& country_code,
-                                 const std::u16string& name,
-                                 const std::u16string& postal_code_label,
-                                 const std::u16string& state_label)
-    : country_code_(country_code), name_(name) {}
 
 // Prints a formatted log of a |AutofillCountry| to a |LogBuffer|.
 LogBuffer& operator<<(LogBuffer& buffer, const AutofillCountry& country) {

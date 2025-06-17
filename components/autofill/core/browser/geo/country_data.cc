@@ -25,7 +25,7 @@ constexpr auto kCountryCodeAliases =
     base::MakeFixedFlatMap<std::string_view, std::string_view>({{"UK", "GB"}});
 
 // Maps country codes to address import requirements.
-// This list is comprized of countries appearing in both
+// This list is comprised of countries appearing in both
 // //third_party/icu/source/data/region/en.txt and
 // //third_party/libaddressinput/src/cpp/src/region_data_constants.cc.
 constexpr auto kCountryAddressImportRequirementsData =
