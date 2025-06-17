@@ -30,8 +30,8 @@ using EntitiesLabels =
     base::StrongAlias<class EntitiesLabelsTag,
                       std::vector<std::vector<std::u16string>>>;
 
-// Returns whether the forms is eligible for the filling journey.
-bool IsFormEligibleForFilling(const autofill::FormStructure& form);
+// Returns whether the form is eligible for the filling journey.
+bool IsFormEligibleForFilling(const FormStructure& form);
 
 // Given `entity_instances` returns `EntitiesLabels`, which will be a
 // list of labels that can be used by an UI surface to display entities
@@ -43,11 +43,10 @@ bool IsFormEligibleForFilling(const autofill::FormStructure& form);
 // `return_at_least_one_label` is true, it makes sure that for each
 // `entity_instances`, at least one label is present, even if it repeats across
 // all other entities.
-EntitiesLabels GetLabelsForEntities(
-    base::span<const autofill::EntityInstance*> entity_instances,
-    bool allow_only_disambiguating_types,
-    bool return_at_least_one_label,
-    const std::string& app_locale);
+EntitiesLabels GetLabelsForEntities(base::span<const EntityInstance*> entities,
+                                    bool allow_only_disambiguating_types,
+                                    bool return_at_least_one_label,
+                                    const std::string& app_locale);
 
 }  // namespace autofill
 

@@ -23,8 +23,8 @@ namespace {
 
 // For a list of entities, this defines all attributes for each entity, together
 // with their value.
-using AttributesAndValues = std::vector<
-    std::vector<std::pair<autofill::AttributeType, std::u16string>>>;
+using AttributesAndValues =
+    std::vector<std::vector<std::pair<AttributeType, std::u16string>>>;
 
 // Arbitrary delimiter to user when concatenating labels to decide whether
 // a series of labels for different entities are unique.
@@ -32,7 +32,7 @@ constexpr char16_t kLabelsDelimiter[] = u" - - ";
 
 }  // namespace
 
-bool IsFormEligibleForFilling(const autofill::FormStructure& form) {
+bool IsFormEligibleForFilling(const FormStructure& form) {
   return std::ranges::any_of(
       form.fields(), [](const std::unique_ptr<AutofillField>& field) {
         return field->GetAutofillAiServerTypePredictions().has_value();
@@ -57,19 +57,18 @@ bool IsFormEligibleForFilling(const autofill::FormStructure& form) {
 // 4. Go over the attribute types generated in the previous step and add their
 // respective value to a final list of labels for each entity. Stops when the
 // concatenation of all these labels are unique.
-EntitiesLabels GetLabelsForEntities(
-    base::span<const EntityInstance*> entity_instances,
-    bool allow_only_disambiguating_types,
-    bool return_at_least_one_label,
-    const std::string& app_locale) {
-  if (entity_instances.empty()) {
+EntitiesLabels GetLabelsForEntities(base::span<const EntityInstance*> entities,
+                                    bool allow_only_disambiguating_types,
+                                    bool return_at_least_one_label,
+                                    const std::string& app_locale) {
+  if (entities.empty()) {
     return EntitiesLabels(std::vector<std::vector<std::u16string>>());
   }
   // Step 1#
   // Retrieve entities attributes types and values, skipping those in
   // `attribute_types_to_exclude`.
   AttributesAndValues entities_attributes_and_values;
-  for (const EntityInstance* entity : entity_instances) {
+  for (const EntityInstance* entity : entities) {
     // Retrieve all entity values, this will be used to generate labels.
     std::vector<std::pair<AttributeType, std::u16string>>&
         attribute_types_and_values =
@@ -84,13 +83,11 @@ EntitiesLabels GetLabelsForEntities(
     }
   }
 
-  // Step 2#
-  // Stores for all entities all of its attributes, sorted based on their
-  // disambiguation order.
+  // The `i`th element holds the attributes and values of the `i`th element of
+  // `entities`.
   std::vector<std::vector<std::pair<AttributeType, std::u16string>>>
-      attribute_types_and_values_available_for_entities;
-  attribute_types_and_values_available_for_entities.reserve(
-      entity_instances.size());
+      attributes_of_all_entities;
+  attributes_of_all_entities.reserve(entities.size());
 
   // Used to determine whether a certain attribute and value pair repeats across
   // all entities. In this case, using a label for this value is
@@ -100,42 +97,36 @@ EntitiesLabels GetLabelsForEntities(
       attribute_type_and_value_occurrences;
 
   // Go over each entity and its attributes and values.
-  for (std::vector<std::pair<AttributeType, std::u16string>>&
-           entity_attributes_and_values :
+  for (std::vector<std::pair<AttributeType, std::u16string>>& attributes :
        std::move(entities_attributes_and_values)) {
-    for (const auto& [attribute_type, entity_value] :
-         entity_attributes_and_values) {
+    for (const auto& [attribute_type, entity_value] : attributes) {
       ++attribute_type_and_value_occurrences[{attribute_type, entity_value}];
     }
 
-    attribute_types_and_values_available_for_entities.push_back(
-        std::move(entity_attributes_and_values));
+    attributes_of_all_entities.push_back(std::move(attributes));
   }
 
   std::vector<AttributeType> disambiguating_attribute_types;
-  autofill::DenseSet<AttributeType> disambiguating_attribute_types_added;
+  DenseSet<AttributeType> disambiguating_attribute_types_added;
 
   // Step 3#
-  // Now remove the redundant values from
-  // `attribute_types_and_values_available_for_entities` and generate the
-  // output. A value is considered redundant if it repeats across all
-  // entities for the same attribute type.
-  for (std::vector<std::pair<AttributeType, std::u16string>>&
-           entity_attribute_types_and_values :
-       attribute_types_and_values_available_for_entities) {
-    for (auto& [attribute_type, value] : entity_attribute_types_and_values) {
+  // Now remove the redundant values from `attributes_of_all_entities` and
+  // generate the output. A value is considered redundant if it repeats across
+  // all entities for the same attribute type.
+  for (std::vector<std::pair<AttributeType, std::u16string>>& attributes :
+       attributes_of_all_entities) {
+    for (const auto& [attribute_type, value] : attributes) {
       // The label is the same for all entities and has no differentiation
       // value.
       if (attribute_type_and_value_occurrences[{attribute_type, value}] ==
-          entity_instances.size()) {
+          entities.size()) {
         continue;
       }
 
-      if (disambiguating_attribute_types_added.contains(attribute_type)) {
+      if (!disambiguating_attribute_types_added.insert(attribute_type).second) {
         continue;
       }
       disambiguating_attribute_types.push_back(attribute_type);
-      disambiguating_attribute_types_added.insert(attribute_type);
     }
   }
 
@@ -144,12 +135,12 @@ EntitiesLabels GetLabelsForEntities(
   if (disambiguating_attribute_types.empty() && return_at_least_one_label) {
     // Take the attribute with highest priority for the entity instance type.
     disambiguating_attribute_types.push_back(
-        attribute_types_and_values_available_for_entities[0][0].first);
+        attributes_of_all_entities[0][0].first);
   }
 
   EntitiesLabels entities_labels_output =
       EntitiesLabels(std::vector<std::vector<std::u16string>>(
-          entity_instances.size(), std::vector<std::u16string>()));
+          entities.size(), std::vector<std::u16string>()));
 
   // Step 4#
   // Go over the list of disambiguating attributes and use their values to
@@ -162,7 +153,7 @@ EntitiesLabels GetLabelsForEntities(
     // Used to check whether the list of labels for the entities is unique.
     std::set<std::u16string> current_labels;
     for (size_t i = 0; i < entities_labels_output->size(); i++) {
-      const autofill::EntityInstance& entity = *entity_instances[i];
+      const EntityInstance& entity = *entities[i];
       std::vector<std::u16string>& entity_labels_output =
           (*entities_labels_output)[i];
       if (entity_labels_output.size() == max_number_of_labels) {
@@ -185,7 +176,7 @@ EntitiesLabels GetLabelsForEntities(
     const size_t non_empty_labels_count = std::ranges::count_if(
         current_labels,
         [](std::u16string_view label) { return !label.empty(); });
-    if (non_empty_labels_count == entity_instances.size()) {
+    if (non_empty_labels_count == entities.size()) {
       return entities_labels_output;
     }
   }
