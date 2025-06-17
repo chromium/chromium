@@ -55,6 +55,7 @@
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_save_and_fill_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/single_field_fillers/mock_single_field_fill_router.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
@@ -2333,6 +2334,18 @@ TEST_F(AutofillExternalDelegateTest,
   EXPECT_CALL(compose_delegate, GoToSettings);
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kComposeGoToSettings),
+      SuggestionPosition{.row = 0});
+}
+
+TEST_F(AutofillExternalDelegateTest,
+       AcceptSaveAndFillCreditCardSuggestion_CallsSaveAndFillManager) {
+  IssueOnQuery();
+
+  EXPECT_CALL(*client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
+              OnDidAcceptCreditCardSaveAndFillSuggestion());
+  external_delegate().DidAcceptSuggestion(
+      test::CreateAutofillSuggestion(
+          SuggestionType::kSaveAndFillCreditCardEntry),
       SuggestionPosition{.row = 0});
 }
 

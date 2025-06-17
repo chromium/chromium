@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_iban_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_save_and_fill_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/single_field_fillers/payments/mock_merchant_promo_code_manager.h"
@@ -101,6 +102,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::RepeatingClosure close_mandatory_reauth_callback) override;
   MockIbanManager* GetIbanManager() override;
   MockIbanAccessManager* GetIbanAccessManager() override;
+  MockSaveAndFillManager* GetSaveAndFillManager() override;
   void ShowMandatoryReauthOptInConfirmation() override;
   MockMerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
   AutofillOfferManager* GetAutofillOfferManager() override;
@@ -265,6 +267,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<MockIbanManager> mock_iban_manager_;
 
   std::unique_ptr<MockIbanAccessManager> mock_iban_access_manager_;
+
+  std::unique_ptr<MockSaveAndFillManager> mock_save_and_fill_manager_;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Populated if name fix flow was offered. True if bubble was shown, false

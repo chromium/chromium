@@ -54,6 +54,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/save_and_fill_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
@@ -1369,11 +1370,16 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       manager_->OnSingleFieldSuggestionSelected(
           suggestion, query_form_.global_id(), query_field_.global_id());
       break;
-    case SuggestionType::kSaveAndFillCreditCardEntry:
-      manager_->client()
-          .GetPaymentsAutofillClient()
-          ->ShowCreditCardSaveAndFillDialog();
+    case SuggestionType::kSaveAndFillCreditCardEntry: {
+      payments::SaveAndFillManager* save_and_fill_manager =
+          manager_->client()
+              .GetPaymentsAutofillClient()
+              ->GetSaveAndFillManager();
+      CHECK(save_and_fill_manager);
+
+      save_and_fill_manager->OnDidAcceptCreditCardSaveAndFillSuggestion();
       break;
+    }
     case SuggestionType::kScanCreditCard:
       manager_->client().GetPaymentsAutofillClient()->ScanCreditCard(
           base::BindOnce(&AutofillExternalDelegate::OnCreditCardScanned,
