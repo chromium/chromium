@@ -115,17 +115,16 @@ void PhishingClassifier::BeginClassification(
     return;
   }
 
+  // For consistency, we always want to invoke the DoneCallback
+  // asynchronously, rather than directly from this method.  To ensure that
+  // this is the case, post a task to begin feature extraction on the next
+  // iteration of the message loop.
   if (base::FeatureList::IsEnabled(
           kClientSideDetectionOnlyExtractVisualFeatures)) {
-    visual_extractor_->ExtractFeatures(
-        render_frame_->GetWebFrame(),
-        base::BindOnce(&PhishingClassifier::OnPlaybackDone,
-                       base::Unretained(this)));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&PhishingClassifier::ExtractVisualFeatures,
+                                  weak_factory_.GetWeakPtr()));
   } else {
-    // For consistency, we always want to invoke the DoneCallback
-    // asynchronously, rather than directly from this method.  To ensure that
-    // this is the case, post a task to begin feature extraction on the next
-    // iteration of the message loop.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&PhishingClassifier::BeginFeatureExtraction,
                                   weak_factory_.GetWeakPtr()));
@@ -185,6 +184,13 @@ void PhishingClassifier::TermExtractionFinished(bool success) {
   } else {
     RunFailureCallback(Result::kTermExtractionFailed);
   }
+}
+
+void PhishingClassifier::ExtractVisualFeatures() {
+  visual_extractor_->ExtractFeatures(
+      render_frame_->GetWebFrame(),
+      base::BindOnce(&PhishingClassifier::OnPlaybackDone,
+                     base::Unretained(this)));
 }
 
 void PhishingClassifier::OnPlaybackDone(std::unique_ptr<SkBitmap> bitmap) {
