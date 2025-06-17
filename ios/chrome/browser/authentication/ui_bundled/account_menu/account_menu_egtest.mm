@@ -488,6 +488,9 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
                                           kAccountMenuSecondaryAccountButtonId)]
       performAction:grey_tap()];
 
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
+    WaitForEnterpriseOnboardingScreen();
+  }
   // Tap on Continue button to acknowledge signing in with a managed account.
   [[EarlGrey
       selectElementWithMatcher:
@@ -528,6 +531,10 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
                            IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)),
                        grey_sufficientlyVisible(), nil)]
         performAction:grey_tap()];
+  }
+
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
+    WaitForEnterpriseOnboardingScreen();
   }
   // Tap on Continue button to acknowledge signing in with a managed account.
   [[EarlGrey
