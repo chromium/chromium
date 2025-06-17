@@ -73,7 +73,7 @@ const media::VideoCodec kMP4VideoCodecsToQuery[] = {
 
 // Is an audio sink connected which supports the given codec?
 static bool CanPassthrough(media::AudioCodec codec) {
-  return (media::AudioManagerAndroid::GetSinkAudioEncodingFormats() &
+  return (media::AudioManagerAndroid::GetHdmiOutputEncodingFormats() &
           media::ConvertAudioCodecToBitstreamFormat(codec)) != 0;
 }
 

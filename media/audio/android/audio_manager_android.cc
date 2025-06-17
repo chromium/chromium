@@ -116,10 +116,6 @@ class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
     return devices;
   }
 
-  bool IsAudioSinkConnected() override {
-    return Java_AudioManagerAndroid_isAudioSinkConnected(AttachCurrentThread());
-  }
-
   int GetMinInputFrameSize(int sample_rate, int channels) override {
     return Java_AudioManagerAndroid_getMinInputFrameSize(AttachCurrentThread(),
                                                          sample_rate, channels);
@@ -185,8 +181,8 @@ class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
         AttachCurrentThread(), sample_rate, channels);
   }
 
-  int GetSinkAudioEncodingFormats() override {
-    return Java_AudioManagerAndroid_getAudioEncodingFormatsSupported(
+  AudioParameters::Format GetHdmiOutputEncodingFormats() override {
+    return Java_AudioManagerAndroid_getHdmiOutputEncodingFormats(
         AttachCurrentThread());
   }
 
@@ -575,27 +571,28 @@ AudioParameters AudioManagerAndroid::GetInputStreamParameters(
   // Use mono as preferred number of input channels on Android to save
   // resources. Using mono also avoids a driver issue seen on Samsung
   // Galaxy S3 and S4 devices. See http://crbug.com/256851 for details.
-  constexpr ChannelLayout channel_layout = CHANNEL_LAYOUT_MONO;
-  int buffer_size = GetJniDelegate().GetMinInputFrameSize(
-      GetJniDelegate().GetNativeOutputSampleRate(),
-      ChannelLayoutToChannelCount(channel_layout));
-  buffer_size = buffer_size <= 0 ? kDefaultInputBufferSize : buffer_size;
-  int effects = AudioParameters::NO_EFFECTS;
-  effects |= GetJniDelegate().AcousticEchoCancelerIsAvailable()
-                 ? AudioParameters::ECHO_CANCELLER
-                 : AudioParameters::NO_EFFECTS;
+  const ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Mono();
 
+  const int sample_rate = GetJniDelegate().GetNativeOutputSampleRate();
+
+  int buffer_size = GetJniDelegate().GetMinInputFrameSize(
+      sample_rate, channel_layout_config.channels());
+  if (buffer_size <= 0) {
+    buffer_size = kDefaultInputBufferSize;
+  }
   int user_buffer_size = GetUserBufferSize();
   if (user_buffer_size) {
     buffer_size = user_buffer_size;
   }
 
+  AudioParameters::PlatformEffectsMask effects =
+      GetJniDelegate().AcousticEchoCancelerIsAvailable()
+          ? AudioParameters::ECHO_CANCELLER
+          : AudioParameters::NO_EFFECTS;
+
   AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         ChannelLayoutConfig::FromLayout<channel_layout>(),
-                         GetJniDelegate().GetNativeOutputSampleRate(),
-                         buffer_size);
+                         channel_layout_config, sample_rate, buffer_size);
   params.set_effects(effects);
-  DVLOG(1) << params.AsHumanReadableString();
   return params;
 }
 
@@ -913,15 +910,17 @@ base::TimeDelta AudioManagerAndroid::GetOutputLatency() {
 AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const AudioParameters& input_params) {
-  DVLOG(1) << __FUNCTION__;
-  // TODO(tommi): Support |output_device_id|.
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+
+  // TODO(crbug.com/417397476): Support non-default devices.
   DLOG_IF(ERROR, !output_device_id.empty()) << "Not implemented!";
+
   ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
   int sample_rate = GetJniDelegate().GetNativeOutputSampleRate();
   int buffer_size = GetOptimalOutputFrameSize(sample_rate, 2);
+
+  // Use the client's input parameters if they are valid.
   if (input_params.IsValid()) {
-    // Use the client's input parameters if they are valid.
     sample_rate = input_params.sample_rate();
 
     // AudioManager APIs for GetOptimalOutputFrameSize() don't support channel
@@ -947,7 +946,11 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
     // use the max number of channels supported. This can prevent down-sampling
     // and loss of channel information (e.g. if a stream starts as stereo and
     // changes to 5.1)
-    channel_layout_config = GetLayoutWithMaxChannels(channel_layout_config);
+    ChannelLayoutConfig max_channel_layout_config = GetLayoutWithMaxChannels();
+    if (max_channel_layout_config.channels() >
+        channel_layout_config.channels()) {
+      channel_layout_config = max_channel_layout_config;
+    }
   }
 
   int user_buffer_size = GetUserBufferSize();
@@ -955,13 +958,14 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
     buffer_size = user_buffer_size;
   }
 
-  // Check if device supports additional audio encodings.
-  if (GetJniDelegate().IsAudioSinkConnected()) {
-    return GetAudioFormatsSupportedBySinkDevice(
-        output_device_id, channel_layout_config, sample_rate, buffer_size);
-  }
+  // Specify hardware capabilities for HDMI audio passthrough
+  AudioParameters::HardwareCapabilities hardware_capabilities(
+      GetJniDelegate().GetHdmiOutputEncodingFormats(),
+      /*require_encapsulation=*/false);
+
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         channel_layout_config, sample_rate, buffer_size);
+                         channel_layout_config, sample_rate, buffer_size,
+                         hardware_capabilities);
 }
 
 bool AudioManagerAndroid::HasNoAudioInputStreams() {
@@ -989,30 +993,10 @@ int AudioManagerAndroid::GetOptimalOutputFrameSize(int sample_rate,
       GetJniDelegate().GetMinOutputFrameSize(sample_rate, channels));
 }
 
-// Returns a bit mask of AudioParameters::Format enum values sink device
-// supports.
-int AudioManagerAndroid::GetSinkAudioEncodingFormats() {
+AudioParameters::Format AudioManagerAndroid::GetHdmiOutputEncodingFormats() {
   // This method is static, so it cannot use the `JniDelegate`.
   JNIEnv* env = AttachCurrentThread();
-  return Java_AudioManagerAndroid_getAudioEncodingFormatsSupported(env);
-}
-
-// Returns encoding bitstream formats supported by Sink device. Returns
-// AudioParameters structure.
-AudioParameters AudioManagerAndroid::GetAudioFormatsSupportedBySinkDevice(
-    const std::string& output_device_id,
-    const ChannelLayoutConfig& channel_layout_config,
-    int sample_rate,
-    int buffer_size) {
-  int formats = GetJniDelegate().GetSinkAudioEncodingFormats();
-  DVLOG(1) << __func__ << ": IsAudioSinkConnected()==true, output_device_id="
-           << output_device_id << ", Supported Encodings=" << formats;
-
-  return AudioParameters(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
-      sample_rate, buffer_size,
-      AudioParameters::HardwareCapabilities(formats,
-                                            /*require_encapsulation=*/false));
+  return Java_AudioManagerAndroid_getHdmiOutputEncodingFormats(env);
 }
 
 void AudioManagerAndroid::DoSetMuteOnAudioThread(bool muted) {
@@ -1032,18 +1016,13 @@ void AudioManagerAndroid::DoSetVolumeOnAudioThread(double volume) {
   }
 }
 
-ChannelLayoutConfig AudioManagerAndroid::GetLayoutWithMaxChannels(
-    ChannelLayoutConfig layout_configuration) {
+ChannelLayoutConfig AudioManagerAndroid::GetLayoutWithMaxChannels() {
   int value = GetJniDelegate().GetLayoutWithMaxChannels();
   CHECK_GT(value, 0);
   CHECK_LE(value, CHANNEL_LAYOUT_MAX);
   ChannelLayout channel_layout = static_cast<ChannelLayout>(value);
-  int number_channels = ChannelLayoutToChannelCount(channel_layout);
-  if (number_channels > layout_configuration.channels()) {
-    return ChannelLayoutConfig(channel_layout, number_channels);
-  }
-
-  return layout_configuration;
+  int channel_count = ChannelLayoutToChannelCount(channel_layout);
+  return ChannelLayoutConfig(channel_layout, channel_count);
 }
 
 void AudioManagerAndroid::SetJniDelegateForTesting(

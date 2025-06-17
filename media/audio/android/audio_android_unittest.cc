@@ -172,24 +172,36 @@ class MockJniDelegate : public JniDelegate {
 
   ~MockJniDelegate() override = default;
 
-  MOCK_METHOD(std::vector<JniAudioDevice>, GetDevices, (bool));
+  MOCK_METHOD(std::vector<JniAudioDevice>, GetDevices, (bool), (override));
   MOCK_METHOD(std::optional<std::vector<JniAudioDevice>>,
               GetCommunicationDevices,
-              ());
-  MOCK_METHOD(bool, IsAudioSinkConnected, ());
-  MOCK_METHOD(int, GetMinInputFrameSize, (int sample_rate, int channels));
-  MOCK_METHOD(bool, AcousticEchoCancelerIsAvailable, ());
-  MOCK_METHOD(base::TimeDelta, GetOutputLatency, ());
-  MOCK_METHOD(void, SetCommunicationAudioModeOn, (bool on));
-  MOCK_METHOD(bool, SetCommunicationDevice, (std::string_view device_id));
-  MOCK_METHOD(bool, IsBluetoothScoOn, ());
-  MOCK_METHOD(void, MaybeSetBluetoothScoState, (bool state));
-  MOCK_METHOD(int, GetNativeOutputSampleRate, ());
-  MOCK_METHOD(bool, IsAudioLowLatencySupported, ());
-  MOCK_METHOD(int, GetAudioLowLatencyOutputFrameSize, ());
-  MOCK_METHOD(int, GetMinOutputFrameSize, (int sample_rate, int channels));
-  MOCK_METHOD(int, GetSinkAudioEncodingFormats, ());
-  MOCK_METHOD(int, GetLayoutWithMaxChannels, ());
+              (),
+              (override));
+  MOCK_METHOD(int,
+              GetMinInputFrameSize,
+              (int sample_rate, int channels),
+              (override));
+  MOCK_METHOD(bool, AcousticEchoCancelerIsAvailable, (), (override));
+  MOCK_METHOD(base::TimeDelta, GetOutputLatency, (), (override));
+  MOCK_METHOD(void, SetCommunicationAudioModeOn, (bool on), (override));
+  MOCK_METHOD(bool,
+              SetCommunicationDevice,
+              (std::string_view device_id),
+              (override));
+  MOCK_METHOD(bool, IsBluetoothScoOn, (), (override));
+  MOCK_METHOD(void, MaybeSetBluetoothScoState, (bool state), (override));
+  MOCK_METHOD(int, GetNativeOutputSampleRate, (), (override));
+  MOCK_METHOD(bool, IsAudioLowLatencySupported, (), (override));
+  MOCK_METHOD(int, GetAudioLowLatencyOutputFrameSize, (), (override));
+  MOCK_METHOD(int,
+              GetMinOutputFrameSize,
+              (int sample_rate, int channels),
+              (override));
+  MOCK_METHOD(AudioParameters::Format,
+              GetHdmiOutputEncodingFormats,
+              (),
+              (override));
+  MOCK_METHOD(int, GetLayoutWithMaxChannels, (), (override));
 };
 
 // Gmock implementation of AudioInputStream::AudioInputCallback.
