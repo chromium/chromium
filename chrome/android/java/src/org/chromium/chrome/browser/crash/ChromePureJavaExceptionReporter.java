@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.crash;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.components.crash.NativeAndJavaSmartExceptionReporter;
 import org.chromium.components.crash.PureJavaExceptionReporter;
@@ -14,6 +15,7 @@ import java.io.File;
 
 /** A custom PureJavaExceptionReporter for Android Chrome's browser. */
 @UsedByReflection("SplitCompatApplication.java")
+@NullMarked
 public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
     private static final String TAG = "ChromeCrashReporter";
     private static final String CHROME_CRASH_PRODUCT_NAME = "Chrome_Android";
@@ -80,7 +82,10 @@ public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
      * @param withLogWarning Whether to include the exception message as {@link Log#w}
      */
     public static void reportJavaException(Throwable exception, boolean withLogWarning) {
-        if (withLogWarning) Log.w(TAG, exception.getMessage());
+        if (withLogWarning) {
+            String message = exception.getMessage();
+            Log.w(TAG, message == null ? "" : message);
+        }
         NativeAndJavaSmartExceptionReporter.postUploadReport(
                 exception, ChromePureJavaExceptionReporter::reportPureJavaException);
     }
