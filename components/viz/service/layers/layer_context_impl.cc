@@ -1223,7 +1223,7 @@ base::expected<void, std::string> DeserializeAnimation(
 
   for (const auto& wire_model : wire.keyframe_models) {
     if (wire_model->keyframes.empty()) {
-      return base::unexpected("Unexpected anmation with no keyframes");
+      return base::unexpected("Unexpected animation with no keyframes");
     }
     // We use the first keyframe to determine the curve type. All keyframes will
     // be validated against this type.
