@@ -1136,33 +1136,47 @@ DeserializeKeyframe(const mojom::AnimationKeyframeValue& value,
     if (value.is_scalar()) {
       keyframe = gfx::FloatKeyframe::Create(start_time, value.get_scalar(),
                                             std::move(timing_function));
+    } else {
+      return base::unexpected("Invalid keyframe type");
     }
   } else if constexpr (std::is_same_v<ValueType, SkColor>) {
     if (value.is_color()) {
       keyframe = gfx::ColorKeyframe::Create(start_time, value.get_color(),
                                             std::move(timing_function));
+    } else {
+      return base::unexpected("Invalid keyframe type");
     }
   } else if constexpr (std::is_same_v<ValueType, gfx::SizeF>) {
     if (value.is_size()) {
       keyframe = gfx::SizeKeyframe::Create(start_time, value.get_size(),
                                            std::move(timing_function));
+    } else {
+      return base::unexpected("Invalid keyframe type");
     }
   } else if constexpr (std::is_same_v<ValueType, gfx::Rect>) {
     if (value.is_rect()) {
       keyframe = gfx::RectKeyframe::Create(start_time, value.get_rect(),
                                            std::move(timing_function));
+    } else {
+      return base::unexpected("Invalid keyframe type");
     }
   } else if constexpr (std::is_same_v<ValueType, gfx::TransformOperations>) {
     if (value.is_transform()) {
       keyframe = gfx::TransformKeyframe::Create(
           start_time, DeserializeTransformOperations(value.get_transform()),
           std::move(timing_function));
+    } else {
+      return base::unexpected("Invalid keyframe type");
     }
   } else {
     static_assert(false, "Unsupported curve type");
   }
 
   if (!keyframe) {
+    // This case handles failures from `gfx::Keyframe::Create` calls above
+    // if the value was of the correct type but otherwise invalid, or if a
+    // new `ValueType` is added to the system without a corresponding
+    // `if constexpr` block and `Create` method here.
     return base::unexpected("Invalid keyframe value");
   }
   return keyframe;

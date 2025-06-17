@@ -181,6 +181,19 @@ class LayerContextImplAnimationTest : public LayerContextImplTest {
     return keyframe;
   }
 
+  mojom::AnimationKeyframePtr CreateMojomTransformKeyframeDefault(
+      base::TimeDelta start_time) {
+    gfx::TransformOperations transform;
+    transform.AppendTranslate(1.0, 1.0, 1.0);  // Default non-identity transform
+    return CreateMojomTransformKeyframe(start_time, transform,
+                                        CreateDefaultMojomTimingFunction());
+  }
+
+  mojom::AnimationKeyframePtr CreateMojomColorKeyframeDefault(
+      base::TimeDelta start_time) {
+    return CreateMojomColorKeyframe(start_time, SK_ColorGREEN,
+                                    CreateDefaultMojomTimingFunction());
+  }
   mojom::AnimationPtr CreateDefaultMojomAnimation(int animation_id,
                                                   int model_id,
                                                   int group_id) {
@@ -843,6 +856,124 @@ TEST_F(LayerContextImplAnimationTest,
   ASSERT_NE(nullptr, host);
   cc::AnimationTimeline* timeline_impl = host->GetTimelineById(kTimelineId);
   EXPECT_EQ(nullptr, timeline_impl);
+}
+
+TEST_F(LayerContextImplAnimationTest,
+       DeserializeAnimationWithMismatchedKeyframeTypeScalarToTransform) {
+  constexpr int kTimelineId = 15;
+  constexpr int kAnimationId = 150;
+  constexpr int kKeyframeModelId = 1500;
+  constexpr int kGroupId = 15;
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom = mojom::Animation::New();
+  animation_mojom->id = kAnimationId;
+  animation_mojom->element_id = kDefaultElementId;
+
+  auto model_mojom = mojom::AnimationKeyframeModel::New();
+  model_mojom->id = kKeyframeModelId;
+  model_mojom->group_id = kGroupId;
+  // Target TRANSFORM property.
+  model_mojom->target_property_type =
+      static_cast<int32_t>(cc::TargetProperty::TRANSFORM);
+  model_mojom->timing_function = CreateDefaultMojomTimingFunction();
+  model_mojom->scaled_duration = kDefaultScaledDuration;
+  // Keyframe 1: TRANSFORM (sets the curve type)
+  model_mojom->keyframes.push_back(
+      CreateMojomTransformKeyframeDefault(kDefaultKeyframeStartTime));
+  // Keyframe 2: SCALAR (mismatches the curve type)
+  model_mojom->keyframes.push_back(CreateDefaultMojomScalarKeyframe(
+      kDefaultKeyframeEndOpacityTime, kDefaultKeyframeStartOpacity));
+  model_mojom->element_id = kDefaultElementId;
+  model_mojom->playback_rate = kDefaultPlaybackRate;
+
+  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid keyframe type");
+}
+
+TEST_F(LayerContextImplAnimationTest,
+       DeserializeAnimationWithMismatchedKeyframeTypeColorToOpacity) {
+  constexpr int kTimelineId = 16;
+  constexpr int kAnimationId = 160;
+  constexpr int kKeyframeModelId = 1600;
+  constexpr int kGroupId = 16;
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom = mojom::Animation::New();
+  animation_mojom->id = kAnimationId;
+  animation_mojom->element_id = kDefaultElementId;
+
+  auto model_mojom = mojom::AnimationKeyframeModel::New();
+  model_mojom->id = kKeyframeModelId;
+  model_mojom->group_id = kGroupId;
+  // Target OPACITY property (expects scalar).
+  model_mojom->target_property_type =
+      static_cast<int32_t>(cc::TargetProperty::OPACITY);
+  model_mojom->timing_function = CreateDefaultMojomTimingFunction();
+  model_mojom->scaled_duration = kDefaultScaledDuration;
+  // Keyframe 1: SCALAR (sets the curve type for OPACITY)
+  model_mojom->keyframes.push_back(CreateDefaultMojomScalarKeyframe(
+      kDefaultKeyframeStartTime, kDefaultKeyframeStartOpacity));
+  // Keyframe 2: COLOR (mismatches the curve type)
+  model_mojom->keyframes.push_back(
+      CreateMojomColorKeyframe(kDefaultKeyframeEndOpacityTime, SK_ColorRED));
+  model_mojom->element_id = kDefaultElementId;
+  model_mojom->playback_rate = kDefaultPlaybackRate;
+
+  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid keyframe type");
+}
+
+TEST_F(LayerContextImplAnimationTest,
+       DeserializeAnimationWithMismatchedKeyframeTypeRectToBackgroundColor) {
+  constexpr int kTimelineId = 17;
+  constexpr int kAnimationId = 170;
+  constexpr int kKeyframeModelId = 1700;
+  constexpr int kGroupId = 17;
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom = mojom::Animation::New();
+  animation_mojom->id = kAnimationId;
+  animation_mojom->element_id = kDefaultElementId;
+
+  auto model_mojom =
+      CreateDefaultOpacityMojomKeyframeModel(kKeyframeModelId, kGroupId);
+  model_mojom->target_property_type =
+      static_cast<int32_t>(cc::TargetProperty::BACKGROUND_COLOR);
+  model_mojom->keyframes.clear();
+  // Keyframe 1: COLOR (sets the curve type for BACKGROUND_COLOR)
+  model_mojom->keyframes.push_back(
+      CreateMojomColorKeyframeDefault(kDefaultKeyframeStartTime));
+  // Keyframe 2: RECT (mismatches the curve type)
+  model_mojom->keyframes.push_back(CreateMojomRectKeyframe(
+      kDefaultKeyframeEndOpacityTime, gfx::Rect(1, 2, 3, 4)));
+  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
+
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid keyframe type");
 }
 
 }  // namespace
