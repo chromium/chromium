@@ -80,6 +80,10 @@ bool IsPlausibleCreditCardCVCNumber(std::u16string_view value);
 // Returns true if the value is a 4 digit year in this century.
 bool IsPlausible4DigitExpirationYear(std::u16string_view value);
 
+// Returns true if `name` is a plausible name on card. It must not contain
+// digits or invalid characters and its length must not exceed 26 characters.
+bool IsValidNameOnCard(std::u16string_view name);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_VALIDATION_H_
