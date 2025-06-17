@@ -289,12 +289,4 @@ try_.builder(
     },
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
-    tryjob = try_.job(
-        location_filters = [
-            # Run on depot_tools for testing telemetry
-            "third_party/depot_tools/.+",
-            "tools/utr/.+",
-            "tools/mb/.+",
-        ],
-    ),
 )
