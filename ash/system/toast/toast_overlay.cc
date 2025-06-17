@@ -28,6 +28,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/canvas.h"
@@ -181,9 +182,10 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.name = "ToastOverlay";
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.accept_events = true;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
+  params.layer_type = ui::LAYER_NOT_DRAWN;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.bounds = CalculateOverlayBounds();
   params.parent =
       root_window_->GetChildById(kShellWindowId_SettingBubbleContainer);
