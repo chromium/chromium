@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/glic_occlusion_notifier.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/auth_controller.h"
@@ -105,6 +106,8 @@ GlicKeyedService::GlicKeyedService(
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
                                                         /*use_for_fre=*/false)),
+      occlusion_notifier_(
+          std::make_unique<GlicOcclusionNotifier>(*window_controller_)),
       contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   host_->Initialize(window_controller_.get());

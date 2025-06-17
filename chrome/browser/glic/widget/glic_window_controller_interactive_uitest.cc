@@ -376,6 +376,12 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       DetachedWidgetIsTrackedByOcclusionTracker) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
+                  CheckOcclusionTracked(true));
+}
+
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
   // The GlicButton and Tabstrip are not actually shown until a tab is created.
   chrome::AddTabAt(browser(), GURL("about:blank"), 0, true);
@@ -680,6 +686,6 @@ IN_PROC_BROWSER_TEST_F(
                   InAnyContext(DetachGlicWindow(), MoveWidgetToSecondDisplay(),
                                CheckWidgetMovedToSecondaryDisplay(true)));
 }
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace glic

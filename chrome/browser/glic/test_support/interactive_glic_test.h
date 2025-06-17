@@ -26,6 +26,8 @@
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -377,6 +379,17 @@ class InteractiveGlicTestT : public T {
     return Api::CheckResult(
         [this] { return browser()->tab_strip_model()->GetTabCount(); },
         expected_count, "CheckTabCount");
+  }
+
+  auto CheckOcclusionTracked(bool expect_is_tracked) {
+    return Api::CheckResult(
+        [this]() {
+          return base::Contains(PictureInPictureWindowManager::GetInstance()
+                                    ->GetOcclusionTracker()
+                                    ->GetPictureInPictureWidgetsForTesting(),
+                                window_controller().GetGlicWidget());
+        },
+        expect_is_tracked, "CheckOcclusionTracked");
   }
 
   auto Wait(base::TimeDelta timeout) {

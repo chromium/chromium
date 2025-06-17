@@ -65,6 +65,9 @@
 //  private:
 //   ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
 // };
+//
+// TODO(https://crbug.com/424225629): This tracks floating windows in general,
+// and not just picture-in-picture windows. Consider renaming this accordingly.
 class PictureInPictureOcclusionTracker : public views::WidgetObserver {
  public:
   PictureInPictureOcclusionTracker();
@@ -80,6 +83,15 @@ class PictureInPictureOcclusionTracker : public views::WidgetObserver {
   // when we receive an associated `OnWidgetDestroying()` call from the widget
   // itself.
   void OnPictureInPictureWidgetOpened(views::Widget* picture_in_picture_widget);
+
+  // Informs the PictureInPictureOcclusionTracker that the given
+  // `picture_in_picture_widget` no longer needs to be tracked for occluding
+  // other widgets. This does not usually need to be called, since the
+  // PictureInPictureOcclusionTracker will properly track visibility and
+  // destruction of widgets passed to `OnPictureInPictureWidgetOpened()`. This
+  // is only useful in cases where a widget remains open and visible but is no
+  // longer floating on top of other windows.
+  void RemovePictureInPictureWidget(views::Widget* picture_in_picture_widget);
 
   // Start observing occlusion state changes for
   // `observer->occludable_widget()`.

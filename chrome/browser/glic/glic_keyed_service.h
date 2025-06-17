@@ -41,6 +41,7 @@ class AuthController;
 class GlicActorController;
 class GlicEnabling;
 class GlicMetrics;
+class GlicOcclusionNotifier;
 class GlicProfileManager;
 class GlicScreenshotCapturer;
 class GlicSharingManagerImpl;
@@ -243,6 +244,7 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<GlicActorController> actor_controller_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<GlicOcclusionNotifier> occlusion_notifier_;
   base::OnceCallback<void()> preload_callback_;
 
   // Unowned
