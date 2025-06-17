@@ -43,7 +43,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
 }  // namespace
 
-@interface TabGridTopToolbar () <UIToolbarDelegate>
+@interface TabGridTopToolbar ()
 @end
 
 @implementation TabGridTopToolbar {
@@ -308,14 +308,6 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 }
 #endif
 
-#pragma mark - UIBarPositioningDelegate
-
-// Returns UIBarPositionTopAttached, otherwise the toolbar's translucent
-// background won't extend below the status bar.
-- (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
-  return UIBarPositionTopAttached;
-}
-
 #pragma mark - Private
 
 - (void)configureSearchModeForTraitCollection:
@@ -435,10 +427,13 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 }
 
 - (void)setupViews {
+  UIToolbarAppearance* appearance = [[UIToolbarAppearance alloc] init];
+  [appearance configureWithTransparentBackground];
+  [self setStandardAppearance:appearance];
+
   self.translatesAutoresizingMaskIntoConstraints = NO;
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   [self createScrolledBackgrounds];
-  self.delegate = self;
   [self setShadowImage:[[UIImage alloc] init]
       forToolbarPosition:UIBarPositionAny];
 
@@ -556,7 +551,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   if (IsIOSSoftLockEnabled()) {
     _scrollBackgroundView = [[TabGridToolbarScrollingBackground alloc] init];
     _scrollBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:_scrollBackgroundView];
+    [self insertSubview:_scrollBackgroundView atIndex:0];
     AddSameConstraintsToSides(
         self, _scrollBackgroundView,
         LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
