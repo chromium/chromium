@@ -18,6 +18,9 @@ import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_S
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
+import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT;
+import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF;
+import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_ON;
 import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_DEFAULT;
 import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_OFF;
 import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_ON;
@@ -120,7 +123,7 @@ public class MainActivity extends AppCompatActivity
     private static final String SHARED_PREF_THEME = "Theme";
     private static final String SHARED_PREF_URL_HIDING = "UrlHiding";
     private static final String SHARED_PREF_SIDE_SHEET_MAX_BUTTON = "SideSheetMaxButton";
-    private static final String SHARED_PREF_OPEN_IN_BROWSER_BUTTON = "OpenInBrowserButton";
+    private static final String SHARED_PREF_OPEN_IN_BROWSER_STATE = "OpenInBrowserToggle";
     private static final String SHARED_PREF_SHOW_ACTION_BUTTON = "ShowActionButton";
     private static final String SHARED_PREF_SHOW_CLOSE_BUTTON = "ShowCloseButton";
     private static final String SHARED_PREF_EPHEMERAL_BROWSING = "EphemeralBrowsing";
@@ -179,6 +182,7 @@ public class MainActivity extends AppCompatActivity
     private MaterialButtonToggleGroup mThemeButton;
     private MaterialButtonToggleGroup mSideSheetPositionToggle;
     private MaterialButtonToggleGroup mShareStateButton;
+    private MaterialButtonToggleGroup mOpenInBrowserToggle;
 
     private TextView mToolbarCornerRadiusLabel;
     private SeekBar mToolbarCornerRadiusSlider;
@@ -188,7 +192,6 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mUrlHidingCheckbox;
     private CheckBox mBackgroundInteractCheckbox;
     private CheckBox mSideSheetMaxButtonCheckbox;
-    private CheckBox mOpenInBrowserButtonCheckbox;
     private CheckBox mShowActionButtonCheckbox;
     private CheckBox mShowCloseButtonCheckbox;
     private CheckBox mEphemeralCctCheckbox;
@@ -668,6 +671,24 @@ public class MainActivity extends AppCompatActivity
                                 : R.id.share_state_off_button;
         mShareStateButton.check(desiredShareState);
 
+        mOpenInBrowserToggle = findViewById(R.id.open_in_browser_toggle);
+        int desiredOpenInBrowserStateValue =
+                mSharedPref.getInt(
+                        SHARED_PREF_OPEN_IN_BROWSER_STATE, OPEN_IN_BROWSER_STATE_DEFAULT);
+
+        int desiredOpenInBrowserState;
+
+        if (desiredOpenInBrowserStateValue == OPEN_IN_BROWSER_STATE_ON) {
+            desiredOpenInBrowserState = R.id.open_in_browser_on_button;
+        } else if (desiredOpenInBrowserStateValue == OPEN_IN_BROWSER_STATE_OFF) {
+            desiredOpenInBrowserState = R.id.open_in_browser_off_button;
+        } else {
+            // If the value is OPEN_IN_BROWSER_STATE_DEFAULT, or any other unexpected
+            // value, it will fall through to this else case.
+            desiredOpenInBrowserState = R.id.open_in_browser_default_button;
+        }
+        mOpenInBrowserToggle.check(desiredOpenInBrowserState);
+
         mCloseButtonPositionToggle = findViewById(R.id.close_button_position_toggle);
         int buttonType =
                 mSharedPref.getInt(
@@ -754,9 +775,6 @@ public class MainActivity extends AppCompatActivity
         mSideSheetMaxButtonCheckbox = findViewById(R.id.side_sheet_max_button_checkbox);
         mSideSheetMaxButtonCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SIDE_SHEET_MAX_BUTTON, CHECKED) == CHECKED);
-        mOpenInBrowserButtonCheckbox = findViewById(R.id.open_in_browser_checkbox);
-        mOpenInBrowserButtonCheckbox.setChecked(
-                mSharedPref.getInt(SHARED_PREF_OPEN_IN_BROWSER_BUTTON, CHECKED) == CHECKED);
         mShowActionButtonCheckbox = findViewById(R.id.show_action_button_checkbox);
         mShowActionButtonCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SHOW_ACTION_BUTTON, CHECKED) == CHECKED);
@@ -968,9 +986,6 @@ public class MainActivity extends AppCompatActivity
                     SHARED_PREF_ENGAGEMENT_SIGNALS_BUTTON, mEngagementSignalsButton.isEnabled());
             editor.putBoolean(SHARED_PREF_SEARCH_IN_CCT, mSearchInCctCheckbox.isChecked());
             editor.putInt(
-                    SHARED_PREF_OPEN_IN_BROWSER_BUTTON,
-                    mOpenInBrowserButtonCheckbox.isChecked() ? CHECKED : UNCHECKED);
-            editor.putInt(
                     SHARED_PREF_EPHEMERAL_BROWSING,
                     mEphemeralCctCheckbox.isChecked() ? CHECKED : UNCHECKED);
             editor.apply();
@@ -1175,11 +1190,6 @@ public class MainActivity extends AppCompatActivity
 
         customTabsIntent.intent.putExtra(EXTRA_OMNIBOX_ENABLED, mSearchInCctCheckbox.isChecked());
 
-        if (mOpenInBrowserButtonCheckbox.isChecked()) {
-            customTabsIntent.intent.putExtra(
-                    "androidx.browser.customtabs.extra.OPEN_IN_BROWSER_STATE", SHARE_STATE_ON);
-        }
-
         if (mCctType.equals(CCT_OPTION_AUTHTAB)) {
             launchAuthTab(url);
             editor.putString(SHARED_PREF_CUSTOM_SCHEME, mCustomScheme);
@@ -1294,6 +1304,7 @@ public class MainActivity extends AppCompatActivity
         int closeButton = mCloseButtonIcon.getCheckedButtonId();
         int colorScheme = getColorSchemeFromButton(editor);
         int shareState = getShareStateFromButton(editor);
+        int openInBrowserState = getOpenInBrowserStateFromToggle(editor);
         if (!TextUtils.isEmpty(mToolbarColor)) {
             builder.setToolbarColor(Color.parseColor(mToolbarColor));
         }
@@ -1302,6 +1313,7 @@ public class MainActivity extends AppCompatActivity
                 .setColorScheme(colorScheme)
                 .setUrlBarHidingEnabled(urlHiding);
         builder.setShareState(shareState);
+        builder.setOpenInBrowserButtonState(openInBrowserState);
         if (isPcct) {
             builder.setStartAnimations(this, R.anim.slide_in_up, R.anim.slide_out_bottom);
             builder.setExitAnimations(this, R.anim.slide_in_bottom, R.anim.slide_out_up);
@@ -1349,6 +1361,25 @@ public class MainActivity extends AppCompatActivity
             editor.putInt(SHARED_PREF_SHARE_STATE, shareState);
         }
         return shareState;
+    }
+
+    private int getOpenInBrowserStateFromToggle(SharedPreferences.Editor editor) {
+        int openInBrowserState;
+        int checkedButtonId = mOpenInBrowserToggle.getCheckedButtonId();
+
+        if (checkedButtonId == R.id.open_in_browser_on_button) {
+            openInBrowserState = OPEN_IN_BROWSER_STATE_ON;
+        } else if (checkedButtonId == R.id.open_in_browser_off_button) {
+            openInBrowserState = OPEN_IN_BROWSER_STATE_OFF;
+        } else {
+            // This handles the default case, including R.id.open_in_browser_default_button
+            // or any other unexpected button ID.
+            openInBrowserState = OPEN_IN_BROWSER_STATE_DEFAULT;
+        }
+        if (editor != null) {
+            editor.putInt(SHARED_PREF_OPEN_IN_BROWSER_STATE, openInBrowserState);
+        }
+        return openInBrowserState;
     }
 
     private void prepareMenuItems(CustomTabsIntent.Builder builder) {

@@ -75,7 +75,10 @@
     <string name="send_to_external_app_text">External Intent Handler</string>
     <string name="search_in_cct_text">Interactive Omnibox</string>
     <string name="share_identity_text">Share Identity</string>
-    <string name="open_in_browser_text">Add open in browser button in toolbar</string>
+    <string name="open_in_browser_text">Open in Browser</string>
+    <string name="open_in_browser_button_default_text">Default</string>
+    <string name="open_in_browser_button_on_text">On</string>
+    <string name="open_in_browser_button_off_text">Off</string>
     <string name="show_action_button_text">Show the action button</string>
     <string name="show_close_button_text">Show the close button</string>
     <string name="ephemeral_cct_text">Enable Ephemeral Browsing</string>
