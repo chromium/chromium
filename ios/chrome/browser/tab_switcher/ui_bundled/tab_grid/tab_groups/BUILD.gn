@@ -363,6 +363,7 @@ source_set("eg2_tests") {
   sources = [
     "shared_tab_groups_egtest.mm",
     "shared_tab_groups_panel_egtest.mm",
+    "shared_tab_groups_policy_egtest.mm",
     "shared_tab_groups_signin_egtest.mm",
     "tab_group_sync_egtest.mm",
     "tab_group_sync_signin_egtest.mm",
@@ -374,6 +375,7 @@ source_set("eg2_tests") {
     ":tab_groups_constant",
     "//base/test:test_support",
     "//components/collaboration/public:features",
+    "//components/collaboration/public:prefs",
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
     "//components/strings",
@@ -416,13 +418,17 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/test/earl_grey:hooks",
   ]
   deps = [
+    "//components/collaboration/public:prefs",
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common",
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",
     "//ios/chrome/browser/collaboration/model",
     "//ios/chrome/browser/collaboration/model:features",
     "//ios/chrome/browser/data_sharing/model",
+    "//ios/chrome/browser/policy/model:test_support",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/share_kit/model:factory",
     "//ios/chrome/browser/share_kit/model:test_support",

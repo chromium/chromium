@@ -6,16 +6,20 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/pref_names.h"
 #import "components/data_sharing/public/data_sharing_service.h"
 #import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/group_data.h"
 #import "components/data_sharing/test_support/mock_preview_server_proxy.h"
+#import "components/policy/core/common/policy_map.h"
+#import "components/policy/policy_constants.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
+#import "ios/chrome/browser/policy/model/test_platform_policy_provider.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
@@ -23,6 +27,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/sync_test_util.h"
+
+using collaboration::prefs::SharedTabGroupsManagedAccountSetting;
 
 namespace {
 
@@ -203,6 +209,35 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
 + (NSString*)activityLogsURL {
   return base::SysUTF8ToNSString(
       data_sharing::features::kActivityLogsURL.Get());
+}
+
++ (void)setSharedTabGroupsManagedAccountPolicyEnabled:
+    (BOOL)managedAccountPolicyEnabled {
+  policy::PolicyMap values;
+  SharedTabGroupsManagedAccountSetting setting =
+      managedAccountPolicyEnabled
+          ? SharedTabGroupsManagedAccountSetting::kEnabled
+          : SharedTabGroupsManagedAccountSetting::kDisabled;
+  values.Set(policy::key::kTabGroupSharingSettings,
+             policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+             policy::POLICY_SOURCE_CLOUD,
+             base::Value(static_cast<int>(setting)),
+             /*external_data_fetcher=*/nullptr);
+  GetTestPlatformPolicyProvider()->UpdateChromePolicy(values);
+}
+
++ (BOOL)isAllowedToJoinTabGroups {
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  return IsSharedTabGroupsJoinEnabled(collaboration_service);
+}
+
++ (BOOL)isAllowedToShareTabGroups {
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  return IsSharedTabGroupsCreateEnabled(collaboration_service);
 }
 
 @end
