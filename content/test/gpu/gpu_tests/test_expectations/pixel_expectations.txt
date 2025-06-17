@@ -519,6 +519,8 @@ crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFrom2DCanv
 crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
 crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] Pixel_WebGPUCopyExternalImageImageBitmap [ Failure ]
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] Pixel_WebGPUCopyExternalImageWebGPUCanvas [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
