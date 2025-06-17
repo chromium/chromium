@@ -652,7 +652,7 @@ BASE_FEATURE_PARAM(bool,
                    kDelayAsyncScriptExecutionOptOutHighFetchPriorityHintParam,
                    &kDelayAsyncScriptExecution,
                    "delay_async_exec_opt_out_high_fetch_priority_hint",
-                   false);
+                   true);
 
 BASE_FEATURE(kDelayLayerTreeViewDeletionOnLocalSwap,
              "DelayLayerTreeViewDeletionOnLocalSwap",
@@ -1792,13 +1792,18 @@ BASE_FEATURE(kLowLatencyWebGLImageChromium,
 
 BASE_FEATURE(kLowPriorityAsyncScriptExecution,
              "LowPriorityAsyncScriptExecution",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kTimeoutForLowPriorityAsyncScriptExecution,
                    &kLowPriorityAsyncScriptExecution,
                    "low_pri_async_exec_timeout",
-                   base::Milliseconds(0));
+                   base::Seconds(1));
 
 // kLowPriorityAsyncScriptExecution will be disabled after document elapsed more
 // than |low_pri_async_exec_feature_limit|. Zero value means no limit.
@@ -1806,20 +1811,20 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    kLowPriorityAsyncScriptExecutionFeatureLimitParam,
                    &kLowPriorityAsyncScriptExecution,
                    "low_pri_async_exec_feature_limit",
-                   base::Seconds(0));
+                   base::Seconds(3));
 
 // kLowPriorityAsyncScriptExecution will be applied only for cross site scripts.
 BASE_FEATURE_PARAM(bool,
                    kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam,
                    &kLowPriorityAsyncScriptExecution,
                    "low_pri_async_exec_cross_site_only",
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kLowPriorityAsyncScriptExecutionMainFrameOnlyParam,
                    &kLowPriorityAsyncScriptExecution,
                    "low_pri_async_exec_main_frame_only",
-                   false);
+                   true);
 
 // kLowPriorityAsyncScriptExecution will exclude scripts that influence LCP
 // element.
@@ -1857,7 +1862,7 @@ BASE_FEATURE_ENUM_PARAM(AsyncScriptExperimentalSchedulingTarget,
                         kLowPriorityAsyncScriptExecutionTargetParam,
                         &kLowPriorityAsyncScriptExecution,
                         "low_pri_async_exec_target",
-                        AsyncScriptExperimentalSchedulingTarget::kBoth,
+                        AsyncScriptExperimentalSchedulingTarget::kNonAds,
                         &async_script_experimental_scheduling_targets);
 // If true, kLowPriorityAsyncScriptExecution will not change the script
 // evaluation timing for the non parser inserted script.
@@ -1873,7 +1878,7 @@ BASE_FEATURE_PARAM(bool,
                    kLowPriorityAsyncScriptExecutionExcludeDocumentWriteParam,
                    &kLowPriorityAsyncScriptExecution,
                    "low_pri_async_exec_exclude_document_write",
-                   false);
+                   true);
 
 // kLowPriorityAsyncScriptExecution will be opted-out when FetchPriorityHint is
 // low.
@@ -1898,7 +1903,7 @@ BASE_FEATURE_PARAM(
     kLowPriorityAsyncScriptExecutionOptOutHighFetchPriorityHintParam,
     &kLowPriorityAsyncScriptExecution,
     "low_pri_async_exec_opt_out_high_fetch_priority_hint",
-    false);
+    true);
 
 BASE_FEATURE(kMixedContentAutoupgrade,
              "AutoupgradeMixedContent",

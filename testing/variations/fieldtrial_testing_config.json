@@ -14322,28 +14322,11 @@
         {
             "platforms": [
                 "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android_webview"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "delay_async_exec_opt_out_auto_fetch_priority_hint": "false",
-                        "delay_async_exec_opt_out_high_fetch_priority_hint": "true",
-                        "delay_async_exec_opt_out_low_fetch_priority_hint": "false",
-                        "low_pri_async_exec_cross_site_only": "true",
-                        "low_pri_async_exec_disable_when_lcp_not_in_html": "false",
-                        "low_pri_async_exec_exclude_document_write": "true",
-                        "low_pri_async_exec_exclude_non_parser_inserted": "false",
-                        "low_pri_async_exec_feature_limit": "3s",
-                        "low_pri_async_exec_lower_task_priority": "low",
-                        "low_pri_async_exec_main_frame_only": "true",
-                        "low_pri_async_exec_target": "non_ads",
-                        "low_pri_async_exec_timeout": "1s"
-                    },
                     "enable_features": [
                         "LowPriorityAsyncScriptExecution"
                     ]
