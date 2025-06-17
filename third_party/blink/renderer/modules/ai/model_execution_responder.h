@@ -43,8 +43,8 @@ CreateModelExecutionStreamingResponder(
     base::RepeatingClosure overflow_callback);
 
 // Creates a ModelStreamingResponder that handles the streaming output of the
-// model execution. The responder will resolves given resolver with the full
-// result.
+// model execution. The responder resolves `resolver` with the complete result,
+// unless `resolve_override_callback` is specified.
 MODULES_EXPORT
 mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>
 CreateModelExecutionResponder(
@@ -55,7 +55,8 @@ CreateModelExecutionResponder(
     AIMetrics::AISessionType session_type,
     base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
         complete_callback,
-    base::RepeatingClosure overflow_callback);
+    base::RepeatingClosure overflow_callback,
+    base::OnceCallback<void(const String&)> resolve_override_callback);
 
 // Creates a closed ReadableStream without any chunk.
 MODULES_EXPORT

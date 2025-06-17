@@ -256,7 +256,8 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     auto pending_remote = CreateModelExecutionResponder(
         script_state, signal, resolver, task_runner_, metric_session_type_,
         base::DoNothingWithBoundArgs(WrapPersistent(this)),
-        base::DoNothingWithBoundArgs(WrapPersistent(this)));
+        base::DoNothingWithBoundArgs(WrapPersistent(this)),
+        /*resolve_override_callback=*/base::NullCallback());
     remoteExecute(trimmed_input, trimmed_context, std::move(pending_remote));
     return promise;
   }

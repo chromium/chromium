@@ -9,11 +9,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/ai/ai_proofreader.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofread_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofreader_create_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/modules/ai/availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
+#include "third_party/blink/renderer/modules/ai/availability.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -70,6 +72,14 @@ class Proofreader final : public ScriptWrappable,
   }
 
  private:
+  static bool ValidateAndCanonicalizeOptionLanguages(
+      v8::Isolate* isolate,
+      ProofreaderCreateCoreOptions* options);
+
+  // Callback to resolve the `proofread()` promise with the full corrected text.
+  void OnProofreadComplete(ScriptPromiseResolver<ProofreadResult>* resolver,
+                           const String& corrected_input);
+
   HeapMojoRemote<mojom::blink::AIProofreader> remote_;
   Member<ProofreaderCreateOptions> options_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

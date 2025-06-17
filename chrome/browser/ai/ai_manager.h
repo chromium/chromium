@@ -15,6 +15,7 @@
 #include "chrome/browser/ai/ai_create_on_device_session_task.h"
 #include "chrome/browser/ai/ai_language_model.h"
 #include "chrome/browser/ai/ai_model_download_progress_manager.h"
+#include "chrome/browser/ai/ai_proofreader.h"
 #include "chrome/browser/ai/ai_summarizer.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -112,6 +113,12 @@ class AIManager : public base::SupportsUserData::Data,
   void CreateRewriter(
       mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
       blink::mojom::AIRewriterCreateOptionsPtr options) override;
+  void CanCreateProofreader(blink::mojom::AIProofreaderCreateOptionsPtr options,
+                            CanCreateProofreaderCallback callback) override;
+  void CreateProofreader(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateProofreaderClient>
+          client,
+      blink::mojom::AIProofreaderCreateOptionsPtr options) override;
   void AddModelDownloadProgressObserver(
       mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
           observer_remote) override;

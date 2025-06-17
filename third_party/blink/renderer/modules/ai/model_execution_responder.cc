@@ -43,14 +43,16 @@ class Responder final : public GarbageCollected<Responder>,
             AIMetrics::AISessionType session_type,
             base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
                 complete_callback,
-            base::RepeatingClosure overflow_callback)
+            base::RepeatingClosure overflow_callback,
+            base::OnceCallback<void(const String&)> resolve_override_callback)
       : script_state_(script_state),
         resolver_(resolver),
         receiver_(this, ExecutionContext::From(script_state)),
         abort_signal_(signal),
         session_type_(session_type),
         complete_callback_(std::move(complete_callback)),
-        overflow_callback_(overflow_callback) {
+        overflow_callback_(overflow_callback),
+        resolve_override_callback_(std::move(resolve_override_callback)) {
     SetContextLifecycleNotifier(ExecutionContext::From(script_state));
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
@@ -94,7 +96,12 @@ class Responder final : public GarbageCollected<Responder>,
         mojom::blink::ModelStreamingResponseStatus::kComplete);
     response_callback_count_++;
 
-    resolver_->Resolve(response_);
+    if (!resolve_override_callback_.is_null()) {
+      std::move(resolve_override_callback_).Run(response_);
+    } else {
+      resolver_->Resolve(response_);
+    }
+
     if (context_info && complete_callback_) {
       std::move(complete_callback_).Run(std::move(context_info));
     }
@@ -165,12 +172,16 @@ class Responder final : public GarbageCollected<Responder>,
   Member<AbortSignal> abort_signal_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
   const AIMetrics::AISessionType session_type_;
-  // The callback will be invoked once when the responder receive the first
-  // `kComplete`.
+  // The callback invoked after the complete model response was received.
   base::OnceCallback<void(
       mojom::blink::ModelExecutionContextInfoPtr context_info)>
       complete_callback_;
+  // A callback invoked anytime the model's token quota is exceeded.
   base::RepeatingClosure overflow_callback_;
+  // An optional callback to override default promise resolving behavior.
+  // If unspecified, `resolver_` is resolved once `response_` is complete.
+  // When specified, this callback is invoked instead of resolving `resolver_`.
+  base::OnceCallback<void(const String&)> resolve_override_callback_;
 };
 
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
@@ -343,10 +354,12 @@ CreateModelExecutionResponder(
     AIMetrics::AISessionType session_type,
     base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
         complete_callback,
-    base::RepeatingClosure overflow_callback) {
+    base::RepeatingClosure overflow_callback,
+    base::OnceCallback<void(const String&)> resolve_override_callback) {
   Responder* responder = MakeGarbageCollected<Responder>(
       script_state, signal, resolver, session_type,
-      std::move(complete_callback), overflow_callback);
+      std::move(complete_callback), overflow_callback,
+      std::move(resolve_override_callback));
   return responder->BindNewPipeAndPassRemote(task_runner);
 }
 

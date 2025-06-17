@@ -65,9 +65,23 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
   void CreateRewriter(
       mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
       blink::mojom::AIRewriterCreateOptionsPtr options) override;
+  void CanCreateProofreader(blink::mojom::AIProofreaderCreateOptionsPtr options,
+                            CanCreateProofreaderCallback callback) override;
+  void CreateProofreader(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateProofreaderClient>
+          client,
+      blink::mojom::AIProofreaderCreateOptionsPtr options) override;
   void AddModelDownloadProgressObserver(
       mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
           observer_remote) override;
+
+  template <typename CanCreateCallback>
+  void CanCreateClient(CanCreateCallback callback);
+
+  template <typename AIClientRemote,
+            typename AIPendingRemote,
+            typename EchoAIClient>
+  void CreateClient(mojo::Remote<AIClientRemote> client_remote);
 
   template <typename AICreateOptions, typename CanCreateCallback>
   void CanCreateWritingAssistanceClient(AICreateOptions options,

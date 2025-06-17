@@ -26,6 +26,7 @@
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_language_model.h"
+#include "chrome/browser/ai/ai_proofreader.h"
 #include "chrome/browser/ai/ai_rewriter.h"
 #include "chrome/browser/ai/ai_summarizer.h"
 #include "chrome/browser/ai/ai_utils.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_proofreader.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_rewriter.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_writer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
@@ -634,6 +636,56 @@ void AIManager::CreateSummarizer(
                      optimization_guide::ModelBasedCapabilityKey::kSummarize,
                      context_bound_object_set_, std::move(callback),
                      std::move(client));
+}
+
+void AIManager::CanCreateProofreader(
+    blink::mojom::AIProofreaderCreateOptionsPtr options,
+    CanCreateProofreaderCallback callback) {
+  // TODO(crbug.com/424673180): Add a warning message when options
+  // `includeCorrectionTypes` and `includeCorrectionExplanations` are set to
+  // true as those features are not yet supported by the API.
+
+  // TODO(crbug.com/424799314): Add console message for handling
+  // missing/unsupported input/explanation languages.
+  if (options &&
+      !IsLanguagesSupported(options->expected_input_languages, {},
+                            options->correction_explanation_language)) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage);
+    return;
+  }
+  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kProofreaderApi,
+                   on_device_model::Capabilities(), std::move(callback));
+}
+
+void AIManager::CreateProofreader(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateProofreaderClient> client,
+    blink::mojom::AIProofreaderCreateOptionsPtr options) {
+  if (options &&
+      !IsLanguagesSupported(options->expected_input_languages, {},
+                            options->correction_explanation_language)) {
+    AddMessageToConsoleForUnexpectedLanguage(
+        blink::mojom::ConsoleMessageLevel::kError,
+        base::StringPrintf(kUnsupportedLanguageError, "Proofreader"));
+    mojo::Remote<blink::mojom::AIManagerCreateProofreaderClient> client_remote(
+        std::move(client));
+    AIUtils::SendClientRemoteError(
+        client_remote,
+        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
+    return;
+  }
+  auto callback = base::BindOnce(
+      &OnSessionCreated<AIProofreader, blink::mojom::AIProofreader,
+                        blink::mojom::AIManagerCreateProofreaderClient,
+                        blink::mojom::AIProofreaderCreateOptionsPtr>,
+      std::ref(context_bound_object_set_), std::move(options),
+      /*initial_request=*/std::nullopt);
+  CreateWritingAssistanceSessionTask<
+      blink::mojom::AIManagerCreateProofreaderClient>::
+      CreateAndStart(
+          browser_context_,
+          optimization_guide::ModelBasedCapabilityKey::kProofreaderApi,
+          context_bound_object_set_, std::move(callback), std::move(client));
 }
 
 blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams() {

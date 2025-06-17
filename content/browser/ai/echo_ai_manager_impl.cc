@@ -10,6 +10,7 @@
 #include "components/language/core/common/locale_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/browser/ai/echo_ai_language_model.h"
+#include "content/browser/ai/echo_ai_proofreader.h"
 #include "content/browser/ai/echo_ai_rewriter.h"
 #include "content/browser/ai/echo_ai_summarizer.h"
 #include "content/browser/ai/echo_ai_writer.h"
@@ -255,6 +256,69 @@ void EchoAIManagerImpl::CreateRewriter(
       std::move(client), std::move(options));
 }
 
+void EchoAIManagerImpl::CanCreateProofreader(
+    blink::mojom::AIProofreaderCreateOptionsPtr options,
+    CanCreateProofreaderCallback callback) {
+  if (options &&
+      !SupportedLanguages(options->expected_input_languages, {},
+                          options->correction_explanation_language)) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedLanguage);
+    return;
+  }
+  CanCreateClient<CanCreateProofreaderCallback>(std::move(callback));
+}
+
+void EchoAIManagerImpl::CreateProofreader(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateProofreaderClient> client,
+    blink::mojom::AIProofreaderCreateOptionsPtr options) {
+  mojo::Remote<blink::mojom::AIManagerCreateProofreaderClient> client_remote(
+      std::move(client));
+  if (options &&
+      !SupportedLanguages(options->expected_input_languages, {},
+                          options->correction_explanation_language)) {
+    client_remote->OnError(
+        blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage,
+        /*quota_error_info=*/nullptr);
+    return;
+  }
+
+  CreateClient<blink::mojom::AIManagerCreateProofreaderClient,
+               blink::mojom::AIProofreader, EchoAIProofreader>(
+      std::move(client_remote));
+}
+
+template <typename CanCreateCallback>
+void EchoAIManagerImpl::CanCreateClient(CanCreateCallback callback) {
+  std::move(callback).Run(
+      model_downloaded_
+          ? blink::mojom::ModelAvailabilityCheckResult::kAvailable
+          : blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+}
+
+template <typename AIClientRemote,
+          typename AIPendingRemote,
+          typename EchoAIClient>
+void EchoAIManagerImpl::CreateClient(
+    mojo::Remote<AIClientRemote> client_remote) {
+  auto return_task =
+      base::BindOnce(&EchoAIManagerImpl::ReturnAIClientCreationResult<
+                         AIClientRemote, AIPendingRemote, EchoAIClient>,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote));
+  if (!model_downloaded_) {
+    // In order to test the model download progress handling, the
+    // `EchoAIManagerImpl` will always start from the `after-download` state,
+    // and we simulate the downloading time by posting a delayed task.
+    content::GetUIThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(return_task)),
+        base::Milliseconds(kMockDownloadPreparationTimeMillisecond));
+  } else {
+    std::move(return_task).Run();
+  }
+}
+
 template <typename AICreateOptions, typename CanCreateCallback>
 void EchoAIManagerImpl::CanCreateWritingAssistanceClient(
     AICreateOptions options,
@@ -266,13 +330,7 @@ void EchoAIManagerImpl::CanCreateWritingAssistanceClient(
                                 kUnavailableUnsupportedLanguage);
     return;
   }
-  if (!model_downloaded_) {
-    std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
-  } else {
-    std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kAvailable);
-  }
+  CanCreateClient<CanCreateCallback>(std::move(callback));
 }
 
 template <typename AICreateOptions,
@@ -291,22 +349,9 @@ void EchoAIManagerImpl::CreateWritingAssistanceClient(
         /*quota_error_info=*/nullptr);
     return;
   }
-  auto return_task =
-      base::BindOnce(&EchoAIManagerImpl::ReturnAIClientCreationResult<
-                         AIClientRemote, AIPendingRemote, EchoAIClient>,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote));
-  if (!model_downloaded_) {
-    // In order to test the model download progress handling, the
-    // `EchoAIManagerImpl` will always start from the `after-download` state,
-    // and we simulate the downloading time by posting a delayed task.
-    content::GetUIThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(return_task)),
-        base::Milliseconds(kMockDownloadPreparationTimeMillisecond));
-  } else {
-    std::move(return_task).Run();
-  }
+
+  CreateClient<AIClientRemote, AIPendingRemote, EchoAIClient>(
+      std::move(client_remote));
 }
 
 template <typename AIClientRemote,

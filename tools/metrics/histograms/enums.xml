@@ -12198,6 +12198,7 @@ from previous Chrome versions.
   <int value="-653616608" label="MacSyscallSandbox:disabled"/>
   <int value="-653505852" label="WebViewEmptyComponentLoaderPolicy:disabled"/>
   <int value="-652635658" label="OmniboxSquareIcons:enabled"/>
+  <int value="-652470387" label="AIProofreadingAPI:enabled"/>
   <int value="-652144124" label="BorealisBigGl:enabled"/>
   <int value="-650731862" label="ExperimentalRgbKeyboardPatterns:enabled"/>
   <int value="-650504533" label="enable-speculative-launch-service-worker"/>
@@ -19732,6 +19733,7 @@ from previous Chrome versions.
   <int value="2129639191" label="ArcWindowPredictor:disabled"/>
   <int value="2129814401" label="SyncTrustedVaultPassphrasePromo:enabled"/>
   <int value="2129929643" label="enable-use-zoom-for-dsf"/>
+  <int value="2130107768" label="AIProofreadingAPI:disabled"/>
   <int value="2130479056" label="CCTResizableSideSheet:disabled"/>
   <int value="2132018256" label="ThumbnailPlaceholder:disabled"/>
   <int value="2132335798" label="EcheSWA:disabled"/>

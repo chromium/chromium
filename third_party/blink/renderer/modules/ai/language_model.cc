@@ -600,8 +600,8 @@ ScriptPromise<IDLString> LanguageModel::prompt(
       script_state, options->getSignalOr(nullptr), resolver, task_runner_,
       AIMetrics::AISessionType::kLanguageModel,
       WTF::BindOnce(&LanguageModel::OnResponseComplete, WrapPersistent(this)),
-      WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
-                         WrapPersistent(this)));
+      WTF::BindRepeating(&LanguageModel::OnQuotaOverflow, WrapPersistent(this)),
+      /*resolve_override_callback=*/base::NullCallback());
 
   WTF::String json_schema = GetSchemaForInput(*processed_constraint, options);
   ConvertPromptInputsToMojo(

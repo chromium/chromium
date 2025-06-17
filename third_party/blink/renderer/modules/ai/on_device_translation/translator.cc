@@ -208,7 +208,8 @@ ScriptPromise<IDLString> Translator::translate(
       script_state, composite_signal, resolver, task_runner_,
       AIMetrics::AISessionType::kTranslator,
       /*complete_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
-      /*overflow_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)));
+      /*overflow_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
+      /*resolve_override_callback=*/base::NullCallback());
 
   // TODO(crbug.com/335374928): implement the error handling for the translation
   // service crash.

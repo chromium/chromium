@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_writing_assistance_create_client.h"
+#include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -21,13 +23,10 @@ void AIWritingAssistanceCreateClient<
     RemoteCreate(
         mojo::PendingRemote<mojom::blink::AIManagerCreateProofreaderClient>
           client_remote) {
-  // TODO(crbug.com/413766815): make actual call to mojo interface in a followup CL to
-  // implement the browser/mojo side.
-  // HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
-  //  AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
-  // ai_manager_remote->CreateProofreader(std::move(client_remote),
-  //                                     ToMojoProofreaderCreateOptions(
-  //                                         options_));
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
+  ai_manager_remote->CreateProofreader(
+      std::move(client_remote), ToMojoProofreaderCreateOptions(options_));
 }
 
 template <>
@@ -36,12 +35,10 @@ void AIWritingAssistanceCreateClient<
     mojom::blink::AIManagerCreateProofreaderClient,
     ProofreaderCreateOptions,
     Proofreader>::RemoteCanCreate(CanCreateCallback callback) {
-  // TODO(crbug.com/413766815): Call CanCreateProofreader() once supported.
-  // HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
-  // AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
-  // ai_manager_remote->CanCreateProofreader(
-  //    ToMojoProofreaderCreateOptions(options_),
-  //    std::move(callback));
+  HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
+      AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
+  ai_manager_remote->CanCreateProofreader(
+      ToMojoProofreaderCreateOptions(options_), std::move(callback));
 }
 
 Proofreader::Proofreader(
@@ -71,6 +68,11 @@ ScriptPromise<V8Availability> Proofreader::availability(
     ThrowInvalidContextException(exception_state);
     return ScriptPromise<V8Availability>();
   }
+  CHECK(options);
+  if (!ValidateAndCanonicalizeOptionLanguages(script_state->GetIsolate(),
+                                              options)) {
+    return ScriptPromise<V8Availability>();
+  }
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(
@@ -95,6 +97,8 @@ ScriptPromise<V8Availability> Proofreader::availability(
         resolver->Resolve(AvailabilityToV8(availability));
       },
       WrapPersistent(resolver), WrapPersistent(execution_context));
+  ai_manager_remote->CanCreateProofreader(
+      ToMojoProofreaderCreateOptions(options), std::move(callback));
 
   return promise;
 }
@@ -107,10 +111,17 @@ ScriptPromise<Proofreader> Proofreader::create(
     ThrowInvalidContextException(exception_state);
     return ScriptPromise<Proofreader>();
   }
+
   CHECK(options);
+  if (!ValidateAndCanonicalizeOptionLanguages(script_state->GetIsolate(),
+                                              options)) {
+    return ScriptPromise<Proofreader>();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<Proofreader>>(script_state);
   auto promise = resolver->Promise();
+
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
     resolver->Reject(signal->reason(script_state));
@@ -135,7 +146,7 @@ ScriptPromise<Proofreader> Proofreader::create(
 
 ScriptPromise<ProofreadResult> Proofreader::proofread(
     ScriptState* script_state,
-    const String& proofread_task,
+    const String& input,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
@@ -149,24 +160,42 @@ ScriptPromise<ProofreadResult> Proofreader::proofread(
   base::UmaHistogramEnumeration(
       AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kProofreader),
       AIMetrics::AIAPI::kProofreaderProofread);
-  base::UmaHistogramCounts1M(
-      AIMetrics::GetAISessionRequestSizeMetricName(
-          AIMetrics::AISessionType::kProofreader),
-      static_cast<int>(proofread_task.CharactersSizeInBytes()));
+  base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
+                                 AIMetrics::AISessionType::kProofreader),
+                             static_cast<int>(input.CharactersSizeInBytes()));
 
+  // Resolver and Promise for the final proofread() result.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<ProofreadResult>>(
       script_state);
   auto promise = resolver->Promise();
 
+  // Abort if receiving abort signal.
   AbortSignal* signal = options_->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
     resolver->Reject(signal->reason(script_state));
     return promise;
   }
 
-  // TODO(crbug.com/413767898): Implement the proofread logic.
-  auto* result = MakeGarbageCollected<ProofreadResult>();
-  resolver->Resolve(result);
+  String trimmed_input = input.StripWhiteSpace();
+  if (trimmed_input.empty()) {
+    auto* proofread_result = MakeGarbageCollected<ProofreadResult>();
+    proofread_result->setCorrectedInput(input);
+    resolver->Resolve(std::move(proofread_result));
+    return promise;
+  }
+
+  // Step 1: Prompt the model to proofread and return fully corrected text.
+  // Pass persistent refs to keep this instance alive during the response.
+  auto pending_remote = CreateModelExecutionResponder(
+      script_state, signal, /*resolver=*/nullptr, task_runner_,
+      AIMetrics::AISessionType::kProofreader,
+      /*complete_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
+      /*overflow_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
+      /*resolve_override_callback=*/
+      WTF::BindOnce(&Proofreader::OnProofreadComplete, WrapPersistent(this),
+                    WrapPersistent(resolver)));
+  remote_->Proofread(input, std::move(pending_remote));
+
   return promise;
 }
 
@@ -182,6 +211,41 @@ void Proofreader::destroy(ScriptState* script_state,
       AIMetrics::AIAPI::kSessionDestroy);
 
   remote_.reset();
+}
+
+// TODO(crbug.com424659255): Consolidate this with the one from
+// AIWritingAssistanceBase.
+bool Proofreader::ValidateAndCanonicalizeOptionLanguages(
+    v8::Isolate* isolate,
+    ProofreaderCreateCoreOptions* options) {
+  using LanguageList = std::optional<Vector<String>>;
+  if (options->hasExpectedInputLanguages()) {
+    LanguageList result = ValidateAndCanonicalizeBCP47Languages(
+        isolate, options->expectedInputLanguages());
+    if (!result) {
+      return false;
+    }
+    options->setExpectedInputLanguages(*result);
+  }
+
+  if (options->hasCorrectionExplanationLanguage()) {
+    LanguageList result = ValidateAndCanonicalizeBCP47Languages(
+        isolate, {options->correctionExplanationLanguage()});
+    if (!result) {
+      return false;
+    }
+    options->setCorrectionExplanationLanguage((*result)[0]);
+  }
+  return true;
+}
+
+void Proofreader::OnProofreadComplete(
+    ScriptPromiseResolver<ProofreadResult>* resolver,
+    const String& corrected_input) {
+  DCHECK(resolver);
+  auto* proofread_result = MakeGarbageCollected<ProofreadResult>();
+  proofread_result->setCorrectedInput(corrected_input);
+  resolver->Resolve(std::move(proofread_result));
 }
 
 }  // namespace blink
