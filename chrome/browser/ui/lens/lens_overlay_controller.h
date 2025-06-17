@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
-#include "chrome/browser/ui/webui/searchbox/lens_searchbox_handler.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
