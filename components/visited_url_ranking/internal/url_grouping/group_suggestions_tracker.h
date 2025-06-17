@@ -31,16 +31,22 @@ class GroupSuggestionsTracker {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  void AddSuggestion(
+  void AddShownSuggestion(
       const GroupSuggestion& suggestion,
       const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
           inputs,
-      GroupSuggestionsDelegate::UserResponse user_response);
+      UserResponse user_response);
 
   bool ShouldShowSuggestion(
       const GroupSuggestion& suggestion,
       const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
           inputs);
+
+  // Caches the provided suggestions. Overwrites any previously cached data.
+  void CacheSuggestions(GroupSuggestions suggestions);
+
+  // Retrieves a copy of the last cached suggestions. Does not clear the cache.
+  std::optional<GroupSuggestions> GetCachedSuggestions() const;
 
  private:
   struct ShownSuggestion {
@@ -60,8 +66,7 @@ class GroupSuggestionsTracker {
     base::Time time_shown;
     std::vector<int> tab_ids;
     std::set<int> host_hashes;
-    GroupSuggestionsDelegate::UserResponse user_response =
-        GroupSuggestionsDelegate::UserResponse::kUnknown;
+    UserResponse user_response = UserResponse::kUnknown;
   };
 
   bool HasOverlappingTabs(const GroupSuggestion& suggestion) const;
@@ -72,6 +77,10 @@ class GroupSuggestionsTracker {
 
   raw_ptr<PrefService> pref_service_;
   std::vector<ShownSuggestion> suggestions_;
+
+  // Holds the last set of computed suggestions for the GetCachedSuggestions
+  // API.
+  std::optional<GroupSuggestions> last_cached_suggestions_;
 };
 
 }  // namespace visited_url_ranking

@@ -60,7 +60,7 @@ URLVisitAggregate CreateVisitForTab(int tab_id,
 void VerifyUkmResults(const std::vector<URLVisitAggregate>& candidates,
                       ukm::TestAutoSetUkmRecorder& ukm_recorder,
                       GroupSuggestion::SuggestionReason suggestion_reason,
-                      GroupSuggestionsDelegate::UserResponse user_response) {
+                      UserResponse user_response) {
   auto ukm_entries = ukm_recorder.GetEntriesByName(
       GroupSuggestionPromo_Suggestion::kEntryName);
   ASSERT_EQ(candidates.size(), ukm_entries.size());
@@ -126,7 +126,7 @@ class GroupSuggestionsManagerTest : public testing::Test {
       GroupSuggestion shown_suggestion,
       const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
           inputs,
-      GroupSuggestionsDelegate::UserResponseMetadata user_response) {
+      UserResponseMetadata user_response) {
     suggestions_manager_->OnSuggestionResult(std::move(shown_suggestion),
                                              inputs, std::move(user_response));
   }
@@ -205,15 +205,15 @@ TEST_F(GroupSuggestionsManagerTest, OnSuggestionResult_RecordUKM) {
     inputs.push_back(AsInputContext(kSuggestionsPredictionSchema, candidate));
   }
   // Prepare user response.
-  GroupSuggestionsDelegate::UserResponseMetadata response;
-  response.user_response = GroupSuggestionsDelegate::UserResponse::kAccepted;
+  UserResponseMetadata response;
+  response.user_response = UserResponse::kAccepted;
 
   OnSuggestionResult(std::move(shown_suggestion), std::move(inputs),
                      std::move(response));
 
   VerifyUkmResults(std::move(candidates), ukm_recorder,
                    GroupSuggestion::SuggestionReason::kRecentlyOpened,
-                   GroupSuggestionsDelegate::UserResponse::kAccepted);
+                   UserResponse::kAccepted);
 }
 
 TEST_F(GroupSuggestionsManagerTest,
@@ -241,8 +241,8 @@ TEST_F(GroupSuggestionsManagerTest,
     inputs.push_back(AsInputContext(kSuggestionsPredictionSchema, candidate));
   }
   // Prepare user response.
-  GroupSuggestionsDelegate::UserResponseMetadata response;
-  response.user_response = GroupSuggestionsDelegate::UserResponse::kAccepted;
+  UserResponseMetadata response;
+  response.user_response = UserResponse::kAccepted;
 
   OnSuggestionResult(std::move(shown_suggestion), std::move(inputs),
                      std::move(response));
@@ -252,7 +252,7 @@ TEST_F(GroupSuggestionsManagerTest,
   candidates.pop_back();
   VerifyUkmResults(std::move(candidates), ukm_recorder,
                    GroupSuggestion::SuggestionReason::kRecentlyOpened,
-                   GroupSuggestionsDelegate::UserResponse::kAccepted);
+                   UserResponse::kAccepted);
 }
 
 TEST_F(GroupSuggestionsManagerTest,

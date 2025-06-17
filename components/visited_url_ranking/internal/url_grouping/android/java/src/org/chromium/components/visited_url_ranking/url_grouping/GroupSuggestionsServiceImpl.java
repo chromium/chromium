@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /**
@@ -84,6 +85,15 @@ public class GroupSuggestionsServiceImpl implements GroupSuggestionsService {
         mDelegateBridge.unregisterDelegate(delegate);
     }
 
+    @Override
+    public @Nullable CachedSuggestions getCachedSuggestions(int windowId) {
+        if (mNativePtr == 0) {
+            // Return CachedSuggestions with an empty list if the native service isn't initialized.
+            return new CachedSuggestions(null, (res) -> {});
+        }
+        return GroupSuggestionsServiceImplJni.get().getCachedSuggestions(mNativePtr, windowId);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -110,5 +120,8 @@ public class GroupSuggestionsServiceImpl implements GroupSuggestionsService {
                 long nativeGroupSuggestionsServiceAndroid, int tabId, int transitionType);
 
         void didEnterTabSwitcher(long nativeGroupSuggestionsServiceAndroid);
+
+        CachedSuggestions getCachedSuggestions(
+                long nativeGroupSuggestionsServiceAndroid, int windowId);
     }
 }

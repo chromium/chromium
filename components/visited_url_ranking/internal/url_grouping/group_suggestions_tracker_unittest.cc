@@ -109,13 +109,13 @@ class GroupSuggestionsTrackerTest : public testing::Test {
     }
   }
 
-  // Wrapper for AddSuggestion to pass inputs.
-  void AddSuggestion(
+  // Wrapper for AddShownSuggestion to pass inputs.
+  void AddShownSuggestion(
       const GroupSuggestion& suggestion,
       const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
           inputs,
-      GroupSuggestionsDelegate::UserResponse user_response) {
-    tracker_->AddSuggestion(suggestion, inputs, user_response);
+      UserResponse user_response) {
+    tracker_->AddShownSuggestion(suggestion, inputs, user_response);
   }
 
  protected:
@@ -155,8 +155,8 @@ TEST_F(GroupSuggestionsTrackerTest, ShouldShowSuggestion_OverlappingTabs) {
   suggestion1.tab_ids = {1, 2, 3};
   suggestion1.suggestion_reason =
       GroupSuggestion::SuggestionReason::kRecentlyOpened;
-  tracker_->AddSuggestion(suggestion1, empty_inputs,
-                          GroupSuggestionsDelegate::UserResponse::kAccepted);
+  tracker_->AddShownSuggestion(suggestion1, empty_inputs,
+                               UserResponse::kAccepted);
   suggestions.push_back(std::move(suggestion1));
   VerifySuggestionsStorage(suggestions);
 
@@ -172,8 +172,8 @@ TEST_F(GroupSuggestionsTrackerTest, ShouldShowSuggestion_OverlappingTabs) {
       GroupSuggestion::SuggestionReason::kRecentlyOpened;
   EXPECT_TRUE(tracker_->ShouldShowSuggestion(suggestion3, empty_inputs));
 
-  tracker_->AddSuggestion(suggestion3, empty_inputs,
-                          GroupSuggestionsDelegate::UserResponse::kAccepted);
+  tracker_->AddShownSuggestion(suggestion3, empty_inputs,
+                               UserResponse::kAccepted);
   suggestions.push_back(std::move(suggestion3));
   VerifySuggestionsStorage(suggestions);
 
@@ -190,8 +190,8 @@ TEST_F(GroupSuggestionsTrackerTest,
   suggestion1.tab_ids = {1, 2, 3};
   suggestion1.suggestion_reason =
       GroupSuggestion::SuggestionReason::kRecentlyOpened;
-  tracker_->AddSuggestion(suggestion1, empty_inputs,
-                          GroupSuggestionsDelegate::UserResponse::kAccepted);
+  tracker_->AddShownSuggestion(suggestion1, empty_inputs,
+                               UserResponse::kAccepted);
   suggestions.push_back(std::move(suggestion1));
   VerifySuggestionsStorage(suggestions);
 
@@ -214,8 +214,8 @@ TEST_F(GroupSuggestionsTrackerTest, ShouldShowSuggestion_DifferentReasons) {
   suggestion1.tab_ids = {1, 2, 3};
   suggestion1.suggestion_reason =
       GroupSuggestion::SuggestionReason::kRecentlyOpened;
-  tracker_->AddSuggestion(suggestion1, empty_inputs,
-                          GroupSuggestionsDelegate::UserResponse::kAccepted);
+  tracker_->AddShownSuggestion(suggestion1, empty_inputs,
+                               UserResponse::kAccepted);
   suggestions.push_back(std::move(suggestion1));
   VerifySuggestionsStorage(suggestions);
 
@@ -240,8 +240,8 @@ TEST_F(GroupSuggestionsTrackerTest,
   suggestion1.tab_ids = {1, 2};
   suggestion1.suggestion_reason =
       GroupSuggestion::SuggestionReason::kSwitchedBetween;
-  tracker_->AddSuggestion(suggestion1, empty_inputs,
-                          GroupSuggestionsDelegate::UserResponse::kAccepted);
+  tracker_->AddShownSuggestion(suggestion1, empty_inputs,
+                               UserResponse::kAccepted);
   suggestions.push_back(std::move(suggestion1));
   VerifySuggestionsStorage(suggestions);
 
@@ -256,8 +256,8 @@ TEST_F(GroupSuggestionsTrackerTest,
   suggestion3.suggestion_reason =
       GroupSuggestion::SuggestionReason::kSwitchedBetween;
   EXPECT_TRUE(tracker_->ShouldShowSuggestion(suggestion3, empty_inputs));
-  tracker_->AddSuggestion(suggestion3, empty_inputs,
-                          GroupSuggestionsDelegate::UserResponse::kAccepted);
+  tracker_->AddShownSuggestion(suggestion3, empty_inputs,
+                               UserResponse::kAccepted);
   suggestions.push_back(std::move(suggestion3));
   VerifySuggestionsStorage(suggestions);
 
@@ -276,8 +276,8 @@ TEST_F(GroupSuggestionsTrackerTest,
   suggestion1.tab_ids = {1, 2, 3};
   suggestion1.suggestion_reason =
       GroupSuggestion::SuggestionReason::kSimilarSource;
-  tracker_->AddSuggestion(suggestion1, empty_inputs,
-                          GroupSuggestionsDelegate::UserResponse::kAccepted);
+  tracker_->AddShownSuggestion(suggestion1, empty_inputs,
+                               UserResponse::kAccepted);
   suggestions.push_back(std::move(suggestion1));
   VerifySuggestionsStorage(suggestions);
 
@@ -287,8 +287,8 @@ TEST_F(GroupSuggestionsTrackerTest,
       GroupSuggestion::SuggestionReason::kSimilarSource;
   EXPECT_TRUE(tracker_->ShouldShowSuggestion(suggestion2, empty_inputs));
 
-  tracker_->AddSuggestion(suggestion2, empty_inputs,
-                          GroupSuggestionsDelegate::UserResponse::kAccepted);
+  tracker_->AddShownSuggestion(suggestion2, empty_inputs,
+                               UserResponse::kAccepted);
   suggestions.push_back(std::move(suggestion2));
   VerifySuggestionsStorage(suggestions);
 
@@ -299,7 +299,7 @@ TEST_F(GroupSuggestionsTrackerTest,
   EXPECT_FALSE(tracker_->ShouldShowSuggestion(suggestion3, empty_inputs));
 }
 
-TEST_F(GroupSuggestionsTrackerTest, AddSuggestion_Storeshosthashes) {
+TEST_F(GroupSuggestionsTrackerTest, AddShownSuggestion_Storeshosthashes) {
   GroupSuggestion suggestion1;
   suggestion1.tab_ids = {1, 2, 3};
   suggestion1.suggestion_reason =
@@ -308,8 +308,7 @@ TEST_F(GroupSuggestionsTrackerTest, AddSuggestion_Storeshosthashes) {
                                    {2, "https://hostb.com/path2"},
                                    {3, "https://hosta.com/path3"}});
 
-  AddSuggestion(suggestion1, inputs1,
-                GroupSuggestionsDelegate::UserResponse::kAccepted);
+  AddShownSuggestion(suggestion1, inputs1, UserResponse::kAccepted);
 
   std::set<int> expected_hashes1;
   expected_hashes1.insert(base::PersistentHash("hosta.com"));
@@ -323,8 +322,7 @@ TEST_F(GroupSuggestionsTrackerTest, AddSuggestion_Storeshosthashes) {
   auto inputs2 = CreateTestInputs(
       {{4, "https://hostc.com/path"}, {5, "https://hostd.com/path"}});
 
-  AddSuggestion(suggestion2, inputs2,
-                GroupSuggestionsDelegate::UserResponse::kRejected);
+  AddShownSuggestion(suggestion2, inputs2, UserResponse::kRejected);
 
   std::set<int> expected_hashes2;
   expected_hashes2.insert(base::PersistentHash("hostc.com"));
@@ -342,8 +340,7 @@ TEST_F(GroupSuggestionsTrackerTest,
   auto inputs1 = CreateTestInputs({{1, "https://hosta.com/p1"},
                                    {2, "https://hostb.com/p2"},
                                    {3, "https://hostc.com/p3"}});
-  AddSuggestion(suggestion1, inputs1,
-                GroupSuggestionsDelegate::UserResponse::kAccepted);
+  AddShownSuggestion(suggestion1, inputs1, UserResponse::kAccepted);
 
   GroupSuggestion suggestion2;  // Candidate
   suggestion2.tab_ids = {4, 5, 6};
@@ -383,8 +380,7 @@ TEST_F(GroupSuggestionsTrackerTest,
   auto inputs1 = CreateTestInputs({{1, "https://hosta.com/p1"},
                                    {2, "https://hostb.com/p2"},
                                    {3, "https://hostc.com/p3"}});
-  AddSuggestion(suggestion1, inputs1,
-                GroupSuggestionsDelegate::UserResponse::kAccepted);
+  AddShownSuggestion(suggestion1, inputs1, UserResponse::kAccepted);
 
   GroupSuggestion suggestion2;
   suggestion2.tab_ids = {4, 5, 6};  // New tab IDs to pass tab overlap check
@@ -408,8 +404,7 @@ TEST_F(GroupSuggestionsTrackerTest,
   auto inputs1 = CreateTestInputs({{1, "https://hosta.com/p1"},
                                    {2, "https://hostb.com/p2"},
                                    {3, "https://hostc.com/p3"}});
-  AddSuggestion(suggestion1, inputs1,
-                GroupSuggestionsDelegate::UserResponse::kAccepted);
+  AddShownSuggestion(suggestion1, inputs1, UserResponse::kAccepted);
 
   GroupSuggestion suggestion2;  // Candidate
   suggestion2.tab_ids = {4, 5, 6};
@@ -434,8 +429,7 @@ TEST_F(GroupSuggestionsTrackerTest,
                                    {3, "https://hostc.com"},
                                    {7, "https://hostg.com"},
                                    {8, "https://hosth.com"}});
-  AddSuggestion(suggestion1, inputs1,
-                GroupSuggestionsDelegate::UserResponse::kAccepted);
+  AddShownSuggestion(suggestion1, inputs1, UserResponse::kAccepted);
 
   // Candidate 2: High tab overlap, low host overlap
   GroupSuggestion suggestion2;
@@ -481,8 +475,7 @@ TEST_F(GroupSuggestionsTrackerTest,
                                          {2, "https://hostb.com"},
                                          {3, "https://hostc.com"},
                                          {4, "https://hostd.com"}});
-  AddSuggestion(suggestion_stored, inputs_stored,
-                GroupSuggestionsDelegate::UserResponse::kAccepted);
+  AddShownSuggestion(suggestion_stored, inputs_stored, UserResponse::kAccepted);
   // Stored hosts: A, B, C, D
 
   // Candidate 1: Reason kRecentlyOpened (threshold 0.55)

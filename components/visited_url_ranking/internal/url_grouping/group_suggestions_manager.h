@@ -47,6 +47,11 @@ class GroupSuggestionsManager {
     consecutive_computation_delay_ = delay;
   }
 
+  // Retrieves the last cached suggestions for the given scope.
+  // Does not clear the cache.
+  std::optional<CachedSuggestions> GetCachedSuggestions(
+      const GroupSuggestionsService::Scope& scope);
+
  private:
   friend class GroupSuggestionsManagerTest;
 
@@ -62,7 +67,7 @@ class GroupSuggestionsManager {
 
   void ShowSuggestion(
       const GroupSuggestionsService::Scope& scope,
-      std::optional<GroupSuggestions> suggestions,
+      GroupSuggestions suggestions,
       const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
           inputs);
 
@@ -70,7 +75,7 @@ class GroupSuggestionsManager {
       const GroupSuggestion& shown_suggestion,
       const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
           inputs,
-      GroupSuggestionsDelegate::UserResponseMetadata user_response);
+      UserResponseMetadata user_response);
 
   const raw_ptr<VisitedURLRankingService> visited_url_ranking_service_;
   base::flat_map<GroupSuggestionsDelegate*, DelegateMetadata>

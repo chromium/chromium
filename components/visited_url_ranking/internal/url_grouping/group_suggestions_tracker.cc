@@ -180,8 +180,7 @@ GroupSuggestionsTracker::ShownSuggestion::FromDict(
     return std::nullopt;
   }
   suggestion.user_response =
-      static_cast<GroupSuggestionsDelegate::UserResponse>(
-          user_response_optional.value());
+      static_cast<UserResponse>(user_response_optional.value());
   return suggestion;
 }
 
@@ -190,11 +189,11 @@ void GroupSuggestionsTracker::RegisterProfilePrefs(
   registry->RegisterListPref(kGroupSuggestionsTrackerStatePref);
 }
 
-void GroupSuggestionsTracker::AddSuggestion(
+void GroupSuggestionsTracker::AddShownSuggestion(
     const GroupSuggestion& suggestion,
     const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
         inputs,
-    GroupSuggestionsDelegate::UserResponse user_response) {
+    UserResponse user_response) {
   ShownSuggestion item;
   item.time_shown = base::Time::Now();
   item.tab_ids = suggestion.tab_ids;
@@ -284,6 +283,18 @@ bool GroupSuggestionsTracker::HasOverlappingHosts(
       GetOverlappingTabCount(all_shown_hosts, suggestion_hosts);
   return hosts_overlap >
          kReasonToMaxOverlappingTabs.at(suggestion.suggestion_reason);
+}
+
+void GroupSuggestionsTracker::CacheSuggestions(GroupSuggestions suggestions) {
+  last_cached_suggestions_ = std::move(suggestions);
+}
+
+std::optional<GroupSuggestions> GroupSuggestionsTracker::GetCachedSuggestions()
+    const {
+  if (last_cached_suggestions_) {
+    return last_cached_suggestions_->DeepCopy();
+  }
+  return std::nullopt;
 }
 
 }  // namespace visited_url_ranking

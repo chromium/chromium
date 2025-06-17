@@ -20,12 +20,12 @@ class GroupSuggestionsServiceAndroid : public base::SupportsUserData::Data {
   explicit GroupSuggestionsServiceAndroid(GroupSuggestionsService* service);
   ~GroupSuggestionsServiceAndroid() override;
 
-  static GroupSuggestionsDelegate::UserResponseMetadata ToNativeUserResponse(
+  static UserResponseMetadata ToNativeUserResponse(
       JNIEnv* env,
       const jni_zero::JavaRef<jobject>& j_metadata);
   static jni_zero::ScopedJavaLocalRef<jobject> FromNativeUserResponse(
       JNIEnv* env,
-      const GroupSuggestionsDelegate::UserResponseMetadata& metadata);
+      const UserResponseMetadata& metadata);
 
   void DidAddTab(JNIEnv* env, int tab_id, int tab_launch_type);
 
@@ -44,6 +44,10 @@ class GroupSuggestionsServiceAndroid : public base::SupportsUserData::Data {
   void OnDidFinishNavigation(JNIEnv* env, int tab_id, int page_transition);
 
   void DidEnterTabSwitcher(JNIEnv* env);
+
+  base::android::ScopedJavaLocalRef<jobject> GetCachedSuggestions(
+      JNIEnv* env,
+      jint window_id);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
@@ -72,9 +76,8 @@ namespace jni_zero {
 // Convert from java UserResponseMetadata.java pointer to native
 // UserResponseMetadata object.
 template <>
-inline visited_url_ranking::GroupSuggestionsDelegate::UserResponseMetadata
-FromJniType<
-    visited_url_ranking::GroupSuggestionsDelegate::UserResponseMetadata>(
+inline visited_url_ranking::UserResponseMetadata
+FromJniType<visited_url_ranking::UserResponseMetadata>(
     JNIEnv* env,
     const JavaRef<jobject>& j_metadata) {
   return visited_url_ranking::GroupSuggestionsServiceAndroid::
@@ -85,10 +88,9 @@ FromJniType<
 // UserResponseMetadata.java object pointer.
 template <>
 inline ScopedJavaLocalRef<jobject>
-ToJniType<visited_url_ranking::GroupSuggestionsDelegate::UserResponseMetadata>(
+ToJniType<visited_url_ranking::UserResponseMetadata>(
     JNIEnv* env,
-    const visited_url_ranking::GroupSuggestionsDelegate::UserResponseMetadata&
-        metadata) {
+    const visited_url_ranking::UserResponseMetadata& metadata) {
   return visited_url_ranking::GroupSuggestionsServiceAndroid::
       FromNativeUserResponse(env, metadata);
 }

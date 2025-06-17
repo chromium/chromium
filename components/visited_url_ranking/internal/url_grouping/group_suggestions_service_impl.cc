@@ -8,6 +8,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/visited_url_ranking/internal/url_grouping/group_suggestions_manager.h"
 #include "components/visited_url_ranking/internal/url_grouping/tab_event_tracker_impl.h"
+#include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
 
 namespace visited_url_ranking {
 
@@ -38,6 +39,11 @@ void GroupSuggestionsServiceImpl::RegisterProfilePrefs(
 
 TabEventTracker* GroupSuggestionsServiceImpl::GetTabEventTracker() {
   return tab_tracker_.get();
+}
+
+std::optional<CachedSuggestions>
+GroupSuggestionsServiceImpl::GetCachedSuggestions(const Scope& scope) {
+  return group_suggestions_manager_->GetCachedSuggestions(scope);
 }
 
 void GroupSuggestionsServiceImpl::RegisterDelegate(

@@ -40,6 +40,8 @@ class GroupSuggestionsServiceImpl : public GroupSuggestionsService,
 
   // GroupSuggestionsService impl:
   TabEventTracker* GetTabEventTracker() override;
+  std::optional<CachedSuggestions> GetCachedSuggestions(
+      const Scope& scope) override;
   void RegisterDelegate(GroupSuggestionsDelegate* delegate,
                         const Scope& scope) override;
   void UnregisterDelegate(GroupSuggestionsDelegate* delegate) override;

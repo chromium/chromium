@@ -29,6 +29,21 @@ GroupSuggestions::~GroupSuggestions() = default;
 GroupSuggestions::GroupSuggestions(GroupSuggestions&&) = default;
 GroupSuggestions& GroupSuggestions::operator=(GroupSuggestions&&) = default;
 
+GroupSuggestions GroupSuggestions::DeepCopy() const {
+  GroupSuggestions copy;
+  copy.suggestions.reserve(suggestions.size());
+  for (const auto& suggestion : suggestions) {
+    copy.suggestions.push_back(suggestion.DeepCopy());
+  }
+  return copy;
+}
+
+CachedSuggestions::CachedSuggestions() = default;
+CachedSuggestions::~CachedSuggestions() = default;
+
+CachedSuggestions::CachedSuggestions(CachedSuggestions&&) = default;
+CachedSuggestions& CachedSuggestions::operator=(CachedSuggestions&&) = default;
+
 const char* GetSuggestionReasonString(
     GroupSuggestion::SuggestionReason reason) {
   switch (reason) {

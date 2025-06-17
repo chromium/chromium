@@ -97,6 +97,7 @@ if (is_android) {
     srcjar_deps = [ ":group_suggestions_generated_enums" ]
 
     sources = [
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/CachedSuggestions.java",
       "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestion.java",
       "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestions.java",
       "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestionsService.java",
@@ -115,6 +116,7 @@ if (is_android) {
 
   generate_jni("jni_headers") {
     sources = [
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/CachedSuggestions.java",
       "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestion.java",
       "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestions.java",
       "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/UserResponseMetadata.java",
@@ -123,7 +125,7 @@ if (is_android) {
 
   java_cpp_enum("group_suggestions_generated_enums") {
     sources = [
-      "url_grouping/group_suggestions_delegate.h",
+      "url_grouping/group_suggestions.h",
       "url_grouping/tab_event_tracker.h",
     ]
   }

@@ -6,6 +6,7 @@ package org.chromium.components.visited_url_ranking.url_grouping;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /**
@@ -51,4 +52,13 @@ public interface GroupSuggestionsService {
 
     /** Unregisters a delegate to receive backend suggestions. */
     void unregisterDelegate(Delegate delegate);
+
+    /**
+     * Returns the cached suggestions for the given window/scope.
+     *
+     * @param windowId The ID of the window or tab model scope.
+     * @return {@link CachedSuggestions} containing suggestions for the window, or null if none are
+     *     cached.
+     */
+    @Nullable CachedSuggestions getCachedSuggestions(int windowId);
 }

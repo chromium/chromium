@@ -4,19 +4,24 @@
 
 #include "components/visited_url_ranking/internal/url_grouping/android/group_suggestions_service_android.h"
 
+#include <jni.h>
+
 #include <memory>
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_callback.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_delegate.h"
+#include "components/visited_url_ranking/public/url_grouping/group_suggestions_service.h"
 #include "components/visited_url_ranking/public/url_grouping/tab_event_tracker.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/visited_url_ranking/internal/jni_headers/DelegateBridge_jni.h"
 #include "components/visited_url_ranking/internal/jni_headers/GroupSuggestionsServiceImpl_jni.h"
+#include "components/visited_url_ranking/public/jni_headers/CachedSuggestions_jni.h"
 #include "components/visited_url_ranking/public/jni_headers/GroupSuggestion_jni.h"
 #include "components/visited_url_ranking/public/jni_headers/GroupSuggestions_jni.h"
 #include "components/visited_url_ranking/public/jni_headers/UserResponseMetadata_jni.h"
@@ -55,31 +60,61 @@ TabEventTracker::TabSelectionType ConvertIntToTabSelectionType(
   }
 }
 
-GroupSuggestionsDelegate::UserResponse ConvertIntToUserResponse(
-    int user_response) {
+UserResponse ConvertIntToUserResponse(int user_response) {
   switch (user_response) {
     case 0:
-      return GroupSuggestionsDelegate::UserResponse::kUnknown;
+      return UserResponse::kUnknown;
     case 1:
-      return GroupSuggestionsDelegate::UserResponse::kNotShown;
+      return UserResponse::kNotShown;
     case 2:
-      return GroupSuggestionsDelegate::UserResponse::kAccepted;
+      return UserResponse::kAccepted;
     case 3:
-      return GroupSuggestionsDelegate::UserResponse::kRejected;
+      return UserResponse::kRejected;
     case 4:
-      return GroupSuggestionsDelegate::UserResponse::kIgnored;
+      return UserResponse::kIgnored;
     default:
-      return GroupSuggestionsDelegate::UserResponse::kUnknown;
+      return UserResponse::kUnknown;
   }
 }
+
+ScopedJavaLocalRef<jobject> GetJavaSuggestionFrom(
+    JNIEnv* env,
+    const GroupSuggestion& group_suggestion) {
+  ScopedJavaLocalRef<jintArray> tab_ids =
+      base::android::ToJavaIntArray(env, group_suggestion.tab_ids);
+  ScopedJavaLocalRef<jstring> suggested_name =
+      base::android::ConvertUTF16ToJavaString(env,
+                                              group_suggestion.suggested_name);
+  ScopedJavaLocalRef<jstring> promo_header =
+      base::android::ConvertUTF8ToJavaString(env,
+                                             group_suggestion.promo_header);
+  ScopedJavaLocalRef<jstring> promo_contents =
+      base::android::ConvertUTF8ToJavaString(env,
+                                             group_suggestion.promo_contents);
+  return Java_GroupSuggestion_createGroupSuggestion(
+      env, tab_ids, group_suggestion.suggestion_id.GetUnsafeValue(),
+      static_cast<int>(group_suggestion.suggestion_reason), suggested_name,
+      promo_header, promo_contents);
+}
+
+ScopedJavaLocalRef<jobject> GetJavaSuggestionsFrom(
+    JNIEnv* env,
+    const GroupSuggestions& group_suggestions) {
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> suggestions;
+  suggestions.reserve(group_suggestions.suggestions.size());
+  for (const auto& group_suggestion : group_suggestions.suggestions) {
+    suggestions.emplace_back(GetJavaSuggestionFrom(env, group_suggestion));
+  }
+  return Java_GroupSuggestions_createGroupSuggestions(env, suggestions);
+}
+
 }  // namespace
 
 // static
-GroupSuggestionsDelegate::UserResponseMetadata
-GroupSuggestionsServiceAndroid::ToNativeUserResponse(
+UserResponseMetadata GroupSuggestionsServiceAndroid::ToNativeUserResponse(
     JNIEnv* env,
     const JavaRef<jobject>& j_metadata) {
-  GroupSuggestionsDelegate::UserResponseMetadata data;
+  UserResponseMetadata data;
   int suggestion_id_int = static_cast<int>(
       Java_UserResponseMetadata_getSuggestionId(env, j_metadata));
   data.suggestion_id =
@@ -93,7 +128,7 @@ GroupSuggestionsServiceAndroid::ToNativeUserResponse(
 ScopedJavaLocalRef<jobject>
 GroupSuggestionsServiceAndroid::FromNativeUserResponse(
     JNIEnv* env,
-    const GroupSuggestionsDelegate::UserResponseMetadata& metadata) {
+    const UserResponseMetadata& metadata) {
   return Java_UserResponseMetadata_create(
       env, static_cast<jint>(metadata.suggestion_id.GetUnsafeValue()),
       static_cast<jint>(metadata.user_response));
@@ -143,30 +178,10 @@ GroupSuggestionsServiceAndroid::SuggestionDelegateBridge::
 
 void GroupSuggestionsServiceAndroid::SuggestionDelegateBridge::ShowSuggestion(
     const GroupSuggestions& group_suggestions,
-    GroupSuggestionsDelegate::SuggestionResponseCallback response_callback) {
+    SuggestionResponseCallback response_callback) {
   JNIEnv* env = AttachCurrentThread();
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> suggestions;
-  suggestions.reserve(group_suggestions.suggestions.size());
-  for (const auto& group_suggestion : group_suggestions.suggestions) {
-    ScopedJavaLocalRef<jintArray> tab_ids =
-        base::android::ToJavaIntArray(env, group_suggestion.tab_ids);
-    ScopedJavaLocalRef<jstring> suggested_name =
-        base::android::ConvertUTF16ToJavaString(
-            env, group_suggestion.suggested_name);
-    ScopedJavaLocalRef<jstring> promo_header =
-        base::android::ConvertUTF8ToJavaString(env,
-                                               group_suggestion.promo_header);
-    ScopedJavaLocalRef<jstring> promo_contents =
-        base::android::ConvertUTF8ToJavaString(env,
-                                               group_suggestion.promo_contents);
-    suggestions.emplace_back(Java_GroupSuggestion_createGroupSuggestion(
-        env, tab_ids, group_suggestion.suggestion_id.GetUnsafeValue(),
-        static_cast<int>(group_suggestion.suggestion_reason), suggested_name,
-        promo_header, promo_contents));
-  }
   Java_DelegateBridge_showSuggestion(
-      env, java_obj_,
-      Java_GroupSuggestions_createGroupSuggestions(env, suggestions),
+      env, java_obj_, GetJavaSuggestionsFrom(env, group_suggestions),
       base::android::ToJniCallback(env, std::move(response_callback)));
 }
 
@@ -255,6 +270,27 @@ void GroupSuggestionsServiceAndroid::OnDidFinishNavigation(
 
 void GroupSuggestionsServiceAndroid::DidEnterTabSwitcher(JNIEnv* env) {
   group_suggestions_service_->GetTabEventTracker()->DidEnterTabSwitcher();
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+GroupSuggestionsServiceAndroid::GetCachedSuggestions(JNIEnv* env,
+                                                     jint window_id) {
+  // TODO(ssid): Correctly map window_id to Scope.
+  GroupSuggestionsService::Scope scope;
+  std::optional<CachedSuggestions> cpp_cached_suggestions =
+      group_suggestions_service_->GetCachedSuggestions(scope);
+
+  ScopedJavaLocalRef<jobject> java_group_suggestions;
+  if (!cpp_cached_suggestions) {
+    return java_group_suggestions;
+  }
+  java_group_suggestions =
+      GetJavaSuggestionsFrom(env, cpp_cached_suggestions->suggestions);
+
+  return visited_url_ranking::Java_CachedSuggestions_create(
+      env, java_group_suggestions,
+      base::android::ToJniCallback(
+          env, std::move(cpp_cached_suggestions->response_callback)));
 }
 
 ScopedJavaLocalRef<jobject> GroupSuggestionsServiceAndroid::GetJavaObject() {
