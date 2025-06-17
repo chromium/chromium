@@ -71,9 +71,6 @@ void DesktopCapturerAndroid::CaptureFrame() {
     return;
   }
 
-  // TODO(crbug.com/352187279): `DesktopCaptureDevice` expects results in ARGB
-  // but Android generally produces results in ABGR. We should add
-  // `webrtc::FourCC` info to the `DesktopCapturer` interface to handle this.
   callback_->OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS,
                              std::move(next_frame_));
   next_frame_.reset();
@@ -127,6 +124,29 @@ void DesktopCapturerAndroid::Shutdown() {
   CHECK(!finishing_);
   finishing_ = true;
 }
+
+namespace {
+
+// TODO(crbug.com/352187279): `DesktopCaptureDevice` expects results in ARGB
+// but Android generally produces results in ABGR. We should add
+// `webrtc::FourCC` info to the `DesktopCapturer` interface to handle this.
+void RgbaToBgra(webrtc::DesktopFrame& frame) {
+  static_assert(webrtc::DesktopFrame::kBytesPerPixel == 4,
+                "kBytesPerPixel must be 4");
+  uint8_t* data = frame.data();
+  for (int r = 0; r < frame.size().height(); ++r) {
+    for (int c = 2; c < frame.stride();
+         c += webrtc::DesktopFrame::kBytesPerPixel) {
+      // SAFETY: `c - 2` is non-negative and c is less than the stride.
+      UNSAFE_BUFFERS(std::swap(data[c - 2], data[c]));
+    }
+    // SAFETY: It's guaranteed that the size of the memory pointed to by
+    // `frame.data()` is at least height * stride.
+    UNSAFE_BUFFERS(data += frame.stride());
+  }
+}
+
+}  // namespace
 
 void DesktopCapturerAndroid::ProcessRgbaFrame(PlaneInfo plane) {
   CHECK(task_runner_);
@@ -193,6 +213,8 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(PlaneInfo plane) {
       span.get_at(offset.ValueOrDie()),
       static_cast<uint32_t>(plane.row_stride.ValueOrDie()),
       webrtc::DesktopRect::MakeSize(size));
+
+  RgbaToBgra(*next_frame_);
 
   base::android::RunRunnableAndroid(plane.release_cb);
 }
