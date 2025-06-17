@@ -38,6 +38,10 @@ class MultipleRequestFacilitatedPaymentsNetworkInterface
   using InitiatePaymentResponseCallback = base::OnceCallback<void(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult,
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>)>;
+  using GetDetailsForCreatePaymentInstrumentResponseCallback =
+      base::OnceCallback<void(
+          autofill::payments::PaymentsAutofillClient::PaymentsRpcResult,
+          bool)>;
   using RequestId =
       base::StrongAlias<struct autofill::payments::RequestIdTag, std::string>;
 
@@ -61,6 +65,13 @@ class MultipleRequestFacilitatedPaymentsNetworkInterface
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
           request_details,
       InitiatePaymentResponseCallback response_callback,
+      const std::string& app_locale);
+
+  // Makes a `GetDetailsForCreatePaymentInstrumentRequest` to the Payments
+  // server. This method is virtual so it can be overridden in tests.
+  virtual RequestId GetDetailsForCreatePaymentInstrument(
+      int64_t billing_customer_number,
+      GetDetailsForCreatePaymentInstrumentResponseCallback response_callback,
       const std::string& app_locale);
 
  private:

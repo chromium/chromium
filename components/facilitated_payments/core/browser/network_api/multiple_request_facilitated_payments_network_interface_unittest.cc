@@ -59,6 +59,16 @@ class MultipleRequestFacilitatedPaymentsNetworkInterfaceTest
         "language-LOCALE");
   }
 
+  void SendGetDetailsForCreatePaymentInstrumentRequest() {
+    id_ = payments_network_interface_->GetDetailsForCreatePaymentInstrument(
+        123,
+        base::BindOnce(
+            &MultipleRequestFacilitatedPaymentsNetworkInterfaceTest::
+                OnGetDetailsForCreatePaymentInstrumentResponseReceived,
+            weak_ptr_factory_.GetWeakPtr()),
+        "language-LOCALE");
+  }
+
   // TODO: crbug.com/362787977 - After single request PaymentsNetworkInterface
   // is cleaned up, move this function to the
   // payments_network_interface_test_base.*.
@@ -75,6 +85,7 @@ class MultipleRequestFacilitatedPaymentsNetworkInterfaceTest
       response_details_;
   std::unique_ptr<MultipleRequestFacilitatedPaymentsNetworkInterface>
       payments_network_interface_;
+  bool is_eligible_for_pix_account_linking_ = false;
 
  private:
   void OnInitiatePaymentResponseReceived(
@@ -83,6 +94,13 @@ class MultipleRequestFacilitatedPaymentsNetworkInterfaceTest
           response_details) {
     result_ = result;
     response_details_ = std::move(response_details);
+  }
+
+  void OnGetDetailsForCreatePaymentInstrumentResponseReceived(
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
+      bool is_eligible_for_pix_account_linking) {
+    result_ = result;
+    is_eligible_for_pix_account_linking_ = is_eligible_for_pix_account_linking;
   }
 
   MultipleRequestFacilitatedPaymentsNetworkInterface::RequestId id_;
@@ -137,6 +155,34 @@ TEST_F(MultipleRequestFacilitatedPaymentsNetworkInterfaceTest,
                 kPermanentFailure,
             result_);
   EXPECT_EQ("Something went wrong!", response_details_->error_message_.value());
+}
+
+TEST_F(MultipleRequestFacilitatedPaymentsNetworkInterfaceTest,
+       GetDetailsForCreatePaymentInstrument_Success) {
+  SendGetDetailsForCreatePaymentInstrumentRequest();
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{\"pix_account_linking_details\":{}}");
+
+  // Verify that a success result was received because the response contained
+  // the pix_account_linking_details.
+  EXPECT_EQ(
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      result_);
+  EXPECT_TRUE(is_eligible_for_pix_account_linking_);
+}
+
+TEST_F(MultipleRequestFacilitatedPaymentsNetworkInterfaceTest,
+       GetDetailsForCreatePaymentInstrument_Failure) {
+  SendGetDetailsForCreatePaymentInstrumentRequest();
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{\"error\":{\"code\":\"invalid_argument\"}}");
+
+  // Verify that a failure result was received because the response contained
+  // error.
+  EXPECT_EQ(autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+                kPermanentFailure,
+            result_);
+  EXPECT_FALSE(is_eligible_for_pix_account_linking_);
 }
 
 }  // namespace payments::facilitated

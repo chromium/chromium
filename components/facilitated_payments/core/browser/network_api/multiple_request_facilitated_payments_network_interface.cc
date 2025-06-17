@@ -6,6 +6,7 @@
 
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request.h"
+#include "components/facilitated_payments/core/browser/network_api/get_details_for_pix_account_linking_request.h"
 
 namespace payments::facilitated {
 
@@ -35,6 +36,17 @@ MultipleRequestFacilitatedPaymentsNetworkInterface::InitiatePayment(
           std::move(request_details), std::move(response_callback), app_locale,
           account_info_getter_
               ->IsSyncFeatureEnabledForPaymentsServerMetrics()));
+}
+
+MultipleRequestFacilitatedPaymentsNetworkInterface::RequestId
+MultipleRequestFacilitatedPaymentsNetworkInterface::
+    GetDetailsForCreatePaymentInstrument(
+        int64_t billing_customer_number,
+        GetDetailsForCreatePaymentInstrumentResponseCallback response_callback,
+        const std::string& app_locale) {
+  return IssueRequest(std::make_unique<GetDetailsForPixAccountLinkingRequest>(
+      billing_customer_number, std::move(response_callback), app_locale,
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()));
 }
 
 }  // namespace payments::facilitated

@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 
 namespace payments::facilitated {
@@ -27,7 +28,19 @@ void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
            ->IsFacilitatedPaymentsPixAccountLinkingUserPrefEnabled()) {
     return;
   }
-
+  // Make a request to payments backend to check if user is eligible for pix
+  // account linking.
+  client_->GetMultipleRequestFacilitatedPaymentsNetworkInterface()
+      ->GetDetailsForCreatePaymentInstrument(
+          autofill::payments::GetBillingCustomerId(
+              CHECK_DEREF(client_->GetPaymentsDataManager())),
+          base::BindOnce(
+              &PixAccountLinkingManager::
+                  OnGetDetailsForCreatePaymentInstrumentResponseReceived,
+              weak_ptr_factory_.GetWeakPtr()),
+          client_->GetPaymentsDataManager()->app_locale());
+  // TODO(crbug.com/417330610): Move this to after the user comes back to Chrome
+  // and GetDetailsForCreatePaymentInstrument is completed.
   ShowPixAccountLinkingPrompt();
 }
 
@@ -76,6 +89,15 @@ void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {
       NOTREACHED() << "Unhandled UiEvent "
                    << base::to_underlying(ui_event_type);
   }
+}
+
+void PixAccountLinkingManager::
+    OnGetDetailsForCreatePaymentInstrumentResponseReceived(
+        autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
+        bool is_eligible_for_pix_account_linking) {
+  // TODO(crbug.com/419108993): Log the result and eligibility for account
+  // linking.
+  is_eligible_for_pix_account_linking_ = is_eligible_for_pix_account_linking;
 }
 
 }  // namespace payments::facilitated

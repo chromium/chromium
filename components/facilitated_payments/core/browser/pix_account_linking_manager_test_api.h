@@ -25,6 +25,17 @@ class PixAccountLinkingManagerTestApi {
   // Calls the underlying PixAccountLinkingManager's private methods.
   void OnAccepted() { manager_->OnAccepted(); }
   void OnDeclined() { manager_->OnDeclined(); }
+  void OnGetDetailsForCreatePaymentInstrumentResponseReceived(
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
+      bool is_eligible_for_pix_account_linking) {
+    manager_->OnGetDetailsForCreatePaymentInstrumentResponseReceived(
+        result, is_eligible_for_pix_account_linking);
+  }
+
+  // Getters for PixAccountLinkingManager's private members.
+  std::optional<bool> is_eligible_for_pix_account_linking() {
+    return manager_->is_eligible_for_pix_account_linking_;
+  }
 
  private:
   const raw_ref<PixAccountLinkingManager> manager_;

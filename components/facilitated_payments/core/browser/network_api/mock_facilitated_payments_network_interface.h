@@ -47,6 +47,12 @@ class MockMultipleRequestFacilitatedPaymentsNetworkInterface
        InitiatePaymentResponseCallback,
        const std::string&),
       (override));
+  MOCK_METHOD(RequestId,
+              GetDetailsForCreatePaymentInstrument,
+              (int64_t,
+               GetDetailsForCreatePaymentInstrumentResponseCallback,
+               const std::string&),
+              (override));
 };
 
 }  // namespace payments::facilitated
