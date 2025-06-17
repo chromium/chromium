@@ -15590,7 +15590,7 @@
             ]
         }
     ],
-    "NtpSearchboxComposeEntrypoint": [
+    "NtpSearchboxComposeEntrypointDesktop": [
         {
             "platforms": [
                 "chromeos",
