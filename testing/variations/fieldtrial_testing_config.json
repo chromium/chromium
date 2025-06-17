@@ -14185,9 +14185,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWarning",
+                    "name": "EnabledBlocking",
                     "params": {
-                        "LocalNetworkAccessChecksWarn": "true"
+                        "LocalNetworkAccessChecksWarn": "false"
                     },
                     "enable_features": [
                         "LocalNetworkAccessChecks"

@@ -3,11 +3,11 @@ Two sessions established and Network enabled on both
 {
     initiatorIPAddressSpace : Local
     initiatorIsSecureContext : true
-    privateNetworkRequestPolicy : PermissionWarn
+    privateNetworkRequestPolicy : PermissionBlock
 }
 {
     initiatorIPAddressSpace : Local
     initiatorIsSecureContext : true
-    privateNetworkRequestPolicy : PermissionWarn
+    privateNetworkRequestPolicy : PermissionBlock
 }
 
