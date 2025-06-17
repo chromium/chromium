@@ -245,6 +245,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   // with an omnibox and a tab strip). By default most features should be
   // instantiated in this block.
   if (browser->is_type_normal()) {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+
     if (IsChromeLabsEnabled()) {
       chrome_labs_coordinator_ =
           std::make_unique<ChromeLabsCoordinator>(browser);
@@ -264,8 +266,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       // Browser::GetBrowserView, which always returns a non-null BrowserView
       // in production, but this crashes during unittests using
       // BrowserWithTestWindowTest; these should eventually be refactored.
-      if (BrowserView* browser_view =
-              BrowserView::GetBrowserViewForBrowser(browser)) {
+      if (browser_view) {
         location_bar = browser_view->GetLocationBarView();
       }
       lens_overlay_entry_point_controller_->Initialize(
@@ -290,11 +291,22 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       // Browser::GetBrowserView, which always returns a non-null BrowserView
       // in production, but this crashes during unittests using
       // BrowserWithTestWindowTest; these should eventually be refactored.
-      if (BrowserView* browser_view =
-              BrowserView::GetBrowserViewForBrowser(browser)) {
+      if (browser_view) {
         tab_search_toolbar_button_controller_ =
             std::make_unique<TabSearchToolbarButtonController>(
                 browser_view, browser_view->GetTabSearchBubbleHost());
+      }
+    }
+
+    if (browser->GetTabStripModel()->SupportsTabGroups() &&
+        tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
+        tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+            browser->GetProfile())) {
+      if (browser_view) {
+        shared_tab_group_feedback_controller_ =
+            std::make_unique<tab_groups::SharedTabGroupFeedbackController>(
+                browser_view);
+        shared_tab_group_feedback_controller_->Init();
       }
     }
   }
@@ -367,15 +379,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   if (download::IsDownloadBubbleEnabled()) {
     download_toolbar_ui_controller_ =
         std::make_unique<DownloadToolbarUIController>(browser_view);
-  }
-
-  if (browser_view->browser()->GetTabStripModel()->SupportsTabGroups() &&
-      tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-          browser_view->GetProfile())) {
-    shared_tab_group_feedback_controller_ =
-        std::make_unique<tab_groups::SharedTabGroupFeedbackController>(
-            browser_view);
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
