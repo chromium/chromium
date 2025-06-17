@@ -132,7 +132,9 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jfloat touch_highlight_width,
     Profile* profile,
     jint rounded_bar_top_resource_id,
-    jint separator_line_color) {
+    jint separator_line_color,
+    jint callout_resource_id,
+    jfloat callout_opacity) {
   // Load the thumbnail if necessary.
   if (thumbnail_url != thumbnail_url_) {
     thumbnail_url_ = thumbnail_url;
@@ -178,7 +180,8 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
       drag_handlebar_color, close_icon_opacity, progress_bar_visible,
       progress_bar_height, progress_bar_opacity, progress_bar_completion,
       touch_highlight_visible, touch_highlight_x_offset, touch_highlight_width,
-      rounded_bar_top_resource_id, separator_line_color);
+      rounded_bar_top_resource_id, separator_line_color, callout_resource_id,
+      callout_opacity);
 
   // Make the layer visible if it is not already.
   contextual_search_layer_->layer()->SetHideLayerAndSubtree(false);

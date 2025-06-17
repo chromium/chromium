@@ -117,7 +117,9 @@ class ContextualSearchSceneLayer : public SceneLayer,
       jfloat touch_highlight_width,
       Profile* profile,
       jint bar_background_resource_id,
-      jint separator_line_color);
+      jint separator_line_color,
+      jint callout_resource_id,
+      jfloat callout_opacity);
 
   // Inherited from BitmapFetcherDelegate
   void OnFetchComplete(

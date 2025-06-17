@@ -222,7 +222,8 @@ public class ContextualSearchPanel extends OverlayPanel {
                 getSearchBarControl(),
                 getPromoControl(),
                 getRelatedSearchesInBarControl(),
-                getImageControl());
+                getImageControl(),
+                getCalloutControl());
 
         return mSceneLayer;
     }
@@ -983,6 +984,16 @@ public class ContextualSearchPanel extends OverlayPanel {
      */
     public ContextualSearchImageControl getImageControl() {
         return getSearchBarControl().getImageControl();
+    }
+
+    // ============================================================================================
+    // Callout Control
+    // ============================================================================================
+    /**
+     * @return The {@link ContextualSearchCalloutControl} for the panel.
+     */
+    public ContextualSearchCalloutControl getCalloutControl() {
+        return getSearchBarControl().getCalloutControl();
     }
 
     // ============================================================================================
