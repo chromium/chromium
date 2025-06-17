@@ -317,7 +317,7 @@ bool IsAccessibilityShakeToLocateEnabled() {
 
 BASE_FEATURE(kAccessibilityManifestV3BrailleIme,
              "AccessibilityManifestV3BrailleIme",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityManifestV3EnabledForBrailleIme() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityManifestV3BrailleIme);
