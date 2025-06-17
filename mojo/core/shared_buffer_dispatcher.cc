@@ -195,18 +195,24 @@ scoped_refptr<SharedBufferDispatcher> SharedBufferDispatcher::Deserialize(
       return nullptr;
   }
 
-  auto region = base::subtle::PlatformSharedMemoryRegion::Take(
+  auto maybe_region = base::subtle::PlatformSharedMemoryRegion::TakeOrFail(
       CreateSharedMemoryRegionHandleFromPlatformHandles(std::move(handles[0]),
                                                         std::move(handles[1])),
       mode, static_cast<size_t>(serialized_state->num_bytes), guid.value());
-  if (!region.IsValid()) {
+  if (!maybe_region.has_value()) {
+    AssertNotExtractingHandlesFromMessage();
+    LOG(ERROR) << "Failed to deserialize platform shared memory region: "
+               << static_cast<int>(maybe_region.error());
+    return nullptr;
+  }
+  if (!maybe_region->IsValid()) {
     AssertNotExtractingHandlesFromMessage();
     LOG(ERROR)
         << "Invalid serialized shared buffer dispatcher (invalid num_bytes?)";
     return nullptr;
   }
 
-  return CreateInternal(std::move(region));
+  return CreateInternal(*std::move(maybe_region));
 }
 
 base::subtle::PlatformSharedMemoryRegion
