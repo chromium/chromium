@@ -639,6 +639,7 @@ viz_source_set("unit_tests") {
     "layers/layer_context_impl_property_trees_unittest.cc",
     "layers/layer_context_impl_tiling_unittest.cc",
     "layers/layer_context_impl_unittest.cc",
+    "layers/layer_context_impl_view_transition_unittest.cc",
     "main/viz_main_impl_unittest.cc",
     "performance_hint/boost_manager_unittest.cc",
     "surfaces/referenced_surface_tracker_unittest.cc",

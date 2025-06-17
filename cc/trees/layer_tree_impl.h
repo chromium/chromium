@@ -828,6 +828,11 @@ class CC_EXPORT LayerTreeImpl {
   base::flat_set<blink::ViewTransitionToken> GetCaptureViewTransitionTokens()
       const;
 
+  const std::vector<std::unique_ptr<ViewTransitionRequest>>&
+  view_transition_requests() const {
+    return view_transition_requests_;
+  }
+
   void UpdateAllScrollbarGeometriesForTesting() {
     UpdateAllScrollbarGeometries();
   }
