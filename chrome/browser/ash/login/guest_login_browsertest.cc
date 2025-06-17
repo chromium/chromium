@@ -38,7 +38,10 @@ const test::UIPath kGuestTosAcceptButton = {kGuestTosId, "acceptButton"};
 // Tests guest user log in.
 class GuestLoginTest : public MixinBasedInProcessBrowserTest {
  public:
-  GuestLoginTest() { login_manager_.set_session_restore_enabled(); }
+  GuestLoginTest() {
+    login_manager_.set_session_restore_enabled();
+    SetAllowFeaturesSwitches(/*allow=*/true);
+  }
   ~GuestLoginTest() override = default;
 
   // Test overrides can implement this to add login policy switches to login

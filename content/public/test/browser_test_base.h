@@ -244,7 +244,7 @@ class BrowserTestBase : public ::testing::Test {
     return *embedded_https_test_server_;
   }
 
-  bool set_up_called() { return set_up_called_; }
+  bool set_up_called() const { return set_up_called_; }
 
 #if BUILDFLAG(IS_POSIX)
   // This is only needed by a test that raises SIGTERM to ensure that a specific
@@ -282,6 +282,10 @@ class BrowserTestBase : public ::testing::Test {
   // that it can sync the host_resolver() rules to the out-of-process network
   // code necessary.
   void SetInitialWebContents(WebContents* web_contents);
+
+  // Sets the flag to allow --enable-features and --disable-features to be
+  // present on the command line. Must be called before `SetUp`.
+  void SetAllowFeaturesSwitches(bool allow);
 
  private:
 #if BUILDFLAG(IS_ANDROID)
@@ -386,6 +390,11 @@ class BrowserTestBase : public ::testing::Test {
   std::unique_ptr<discardable_memory::DiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
 #endif
+
+  // Whether allow tests to provide --enable-features and --disable-features
+  // switches. Tests such as `GuestLoginTest` passes feature switches from PRE_
+  // to real tests.
+  bool allow_features_switches_ = false;
 };
 
 }  // namespace content

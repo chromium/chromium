@@ -479,10 +479,25 @@ void BrowserTestBase::SetUp() {
 
   SetUpInProcessBrowserTestFixture();
 
-  // Should not use CommandLine to modify features. Please use ScopedFeatureList
-  // instead.
-  DCHECK(!command_line->HasSwitch(switches::kEnableFeatures));
-  DCHECK(!command_line->HasSwitch(switches::kDisableFeatures));
+  std::string command_line_enable_features;
+  std::string command_line_disable_features;
+  if (allow_features_switches_) {
+    if (command_line->HasSwitch(switches::kEnableFeatures)) {
+      command_line_enable_features =
+          command_line->GetSwitchValueASCII(switches::kEnableFeatures);
+      command_line->RemoveSwitch(switches::kEnableFeatures);
+    }
+    if (command_line->HasSwitch(switches::kDisableFeatures)) {
+      command_line_disable_features =
+          command_line->GetSwitchValueASCII(switches::kDisableFeatures);
+      command_line->RemoveSwitch(switches::kDisableFeatures);
+    }
+  } else {
+    // Should not use CommandLine to modify features. Please use
+    // ScopedFeatureList instead.
+    DCHECK(!command_line->HasSwitch(switches::kEnableFeatures));
+    DCHECK(!command_line->HasSwitch(switches::kDisableFeatures));
+  }
 
   // At this point, copy features to the command line, since BrowserMain will
   // wipe out the current feature list.
@@ -491,6 +506,15 @@ void BrowserTestBase::SetUp() {
   if (base::FeatureList::GetInstance()) {
     base::FeatureList::GetInstance()->GetFeatureOverrides(&enabled_features,
                                                           &disabled_features);
+  }
+
+  if (!command_line_enable_features.empty()) {
+    enabled_features =
+        base::StrCat({command_line_enable_features, ",", enabled_features});
+  }
+  if (!command_line_disable_features.empty()) {
+    disabled_features =
+        base::StrCat({command_line_disable_features, ",", disabled_features});
   }
 
   if (!enabled_features.empty()) {
@@ -1032,6 +1056,11 @@ void BrowserTestBase::UseSoftwareCompositing() {
 void BrowserTestBase::SetInitialWebContents(WebContents* web_contents) {
   DCHECK(!initial_web_contents_);
   initial_web_contents_ = web_contents->GetWeakPtr();
+}
+
+void BrowserTestBase::SetAllowFeaturesSwitches(bool allow) {
+  DCHECK(!set_up_called_);
+  allow_features_switches_ = allow;
 }
 
 void BrowserTestBase::AssertThatNetworkServiceDidNotCrash() {

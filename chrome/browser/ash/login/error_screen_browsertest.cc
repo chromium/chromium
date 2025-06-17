@@ -240,7 +240,10 @@ class GuestErrorScreenTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<DeviceStateMixin::State> {
  public:
-  GuestErrorScreenTest() { login_manager_.set_session_restore_enabled(); }
+  GuestErrorScreenTest() {
+    login_manager_.set_session_restore_enabled();
+    SetAllowFeaturesSwitches(/*allow=*/true);
+  }
 
   GuestErrorScreenTest(const GuestErrorScreenTest&) = delete;
   GuestErrorScreenTest& operator=(const GuestErrorScreenTest&) = delete;
