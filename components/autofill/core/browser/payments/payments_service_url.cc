@@ -43,6 +43,13 @@ const char kSandboxPaymentsManageCardsUrl[] =
     "https://pay.sandbox.google.com/"
     "pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
     "payment_methods";
+
+// URL used when opening the Loyalty cards page from chrome://settings/payments.
+// TODO(crbug.com/416662510): Update the UTM params to be the correct one.
+const char kManageLoyaltyCardsUrl[] =
+    "https://pay.google.com/"
+    "pay?p=passes&utm_source=chrome&utm_medium=settings";
+
 // LINT.IfChange
 const char kVirtualCardEnrollmentSupportUrl[] =
     "https://support.google.com/googlepay/answer/11234179";
@@ -93,6 +100,10 @@ GURL GetManageInstrumentUrl(int64_t instrument_id) {
   GURL::Replacements replacements;
   replacements.SetQueryStr(new_query);
   return url.ReplaceComponents(replacements);
+}
+
+GURL GetManageLoyaltyCardsUrl() {
+  return GURL(kManageLoyaltyCardsUrl);
 }
 
 GURL GetManageAddressesUrl() {
