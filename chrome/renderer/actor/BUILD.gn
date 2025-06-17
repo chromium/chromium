@@ -22,6 +22,7 @@ source_set("actor") {
     "scroll_tool.h",
     "select_tool.cc",
     "select_tool.h",
+    "tool_base.cc",
     "tool_base.h",
     "tool_executor.cc",
     "tool_executor.h",

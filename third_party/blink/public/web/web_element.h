@@ -173,6 +173,11 @@ class BLINK_EXPORT WebElement : public WebNode {
   // cannot scroll (e.g. it's not rendered, no scroll extent).
   bool SetScrollOffset(const gfx::Vector2dF& offset);
 
+  // Returns true if this element has scroll-behavior: smooth style, meaning
+  // that programmatic scrolls will animate rather than instantly jumping to the
+  // specified scroll offset.
+  bool HasScrollBehaviorSmooth() const;
+
   // Returns whether the element has scrollable overflow and can be scrolled by
   // the user (i.e. true for `overflow: scroll|auto` with overflow but false for
   // `overflow: hidden`).

@@ -8,6 +8,7 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/renderer/actor/journal.h"
 #include "content/public/renderer/render_frame_observer.h"
 
@@ -16,6 +17,8 @@ class RenderFrame;
 }  // namespace content
 
 namespace actor {
+
+class ToolBase;
 
 // Helper class for monitoring page stability after tool usage. Its lifetime
 // must not outlive the RenderFrame it is observing. This object is single-use,
@@ -29,7 +32,8 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
 
   // Invokes the given callback when the page is deemed stable enough for an
   // observation to take place or when the document is no longer active.
-  void WaitForStable(int32_t task_id,
+  void WaitForStable(const ToolBase& tool,
+                     int32_t task_id,
                      Journal& journal,
                      base::OnceClosure callback);
 
@@ -53,6 +57,9 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
 
     // Wait until the main thread is settled.
     kWaitForMainThreadIdle,
+
+    // Ensure the minimum delay time has been met.
+    kEnsureMinimumDelay,
 
     // Wait until a new frame has been submitted to and presented by the display
     // compositor.
@@ -95,6 +102,10 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
   base::OnceClosure is_stable_callback_;
 
   std::unique_ptr<Journal::PendingAsyncEntry> journal_entry_;
+
+  // This value is set to prevent the monitor from returning sooner than this
+  // time.
+  base::TimeTicks minimum_end_time_;
 
   base::WeakPtrFactory<PageStabilityMonitor> weak_ptr_factory_{this};
 };

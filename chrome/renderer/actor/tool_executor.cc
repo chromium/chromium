@@ -110,7 +110,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
   execute_journal.reset();
 
   page_stability_monitor_->WaitForStable(
-      request->task_id, *journal_,
+      *tool, request->task_id, *journal_,
       base::BindOnce(&ToolExecutor::ToolFinished, base::Unretained(this),
                      std::move(result)));
 }

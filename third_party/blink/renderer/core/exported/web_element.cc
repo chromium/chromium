@@ -388,6 +388,11 @@ bool WebElement::SetScrollOffset(const gfx::Vector2dF& offset) {
   return element->SetScrollOffset(offset);
 }
 
+bool WebElement::HasScrollBehaviorSmooth() const {
+  return GetScrollingBox()->StyleRef().GetScrollBehavior() ==
+         mojom::blink::ScrollBehavior::kSmooth;
+}
+
 bool WebElement::IsUserScrollableX() const {
   LayoutBox* box = GetScrollingBox();
   if (!box) {

@@ -33,6 +33,7 @@ class ScrollTool : public ToolBase {
   // actor::ToolBase
   mojom::ActionResultPtr Execute() override;
   std::string DebugString() const override;
+  base::TimeDelta MinimumObservationDelay() const override;
 
  private:
   struct ScrollerAndDistance {
@@ -43,6 +44,8 @@ class ScrollTool : public ToolBase {
       base::expected<ScrollerAndDistance, mojom::ActionResultPtr>;
 
   ValidatedResult Validate() const;
+
+  bool targeting_smooth_scroller_ = false;
 
   mojom::ScrollActionPtr action_;
 };

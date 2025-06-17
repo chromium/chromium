@@ -28,6 +28,11 @@ using ::blink::WebElement;
 using ::blink::WebLocalFrame;
 using ::blink::WebNode;
 
+namespace {
+// The default maximum duration for a scroll animation is 700ms.
+constexpr base::TimeDelta kSmoothScrollDelay = base::Milliseconds(700);
+}  // namespace
+
 ScrollTool::ScrollTool(content::RenderFrame& frame,
                        Journal::TaskId task_id,
                        Journal& journal,
@@ -53,6 +58,8 @@ mojom::ActionResultPtr ScrollTool::Execute() {
   bool did_scroll =
       scrolling_element.SetScrollOffset(start_offset_css + offset_css);
 
+  targeting_smooth_scroller_ = scrolling_element.HasScrollBehaviorSmooth();
+
   return did_scroll
              ? MakeOkResult()
              : MakeResult(mojom::ActionResultCode::kScrollOffsetDidNotChange);
@@ -62,6 +69,11 @@ std::string ScrollTool::DebugString() const {
   return absl::StrFormat("ScrollTool[%s;direction(%s);distance(%f)]",
                          ToDebugString(action_->target),
                          base::ToString(action_->direction), action_->distance);
+}
+
+base::TimeDelta ScrollTool::MinimumObservationDelay() const {
+  return targeting_smooth_scroller_ ? kSmoothScrollDelay
+                                    : ToolBase::MinimumObservationDelay();
 }
 
 ScrollTool::ValidatedResult ScrollTool::Validate() const {
