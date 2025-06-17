@@ -795,9 +795,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
       test::TapUserCreationNext();
     }
 
-    if (features::IsOobeGaiaInfoScreenEnabled()) {
-      HandleGaiaInfoScreen();
-    }
+    HandleGaiaInfoScreen();
   }
 
   WaitForGaiaSignInScreen();

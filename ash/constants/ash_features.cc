@@ -2156,11 +2156,6 @@ BASE_FEATURE(kOobeSoftwareUpdate,
              "OobeSoftwareUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the Gaia info screen in OOBE.
-BASE_FEATURE(kOobeGaiaInfoScreen,
-             "OobeGaiaInfoScreen",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, TouchPadScreen will be shown in CHOOBE.
 // enabling this without enabling OobeChoobe flag will have no effect
 BASE_FEATURE(kOobeTouchpadScroll,
@@ -4251,10 +4246,6 @@ bool IsOfflineItemsInNotificationsEnabled() {
 
 bool AreOngoingProcessesEnabled() {
   return base::FeatureList::IsEnabled(kOngoingProcesses);
-}
-
-bool IsOobeGaiaInfoScreenEnabled() {
-  return base::FeatureList::IsEnabled(kOobeGaiaInfoScreen);
 }
 
 bool IsOobeJellyEnabled() {
