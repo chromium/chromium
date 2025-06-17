@@ -130,6 +130,10 @@ ContextualSearch::ContextualSearch() {
       base::FeatureParam<bool>(&kContextualSuggestionsAblateOthersWhenPresent,
                                "AblateSearchOnly", false)
           .Get();
+  contextual_suggestions_ablate_url_only =
+      base::FeatureParam<bool>(&kContextualSuggestionsAblateOthersWhenPresent,
+                               "AblateUrlOnly", false)
+          .Get();
   starter_pack_page = feature_enabled(kStarterPackPage);
   contextual_zero_suggest_lens_fulfillment =
       feature_enabled(kContextualZeroSuggestLensFulfillment);
