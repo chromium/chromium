@@ -6,11 +6,16 @@
 #define CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_COLLECTION_TAB_MODEL_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/raw_ptr.h"
 
 class Profile;
+
+namespace tab_groups {
+class TabGroupId;
+}  // namespace tab_groups
 
 namespace tabs {
 class TabStripCollection;
@@ -46,7 +51,21 @@ class TabCollectionTabModelImpl {
       JNIEnv* env,
       size_t index) const;
 
+  // Adds a tab to the tab model.
+  void AddTabRecursive(JNIEnv* env,
+                       const jni_zero::JavaParamRef<jobject>& j_tab_android,
+                       size_t index,
+                       const jni_zero::JavaParamRef<jobject>& j_tab_group_id,
+                       bool is_pinned);
+
  private:
+  // Returns a safe index for adding or moving a single tab without it changing
+  // state.
+  size_t GetSafeIndex(size_t proposed_index,
+                      const std::optional<tab_groups::TabGroupId>& tab_group_id,
+                      bool is_pinned) const;
+  std::optional<tab_groups::TabGroupId> GetGroupIdAt(size_t index) const;
+
   JavaObjectWeakGlobalRef java_object_;
   raw_ptr<Profile> profile_;
 

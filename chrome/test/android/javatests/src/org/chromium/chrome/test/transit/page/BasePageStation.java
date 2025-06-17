@@ -477,7 +477,7 @@ public class BasePageStation<HostActivity extends ChromeActivity>
         private final Supplier<ActivityT> mActivitySupplier;
 
         private AnyActivityTabCondition(Supplier<ActivityT> activitySupplier) {
-            super(/* isRunOnUiThread= */ false);
+            super(/* isRunOnUiThread= */ true);
             mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeActivity");
         }
 

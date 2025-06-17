@@ -47,7 +47,9 @@ public class TabCollectionTabModelImplUnitTest {
     @Mock private Profile mOtrProfile;
     @Mock private TabCreator mRegularTabCreator;
     @Mock private TabCreator mIncognitoTabCreator;
+    @Mock private TabModelOrderController mOrderController;
     @Mock private TabModelDelegate mTabModelDelegate;
+    @Mock private AsyncTabParamsManager mAsyncTabParamsManager;
     @Mock private TabModelObserver mTabModelObserver;
 
     private TabCollectionTabModelImpl mTabModel;
@@ -82,7 +84,9 @@ public class TabCollectionTabModelImplUnitTest {
                         /* isArchivedTabModel= */ false,
                         mRegularTabCreator,
                         mIncognitoTabCreator,
-                        mTabModelDelegate);
+                        mOrderController,
+                        mTabModelDelegate,
+                        mAsyncTabParamsManager);
         mTabModel.addObserver(mTabModelObserver);
     }
 
@@ -132,6 +136,7 @@ public class TabCollectionTabModelImplUnitTest {
     public void testAddTabBasic() {
         @TabId int tabId = 789;
         MockTab tab = MockTab.createAndInitialize(tabId, mProfile);
+        tab.setIsInitialized(true);
         mTabModel.addTab(
                 tab,
                 /* index= */ 0,
@@ -145,6 +150,7 @@ public class TabCollectionTabModelImplUnitTest {
     public void testAddTabDuplicate() {
         @TabId int tabId = 789;
         MockTab tab = MockTab.createAndInitialize(tabId, mProfile);
+        tab.setIsInitialized(true);
         mTabModel.addTab(
                 tab,
                 /* index= */ 0,
@@ -164,6 +170,7 @@ public class TabCollectionTabModelImplUnitTest {
     public void testAddTabWrongModel() {
         @TabId int tabId = 789;
         MockTab otrTab = MockTab.createAndInitialize(tabId, mOtrProfile);
+        otrTab.setIsInitialized(true);
         assertThrows(
                 IllegalStateException.class,
                 () ->

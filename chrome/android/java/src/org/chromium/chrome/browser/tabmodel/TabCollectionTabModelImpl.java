@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.base.ThreadUtils.assertOnUiThread;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.JNINamespace;
@@ -63,7 +64,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     private final boolean mIsArchivedTabModel;
     private final TabCreator mRegularTabCreator;
     private final TabCreator mIncognitoTabCreator;
+    private final TabModelOrderController mOrderController;
     private final TabModelDelegate mModelDelegate;
+    private final AsyncTabParamsManager mAsyncTabParamsManager;
     // TODO(crbug.com/405343634): Replace this with the appropriate TabUngrouper.
     private final TabUngrouper mTabUngrouper = new PassthroughTabUngrouper(() -> this);
 
@@ -72,8 +75,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     // broadcastSessionRestoreComplete().
     private boolean mInitializationComplete;
     private boolean mActive;
-    // TODO(crbug.com/425345868): Consider using indexOf(mCurrentTabSupplier.get()) instead.
-    private int mIndex = TabList.INVALID_TAB_INDEX;
 
     /**
      * @param profile The {@link Profile} tabs in the tab collection tab model belongs to.
@@ -81,7 +82,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
      * @param isArchivedTabModel Whether the tab collection tab model stored archived tabs.
      * @param regularTabCreator The tab creator for regular tabs.
      * @param incognitoTabCreator The tab creator for incognito tabs.
+     * @param orderController Controls logic for selecting and positioning tabs.
      * @param modelDelegate The {@link TabModelDelegate} for interacting outside the tab model.
+     * @param asyncTabParamsManager To detect if an async tab operation is in progress.
      */
     public TabCollectionTabModelImpl(
             Profile profile,
@@ -89,19 +92,35 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             boolean isArchivedTabModel,
             TabCreator regularTabCreator,
             TabCreator incognitoTabCreator,
-            TabModelDelegate modelDelegate) {
+            TabModelOrderController orderController,
+            TabModelDelegate modelDelegate,
+            AsyncTabParamsManager asyncTabParamsManager) {
         super(profile);
+        assertOnUiThread();
         mIsArchivedTabModel = isArchivedTabModel;
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
+        mOrderController = orderController;
         mModelDelegate = modelDelegate;
+        mAsyncTabParamsManager = asyncTabParamsManager;
 
         initializeNative(activityType, isArchivedTabModel);
     }
 
     @Override
     public void destroy() {
-        // TODO(crbug.com/405343634): Destroy any still open tabs.
+        assertOnUiThread();
+        for (Tab tab : mTabIdToTabs.values()) {
+            if (mModelDelegate.isReparentingInProgress()
+                    && mAsyncTabParamsManager.hasParamsForTabId(tab.getId())) {
+                continue;
+            }
+
+            // TabStripCollection in native only holds weak ptrs to tabs and will be deleted shortly
+            // so this is safe.
+            if (tab.isInitialized()) tab.destroy();
+        }
+
         mTabCountSupplier.set(0);
         mTabIdToTabs.clear();
         mTabModelObservers.clear();
@@ -119,12 +138,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public int index() {
+        assertOnUiThread();
         if (mIsArchivedTabModel) return TabList.INVALID_TAB_INDEX;
-        return mIndex;
+        return indexOf(mCurrentTabSupplier.get());
     }
 
     @Override
     public int getCount() {
+        assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == 0) return 0;
         return TabCollectionTabModelImplJni.get()
                 .getTabCountRecursive(mNativeTabCollectionTabModelImplPtr);
@@ -132,6 +153,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public @Nullable Tab getTabAt(int index) {
+        assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == 0) return null;
         return TabCollectionTabModelImplJni.get()
                 .getTabAtIndexRecursive(mNativeTabCollectionTabModelImplPtr, index);
@@ -139,6 +161,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public int indexOf(@Nullable Tab tab) {
+        assertOnUiThread();
         if (tab == null || mNativeTabCollectionTabModelImplPtr == 0) {
             return TabList.INVALID_TAB_INDEX;
         }
@@ -156,11 +179,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public void addObserver(TabModelObserver observer) {
+        assertOnUiThread();
         mTabModelObservers.addObserver(observer);
     }
 
     @Override
     public void removeObserver(TabModelObserver observer) {
+        assertOnUiThread();
         mTabModelObservers.removeObserver(observer);
     }
 
@@ -215,6 +240,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public void setIndex(int i, final @TabSelectionType int type) {
+        assertOnUiThread();
         // TODO(crbug.com/425344200): Prevent passing negative indices.
         if (mIsArchivedTabModel) return;
         if (mNativeTabCollectionTabModelImplPtr == 0) return;
@@ -227,18 +253,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         int lastId = (oldSelectedTab == null) ? Tab.INVALID_TAB_ID : oldSelectedTab.getId();
 
         int currentTabCount = getCount();
-
+        final Tab newSelectedTab;
         if (currentTabCount == 0) {
-            // INVALID_TAB_INDEX is only permitted when the tab model is empty.
-            mIndex = TabList.INVALID_TAB_INDEX;
+            newSelectedTab = null;
         } else {
-            mIndex = MathUtils.clamp(i, 0, currentTabCount - 1);
+            newSelectedTab = getTabAt(MathUtils.clamp(i, 0, currentTabCount - 1));
         }
-
-        Tab newSelectedTab = (mIndex == TabList.INVALID_TAB_INDEX) ? null : getTabAt(mIndex);
-        // Request to show the tab first so that it gets loaded; i.e. has a view, web contents, etc.
-        mModelDelegate.requestToShowTab(newSelectedTab, type);
         mCurrentTabSupplier.set(newSelectedTab);
+        mModelDelegate.requestToShowTab(newSelectedTab, type);
 
         if (newSelectedTab != null) {
             for (TabModelObserver obs : mTabModelObservers) {
@@ -255,11 +277,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public boolean isActiveModel() {
+        assertOnUiThread();
         return mActive;
     }
 
     @Override
     public boolean isInitializationComplete() {
+        assertOnUiThread();
         return mInitializationComplete;
     }
 
@@ -268,27 +292,64 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public ObservableSupplier<Integer> getTabCountSupplier() {
+        assertOnUiThread();
         return mTabCountSupplier;
     }
 
     @Override
     public TabCreator getTabCreator() {
+        assertOnUiThread();
         return getTabCreator(isIncognitoBranded());
     }
 
     @Override
     public void addTab(
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
-
+        assertOnUiThread();
         assert !mTabIdToTabs.containsKey(tab.getId())
                 : "Attempting to add a duplicate tab id=" + tab.getId();
         if (tab.isOffTheRecord() != isOffTheRecord()) {
             throw new IllegalStateException("Attempting to open a tab in the wrong model.");
         }
+        if (mNativeTabCollectionTabModelImplPtr == 0) {
+            assert false : "Trying to add a tab to a destroyed TabCollectionTabModelImpl.";
+            return;
+        }
 
-        // TODO(crbug.com/405343634): Add the tab to the collection and select the tab if required.
+        for (TabModelObserver obs : mTabModelObservers) obs.willAddTab(tab, type);
 
+        boolean hasAnyTabs = mCurrentTabSupplier.hasValue();
+        boolean selectTab =
+                mOrderController.willOpenInForeground(type, isIncognitoBranded())
+                        || (!hasAnyTabs && type == TabLaunchType.FROM_LONGPRESS_BACKGROUND);
+        index = mOrderController.determineInsertionIndex(type, index, tab);
+
+        assert !(tab.getTabGroupId() != null && tab.getIsPinned())
+                : "Pinned and grouped states are mutually exclusive.";
+        TabCollectionTabModelImplJni.get()
+                .addTabRecursive(
+                        mNativeTabCollectionTabModelImplPtr,
+                        tab,
+                        index,
+                        tab.getTabGroupId(),
+                        tab.getIsPinned());
+        int finalIndex = indexOf(tab);
+
+        // When adding the first background tab make sure to select it.
+        if (!isActiveModel() && !hasAnyTabs && !selectTab) {
+            mCurrentTabSupplier.set(tab);
+        }
+
+        tab.onAddedToTabModel(mCurrentTabSupplier);
         mTabIdToTabs.put(tab.getId(), tab);
+        mTabCountSupplier.set(getCount());
+
+        tabAddedToModel(tab);
+        for (TabModelObserver obs : mTabModelObservers) {
+            obs.didAddTab(tab, type, creationState, selectTab);
+        }
+
+        if (selectTab) setIndex(finalIndex, TabSelectionType.FROM_NEW);
     }
 
     // TabCloser overrides.
@@ -302,15 +363,15 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public void completeInitialization() {
+        assertOnUiThread();
         assert !mInitializationComplete : "TabCollectionTabModelImpl initialized multiple times.";
         mInitializationComplete = true;
 
-        if (getCount() != 0 && mIndex == TabList.INVALID_TAB_INDEX) {
+        if (getCount() != 0 && !mCurrentTabSupplier.hasValue()) {
             if (isActiveModel()) {
                 setIndex(0, TabSelectionType.FROM_USER);
             } else {
-                mIndex = 0;
-                mCurrentTabSupplier.set(getTabAt(mIndex));
+                mCurrentTabSupplier.set(getTabAt(0));
             }
         }
 
@@ -376,6 +437,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     protected boolean isSessionRestoreInProgress() {
+        assertOnUiThread();
         return !mModelDelegate.isTabModelRestored();
     }
 
@@ -391,16 +453,19 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public void addTabGroupObserver(TabGroupModelFilterObserver observer) {
+        assertOnUiThread();
         mTabGroupObservers.addObserver(observer);
     }
 
     @Override
     public void removeTabGroupObserver(TabGroupModelFilterObserver observer) {
+        assertOnUiThread();
         mTabGroupObservers.removeObserver(observer);
     }
 
     @Override
     public TabModel getTabModel() {
+        assertOnUiThread();
         return this;
     }
 
@@ -611,5 +676,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         int getIndexOfTabRecursive(long nativeTabCollectionTabModelImpl, Tab tab);
 
         Tab getTabAtIndexRecursive(long nativeTabCollectionTabModelImpl, int index);
+
+        void addTabRecursive(
+                long nativeTabCollectionTabModelImpl,
+                Tab tab,
+                int index,
+                @Nullable Token tabGroupId,
+                boolean isPinned);
     }
 }
