@@ -140,18 +140,25 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
                                      int progress_bar_background_width,
                                      int progress_bar_background_height,
                                      int progress_bar_background_color,
+                                     int progress_bar_static_background_x,
+                                     int progress_bar_static_background_width,
+                                     int progress_bar_static_background_color,
                                      int progress_bar_end_indicator_x,
                                      int progress_bar_end_indicator_y,
                                      int progress_bar_end_indicator_width,
                                      int progress_bar_end_indicator_height,
-                                     float corner_radius) {
-  bool is_progress_bar_background_visible = SkColorGetA(
-      progress_bar_background_color);
-  progress_bar_background_layer_->SetHideLayerAndSubtree(
-      !is_progress_bar_background_visible);
+                                     float corner_radius,
+                                     bool progress_bar_visual_update_available) {
+  bool is_progress_bar_visible = SkColorGetA(progress_bar_background_color);
+
+  progress_bar_background_layer_->SetHideLayerAndSubtree(!is_progress_bar_visible);
+  progress_bar_layer_->SetHideLayerAndSubtree(!is_progress_bar_visible);
   progress_bar_end_circle_layer_->SetHideLayerAndSubtree(
-      !is_progress_bar_background_visible);
-  if (is_progress_bar_background_visible) {
+      !(is_progress_bar_visible && progress_bar_visual_update_available));
+  progress_bar_static_background_layer_->SetHideLayerAndSubtree(
+      !(is_progress_bar_visible && progress_bar_visual_update_available));
+
+  if (is_progress_bar_visible) {
     progress_bar_background_layer_->SetPosition(
         gfx::PointF(progress_bar_background_x, progress_bar_background_y));
     progress_bar_background_layer_->SetBounds(
@@ -162,17 +169,6 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
         SkColor4f::FromColor(progress_bar_background_color));
     progress_bar_background_layer_->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
 
-    progress_bar_end_circle_layer_->SetPosition(
-        gfx::PointF(progress_bar_end_indicator_x, progress_bar_end_indicator_y));
-    progress_bar_end_circle_layer_->SetBounds(
-        gfx::Size(progress_bar_end_indicator_width, progress_bar_end_indicator_height));
-    progress_bar_end_circle_layer_->SetBackgroundColor(SkColor4f::FromColor(progress_bar_color));
-    progress_bar_end_circle_layer_->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
-  }
-
-  bool is_progress_bar_visible = SkColorGetA(progress_bar_background_color);
-  progress_bar_layer_->SetHideLayerAndSubtree(!is_progress_bar_visible);
-  if (is_progress_bar_visible) {
     progress_bar_layer_->SetPosition(
         gfx::PointF(progress_bar_x, progress_bar_y));
     progress_bar_layer_->SetBounds(
@@ -181,6 +177,24 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
     progress_bar_layer_->SetBackgroundColor(
         SkColor4f::FromColor(progress_bar_color));
     progress_bar_layer_->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
+
+    if (progress_bar_visual_update_available) {
+      // Display the end circle and static background layer.
+      progress_bar_end_circle_layer_->SetPosition(
+          gfx::PointF(progress_bar_end_indicator_x, progress_bar_end_indicator_y));
+      progress_bar_end_circle_layer_->SetBounds(
+          gfx::Size(progress_bar_end_indicator_width, progress_bar_end_indicator_height));
+      progress_bar_end_circle_layer_->SetBackgroundColor(SkColor4f::FromColor(progress_bar_color));
+      progress_bar_end_circle_layer_->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
+
+      progress_bar_static_background_layer_->SetPosition(gfx::PointF(
+          progress_bar_static_background_x, progress_bar_y));
+      progress_bar_static_background_layer_->SetBounds(gfx::Size(
+          progress_bar_static_background_width, progress_bar_height));
+      progress_bar_static_background_layer_->SetBackgroundColor(
+          SkColor4f::FromColor(progress_bar_static_background_color));
+      progress_bar_static_background_layer_->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
+    }
   }
 }
 
@@ -192,6 +206,7 @@ void ToolbarLayer::SetOpacity(float opacity) {
   progress_bar_layer_->SetOpacity(opacity);
   progress_bar_background_layer_->SetOpacity(opacity);
   progress_bar_end_circle_layer_->SetOpacity(opacity);
+  progress_bar_static_background_layer_->SetOpacity(opacity);
 }
 
 ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
@@ -203,6 +218,7 @@ ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
       progress_bar_layer_(cc::slim::SolidColorLayer::Create()),
       progress_bar_background_layer_(cc::slim::SolidColorLayer::Create()),
       progress_bar_end_circle_layer_(cc::slim::SolidColorLayer::Create()),
+      progress_bar_static_background_layer_(cc::slim::SolidColorLayer::Create()),
       debug_layer_(cc::slim::SolidColorLayer::Create()) {
   toolbar_background_layer_->SetIsDrawable(true);
   layer_->AddChild(toolbar_background_layer_);
@@ -213,6 +229,10 @@ ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
 
   bitmap_layer_->SetIsDrawable(true);
   layer_->AddChild(bitmap_layer_);
+
+  progress_bar_static_background_layer_->SetIsDrawable(true);
+  progress_bar_static_background_layer_->SetHideLayerAndSubtree(true);
+  layer_->AddChild(progress_bar_static_background_layer_);
 
   progress_bar_background_layer_->SetIsDrawable(true);
   progress_bar_background_layer_->SetHideLayerAndSubtree(true);

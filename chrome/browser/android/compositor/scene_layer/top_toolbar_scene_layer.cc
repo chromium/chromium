@@ -81,20 +81,26 @@ void TopToolbarSceneLayer::UpdateProgressBar(
     jint progress_bar_background_width,
     jint progress_bar_background_height,
     jint progress_bar_background_color,
+    jint progress_bar_static_background_x,
+    jint progress_bar_static_background_width,
+    jint progress_bar_static_background_color,
     jint progress_bar_end_indicator_x,
     jint progress_bar_end_indicator_y,
     jint progress_bar_end_indicator_width,
     jint progress_bar_end_indicator_height,
-    jfloat corner_radius) {
+    jfloat corner_radius,
+    jboolean progress_bar_visual_update_available) {
   if (!toolbar_layer_)
     return;
   toolbar_layer_->UpdateProgressBar(
       progress_bar_x, progress_bar_y, progress_bar_width, progress_bar_height,
       progress_bar_color, progress_bar_background_x, progress_bar_background_y,
       progress_bar_background_width, progress_bar_background_height,
-      progress_bar_background_color, progress_bar_end_indicator_x,
-      progress_bar_end_indicator_y, progress_bar_end_indicator_width,
-      progress_bar_end_indicator_height, corner_radius);
+      progress_bar_background_color, progress_bar_static_background_x,
+      progress_bar_static_background_width, progress_bar_static_background_color,
+      progress_bar_end_indicator_x, progress_bar_end_indicator_y,
+      progress_bar_end_indicator_width, progress_bar_end_indicator_height, corner_radius,
+      progress_bar_visual_update_available);
 }
 
 void TopToolbarSceneLayer::SetContentTree(

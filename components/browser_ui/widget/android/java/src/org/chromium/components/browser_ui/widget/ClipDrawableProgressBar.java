@@ -31,11 +31,14 @@ public class ClipDrawableProgressBar extends ImageView {
     public static class DrawingInfo {
         public final Rect progressBarRect = new Rect();
         public final Rect progressBarBackgroundRect = new Rect();
+        public final Rect progressBarStaticBackgroundRect = new Rect();
         public final Rect progressBarEndIndicator = new Rect();
 
         public int progressBarColor;
         public int progressBarBackgroundColor;
+        public int progressBarStaticBackgroundColor;
         public float cornerRadius;
+        public boolean progressBarVisualUpdateAvailable;
     }
 
     /** An observer for visible progress updates. */
@@ -67,6 +70,7 @@ public class ClipDrawableProgressBar extends ImageView {
     @Nullable private GradientDrawable mEndCapCircleDrawable;
     private int mForegroundColor;
     private int mBackgroundColor;
+    private int mStaticBackgroundColor;
     protected final int mProgressBarHeight;
     private float mProgress;
     private int mDesiredVisibility;
@@ -254,9 +258,12 @@ public class ClipDrawableProgressBar extends ImageView {
         float effectiveAlpha = getVisibility() == VISIBLE ? getAlpha() : 0.0f;
         drawingInfoOut.progressBarColor = applyAlpha(mForegroundColor, effectiveAlpha);
         drawingInfoOut.progressBarBackgroundColor = applyAlpha(mBackgroundColor, effectiveAlpha);
+        // Defaults to Color.TRANSPARENT
+        drawingInfoOut.progressBarStaticBackgroundColor = applyAlpha(mStaticBackgroundColor, effectiveAlpha);
 
         drawingInfoOut.cornerRadius = 0;
         if (useGradientDrawable()) {
+            drawingInfoOut.progressBarVisualUpdateAvailable = true;
             drawingInfoOut.cornerRadius = (float) (getBottom() - getTop()) / 2;
             if (mProgress == 0.0f) {
                 // Ensure the background drawable is fully visible when the progress is 0.
@@ -266,6 +273,8 @@ public class ClipDrawableProgressBar extends ImageView {
 
         int endIndicatorSize = getBottom() - getTop();
         if (ViewCompat.getLayoutDirection(this) == LAYOUT_DIRECTION_LTR) {
+            drawingInfoOut.progressBarStaticBackgroundRect.set(
+                    getLeft(), getTop(), getRight(), getBottom());
             drawingInfoOut.progressBarRect.set(
                     getLeft(),
                     getTop(),
@@ -290,6 +299,8 @@ public class ClipDrawableProgressBar extends ImageView {
                     getRight(),
                     getBottom());
         } else {
+            drawingInfoOut.progressBarStaticBackgroundRect.set(
+                    getRight(), getTop(), getLeft(), getBottom());
             drawingInfoOut.progressBarRect.set(
                     getRight() - Math.round(mProgress * getWidth()),
                     getTop(),
@@ -395,6 +406,7 @@ public class ClipDrawableProgressBar extends ImageView {
      */
     public void setProgressGapBackgroundColor(int color) {
         super.setBackgroundColor(color);
+        mStaticBackgroundColor = color;
     }
 
     @Override
