@@ -2,7 +2,7 @@ The optimization guide component contains code for processing hints and machine
 learning models received from the remote Chrome Optimization Guide Service.
 
 Optimization Guide is a layered component
-(https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design)
+(https://www.chromium.org/developers/design-documents/layered-components-design)
 to enable it to be easily used on all platforms.
 
 Directory structure:
