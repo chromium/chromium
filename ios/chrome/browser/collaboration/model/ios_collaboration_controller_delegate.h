@@ -198,6 +198,14 @@ class IOSCollaborationControllerDelegate
   // Returns the join group image displayed in the join flow.
   UIImage* JoinGroupImage(NSArray<ShareKitPreviewItem*>* preview_items);
 
+  // Shows an alert when sign in has been disabled by the user.
+  void ShowSignInDisabledByUserAlert(ResultCallback result);
+
+  // Called when the alert has been dismissed. Opens the Google services
+  // settings screen if `open_settings` is true.
+  void SignInDisabledByUserAlertDismissed(ResultCallback result,
+                                          bool open_settings);
+
   // Presents the scrim view.
   void AddScrimView();
 
