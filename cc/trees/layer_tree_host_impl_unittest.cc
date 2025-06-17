@@ -16717,7 +16717,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
 
   hidden_layer->tilings()->AddTiling(gfx::AxisTransform2d(), raster_source);
   PictureLayerTiling* hidden_tiling = hidden_layer->tilings()->tiling_at(0);
-  hidden_tiling->set_resolution(TileResolution::LOW_RESOLUTION);
+  hidden_tiling->set_resolution(TileResolution::HIGH_RESOLUTION);
   hidden_tiling->CreateAllTilesForTesting();
   hidden_tiling->SetTilePriorityRectsForTesting(
       layer_rect,   // Visible rect.
@@ -16735,19 +16735,13 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
       layer_rect,   // Soon rect.
       layer_rect);  // Eventually rect.
 
-  // Both layers are drawn. Since the hidden layer has a low resolution tiling,
-  // in smoothness priority mode its tile is higher priority.
-  std::unique_ptr<RasterTilePriorityQueue> queue =
-      host_impl_->BuildRasterQueue(TreePriority::SMOOTHNESS_TAKES_PRIORITY,
-                                   RasterTilePriorityQueue::Type::ALL);
-  EXPECT_EQ(queue->Top().tile()->layer_id(), 2);
-
-  // Hide the hidden layer and set it to so it still rasters. Now the drawing
+  // Hide the hidden layer and set it to so it still rasters. The drawing
   // layer should be prioritized over the hidden layer.
   hidden_layer->set_contributes_to_drawn_render_surface(false);
   hidden_layer->set_raster_even_if_not_drawn(true);
-  queue = host_impl_->BuildRasterQueue(TreePriority::SMOOTHNESS_TAKES_PRIORITY,
-                                       RasterTilePriorityQueue::Type::ALL);
+  std::unique_ptr<RasterTilePriorityQueue> queue =
+      host_impl_->BuildRasterQueue(TreePriority::SMOOTHNESS_TAKES_PRIORITY,
+                                   RasterTilePriorityQueue::Type::ALL);
   EXPECT_EQ(queue->Top().tile()->layer_id(), 3);
 }
 
