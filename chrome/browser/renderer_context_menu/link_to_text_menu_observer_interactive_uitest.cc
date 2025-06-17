@@ -538,8 +538,16 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
       "SharedHighlights.LinkGenerated.RequestedBeforeReady", 0);
 }
 
+// TODO(crbug.com/410751413): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LinkGenerationRequestedMetric_Failure_WithDelay \
+  DISABLED_LinkGenerationRequestedMetric_Failure_WithDelay
+#else
+#define MAYBE_LinkGenerationRequestedMetric_Failure_WithDelay \
+  LinkGenerationRequestedMetric_Failure_WithDelay
+#endif
 IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
-                       LinkGenerationRequestedMetric_Failure_WithDelay) {
+                       MAYBE_LinkGenerationRequestedMetric_Failure_WithDelay) {
   base::HistogramTester histogram_tester;
 
   content::BrowserTestClipboardScope test_clipboard_scope;
