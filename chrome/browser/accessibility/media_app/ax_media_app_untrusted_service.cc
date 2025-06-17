@@ -59,6 +59,7 @@
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/aura/env.h"
+#include "ui/aura/window.h"
 #endif  // defined(USE_AURA)
 
 namespace ash {
@@ -1478,7 +1479,7 @@ std::unique_ptr<gfx::Transform>
 AXMediaAppUntrustedService::MakeTransformFromOffsetAndScale() const {
   auto transform = std::make_unique<gfx::Transform>();
   float device_pixel_ratio = 1.0f;
-  if (native_window_) {
+  if (native_window_ && !native_window_->is_destroying()) {
     const auto maybe_device_pixel_ratio =
         display::Screen::GetScreen()->GetPreferredScaleFactorForWindow(
             native_window_);
