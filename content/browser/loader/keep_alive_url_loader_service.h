@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/lru_cache.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/browser/loader/keep_alive_url_loader.h"
@@ -141,6 +142,10 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
     // the `attribution_context` is created.
     std::optional<AttributionSuitableContext> attribution_context;
 
+    // On NavigationRequest::DidCommitNavigation(), this field is set to the
+    // network isolation key of the committed RenderFrameHostImpl.
+    net::NetworkIsolationKey network_isolation_key;
+
     // This must be the last member.
     base::WeakPtrFactory<FactoryContext> weak_ptr_factory{this};
   };
@@ -188,6 +193,8 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   void Shutdown();
 
   // For testing only:
+  base::WeakPtr<KeepAliveURLLoader> GetLoaderWithRequestIdForTesting(
+      int32_t request_id) const;
   size_t NumLoadersForTesting() const;
   size_t NumDisconnectedLoadersForTesting() const;
   void SetLoaderObserverForTesting(
@@ -213,6 +220,15 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // `loader_receivers_` or `disconnected_loaders_`.
   void RemoveLoader(mojo::ReceiverId loader_receiver_id);
 
+  // Called when a loader with the given NetworkIsolationKey wants to attempt a
+  // retry. This function checks the limit of retries for the given factory /
+  // NetworkIsolationKey and returns whether a retry is allowed or not.
+  bool CheckRetryEligibility(const net::NetworkIsolationKey&);
+
+  // The continuation of the call above. This is called after we've determined
+  // that the retry is allowed, to update the global retry limit tracker.
+  void OnRetryScheduled(const net::NetworkIsolationKey&);
+
   // The browsing session that owns this instance of the service.
   const raw_ptr<BrowserContext> browser_context_;
 
@@ -222,6 +238,12 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // Many-to-one mojo receiver of FetchLaterLoaderFactory for FetchLater
   // keepalive requests.
   std::unique_ptr<FetchLaterLoaderFactories> fetch_later_loader_factories_;
+
+  // Map for NetworkIsolationKey -> total retry attempt done for fetches
+  // initiated by a document with the given NetworkIsolationKey. This is used to
+  // limit the amount of retries that can be attempted per browsing session for
+  // a given NetworkIsolationKey.
+  base::LRUCache<net::NetworkIsolationKey, size_t> retry_counts_;
 
   // For testing only:
   // Not owned.

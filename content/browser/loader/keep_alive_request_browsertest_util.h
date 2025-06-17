@@ -127,7 +127,8 @@ class KeepAliveRequestBrowserTestBase : public ContentBrowserTest {
       const ExpectedTotalRequests& total,
       const ExpectedStartedRequests& started_count,
       const ExpectedSucceededRequests& succeeded_count,
-      const ExpectedFailedRequests& failed_count);
+      const ExpectedFailedRequests& failed_count,
+      size_t retried_count = 0);
 
   void DisableBackForwardCache(WebContents* web_contents);
   void SetUseHttps();

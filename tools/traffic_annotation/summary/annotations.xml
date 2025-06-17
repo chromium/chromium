@@ -515,3 +515,4 @@ Refer to README.md for content description and update process.
  <item id="corp_register_support_host_request" added_in_milestone="138" content_hash_code="03509e36" os_list="linux,windows,chromeos" file_path="remoting/host/corp_register_support_host_request.cc" />
  <item id="zero_state_suggestions_model_execution" added_in_milestone="138" content_hash_code="04362741" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
 </annotations>
+ <item id="keepalive_fetch_retry" added_in_milestone="138" content_hash_code="07e1463e" os_list="linux,windows,android" file_path="content/browser/loader/keep_alive_url_loader.cc" />

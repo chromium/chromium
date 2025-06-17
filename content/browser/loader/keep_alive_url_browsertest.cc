@@ -39,6 +39,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/keep_alive_url_loader_utils.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
@@ -1052,5 +1053,320 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLAttributionReportingBrowserTest,
   // `WaitforTotalCompleteProcessed()` here might be flaky.
   loaders_observer().WaitForTotalOnComplete({net::ERR_BLOCKED_BY_CSP});
 }
+
+class KeepAliveFetchRetryBrowserTest
+    : public FetchKeepAliveCommonTestBase,
+      public ::testing::WithParamInterface<std::string> {
+ protected:
+  static constexpr int kMaxRetryCountPerLoaderForTesting = 2;
+  static constexpr int kMaxRetryCountPerNetworkIsolationKeyForTesting = 3;
+  static constexpr int kMaxRetryCountPerFactoryForTesting = 4;
+
+  void SetUp() override {
+    SetUseHttps();
+    FetchKeepAliveCommonTestBase::SetUp();
+  }
+
+  const FeaturesType& GetEnabledFeatures() override {
+    static const FeaturesType enabled_features =
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{blink::features::kFetchRetry,
+              {
+                  {"max_retry_count",
+                   base::NumberToString(kMaxRetryCountPerLoaderForTesting)},
+                  {"max_retries_per_factory",
+                   base::NumberToString(kMaxRetryCountPerFactoryForTesting)},
+                  {"max_retries_per_nik",
+                   base::NumberToString(
+                       kMaxRetryCountPerNetworkIsolationKeyForTesting)},
+                  // Retry almost immediately to avoid timing out in tests.
+                  {"min_retry_delta", "1ms"},
+                  {"min_retry_backoff", "1.0"},
+                  {"max_retry_age", "1d"},
+              }}});
+    return enabled_features;
+  }
+
+  void LoadPageAndTriggerFetchKeepaliveWithRetry(const GURL& fetch_url) {
+    // Note that we explicitly want to trigger the fetch separately from
+    // navigating to the page that contains it, because if we trigger the fetch
+    // during the initial load, the IPC to create the KeepAliveURLLoader might
+    // arrive earlier than the DidCommit IPC for the navigation, causing the
+    // loader to not have the correct NetworkIsolationKey, etc.
+    // TODO(rakina): File a bug about the race condition, which is orthogonal
+    // from the fetch retry feature.
+    ASSERT_TRUE(NavigateToURL(web_contents(),
+                              server()->GetURL(kPrimaryHost, "/title1.html")));
+    TriggerFetchKeepaliveWithRetry(fetch_url);
+  }
+
+  void TriggerFetchKeepaliveWithRetry(const GURL& fetch_url) {
+    ASSERT_TRUE(ExecJs(web_contents(),
+                       JsReplace(R"(
+                        window.fetchPromise = fetch($1, {
+                          keepalive: true,
+                          retryOptions: {
+                            maxAttempts: $2,
+                            retryAfterUnload: true
+                          }});)",
+                                 fetch_url, kMaxRetryCountPerLoaderForTesting),
+                       content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  }
+
+  void ExpectFetchResolvedInJavaScript(bool result_is_ok) {
+    EXPECT_EQ(result_is_ok, EvalJs(web_contents(), R"((async function() {
+        try {
+          let result = await window.fetchPromise;
+          return result.ok;
+        } catch (e) {
+          // The fetch failed.
+          return false;
+        }
+    })())"));
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    KeepAliveFetchRetryBrowserTest,
+    // TODO(crbug.com/417930271): Test with POST as well.
+    ::testing::Values(net::HttpRequestHeaders::kGetMethod),
+    [](const testing::TestParamInfo<KeepAliveFetchRetryBrowserTest::ParamType>&
+           info) { return info.param; });
+
+// Test failing a load due to network changed error, then having the retry
+// succeed.
+IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
+                       FailedRetriedThenSucceeded) {
+  ASSERT_TRUE(server()->Start());
+  const auto beacon_url = server()->GetURL(kPrimaryHost, kKeepAliveEndpoint);
+  int request_count = 0;
+  std::string initial_request_guid;
+  URLLoaderInterceptor url_interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url != beacon_url) {
+          return false;
+        }
+        request_count++;
+        if (request_count == 1) {
+          // Fail the first fetch with a network changed error.
+          params->client->OnComplete(
+              network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED));
+          initial_request_guid =
+              params->url_request.headers
+                  .GetHeader(KeepAliveURLLoader::kRetryGuidHeader)
+                  .value();
+          return true;
+        } else {
+          //  Ensure the retry succeeds.
+          EXPECT_EQ(params->url_request.headers.GetHeader(
+                        KeepAliveURLLoader::kRetryAttemptsHeader),
+                    "1");
+          EXPECT_EQ(params->url_request.headers
+                        .GetHeader(KeepAliveURLLoader::kRetryGuidHeader)
+                        .value(),
+                    initial_request_guid);
+          URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\n"
+              "Content-type: text/html\n",
+              "\r\n", params->client.get());
+          return true;
+        }
+      }));
+
+  LoadPageAndTriggerFetchKeepaliveWithRetry(beacon_url);
+
+  // We fail once and then succeed on the retry.
+  loaders_observer().WaitForTotalOnComplete(
+      {net::ERR_NETWORK_CHANGED, net::OK});
+  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+
+  // Only the last result (success) is forwarded to the renderer.
+  loaders_observer().WaitForTotalOnCompleteForwarded({net::OK});
+  ExpectFetchResolvedInJavaScript(/*result_is_ok=*/true);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedFailedRequests(/*browser=*/1, /*renderer=*/0),
+      /*retried_count=*/1);
+}
+
+// Test failing a load due to HTTP 500 error. The request should not be retried.
+IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
+                       FailedNotRetried_HTTPError) {
+  net::test_server::ControllableHttpResponse response(server(),
+                                                      kKeepAliveEndpoint);
+  ASSERT_TRUE(server()->Start());
+  const auto beacon_url = server()->GetURL(kPrimaryHost, kKeepAliveEndpoint);
+  LoadPageAndTriggerFetchKeepaliveWithRetry(beacon_url);
+  // Send a HTTP 500 response. This should not be retried, as it's not a network
+  // error.
+  response.WaitForRequest();
+  response.Send(net::HTTP_INTERNAL_SERVER_ERROR);
+  response.Done();
+  loaders_observer().WaitForTotalOnReceiveResponse(1);
+  loaders_observer().WaitForTotalOnComplete({net::OK});
+  loaders_observer().WaitForTotalOnCompleteForwarded({net::OK});
+  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+
+  // The HTTP error is deemed as a success by the renderer (since it's not a
+  // network error). Note that we don't check the failed count on the renderer
+  // because sometimes the error is also counted on the renderer when loading
+  // the body (this is unrelated to the retry logic at all, which is not
+  // triggered in this case).
+  ExpectFetchResolvedInJavaScript(/*result_is_ok=*/false);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedFailedRequests(/*browser=*/0),
+      /*retried_count=*/0);
+}
+
+// Test that a failure wit ha network error that doesn't trigger a retry
+IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
+                       FailedNotRetried_NonRetryEligibleNetworkError) {
+  ASSERT_TRUE(server()->Start());
+  const auto beacon_url = server()->GetURL(kPrimaryHost, kKeepAliveEndpoint);
+  // Always fail the fetch with a SSL protocol error.
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(beacon_url,
+                                                   net::ERR_SSL_PROTOCOL_ERROR);
+  LoadPageAndTriggerFetchKeepaliveWithRetry(beacon_url);
+
+  // Observe the error, which is invalid for retrying.
+  loaders_observer().WaitForTotalOnComplete({net::ERR_SSL_PROTOCOL_ERROR});
+  loaders_observer().WaitForTotalOnCompleteForwarded(
+      {net::ERR_SSL_PROTOCOL_ERROR});
+  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+
+  // The fetch is not retried.
+  ExpectFetchResolvedInJavaScript(/*result_is_ok=*/false);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/1, /*renderer=*/1),
+      /*retried_count=*/0);
+}
+
+// Test failing a load and all the retries.
+IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
+                       FailedRetriedUntilMaxRetryCount) {
+  ASSERT_TRUE(server()->Start());
+  const auto beacon_url = server()->GetURL(kPrimaryHost, kKeepAliveEndpoint);
+  // Always fail the fetch with a network changed error.
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(beacon_url,
+                                                   net::ERR_NETWORK_CHANGED);
+  LoadPageAndTriggerFetchKeepaliveWithRetry(beacon_url);
+
+  // Max retry is 2 in the test, so we'll get 3 failures in total.
+  std::vector<int> errors = {net::ERR_NETWORK_CHANGED, net::ERR_NETWORK_CHANGED,
+                             net::ERR_NETWORK_CHANGED};
+  loaders_observer().WaitForTotalOnComplete(errors);
+  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+
+  // Only the last failure is forwarded to the renderer.
+  loaders_observer().WaitForTotalOnCompleteForwarded(
+      {net::ERR_NETWORK_CHANGED});
+  ExpectFetchResolvedInJavaScript(/*result_is_ok=*/false);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/3, /*renderer=*/1),
+      /*retried_count=*/kMaxRetryCountPerLoaderForTesting);
+
+  // Trigger another fetch keepalive.
+  TriggerFetchKeepaliveWithRetry(beacon_url);
+
+  // Max retry is 2 for the loader, but since it's coming from the same
+  // NetworkIsolationKey, which has a max retry of 3 attempts per
+  // NetworkIsolationKey, we'll only do 1 fetch and 1 retry, totaling in 5
+  // OnCompletes.
+  errors.insert(errors.end(),
+                {net::ERR_NETWORK_CHANGED, net::ERR_NETWORK_CHANGED});
+  loaders_observer().WaitForTotalOnComplete(errors);
+  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+
+  // The last failure is forwarded to the renderer too.
+  loaders_observer().WaitForTotalOnCompleteForwarded(
+      {net::ERR_NETWORK_CHANGED, net::ERR_NETWORK_CHANGED});
+  ExpectFetchResolvedInJavaScript(/*result_is_ok=*/false);
+  FetchHistogramsFromChildProcesses();
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      ExpectedTotalRequests(/*browser=*/2, /*renderer=*/2),
+      ExpectedStartedRequests(/*browser=*/2, /*renderer=*/2),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/5, /*renderer=*/2),
+      /*retried_count=*/kMaxRetryCountPerNetworkIsolationKeyForTesting);
+
+  // Triggering another fetch won't result in any retries.
+  TriggerFetchKeepaliveWithRetry(beacon_url);
+  errors.push_back(net::ERR_NETWORK_CHANGED);
+  loaders_observer().WaitForTotalOnComplete(errors);
+  loaders_observer().WaitForTotalOnCompleteForwarded(
+      {net::ERR_NETWORK_CHANGED, net::ERR_NETWORK_CHANGED,
+       net::ERR_NETWORK_CHANGED});
+  ExpectFetchResolvedInJavaScript(/*result_is_ok=*/false);
+  FetchHistogramsFromChildProcesses();
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      ExpectedTotalRequests(/*browser=*/3, /*renderer=*/3),
+      ExpectedStartedRequests(/*browser=*/3, /*renderer=*/3),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/6, /*renderer=*/3),
+      /*retried_count=*/kMaxRetryCountPerNetworkIsolationKeyForTesting);
+
+  // Navigate cross-origin to create a fetch with a different initiator
+  // NetworkIsolationKey.
+  ASSERT_TRUE(NavigateToURL(web_contents(), GetCrossOriginPageURL()));
+  TriggerFetchKeepaliveWithRetry(beacon_url);
+
+  // The fetch will fail, then only 1 retry will be attempted, because we hit
+  // the max retry per factory (4).
+  errors.insert(errors.end(),
+                {net::ERR_NETWORK_CHANGED, net::ERR_NETWORK_CHANGED});
+  loaders_observer().WaitForTotalOnComplete(errors);
+  loaders_observer().WaitForTotalOnCompleteForwarded(
+      {net::ERR_NETWORK_CHANGED, net::ERR_NETWORK_CHANGED,
+       net::ERR_NETWORK_CHANGED, net::ERR_NETWORK_CHANGED});
+  ExpectFetchResolvedInJavaScript(/*result_is_ok=*/false);
+  FetchHistogramsFromChildProcesses();
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      ExpectedTotalRequests(/*browser=*/4, /*renderer=*/4),
+      ExpectedStartedRequests(/*browser=*/4, /*renderer=*/4),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/8, /*renderer=*/4),
+      /*retried_count=*/kMaxRetryCountPerFactoryForTesting);
+
+  // Triggering another fetch won't result in any retries.
+  TriggerFetchKeepaliveWithRetry(beacon_url);
+  errors.push_back(net::ERR_NETWORK_CHANGED);
+  loaders_observer().WaitForTotalOnComplete(errors);
+  loaders_observer().WaitForTotalOnCompleteForwarded(
+      {net::ERR_NETWORK_CHANGED, net::ERR_NETWORK_CHANGED,
+       net::ERR_NETWORK_CHANGED, net::ERR_NETWORK_CHANGED,
+       net::ERR_NETWORK_CHANGED});
+  ExpectFetchResolvedInJavaScript(/*result_is_ok=*/false);
+  FetchHistogramsFromChildProcesses();
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      ExpectedTotalRequests(/*browser=*/5, /*renderer=*/5),
+      ExpectedStartedRequests(/*browser=*/5, /*renderer=*/5),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/9, /*renderer=*/5),
+      /*retried_count=*/kMaxRetryCountPerFactoryForTesting);
+}
+
+// TODO(crbug.com/417930271): test unload, redirects, timeout, attribution.
 
 }  // namespace content
