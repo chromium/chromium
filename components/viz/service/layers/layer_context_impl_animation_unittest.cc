@@ -824,6 +824,75 @@ TEST_F(LayerContextImplAnimationTest, DeserializeWithStepsTimingFunction) {
             gfx::StepsTimingFunction::StepPosition::END);
 }
 
+struct StepsTimingFunctionTestData {
+  int timeline_id;
+  int animation_id;
+  int keyframe_model_id;
+  int group_id;
+  mojom::TimingStepPosition mojom_step_position;
+  gfx::StepsTimingFunction::StepPosition expected_gfx_step_position;
+};
+
+class LayerContextImplStepsTimingFunctionTest
+    : public LayerContextImplAnimationTest,
+      public testing::WithParamInterface<StepsTimingFunctionTestData> {};
+
+TEST_P(LayerContextImplStepsTimingFunctionTest, Deserialize) {
+  const auto& param = GetParam();
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(param.timeline_id);
+  auto animation_mojom = CreateDefaultMojomAnimation(
+      param.animation_id, param.keyframe_model_id, param.group_id);
+  animation_mojom->keyframe_models[0]->timing_function =
+      CreateMojomStepsTimingFunction(kDefaultSteps, param.mojom_step_position);
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  const cc::AnimationHost* host = GetAnimationHost();
+  const cc::AnimationTimeline* timeline_impl =
+      host->GetTimelineById(param.timeline_id);
+  ASSERT_NE(nullptr, timeline_impl);
+  const cc::Animation* animation_impl =
+      timeline_impl->GetAnimationById(param.animation_id);
+  ASSERT_NE(nullptr, animation_impl);
+  const cc::KeyframeEffect* effect_impl = animation_impl->keyframe_effect();
+  ASSERT_NE(nullptr, effect_impl);
+  ASSERT_EQ(effect_impl->keyframe_models().size(), 1u);
+  const gfx::KeyframeModel* gfx_model_impl =
+      effect_impl->keyframe_models()[0].get();
+  ASSERT_NE(nullptr, gfx_model_impl);
+  const auto* float_curve =
+      static_cast<const gfx::KeyframedFloatAnimationCurve*>(
+          gfx_model_impl->curve());
+  ASSERT_NE(nullptr, float_curve->timing_function());
+  const auto* steps_timing_fn = static_cast<const gfx::StepsTimingFunction*>(
+      float_curve->timing_function());
+  EXPECT_EQ(steps_timing_fn->step_position(), param.expected_gfx_step_position);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LayerContextImplStepsTimingFunctionTest,
+    testing::Values(
+        StepsTimingFunctionTestData{
+            18, 180, 1800, 18, mojom::TimingStepPosition::kJumpBoth,
+            gfx::StepsTimingFunction::StepPosition::JUMP_BOTH},
+        StepsTimingFunctionTestData{
+            19, 190, 1900, 19, mojom::TimingStepPosition::kJumpEnd,
+            gfx::StepsTimingFunction::StepPosition::JUMP_END},
+        StepsTimingFunctionTestData{
+            20, 200, 2000, 20, mojom::TimingStepPosition::kJumpNone,
+            gfx::StepsTimingFunction::StepPosition::JUMP_NONE},
+        StepsTimingFunctionTestData{
+            21, 210, 2100, 21, mojom::TimingStepPosition::kJumpStart,
+            gfx::StepsTimingFunction::StepPosition::JUMP_START}));
+
 TEST_F(LayerContextImplAnimationTest,
        DeserializeAnimationWithZeroPlaybackRateFails) {
   constexpr int kTimelineId = 14;
