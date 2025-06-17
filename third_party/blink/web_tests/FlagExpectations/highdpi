@@ -410,7 +410,6 @@ crbug.com/1266821 paint/invalidation/scroll/scrollbar-damage-and-full-viewport-r
 crbug.com/1266821 paint/invalidation/table/composited-table-background-section-composited-row-initial-empty.html [ Failure ]
 crbug.com/1266821 paint/invalidation/table/composited-table-background-section-composited-row.html [ Failure ]
 crbug.com/1266821 svg/wicd/test-scalable-background-image2.xhtml [ Failure ]
-crbug.com/1266821 transforms/3d/point-mapping/3d-point-mapping-3.html [ Failure ]
 crbug.com/1266821 transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html [ Failure ]
 
 # Existing failures. Mark these as [ Pass ] when these tests are fixed.

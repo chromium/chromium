@@ -1532,7 +1532,6 @@ tables/mozilla/bugs/bug4527.html
 transforms/2d/transform-borderbox.html
 transforms/3d/general/perspective-units.html
 transforms/3d/hit-testing/backface-hit-test.html
-transforms/3d/point-mapping/3d-point-mapping-3.html
 transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html
 transforms/combine-transforms-properties-transform.html
 transforms/perspective-fixed-pos-descendant.html
