@@ -337,6 +337,10 @@ class CONTENT_EXPORT KeepAliveURLLoader
                            SelfDeletionOnMaxAge);
   FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
                            ErrorCodeRetryEligibility_OnlyIfServerUnreached);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           RetryAttemptedOnDisconnect);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           CookiesClearingWillDeleteRetryingLoader);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

@@ -192,11 +192,16 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // down.
   void Shutdown();
 
+  // Called when user data is cleared that requires clearing pending retry
+  // loads as well.
+  void ClearKeepAliveURLLoadersAttemptingRetry();
+
   // For testing only:
   base::WeakPtr<KeepAliveURLLoader> GetLoaderWithRequestIdForTesting(
       int32_t request_id) const;
   size_t NumLoadersForTesting() const;
   size_t NumDisconnectedLoadersForTesting() const;
+  size_t NumLoadersAttemptingRetryForTesting() const;
   void SetLoaderObserverForTesting(
       scoped_refptr<KeepAliveURLLoader::TestObserver> observer);
   void SetURLLoaderThrottlesGetterForTesting(

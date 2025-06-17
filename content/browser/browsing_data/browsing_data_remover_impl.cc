@@ -510,6 +510,11 @@ void BrowsingDataRemoverImpl::RemoveImpl(
         StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS;
   }
 
+  if ((remove_mask & DATA_TYPE_COOKIES) || (remove_mask & DATA_TYPE_CACHE)) {
+    storage_partition_remove_mask |=
+        StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY;
+  }
+
   if (storage_partition_remove_mask) {
     // If cookies are supposed to be conditionally deleted from the storage
     // partition, create the deletion info object.
