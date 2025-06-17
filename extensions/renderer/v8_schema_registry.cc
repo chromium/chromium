@@ -42,7 +42,7 @@ void DeepFreeze(const v8::Local<v8::Object>& object,
                 const v8::Local<v8::Context>& context) {
   // Don't let the object trace upwards via the prototype.
   v8::Maybe<bool> maybe =
-      object->SetPrototype(context, v8::Null(context->GetIsolate()));
+      object->SetPrototypeV2(context, v8::Null(context->GetIsolate()));
   CHECK(maybe.IsJust() && maybe.FromJust());
   v8::Local<v8::Array> property_names =
       object->GetOwnPropertyNames(context).ToLocalChecked();

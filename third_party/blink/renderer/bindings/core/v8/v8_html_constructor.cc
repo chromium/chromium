@@ -158,7 +158,7 @@ void V8HTMLConstructor::HtmlConstructor(
   // Note that SetPrototype doesn't actually return the exceptions, it just
   // returns false or Nothing on exception. See crbug.com/1197894 for an
   // example.
-  v8::Maybe<bool> maybe_result = wrapper->SetPrototype(
+  v8::Maybe<bool> maybe_result = wrapper->SetPrototypeV2(
       script_state->GetContext(), prototype.As<v8::Object>());
   bool success;
   if (!maybe_result.To(&success)) {
