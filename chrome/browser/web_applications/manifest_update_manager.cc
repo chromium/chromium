@@ -316,16 +316,9 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
   auto app_window_close_await_callback =
       base::BindOnce(&ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose,
                      weak_factory_.GetWeakPtr(), web_contents, url, app_id);
-  if (base::FeatureList::IsEnabled(features::kWebAppEnableUpdateTokenParsing)) {
-    // TODO(crbug.com/414851433): Remove ScheduleManifestUpdateCheck()
-    provider_->scheduler().ScheduleManifestSilentUpdate(
-        url, app_id, check_time, web_contents,
-        std::move(app_window_close_await_callback));
-  } else {
-    provider_->scheduler().ScheduleManifestUpdateCheck(
-        url, app_id, check_time, web_contents,
-        std::move(app_window_close_await_callback));
-  }
+  provider_->scheduler().ScheduleManifestUpdateCheck(
+      url, app_id, check_time, web_contents,
+      std::move(app_window_close_await_callback));
 }
 
 void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(

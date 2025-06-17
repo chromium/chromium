@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 
@@ -21,13 +22,24 @@ namespace web_app {
 
 // Not actually used in production logic. This is just for debugging output.
 enum class ManifestSilentUpdateCommandStage {
-  kStartManifestDataFetching,
+  kFetchingNewManifestData,
   kLoadingExistingManifestData,
+  kAcquiringAppLock,
+  kComparingNonSecuritySensitiveManifestData,
+  kFinalizingSilentManifestChanges,
   kCompleteCommand,
 };
 
-std::ostream& operator<<(std::ostream& os,
-                         ManifestSilentUpdateCommandStage stage);
+// TODO(crbug.com/425468621): Add histograms to check for result.
+enum class ManifestSilentUpdateCheckResult {
+  kAppNotInstalled,
+  kAppUpdateFailedDuringInstall,
+  kSystemShutdown,
+  kAppSilentlyUpdated,
+  kAppUpToDate,
+  kIconReadFromDiskFailed,
+  kWebContentsDestroyed,
+};
 
 struct WebAppInstallInfo;
 
@@ -47,19 +59,14 @@ struct WebAppInstallInfo;
 //   image diff) or store it as a PendingUpdateInfo (>10% image diff).
 // - Finalize silent update of icon (if needed) and destroy command.
 class ManifestSilentUpdateCommand
-    : public WebAppCommand<AppLock,
-                           ManifestUpdateCheckResult,
-                           std::unique_ptr<WebAppInstallInfo>>,
+    : public WebAppCommand<NoopLock, ManifestSilentUpdateCheckResult>,
       public content::WebContentsObserver {
  public:
-  using CompletedCallback = base::OnceCallback<void(
-      ManifestUpdateCheckResult check_result,
-      std::unique_ptr<WebAppInstallInfo> new_install_info)>;
+  using CompletedCallback =
+      base::OnceCallback<void(ManifestSilentUpdateCheckResult check_result)>;
 
   ManifestSilentUpdateCommand(
       const GURL& url,
-      const webapps::AppId& app_id,
-      base::Time check_time,
       base::WeakPtr<content::WebContents> web_contents,
       CompletedCallback callback,
       std::unique_ptr<WebAppDataRetriever> data_retriever,
@@ -69,11 +76,11 @@ class ManifestSilentUpdateCommand
 
  protected:
   // WebAppCommand:
-  void StartWithLock(std::unique_ptr<AppLock> lock) override;
+  void StartWithLock(std::unique_ptr<NoopLock> lock) override;
 
  private:
   // Stage: Starting to fetch new manifest data
-  // (ManifestSilentUpdateCommandStage::kStartManifestDataFetching).
+  // (ManifestSilentUpdateCommandStage::kFetchingNewManifestData).
   void StashNewManifestJson(blink::mojom::ManifestPtr opt_manifest,
                             bool valid_manifest_for_web_app,
                             webapps::InstallableStatusCode installable_status);
@@ -84,17 +91,27 @@ class ManifestSilentUpdateCommand
   // Stage: Loading existing manifest data from disk.
   // (ManifestSilentUpdateCommandStage::kLoadingExistingManifestData)
   void StashExistingAppIcons(IconBitmaps icon_bitmaps);
-  void StashExistingShortcutsMenuIcons(
+  void StashExistingShortcutsMenuIconsFinalizeUpdateIfNeeded(
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
+
+  // Stage: Compare the manifest data from the new and existing manifests.
+  // (ManifestSilentUpdateCommandStage::
+  // kComparingNonSecuritySensitiveManifestData)
+  void CompareManifestDataForSilentUpdate();
+
+  // Stage: Finalize silent changes to web app.
+  // (ManifestSilentUpdateCommandStage::kFinalizingSilentManifestChanges)
+  void NonSecuritySensitiveFieldsApplied(const webapps::AppId& app_id,
+                                         webapps::InstallResultCode code);
 
   // Stage: Update check complete.
   // (ManifestSilentUpdateCommandStage::kCompleteCommand)
-  void CheckComplete();
-
-  const WebApp& GetWebApp() const;
+  void CompleteCommandAndSelfDestruct(
+      ManifestSilentUpdateCheckResult check_result);
 
   bool IsWebContentsDestroyed();
-  void CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult check_result);
+  // Updates NoopLock to an AppLock after retrieving the new manifest data.
+  void OnAppLockRetrieved();
 
   base::WeakPtr<ManifestSilentUpdateCommand> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -102,11 +119,11 @@ class ManifestSilentUpdateCommand
 
   // Manifest update check request parameters.
   const GURL url_;
-  const webapps::AppId app_id_;
-  base::Time check_time_;
+  webapps::AppId app_id_;
 
   // Resources and helpers used to fetch manifest data.
-  std::unique_ptr<AppLock> lock_;
+  std::unique_ptr<NoopLock> lock_;
+  std::unique_ptr<AppLock> app_lock_;
   base::WeakPtr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppIconDownloader> icon_downloader_;
@@ -116,11 +133,10 @@ class ManifestSilentUpdateCommand
   std::unique_ptr<WebAppInstallInfo> new_install_info_;
   IconBitmaps existing_app_icon_bitmaps_;
   ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
-  ManifestDataChanges manifest_data_changes_;
 
   // Debug info.
   ManifestSilentUpdateCommandStage stage_ =
-      ManifestSilentUpdateCommandStage::kStartManifestDataFetching;
+      ManifestSilentUpdateCommandStage::kFetchingNewManifestData;
 
   base::WeakPtrFactory<ManifestSilentUpdateCommand> weak_factory_{this};
 };

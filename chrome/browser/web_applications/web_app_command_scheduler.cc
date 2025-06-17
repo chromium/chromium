@@ -228,14 +228,12 @@ void WebAppCommandScheduler::ScheduleManifestUpdateCheck(
 
 void WebAppCommandScheduler::ScheduleManifestSilentUpdate(
     const GURL& url,
-    const webapps::AppId& app_id,
-    base::Time check_time,
     base::WeakPtr<content::WebContents> contents,
     ManifestSilentUpdateCommand::CompletedCallback callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ManifestSilentUpdateCommand>(
-          url, app_id, check_time, contents, std::move(callback),
+          url, contents, std::move(callback),
           provider_->web_contents_manager().CreateDataRetriever(),
           provider_->web_contents_manager().CreateIconDownloader()),
       location);

@@ -63,6 +63,7 @@ enum class LaunchWebAppWindowSetting;
 enum class RunOnOsLoginMode;
 enum class ManifestUpdateCheckResult;
 enum class ManifestUpdateResult;
+enum class ManifestSilentUpdateCheckResult;
 enum class NavigateAndTriggerInstallDialogCommandResult;
 struct CleanupOrphanedIsolatedWebAppsCommandError;
 struct CleanupOrphanedIsolatedWebAppsCommandSuccess;
@@ -203,6 +204,8 @@ class WebAppCommandScheduler {
       ManifestUpdateCheckCompletedCallback callback,
       const base::Location& location = FROM_HERE);
 
+  using ManifestSilentUpdateCompletedCallback =
+      base::OnceCallback<void(ManifestSilentUpdateCheckResult check_result)>;
   // Schedule a command that performs fetching data from the manifest
   // for a manifest update. This is part of the predicatable app updating
   // algorithm that will be implemented. After implementation, this should
@@ -210,10 +213,8 @@ class WebAppCommandScheduler {
   // For more details, go/predictable-app-updating-design-doc.
   void ScheduleManifestSilentUpdate(
       const GURL& url,
-      const webapps::AppId& app_id,
-      base::Time check_time,
       base::WeakPtr<content::WebContents> contents,
-      ManifestUpdateCheckCompletedCallback callback,
+      ManifestSilentUpdateCompletedCallback callback,
       const base::Location& location = FROM_HERE);
 
   // Schedules a command that performs the data writes into the DB for
