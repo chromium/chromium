@@ -32,7 +32,7 @@ promise_test(async t => {
   newImage.src = kValidImagePath;
   const session = await createLanguageModel(kImageOptions);
   // TODO(crbug.com/409615288): Expect a TypeError according to the spec.
-  promise_rejects_dom(
+  return promise_rejects_dom(
       t, 'SyntaxError',
       session.prompt(messageWithContent(kPrompt, 'text', newImage)));
 }, 'Prompt with type:"text" and image content should reject');
@@ -42,7 +42,7 @@ promise_test(async t => {
   const newImage = new Image();
   newImage.src = kValidImagePath;
   const session = await createLanguageModel(kImageOptions);
-  promise_rejects_dom(t, 'NotSupportedError', session.prompt([
+  return promise_rejects_dom(t, 'NotSupportedError', session.prompt([
     {role: 'assistant', content: [{type: 'image', value: newImage}]}
   ]));
 }, 'Prompt with assistant role should reject with multimodal input');
@@ -56,7 +56,7 @@ promise_test(async (t) => {
   const newImage = new Image();
   newImage.src = kValidImagePath;
   const session = await createLanguageModel();
-  promise_rejects_dom(
+  return promise_rejects_dom(
       t, 'NotSupportedError',
       session.prompt(messageWithContent(kPrompt, 'image', newImage)));
 }, 'Prompt image without `image` expectedInput');
@@ -223,7 +223,7 @@ promise_test(async (t) => {
   await ensureLanguageModel();
   const blob = await (await fetch(kValidAudioPath)).blob();
   const session = await createLanguageModel();
-  promise_rejects_dom(
+  return promise_rejects_dom(
       t, 'NotSupportedError',
       session.prompt(messageWithContent(kPrompt, 'audio', blob)));
 }, 'Prompt audio without `audio` expectedInput');
@@ -255,7 +255,7 @@ promise_test(async (t) => {
   const blob = await (await fetch(kValidImagePath)).blob();
   const session = await createLanguageModel(kAudioOptions);
   // TODO(crbug.com/409615288): Expect a TypeError according to the spec.
-  promise_rejects_dom(
+  return promise_rejects_dom(
       t, 'DataError',
       session.prompt(messageWithContent(kPrompt, 'audio', blob)));
 }, 'Prompt audio with blob containing invalid audio data.');

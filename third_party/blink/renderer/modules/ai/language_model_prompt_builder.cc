@@ -248,6 +248,10 @@ void LanguageModelPromptBuilder::OnPromptContentProcessed(
 void LanguageModelPromptBuilder::Build(const V8LanguageModelPrompt* input) {
   CHECK_EQ(processed_remaining_, 0);  // Prevent parallel Build() calls.
   HeapVector<Member<LanguageModelMessage>> messages = NormalizePrompt(input);
+  if (messages.empty()) {
+    Resolve();
+    return;
+  }
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       ExecutionContext::From(script_state_)
           ->GetTaskRunner(TaskType::kInternalDefault);

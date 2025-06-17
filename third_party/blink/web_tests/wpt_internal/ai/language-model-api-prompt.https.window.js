@@ -14,9 +14,11 @@ promise_test(async () => {
 promise_test(async (t) => {
   await ensureLanguageModel();
   const session = await createLanguageModel();
-  promise_rejects_dom(t, 'TypeError', session.prompt([]));
-  promise_rejects_dom(t, 'TypeError', session.prompt({}));
-}, 'Check malformed input');
+  assert_true(!!(await session.prompt([])));
+  // Invalid input should be stringified.
+  assert_regexp_match(await session.prompt({}), /\[object Object\]/);
+}, 'Check empty input');
+
 
 promise_test(async (t) => {
   await ensureLanguageModel();
