@@ -132,6 +132,11 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
     column_set_indices = row_set_indices = GridItemIndices();
   }
 
+  const GridSpan& MaybeTranslateSpan(wtf_size_t start_offset,
+                                     GridTrackSizingDirection track_direction) {
+    return resolved_position.MaybeTranslateSpan(start_offset, track_direction);
+  }
+
   const GridSpan& Span(GridTrackSizingDirection track_direction) const {
     return resolved_position.Span(track_direction);
   }
@@ -413,6 +418,11 @@ class CORE_EXPORT GridItems {
     DCHECK_LT(index, item_data_.size());
     DCHECK(item_data_[index]);
     return *item_data_[index];
+  }
+
+  const Member<GridItemData>& operator[](wtf_size_t index) const {
+    DCHECK_LT(index, item_data_.size());
+    return item_data_[index];
   }
 
   void ReserveInitialCapacity(wtf_size_t initial_capacity) {

@@ -11,6 +11,7 @@ namespace blink {
 
 MasonryItemGroups MasonryNode::CollectItemGroups(
     const GridLineResolver& line_resolver,
+    const GridItems& masonry_items,
     wtf_size_t& max_end_line,
     wtf_size_t& start_offset) const {
   const auto grid_axis_direction = Style().MasonryTrackSizingDirection();
@@ -18,7 +19,11 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
   start_offset = 0;
   MasonryItemGroupMap item_group_map;
 
-  for (auto child = FirstChild(); child; child = child.NextSibling()) {
+  for (wtf_size_t index = 0; index < masonry_items.Size(); ++index) {
+    const Member<GridItemData>& masonry_item = masonry_items[index];
+    DCHECK(masonry_item);
+
+    const BlockNode& child = masonry_item->node;
     if (child.IsOutOfFlowPositioned()) {
       continue;
     }
@@ -36,9 +41,9 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
     const auto group_it = item_group_map.find(item_properties);
     if (group_it == item_group_map.end()) {
       item_group_map.insert(item_properties,
-                            HeapVector<BlockNode, 16>({To<BlockNode>(child)}));
+                            GridItems::GridItemDataVector({masonry_item}));
     } else {
-      group_it->value.emplace_back(To<BlockNode>(child));
+      group_it->value.emplace_back(masonry_item);
     }
   }
 
@@ -65,8 +70,7 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
 }
 
 GridItems MasonryNode::ConstructMasonryItems(
-    const GridLineResolver& line_resolver,
-    wtf_size_t start_offset) const {
+    const GridLineResolver& line_resolver) const {
   const auto& style = Style();
   const auto grid_axis_direction = style.MasonryTrackSizingDirection();
 
@@ -89,10 +93,6 @@ GridItems MasonryNode::ConstructMasonryItems(
       // the number of spans for each item based on the grid axis.
       auto item_span = line_resolver.ResolveGridPositionsFromStyle(
           child_style, grid_axis_direction);
-
-      if (item_span.IsUntranslatedDefinite()) {
-        item_span.Translate(start_offset);
-      }
 
       masonry_item->resolved_position.SetSpan(item_span, grid_axis_direction);
       masonry_items.Append(masonry_item);

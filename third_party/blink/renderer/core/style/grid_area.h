@@ -217,6 +217,15 @@ struct GridArea {
     }
   }
 
+  const GridSpan& MaybeTranslateSpan(wtf_size_t start_offset,
+                                     GridTrackSizingDirection track_direction) {
+    GridSpan& span = (track_direction == kForColumns) ? columns : rows;
+    if (span.IsUntranslatedDefinite()) {
+      span.Translate(start_offset);
+    }
+    return span;
+  }
+
   wtf_size_t StartLine(GridTrackSizingDirection track_direction) const {
     return Span(track_direction).StartLine();
   }

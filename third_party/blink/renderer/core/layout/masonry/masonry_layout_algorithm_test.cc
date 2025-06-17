@@ -26,14 +26,17 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     const auto& style = algorithm.Style();
     const GridLineResolver line_resolver(style, /*auto_repetitions=*/0);
 
+    const auto masonry_items =
+        algorithm.Node().ConstructMasonryItems(line_resolver);
     grid_axis_tracks_ = algorithm.BuildGridAxisTracks(
-        line_resolver, SizingConstraint::kLayout, start_offset);
+        line_resolver, masonry_items, SizingConstraint::kLayout, start_offset);
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
     ASSERT_EQ(grid_axis_direction, style.MasonryTrackSizingDirection());
 
     for (const auto& masonry_item : algorithm.BuildVirtualMasonryItems(
-             line_resolver, SizingConstraint::kLayout, start_offset)) {
+             line_resolver, masonry_items, SizingConstraint::kLayout,
+             start_offset)) {
       MasonryItemCachedData item_data;
 
       item_data.resolved_span =
@@ -132,8 +135,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ConstructMasonryItems) {
   MasonryNode node(GetLayoutBoxByElementId("masonry"));
 
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  const auto masonry_items =
-      node.ConstructMasonryItems(line_resolver, /*start_offset=*/0);
+  auto masonry_items = node.ConstructMasonryItems(line_resolver);
 
   const Vector<GridSpan> expected_spans = {
       GridSpan::IndefiniteGridSpan(1),
@@ -148,7 +150,9 @@ TEST_F(MasonryLayoutAlgorithmTest, ConstructMasonryItems) {
   EXPECT_EQ(masonry_items.Size(), expected_spans.size());
 
   const auto grid_axis_direction = node.Style().MasonryTrackSizingDirection();
-  for (wtf_size_t i = 0; const auto& masonry_item : masonry_items) {
+  for (wtf_size_t i = 0; auto& masonry_item : masonry_items) {
+    masonry_item.MaybeTranslateSpan(/*start_offset=*/0,
+                                    GridTrackSizingDirection::kForColumns);
     EXPECT_EQ(masonry_item.resolved_position.Span(grid_axis_direction),
               expected_spans[i++]);
   }
@@ -247,8 +251,9 @@ TEST_F(MasonryLayoutAlgorithmTest, CollectMasonryItemGroups) {
 
   wtf_size_t max_end_line, start_offset;
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  const auto item_groups =
-      node.CollectItemGroups(line_resolver, max_end_line, start_offset);
+  const auto masonry_items = node.ConstructMasonryItems(line_resolver);
+  const auto item_groups = node.CollectItemGroups(line_resolver, masonry_items,
+                                                  max_end_line, start_offset);
 
   EXPECT_EQ(item_groups.size(), 4u);
 

@@ -31,16 +31,19 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   friend class MasonryLayoutAlgorithmTest;
 
   // This places all the items stored in `masonry_items` and adjusts
-  // `intrinsic_block_size_` based on the placement of the items. Placement of
+  // `intrinsic_block_size_` based on the placement of the items. Each item's
+  // resolved position is translated based on `start_offset`. Placement of
   // the items is finalized within this method. `running_positions` is an output
   // parameter that can be used to find the intrinsic inline size when the
   // stacking axis is the inline axis.
   void PlaceMasonryItems(const GridLayoutTrackCollection& track_collection,
                          GridItems& masonry_items,
+                         wtf_size_t start_offset,
                          MasonryRunningPositions& running_positions);
 
   GridSizingTrackCollection BuildGridAxisTracks(
       const GridLineResolver& line_resolver,
+      const GridItems& masonry_items,
       SizingConstraint sizing_constraint,
       wtf_size_t& start_offset) const;
 
@@ -52,6 +55,7 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   // Returns a collection of items that reflect the intrinsic contributions from
   // the item groups, which will be used to resolve the grid axis' track sizes.
   GridItems BuildVirtualMasonryItems(const GridLineResolver& line_resolver,
+                                     const GridItems& masonry_items,
                                      SizingConstraint sizing_constraint,
                                      wtf_size_t& start_offset) const;
 
@@ -59,7 +63,7 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       GridTrackSizingDirection track_direction,
       SizingConstraint sizing_constraint,
       const ConstraintSpace space_for_measure,
-      GridItemData* virtual_item) const;
+      const GridItemData* virtual_item) const;
 
   ConstraintSpace CreateConstraintSpace(
       const GridItemData& masonry_item,

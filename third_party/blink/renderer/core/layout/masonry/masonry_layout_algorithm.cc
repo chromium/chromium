@@ -28,11 +28,10 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
     wtf_size_t start_offset;
     const bool is_for_columns =
         Style().MasonryTrackSizingDirection() == kForColumns;
-    // When item-direction is row, we pass in `kLayout` for `sizing_constraint`
-    // because the grid-axis is the block axis, and we can only apply sizing
-    // constraints to the inline axis.
-    const auto track_collection =
-        BuildGridAxisTracks(line_resolver, sizing_constraint, start_offset);
+
+    GridItems masonry_items = Node().ConstructMasonryItems(line_resolver);
+    const auto track_collection = BuildGridAxisTracks(
+        line_resolver, masonry_items, sizing_constraint, start_offset);
 
     if (is_for_columns) {
       // Track sizing is done during the guess placement step, which happens in
@@ -40,9 +39,6 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
       // the columns should correctly give us the intrinsic inline size.
       return track_collection.CalculateSetSpanSize();
     } else {
-      auto masonry_items =
-          Node().ConstructMasonryItems(line_resolver, start_offset);
-
       if (masonry_items.IsEmpty()) {
         // If there are no masonry items, the intrinsic inline size is only
         // border, scrollbar, and padding.
@@ -52,7 +48,8 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
       MasonryRunningPositions running_positions(
           track_collection.EndLineOfImplicitGrid(), LayoutUnit(),
           ResolveItemToleranceForMasonry(Style(), ChildAvailableSize()));
-      PlaceMasonryItems(track_collection, masonry_items, running_positions);
+      PlaceMasonryItems(track_collection, masonry_items, start_offset,
+                        running_positions);
       // `stacking_axis_gap` represents the space between each of the items
       // in the row. We need to subtract this as it is always added to
       // `running_positions` whenever an item is placed, but the very last
@@ -82,16 +79,17 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   const GridLineResolver line_resolver(Style(), ComputeAutomaticRepetitions());
 
   wtf_size_t start_offset;
-  const auto track_collection = BuildGridAxisTracks(
-      line_resolver, SizingConstraint::kLayout, start_offset);
-
   const auto& node = Node();
-  auto masonry_items = node.ConstructMasonryItems(line_resolver, start_offset);
+  auto masonry_items = node.ConstructMasonryItems(line_resolver);
+  const auto track_collection = BuildGridAxisTracks(
+      line_resolver, masonry_items, SizingConstraint::kLayout, start_offset);
+
   if (!masonry_items.IsEmpty()) {
     MasonryRunningPositions running_positions(
         track_collection.EndLineOfImplicitGrid(), LayoutUnit(),
         ResolveItemToleranceForMasonry(Style(), ChildAvailableSize()));
-    PlaceMasonryItems(track_collection, masonry_items, running_positions);
+    PlaceMasonryItems(track_collection, masonry_items, start_offset,
+                      running_positions);
   }
   // Account for border, scrollbar, and padding in the intrinsic block size.
   intrinsic_block_size_ += BorderScrollbarPadding().BlockSum();
@@ -152,6 +150,7 @@ const LayoutResult* LayoutMasonryItemForMeasure(
 void MasonryLayoutAlgorithm::PlaceMasonryItems(
     const GridLayoutTrackCollection& track_collection,
     GridItems& masonry_items,
+    wtf_size_t start_offset,
     MasonryRunningPositions& running_positions) {
   const auto& available_size = ChildAvailableSize();
   const auto& border_scrollbar_padding = BorderScrollbarPadding();
@@ -169,8 +168,9 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
 
   for (auto& masonry_item : masonry_items) {
     // Find the definite span that the masonry items should be placed in.
-    auto item_span = masonry_item.Span(grid_axis_direction);
     LayoutUnit max_position;
+    GridSpan item_span =
+        masonry_item.MaybeTranslateSpan(start_offset, grid_axis_direction);
 
     // Determine final placement for remaining indefinite spans.
     if (item_span.IsIndefinite()) {
@@ -250,6 +250,7 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
 
 GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
     const GridLineResolver& line_resolver,
+    const GridItems& masonry_items,
     SizingConstraint sizing_constraint,
     wtf_size_t& start_offset) const {
   const auto& style = Style();
@@ -259,19 +260,15 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
   wtf_size_t max_end_line;
   GridItems virtual_items;
 
-  for (const auto& [group_items, group_properties] :
-       Node().CollectItemGroups(line_resolver, max_end_line, start_offset)) {
+  for (const auto& [group_items, group_properties] : Node().CollectItemGroups(
+           line_resolver, masonry_items, max_end_line, start_offset)) {
     auto* virtual_item = MakeGarbageCollected<GridItemData>();
     auto span = group_properties.Span();
 
-    for (const auto& item_node : group_items) {
-      // TODO(almaher): Refactor the code such that we use items collected in
-      // ConstructMasonryItems() when building up the virtual items instead of
-      // creating new Garbage Collected items. This will likely require an
-      // adjustment to the data structure we produce in CollectItemGroups().
-      GridItemData* item_data =
-          MakeGarbageCollected<GridItemData>(item_node, style);
-      const auto space = CreateConstraintSpaceForMeasure(*item_data);
+    for (const Member<GridItemData>& group_item : group_items) {
+      const GridItemData& item_data = *group_item;
+      const BlockNode& item_node = item_data.node;
+      const auto space = CreateConstraintSpaceForMeasure(item_data);
 
       // TODO(almaher): Subgrids have extra margin to handle unique gap sizes.
       // This requires access to the subgrid track collection, where that extra
@@ -290,7 +287,7 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
       } else {
         virtual_item->EncompassContributionSize(
             ComputeMasonryItemBlockContribution(
-                grid_axis_direction, sizing_constraint, space, item_data) +
+                grid_axis_direction, sizing_constraint, space, &item_data) +
             margin_sum);
       }
     }
@@ -355,7 +352,7 @@ LayoutUnit MasonryLayoutAlgorithm::ComputeMasonryItemBlockContribution(
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint,
     const ConstraintSpace space_for_measure,
-    GridItemData* masonry_item) const {
+    const GridItemData* masonry_item) const {
   DCHECK(masonry_item);
 
   // TODO(ikilpatrick): We'll need to record if any child used an indefinite
@@ -403,12 +400,13 @@ LayoutUnit MasonryLayoutAlgorithm::ComputeMasonryItemBlockContribution(
 
 GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
     const GridLineResolver& line_resolver,
+    const GridItems& masonry_items,
     SizingConstraint sizing_constraint,
     wtf_size_t& start_offset) const {
   const auto& style = Style();
   const auto grid_axis_direction = style.MasonryTrackSizingDirection();
-  auto virtual_items =
-      BuildVirtualMasonryItems(line_resolver, sizing_constraint, start_offset);
+  auto virtual_items = BuildVirtualMasonryItems(
+      line_resolver, masonry_items, sizing_constraint, start_offset);
 
   auto BuildRanges = [&]() {
     GridRangeBuilder range_builder(

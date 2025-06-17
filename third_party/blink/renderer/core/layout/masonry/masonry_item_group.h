@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_MASONRY_ITEM_GROUP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_MASONRY_ITEM_GROUP_H_
 
+#include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
@@ -62,12 +63,12 @@ struct MasonryItemGroup {
 
   void Trace(Visitor* visitor) const { visitor->Trace(items); }
 
-  HeapVector<BlockNode, 16> items;
+  GridItems::GridItemDataVector items;
   MasonryItemGroupProperties properties;
 };
 
 using MasonryItemGroupMap =
-    HeapHashMap<MasonryItemGroupProperties, HeapVector<BlockNode, 16>>;
+    HeapHashMap<MasonryItemGroupProperties, GridItems::GridItemDataVector>;
 using MasonryItemGroups = HeapVector<MasonryItemGroup, 16>;
 
 }  // namespace blink
