@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -38,6 +39,13 @@ using ::optimization_guide::proto::BrowserAction;
 using ::optimization_guide::proto::ClickAction;
 using ::optimization_guide::proto::ContentAttributes;
 using ::optimization_guide::proto::ContentNode;
+
+constexpr char kActivateSurfaceIncompatibilityNotice[] =
+    "Programmatic window activation does not work on the Weston reference "
+    "implementation of Wayland used on Linux testbots. It also doesn't work "
+    "reliably on Linux in general. For this reason, some of these tests which "
+    "use ActivateSurface() may be skipped on machine configurations which do "
+    "not reliably support them.";
 
 std::string EncodeActionProto(const BrowserAction& action) {
   return base::Base64Encode(action.SerializeAsString());
@@ -658,6 +666,27 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
                   PauseActorTask(),
                   ResumeActorTask(UpdatedContextOptions(), true),
                   ResumeActorTask(UpdatedContextOptions(), false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, GetPageContextWithoutFocus) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+      AddInstrumentedTab(kOtherTabId, GURL(chrome::kChromeUISettingsURL)),
+      FocusWebContents(kOtherTabId),
+      // After waiting, this should get the context for `kNewActorTabId`, not
+      // the currently focused settings page. The choice of the settings page is
+      // to make ExecuteAction fail if we try to fetch the page context of the
+      // wrong tab.
+      ExecuteAction(actor::MakeWait(), AnnotationsOnlyContextOptions()));
 }
 
 class GlicActorControllerWithActorDisabledUiTest

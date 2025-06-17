@@ -359,8 +359,7 @@ void GlicKeyedService::ActInFocusedTab(
   }
 
   CHECK(actor_controller_);
-  actor_controller_->Act(sharing_manager_->GetFocusedTabData(), action, options,
-                         std::move(callback));
+  actor_controller_->Act(action, options, std::move(callback));
 }
 
 void GlicKeyedService::StopActorTask(actor::TaskId task_id) {

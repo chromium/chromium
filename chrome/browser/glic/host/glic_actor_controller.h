@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/task_id.h"
-#include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -48,8 +47,7 @@ class GlicActorController {
   // start/stop task. Instead it keeps track of any ongoing task, and implicitly
   // creates one for Act() if one does not already exist.
   // Invokes the actor to complete an action.
-  void Act(const FocusedTabData& focused_tab_data,
-           const optimization_guide::proto::BrowserAction& action,
+  void Act(const optimization_guide::proto::BrowserAction& action,
            const mojom::GetTabContextOptions& options,
            mojom::WebClientHandler::ActInFocusedTabCallback callback);
 
@@ -79,14 +77,12 @@ class GlicActorController {
       optimization_guide::proto::BrowserStartTaskResult result);
 
   // Core logic to execute an action.
-  void ActImpl(base::WeakPtr<tabs::TabInterface> tab,
-               const optimization_guide::proto::BrowserAction& action,
+  void ActImpl(const optimization_guide::proto::BrowserAction& action,
                const mojom::GetTabContextOptions& options,
                mojom::WebClientHandler::ActInFocusedTabCallback callback) const;
 
   // Handles the result of the action, returning new page context if necessary.
   void OnActionFinished(
-      base::WeakPtr<tabs::TabInterface> tab,
       actor::TaskId task_id,
       const mojom::GetTabContextOptions& options,
       mojom::WebClientHandler::ActInFocusedTabCallback callback,

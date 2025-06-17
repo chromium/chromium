@@ -47,7 +47,7 @@ void PostTaskForActCallback(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
-void OnGetContextFromFocusedTab(
+void OnFetchPageContext(
     std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry,
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
     base::WeakPtr<actor::ExecutionEngine> execution_engine,
@@ -101,7 +101,6 @@ GlicActorController::GlicActorController(Profile* profile) : profile_(profile) {
 GlicActorController::~GlicActorController() = default;
 
 void GlicActorController::Act(
-    const FocusedTabData& focused_tab_data,
     const optimization_guide::proto::BrowserAction& action,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback) {
@@ -129,15 +128,7 @@ void GlicActorController::Act(
     return;
   }
 
-  tabs::TabHandle handle(action.tab_id());
-  tabs::TabInterface* tab = handle.Get();
-  if (!tab && focused_tab_data.is_focus()) {
-    // The glic actor does not yet specify tab IDs. Just use the focused tab
-    // until it does.
-    tab = focused_tab_data.focus();
-  }
-  ActImpl(tab ? tab->GetWeakPtr() : nullptr, action, options,
-          std::move(callback));
+  ActImpl(action, options, std::move(callback));
 }
 
 void GlicActorController::OnTaskStartedForAct(
@@ -158,12 +149,7 @@ void GlicActorController::OnTaskStartedForAct(
       actor::TaskId(result.task_id()));
   CHECK(actor_task_);
 
-  // This will always grab the newly created tab (temporary hack).
-  tabs::TabHandle handle(result.tab_id());
-  tabs::TabInterface* tab = handle.Get();
-
-  ActImpl(tab ? tab->GetWeakPtr() : nullptr, action, options,
-          std::move(callback));
+  ActImpl(action, options, std::move(callback));
 }
 
 // TODO(mcnee): Determine if we need additional mechanisms, within the browser,
@@ -257,19 +243,17 @@ actor::ExecutionEngine& GlicActorController::GetExecutionEngineForTesting(
 }
 
 void GlicActorController::ActImpl(
-    base::WeakPtr<tabs::TabInterface> tab,
     const optimization_guide::proto::BrowserAction& action,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback) const {
   actor::ExecutionEngine::ActionResultCallback action_callback = base::BindOnce(
-      &GlicActorController::OnActionFinished, GetWeakPtr(), tab,
+      &GlicActorController::OnActionFinished, GetWeakPtr(),
       actor::TaskId(action.task_id()), options, std::move(callback));
 
   GetExecutionEngine()->Act(action, std::move(action_callback));
 }
 
 void GlicActorController::OnActionFinished(
-    base::WeakPtr<tabs::TabInterface> tab,
     actor::TaskId task_id,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
@@ -280,24 +264,27 @@ void GlicActorController::OnActionFinished(
     return;
   }
 
+  tabs::TabInterface* tab = GetExecutionEngine()->GetTabOfCurrentTask();
+  actor::AggregatedJournal& journal =
+      actor::ActorKeyedService::Get(profile_)->GetJournal();
+
   // TODO(https://crbug.com/398271171): Remove when the actor coordinator
   // handles getting a new observation.
   // TODO(https://crbug.com/402086398): Figure out if/how this can be shared
   // with GlicKeyedService::GetContextFromFocusedTab(). It's not clear yet if
   // the same permission checks, etc. should apply here.
   if (tab) {
-    actor::AggregatedJournal& journal =
-        actor::ActorKeyedService::Get(profile_.get())->GetJournal();
     auto journal_entry = journal.CreatePendingAsyncEntry(
         tab->GetContents()->GetLastCommittedURL(), task_id, "FetchPageContext",
         "");
 
     FetchPageContext(
-        tab.get(), options, /*include_actionable_data=*/true,
-        base::BindOnce(OnGetContextFromFocusedTab, std::move(journal_entry),
+        tab, options, /*include_actionable_data=*/true,
+        base::BindOnce(OnFetchPageContext, std::move(journal_entry),
                        std::move(callback),
-                       this->GetExecutionEngine()->GetWeakPtr()));
+                       GetExecutionEngine()->GetWeakPtr()));
   } else {
+    journal.Log(GURL(), task_id, "FetchPageContext", "Tab is gone");
     PostTaskForActCallback(std::move(callback),
                            mojom::ActInFocusedTabErrorReason::kTargetNotFound);
   }
