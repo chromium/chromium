@@ -27,6 +27,9 @@ class AwTracingDelegate : public content::TracingDelegate {
   bool IsRecordingAllowed(bool requires_anonymized_data) const override;
   std::unique_ptr<tracing::BackgroundTracingStateManager> CreateStateManager()
       override;
+  std::string RecordSerializedSystemProfileMetrics() const override;
+  tracing::MetadataDataSource::BundleRecorder
+  CreateSystemProfileMetadataRecorder() const override;
 };
 
 }  // namespace android_webview

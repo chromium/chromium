@@ -83,8 +83,11 @@ class TracingControllerImpl : public TracingController,
   void InitializeDataSources();
   void ConnectToServiceIfNeeded();
   std::optional<base::Value::Dict> GenerateMetadataDict();
-  void GenerateMetadataPacket(perfetto::protos::pbzero::TracePacket* packet,
-                              bool privacy_filtering_enabled);
+  static void RecorderMetadataToBundle(
+      perfetto::protos::pbzero::ChromeEventBundle* bundle);
+  static void GenerateMetadataPacket(
+      perfetto::protos::pbzero::TracePacket* packet,
+      bool privacy_filtering_enabled);
   void GenerateMetadataPacketFieldTrials(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata_proto,
       bool privacy_filtering_enabled);

@@ -9,6 +9,7 @@ include_rules = [
   "+content/public/browser/tracing_delegate.h",
   "+content/public/browser/browser_thread.h",
   "+third_party/snappy",
+  "+services/tracing/public/cpp",
 ]
 
 specific_include_rules = {

@@ -49,7 +49,7 @@ const char* kDefaultConfig = R"pb(
   stop_rules: { manual_trigger_name: "stop_trigger" }
   upload_rules: { manual_trigger_name: "upload_trigger" }
   trace_config: {
-    data_sources: { config: { name: "org.chromium.trace_metadata" } }
+    data_sources: { config: { name: "org.chromium.trace_metadata2" } }
   }
   nested_scenarios: {
     scenario_name: "nested_scenario"
@@ -337,7 +337,7 @@ TEST_F(TracingScenarioTest, Init) {
       ParseScenarioConfigFromText(R"pb(
         scenario_name: "test_scenario"
         trace_config: {
-          data_sources: { config: { name: "org.chromium.trace_metadata" } }
+          data_sources: { config: { name: "org.chromium.trace_metadata2" } }
         }
       )pb"),
       &delegate);

@@ -160,8 +160,6 @@ class BackgroundTracingManagerImpl
   void GetTraceToUpload(base::OnceCallback<void(std::optional<std::string>,
                                                 std::optional<std::string>,
                                                 base::OnceClosure)>) override;
-  void SetSystemProfileRecorder(
-      base::RepeatingCallback<std::string()> recorder) override;
 
   CONTENT_EXPORT size_t GetScenarioSavedCount(const std::string& scenario_name);
   CONTENT_EXPORT void InitializeTraceReportDatabase(
@@ -266,7 +264,6 @@ class BackgroundTracingManagerImpl
   raw_ptr<TracingScenario> active_scenario_{nullptr};
   std::vector<std::unique_ptr<BackgroundTracingRule>> trigger_rules_;
   ReceiveCallback receive_callback_;
-  base::RepeatingCallback<std::string()> system_profile_recorder_;
 
   std::map<std::string, base::ObserverList<BackgroundTracingRule>>
       named_trigger_observers_;

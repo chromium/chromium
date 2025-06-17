@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/tracing/chrome_tracing_delegate.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/browser/background_tracing_manager.h"
@@ -68,7 +69,7 @@ class ChromeBackgroundTracingMetricsProviderTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  content::TracingDelegate tracing_delegate_;
+  ChromeTracingDelegate tracing_delegate_;
   std::unique_ptr<content::BackgroundTracingManager>
       background_tracing_manager_;
   ScopedTestingLocalState local_state_;
