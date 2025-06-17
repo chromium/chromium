@@ -7,6 +7,8 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#include <memory>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -25,6 +27,12 @@ namespace web {
 
 class BrowserState;
 class WKContentRuleListProvider;
+
+// Keys for the static content rule lists managed by this provider.
+inline constexpr char kBlockLocalResourcesRuleListKey[] =
+    "block_local_resources";
+inline constexpr char kMixedContentUpgradeRuleListKey[] =
+    "mixed_content_upgrade";
 
 // A provider class associated with a single web::BrowserState object. Manages
 // the lifetime and performs setup of WKWebViewConfiguration and instances. Not
@@ -95,7 +103,7 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
 
   // Returns WKContentRuleListProvider associated with WKWebViewConfiguration.
   // Callers must not retain the returned object.
-  WKContentRuleListProvider* GetContentRuleListProvider();
+  WKContentRuleListProvider& GetContentRuleListProvider();
 
   // Registers callback to be invoked when the website data store is updated for
   // this provider.
