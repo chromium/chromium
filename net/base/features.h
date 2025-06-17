@@ -695,11 +695,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSimdutfBase64Support);
 // Further optimize parsing data: URLs.
 NET_EXPORT BASE_DECLARE_FEATURE(kFurtherOptimizeParsingDataUrls);
 
-// Enables support for codepoints defined in draft-ietf-tls-tls13-pkcs1, which
-// enable RSA keys to be used with client certificates even if they do not
-// support RSA-PSS.
-NET_EXPORT BASE_DECLARE_FEATURE(kLegacyPKCS1ForTLS13);
-
 // Keep whitespace for non-base64 encoded data: URLs.
 NET_EXPORT BASE_DECLARE_FEATURE(kKeepWhitespaceForDataUrls);
 

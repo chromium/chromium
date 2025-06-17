@@ -4395,7 +4395,6 @@ TEST_F(SSLClientSocketTest, ClientCertSignatureAlgorithm) {
 
   const struct {
     const char* name;
-    bool legacy_pkcs1_enabled = true;
     uint16_t version;
     std::vector<uint16_t> server_prefs;
     std::vector<uint16_t> client_prefs;
@@ -4478,16 +4477,6 @@ TEST_F(SSLClientSocketTest, ClientCertSignatureAlgorithm) {
           .expected_signature_algorithm = SSL_SIGN_RSA_PKCS1_SHA256_LEGACY,
       },
       {
-          .name = "TLS 1.3 legacy PKCS#1 disabled",
-          .legacy_pkcs1_enabled = false,
-          .version = SSL_PROTOCOL_VERSION_TLS1_3,
-          .server_prefs = {SSL_SIGN_RSA_PKCS1_SHA256_LEGACY},
-          .client_prefs = {SSL_SIGN_RSA_PKCS1_SHA256},
-          // The rsa_pkcs1_sha256_legacy codepoint may be used in TLS 1.3, but
-          // was disabled.
-          .error = ERR_SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS,
-      },
-      {
           .name = "TLS 1.3 legacy PKCS#1 not preferred",
           .version = SSL_PROTOCOL_VERSION_TLS1_3,
           .server_prefs = {SSL_SIGN_RSA_PKCS1_SHA256_LEGACY,
@@ -4501,10 +4490,6 @@ TEST_F(SSLClientSocketTest, ClientCertSignatureAlgorithm) {
   };
   for (const auto& test : kTests) {
     SCOPED_TRACE(test.name);
-
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatureState(
-        net::features::kLegacyPKCS1ForTLS13, test.legacy_pkcs1_enabled);
 
     SSLServerConfig server_config;
     server_config.version_min = test.version;
