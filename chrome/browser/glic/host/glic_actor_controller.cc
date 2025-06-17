@@ -202,7 +202,7 @@ void GlicActorController::OnUserInputSubmitted() {
   current_request_->journal_entry_ =
       actor::ActorKeyedService::Get(profile_.get())
           ->GetJournal()
-          .CreatePendingAsyncEntry(/*url=*/std::string(), actor::TaskId(),
+          .CreatePendingAsyncEntry(/*url=*/GURL::EmptyGURL(), actor::TaskId(),
                                    "Request", /*details=*/"User Input");
 }
 
@@ -211,9 +211,9 @@ void GlicActorController::OnRequestStarted() {
 
   if (!current_request_) {
     current_request_ = std::make_unique<OngoingRequest>();
-    current_request_->journal_entry_ =
-        journal.CreatePendingAsyncEntry(/*url=*/std::string(), actor::TaskId(),
-                                        "Request", /*details=*/"Multi-turn");
+    current_request_->journal_entry_ = journal.CreatePendingAsyncEntry(
+        /*url=*/GURL::EmptyGURL(), actor::TaskId(), "Request",
+        /*details=*/"Multi-turn");
   } else {
     journal.Log(/*url=*/GURL(), actor::TaskId(), "Request", "Request Started");
   }

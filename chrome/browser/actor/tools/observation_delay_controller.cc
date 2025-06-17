@@ -34,7 +34,13 @@ ObservationDelayController::ObservationDelayController(
 
 ObservationDelayController::~ObservationDelayController() = default;
 
-void ObservationDelayController::Wait(ReadyCallback callback) {
+void ObservationDelayController::Wait(
+    AggregatedJournal::PendingAsyncEntry& parent_journal_entry,
+    ReadyCallback callback) {
+  journal_entry_ = parent_journal_entry.GetJournal().CreatePendingAsyncEntry(
+      GURL::EmptyGURL(), parent_journal_entry.GetTaskId(), "ObservationDelay",
+      StateToString(state_));
+
   switch (state_) {
     case State::kWaitingForLoadStart:
     case State::kWaitingForLoadStop:
@@ -53,6 +59,7 @@ void ObservationDelayController::Wait(ReadyCallback callback) {
     }
     case State::kDone: {
       PostFinishedTask(std::move(callback));
+      journal_entry_->EndEntry("Done");
       break;
     }
   }
@@ -73,6 +80,13 @@ void ObservationDelayController::DidStopLoading() {
     return;
   }
 
+  // If we aren't waiting, then this new state will be logged when
+  // we actually wait.
+  if (journal_entry_) {
+    journal_entry_->GetJournal().Log(GURL::EmptyGURL(),
+                                     journal_entry_->GetTaskId(),
+                                     "ObservationDelay", "Done Loading");
+  }
   WaitForVisualStateUpdate();
 }
 
@@ -97,6 +111,7 @@ void ObservationDelayController::VisualStateUpdated(bool /*success*/) {
   // called. In that case, the callback will be posted when Wait is called.
   if (ready_callback_) {
     PostFinishedTask(std::move(ready_callback_));
+    journal_entry_->EndEntry("Visual Update");
   }
 }
 
@@ -104,7 +119,22 @@ void ObservationDelayController::Timeout() {
   state_ = State::kDone;
   if (ready_callback_) {
     PostFinishedTask(std::move(ready_callback_));
+    journal_entry_->EndEntry("Timeout");
   }
+}
+
+std::string_view ObservationDelayController::StateToString(State state) {
+  switch (state) {
+    case State::kWaitingForLoadStart:
+      return "WaitLoadStart";
+    case State::kWaitingForLoadStop:
+      return "WaitLoadStop";
+    case State::kWaitingForVisualUpdate:
+      return "WaitVisualUpdate";
+    case State::kDone:
+      return "Done";
+  }
+  NOTREACHED();
 }
 
 }  // namespace actor

@@ -71,8 +71,8 @@ TEST_F(AggregatedJournalTest, SerializerInMemory) {
   AggregatedJournal& journal = ActorKeyedService::Get(profile())->GetJournal();
   AggregatedJournalInMemorySerializer serializer(journal);
   serializer.Init();
-  auto begin_entry =
-      journal.CreatePendingAsyncEntry("google", TaskId(), "Begin", "Entry");
+  auto begin_entry = journal.CreatePendingAsyncEntry(
+      GURL("http://example.com"), TaskId(), "Begin", "Entry");
   journal.Log(GURL(), TaskId(0), "Test", "Nothing");
   journal.Log(GURL(), TaskId(0), "Test2", "Nothing");
   journal.Log(GURL(), TaskId(0), "Test3", "Nothing");
@@ -97,8 +97,8 @@ TEST_F(AggregatedJournalTest, SerializerInFile) {
   serializer.Init(temp_file.path(), init_future.GetCallback());
   EXPECT_TRUE(init_future.Get<bool>());
 
-  auto begin_entry =
-      journal.CreatePendingAsyncEntry("google", TaskId(), "Begin", "Entry");
+  auto begin_entry = journal.CreatePendingAsyncEntry(
+      GURL("http://example.com"), TaskId(), "Begin", "Entry");
   journal.Log(GURL(), TaskId(0), "Test", "Nothing");
   journal.Log(GURL(), TaskId(0), "Test2", "Nothing");
   journal.Log(GURL(), TaskId(0), "Test3", "Nothing");

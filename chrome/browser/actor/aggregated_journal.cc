@@ -101,12 +101,20 @@ void AggregatedJournal::PendingAsyncEntry::EndEntry(std::string_view details) {
   journal_->AddEndEvent(pass_key_, task_id_, trace_id_, event_name_, details);
 }
 
+AggregatedJournal& AggregatedJournal::PendingAsyncEntry::GetJournal() {
+  return *journal_;
+}
+
+TaskId AggregatedJournal::PendingAsyncEntry::GetTaskId() {
+  return task_id_;
+}
+
 base::SafeRef<AggregatedJournal> AggregatedJournal::GetSafeRef() {
   return weak_ptr_factory_.GetSafeRef();
 }
 
 std::unique_ptr<AggregatedJournal::PendingAsyncEntry>
-AggregatedJournal::CreatePendingAsyncEntry(const std::string& url,
+AggregatedJournal::CreatePendingAsyncEntry(const GURL& url,
                                            TaskId task_id,
                                            std::string_view event_name,
                                            std::string_view details) {
@@ -114,10 +122,10 @@ AggregatedJournal::CreatePendingAsyncEntry(const std::string& url,
 
   uint64_t trace_id = next_trace_id_++;
   AddEntry(std::make_unique<Entry>(
-      url, mojom::JournalEntry::New(mojom::JournalEntryType::kBegin,
-                                    task_id.GetUnsafeValue(), trace_id,
-                                    base::Time::Now(), std::string(event_name),
-                                    std::string(details))));
+      url.possibly_invalid_spec(),
+      mojom::JournalEntry::New(
+          mojom::JournalEntryType::kBegin, task_id.GetUnsafeValue(), trace_id,
+          base::Time::Now(), std::string(event_name), std::string(details))));
   return base::WrapUnique(new PendingAsyncEntry(
       base::PassKey<AggregatedJournal>(), weak_ptr_factory_.GetSafeRef(),
       task_id, trace_id, event_name));

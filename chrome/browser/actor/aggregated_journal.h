@@ -55,6 +55,9 @@ class AggregatedJournal {
     // been called.
     void EndEntry(std::string_view details);
 
+    AggregatedJournal& GetJournal();
+    TaskId GetTaskId();
+
    private:
     base::PassKey<AggregatedJournal> pass_key_;
     bool terminated_ = false;
@@ -78,7 +81,7 @@ class AggregatedJournal {
   // Create an async entry. This will log a Begin Entry event and when the
   // PendingAsyncEntry object is destroyed the End Entry will be logged.
   std::unique_ptr<PendingAsyncEntry> CreatePendingAsyncEntry(
-      const std::string& url,
+      const GURL& url,
       TaskId task_id,
       std::string_view event_name,
       std::string_view details);

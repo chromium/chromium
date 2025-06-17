@@ -48,10 +48,7 @@ class DecisionWrapper {
                   DecisionCallback callback)
       : callback_(std::move(callback)),
         journal_entry_(
-            journal.CreatePendingAsyncEntry(url.possibly_invalid_spec(),
-                                            task_id,
-                                            "MayActOnTab",
-                                            "")) {}
+            journal.CreatePendingAsyncEntry(url, task_id, "MayActOnTab", "")) {}
 
   void Reject(std::string_view reason) {
     journal_entry_->EndEntry(reason);

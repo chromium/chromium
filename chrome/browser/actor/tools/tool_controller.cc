@@ -34,6 +34,18 @@ using tabs::TabInterface;
 
 namespace actor {
 
+namespace {
+const GURL& GetURL(TabInterface* tab, RenderFrameHost* target_frame) {
+  if (target_frame) {
+    return target_frame->GetLastCommittedURL();
+  } else if (tab) {
+    return tab->GetContents()->GetLastCommittedURL();
+  }
+  return GURL::EmptyGURL();
+}
+
+}  // namespace
+
 ToolController::ActiveState::ActiveState(
     std::unique_ptr<Tool> tool,
     ResultCallback completion_callback,
@@ -118,16 +130,8 @@ void ToolController::Invoke(const Action& action,
     return;
   }
 
-  std::string url_spec;
-  if (target_frame) {
-    url_spec = target_frame->GetLastCommittedURL().possibly_invalid_spec();
-  } else if (tab) {
-    url_spec =
-        tab->GetContents()->GetLastCommittedURL().possibly_invalid_spec();
-  }
-
   auto journal_event = journal.CreatePendingAsyncEntry(
-      url_spec, task_id, created_tool->JournalEvent(),
+      GetURL(tab, target_frame), task_id, created_tool->JournalEvent(),
       created_tool->DebugString());
 
   content::WeakDocumentPtr document_ptr;
@@ -170,6 +174,7 @@ void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
   CHECK(active_state_);
   if (observation_delayer_ && IsOk(*result)) {
     observation_delayer_->Wait(
+        *active_state_->journal_entry,
         base::BindOnce(&ToolController::CompleteToolRequest,
                        weak_ptr_factory_.GetWeakPtr(), std::move(result)));
   } else {
@@ -179,10 +184,10 @@ void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
 
 void ToolController::CompleteToolRequest(mojom::ActionResultPtr result) {
   CHECK(active_state_);
+  observation_delayer_.reset();
   active_state_->journal_entry->EndEntry(ToDebugString(*result));
   PostResponseTask(std::move(active_state_->completion_callback),
                    std::move(result));
-  observation_delayer_.reset();
   active_state_.reset();
 }
 

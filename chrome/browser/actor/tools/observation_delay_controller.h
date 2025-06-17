@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -30,7 +31,8 @@ class ObservationDelayController : public content::WebContentsObserver {
 
   // Note: Callback will always be executed asynchronously. It may be run after
   // this object is deleted so must manage its own lifetime.
-  void Wait(ReadyCallback callback);
+  void Wait(AggregatedJournal::PendingAsyncEntry& parent_journal_entry,
+            ReadyCallback callback);
 
   // content::WebContentsObserver
   void DidStartLoading() override;
@@ -46,10 +48,12 @@ class ObservationDelayController : public content::WebContentsObserver {
     kWaitingForLoadStop,
     kWaitingForVisualUpdate,
     kDone
-  } state_ = State::kWaitingForLoadStart;
+  };
+  static std::string_view StateToString(State state);
 
+  State state_ = State::kWaitingForLoadStart;
   ReadyCallback ready_callback_;
-
+  std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry_;
   base::WeakPtrFactory<ObservationDelayController> weak_ptr_factory_{this};
 };
 
