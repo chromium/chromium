@@ -292,14 +292,6 @@ void ExtensionApiTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(::switches::kDisableRendererBackgrounding);
 }
 
-void ExtensionApiTest::UseHttpsTestServer() {
-  https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server_.get()->AddDefaultHandlers(GetChromeTestDataDir());
-  https_test_server_.get()->SetSSLConfig(
-      net::EmbeddedTestServer::CERT_TEST_NAMES);
-}
-
 void ExtensionApiTest::SetUpTestDataDir() {
   // Unfortunately, the timing we need to set up the test data dir differs on
   // Android and non-Android. On Android, we don't initialize the

@@ -360,6 +360,24 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
 
   ExtensionService* extension_service();
 
+  // Creates a new secure test server that can be used in place of the default
+  // HTTP embedded_test_server defined in BrowserTestBase. The new test server
+  // can then be retrieved using the same embedded_test_server() method used
+  // to get the BrowserTestBase HTTP server.
+  void UseHttpsTestServer();
+
+  // This will return either the https test server or the
+  // default one specified in BrowserTestBase, depending on if an https test
+  // server was created by calling UseHttpsTestServer().
+  const net::EmbeddedTestServer* embedded_test_server() const {
+    return (https_test_server_) ? https_test_server_.get()
+                                : BrowserTestBase::embedded_test_server();
+  }
+  net::EmbeddedTestServer* embedded_test_server() {
+    return const_cast<net::EmbeddedTestServer*>(
+        const_cast<const ExtensionBrowserTest&>(*this).embedded_test_server());
+  }
+
   // Set to "chrome/test/data/extensions". Derived classes may override.
   base::FilePath test_data_dir_;
 
@@ -446,6 +464,10 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
 
   std::unique_ptr<ExtensionTestNotificationObserver>
       test_notification_observer_;
+
+  // Secure test server, isn't created by default. Needs to be created using
+  // UseHttpsTestServer() and then called with embedded_test_server().
+  std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
 
   // Listens to extension loaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
