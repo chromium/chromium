@@ -246,9 +246,17 @@ class PendingState : public ControllerState {
       }
     }
 
-    // Handle disabled by policy.
     ServiceStatus status =
         controller_->collaboration_service()->GetServiceStatus();
+    // Handle disabled by versioning.
+    // TODO(haileywang@): Refactor error handling for share/join flows and
+    // record metrics.
+    if (status.collaboration_status ==
+        CollaborationStatus::kVersionOutOfDateShowUpdateChromeUi) {
+      HandleErrorWithType(ErrorInfo::Type::kUpdateChromeUiForVersionOutOfDate);
+      return;
+    }
+    // Handle disabled by policy.
     if (!status.IsAllowedToJoin()) {
       controller_->TransitionTo(StateId::kWaitingForPolicyUpdate);
       return;
@@ -340,7 +348,12 @@ class WaitingForPolicyUpdateState : public ControllerState,
         break;
       case CollaborationStatus::kDisabled:
       case CollaborationStatus::kDisabledForPolicy:
+      case CollaborationStatus::kVersionOutOfDate:
         HandleError();
+        break;
+      case CollaborationStatus::kVersionOutOfDateShowUpdateChromeUi:
+        HandleErrorWithType(
+            ErrorInfo::Type::kUpdateChromeUiForVersionOutOfDate);
         break;
       case CollaborationStatus::kAllowedToJoin:
       case CollaborationStatus::kEnabledJoinOnly:

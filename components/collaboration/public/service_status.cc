@@ -14,6 +14,8 @@ bool ServiceStatus::IsAllowedToJoin() {
     case CollaborationStatus::kDisabled:
     case CollaborationStatus::kDisabledPending:
     case CollaborationStatus::kDisabledForPolicy:
+    case CollaborationStatus::kVersionOutOfDate:
+    case CollaborationStatus::kVersionOutOfDateShowUpdateChromeUi:
       return false;
     case CollaborationStatus::kAllowedToJoin:
     case CollaborationStatus::kEnabledJoinOnly:
@@ -36,8 +38,10 @@ bool ServiceStatus::IsAllowedToCreate() {
     case CollaborationStatus::kDisabledForPolicy:
     case CollaborationStatus::kAllowedToJoin:
     case CollaborationStatus::kEnabledJoinOnly:
+    case CollaborationStatus::kVersionOutOfDate:
       return false;
     case CollaborationStatus::kEnabledCreateAndJoin:
+    case CollaborationStatus::kVersionOutOfDateShowUpdateChromeUi:
       return true;
   }
 }

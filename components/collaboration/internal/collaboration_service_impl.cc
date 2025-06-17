@@ -435,6 +435,20 @@ CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
   }
 #endif
 
+  // Versioning turn off shared tab groups data types when version out of date.
+  if (!base::FeatureList::IsEnabled(
+          data_sharing::features::kSharedDataTypesKillSwitch) &&
+      base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingEnableUpdateChromeUI)) {
+    return CollaborationStatus::kVersionOutOfDateShowUpdateChromeUi;
+  }
+
+  // Versioning turn off shared tab groups data types when version out of date.
+  if (!base::FeatureList::IsEnabled(
+          data_sharing::features::kSharedDataTypesKillSwitch)) {
+    return CollaborationStatus::kVersionOutOfDate;
+  }
+
   // Disable for automotive users.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_AUTOMOTIVE &&
       !base::FeatureList::IsEnabled(

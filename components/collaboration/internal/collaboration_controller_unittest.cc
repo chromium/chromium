@@ -444,6 +444,65 @@ TEST_F(CollaborationControllerTest, UrlHandlingError) {
   run_loop.Run();
 }
 
+TEST_F(CollaborationControllerTest, JoinFlowVersionOutOfDate) {
+  // Start Join flow.
+  InitializeJoinController(base::DoNothing());
+
+  // 1. Pending state.
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
+
+  // Simulate version out of date.
+  ServiceStatus status;
+  status.signin_status = SigninStatus::kSignedIn;
+  status.sync_status = SyncStatus::kSyncEnabled;
+  status.collaboration_status =
+      CollaborationStatus::kVersionOutOfDateShowUpdateChromeUi;
+  EXPECT_CALL(*collaboration_service_, GetServiceStatus())
+      .WillRepeatedly(Return(status));
+
+  EXPECT_CALL(
+      *delegate_,
+      ShowError(ErrorInfo(ErrorInfo::Type::kUpdateChromeUiForVersionOutOfDate),
+                IsNotNullCallback()));
+
+  std::move(prepare_ui_callback_).Run(Outcome::kSuccess);
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
+}
+
+TEST_F(CollaborationControllerTest, ShareFlowVersionOutOfDate) {
+  // Start Share flow.
+  tab_groups::LocalTabGroupID local_id =
+      tab_groups::test::GenerateRandomTabGroupID();
+  tab_groups::EitherGroupID either_id = local_id;
+  SavedTabGroup tab_group(std::u16string(u"title"),
+                          tab_groups::TabGroupColorId::kGrey, {});
+  tab_group.SetLocalGroupId(local_id);
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
+      .WillRepeatedly(Return(tab_group));
+
+  InitializeController(base::DoNothing(),
+                       Flow(FlowType::kShareOrManage, local_id));
+
+  // 1. Pending state.
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
+
+  // Simulate version out of date.
+  ServiceStatus status;
+  status.signin_status = SigninStatus::kSignedIn;
+  status.sync_status = SyncStatus::kSyncEnabled;
+  status.collaboration_status =
+      CollaborationStatus::kVersionOutOfDateShowUpdateChromeUi;
+  EXPECT_CALL(*collaboration_service_, GetServiceStatus())
+      .WillRepeatedly(Return(status));
+
+  EXPECT_CALL(
+      *delegate_,
+      ShowError(ErrorInfo(ErrorInfo::Type::kUpdateChromeUiForVersionOutOfDate),
+                IsNotNullCallback()));
+  std::move(prepare_ui_callback_).Run(Outcome::kSuccess);
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
+}
+
 TEST_F(CollaborationControllerTest, DelegateOutcomeError) {
   RunLoop run_loop;
   // Start Join flow.

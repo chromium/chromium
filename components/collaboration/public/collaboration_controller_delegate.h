@@ -37,6 +37,8 @@ class CollaborationControllerDelegate {
       kGroupFull = 5,
       // Show the group closed error dialog.
       kGroupClosedByOrganizationPolicy = 6,
+      // Show the update chrome error dialog.
+      kUpdateChromeUiForVersionOutOfDate = 7,
     };
 
     explicit ErrorInfo(Type type) : type_(type) { GetStringForErrorType(); }
@@ -65,12 +67,20 @@ class CollaborationControllerDelegate {
           return "Group Is Full";
         case Type::kGroupClosedByOrganizationPolicy:
           return "Group Is Closed By Organization Policy";
+        case Type::kUpdateChromeUiForVersionOutOfDate:
+          return "Update Chrome For Version Out Of Date";
       }
     }
 
    private:
     void GetStringForErrorType() {
       switch (type_) {
+        case Type::kUpdateChromeUiForVersionOutOfDate:
+          error_header = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_SHARE_BUTTON_CHROME_OUT_OF_DATE_ERROR_DIALOG_HEADER);
+          error_body = l10n_util::GetStringUTF8(
+              IDS_COLLABORATION_SHARE_BUTTON_CHROME_OUT_OF_DATE_ERROR_DIALOG_BODY);
+          break;
         case Type::kInvalidUrl:
           error_header =
               l10n_util::GetStringUTF8(IDS_COLLABORATION_LINK_FAILED_HEADER);

@@ -41,6 +41,8 @@ CollaborationServicePreconditionChecker::GetPreconditionState() const {
     case CollaborationStatus::kDisabledPending:
       return PreconditionState::kMustStopAndKeepData;
     case CollaborationStatus::kDisabledForPolicy:
+    case CollaborationStatus::kVersionOutOfDate:
+    case CollaborationStatus::kVersionOutOfDateShowUpdateChromeUi:
       return PreconditionState::kMustStopAndClearData;
     case CollaborationStatus::kAllowedToJoin:
     case CollaborationStatus::kEnabledJoinOnly:

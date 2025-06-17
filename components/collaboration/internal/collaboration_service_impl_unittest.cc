@@ -659,4 +659,18 @@ TEST_F(CollaborationServiceImplTest,
   EXPECT_TRUE(cancel_called);
 }
 
+TEST_F(CollaborationServiceImplTest,
+       GetServiceStatus_VersionOutOfDateShowUpdateChromeUi) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {data_sharing::features::kDataSharingEnableUpdateChromeUI},
+      {data_sharing::features::kDataSharingFeature,
+       data_sharing::features::kDataSharingJoinOnly,
+       data_sharing::features::kSharedDataTypesKillSwitch});
+  InitService();
+
+  EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
+            CollaborationStatus::kVersionOutOfDateShowUpdateChromeUi);
+}
+
 }  // namespace collaboration

@@ -50,6 +50,12 @@
   <message name="IDS_COLLABORATION_LINK_FAILED_BODY" desc="The body for the link failed dialog.">
     Contact the sender to ask for a new link
   </message>
+  <message name="IDS_COLLABORATION_SHARE_BUTTON_CHROME_OUT_OF_DATE_ERROR_DIALOG_HEADER" desc="The title for the chrome out of date dialog, shown when user tries to share a tab group.">
+    Chrome is out of date
+  </message>
+  <message name="IDS_COLLABORATION_SHARE_BUTTON_CHROME_OUT_OF_DATE_ERROR_DIALOG_BODY" desc="The body for the chrome out of date dialog, shown when user tries to share a tab group.">
+    To share tab groups, update Chrome
+  </message>
   <message name="IDS_COLLABORATION_SIGNED_OUT_HEADER" desc="The title for the signed out dialog." formatter_data="android_java">
     You're signed out
   </message>

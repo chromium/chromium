@@ -29,8 +29,15 @@ BASE_DECLARE_FEATURE(kDataSharingJoinOnly);
 // autopush server environment is set.
 BASE_DECLARE_FEATURE(kDataSharingNonProductionEnvironment);
 
-// Feature flag to show UI that prompts the user to update Chrome when a version
-// mismatch is detected.
+// Feature flag for turning off the data types for shared tab groups when the
+// version is out of date.
+// Note: Do not clean up this feature as it is meant to be used in unforeseen
+// situations as a kill switch in future from finch when the shared tab groups
+// feature becomes incompatible for the current chrome client.
+BASE_DECLARE_FEATURE(kSharedDataTypesKillSwitch);
+
+// Feature flag to show UI that prompts the user to update Chrome when the
+// version is out of date.
 // Note: Do not clean up this feature as it is meant to be used in unforeseen
 // situations as a kill switch in future from finch when the shared tab groups
 // feature becomes incompatible for the current chrome client.
