@@ -385,11 +385,8 @@ void WebUIContentsPreloadManager::MaybePreloadForBrowserContextLater(
       busy_web_contents_to_watch, preload_reason, deadline);
 }
 
-std::unique_ptr<content::WebContents>
-WebUIContentsPreloadManager::SetPreloadedContents(
+void WebUIContentsPreloadManager::SetPreloadedContents(
     std::unique_ptr<content::WebContents> web_contents) {
-  std::unique_ptr<content::WebContents> previous_preloaded_web_contents =
-      std::move(preloaded_web_contents_);
   webui_controller_embedder_stub_->Detach();
   profile_observation_.Reset();
 
@@ -403,8 +400,6 @@ WebUIContentsPreloadManager::SetPreloadedContents(
     WebUIContentsPreloadState::FromWebContents(preloaded_web_contents_.get())
         ->preloaded = true;
   }
-
-  return previous_preloaded_web_contents;
 }
 
 RequestResult WebUIContentsPreloadManager::Request(

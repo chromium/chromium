@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/top_chrome/preload_context.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager_test_api.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_state.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -497,12 +498,8 @@ TEST_F(WebUIContentsPreloadManagerTest, DelayPreloadFireOnce) {
   content::WebContentsTester::For(test_web_contents.get())
       ->TestDidFirstVisuallyNonEmptyPaint();
   // Now it's preloaded.
-  // Retain the preloaded content. Do not destroy it. Destroying it will trigger
-  // new preload.
-  std::unique_ptr<content::WebContents> preloaded_content =
-      test_api().SetPreloadedContents(nullptr);
-  EXPECT_NE(preloaded_content, nullptr);
-  EXPECT_EQ(preload_manager()->preloaded_web_contents(), nullptr);
+  EXPECT_NE(preload_manager()->preloaded_web_contents(), nullptr);
+  test_api().SetPreloadedContents(nullptr);
 
   // Fast forward to pass deadline should not trigger preload.
   FastForwardToTriggerPreload();
@@ -515,13 +512,36 @@ TEST_F(WebUIContentsPreloadManagerTest, DelayPreloadFireOnce) {
   EXPECT_EQ(preload_manager()->preloaded_web_contents(), nullptr);
   // Fast forward to pass deadline should trigger preload.
   task_environment()->FastForwardBy(deadline);
-  std::unique_ptr<content::WebContents> preloaded_content2 =
-      test_api().SetPreloadedContents(nullptr);
-  EXPECT_NE(preloaded_content2, nullptr);
-  EXPECT_EQ(preload_manager()->preloaded_web_contents(), nullptr);
+  EXPECT_NE(preload_manager()->preloaded_web_contents(), nullptr);
+  test_api().SetPreloadedContents(nullptr);
 
   // The first non-empty paint should not trigger preload.
   content::WebContentsTester::For(test_web_contents.get())
       ->TestDidFirstVisuallyNonEmptyPaint();
   EXPECT_EQ(preload_manager()->preloaded_web_contents(), nullptr);
+}
+
+// Tests that SetPreloadedContents() does not lead to a new
+// PendingPreload due to the destruction of old preloaded
+// contents.
+TEST_F(WebUIContentsPreloadManagerTest,
+       NoPendingPreloadAfterSetPreloadedContents) {
+  std::unique_ptr<content::BrowserContext> browser_context =
+      std::make_unique<TestingProfile>();
+
+  // First, preload a WebContents.
+  test_api().MaybePreloadForBrowserContext(browser_context.get());
+  ASSERT_NE(preload_manager()->preloaded_web_contents(), nullptr);
+  base::WeakPtr<content::WebContents> old_preloaded_contents =
+      preload_manager()->preloaded_web_contents()->GetWeakPtr();
+
+  // Then, simulate setting a new preloaded contents.
+  std::unique_ptr<content::WebContents> new_preloaded_contents =
+      content::WebContentsTester::CreateTestWebContents(browser_context.get(),
+                                                        nullptr);
+  WebUIContentsPreloadState::GetOrCreateForWebContents(
+      new_preloaded_contents.get());
+  test_api().SetPreloadedContents(std::move(new_preloaded_contents));
+  EXPECT_TRUE(old_preloaded_contents.WasInvalidated());
+  EXPECT_FALSE(test_api().HasPendingPreload());
 }

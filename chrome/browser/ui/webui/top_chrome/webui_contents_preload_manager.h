@@ -153,9 +153,7 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // Sets the current preloaded WebContents and performs necessary bookkepping.
   // The bookkeeping includes monitoring for the shutdown of the browser context
   // and handling the "ready-to-show" event emitted by the WebContents.
-  // Returns the previous preloaded WebContents.
-  std::unique_ptr<content::WebContents> SetPreloadedContents(
-      std::unique_ptr<content::WebContents> web_contents);
+  void SetPreloadedContents(std::unique_ptr<content::WebContents> web_contents);
 
   std::unique_ptr<content::WebContents> CreateNewContents(
       content::BrowserContext* browser_context,

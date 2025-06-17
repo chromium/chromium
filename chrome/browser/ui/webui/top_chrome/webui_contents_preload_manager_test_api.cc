@@ -56,8 +56,11 @@ void WebUIContentsPreloadManagerTestAPI::PreloadUrl(
       preload_manager()->CreateNewContents(browser_context, url));
 }
 
-std::unique_ptr<content::WebContents>
-WebUIContentsPreloadManagerTestAPI::SetPreloadedContents(
+bool WebUIContentsPreloadManagerTestAPI::HasPendingPreload() {
+  return preload_manager()->pending_preload_ != nullptr;
+}
+
+void WebUIContentsPreloadManagerTestAPI::SetPreloadedContents(
     std::unique_ptr<content::WebContents> web_contents) {
   return preload_manager()->SetPreloadedContents(std::move(web_contents));
 }

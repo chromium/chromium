@@ -43,9 +43,10 @@ class WebUIContentsPreloadManagerTestAPI {
 
   void PreloadUrl(content::BrowserContext* browser_context, const GURL& url);
 
-  // Sets a new preloaded contents and returns the previous preloaded contents.
-  std::unique_ptr<content::WebContents> SetPreloadedContents(
-    std::unique_ptr<content::WebContents> web_contents);
+  bool HasPendingPreload();
+
+  // Sets a new preloaded contents.
+  void SetPreloadedContents(std::unique_ptr<content::WebContents> web_contents);
 
   void DisableDelayPreload(bool disable);
 
