@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_manager.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
@@ -17,23 +18,30 @@ namespace {
 // Logs the histograms for add to account operation:
 //   * Signin.AddAccountToDevice.Result
 //   * Signin.AddAccountToDevice.{Interrupted|CancelledByUser|Error|Succes}.Duration
+// Also emits an action.
 void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
                                      base::TimeDelta duration) {
   base::UmaHistogramEnumeration("Signin.AddAccountToDevice.Result", result);
   switch (result) {
     case SigninAddAccountToDeviceResult::kInterrupted:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AddAccount_Interrupted"));
       base::UmaHistogramMediumTimes(
           "Signin.AddAccountToDevice.Interrupted.Duration", duration);
       break;
     case SigninAddAccountToDeviceResult::kError:
+      base::RecordAction(base::UserMetricsAction("Signin_AddAccount_Error"));
       base::UmaHistogramMediumTimes("Signin.AddAccountToDevice.Error.Duration",
                                     duration);
       break;
     case SigninAddAccountToDeviceResult::kCancelledByUser:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AddAccount_Cancelled"));
       base::UmaHistogramMediumTimes(
           "Signin.AddAccountToDevice.CancelledByUser.Duration", duration);
       break;
     case SigninAddAccountToDeviceResult::kSuccess:
+      base::RecordAction(base::UserMetricsAction("Signin_AddAccount_Success"));
       base::UmaHistogramMediumTimes(
           "Signin.AddAccountToDevice.Success.Duration", duration);
       break;

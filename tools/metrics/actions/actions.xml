@@ -39298,6 +39298,42 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_AddAccount_Cancelled">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the user cancel the Add Account flow. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_AddAccount_Error">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when an error caused the Add Account flow to fail. Recorded for iOS
+    only.
+  </description>
+</action>
+
+<action name="Signin_AddAccount_Interrupted">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the Add Account flow was interrupted, as requested by the
+    coordinator’s owner. It may or may not be triggered by an action from the
+    user. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_AddAccount_Success">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    Recorded when the user succesfully added an account through the Add Account
+    flow. Recorded for iOS only.
+  </description>
+</action>
+
 <action name="Signin_AddAccountToDevice">
   <owner>gogerald@chromium.org</owner>
   <description>Recorded when the add account dialog is opened.</description>
