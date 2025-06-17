@@ -122,6 +122,7 @@ class GraphBuilderOrt {
       const mojom::ElementWiseUnary& element_wise_unary);
   void AddGemmOperation(const mojom::Gemm& gemm);
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
+  void AddReshapeOperation(const mojom::Reshape& reshape);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
   void AddTransposeOperation(const mojom::Transpose& transpose);
 

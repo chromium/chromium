@@ -162,7 +162,11 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*reduce_sum_square_input=*/{},
        /*relu_input=*/{DataTypeConstraint::kFloat16To32Int8To64, kMaxRank},
        /*resample2d_input=*/{},
-       /*reshape_input=*/{},
+       // TODO(crbug.com/425151000): Add int4/uint4 support for reshape once the
+       // related ORT issue is fixed.
+       // https://github.com/microsoft/onnxruntime/issues/24285
+       /*reshape_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*reverse_input=*/{},
        /*scatter_elements_input=*/{},
        /*scatter_elements_indices=*/{},

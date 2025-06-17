@@ -52,6 +52,7 @@ constexpr base::cstring_view kOpTypeGelu = "Gelu";
 constexpr base::cstring_view kOpTypeGemm = "Gemm";
 constexpr base::cstring_view kOpTypeHardSwish = "HardSwish";
 constexpr base::cstring_view kOpTypeRelu = "Relu";
+constexpr base::cstring_view kOpTypeReshape = "Reshape";
 constexpr base::cstring_view kOpTypeSigmoid = "Sigmoid";
 constexpr base::cstring_view kOpTypeSoftmax = "Softmax";
 constexpr base::cstring_view kOpTypeSoftsign = "Softsign";
@@ -590,6 +591,30 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
   model_editor_.AddNode(op_type, node, inputs, outputs, attributes);
 }
 
+void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
+  const std::string node = GenerateOperationName(reshape.label);
+  const std::string input = GetOperandNameById(reshape.input_operand_id);
+  const std::string output = GetOperandNameById(reshape.output_operand_id);
+
+  CHECK(context_properties_.data_type_limits.reshape_input.Supports(
+      GetOperand(reshape.input_operand_id).descriptor));
+
+  // `new_shape` should be an int64 tensor that specifies the output's shape.
+  const std::vector<uint32_t>& output_shape =
+      GetOperand(reshape.output_operand_id).descriptor.shape();
+  std::array<int64_t, 1> new_shape_dims = {
+      base::checked_cast<int64_t>(output_shape.size())};
+  std::vector<int64_t> new_shape_value(output_shape.begin(),
+                                       output_shape.end());
+  const std::string new_shape =
+      CreateInitializer<int64_t>(new_shape_dims, new_shape_value);
+
+  std::array<const char*, 2> inputs = {input.c_str(), new_shape.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeReshape, node, inputs, outputs);
+}
+
 void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
   const std::string node = GenerateOperationName(softmax.label);
   const std::string input = GetOperandNameById(softmax.input_operand_id);
@@ -684,6 +709,10 @@ GraphBuilderOrt::BuildModel() {
         AddUnaryOperation(*operation->get_relu(), kOpTypeRelu);
         break;
       }
+      case mojom::Operation::Tag::kReshape: {
+        AddReshapeOperation(*operation->get_reshape());
+        break;
+      }
       case mojom::Operation::Tag::kSigmoid: {
         CHECK(data_type_limits.sigmoid_input.Supports(
             GetOperand(operation->get_sigmoid()->input_operand_id).descriptor));
@@ -737,7 +766,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kReduce:
       case mojom::Operation::Tag::kResample2d:
-      case mojom::Operation::Tag::kReshape:
       case mojom::Operation::Tag::kReverse:
       case mojom::Operation::Tag::kScatterElements:
       case mojom::Operation::Tag::kScatterNd:
