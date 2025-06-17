@@ -50,6 +50,13 @@ namespace variations {
 
 class EntropyProviders;
 
+// TODO(crbug.com/424154785): Clean this up if low entropy source values are no
+// longer transmitted with VariationIDs.
+struct CreateTrialsResult {
+  bool applied_seed = false;
+  std::optional<bool> seed_has_limited_layer;
+};
+
 // Just maps one set of enum values to another. Nothing to see here.
 Study::Channel ConvertProductChannelToStudyChannel(
     version_info::Channel product_channel);
@@ -268,17 +275,26 @@ class VariationsFieldTrialCreatorBase {
   // the server.
   bool IsSeedForFutureMilestone(bool is_safe_seed);
 
-  // Creates field trials based on the variations seed loaded from local state.
-  // If there is a problem loading the seed data, all trials specified by the
-  // seed may not be created. Some field trials are configured to override or
-  // associate with (for reporting) specific features. These associations are
-  // registered with |feature_list|. Returns true if trials were created
-  // successfully; and if so, stores the loaded variations state into the
-  // |safe_seed_manager|.
-  bool CreateTrialsFromSeed(const EntropyProviders& entropy_providers,
-                            base::FeatureList* feature_list,
-                            SafeSeedManagerBase* safe_seed_manager,
-                            std::unique_ptr<ClientFilterableState> state);
+  // Creates field trials from a VariationsSeed. Returns whether the seed was
+  // successfully applied and whether the seed contains a limited-entropy-mode
+  // layer.
+  //
+  // |entropy_providers| helps to randomize field trial groups.
+  // |feature_list| associates field trial groups with features.
+  // |safe_seed_manager| has two responsibilities. It is used to determine which
+  // seed to apply, if any. If the latest seed is successfully applied, the
+  // manager also stores the applied variations state.
+  // |client_state| is used for filtering studies in the seed.
+  //
+  // If the seed isn't successfully loaded or if the seed fails some checks
+  // (e.g. if the seed has expired), then no trials are created from the seed
+  // and the client uses client-side defaults for features, like
+  // DISABLED_BY_DEFAULT.
+  CreateTrialsResult CreateTrialsFromSeed(
+      const EntropyProviders& entropy_providers,
+      base::FeatureList* feature_list,
+      SafeSeedManagerBase* safe_seed_manager,
+      std::unique_ptr<ClientFilterableState> client_state);
 
   // Reads a seed's data and signature from the file at |json_seed_path| and
   // writes them to Local State. Exits Chrome if (A) the file's contents can't
