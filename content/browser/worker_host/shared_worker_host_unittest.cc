@@ -64,7 +64,7 @@ class SharedWorkerHostTest : public testing::Test {
         &mock_render_process_host_factory_);
     site_instance_ =
         SiteInstanceImpl::CreateForTesting(&browser_context_, kWorkerUrl);
-    RenderProcessHost* rph = site_instance_->GetOrCreateProcess();
+    RenderProcessHost* rph = site_instance_->GetOrCreateProcessForTesting();
 
     std::vector<std::unique_ptr<MockRenderProcessHost>>* processes =
         mock_render_process_host_factory_.GetProcesses();

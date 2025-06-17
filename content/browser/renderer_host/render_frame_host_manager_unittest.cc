@@ -1191,7 +1191,7 @@ TEST_P(RenderFrameHostManagerTest, WebUI) {
 TEST_P(RenderFrameHostManagerTest, WebUIInNewTab) {
   scoped_refptr<SiteInstance> blank_instance =
       SiteInstance::Create(browser_context());
-  blank_instance->GetOrCreateProcess()->Init();
+  blank_instance->GetOrCreateProcessForTesting()->Init();
 
   // Create a blank tab.
   std::unique_ptr<TestWebContents> web_contents1(

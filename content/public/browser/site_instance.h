@@ -112,9 +112,9 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   virtual BrowsingInstanceId GetBrowsingInstanceId() = 0;
 
   // Whether this SiteInstance has a running process associated with it.
-  // This may return true before the first call to GetOrCreateProcess(), in
-  // cases where we use process-per-site and there is an existing process
-  // available.
+  // This may return true before the first call to
+  // SiteInstanceImpl::GetOrCreateProcess(), in cases where we use
+  // process-per-site and there is an existing process available.
   virtual bool HasProcess() = 0;
 
   // Returns the current RenderProcessHost being used to render pages for this
@@ -128,9 +128,7 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
 
   // Test-only function that returns the current RenderProcessHost for this
   // SiteInstance and creates one if there is no RenderProcessHost.
-  // TODO(crbug.com/391970626): Rename the function to
-  // GetOrCreatProcessForTesting() or remove it.
-  virtual RenderProcessHost* GetOrCreateProcess() = 0;
+  virtual RenderProcessHost* GetOrCreateProcessForTesting() = 0;
 
   // Returns the ID of the SiteInstanceGroup this SiteInstance belongs to. If
   // the SiteInstance has no group, return 0, which is an invalid

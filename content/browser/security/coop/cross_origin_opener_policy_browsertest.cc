@@ -2966,7 +2966,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(current_si->IsCrossOriginIsolated());
     EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
-    EXPECT_NE(current_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(current_si->GetProcess(),
+              previous_si->GetOrCreateProcessForTesting());
   }
 
   // Navigation to the same cross-origin isolated page.
@@ -2987,7 +2988,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_FALSE(current_si->IsCrossOriginIsolated());
     EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
-    EXPECT_NE(current_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(current_si->GetProcess(),
+              previous_si->GetOrCreateProcessForTesting());
   }
 
   // Back navigation from a cross-origin isolated page to a non cross-origin
@@ -3008,8 +3010,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
         non_cross_origin_isolated_site_instance->IsCrossOriginIsolated());
     EXPECT_FALSE(non_cross_origin_isolated_site_instance->IsRelatedSiteInstance(
         cross_origin_isolated_site_instance.get()));
-    EXPECT_NE(non_cross_origin_isolated_site_instance->GetProcess(),
-              cross_origin_isolated_site_instance->GetOrCreateProcess());
+    EXPECT_NE(
+        non_cross_origin_isolated_site_instance->GetProcess(),
+        cross_origin_isolated_site_instance->GetOrCreateProcessForTesting());
   }
 
   // Cross origin navigation in between two cross-origin isolated pages.
@@ -3022,7 +3025,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     EXPECT_TRUE(site_instance_1->IsCrossOriginIsolated());
     EXPECT_TRUE(site_instance_2->IsCrossOriginIsolated());
     EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(site_instance_2));
-    EXPECT_NE(site_instance_1->GetOrCreateProcess(),
+    EXPECT_NE(site_instance_1->GetOrCreateProcessForTesting(),
               site_instance_2->GetProcess());
   }
 }
@@ -3059,7 +3062,8 @@ IN_PROC_BROWSER_TEST_P(
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(current_si->IsCrossOriginIsolated());
     EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
-    EXPECT_NE(current_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(current_si->GetProcess(),
+              previous_si->GetOrCreateProcessForTesting());
   }
 
   // Navigation to the same cross-origin isolated page.
@@ -3080,7 +3084,8 @@ IN_PROC_BROWSER_TEST_P(
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_FALSE(current_si->IsCrossOriginIsolated());
     EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
-    EXPECT_NE(current_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(current_si->GetProcess(),
+              previous_si->GetOrCreateProcessForTesting());
   }
 
   // Cross origin navigation in between two cross-origin isolated pages.
@@ -3093,7 +3098,7 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(site_instance_1->IsCrossOriginIsolated());
     EXPECT_TRUE(site_instance_2->IsCrossOriginIsolated());
     EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(site_instance_2));
-    EXPECT_NE(site_instance_1->GetOrCreateProcess(),
+    EXPECT_NE(site_instance_1->GetOrCreateProcessForTesting(),
               site_instance_2->GetProcess());
   }
 }
@@ -3326,7 +3331,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     EXPECT_FALSE(NavigateToURL(shell(), invalid_url));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
     EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
-    EXPECT_NE(current_si->GetProcess(), previous_si->GetOrCreateProcess());
+    EXPECT_NE(current_si->GetProcess(),
+              previous_si->GetOrCreateProcessForTesting());
     EXPECT_FALSE(current_si->IsCrossOriginIsolated());
   }
 }

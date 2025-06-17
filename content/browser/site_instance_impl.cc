@@ -488,7 +488,7 @@ RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess(
   return site_instance_group_->process();
 }
 
-RenderProcessHost* SiteInstanceImpl::GetOrCreateProcess() {
+RenderProcessHost* SiteInstanceImpl::GetOrCreateProcessForTesting() {
   CHECK_IS_TEST();
   return GetOrCreateProcess(
       ProcessAllocationContext{ProcessAllocationSource::kTest});

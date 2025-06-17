@@ -1961,7 +1961,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // Simulate this by creating a new RPH for site_instance_a directly. Note that
   // the actual process may not get created (only if the spare process is in
   // use), so wait for RPH destruction rather than process exit.
-  RenderProcessHost* rph_2 = site_instance_a->GetOrCreateProcess();
+  RenderProcessHost* rph_2 = site_instance_a->GetOrCreateProcessForTesting();
   RenderProcessHostWatcher process_exit_observer_2(
       rph_2, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
   ASSERT_TRUE(navigation_b.WaitForNavigationFinished());

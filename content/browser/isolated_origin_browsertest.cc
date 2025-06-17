@@ -3461,7 +3461,7 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest,
   // https://crbug.com/961386, we didn't swap processes for the second
   // navigation, leading to renderer kills.
   EXPECT_NE(foo_site_instance.get(), bar_site_instance.get());
-  EXPECT_NE(foo_site_instance->GetOrCreateProcess(),
+  EXPECT_NE(foo_site_instance->GetOrCreateProcessForTesting(),
             bar_site_instance->GetProcess());
 
   // Navigate to another site, then repeat this test with a redirect from
@@ -4305,7 +4305,7 @@ IN_PROC_BROWSER_TEST_F(
               hung_isolated_url,
               StoragePartitionConfig::CreateDefault(browser_context)),
           /* can_reuse_process= */ true);
-  RenderProcessHost* sw_host = sw_site_instance->GetOrCreateProcess();
+  RenderProcessHost* sw_host = sw_site_instance->GetOrCreateProcessForTesting();
   EXPECT_NE(new_shell->web_contents()->GetPrimaryMainFrame()->GetProcess(),
             sw_host);
 
@@ -5997,7 +5997,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, ForceBrowsingInstanceSwap) {
       root->current_frame_host()->GetSiteInstance();
   EXPECT_NE(first_instance, second_instance);
   EXPECT_FALSE(first_instance->IsRelatedSiteInstance(second_instance.get()));
-  EXPECT_NE(first_instance->GetOrCreateProcess(),
+  EXPECT_NE(first_instance->GetOrCreateProcessForTesting(),
             second_instance->GetProcess());
   EXPECT_EQ(ProcessLockFromUrl("http://foo.com"),
             second_instance->GetProcess()->GetProcessLock());
@@ -6050,7 +6050,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
       root->current_frame_host()->GetSiteInstance();
   EXPECT_NE(first_instance, second_instance);
   EXPECT_FALSE(first_instance->IsRelatedSiteInstance(second_instance.get()));
-  EXPECT_NE(first_instance->GetOrCreateProcess(),
+  EXPECT_NE(first_instance->GetOrCreateProcessForTesting(),
             second_instance->GetProcess());
   EXPECT_EQ(ProcessLockFromUrl("http://foo.com"),
             second_instance->GetProcess()->GetProcessLock());

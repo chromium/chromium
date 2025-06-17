@@ -6653,8 +6653,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
       starting_instance->IsRelatedSiteInstance(main_frame->GetSiteInstance()));
   EXPECT_EQ(starting_instance->GetStoragePartitionConfig(),
             main_frame->GetSiteInstance()->GetStoragePartitionConfig());
-  EXPECT_EQ(starting_instance->GetOrCreateProcess()->GetStoragePartition(),
-            main_frame->GetProcess()->GetStoragePartition());
+  EXPECT_EQ(
+      starting_instance->GetOrCreateProcessForTesting()->GetStoragePartition(),
+      main_frame->GetProcess()->GetStoragePartition());
 
   // Ensure the guest SiteInstance reflects the proper site and actually uses
   // site isolation.
@@ -6859,8 +6860,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, BrowsingInstanceSwap) {
   EXPECT_FALSE(first_instance->IsRelatedSiteInstance(second_instance.get()));
   EXPECT_EQ(first_instance->GetStoragePartitionConfig(),
             second_instance->GetStoragePartitionConfig());
-  EXPECT_EQ(first_instance->GetOrCreateProcess()->GetStoragePartition(),
-            second_instance->GetProcess()->GetStoragePartition());
+  EXPECT_EQ(
+      first_instance->GetOrCreateProcessForTesting()->GetStoragePartition(),
+      second_instance->GetProcess()->GetStoragePartition());
 }
 
 // Helper class to count the number of guest processes created.
@@ -6948,8 +6950,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, NavigateToAboutBlank) {
   EXPECT_FALSE(first_instance->IsRelatedSiteInstance(third_instance.get()));
   EXPECT_EQ(first_instance->GetStoragePartitionConfig(),
             third_instance->GetStoragePartitionConfig());
-  EXPECT_EQ(first_instance->GetOrCreateProcess()->GetStoragePartition(),
-            third_instance->GetProcess()->GetStoragePartition());
+  EXPECT_EQ(
+      first_instance->GetOrCreateProcessForTesting()->GetStoragePartition(),
+      third_instance->GetProcess()->GetStoragePartition());
 
   // Ask embedder to navigate the webview back to about:blank.  This should
   // stay in the same SiteInstance.

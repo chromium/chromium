@@ -119,7 +119,7 @@ class UserScriptListenerTest : public testing::Test {
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
 
     auto instance = content::SiteInstance::Create(profile_);
-    instance->GetOrCreateProcess()->Init();
+    instance->GetOrCreateProcessForTesting()->Init();
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_, std::move(instance));
   }

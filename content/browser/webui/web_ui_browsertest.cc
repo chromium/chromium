@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, NavigateFromCrashedAboutBlank) {
   // the initial one. Crashing the about:blank page shouldn't affect this, so
   // the WebUI navigation should end up in a fresh SiteInstance and process.
   EXPECT_NE(orig_site_instance, web_contents->GetSiteInstance());
-  EXPECT_NE(orig_site_instance->GetOrCreateProcess(),
+  EXPECT_NE(orig_site_instance->GetOrCreateProcessForTesting(),
             web_contents->GetPrimaryMainFrame()->GetProcess());
 
   // Check that the resulting WebUI page has bindings, and its process is

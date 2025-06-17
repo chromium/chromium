@@ -292,7 +292,7 @@ class TestAuctionProcessManager
       // BindInterface() will only be invoked once, synchronously, for each
       // AuctionManagerBaseType::CreateProcessInternal() invocation.
       static_cast<MockRenderProcessHost*>(
-          worklet_process.site_instance()->GetOrCreateProcess())
+          worklet_process.site_instance()->GetOrCreateProcessForTesting())
           ->OverrideBinderForTesting(
               auction_worklet::mojom::AuctionWorkletService::Name_,
               base::BindRepeating(&TestAuctionProcessManager<
@@ -1847,7 +1847,7 @@ TEST_P(SitePerProcessAuctionProcessManagerTest,
   // launch as completed. |frame_site_instance| will help keep it alive.
   scoped_refptr<SiteInstance> frame_site_instance =
       site_instance1_->GetRelatedSiteInstance(kOriginA.GetURL());
-  frame_site_instance->GetOrCreateProcess()->Init();
+  frame_site_instance->GetOrCreateProcessForTesting()->Init();
   for (std::unique_ptr<MockRenderProcessHost>& proc :
        *rph_factory_.GetProcesses()) {
     proc->SimulateReady();

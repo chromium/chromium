@@ -120,7 +120,7 @@ class WebUIContentsWrapperTest : public ChromeViewsTestBase {
 
     scoped_refptr<content::SiteInstance> instance =
         content::SiteInstance::Create(profile_.get());
-    instance->GetOrCreateProcess()->Init();
+    instance->GetOrCreateProcessForTesting()->Init();
     auto test_contents = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), std::move(instance));
 

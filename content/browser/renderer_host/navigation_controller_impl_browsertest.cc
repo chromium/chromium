@@ -17934,8 +17934,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_NE(success_site_instance, error_site_instance);
   EXPECT_TRUE(
       success_site_instance->IsRelatedSiteInstance(error_site_instance.get()));
-  EXPECT_NE(success_site_instance->GetOrCreateProcess()->GetDeprecatedID(),
-            error_site_instance->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(
+      success_site_instance->GetOrCreateProcessForTesting()->GetDeprecatedID(),
+      error_site_instance->GetProcess()->GetDeprecatedID());
   EXPECT_EQ(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
 
   EXPECT_TRUE(
