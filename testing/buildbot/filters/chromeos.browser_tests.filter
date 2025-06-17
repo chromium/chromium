@@ -1,9 +1,6 @@
 # TODO(crbug.com/40634031): Enable this.
 -AutotestPrivateWithPolicyApiTest.PolicyAPITest
 
-# TODO(crbug.com/41466539): Enable this.
--MSE_Widevine/EncryptedMediaTest.*
-
 # TODO(crbug.com/985390): Enable this.
 -OSSettingsPeoplePageAccountManagerTest.AllJsTests
 
