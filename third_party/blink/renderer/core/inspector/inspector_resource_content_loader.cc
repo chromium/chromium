@@ -153,6 +153,10 @@ void InspectorResourceContentLoader::Start() {
           mojom::blink::RequestContextType::INTERNAL);
       ResourceLoaderOptions options(world);
       options.initiator_info.name = fetch_initiator_type_names::kInternal;
+      auto* owner_element = DynamicTo<HTMLElement>(style_sheet->ownerNode());
+      if (owner_element && owner_element->nonce()) {
+        options.content_security_policy_nonce = owner_element->nonce();
+      }
       FetchParameters params(std::move(style_sheet_resource_request), options);
       ResourceClient* resource_client =
           MakeGarbageCollected<ResourceClient>(this);
