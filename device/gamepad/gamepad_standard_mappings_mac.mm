@@ -790,6 +790,8 @@ constexpr struct MappingData {
     {GamepadId::kPowerALicPro, MapperSwitchPro},
     // 8BitDo Ultimate Wireless 2C (Bluetooth)
     {GamepadId::k8BitDoProduct301b, Mapper8BitDoBluetooth},
+    // 8BitDo Ultimate Wireless 2C 81HE (Bluetooth)
+    {GamepadId::k8BitDoProduct6012, Mapper8BitDoBluetooth},
     // Snakebyte iDroid:con
     {GamepadId::kBroadcomProduct8502, MapperSnakebyteIDroidCon},
     // DragonRise Generic USB
