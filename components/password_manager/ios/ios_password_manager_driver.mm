@@ -13,6 +13,7 @@
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 using password_manager::PasswordAutofillManager;
 using password_manager::PasswordManager;
@@ -185,6 +186,12 @@ int IOSPasswordManagerDriver::GetFrameId() const {
 
 const GURL& IOSPasswordManagerDriver::GetLastCommittedURL() const {
   return bridge_.lastCommittedURL;
+}
+
+gfx::RectF IOSPasswordManagerDriver::TransformToRootCoordinates(
+    const gfx::RectF& bounds_in_frame_coordinates) {
+  NOTIMPLEMENTED();
+  return bounds_in_frame_coordinates;
 }
 
 base::WeakPtr<password_manager::PasswordManagerDriver>

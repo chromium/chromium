@@ -36,5 +36,4 @@ pmc --> afc:  <PasswordAutofillManager is PasswordDelegate>
 afc --> bam:  <PasswordAutofillManager is PasswordDelegate>
 
 bam -> pam: e.g. PasswordDelegate::ShowSuggestions()
-
 @enduml

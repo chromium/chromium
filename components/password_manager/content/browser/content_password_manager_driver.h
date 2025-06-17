@@ -58,6 +58,8 @@ class ContentPasswordManagerDriver final
 
   // PasswordManagerDriver implementation.
   int GetId() const override;
+  gfx::RectF TransformToRootCoordinates(
+      const gfx::RectF& bounds_in_frame_coordinates) override;
   void PropagateFillDataOnParsingCompletion(
       const autofill::PasswordFormFillData& form_data) override;
   void InformNoSavedCredentials(
@@ -131,11 +133,6 @@ class ContentPasswordManagerDriver final
   // Notify the renderer that the user wants to trigger password generation.
   void GeneratePassword(autofill::mojom::PasswordGenerationAgent::
                             TriggeredGeneratePasswordCallback callback);
-
-  // Notify the associated `PasswordAutofillManager` that password suggestions
-  // for the triggering field can be shown.
-  void ShowPasswordSuggestionsForField(
-      const autofill::TriggeringField& triggering_field);
 
   // Returns true if the field is any of the following cases:
   // 1) The field has type="password".
