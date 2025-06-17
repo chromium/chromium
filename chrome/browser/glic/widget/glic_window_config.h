@@ -19,12 +19,6 @@ class GlicWindowConfig {
   // True if conditions are met to reset the panel location when opening.
   bool ShouldResetOnOpen() const;
 
-  // True if conditions are met to reset the panel location instead of closing.
-  bool ShouldResetOnClose() const;
-
-  // True if the panel should animate to the default location.
-  bool ShouldAnimate() const;
-
   // True if the panel location should be reset on Chrome start.
   bool ShouldResetOnStart() const;
 

@@ -187,7 +187,7 @@ class GlicWindowControllerImpl
   void DetachFinished();
 
   // Save the top-right corner position for re-opening.
-  void SaveWidgetPosition(bool is_drag);
+  void SaveWidgetPosition(bool user_modified);
 
   // Clear the previous position if the widget would not be on an existing
   // display when shown.

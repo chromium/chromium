@@ -389,6 +389,7 @@ void GlicWindowControllerImpl::OnWidgetUserResizeEnded() {
 
   if (GetGlicWidget()) {
     glic_size_ = GetGlicWidget()->GetSize();
+    SaveWidgetPosition(/*user_modified=*/true);
   }
 
   glic_window_animator_->ResetLastTargetSize();
@@ -453,18 +454,6 @@ void GlicWindowControllerImpl::Toggle(BrowserWindowInterface* bwi,
   // If floaty is closed, open floaty
   if (state_ == State::kClosed) {
     Show(new_attached_browser, source);
-    return;
-  }
-
-  if (state_ == State::kOpen && window_config_.ShouldResetOnClose()) {
-    previous_position_.reset();
-    gfx::Rect new_bounds = GetInitialBounds(new_attached_browser);
-    MaybeAdjustSizeForDisplay(window_config_.ShouldAnimate());
-    base::TimeDelta duration = window_config_.ShouldAnimate()
-                                   ? kAnimationDuration
-                                   : base::Milliseconds(0);
-    glic_window_animator_->AnimatePosition(new_bounds.origin(), duration,
-                                           base::DoNothing());
     return;
   }
 
@@ -1033,7 +1022,7 @@ void GlicWindowControllerImpl::Close() {
   }
 
   // Save the widge position on close so we can restore in the same position.
-  SaveWidgetPosition(/*is_drag=*/false);
+  SaveWidgetPosition(/*user_modified=*/false);
   window_config_.SetLastCloseTime();
 
   glic_window_animator_.reset();
@@ -1070,11 +1059,11 @@ void GlicWindowControllerImpl::Close() {
   }
 }
 
-void GlicWindowControllerImpl::SaveWidgetPosition(bool is_drag) {
+void GlicWindowControllerImpl::SaveWidgetPosition(bool user_modified) {
   if (!GetGlicWidget() || !GetGlicWidget()->IsVisible()) {
     return;
   }
-  if (!is_drag && window_config_.ShouldSetPostionOnDrag() &&
+  if (window_config_.ShouldSetPostionOnDrag() && !user_modified &&
       !previous_position_.has_value()) {
     profile_->GetPrefs()->ClearPref(prefs::kGlicPreviousPositionX);
     profile_->GetPrefs()->ClearPref(prefs::kGlicPreviousPositionY);
@@ -1139,7 +1128,7 @@ void GlicWindowControllerImpl::HandleWindowDragWithOffset(
     glic_window_animator_->MaybeAnimateToTargetSize();
 
     AdjustPositionIfNeeded();
-    SaveWidgetPosition(/*is_drag=*/true);
+    SaveWidgetPosition(/*user_modified=*/true);
 
     if (!AlwaysDetached()) {
       // set glic z-order back to normal after drag is done.

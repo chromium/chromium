@@ -328,10 +328,6 @@ BASE_DECLARE_FEATURE(kGlicExplicitBackgroundColor);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicPanelResetTopChromeButton);
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool> kGlicPanelResetTopChromeButtonOnOpen;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool> kGlicPanelResetTopChromeButtonAnimate;
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kGlicPanelResetTopChromeButtonDelayMs;
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicPanelResetOnStart);

@@ -4654,39 +4654,14 @@ const FeatureEntry::FeatureVariation
 #if BUILDFLAG(ENABLE_GLIC)
 // Variations of the glic panel reset for the top Chrome button.
 const FeatureEntry::FeatureParam kGlicPanelResetTopChromeButtonOnOpen_1s[] = {
-    {"glic-panel-reset-on-open", "true"},
     {"glic-panel-reset-delay-ms", "1000"}};
 const FeatureEntry::FeatureParam kGlicPanelResetTopChromeButtonOnOpen_2s[] = {
-    {"glic-panel-reset-on-open", "true"},
     {"glic-panel-reset-delay-ms", "2000"}};
 const FeatureEntry::FeatureParam kGlicPanelResetTopChromeButtonOnOpen_3s[] = {
-    {"glic-panel-reset-on-open", "true"},
     {"glic-panel-reset-delay-ms", "3000"}};
 const FeatureEntry::FeatureParam kGlicPanelResetTopChromeButtonOnOpen_5s[] = {
-    {"glic-panel-reset-on-open", "true"},
     {"glic-panel-reset-delay-ms", "3000"}};
 const FeatureEntry::FeatureParam kGlicPanelResetTopChromeButtonOnOpen_10s[] = {
-    {"glic-panel-reset-on-open", "true"},
-    {"glic-panel-reset-delay-ms", "10000"}};
-const FeatureEntry::FeatureParam kGlicPanelResetTopChromeButtonOnClose_1s[] = {
-    {"glic-panel-reset-on-open", "false"},
-    {"glic-panel-reset-delay-ms", "1000"}};
-const FeatureEntry::FeatureParam kGlicPanelResetTopChromeButtonOnClose_2s[] = {
-    {"glic-panel-reset-on-open", "false"},
-    {"glic-panel-reset-delay-ms", "2000"}};
-const FeatureEntry::FeatureParam
-    kGlicPanelResetTopChromeButtonOnCloseAnimate_2s[] = {
-        {"glic-panel-reset-on-open", "false"},
-        {"glic-panel-reset-animate", "true"},
-        {"glic-panel-reset-delay-ms", "2000"}};
-const FeatureEntry::FeatureParam kGlicPanelResetTopChromeButtonOnClose_3s[] = {
-    {"glic-panel-reset-on-open", "false"},
-    {"glic-panel-reset-delay-ms", "3000"}};
-const FeatureEntry::FeatureParam kGlicPanelResetTopChromeButtonOnClose_5s[] = {
-    {"glic-panel-reset-on-open", "false"},
-    {"glic-panel-reset-delay-ms", "3000"}};
-const FeatureEntry::FeatureParam kGlicPanelResetTopChromeButtonOnClose_10s[] = {
-    {"glic-panel-reset-on-open", "false"},
     {"glic-panel-reset-delay-ms", "10000"}};
 
 const FeatureEntry::FeatureVariation
@@ -4700,20 +4675,7 @@ const FeatureEntry::FeatureVariation
         {"Reset on open - 5s", kGlicPanelResetTopChromeButtonOnOpen_5s,
          std::size(kGlicPanelResetTopChromeButtonOnOpen_5s), nullptr},
         {"Reset on open - 10s", kGlicPanelResetTopChromeButtonOnOpen_10s,
-         std::size(kGlicPanelResetTopChromeButtonOnOpen_10s), nullptr},
-        {"Reset on close - 1s", kGlicPanelResetTopChromeButtonOnClose_1s,
-         std::size(kGlicPanelResetTopChromeButtonOnClose_1s), nullptr},
-        {"Reset on close - 2s", kGlicPanelResetTopChromeButtonOnClose_2s,
-         std::size(kGlicPanelResetTopChromeButtonOnClose_2s), nullptr},
-        {"Reset on close - 2s (Animate)",
-         kGlicPanelResetTopChromeButtonOnCloseAnimate_2s,
-         std::size(kGlicPanelResetTopChromeButtonOnCloseAnimate_2s), nullptr},
-        {"Reset on close - 3s", kGlicPanelResetTopChromeButtonOnClose_3s,
-         std::size(kGlicPanelResetTopChromeButtonOnClose_3s), nullptr},
-        {"Reset on close - 5s", kGlicPanelResetTopChromeButtonOnClose_5s,
-         std::size(kGlicPanelResetTopChromeButtonOnClose_5s), nullptr},
-        {"Reset on close - 10s", kGlicPanelResetTopChromeButtonOnClose_10s,
-         std::size(kGlicPanelResetTopChromeButtonOnClose_10s), nullptr}};
+         std::size(kGlicPanelResetTopChromeButtonOnOpen_10s), nullptr}};
 
 const FeatureEntry::FeatureParam kGlicPanelResetOnSessionTimeout_1h[] = {
     {"glic-panel-reset-session-timeout-delay-h", "1"},

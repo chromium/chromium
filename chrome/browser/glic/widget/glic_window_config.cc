@@ -10,23 +10,9 @@
 namespace glic {
 
 bool GlicWindowConfig::ShouldResetOnOpen() const {
-  if (!base::FeatureList::IsEnabled(features::kGlicPanelResetTopChromeButton)) {
-    return false;
-  }
-  return features::kGlicPanelResetTopChromeButtonOnOpen.Get() &&
+  return base::FeatureList::IsEnabled(
+             features::kGlicPanelResetTopChromeButton) &&
          IsButtonClickDelayValid();
-}
-
-bool GlicWindowConfig::ShouldResetOnClose() const {
-  if (!base::FeatureList::IsEnabled(features::kGlicPanelResetTopChromeButton)) {
-    return false;
-  }
-  return !features::kGlicPanelResetTopChromeButtonOnOpen.Get() &&
-         IsButtonClickDelayValid();
-}
-
-bool GlicWindowConfig::ShouldAnimate() const {
-  return features::kGlicPanelResetTopChromeButtonAnimate.Get();
 }
 
 bool GlicWindowConfig::ShouldResetOnStart() const {
