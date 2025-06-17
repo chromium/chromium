@@ -76,13 +76,14 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
     const FormStructure& form,
     const AutofillField& field,
     base::TimeTicks form_parsed_timestamp,
-    bool off_the_record) {
+    bool off_the_record,
+    base::span<const Suggestion> suggestions) {
   if (DoSuggestionsIncludeVirtualCard())
     Log(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, form);
 
   // Also perform the logging actions from the base class:
   FormEventLoggerBase::OnDidShowSuggestions(form, field, form_parsed_timestamp,
-                                            off_the_record);
+                                            off_the_record, suggestions);
 
   suggestion_shown_timestamp_ = base::TimeTicks::Now();
 

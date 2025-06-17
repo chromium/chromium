@@ -3532,6 +3532,22 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.HomeWorkProfiles.SuggestionPresent.{SuggestionType}"
+    enum="BooleanYesNo" expires_after="2025-12-12">
+  <owner>jsobiech@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Tracks the presence of a home/work profile in address suggestions at least
+    once during the form interaction. Metric emitted at form submission time,
+    only when a user has a home/work profile set and if at least one suggestion
+    was shown.
+  </summary>
+  <token key="SuggestionType">
+    <variant name="Home"/>
+    <variant name="Work"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Iban.CountryOfSaveAcceptedIban" enum="IbanCountry"
     expires_after="2026-06-01">
   <owner>qihuizhao@google.com</owner>

@@ -80,7 +80,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   void OnDidShowSuggestions(const FormStructure& form,
                             const AutofillField& field,
                             base::TimeTicks form_parsed_timestamp,
-                            bool off_the_record) override;
+                            bool off_the_record,
+                            base::span<const Suggestion> suggestions) override;
 
   void OnDidSelectCardSuggestion(
       const CreditCard& credit_card,

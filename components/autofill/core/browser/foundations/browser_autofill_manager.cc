@@ -1504,7 +1504,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
         client()
             .GetPaymentsAutofillClient()
             ->GetIbanManager()
-            ->OnGetSingleFieldSuggestions(*form_structure, field, *autofill_field, client(),
+            ->OnGetSingleFieldSuggestions(*form_structure, field,
+                                          *autofill_field, client(),
                                           on_suggestions_returned)) {
       return;
     }
@@ -2211,7 +2212,7 @@ void BrowserAutofillManager::DidShowSuggestions(
     }
     logger->OnDidShowSuggestions(*form_structure, *autofill_field,
                                  form_structure->form_parsed_timestamp(),
-                                 client().IsOffTheRecord());
+                                 client().IsOffTheRecord(), suggestions);
   }
 }
 

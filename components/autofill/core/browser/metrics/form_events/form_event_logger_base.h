@@ -44,7 +44,8 @@ class FormEventLoggerBase {
   virtual void OnDidShowSuggestions(const FormStructure& form,
                                     const AutofillField& field,
                                     base::TimeTicks form_parsed_timestamp,
-                                    bool off_the_record);
+                                    bool off_the_record,
+                                    base::span<const Suggestion> suggestions);
 
   void OnDidRefill(const FormStructure& form);
 
@@ -67,7 +68,7 @@ class FormEventLoggerBase {
   // logging of funnel and key metrics.
   // The function must not be called from the destructor, since this makes it
   // impossible to dispatch virtual functions into the derived classes.
-  void OnDestroyed();
+  virtual void OnDestroyed();
 
   // Adds the appropriate form types based on `type` to
   // `field_by_field_filled_form_types_` after a filling operation.

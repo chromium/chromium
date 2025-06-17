@@ -6,10 +6,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
@@ -427,6 +430,104 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AddressSuggestionOnTypingAccepted.DaysSinceLastUse.Profile",
       kProfileLastUsedInDays, 1);
+}
+
+class AutofillOnDidShowSuggestionsMetricsTest : public AutofillMetricsBaseTest,
+                                                public testing::Test {
+ public:
+  AutofillOnDidShowSuggestionsMetricsTest() = default;
+
+  void SetUp() override {
+    SetUpHelper();
+    // Clear profiles added in SetUpHelper.
+    personal_data().test_address_data_manager().ClearProfiles();
+  }
+  void TearDown() override { TearDownHelper(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableSupportForHomeAndWork};
+};
+
+TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
+       LogAutofillMetrics_HomeProfileSuggestionPresent) {
+  AutofillProfile profile = test::GetFullProfile();
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccountHome);
+  personal_data().address_data_manager().AddProfile(profile);
+
+  FormData form = test::CreateTestAddressFormData();
+
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{form},
+                                 /*removed_forms=*/{});
+
+  autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields().front().global_id());
+
+  external_delegate().CheckSuggestions(
+      form.fields()[0].global_id(),
+      {Suggestion("John", "666 Erebus St.", Suggestion::Icon::kHome,
+                  SuggestionType::kAddressEntry),
+       Suggestion(SuggestionType::kSeparator),
+       CreateManageAddressesSuggestion()});
+  const std::vector<Suggestion>& generated_suggestions =
+      external_delegate().suggestions();
+
+  base::HistogramTester histogram_tester;
+
+  autofill_manager().DidShowSuggestions(generated_suggestions, form,
+                                        form.fields()[0].global_id(), {});
+
+  test_api(autofill_client().GetAutofillDriverFactory())
+      .Reset(autofill_driver());
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.HomeWorkProfiles.SuggestionPresent.Home"),
+              BucketsAre(base::Bucket(false, 0), base::Bucket(true, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.HomeWorkProfiles.SuggestionPresent.Work"),
+              BucketsAre(base::Bucket(false, 0), base::Bucket(true, 0)));
+}
+
+TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
+       LogAutofillMetrics_HomeProfileSuggestionSuppressed) {
+  AutofillProfile profile1 = test::StandardProfile();
+  personal_data().address_data_manager().AddProfile(profile1);
+
+  AutofillProfile profile2 = test::SubsetOfStandardProfile();
+  test_api(profile2).set_record_type(AutofillProfile::RecordType::kAccountHome);
+  personal_data().address_data_manager().AddProfile(profile2);
+
+  FormData form = test::CreateTestAddressFormData();
+
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{form},
+                                 /*removed_forms=*/{});
+
+  autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields().front().global_id());
+
+  external_delegate().CheckSuggestions(
+      form.fields()[0].global_id(),
+      {Suggestion("Pablo Diego", "123 Mainstreet", Suggestion::Icon::kAccount,
+                  SuggestionType::kAddressEntry),
+       Suggestion(SuggestionType::kSeparator),
+       CreateManageAddressesSuggestion()});
+  const std::vector<Suggestion>& generated_suggestions =
+      external_delegate().suggestions();
+
+  base::HistogramTester histogram_tester;
+
+  autofill_manager().DidShowSuggestions(generated_suggestions, form,
+                                        form.fields()[0].global_id(), {});
+
+  test_api(autofill_client().GetAutofillDriverFactory())
+      .Reset(autofill_driver());
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.HomeWorkProfiles.SuggestionPresent.Home"),
+              BucketsAre(base::Bucket(false, 1), base::Bucket(true, 0)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.HomeWorkProfiles.SuggestionPresent.Work"),
+              BucketsAre(base::Bucket(false, 0), base::Bucket(true, 0)));
 }
 
 }  // namespace autofill::autofill_metrics
