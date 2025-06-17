@@ -251,9 +251,12 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
 
   protected getRunTestsAdditionalMessage(): string {
     const batteryInfoMissing = !this.batteryChargeStatus || !this.batteryHealth;
+    if (batteryInfoMissing) {
+      return '';
+    }
     const notCharging = this.batteryChargeStatus.powerAdapterStatus ===
         ExternalPowerSource.kDisconnected;
-    if (notCharging || batteryInfoMissing) {
+    if (notCharging) {
       return '';
     }
 
