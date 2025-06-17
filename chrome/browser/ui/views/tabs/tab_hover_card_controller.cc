@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/callback_list.h"
-#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -125,7 +124,6 @@ base::TimeDelta GetShowDelay(int tab_width) {
 
 bool IsBrowserForSystemWebApp(const Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS)
-  CHECK(browser);
   const auto* const app_controller = browser->app_controller();
   if (app_controller && app_controller->system_app()) {
     return true;
@@ -212,10 +210,7 @@ TabHoverCardController::TabHoverCardController(TabStrip* tab_strip)
 
     // Register for memory usage enabled pref change events. Exclude
     // tracking them for system web apps (e.g. ChromeOS terminal app).
-    Browser* browser = tab_strip_->GetBrowser();
-    if (!browser) {
-      CHECK_IS_TEST();
-    } else if (!IsBrowserForSystemWebApp(browser)) {
+    if (!IsBrowserForSystemWebApp(tab_strip_->GetBrowser())) {
       OnHovercardMemoryUsageEnabledChanged();
       pref_change_registrar_.Add(
           prefs::kHoverCardMemoryUsageEnabled,

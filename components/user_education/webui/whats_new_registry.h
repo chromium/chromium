@@ -212,10 +212,6 @@ class WhatsNewRegistry {
     return editions_;
   }
 
-  WhatsNewStorageService* GetMutableStorageServiceForTesting() {
-    return storage_service_.get();
-  }
-
  private:
   std::unique_ptr<WhatsNewStorageService> storage_service_;
   std::map<std::string, WhatsNewModule> modules_;

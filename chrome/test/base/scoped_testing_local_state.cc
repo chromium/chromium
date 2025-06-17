@@ -4,14 +4,20 @@
 
 #include "chrome/test/base/scoped_testing_local_state.h"
 
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 ScopedTestingLocalState::ScopedTestingLocalState(
     TestingBrowserProcess* browser_process)
-    : browser_process_(browser_process) {}
+    : browser_process_(browser_process) {
+  CHECK(browser_process_);
+  RegisterLocalState(local_state_.registry());
+  EXPECT_FALSE(browser_process_->local_state());
+  browser_process_->SetLocalState(&local_state_);
+}
 
-ScopedTestingLocalState::~ScopedTestingLocalState() = default;
-
-TestingPrefServiceSimple* ScopedTestingLocalState::Get() {
-  return browser_process_->GetTestingLocalState();
+ScopedTestingLocalState::~ScopedTestingLocalState() {
+  EXPECT_EQ(&local_state_, browser_process_->local_state());
+  browser_process_->SetLocalState(nullptr);
 }

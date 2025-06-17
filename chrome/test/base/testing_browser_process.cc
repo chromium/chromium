@@ -25,7 +25,6 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/permissions/chrome_permissions_client.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
@@ -42,7 +41,6 @@
 #include "components/permissions/permissions_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "extensions/buildflags/buildflags.h"
@@ -145,11 +143,8 @@ void TestingBrowserProcess::TearDownAndDeleteInstance() {
 }
 
 TestingBrowserProcess::TestingBrowserProcess()
-    : testing_local_state_(std::make_unique<TestingPrefServiceSimple>()),
-      platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()),
+    : platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()),
       os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting()) {
-  RegisterLocalState(testing_local_state_->registry());
-
   // Observe TaskEnvironment to get a chance to teardown components before
   // ThreadPool is destroyed.
   // In production, BrowserProcess is destroyed while ThreadPool is still
@@ -163,19 +158,14 @@ TestingBrowserProcess::~TestingBrowserProcess() {
   // Tear down components for tests that do not have TaskEnvironment.
   MaybeStartTearDown();
 
+  EXPECT_FALSE(local_state_);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ExtensionsBrowserClient::Set(nullptr);
   extensions::AppWindowClient::Set(nullptr);
 #endif
 
-  if (test_network_connection_tracker_) {
+  if (test_network_connection_tracker_)
     content::SetNetworkConnectionTrackerForTesting(nullptr);
-  }
-
-  // Destroy objects in the same way as BrowserProcessImpl does.
-  serial_policy_allowed_ports_.reset();
-  testing_local_state_.reset();
-  browser_policy_connector_.reset();
 
   // Destructors for some objects owned by TestingBrowserProcess will use
   // g_browser_process if it is not null, so it must be null before proceeding.
@@ -287,7 +277,7 @@ void TestingBrowserProcess::SetProfileManager(
   // NotificationUIManager can contain references to elements in the current
   // ProfileManager. So when we change the ProfileManager (typically during test
   // shutdown) make sure to reset any objects that might maintain references to
-  // it.
+  // it. See SetLocalState() for a description of a similar situation.
   notification_ui_manager_.reset();
 #endif
   profile_manager_ = std::move(profile_manager);
@@ -299,7 +289,7 @@ void TestingBrowserProcess::SetVariationsService(
 }
 
 PrefService* TestingBrowserProcess::local_state() {
-  return testing_local_state_.get();
+  return local_state_;
 }
 
 signin::ActivePrimaryAccountsMetricsRecorder*
@@ -318,6 +308,9 @@ StartupData* TestingBrowserProcess::startup_data() {
 policy::ChromeBrowserPolicyConnector*
 TestingBrowserProcess::browser_policy_connector() {
   if (!browser_policy_connector_) {
+    EXPECT_FALSE(created_browser_policy_connector_);
+    created_browser_policy_connector_ = true;
+
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
     // Make sure that the machine policy directory does not exist so that
     // machine-wide policies do not affect tests.
@@ -517,11 +510,13 @@ MediaFileSystemRegistry* TestingBrowserProcess::media_file_system_registry() {
 network_time::NetworkTimeTracker*
 TestingBrowserProcess::network_time_tracker() {
   if (!network_time_tracker_) {
-    CHECK(local_state());
+    if (!local_state_)
+      return nullptr;
+
     network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
         std::unique_ptr<base::Clock>(new base::DefaultClock()),
         std::unique_ptr<base::TickClock>(new base::DefaultTickClock()),
-        local_state(), nullptr, std::nullopt);
+        local_state_, nullptr, std::nullopt);
   }
   return network_time_tracker_.get();
 }
@@ -622,16 +617,34 @@ void TestingBrowserProcess::SetSystemNotificationHelper(
   system_notification_helper_ = std::move(system_notification_helper);
 }
 
+void TestingBrowserProcess::SetLocalState(PrefService* local_state) {
+  if (!local_state) {
+    // The local_state_ PrefService is owned outside of TestingBrowserProcess,
+    // but some of the members of TestingBrowserProcess hold references to it
+    // (for example, via PrefNotifier members). But given our test
+    // infrastructure which tears down individual tests before freeing the
+    // TestingBrowserProcess, there's not a good way to make local_state outlive
+    // these dependencies. As a workaround, whenever local_state_ is cleared
+    // (assumedly as part of exiting the test and freeing TestingBrowserProcess)
+    // any components owned by TestingBrowserProcess that depend on local_state
+    // are also freed.
+    network_time_tracker_.reset();
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
+    notification_ui_manager_.reset();
+#endif
+    serial_policy_allowed_ports_.reset();
+    ShutdownBrowserPolicyConnector();
+    created_browser_policy_connector_ = false;
+  }
+  local_state_ = local_state;
+}
+
 void TestingBrowserProcess::MaybeStartTearDown() {
   if (is_torn_down_) {
     return;
   }
   is_torn_down_ = true;
 
-  network_time_tracker_.reset();
-#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
-  notification_ui_manager_.reset();
-#endif
   ShutdownBrowserPolicyConnector();
 }
 
@@ -650,6 +663,7 @@ void TestingBrowserProcess::ShutdownBrowserPolicyConnector() {
 #endif
     browser_policy_connector_->Shutdown();
   }
+  browser_policy_connector_.reset();
 }
 
 TestingBrowserProcessPlatformPart*
@@ -703,10 +717,6 @@ void TestingBrowserProcess::SetUsbSystemTrayIcon(
   usb_system_tray_icon_ = std::move(usb_system_tray_icon);
 }
 #endif
-
-TestingPrefServiceSimple* TestingBrowserProcess::GetTestingLocalState() {
-  return testing_local_state_.get();
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 
