@@ -1061,10 +1061,10 @@ index e748936..fbe6638 100644
  int Hunspell_spell(Hunhandle* pHunspell, const char* word) {
    return reinterpret_cast<HunspellImpl*>(pHunspell)->spell(word);
 diff --git a/src/hunspell/hunspell.hxx b/src/hunspell/hunspell.hxx
-index a06bdd4..d3c2689 100644
+index 3b3a03d..c4d6bb2 100644
 --- a/src/hunspell/hunspell.hxx
 +++ b/src/hunspell/hunspell.hxx
-@@ -76,9 +76,14 @@
+@@ -76,6 +76,11 @@
  #include <string>
  #include <vector>
  
@@ -1075,12 +1075,8 @@ index a06bdd4..d3c2689 100644
 +
  #define SPELL_XML "<?xml?>"
  
--#define MAXSUGGESTION 15
-+#define MAXSUGGESTION 5
- #define MAXSHARPS 5
- 
- #ifndef MAXWORDLEN
-@@ -112,11 +117,17 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
+ #ifndef MAXSUGGESTION
+@@ -115,11 +120,17 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
     * long path names (without the long path prefix Hunspell will use fopen()
     * with system-dependent character encoding instead of _wfopen()).
     */
