@@ -2611,8 +2611,19 @@ void Element::scrollTo(double x, double y) {
 }
 
 void Element::scrollTo(const ScrollToOptions* scroll_to_options) {
+  SetScrollOffset(scroll_to_options);
+}
+
+bool Element::SetScrollOffset(const ScrollOffset& offset) {
+  ScrollToOptions* scroll_to_options = ScrollToOptions::Create();
+  scroll_to_options->setLeft(offset.x());
+  scroll_to_options->setTop(offset.y());
+  return SetScrollOffset(scroll_to_options);
+}
+
+bool Element::SetScrollOffset(const ScrollToOptions* scroll_to_options) {
   if (!InActiveDocument()) {
-    return;
+    return false;
   }
 
   // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
@@ -2625,13 +2636,13 @@ void Element::scrollTo(const ScrollToOptions* scroll_to_options) {
                                             DocumentUpdateReason::kJavaScript);
 
   if (GetDocument().ScrollingElementNoLayout() == this) {
-    ScrollFrameTo(scroll_to_options);
+    return ScrollFrameTo(scroll_to_options);
   } else {
-    ScrollLayoutBoxTo(scroll_to_options);
+    return ScrollLayoutBoxTo(scroll_to_options);
   }
 }
 
-void Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options) {
+bool Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options) {
   gfx::Vector2dF displacement;
   if (scroll_to_options->hasLeft()) {
     displacement.set_x(
@@ -2647,90 +2658,98 @@ void Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options) {
           scroll_to_options->behavior().AsEnum());
   LayoutBox* box = GetLayoutBoxForScrolling();
   if (!box) {
-    return;
+    return false;
   }
-  if (PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea()) {
-    DCHECK(box);
-    gfx::PointF current_position(scrollable_area->ScrollPosition().x(),
-                                 scrollable_area->ScrollPosition().y());
-    displacement.Scale(box->Style()->EffectiveZoom());
-    gfx::PointF new_position = current_position + displacement;
+  PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea();
+  if (!scrollable_area) {
+    return false;
+  }
 
-    std::unique_ptr<cc::SnapSelectionStrategy> strategy =
-        cc::SnapSelectionStrategy::CreateForDisplacement(
-            current_position, displacement,
-            RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
-    new_position =
-        scrollable_area->GetSnapPositionAndSetTarget(*strategy).value_or(
-            new_position);
-    scrollable_area->ScrollToAbsolutePosition(new_position, scroll_behavior);
-  }
+  DCHECK(box);
+  gfx::PointF current_position(scrollable_area->ScrollPosition().x(),
+                               scrollable_area->ScrollPosition().y());
+  displacement.Scale(box->Style()->EffectiveZoom());
+  gfx::PointF new_position = current_position + displacement;
+
+  std::unique_ptr<cc::SnapSelectionStrategy> strategy =
+      cc::SnapSelectionStrategy::CreateForDisplacement(
+          current_position, displacement,
+          RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
+  new_position =
+      scrollable_area->GetSnapPositionAndSetTarget(*strategy).value_or(
+          new_position);
+  return scrollable_area->ScrollToAbsolutePosition(new_position,
+                                                   scroll_behavior);
 }
 
-void Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
+bool Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
   mojom::blink::ScrollBehavior scroll_behavior =
       ScrollableArea::V8EnumToScrollBehavior(
           scroll_to_options->behavior().AsEnum());
 
   LayoutBox* box = GetLayoutBoxForScrolling();
   if (!box) {
-    return;
+    return false;
   }
-  if (PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea()) {
-    if (scroll_to_options->hasLeft() && HasLeftwardDirection(*this)) {
+
+  PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea();
+  if (!scrollable_area) {
+    return false;
+  }
+
+  if (scroll_to_options->hasLeft() && HasLeftwardDirection(*this)) {
+    UseCounter::Count(
+        GetDocument(),
+        WebFeature::
+            kElementWithLeftwardOrUpwardOverflowDirection_ScrollLeftOrTop);
+    if (scroll_to_options->left() > 0) {
       UseCounter::Count(
           GetDocument(),
           WebFeature::
-              kElementWithLeftwardOrUpwardOverflowDirection_ScrollLeftOrTop);
-      if (scroll_to_options->left() > 0) {
-        UseCounter::Count(
-            GetDocument(),
-            WebFeature::
-                kElementWithLeftwardOrUpwardOverflowDirection_ScrollLeftOrTopSetPositive);
-      }
+              kElementWithLeftwardOrUpwardOverflowDirection_ScrollLeftOrTopSetPositive);
     }
-    if (scroll_to_options->hasTop() && HasUpwardDirection(*this)) {
+  }
+  if (scroll_to_options->hasTop() && HasUpwardDirection(*this)) {
+    UseCounter::Count(
+        GetDocument(),
+        WebFeature::
+            kElementWithLeftwardOrUpwardOverflowDirection_ScrollLeftOrTop);
+    if (scroll_to_options->top() > 0) {
       UseCounter::Count(
           GetDocument(),
           WebFeature::
-              kElementWithLeftwardOrUpwardOverflowDirection_ScrollLeftOrTop);
-      if (scroll_to_options->top() > 0) {
-        UseCounter::Count(
-            GetDocument(),
-            WebFeature::
-                kElementWithLeftwardOrUpwardOverflowDirection_ScrollLeftOrTopSetPositive);
-      }
+              kElementWithLeftwardOrUpwardOverflowDirection_ScrollLeftOrTopSetPositive);
     }
-
-    ScrollOffset new_offset = scrollable_area->GetScrollOffset();
-    if (scroll_to_options->hasLeft()) {
-      new_offset.set_x(
-          ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->left()) *
-          box->Style()->EffectiveZoom());
-    }
-    if (scroll_to_options->hasTop()) {
-      new_offset.set_y(
-          ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->top()) *
-          box->Style()->EffectiveZoom());
-    }
-
-    new_offset = SnapScrollOffsetToPhysicalPixels(new_offset);
-    std::unique_ptr<cc::SnapSelectionStrategy> strategy =
-        cc::SnapSelectionStrategy::CreateForEndPosition(
-            scrollable_area->ScrollOffsetToPosition(new_offset),
-            scroll_to_options->hasLeft(), scroll_to_options->hasTop());
-    std::optional<gfx::PointF> snap_point =
-        scrollable_area->GetSnapPositionAndSetTarget(*strategy);
-    if (snap_point.has_value()) {
-      new_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
-    }
-
-    scrollable_area->SetScrollOffset(
-        new_offset, mojom::blink::ScrollType::kProgrammatic, scroll_behavior);
   }
+
+  ScrollOffset new_offset = scrollable_area->GetScrollOffset();
+  if (scroll_to_options->hasLeft()) {
+    new_offset.set_x(
+        ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->left()) *
+        box->Style()->EffectiveZoom());
+  }
+  if (scroll_to_options->hasTop()) {
+    new_offset.set_y(
+        ScrollableArea::NormalizeNonFiniteScroll(scroll_to_options->top()) *
+        box->Style()->EffectiveZoom());
+  }
+
+  new_offset = SnapScrollOffsetToPhysicalPixels(new_offset);
+  std::unique_ptr<cc::SnapSelectionStrategy> strategy =
+      cc::SnapSelectionStrategy::CreateForEndPosition(
+          scrollable_area->ScrollOffsetToPosition(new_offset),
+          scroll_to_options->hasLeft(), scroll_to_options->hasTop());
+  std::optional<gfx::PointF> snap_point =
+      scrollable_area->GetSnapPositionAndSetTarget(*strategy);
+  if (snap_point.has_value()) {
+    new_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
+  }
+
+  return scrollable_area->SetScrollOffset(
+      new_offset, mojom::blink::ScrollType::kProgrammatic, scroll_behavior);
 }
 
-void Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options) {
+bool Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options) {
   gfx::Vector2dF displacement;
   if (scroll_to_options->hasLeft()) {
     displacement.set_x(
@@ -2746,12 +2765,12 @@ void Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options) {
           scroll_to_options->behavior().AsEnum());
   LocalFrame* frame = GetDocument().GetFrame();
   if (!frame || !frame->View() || !GetDocument().GetPage()) {
-    return;
+    return false;
   }
 
   ScrollableArea* viewport = frame->View()->LayoutViewport();
   if (!viewport) {
-    return;
+    return false;
   }
 
   displacement.Scale(frame->LayoutZoomFactor());
@@ -2763,23 +2782,23 @@ void Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options) {
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
   new_position =
       viewport->GetSnapPositionAndSetTarget(*strategy).value_or(new_position);
-  viewport->SetScrollOffset(viewport->ScrollPositionToOffset(new_position),
-                            mojom::blink::ScrollType::kProgrammatic,
-                            scroll_behavior);
+  return viewport->SetScrollOffset(
+      viewport->ScrollPositionToOffset(new_position),
+      mojom::blink::ScrollType::kProgrammatic, scroll_behavior);
 }
 
-void Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
+bool Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
   mojom::blink::ScrollBehavior scroll_behavior =
       ScrollableArea::V8EnumToScrollBehavior(
           scroll_to_options->behavior().AsEnum());
   LocalFrame* frame = GetDocument().GetFrame();
   if (!frame || !frame->View() || !GetDocument().GetPage()) {
-    return;
+    return false;
   }
 
   ScrollableArea* viewport = frame->View()->LayoutViewport();
   if (!viewport) {
-    return;
+    return false;
   }
 
   ScrollOffset new_offset = viewport->GetScrollOffset();
@@ -2803,8 +2822,8 @@ void Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
   new_position =
       viewport->GetSnapPositionAndSetTarget(*strategy).value_or(new_position);
   new_offset = viewport->ScrollPositionToOffset(new_position);
-  viewport->SetScrollOffset(new_offset, mojom::blink::ScrollType::kProgrammatic,
-                            scroll_behavior);
+  return viewport->SetScrollOffset(
+      new_offset, mojom::blink::ScrollType::kProgrammatic, scroll_behavior);
 }
 
 gfx::Rect Element::BoundsInWidget() const {

@@ -357,13 +357,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
   gfx::Point ScrollOrigin() const { return scroll_origin_; }
   bool ScrollOriginChanged() const { return scroll_origin_changed_; }
 
-  void ScrollToAbsolutePosition(const gfx::PointF& position,
+  bool ScrollToAbsolutePosition(const gfx::PointF& position,
                                 mojom::blink::ScrollBehavior scroll_behavior =
                                     mojom::blink::ScrollBehavior::kInstant,
                                 mojom::blink::ScrollType scroll_type =
                                     mojom::blink::ScrollType::kProgrammatic) {
-    SetScrollOffset(ScrollOffset(position - gfx::PointF(ScrollOrigin())),
-                    scroll_type, scroll_behavior);
+    return SetScrollOffset(ScrollOffset(position - gfx::PointF(ScrollOrigin())),
+                           scroll_type, scroll_behavior);
   }
 
   // This will set the scroll position without clamping, and it will do all

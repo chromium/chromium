@@ -383,10 +383,9 @@ gfx::Vector2dF WebElement::GetScrollOffset() const {
   return gfx::Vector2dF(element->scrollLeft(), element->scrollTop());
 }
 
-void WebElement::SetScrollOffset(const gfx::Vector2dF& offset) {
+bool WebElement::SetScrollOffset(const gfx::Vector2dF& offset) {
   Element* element = Unwrap<Element>();
-  element->setScrollLeft(offset.x());
-  element->setScrollTop(offset.y());
+  return element->SetScrollOffset(offset);
 }
 
 bool WebElement::IsUserScrollableX() const {

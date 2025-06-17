@@ -1401,6 +1401,45 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ZeroIdTargetsViewport) {
                   EvalJs(web_contents(), "window.scrollY").ExtractDouble());
 }
 
+// Test that a scroll on a page with scroll-behavior:smooth returns success if
+// an animation was started, even though it may not have instantly scrolled.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_SmoothScrollSucceeds) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  float scroll_offset_y = 300;
+  int scroller = GetDOMNodeId(*main_frame(), "#smoothscroller").value();
+  BrowserAction action = MakeScroll(*main_frame(), scroller,
+                                    /*scroll_offset_x=*/0, scroll_offset_y);
+
+  TestFuture<mojom::ActionResultPtr> result;
+  execution_engine().Act(action, result.GetCallback());
+  ExpectOkResult(result);
+}
+
+// Test that a scroll on a page with scroll-behavior:smooth returns failure if
+// trying to scroll in a direction with no scrollable extent.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_SmoothScrollAtExtent) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Scroll to the scroller's full extent.
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "document.querySelector('#smoothscroller').scrollTo({top:"
+                     "10000, behavior:'instant'})"));
+
+  float scroll_offset_y = 300;
+  int scroller = GetDOMNodeId(*main_frame(), "#smoothscroller").value();
+  BrowserAction action = MakeScroll(*main_frame(), scroller,
+                                    /*scroll_offset_x=*/0, scroll_offset_y);
+
+  TestFuture<mojom::ActionResultPtr> result;
+  execution_engine().Act(action, result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kScrollOffsetDidNotChange);
+}
+
 // ===============================================
 // Drag and Release Tool
 // ===============================================

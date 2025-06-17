@@ -520,6 +520,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void scrollTo(double x, double y);
   void scrollTo(const ScrollToOptions*);
 
+  bool SetScrollOffset(const ScrollOffset&);
+  bool SetScrollOffset(const ScrollToOptions*);
+
   // Returns the bounds of this Element, unclipped, in the coordinate space of
   // the local root's widget. That is, in the outermost main frame, this will
   // scale and transform the bounds by the visual viewport transform (i.e.
@@ -1856,10 +1859,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // containment by modifying the box tree outside the container during layout.
   bool HasSiblingBoxPseudoElements() const;
 
-  void ScrollLayoutBoxBy(const ScrollToOptions*);
-  void ScrollLayoutBoxTo(const ScrollToOptions*);
-  void ScrollFrameBy(const ScrollToOptions*);
-  void ScrollFrameTo(const ScrollToOptions*);
+  bool ScrollLayoutBoxBy(const ScrollToOptions*);
+  bool ScrollLayoutBoxTo(const ScrollToOptions*);
+  bool ScrollFrameBy(const ScrollToOptions*);
+  bool ScrollFrameTo(const ScrollToOptions*);
 
   bool HasElementFlag(ElementFlags mask) const;
   void SetElementFlag(ElementFlags, bool value = true);

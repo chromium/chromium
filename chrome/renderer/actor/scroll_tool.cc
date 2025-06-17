@@ -50,9 +50,9 @@ mojom::ActionResultPtr ScrollTool::Execute() {
       gfx::ScaleVector2d(offset_physical, physical_to_css, physical_to_css);
 
   gfx::Vector2dF start_offset_css = scrolling_element.GetScrollOffset();
-  scrolling_element.SetScrollOffset(start_offset_css + offset_css);
+  bool did_scroll =
+      scrolling_element.SetScrollOffset(start_offset_css + offset_css);
 
-  bool did_scroll = scrolling_element.GetScrollOffset() != start_offset_css;
   return did_scroll
              ? MakeOkResult()
              : MakeResult(mojom::ActionResultCode::kScrollOffsetDidNotChange);
