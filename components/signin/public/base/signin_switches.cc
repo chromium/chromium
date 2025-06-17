@@ -261,3 +261,7 @@ BASE_FEATURE(kIgnoreMirrorHeadersInBackgoundTabs,
 BASE_FEATURE(kNonDefaultGaiaOriginCheck,
              "NonDefaultGaiaOriginCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseAccountCapabilityToDetermineAccountManagement,
+             "UseAccountCapabilityToDetermineAccountManagement",
+             base::FEATURE_DISABLED_BY_DEFAULT);

@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -165,6 +166,10 @@ bool AccountInfo::IsMemberOfFlexOrg() const {
 }
 
 signin::Tribool AccountInfo::IsManaged() const {
+  if (base::FeatureList::IsEnabled(
+          kUseAccountCapabilityToDetermineAccountManagement)) {
+    return capabilities.is_subject_to_enterprise_policies();
+  }
   return IsManaged(hosted_domain);
 }
 
