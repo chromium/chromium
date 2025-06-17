@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/views/find_bar_view.h"
@@ -220,6 +221,10 @@ class FindBarHost : public FindBar,
   // or any of its children. Used to restore focus once the FindBarHost's view
   // is closed.
   std::unique_ptr<views::ExternalFocusTracker> focus_tracker_;
+
+  // Observation over the host's FocusManager.
+  base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
+      focus_manager_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FIND_BAR_HOST_H_

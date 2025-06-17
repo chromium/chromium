@@ -427,6 +427,10 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 
   desktop_browser_window_capabilities_.reset();
   signin_view_controller_->TearDownPreBrowserWindowDestruction();
+
+  // TODO(crbug.com/423956131): Update reset order once FindBarController is
+  // deterministically constructed.
+  find_bar_controller_.reset();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

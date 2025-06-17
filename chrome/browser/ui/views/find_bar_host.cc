@@ -174,7 +174,7 @@ FindBarHost::FindBarHost(BrowserView* browser_view)
   // Start listening to focus changes, so we can register and unregister our
   // own handler for Escape.
   focus_manager_ = host_->GetFocusManager();
-  focus_manager_->AddFocusChangeListener(this);
+  focus_manager_observation_.Observe(focus_manager_.get());
 
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
   if (!gfx::Animation::ShouldRenderRichAnimation()) {
@@ -187,7 +187,6 @@ FindBarHost::FindBarHost(BrowserView* browser_view)
 }
 
 FindBarHost::~FindBarHost() {
-  focus_manager_->RemoveFocusChangeListener(this);
   focus_tracker_.reset();
 }
 
