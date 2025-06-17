@@ -3308,7 +3308,7 @@
 <translation id="3303855915957856445">找不到相符的搜尋結果</translation>
 <translation id="3304212451103136496">現折 <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">格式化程序可能需要幾秒鐘，請稍候。</translation>
-<translation id="3305661444342691068">在預覽中開啟 PDF</translation>
+<translation id="3305661444342691068">在預覽應用程式開啟 PDF</translation>
 <translation id="3307283429759317478">系統現會顯示你在其他裝置中開啟的分頁，方便你輕鬆回到最近的活動。
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -5709,7 +5709,7 @@
 <translation id="4986706507552097681">你隨時可以在設定中選擇要同步處理的資料。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="4986728572522335985">這項操作將刪除這個安全金鑰上的所有資料，包括 PIN 碼</translation>
 <translation id="4987944280765486504">下載完成後，Chromebook 就會重新啟動，方便你繼續設定。</translation>
-<translation id="4988526792673242964">網頁</translation>
+<translation id="4988526792673242964">頁面</translation>
 <translation id="4989479404508898003">你可以根據一般網頁內容搜尋瀏覽記錄，不限於網頁標題和網址，查看更精確的搜尋結果</translation>
 <translation id="49896407730300355">逆時針旋轉(&amp;O)</translation>
 <translation id="4989966318180235467">檢查背景頁面(&amp;B)</translation>

@@ -2181,6 +2181,7 @@
 <translation id="24786041351753425">데이터 복구 서비스 사용 설정</translation>
 <translation id="2479541499757560845">접근성 키보드 설정</translation>
 <translation id="2480868415629598489">복사하고 붙여넣는 데이터 수정</translation>
+<translation id="2480881140544300950">현재 새 탭 페이지를 관리하는 검색엔진</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2482895651873876648"><ph name="GROUP_NAME" /> 그룹으로 탭을 이동함 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Chrome 브라우저 설정에서 검색엔진 설정</translation>
@@ -2235,6 +2236,7 @@
 <translation id="2514326558286966059">지문으로 신속하게 잠금 해제</translation>
 <translation id="2514465118223423406">마우스가 연결되어 있을 때</translation>
 <translation id="2514938842036917377"><ph name="SITE_NAME" />, 관련 사이트 및 설치된 앱에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
+<translation id="2515489088825102986">이 기능 및 개인 정보 보호에 대해 자세히 알아보기</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">사용자 이름 확인</translation>
 <translation id="2517472476991765520">스캔</translation>
@@ -3438,6 +3440,7 @@
 <translation id="3387829698079331264">현재 기기를 사용 중인지 알 수 없음</translation>
 <translation id="3388094447051599208">배지대가 거의 가득 찼습니다.</translation>
 <translation id="3388788256054548012">암호화된 파일입니다. 소유자에게 복호화를 요청하세요.</translation>
+<translation id="3389326266972418853">자동화된 비밀번호 변경에 대해 자세히 알아보기</translation>
 <translation id="3390013585654699824">앱 세부정보</translation>
 <translation id="3390442085511866400">동영상 프레임을 다른 이름으로 저장(&amp;F)…</translation>
 <translation id="3390530051434634135">참고: <ph name="NOTE" /></translation>
@@ -5380,10 +5383,12 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4742970037960872810">강조표시 삭제</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />애플리케이션 업데이트 방법 알아보기<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">허용됨 – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />시스템 마이크 액세스<ph name="LINK_END" />를 사용 설정하세요.</translation>
+<translation id="4744172369799559159">이 기능을 개선하기 위해 인적 검토자가 비밀번호 페이지 및 관련 정보를 검토하지만, 비밀번호는 암호화되어 누구에게도 공개되지 않습니다.</translation>
 <translation id="4744260496658845719">키보드 백라이트 밝기</translation>
 <translation id="4744268813103118742">사이트로 이동</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{사이트 음소거 취소}other{사이트 음소거 취소}}</translation>
+<translation id="4745096442457817087">공개 정보 유출로 인해 귀하의 비밀번호가 노출되었습니다</translation>
 <translation id="4745500401920035244">관리자가 시스템 전체에 변경사항을 적용하여 일부 기존 프로필이 비활성화되었습니다. 더 이상 이 프로필에 액세스할 수 없지만 삭제할 수는 있습니다.</translation>
 <translation id="474609389162964566">"Hey Google"로 어시스턴트에 액세스</translation>
 <translation id="4746757725581505837">이 기기에 저장된 <ph name="BRAND" /> 데이터를 삭제하려고 합니다</translation>
@@ -6339,6 +6344,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 암호화</translation>
 <translation id="5435274640623994081">이어콘 로깅 사용</translation>
 <translation id="5435779377906857208"><ph name="HOST" />의 위치 액세스 항상 허용</translation>
+<translation id="5436211819997237281">현재 새 탭 페이지를 관리하는 확장 프로그램</translation>
 <translation id="5436492226391861498">프록시 터널을 기다리는 중...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> 검색:</translation>
 <translation id="5438014818441491616">이제 <ph name="WINDOW_SIDE" /> 창의 너비가 <ph name="WINDOW_SIZE_PERCENT" />, <ph name="PANE_SIDE" /> 창의 너비가 <ph name="PANE_SIZE_PERCENT" />입니다.</translation>
@@ -6480,6 +6486,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5533343601674003130">PDF 서비스</translation>
 <translation id="5537725057119320332">전송</translation>
 <translation id="5539070192556911367">Google에 연결할 수 없음</translation>
+<translation id="5541091577812545428">비밀번호가 변경되지 않았습니다.</translation>
 <translation id="5542132724887566711">프로필</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" />의 쿠키를 차단함</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" />에 연결 중</translation>
@@ -8282,6 +8289,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6841186874966388268">오류</translation>
 <translation id="6842135459748401207"><ph name="USER_EMAIL" />에 로그인되어 있는 기기만</translation>
 <translation id="6842136130964845393">저장된 비밀번호에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
+<translation id="6842670680297285750">현재 탭이 포함된 새 분할 보기</translation>
 <translation id="6842749380892715807">XML 사이트 목록은 <ph name="LAST_DATE_DOWNLOAD" />에 마지막으로 다운로드되었습니다.</translation>
 <translation id="6842868554183332230">일반적으로 사용자가 현재 기기를 사용 중인지를 사이트에서 감지하여 채팅 앱에서 사용자의 온라인 상태를 설정할 수 있습니다.</translation>
 <translation id="6843264316370513305">네트워크 디버깅</translation>
@@ -9228,6 +9236,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7529411698175791732">인터넷 연결 상태를 확인하세요. 문제가 계속되면 로그아웃한 뒤 다시 로그인해보세요.</translation>
 <translation id="7529865045818406536">두 개 이상의 이전 네트워크를 사용할 수 있는 경우 기본 네트워크가 사용됩니다.</translation>
 <translation id="7530016656428373557">방전율(와트)</translation>
+<translation id="7530215951451994972">이미지 만들기</translation>
 <translation id="7531771599742723865">기기 사용 중</translation>
 <translation id="7531779363494549572">설정 &gt; 앱 및 알림 &gt; 알림으로 이동합니다.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> 앱이 응답하지 않습니다. '강제 종료'를 선택하여 앱을 닫으세요.</translation>
@@ -9300,6 +9309,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7585106857920830898">조직 보안 정책을 준수하는지 확인 중</translation>
 <translation id="7586498138629385861">Chrome 앱이 열려 있을 때 Chrome이 계속 실행됩니다.</translation>
 <translation id="7587806318633605613">추천 기록</translation>
+<translation id="7589448773774086276">현재 탭이 포함된 새 분할 보기</translation>
 <translation id="7589461650300748890">주의하세요.</translation>
 <translation id="7590883480672980941">입력 설정</translation>
 <translation id="7592060599656252486">일부</translation>
@@ -10038,6 +10048,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8077579734294125741">기타 Chrome 프로필</translation>
 <translation id="8077749280021225629">인터넷 사용 기록(<ph name="URL" />)도 삭제합니다. 이렇게 하면 <ph name="DOMAIN" />에서 로그아웃됩니다.<ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">이미지 검색</translation>
+<translation id="8079606020824373126">Google 비밀번호 관리자를 사용하면 안전한 비밀번호로 계정을 업데이트하고 비밀번호를 <ph name="EMAIL" />에 저장할 수 있습니다. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">사이트에서 모든 디스플레이의 창 관리 허용 여부를 확인할 수 있음</translation>
 <translation id="8080028325999236607">탭 모두 닫기</translation>
 <translation id="8081989000209387414">ADB 디버깅을 사용 중지하시겠습니까?</translation>
@@ -10249,6 +10260,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" />의 비밀번호를 저장하시겠습니까?</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" /> 삭제</translation>
 <translation id="8230446983261649357">사이트의 이미지 표시 허용 안함</translation>
+<translation id="8231438895476693774">새 분할 보기에 탭 추가</translation>
 <translation id="823226567613548870"><ph name="BRAND" /> 데이터 삭제</translation>
 <translation id="8233028084277069927">지금 열기</translation>
 <translation id="8234795456569844941">Google 엔지니어가 이 문제를 해결하도록 도와주세요. 프로필 오류 메시지가 표시되기 직전에 무슨 일이 있었는지 알려 주시기 바랍니다.</translation>
@@ -10261,6 +10273,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8239932336306009582">알림 전송이 허용되지 않음</translation>
 <translation id="8241040075392580210">해와 구름</translation>
 <translation id="8241338426526905580">인증서 없음</translation>
+<translation id="8241650983304689286">새 분할 보기에 탭 추가</translation>
 <translation id="8241806945692107836">기기 설정을 확인하는 중...</translation>
 <translation id="8241868517363889229">북마크 조회 및 변경</translation>
 <translation id="8242273718576931540">기기를 이 네트워크에 연결할 수 없습니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>

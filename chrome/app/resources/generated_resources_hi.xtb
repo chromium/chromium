@@ -2180,6 +2180,7 @@
 <translation id="24786041351753425">डेटा रिकवर करने की सेवा चालू करें.</translation>
 <translation id="2479541499757560845">कीबोर्ड की सुलभता सेटिंग</translation>
 <translation id="2480868415629598489">अपने कॉपी किए हुए और चिपकाए हुए डेटा में बदलाव करें</translation>
+<translation id="2480881140544300950">आपके 'नया टैब' पेज को मौजूदा सर्च इंजन मैनेज कर रहा है</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2482895651873876648">टैब को <ph name="GROUP_NAME" /> ग्रुप में ले जाया गया - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Chrome ब्राउज़र सेटिंग में सर्च इंजन सेट करें</translation>
@@ -5379,6 +5380,7 @@
 <translation id="4742970037960872810">हाइलाइट हटाएं</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ऐप्लिकेशन अपडेट करने का तरीका जानें<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">अनुमति है – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />सिस्टम का माइक्रोफ़ोन ऐक्सेस करने<ph name="LINK_END" /> की अनुमति दें.</translation>
+<translation id="4744172369799559159">इस सुविधा को बेहतर बनाने के लिए, पासवर्ड पेजों और उससे जुड़ी जानकारी की मैन्युअल तरीके से समीक्षा की जाती है. हालांकि, आपका पासवर्ड एन्क्रिप्ट यानी सुरक्षित रहता है और किसी को भी नहीं दिखता है.</translation>
 <translation id="4744260496658845719">कीबोर्ड की बैकलाइट की रोशनी</translation>
 <translation id="4744268813103118742">साइट पर जाएं</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6336,6 +6338,7 @@
 <translation id="5434065355175441495">PKCS #1 RSA सुरक्षित करने का तरीका</translation>
 <translation id="5435274640623994081">इयरकॉन में लॉग इन करना चालू करें</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> को, हमेशा अपनी जगह की जानकारी को ऐक्सेस करने की अनुमति दें</translation>
+<translation id="5436211819997237281">आपके 'नया टैब' पेज को मौजूदा एक्सटेंशन मैनेज कर रहा है</translation>
 <translation id="5436492226391861498">प्रॉक्सी टनल का इंतज़ार किया जा रहा है...</translation>
 <translation id="5436510242972373446">खोजें <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> विंडो अब <ph name="WINDOW_SIZE_PERCENT" /> चौड़ी है, <ph name="PANE_SIDE" /> पैनल अब <ph name="PANE_SIZE_PERCENT" /> चौड़ा है.</translation>
@@ -9227,6 +9230,7 @@
 <translation id="7529411698175791732">अपना इंटरनेट कनेक्शन जाँचें. अगर समस्या बनी रहती है, तो साइन आउट करें और दोबारा साइन इन करके देखें.</translation>
 <translation id="7529865045818406536">अगर पहले से कनेक्ट किए गए एक से ज़्यादा नेटवर्क उपलब्ध हैं, तो कनेक्शन के लिए पसंदीदा नेटवर्क को प्राथमिकता दी जाएगी</translation>
 <translation id="7530016656428373557">डिस्चार्ज दर वॉट में</translation>
+<translation id="7530215951451994972">इमेज बनाएं</translation>
 <translation id="7531771599742723865">इस्तेमाल हो रहा डिवाइस</translation>
 <translation id="7531779363494549572">सेटिंग &gt; ऐप्लिकेशन और सूचनाएं &gt; सूचनाएं पर जाएं.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> काम नहीं कर रहा है. ऐप्लिकेशन को बंद करने के लिए "ज़बरदस्ती बंद करें" चुनें.</translation>

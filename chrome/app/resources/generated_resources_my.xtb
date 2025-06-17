@@ -2177,6 +2177,7 @@
 <translation id="24786041351753425">ဒေတာပြန်ရယူရေးဝန်ဆောင်မှု ဖွင့်ရန်။</translation>
 <translation id="2479541499757560845">အများသုံးနိုင်မှု ကီးဘုတ်ဆက်တင်များ</translation>
 <translation id="2480868415629598489">သင်မိတ္တူကူးပြီး ထည့်ထားသော အချက်အလက်တို့ကို ပြင်ဆင်ပါ</translation>
+<translation id="2480881140544300950">သင့်တဘ်စာမျက်နှာအသစ်ကို စီမံနေသည့် လက်ရှိရှာဖွေရေးအင်ဂျင်</translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
 <translation id="2482895651873876648"><ph name="GROUP_NAME" /> ထဲသို့ တဘ်ကိုရွှေ့လိုက်သည် - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Chrome ဘရောင်ဇာ ဆက်တင်များတွင် ရှာဖွေရေး အင်ဂျင် သတ်မှတ်ရန်</translation>
@@ -2231,6 +2232,7 @@
 <translation id="2514326558286966059">သင့်လက်ဗွေဖြင့် ပိုမိုမြန်ဆန်စွာ ဖွင့်ခြင်း</translation>
 <translation id="2514465118223423406">မောက်စ်နှင့် ချိတ်ဆက်ထားသောအခါ</translation>
 <translation id="2514938842036917377">၎င်းက <ph name="SITE_NAME" />၊ သက်ဆိုင်သောဝဘ်ဆိုက်နှင့် ထည့်သွင်းထားသောအက်ပ်များ သိမ်းထားသည့်ဒေတာ <ph name="TOTAL_USAGE" /> ကို ဖျက်မည်</translation>
+<translation id="2515489088825102986">ဤတူးလ်နှင့် သင့်ကိုယ်ရေးအချက်အလက် လုံခြုံမှုအကြောင်း ပိုမိုသိရှိရန်</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">အသုံးပြုသူအမည် အတည်ပြုရန်</translation>
 <translation id="2517472476991765520">ရှာဖွေရန်</translation>
@@ -3435,6 +3437,7 @@
 <translation id="3387829698079331264">သင့်ကိရိယာသုံးနေချိန်ကို သိရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="3388094447051599208">အထွက်ဗန်း ပြည့်လုနီးနေပါပြီ</translation>
 <translation id="3388788256054548012">ဤဖိုင်ကို အသွင်ဝှက်ထားသည်။ ၎င်း၏ပိုင်ရှင်ကို ကုဒ်ဖော်ခိုင်းပါ။</translation>
+<translation id="3389326266972418853">အလိုအလျောက်သတ်မှတ်၍ စကားဝှက်ပြောင်းခြင်းအကြောင်း ပိုမိုသိရှိရန်</translation>
 <translation id="3390013585654699824">အက်ပ်အသေးစိတ်</translation>
 <translation id="3390442085511866400">ဗီဒီယိုဖရိမ်ကို ဤပုံစံအဖြစ်သိမ်းရန်…</translation>
 <translation id="3390530051434634135">မှတ်ချက်- <ph name="NOTE" /></translation>
@@ -5377,10 +5380,12 @@
 <translation id="4742970037960872810">မြင်သာအောင်လုပ်ထားသည်ကို ဖယ်ရှားရန်</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />အပလီကေးရှင်းများ အပ်ဒိတ်လုပ်နည်းကို လေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">ခွင့်ပြုထားသည် - <ph name="PERMISSION_DETAILS" />။ <ph name="LINK_BEGIN" />စနစ်မိုက်ခရိုဖုန်း သုံးခွင့်<ph name="LINK_END" /> ဖွင့်ရန်။</translation>
+<translation id="4744172369799559159">ဤတူးလ် ပိုကောင်းအောင်လုပ်ရန်အတွက် စကားဝှက်စာမျက်နှာနှင့် ဆက်စပ်အချက်အလက်တို့ကို လူကိုယ်တိုင်ပြန်စစ်သော်လည်း သင့်စကားဝှက်ကို အသွင်ဝှက်ထားပြီး မည်သူကမျှ မမြင်နိုင်ပါ။</translation>
 <translation id="4744260496658845719">ကီးဘုတ်နောက်မီး တောက်ပမှု</translation>
 <translation id="4744268813103118742">ဝဘ်ဆိုက်သို့ သွားရန်</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ဝဘ်ဆိုက် အသံပြန်ဖွင့်ရန်}other{ဝဘ်ဆိုက်များ အသံပြန်ဖွင့်ရန်}}</translation>
+<translation id="4745096442457817087">သင့်စကားဝှက်ကို အများမြင် ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိထားသည်</translation>
 <translation id="4745500401920035244">သင်၏စီမံခန့်ခွဲသူသည် စနစ်တစ်ခုလုံးအတွက် အပြောင်းအလဲပြုလုပ်ထားပြီး ၎င်းက ပရိုဖိုင်အဟောင်းအချို့ကို ပိတ်လိုက်ပါမည်။ သင်သည် ဤပရိုဖိုင်ကို ဝင်ကြည့်၍ မရတော့သော်လည်း ဖယ်ရှားနိုင်ပါသေးသည်</translation>
 <translation id="474609389162964566">“Ok Google” ဖြင့် Assistant သုံးခြင်း</translation>
 <translation id="4746757725581505837">ဤစက်တွင် သိမ်းထားသော သင်၏ <ph name="BRAND" /> ဒေတာကို ဖျက်ပါတော့မည်</translation>
@@ -6336,6 +6341,7 @@
 <translation id="5434065355175441495">PKCS #1 RSA လျှို့ဝှက်ကုဒ်သွင်းမှု</translation>
 <translation id="5435274640623994081">အသံသင်္ကေတ မှတ်တမ်းကို ဖွင့်ပါ</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> ကို သင့်တည်နေရာ အမြဲသုံးခွင့်ပြုရန်</translation>
+<translation id="5436211819997237281">သင့်တဘ်စာမျက်နှာအသစ်ကို စီမံနေသည့် လက်ရှိနောက်ဆက်တွဲ</translation>
 <translation id="5436492226391861498">မရောက်စီလိုင်း အားစောင့်နေ...</translation>
 <translation id="5436510242972373446">ရှာဖွေရန် <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> ဝင်းဒိုးသည် ယခု <ph name="WINDOW_SIZE_PERCENT" /> ကျယ်ပြန့်သွားသည်၊ <ph name="PANE_SIDE" /> အကန့်သည် ယခု <ph name="PANE_SIZE_PERCENT" /> ကျယ်ပြန့်သွားသည်။</translation>
@@ -6477,6 +6483,7 @@
 <translation id="5533343601674003130">PDF ဝန်ဆောင်မှု</translation>
 <translation id="5537725057119320332">သရုပ်ဆောင်​များ</translation>
 <translation id="5539070192556911367">Google သို့ ချိတ်ဆက်၍မရပါ</translation>
+<translation id="5541091577812545428">စကားဝှက်ကို ပြောင်းမထားပါ</translation>
 <translation id="5542132724887566711">ပရိုဖိုင်</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> ထံမှ ကွတ်ကီးများကို ပိတ်ထားသည်</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> သို့ ချိတ်ဆက်နေသည်</translation>
@@ -8277,6 +8284,7 @@
 <translation id="6841186874966388268">အမှားများ</translation>
 <translation id="6842135459748401207"><ph name="USER_EMAIL" /> သို့ လက်မှတ်ထိုးဝင်ထားသော စက်များသာ</translation>
 <translation id="6842136130964845393">သိမ်းထားသောစကားဝှက်များကို အမြဲသုံးခွင့်ရကြောင်း သေချာစေရန် သင်ဖြစ်ကြောင်းအတည်ပြုပါ</translation>
+<translation id="6842670680297285750">လက်ရှိတဘ်ဖြင့် မျက်နှာပြင်ခွဲ၍ ပြသခြင်းအသစ်</translation>
 <translation id="6842749380892715807">XML ဝဘ်ဆိုက်စာရင်းများကို <ph name="LAST_DATE_DOWNLOAD" /> တွင် နောက်ဆုံးဒေါင်းလုဒ်လုပ်ထားသည်။</translation>
 <translation id="6842868554183332230">ချတ်အက်ပ်များတွင် ချတ်လုပ်နိုင်မှုကို သတ်မှတ်ရန် သင့်ကိရိယာသုံးနေချိန်ကို ဝဘ်ဆိုက်များက စူးစမ်းလေ့ရှိသည်</translation>
 <translation id="6843264316370513305">ကွန်ရက် အမှားရှာပြင်ခြင်း</translation>
@@ -9223,6 +9231,7 @@
 <translation id="7529411698175791732">အင်တာနက်ချိတ်ဆက်မှုကို စစ်ကြည့်ပါ။ ပြဿနာဆက်လက်ရှိနေသေးပါက ထွက်လိုက်ပြီး ပြန်လည်၍ လက်မှတ်ထိုးဝင်ကြည့်ပါ။</translation>
 <translation id="7529865045818406536">ယခင်ကွန်ရက် တစ်ခုနှင့်အထက် ရှိပါက စိတ်ကြိုက် ကွန်ရက်များကို သုံးပါမည်</translation>
 <translation id="7530016656428373557">အားကုန်မှုနှုန်း ဝပ်</translation>
+<translation id="7530215951451994972">ပုံပြုလုပ်ရန်</translation>
 <translation id="7531771599742723865">အသုံးပြုနေသောစက်</translation>
 <translation id="7531779363494549572">ဆက်တင်များ &gt; အက်ပ်နှင့် အကြောင်းကြားချက်များ &gt; အကြောင်းကြားချက်များ သို့သွားပါ။</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> က တုံ့ပြန်မှုမရှိပါ။ အက်ပ်ကိုပိတ်ရန် "မဖြစ်မနေပိတ်ရန်" ကို ရွေးပါ။</translation>
@@ -9295,6 +9304,7 @@
 <translation id="7585106857920830898">သင့်အဖွဲ့အစည်း၏ လုံခြုံရေးမူဝါဒများဖြင့် စစ်ဆေးနေသည်...</translation>
 <translation id="7586498138629385861">Chrome Apps များဖွင့်ထားစဉ် Chrome ဆက်အလုပ်လုပ်နေမည်။</translation>
 <translation id="7587806318633605613">အကြံပြုချက်မှတ်တမ်း</translation>
+<translation id="7589448773774086276">လက်ရှိတဘ်ဖြင့် မျက်နှာပြင်ခွဲ၍ ပြသခြင်းအသစ်</translation>
 <translation id="7589461650300748890">ဝါဝို၊ ဟောဟိုမှာ၊ သတိထား။</translation>
 <translation id="7590883480672980941">ထည့်သွင်းမှု ဆက်တင်များ</translation>
 <translation id="7592060599656252486">အချို့</translation>
@@ -10031,6 +10041,7 @@
 <translation id="8077579734294125741">အခြား Chrome ပရိုဖိုင်များ</translation>
 <translation id="8077749280021225629">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာ (<ph name="URL" />) ကိုလည်း ဖျက်မည်ဖြစ်ပြီး <ph name="DOMAIN" /> မှ ထွက်သွားပါမည်။ <ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">ပုံဖြင့်ရှာဖွေမှု</translation>
+<translation id="8079606020824373126">Google Password Manager သည် သင့်အကောင့်ကို လုံခြုံမှုမြင့်သည့် စကားဝှက်ဖြင့် အပ်ဒိတ်လုပ်ပြီး <ph name="EMAIL" /> တွင် သိမ်းနိုင်သည်။ <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">သင့်ဖန်သားပြင်အားလုံးတွင် ဝင်းဒိုးများစီမံရန်အတွက် ဝဘ်ဆိုက်များကို တောင်းဆိုခွင့်ပြုရန်</translation>
 <translation id="8080028325999236607">တဘ်အားလုံး ပိတ်မည်</translation>
 <translation id="8081989000209387414">ADB အမှားရှာပြင်ခြင်းကို ပိတ်လိုပါသလား။</translation>
@@ -10242,6 +10253,7 @@
 <translation id="8230134520748321204"><ph name="ORIGIN" /> အတွက် စကားဝှက်ကို သိမ်းဆည်းလိုပါသလား။</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" /> ဖျက်ရန်</translation>
 <translation id="8230446983261649357">ပုံများပြရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
+<translation id="8231438895476693774">တဘ်ကို မျက်နှာပြင်ခွဲ၍ ပြသခြင်းအသစ်သို့ ထည့်ရန်</translation>
 <translation id="823226567613548870">သင်၏ <ph name="BRAND" /> ဒေတာကို ဖျက်လိုသည်</translation>
 <translation id="8233028084277069927">ယခုဖွင့်ရန်</translation>
 <translation id="8234795456569844941">ကျွန်ုပ်တို့၏ အင်ဂျင်နီယာများက ဤပြဿနာကို ဖြေရှင်းနိုင်ရန် ကူညီပေးပါ။ ပရိုဖိုင်မှားယွင်းကြောင်းမက်ဆေ့ဂျ်ကို မရရှိမီ ဖြစ်ပျက်ခဲ့ပုံကို ကျွန်ုပ်တို့အား ပြောပါ−</translation>
@@ -10254,6 +10266,7 @@
 <translation id="8239932336306009582">အကြောင်းကြားချက်များပို့ရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="8241040075392580210">နေရိပ်</translation>
 <translation id="8241338426526905580">အသိအမှတ်ပြုလက်မှတ် မရှိပါ</translation>
+<translation id="8241650983304689286">တဘ်ကို မျက်နှာပြင်ခွဲ၍ ပြသခြင်းအသစ်သို့ ထည့်ရန်</translation>
 <translation id="8241806945692107836">ကိရိယာ၏ စီစဉ် ဖွဲ့စည်းမှုကို စူးစမ်းနေ...</translation>
 <translation id="8241868517363889229">သင့်စာညှပ်ကို ဖတ်ကာ ပြောင်းလဲရန်</translation>
 <translation id="8242273718576931540">သင့်စက်က ဤကွန်ရက်သို့ ချိတ်ဆက်၍မရပါ။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>

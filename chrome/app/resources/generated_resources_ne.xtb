@@ -6464,6 +6464,7 @@
 <translation id="5533343601674003130">PDF सेवा</translation>
 <translation id="5537725057119320332">कास्ट गर्नु</translation>
 <translation id="5539070192556911367">Google का सर्भरमा कनेक्ट गर्न सकिएन</translation>
+<translation id="5541091577812545428">पासवर्ड परिवर्तन गरिएन</translation>
 <translation id="5542132724887566711">प्रोफाइल</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> का कुकीहरूमाथि रोक लगाइयो</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> मा जोडिँदै</translation>
@@ -8265,6 +8266,7 @@
 <translation id="6841186874966388268">त्रुटिहरू</translation>
 <translation id="6842135459748401207"><ph name="USER_EMAIL" /> मा साइन इन गरिएका डिभाइसहरू मात्र</translation>
 <translation id="6842136130964845393">तपाईं आफूले सेभ गरेका पासवर्डहरू जुनसुकै बेला हेर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्न साइन इन गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
+<translation id="6842670680297285750">हालको ट्याब भएको नयाँ स्प्लिट भ्यू</translation>
 <translation id="6842749380892715807">XML प्रयोग गर्ने साइटका सूचीहरू पछिल्लो पटक <ph name="LAST_DATE_DOWNLOAD" /> मा डाउनलोड गरिएका थिए।</translation>
 <translation id="6842868554183332230">साइटहरूले सामान्यतया च्याटसम्बन्धी एपहरूमा तपाईं उपलब्ध हुनुहुन्छ कि हुनुहुन्न भन्ने कुरा तय गर्न तपाईं आफ्नो यन्त्र चलाउँदै हुनुहुन्छ कि हुनुहुन्न भन्ने कुरा पत्ता लगाउँछन्</translation>
 <translation id="6843264316370513305">नेटवर्कको डिबग प्रक्रिया</translation>
@@ -9284,6 +9286,7 @@
 <translation id="7585106857920830898">तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीतिहरू अनुकूल छन् कि छैनन् भन्ने कुरा जाँच गरिँदै छ...</translation>
 <translation id="7586498138629385861">Chrome एपहरू खुल्ला हुँदा Chrome चालू भइरहन्छ।</translation>
 <translation id="7587806318633605613">सुझावको हिस्ट्री</translation>
+<translation id="7589448773774086276">हालको ट्याब भएको नयाँ स्प्लिट भ्यू</translation>
 <translation id="7589461650300748890">ओहो। ध्यान दिनुहोस्।</translation>
 <translation id="7590883480672980941">इनपुटसम्बन्धी सेटिङ</translation>
 <translation id="7592060599656252486">केही</translation>
@@ -10231,6 +10234,7 @@
 <translation id="8230134520748321204"><ph name="ORIGIN" /> को पासवर्ड सुरक्षित गर्ने हो?</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" /> मेटाउनुहोस्</translation>
 <translation id="8230446983261649357">साइटहरूलाई फोटो देखाउने अनुमति नदिनुहोस्</translation>
+<translation id="8231438895476693774">नयाँ स्प्लिट भ्यूमा ट्याब हाल्नुहोस्</translation>
 <translation id="823226567613548870">तपाईंको <ph name="BRAND" /> मा भएको जानकारी मेटाउनुहोस्</translation>
 <translation id="8233028084277069927">अहिले नै खोल्नुहोस्</translation>
 <translation id="8234795456569844941">कृपया यो समस्या समाधान गर्ने काममा हाम्रा इन्जिनियरहरूलाई मद्दत गर्नुहोस्। तपाईंले प्रोफाइल सम्बन्धी त्रुटिको यो सन्देश पाउनुभन्दा ठ्याक्कै अगाडि के भयो, हामीलाई बताउनुहोस्:</translation>
@@ -10243,6 +10247,7 @@
 <translation id="8239932336306009582">सूचना पठाउने अनुमति नदिइएका साइटहरू</translation>
 <translation id="8241040075392580210">छहारिलो</translation>
 <translation id="8241338426526905580">कुनै पनि सर्टिफिकेट छैन</translation>
+<translation id="8241650983304689286">नयाँ स्प्लिट भ्यूमा ट्याब हाल्नुहोस्</translation>
 <translation id="8241806945692107836">डिभाइस कन्फिगुरेसन निर्धारन गर्दै...</translation>
 <translation id="8241868517363889229">आफ्ना बुकमार्कहरूलाई पढेर परिवर्तन गर्नुहोस्</translation>
 <translation id="8242273718576931540">तपाईंको डिभाइस यो नेटवर्कमा कनेक्ट गर्न मिल्दैन। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>

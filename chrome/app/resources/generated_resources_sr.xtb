@@ -2219,6 +2219,7 @@
 <translation id="2514326558286966059">Откључавајте брже помоћу отиска прста</translation>
 <translation id="2514465118223423406">Када је миш повезан</translation>
 <translation id="2514938842036917377">Овим бришете <ph name="TOTAL_USAGE" /> података које чувају <ph name="SITE_NAME" />, повезани сајтови и инсталиране апликације</translation>
+<translation id="2515489088825102986">Више о овој функцији и приватности</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Потврдите корисничко име</translation>
 <translation id="2517472476991765520">Скенирај</translation>
@@ -3422,6 +3423,7 @@
 <translation id="3387829698079331264">Немају дозволу да знају када активно користите уређај</translation>
 <translation id="3388094447051599208">Посуда за одштампани материјал је скоро пуна</translation>
 <translation id="3388788256054548012">Ова датотека је шифрована. Затражите од власника да је дешифрује.</translation>
+<translation id="3389326266972418853">Више о аутоматској промени лозинке</translation>
 <translation id="3390013585654699824">Детаљи о апликацији</translation>
 <translation id="3390442085511866400">Сачувај кадар &amp;видеа као...</translation>
 <translation id="3390530051434634135">Напомена: <ph name="NOTE" /></translation>
@@ -5370,6 +5372,7 @@
 <translation id="4744268813103118742">Иди на сајт</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Укључи звук сајта}one{Укључи звук сајтова}few{Укључи звук сајтова}other{Укључи звук сајтова}}</translation>
+<translation id="4745096442457817087">Ова лозинка је пронађена у јавној повреди података</translation>
 <translation id="4745500401920035244">Администратор је унео промену која се односи на цео систем и која је онемогућила неке старе профиле. Више не можете да приступите овом профилу, али и даље можете да га уклоните</translation>
 <translation id="474609389162964566">Приступајте Помоћнику фразом „Хеј Google“</translation>
 <translation id="4746757725581505837">Избрисаћете податке из услуге <ph name="BRAND" /> сачуване на овом уређају</translation>
@@ -10032,6 +10035,7 @@
 <translation id="8077579734294125741">Други Chrome профили</translation>
 <translation id="8077749280021225629">Избриши и податке прегледања (<ph name="URL" />). Тиме се одјављујете са <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">Претрага слика</translation>
+<translation id="8079606020824373126">Google менаџер лозинки може да ажурира налог јаком лозинки и сачува га на <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Сајтови могу да затраже да управљају прозорима на свим екранима</translation>
 <translation id="8080028325999236607">Затвори све картице</translation>
 <translation id="8081989000209387414">Желите да онемогућите ADB отклањање грешака?</translation>

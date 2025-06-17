@@ -2230,6 +2230,7 @@
 <translation id="2514326558286966059">Хурууны хээгээрээ түгжээг илүү хурдан тайлаарай</translation>
 <translation id="2514465118223423406">Хулгана холбогдсон байхад</translation>
 <translation id="2514938842036917377">Энэ нь <ph name="SITE_NAME" />, холбогдох сайт, суулгасан аппын хадгалсан <ph name="TOTAL_USAGE" />-н өгөгдлийг устгана</translation>
+<translation id="2515489088825102986">Энэ онцлог, таны нууцлалын талаарх нэмэлт мэдээлэл</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Хэрэглэгчийн нэрээ баталгаажуулна уу</translation>
 <translation id="2517472476991765520">Шалгах</translation>
@@ -3433,6 +3434,7 @@
 <translation id="3387829698079331264">Таныг төхөөрөмжөө хэзээ идэвхтэй ашиглаж буйг мэдэхийг зөвшөөрөөгүй</translation>
 <translation id="3388094447051599208">Гарах цаасны тэвш бараг дүүрсэн байна</translation>
 <translation id="3388788256054548012">Энэ файлыг шифрлэсэн байна. Өмчлөгчөөс нь үүний кодыг тайлахыг хүснэ үү.</translation>
+<translation id="3389326266972418853">Нууц үгний автоматжуулсан өөрчлөлтийн талаарх нэмэлт мэдээлэл</translation>
 <translation id="3390013585654699824">Аппын дэлгэрэнгүй</translation>
 <translation id="3390442085511866400">Видеоны фреймийг дараахаар хадгалах...</translation>
 <translation id="3390530051434634135">Тэмдэглэл: <ph name="NOTE" /></translation>
@@ -5380,6 +5382,7 @@
 <translation id="4744268813103118742">Сайт руу очих</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Сайтын дууг нээх}other{Сайтуудын дууг нээх}}</translation>
+<translation id="4745096442457817087">Таны нууц үгийг олон нийтийн өгөгдлийн зөрчлөөс оллоо</translation>
 <translation id="4745500401920035244">Танай администратор зарим хуучин профайлыг идэвхгүй болгодог систем даяарх өөрчлөлтийг хийсэн. Та цаашид энэ профайлд хандах боломжгүй хэдий ч үүнийг хасах боломжтой хэвээр байна</translation>
 <translation id="474609389162964566">Туслахдаа “Ok Google”-р хандаарай</translation>
 <translation id="4746757725581505837">Та энэ төхөөрөмж дээр хадгалсан <ph name="BRAND" />-н өгөгдлөө устгах гэж байна</translation>
@@ -10035,6 +10038,7 @@
 <translation id="8077579734294125741">Chrome-н бусад профайл</translation>
 <translation id="8077749280021225629">Мөн интернэтээр үзсэн өгөгдлийг (<ph name="URL" />) устгах. Энэ нь таныг <ph name="DOMAIN" />-с гаргана.<ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">Зурган хайлт</translation>
+<translation id="8079606020824373126">Google Нууц үгний менежер таны бүртгэлийг сайн нууц үгээр шинэчилж, <ph name="EMAIL" />-д хадгалах боломжтой. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Сайтууд таны бүх дэлгэц дээр цонх удирдахыг хүсэх боломжтой</translation>
 <translation id="8080028325999236607">Бүх цонхнуудыг хаах</translation>
 <translation id="8081989000209387414">ADB алдаа засахыг идэвхгүй болгох уу?</translation>
