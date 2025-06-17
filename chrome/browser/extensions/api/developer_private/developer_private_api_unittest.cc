@@ -49,12 +49,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "components/crx_file/id_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -68,6 +65,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
+#include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_error_test_util.h"
 #include "extensions/browser/extension_prefs.h"
@@ -94,6 +92,11 @@
 #include "services/data_decoder/data_decoder_service.h"
 #include "services/service_manager/public/cpp/test/test_connector_factory.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/extensions/extension_install_ui.h"  // nogncheck
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace extensions {
 
@@ -460,8 +463,6 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
 
   virtual bool ProfileIsSupervised() const { return false; }
 
-  Browser* browser() { return browser_.get(); }
-
   content::RenderProcessHost* render_process_host() const {
     return render_process_host_.get();
   }
@@ -474,8 +475,6 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   test::ScopedDisableRootChecking disable_root_checking_;
 
   // The browser (and accompanying window).
-  std::unique_ptr<TestBrowserWindow> browser_window_;
-  std::unique_ptr<Browser> browser_;
   std::unique_ptr<content::RenderProcessHost> render_process_host_;
 
   std::vector<TestExtensionDir> test_extension_dirs_;
@@ -586,6 +585,8 @@ void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
   }
 }
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
     const base::Value::List& args,
     api::developer_private::PackStatus expected_status,
@@ -620,6 +621,7 @@ testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
 
   return testing::AssertionSuccess();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 void DeveloperPrivateApiUnitTest::UpdateProfileConfigurationDevMode(
     bool dev_mode) {
@@ -666,12 +668,6 @@ void DeveloperPrivateApiUnitTest::SetUp() {
   InitializeExtensionService(std::move(init_params));
   extension_action_test_util::CreateToolbarModelForProfile(profile());
 
-  browser_window_ = std::make_unique<TestBrowserWindow>();
-  Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_NORMAL;
-  params.window = browser_window_.get();
-  browser_.reset(Browser::Create(params));
-
   // Allow the API to be created.
   EventRouterFactory::GetInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&BuildEventRouter));
@@ -688,8 +684,6 @@ void DeveloperPrivateApiUnitTest::SetUp() {
 
 void DeveloperPrivateApiUnitTest::TearDown() {
   test_extension_dirs_.clear();
-  browser_.reset();
-  browser_window_.reset();
   render_process_host_.reset();
   ExtensionServiceTestBase::TearDown();
 }
@@ -795,6 +789,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateReload) {
   EXPECT_EQ(extension_id, reloaded_extension->id());
 }
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test developerPrivate.packDirectory.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
   // Use a temp dir isolating the extension dir and its generated files.
@@ -846,6 +842,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
   EXPECT_TRUE(TestPackExtensionFunction(
       pack_args, api::developer_private::PackStatus::kError, 0));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test developerPrivate.choosePath.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
@@ -906,6 +903,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   EXPECT_EQ(std::string("File selection was canceled."), function->GetError());
 }
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test developerPrivate.loadUnpacked.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
   std::unique_ptr<content::WebContents> web_contents(
@@ -1410,6 +1409,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   api::DeveloperPrivateNotifyDragInstallInProgressFunction::
       SetDropFileForTesting(nullptr);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test developerPrivate.requestFileSource.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRequestFileSource) {
@@ -1638,6 +1638,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDevMode) {
   }
 }
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithoutDevMode) {
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
@@ -1681,6 +1683,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithBlocklistingPolicy) {
       function.get(), "[]", profile());
   EXPECT_THAT(error, testing::HasSubstr("policy"));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(DeveloperPrivateApiUnitTest,
        LoadUnpackedWorksWithBlocklistingPolicyAlongAllowlistingPolicy) {
@@ -1707,6 +1710,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
   EXPECT_TRUE(info.can_load_unpacked);
 }
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileNoDraggedPath) {
   base::AutoReset<bool> disable_ui =
       ExtensionInstallUI::disable_ui_for_tests(true);
@@ -1779,6 +1784,7 @@ TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileUserScript) {
   ASSERT_TRUE(extension);
   EXPECT_EQ("My user script", extension->name());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(DeveloperPrivateApiUnitTest, GrantHostPermission) {
   scoped_refptr<const Extension> extension =
@@ -1912,8 +1918,7 @@ TEST_F(DeveloperPrivateApiUnitTest, UpdateHostAccess) {
       ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
   registrar()->AddExtension(extension.get());
 
-  PermissionsManager* permissions_manager =
-      PermissionsManager::Get(browser()->profile());
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
   EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
 
   RunUpdateHostAccess(*extension, "ON_CLICK");
@@ -1936,8 +1941,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   const GURL example_com("https://example.com");
   modifier.GrantHostPermission(example_com);
-  PermissionsManager* permissions_manager =
-      PermissionsManager::Get(browser()->profile());
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
 
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
   EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
@@ -1980,8 +1984,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
 
-  PermissionsManager* permissions_manager =
-      PermissionsManager::Get(browser()->profile());
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
   const GURL example_com("https://example.com");
 
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
@@ -2028,8 +2031,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // Even though <all_urls> has been granted, it was granted as a runtime host
   // pattern, so the extension is still is considered to have withheld host
   // permissions.
-  PermissionsManager* permissions_manager =
-      PermissionsManager::Get(browser()->profile());
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
   EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*extension));
   EXPECT_TRUE(
       permissions_manager->HasGrantedHostPermission(*extension, kGoogleCom));
@@ -2222,6 +2224,8 @@ class DeveloperPrivateApiZipFileUnitTest
   base::FilePath expected_extension_install_directory_;
 };
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(DeveloperPrivateApiZipFileUnitTest, InstallDroppedFileZip) {
   base::FilePath zip_path = data_dir().AppendASCII("simple_empty.zip");
   base::AutoReset<bool> disable_ui =
@@ -2264,6 +2268,7 @@ TEST_F(DeveloperPrivateApiZipFileUnitTest, InstallDroppedFileZip) {
   EXPECT_TRUE(
       extension->path().BaseName().AsUTF8Unsafe().starts_with("simple_empty"));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test developerPrivate.getUserSiteSettings.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetUserSiteSettings) {
@@ -2670,8 +2675,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   get_user_and_extension_sites(R"([])");
 
-  EXPECT_FALSE(PermissionsManager::Get(browser()->profile())
-                   ->HasWithheldHostPermissions(*extension_1));
+  EXPECT_FALSE(PermissionsManager::Get(profile())->HasWithheldHostPermissions(
+      *extension_1));
 
   ScriptingPermissionsModifier modifier(profile(), extension_1.get());
   modifier.SetWithholdHostPermissions(true);
@@ -2824,8 +2829,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
   EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
                          extension->id(), developer::HostAccess::kOnAllSites,
                          /*can_request_all_sites=*/true)));
-  EXPECT_FALSE(PermissionsManager::Get(browser()->profile())
-                   ->HasWithheldHostPermissions(*extension));
+  EXPECT_FALSE(PermissionsManager::Get(profile())->HasWithheldHostPermissions(
+      *extension));
 
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
@@ -3027,6 +3032,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
       permissions_manager->HasGrantedHostPermission(*extension_2, kGoogleCom));
 }
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test uninstalling multiple extensions.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRemoveMultipleExtensions) {
   scoped_refptr<const Extension> extension_1 =
@@ -3206,6 +3213,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
       test_observer, extension->id(),
       api::developer_private::EventType::kPinnedActionsChanged));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class DeveloperPrivateApiAllowlistUnitTest
     : public DeveloperPrivateApiUnitTest {
@@ -3289,6 +3297,8 @@ class DeveloperPrivateApiSupervisedUserUnitTest
   bool ProfileIsSupervised() const override { return true; }
 };
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests trying to call loadUnpacked when the profile shouldn't be allowed to.
 TEST_F(DeveloperPrivateApiSupervisedUserUnitTest,
        LoadUnpackedFailsForSupervisedUsers) {
@@ -3304,6 +3314,7 @@ TEST_F(DeveloperPrivateApiSupervisedUserUnitTest,
         function.get(), "[]", profile());
     EXPECT_THAT(error, testing::HasSubstr("Child account"));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)s
 
 // Test suite for cases where the user is in the  MV2 deprecation "warning"
 // experiment phase.
@@ -3337,6 +3348,8 @@ class DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
        TestAcknowledgingAnExtension) {
   // Add an extension that is affected by the MV2 deprecation.
@@ -3378,7 +3391,7 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
   // Cannot dismiss an extension's notice whe the extension is not affected by
   // the MV2 deprecation.
   std::string error = api_test_utils::RunFunctionAndReturnError(
-      dismiss_notice_function, args, browser()->profile());
+      dismiss_notice_function, args, profile());
   EXPECT_EQ(error,
             ErrorUtils::FormatErrorMessage(
                 "Extension with ID '*' is not affected by the MV2 deprecation.",
@@ -3389,6 +3402,7 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
       ManifestV2ExperimentManager::Get(browser_context());
   EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
        TestAcknowledgingNoticeGlobally) {
@@ -3407,6 +3421,8 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
   EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNoticeGlobally());
 }
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest,
        TestAcknowledgingAnExtension) {
   // Add an extension that is affected by the MV2 deprecation.
@@ -3444,6 +3460,7 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest,
   EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
   EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class DeveloperPrivateApiTransportModeUnitTest
     : public DeveloperPrivateApiUnitTest {
@@ -3537,6 +3554,9 @@ class DeveloperPrivateApiTransportModeUnitTest
       identity_test_env_profile_adaptor_;
 };
 
+// TODO(crbug.com/392777363): Enable on desktop android. Currently all the
+// DeveloperPrivateApiTransportModeUnitTest tests block forever on WaitForEvent.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that extensions cannot be uploaded if the user is signed out.
 TEST_F(DeveloperPrivateApiTransportModeUnitTest,
        UploadExtensionToAccount_SignedOut) {
@@ -3857,5 +3877,6 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
   EXPECT_FALSE(info.can_upload_as_account_extension);
   EXPECT_FALSE(CanUploadToAccount(*extension));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions
