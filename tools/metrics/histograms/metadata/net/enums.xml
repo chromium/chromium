@@ -2843,6 +2843,23 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="imported from socket"/>
 </enum>
 
+<!-- LINT.IfChange(SqlDiskCacheStoreError) -->
+
+<enum name="SqlDiskCacheStoreError">
+  <int value="0" label="Ok"/>
+  <int value="1" label="FailedToCreateDirectory"/>
+  <int value="2" label="FailedToOpenDatabase"/>
+  <int value="3" label="FailedToRazeIncompatibleDatabase"/>
+  <int value="4" label="FailedToStartTransaction"/>
+  <int value="5" label="FailedToCommitTransaction"/>
+  <int value="6" label="FailedToInitializeMetaTable"/>
+  <int value="7" label="FailedToInitializeSchema"/>
+  <int value="8" label="FailedToSetEntryCountMetadata"/>
+  <int value="9" label="FailedToSetTotalSizeMetadata"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store.h:SqlDiskCacheStoreError) -->
+
 <enum name="SSLECHResult">
   <summary>The result of a TLS connection that offered ECH</summary>
   <int value="0" label="The connection succeeded on the initial connection"/>

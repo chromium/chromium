@@ -46,6 +46,7 @@ chromium-metrics-reviews@google.com.
   <variant name="History" summary="History"/>
   <variant name="HistoryEmbeddings" summary="HistoryEmbeddings"/>
   <variant name="HistoryInMemoryDB" summary="HistoryInMemoryDB"/>
+  <variant name="HttpCacheDiskCache" summary="HttpCacheDiskCache"/>
   <variant name="InterestGroups" summary="InterestGroups"/>
   <variant name="InterestGroupStorage" summary="InterestGroupStorage"/>
   <variant name="IpProtectionProbabilisticRevealTokens"

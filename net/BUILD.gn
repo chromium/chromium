@@ -1790,9 +1790,13 @@ component("net") {
     sources += [
       "disk_cache/sql/cache_entry_key.cc",
       "disk_cache/sql/cache_entry_key.h",
+      "disk_cache/sql/sql_backend_constants.h",
       "disk_cache/sql/sql_backend_impl.cc",
       "disk_cache/sql/sql_backend_impl.h",
+      "disk_cache/sql/sql_persistent_store.cc",
+      "disk_cache/sql/sql_persistent_store.h",
     ]
+    deps += [ "//sql:sql" ]
   }
 }
 
@@ -3498,6 +3502,7 @@ target(_test_target_type, "net_unittests") {
     sources += [
       "disk_cache/sql/cache_entry_key_unittest.cc",
       "disk_cache/sql/sql_backend_impl_unittest.cc",
+      "disk_cache/sql/sql_persistent_store_unittest.cc",
     ]
   }
 }
