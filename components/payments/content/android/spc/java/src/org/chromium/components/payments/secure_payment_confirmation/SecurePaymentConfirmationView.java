@@ -45,9 +45,10 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
     /* package */ final RelativeLayout mContentView;
     /* package */ final ScrollView mScrollView;
     /* package */ final ImageView mHeaderImage;
-    /* package */ final LinearLayout mIssuerNetworkIconsRow;
-    /* package */ final ImageView mIssuerIcon;
-    /* package */ final ImageView mNetworkIcon;
+    /* package */ final LinearLayout mHeaderLogosRow;
+    /* package */ final View mHeaderLogosDivider;
+    /* package */ final ImageView mHeaderLogoPrimary;
+    /* package */ final ImageView mHeaderLogoSecondary;
     /* package */ final TextView mTitle;
     /* package */ final RecyclerView mItemList;
     /* package */ final TextViewWithClickableSpans mOptOutText;
@@ -60,10 +61,11 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
                         LayoutInflater.from(context)
                                 .inflate(R.layout.secure_payment_confirmation, null);
         mScrollView = mContentView.findViewById(R.id.scroll_view);
-        mHeaderImage = mContentView.findViewById(R.id.secure_payment_confirmation_image);
-        mIssuerNetworkIconsRow = mContentView.findViewById(R.id.issuer_network_icons_row);
-        mIssuerIcon = mContentView.findViewById(R.id.issuer_icon);
-        mNetworkIcon = mContentView.findViewById(R.id.network_icon);
+        mHeaderImage = mContentView.findViewById(R.id.secure_payment_confirmation_header_image);
+        mHeaderLogosRow = mContentView.findViewById(R.id.header_logos_row);
+        mHeaderLogosDivider = mContentView.findViewById(R.id.header_logos_divider);
+        mHeaderLogoPrimary = mContentView.findViewById(R.id.header_logo_primary);
+        mHeaderLogoSecondary = mContentView.findViewById(R.id.header_logo_secondary);
         mTitle = mContentView.findViewById(R.id.secure_payment_confirmation_title);
         mItemList = mContentView.findViewById(R.id.item_list);
         mOptOutText =
@@ -71,7 +73,6 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
         mFootnote = mContentView.findViewById(R.id.secure_payment_confirmation_footnote);
         mContinueButton = mContentView.findViewById(R.id.continue_button);
 
-        mHeaderImage.setImageResource(R.drawable.save_card);
         mItemList.setLayoutManager(
                 new LinearLayoutManager(
                         context, LinearLayoutManager.VERTICAL, /* reverseLayout= */ false));

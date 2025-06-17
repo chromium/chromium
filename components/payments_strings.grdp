@@ -587,5 +587,11 @@
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_NO_MATCHING_CREDENTIAL_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet of no matching payment credential is closed." formatter_data="android_java">
       Secure payment credential no matching credential sheet is closed
     </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_HEADER_LOGO_PRIMARY" desc="Accessibility string for the primary header logo shown on the Secure Payment Confirmation verification or confirmation prompt. The logo is provided by the web api and intended to be the logo of an entity facilitating the Secure Payment Confirmation transaction." formatter_data="android_java">
+      Primary Header Logo
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_HEADER_LOGO_SECONDARY" desc="Accessibility string for the secondary header logo shown on the Secure Payment Confirmation verification or confirmation prompt. The logo is provided by the web api and intended to be the logo of an entity facilitating the Secure Payment Confirmation transaction." formatter_data="android_java">
+      Secondary Header Logo
+    </message>
   </if>  <!-- is_android -->
 </grit-part>

@@ -6,12 +6,16 @@ package org.chromium.components.payments.secure_payment_confirmation;
 
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.payments.PaymentApp.PaymentEntityLogo;
 import org.chromium.components.payments.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
 
 /**
  * The view binder of the SecurePaymentConfirmation UI, which is stateless. It is called to bind a
@@ -21,20 +25,33 @@ import org.chromium.ui.modelutil.PropertyModel;
 /* package */ class SecurePaymentConfirmationViewBinder {
     /* package */ static void bind(
             PropertyModel model, SecurePaymentConfirmationView view, PropertyKey propertyKey) {
-        if (SecurePaymentConfirmationProperties.SHOWS_ISSUER_NETWORK_ICONS == propertyKey) {
-            if (model.get(SecurePaymentConfirmationProperties.SHOWS_ISSUER_NETWORK_ICONS)) {
-                view.mIssuerNetworkIconsRow.setVisibility(View.VISIBLE);
-                view.mHeaderImage.setVisibility(View.GONE);
-            } else {
+        if (SecurePaymentConfirmationProperties.HEADER_LOGOS == propertyKey) {
+            List<PaymentEntityLogo> logos =
+                    model.get(SecurePaymentConfirmationProperties.HEADER_LOGOS);
+            if (logos.isEmpty()) {
                 view.mHeaderImage.setVisibility(View.VISIBLE);
-                view.mIssuerNetworkIconsRow.setVisibility(View.GONE);
+                view.mHeaderLogosRow.setVisibility(View.GONE);
+            } else {
+                view.mHeaderLogoPrimary.setImageBitmap(logos.get(0).getIcon());
+                view.mHeaderLogoPrimary.setContentDescription(logos.get(0).getLabel());
+                view.mHeaderLogoPrimary.setScaleType(ScaleType.FIT_CENTER);
+                if (logos.size() > 1) {
+                    // Note that even if the merchant provides more than 2 logos, SPCAppFactory
+                    // should be filtering the logos down to a max size of 2.
+                    assert (logos.size() == 2);
+                    view.mHeaderLogoSecondary.setImageBitmap(logos.get(1).getIcon());
+                    view.mHeaderLogoSecondary.setContentDescription(logos.get(1).getLabel());
+                    view.mHeaderLogosDivider.setVisibility(View.VISIBLE);
+                    view.mHeaderLogoPrimary.setScaleType(ScaleType.FIT_END);
+                } else {
+                    view.mHeaderLogosDivider.setVisibility(View.GONE);
+                    view.mHeaderLogoSecondary.setVisibility(View.GONE);
+                    view.mHeaderLogoPrimary.setScaleType(ScaleType.FIT_CENTER);
+                }
+
+                view.mHeaderLogosRow.setVisibility(View.VISIBLE);
+                view.mHeaderImage.setVisibility(View.GONE);
             }
-        } else if (SecurePaymentConfirmationProperties.ISSUER_ICON == propertyKey) {
-            view.mIssuerIcon.setImageDrawable(
-                    model.get(SecurePaymentConfirmationProperties.ISSUER_ICON));
-        } else if (SecurePaymentConfirmationProperties.NETWORK_ICON == propertyKey) {
-            view.mNetworkIcon.setImageDrawable(
-                    model.get(SecurePaymentConfirmationProperties.NETWORK_ICON));
         } else if (SecurePaymentConfirmationProperties.TITLE == propertyKey) {
             view.mTitle.setText(model.get(SecurePaymentConfirmationProperties.TITLE));
         } else if (SecurePaymentConfirmationProperties.ITEM_LIST_ADAPTER == propertyKey) {
@@ -78,8 +95,9 @@ import org.chromium.ui.modelutil.PropertyModel;
         } else if (SecurePaymentConfirmationProperties.ItemProperties.SECONDARY_TEXT
                 == propertyKey) {
             TextView secondaryTextView = view.findViewById(R.id.secondary_text);
-            if (model.get(SecurePaymentConfirmationProperties.ItemProperties.SECONDARY_TEXT)
-                    == null) {
+            if (model.get(SecurePaymentConfirmationProperties.ItemProperties.SECONDARY_TEXT) == null
+                    || model.get(SecurePaymentConfirmationProperties.ItemProperties.SECONDARY_TEXT)
+                            .isEmpty()) {
                 secondaryTextView.setVisibility(View.GONE);
             } else {
                 secondaryTextView.setText(

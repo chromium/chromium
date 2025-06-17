@@ -38,19 +38,20 @@ found in the LICENSE file.
         android:paddingTop="@dimen/secure_payment_confirmation_ui_small_padding"
         android:paddingBottom="@dimen/secure_payment_confirmation_ui_large_padding">
 
-      <!-- Shopping cart image -->
+      <!-- Default header image -->
       <ImageView
-          android:id="@+id/secure_payment_confirmation_image"
-          android:importantForAccessibility="no"
+          android:id="@+id/secure_payment_confirmation_header_image"
           android:layout_height="wrap_content"
           android:layout_width="match_parent"
           android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"
-          android:scaleType="centerInside"/>
+          android:scaleType="centerInside"
+          android:importantForAccessibility="no"
+          android:src="@drawable/save_card" />
 
-      <!-- Issuer and network icons row -->
+      <!-- Header logos row -->
       <LinearLayout
-          android:id="@+id/issuer_network_icons_row"
-          android:layout_below="@id/secure_payment_confirmation_image"
+          android:id="@+id/header_logos_row"
+          android:layout_below="@id/secure_payment_confirmation_header_image"
           android:layout_height="wrap_content"
           android:layout_width="match_parent"
           android:orientation="horizontal"
@@ -59,38 +60,38 @@ found in the LICENSE file.
           android:visibility="gone">
 
         <ImageView
-            android:id="@+id/issuer_icon"
-            android:layout_height="@dimen/secure_payment_confirmation_ui_header_icon_height"
-            android:layout_width="@dimen/secure_payment_confirmation_ui_header_icon_width"
+            android:id="@+id/header_logo_primary"
+            android:layout_height="@dimen/secure_payment_confirmation_ui_header_logo_height"
+            android:layout_width="@dimen/secure_payment_confirmation_ui_header_logo_width"
             android:scaleType="fitEnd"
-            android:importantForAccessibility="no"/>
+            android:contentDescription="@string/secure_payment_confirmation_header_logo_primary"/>
 
         <View
             style="@style/VerticalDivider"
-            android:id="@+id/issuer_network_icons_divider"
+            android:id="@+id/header_logos_divider"
             android:layout_marginHorizontal="@dimen/secure_payment_confirmation_ui_medium_padding"/>
 
         <ImageView
-            android:id="@+id/network_icon"
-            android:layout_height="@dimen/secure_payment_confirmation_ui_header_icon_height"
-            android:layout_width="@dimen/secure_payment_confirmation_ui_header_icon_width"
+            android:id="@+id/header_logo_secondary"
+            android:layout_height="@dimen/secure_payment_confirmation_ui_header_logo_height"
+            android:layout_width="@dimen/secure_payment_confirmation_ui_header_logo_width"
             android:scaleType="fitStart"
-            android:importantForAccessibility="no"/>
+            android:contentDescription="@string/secure_payment_confirmation_header_logo_secondary"/>
       </LinearLayout>
 
-      <!-- "Verify your purchase" label -->
+      <!-- SPC bottom sheet title -->
       <TextView
           android:id="@+id/secure_payment_confirmation_title"
-          android:layout_below="@id/issuer_network_icons_row"
+          android:layout_below="@id/header_logos_row"
           android:layout_height="wrap_content"
           android:layout_width="wrap_content"
           android:layout_centerHorizontal="true"
           android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"
           android:textAppearance="@style/TextAppearance.Headline.Primary"
           android:includeFontPadding="false"
-          tools:text="Verify your purchase"/>
+          tools:text="Verify"/>
 
-      <!-- List of item rows for SPC (includes "Store", "Payment", and "Total". -->
+      <!-- List of item rows for SPC (includes "Store", "Payment", and "Total") -->
       <androidx.recyclerview.widget.RecyclerView
           android:id="@+id/item_list"
           android:layout_below="@id/secure_payment_confirmation_title"
@@ -112,6 +113,7 @@ found in the LICENSE file.
           android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"
           android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
 
+      <!-- Footnote text including a clickable link to "verify another way" -->
       <org.chromium.ui.widget.TextViewWithClickableSpans
           android:id="@+id/secure_payment_confirmation_footnote"
           android:layout_below="@id/secure_payment_confirmation_nocredmatch_opt_out"
@@ -123,7 +125,7 @@ found in the LICENSE file.
           android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"
           android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
 
-      <!-- "Continue" button -->
+      <!-- Continue button -->
       <org.chromium.ui.widget.ButtonCompat
           android:id="@+id/continue_button"
           android:layout_below="@id/secure_payment_confirmation_footnote"

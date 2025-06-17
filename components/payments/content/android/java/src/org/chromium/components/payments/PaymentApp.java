@@ -325,7 +325,7 @@ public abstract class PaymentApp extends EditableOption {
      * @return The payment entities logos, an unmodifiable {@link List} (Secure Payment Confirmation
      *     specific).
      */
-    public List<? extends PaymentEntityLogo> getPaymentEntitiesLogos() {
+    public List<PaymentEntityLogo> getPaymentEntitiesLogos() {
         return emptyList();
     }
 }

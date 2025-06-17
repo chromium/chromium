@@ -45,6 +45,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.payments.PaymentApp.PaymentEntityLogo;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationController.SpcResponseStatus;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationProperties.ItemProperties;
 import org.chromium.components.payments.ui.CurrencyFormatter;
@@ -67,6 +68,8 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 /** Unit tests for {@link SecurePaymentConfirmationController} */
@@ -79,6 +82,26 @@ import java.util.Locale;
 public class SecurePaymentConfirmationControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    static class TestPaymentEntityLogo implements PaymentEntityLogo {
+        private final Bitmap mIcon;
+        private final String mLabel;
+
+        TestPaymentEntityLogo(Bitmap icon, String label) {
+            mIcon = icon;
+            mLabel = label;
+        }
+
+        @Override
+        public String getLabel() {
+            return mLabel;
+        }
+
+        @Override
+        public Bitmap getIcon() {
+            return mIcon;
+        }
+    }
+
     @Mock private WindowAndroid mWindow;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Callback<Integer> mResponseCallback;
@@ -86,9 +109,11 @@ public class SecurePaymentConfirmationControllerTest {
 
     private final FakeClock mClock = new FakeClock();
 
+    private List<PaymentEntityLogo> mPaymentEntityLogos;
     private String mPayeeName;
     private Origin mPayeeOrigin;
-    private String mPaymentInstrumentLabel;
+    private String mPaymentInstrumentLabelPrimary;
+    private String mPaymentInstrumentLabelSecondary;
     private PaymentItem mTotal;
     private Drawable mPaymentIcon;
     private Drawable mIssuerIcon;
@@ -132,9 +157,26 @@ public class SecurePaymentConfirmationControllerTest {
                         any(CurrencyFormatter.class),
                         eq("1.50"));
 
+        mPaymentEntityLogos =
+                Arrays.asList(
+                        new TestPaymentEntityLogo(
+                                Bitmap.createBitmap(
+                                        new int[] {Color.GREEN},
+                                        /* width= */ 1,
+                                        /* height= */ 1,
+                                        Bitmap.Config.ARGB_8888),
+                                "first logo label"),
+                        new TestPaymentEntityLogo(
+                                Bitmap.createBitmap(
+                                        new int[] {Color.BLUE},
+                                        /* width= */ 1,
+                                        /* height= */ 1,
+                                        Bitmap.Config.ARGB_8888),
+                                "second logo label"));
         mPayeeName = "Payee Name";
         mPayeeOrigin = Origin.create(new GURL("https://test.payee"));
-        mPaymentInstrumentLabel = "Payment Instrument Label";
+        mPaymentInstrumentLabelPrimary = "Payment Instrument Label Primary";
+        mPaymentInstrumentLabelSecondary = "Payment Instrument Label Secondary";
         mTotal = new PaymentItem();
         mTotal.amount = new PaymentCurrencyAmount();
         mTotal.amount.currency = "CAD";
@@ -144,22 +186,6 @@ public class SecurePaymentConfirmationControllerTest {
                         RuntimeEnvironment.getApplication().getResources(),
                         Bitmap.createBitmap(
                                 new int[] {Color.RED},
-                                /* width= */ 1,
-                                /* height= */ 1,
-                                Bitmap.Config.ARGB_8888));
-        mIssuerIcon =
-                new BitmapDrawable(
-                        RuntimeEnvironment.getApplication().getResources(),
-                        Bitmap.createBitmap(
-                                new int[] {Color.GREEN},
-                                /* width= */ 1,
-                                /* height= */ 1,
-                                Bitmap.Config.ARGB_8888));
-        mNetworkIcon =
-                new BitmapDrawable(
-                        RuntimeEnvironment.getApplication().getResources(),
-                        Bitmap.createBitmap(
-                                new int[] {Color.BLUE},
                                 /* width= */ 1,
                                 /* height= */ 1,
                                 Bitmap.Config.ARGB_8888));
@@ -209,9 +235,8 @@ public class SecurePaymentConfirmationControllerTest {
         createController(/* showOptOut= */ false, /* informOnly= */ false);
         PropertyModel model = mController.getModelForTesting();
 
-        assertTrue(model.get(SecurePaymentConfirmationProperties.SHOWS_ISSUER_NETWORK_ICONS));
-        assertSame(mIssuerIcon, model.get(SecurePaymentConfirmationProperties.ISSUER_ICON));
-        assertSame(mNetworkIcon, model.get(SecurePaymentConfirmationProperties.NETWORK_ICON));
+        assertSame(
+                mPaymentEntityLogos, model.get(SecurePaymentConfirmationProperties.HEADER_LOGOS));
         assertEquals(
                 context.getString(
                         org.chromium.components.payments.R.string
@@ -233,7 +258,11 @@ public class SecurePaymentConfirmationControllerTest {
                 storeItem.model.get(ItemProperties.SECONDARY_TEXT));
         ListItem paymentItem = itemList.get(1);
         assertEquals(mPaymentIcon, paymentItem.model.get(ItemProperties.ICON));
-        assertEquals(mPaymentInstrumentLabel, paymentItem.model.get(ItemProperties.PRIMARY_TEXT));
+        assertEquals(
+                mPaymentInstrumentLabelPrimary, paymentItem.model.get(ItemProperties.PRIMARY_TEXT));
+        assertEquals(
+                mPaymentInstrumentLabelSecondary,
+                paymentItem.model.get(ItemProperties.SECONDARY_TEXT));
         ListItem totalItem = itemList.get(2);
         assertEquals(
                 context.getString(
@@ -453,13 +482,13 @@ public class SecurePaymentConfirmationControllerTest {
         mController =
                 new SecurePaymentConfirmationController(
                         mWindow,
+                        mPaymentEntityLogos,
                         mPayeeName,
                         mPayeeOrigin,
-                        mPaymentInstrumentLabel,
+                        mPaymentInstrumentLabelPrimary,
+                        mPaymentInstrumentLabelSecondary,
                         mTotal,
                         mPaymentIcon,
-                        mIssuerIcon,
-                        mNetworkIcon,
                         mRelyingPartyId,
                         showOptOut,
                         informOnly,

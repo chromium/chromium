@@ -20,7 +20,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.payments.PaymentApp.PaymentEntityLogo;
 import org.chromium.components.payments.R;
+import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationBottomSheetObserver.ControllerDelegate;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationProperties.ItemProperties;
 import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.components.payments.ui.InputProtector;
@@ -41,6 +43,7 @@ import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -51,8 +54,7 @@ import java.util.Objects;
  * component that needs to interact with another component does that through this controller.
  */
 @NullMarked
-public class SecurePaymentConfirmationController
-        implements SecurePaymentConfirmationBottomSheetObserver.ControllerDelegate {
+public class SecurePaymentConfirmationController implements ControllerDelegate {
     /** There is only a single model/view for SPC items so only a single item type is needed. */
     private static final int SPC_ITEM_TYPE = 0;
 
@@ -88,7 +90,7 @@ public class SecurePaymentConfirmationController
      * @param window The WindowAndroid of the merchant.
      * @param payeeName The name of the payee, or null if not specified.
      * @param payeeOrigin The origin of the payee, or null if not specified.
-     * @param paymentInstrumentLabel The label to display for the payment instrument.
+     * @param paymentInstrumentLabelPrimary The label to display for the payment instrument.
      * @param paymentItem The payment item of the transaction containing total payment information.
      * @param paymentIcon The icon of the payment instrument.
      * @param issuerIcon The icon of the issuer.
@@ -100,13 +102,13 @@ public class SecurePaymentConfirmationController
      */
     public SecurePaymentConfirmationController(
             WindowAndroid window,
+            List<PaymentEntityLogo> paymentEntityLogos,
             @Nullable String payeeName,
             @Nullable Origin payeeOrigin,
-            String paymentInstrumentLabel,
+            String paymentInstrumentLabelPrimary,
+            @Nullable String paymentInstrumentLabelSecondary,
             PaymentItem paymentItem,
             Drawable paymentIcon,
-            @Nullable Drawable issuerIcon,
-            @Nullable Drawable networkIcon,
             String relyingPartyId,
             boolean showOptOut,
             boolean informOnly,
@@ -173,7 +175,10 @@ public class SecurePaymentConfirmationController
                         SPC_ITEM_TYPE,
                         new PropertyModel.Builder(ItemProperties.ALL_KEYS)
                                 .with(ItemProperties.ICON, paymentIcon)
-                                .with(ItemProperties.PRIMARY_TEXT, paymentInstrumentLabel)
+                                .with(ItemProperties.PRIMARY_TEXT, paymentInstrumentLabelPrimary)
+                                .with(
+                                        ItemProperties.SECONDARY_TEXT,
+                                        paymentInstrumentLabelSecondary)
                                 .build()));
 
         // Convert the total value to the local currency amount.
@@ -229,8 +234,6 @@ public class SecurePaymentConfirmationController
                                     new ChromeClickableSpan(context, (widget) -> onOptOut())));
         }
 
-        boolean showsIssuerNetworkIcons = issuerIcon != null && networkIcon != null;
-
         SpannableString footnote = null;
         if (!mInformOnly) {
             footnote =
@@ -246,11 +249,7 @@ public class SecurePaymentConfirmationController
         mView = new SecurePaymentConfirmationView(context);
         mModel =
                 new PropertyModel.Builder(SecurePaymentConfirmationProperties.ALL_KEYS)
-                        .with(
-                                SecurePaymentConfirmationProperties.SHOWS_ISSUER_NETWORK_ICONS,
-                                showsIssuerNetworkIcons)
-                        .with(SecurePaymentConfirmationProperties.ISSUER_ICON, issuerIcon)
-                        .with(SecurePaymentConfirmationProperties.NETWORK_ICON, networkIcon)
+                        .with(SecurePaymentConfirmationProperties.HEADER_LOGOS, paymentEntityLogos)
                         .with(
                                 SecurePaymentConfirmationProperties.TITLE,
                                 mInformOnly

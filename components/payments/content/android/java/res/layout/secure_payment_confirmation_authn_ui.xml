@@ -58,8 +58,8 @@ found in the LICENSE file.
 
                 <ImageView
                     android:id="@+id/issuer_icon"
-                    android:layout_height="@dimen/secure_payment_confirmation_ui_header_icon_height"
-                    android:layout_width="@dimen/secure_payment_confirmation_ui_header_icon_width"
+                    android:layout_height="@dimen/secure_payment_confirmation_ui_header_logo_height"
+                    android:layout_width="@dimen/secure_payment_confirmation_ui_header_logo_width"
                     android:scaleType="fitEnd"
                     android:importantForAccessibility="no"/>
 
@@ -70,8 +70,8 @@ found in the LICENSE file.
 
                 <ImageView
                     android:id="@+id/network_icon"
-                    android:layout_height="@dimen/secure_payment_confirmation_ui_header_icon_height"
-                    android:layout_width="@dimen/secure_payment_confirmation_ui_header_icon_width"
+                    android:layout_height="@dimen/secure_payment_confirmation_ui_header_logo_height"
+                    android:layout_width="@dimen/secure_payment_confirmation_ui_header_logo_width"
                     android:scaleType="fitStart"
                     android:importantForAccessibility="no"/>
             </LinearLayout>

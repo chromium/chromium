@@ -402,6 +402,8 @@ void SecurePaymentConfirmationAppFactory::Create(
       spc_request->issuer_info = nullptr;
 
       // Since only the first 2 icons are shown, remove the remaining logos.
+      // Note that the SPC dialog on Chrome Android will CHECK() that no more
+      // than 2 logos are provided.
       if (spc_request->payment_entities_logos.size() > 2) {
         spc_request->payment_entities_logos.erase(
             spc_request->payment_entities_logos.begin() + 2);

@@ -8,10 +8,12 @@ import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.payments.PaymentApp.PaymentEntityLogo;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+
+import java.util.List;
 
 /** The properties of the SecurePaymentConfirmation UI, which fully describe the state of the UI. */
 @NullMarked
@@ -41,19 +43,8 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
         private ItemProperties() {}
     }
 
-    /**
-     * When true, shows the issuer and network icons (if provided) in the header instead of the
-     * default header image.
-     */
-    /* package */ static final ReadableBooleanPropertyKey SHOWS_ISSUER_NETWORK_ICONS =
-            new ReadableBooleanPropertyKey();
-
-    /** The issuer icon for the UI. */
-    /* package */ static final ReadableObjectPropertyKey<Drawable> ISSUER_ICON =
-            new ReadableObjectPropertyKey<>();
-
-    /** The network icon for the UI. */
-    /* package */ static final ReadableObjectPropertyKey<Drawable> NETWORK_ICON =
+    /** The list of header logos for the UI. */
+    /* package */ static final ReadableObjectPropertyKey<List<PaymentEntityLogo>> HEADER_LOGOS =
             new ReadableObjectPropertyKey<>();
 
     /** The title text for the UI. */
@@ -81,9 +72,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
     /* package */ static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                SHOWS_ISSUER_NETWORK_ICONS,
-                ISSUER_ICON,
-                NETWORK_ICON,
+                HEADER_LOGOS,
                 TITLE,
                 ITEM_LIST_ADAPTER,
                 OPT_OUT_TEXT,

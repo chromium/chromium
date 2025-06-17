@@ -417,13 +417,13 @@ public class ChromePaymentRequestService
             mSpcController =
                     new SecurePaymentConfirmationController(
                             windowAndroid,
+                            getSelectedPaymentApp().getPaymentEntitiesLogos(),
                             spcMethodData.securePaymentConfirmation.payeeName,
                             getPayeeOrigin(spcMethodData),
                             getSelectedPaymentApp().getLabel(),
+                            getSelectedPaymentApp().getSublabel(),
                             mSpec.getRawTotal(),
                             getSelectedPaymentApp().getDrawableIcon(),
-                            getIssuerIcon(),
-                            getNetworkIcon(),
                             spcMethodData.securePaymentConfirmation.rpId,
                             spcMethodData.securePaymentConfirmation.showOptOut,
                             /* informOnly= */ true,
@@ -570,13 +570,13 @@ public class ChromePaymentRequestService
                 mSpcController =
                         new SecurePaymentConfirmationController(
                                 windowAndroid,
+                                getSelectedPaymentApp().getPaymentEntitiesLogos(),
                                 spcMethodData.securePaymentConfirmation.payeeName,
                                 getPayeeOrigin(spcMethodData),
                                 getSelectedPaymentApp().getLabel(),
+                                getSelectedPaymentApp().getSublabel(),
                                 mSpec.getRawTotal(),
                                 getSelectedPaymentApp().getDrawableIcon(),
-                                getIssuerIcon(),
-                                getNetworkIcon(),
                                 spcMethodData.securePaymentConfirmation.rpId,
                                 spcMethodData.securePaymentConfirmation.showOptOut,
                                 /* informOnly= */ false,

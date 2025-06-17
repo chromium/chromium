@@ -303,7 +303,7 @@ public class JniPaymentApp extends PaymentApp {
     }
 
     @Override
-    public List<? extends PaymentApp.PaymentEntityLogo> getPaymentEntitiesLogos() {
+    public List<PaymentEntityLogo> getPaymentEntitiesLogos() {
         return unmodifiableList(mPaymentEntitiesLogos);
     }
 
