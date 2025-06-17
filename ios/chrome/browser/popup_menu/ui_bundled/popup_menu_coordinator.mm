@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -62,7 +63,6 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
-#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
@@ -300,8 +300,7 @@ using base::UserMetricsAction;
     }
 
     if (IsPageActionMenuEnabled()) {
-      mediator.pageActionMenuHandler =
-          HandlerForProtocol(dispatcher, PageActionMenuCommands);
+      mediator.BWGHandler = HandlerForProtocol(dispatcher, BWGCommands);
     }
 
     mediator.browserCoordinatorHandler =

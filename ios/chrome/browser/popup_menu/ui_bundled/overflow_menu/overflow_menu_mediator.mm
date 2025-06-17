@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -2451,7 +2452,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Starts ask BWG.
 - (void)startAskBWG {
   [self dismissMenu];
-  [self.pageActionMenuHandler showPageActionMenu];
+  [self.BWGHandler startBWGFlow];
 }
 
 // Opens the "Set a reminder" screen for the user's current tab.

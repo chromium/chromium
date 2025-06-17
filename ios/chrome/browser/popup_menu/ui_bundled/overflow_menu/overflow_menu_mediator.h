@@ -55,7 +55,7 @@ class TemplateURLService;
 class WebNavigationBrowserAgent;
 class WebStateList;
 @protocol WhatsNewCommands;
-@protocol PageActionMenuCommands;
+@protocol BWGCommands;
 
 // Mediator for the overflow menu. This object is in charge of creating and
 // updating the items of the overflow menu.
@@ -91,7 +91,7 @@ class WebStateList;
 @property(nonatomic, weak) id<QuickDeleteCommands> quickDeleteHandler;
 @property(nonatomic, weak) id<WhatsNewCommands> whatsNewHandler;
 @property(nonatomic, weak) id<ReaderModeCommands> readerModeHandler;
-@property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
+@property(nonatomic, weak) id<BWGCommands> BWGHandler;
 
 // Navigation agent for reloading pages.
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;
