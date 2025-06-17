@@ -478,10 +478,6 @@ bool OffscreenCanvas::OriginClean() const {
   return origin_clean_ && !disable_reading_from_canvas_;
 }
 
-bool OffscreenCanvas::IsAccelerated() const {
-  return GetRasterMode() == RasterMode::kGPU;
-}
-
 bool OffscreenCanvas::EnableAccelerationForCanvas2D() {
   CHECK(IsRenderingContext2D());
 

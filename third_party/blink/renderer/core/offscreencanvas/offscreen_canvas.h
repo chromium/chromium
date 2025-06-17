@@ -181,9 +181,6 @@ class CORE_EXPORT OffscreenCanvas final
   }
   bool IsOpaque() const final;
 
-  // overrides CanvasImageSource::IsAccelerated()
-  bool IsAccelerated() const final;
-
   // overrides CanvasRenderingContextHost::EnableAccelerationForCanvas2D()
   bool EnableAccelerationForCanvas2D() final;
 

@@ -436,6 +436,10 @@ bool CanvasRenderingContextHost::IsOffscreenCanvas() const {
   return host_type_ == HostType::kOffscreenCanvasHost;
 }
 
+bool CanvasRenderingContextHost::IsAccelerated() const {
+  return GetRasterMode() == RasterMode::kGPU;
+}
+
 ImageBitmapSourceStatus CanvasRenderingContextHost::CheckUsability() const {
   const gfx::Size size = Size();
   if (size.IsEmpty()) {

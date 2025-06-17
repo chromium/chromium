@@ -2380,8 +2380,4 @@ bool HTMLCanvasElement::TransferToGPUTextureWasInvoked() {
       .TransferToGPUTextureWasInvoked();
 }
 
-bool HTMLCanvasElement::IsAccelerated() const {
-  return GetRasterMode() == RasterMode::kGPU;
-}
-
 }  // namespace blink

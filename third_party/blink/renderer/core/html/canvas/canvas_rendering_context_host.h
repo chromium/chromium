@@ -120,6 +120,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   // blink::CanvasImageSource
   bool IsOffscreenCanvas() const override;
+  bool IsAccelerated() const override;
 
   // ImageBitmapSource implementation
   ImageBitmapSourceStatus CheckUsability() const override;
