@@ -2168,6 +2168,7 @@
 <translation id="24786041351753425">ڈیٹا بازیابی کی سروس کو فعال کریں۔</translation>
 <translation id="2479541499757560845">ایکسیسبیلٹی کی بورڈ کی ترتیبات</translation>
 <translation id="2480868415629598489">آپ جو ڈیٹا کاپی اور پیسٹ کرتے ہیں اس میں ترمیم کریں</translation>
+<translation id="2480881140544300950">موجودہ سرچ انجن آپ کے نئے ٹیب صفحہ کا نظم کر رہا ہے</translation>
 <translation id="2482878487686419369">اطلاعات</translation>
 <translation id="2482895651873876648">ٹیب کو گروپ میں منتقل کر دیا گیا <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">‏Chrome براؤزر کی ترتیبات میں سرچ انجن سیٹ کریں</translation>
@@ -4552,7 +4553,6 @@
 <translation id="413915106327509564">‏<ph name="WINDOW_TITLE" /> - HID آلہ منسلک ہے</translation>
 <translation id="4139326893730851150">فرم ویئر اپ ڈیٹس</translation>
 <translation id="4142052906269098341">اپنے <ph name="DEVICE_TYPE" /> کو اپنے فون سے غیر فعال کریں <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">‏دریافت کریں کہ AI آپ کے تجربے کو کیسے شکل عطا کرتا ہے اور آپ کی رازداری کے بارے میں کیسے باخبر انتخابات کرتا ہے</translation>
 <translation id="4146026355784316281">ہمیشہ سسٹم ناظر کے ساتھ کھولیں</translation>
 <translation id="4146785383423576110">ری سیٹ کریں اور صاف کریں</translation>
 <translation id="4147099377280085053">بریل ٹیبل کا انتخاب کریں</translation>
@@ -5367,6 +5367,7 @@
 <translation id="4742970037960872810">ہائی لائٹ کو ہٹائیں</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ایپلیکیشنز کو اپ ڈیٹ کرنے کا طریقہ جانیں<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">اجازت دی گئی – <ph name="PERMISSION_DETAILS" />۔ <ph name="LINK_BEGIN" />سسٹم مائیکروفون تک رسائی<ph name="LINK_END" /> کو آن کریں۔</translation>
+<translation id="4744172369799559159">انسان اس خصوصیت کو بہتر بنانے کے لیے پاس ورڈ کے صفحات اور متعلقہ معلومات کا جائزہ لیتے ہیں، حالانکہ آپ کا پاس ورڈ مرموز کردہ ہے اور کسی نے کبھی نہیں دیکھا۔</translation>
 <translation id="4744260496658845719">کی بورڈ بیک لائٹ کی چمک</translation>
 <translation id="4744268813103118742">سائٹ پر جائیں</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6323,6 +6324,7 @@
 <translation id="5434065355175441495">‏PKCS #1 RSA مرموزکاری</translation>
 <translation id="5435274640623994081">ایئرکون لاگنگ کو فعال کریں</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> کو ہمیشہ اپنے مقام تک رسائی کی اجازت دیں</translation>
+<translation id="5436211819997237281">موجودہ ایکسٹینشن آپ کے نئے ٹیب صفحہ کا نظم کر رہی ہے</translation>
 <translation id="5436492226391861498">پراکسی ٹنل کا انتظار ہے…</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> کو تلاش کریں:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> ونڈو اب <ph name="WINDOW_SIZE_PERCENT" /> چوڑا ہے <ph name="PANE_SIDE" /> پین اب <ph name="PANE_SIZE_PERCENT" /> چوڑا ہے۔</translation>
@@ -6464,6 +6466,7 @@
 <translation id="5533343601674003130">‏PDF سروس</translation>
 <translation id="5537725057119320332">کاسٹ کریں</translation>
 <translation id="5539070192556911367">‏Google تک رسائی نہیں ہو سکتی</translation>
+<translation id="5541091577812545428">پاس ورڈ تبدیل نہیں ہوا</translation>
 <translation id="5542132724887566711">پروفائل</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> کی کوکیز مسدود ہو گئیں</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> سے منسلک کیا جا رہا ہے</translation>
@@ -8266,6 +8269,7 @@
 <translation id="6841186874966388268">خرابیاں</translation>
 <translation id="6842135459748401207">صرف <ph name="USER_EMAIL" /> میں سائن ان کردہ آلات</translation>
 <translation id="6842136130964845393">اس بات کو یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے محفوظ کردہ پاس ورڈز تک رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>
+<translation id="6842670680297285750">موجودہ ٹیب کے ساتھ نیا اسپلٹ ویو</translation>
 <translation id="6842749380892715807">‏XML سائٹ لسٹس آخری بار <ph name="LAST_DATE_DOWNLOAD" /> کو ڈاؤن لوڈ کی گئی تھیں۔</translation>
 <translation id="6842868554183332230">سائٹس عام طور پر چیٹ ایپس پر آپ کی دستیابی سیٹ کرنے کے لئے آپ اپنے آلے کا فعال طور پر استعمال کب کر رہے ہیں اس بات کا پتا لگاتی ہیں</translation>
 <translation id="6843264316370513305">نیٹ ورک ڈیبگنگ</translation>
@@ -9212,6 +9216,7 @@
 <translation id="7529411698175791732">اپنا انٹرنیٹ کنکشن چیک کریں۔ اگر مسئلہ برقرار رہتا ہے تو سائن آؤٹ اور دوبارہ سائن ان کر کے دیکھیں۔</translation>
 <translation id="7529865045818406536">ایک سے زیادہ سابقہ نیٹ ورک کے دستیاب ہونے کی صورت میں ترجیحی نیٹ ورک کا استعمال کیا جائے گا</translation>
 <translation id="7530016656428373557">واٹس میں ڈسچارج ہونے کی شرح</translation>
+<translation id="7530215951451994972">تصویر تخلیق کریں</translation>
 <translation id="7531771599742723865">زیر استعمال آلہ</translation>
 <translation id="7531779363494549572">ترتیبات &gt; ایپس اور اطلاعات &gt; اطلاعات پر جائیں۔</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> جواب نہیں دے رہی ہے۔ ایپ بند کرنے کیلئے، "زبردستی بند کریں" منتخب کریں۔</translation>
@@ -9284,6 +9289,7 @@
 <translation id="7585106857920830898">آپ کی تنظیم کی سکیورٹی پالیسیوں کے ساتھ چیک کیا جا رہا ہے...</translation>
 <translation id="7586498138629385861">‏Chrome Apps کھلے ہونے پر Chrome چلتا رہے گا۔</translation>
 <translation id="7587806318633605613">تجویز کی سرگزشت</translation>
+<translation id="7589448773774086276">موجودہ ٹیب کے ساتھ نیا اسپلٹ ویو</translation>
 <translation id="7589461650300748890">رک جائیں۔ محتاط رہیں۔</translation>
 <translation id="7590883480672980941">ان پٹ کی ترتیبات</translation>
 <translation id="7592060599656252486">کچھ</translation>
@@ -10231,6 +10237,7 @@
 <translation id="8230134520748321204"><ph name="ORIGIN" /> کے لیے پاس ورڈ کو محفوظ کریں؟</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" /> حذف کریں</translation>
 <translation id="8230446983261649357">سائٹس کو تصاویر دکھانے کی اجازت نہ دیں</translation>
+<translation id="8231438895476693774">نئے اسپلٹ ویو میں ٹیب شامل کریں</translation>
 <translation id="823226567613548870">اپنا <ph name="BRAND" /> ڈیٹا حذف کریں</translation>
 <translation id="8233028084277069927">ابھی کھولیں</translation>
 <translation id="8234795456569844941">براہ مہربانی مسئلہ حل کرنے میں ہمارے انجینئروں کی مدد کریں۔ ہمیں بتائیں کہ پروفائل کی خرابی کا پیغام موصول ہونے سے پہلے کیا ہوا تھا:</translation>
@@ -10243,6 +10250,7 @@
 <translation id="8239932336306009582">اطلاعات بھیجنے کی اجازت نہیں ہے</translation>
 <translation id="8241040075392580210">سایہ دار</translation>
 <translation id="8241338426526905580">کوئی سرٹیفیکیٹ نہیں</translation>
+<translation id="8241650983304689286">نئے اسپلٹ ویو میں ٹیب شامل کریں</translation>
 <translation id="8241806945692107836">آلہ کفیگریشن کا تعین کیا جا رہا ہے…</translation>
 <translation id="8241868517363889229">اپنے بُک مارکس کو پڑھیں اور تبدیل کریں</translation>
 <translation id="8242273718576931540">آپ کا آلہ اس نیٹ ورک سے منسلک نہیں ہو سکتا۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>

@@ -2221,6 +2221,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2514326558286966059">Sblocca più velocemente il dispositivo con l'impronta</translation>
 <translation id="2514465118223423406">Quando è collegato un mouse</translation>
 <translation id="2514938842036917377">Questa operazione comporterà l'eliminazione di <ph name="TOTAL_USAGE" /> di dati memorizzati da <ph name="SITE_NAME" />, siti correlati e app installate</translation>
+<translation id="2515489088825102986">Scopri di più su questa funzionalità e sulla tua privacy</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Conferma il tuo nome utente</translation>
 <translation id="2517472476991765520">Scansiona</translation>
@@ -3424,6 +3425,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3387829698079331264">Non autorizzati a sapere quando stai utilizzando attivamente il tuo dispositivo</translation>
 <translation id="3388094447051599208">Il vassoio di uscita è quasi pieno</translation>
 <translation id="3388788256054548012">Questo file è criptato. Chiedi al proprietario di decriptarlo.</translation>
+<translation id="3389326266972418853">Scopri di più sulla modifica automatica delle password</translation>
 <translation id="3390013585654699824">Dettagli app</translation>
 <translation id="3390442085511866400">Salva frame come…</translation>
 <translation id="3390530051434634135">Nota: <ph name="NOTE" /></translation>
@@ -4553,7 +4555,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - Dispositivo HID connesso</translation>
 <translation id="4139326893730851150">Aggiornamenti del firmware</translation>
 <translation id="4142052906269098341">Sblocca <ph name="DEVICE_TYPE" /> con il telefono. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">Scopri in che modo l'AI definisce la tua esperienza e prendi decisioni consapevoli sulla tua privacy</translation>
 <translation id="4146026355784316281">Apri sempre con visualizzatore di sistema</translation>
 <translation id="4146785383423576110">Reimpostazione e pulizia</translation>
 <translation id="4147099377280085053">Seleziona una tabella braille</translation>
@@ -5373,6 +5374,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4744268813103118742">Vai al sito</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Riattiva l'audio del sito}other{Riattiva l'audio dei siti}}</translation>
+<translation id="4745096442457817087">La password è stata compromessa nell'ambito di una violazione dei dati pubblici</translation>
 <translation id="4745500401920035244">L'amministratore ha apportato una modifica a livello di sistema che disattiva alcuni vecchi profili. Non puoi più accedere a questo profilo, ma puoi comunque rimuoverlo</translation>
 <translation id="474609389162964566">Accedi al tuo assistente con "Hey Google"</translation>
 <translation id="4746757725581505837">Stai per eliminare i dati relativi a <ph name="BRAND" /> salvati su questo dispositivo</translation>
@@ -6469,6 +6471,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5533343601674003130">Servizio PDF</translation>
 <translation id="5537725057119320332">Trasmetti</translation>
 <translation id="5539070192556911367">Impossibile accedere a Google</translation>
+<translation id="5541091577812545428">La password non è stata modificata</translation>
 <translation id="5542132724887566711">Profilo</translation>
 <translation id="5542750926112347543">Cookie provenienti da <ph name="DOMAIN" /> bloccati</translation>
 <translation id="5542949973455282971">Connessione a <ph name="CARRIER_NAME" /></translation>
@@ -8268,6 +8271,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6841186874966388268">Errori</translation>
 <translation id="6842135459748401207">Solo i dispositivi che hanno effettuato l'accesso a <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">Per assicurarti di poter accedere alle tue password salvate in qualsiasi momento, verifica la tua identità</translation>
+<translation id="6842670680297285750">Nuova visualizzazione divisa con la scheda corrente</translation>
 <translation id="6842749380892715807">Ultimo download degli elenchi di siti XML: <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">In genere i siti rilevano quando stai utilizzando attivamente il tuo dispositivo per impostare la tua disponibilità nelle app di chat</translation>
 <translation id="6843264316370513305">Debug rete</translation>
@@ -9288,6 +9292,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7585106857920830898">Controllo della conformità alle norme di sicurezza della tua organizzazione in corso…</translation>
 <translation id="7586498138629385861">Chrome rimane in esecuzione se ci sono app di Chrome aperte.</translation>
 <translation id="7587806318633605613">Cronologia dei suggerimenti</translation>
+<translation id="7589448773774086276">Nuova visualizzazione divisa con la scheda corrente</translation>
 <translation id="7589461650300748890">Attenzione.</translation>
 <translation id="7590883480672980941">Impostazioni di immissione</translation>
 <translation id="7592060599656252486">Qualche segno di punteggiatura</translation>
@@ -10025,6 +10030,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8077579734294125741">Altri profili Chrome</translation>
 <translation id="8077749280021225629">Elimina anche i dati di navigazione (<ph name="URL" />) che ti faranno uscire dall'account su <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">Ricerca immagini</translation>
+<translation id="8079606020824373126">Gestore delle password di Google può aggiornare il tuo account con una password efficace e salvarla in <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">I siti possono chiedere di gestire le finestre su tutti i tuoi schermi</translation>
 <translation id="8080028325999236607">Chiudi tutte le schede</translation>
 <translation id="8081989000209387414">Disattivare il debug ADB?</translation>
@@ -10236,6 +10242,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8230134520748321204">Salvare la password per <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">Elimina <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Non consentire ai siti di mostrare immagini</translation>
+<translation id="8231438895476693774">Aggiungi scheda alla nuova visualizzazione divisa</translation>
 <translation id="823226567613548870">eliminare i tuoi dati del <ph name="BRAND" /></translation>
 <translation id="8233028084277069927">Apri adesso</translation>
 <translation id="8234795456569844941">Aiuta i nostri tecnici a risolvere il problema. Descrivi cosa è accaduto subito prima di ricevere il messaggio di errore del profilo:</translation>
@@ -10248,6 +10255,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8239932336306009582">Non possono inviare notifiche</translation>
 <translation id="8241040075392580210">Nuvola</translation>
 <translation id="8241338426526905580">Nessun certificato</translation>
+<translation id="8241650983304689286">Aggiungi scheda alla nuova visualizzazione divisa</translation>
 <translation id="8241806945692107836">Configurazione del dispositivo in fase di determinazione...</translation>
 <translation id="8241868517363889229">Leggere e modificare i tuoi Preferiti</translation>
 <translation id="8242273718576931540">Il tuo dispositivo non può connettersi a questa rete. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>

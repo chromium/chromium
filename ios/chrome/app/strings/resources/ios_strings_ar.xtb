@@ -18,6 +18,7 @@
 <translation id="1054745118061919935">تعني المتابعة موافقتك على <ph name="BEGIN_LINK" />بنود الخدمة<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">المواقع التي لن تحفظ كلمات المرور أبدًا</translation>
 <translation id="1062138828266376352">لم يتم تغيير رقم التعريف الشخصي. يُرجى التأكّد من الاتصال بالإنترنت، ثم إعادة المحاولة</translation>
+<translation id="1063070031224282617">يُرجى اختيار مكان لحفظ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">مراجعات مقترَحة بناءً على اهتماماتك</translation>
 <translation id="1074827084851510304">‏أنت على وشك حذف {password_count} من كلمات المرور وقائمة المواقع الإلكترونية والتطبيقات التي اخترت عدم حفظ معلومات تسجيل الدخول إليها، ولن يتم حذف أي حساب أنشأته للمواقع الإلكترونية والتطبيقات.</translation>
 <translation id="1076421457278169141">تم مسح الرمز ضوئيًا</translation>
@@ -593,6 +594,7 @@
 <translation id="3476450923187944815">يمكنك الوصول في التطبيقات الأخرى إلى كلمات المرور.</translation>
 <translation id="3488501490964659223">تم إغلاق علامات التبويب وحذف بيانات التصفُّح وتسجيل خروجك</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول المحتوى المقترح</translation>
+<translation id="349446645805573740">يُرجى اختيار مكان لحفظ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">الإعدادات</translation>
 <translation id="35083190962747987">‏فتح عنوان ${url}</translation>
 <translation id="3511519535430890904">إضافة حماية التصفُّح</translation>
@@ -692,6 +694,7 @@
 <translation id="3922395466317605522">تخصيص القائمة</translation>
 <translation id="3929457972718048006">العناوين</translation>
 <translation id="3931215329146376310">{count,plural, =1{هناك كلمة مرور جديدة لهذا الموقع الإلكتروني}zero{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}two{هناك كلمتا مرور جديدتان لهذا الموقع الإلكتروني}few{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}many{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}other{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}}</translation>
+<translation id="3934905113567851655">يمكنك تصغير أو تكبير الصورة بإصبعين لتغيير حجمها</translation>
 <translation id="3940195383040445971">تتبُّع الأسعار في علامات التبويب</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{إغلاق علامة تبويب واحدة ({COUNT})}zero{إغلاق {COUNT} علامة تبويب}two{إغلاق علامتَي تبويب ({COUNT})}few{إغلاق {COUNT} علامات تبويب}many{إغلاق {COUNT} علامة تبويب}other{إغلاق {COUNT} علامة تبويب}}</translation>
 <translation id="3948600256434252210">يمكنك التمرير سريعًا إلى اليسار للتصفُّح في "وضع التصفّح المتخفي".</translation>
@@ -1697,6 +1700,7 @@
 <translation id="7925108652071887026">بيانات الملء التلقائي</translation>
 <translation id="7926975587469166629">لقب البطاقة</translation>
 <translation id="7927711904086083099">غير محدد</translation>
+<translation id="7927902634113905831">يُرجى اختيار الحساب المُراد استخدامه لحفظ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" - <ph name="FILESIZE" /></translation>
 <translation id="7930998711684428189">التحذير في حال الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="7933880123415105005">البحث في <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>

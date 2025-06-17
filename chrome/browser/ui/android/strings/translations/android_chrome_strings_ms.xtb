@@ -675,6 +675,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="4116038641877404294">Muat turun halaman untuk digunakan di luar talian</translation>
 <translation id="4121654769234887259">Anda tidak perlu mengingati kata laluan ini. Kata laluan ini akan disimpan pada Google Password Manager untuk <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Aliran kebenaran pemberitahuan dibuka pada ketinggian penuh</translation>
+<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome menghentikan pemberitahuan daripada laman ini. Anda boleh menyemak dan mengurus pemberitahuan.}other{Chrome menghentikan pemberitahuan daripada laman ini. Anda boleh menyemak dan mengurus pemberitahuan.}}</translation>
 <translation id="4132137475637520539">Benarkan sesiapa sahaja yang mempunyai pautan untuk menyertai kumpulan</translation>
 <translation id="4135200667068010335">Senarai peranti untuk berkongsi tab ditutup.</translation>
 <translation id="4137746084635924146">Bahasa peranti semasa</translation>
@@ -939,6 +940,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5267572070504076962">Hidupkan Penyemakan Imbas Selamat untuk mendapatkan perlindungan terhadap laman berbahaya</translation>
 <translation id="5271967389191913893">Peranti tidak dapat membuka kandungan yang hendak dimuat turun.</translation>
 <translation id="5273031377282080577">Pentadbir anda mengurus tetapan ini.</translation>
+<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Nyahlanggan daripada satu laman yang tidak digunakan}other{Nyahlanggan daripada # laman yang tidak digunakan}}</translation>
 <translation id="5292796745632149097">Hantar ke</translation>
 <translation id="5301876394151419436">Anda log masuk sebagai <ph name="EMAIL" />. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="5304593522240415983">Medan ini tidak boleh kosong</translation>
@@ -1286,6 +1288,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6764137532716892442">Kumpulan tab <ph name="GROUP_TITLE" /> dikongsi dengan aktiviti baharu</translation>
 <translation id="6767294960381293877">Senarai peranti untuk berkongsi tab dibuka pada ketinggian separuh.</translation>
 <translation id="6785476624617658922">Syarat Perkhidmatan Tambahan Chrome &amp; Chrome OS</translation>
+<translation id="6786747875388722282">Pelanjutan</translation>
 <translation id="6795633245022906657">Buka tab baharu dengan pantas. Untuk mengedit pintasan ini, pergi ke Tetapan.</translation>
 <translation id="679588508577699489">Jadikan Chrome sebagai penyemak imbas lalai anda</translation>
 <translation id="679956319013005046">Untuk menetapkan autolengkap bagi perkhidmatan pilihan anda, tambahkan perkhidmatan tersebut dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" /> dahulu.</translation>

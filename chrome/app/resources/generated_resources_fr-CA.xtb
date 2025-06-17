@@ -2167,6 +2167,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="24786041351753425">Activer le service de récupération de données.</translation>
 <translation id="2479541499757560845">Paramètres du clavier d'accessibilité</translation>
 <translation id="2480868415629598489">Modifier les données que vous copiez et collez</translation>
+<translation id="2480881140544300950">Le moteur de recherche actuel qui gère votre page Nouvel onglet</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2482895651873876648">Onglet déplacé vers le groupe <ph name="GROUP_NAME" /> : <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Définir le moteur de recherche dans les paramètres du navigateur Chrome</translation>
@@ -4555,7 +4556,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - appareil HID connecté</translation>
 <translation id="4139326893730851150">Mises à jour du micrologiciel</translation>
 <translation id="4142052906269098341">Déverrouillez votre <ph name="DEVICE_TYPE" /> avec votre téléphone. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">Découvrez comment l'IA façonne votre expérience et faites des choix éclairés concernant votre vie privée.</translation>
 <translation id="4146026355784316281">Toujours ouvrir avec System Viewer</translation>
 <translation id="4146785383423576110">Réinitialiser et nettoyer</translation>
 <translation id="4147099377280085053">Sélectionnez un tableau Braille</translation>
@@ -5370,6 +5370,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4742970037960872810">Retirer la surbrillance</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Découvrir comment mettre à jour des applications<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Autorisé – <ph name="PERMISSION_DETAILS" />. Activez l'<ph name="LINK_BEGIN" />accès au microphone du système<ph name="LINK_END" />.</translation>
+<translation id="4744172369799559159">Des humains examinent les pages de mots de passe et les renseignements connexes pour améliorer cette fonctionnalité. Votre mot de passe est chiffré et n'est jamais vu par personne.</translation>
 <translation id="4744260496658845719">Luminosité du rétroéclairage du clavier</translation>
 <translation id="4744268813103118742">Accéder au site</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6327,6 +6328,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5434065355175441495">Chiffrement RSA PKCS #1</translation>
 <translation id="5435274640623994081">Activer la journalisation d'icône sonore</translation>
 <translation id="5435779377906857208">Toujours autoriser <ph name="HOST" /> à accéder à votre position</translation>
+<translation id="5436211819997237281">L'extension actuelle qui gère votre page Nouvel onglet</translation>
 <translation id="5436492226391861498">En attente du tunnel mandataire...</translation>
 <translation id="5436510242972373446">Recherche sur <ph name="SITE_NAME" /> :</translation>
 <translation id="5438014818441491616">La largeur de la fenêtre <ph name="WINDOW_SIDE" /> est désormais de <ph name="WINDOW_SIZE_PERCENT" />, et la largeur du volet <ph name="PANE_SIDE" /> est désormais de <ph name="PANE_SIZE_PERCENT" />.</translation>
@@ -6468,6 +6470,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5533343601674003130">Service PDF</translation>
 <translation id="5537725057119320332">Diffuser</translation>
 <translation id="5539070192556911367">Impossible de contacter Google</translation>
+<translation id="5541091577812545428">Le mot de passe n'a pas été modifié</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5542750926112347543">Les témoins de <ph name="DOMAIN" /> sont bloqués</translation>
 <translation id="5542949973455282971">Connexion à <ph name="CARRIER_NAME" /> en cours…</translation>
@@ -8272,6 +8275,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6841186874966388268">Erreurs</translation>
 <translation id="6842135459748401207">Seulement les appareils connectés à <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">Pour vous assurer de toujours pouvoir accéder à vos mots de passe enregistrés, vérifiez qu'il s'agit bien de vous</translation>
+<translation id="6842670680297285750">Nouvel affichage partagé avec l'onglet actuel</translation>
 <translation id="6842749380892715807">Le dernier téléchargement des listes de sites XML a eu lieu à <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">En général, les sites détectent quand vous utilisez activement votre appareil pour définir votre disponibilité dans les applications de clavardage</translation>
 <translation id="6843264316370513305">Débogage réseau</translation>
@@ -9218,6 +9222,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7529411698175791732">Vérifiez votre connexion Internet. Si le problème persiste, essayez de vous déconnecter et de vous reconnecter.</translation>
 <translation id="7529865045818406536">Les réseaux préférés seront utilisés si plusieurs réseaux précédents sont accessibles</translation>
 <translation id="7530016656428373557">Taux de décharge en watts</translation>
+<translation id="7530215951451994972">Créer une image</translation>
 <translation id="7531771599742723865">Appareil en cours d'utilisation</translation>
 <translation id="7531779363494549572">Accédez à Paramètres &gt; Applications et notifications &gt; Notifications.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ne répond pas. Sélectionnez « Forcer la fermeture » pour fermer l'application.</translation>
@@ -9290,6 +9295,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7585106857920830898">Vérification de la conformité du fichier aux politiques de sécurité de votre organisation en cours…</translation>
 <translation id="7586498138629385861">Chrome continuera à fonctionner tant que des applications Chrome seront ouvertes.</translation>
 <translation id="7587806318633605613">Historique des suggestions</translation>
+<translation id="7589448773774086276">Nouvel affichage partagé avec l'onglet actuel</translation>
 <translation id="7589461650300748890">Attention!</translation>
 <translation id="7590883480672980941">Paramètres d'entrée</translation>
 <translation id="7592060599656252486">Certains</translation>
@@ -10237,6 +10243,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8230134520748321204">Enregistrer le mot de passe pour <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">Supprimer le <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Ne pas autoriser les sites à afficher les images</translation>
+<translation id="8231438895476693774">Ajouter un onglet au nouvel affichage partagé</translation>
 <translation id="823226567613548870">supprimer vos données de <ph name="BRAND" /></translation>
 <translation id="8233028084277069927">Ouvert actuellement</translation>
 <translation id="8234795456569844941">Veuillez aider nos ingénieurs à corriger ce problème. Dites-nous ce qui s'est passé juste avant que vous receviez le message d'erreur lié au profil :</translation>
@@ -10249,6 +10256,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8239932336306009582">Non autorisés à envoyer des notifications</translation>
 <translation id="8241040075392580210">Nuage</translation>
 <translation id="8241338426526905580">Aucun certificat</translation>
+<translation id="8241650983304689286">Ajouter un onglet au nouvel affichage partagé</translation>
 <translation id="8241806945692107836">Détermination de la configuration de l'appareil en cours...</translation>
 <translation id="8241868517363889229">Lire et modifier vos favoris</translation>
 <translation id="8242273718576931540">Votre appareil ne parvient pas à se connecter à ce réseau. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>

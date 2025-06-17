@@ -674,6 +674,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4116038641877404294">Tải trang xuống để sử dụng ngoại tuyến</translation>
 <translation id="4121654769234887259">Bạn không cần ghi nhớ mật khẩu này. Mật khẩu này sẽ được lưu vào Trình quản lý mật khẩu của Google cho <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Quy trình cấp quyền gửi thông báo đã mở trên toàn màn hình</translation>
+<translation id="4129668596244365470">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome đã dừng thông báo của trang web này. Bạn có thể xem lại và quản lý.}other{Chrome đã dừng thông báo từ các trang web này. Bạn có thể xem lại và quản lý.}}</translation>
 <translation id="4132137475637520539">Cho phép bất kỳ ai có đường liên kết tham gia</translation>
 <translation id="4135200667068010335">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã đóng.</translation>
 <translation id="4137746084635924146">Ngôn ngữ hiện tại của thiết bị</translation>
@@ -936,6 +937,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5267572070504076962">Bật tính năng Duyệt web an toàn để được bảo vệ khỏi các trang web nguy hiểm</translation>
 <translation id="5271967389191913893">Thiết bị không thể mở nội dung được tải xuống.</translation>
 <translation id="5273031377282080577">Quản trị viên của bạn quản lý chế độ cài đặt này.</translation>
+<translation id="5287338992381051621">{NUM_REVOKED_PERMISSIONS,plural, =1{Đã huỷ đăng ký nhận thông báo từ một trang web không dùng đến}other{Đã huỷ đăng ký nhận thông báo từ # trang web không dùng đến}}</translation>
 <translation id="5292796745632149097">Gửi đến</translation>
 <translation id="5301876394151419436">Bạn đã đăng nhập bằng <ph name="EMAIL" />. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="5304593522240415983">Không được để trống trường này</translation>
@@ -1283,6 +1285,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6764137532716892442">Đã chia sẻ nhóm thẻ <ph name="GROUP_TITLE" /> có hoạt động mới</translation>
 <translation id="6767294960381293877">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã mở ở nửa dưới của màn hình.</translation>
 <translation id="6785476624617658922">Điều khoản dịch vụ bổ sung của Chrome và ChromeOS</translation>
+<translation id="6786747875388722282">Tiện ích</translation>
 <translation id="6795633245022906657">Mở nhanh một thẻ mới. Để chỉnh sửa lối tắt này, hãy chuyển đến phần Cài đặt.</translation>
 <translation id="679588508577699489">Đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="679956319013005046">Để thiết lập dịch vụ tự động điền mà bạn ưu tiên, trước tiên, hãy thêm dịch vụ đó trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" /> .</translation>

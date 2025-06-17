@@ -2226,6 +2226,7 @@
 <translation id="2514326558286966059">استخدام بصمة الإصبع لفتح قفل الجهاز بسرعة</translation>
 <translation id="2514465118223423406">عند توصيل الماوس</translation>
 <translation id="2514938842036917377">سيؤدي هذا الإجراء إلى حذف <ph name="TOTAL_USAGE" /> من البيانات التي خزَّنها الموقع الإلكتروني <ph name="SITE_NAME" />، والمواقع الإلكترونية ذات الصلة، والتطبيقات المثبّتة</translation>
+<translation id="2515489088825102986">مزيد من المعلومات حول هذه الميزة وخصوصيتك</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">تأكيد اسم المستخدم</translation>
 <translation id="2517472476991765520">فحص</translation>
@@ -3429,6 +3430,7 @@
 <translation id="3387829698079331264">المواقع الإلكترونية التي لا يُسمح لها بمعرفة متى تستخدم جهازك بشكل نشط</translation>
 <translation id="3388094447051599208">دُرج الإخراج في الطابعة شبه ممتلئ</translation>
 <translation id="3388788256054548012">هذا الملف مشفّر. يُرجى طلب فكّ تشفيره من المالك.</translation>
+<translation id="3389326266972418853">مزيد من المعلومات حول تغيير كلمة المرور المبرمَج</translation>
 <translation id="3390013585654699824">تفاصيل التطبيق</translation>
 <translation id="3390442085511866400">حفظ إط&amp;ار الفيديو باسم...</translation>
 <translation id="3390530051434634135">ملاحظة: <ph name="NOTE" /></translation>
@@ -4556,7 +4558,6 @@
 <translation id="413915106327509564">‏<ph name="WINDOW_TITLE" /> - متصّل بجهاز HID</translation>
 <translation id="4139326893730851150">تحديثات البرامج الثابتة</translation>
 <translation id="4142052906269098341">يمكنك فتح قفل جهاز <ph name="DEVICE_TYPE" /> باستخدام هاتفك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">يمكنك استكشاف كيفية تأثير الذكاء الاصطناعي في تجربتك واتخاذ قرارات مستنِدة إلى معلومات متوفّرة عن خصوصيتك</translation>
 <translation id="4146026355784316281">افتح دائمًا باستخدام عرض النظام</translation>
 <translation id="4146785383423576110">إعادة الضبط وإزالة البرامج الضارة</translation>
 <translation id="4147099377280085053">اختيار جدول بلغة برايل</translation>
@@ -5376,6 +5377,7 @@
 <translation id="4744268813103118742">زيارة الموقع الإلكتروني</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{إعادة صوت الموقع الإلكتروني}zero{إعادة صوت المواقع الإلكترونية}two{إعادة صوت الموقعَين الإلكترونيين}few{إعادة صوت المواقع الإلكترونية}many{إعادة صوت المواقع الإلكترونية}other{إعادة صوت المواقع الإلكترونية}}</translation>
+<translation id="4745096442457817087">لقد استُخدمَت كلمة مرورك في عملية اختراق عامة للبيانات</translation>
 <translation id="4745500401920035244">أجرى المشرف تغييرًا على مستوى النظام بأكمله يعمل على إيقاف بعض الملفات الشخصية القديمة. لم يعُد بإمكانك الوصول إلى هذا الملف الشخصي، لكن لا يزال بإمكانك إزالته.</translation>
 <translation id="474609389162964566">‏الوصول إلى "مساعد Google" من خلال قول Ok Google</translation>
 <translation id="4746757725581505837">أنت على وشك حذف بياناتك في "<ph name="BRAND" />" التي تم حفظها على هذا الجهاز</translation>
@@ -6473,6 +6475,7 @@
 <translation id="5533343601674003130">‏خدمة PDF</translation>
 <translation id="5537725057119320332">بث</translation>
 <translation id="5539070192556911367">‏لا يمكن التواصل مع Google</translation>
+<translation id="5541091577812545428">لم يتم تغيير كلمة المرور</translation>
 <translation id="5542132724887566711">الملف التعريفي</translation>
 <translation id="5542750926112347543">تم حظر ملفات تعريف الارتباط الواردة من <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">جارٍ الربط بشبكة <ph name="CARRIER_NAME" /></translation>
@@ -8283,6 +8286,7 @@
 <translation id="6841186874966388268">أخطاء</translation>
 <translation id="6842135459748401207">الأجهزة التي تم تسجيل الدخول إلى <ph name="USER_EMAIL" /> عليها فقط</translation>
 <translation id="6842136130964845393">لضمان إمكانية الوصول دائمًا إلى كلمات المرور المحفوظة، عليك إثبات هويتك.</translation>
+<translation id="6842670680297285750">إضافة علامة التبويب الحالية إلى وضع تقسيم العرض الجديد</translation>
 <translation id="6842749380892715807">‏تم تزيل قوائم المواقع الإلكترونية المُعدَّة بالتنسيق XML آخر مرة في <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">ترصد المواقع الإلكترونية عادةً أوقات استخدامك النشط للجهاز، وذلك لتحديد ما إذا كنت متوفّرًا للردّ على تطبيقات الدردشة.</translation>
 <translation id="6843264316370513305">تصحيح الأخطاء في الشبكة</translation>
@@ -9303,6 +9307,7 @@
 <translation id="7585106857920830898">جارٍ فحص الملف للتأكّد من توافقه مع سياسات أمان مؤسستك…</translation>
 <translation id="7586498138629385861">‏سيستمر Chrome في العمل أثناء فتح تطبيقات Chrome.</translation>
 <translation id="7587806318633605613">سجلّ الاقتراحات</translation>
+<translation id="7589448773774086276">إضافة علامة التبويب الحالية إلى وضع تقسيم العرض الجديد</translation>
 <translation id="7589461650300748890">توقف، وكن حذرًا.</translation>
 <translation id="7590883480672980941">إعدادات الإدخال</translation>
 <translation id="7592060599656252486">بعض</translation>
@@ -10040,6 +10045,7 @@
 <translation id="8077579734294125741">‏الملفات الشخصية الأخرى على Chrome</translation>
 <translation id="8077749280021225629">حذف بيانات التصفّح (<ph name="URL" />) أيضًا، ما سيؤدي إلى تسجيل خروجك من <ph name="DOMAIN" />: <ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">البحث بالصور</translation>
+<translation id="8079606020824373126">‏يمكن أن يغيّر "مدير كلمات المرور في Google" كلمة مرور حسابك إلى أخرى قوية ويحفظها في <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">السماح للمواقع الإلكترونية بطلب إدارة النوافذ على جميع شاشات أجهزتك</translation>
 <translation id="8080028325999236607">إغلاق جميع علامات التبويب</translation>
 <translation id="8081989000209387414">‏هل تريد إيقاف خيار "تصحيح الأخطاء عبر ADB"؟</translation>
@@ -10252,6 +10258,7 @@
 <translation id="8230134520748321204">هل تريد حفظ كلمة المرور لـ <ph name="ORIGIN" />؟</translation>
 <translation id="8230326817897075865">حذف <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">عدم السماح للمواقع الإلكترونية بعرض الصور</translation>
+<translation id="8231438895476693774">إضافة علامة التبويب إلى وضع تقسيم العرض الجديد</translation>
 <translation id="823226567613548870">حذف بياناتك في "<ph name="BRAND" />"</translation>
 <translation id="8233028084277069927">فتح الآن</translation>
 <translation id="8234795456569844941">يُرجى مساعدة مهندسينا في حل هذه المشكلة. أخبرنا بما حدث مباشرة قبل ظهور رسالة خطأ الملف الشخصي:</translation>
@@ -10264,6 +10271,7 @@
 <translation id="8239932336306009582">المواقع الإلكترونية التي لا يُسمح لها بإرسال الإشعارات</translation>
 <translation id="8241040075392580210">الظلال</translation>
 <translation id="8241338426526905580">ما مِن شهادات</translation>
+<translation id="8241650983304689286">إضافة علامة التبويب إلى وضع تقسيم العرض الجديد</translation>
 <translation id="8241806945692107836">جارِ تحديد تكوين الجهاز...</translation>
 <translation id="8241868517363889229">قراءة الإشارات وتغييرها</translation>
 <translation id="8242273718576931540">لا يمكن لجهازك الاتصال بهذه الشبكة. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>

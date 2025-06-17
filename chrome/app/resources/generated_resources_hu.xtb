@@ -2178,6 +2178,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="24786041351753425">Adat-helyreállítási szolgáltatás engedélyezése.</translation>
 <translation id="2479541499757560845">Kisegítő lehetőségek billentyűzetbeállításai</translation>
 <translation id="2480868415629598489">Az Ön által másolt és beillesztett adatok módosítása</translation>
+<translation id="2480881140544300950">Az új lap oldalt kezelő aktuális keresőmotor</translation>
 <translation id="2482878487686419369">Értesítések</translation>
 <translation id="2482895651873876648">Lap áthelyezve a következő csoportba: <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">A keresőmotort a Chrome böngésző beállításaiban állíthatja be</translation>
@@ -4563,7 +4564,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID-eszköz csatlakoztatva</translation>
 <translation id="4139326893730851150">Firmware-frissítések</translation>
 <translation id="4142052906269098341">Feloldhatja <ph name="DEVICE_TYPE" /> eszközét telefonjával. <ph name="LINK_BEGIN" />További információ.<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">Felfedezheti, hogy hogyan alakítja az AI a felhasználói élményt, és megalapozott döntéseket hozhat az adatvédelemről.</translation>
 <translation id="4146026355784316281">Megnyitás mindig a rendszer megtekintőjével</translation>
 <translation id="4146785383423576110">Visszaállítás és megtisztítás</translation>
 <translation id="4147099377280085053">Braille-táblázat kiválasztása</translation>
@@ -5378,6 +5378,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4742970037960872810">Kiemelés eltávolítása</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />További információ az alkalmazások frissítéséről<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Engedélyezve – <ph name="PERMISSION_DETAILS" />. Kapcsolja be a <ph name="LINK_BEGIN" />rendszermikrofonhoz való hozzáférést<ph name="LINK_END" />.</translation>
+<translation id="4744172369799559159">A funkció továbbfejlesztése érdekében emberek vizsgálják felül a jelszóoldalakat és a kapcsolódó információkat, bár a jelszava titkosítva van, és senki sem láthatja.</translation>
 <translation id="4744260496658845719">Billentyűzet háttérvilágításának fényereje</translation>
 <translation id="4744268813103118742">Ugrás a webhelyre</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6337,6 +6338,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA titkosítás</translation>
 <translation id="5435274640623994081">Hangjelzés naplózásának engedélyezése</translation>
 <translation id="5435779377906857208">A(z) <ph name="HOST" /> mindig hozzáférhet az Ön tartózkodási helyéhez</translation>
+<translation id="5436211819997237281">Az új lap oldalt kezelő aktuális bővítmény</translation>
 <translation id="5436492226391861498">Várakozás a proxy alagútra...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> keresés:</translation>
 <translation id="5438014818441491616">A(z) <ph name="WINDOW_SIDE" /> ablak most <ph name="WINDOW_SIZE_PERCENT" /> széles, a(z) <ph name="PANE_SIDE" /> panel most <ph name="PANE_SIZE_PERCENT" /> széles.</translation>
@@ -9227,6 +9229,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7529411698175791732">Ellenőrizze az internetkapcsolatot. Ha a probléma továbbra is fennáll, próbáljon ki-, majd újra bejelentkezni.</translation>
 <translation id="7529865045818406536">A rendszer a preferált hálózatokat használja, ha egynél több korábbi hálózat áll rendelkezésre</translation>
 <translation id="7530016656428373557">Kisütési teljesítmény wattban</translation>
+<translation id="7530215951451994972">Kép létrehozása</translation>
 <translation id="7531771599742723865">Az eszköz használatban van</translation>
 <translation id="7531779363494549572">Nyissa meg a Beállítások &gt; Alkalmazások és értesítések &gt; Értesítések menüpontot.</translation>
 <translation id="7532009420053991888">A(z) <ph name="LINUX_APP_NAME" /> nem válaszol. A bezárásához válassza a „Bezárás most” gombot.</translation>

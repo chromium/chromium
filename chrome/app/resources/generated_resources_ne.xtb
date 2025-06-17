@@ -2163,6 +2163,7 @@
 <translation id="24786041351753425">डेटा रिकभर गर्ने सेवा अन गर्नुहोस्।</translation>
 <translation id="2479541499757560845">एक्सेसिबिलिटी किबोर्डका सेटिङ</translation>
 <translation id="2480868415629598489">तपाईंले प्रतिलिपि गरी टाँस्नुभएको डेटालाई परिमार्जन गर्नुहोस्</translation>
+<translation id="2480881140544300950">हालको सर्च इन्जिनले तपाईंको नयाँ ट्याब नामक पेज व्यवस्थापन गरिरहेको छ</translation>
 <translation id="2482878487686419369">नोटिफिकेसनहरू</translation>
 <translation id="2482895651873876648">यो ट्याब <ph name="GROUP_NAME" /> समूहमा सारियो - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Chrome ब्राउजरको सेटिङमा गई सर्च इन्जिन सेट गर्नुहोस्</translation>
@@ -4547,7 +4548,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID यन्त्र जोडियो</translation>
 <translation id="4139326893730851150">फर्मवेयरसम्बन्धी अपडेटहरू</translation>
 <translation id="4142052906269098341">आफ्नो फोनमार्फत आफ्नो <ph name="DEVICE_TYPE" /> अनलक गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">AI ले तपाईंलाई कसरी अझ राम्रो अनुभव प्रदान गर्छ भन्ने बारेमा जानकारी प्राप्त गर्नुहोस् र आफ्नो गोपनीयताका बारेमा सुसूचित निर्णयहरू गर्नुहोस्</translation>
 <translation id="4146026355784316281">प्रणाली दर्शकमार्फत सधैं खोल्नुहोस्</translation>
 <translation id="4146785383423576110">रिसेट गर्नुहोस् र हानिकारक सफ्टवेयर हटाउनुहोस्</translation>
 <translation id="4147099377280085053">कुनै ब्रेल तालिका चयन गर्नुहोस्</translation>
@@ -5362,6 +5362,7 @@
 <translation id="4742970037960872810">हाइलाइट हटाउनुहोस्</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />एपहरू अद्यावधिक गर्ने तरिका सिक्नुहोस्‌<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">प्रयोग गर्ने अनुमति दिइएको छ – <ph name="PERMISSION_DETAILS" />। <ph name="LINK_BEGIN" />सिस्टमको माइक्रोफोन प्रयोग गर्ने अनुमति<ph name="LINK_END" /> दिनुहोस्।</translation>
+<translation id="4744172369799559159">तपाईंको पासवर्ड इन्क्रिप्ट गरिएको र कसैले कहिल्यै पनि उक्त पासवर्ड नदेखेको भए तापनि पासवर्ड नामक पेज र सम्बन्धित जानकारीको म्यानुअल समीक्षा गरेर यो सुविधाको गुणस्तर सुधार गर्नुहोस्।</translation>
 <translation id="4744260496658845719">किबोर्ड ब्याकलाइटको चमक</translation>
 <translation id="4744268813103118742">साइटमा जानुहोस्</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6321,6 +6322,7 @@
 <translation id="5434065355175441495">PKCS #1 RSA गुप्तलेखन</translation>
 <translation id="5435274640623994081">earcon लगइन सक्षम पार्नुहोस्</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> लाई सधैँ आफ्नो स्थानसम्बन्धी जानकारी प्रयोग गर्न दिनुहोस्</translation>
+<translation id="5436211819997237281">हालको एक्स्टेन्सनले तपाईंको नयाँ ट्याब नामक पेज व्यवस्थापन गरिरहेको छ</translation>
 <translation id="5436492226391861498">प्रोक्सी टनलको लागि प्रतिक्षा गर्दै...</translation>
 <translation id="5436510242972373446">खोज <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> विन्डोको चौडाइ बदलेर <ph name="WINDOW_SIZE_PERCENT" /> बनाइएको छ, <ph name="PANE_SIDE" /> पेनको चौडाइ बदलेर अब <ph name="PANE_SIZE_PERCENT" /> बनाइएको छ।</translation>
@@ -9209,6 +9211,7 @@
 <translation id="7529411698175791732">आफ्नो इन्टरनेट जडान जाँच गर्नुहोस्। समस्या यथावत् रहिरहेमा साइन आउट गरेर पुन: साइन इन गरी हेर्नुहोस्।</translation>
 <translation id="7529865045818406536">यसअघि प्रयोग गरिएका एकभन्दा बढी नेटवर्क उपलब्ध भएमा रुचाइएका नेटवर्कहरू प्रयोग गरिने छ</translation>
 <translation id="7530016656428373557">वाट्स मा दर डिस्चार्ज गर्नुहोस्</translation>
+<translation id="7530215951451994972">फोटो बनाउनुहोस्</translation>
 <translation id="7531771599742723865">यो डिभाइस प्रयोग भइरहेको छ</translation>
 <translation id="7531779363494549572">सेटिङहरू &gt; एप तथा सूचनाहरू &gt; सूचनाहरू नामक विकल्पमा जानुहोस्।</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ले प्रतिक्रिया जनाइरहेको छैन। एप बन्द गर्न "बलपूर्वक बन्द गर्नुहोस्" चयन गर्नुहोस्।</translation>

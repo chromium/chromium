@@ -2180,6 +2180,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="24786041351753425">Kveikja á þjónustu fyrir endurheimt gagna.</translation>
 <translation id="2479541499757560845">Stillingar á aðgengi lyklaborðs</translation>
 <translation id="2480868415629598489">Breyta gögnum sem þú afritar og límir</translation>
+<translation id="2480881140544300950">Núverandi leitarvél stjórnar síðu nýrra flipa</translation>
 <translation id="2482878487686419369">Tilkynningar</translation>
 <translation id="2482895651873876648">Flipi færður inn í hópinn <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Stilla leitarvél í vafrastillingum Chrome</translation>
@@ -4566,7 +4567,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID-tæki tengt</translation>
 <translation id="4139326893730851150">Uppfærslur fastbúnaðar</translation>
 <translation id="4142052906269098341">Taktu <ph name="DEVICE_TYPE" /> úr lás með símanum þínum. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">Kynntu þér hvernig gervigreind mótar upplifun þína og taktu upplýstar ákvarðanir um persónuvernd þína</translation>
 <translation id="4146026355784316281">Opna alltaf með skoðara kerfis</translation>
 <translation id="4146785383423576110">Endurstilla og hreinsa</translation>
 <translation id="4147099377280085053">Veldu blindraleturstöflu</translation>
@@ -5381,6 +5381,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4742970037960872810">Fjarlægja áherslumerkingu</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Kynntu þér hvernig á að uppfæra forrit<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Leyft – <ph name="PERMISSION_DETAILS" />. Kveiktu á <ph name="LINK_BEGIN" />aðgangi kerfisins að hljóðnemanum<ph name="LINK_END" />.</translation>
+<translation id="4744172369799559159">Mannlegir yfirlesarar fara yfir aðgangsorðasíður og tengdar upplýsingar til að bæta þennan eiginleika þrátt fyrir að aðgangsorðið þitt sé dulkóðað og enginn sjái það.</translation>
 <translation id="4744260496658845719">Birtustig á baklýsingu lyklaborðs</translation>
 <translation id="4744268813103118742">Fara á vefsvæði</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6340,6 +6341,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-dulkóðun</translation>
 <translation id="5435274640623994081">Kveikja á skráningu hljóðmerkja</translation>
 <translation id="5435779377906857208">Veita <ph name="HOST" /> alltaf aðgang að staðsetningunni þinni</translation>
+<translation id="5436211819997237281">Núverandi viðbót stýrir síðu nýrra flipa</translation>
 <translation id="5436492226391861498">Bíður eftir proxy-gögnum...</translation>
 <translation id="5436510242972373446">Leita á <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> gluggi er núna <ph name="WINDOW_SIZE_PERCENT" /> á breidd, <ph name="PANE_SIDE" /> svæði er núna <ph name="PANE_SIZE_PERCENT" /> á breidd.</translation>
@@ -9231,6 +9233,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7529411698175791732">Athugaðu nettenginguna. Ef vandamálið er viðvarandi skaltu prófa að skrá þig út og inn aftur.</translation>
 <translation id="7529865045818406536">Valin net verða notuð ef fleiri en eitt net sem notað hefur verið áður eru í boði</translation>
 <translation id="7530016656428373557">Afhleðslustraumstyrkur í vöttum</translation>
+<translation id="7530215951451994972">Búa til mynd</translation>
 <translation id="7531771599742723865">Tæki í notkun</translation>
 <translation id="7531779363494549572">Farðu í Stillingar &gt; Forrit og tilkynningar &gt; Tilkynningar.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> svarar ekki. Veldu „Þvinga fram lokun“ til að loka forritinu.</translation>

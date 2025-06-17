@@ -2178,6 +2178,7 @@
 <translation id="24786041351753425">הפעלה של שירות שחזור הנתונים</translation>
 <translation id="2479541499757560845">הגדרות מקלדת הנגישות</translation>
 <translation id="2480868415629598489">שינוי נתונים שהעתקת והדבקת</translation>
+<translation id="2480881140544300950">מנוע החיפוש הנוכחי שמנהל את הדף "כרטיסייה חדשה"</translation>
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2482895651873876648">הכרטיסייה הועברה לקבוצה <ph name="GROUP_NAME" /> ‏– <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">‏הגדרת מנוע חיפוש בהגדרות דפדפן Chrome</translation>
@@ -4564,7 +4565,6 @@
 <translation id="413915106327509564">‏<ph name="WINDOW_TITLE" /> - התקן HID מחובר</translation>
 <translation id="4139326893730851150">עדכוני קושחה</translation>
 <translation id="4142052906269098341">אפשר לבטל את הנעילה של <ph name="DEVICE_TYPE" /> בעזרת הטלפון. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">כאן אפשר ללמוד איך בינה מלאכותית משפיעה על החוויה שלך ולקבל החלטות מושכלות לגבי הפרטיות שלך</translation>
 <translation id="4146026355784316281">פתיחה תמיד באמצעות מציג המערכת</translation>
 <translation id="4146785383423576110">איפוס וניקוי</translation>
 <translation id="4147099377280085053">בחירת טבלת ברייל</translation>
@@ -4780,6 +4780,7 @@
 <translation id="4305402730127028764">העתקה אל <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">מעבר</translation>
 <translation id="4306119971288449206">הפעלת אפליקציות חייבת להתבצע עם סוג תוכן "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4306489587293957491">הזנת ביטוי סיסמה</translation>
 <translation id="4306810703452026910">‏‫Chrome יפסיק לסמן את ההתראות מהאתר הזה כספאם</translation>
 <translation id="4307992518367153382">היסודות</translation>
 <translation id="4309165024397827958">‏מומלץ לאפשר לאפליקציות ולשירותים של Android עם הרשאת מיקום להשתמש במיקום של המכשיר שלך. Google עשויה לאסוף נתוני מיקום מדי פעם, ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את הדיוק של המיקום ואת האיכות של השירותים מבוססי-המיקום.</translation>
@@ -4837,6 +4838,7 @@
 <translation id="4350230709416545141">לחסום תמיד – ל-<ph name="HOST" /> לא תהיה יותר גישה למיקום שלך</translation>
 <translation id="4350782034419308508">Hey Google</translation>
 <translation id="435185728237714178">כדי לנהל אפליקציות שמותקנות ואפליקציות סטרימינג, עוברים לאפליקציה '<ph name="APP_NAME" />'</translation>
+<translation id="4352913519324947509">הסיסמה שלך לא שונתה, אבל עדיין אמורה להיות לך אפשרות לגשת לאתר באמצעות הסיסמה הקיימת</translation>
 <translation id="4354073718307267720">תוצג שאלה כשאתר ירצה ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה</translation>
 <translation id="4354344420232759511">אתרים שבהם ביקרת יופיעו כאן</translation>
 <translation id="435527878592612277">בחירת התמונה שלך</translation>
@@ -5378,6 +5380,7 @@
 <translation id="4742970037960872810">הסרת ההדגשה</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />איך לעדכן אפליקציות<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">יש הרשאה – <ph name="PERMISSION_DETAILS" />. צריך להפעיל את ה<ph name="LINK_BEGIN" />גישה למיקרופון המערכת<ph name="LINK_END" />.</translation>
+<translation id="4744172369799559159">בודקים אנושיים בודקים את דפי הסיסמאות ואת המידע הקשור אליהם כדי לשפר את התכונה הזו, אבל הסיסמה שלך מוצפנת ואף אחד לא יכול לראות אותה.</translation>
 <translation id="4744260496658845719">בהירות התאורה האחורית במקלדת</translation>
 <translation id="4744268813103118742">לאתר</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6337,6 +6340,7 @@
 <translation id="5434065355175441495">‏הצפנת RSA של PKCS #1</translation>
 <translation id="5435274640623994081">הפעלת רישום ביומן של צלילי התראה</translation>
 <translation id="5435779377906857208">לאשר תמיד ל-<ph name="HOST" /> גישה למיקום</translation>
+<translation id="5436211819997237281">התוסף הנוכחי שמנהל את הדף "כרטיסייה חדשה"</translation>
 <translation id="5436492226391861498">‏בהמתנה ל-Proxy Tunnel...</translation>
 <translation id="5436510242972373446">חיפוש ב-<ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">עכשיו החלון בצד <ph name="WINDOW_SIDE" /> ברוחב <ph name="WINDOW_SIZE_PERCENT" />, והחלונית בצד <ph name="PANE_SIDE" /> ברוחב <ph name="PANE_SIZE_PERCENT" />.</translation>
@@ -8331,6 +8335,7 @@
 <translation id="686831807558000905">אני לא רוצה להיכנס</translation>
 <translation id="686839242150793617">יש הרשאה להפעלה אוטומטית של מצב תמונה בתוך תמונה</translation>
 <translation id="6868934826811377550">הצגת פרטים</translation>
+<translation id="6870470066213933201">‏ניהול האופטימיזציה והאבטחה של JavaScript</translation>
 <translation id="6871644448911473373">‏מגיב OCSP: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">שפות...</translation>
 <translation id="6873571253135628430">שינוי ההרשאות לאתרים</translation>
@@ -9230,6 +9235,7 @@
 <translation id="7529411698175791732">יש לבדוק את חיבור האינטרנט. אם הבעיה לא נפתרת, יש לנסות לצאת מהחשבון ולהיכנס אליו שוב.</translation>
 <translation id="7529865045818406536">אם יש יותר מרשת קודמת אחת שזמינה, המערכת תשתמש ברשתות המועדפות</translation>
 <translation id="7530016656428373557">שיעור פריקה בוואט</translation>
+<translation id="7530215951451994972">יצירת תמונה</translation>
 <translation id="7531771599742723865">המכשיר נמצא בשימוש</translation>
 <translation id="7531779363494549572">עוברים אל 'הגדרות' &gt; 'אפליקציות והודעות' &gt; 'הודעות'.</translation>
 <translation id="7532009420053991888">האפליקציה <ph name="LINUX_APP_NAME" /> לא מגיבה. כדי לסגור את האפליקציה, יש לבחור באפשרות "אילוץ סגירה".</translation>

@@ -4551,7 +4551,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID уређај је повезан</translation>
 <translation id="4139326893730851150">Ажурирања фирмвера</translation>
 <translation id="4142052906269098341">Откључајте <ph name="DEVICE_TYPE" /> помоћу телефона. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">Истражите како вештачка интелигенција обликује ваш доживљај и донесите утемељене одлуке о приватности</translation>
 <translation id="4146026355784316281">Увек отварај помоћу системског приказивача</translation>
 <translation id="4146785383423576110">Ресетовање и чишћење</translation>
 <translation id="4147099377280085053">Изаберите табелу са Брајевом азбуком</translation>
@@ -6466,6 +6465,7 @@
 <translation id="5533343601674003130">Услуга за PDF</translation>
 <translation id="5537725057119320332">Пребацуј</translation>
 <translation id="5539070192556911367">Google није доступан</translation>
+<translation id="5541091577812545428">Лозинка није промењена</translation>
 <translation id="5542132724887566711">Профил</translation>
 <translation id="5542750926112347543">Колачићи са <ph name="DOMAIN" /> су блокирани</translation>
 <translation id="5542949973455282971">Повезује се са мрежом <ph name="CARRIER_NAME" /></translation>
@@ -8273,6 +8273,7 @@
 <translation id="6841186874966388268">Грешке</translation>
 <translation id="6842135459748401207">Само уређаји пријављени на <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">Да бисте били сигурни да увек можете да приступате сачуваним лозинкама, потврдите да сте то ви</translation>
+<translation id="6842670680297285750">Нови подељени приказ са актуелном картицом</translation>
 <translation id="6842749380892715807">XML листе сајтова су последњи пут преузете: <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Сајтови обично откривају када активно користите уређај ради подешавања доступности у апликацијама за чет</translation>
 <translation id="6843264316370513305">Отклањање грешака на мрежи</translation>
@@ -9293,6 +9294,7 @@
 <translation id="7585106857920830898">Проверава се да ли је у складу са безбедносним смерницама организације…</translation>
 <translation id="7586498138629385861">Chrome ће наставити да ради док су Chrome апликације отворене.</translation>
 <translation id="7587806318633605613">Историја предлога</translation>
+<translation id="7589448773774086276">Нови подељени приказ са актуелном картицом</translation>
 <translation id="7589461650300748890">Полако. Будите опрезни.</translation>
 <translation id="7590883480672980941">Подешавања уноса</translation>
 <translation id="7592060599656252486">Делимичан</translation>
@@ -10241,6 +10243,7 @@
 <translation id="8230134520748321204">Желите ли да сачувате лозинку за <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">Избришите акредитив <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Не дозволите сајтовима приказивање слика</translation>
+<translation id="8231438895476693774">Додај картицу у нови подељени приказ</translation>
 <translation id="823226567613548870">избришите <ph name="BRAND" /> податке</translation>
 <translation id="8233028084277069927">Отворено сада</translation>
 <translation id="8234795456569844941">Помозите нашим инжењерима да реше проблем. Реците нам шта се догодило непосредно пре него што сте добили поруку о грешци на профилу:</translation>
@@ -10253,6 +10256,7 @@
 <translation id="8239932336306009582">Није дозвољено слање обавештења</translation>
 <translation id="8241040075392580210">Облачко</translation>
 <translation id="8241338426526905580">Нема сертификата</translation>
+<translation id="8241650983304689286">Додај картицу у нови подељени приказ</translation>
 <translation id="8241806945692107836">Утврђивање конфигурације уређаја...</translation>
 <translation id="8241868517363889229">Читање и мењање обележивача</translation>
 <translation id="8242273718576931540">Уређај не може да се повеже са овом мрежом. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>

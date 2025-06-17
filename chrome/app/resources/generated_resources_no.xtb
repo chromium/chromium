@@ -2173,6 +2173,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="24786041351753425">Slå på tjenesten for datagjenoppretting.</translation>
 <translation id="2479541499757560845">Innstillinger for tilgjengelighetstastatur</translation>
 <translation id="2480868415629598489">endre data du kopierer og limer inn</translation>
+<translation id="2480881140544300950">Den nåværende søkemotoren som administrerer Ny fane-siden din</translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2482895651873876648">Fanen er flyttet til gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Angi søkemotor i Chrome-nettleserinnstillingene</translation>
@@ -4557,7 +4558,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID-enhet er tilkoblet</translation>
 <translation id="4139326893730851150">Fastvareoppdateringer</translation>
 <translation id="4142052906269098341">Lås opp <ph name="DEVICE_TYPE" /> med telefonen. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">Finn ut hvordan AI former opplevelsen din, og ta informerte valg om personvernet ditt</translation>
 <translation id="4146026355784316281">Åpne alltid med systemvisningsprogrammet</translation>
 <translation id="4146785383423576110">Tilbakestill og rydd opp</translation>
 <translation id="4147099377280085053">Velg en tabell for punktskrift</translation>
@@ -5372,6 +5372,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4742970037960872810">Fjern markering</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Finn ut hvordan du oppdaterer programmer<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Tillatt – <ph name="PERMISSION_DETAILS" />. Slå på <ph name="LINK_BEGIN" />mikrofontilgang for systemet<ph name="LINK_END" />.</translation>
+<translation id="4744172369799559159">Mennesker gjennomgår passordsider og relatert informasjon for å gjøre denne funksjonen bedre, men passordet ditt er kryptert og sees aldri av noen.</translation>
 <translation id="4744260496658845719">Tastaturlysstyrke</translation>
 <translation id="4744268813103118742">Gå til nettstedet</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6328,6 +6329,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-kryptering</translation>
 <translation id="5435274640623994081">Slå på loggføring av lydikon</translation>
 <translation id="5435779377906857208">La alltid <ph name="HOST" /> ha tilgang til posisjonen din</translation>
+<translation id="5436211819997237281">Den nåværende utvidelsen som administrerer Ny fane-siden din</translation>
 <translation id="5436492226391861498">Venter på mellomtjenertunnel</translation>
 <translation id="5436510242972373446">Søk på <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> vindu er nå <ph name="WINDOW_SIZE_PERCENT" /> bredt, og <ph name="PANE_SIDE" /> rute er <ph name="PANE_SIZE_PERCENT" /> bred.</translation>
@@ -9218,6 +9220,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7529411698175791732">Sjekk Internett-tilkoblingen din. Hvis problemet vedvarer, bør du prøve å logge av og så logge på igjen.</translation>
 <translation id="7529865045818406536">Foretrukne nettverk brukes hvis mer enn ett tidligere nettverk er tilgjengelig</translation>
 <translation id="7530016656428373557">Utladningshastighet i watt</translation>
+<translation id="7530215951451994972">Lag bilde</translation>
 <translation id="7531771599742723865">Enheten er i bruk</translation>
 <translation id="7531779363494549572">Gå til Innstillinger &gt; Apper og varsler &gt; Varsler.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> svarer ikke. Velg «Tving avslutning» for å lukke appen.</translation>

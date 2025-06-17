@@ -4550,7 +4550,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - เชื่อมต่ออุปกรณ์ HID แล้ว</translation>
 <translation id="4139326893730851150">การอัปเดตเฟิร์มแวร์</translation>
 <translation id="4142052906269098341">ปลดล็อก <ph name="DEVICE_TYPE" /> ด้วยโทรศัพท์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">ดูวิธีที่ AI ช่วยสร้างประสบการณ์การใช้งานของคุณและตัดสินใจเกี่ยวกับความเป็นส่วนตัวได้อย่างรอบคอบ</translation>
 <translation id="4146026355784316281">เปิดด้วยโปรแกรมดูของระบบทุกครั้ง</translation>
 <translation id="4146785383423576110">รีเซ็ตและล้างข้อมูล</translation>
 <translation id="4147099377280085053">เลือกตารางอักษรเบรลล์</translation>
@@ -6463,6 +6462,7 @@
 <translation id="5533343601674003130">บริการ PDF</translation>
 <translation id="5537725057119320332">แคสต์</translation>
 <translation id="5539070192556911367">เข้าถึง Google ไม่ได้</translation>
+<translation id="5541091577812545428">ไม่ได้เปลี่ยนรหัสผ่าน</translation>
 <translation id="5542132724887566711">โปรไฟล์</translation>
 <translation id="5542750926112347543">บล็อกคุกกี้จาก <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">กำลังเชื่อมต่อกับ <ph name="CARRIER_NAME" /></translation>
@@ -8262,6 +8262,7 @@
 <translation id="6841186874966388268">ข้อผิดพลาด</translation>
 <translation id="6842135459748401207">เฉพาะอุปกรณ์ที่ลงชื่อเข้าใช้ <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงรหัสผ่านที่บันทึกไว้ได้ทุกเมื่อ</translation>
+<translation id="6842670680297285750">มุมมองแยกใหม่พร้อมแท็บปัจจุบัน</translation>
 <translation id="6842749380892715807">ดาวน์โหลดรายการเว็บไซต์ XML ครั้งล่าสุดเมื่อ <ph name="LAST_DATE_DOWNLOAD" /></translation>
 <translation id="6842868554183332230">โดยปกติแล้วเว็บไซต์จะตรวจจับเวลาที่คุณใช้งานอุปกรณ์อยู่เพื่อกำหนดความพร้อมใช้งานแอปแชท</translation>
 <translation id="6843264316370513305">การแก้ไขข้อบกพร่องของเครือข่าย</translation>
@@ -9280,6 +9281,7 @@
 <translation id="7585106857920830898">กำลังตรวจสอบกับนโยบายความปลอดภัยขององค์กร…</translation>
 <translation id="7586498138629385861">Chrome จะยังคงทำงานต่อไปขณะที่แอปของ Chrome เปิดอยู่</translation>
 <translation id="7587806318633605613">ประวัติคำแนะนำ</translation>
+<translation id="7589448773774086276">มุมมองแยกใหม่พร้อมแท็บปัจจุบัน</translation>
 <translation id="7589461650300748890">อ๊ะ โปรดระวัง</translation>
 <translation id="7590883480672980941">การตั้งค่าการป้อนข้อมูล</translation>
 <translation id="7592060599656252486">บางอย่าง</translation>
@@ -10228,6 +10230,7 @@
 <translation id="8230134520748321204">บันทึกรหัสผ่านสำหรับ <ph name="ORIGIN" /> ไหม</translation>
 <translation id="8230326817897075865">ลบ<ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">ไม่อนุญาตให้เว็บไซต์แสดงรูปภาพ</translation>
+<translation id="8231438895476693774">เพิ่มแท็บไปยังมุมมองแบบแยกใหม่</translation>
 <translation id="823226567613548870">ลบข้อมูล <ph name="BRAND" /></translation>
 <translation id="8233028084277069927">เปิดเลย</translation>
 <translation id="8234795456569844941">โปรดช่วยวิศวกรของเราแก้ปัญหานี้ แจ้งให้เราทราบถึงสิ่งที่เกิดขึ้นก่อนที่คุณจะได้รับข้อความแสดงข้อผิดพลาดของโปรไฟล์</translation>
@@ -10240,6 +10243,7 @@
 <translation id="8239932336306009582">ไม่อนุญาตให้ส่งการแจ้งเตือน</translation>
 <translation id="8241040075392580210">เชดดี้</translation>
 <translation id="8241338426526905580">ไม่มีใบรับรอง</translation>
+<translation id="8241650983304689286">เพิ่มแท็บไปยังมุมมองแบบแยกใหม่</translation>
 <translation id="8241806945692107836">กำลังกำหนดการกำหนดค่าอุปกรณ์...</translation>
 <translation id="8241868517363889229">อ่านและเปลี่ยนแปลงบุ๊กมาร์กของคุณ</translation>
 <translation id="8242273718576931540">อุปกรณ์ของคุณเชื่อมต่อกับเครือข่ายนี้ไม่ได้ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>

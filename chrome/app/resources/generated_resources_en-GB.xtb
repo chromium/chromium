@@ -2179,6 +2179,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="24786041351753425">Enable data recovery service.</translation>
 <translation id="2479541499757560845">Accessibility keyboard settings</translation>
 <translation id="2480868415629598489">Modify data that you copy and paste</translation>
+<translation id="2480881140544300950">Current search engine managing your new tab page</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2482895651873876648">Tab moved into group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Set search engine in Chrome browser settings</translation>
@@ -2233,6 +2234,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2514326558286966059">Unlock faster with your fingerprint</translation>
 <translation id="2514465118223423406">When a mouse is connected</translation>
 <translation id="2514938842036917377">This will delete <ph name="TOTAL_USAGE" /> of data stored by <ph name="SITE_NAME" />, related sites and installed apps</translation>
+<translation id="2515489088825102986">More about this feature and your privacy</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirm your username</translation>
 <translation id="2517472476991765520">Scan</translation>
@@ -3436,6 +3438,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3387829698079331264">Not allowed to know when you're actively using your device</translation>
 <translation id="3388094447051599208">Output tray is almost full</translation>
 <translation id="3388788256054548012">This file is encrypted. Ask its owner to decrypt it.</translation>
+<translation id="3389326266972418853">More about automated password change</translation>
 <translation id="3390013585654699824">App details</translation>
 <translation id="3390442085511866400">Save video frame as…</translation>
 <translation id="3390530051434634135">Note: <ph name="NOTE" /></translation>
@@ -4565,7 +4568,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID device connected</translation>
 <translation id="4139326893730851150">Firmware updates</translation>
 <translation id="4142052906269098341">Unlock your <ph name="DEVICE_TYPE" /> with your phone. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">Explore how AI shapes your experience and make informed choices about your privacy</translation>
 <translation id="4146026355784316281">Always Open With System Viewer</translation>
 <translation id="4146785383423576110">Reset and clean up</translation>
 <translation id="4147099377280085053">Select a braille table</translation>
@@ -5380,10 +5382,12 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4742970037960872810">Remove highlight</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Find out how to update applications<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Allowed – <ph name="PERMISSION_DETAILS" />. Turn on <ph name="LINK_BEGIN" />system microphone access<ph name="LINK_END" />.</translation>
+<translation id="4744172369799559159">Humans review password pages and related info to improve this feature, though your password is encrypted and never seen by anyone.</translation>
 <translation id="4744260496658845719">Keyboard backlight brightness</translation>
 <translation id="4744268813103118742">Go to site</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Unmute site}other{Unmute sites}}</translation>
+<translation id="4745096442457817087">Your password was found in a public data breach</translation>
 <translation id="4745500401920035244">Your administrator has made a system-wide change that disables some old profiles. You can no longer access this profile but can still remove it</translation>
 <translation id="474609389162964566">Access your Assistant with 'Hey Google'</translation>
 <translation id="4746757725581505837">You're about to delete your <ph name="BRAND" /> data saved on this device</translation>
@@ -6339,6 +6343,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5434065355175441495">PKCS #1 RSA Encryption</translation>
 <translation id="5435274640623994081">Enable earcon logging</translation>
 <translation id="5435779377906857208">Always allow <ph name="HOST" /> to access your location</translation>
+<translation id="5436211819997237281">Current extension managing your new tab page</translation>
 <translation id="5436492226391861498">Waiting for proxy tunnel...</translation>
 <translation id="5436510242972373446">Search <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> window now <ph name="WINDOW_SIZE_PERCENT" /> wide, <ph name="PANE_SIDE" /> pane now <ph name="PANE_SIZE_PERCENT" /> wide.</translation>
@@ -6480,6 +6485,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5533343601674003130">PDF service</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5539070192556911367">Can't reach Google</translation>
+<translation id="5541091577812545428">Password wasn't changed</translation>
 <translation id="5542132724887566711">Profile</translation>
 <translation id="5542750926112347543">Cookies from <ph name="DOMAIN" /> blocked</translation>
 <translation id="5542949973455282971">Connecting to <ph name="CARRIER_NAME" /></translation>
@@ -8282,6 +8288,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6841186874966388268">Errors</translation>
 <translation id="6842135459748401207">Only devices signed in to <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">To make sure that you can always access your saved passwords, verify that it's you</translation>
+<translation id="6842670680297285750">New split view with current tab</translation>
 <translation id="6842749380892715807">XML sitelists were last downloaded at <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Sites usually detect when you're actively using your device to set your availability on chat apps</translation>
 <translation id="6843264316370513305">Network debugging</translation>
@@ -9229,6 +9236,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7529411698175791732">Check your Internet connection. If the problem continues, try signing out and signing in again.</translation>
 <translation id="7529865045818406536">Preferred networks will be used if more than one previous network is available</translation>
 <translation id="7530016656428373557">Discharge Rate in Watts</translation>
+<translation id="7530215951451994972">Create image</translation>
 <translation id="7531771599742723865">Device in use</translation>
 <translation id="7531779363494549572">Go to Settings &gt; Apps &amp; notifications &gt; Notifications.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> is not responding. Select 'Force close' to close the app.</translation>
@@ -9301,6 +9309,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7585106857920830898">Checking with your organisation's security policies…</translation>
 <translation id="7586498138629385861">Chrome will keep running while Chrome Apps are open.</translation>
 <translation id="7587806318633605613">Suggestion history</translation>
+<translation id="7589448773774086276">New split view with current tab</translation>
 <translation id="7589461650300748890">Whoa, there. Be careful.</translation>
 <translation id="7590883480672980941">Input settings</translation>
 <translation id="7592060599656252486">Some</translation>
@@ -10038,6 +10047,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8077579734294125741">Other Chrome profiles</translation>
 <translation id="8077749280021225629">Also delete browsing data (<ph name="URL" />) which will sign you out of <ph name="DOMAIN" />.<ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">Image search</translation>
+<translation id="8079606020824373126">Google Password Manager can update your account with a strong password and save it in <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Sites can ask to manage windows on all your displays</translation>
 <translation id="8080028325999236607">Close All Tabs</translation>
 <translation id="8081989000209387414">Disable ADB debugging?</translation>
@@ -10249,6 +10259,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8230134520748321204">Save password for <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">Delete <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Don't allow sites to show images</translation>
+<translation id="8231438895476693774">Add tab to new split view</translation>
 <translation id="823226567613548870">delete your <ph name="BRAND" /> data</translation>
 <translation id="8233028084277069927">Open now</translation>
 <translation id="8234795456569844941">Please help our engineers fix this problem. Tell us what happened right before you got the profile error message:</translation>
@@ -10261,6 +10272,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8239932336306009582">Not allowed to send notifications</translation>
 <translation id="8241040075392580210">Cloudy</translation>
 <translation id="8241338426526905580">No certificates</translation>
+<translation id="8241650983304689286">Add tab to new split view</translation>
 <translation id="8241806945692107836">Determining device configuration...</translation>
 <translation id="8241868517363889229">Read and change your bookmarks</translation>
 <translation id="8242273718576931540">Your device can't connect to this network. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>

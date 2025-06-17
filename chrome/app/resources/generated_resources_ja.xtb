@@ -2215,6 +2215,7 @@
 <translation id="2514326558286966059">指紋を使ってロックをすばやく解除できます</translation>
 <translation id="2514465118223423406">マウスの接続時</translation>
 <translation id="2514938842036917377"><ph name="SITE_NAME" />、関連サイト、インストールされたアプリにより保存された <ph name="TOTAL_USAGE" /> のデータを削除します</translation>
+<translation id="2515489088825102986">この機能とプライバシーの詳細</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">ユーザー名を確認</translation>
 <translation id="2517472476991765520">スキャン</translation>
@@ -3415,6 +3416,7 @@
 <translation id="3387829698079331264">このデバイスのアクティブ状態の検出を許可しない</translation>
 <translation id="3388094447051599208">排紙トレイがあと少しでいっぱいです</translation>
 <translation id="3388788256054548012">このファイルは暗号化されています。所有者に復号するよう依頼してください。</translation>
+<translation id="3389326266972418853">自動パスワード変更の詳細</translation>
 <translation id="3390013585654699824">アプリの詳細</translation>
 <translation id="3390442085511866400">動画フレームに名前を付けて保存(&amp;F)...</translation>
 <translation id="3390530051434634135">注意: <ph name="NOTE" /></translation>
@@ -4543,7 +4545,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID デバイスに接続中</translation>
 <translation id="4139326893730851150">ファームウェア アップデート</translation>
 <translation id="4142052906269098341">スマートフォンを使って <ph name="DEVICE_TYPE" /> のロックを解除します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">AI を活用してエクスペリエンスをカスタマイズし、情報に基づきプライバシーに関する選択を行う方法を確認する</translation>
 <translation id="4146026355784316281">常にシステム ビューアで開く</translation>
 <translation id="4146785383423576110">リセットとクリーンアップ</translation>
 <translation id="4147099377280085053">点字表を選択</translation>
@@ -5360,6 +5361,7 @@
 <translation id="4744268813103118742">サイトに移動</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{サイトのミュートを解除}other{サイトのミュートを解除}}</translation>
+<translation id="4745096442457817087">一般に報告されているデータ侵害でパスワードが検出されました</translation>
 <translation id="4745500401920035244">管理者がシステム全体に行った変更により、一部の古いプロフィールが無効になりました。このプロフィールにアクセスすることはできませんが、削除することはできます</translation>
 <translation id="474609389162964566">「OK Google」と話しかけてアシスタントにアクセス</translation>
 <translation id="4746757725581505837">このデバイスに保存されている <ph name="BRAND" /> のデータを削除しようとしています</translation>
@@ -6451,6 +6453,7 @@
 <translation id="5533343601674003130">PDF サービス</translation>
 <translation id="5537725057119320332">キャスト</translation>
 <translation id="5539070192556911367">Google に接続できません</translation>
+<translation id="5541091577812545428">パスワードは変更されませんでした</translation>
 <translation id="5542132724887566711">プロフィール</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> からの Cookie がブロックされました</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> に接続しています</translation>
@@ -8251,6 +8254,7 @@
 <translation id="6841186874966388268">エラー</translation>
 <translation id="6842135459748401207"><ph name="USER_EMAIL" /> にログインしているデバイスのみ</translation>
 <translation id="6842136130964845393">保存したパスワードに常にアクセスできるようにするには、本人確認を行ってください</translation>
+<translation id="6842670680297285750">現在のタブで新しい分割表示</translation>
 <translation id="6842749380892715807">XML サイトリストの前回のダウンロードは <ph name="LAST_DATE_DOWNLOAD" /> に行われました。</translation>
 <translation id="6842868554183332230">多くのサイトはデバイスのアクティブ状態を検出して、チャットアプリのステータスを設定しています</translation>
 <translation id="6843264316370513305">ネットワークのデバッグ</translation>
@@ -9270,6 +9274,7 @@
 <translation id="7585106857920830898">組織のセキュリティ ポリシーに沿ってチェックしています…</translation>
 <translation id="7586498138629385861">Chrome アプリが開いている間 Chrome は実行され続けます。</translation>
 <translation id="7587806318633605613">候補の履歴</translation>
+<translation id="7589448773774086276">現在のタブで新しい分割表示</translation>
 <translation id="7589461650300748890">データが失われる危険があります。</translation>
 <translation id="7590883480672980941">入力設定</translation>
 <translation id="7592060599656252486">一部</translation>
@@ -10006,6 +10011,7 @@
 <translation id="8077579734294125741">その他の Chrome プロファイル</translation>
 <translation id="8077749280021225629">閲覧履歴データ（<ph name="URL" />）も削除します。これにより、<ph name="DOMAIN" /> からログアウトします。<ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">画像検索</translation>
+<translation id="8079606020824373126">Google パスワード マネージャーでアカウントのパスワードを安全なものに変更し、<ph name="EMAIL" /> に保存できます。<ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">全ディスプレイのウィンドウ管理をリクエストすることをサイトに許可する</translation>
 <translation id="8080028325999236607">すべてのタブを閉じる</translation>
 <translation id="8081989000209387414">ADB デバッグを無効にしますか？</translation>
@@ -10217,6 +10223,7 @@
 <translation id="8230134520748321204"><ph name="ORIGIN" /> のパスワードを保存しますか？</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" /> を削除</translation>
 <translation id="8230446983261649357">サイトに画像の表示を許可しない</translation>
+<translation id="8231438895476693774">新しい分割表示にタブを追加</translation>
 <translation id="823226567613548870"><ph name="BRAND" /> のデータを削除</translation>
 <translation id="8233028084277069927">開く</translation>
 <translation id="8234795456569844941">問題解決の手がかりとして、具体的にどのような操作を行ったときにプロフィール エラーのメッセージが表示されたかをお知らせください。</translation>
@@ -10229,6 +10236,7 @@
 <translation id="8239932336306009582">通知の送信を許可しないサイト</translation>
 <translation id="8241040075392580210">シェイディ</translation>
 <translation id="8241338426526905580">証明書がありません</translation>
+<translation id="8241650983304689286">新しい分割表示にタブを追加</translation>
 <translation id="8241806945692107836">デバイスの設定を確認しています...</translation>
 <translation id="8241868517363889229">ブックマークの読み取りと変更</translation>
 <translation id="8242273718576931540">お使いのデバイスはこのネットワークに接続できません。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>

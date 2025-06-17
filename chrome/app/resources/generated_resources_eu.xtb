@@ -4550,7 +4550,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID gailua konektatuta dago</translation>
 <translation id="4139326893730851150">Firmware-eguneratzeak</translation>
 <translation id="4142052906269098341">Desblokeatu <ph name="DEVICE_TYPE" /> gailua telefonoaren bidez. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">Arakatu nola aldatzen duen erabilera AAk eta hartu erabakiak informazioarekin pribatutasunari buruz</translation>
 <translation id="4146026355784316281">Ireki beti sistema-ikustailearekin</translation>
 <translation id="4146785383423576110">Berrezarri eta garbitu</translation>
 <translation id="4147099377280085053">Hautatu braille-taula bat</translation>
@@ -5406,7 +5405,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4776594120007763294">Geroago irakurtzeko orri bat gehitu nahi baduzu, sakatu botoia</translation>
 <translation id="4777458362738635055">Gailu honen beste erabiltzaileek sarea erabil dezakete</translation>
 <translation id="4777813841994368231">Aktibatuta • Garatzaileak luzapena desargitaratu du</translation>
-<translation id="4777825441726637019">Play Store</translation>
+<translation id="4777825441726637019">Google Play Store</translation>
 <translation id="4777866634702576038">Fitxa taldea ezabatu nahi duzu?</translation>
 <translation id="4777943778632837590">Konfiguratu sareko izenen zerbitzariak</translation>
 <translation id="4778630024246633221">Ziurtagiri-kudeatzailea</translation>
@@ -9458,7 +9457,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="7701869757853594372">Erabiltzailearen heldulekuak</translation>
 <translation id="7702463352133825032">Utzi <ph name="DEVICE_NAME" /> gailura igortzeari</translation>
 <translation id="7704305437604973648">Zeregina</translation>
-<translation id="7704521324619958564">Ireki Play Store</translation>
+<translation id="7704521324619958564">Ireki Google Play Store</translation>
 <translation id="7705085181312584869">Idazteko laguntza</translation>
 <translation id="7705276765467986571">Ezin izan da laster-marken modeloa kargatu.</translation>
 <translation id="7705334495398865155">Antolatu ausaz hardware-identifikatzailea (BSSIDa) beste pertsonei gailuaren jarraipena egitea galarazteko.</translation>

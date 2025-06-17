@@ -4565,7 +4565,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - एचआईडी डिवाइस कनेक्ट हो गया</translation>
 <translation id="4139326893730851150">फ़र्मवेयर से जुड़े अपडेट</translation>
 <translation id="4142052906269098341">अपने फ़ोन से <ph name="DEVICE_TYPE" /> को अनलॉक करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">जानें कि एआई किस तरह आपके अनुभव को बेहतर बनाता है और आपकी निजता के बारे में सही जानकारी देता है</translation>
 <translation id="4146026355784316281">हमेशा सिस्‍टम व्‍यूअर से खोलें</translation>
 <translation id="4146785383423576110">रीसेट करें और साफ़ करें</translation>
 <translation id="4147099377280085053">ब्रेल टेबल चुनें</translation>
@@ -8267,7 +8266,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         इससे जुड़ी सेटिंग को, कार्ड मेन्यू में जाकर मैनेज किया जा सकता है. इसके अलावा, 'Chrome को पसंद के मुताबिक बनाएं' सेक्शन में मौजूद ज़्यादा विकल्प देखे जा सकते हैं.</translation>
-<translation id="6831043979455480757">Translate</translation>
+<translation id="6831043979455480757">अनुवाद करें</translation>
 <translation id="6832218595502288407">बाईं ओर अलाइन करें</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{क्या टैब को हटाकर ग्रुप मिटाना है?}=1{क्या टैब को हटाकर ग्रुप मिटाना है?}one{क्या टैब को हटाकर ग्रुप मिटाना है?}other{क्या टैब हटाकर ग्रुप मिटाने हैं?}}</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> ग्रुप में मौजूद टैब हटाया गया - <ph name="GROUP_CONTENTS" /></translation>

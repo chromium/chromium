@@ -2233,6 +2233,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2514326558286966059">Mở khóa nhanh hơn bằng vân tay</translation>
 <translation id="2514465118223423406">Khi kết nối chuột</translation>
 <translation id="2514938842036917377">Thao tác này sẽ xoá <ph name="TOTAL_USAGE" /> dữ liệu do <ph name="SITE_NAME" />, các trang web có liên quan và ứng dụng đã cài đặt lưu trữ</translation>
+<translation id="2515489088825102986">Xem thêm thông tin về tính năng này và quyền riêng tư của bạn</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Xác nhận tên người dùng</translation>
 <translation id="2517472476991765520">Quét</translation>
@@ -3436,6 +3437,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3387829698079331264">Trang web không biết khi bạn đang dùng thiết bị của mình</translation>
 <translation id="3388094447051599208">Khay giấy ra sắp đầy</translation>
 <translation id="3388788256054548012">Tệp này đã được mã hóa. Hãy yêu cầu chủ sở hữu tệp giải mã.</translation>
+<translation id="3389326266972418853">Xem thêm thông tin về tính năng thay đổi mật khẩu tự động</translation>
 <translation id="3390013585654699824">Chi tiết ứng dụng</translation>
 <translation id="3390442085511866400">Lưu khung &amp;video làm...</translation>
 <translation id="3390530051434634135">Lưu ý: <ph name="NOTE" /></translation>
@@ -4565,7 +4567,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – Đã kết nối thiết bị giao diện tương tác với con người (HID)</translation>
 <translation id="4139326893730851150">Các bản cập nhật chương trình cơ sở</translation>
 <translation id="4142052906269098341">Mở khóa <ph name="DEVICE_TYPE" /> bằng điện thoại của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">Khám phá cách AI xây dựng trải nghiệm của bạn và đưa ra lựa chọn sáng suốt về quyền riêng tư</translation>
 <translation id="4146026355784316281">Luôn mở bằng trình xem hệ thống</translation>
 <translation id="4146785383423576110">Đặt lại và dọn dẹp</translation>
 <translation id="4147099377280085053">Chọn một bảng chữ nổi</translation>
@@ -5384,6 +5385,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4744268813103118742">Mở trang web</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Bật âm thanh trang web}other{Bật âm thanh các trang web}}</translation>
+<translation id="4745096442457817087">Mật khẩu này đã được tìm thấy trong một sự cố rò rỉ dữ liệu công khai</translation>
 <translation id="4745500401920035244">Quản trị viên của bạn đã thực hiện một thay đổi trên toàn hệ thống, khiến một số hồ sơ cũ bị vô hiệu hoá. Bạn không thể truy cập vào hồ sơ này nữa nhưng vẫn có thể xoá hồ sơ.</translation>
 <translation id="474609389162964566">Hãy nói "Ok Google" để sử dụng Trợ lý của bạn</translation>
 <translation id="4746757725581505837">Bạn sắp xoá dữ liệu của <ph name="BRAND" /> được lưu trên thiết bị này</translation>
@@ -6480,6 +6482,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5533343601674003130">Dịch vụ PDF</translation>
 <translation id="5537725057119320332">Truyền</translation>
 <translation id="5539070192556911367">Không thể kết nối với Google</translation>
+<translation id="5541091577812545428">Mật khẩu không thay đổi</translation>
 <translation id="5542132724887566711">Tiểu sử</translation>
 <translation id="5542750926112347543">Đã chặn cookie từ <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">Đang kết nối với <ph name="CARRIER_NAME" /></translation>
@@ -8282,6 +8285,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6841186874966388268">Lỗi</translation>
 <translation id="6842135459748401207">Chỉ những thiết bị đã đăng nhập vào <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">Hãy xác minh danh tính của bạn để đảm bảo bạn luôn có thể truy cập mật khẩu đã lưu</translation>
+<translation id="6842670680297285750">Chế độ xem phân tách mới với thẻ hiện tại</translation>
 <translation id="6842749380892715807">Lần tải danh sách trang web XML gần nhất: <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Trang web thường phát hiện khi bạn đang dùng thiết bị để đặt tình trạng rảnh/bận của bạn trên ứng dụng trò chuyện</translation>
 <translation id="6843264316370513305">Gỡ lỗi mạng</translation>
@@ -9303,6 +9307,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7585106857920830898">Đang kiểm tra để xem tệp có tuân thủ các chính sách bảo mật của tổ chức bạn hay không...</translation>
 <translation id="7586498138629385861">Chrome sẽ tiếp tục chạy khi ứng dụng Chrome đang mở.</translation>
 <translation id="7587806318633605613">Nhật ký đề xuất</translation>
+<translation id="7589448773774086276">Chế độ xem phân tách mới với thẻ hiện tại</translation>
 <translation id="7589461650300748890">Oa. Hãy cẩn thận.</translation>
 <translation id="7590883480672980941">Cài đặt phương thức nhập</translation>
 <translation id="7592060599656252486">Một vài</translation>
@@ -10040,6 +10045,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8077579734294125741">Các hồ sơ khác trên Chrome</translation>
 <translation id="8077749280021225629">Xoá cả dữ liệu duyệt web (<ph name="URL" />), việc này sẽ khiến bạn bị đăng xuất khỏi <ph name="DOMAIN" />.<ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">Tìm kiếm hình ảnh</translation>
+<translation id="8079606020824373126">Trình quản lý mật khẩu của Google có thể cập nhật tài khoản của bạn bằng mật khẩu mạnh và lưu mật khẩu đó vào <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">Các trang web có thể yêu cầu quản lý các cửa sổ trên tất cả màn hình của bạn</translation>
 <translation id="8080028325999236607">Đóng tất cả các thẻ</translation>
 <translation id="8081989000209387414">Tắt tùy chọn gỡ lỗi ADB?</translation>
@@ -10251,6 +10257,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8230134520748321204">Bạn có muốn lưu mật khẩu cho <ph name="ORIGIN" /> không?</translation>
 <translation id="8230326817897075865">Xoá <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Không cho phép trang web hiển thị hình ảnh</translation>
+<translation id="8231438895476693774">Thêm thẻ vào chế độ xem phân tách mới</translation>
 <translation id="823226567613548870">xoá dữ liệu của bạn trong <ph name="BRAND" /></translation>
 <translation id="8233028084277069927">Mở ngay</translation>
 <translation id="8234795456569844941">Hãy giúp các kỹ sư của chúng tôi khắc phục sự cố này. Hãy cho chúng tôi biết điều gì đã xảy ra ngay trước khi bạn nhận được thông báo lỗi hồ sơ:</translation>
@@ -10263,6 +10270,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8239932336306009582">Không được phép gửi thông báo</translation>
 <translation id="8241040075392580210">Bóng mát</translation>
 <translation id="8241338426526905580">Không có chứng chỉ nào</translation>
+<translation id="8241650983304689286">Thêm thẻ vào chế độ xem phân tách mới</translation>
 <translation id="8241806945692107836">Đang xác định cấu hình thiết bị...</translation>
 <translation id="8241868517363889229">Đọc và thay đổi dấu trang của bạn</translation>
 <translation id="8242273718576931540">Thiết bị của bạn không kết nối được với mạng này. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>

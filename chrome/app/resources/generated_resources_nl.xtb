@@ -2166,6 +2166,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="24786041351753425">Gegevensherstelservice aanzetten</translation>
 <translation id="2479541499757560845">Instellingen voor toetsenbord voor toegankelijkheid</translation>
 <translation id="2480868415629598489">Gegevens aanpassen die je kopieert en plakt</translation>
+<translation id="2480881140544300950">Huidige zoekmachine die je pagina Nieuw tabblad beheert</translation>
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="2482895651873876648">Tabblad verplaatst naar groep <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Zoekmachine instellen in de Chrome-browserinstellingen</translation>
@@ -4549,7 +4550,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" />: HID-apparaat verbonden</translation>
 <translation id="4139326893730851150">Firmware-updates</translation>
 <translation id="4142052906269098341">Ontgrendel je <ph name="DEVICE_TYPE" /> met je telefoon. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">Ontdek hoe AI van invloed is op de functionaliteit en maak weloverwogen keuzes over je privacy</translation>
 <translation id="4146026355784316281">Altijd openen met systeemviewer</translation>
 <translation id="4146785383423576110">Resetten en opruimen</translation>
 <translation id="4147099377280085053">Brailletabel selecteren</translation>
@@ -5364,6 +5364,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4742970037960872810">Markering verwijderen</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Meer informatie over hoe je apps updatet<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Toegestaan: <ph name="PERMISSION_DETAILS" />. Zet <ph name="LINK_BEGIN" />microfoontoegang voor het systeem<ph name="LINK_END" /> aan.</translation>
+<translation id="4744172369799559159">Menselijke reviewers beoordelen wachtwoordpagina's en gerelateerde informatie om deze functie te verbeteren. Je wachtwoord is versleuteld en wordt nooit door iemand gezien.</translation>
 <translation id="4744260496658845719">Helderheid van achtergrondverlichting van toetsenbord</translation>
 <translation id="4744268813103118742">Naar site</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6321,6 +6322,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5434065355175441495">PKCS nr. 1 met RSA-versleuteling</translation>
 <translation id="5435274640623994081">Earconregistratie aanzetten</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> altijd toegang tot je locatie geven</translation>
+<translation id="5436211819997237281">Huidige extensie die je pagina Nieuw tabblad beheert</translation>
 <translation id="5436492226391861498">Wachten op proxytunnel...</translation>
 <translation id="5436510242972373446">Zoeken op <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Het venster <ph name="WINDOW_SIDE" /> is nu <ph name="WINDOW_SIZE_PERCENT" /> breed en het deelvenster <ph name="PANE_SIDE" /> is nu <ph name="PANE_SIZE_PERCENT" /> breed.</translation>
@@ -9207,6 +9209,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7529411698175791732">Controleer de internetverbinding. Als het probleem blijft optreden, log je uit en weer in.</translation>
 <translation id="7529865045818406536">Voorkeursnetwerken worden gebruikt als er meer dan één eerder netwerk beschikbaar is</translation>
 <translation id="7530016656428373557">Ontlading in Watt</translation>
+<translation id="7530215951451994972">Afbeelding maken</translation>
 <translation id="7531771599742723865">Apparaat in gebruik</translation>
 <translation id="7531779363494549572">Ga naar Instellingen &gt; Apps en meldingen &gt; Meldingen.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> reageert niet. Selecteer 'Nu sluiten' om de app te sluiten.</translation>

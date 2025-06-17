@@ -18,6 +18,7 @@
 <translation id="1054745118061919935">Үргэлжлүүлснээр та <ph name="BEGIN_LINK" />Үйлчилгээний нөхцөлийг<ph name="END_LINK" /> зөвшөөрнө.</translation>
 <translation id="10614374240317010">Огт хадгалагдаагүй байна</translation>
 <translation id="1062138828266376352">Таны ПИН-г өөрчлөөгүй. Интернэт холболтоо шалгаад, дахин оролдоно уу</translation>
+<translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)-г хаана хадгалахыг сонгоно уу</translation>
 <translation id="1072476005125066234">Таны сонирхолд тулгуурласан шүүмж</translation>
 <translation id="1074827084851510304">Та {password_count} нууц үг болон нэвтрэх мэдээлэл хэзээ ч хадгалахгүй байхаар сонгосон сайт, аппын жагсаалтыг устгах гэж байна. Таны сайт, аппад зориулж үүсгэсэн аливаа бүртгэлийг устгахгүй.</translation>
 <translation id="1076421457278169141">Кодыг скан хийсэн</translation>
@@ -545,6 +546,7 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3235063766008841141">Сэжигтэй сайтад оруулсан, мөн өгөгдлийн зөрчил дээр олдсон</translation>
 <translation id="3235242129752692527">Үйл явдлын дэлгэрэнгүйг засаад “Хадгалах“-ыг товшино уу.</translation>
+<translation id="323863549127671026">Одоогоор нээлттэй байгаа таб болон табын бүлэг</translation>
 <translation id="3240426699337459095">Холбоосыг хуулсан</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Хэрэв та мөн Chrome-н ашиглалтын тайланг хуваалцвал тэдгээр тайланд таны зочилсон URL багтана</translation>
@@ -592,6 +594,7 @@
 <translation id="3476450923187944815">Бусад аппад нууц үгнүүддээ хандаарай.</translation>
 <translation id="3488501490964659223">Табуудыг хаасан бөгөөд интернэтээр үзсэн өгөгдлийг устгасан. Таныг гаргасан</translation>
 <translation id="3493531032208478708">Санал болгосон агуулгын талаар <ph name="BEGIN_LINK" />дэлгэрэнгүй үзэх<ph name="END_LINK" /></translation>
+<translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"-г хаана хадгалахыг сонгоно уу</translation>
 <translation id="3504377992102007712">Тохиргоо</translation>
 <translation id="35083190962747987">${url}-г нээх</translation>
 <translation id="3511519535430890904">Үзэх хамгаалалт нэмэх</translation>
@@ -691,6 +694,7 @@
 <translation id="3922395466317605522">Цэсийг өөрчлөх</translation>
 <translation id="3929457972718048006">Хаягууд</translation>
 <translation id="3931215329146376310">{count,plural, =1{Энэ сайтын шинэ нууц үг}other{Энэ сайтын шинэ нууц үгнүүд}}</translation>
+<translation id="3934905113567851655">Хэмжээг өөрчлөхийн тулд чимхэнэ үү</translation>
 <translation id="3940195383040445971">Табууд дээрх үнийг хянах</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} табыг хаах}other{{COUNT} табыг хаах}}</translation>
 <translation id="3948600256434252210">Та Нууцлалтай горимд үзэхийн тулд баруун тийш шудрах боломжтой.</translation>
@@ -1698,6 +1702,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7925108652071887026">Автоматаар бөглөх мэдээлэл</translation>
 <translation id="7926975587469166629">Картын хоч</translation>
 <translation id="7927711904086083099">Сонгогдоогүй</translation>
+<translation id="7927902634113905831">Та "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" - <ph name="FILESIZE" />-г хадгалахдаа ашигламаар байгаа бүртгэлээ сонгоно уу</translation>
 <translation id="7930998711684428189">Өгөгдлийн зөрчлийн улмаас нууц үгийг задруулсан бол танд анхааруулга өгдөг.</translation>
 <translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" />-с хайх</translation>
 <translation id="7938254975914653459">FaceTime</translation>

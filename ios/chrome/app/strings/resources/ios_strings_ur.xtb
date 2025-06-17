@@ -18,6 +18,7 @@
 <translation id="1054745118061919935">جاری رکھ کر آپ <ph name="BEGIN_LINK" />سروس کی شرائط<ph name="END_LINK" /> سے اتفاق کرتے ہیں۔</translation>
 <translation id="10614374240317010">کبھی بھی محفوظ نہیں کیا ہوا</translation>
 <translation id="1062138828266376352">‏آپ کا PIN تبدیل نہیں کیا گیا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں</translation>
+<translation id="1063070031224282617">منتخب کریں کہ (<ph name="FILE_SIZE" />) "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" کو کہاں محفوظ کرنا ہے</translation>
 <translation id="1072476005125066234">آپ کی دلچسپیوں پر مبنی جائزے</translation>
 <translation id="1074827084851510304">‏آپ {password_count}} پاس ورڈز اور سائٹس اور ایپس کی فہرست حذف کرنے والے ہیں جنہیں آپ نے کبھی سائن ان معلومات محفوظ نہ کرنے کا انتخاب کیا تھا۔ جو بھی اکاؤنٹ آپ نے سائٹس اور ایپس کے لیے بنایا ہے وہ حذف نہیں ہوگا۔</translation>
 <translation id="1076421457278169141">کوڈ اسکین ہوگیا</translation>
@@ -545,6 +546,7 @@
 <translation id="3227137524299004712">مائیکروفون</translation>
 <translation id="3235063766008841141">ایک فریب کار سائٹ میں داخل ہو گیا اور ڈیٹا کی خلاف ورزی میں پایا گیا</translation>
 <translation id="3235242129752692527">ایونٹ کی تفصیلات میں ترمیم کریں اور "محفوظ کریں" پر تھپتھپائیں۔</translation>
+<translation id="323863549127671026">فی الحال کھلے ٹیبز اور ٹیب گروپس</translation>
 <translation id="3240426699337459095">لنک کاپی ہوگیا</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">‏اگر آپ Chrome کے استعمال کی رپورٹس کا بھی اشتراک کرتے ہیں تو ان رپورٹس میں آپ کے ملاحظہ کردہ URLs شامل ہوں گے</translation>
@@ -592,6 +594,7 @@
 <translation id="3476450923187944815">دیگر ایپس پر اپنے پاس ورڈز تک رسائی حاصل کریں۔</translation>
 <translation id="3488501490964659223">ٹیبز کو بند کر دیا گیا تھا اور براؤزنگ ڈیٹا کو حذف کر دیا گیا تھا آپ کو سائن آؤٹ کر دیا گیا</translation>
 <translation id="3493531032208478708">تجویز کردہ مواد کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="349446645805573740">منتخب کریں کہ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" کو کہاں محفوظ کرنا ہے</translation>
 <translation id="3504377992102007712">ترتیبات</translation>
 <translation id="35083190962747987">‏{url}$ کھولیں</translation>
 <translation id="3511519535430890904">براؤزنگ کا تحفظ شامل کریں</translation>
@@ -691,6 +694,7 @@
 <translation id="3922395466317605522">مینو کو حسب ضرورت بنائیں</translation>
 <translation id="3929457972718048006">پتے</translation>
 <translation id="3931215329146376310">{count,plural, =1{اس سائٹ کے لیے نیا پاس ورڈ}other{اس سائٹ کے لیے نئے پاس ورڈز}}</translation>
+<translation id="3934905113567851655">سائز تبدیل کرنے کیلئے چٹکی بھریں</translation>
 <translation id="3940195383040445971">ٹیبز پر قیمتیں ٹریک کریں</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{‫{COUNT} ٹیب بند کریں}other{‫{COUNT} ٹیبز بند کریں}}</translation>
 <translation id="3948600256434252210">آپ پوشیدگی میں براؤز کرنے کے لیے بائیں سوائپ کر سکتے ہیں۔</translation>
@@ -1698,6 +1702,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7925108652071887026">آٹو فل ڈیٹا</translation>
 <translation id="7926975587469166629">کارڈ کا عرفی نام</translation>
 <translation id="7927711904086083099">غیر منتخب کردہ</translation>
+<translation id="7927902634113905831">وہ اکاؤنٹ منتخب کریں جسے آپ <ph name="FILESIZE" /> - "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" کو محفوظ کرنے کے لیے استعمال کرنا چاہتے ہیں</translation>
 <translation id="7930998711684428189">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو آپ کو متنبہ کرتا ہے۔</translation>
 <translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> تلاش کریں</translation>
 <translation id="7938254975914653459">FaceTime</translation>

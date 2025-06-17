@@ -4551,7 +4551,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID uređaj je povezan</translation>
 <translation id="4139326893730851150">Ažuriranja firmvera</translation>
 <translation id="4142052906269098341">Otključajte <ph name="DEVICE_TYPE" /> pomoću telefona. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">Istražite kako veštačka inteligencija oblikuje vaš doživljaj i donesite utemeljene odluke o privatnosti</translation>
 <translation id="4146026355784316281">Uvek otvaraj pomoću sistemskog prikazivača</translation>
 <translation id="4146785383423576110">Resetovanje i čišćenje</translation>
 <translation id="4147099377280085053">Izaberite tabelu sa Brajevom azbukom</translation>
@@ -6466,6 +6465,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5533343601674003130">Usluga za PDF</translation>
 <translation id="5537725057119320332">Prebacuj</translation>
 <translation id="5539070192556911367">Google nije dostupan</translation>
+<translation id="5541091577812545428">Lozinka nije promenjena</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5542750926112347543">Kolačići sa <ph name="DOMAIN" /> su blokirani</translation>
 <translation id="5542949973455282971">Povezuje se sa mrežom <ph name="CARRIER_NAME" /></translation>
@@ -8273,6 +8273,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6841186874966388268">Greške</translation>
 <translation id="6842135459748401207">Samo uređaji prijavljeni na <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">Da biste bili sigurni da uvek možete da pristupate sačuvanim lozinkama, potvrdite da ste to vi</translation>
+<translation id="6842670680297285750">Novi podeljeni prikaz sa aktuelnom karticom</translation>
 <translation id="6842749380892715807">XML liste sajtova su poslednji put preuzete: <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Sajtovi obično otkrivaju kada aktivno koristite uređaj radi podešavanja dostupnosti u aplikacijama za čet</translation>
 <translation id="6843264316370513305">Otklanjanje grešaka na mreži</translation>
@@ -9293,6 +9294,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7585106857920830898">Proverava se da li je u skladu sa bezbednosnim smernicama organizacije…</translation>
 <translation id="7586498138629385861">Chrome će nastaviti da radi dok su Chrome aplikacije otvorene.</translation>
 <translation id="7587806318633605613">Istorija predloga</translation>
+<translation id="7589448773774086276">Novi podeljeni prikaz sa aktuelnom karticom</translation>
 <translation id="7589461650300748890">Polako. Budite oprezni.</translation>
 <translation id="7590883480672980941">Podešavanja unosa</translation>
 <translation id="7592060599656252486">Delimičan</translation>
@@ -10241,6 +10243,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8230134520748321204">Želite li da sačuvate lozinku za <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">Izbrišite akreditiv <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Ne dozvolite sajtovima prikazivanje slika</translation>
+<translation id="8231438895476693774">Dodaj karticu u novi podeljeni prikaz</translation>
 <translation id="823226567613548870">izbrišite <ph name="BRAND" /> podatke</translation>
 <translation id="8233028084277069927">Otvoreno sada</translation>
 <translation id="8234795456569844941">Pomozite našim inženjerima da reše problem. Recite nam šta se dogodilo neposredno pre nego što ste dobili poruku o grešci na profilu:</translation>
@@ -10253,6 +10256,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8239932336306009582">Nije dozvoljeno slanje obaveštenja</translation>
 <translation id="8241040075392580210">Oblačko</translation>
 <translation id="8241338426526905580">Nema sertifikata</translation>
+<translation id="8241650983304689286">Dodaj karticu u novi podeljeni prikaz</translation>
 <translation id="8241806945692107836">Utvrđivanje konfiguracije uređaja...</translation>
 <translation id="8241868517363889229">Čitanje i menjanje obeleživača</translation>
 <translation id="8242273718576931540">Uređaj ne može da se poveže sa ovom mrežom. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>

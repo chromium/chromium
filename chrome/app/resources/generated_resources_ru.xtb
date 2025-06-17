@@ -2168,6 +2168,7 @@
 <translation id="24786041351753425">Включение сервиса восстановления данных</translation>
 <translation id="2479541499757560845">Настройки экранной клавиатуры</translation>
 <translation id="2480868415629598489">Изменение копируемых и вставляемых данных</translation>
+<translation id="2480881140544300950">Текущая поисковая система управляет страницей быстрого доступа</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2482895651873876648">Вкладка перемещена в группу "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Выбор поисковой системы в настройках браузера Chrome</translation>
@@ -4554,7 +4555,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – подключено HID-устройство</translation>
 <translation id="4139326893730851150">Обновления встроенного ПО</translation>
 <translation id="4142052906269098341">Разблокировка устройства <ph name="DEVICE_TYPE" /> с помощью телефона. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">Узнайте больше о работе с ИИ и выберите настройки конфиденциальности, которые подходят именно вам.</translation>
 <translation id="4146026355784316281">Всегда открывать в программе просмотра по умолчанию</translation>
 <translation id="4146785383423576110">Сброс настроек и удаление вредоносного ПО</translation>
 <translation id="4147099377280085053">Вид шрифта Брайля</translation>
@@ -5369,6 +5369,7 @@
 <translation id="4742970037960872810">Снять выделение</translation>
 <translation id="4743260470722568160">Подробнее о том, <ph name="BEGIN_LINK" />как обновлять приложения<ph name="END_LINK" />…</translation>
 <translation id="4743990041512863976">Разрешено (<ph name="PERMISSION_DETAILS" />). Предоставьте <ph name="LINK_BEGIN" />доступ к микрофону на уровне системы<ph name="LINK_END" />.</translation>
+<translation id="4744172369799559159">Чтобы улучшать эту функцию, наши специалисты проверяют страницы с паролями и сопутствующую информацию. Однако ваш пароль зашифрован и его никто не видит.</translation>
 <translation id="4744260496658845719">Яркость подсветки клавиатуры</translation>
 <translation id="4744268813103118742">Перейти на сайт</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6327,6 +6328,7 @@
 <translation id="5434065355175441495">PKCS #1 шифрование RSA</translation>
 <translation id="5435274640623994081">Включить ведение журнала для звуковых сигналов</translation>
 <translation id="5435779377906857208">Сообщать сайту <ph name="HOST" />, где я нахожусь</translation>
+<translation id="5436211819997237281">Текущее расширение управляет страницей быстрого доступа</translation>
 <translation id="5436492226391861498">Ожидание создания туннеля прокси...</translation>
 <translation id="5436510242972373446">Искать на <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> окно, ширина – <ph name="WINDOW_SIZE_PERCENT" />, <ph name="PANE_SIDE" /> панель, ширина – <ph name="PANE_SIZE_PERCENT" />.</translation>
@@ -9222,6 +9224,7 @@
 <translation id="7529411698175791732">Проверьте подключение к Интернету. Если оно установлено, попробуйте выйти из аккаунта и войти снова.</translation>
 <translation id="7529865045818406536">Предпочитаемые сети используются, когда доступно несколько сетей, к которым вы подключались ранее</translation>
 <translation id="7530016656428373557">Скорость разрядки в ваттах</translation>
+<translation id="7530215951451994972">Создание изображения</translation>
 <translation id="7531771599742723865">Устройство сейчас используется</translation>
 <translation id="7531779363494549572">Откройте настройки устройства и выберите "Приложения и уведомления &gt; Уведомления".</translation>
 <translation id="7532009420053991888">Приложение "<ph name="LINUX_APP_NAME" />" не отвечает. Чтобы выйти из него, нажмите "Закрыть принудительно".</translation>

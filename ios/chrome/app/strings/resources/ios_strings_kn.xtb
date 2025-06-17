@@ -18,6 +18,7 @@
 <translation id="1054745118061919935">ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK" />ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ.</translation>
 <translation id="10614374240317010">ಉಳಿಸಿಯೇ ಇಲ್ಲ</translation>
 <translation id="1062138828266376352">ನಿಮ್ಮ ಪಿನ್ ಬದಲಾಗಿಲ್ಲ. ನಿಮ್ಮ ಇಂಟರ್‌ನೆಟ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) ಅನ್ನು ಎಲ್ಲಿ ಸೇವ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="1072476005125066234">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಆಧರಿಸಿದ ವಿಮರ್ಶೆಗಳು</translation>
 <translation id="1074827084851510304">ನೀವು {password_count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಸೈನ್-ಇನ್ ಮಾಹಿತಿಯನ್ನು ಎಂದಿಗೂ ಸೇವ್ ಮಾಡದಿರಲು ಆಯ್ಕೆ ಮಾಡಿಕೊಂಡಿರುವ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೈಟ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಅಳಿಸಲಿದ್ದೀರಿ. ಸೈಟ್‌ಗಳು ಅಥವಾ ಆ್ಯಪ್‌ಗಳಿಗಾಗಿ ನೀವು ರಚಿಸಿದ ಯಾವುದೇ ಖಾತೆಯನ್ನು ಅಳಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="1076421457278169141">ಕೋಡ್‌ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -593,6 +594,7 @@
 <translation id="3476450923187944815">ಇತರ ಆ್ಯಪ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ.</translation>
 <translation id="3488501490964659223">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗಿದೆ ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗಿದೆ. ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3493531032208478708">ಸೂಚಿಸಲಾದ ವಿಷಯದ ಕುರಿತು <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
+<translation id="349446645805573740">ಎಲ್ಲಿ ಸೇವ್ ಮಾಡಬೇಕೆಂದು ಆಯ್ಕೆಮಾಡಿ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="35083190962747987">${url} ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3511519535430890904">ಬ್ರೌಸಿಂಗ್‌ ರಕ್ಷಣೆಯನ್ನು ಸೇರಿಸಿ</translation>
@@ -692,6 +694,7 @@
 <translation id="3922395466317605522">ಮೆನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="3929457972718048006">ವಿಳಾಸಗಳು</translation>
 <translation id="3931215329146376310">{count,plural, =1{ಈ ಸೈಟ್‌ನ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌}one{ಈ ಸೈಟ್‌ಗಳ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{ಈ ಸೈಟ್‌ಗಳ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
+<translation id="3934905113567851655">ಮರುಗಾತ್ರಗೊಳಿಸಲು ಪಿಂಚ್ ಮಾಡಿ</translation>
 <translation id="3940195383040445971">ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಬೆಲೆಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ಟ್ಯಾಬ್‌ ಅನ್ನು ಮುಚ್ಚಿರಿ}one{{COUNT} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}other{{COUNT} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}}</translation>
 <translation id="3948600256434252210">ಅಜ್ಞಾತದಲ್ಲಿ ಬ್ರೌಸ್ ಮಾಡಲು ನೀವು ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಬಹುದು.</translation>
@@ -1699,6 +1702,7 @@
 <translation id="7925108652071887026">ಸ್ವಯಂಭರ್ತಿ ಡೇಟಾ</translation>
 <translation id="7926975587469166629">ಕಾರ್ಡ್ ಅಡ್ಡ ಹೆಸರು</translation>
 <translation id="7927711904086083099">ಆಯ್ಕೆಮಾಡಲಾಗಿಲ್ಲ</translation>
+<translation id="7927902634113905831">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" - <ph name="FILESIZE" /> ಅನ್ನು ಸೇವ್ ಮಾಡಲು ನೀವು ಬಳಸಲು ಬಯಸುವ ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7930998711684428189">ಡೇಟಾ ಉಲ್ಲಂಘನೆಯ ಮೂಲಕ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಬಹಿರಂಗವಾದರೆ, ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ.</translation>
 <translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="7938254975914653459">FaceTime</translation>

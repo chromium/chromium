@@ -4563,7 +4563,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID పరికరం కనెక్ట్ చేయబడింది</translation>
 <translation id="4139326893730851150">ఫర్మ్‌వేర్ అప్‌డేట్‌లు</translation>
 <translation id="4142052906269098341">మీ ఫోన్‌తో <ph name="DEVICE_TYPE" />ను అన్‌లాక్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">AI మీ ఎక్స్‌పీరియన్స్‌ను ఎలా మెరుగుపరుస్తుందో, మీ గోప్యత విషయంలో సున్నితత్వాన్ని గుర్తెరిగి ఏవిధంగా సరైన నిర్ణయాలు తీసుకుంటుందో తెలుసుకోండి.</translation>
 <translation id="4146026355784316281">ఎల్లప్పుడూ సిస్టమ్ వ్యూయర్‌తో తెరువు</translation>
 <translation id="4146785383423576110">రీసెట్ చేసి హానికరమైన వాటిని తీసివేయండి</translation>
 <translation id="4147099377280085053">బ్రెయిలీ టేబుల్‌ను ఎంచుకోండి</translation>
@@ -6477,6 +6476,7 @@
 <translation id="5533343601674003130">PDF సర్వీస్</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5539070192556911367">Googleను చేరుకోవడం సాధ్యం కాలేదు</translation>
+<translation id="5541091577812545428">పాస్‌వర్డ్ మారలేదు</translation>
 <translation id="5542132724887566711">ప్రొఫైల్</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> నుండి కుక్కీలు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" />కు కనెక్ట్ చేయబడుతోంది</translation>
@@ -8279,6 +8279,7 @@
 <translation id="6841186874966388268">లోపాలు</translation>
 <translation id="6842135459748401207"><ph name="USER_EMAIL" />‌తో సైన్ ఇన్ చేసిన పరికరాలు మాత్రమే కనెక్ట్ అవుతాయి</translation>
 <translation id="6842136130964845393">మీరు మీ సేవ్ చేయబడిన పాస్‌వర్డ్‌లను ఎల్లప్పుడూ యాక్సెస్ చేయగలరని నిర్ధారించుకోవడానికి, అది మీరేనని వెరిఫై చేయండి</translation>
+<translation id="6842670680297285750">ప్రస్తుత ట్యాబ్‌తో కూడిన కొత్త స్ప్లిట్ వీక్షణ</translation>
 <translation id="6842749380892715807">XML సైట్‌లిస్ట్‌లు చివరిగా <ph name="LAST_DATE_DOWNLOAD" />న డౌన్‌లోడ్ చేయబడ్డాయి.</translation>
 <translation id="6842868554183332230">చాట్ యాప్‌లలో మీ లభ్యతను సెట్ చేయడానికి మీరు మీ పరికరాన్ని యాక్టివ్‌గా ఉపయోగిస్తున్నప్పుడు సాధారణంగా సైట్‌లు గుర్తిస్తాయి</translation>
 <translation id="6843264316370513305">నెట్‌వర్క్ డీబగ్గింగ్</translation>
@@ -9298,6 +9299,7 @@
 <translation id="7585106857920830898">మీ సంస్థకు చెందిన సెక్యూరిటీ పాలసీలతో చెక్ చేస్తోంది...</translation>
 <translation id="7586498138629385861">Chrome యాప్‌లు తెరవబడి ఉన్నప్పుడు Chrome నిరంతరాయంగా అమలులో ఉంటుంది.</translation>
 <translation id="7587806318633605613">సూచన హిస్టరీ</translation>
+<translation id="7589448773774086276">ప్రస్తుత ట్యాబ్‌తో కూడిన కొత్త స్ప్లిట్ వీక్షణ</translation>
 <translation id="7589461650300748890">అయ్యో, అక్కడ. జాగ్రత్తగా ఉండండి.</translation>
 <translation id="7590883480672980941">ఇన్‌పుట్ సెట్టింగ్‌లు</translation>
 <translation id="7592060599656252486">కొన్ని</translation>
@@ -10242,6 +10244,7 @@
 <translation id="8230134520748321204"><ph name="ORIGIN" /> కోసం పాస్‌వర్డ్‌ని సేవ్ చేయాలా?</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" />ను తొలగించండి</translation>
 <translation id="8230446983261649357">ఇమేజ్‌లను చూపించడానికి సైట్‌లను అనుమతించకండి</translation>
+<translation id="8231438895476693774">కొత్త స్ప్లిట్ వీక్షణకు ట్యాబ్‌ను జోడించండి</translation>
 <translation id="823226567613548870">మీ <ph name="BRAND" /> డేటాను తొలగించండి</translation>
 <translation id="8233028084277069927">ఇప్పుడే తెరవండి</translation>
 <translation id="8234795456569844941">దయచేసి ఈ సమస్యను పరిష్కరించడంలో మా ఇంజినీర్‌లకు సహాయపడండి. ప్రొఫైల్ ఎర్రర్ మెసేజ్‌ ఎదురయ్యే ముందు ఏమి జరిగిందో మాకు తెలియజేయండి:</translation>
@@ -10254,6 +10257,7 @@
 <translation id="8239932336306009582">నోటిఫికేషన్‌లను పంపడానికి అనుమతి లేని సైట్‌లు</translation>
 <translation id="8241040075392580210">షేడీ</translation>
 <translation id="8241338426526905580">సర్టిఫికెట్‌లేవీ లేవు</translation>
+<translation id="8241650983304689286">కొత్త స్ప్లిట్ వీక్షణకు ట్యాబ్‌ను జోడించండి</translation>
 <translation id="8241806945692107836">పరికర కాన్ఫిగరేషన్‌ను గుర్తిస్తోంది...</translation>
 <translation id="8241868517363889229">మీ బుక్‌మార్క్‌లను చదవడం మరియు మార్చడం</translation>
 <translation id="8242273718576931540">మీ పరికరం ఈ నెట్‌వర్క్‌కు కనెక్ట్ కాలేదు. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>

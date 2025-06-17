@@ -2227,6 +2227,7 @@
 <translation id="2514326558286966059">ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಮೂಲಕ ವೇಗವಾಗಿ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="2514465118223423406">ಮೌಸ್ ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಿದಾಗ</translation>
 <translation id="2514938842036917377"><ph name="SITE_NAME" />, ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳು ಮತ್ತು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ <ph name="TOTAL_USAGE" /> ಡೇಟಾವನ್ನು ಇದು ಅಳಿಸುತ್ತದೆ</translation>
+<translation id="2515489088825102986">ಈ ಫೀಚರ್ ಮತ್ತು ನಿಮ್ಮ ಗೌಪ್ಯತೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="2517472476991765520">ಸ್ಕ್ಯಾನ್</translation>
@@ -3428,6 +3429,7 @@
 <translation id="3387829698079331264">ನಿಮ್ಮ ಸಾಧನವನ್ನು ನೀವು ಸಕ್ರಿಯವಾಗಿ ಬಳಸುತ್ತಿರುವುದನ್ನು ತಿಳಿದುಕೊಳ್ಳಲು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="3388094447051599208">ಔಟ್‌ಪುಟ್ ಟ್ರೇ ಬಹುತೇಕ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="3388788256054548012">ಈ ಫೈಲ್ ಅನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಅದನ್ನು ಡಿಕ್ರಿಪ್ಟ್ ಮಾಡಲು ಅದರ ಮಾಲೀಕರಿಗೆ ಕೇಳಿ.</translation>
+<translation id="3389326266972418853">ಸ್ವಯಂಚಾಲಿತ ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾವಣೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು</translation>
 <translation id="3390013585654699824">ಆ್ಯಪ್‌ ವಿವರಗಳು</translation>
 <translation id="3390442085511866400">ವೀಡಿಯೊ ಫ್ರೇಮ್ ಅನ್ನು ಹೀಗೆ ಸೇವ್ ಮಾಡಿ...</translation>
 <translation id="3390530051434634135">ಟಿಪ್ಪಣಿ: <ph name="NOTE" /></translation>
@@ -4558,7 +4560,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID ಸಾಧನವು ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="4139326893730851150">ಫರ್ಮ್‌‌ವೇರ್‌‌ ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="4142052906269098341">ನಿಮ್ಮ ಫೋನ್‌ನ ಮೂಲಕ, ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">AI ನಿಮ್ಮ ಅನುಭವವನ್ನು ಹೇಗೆ ರೂಪಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ ಹಾಗೂ ನಿಮ್ಮ ಗೌಪ್ಯತೆಯ ಕುರಿತು ತಿಳುವಳಿಕೆಯುಳ್ಳ ಆಯ್ಕೆಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="4146026355784316281">ಯಾವಾಗಲೂ ಸಿಸ್ಟಂ ವೀಕ್ಷಕದ ಜೊತೆಗೆ ತೆರೆಯಿರಿ</translation>
 <translation id="4146785383423576110">ಮರುಹೊಂದಿಸಿ ಮತ್ತು ಸ್ವಚ್ಛಗೊಳಿಸಿ</translation>
 <translation id="4147099377280085053">ಬ್ರೈಲ್ ಟೇಬಲ್ ಒಂದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -5378,6 +5379,7 @@
 <translation id="4744268813103118742">ಸೈಟ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ಸೈಟ್‌ ಅನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}one{ಸೈಟ್‌ ಅನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}other{ಸೈಟ್‌ಗಳನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}}</translation>
+<translation id="4745096442457817087">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಸಾರ್ವಜನಿಕ ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="4745500401920035244">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸಿಸ್ಟಂನಾದ್ಯಂತ ಒಂದು ಬದಲಾವಣೆಯನ್ನು ಮಾಡಿದ್ದಾರೆ. ಇದರಿಂದಾಗಿ ಕೆಲವು ಹಳೆಯ ಪ್ರೊಫೈಲ್‌ಗಳು ನಿಷ್ಕ್ರಿಯವಾಗುತ್ತವೆ. ನೀವು ಇನ್ನು ಮುಂದೆ ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ, ಆದರೆ ಅದನ್ನು ಈಗಲೂ ತೆಗೆದುಹಾಕಬಹುದು</translation>
 <translation id="474609389162964566">"Ok Google" ಎಂದು ಎಚ್ಚರಿಸುವ ಮೂಲಕ ನಿಮ್ಮ Assistant ಅನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="4746757725581505837">ಈ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಿರುವ ನಿಮ್ಮ <ph name="BRAND" /> ಡೇಟಾವನ್ನು ನೀವು ಅಳಿಸಲಿದ್ದೀರಿ</translation>
@@ -6474,6 +6476,7 @@
 <translation id="5533343601674003130">PDF ಸೇವೆಗಳು</translation>
 <translation id="5537725057119320332">ಪಾತ್ರವರ್ಗ</translation>
 <translation id="5539070192556911367">Google ತಲುಪಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
+<translation id="5541091577812545428">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾಗಿಲ್ಲ</translation>
 <translation id="5542132724887566711">ಪ್ರೊಫೈಲ್</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> ನ ಕುಕೀಸ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> ಗೆ ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -8279,6 +8282,7 @@
 <translation id="6841186874966388268">ದೋಷಗಳು</translation>
 <translation id="6842135459748401207"><ph name="USER_EMAIL" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರುವ ಸಾಧನಗಳು ಮಾತ್ರ</translation>
 <translation id="6842136130964845393">ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಗೆ ನೀವು ಯಾವಾಗಲೂ ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗುವ ಹಾಗೆ ನೋಡಿಕೊಳ್ಳಲು, ಅದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ</translation>
+<translation id="6842670680297285750">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್‌ನೊಂದಿಗೆ ಹೊಸ ಸ್ಪ್ಲಿಟ್ ವೀಕ್ಷಣೆ</translation>
 <translation id="6842749380892715807">XML ಸೈಟ್‌ಲಿಸ್ಟ್‌ಗಳನ್ನು ಕೊನೆಯದಾಗಿ <ph name="LAST_DATE_DOWNLOAD" /> ರಂದು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="6842868554183332230">ಚಾಟ್ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಲಭ್ಯತೆಯನ್ನು ಹೊಂದಿಸಲು ನಿಮ್ಮ ಸಾಧನವನ್ನು ನೀವು ಸಕ್ರಿಯವಾಗಿ ಬಳಸುತ್ತಿರುವುದನ್ನು ಸಾಮಾನ್ಯವಾಗಿ ಸೈಟ್‌ಗಳು ಪತ್ತೆಮಾಡುತ್ತವೆ</translation>
 <translation id="6843264316370513305">ನೆಟ್‌ವರ್ಕ್ ಡೀಬಗ್ ಮಾಡುವಿಕೆ</translation>
@@ -9299,6 +9303,7 @@
 <translation id="7585106857920830898">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಭದ್ರತಾ ನೀತಿಗಳ ಜೊತೆಗೆ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7586498138629385861">Chrome Apps ತೆರೆದಿರುವಾಗ Chrome ರನ್ ಆಗುತ್ತಲೇ ಇರುತ್ತದೆ.</translation>
 <translation id="7587806318633605613">ಸಲಹೆಯ ಇತಿಹಾಸ</translation>
+<translation id="7589448773774086276">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್‌ನೊಂದಿಗೆ ಹೊಸ ಸ್ಪ್ಲಿಟ್ ವೀಕ್ಷಣೆ</translation>
 <translation id="7589461650300748890">ವಾಹ್, ಇಲ್ಲ. ಜಾಗರೂಕರಾಗಿರಿ.</translation>
 <translation id="7590883480672980941">ಇನ್‌ಪುಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="7592060599656252486">ಕೆಲವು</translation>
@@ -10032,6 +10037,7 @@
 <translation id="8077579734294125741">ಇತರ Chrome ಪ್ರೊಫೈಲ್‌ಗಳು</translation>
 <translation id="8077749280021225629">ನಿಮ್ಮನ್ನು <ph name="DOMAIN" /> ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಬಹುದಾದ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು (<ph name="URL" />) ಸಹ ಅಳಿಸಿ. <ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಾಟ</translation>
+<translation id="8079606020824373126">Google Password Manager ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಸದೃಢ ಪಾಸ್‌ವರ್ಡ್‌ನೊಂದಿಗೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಬಹುದು ಮತ್ತು ಅದನ್ನು <ph name="EMAIL" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಬಹುದು. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">ನಿಮ್ಮ ಎಲ್ಲಾ ಡಿಸ್‌ಪ್ಲೇಗಳಲ್ಲಿ ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
 <translation id="8080028325999236607">ಎಲ್ಲ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="8081989000209387414">ADB ಡೀಬಗ್ ಮಾಡುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬೇಕೇ?</translation>
@@ -10243,6 +10249,7 @@
 <translation id="8230134520748321204"><ph name="ORIGIN" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ ಉಳಿಸುವುದೇ?</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" /> ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="8230446983261649357">ಚಿತ್ರಗಳನ್ನು ತೋರಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
+<translation id="8231438895476693774">ಹೊಸ ಸ್ಪ್ಲಿಟ್ ವೀಕ್ಷಣೆಗೆ ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="823226567613548870">ನಿಮ್ಮ <ph name="BRAND" /> ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="8233028084277069927">ತೆರೆದಿದೆ</translation>
 <translation id="8234795456569844941">ಈ ಸಮಸ್ಯೆಯನ್ನು ಸರಿಪಡಿಸಲು ನಮ್ಮ ಇಂಜಿನಿಯರ್‌ಗಳಿಗೆ ಸಹಾಯ ಮಾಡಿ. ಪ್ರೊಫೈಲ್ ದೋಷ ಸಂದೇಶವನ್ನು ಪಡೆಯುವುದಕ್ಕೆ ಸ್ವಲ್ಪ ಮೊದಲು ಏನಾಯಿತು ಎಂದು ನಮಗೆ ತಿಳಿಸಿ:</translation>
@@ -10255,6 +10262,7 @@
 <translation id="8239932336306009582">ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="8241040075392580210">ಶಾಡಿ</translation>
 <translation id="8241338426526905580">ಯಾವುದೇ ಪ್ರಮಾಣಪತ್ರಗಳಿಲ್ಲ</translation>
+<translation id="8241650983304689286">ಹೊಸ ಸ್ಪ್ಲಿಟ್ ವೀಕ್ಷಣೆಗೆ ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8241806945692107836">ಸಾಧನದ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ನಿರ್ಧರಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8241868517363889229">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಓದಿ ಮತ್ತು ಬದಲಾಯಿಸಿ</translation>
 <translation id="8242273718576931540">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>

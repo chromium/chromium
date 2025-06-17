@@ -18,6 +18,7 @@
 <translation id="1054745118061919935">En continuant, vous acceptez les <ph name="BEGIN_LINK" />conditions d'utilisation<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Jamais enregistrés</translation>
 <translation id="1062138828266376352">Votre NIP n'a pas été modifié. Vérifiez votre connexion Internet et réessayez</translation>
+<translation id="1063070031224282617">Choisissez l'endroit où enregistrer « <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> » (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Avis en fonction de vos centres d'intérêt</translation>
 <translation id="1074827084851510304">Vous êtes sur le point de supprimer {password_count} mots de passe et la liste des sites et des applis pour lesquels vous avez choisi de ne jamais enregistrer les renseignements de connexion. Tout compte que vous avez créé pour des sites ou des applis ne sera pas supprimé.</translation>
 <translation id="1076421457278169141">Code numérisé</translation>
@@ -545,6 +546,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3235063766008841141">Entré sur un site trompeur et trouvé dans une violation de données</translation>
 <translation id="3235242129752692527">Modifiez les détails de l'événement et touchez « Enregistrer ».</translation>
+<translation id="323863549127671026">Les onglets et les groupes d'onglets actuellement ouverts</translation>
 <translation id="3240426699337459095">Lien copié</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation de Chrome, ceux-ci incluent les URL que vous consultez</translation>
@@ -592,6 +594,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3476450923187944815">Accédez à vos mots de passe sur d'autres applications.</translation>
 <translation id="3488501490964659223">Les onglets ont été fermés, et les données de navigation ont été supprimées. Vous avez été déconnecté</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
+<translation id="349446645805573740">Choisissez l'endroit où enregistrer « <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> »</translation>
 <translation id="3504377992102007712">Réglages</translation>
 <translation id="35083190962747987">Ouvrir ${url}</translation>
 <translation id="3511519535430890904">Ajouter une protection de la navigation</translation>
@@ -691,6 +694,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3922395466317605522">Personnaliser le menu</translation>
 <translation id="3929457972718048006">Adresses</translation>
 <translation id="3931215329146376310">{count,plural, =1{Nouveau mot de passe pour ce site}one{Nouveau mot de passe pour ce site}other{Nouveaux mots de passe pour ce site}}</translation>
+<translation id="3934905113567851655">Pincez l'écran pour effectuer un redimensionnement</translation>
 <translation id="3940195383040445971">Suivi des prix dans des onglets</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}other{Fermer {COUNT} onglets}}</translation>
 <translation id="3948600256434252210">Vous pouvez balayer l'écran vers la droite pour naviguer en mode Navigation privée.</translation>
@@ -1698,6 +1702,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7925108652071887026">Données de remplissage automatique</translation>
 <translation id="7926975587469166629">Pseudo de la carte</translation>
 <translation id="7927711904086083099">Non sélectionné</translation>
+<translation id="7927902634113905831">Sélectionnez le compte que vous souhaitez utiliser pour enregistrer « <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> » (<ph name="FILESIZE" />)</translation>
 <translation id="7930998711684428189">Il vous envoie un avertissement si des mots de passe sont exposés dans une violation de données.</translation>
 <translation id="7933880123415105005">Rechercher sur <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>

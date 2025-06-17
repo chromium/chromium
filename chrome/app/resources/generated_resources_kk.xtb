@@ -2163,6 +2163,7 @@
 <translation id="24786041351753425">Деректерді қалпына келтіру қызметін қосу</translation>
 <translation id="2479541499757560845">Арнайы мүмкіндіктері бар пернетақта параметрлері</translation>
 <translation id="2480868415629598489">Көшіріліп қойылатын деректерді жаңарту</translation>
+<translation id="2480881140544300950">"Жаңа қойынды" бетін қазіргі іздеу жүйесі басқарып жатыр</translation>
 <translation id="2482878487686419369">Хабарландырулар</translation>
 <translation id="2482895651873876648">Қойынды "<ph name="GROUP_NAME" />" тобына (<ph name="GROUP_CONTENTS" />) жылжытылды.</translation>
 <translation id="2483627560139625913">Chrome браузерінің параметрлерінде іздеу жүйесін орнату</translation>
@@ -4547,7 +4548,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID құрылғысы қосылған</translation>
 <translation id="4139326893730851150">Микробағдарлама жаңартулары</translation>
 <translation id="4142052906269098341">Телефон арқылы <ph name="DEVICE_TYPE" /> құрылғысының құлпын ашыңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
-<translation id="4143606504420684845">Жасанды интеллект қандай мүмкіндіктер ұсынатынын зерттеп, құпиялыққа қатысты дұрыс таңдау жасаңыз.</translation>
 <translation id="4146026355784316281">Әрқашан жүйелік көру құралымен ашу</translation>
 <translation id="4146785383423576110">Бастапқы күйге қайтару және жою</translation>
 <translation id="4147099377280085053">Брайль қарпінің кестесін таңдау</translation>
@@ -5362,6 +5362,7 @@
 <translation id="4742970037960872810">Ерекшелемеу</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Қолданбаларды жаңарту әдісі туралы ақпарат алу<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Рұқсат етілген (<ph name="PERMISSION_DETAILS" />). <ph name="LINK_BEGIN" />Жүйенің микрофонды пайдалану рұқсатын<ph name="LINK_END" /> қосыңыз.</translation>
+<translation id="4744172369799559159">Мамандар бұл функцияны жақсарту үшін құпия сөз беттері мен оған қатысты ақпаратты тексереді, дегенмен құпия сөз шифрланады және ешкімге көрсетілмейді.</translation>
 <translation id="4744260496658845719">Пернетақта жарығының жарықтығы</translation>
 <translation id="4744268813103118742">Сайтқа кіру</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6319,6 +6320,7 @@
 <translation id="5434065355175441495">PKCS #1 RSA шифрлауы</translation>
 <translation id="5435274640623994081">Earcon журналын қосу</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> сайтына геодерегіңізді пайдалануға әрқашан рұқсат беру</translation>
+<translation id="5436211819997237281">"Жаңа қойынды" бетін қазіргі кеңейтім басқарып жатыр</translation>
 <translation id="5436492226391861498">Прокси туннелі күтілуде…</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> іздеу:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> терезе ені — <ph name="WINDOW_SIZE_PERCENT" />, <ph name="PANE_SIDE" /> панель ені — <ph name="PANE_SIZE_PERCENT" />.</translation>
@@ -9204,6 +9206,7 @@
 <translation id="7529411698175791732">Интернет байланысын тексеріңіз. Егер мәселе шешілмесе, жүйеден шығып, қайта кіріп көріңіз.</translation>
 <translation id="7529865045818406536">Бірнеше алдыңғы желі қолжетімді болса, таңдаулы желілер пайдаланылады.</translation>
 <translation id="7530016656428373557">Зарядтың азаю жылдамдығы ватпен берілген</translation>
+<translation id="7530215951451994972">Сурет жасау</translation>
 <translation id="7531771599742723865">Құрылғы қолданылып жатыр</translation>
 <translation id="7531779363494549572">"Параметрлер &gt; Қолданбалар мен хабарландырулар &gt; Хабарландырулар" тармағына өтіңіз.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> жауап бермей жатыр. Оны жабу үшін "Қолмен жабу" опциясын таңдаңыз.</translation>
