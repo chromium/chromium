@@ -1,14 +1,14 @@
 Name: hunspell
 URL: http://hunspell.sourceforge.net/
-Version: d6a5ae5
-CPEPrefix: cpe:/a:hunspell_project:hunspell:1.7.0
-License: MPL 1.1/GPL 2.0/LGPL 2.1
+Version: v1.7.1
+CPEPrefix: cpe:/a:hunspell_project:hunspell:1.7.1
+License: MPL-1.1
 License File: COPYING.MPL
 Security Critical: yes
 Shipped: yes
 
 Description:
-This is a partial copy of Hunspell d6a5ae5 with the following changes:
+This is a partial copy of Hunspell v1.7.1 with the following changes:
 * Move README.md onto the README symlink.
 * Change src/hunspell/filemgr.hxx and src/hunspell/filemgr.cxx to use
   LineIterator.
@@ -34,20 +34,25 @@ steps.
 2) Checkout hunspell:
    $ git clone https://github.com/hunspell/hunspell.git
    $ cd hunspell
-   $ git checkout d6a5ae5
-3) Apply the existing patch:
+   $ git checkout v1.7.1
+3) Apply Hunspell patches and make a throwaway commit:
+   $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/correction-of-a-knowingly-false-condition.patch
+   $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/speed-up-hunspell-inner-loop.patch
+   $ patch -p1 --no-backup-if-mismatch -i $CHROMIUM_HUNSPELL/WaE-overflow-in-expression.patch
+   $ git commit -am "Apply Hunspell-specific patches"
+4) Apply the existing patch:
    $ patch -p1 -i $CHROMIUM_HUNSPELL/google.patch
-4) Make your new changes inside the git hunspell directory.
-5) Generate the updated patch:
+5) Make your new changes inside the git hunspell directory.
+6) Generate the updated patch:
    $ git diff > $CHROMIUM_HUNSPELL/google.patch
-6) Copy the patched source to Chromium:
+7) Copy the patched source to Chromium:
    $ cp -r src/ README.md COPYING* license* $CHROMIUM_HUNSPELL
    $ rm -r $CHROMIUM_HUNSPELL/src/Makefile.am \
        $CHROMIUM_HUNSPELL/src/hunspell/Makefile.am \
        $CHROMIUM_HUNSPELL/src/parsers/.gitignore \
        $CHROMIUM_HUNSPELL/src/parsers/Makefile.am \
        $CHROMIUM_HUNSPELL/src/tools/
-7) In the Chromium src folder:
+8) In the Chromium src folder:
    $ git add third_party/hunspell
 
 All dictionaries used by Chromium has been checked in to the

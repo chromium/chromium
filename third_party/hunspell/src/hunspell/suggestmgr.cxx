@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -332,7 +332,7 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
     if (slst.size() < maxSug) {
       size_t i = slst.size();
       if (utf8)
-        capchars_utf(slst, &word_utf[0], wl, cpdsuggest);
+        capchars_utf(slst, word_utf.data(), wl, cpdsuggest);
       else
         capchars(slst, word, cpdsuggest);
       if (slst.size() > i)
@@ -364,7 +364,7 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
     // did we swap the order of chars by mistake
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        swapchar_utf(slst, &word_utf[0], wl, cpdsuggest);
+        swapchar_utf(slst, word_utf.data(), wl, cpdsuggest);
       else
         swapchar(slst, word, cpdsuggest);
     }
@@ -374,7 +374,7 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
     // did we swap the order of non adjacent chars by mistake
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        longswapchar_utf(slst, &word_utf[0], wl, cpdsuggest);
+        longswapchar_utf(slst, word_utf.data(), wl, cpdsuggest);
       else
         longswapchar(slst, word, cpdsuggest);
     }
@@ -384,7 +384,7 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
     // did we just hit the wrong key in place of a good char (case and keyboard)
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        badcharkey_utf(slst, &word_utf[0], wl, cpdsuggest);
+        badcharkey_utf(slst, word_utf.data(), wl, cpdsuggest);
       else
         badcharkey(slst, word, cpdsuggest);
     }
@@ -394,7 +394,7 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
     // did we add a char that should not be there
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        extrachar_utf(slst, &word_utf[0], wl, cpdsuggest);
+        extrachar_utf(slst, word_utf.data(), wl, cpdsuggest);
       else
         extrachar(slst, word, cpdsuggest);
     }
@@ -404,7 +404,7 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
     // did we forgot a char
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        forgotchar_utf(slst, &word_utf[0], wl, cpdsuggest);
+        forgotchar_utf(slst, word_utf.data(), wl, cpdsuggest);
       else
         forgotchar(slst, word, cpdsuggest);
     }
@@ -414,7 +414,7 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
     // did we move a char
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        movechar_utf(slst, &word_utf[0], wl, cpdsuggest);
+        movechar_utf(slst, word_utf.data(), wl, cpdsuggest);
       else
         movechar(slst, word, cpdsuggest);
     }
@@ -424,7 +424,7 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
     // did we just hit the wrong key in place of a good char
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        badchar_utf(slst, &word_utf[0], wl, cpdsuggest);
+        badchar_utf(slst, word_utf.data(), wl, cpdsuggest);
       else
         badchar(slst, word, cpdsuggest);
     }
@@ -434,7 +434,7 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
     // did we double two characters
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        doubletwochars_utf(slst, &word_utf[0], wl, cpdsuggest);
+        doubletwochars_utf(slst, word_utf.data(), wl, cpdsuggest);
       else
         doubletwochars(slst, word, cpdsuggest);
     }
