@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/omnibox/browser/match_compare.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
@@ -40,6 +41,7 @@
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search/search.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -403,8 +405,16 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
     match.description_class = {{0, ACMatchClassification::NONE}};
   }
 
-  if (config.always_include_lens_action ||
-      IsLensEntrypointAvailable(input, client())) {
+  // AI and contextual search are only allowed if the DSE is google and locale
+  // is EN.
+  auto* turl_service = client()->GetTemplateURLService();
+  bool google_dse = search::DefaultSearchProviderIsGoogle(turl_service);
+  bool english_locale =
+      l10n_util::GetLanguage(client()->GetApplicationLocale()) == "en";
+
+  if (config.show_lens_action && google_dse && english_locale &&
+      (config.always_include_lens_action ||
+       IsLensEntrypointAvailable(input, client()))) {
     match.actions.push_back(
         base::MakeRefCounted<ContextualSearchOpenLensAction>());
   }
@@ -412,20 +422,26 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
   // Add the starter pack entry actions only if the given starter pack keyword
   // is enabled.
   auto check_and_add = [&]<typename T>(int starter_pack_id) {
-    if (const TemplateURL* turl =
-            client()->GetTemplateURLService()->FindStarterPackTemplateURL(
-                starter_pack_id)) {
-      if (turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {
-        match.actions.push_back(base::MakeRefCounted<T>());
-      }
-    }
+    const TemplateURL* turl =
+        turl_service->FindStarterPackTemplateURL(starter_pack_id);
+    if (!turl)
+      return;
+    if (turl->is_active() != TemplateURLData::ActiveStatus::kTrue)
+      return;
+    match.actions.push_back(base::MakeRefCounted<T>());
   };
-  check_and_add.operator()<StarterPackBookmarksAction>(
-      TemplateURLStarterPackData::StarterPackID::kBookmarks);
-  check_and_add.operator()<StarterPackTabsAction>(
-      TemplateURLStarterPackData::StarterPackID::kTabs);
-  check_and_add.operator()<StarterPackHistoryAction>(
-      TemplateURLStarterPackData::StarterPackID::kHistory);
+  if (config.show_bookmarks_action) {
+    check_and_add.operator()<StarterPackBookmarksAction>(
+        TemplateURLStarterPackData::StarterPackID::kBookmarks);
+  }
+  if (config.show_tabs_action) {
+    check_and_add.operator()<StarterPackTabsAction>(
+        TemplateURLStarterPackData::StarterPackID::kTabs);
+  }
+  if (config.show_history_action) {
+    check_and_add.operator()<StarterPackHistoryAction>(
+        TemplateURLStarterPackData::StarterPackID::kHistory);
+  }
 
   matches_.push_back(match);
   return true;

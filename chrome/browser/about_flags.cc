@@ -1584,6 +1584,17 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
+const FeatureEntry::FeatureParam kOmniboxToolbeltAggressive[] = {
+    {"KeepToolbeltAfterInput", "true"}, {"AlwaysIncludeLensAction", "false"},
+    {"ShowAiSearchAction", "true"},     {"ShowLensAction", "true"},
+    {"ShowBookmarksAction", "true"},    {"ShowTabsAction", "true"},
+    {"ShowHistoryAction", "true"},
+};
+const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
+    {"Aggressive - zero & typed inputs; all actions.",
+     kOmniboxToolbeltAggressive, std::size(kOmniboxToolbeltAggressive),
+     nullptr}};
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -6864,7 +6875,10 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"omnibox-toolbelt", flag_descriptions::kOmniboxToolbeltName,
      flag_descriptions::kOmniboxToolbeltDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox_feature_configs::Toolbelt::kOmniboxToolbelt)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox_feature_configs::Toolbelt::kOmniboxToolbelt,
+         kOmniboxToolbeltVariations,
+         "OmniboxToolbelt")},
 
     {"omnibox-domain-suggestions",
      flag_descriptions::kOmniboxDomainSuggestionsName,
@@ -12912,15 +12926,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kWebAppInstallation)},
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-BUILDFLAG(IS_WIN)
+    BUILDFLAG(IS_WIN)
     {"lens-search-side-panel-default-width-change",
      flag_descriptions::kLensSearchSidePanelDefaultWidthChangeName,
      flag_descriptions::kLensSearchSidePanelDefaultWidthChangeDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          lens::features::kLensSearchSidePanelDefaultWidthChange)},
- #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
-         // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
 
     {"transferable-resource-pass-alpha-type-directly",
      flag_descriptions::kTransferableResourcePassAlphaTypeDirectlyName,
