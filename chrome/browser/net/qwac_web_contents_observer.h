@@ -18,10 +18,26 @@
 // on main frame navigations. It then creates the QwacStatus subclass which
 // fetches the binding, verifies it, and stores the resulting 2-QWAC state on
 // content::Page's user data.
-//
-// TODO(crbug.com/392931069): Add histograms.
 class QwacWebContentsObserver : public content::WebContentsObserver {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(NetCertVerifier2QwacLinkProcessingResult)
+  enum class QwacLinkProcessingResult {
+    kQwacStatusAlreadyPresent = 0,
+    kUnacceptableSslInfo = 1,
+    kNoQwacLinkHeader = 2,
+    kInvalidQwacLinkHeader = 3,
+    kNonrelativeQwacLinkUrl = 4,
+    kDownloadFailed = 5,
+    k2QwacVerificationFailed = 6,
+    kValid2Qwac = 7,
+    kDestroyedBeforeFinish = 8,
+
+    kMaxValue = kDestroyedBeforeFinish,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NetCertVerifier2QwacLinkProcessingResult)
+
   class QwacStatus : public content::PageUserData<QwacStatus> {
    public:
     using CallbackList = base::OnceCallbackList<void()>;

@@ -701,6 +701,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/cert/cert_verify_proc_builtin.h:NetCertVerifier2QwacBindingResult) -->
 
+<!-- LINT.IfChange(NetCertVerifier2QwacLinkProcessingResult) -->
+
+<enum name="NetCertVerifier2QwacLinkProcessingResult">
+  <int value="0" label="QwacStatus already present"/>
+  <int value="1" label="unacceptable SSLInfo"/>
+  <int value="2" label="no 2-QWAC Link header"/>
+  <int value="3" label="invalid 2-QWAC Link header"/>
+  <int value="4" label="non-relative 2-QWAC Link URL"/>
+  <int value="5" label="download failed or disallowed"/>
+  <int value="6" label="verification failed"/>
+  <int value="7" label="valid 2-QWAC"/>
+  <int value="8" label="QwacStatus destroyed before processing finished"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/net/qwac_web_contents_observer.h:NetCertVerifier2QwacLinkProcessingResult) -->
+
 <enum name="NetErrorPageEvents">
   <int value="0" label="Error Page Shown">
     An error page was shown. This bucket encompasses all others and works as a

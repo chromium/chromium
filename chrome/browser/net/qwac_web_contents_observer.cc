@@ -4,6 +4,7 @@
 
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/link_header_util/link_header_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -58,6 +59,11 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         policy_exception_justification: "QWAC verification is required."
       })");
 
+void RecordHistogram(QwacWebContentsObserver::QwacLinkProcessingResult result) {
+  base::UmaHistogramEnumeration("Net.CertVerifier.Qwac.2QwacLinkProcessing",
+                                result);
+}
+
 }  // namespace
 
 PAGE_USER_DATA_KEY_IMPL(QwacWebContentsObserver::QwacStatus);
@@ -109,7 +115,11 @@ QwacWebContentsObserver::QwacStatus::QwacStatus(
       k2QwacMaxSize);
 }
 
-QwacWebContentsObserver::QwacStatus::~QwacStatus() = default;
+QwacWebContentsObserver::QwacStatus::~QwacStatus() {
+  if (!is_finished_) {
+    RecordHistogram(QwacLinkProcessingResult::kDestroyedBeforeFinish);
+  }
+}
 
 base::CallbackListSubscription
 QwacWebContentsObserver::QwacStatus::RegisterCallback(
@@ -121,6 +131,7 @@ QwacWebContentsObserver::QwacStatus::RegisterCallback(
 void QwacWebContentsObserver::QwacStatus::On2QwacDownloadComplete(
     std::optional<std::string> response_body) {
   if (!response_body) {
+    RecordHistogram(QwacLinkProcessingResult::kDownloadFailed);
     is_finished_ = true;
     callback_list_.Notify();
     return;
@@ -139,6 +150,9 @@ void QwacWebContentsObserver::QwacStatus::On2QwacDownloadComplete(
 
 void QwacWebContentsObserver::QwacStatus::On2QwacVerificationComplete(
     const scoped_refptr<net::X509Certificate>& verified_2qwac) {
+  RecordHistogram(verified_2qwac
+                      ? QwacLinkProcessingResult::kValid2Qwac
+                      : QwacLinkProcessingResult::k2QwacVerificationFailed);
   is_finished_ = true;
   verified_2qwac_ = verified_2qwac;
   callback_list_.Notify();
@@ -218,6 +232,7 @@ void QwacWebContentsObserver::DidFinishNavigation(
             status->tls_cert())) {
       // If the page wasn't reloaded, or was reloaded but the certificate
       // didn't change, then we can just reuse the existing QwacStatus.
+      RecordHistogram(QwacLinkProcessingResult::kQwacStatusAlreadyPresent);
       return;
     }
     // Otherwise, clear the existing entry and go through the fetching and
@@ -226,6 +241,7 @@ void QwacWebContentsObserver::DidFinishNavigation(
   }
 
   if (!NavigationHandleHasAcceptableSSLInfo(navigation_handle)) {
+    RecordHistogram(QwacLinkProcessingResult::kUnacceptableSslInfo);
     return;
   }
 
@@ -238,6 +254,7 @@ void QwacWebContentsObserver::DidFinishNavigation(
   std::optional<std::string> link_header =
       navigation_handle->GetResponseHeaders()->GetNormalizedHeader("link");
   if (!link_header.has_value()) {
+    RecordHistogram(QwacLinkProcessingResult::kNoQwacLinkHeader);
     return;
   }
 
@@ -264,11 +281,13 @@ void QwacWebContentsObserver::DidFinishNavigation(
   }
 
   if (qwac_binding_url.empty()) {
+    RecordHistogram(QwacLinkProcessingResult::kNoQwacLinkHeader);
     return;
   }
 
   GURL full_qwac_url = navigation_handle->GetURL().Resolve(qwac_binding_url);
   if (!full_qwac_url.is_valid()) {
+    RecordHistogram(QwacLinkProcessingResult::kInvalidQwacLinkHeader);
     return;
   }
 
@@ -281,6 +300,7 @@ void QwacWebContentsObserver::DidFinishNavigation(
   //   Certificate Binding, and a rel value of tls-certificate-binding
   if (url::SchemeHostPort(full_qwac_url) !=
       url::SchemeHostPort(navigation_handle->GetURL())) {
+    RecordHistogram(QwacLinkProcessingResult::kNonrelativeQwacLinkUrl);
     return;
   }
 

@@ -1393,6 +1393,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.CertVerifier.Qwac.2QwacLinkProcessing"
+    enum="NetCertVerifier2QwacLinkProcessingResult" expires_after="2026-03-18">
+  <owner>mattm@chromium.org</owner>
+  <owner>nharper@chromium.org</owner>
+  <owner>src/net/cert/OWNERS</owner>
+  <summary>
+    Result of processing 2-QWAC link headers.
+
+    This will be emitted only for committed TLS main frame navigations when the
+    VerifyQWACs feature flag is enabled and Chrome Root Store is being used.
+    (Notably, it is not recorded for same-page navigations, nor are Link headers
+    on main-frame redirects processed or histogrammed.)
+  </summary>
+</histogram>
+
 <histogram name="Net.CertVerifier.TimeUntilReady" units="ms"
     expires_after="2025-11-30">
   <owner>hchao@chromium.org</owner>
