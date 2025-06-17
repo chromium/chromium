@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.transit;
 
+import static org.chromium.base.test.transit.Triggers.noopTo;
+
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -71,7 +73,7 @@ public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule implemen
         WebPageStation entryPageStation = WebPageStation.newBuilder().withEntryPoint().build();
 
         // Wait for the Conditions to be met to return an active PageStation.
-        return Station.spawnSync(entryPageStation, /* trigger= */ null);
+        return noopTo().inNewTask().arriveAt(entryPageStation);
     }
 
     /**

@@ -34,6 +34,7 @@ public class TripBuilder {
     private @Nullable Station<?> mContextStation;
     private @Nullable Facility<?> mContextFacility;
     private @Nullable CarryOn mContextCarryOn;
+    private boolean mInNewTask;
 
     public TripBuilder() {}
 
@@ -90,6 +91,16 @@ public class TripBuilder {
     @CheckReturnValue
     public TripBuilder withOptions(TransitionOptions options) {
         mOptions = TransitionOptions.merge(/* primary= */ options, /* secondary= */ mOptions);
+        return this;
+    }
+
+    /**
+     * Expect the destination Station to be in a new task, and do not assume the currently active
+     * Station will be exited..
+     */
+    @CheckReturnValue
+    public TripBuilder inNewTask() {
+        mInNewTask = true;
         return this;
     }
 
@@ -228,6 +239,9 @@ public class TripBuilder {
     public void complete() {
         assert mTrigger != null : "Trigger not set";
 
+        assert !mInNewTask || mDestinationStation != null
+                : "A new Station needs to be entered in the new task";
+
         // If a context Station is required, infer it from the active Stations.
         // A context Station is required to travel to a Station or to enter Facilities.
         if (mContextStation == null
@@ -236,7 +250,7 @@ public class TripBuilder {
             if (activeStations.size() == 1) {
                 mContextStation = activeStations.get(0);
             } else {
-                assert false
+                assert mInNewTask
                         : String.format(
                                 "Context Station not set with withContext(), cannot infer because"
                                         + " there isn't exactly one active Station. Had %d active"
@@ -245,11 +259,8 @@ public class TripBuilder {
             }
         }
 
-        // If entering a station, assume to be exiting an active Station too.
-        //
-        // TODO(crbug.com/406325581): Stop assuming this if the TransitionBuilder is set to spawn a
-        // Station. This is needed to support Station#spawnSync().
-        if (mDestinationStation != null) {
+        // If entering a station and not in a new task, assume to be exiting an active Station too.
+        if (mDestinationStation != null && !mInNewTask) {
             mOriginStation = mContextStation;
         }
 
@@ -257,8 +268,12 @@ public class TripBuilder {
             for (Facility<?> facility : mFacilitiesToEnter) {
                 mDestinationStation.addInitialFacility(facility);
             }
-            // TODO(crbug.com/406325581): Support Station#spawnSync().
-            mDestinationStation.requireToBeInSameTask(mOriginStation);
+
+            if (mInNewTask) {
+                mDestinationStation.requireToBeInNewTask();
+            } else {
+                mDestinationStation.requireToBeInSameTask(mOriginStation);
+            }
         } else {
             // TODO(crbug.com/406325581): Support entering Facilities from multiple Stations in
             // multi-window.

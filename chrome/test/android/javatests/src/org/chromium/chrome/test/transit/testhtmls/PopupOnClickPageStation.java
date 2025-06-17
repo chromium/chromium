@@ -55,13 +55,15 @@ public class PopupOnClickPageStation extends WebPageStation {
 
     /** Opens a sample page as a pop-up with bounds and expects a new window to open. */
     public CctPageStation clickLinkToOpenPopupWithBoundsExpectNewWindow() {
-        CctPageStation newPage =
-                CctPageStation.newBuilder()
-                        .withEntryPoint()
-                        .withExpectedUrlSubstring("simple.html")
-                        .withExpectedTitle("Simple")
-                        .build();
-        return spawnSync(newPage, linkToPopupWithBounds.getClickTrigger());
+        return linkToPopupWithBounds
+                .clickTo()
+                .inNewTask()
+                .arriveAt(
+                        CctPageStation.newBuilder()
+                                .withEntryPoint()
+                                .withExpectedUrlSubstring("simple.html")
+                                .withExpectedTitle("Simple")
+                                .build());
     }
 
     /**

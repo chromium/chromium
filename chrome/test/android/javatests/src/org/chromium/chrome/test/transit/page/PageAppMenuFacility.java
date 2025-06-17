@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
-import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -119,7 +118,6 @@ public class PageAppMenuFacility<HostPageStationT extends PageStation>
      */
     protected RegularNewTabPageStation handleOpenNewWindow(
             ItemOnScreenFacility<RegularNewTabPageStation> itemOnScreen) {
-        return Station.spawnSync(
-                createNewWindowStation(), itemOnScreen.viewElement.getClickTrigger());
+        return itemOnScreen.viewElement.clickTo().inNewTask().arriveAt(createNewWindowStation());
     }
 }
