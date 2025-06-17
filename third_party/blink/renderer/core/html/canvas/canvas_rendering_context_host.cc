@@ -169,8 +169,7 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGL() {
   auto* provider = GetResourceProviderForWebGL();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (IsValidImageSize()) {
-      SetResourceProviderWithoutContextCheck(
-          CreateCanvasResourceProviderWebGL());
+      CreateCanvasResourceProviderWebGL();
       provider = GetResourceProviderForWebGL();
     }
     if (!provider) {
@@ -218,9 +217,8 @@ CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
   return raw_provider;
 }
 
-std::unique_ptr<CanvasResourceProvider>
-CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
-  DCHECK(IsWebGL());
+void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
+  CHECK(!GetResourceProviderForWebGL());
 
   base::WeakPtr<CanvasResourceDispatcher> dispatcher =
       GetOrCreateResourceDispatcher()
@@ -300,7 +298,7 @@ CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
         Size(), format, alpha_type, color_space, kShouldInitialize, this);
   }
 
-  return provider;
+  SetResourceProviderWithoutContextCheck(std::move(provider));
 }
 
 CanvasResourceProvider*

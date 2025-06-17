@@ -173,7 +173,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
  private:
   CanvasResourceProvider* CreateCanvasResourceProvider2D();
-  std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProviderWebGL();
+  void CreateCanvasResourceProviderWebGL();
   CanvasResourceProvider* CreateCanvasResourceProviderWebGPU();
 
   bool did_record_canvas_size_to_uma_ = false;

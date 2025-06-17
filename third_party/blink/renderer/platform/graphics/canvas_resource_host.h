@@ -93,7 +93,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
  protected:
   // Should be called only from within subclasses'
-  // GetOrCreateCanvasResourceProviderFor<ContextType> methods.
+  // CreateCanvasResourceProvider<ContextType> methods.
   // `resource_provider_` must be null.
   void SetResourceProviderWithoutContextCheck(
       std::unique_ptr<CanvasResourceProvider> resource_provider) {
