@@ -68,6 +68,7 @@ swift_source_set("widget_kit_extension_swift") {
     "WidgetKit.framework",
     "Foundation.framework",
     "SwiftUI.framework",
+    "AppIntents.framework",
   ]
 }
 

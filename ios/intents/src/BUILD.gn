@@ -30,5 +30,6 @@ swift_source_set("src_swift") {
   frameworks = [
     "Foundation.framework",
     "Intents.framework",
+    "AppIntents.framework",
   ]
 }
