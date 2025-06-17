@@ -775,6 +775,173 @@ TEST_F(LayerContextImplAnimationTest, DeserializeWithLinearTimingFunction) {
             gfx::TimingFunction::Type::LINEAR);
 }
 
+namespace {
+
+mojom::TimingFunctionPtr CreateMojomLinearTimingFunctionWithPoints(
+    double p1_in,
+    double p1_out,
+    double p2_in,
+    double p2_out,
+    double p3_in,
+    double p3_out) {
+  std::vector<mojom::LinearEasingPointPtr> points_vector;
+  points_vector.push_back(mojom::LinearEasingPoint::New(p1_in, p1_out));
+  points_vector.push_back(mojom::LinearEasingPoint::New(p2_in, p2_out));
+  points_vector.push_back(mojom::LinearEasingPoint::New(p3_in, p3_out));
+  return mojom::TimingFunction::NewLinear(std::move(points_vector));
+}
+
+}  // namespace
+
+TEST_F(LayerContextImplAnimationTest,
+       DeserializeWithModelLinearTimingFunctionWithPoints) {
+  constexpr int kTimelineId = 22;
+  constexpr int kAnimationId = 220;
+  constexpr int kKeyframeModelId = 2200;
+  constexpr int kGroupId = 22;
+  constexpr double kPoint1Input = 0.0;
+  constexpr double kPoint1Output = 0.0;
+  constexpr double kPoint2Input = 0.5;
+  constexpr double kPoint2Output = 0.25;
+  constexpr double kPoint3Input = 1.0;
+  constexpr double kPoint3Output = 1.0;
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom =
+      CreateDefaultMojomAnimation(kAnimationId, kKeyframeModelId, kGroupId);
+
+  // Set the model's timing function to be linear with points.
+  animation_mojom->keyframe_models[0]->timing_function =
+      CreateMojomLinearTimingFunctionWithPoints(kPoint1Input, kPoint1Output,
+                                                kPoint2Input, kPoint2Output,
+                                                kPoint3Input, kPoint3Output);
+
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  cc::AnimationHost* host = GetAnimationHost();
+  cc::AnimationTimeline* timeline_impl = host->GetTimelineById(kTimelineId);
+  ASSERT_NE(nullptr, timeline_impl);
+  cc::Animation* animation_impl = timeline_impl->GetAnimationById(kAnimationId);
+  ASSERT_NE(nullptr, animation_impl);
+  cc::KeyframeEffect* effect_impl = animation_impl->keyframe_effect();
+  ASSERT_NE(nullptr, effect_impl);
+  ASSERT_EQ(effect_impl->keyframe_models().size(), 1u);
+  gfx::KeyframeModel* gfx_model_impl = effect_impl->keyframe_models()[0].get();
+  ASSERT_NE(nullptr, gfx_model_impl);
+
+  // Verify the model's curve timing function.
+  const auto* float_curve =
+      static_cast<const gfx::KeyframedFloatAnimationCurve*>(
+          gfx_model_impl->curve());
+  ASSERT_NE(nullptr, float_curve->timing_function());
+  EXPECT_EQ(float_curve->timing_function()->GetType(),
+            gfx::TimingFunction::Type::LINEAR);
+  const auto* linear_timing_fn = static_cast<const gfx::LinearTimingFunction*>(
+      float_curve->timing_function());
+  ASSERT_EQ(linear_timing_fn->Points().size(), 3u);
+  EXPECT_EQ(linear_timing_fn->Points()[0].input, kPoint1Input);
+  EXPECT_EQ(linear_timing_fn->Points()[0].output, kPoint1Output);
+  EXPECT_EQ(linear_timing_fn->Points()[1].input, kPoint2Input);
+  EXPECT_EQ(linear_timing_fn->Points()[1].output, kPoint2Output);
+  EXPECT_EQ(linear_timing_fn->Points()[2].input, kPoint3Input);
+  EXPECT_EQ(linear_timing_fn->Points()[2].output, kPoint3Output);
+
+  // Verify the first keyframe's timing function (should be default cubic
+  // bezier).
+  ASSERT_FALSE(float_curve->keyframes().empty());
+  const auto* keyframe_timing_fn =
+      float_curve->keyframes()[0]->timing_function();
+  ASSERT_NE(nullptr, keyframe_timing_fn);
+  EXPECT_EQ(keyframe_timing_fn->GetType(),
+            gfx::TimingFunction::Type::CUBIC_BEZIER);
+}
+
+TEST_F(LayerContextImplAnimationTest,
+       DeserializeWithKeyframeLinearTimingFunctionWithPoints) {
+  constexpr int kTimelineId = 23;
+  constexpr int kAnimationId = 230;
+  constexpr int kKeyframeModelId = 2300;
+  constexpr int kGroupId = 23;
+  constexpr double kPoint1Input = 0.1;
+  constexpr double kPoint1Output = 0.2;
+  constexpr double kPoint2Input = 0.6;
+  constexpr double kPoint2Output = 0.7;
+  constexpr double kPoint3Input = 0.9;
+  constexpr double kPoint3Output = 0.8;
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom =
+      CreateDefaultMojomAnimation(kAnimationId, kKeyframeModelId, kGroupId);
+
+  // The model itself uses the default timing function (cubic bezier).
+  // Set the first keyframe's timing function to be linear with points.
+  ASSERT_FALSE(animation_mojom->keyframe_models[0]->keyframes.empty());
+  animation_mojom->keyframe_models[0]->keyframes[0]->timing_function =
+      CreateMojomLinearTimingFunctionWithPoints(kPoint1Input, kPoint1Output,
+                                                kPoint2Input, kPoint2Output,
+                                                kPoint3Input, kPoint3Output);
+
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update)).has_value());
+
+  cc::AnimationHost* host = GetAnimationHost();
+  cc::AnimationTimeline* timeline_impl = host->GetTimelineById(kTimelineId);
+  ASSERT_NE(nullptr, timeline_impl);
+  cc::Animation* animation_impl = timeline_impl->GetAnimationById(kAnimationId);
+  ASSERT_NE(nullptr, animation_impl);
+  cc::KeyframeEffect* effect_impl = animation_impl->keyframe_effect();
+  ASSERT_NE(nullptr, effect_impl);
+  ASSERT_EQ(effect_impl->keyframe_models().size(), 1u);
+  gfx::KeyframeModel* gfx_model_impl = effect_impl->keyframe_models()[0].get();
+  ASSERT_NE(nullptr, gfx_model_impl);
+
+  // Verify the model's curve timing function (should be default cubic bezier).
+  const auto* float_curve =
+      static_cast<const gfx::KeyframedFloatAnimationCurve*>(
+          gfx_model_impl->curve());
+  ASSERT_NE(nullptr, float_curve->timing_function());
+  EXPECT_EQ(float_curve->timing_function()->GetType(),
+            gfx::TimingFunction::Type::CUBIC_BEZIER);
+
+  // Verify the first keyframe's timing function.
+  ASSERT_FALSE(float_curve->keyframes().empty());
+  const auto* keyframe_linear_timing_fn =
+      static_cast<const gfx::LinearTimingFunction*>(
+          float_curve->keyframes()[0]->timing_function());
+  ASSERT_NE(nullptr, keyframe_linear_timing_fn);
+  EXPECT_EQ(keyframe_linear_timing_fn->GetType(),
+            gfx::TimingFunction::Type::LINEAR);
+  ASSERT_EQ(keyframe_linear_timing_fn->Points().size(), 3u);
+  EXPECT_EQ(keyframe_linear_timing_fn->Points()[0].input, kPoint1Input);
+  EXPECT_EQ(keyframe_linear_timing_fn->Points()[0].output, kPoint1Output);
+  EXPECT_EQ(keyframe_linear_timing_fn->Points()[1].input, kPoint2Input);
+  EXPECT_EQ(keyframe_linear_timing_fn->Points()[1].output, kPoint2Output);
+  EXPECT_EQ(keyframe_linear_timing_fn->Points()[2].input, kPoint3Input);
+  EXPECT_EQ(keyframe_linear_timing_fn->Points()[2].output, kPoint3Output);
+
+  // Verify the second keyframe's timing function (should be default cubic
+  // bezier).
+  ASSERT_EQ(float_curve->keyframes().size(), 2u);
+  const auto* second_keyframe_timing_fn =
+      float_curve->keyframes()[1]->timing_function();
+  ASSERT_NE(nullptr, second_keyframe_timing_fn);
+  EXPECT_EQ(second_keyframe_timing_fn->GetType(),
+            gfx::TimingFunction::Type::CUBIC_BEZIER);
+}
+
 TEST_F(LayerContextImplAnimationTest, DeserializeWithStepsTimingFunction) {
   constexpr int kTimelineId = 13;
   constexpr int kAnimationId = 130;
