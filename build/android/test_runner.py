@@ -489,10 +489,12 @@ def AddGTestOptions(parser):
       'and test data. Only use when running the same test for multiple '
       'iterations.')
   # This is currently only implemented for gtests tests.
+  # TODO(crbug.com/40200835): Remove this flag when PRE tests run properly.
   parser.add_argument('--gtest_also_run_pre_tests',
                       '--gtest-also-run-pre-tests',
                       dest='run_pre_tests',
                       action='store_true',
+                      default=True,
                       help='Also run PRE_ tests if applicable.')
 
 

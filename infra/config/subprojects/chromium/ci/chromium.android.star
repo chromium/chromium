@@ -2616,7 +2616,6 @@ ci.builder(
             # If you change this, make similar changes in android-x86-code-coverage
             "content_browsertests": targets.mixin(
                 args = [
-                    "--gtest-also-run-pre-tests",
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter",
                 ],
                 swarming = targets.swarming(
@@ -3063,7 +3062,6 @@ ci.builder(
             # If you change this, make similar changes in android-x86-code-coverage
             "content_browsertests": targets.mixin(
                 args = [
-                    "--gtest-also-run-pre-tests",
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.content_browsertests.filter",
                 ],
                 swarming = targets.swarming(
@@ -3708,7 +3706,6 @@ ci.builder(
             ),
             "content_browsertests": targets.mixin(
                 args = [
-                    "--gtest-also-run-pre-tests",
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.content_browsertests.filter",
                 ],
                 # TODO(crbug.com/410638690): Re-enable on CQ once the high

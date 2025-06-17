@@ -324,7 +324,6 @@ coverage_builder(
             # Keep this same as android-10-x86-rel
             "content_browsertests": targets.mixin(
                 args = [
-                    "--gtest-also-run-pre-tests",
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.content_browsertests.filter",
                 ],
                 swarming = targets.swarming(
