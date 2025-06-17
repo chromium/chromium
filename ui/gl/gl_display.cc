@@ -32,6 +32,7 @@
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gpu_switching_manager.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
