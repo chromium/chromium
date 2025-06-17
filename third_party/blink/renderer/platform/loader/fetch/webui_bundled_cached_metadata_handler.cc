@@ -70,7 +70,7 @@ WebUIBundledCachedMetadataHandler::GetCachedMetadata(
 }
 
 String WebUIBundledCachedMetadataHandler::Encoding() const {
-  return WTF::UTF8Encoding().GetName();
+  return Utf8Encoding().GetName();
 }
 
 CachedMetadataHandler::ServingSource

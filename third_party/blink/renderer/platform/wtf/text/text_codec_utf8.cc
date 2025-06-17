@@ -50,7 +50,7 @@ bool IsNonCharacter(int character) {
   return character >= kNonCharacter3 && character <= kNonCharacter1;
 }
 
-std::unique_ptr<TextCodec> TextCodecUtf8::Create(const WTF::TextEncoding&,
+std::unique_ptr<TextCodec> TextCodecUtf8::Create(const TextEncoding&,
                                                  const void*) {
   return base::WrapUnique(new TextCodecUtf8());
 }

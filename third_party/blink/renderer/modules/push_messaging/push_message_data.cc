@@ -50,7 +50,7 @@ PushMessageData* PushMessageData::Create(
     }
     case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
         kUSVString: {
-      std::string encoded_string = UTF8Encoding().Encode(
+      std::string encoded_string = Utf8Encoding().Encode(
           message_data->GetAsUSVString(), WTF::kNoUnencodables);
       return MakeGarbageCollected<PushMessageData>(
           base::as_byte_span(encoded_string));
@@ -91,7 +91,7 @@ ScriptValue PushMessageData::json(ScriptState* script_state) const {
 }
 
 String PushMessageData::text() const {
-  return UTF8Encoding().Decode(data_);
+  return Utf8Encoding().Decode(data_);
 }
 
 }  // namespace blink

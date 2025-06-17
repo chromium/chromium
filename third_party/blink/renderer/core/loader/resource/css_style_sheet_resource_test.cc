@@ -59,7 +59,7 @@ class CSSStyleSheetResourceTest : public PageTestBase {
     response.SetMimeType(AtomicString("style/css"));
 
     CSSStyleSheetResource* css_resource =
-        CSSStyleSheetResource::CreateForTest(css_url, UTF8Encoding());
+        CSSStyleSheetResource::CreateForTest(css_url, Utf8Encoding());
     css_resource->ResponseReceived(response);
     css_resource->FinishForTest();
     MemoryCache::Get()->Add(css_resource);
@@ -84,7 +84,7 @@ TEST_F(CSSStyleSheetResourceTest, DuplicateResourceNotCached) {
   ASSERT_TRUE(MemoryCache::Get()->Contains(image_resource));
 
   CSSStyleSheetResource* css_resource =
-      CSSStyleSheetResource::CreateForTest(css_url, UTF8Encoding());
+      CSSStyleSheetResource::CreateForTest(css_url, Utf8Encoding());
   css_resource->ResponseReceived(response);
   css_resource->FinishForTest();
 

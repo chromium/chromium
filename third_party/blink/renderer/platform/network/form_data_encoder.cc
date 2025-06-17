@@ -97,9 +97,9 @@ inline void AppendNormalized(Vector<char>& buffer, const std::string& string) {
 
 }  // namespace
 
-WTF::TextEncoding FormDataEncoder::EncodingFromAcceptCharset(
+TextEncoding FormDataEncoder::EncodingFromAcceptCharset(
     const String& accept_charset,
-    const WTF::TextEncoding& fallback_encoding) {
+    const TextEncoding& fallback_encoding) {
   DCHECK(fallback_encoding.IsValid());
 
   String normalized_accept_charset = accept_charset;
@@ -109,7 +109,7 @@ WTF::TextEncoding FormDataEncoder::EncodingFromAcceptCharset(
   normalized_accept_charset.Split(' ', charsets);
 
   for (const String& name : charsets) {
-    WTF::TextEncoding encoding(name);
+    TextEncoding encoding(name);
     if (encoding.IsValid())
       return encoding;
   }
@@ -176,10 +176,9 @@ void FormDataEncoder::AddBoundaryToMultiPartHeader(Vector<char>& buffer,
   Append(buffer, "\r\n");
 }
 
-void FormDataEncoder::AddFilenameToMultiPartHeader(
-    Vector<char>& buffer,
-    const WTF::TextEncoding& encoding,
-    const String& filename) {
+void FormDataEncoder::AddFilenameToMultiPartHeader(Vector<char>& buffer,
+                                                   const TextEncoding& encoding,
+                                                   const String& filename) {
   // Characters that cannot be encoded using the form's encoding will
   // be escaped using numeric character references, e.g. &#128514; for
   // 😂.

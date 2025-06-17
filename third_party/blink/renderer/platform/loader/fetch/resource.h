@@ -159,7 +159,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   void Trace(Visitor*) const override;
 
-  virtual WTF::TextEncoding Encoding() const { return WTF::TextEncoding(); }
+  virtual TextEncoding Encoding() const { return TextEncoding(); }
   // If a BackgroundResponseProcessor consumed the body data on the background
   // thread, this method is called with a SegmentedBuffer data. Otherwise, it is
   // called with a span<const char> data several times.

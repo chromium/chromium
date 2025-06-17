@@ -36,7 +36,7 @@
 namespace blink {
 
 DocumentEncodingData::DocumentEncodingData()
-    : encoding_(UTF8Encoding()),
+    : encoding_(Utf8Encoding()),
       was_detected_heuristically_(false),
       saw_decoding_error_(false) {}
 
@@ -51,7 +51,7 @@ DocumentEncodingData::DocumentEncodingData(const WebEncodingData& data)
       was_detected_heuristically_(data.was_detected_heuristically),
       saw_decoding_error_(data.saw_decoding_error) {}
 
-void DocumentEncodingData::SetEncoding(const WTF::TextEncoding& encoding) {
+void DocumentEncodingData::SetEncoding(const TextEncoding& encoding) {
   encoding_ = encoding;
 }
 

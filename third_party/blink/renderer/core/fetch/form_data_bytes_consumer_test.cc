@@ -401,7 +401,7 @@ TEST_F(FormDataBytesConsumerTest, DrainAsBlobDataHandleFromArrayBuffer) {
 }
 
 TEST_F(FormDataBytesConsumerTest, DrainAsBlobDataHandleFromSimpleFormData) {
-  auto* data = MakeGarbageCollected<FormData>(UTF8Encoding());
+  auto* data = MakeGarbageCollected<FormData>(Utf8Encoding());
   data->append("name1", "value1");
   data->append("name2", "value2");
   scoped_refptr<EncodedFormData> input_form_data =
@@ -465,7 +465,7 @@ TEST_F(FormDataBytesConsumerTest, DrainAsFormDataFromArrayBuffer) {
 }
 
 TEST_F(FormDataBytesConsumerTest, DrainAsFormDataFromSimpleFormData) {
-  auto* data = MakeGarbageCollected<FormData>(UTF8Encoding());
+  auto* data = MakeGarbageCollected<FormData>(Utf8Encoding());
   data->append("name1", "value1");
   data->append("name2", "value2");
   scoped_refptr<EncodedFormData> input_form_data =

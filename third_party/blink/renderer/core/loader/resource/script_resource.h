@@ -84,7 +84,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   static ScriptResource* CreateForTest(
       v8::Isolate* isolate,
       const KURL& url,
-      const WTF::TextEncoding& encoding,
+      const TextEncoding& encoding,
       mojom::blink::ScriptType = mojom::blink::ScriptType::kClassic);
 
   ScriptResource(const ResourceRequest&,

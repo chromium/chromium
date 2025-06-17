@@ -59,7 +59,7 @@ class TextCodecCjk final : public TextCodec {
  private:
   enum class Encoding : uint8_t;
   explicit TextCodecCjk(Encoding);
-  WTF_EXPORT static std::unique_ptr<TextCodec> Create(const WTF::TextEncoding&,
+  WTF_EXPORT static std::unique_ptr<TextCodec> Create(const TextEncoding&,
                                                       const void*);
   String Decode(base::span<const uint8_t> data,
                 FlushBehavior,

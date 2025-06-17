@@ -78,7 +78,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   const ResourceResponse& GetResponse() const { return resource_response_; }
   // Gets the raw data of the main script.
   SharedBuffer* Data() const { return data_.get(); }
-  WTF::TextEncoding GetScriptEncoding() { return script_encoding_; }
+  TextEncoding GetScriptEncoding() { return script_encoding_; }
   CachedMetadataHandler* CreateCachedMetadataHandler();
 
   void Trace(Visitor*) const;
@@ -107,7 +107,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   base::TimeTicks start_time_;
   ResourceResponse resource_response_;
   scoped_refptr<SharedBuffer> data_;
-  WTF::TextEncoding script_encoding_;
+  TextEncoding script_encoding_;
 
   // The final status received from network.
   network::URLLoaderCompletionStatus status_;

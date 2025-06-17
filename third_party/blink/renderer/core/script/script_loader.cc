@@ -872,9 +872,9 @@ PendingScript* ScriptLoader::PrepareScript(
         // encoding.</spec>
         //
         // TODO(hiroshige): Should we handle failure in getting an encoding?
-        WTF::TextEncoding encoding;
+        TextEncoding encoding;
         if (!element_->CharsetAttributeValue().empty()) {
-          encoding = WTF::TextEncoding(element_->CharsetAttributeValue());
+          encoding = TextEncoding(element_->CharsetAttributeValue());
         } else {
           encoding = element_document.Encoding();
         }

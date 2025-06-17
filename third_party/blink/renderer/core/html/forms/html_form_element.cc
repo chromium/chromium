@@ -590,7 +590,7 @@ void HTMLFormElement::ScheduleFormSubmission(
 
 FormData* HTMLFormElement::ConstructEntryList(
     HTMLFormControlElement* submit_button,
-    const WTF::TextEncoding& encoding) {
+    const TextEncoding& encoding) {
   if (is_constructing_entry_list_) {
     return nullptr;
   }

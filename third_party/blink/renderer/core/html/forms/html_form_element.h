@@ -152,7 +152,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   // https://html.spec.whatwg.org/C/#constructing-the-form-data-set
   // Returns nullptr if this form is already running this function.
   FormData* ConstructEntryList(HTMLFormControlElement* submit_button,
-                               const WTF::TextEncoding& encoding);
+                               const TextEncoding& encoding);
 
   void InvalidateListedElementsForAutofill();
   void UseCountPropertyAccess(v8::Local<v8::Name>&,

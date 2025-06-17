@@ -45,23 +45,23 @@ static inline bool BytesEqual(base::span<const char> bytes,
   return bytes.first<prefix_length>() == prefix;
 }
 
-static WTF::TextEncoding FindTextEncoding(std::string_view encoding_name) {
+static TextEncoding FindTextEncoding(std::string_view encoding_name) {
   const wtf_size_t length =
       base::checked_cast<wtf_size_t>(encoding_name.size());
   Vector<char, 64> buffer(length + 1);
   base::span(buffer).copy_prefix_from(encoding_name);
   buffer[length] = '\0';
-  return WTF::TextEncoding(buffer.data());
+  return TextEncoding(buffer.data());
 }
 
-const WTF::TextEncoding& TextResourceDecoder::DefaultEncoding(
+const TextEncoding& TextResourceDecoder::DefaultEncoding(
     TextResourceDecoderOptions::ContentType content_type,
-    const WTF::TextEncoding& specified_default_encoding) {
+    const TextEncoding& specified_default_encoding) {
   // Despite 8.5 "Text/xml with Omitted Charset" of RFC 3023, we assume UTF-8
   // instead of US-ASCII for text/xml. This matches Firefox.
   if (content_type == TextResourceDecoderOptions::kXMLContent ||
       content_type == TextResourceDecoderOptions::kJSONContent)
-    return UTF8Encoding();
+    return Utf8Encoding();
   if (!specified_default_encoding.IsValid())
     return Latin1Encoding();
   return specified_default_encoding;
@@ -84,7 +84,7 @@ TextResourceDecoder::TextResourceDecoder(
       TextResourceDecoderOptions::kAlwaysUseUTF8ForText) {
     DCHECK_EQ(options_.GetContentType(),
               TextResourceDecoderOptions::kPlainTextContent);
-    DCHECK(encoding_ == UTF8Encoding());
+    DCHECK(encoding_ == Utf8Encoding());
   }
 }
 
@@ -102,7 +102,7 @@ void TextResourceDecoder::AddToBufferIfEmpty(base::span<const char> data) {
     buffer_.AppendSpan(data);
 }
 
-void TextResourceDecoder::SetEncoding(const WTF::TextEncoding& encoding,
+void TextResourceDecoder::SetEncoding(const TextEncoding& encoding,
                                       EncodingSource source) {
   // In case the encoding didn't exist, we keep the old one (helps some sites
   // specifying invalid encodings).
@@ -118,7 +118,7 @@ void TextResourceDecoder::SetEncoding(const WTF::TextEncoding& encoding,
   // XHR), treat x-user-defined as windows-1252 (bug 18270)
   if (source == kEncodingFromMetaTag &&
       WTF::EqualIgnoringASCIICase(encoding.GetName(), "x-user-defined"))
-    encoding_ = WTF::TextEncoding("windows-1252");
+    encoding_ = TextEncoding("windows-1252");
   else if (source == kEncodingFromMetaTag || source == kEncodingFromXMLHeader ||
            source == kEncodingFromCSSCharset)
     encoding_ = encoding.ClosestByteBasedEquivalent();
@@ -202,15 +202,15 @@ wtf_size_t TextResourceDecoder::CheckForBOM(base::span<const char> data) {
   // Check for the BOM.
   wtf_size_t length_of_bom = 0;
   if (c1 == 0xEF && c2 == 0xBB && c3 == 0xBF) {
-    SetEncoding(UTF8Encoding(), kAutoDetectedEncoding);
+    SetEncoding(Utf8Encoding(), kAutoDetectedEncoding);
     length_of_bom = 3;
   } else if (options_.GetEncodingDetectionOption() !=
              TextResourceDecoderOptions::kAlwaysUseUTF8ForText) {
     if (c1 == 0xFE && c2 == 0xFF) {
-      SetEncoding(UTF16BigEndianEncoding(), kAutoDetectedEncoding);
+      SetEncoding(Utf16BigEndianEncoding(), kAutoDetectedEncoding);
       length_of_bom = 2;
     } else if (c1 == 0xFF && c2 == 0xFE) {
-      SetEncoding(UTF16LittleEndianEncoding(), kAutoDetectedEncoding);
+      SetEncoding(Utf16LittleEndianEncoding(), kAutoDetectedEncoding);
       length_of_bom = 2;
     }
   }
@@ -287,9 +287,9 @@ bool TextResourceDecoder::CheckForXMLCharset(base::span<const char> data) {
     // continue looking for a charset - it may be specified in an HTTP-Equiv
     // meta
   } else if (BytesEqual(data, '<', '\0', '?', '\0', 'x', '\0')) {
-    SetEncoding(UTF16LittleEndianEncoding(), kAutoDetectedEncoding);
+    SetEncoding(Utf16LittleEndianEncoding(), kAutoDetectedEncoding);
   } else if (BytesEqual(data, '\0', '<', '\0', '?', '\0', 'x')) {
-    SetEncoding(UTF16BigEndianEncoding(), kAutoDetectedEncoding);
+    SetEncoding(Utf16BigEndianEncoding(), kAutoDetectedEncoding);
   }
 
   checked_for_xml_charset_ = true;
@@ -338,7 +338,7 @@ void TextResourceDecoder::AutoDetectEncodingIfAllowed(
         (source_ == kEncodingFromParentFrame && options_.HintEncoding())))
     return;
 
-  WTF::TextEncoding detected_encoding;
+  TextEncoding detected_encoding;
   if (DetectTextEncoding(
           base::as_bytes(data), options_.HintEncoding().Utf8().c_str(),
           options_.HintURL(), options_.HintLanguage(), &detected_encoding)) {
@@ -351,8 +351,9 @@ void TextResourceDecoder::AutoDetectEncodingIfAllowed(
       *auto_detected_charset = detected_encoding.GetName();
     }
   }
-  if (detected_encoding != WTF::UnknownEncoding())
+  if (detected_encoding != UnknownEncoding()) {
     detection_completed_ = true;
+  }
 }
 
 String TextResourceDecoder::Decode(base::span<const char> data,

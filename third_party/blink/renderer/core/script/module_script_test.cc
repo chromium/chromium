@@ -188,7 +188,7 @@ TEST_F(ModuleScriptTest, V8CodeCache) {
   auto sender = std::make_unique<MockCachedMetadataSender>();
   MockCachedMetadataSender* sender_ptr = sender.get();
   CachedMetadataHandler* cache_handler =
-      MakeGarbageCollected<ScriptCachedMetadataHandler>(UTF8Encoding(),
+      MakeGarbageCollected<ScriptCachedMetadataHandler>(Utf8Encoding(),
                                                         std::move(sender));
   const uint32_t kTimeStampTag = V8CodeCache::TagForTimeStamp(cache_handler);
   const uint32_t kCodeTag = V8CodeCache::TagForCodeCache(cache_handler);
@@ -314,7 +314,7 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
   MockCachedMetadataSender* sender_ptr = sender.get();
   ScriptCachedMetadataHandlerWithHashing* cache_handler =
       MakeGarbageCollected<ScriptCachedMetadataHandlerWithHashing>(
-          UTF8Encoding(), std::move(sender));
+          Utf8Encoding(), std::move(sender));
   const uint32_t kTimeStampTag = V8CodeCache::TagForTimeStamp(cache_handler);
   const uint32_t kCodeTag = V8CodeCache::TagForCodeCache(cache_handler);
 

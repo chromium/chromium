@@ -928,7 +928,7 @@ class DummyCachedMetadataSender : public CachedMetadataSender {
 mojo_base::BigBuffer CreateDummyCodeCacheData() {
   CachedMetadataHandler* cache_handler =
       MakeGarbageCollected<ScriptCachedMetadataHandler>(
-          UTF8Encoding(), std::make_unique<DummyCachedMetadataSender>());
+          Utf8Encoding(), std::make_unique<DummyCachedMetadataSender>());
   uint32_t data_type_id = V8CodeCache::TagForCodeCache(cache_handler);
   cache_handler->SetCachedMetadata(
       /*code_cache_host=*/nullptr, data_type_id,
@@ -943,7 +943,7 @@ mojo_base::BigBuffer CreateDummyCodeCacheData() {
 mojo_base::BigBuffer CreateDummyTimeStampData() {
   CachedMetadataHandler* cache_handler =
       MakeGarbageCollected<ScriptCachedMetadataHandler>(
-          UTF8Encoding(), std::make_unique<DummyCachedMetadataSender>());
+          Utf8Encoding(), std::make_unique<DummyCachedMetadataSender>());
   uint32_t data_type_id = V8CodeCache::TagForTimeStamp(cache_handler);
   uint64_t now_ms = 11111;
   cache_handler->SetCachedMetadata(
@@ -960,7 +960,7 @@ mojo_base::BigBuffer CreateDummyCodeCacheDataWithHash(
     base::span<const char> source) {
   ScriptCachedMetadataHandlerWithHashing* cache_handler =
       MakeGarbageCollected<ScriptCachedMetadataHandlerWithHashing>(
-          UTF8Encoding(), std::make_unique<DummyCachedMetadataSender>());
+          Utf8Encoding(), std::make_unique<DummyCachedMetadataSender>());
   ParkableString source_text(String(source).ReleaseImpl());
   cache_handler->Check(nullptr, source_text);
   uint32_t data_type_id = V8CodeCache::TagForCodeCache(cache_handler);
@@ -1004,7 +1004,7 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
  protected:
   void Init(v8::Isolate* isolate,
             bool is_module_script = false,
-            std::optional<WTF::TextEncoding> charset = std::nullopt,
+            std::optional<TextEncoding> charset = std::nullopt,
             v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
                 v8_compile_hints_consumer = nullptr) {
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
@@ -1569,8 +1569,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EnoughDataModuleScript) {
 TEST_F(BackgroundResourceScriptStreamerTest, EncodingNotSupported) {
   V8TestingScope scope;
   // Intentionally using unsupported encoding "EUC-JP".
-  Init(scope.GetIsolate(), /*is_module_script=*/false,
-       WTF::TextEncoding("EUC-JP"));
+  Init(scope.GetIsolate(), /*is_module_script=*/false, TextEncoding("EUC-JP"));
   RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;
@@ -1599,8 +1598,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, EncodingNotSupported) {
 TEST_F(BackgroundResourceScriptStreamerTest, EncodingFromBOM) {
   V8TestingScope scope;
   // Intentionally using unsupported encoding "EUC-JP".
-  Init(scope.GetIsolate(), /*is_module_script=*/false,
-       WTF::TextEncoding("EUC-JP"));
+  Init(scope.GetIsolate(), /*is_module_script=*/false, TextEncoding("EUC-JP"));
   RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     std::optional<mojo_base::BigBuffer> cached_metadata;

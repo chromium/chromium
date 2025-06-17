@@ -3719,7 +3719,7 @@ bool Internals::isLowEndDevice() const {
 }
 
 Vector<String> Internals::supportedTextEncodingLabels() const {
-  return WTF::TextEncodingAliasesForTesting();
+  return TextEncodingAliasesForTesting();
 }
 
 void Internals::simulateRasterUnderInvalidations(bool enable) {

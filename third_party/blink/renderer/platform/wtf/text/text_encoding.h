@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace WTF {
+namespace blink {
 
 class WTF_EXPORT TextEncoding final {
   USING_FAST_MALLOC(TextEncoding);
@@ -72,21 +72,14 @@ inline bool operator!=(const TextEncoding& a, const TextEncoding& b) {
   return a.GetName() != b.GetName();
 }
 
-WTF_EXPORT const TextEncoding& ASCIIEncoding();
+WTF_EXPORT const TextEncoding& AsciiEncoding();
 WTF_EXPORT const TextEncoding& Latin1Encoding();
 WTF_EXPORT const TextEncoding& UnknownEncoding();
-WTF_EXPORT const TextEncoding& UTF16BigEndianEncoding();
-WTF_EXPORT const TextEncoding& UTF16LittleEndianEncoding();
-WTF_EXPORT const TextEncoding& UTF8Encoding();
+WTF_EXPORT const TextEncoding& Utf16BigEndianEncoding();
+WTF_EXPORT const TextEncoding& Utf16LittleEndianEncoding();
+WTF_EXPORT const TextEncoding& Utf8Encoding();
 WTF_EXPORT const TextEncoding& WindowsLatin1Encoding();
-}  // namespace WTF
 
-using WTF::ASCIIEncoding;
-using WTF::Latin1Encoding;
-using WTF::UnknownEncoding;
-using WTF::UTF16BigEndianEncoding;
-using WTF::UTF16LittleEndianEncoding;
-using WTF::UTF8Encoding;
-using WTF::WindowsLatin1Encoding;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_ENCODING_H_

@@ -106,7 +106,7 @@ class PLATFORM_EXPORT FetchParameters {
       TextResourceDecoderOptions::ContentType content_type) {
     decoder_options_.OverrideContentType(content_type);
   }
-  void SetCharset(const WTF::TextEncoding& charset) {
+  void SetCharset(const TextEncoding& charset) {
     SetDecoderOptions(TextResourceDecoderOptions(
         TextResourceDecoderOptions::kPlainTextContent, charset));
   }

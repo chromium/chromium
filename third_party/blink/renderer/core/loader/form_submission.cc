@@ -258,9 +258,9 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       is_multi_part_form = false;
     }
   }
-  WTF::TextEncoding data_encoding =
+  TextEncoding data_encoding =
       is_mailto_form
-          ? UTF8Encoding()
+          ? Utf8Encoding()
           : FormDataEncoder::EncodingFromAcceptCharset(
                 copied_attributes.AcceptCharset(), document.Encoding());
   FormData* dom_form_data = form->ConstructEntryList(

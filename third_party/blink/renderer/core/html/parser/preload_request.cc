@@ -176,7 +176,7 @@ Resource* PreloadRequest::Start(Document* document) {
   } else if (resource_type_ == ResourceType::kScript ||
              resource_type_ == ResourceType::kCSSStyleSheet) {
     params.SetCharset(charset_.empty() ? document->Encoding()
-                                       : WTF::TextEncoding(charset_));
+                                       : TextEncoding(charset_));
   }
   FetchParameters::SpeculativePreloadType speculative_preload_type =
       FetchParameters::SpeculativePreloadType::kInDocument;

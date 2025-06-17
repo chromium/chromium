@@ -31,7 +31,7 @@ namespace blink {
 class TextDecoderStream::Transformer final : public TransformStreamTransformer {
  public:
   explicit Transformer(ScriptState* script_state,
-                       WTF::TextEncoding encoding,
+                       TextEncoding encoding,
                        bool fatal,
                        bool ignore_bom)
       : decoder_(NewTextCodec(encoding)),
@@ -122,7 +122,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
         exception_state);
   }
 
-  static bool EncodingHasBomRemoval(const WTF::TextEncoding& encoding) {
+  static bool EncodingHasBomRemoval(const TextEncoding& encoding) {
     const AtomicString& name = encoding.GetName();
     return name == "UTF-8" || name == "UTF-16LE" || name == "UTF-16BE";
   }
@@ -141,8 +141,7 @@ TextDecoderStream* TextDecoderStream::Create(ScriptState* script_state,
                                              const String& label,
                                              const TextDecoderOptions* options,
                                              ExceptionState& exception_state) {
-  WTF::TextEncoding encoding(
-      label.StripWhiteSpace(&encoding::IsASCIIWhiteSpace));
+  TextEncoding encoding(label.StripWhiteSpace(&encoding::IsASCIIWhiteSpace));
   // The replacement encoding is not valid, but the Encoding API also
   // rejects aliases of the replacement encoding.
   if (!encoding.IsValid() ||
@@ -176,7 +175,7 @@ void TextDecoderStream::Trace(Visitor* visitor) const {
 }
 
 TextDecoderStream::TextDecoderStream(ScriptState* script_state,
-                                     const WTF::TextEncoding& encoding,
+                                     const TextEncoding& encoding,
                                      const TextDecoderOptions* options,
                                      ExceptionState& exception_state)
     : transform_(TransformStream::Create(

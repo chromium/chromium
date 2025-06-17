@@ -122,7 +122,7 @@ ScriptResource* ScriptResource::Fetch(
 ScriptResource* ScriptResource::CreateForTest(
     v8::Isolate* isolate,
     const KURL& url,
-    const WTF::TextEncoding& encoding,
+    const TextEncoding& encoding,
     mojom::blink::ScriptType script_type) {
   ResourceRequest request(url);
   request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
@@ -507,7 +507,7 @@ void ScriptResource::SetEncoding(const String& chs) {
   TextResource::SetEncoding(chs);
   if (stream_text_decoder_) {
     stream_text_decoder_->SetEncoding(
-        WTF::TextEncoding(chs), TextResourceDecoder::kEncodingFromHTTPHeader);
+        TextEncoding(chs), TextResourceDecoder::kEncodingFromHTTPHeader);
   }
 }
 

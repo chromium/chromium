@@ -13,7 +13,7 @@
 namespace blink {
 
 ScriptCachedMetadataHandler::ScriptCachedMetadataHandler(
-    const WTF::TextEncoding& encoding,
+    const TextEncoding& encoding,
     std::unique_ptr<CachedMetadataSender> sender)
     : sender_(std::move(sender)), encoding_(encoding) {}
 
@@ -109,7 +109,7 @@ void ScriptCachedMetadataHandler::CommitToPersistentStorage(
 }
 
 ScriptCachedMetadataHandlerWithHashing::ScriptCachedMetadataHandlerWithHashing(
-    const WTF::TextEncoding& encoding,
+    const TextEncoding& encoding,
     std::unique_ptr<CachedMetadataSender> sender)
     : ScriptCachedMetadataHandler(encoding, std::move(sender)) {}
 

@@ -43,7 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -111,4 +111,4 @@ TEST(TextCodecUTF8, DecodeOverflow) {
 
 }  // namespace
 
-}  // namespace WTF
+}  // namespace blink

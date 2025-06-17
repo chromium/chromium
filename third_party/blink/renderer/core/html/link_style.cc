@@ -254,7 +254,7 @@ void LinkStyle::SetDisabledState(bool disabled) {
 
 LinkStyle::LoadReturnValue LinkStyle::LoadStylesheetIfNeeded(
     const LinkLoadParameters& params,
-    const WTF::TextEncoding& charset) {
+    const TextEncoding& charset) {
   if (disabled_state_ == kDisabled || !owner_->RelAttribute().IsStyleSheet() ||
       !StyleSheetTypeIsSupported(params.type) || !ShouldLoadResource() ||
       !params.href.IsValid())
@@ -336,7 +336,7 @@ void LinkStyle::Process(LinkLoadParameters::Reason reason) {
       owner_->FastGetAttribute(html_names::kImagesizesAttr),
       owner_->FastGetAttribute(html_names::kBlockingAttr), reason);
 
-  WTF::TextEncoding charset = GetCharset();
+  TextEncoding charset = GetCharset();
 
   if (owner_->RelAttribute().GetIconType() !=
           mojom::blink::FaviconIconType::kInvalid &&

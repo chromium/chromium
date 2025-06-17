@@ -124,7 +124,7 @@ static const unsigned kDataBufferCapacity = 65536;
 
 WebFrameSerializerImpl::SerializeDomParam::SerializeDomParam(
     const KURL& url,
-    const WTF::TextEncoding& text_encoding,
+    const TextEncoding& text_encoding,
     Document* document)
     : url(url),
       text_encoding(text_encoding),
@@ -179,7 +179,7 @@ String WebFrameSerializerImpl::PreActionBeforeSerializeOpenTag(
       if (xml_encoding.empty())
         xml_encoding = param->document->EncodingName();
       if (xml_encoding.empty())
-        xml_encoding = UTF8Encoding().GetName();
+        xml_encoding = Utf8Encoding().GetName();
       result.Append("<?xml version=\"");
       result.Append(param->document->xmlVersion());
       result.Append("\" encoding=\"");
@@ -518,8 +518,8 @@ bool WebFrameSerializerImpl::Serialize() {
   if (url.IsValid()) {
     did_serialization = true;
 
-    const WTF::TextEncoding& text_encoding =
-        document->Encoding().IsValid() ? document->Encoding() : UTF8Encoding();
+    const TextEncoding& text_encoding =
+        document->Encoding().IsValid() ? document->Encoding() : Utf8Encoding();
     if (text_encoding.IsNonByteBasedEncoding()) {
       const UChar kByteOrderMark = 0xFEFF;
       data_buffer_.Append(kByteOrderMark);

@@ -743,7 +743,7 @@ void HTMLMetaElement::ProcessContent() {
   }
 }
 
-WTF::TextEncoding HTMLMetaElement::ComputeEncoding() const {
+TextEncoding HTMLMetaElement::ComputeEncoding() const {
   HTMLAttributeList attribute_list;
   for (const Attribute& attr : Attributes())
     attribute_list.push_back(

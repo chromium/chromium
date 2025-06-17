@@ -42,8 +42,7 @@ class TextCodecUtf8 : public TextCodec {
   TextCodecUtf8() : partial_sequence_size_(0) {}
 
  private:
-  static std::unique_ptr<TextCodec> Create(const WTF::TextEncoding&,
-                                           const void*);
+  static std::unique_ptr<TextCodec> Create(const TextEncoding&, const void*);
 
   String Decode(base::span<const uint8_t> data,
                 FlushBehavior,

@@ -43,7 +43,7 @@ void TextCodecUserDefined::RegisterEncodingNames(
 }
 
 static std::unique_ptr<TextCodec> NewStreamingTextDecoderUserDefined(
-    const WTF::TextEncoding&,
+    const TextEncoding&,
     const void*) {
   return std::make_unique<TextCodecUserDefined>();
 }

@@ -48,10 +48,10 @@ BASE_FEATURE(kThrowExceptionWhenTextEncodeOOM,
 
 TextEncoder* TextEncoder::Create(ExecutionContext* context,
                                  ExceptionState& exception_state) {
-  return MakeGarbageCollected<TextEncoder>(UTF8Encoding());
+  return MakeGarbageCollected<TextEncoder>(Utf8Encoding());
 }
 
-TextEncoder::TextEncoder(const WTF::TextEncoding& encoding)
+TextEncoder::TextEncoder(const TextEncoding& encoding)
     : encoding_(encoding), codec_(NewTextCodec(encoding)) {
   DCHECK_EQ(encoding_.GetName(), "UTF-8");
 }

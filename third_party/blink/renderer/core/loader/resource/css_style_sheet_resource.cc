@@ -65,7 +65,7 @@ CSSStyleSheetResource* CSSStyleSheetResource::Fetch(FetchParameters& params,
 
 CSSStyleSheetResource* CSSStyleSheetResource::CreateForTest(
     const KURL& url,
-    const WTF::TextEncoding& encoding) {
+    const TextEncoding& encoding) {
   ResourceRequest request(url);
   request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
   ResourceLoaderOptions options(nullptr /* world */);

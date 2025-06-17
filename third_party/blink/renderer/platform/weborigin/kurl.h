@@ -41,6 +41,12 @@
 #include "url/url_canon.h"
 #include "url/url_util.h"
 
+class GURL;
+
+namespace blink {
+
+class TextEncoding;
+
 // KURL stands for the URL parser in KDE's HTML Widget (KHTML). The name hasn't
 // changed since Blink forked WebKit, which in turn forked KHTML.
 //
@@ -58,14 +64,6 @@
 // - Internal reference to the URL protocol (scheme) to avoid String allocation
 //   for the callers that require it. Common protocols like http and https are
 //   stored as shared static strings.
-namespace WTF {
-class TextEncoding;
-}
-
-class GURL;
-
-namespace blink {
-
 class PLATFORM_EXPORT KURL {
   USING_FAST_MALLOC(KURL);
 
@@ -95,7 +93,7 @@ class PLATFORM_EXPORT KURL {
   // URL. Instead I think it would be better to treat all invalid base URLs
   // the same way we treate null and empty base URLs.
   KURL(const KURL& base, const String& relative);
-  KURL(const KURL& base, const String& relative, const WTF::TextEncoding&);
+  KURL(const KURL& base, const String& relative, const TextEncoding&);
 
   // For conversions from other structures that have already parsed and
   // canonicalized the URL. The input must be exactly what KURL would have
@@ -257,7 +255,7 @@ class PLATFORM_EXPORT KURL {
 
   void Init(const KURL& base,
             const String& relative,
-            const WTF::TextEncoding* query_encoding);
+            const TextEncoding* query_encoding);
 
   bool IsAboutURL(const char* allowed_path) const;
 

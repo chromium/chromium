@@ -162,7 +162,7 @@ void ProcessingInstruction::Process(const String& href, const String& charset) {
     XSLStyleSheetResource::Fetch(params, GetDocument().Fetcher(), this);
   } else {
     params.SetCharset(charset.empty() ? GetDocument().Encoding()
-                                      : WTF::TextEncoding(charset));
+                                      : TextEncoding(charset));
     GetDocument().GetStyleEngine().AddPendingBlockingSheet(
         *this, PendingSheetType::kBlocking);
     CSSStyleSheetResource::Fetch(params, GetDocument().Fetcher(), this);

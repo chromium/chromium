@@ -63,7 +63,7 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
     Document& element_document,
     const ScriptFetchOptions& options,
     CrossOriginAttributeValue cross_origin,
-    const WTF::TextEncoding& encoding,
+    const TextEncoding& encoding,
     ScriptElementBase* element,
     FetchParameters::DeferOption defer,
     scheduler::TaskAttributionInfo* parent_task) {

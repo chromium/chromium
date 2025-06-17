@@ -830,7 +830,7 @@ void XMLHttpRequest::send(Document* document, ExceptionState& exception_state) {
     String body = CreateMarkup(document);
 
     http_body = EncodedFormData::Create(
-        UTF8Encoding().Encode(body, WTF::kNoUnencodables));
+        Utf8Encoding().Encode(body, WTF::kNoUnencodables));
   }
 
   CreateRequest(std::move(http_body), exception_state);
@@ -844,7 +844,7 @@ void XMLHttpRequest::send(const String& body, ExceptionState& exception_state) {
 
   if (!body.IsNull() && AreMethodAndURLValidForSend()) {
     http_body = EncodedFormData::Create(
-        UTF8Encoding().Encode(body, WTF::kNoUnencodables));
+        Utf8Encoding().Encode(body, WTF::kNoUnencodables));
     UpdateContentTypeAndCharset(AtomicString("text/plain;charset=UTF-8"),
                                 "UTF-8");
   }
@@ -1578,7 +1578,7 @@ AtomicString XMLHttpRequest::GetResponseMIMEType() const {
 }
 
 // https://xhr.spec.whatwg.org/#final-charset
-WTF::TextEncoding XMLHttpRequest::FinalResponseCharset() const {
+TextEncoding XMLHttpRequest::FinalResponseCharset() const {
   // 1. Let label be null. [spec text]
   //
   // 2. If response MIME type's parameters["charset"] exists, then set label to
@@ -1601,9 +1601,9 @@ WTF::TextEncoding XMLHttpRequest::FinalResponseCharset() const {
   //
   // 7. Return encoding. [spec text]
   //
-  // We rely on WTF::TextEncoding() to return invalid TextEncoding for
+  // We rely on TextEncoding() to return invalid TextEncoding for
   // null, empty, or invalid/unsupported |label|.
-  return WTF::TextEncoding(label);
+  return TextEncoding(label);
 }
 
 void XMLHttpRequest::UpdateContentTypeAndCharset(
@@ -1845,7 +1845,7 @@ std::unique_ptr<TextResourceDecoder> XMLHttpRequest::CreateDecoder() const {
         TextResourceDecoderOptions::CreateUTF8Decode()));
   }
 
-  WTF::TextEncoding final_response_charset = FinalResponseCharset();
+  TextEncoding final_response_charset = FinalResponseCharset();
   if (final_response_charset.IsValid()) {
     // If the final charset is given and valid, use the charset without
     // sniffing the content.
@@ -1867,12 +1867,12 @@ std::unique_ptr<TextResourceDecoder> XMLHttpRequest::CreateDecoder() const {
       [[fallthrough]];
     case V8XMLHttpRequestResponseType::Enum::kText:
       return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
-          TextResourceDecoderOptions::kPlainTextContent, UTF8Encoding()));
+          TextResourceDecoderOptions::kPlainTextContent, Utf8Encoding()));
 
     case V8XMLHttpRequestResponseType::Enum::kDocument:
       if (ResponseIsHTML()) {
         return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
-            TextResourceDecoderOptions::kHTMLContent, UTF8Encoding()));
+            TextResourceDecoderOptions::kHTMLContent, Utf8Encoding()));
       }
       return std::make_unique<TextResourceDecoder>(decoder_options_for_xml);
     case V8XMLHttpRequestResponseType::Enum::kJson:

@@ -1047,9 +1047,8 @@ void TextCodecCjk::RegisterCodecs(TextCodecRegistrar registrar) {
   }
 }
 
-std::unique_ptr<TextCodec> TextCodecCjk::Create(
-    const WTF::TextEncoding& encoding,
-    const void*) {
+std::unique_ptr<TextCodec> TextCodecCjk::Create(const TextEncoding& encoding,
+                                                const void*) {
   const AtomicString& name = encoding.GetName();
 
   // To keep the `TextCodecCjk` constructor private, we intend to `new`

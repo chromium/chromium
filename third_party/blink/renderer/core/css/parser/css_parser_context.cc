@@ -53,7 +53,7 @@ CSSParserContext::CSSParserContext(const CSSParserContext* other,
                                    const KURL& base_url,
                                    bool origin_clean,
                                    const Referrer& referrer,
-                                   const WTF::TextEncoding& charset,
+                                   const TextEncoding& charset,
                                    const Document* use_counter_document)
     : CSSParserContext(base_url,
                        origin_clean,
@@ -73,7 +73,7 @@ CSSParserContext::CSSParserContext(CSSParserMode mode,
                                    const Document* use_counter_document)
     : CSSParserContext(KURL(),
                        true /* origin_clean */,
-                       WTF::TextEncoding(),
+                       TextEncoding(),
                        mode,
                        Referrer(),
                        false,
@@ -102,7 +102,7 @@ CSSParserContext::CSSParserContext(
     const KURL& base_url_override,
     bool origin_clean,
     const Referrer& referrer,
-    const WTF::TextEncoding& charset,
+    const TextEncoding& charset,
     enum ResourceFetchRestriction resource_fetch_restriction)
     : CSSParserContext(
           base_url_override,
@@ -123,7 +123,7 @@ CSSParserContext::CSSParserContext(
 CSSParserContext::CSSParserContext(const ExecutionContext& context)
     : CSSParserContext(context.Url(),
                        true /* origin_clean */,
-                       WTF::TextEncoding(),
+                       TextEncoding(),
                        kHTMLStandardMode,
                        Referrer(context.Url().StrippedForUseAsReferrer(),
                                 context.GetReferrerPolicy()),
@@ -138,7 +138,7 @@ CSSParserContext::CSSParserContext(const ExecutionContext& context)
 CSSParserContext::CSSParserContext(
     const KURL& base_url,
     bool origin_clean,
-    const WTF::TextEncoding& charset,
+    const TextEncoding& charset,
     CSSParserMode mode,
     const Referrer& referrer,
     bool is_html_document,

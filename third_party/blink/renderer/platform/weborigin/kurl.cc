@@ -93,8 +93,8 @@ bool IsSchemeChar(char c) {
          c == '-' || c == '+';
 }
 
-bool IsUnicodeEncoding(const WTF::TextEncoding* encoding) {
-  return encoding->EncodingForFormSubmission() == UTF8Encoding();
+bool IsUnicodeEncoding(const TextEncoding* encoding) {
+  return encoding->EncodingForFormSubmission() == Utf8Encoding();
 }
 
 class KURLCharsetConverter final : public url::CharsetConverter {
@@ -103,7 +103,7 @@ class KURLCharsetConverter final : public url::CharsetConverter {
  public:
   // The encoding parameter may be 0, but in this case the object must not be
   // called.
-  explicit KURLCharsetConverter(const WTF::TextEncoding* encoding)
+  explicit KURLCharsetConverter(const TextEncoding* encoding)
       : encoding_(encoding) {}
 
   void ConvertFromUTF16(std::u16string_view input,
@@ -114,7 +114,7 @@ class KURLCharsetConverter final : public url::CharsetConverter {
   }
 
  private:
-  raw_ptr<const WTF::TextEncoding> encoding_;
+  raw_ptr<const TextEncoding> encoding_;
 };
 
 }  // namespace
@@ -261,7 +261,7 @@ KURL::KURL(const KURL& base, const String& relative) {
 // Any query portion of the relative URL will be encoded in the given encoding.
 KURL::KURL(const KURL& base,
            const String& relative,
-           const WTF::TextEncoding& encoding) {
+           const TextEncoding& encoding) {
   Init(base, relative, &encoding.EncodingForFormSubmission());
   AssertStringSpecIsASCII();
 }
@@ -785,7 +785,7 @@ String DecodeURLEscapeSequences(const StringView& string, DecodeURLMode mode) {
 
 String EncodeWithURLEscapeSequences(const StringView& not_encoded_string) {
   std::string utf8 =
-      UTF8Encoding().Encode(not_encoded_string, WTF::kNoUnencodables);
+      Utf8Encoding().Encode(not_encoded_string, WTF::kNoUnencodables);
 
   url::RawCanonOutputT<char> buffer;
   size_t input_length = utf8.length();
@@ -901,7 +901,7 @@ bool ProtocolIs(const String& url, const char* protocol) {
 
 void KURL::Init(const KURL& base,
                 const String& relative,
-                const WTF::TextEncoding* query_encoding) {
+                const TextEncoding* query_encoding) {
   // As a performance optimization, we do not use the charset converter
   // if encoding is UTF-8 or other Unicode encodings. Note that this is
   // per HTML5 2.5.3 (resolving URL). The URL canonicalizer will be more

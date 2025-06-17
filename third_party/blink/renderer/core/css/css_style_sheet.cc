@@ -131,7 +131,7 @@ CSSStyleSheet* CSSStyleSheet::CreateInline(StyleSheetContents* sheet,
 CSSStyleSheet* CSSStyleSheet::CreateInline(Node& owner_node,
                                            const KURL& base_url,
                                            const TextPosition& start_position,
-                                           const WTF::TextEncoding& encoding) {
+                                           const TextEncoding& encoding) {
   Document& owner_node_document = owner_node.GetDocument();
   auto* parser_context = MakeGarbageCollected<CSSParserContext>(
       owner_node_document, owner_node_document.BaseURL(),

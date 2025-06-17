@@ -153,7 +153,7 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
 void LinkLoader::LoadStylesheet(
     const LinkLoadParameters& params,
     const AtomicString& local_name,
-    const WTF::TextEncoding& charset,
+    const TextEncoding& charset,
     FetchParameters::DeferOption defer_option,
     Document& document,
     ResourceClient* link_client,

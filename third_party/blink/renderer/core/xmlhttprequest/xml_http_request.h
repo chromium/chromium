@@ -221,7 +221,7 @@ class CORE_EXPORT XMLHttpRequest final
   AtomicString GetResponseMIMEType() const;
   // Returns the "final charset" defined in
   // https://xhr.spec.whatwg.org/#final-charset.
-  WTF::TextEncoding FinalResponseCharset() const;
+  TextEncoding FinalResponseCharset() const;
   bool ResponseIsXML() const;
   bool ResponseIsHTML() const;
 

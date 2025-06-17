@@ -28,7 +28,7 @@ FormData* Deserialize(ExecutionContext& context,
 
 TEST(FormDataTest, append) {
   test::TaskEnvironment task_environment;
-  auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
+  auto* fd = MakeGarbageCollected<FormData>(Utf8Encoding());
   fd->append("test\n1", "value\n1");
   fd->append("test\r2", nullptr, "filename");
 
@@ -45,7 +45,7 @@ TEST(FormDataTest, AppendFromElement) {
   UChar lone_surrogate_chars[] = {u'a', 0xD800, u'b', 0};
   String lone_surrogate_string(lone_surrogate_chars);
 
-  auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
+  auto* fd = MakeGarbageCollected<FormData>(Utf8Encoding());
   fd->AppendFromElement("Atomic\nNumber", 1);
   fd->AppendFromElement("Periodic\nTable", nullptr);
   fd->AppendFromElement("Noble\nGas", "He\rNe\nAr\r\nKr");
@@ -71,7 +71,7 @@ TEST(FormDataTest, AppendFromElement) {
 
 TEST(FormDataTest, get) {
   test::TaskEnvironment task_environment;
-  auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
+  auto* fd = MakeGarbageCollected<FormData>(Utf8Encoding());
   fd->append("name1", "value1");
 
   V8UnionFileOrUSVString* result = fd->get("name1");
@@ -85,7 +85,7 @@ TEST(FormDataTest, get) {
 
 TEST(FormDataTest, getAll) {
   test::TaskEnvironment task_environment;
-  auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
+  auto* fd = MakeGarbageCollected<FormData>(Utf8Encoding());
   fd->append("name1", "value1");
 
   const HeapVector<Member<V8FormDataEntryValue>>& results = fd->getAll("name1");
@@ -98,7 +98,7 @@ TEST(FormDataTest, getAll) {
 
 TEST(FormDataTest, has) {
   test::TaskEnvironment task_environment;
-  auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
+  auto* fd = MakeGarbageCollected<FormData>(Utf8Encoding());
   fd->append("name1", "value1");
 
   EXPECT_TRUE(fd->has("name1"));
@@ -199,7 +199,7 @@ TEST(FormDataTest, FilenameWithLoneSurrogates) {
   auto* file = MakeGarbageCollected<File>(filename, std::nullopt,
                                           BlobDataHandle::Create());
 
-  auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
+  auto* fd = MakeGarbageCollected<FormData>(Utf8Encoding());
   fd->AppendFromElement("test", file);
 
   // The multipart/form-data format with UTF-8 encoding exposes the lone

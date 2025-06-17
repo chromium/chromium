@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -48,4 +48,5 @@ TEST(TextEncoding, EncodingForFormSubmission) {
   EXPECT_EQ("GBK", TextEncoding("gbk").EncodingForFormSubmission().GetName());
 }
 }
-}
+
+}  // namespace blink

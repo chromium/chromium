@@ -96,7 +96,7 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
                                         const SecurityOrigin*,
                                         const DOMWrapperWorld* world,
                                         CrossOriginAttributeValue,
-                                        const WTF::TextEncoding&,
+                                        const TextEncoding&,
                                         FetchParameters::DeferOption,
                                         const FeatureContext*) const;
 

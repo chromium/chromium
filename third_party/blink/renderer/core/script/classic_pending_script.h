@@ -39,7 +39,7 @@ class CORE_EXPORT ClassicPendingScript final
       Document&,
       const ScriptFetchOptions&,
       CrossOriginAttributeValue,
-      const WTF::TextEncoding&,
+      const TextEncoding&,
       ScriptElementBase*,
       FetchParameters::DeferOption,
       scheduler::TaskAttributionInfo* parent_task);

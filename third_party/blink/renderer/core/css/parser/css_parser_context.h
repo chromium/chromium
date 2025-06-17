@@ -47,7 +47,7 @@ class CORE_EXPORT CSSParserContext final
                    const KURL& base_url_override,
                    bool origin_clean,
                    const Referrer& referrer,
-                   const WTF::TextEncoding& charset_override,
+                   const TextEncoding& charset_override,
                    const Document* use_counter_document);
   CSSParserContext(CSSParserMode,
                    SecureContextMode,
@@ -58,7 +58,7 @@ class CORE_EXPORT CSSParserContext final
                    const KURL& base_url_override,
                    bool origin_clean,
                    const Referrer& referrer,
-                   const WTF::TextEncoding& charset = WTF::TextEncoding(),
+                   const TextEncoding& charset = TextEncoding(),
                    ResourceFetchRestriction resource_fetch_restriction =
                        ResourceFetchRestriction::kNone);
 
@@ -67,7 +67,7 @@ class CORE_EXPORT CSSParserContext final
 
   CSSParserContext(const KURL& base_url,
                    bool origin_clean,
-                   const WTF::TextEncoding& charset,
+                   const TextEncoding& charset,
                    CSSParserMode,
                    const Referrer& referrer,
                    bool is_html_document,
@@ -83,7 +83,7 @@ class CORE_EXPORT CSSParserContext final
 
   CSSParserMode Mode() const { return mode_; }
   const KURL& BaseURL() const { return base_url_; }
-  const WTF::TextEncoding& Charset() const { return charset_; }
+  const TextEncoding& Charset() const { return charset_; }
   const Referrer& GetReferrer() const { return referrer_; }
   bool IsAdRelated() const { return is_ad_related_; }
   bool IsHTMLDocument() const { return is_html_document_; }
@@ -169,7 +169,7 @@ class CORE_EXPORT CSSParserContext final
   bool is_html_document_;
   SecureContextMode secure_context_mode_;
 
-  WTF::TextEncoding charset_;
+  TextEncoding charset_;
 
   WeakMember<const Document> document_;
 

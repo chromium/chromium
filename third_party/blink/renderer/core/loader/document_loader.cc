@@ -3271,7 +3271,7 @@ void DocumentLoader::CreateParserPostCommit() {
   // script queries it via document.characterSet.
   if (commit_reason_ == CommitReason::kXSLT) {
     DocumentEncodingData data;
-    data.SetEncoding(WTF::TextEncoding(response_.TextEncodingName()));
+    data.SetEncoding(TextEncoding(response_.TextEncodingName()));
     document->SetEncodingData(data);
   }
 

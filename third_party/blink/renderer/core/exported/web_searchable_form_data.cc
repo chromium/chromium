@@ -54,18 +54,18 @@ namespace {
 
 // Gets the encoding for the form.
 // TODO(tkent): Use FormDataEncoder::encodingFromAcceptCharset().
-void GetFormEncoding(const HTMLFormElement& form, WTF::TextEncoding* encoding) {
+void GetFormEncoding(const HTMLFormElement& form, TextEncoding* encoding) {
   String str(form.FastGetAttribute(html_names::kAcceptCharsetAttr));
   str.Replace(',', ' ');
   Vector<String> charsets;
   str.Split(' ', charsets);
   for (const String& charset : charsets) {
-    *encoding = WTF::TextEncoding(charset);
+    *encoding = TextEncoding(charset);
     if (encoding->IsValid())
       return;
   }
   if (form.GetDocument().Loader())
-    *encoding = WTF::TextEncoding(form.GetDocument().Encoding());
+    *encoding = TextEncoding(form.GetDocument().Encoding());
 }
 
 // If the form does not have an activated submit button, the first submit
@@ -184,7 +184,7 @@ HTMLInputElement* FindSuitableSearchInputElement(const HTMLFormElement& form) {
 // Return false if the provided HTMLInputElement is not found in the form
 bool BuildSearchString(const HTMLFormElement& form,
                        Vector<char>* encoded_string,
-                       const WTF::TextEncoding& encoding,
+                       const TextEncoding& encoding,
                        const HTMLInputElement* text_element) {
   bool is_element_found = false;
   for (ListedElement* item : form.ListedElements()) {
@@ -232,7 +232,7 @@ WebSearchableFormData::WebSearchableFormData(
           form_element->FastGetAttribute(html_names::kMethodAttr), "post"))
     return;
 
-  WTF::TextEncoding encoding;
+  TextEncoding encoding;
   GetFormEncoding(*form_element, &encoding);
   if (!encoding.IsValid()) {
     // Need a valid encoding to encode the form elements.

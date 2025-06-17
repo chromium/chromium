@@ -34,12 +34,10 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace WTF {
-class TextEncoding;
-}
-
 namespace blink {
+
 class KURL;
+class TextEncoding;
 
 // Given a sequence of bytes in `bytes` and an optional
 // `hint_encoding_name`, detect the most likely character encoding.
@@ -52,7 +50,7 @@ PLATFORM_EXPORT bool DetectTextEncoding(base::span<const uint8_t> bytes,
                                         const char* hint_encoding_name,
                                         const KURL& hint_url,
                                         const char* hint_user_language,
-                                        WTF::TextEncoding* detected_encoding);
+                                        TextEncoding* detected_encoding);
 
 }  // namespace blink
 

@@ -65,8 +65,8 @@ class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
   TextResourceDecoder& operator=(const TextResourceDecoder&) = delete;
   ~TextResourceDecoder() override;
 
-  void SetEncoding(const WTF::TextEncoding&, EncodingSource);
-  const WTF::TextEncoding& Encoding() const { return encoding_; }
+  void SetEncoding(const TextEncoding&, EncodingSource);
+  const TextEncoding& Encoding() const { return encoding_; }
   bool EncodingWasDetectedHeuristically() const {
     return source_ == kAutoDetectedEncoding ||
            source_ == kEncodingFromContentSniffing;
@@ -86,9 +86,9 @@ class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
   wtf_size_t CheckForBOM(base::span<const char>);
 
  private:
-  static const WTF::TextEncoding& DefaultEncoding(
+  static const TextEncoding& DefaultEncoding(
       TextResourceDecoderOptions::ContentType,
-      const WTF::TextEncoding& default_encoding);
+      const TextEncoding& default_encoding);
 
   void AddToBuffer(base::span<const char> data);
   void AddToBufferIfEmpty(base::span<const char> data);
@@ -100,7 +100,7 @@ class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {
 
   const TextResourceDecoderOptions options_;
 
-  WTF::TextEncoding encoding_;
+  TextEncoding encoding_;
   std::unique_ptr<TextCodec> codec_;
   EncodingSource source_;
   Vector<char> buffer_;

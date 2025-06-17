@@ -383,8 +383,7 @@ enum class MetaAttribute {
   kPragma,
 };
 
-WTF::TextEncoding EncodingFromMetaAttributes(
-    const HTMLAttributeList& attributes) {
+TextEncoding EncodingFromMetaAttributes(const HTMLAttributeList& attributes) {
   bool got_pragma = false;
   bool has_charset = false;
   MetaAttribute mode = MetaAttribute::kNone;
@@ -411,9 +410,9 @@ WTF::TextEncoding EncodingFromMetaAttributes(
 
   if (mode == MetaAttribute::kCharset ||
       (mode == MetaAttribute::kPragma && got_pragma))
-    return WTF::TextEncoding(StripLeadingAndTrailingHTMLSpaces(charset));
+    return TextEncoding(StripLeadingAndTrailingHTMLSpaces(charset));
 
-  return WTF::TextEncoding();
+  return TextEncoding();
 }
 
 static bool ThreadSafeEqual(const StringImpl* a, const StringImpl* b) {

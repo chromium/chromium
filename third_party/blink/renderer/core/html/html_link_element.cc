@@ -215,7 +215,7 @@ bool HTMLLinkElement::LoadLink(const LinkLoadParameters& params) {
 }
 
 void HTMLLinkElement::LoadStylesheet(const LinkLoadParameters& params,
-                                     const WTF::TextEncoding& charset,
+                                     const TextEncoding& charset,
                                      FetchParameters::DeferOption defer_option,
                                      ResourceClient* link_client,
                                      RenderBlockingBehavior render_blocking) {

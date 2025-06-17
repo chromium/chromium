@@ -1211,7 +1211,7 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
         GetSecurityOrigin());
 
     cached_metadata_handler = MakeGarbageCollected<ScriptCachedMetadataHandler>(
-        WTF::TextEncoding(response_head->charset.c_str()), std::move(sender));
+        TextEncoding(response_head->charset.c_str()), std::move(sender));
 
     if (cached_metadata) {
       cached_metadata_handler->SetSerializedCachedMetadata(

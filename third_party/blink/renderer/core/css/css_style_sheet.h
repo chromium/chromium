@@ -80,7 +80,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
       Node&,
       const KURL&,
       const TextPosition& start_position = TextPosition::MinimumPosition(),
-      const WTF::TextEncoding& = WTF::TextEncoding());
+      const TextEncoding& = TextEncoding());
   static CSSStyleSheet* CreateInline(
       StyleSheetContents*,
       Node& owner_node,

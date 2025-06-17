@@ -31,7 +31,7 @@ class CachedMetadataSender;
 class PLATFORM_EXPORT ScriptCachedMetadataHandler
     : public CachedMetadataHandler {
  public:
-  ScriptCachedMetadataHandler(const WTF::TextEncoding& encoding,
+  ScriptCachedMetadataHandler(const TextEncoding& encoding,
                               std::unique_ptr<CachedMetadataSender> sender);
   ~ScriptCachedMetadataHandler() override;
 
@@ -82,7 +82,7 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler
 
   bool cached_metadata_discarded_ = false;
   std::unique_ptr<CachedMetadataSender> sender_;
-  const WTF::TextEncoding encoding_;
+  const TextEncoding encoding_;
   scoped_refptr<CachedMetadata> cached_metadata_;
 };
 
@@ -92,7 +92,7 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandlerWithHashing final
   static constexpr uint32_t kSha256Bytes = 256 / 8;
 
   ScriptCachedMetadataHandlerWithHashing(
-      const WTF::TextEncoding& encoding,
+      const TextEncoding& encoding,
       std::unique_ptr<CachedMetadataSender> sender);
   ~ScriptCachedMetadataHandlerWithHashing() override = default;
 

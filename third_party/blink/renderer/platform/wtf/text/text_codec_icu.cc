@@ -59,9 +59,8 @@ static UConverter*& CachedConverterIcu() {
   return WtfThreading().CachedConverterIcu().converter;
 }
 
-std::unique_ptr<TextCodec> TextCodecIcu::Create(
-    const WTF::TextEncoding& encoding,
-    const void*) {
+std::unique_ptr<TextCodec> TextCodecIcu::Create(const TextEncoding& encoding,
+                                                const void*) {
   return base::WrapUnique(new TextCodecIcu(encoding));
 }
 
@@ -303,7 +302,7 @@ void TextCodecIcu::RegisterCodecs(TextCodecRegistrar registrar) {
   }
 }
 
-TextCodecIcu::TextCodecIcu(const WTF::TextEncoding& encoding)
+TextCodecIcu::TextCodecIcu(const TextEncoding& encoding)
     : encoding_(encoding) {}
 
 TextCodecIcu::~TextCodecIcu() {
@@ -335,7 +334,7 @@ void TextCodecIcu::CreateIcuConverter() const {
   if (cached_converter) {
     err = U_ZERO_ERROR;
     const char* cached_name = ucnv_getName(cached_converter, &err);
-    if (U_SUCCESS(err) && encoding_ == WTF::TextEncoding(cached_name)) {
+    if (U_SUCCESS(err) && encoding_ == TextEncoding(cached_name)) {
       converter_icu_ = cached_converter;
       cached_converter = nullptr;
       return;
@@ -646,12 +645,12 @@ class TextCodecInput final {
   STACK_ALLOCATED();
 
  public:
-  TextCodecInput(const WTF::TextEncoding& encoding,
+  TextCodecInput(const TextEncoding& encoding,
                  base::span<const UChar> characters)
       : begin_(characters.data()),
         end_(characters.data() + characters.size()) {}
 
-  TextCodecInput(const WTF::TextEncoding& encoding,
+  TextCodecInput(const TextEncoding& encoding,
                  base::span<const LChar> characters) {
     buffer_.ReserveInitialCapacity(
         base::checked_cast<wtf_size_t>(characters.size()));
@@ -711,9 +710,9 @@ std::string TextCodecIcu::EncodeInternal(const TextCodecInput& input,
 #endif
       break;
     case UnencodableHandling::kNoUnencodables:
-      DCHECK(encoding_ == UTF16BigEndianEncoding() ||
-             encoding_ == UTF16LittleEndianEncoding() ||
-             encoding_ == UTF8Encoding());
+      DCHECK(encoding_ == Utf16BigEndianEncoding() ||
+             encoding_ == Utf16LittleEndianEncoding() ||
+             encoding_ == Utf8Encoding());
       ucnv_setFromUCallBack(converter_icu_, NotReachedEntityCallback, nullptr,
                             nullptr, nullptr, &err);
       break;

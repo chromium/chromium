@@ -74,18 +74,18 @@ static const auto kEncodings = std::to_array<LegacyEncoding>(
      {"us", "windows-1252"}, {"vn", "windows-1258"}, {"xa", "windows-1252"},
      {"xb", "windows-1257"}});
 
-static const WTF::TextEncoding GetEncodingFromDomain(const KURL& url) {
+static const TextEncoding GetEncodingFromDomain(const KURL& url) {
   Vector<String> tokens;
   url.Host().ToString().Split(".", tokens);
   if (!tokens.empty()) {
     auto tld = tokens.back();
     for (const auto& encoding : kEncodings) {
       if (tld == encoding.domain) {
-        return WTF::TextEncoding(encoding.encoding);
+        return TextEncoding(encoding.encoding);
       }
     }
   }
-  return WTF::TextEncoding();
+  return TextEncoding();
 }
 
 TextResourceDecoderOptions::ContentType DetermineContentType(
@@ -106,7 +106,7 @@ std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoder(
     const KURL& url,
     const AtomicString& mime_type,
     const AtomicString& encoding) {
-  const WTF::TextEncoding encoding_from_domain = GetEncodingFromDomain(url);
+  const TextEncoding encoding_from_domain = GetEncodingFromDomain(url);
 
   LocalFrame* parent_frame = nullptr;
   if (frame)
@@ -125,11 +125,10 @@ std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoder(
 
   std::unique_ptr<TextResourceDecoder> decoder;
   if (frame && frame->GetSettings()) {
-    const WTF::TextEncoding default_encoding =
+    const TextEncoding default_encoding =
         encoding_from_domain.IsValid()
             ? encoding_from_domain
-            : WTF::TextEncoding(
-                  frame->GetSettings()->GetDefaultTextEncodingName());
+            : TextEncoding(frame->GetSettings()->GetDefaultTextEncodingName());
     // Disable autodetection for XML/JSON to honor the default encoding (UTF-8)
     // for unlabelled documents.
     if (MIMETypeRegistry::IsXMLMIMEType(mime_type)) {
@@ -143,7 +142,7 @@ std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoder(
               TextResourceDecoderOptions::kJSONContent, default_encoding));
       use_hint_encoding = false;
     } else {
-      WTF::TextEncoding hint_encoding;
+      TextEncoding hint_encoding;
       if (use_hint_encoding &&
           parent_frame->GetDocument()->EncodingWasDetectedHeuristically())
         hint_encoding = parent_frame->GetDocument()->Encoding();
@@ -159,7 +158,7 @@ std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoder(
   DCHECK(decoder);
 
   if (!encoding.empty()) {
-    decoder->SetEncoding(WTF::TextEncoding(encoding.GetString()),
+    decoder->SetEncoding(TextEncoding(encoding.GetString()),
                          TextResourceDecoder::kEncodingFromHTTPHeader);
   } else if (use_hint_encoding) {
     decoder->SetEncoding(parent_frame->GetDocument()->Encoding(),

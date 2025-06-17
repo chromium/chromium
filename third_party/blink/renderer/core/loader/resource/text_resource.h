@@ -26,7 +26,7 @@ class CORE_EXPORT TextResource : public Resource {
   // call time.
   String DecodedText() const;
 
-  WTF::TextEncoding Encoding() const override;
+  TextEncoding Encoding() const override;
 
   void SetEncodingForTest(const String& encoding) { SetEncoding(encoding); }
 

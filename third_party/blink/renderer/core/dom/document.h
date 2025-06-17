@@ -1473,9 +1473,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void FinishedParsing();
 
   void SetEncodingData(const DocumentEncodingData& new_data);
-  const WTF::TextEncoding& Encoding() const {
-    return encoding_data_.Encoding();
-  }
+  const TextEncoding& Encoding() const { return encoding_data_.Encoding(); }
 
   bool EncodingWasDetectedHeuristically() const {
     return encoding_data_.WasDetectedHeuristically();

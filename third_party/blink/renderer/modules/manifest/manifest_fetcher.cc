@@ -69,7 +69,7 @@ void ManifestFetcher::DidReceiveData(base::span<const char> data) {
     String encoding = response_.TextEncodingName();
     decoder_ = std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
         TextResourceDecoderOptions::kPlainTextContent,
-        encoding.empty() ? UTF8Encoding() : WTF::TextEncoding(encoding)));
+        encoding.empty() ? Utf8Encoding() : TextEncoding(encoding)));
   }
 
   data_.Append(decoder_->Decode(data));

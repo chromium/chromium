@@ -25,7 +25,7 @@ void TextCodecReplacement::RegisterEncodingNames(
 }
 
 static std::unique_ptr<TextCodec> NewStreamingTextDecoderReplacement(
-    const WTF::TextEncoding&,
+    const TextEncoding&,
     const void*) {
   return std::make_unique<TextCodecReplacement>();
 }

@@ -108,9 +108,8 @@ Document* XSLTProcessor::CreateDocumentFromSource(
           .WithExecutionContext(owner_document->GetExecutionContext())
           .WithAgent(owner_document->GetAgent());
   Document* document = init.CreateDocument();
-  auto parsed_source_encoding = source_encoding.empty()
-                                    ? UTF8Encoding()
-                                    : WTF::TextEncoding(source_encoding);
+  auto parsed_source_encoding =
+      source_encoding.empty() ? Utf8Encoding() : TextEncoding(source_encoding);
   if (parsed_source_encoding.IsValid()) {
     DocumentEncodingData data;
     data.SetEncoding(parsed_source_encoding);

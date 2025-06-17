@@ -71,7 +71,7 @@ void TestStyleSheet::AddCSSRules(const String& css_text, bool is_empty_sheet) {
 
 CSSStyleSheet* CreateStyleSheet(Document& document) {
   return CSSStyleSheet::CreateInline(
-      document, NullURL(), TextPosition::MinimumPosition(), UTF8Encoding());
+      document, NullURL(), TextPosition::MinimumPosition(), Utf8Encoding());
 }
 
 RuleSet* CreateRuleSet(Document& document, String text) {
@@ -220,7 +220,7 @@ StyleRuleBase* ParseNestedRule(Document& document,
                                CSSNestingType nesting_type,
                                StyleRule* parent_rule_for_nesting) {
   auto* sheet = CSSStyleSheet::CreateInline(
-      document, NullURL(), TextPosition::MinimumPosition(), UTF8Encoding());
+      document, NullURL(), TextPosition::MinimumPosition(), Utf8Encoding());
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
   return CSSParser::ParseRule(context, sheet->Contents(), nesting_type,
                               parent_rule_for_nesting, text);

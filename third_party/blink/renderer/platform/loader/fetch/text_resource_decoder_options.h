@@ -36,7 +36,7 @@ class PLATFORM_EXPORT TextResourceDecoderOptions final {
   // - Else, Latin-1.
   explicit TextResourceDecoderOptions(
       ContentType,
-      const WTF::TextEncoding& default_encoding = WTF::TextEncoding());
+      const TextEncoding& default_encoding = TextEncoding());
 
   // Corresponds to utf-8 decode in Encoding spec:
   // https://encoding.spec.whatwg.org/#utf-8-decode.
@@ -48,8 +48,8 @@ class PLATFORM_EXPORT TextResourceDecoderOptions final {
 
   static TextResourceDecoderOptions CreateWithAutoDetection(
       ContentType,
-      const WTF::TextEncoding& default_encoding,
-      const WTF::TextEncoding& hint_encoding,
+      const TextEncoding& default_encoding,
+      const TextEncoding& hint_encoding,
       const KURL& hint_url);
 
   void SetUseLenientXMLDecoding() { use_lenient_xml_decoding_ = true; }
@@ -82,7 +82,7 @@ class PLATFORM_EXPORT TextResourceDecoderOptions final {
     return encoding_detection_option_;
   }
   ContentType GetContentType() const { return content_type_; }
-  const WTF::TextEncoding& DefaultEncoding() const { return default_encoding_; }
+  const TextEncoding& DefaultEncoding() const { return default_encoding_; }
   bool GetNoBOMDecoding() const { return no_bom_decoding_; }
   bool GetUseLenientXMLDecoding() const { return use_lenient_xml_decoding_; }
 
@@ -93,13 +93,13 @@ class PLATFORM_EXPORT TextResourceDecoderOptions final {
  private:
   TextResourceDecoderOptions(EncodingDetectionOption,
                              ContentType,
-                             const WTF::TextEncoding& default_encoding,
+                             const TextEncoding& default_encoding,
                              const AtomicString& hint_encoding,
                              const KURL& hint_url);
 
   EncodingDetectionOption encoding_detection_option_;
   ContentType content_type_;
-  WTF::TextEncoding default_encoding_;
+  TextEncoding default_encoding_;
   bool no_bom_decoding_;
   bool use_lenient_xml_decoding_;  // Don't stop on XML decoding errors.
 

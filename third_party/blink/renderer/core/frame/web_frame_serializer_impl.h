@@ -42,15 +42,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
-class TextEncoding;
-}
-
 namespace blink {
 
 class Document;
 class Element;
 class Node;
+class TextEncoding;
 class WebLocalFrame;
 class WebLocalFrameImpl;
 
@@ -99,10 +96,10 @@ class WebFrameSerializerImpl {
     STACK_ALLOCATED();
 
    public:
-    SerializeDomParam(const KURL&, const WTF::TextEncoding&, Document*);
+    SerializeDomParam(const KURL&, const TextEncoding&, Document*);
 
     const KURL& url;
-    const WTF::TextEncoding& text_encoding;
+    const TextEncoding& text_encoding;
     Document* document;
     bool is_html_document;  // document.isHTMLDocument()
     bool have_seen_doc_type;

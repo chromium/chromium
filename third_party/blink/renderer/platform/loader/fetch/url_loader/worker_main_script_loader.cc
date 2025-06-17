@@ -99,10 +99,9 @@ void WorkerMainScriptLoader::Start(
     return;
   }
 
-  script_encoding_ =
-      resource_response_.TextEncodingName().empty()
-          ? UTF8Encoding()
-          : WTF::TextEncoding(resource_response_.TextEncodingName());
+  script_encoding_ = resource_response_.TextEncodingName().empty()
+                         ? Utf8Encoding()
+                         : TextEncoding(resource_response_.TextEncodingName());
 
   url_loader_remote_.Bind(std::move(
       worker_main_script_load_params->url_loader_client_endpoints->url_loader));

@@ -97,7 +97,7 @@ void TextCodecLatin1::RegisterEncodingNames(
 }
 
 static std::unique_ptr<TextCodec> NewStreamingTextDecoderWindowsLatin1(
-    const WTF::TextEncoding&,
+    const TextEncoding&,
     const void*) {
   return std::make_unique<TextCodecLatin1>();
 }

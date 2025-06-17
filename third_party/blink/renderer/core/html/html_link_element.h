@@ -107,7 +107,7 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   // For LinkStyle
   bool LoadLink(const LinkLoadParameters&);
   void LoadStylesheet(const LinkLoadParameters&,
-                      const WTF::TextEncoding&,
+                      const TextEncoding&,
                       FetchParameters::DeferOption,
                       ResourceClient*,
                       RenderBlockingBehavior render_blocking);

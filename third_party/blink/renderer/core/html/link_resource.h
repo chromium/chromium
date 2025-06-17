@@ -69,7 +69,7 @@ class CORE_EXPORT LinkResource : public GarbageCollected<LinkResource> {
 
   Document& GetDocument();
   const Document& GetDocument() const;
-  WTF::TextEncoding GetCharset() const;
+  TextEncoding GetCharset() const;
   ExecutionContext* GetExecutionContext();
 
   const Member<HTMLLinkElement> owner_;

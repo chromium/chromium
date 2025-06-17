@@ -719,7 +719,7 @@ void FetchManager::Loader::DidReceiveResponse(
     // We create a ScriptCachedMetadataHandler for WASM modules.
     cached_metadata_handler_ =
         MakeGarbageCollected<ScriptCachedMetadataHandler>(
-            WTF::TextEncoding(),
+            TextEncoding(),
             CachedMetadataSender::Create(
                 response, mojom::blink::CodeCacheType::kWebAssembly,
                 GetExecutionContext()->GetSecurityOrigin()));

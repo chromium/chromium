@@ -18,7 +18,6 @@
 #include "v8/include/v8.h"
 
 namespace WTF {
-class TextEncoding;
 class TextPosition;
 }  // namespace WTF
 
@@ -30,6 +29,7 @@ class ClassicScript;
 class KURL;
 class ModuleRecordProduceCacheData;
 class ScriptState;
+class TextEncoding;
 
 class CORE_EXPORT V8CodeCache final {
   STATIC_ONLY(V8CodeCache);
@@ -135,7 +135,7 @@ class CORE_EXPORT V8CodeCache final {
       ScriptState*,
       const String& script_string,
       const KURL& source_url,
-      const WTF::TextEncoding&,
+      const TextEncoding&,
       OpaqueMode);
 
   // These values are persisted to logs. Entries should not be renumbered and

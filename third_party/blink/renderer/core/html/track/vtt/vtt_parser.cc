@@ -94,7 +94,7 @@ VTTParser::VTTParser(VTTParserClient* client, Document& document)
       state_(kInitial),
       decoder_(std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent,
-          UTF8Encoding()))),
+          Utf8Encoding()))),
       current_start_time_(0),
       current_end_time_(0),
       current_region_(nullptr),
@@ -245,7 +245,7 @@ VTTParser::ParseState VTTParser::CollectStyleSheet(const String& line) {
   if (line.empty() || line.Contains("-->")) {
     auto* parser_context = MakeGarbageCollected<CSSParserContext>(
         *document_, NullURL(), true /* origin_clean */, Referrer(),
-        UTF8Encoding(), ResourceFetchRestriction::kOnlyDataUrls);
+        Utf8Encoding(), ResourceFetchRestriction::kOnlyDataUrls);
     auto* style_sheet_contents =
         MakeGarbageCollected<StyleSheetContents>(parser_context);
     CSSParser::ParseSheet(

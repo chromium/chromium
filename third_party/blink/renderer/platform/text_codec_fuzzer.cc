@@ -37,7 +37,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // text codecs.
 
   // Initializes the codec map.
-  static const WTF::TextEncoding encoding = WTF::TextEncoding(
+  static const blink::TextEncoding encoding = blink::TextEncoding(
 #if defined(UTF_8)
       "UTF-8"
 #elif defined(WINDOWS_1252)

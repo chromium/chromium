@@ -616,7 +616,7 @@ void V8CodeCache::ProduceCache(v8::Isolate* isolate,
 
 uint32_t V8CodeCache::TagForBundledCodeCache() {
   // The bundled code cache will operate only on utf-8 formatted scripts.
-  return CacheTag(kCacheTagCode, WTF::UTF8Encoding().GetName());
+  return CacheTag(kCacheTagCode, Utf8Encoding().GetName());
 }
 
 uint32_t V8CodeCache::TagForCodeCache(
@@ -659,7 +659,7 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
     ScriptState* script_state,
     const String& script_string,
     const KURL& source_url,
-    const WTF::TextEncoding& encoding,
+    const TextEncoding& encoding,
     OpaqueMode opaque_mode) {
   const String file_name = source_url.GetString();
 

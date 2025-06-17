@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
-namespace WTF {
+namespace blink {
 
 TextEncoding::TextEncoding(const char* name)
     : name_(AtomicString(AtomicCanonicalTextEncodingName(name))) {}
@@ -76,13 +76,13 @@ bool TextEncoding::UsesVisualOrdering() const {
 }
 
 bool TextEncoding::IsNonByteBasedEncoding() const {
-  return *this == UTF16LittleEndianEncoding() ||
-         *this == UTF16BigEndianEncoding();
+  return *this == Utf16LittleEndianEncoding() ||
+         *this == Utf16BigEndianEncoding();
 }
 
 const TextEncoding& TextEncoding::ClosestByteBasedEquivalent() const {
   if (IsNonByteBasedEncoding())
-    return UTF8Encoding();
+    return Utf8Encoding();
   return *this;
 }
 
@@ -91,11 +91,11 @@ const TextEncoding& TextEncoding::ClosestByteBasedEquivalent() const {
 // encoding and can contain 0x00.
 const TextEncoding& TextEncoding::EncodingForFormSubmission() const {
   if (IsNonByteBasedEncoding())
-    return UTF8Encoding();
+    return Utf8Encoding();
   return *this;
 }
 
-const TextEncoding& ASCIIEncoding() {
+const TextEncoding& AsciiEncoding() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(const TextEncoding, global_ascii_encoding,
                                   ("ASCII"));
   return global_ascii_encoding;
@@ -107,19 +107,19 @@ const TextEncoding& Latin1Encoding() {
   return global_latin1_encoding;
 }
 
-const TextEncoding& UTF16BigEndianEncoding() {
+const TextEncoding& Utf16BigEndianEncoding() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       const TextEncoding, global_utf16_big_endian_encoding, ("UTF-16BE"));
   return global_utf16_big_endian_encoding;
 }
 
-const TextEncoding& UTF16LittleEndianEncoding() {
+const TextEncoding& Utf16LittleEndianEncoding() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       const TextEncoding, global_utf16_little_endian_encoding, ("UTF-16LE"));
   return global_utf16_little_endian_encoding;
 }
 
-const TextEncoding& UTF8Encoding() {
+const TextEncoding& Utf8Encoding() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(const TextEncoding, global_utf8_encoding,
                                   ("UTF-8"));
   DCHECK(global_utf8_encoding.IsValid());
@@ -138,4 +138,4 @@ const TextEncoding& UnknownEncoding() {
   return global_unknown_encoding;
 }
 
-}  // namespace WTF
+}  // namespace blink

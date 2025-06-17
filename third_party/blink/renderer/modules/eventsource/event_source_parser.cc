@@ -19,7 +19,7 @@ EventSourceParser::EventSourceParser(const AtomicString& last_event_id,
     : id_(last_event_id),
       last_event_id_(last_event_id),
       client_(client),
-      codec_(NewTextCodec(UTF8Encoding())) {}
+      codec_(NewTextCodec(Utf8Encoding())) {}
 
 void EventSourceParser::AddBytes(base::span<const char> bytes) {
   // A line consists of |m_line| followed by

@@ -266,7 +266,7 @@ static std::unique_ptr<TextResourceDecoder> CreateResourceTextDecoder(
   if (!text_encoding_name.empty()) {
     return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
         TextResourceDecoderOptions::kPlainTextContent,
-        WTF::TextEncoding(text_encoding_name)));
+        TextEncoding(text_encoding_name)));
   }
   if (MIMETypeRegistry::IsXMLMIMEType(mime_type)) {
     TextResourceDecoderOptions options(TextResourceDecoderOptions::kXMLContent);
@@ -275,17 +275,17 @@ static std::unique_ptr<TextResourceDecoder> CreateResourceTextDecoder(
   }
   if (EqualIgnoringASCIICase(mime_type, "text/html")) {
     return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
-        TextResourceDecoderOptions::kHTMLContent, UTF8Encoding()));
+        TextResourceDecoderOptions::kHTMLContent, Utf8Encoding()));
   }
   if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType(mime_type) ||
       MIMETypeRegistry::IsJSONMimeType(mime_type)) {
     return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
-        TextResourceDecoderOptions::kPlainTextContent, UTF8Encoding()));
+        TextResourceDecoderOptions::kPlainTextContent, Utf8Encoding()));
   }
   if (MIMETypeRegistry::IsPlainTextMIMEType(mime_type)) {
     return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
         TextResourceDecoderOptions::kPlainTextContent,
-        WTF::TextEncoding("ISO-8859-1")));
+        TextEncoding("ISO-8859-1")));
   }
   return nullptr;
 }
@@ -341,7 +341,7 @@ bool InspectorPageAgent::SegmentedBufferContent(
   String text_content;
   std::unique_ptr<TextResourceDecoder> decoder =
       CreateResourceTextDecoder(mime_type, text_encoding_name);
-  WTF::TextEncoding encoding(text_encoding_name);
+  TextEncoding encoding(text_encoding_name);
 
   const SegmentedBuffer::DeprecatedFlatData flat_buffer(buffer);
   const auto byte_buffer = base::as_byte_span(flat_buffer);

@@ -27,14 +27,11 @@
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
-namespace WTF {
-class TextEncoding;
-}  // namespace WTF
-
 namespace blink {
 
 class Document;
 class KURL;
+class TextEncoding;
 
 // Stores data for a <url> value (url(), src()).
 class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
@@ -71,7 +68,7 @@ class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
   // Returns a copy where the unresolved URL has been resolved against
   // `base_url` (using `charset` encoding if valid).
   const CSSUrlData* MakeResolved(const KURL& base_url,
-                                 const WTF::TextEncoding& charset) const;
+                                 const TextEncoding& charset) const;
 
   // Returns a copy with the URL (re)resolved against the base URL of the
   // document if there's is potential risk of "dangling markup". Otherwise

@@ -108,9 +108,8 @@ const CSSUrlData* CSSUrlData::MakeComputed() const {
       potentially_dangling_markup_);
 }
 
-const CSSUrlData* CSSUrlData::MakeResolved(
-    const KURL& base_url,
-    const WTF::TextEncoding& charset) const {
+const CSSUrlData* CSSUrlData::MakeResolved(const KURL& base_url,
+                                           const TextEncoding& charset) const {
   if (relative_url_.empty()) {
     return this;
   }

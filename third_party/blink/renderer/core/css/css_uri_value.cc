@@ -71,9 +71,8 @@ bool CSSURIValue::Equals(const CSSURIValue& other) const {
   return *url_data_ == *other.url_data_;
 }
 
-CSSURIValue* CSSURIValue::ComputedCSSValue(
-    const KURL& base_url,
-    const WTF::TextEncoding& charset) const {
+CSSURIValue* CSSURIValue::ComputedCSSValue(const KURL& base_url,
+                                           const TextEncoding& charset) const {
   return MakeGarbageCollected<CSSURIValue>(
       *UrlData().MakeResolved(base_url, charset));
 }

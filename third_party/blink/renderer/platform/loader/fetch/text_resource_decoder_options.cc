@@ -10,7 +10,7 @@ namespace blink {
 
 TextResourceDecoderOptions::TextResourceDecoderOptions(
     ContentType content_type,
-    const WTF::TextEncoding& default_encoding)
+    const TextEncoding& default_encoding)
     : TextResourceDecoderOptions(kUseContentAndBOMBasedDetection,
                                  content_type,
                                  default_encoding,
@@ -19,7 +19,7 @@ TextResourceDecoderOptions::TextResourceDecoderOptions(
 
 TextResourceDecoderOptions TextResourceDecoderOptions::CreateUTF8Decode() {
   return TextResourceDecoderOptions(kAlwaysUseUTF8ForText, kPlainTextContent,
-                                    UTF8Encoding(), AtomicString(), NullURL());
+                                    Utf8Encoding(), AtomicString(), NullURL());
 }
 
 TextResourceDecoderOptions
@@ -31,8 +31,8 @@ TextResourceDecoderOptions::CreateUTF8DecodeWithoutBOM() {
 
 TextResourceDecoderOptions TextResourceDecoderOptions::CreateWithAutoDetection(
     ContentType content_type,
-    const WTF::TextEncoding& default_encoding,
-    const WTF::TextEncoding& hint_encoding,
+    const TextEncoding& default_encoding,
+    const TextEncoding& hint_encoding,
     const KURL& hint_url) {
   return TextResourceDecoderOptions(kUseAllAutoDetection, content_type,
                                     default_encoding, hint_encoding.GetName(),
@@ -42,7 +42,7 @@ TextResourceDecoderOptions TextResourceDecoderOptions::CreateWithAutoDetection(
 TextResourceDecoderOptions::TextResourceDecoderOptions(
     EncodingDetectionOption encoding_detection_option,
     ContentType content_type,
-    const WTF::TextEncoding& default_encoding,
+    const TextEncoding& default_encoding,
     const AtomicString& hint_encoding,
     const KURL& hint_url)
     : encoding_detection_option_(encoding_detection_option),

@@ -1159,12 +1159,12 @@ function main(metadata) {
       String text_string = css_text.ToString();
       std::string text;
       if (charset.IsValid()) {
-        WTF::TextEncoding text_encoding(charset);
+        TextEncoding text_encoding(charset);
         text = text_encoding.Encode(text_string,
                                     WTF::kCSSEncodedEntitiesForUnencodables);
       } else {
-        text = WTF::UTF8Encoding().Encode(
-            text_string, WTF::kCSSEncodedEntitiesForUnencodables);
+        text = Utf8Encoding().Encode(text_string,
+                                     WTF::kCSSEncodedEntitiesForUnencodables);
       }
 
       resource_serializer_->AddToResources(String("text/css"),

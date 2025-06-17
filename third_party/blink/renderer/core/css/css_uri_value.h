@@ -11,15 +11,12 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
-class TextEncoding;
-}  // namespace WTF
-
 namespace blink {
 
 class Document;
 class KURL;
 class SVGResource;
+class TextEncoding;
 
 namespace cssvalue {
 
@@ -51,7 +48,7 @@ class CORE_EXPORT CSSURIValue : public CSSValue {
   bool Equals(const CSSURIValue&) const;
 
   CSSURIValue* ComputedCSSValue(const KURL& base_url,
-                                const WTF::TextEncoding&) const;
+                                const TextEncoding&) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

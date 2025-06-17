@@ -50,7 +50,7 @@ class HTMLMetaCharsetParser {
   // Returns true if done checking, regardless whether an encoding is found.
   bool CheckForMetaCharset(base::span<const char> data);
 
-  const WTF::TextEncoding& Encoding() { return encoding_; }
+  const TextEncoding& Encoding() { return encoding_; }
 
  private:
   bool ProcessMeta(const HTMLToken& token);
@@ -61,7 +61,7 @@ class HTMLMetaCharsetParser {
   bool in_head_section_;
 
   bool done_checking_;
-  WTF::TextEncoding encoding_;
+  TextEncoding encoding_;
 };
 
 }  // namespace blink

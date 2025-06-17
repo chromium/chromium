@@ -131,12 +131,12 @@ class V8ScriptRunnerTest : public testing::Test {
 
   ScriptResource* CreateEmptyResource(v8::Isolate* isolate) {
     ScriptResource* resource =
-        ScriptResource::CreateForTest(isolate, NullURL(), UTF8Encoding());
+        ScriptResource::CreateForTest(isolate, NullURL(), Utf8Encoding());
     return resource;
   }
 
   ScriptResource* CreateResource(v8::Isolate* isolate,
-                                 const WTF::TextEncoding& encoding,
+                                 const TextEncoding& encoding,
                                  Vector<uint8_t> serialized_metadata,
                                  std::optional<String> code = {}) {
     return CreateResource(isolate, encoding, base::span(serialized_metadata),
@@ -145,7 +145,7 @@ class V8ScriptRunnerTest : public testing::Test {
 
   ScriptResource* CreateResource(
       v8::Isolate* isolate,
-      const WTF::TextEncoding& encoding,
+      const TextEncoding& encoding,
       base::span<const uint8_t> serialized_metadata = {},
       std::optional<String> code = {}) {
     ScriptResource* resource =
@@ -172,7 +172,7 @@ class V8ScriptRunnerTest : public testing::Test {
   Vector<uint8_t> CreateCachedData() {
     V8TestingScope scope;
     ClassicScript* classic_script =
-        CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+        CreateScript(CreateResource(scope.GetIsolate(), Utf8Encoding()));
     // Set timestamp to simulate a warm run.
     CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
     ExecutionContext* execution_context =
@@ -236,7 +236,7 @@ TEST_F(V8ScriptRunnerTest, emptyResourceDoesNotHaveCacheHandler) {
 TEST_F(V8ScriptRunnerTest, codeOption) {
   V8TestingScope scope;
   ClassicScript* classic_script =
-      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+      CreateScript(CreateResource(scope.GetIsolate(), Utf8Encoding()));
   CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
   ExecutionContext* execution_context =
       ExecutionContext::From(scope.GetScriptState());
@@ -251,7 +251,7 @@ TEST_F(V8ScriptRunnerTest, codeOption) {
   EXPECT_TRUE(cache_handler->GetCachedMetadata(TagForCodeCache(cache_handler)));
   // The cached data is associated with the encoding.
   ScriptResource* another_resource =
-      CreateResource(scope.GetIsolate(), UTF16LittleEndianEncoding());
+      CreateResource(scope.GetIsolate(), Utf16LittleEndianEncoding());
   EXPECT_FALSE(cache_handler->GetCachedMetadata(
       TagForCodeCache(another_resource->CacheHandler())));
 }
@@ -259,7 +259,7 @@ TEST_F(V8ScriptRunnerTest, codeOption) {
 TEST_F(V8ScriptRunnerTest, consumeCodeOption) {
   V8TestingScope scope;
   ClassicScript* classic_script =
-      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+      CreateScript(CreateResource(scope.GetIsolate(), Utf8Encoding()));
   // Set timestamp to simulate a warm run.
   CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
   ExecutionContext* execution_context =
@@ -296,7 +296,7 @@ TEST_F(V8ScriptRunnerTest, consumeCodeOption) {
 TEST_F(V8ScriptRunnerTest, produceAndConsumeCodeOption) {
   V8TestingScope scope;
   ClassicScript* classic_script =
-      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+      CreateScript(CreateResource(scope.GetIsolate(), Utf8Encoding()));
   CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
 
   // Cold run - should set the timestamp.
@@ -333,7 +333,7 @@ TEST_F(V8ScriptRunnerTest, produceAndConsumeCodeOption) {
 TEST_F(V8ScriptRunnerTest, cacheDataTypeMismatch) {
   V8TestingScope scope;
   ClassicScript* classic_script =
-      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+      CreateScript(CreateResource(scope.GetIsolate(), Utf8Encoding()));
   CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
   EXPECT_FALSE(
       cache_handler->GetCachedMetadata(TagForTimeStamp(cache_handler)));
@@ -357,7 +357,7 @@ TEST_F(V8ScriptRunnerTest, successfulCodeCacheWithHashing) {
       "codecachewithhashing");
   url_ = "codecachewithhashing://bla.com/bla";
   ClassicScript* classic_script =
-      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+      CreateScript(CreateResource(scope.GetIsolate(), Utf8Encoding()));
   CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
   EXPECT_TRUE(cache_handler->HashRequired());
 
@@ -405,7 +405,7 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   url_ = "codecachewithhashing://bla.com/bla";
 
   ClassicScript* classic_script_1 =
-      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+      CreateScript(CreateResource(scope.GetIsolate(), Utf8Encoding()));
   ScriptCachedMetadataHandlerWithHashing* cache_handler_1 =
       static_cast<ScriptCachedMetadataHandlerWithHashing*>(
           classic_script_1->CacheHandler());
@@ -425,7 +425,7 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   // A second script with matching script text, using the state of
   // the ScriptCachedMetadataHandler from the first script.
   ClassicScript* classic_script_2 = CreateScript(
-      CreateResource(scope.GetIsolate(), UTF8Encoding(),
+      CreateResource(scope.GetIsolate(), Utf8Encoding(),
                      cache_handler_1->GetSerializedCachedMetadata()));
   ScriptCachedMetadataHandlerWithHashing* cache_handler_2 =
       static_cast<ScriptCachedMetadataHandlerWithHashing*>(
@@ -443,7 +443,7 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   // A third script with different script text, using the state of
   // the ScriptCachedMetadataHandler from the second script.
   ClassicScript* classic_script_3 = CreateScript(CreateResource(
-      scope.GetIsolate(), UTF8Encoding(),
+      scope.GetIsolate(), Utf8Encoding(),
       cache_handler_2->GetSerializedCachedMetadata(), DifferentCode()));
   ScriptCachedMetadataHandlerWithHashing* cache_handler_3 =
       static_cast<ScriptCachedMetadataHandlerWithHashing*>(
@@ -466,7 +466,7 @@ TEST_F(V8ScriptRunnerTest, codeCacheWithFailedHashCheck) {
   // A fourth script with matching script text, using the state of
   // the ScriptCachedMetadataHandler from the third script.
   ClassicScript* classic_script_4 = CreateScript(
-      CreateResource(scope.GetIsolate(), UTF8Encoding(),
+      CreateResource(scope.GetIsolate(), Utf8Encoding(),
                      cache_handler_3->GetSerializedCachedMetadata()));
   ScriptCachedMetadataHandlerWithHashing* cache_handler_4 =
       static_cast<ScriptCachedMetadataHandlerWithHashing*>(
@@ -520,7 +520,7 @@ TEST_F(V8ScriptRunnerTest, successfulOffThreadCodeCache) {
 
   // Hot run - should start an off-thread code cache consumption.
   ScriptResource* resource =
-      CreateResource(scope.GetIsolate(), UTF8Encoding(), cached_data);
+      CreateResource(scope.GetIsolate(), Utf8Encoding(), cached_data);
   EXPECT_TRUE(V8CodeCache::HasCodeCache(resource->CacheHandler()));
   ClassicScript* classic_script = CreateScript(resource);
   EXPECT_NE(classic_script->CacheConsumer(), nullptr);
@@ -619,7 +619,7 @@ class WebUIBundledCodeCacheV8ScriptRunnerTest : public V8ScriptRunnerTest {
 TEST_F(WebUIBundledCodeCacheV8ScriptRunnerTest, DoesNotProduceCache) {
   V8TestingScope scope;
   ClassicScript* classic_script =
-      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+      CreateScript(CreateResource(scope.GetIsolate(), Utf8Encoding()));
   CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
   EXPECT_EQ(CachedMetadataHandler::ServingSource::kWebUIBundledCache,
             cache_handler->GetServingSource());
@@ -640,7 +640,7 @@ TEST_F(WebUIBundledCodeCacheV8ScriptRunnerTest, ConsumesAvailableCodeCache) {
   base::HistogramTester histogram_tester;
   V8TestingScope scope;
   ClassicScript* classic_script =
-      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+      CreateScript(CreateResource(scope.GetIsolate(), Utf8Encoding()));
   CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
   EXPECT_EQ(CachedMetadataHandler::ServingSource::kWebUIBundledCache,
             cache_handler->GetServingSource());
@@ -674,7 +674,7 @@ TEST_F(WebUIBundledCodeCacheV8ScriptRunnerTest, RejectsInvalidCodeCache) {
   base::HistogramTester histogram_tester;
   V8TestingScope scope;
   ClassicScript* classic_script =
-      CreateScript(CreateResource(scope.GetIsolate(), UTF8Encoding()));
+      CreateScript(CreateResource(scope.GetIsolate(), Utf8Encoding()));
   CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
   EXPECT_EQ(CachedMetadataHandler::ServingSource::kWebUIBundledCache,
             cache_handler->GetServingSource());
@@ -682,7 +682,7 @@ TEST_F(WebUIBundledCodeCacheV8ScriptRunnerTest, RejectsInvalidCodeCache) {
   // Create and compile a different script to generate cached metadata
   // invalid for use with with `classic_script`.
   ClassicScript* different_classic_script = CreateScript(CreateResource(
-      scope.GetIsolate(), UTF8Encoding(), Vector<uint8_t>(), DifferentCode()));
+      scope.GetIsolate(), Utf8Encoding(), Vector<uint8_t>(), DifferentCode()));
   scoped_refptr<blink::CachedMetadata> different_cached_metadata =
       ProduceCachedMetadata(scope.GetIsolate(), scope.GetScriptState(),
                             *different_classic_script);
@@ -716,7 +716,7 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithDifferentSource) {
   V8TestingScope scope;
 
   // Hot run - should start an off-thread code cache consumption.
-  ScriptResource* resource = CreateResource(scope.GetIsolate(), UTF8Encoding(),
+  ScriptResource* resource = CreateResource(scope.GetIsolate(), Utf8Encoding(),
                                             cached_data, DifferentCode());
   ClassicScript* classic_script = CreateScript(resource);
   EXPECT_NE(classic_script->CacheConsumer(), nullptr);
@@ -763,7 +763,7 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithBitCorruption) {
 
   // Hot run - should start an off-thread code cache consumption.
   ScriptResource* resource =
-      CreateResource(scope.GetIsolate(), UTF8Encoding(), corrupted_data);
+      CreateResource(scope.GetIsolate(), Utf8Encoding(), corrupted_data);
   ClassicScript* classic_script = CreateScript(resource);
   EXPECT_NE(classic_script->CacheConsumer(), nullptr);
   auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
