@@ -41,6 +41,7 @@ namespace {
 
 // Smaller than DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH.
 constexpr int kQrCodeSize = 240;
+constexpr int kQrCodeMargin = 20;
 
 using DigitalIdentityInterstitialAbortCallback =
     content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
@@ -81,6 +82,9 @@ std::unique_ptr<views::View> MakeQrCodeImageView(const std::string& qr_url) {
   image_view->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_WEB_DIGITAL_CREDENTIALS_QR_CODE_ALT_TEXT));
   image_view->SetImageSize(gfx::Size(kQrCodeSize, kQrCodeSize));
+  image_view->SetCornerRadius(
+      10);  // Set radius to match that used in the QR-Code Locator.
+  image_view->SetBorder(views::CreateEmptyBorder(gfx::Insets(kQrCodeMargin)));
   return image_view;
 }
 
@@ -269,7 +273,11 @@ void DigitalIdentityProviderDesktop::ShowQrCodeDialog(
       l10n_util::GetStringUTF16(IDS_WEB_DIGITAL_CREDENTIALS_QR_BODY);
   EnsureDialogCreated()->TryShow(
       /*accept_button=*/std::nullopt, base::OnceClosure(),
-      ui::DialogModel::Button::Params(),
+      /*cancel_button=*/
+      ui::DialogModel::Button::Params()
+          .SetLabel(l10n_util::GetStringUTF16(
+              IDS_WEB_DIGITAL_CREDENTIALS_FLOW_CANCEL_BUTTON_TEXT))
+          .SetStyle(ui::ButtonStyle::kDefault),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnCanceled,
                      weak_ptr_factory_.GetWeakPtr()),
       dialog_title, dialog_body, MakeQrCodeImageView(qr_url),
@@ -304,7 +312,11 @@ void DigitalIdentityProviderDesktop::ShowConnectingToPhoneDialog() {
 
   EnsureDialogCreated()->TryShow(
       /*accept_button=*/std::nullopt, base::OnceClosure(),
-      ui::DialogModel::Button::Params(),
+      /*cancel_button=*/
+      ui::DialogModel::Button::Params()
+          .SetLabel(l10n_util::GetStringUTF16(
+              IDS_WEB_DIGITAL_CREDENTIALS_FLOW_CANCEL_BUTTON_TEXT))
+          .SetStyle(ui::ButtonStyle::kDefault),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnCanceled,
                      weak_ptr_factory_.GetWeakPtr()),
       /*dialog_title=*/u"", /*dialog_body=*/u"",
@@ -326,7 +338,11 @@ void DigitalIdentityProviderDesktop::ShowContinueStepsOnThePhoneDialog() {
 
   EnsureDialogCreated()->TryShow(
       /*accept_button=*/std::nullopt, base::OnceClosure(),
-      ui::DialogModel::Button::Params(),
+      /*cancel_button=*/
+      ui::DialogModel::Button::Params()
+          .SetLabel(l10n_util::GetStringUTF16(
+              IDS_WEB_DIGITAL_CREDENTIALS_FLOW_CANCEL_BUTTON_TEXT))
+          .SetStyle(ui::ButtonStyle::kDefault),
       base::BindOnce(&DigitalIdentityProviderDesktop::OnCanceled,
                      weak_ptr_factory_.GetWeakPtr()),
       /*dialog_title=*/u"", /*dialog_body=*/u"",

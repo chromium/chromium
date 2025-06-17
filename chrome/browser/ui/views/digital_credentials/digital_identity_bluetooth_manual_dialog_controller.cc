@@ -56,7 +56,9 @@ void DigitalIdentityBluetoothManualDialogController::UpdateDialog(
       ok_button_params,
       base::BindOnce(&DigitalIdentityBluetoothManualDialogController::OnAccept,
                      weak_factory_.GetWeakPtr()),
-      ui::DialogModel::Button::Params(),
+      /*cancel_button=*/
+      ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
+          IDS_WEB_DIGITAL_CREDENTIALS_FLOW_CANCEL_BUTTON_TEXT)),
       base::BindOnce(&DigitalIdentityBluetoothManualDialogController::OnCancel,
                      weak_factory_.GetWeakPtr()),
       /*dialog_title=*/u"", /*dialog_body=*/u"",

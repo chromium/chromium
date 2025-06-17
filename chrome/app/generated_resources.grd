@@ -17702,6 +17702,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Follow the steps on your other device
       </message>
 
+      <message name="IDS_WEB_DIGITAL_CREDENTIALS_FLOW_CANCEL_BUTTON_TEXT" desc="The button text to cancel the current flow.">
+        Cancel
+      </message>
+
     <!-- Interstitial shown prior to making digital identity request to wallet -->
     <!-- Android strings are declared in android_chrome_strings.grd. -->
     <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_DIALOG_TITLE">
