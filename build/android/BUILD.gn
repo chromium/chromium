@@ -109,7 +109,7 @@ if (enable_java_templates) {
   }
 }
 
-if (defined(sanitizer_arch)) {
+if (enable_wrap_sh) {
   action("generate_wrap_sh") {
     script = "generate_wrap_sh.py"
     outputs = [ "$target_gen_dir/$target_name/wrap.sh" ]
@@ -118,8 +118,16 @@ if (defined(sanitizer_arch)) {
       "--output",
       rebase_path(outputs[0], root_build_dir),
     ]
-    if (is_hwasan) {
-      args += [ "--is_hwasan" ]
+    if (is_asan) {
+      args += [ "--asan" ]
+    } else if (is_hwasan) {
+      args += [ "--hwasan" ]
+    }
+    if (android_custom_env != "") {
+      args += [
+        "--env",
+        android_custom_env,
+      ]
     }
   }
 }

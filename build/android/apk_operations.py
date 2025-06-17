@@ -736,6 +736,7 @@ class _LogcatProcessor:
       'AndroidRuntime',  # Java crash dumps
       'AppZygoteInit',  # Android's native application zygote support.
       'DEBUG',  # Native crash dump.
+      'cr_wrap.sh',  # Logs from wrap.sh scripts embedded in apks.
   }
 
   # Matches messages only on pre-L (Dalvik) that are spammy and unimportant.

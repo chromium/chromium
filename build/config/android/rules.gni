@@ -2682,7 +2682,7 @@ if (!is_robolectric && enable_java_templates) {
     if (_is_base_module && _native_libs_deps != [] && !_uses_static_library) {
       _sanitizer_loadable_modules += _sanitizer_runtimes
     }
-    if ((is_hwasan || is_asan) && _is_base_module &&
+    if (enable_wrap_sh && _is_base_module &&
         (_uses_static_library || _native_libs_deps != [])) {
       _sanitizer_loadable_modules +=
           [ "$root_gen_dir/build/android/generate_wrap_sh/wrap.sh" ]
