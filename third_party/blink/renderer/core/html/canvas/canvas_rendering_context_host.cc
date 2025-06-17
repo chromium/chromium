@@ -396,12 +396,13 @@ CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
         Size(), format, alpha_type, color_space, kShouldInitialize, this);
   }
 
+  if (provider) {
+    provider->SetResourceRecyclingEnabled(true);
+  }
+
   auto* raw_provider = provider.get();
   ReplaceResourceProvider(std::move(provider));
 
-  if (raw_provider) {
-    raw_provider->SetResourceRecyclingEnabled(true);
-  }
   return raw_provider;
 }
 
