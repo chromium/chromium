@@ -866,7 +866,7 @@ public class AutofillLocalCardEditorTest {
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecord(AutofillLocalCardEditor.ADD_CARD_FLOW_HISTOGRAM, true)
                         .build();
-        initFragment(getSampleLocalCard());
+        initFragment(null);
 
         addCardFlowHistogram.assertExpected();
     }
@@ -882,7 +882,7 @@ public class AutofillLocalCardEditorTest {
                                         .ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM,
                                 true)
                         .build();
-        initFragment(getSampleLocalCard());
+        initFragment(null);
 
         addCardFlowWithoutExistingCardsHistogram.assertExpected();
     }
@@ -900,9 +900,26 @@ public class AutofillLocalCardEditorTest {
                                         .ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM,
                                 false)
                         .build();
-        initFragment(getSampleLocalCard());
+        initFragment(null);
 
         addCardFlowWithoutExistingCardsHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_notRecordedWhenCardEditFlowStarted() {
+        // If the editor is opened for editing an existing card, the 'add card' histograms should
+        // not be recorded.
+        HistogramWatcher addCardFlowHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(AutofillLocalCardEditor.ADD_CARD_FLOW_HISTOGRAM)
+                        .expectNoRecords(
+                                AutofillLocalCardEditor
+                                        .ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM)
+                        .build();
+        initFragment(getSampleLocalCard());
+
+        addCardFlowHistogram.assertExpected();
     }
 
     @Test

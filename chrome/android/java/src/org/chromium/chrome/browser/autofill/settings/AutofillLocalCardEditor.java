@@ -68,9 +68,9 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
     static final String CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM =
             "Autofill.PaymentMethods.SettingsPage.StoredCreditCardCountBeforeCardAdded";
     static final String ADD_CARD_FLOW_HISTOGRAM =
-            "Autofill.PaymentMethodsSettingsPage.AddCardClicked";
+            "Autofill.PaymentMethodsSettingsPage.AddCardClicked2";
     static final String ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM =
-            "Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards";
+            "Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards2";
     static final String CARD_ADDED_WITHOUT_EXISTING_CARDS_HISTOGRAM =
             "Autofill.PaymentMethodsSettingsPage.CardAddedWithoutExistingCards";
 
@@ -184,12 +184,16 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
 
         addCardDataToEditFields();
         initializeButtons(v);
-        RecordHistogram.recordBooleanHistogram(ADD_CARD_FLOW_HISTOGRAM, true);
-        RecordHistogram.recordBooleanHistogram(
-                ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM,
-                PersonalDataManagerFactory.getForProfile(getProfile())
-                        .getCreditCardsForSettings()
-                        .isEmpty());
+
+        if (mIsNewEntry) {
+            RecordHistogram.recordBooleanHistogram(ADD_CARD_FLOW_HISTOGRAM, true);
+            RecordHistogram.recordBooleanHistogram(
+                    ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM,
+                    PersonalDataManagerFactory.getForProfile(getProfile())
+                            .getCreditCardsForSettings()
+                            .isEmpty());
+        }
+
         if (sObserverForTest != null) {
             sObserverForTest.onResult(this);
         }

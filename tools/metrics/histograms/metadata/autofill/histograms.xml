@@ -4829,23 +4829,24 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.PaymentMethodsSettingsPage.AddCardClicked"
+<histogram name="Autofill.PaymentMethodsSettingsPage.AddCardClicked2"
     enum="Boolean" expires_after="2025-12-14">
-  <owner>npnavarro@google.com</owner>
   <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Logs when the add card flow is started (currently only on Android). Recorded
     when a user starts the flow to add a new local card through the Chrome
     payment methods settings page.
+
+    Note that a previous version of this histogram incorrectly measured both add
+    and edit cases, and was obsoleted in mid-June 2025.
   </summary>
 </histogram>
 
 <histogram
-    name="Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards"
+    name="Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards2"
     enum="Boolean" expires_after="2025-10-26">
   <owner>darwinyang@google.com</owner>
-  <owner>npnavarro@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Logs true when the add card flow is started when the user does not have any
@@ -4853,6 +4854,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     false. Recorded when a user starts the flow to add a new card through the
     Chrome payment methods settings page and they do not have any existing
     cards.
+
+    Note that a previous version of this histogram incorrectly measured both add
+    and edit cases, and was obsoleted in mid-June 2025.
   </summary>
 </histogram>
 
