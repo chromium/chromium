@@ -83,4 +83,32 @@
 
     assert_array_equals(event_log, expected_events, "events received");
   }, "A repeated setPointerCapture call does not redispatch capture events");
+
+  promise_test(async () => {
+    event_log = [];
+
+    target.addEventListener("pointermove", e => {
+      try {
+        // Pick a non-existent random pointerId to force this call to fail.
+        other.setPointerCapture(e.pointerId + 4321);
+      } catch (error) {}
+    });
+
+    let done_click_promise = getEvent("click", done);
+
+    let actions = new test_driver.Actions()
+        .addPointer("TestPointer", pointer_type)
+        .pointerMove(0, 0, {origin: target})
+        .pointerDown()
+        .pointerMove(10, 10, {origin: target})
+        .pointerUp()
+        .pointerMove(0, 0, {origin: done})
+        .pointerDown()
+        .pointerUp();
+
+    await actions.send();
+    await done_click_promise;
+
+    assert_array_equals(event_log, expected_events, "events received");
+  }, "A failed setPointerCapture call does not affect existing capture");
 </script>
