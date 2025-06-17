@@ -26,12 +26,14 @@
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/extensions/webstore_reinstaller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/common/drop_data.h"
 #include "extensions/browser/disable_reason.h"
@@ -56,7 +58,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -587,9 +588,6 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
       event_router->OnExtensionConfigurationChanged(extension->id());
     }
   }
-// TODO(crbug.com/392777363): Enable this code when toolbars are supported on
-// desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (update.show_access_requests_in_toolbar) {
     SitePermissionsHelper(Profile::FromBrowserContext(browser_context()))
         .SetShowAccessRequestsInToolbar(
@@ -609,7 +607,6 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
                                                  !is_action_pinned);
     }
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return RespondNow(NoArguments());
 }
