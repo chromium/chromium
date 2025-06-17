@@ -512,6 +512,20 @@ FrameTreeNodeId PrerenderTestHelper::GetHostForUrl(const GURL& url) {
   return GetHostForUrl(*GetWebContents(), url);
 }
 
+// static
+FrameTreeNodeId PrerenderTestHelper::GetPrewarmSearchResultHost(
+    WebContents& web_contents,
+    const GURL& prewarm_url) {
+  auto* host = GetPrerenderHostRegistry(&web_contents)
+                   .FindPrewarmSearchResultHostForTesting(prewarm_url);
+  return host ? host->frame_tree_node_id() : FrameTreeNodeId();
+}
+
+FrameTreeNodeId PrerenderTestHelper::GetPrewarmSearchResultHost(
+    const GURL& url) {
+  return GetPrewarmSearchResultHost(*GetWebContents(), url);
+}
+
 bool PrerenderTestHelper::HasNewTabHandle(FrameTreeNodeId host_id) {
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry(GetWebContents());
   return registry.HasNewTabHandleByIdForTesting(host_id);

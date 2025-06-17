@@ -219,6 +219,12 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // the URL doesn't match any non-reserved host.
   PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
+  // Returns the prewarmed default search engine page. The prewarm page is
+  // filtered by exactly matching the search prewarm URL with the initial URL of
+  // the prerender host.
+  PrerenderHost* FindPrewarmSearchResultHostForTesting(
+      const GURL& search_prewarm_url);
+
   // Returns whether prerender_new_tab_handle_by_frame_tree_node_id_ has the
   // given id.
   bool HasNewTabHandleByIdForTesting(FrameTreeNodeId frame_tree_node_id);

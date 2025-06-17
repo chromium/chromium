@@ -150,6 +150,10 @@ class PrerenderTestHelper {
                                        const GURL& url);
   FrameTreeNodeId GetHostForUrl(const GURL& url);
 
+  static FrameTreeNodeId GetPrewarmSearchResultHost(WebContents& web_contents,
+                                                    const GURL& prewarm_url);
+  FrameTreeNodeId GetPrewarmSearchResultHost(const GURL& prewarm_url);
+
   // Returns whether the registry holds the handler for prerender-into-new-tab.
   bool HasNewTabHandle(FrameTreeNodeId host_id);
 
@@ -170,6 +174,7 @@ class PrerenderTestHelper {
   static void WaitForPrerenderLoadCancellation(WebContents& web_contents,
                                                const GURL& url);
   void WaitForPrerenderLoadCancellation(const GURL& url);
+  void WaitForPrerenderLoadCancellation(FrameTreeNodeId host_id);
 
   // Adds <script type="speculationrules"> in the current main frame and waits
   // until the completion of prerendering. Returns the id of the resulting

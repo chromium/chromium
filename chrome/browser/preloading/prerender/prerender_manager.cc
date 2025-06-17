@@ -349,10 +349,11 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
       // prerendering url with the navigation url.
       // TODO(https://crbug.com/406378765): Revisit when we support process
       // reuse.
-      /*url_match_predicate=*/base::BindRepeating([](const GURL& url,
-                               const std::optional<content::UrlMatchType>&) {
-        return false;
-      }),
+      /*url_match_predicate=*/
+      base::BindRepeating(
+          [](const GURL& url, const std::optional<content::UrlMatchType>&) {
+            return false;
+          }),
       /*prerender_navigation_handle_callback=*/{});
 
   return search_prewarm_handle_ != nullptr;
