@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
 import androidx.core.view.DisplayCutoutCompat;
 import androidx.core.view.OnApplyWindowInsetsListener;
@@ -18,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -63,7 +65,17 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     private static @Nullable WindowInsetsCompat sInitialRawWindowInsetsForTesting;
 
     // Edge-to-edge investigations
+    // True if non-zero navbar insets have ever been seen during the current session, false
+    // otherwise.
     private boolean mHasSeenNonZeroNavBar;
+    // Set to true after the first insets have been seen and verified.
+    private boolean mHasSeenInsets;
+    // Set to true when non-zero navbar insets have been seen for the first time to correct missing
+    // navbar insets.
+    private boolean mObservedNonZeroNavBarCorrection;
+    // Set to true when navbar insets are missing for the first time after non-zero navbar insets
+    // were seen, indicating a regression in navbar insets being provided.
+    private boolean mObservedNonZeroNavBarRegression;
 
     /** Allows observing changes to the window insets from Android system UI. */
     public interface WindowInsetObserver {
@@ -131,6 +143,38 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             // Update this whenever a consumer source is added or removed.
             int COUNT = 6;
         }
+    }
+
+    @IntDef({
+        HasSeenNonZeroNavBarState.GESTURE_NAV_FIRST_NAVBAR_MISSING,
+        HasSeenNonZeroNavBarState.GESTURE_NAV_CORRECTION,
+        HasSeenNonZeroNavBarState.GESTURE_NAV_REGRESSED,
+        HasSeenNonZeroNavBarState.TAPPABLE_NAV_FIRST_NAVBAR_MISSING,
+        HasSeenNonZeroNavBarState.TAPPABLE_NAV_CORRECTION,
+        HasSeenNonZeroNavBarState.TAPPABLE_NAV_REGRESSED,
+        HasSeenNonZeroNavBarState.BOTH_NAV_FIRST_NAVBAR_MISSING,
+        HasSeenNonZeroNavBarState.BOTH_NAV_CORRECTION,
+        HasSeenNonZeroNavBarState.BOTH_NAV_REGRESSED,
+        HasSeenNonZeroNavBarState.NEITHER_NAV_FIRST_NAVBAR_MISSING,
+        HasSeenNonZeroNavBarState.NEITHER_NAV_CORRECTION,
+        HasSeenNonZeroNavBarState.NEITHER_NAV_REGRESSED,
+        HasSeenNonZeroNavBarState.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface HasSeenNonZeroNavBarState {
+        int GESTURE_NAV_FIRST_NAVBAR_MISSING = 0;
+        int GESTURE_NAV_CORRECTION = 1;
+        int GESTURE_NAV_REGRESSED = 2;
+        int TAPPABLE_NAV_FIRST_NAVBAR_MISSING = 3;
+        int TAPPABLE_NAV_CORRECTION = 4;
+        int TAPPABLE_NAV_REGRESSED = 5;
+        int BOTH_NAV_FIRST_NAVBAR_MISSING = 6;
+        int BOTH_NAV_CORRECTION = 7;
+        int BOTH_NAV_REGRESSED = 8;
+        int NEITHER_NAV_FIRST_NAVBAR_MISSING = 9;
+        int NEITHER_NAV_CORRECTION = 10;
+        int NEITHER_NAV_REGRESSED = 11;
+        int COUNT = 12;
     }
 
     /**
@@ -320,14 +364,115 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         return mWindowInsetsAnimationProxyCallback;
     }
 
-    private void checkForNavigationBar(WindowInsetsCompat insets) {
+    // Checks the insets for any irregularities that might interfere with edge-to-edge logic. If
+    // such irregularities are detected, this will record (an) appropriate histogram(s).
+    @VisibleForTesting
+    void verifyInsetsForEdgeToEdge(WindowInsetsCompat insets) {
         Insets navigationBarInsets =
                 insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
         boolean nonZeroNavBarInsets =
                 navigationBarInsets.left > 0
                         || navigationBarInsets.bottom > 0
                         || navigationBarInsets.right > 0;
+
+        boolean isFirstVerification = !mHasSeenInsets;
+        boolean shouldRecordZeroNavBarCorrection = false;
+        boolean shouldRecordZeroNavBarRegression = false;
+        if (!isFirstVerification
+                && !mHasSeenNonZeroNavBar
+                && nonZeroNavBarInsets
+                && !mObservedNonZeroNavBarCorrection) {
+            // Non-zero navbar insets have been observed, indicating a correction.
+            shouldRecordZeroNavBarCorrection = true;
+            mObservedNonZeroNavBarCorrection = true;
+        } else if (!isFirstVerification
+                && mHasSeenNonZeroNavBar
+                && !nonZeroNavBarInsets
+                && !mObservedNonZeroNavBarRegression) {
+            // Missing navbar insets have been observed after non-zero insets had previously
+            // been seen, indicating a regression.
+            shouldRecordZeroNavBarRegression = true;
+            mObservedNonZeroNavBarRegression = true;
+        }
+        mHasSeenInsets = true;
         mHasSeenNonZeroNavBar |= nonZeroNavBarInsets;
+
+        Insets mandatorySystemGesturesInsets =
+                insets.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
+        boolean mandatorySystemGestureImpliesNavBarInset =
+                mandatorySystemGesturesInsets.left > 0
+                        || mandatorySystemGesturesInsets.bottom > 0
+                        || mandatorySystemGesturesInsets.right > 0;
+
+        // Mandatory system gestures insets include insets covering (and sometimes exceeding) the
+        // system bars. This inset is more consistent than the system bars - if it seems like the
+        // mandatory system gestures insets implies the presence of a navigation bar, but the
+        // navigation bar insets are missing (ignoring viz to account for situations like
+        // fullscreen), then record a histogram.
+        boolean hasInsetMismatch = mandatorySystemGestureImpliesNavBarInset && !nonZeroNavBarInsets;
+        boolean shouldRecordMismatch =
+                hasInsetMismatch && (isFirstVerification || shouldRecordZeroNavBarRegression);
+        if (!shouldRecordZeroNavBarCorrection && !shouldRecordMismatch) return;
+
+        Insets systemGesturesInsets = insets.getInsets(WindowInsetsCompat.Type.systemGestures());
+        Insets nonMandatorySystemGestures =
+                Insets.subtract(systemGesturesInsets, mandatorySystemGesturesInsets);
+        // In gesture navigation mode, the left and right sides typically have insets for
+        // swiping gestures, but these are not considered mandatory system gestures because apps
+        // can specify gesture exclusion rects for these edges.
+        boolean inGestureNavMode =
+                nonMandatorySystemGestures.left > 0 || nonMandatorySystemGestures.right > 0;
+
+        Insets tappableInsets = insets.getInsets(WindowInsetsCompat.Type.tappableElement());
+        boolean inTappableNavMode =
+                tappableInsets.left > 0 || tappableInsets.bottom > 0 || tappableInsets.right > 0;
+
+        @HasSeenNonZeroNavBarState int hasSeenNonZeroNavBarState;
+        if (inGestureNavMode) {
+            if (inTappableNavMode) {
+                if (isFirstVerification) {
+                    hasSeenNonZeroNavBarState =
+                            HasSeenNonZeroNavBarState.BOTH_NAV_FIRST_NAVBAR_MISSING;
+                } else if (shouldRecordZeroNavBarCorrection) {
+                    hasSeenNonZeroNavBarState = HasSeenNonZeroNavBarState.BOTH_NAV_CORRECTION;
+                } else {
+                    hasSeenNonZeroNavBarState = HasSeenNonZeroNavBarState.BOTH_NAV_REGRESSED;
+                }
+            } else {
+                if (isFirstVerification) {
+                    hasSeenNonZeroNavBarState =
+                            HasSeenNonZeroNavBarState.GESTURE_NAV_FIRST_NAVBAR_MISSING;
+                } else if (shouldRecordZeroNavBarCorrection) {
+                    hasSeenNonZeroNavBarState = HasSeenNonZeroNavBarState.GESTURE_NAV_CORRECTION;
+                } else {
+                    hasSeenNonZeroNavBarState = HasSeenNonZeroNavBarState.GESTURE_NAV_REGRESSED;
+                }
+            }
+        } else {
+            if (inTappableNavMode) {
+                if (isFirstVerification) {
+                    hasSeenNonZeroNavBarState =
+                            HasSeenNonZeroNavBarState.TAPPABLE_NAV_FIRST_NAVBAR_MISSING;
+                } else if (shouldRecordZeroNavBarCorrection) {
+                    hasSeenNonZeroNavBarState = HasSeenNonZeroNavBarState.TAPPABLE_NAV_CORRECTION;
+                } else {
+                    hasSeenNonZeroNavBarState = HasSeenNonZeroNavBarState.TAPPABLE_NAV_REGRESSED;
+                }
+            } else {
+                if (isFirstVerification) {
+                    hasSeenNonZeroNavBarState =
+                            HasSeenNonZeroNavBarState.NEITHER_NAV_FIRST_NAVBAR_MISSING;
+                } else if (shouldRecordZeroNavBarCorrection) {
+                    hasSeenNonZeroNavBarState = HasSeenNonZeroNavBarState.NEITHER_NAV_CORRECTION;
+                } else {
+                    hasSeenNonZeroNavBarState = HasSeenNonZeroNavBarState.NEITHER_NAV_REGRESSED;
+                }
+            }
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch",
+                hasSeenNonZeroNavBarState,
+                HasSeenNonZeroNavBarState.COUNT);
     }
 
     /**
@@ -341,7 +486,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     @Override
     public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat insets) {
         mLastSeenRawWindowInset = insets;
-        checkForNavigationBar(insets);
+        verifyInsetsForEdgeToEdge(insets);
 
         updateDisplayCutoutRect(insets);
         insets = forwardToInsetConsumers(insets);

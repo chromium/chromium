@@ -2014,6 +2014,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch"
+    enum="HasSeenNonZeroNavBarState" expires_after="2025-12-01">
+  <owner>clhager@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>edge-to-edge@chromium.org</owner>
+  <summary>
+    Records when insets are updated and the mandatory system gestures insets
+    seem to indicate the presence of a navigation bar, but the navigation bar
+    insets (ignoring visibility) are zero. This is recorded up to three times
+    per session: once if there's a mismatch in the first insets received by the
+    app, once on the first time those mismatched insets are corrected (non-zero
+    navbar insets), and once if insets are mismatched after non-zero navbar
+    insets have been seen during the current session. The enum value also tracks
+    the navigation mode (gesture, tappable) indicated by the insets, or if the
+    insets are giving mixed signals on the navigation mode.
+  </summary>
+</histogram>
+
 <histogram name="Android.EdgeToEdge.SupportedConfigurationSwitch2"
     enum="SupportedConfigurationSwitch" expires_after="2025-12-01">
   <owner>clhager@google.com</owner>

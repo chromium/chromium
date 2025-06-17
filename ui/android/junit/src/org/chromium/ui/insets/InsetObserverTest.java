@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -39,6 +40,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
@@ -73,8 +75,10 @@ public class InsetObserverTest {
     private static final Insets SYSTEM_BAR_INSETS_MODIFIED = Insets.of(1, 1, 1, 2);
 
     private static final Insets SYSTEM_GESTURES_INSETS = Insets.of(1, 1, 1, 1);
-
     private static final Insets SYSTEM_GESTURES_INSETS_MODIFIED = Insets.of(1, 1, 1, 2);
+
+    private static final Insets MANDATORY_SYSTEM_GESTURES_INSETS = Insets.of(0, 1, 0, 1);
+    private static final Insets MANDATORY_SYSTEM_GESTURES_INSETS_MODIFIED = Insets.of(0, 1, 0, 2);
 
     private static final Insets NAVIGATION_BAR_INSETS = Insets.of(0, 0, 0, 1);
     private static final Insets NAVIGATION_BAR_INSETS_MODIFIED = Insets.of(0, 0, 0, 2);
@@ -120,6 +124,14 @@ public class InsetObserverTest {
         doReturn(NAVIGATION_BAR_INSETS)
                 .when(mInsets)
                 .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
+
+        doReturn(MANDATORY_SYSTEM_GESTURES_INSETS)
+                .when(mInsets)
+                .getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
+        doReturn(MANDATORY_SYSTEM_GESTURES_INSETS_MODIFIED)
+                .when(mModifiedInsets)
+                .getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
+
         doReturn(SYSTEM_BAR_INSETS_MODIFIED)
                 .when(mModifiedInsets)
                 .getInsets(WindowInsetsCompat.Type.systemBars());
@@ -414,5 +426,285 @@ public class InsetObserverTest {
                 "WindowInsets is different.",
                 WindowInsetsCompat.toWindowInsetsCompat(mNonCompatInsets),
                 mInsetObserver.getLastRawWindowInsets());
+    }
+
+    @Test
+    @SmallTest
+    public void verifyInsets_gestureNav_recordsAppropriateHistograms() {
+        mInsetObserver =
+                new InsetObserver(
+                        new ImmutableWeakReference<>(mContentView),
+                        /* enableKeyboardOverlayMode= */ true);
+        WindowInsetsCompat zeroNavbarInsets = mock(WindowInsetsCompat.class);
+        doReturn(Insets.NONE)
+                .when(zeroNavbarInsets)
+                .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(zeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
+        doReturn(Insets.of(25, 100, 25, 75))
+                .when(zeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.systemGestures());
+        doReturn(Insets.of(0, 100, 0, 0))
+                .when(zeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.tappableElement());
+
+        WindowInsetsCompat nonZeroNavbarInsets = mock(WindowInsetsCompat.class);
+        doReturn(Insets.of(0, 0, 0, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
+        doReturn(Insets.of(25, 100, 25, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.systemGestures());
+        doReturn(Insets.of(0, 100, 0, 0))
+                .when(nonZeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.tappableElement());
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch",
+                                InsetObserver.HasSeenNonZeroNavBarState
+                                        .GESTURE_NAV_FIRST_NAVBAR_MISSING)
+                        .build();
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        // Ensure duplicate calls don't result in multiple histograms.
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch",
+                                InsetObserver.HasSeenNonZeroNavBarState.GESTURE_NAV_CORRECTION)
+                        .build();
+        mInsetObserver.verifyInsetsForEdgeToEdge(nonZeroNavbarInsets);
+        // Ensure duplicate calls don't result in multiple histograms.
+        mInsetObserver.verifyInsetsForEdgeToEdge(nonZeroNavbarInsets);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch",
+                                InsetObserver.HasSeenNonZeroNavBarState.GESTURE_NAV_REGRESSED)
+                        .build();
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        // Ensure duplicate calls don't result in multiple histograms.
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void verifyInsets_tappableNav_recordsAppropriateHistograms() {
+        mInsetObserver =
+                new InsetObserver(
+                        new ImmutableWeakReference<>(mContentView),
+                        /* enableKeyboardOverlayMode= */ true);
+        WindowInsetsCompat zeroNavbarInsets = mock(WindowInsetsCompat.class);
+        doReturn(Insets.NONE)
+                .when(zeroNavbarInsets)
+                .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(zeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(zeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.systemGestures());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(zeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.tappableElement());
+
+        WindowInsetsCompat nonZeroNavbarInsets = mock(WindowInsetsCompat.class);
+        doReturn(Insets.of(0, 0, 0, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.systemGestures());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.tappableElement());
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch",
+                                InsetObserver.HasSeenNonZeroNavBarState
+                                        .TAPPABLE_NAV_FIRST_NAVBAR_MISSING)
+                        .build();
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        // Ensure duplicate calls don't result in multiple histograms.
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch",
+                                InsetObserver.HasSeenNonZeroNavBarState.TAPPABLE_NAV_CORRECTION)
+                        .build();
+        mInsetObserver.verifyInsetsForEdgeToEdge(nonZeroNavbarInsets);
+        // Ensure duplicate calls don't result in multiple histograms.
+        mInsetObserver.verifyInsetsForEdgeToEdge(nonZeroNavbarInsets);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch",
+                                InsetObserver.HasSeenNonZeroNavBarState.TAPPABLE_NAV_REGRESSED)
+                        .build();
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        // Ensure duplicate calls don't result in multiple histograms.
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void verifyInsets_bothNav_recordsAppropriateHistograms() {
+        mInsetObserver =
+                new InsetObserver(
+                        new ImmutableWeakReference<>(mContentView),
+                        /* enableKeyboardOverlayMode= */ true);
+        WindowInsetsCompat zeroNavbarInsets = mock(WindowInsetsCompat.class);
+        doReturn(Insets.NONE)
+                .when(zeroNavbarInsets)
+                .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(zeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
+        doReturn(Insets.of(25, 100, 25, 75))
+                .when(zeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.systemGestures());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(zeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.tappableElement());
+
+        WindowInsetsCompat nonZeroNavbarInsets = mock(WindowInsetsCompat.class);
+        doReturn(Insets.of(0, 0, 0, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
+        doReturn(Insets.of(25, 100, 25, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.systemGestures());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.tappableElement());
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch",
+                                InsetObserver.HasSeenNonZeroNavBarState
+                                        .BOTH_NAV_FIRST_NAVBAR_MISSING)
+                        .build();
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        // Ensure duplicate calls don't result in multiple histograms.
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch",
+                                InsetObserver.HasSeenNonZeroNavBarState.BOTH_NAV_CORRECTION)
+                        .build();
+        mInsetObserver.verifyInsetsForEdgeToEdge(nonZeroNavbarInsets);
+        // Ensure duplicate calls don't result in multiple histograms.
+        mInsetObserver.verifyInsetsForEdgeToEdge(nonZeroNavbarInsets);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch",
+                                InsetObserver.HasSeenNonZeroNavBarState.BOTH_NAV_REGRESSED)
+                        .build();
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        // Ensure duplicate calls don't result in multiple histograms.
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void verifyInsets_neitherNav_recordsAppropriateHistograms() {
+        mInsetObserver =
+                new InsetObserver(
+                        new ImmutableWeakReference<>(mContentView),
+                        /* enableKeyboardOverlayMode= */ true);
+        WindowInsetsCompat zeroNavbarInsets = mock(WindowInsetsCompat.class);
+        doReturn(Insets.NONE)
+                .when(zeroNavbarInsets)
+                .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(zeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(zeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.systemGestures());
+        doReturn(Insets.of(0, 100, 0, 0))
+                .when(zeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.tappableElement());
+
+        WindowInsetsCompat nonZeroNavbarInsets = mock(WindowInsetsCompat.class);
+        doReturn(Insets.of(0, 0, 0, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.mandatorySystemGestures());
+        doReturn(Insets.of(0, 100, 0, 75))
+                .when(nonZeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.systemGestures());
+        doReturn(Insets.of(0, 100, 0, 0))
+                .when(nonZeroNavbarInsets)
+                .getInsets(WindowInsetsCompat.Type.tappableElement());
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch",
+                                InsetObserver.HasSeenNonZeroNavBarState
+                                        .NEITHER_NAV_FIRST_NAVBAR_MISSING)
+                        .build();
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        // Ensure duplicate calls don't result in multiple histograms.
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch",
+                                InsetObserver.HasSeenNonZeroNavBarState.NEITHER_NAV_CORRECTION)
+                        .build();
+        mInsetObserver.verifyInsetsForEdgeToEdge(nonZeroNavbarInsets);
+        // Ensure duplicate calls don't result in multiple histograms.
+        mInsetObserver.verifyInsetsForEdgeToEdge(nonZeroNavbarInsets);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch",
+                                InsetObserver.HasSeenNonZeroNavBarState.NEITHER_NAV_REGRESSED)
+                        .build();
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        // Ensure duplicate calls don't result in multiple histograms.
+        mInsetObserver.verifyInsetsForEdgeToEdge(zeroNavbarInsets);
+        histogramWatcher.assertExpected();
     }
 }

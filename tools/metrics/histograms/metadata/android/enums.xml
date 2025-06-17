@@ -1091,6 +1091,21 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Got JPEG thumbnail on refetch"/>
 </enum>
 
+<enum name="HasSeenNonZeroNavBarState">
+  <int value="0" label="GestureNav First NavBar Missing"/>
+  <int value="1" label="GestureNav Corrected"/>
+  <int value="2" label="GestureNav Regressed"/>
+  <int value="3" label="TappableNav First NavBar Missing"/>
+  <int value="4" label="TappableNav Corrected"/>
+  <int value="5" label="TappableNav Regressed"/>
+  <int value="6" label="BothNav First NavBar Missing"/>
+  <int value="7" label="BothNav Corrected"/>
+  <int value="8" label="BothNav Regressed"/>
+  <int value="9" label="NeitherNav First NavBar Missing"/>
+  <int value="10" label="NeitherNav Corrected"/>
+  <int value="11" label="NeitherNav Regressed"/>
+</enum>
+
 <!-- LINT.IfChange(HubPaneId) -->
 
 <enum name="HubPaneId">
