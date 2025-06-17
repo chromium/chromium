@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/check_is_test.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "ui/base/models/image_model.h"

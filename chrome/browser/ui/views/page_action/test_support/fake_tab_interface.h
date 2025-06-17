@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_TEST_SUPPORT_FAKE_TAB_INTERFACE_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
 

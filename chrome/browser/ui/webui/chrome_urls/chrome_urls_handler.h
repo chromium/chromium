@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROME_URLS_CHROME_URLS_HANDLER_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/webui/chrome_urls/mojom/chrome_urls.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

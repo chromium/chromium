@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/focus_mode/certificate_manager.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"

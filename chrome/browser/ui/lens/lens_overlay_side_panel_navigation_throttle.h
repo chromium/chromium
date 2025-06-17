@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_SIDE_PANEL_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_SIDE_PANEL_NAVIGATION_THROTTLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "content/public/browser/navigation_throttle.h"
 

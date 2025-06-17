@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_FIELD_PROMO_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_FIELD_PROMO_CONTROLLER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 
 namespace content {

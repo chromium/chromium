@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_TWO_ORIGINS_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_TWO_ORIGINS_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SKYVAULT_LOCAL_FILES_MIGRATION_PAGE_HANDLER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"

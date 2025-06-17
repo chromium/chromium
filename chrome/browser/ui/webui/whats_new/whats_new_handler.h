@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new.mojom.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "content/public/browser/web_ui_message_handler.h"

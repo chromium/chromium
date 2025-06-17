@@ -9,6 +9,7 @@
 #include <map>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "ui/actions/action_id.h"
 #include "ui/views/layout/box_layout_view.h"

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "content/public/browser/select_audio_output_request.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ADAPTERS_BROWSER_ADAPTER_IMPL_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ADAPTERS_BROWSER_ADAPTER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
 

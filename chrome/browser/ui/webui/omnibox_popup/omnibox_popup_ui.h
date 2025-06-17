@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/render_frame_host.h"

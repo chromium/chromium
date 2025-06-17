@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/tabs/fade_label_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"

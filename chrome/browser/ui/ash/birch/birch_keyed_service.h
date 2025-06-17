@@ -9,6 +9,7 @@
 
 #include "ash/birch/birch_client.h"
 #include "ash/shell_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"

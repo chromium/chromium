@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_BNPL_TOS_VIEW_DESKTOP_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_BNPL_TOS_VIEW_DESKTOP_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_view.h"
 #include "ui/views/widget/widget.h"
 

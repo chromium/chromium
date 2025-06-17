@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_RESIZE_AREA_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_RESIZE_AREA_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/resize_area.h"

@@ -5,6 +5,7 @@
 #define CHROME_BROWSER_UI_TABS_GLIC_NUDGE_CONTROLLER_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/glic_nudge_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"

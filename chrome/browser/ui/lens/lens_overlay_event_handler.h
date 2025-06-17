@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_EVENT_HANDLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_EVENT_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"

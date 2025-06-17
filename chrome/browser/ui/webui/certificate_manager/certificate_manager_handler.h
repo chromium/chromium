@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/resources/certificate_manager/certificate_manager.mojom.h"

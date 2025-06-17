@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_COMMERCE_PRODUCT_SPECIFICATIONS_UI_HANDLER_DELEGATE_H_
 #define CHROME_BROWSER_UI_WEBUI_COMMERCE_PRODUCT_SPECIFICATIONS_UI_HANDLER_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/commerce/core/webui/product_specifications_handler.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/window_open_disposition.h"

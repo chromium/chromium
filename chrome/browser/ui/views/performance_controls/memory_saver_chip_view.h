@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_observer.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"

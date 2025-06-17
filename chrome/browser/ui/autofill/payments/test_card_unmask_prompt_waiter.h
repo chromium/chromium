@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_TEST_CARD_UNMASK_PROMPT_WAITER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_TEST_CARD_UNMASK_PROMPT_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"

@@ -7,6 +7,7 @@
 
 #include <array>
 
+#include "base/memory/raw_ptr.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "ui/base/metadata/metadata_header_macros.h"

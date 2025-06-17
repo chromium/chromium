@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"

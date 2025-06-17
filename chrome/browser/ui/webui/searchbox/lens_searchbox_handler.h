@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SEARCHBOX_LENS_SEARCHBOX_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_LENS_SEARCHBOX_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
 

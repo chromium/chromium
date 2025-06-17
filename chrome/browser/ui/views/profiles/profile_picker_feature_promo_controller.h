@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FEATURE_PROMO_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FEATURE_PROMO_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/feature_promo_controller_20.h"
 

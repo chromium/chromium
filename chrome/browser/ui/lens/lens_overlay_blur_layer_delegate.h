@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_BLUR_LAYER_DELEGATE_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_BLUR_LAYER_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"

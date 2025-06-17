@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_TEST_ISOLATED_WEB_APP_INSTALLER_MODEL_OBSERVER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 
 namespace web_app {

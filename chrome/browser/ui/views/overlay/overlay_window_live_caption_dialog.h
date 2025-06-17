@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OVERLAY_OVERLAY_WINDOW_LIVE_CAPTION_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_OVERLAY_WINDOW_LIVE_CAPTION_DIALOG_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 

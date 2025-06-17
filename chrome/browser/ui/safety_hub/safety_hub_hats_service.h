@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_HATS_SERVICE_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_HATS_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "components/keyed_service/core/keyed_service.h"

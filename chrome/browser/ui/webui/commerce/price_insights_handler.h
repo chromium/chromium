@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_COMMERCE_PRICE_INSIGHTS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_COMMERCE_PRICE_INSIGHTS_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "components/commerce/core/mojom/price_insights.mojom.h"

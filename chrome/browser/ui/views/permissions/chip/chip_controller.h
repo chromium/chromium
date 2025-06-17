@@ -10,6 +10,7 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "components/permissions/permission_prompt.h"

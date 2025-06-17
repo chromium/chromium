@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_DATA_SHARING_DATA_SHARING_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_DATA_SHARING_DATA_SHARING_UI_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"

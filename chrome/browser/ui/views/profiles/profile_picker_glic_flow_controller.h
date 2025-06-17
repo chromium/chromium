@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_GLIC_FLOW_CONTROLLER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

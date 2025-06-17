@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_BASE_DIALOG_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_BASE_DIALOG_UI_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog.mojom.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_handler.h"

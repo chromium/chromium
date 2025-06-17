@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/webapps/common/web_app_id.h"
 
 class Profile;

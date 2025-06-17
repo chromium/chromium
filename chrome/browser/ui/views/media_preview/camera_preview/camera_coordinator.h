@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_mediator.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_view_controller.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_coordinator.h"

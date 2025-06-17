@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_COMMERCE_ADD_TO_COMPARISON_TABLE_SUB_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_COMMERCE_ADD_TO_COMPARISON_TABLE_SUB_MENU_MODEL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "ui/menus/simple_menu_model.h"

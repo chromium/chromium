@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/search/magic_boost_notice_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/search/mojom/magic_boost_handler.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

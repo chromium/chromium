@@ -7,6 +7,7 @@
 
 #include <variant>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 

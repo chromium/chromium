@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/content/browser/content_translate_driver.h"

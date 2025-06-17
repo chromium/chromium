@@ -11,6 +11,7 @@
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/system/video_conference/video_conference_common.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/unguessable_token.h"

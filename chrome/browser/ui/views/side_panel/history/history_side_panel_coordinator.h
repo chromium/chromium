@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class BrowserWindowInterface;

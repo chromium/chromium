@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_BASE_DIALOG_HANDLER_H_
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/privacy_sandbox/notice/desktop_view_manager_interface.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"

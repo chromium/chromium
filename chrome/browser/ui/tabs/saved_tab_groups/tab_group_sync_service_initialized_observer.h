@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_SERVICE_INITIALIZED_OBSERVER_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_SERVICE_INITIALIZED_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"

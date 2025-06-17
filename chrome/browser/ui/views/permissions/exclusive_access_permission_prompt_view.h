@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/permissions/exclusive_access_permission_prompt.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COMMERCE_PRODUCT_SPECIFICATIONS_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_PRODUCT_SPECIFICATIONS_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

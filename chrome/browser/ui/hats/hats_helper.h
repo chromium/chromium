@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_HATS_HATS_HELPER_H_
 #define CHROME_BROWSER_UI_HATS_HATS_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 

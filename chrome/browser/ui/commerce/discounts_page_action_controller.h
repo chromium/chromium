@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_COMMERCE_DISCOUNTS_PAGE_ACTION_CONTROLLER_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
 #include "components/commerce/core/commerce_types.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_SENSITIVITY_CACHE_H_
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_SENSITIVITY_CACHE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "url/gurl.h"

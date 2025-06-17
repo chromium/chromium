@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_FLOATING_WORKSPACE_FLOATING_WORKSPACE_UI_H_
 
 #include "ash/webui/common/chrome_os_webui_config.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"

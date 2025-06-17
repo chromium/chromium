@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_EXTENSIONS_ZERO_STATE_PROMO_ZERO_STATE_PROMO_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_EXTENSIONS_ZERO_STATE_PROMO_ZERO_STATE_PROMO_PAGE_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"

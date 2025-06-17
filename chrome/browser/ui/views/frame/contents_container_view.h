@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_CONTAINER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_CONTAINER_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
