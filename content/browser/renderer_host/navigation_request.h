@@ -2216,8 +2216,8 @@ class CONTENT_EXPORT NavigationRequest
 
   // Check the COOP value of the page is compatible with the COEP value of each
   // of its documents. COOP:kSameOriginPlusCoep is incompatible with COEP:kNone.
-  // If they aren't, this returns false and emits a crash report.
-  bool CoopCoepSanityCheck();
+  // If they aren't, this emits a crash report.
+  void CoopCoepSanityCheck();
 
   // Checks that, given an origin to be committed, all of the permissions
   // policies that a fenced frame requires to be enabled are enabled. If not, it
