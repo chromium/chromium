@@ -66,7 +66,7 @@ Cronet_RawDataPtr TestCronet_Buffer_GetData(Cronet_BufferPtr self) {
   CHECK(test);
   test->GetData_called_ = true;
 
-  return static_cast<Cronet_RawDataPtr>(0);
+  return static_cast<Cronet_RawDataPtr>(nullptr);
 }
 }  // namespace
 
@@ -283,7 +283,7 @@ Cronet_String TestCronet_Engine_GetVersionString(Cronet_EnginePtr self) {
   CHECK(test);
   test->GetVersionString_called_ = true;
 
-  return static_cast<Cronet_String>(0);
+  return static_cast<Cronet_String>(nullptr);
 }
 Cronet_String TestCronet_Engine_GetDefaultUserAgent(Cronet_EnginePtr self) {
   CHECK(self);
@@ -292,7 +292,7 @@ Cronet_String TestCronet_Engine_GetDefaultUserAgent(Cronet_EnginePtr self) {
   CHECK(test);
   test->GetDefaultUserAgent_called_ = true;
 
-  return static_cast<Cronet_String>(0);
+  return static_cast<Cronet_String>(nullptr);
 }
 void TestCronet_Engine_AddRequestFinishedListener(
     Cronet_EnginePtr self,

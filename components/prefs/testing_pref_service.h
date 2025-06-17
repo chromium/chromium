@@ -355,7 +355,7 @@ TestingPrefServiceBase<SuperPrefService, ConstructionPrefRegistry>::GetPref(
     TestingPrefStore* pref_store,
     const std::string& path) const {
   const base::Value* res;
-  return pref_store->GetValue(path, &res) ? res : NULL;
+  return pref_store->GetValue(path, &res) ? res : nullptr;
 }
 
 template <class SuperPrefService, class ConstructionPrefRegistry>

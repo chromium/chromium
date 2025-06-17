@@ -107,7 +107,7 @@ class NoStatePrefetchContents::WebContentsDelegateImpl
     // TODO(cbentzel): Consider supporting this for CURRENT_TAB dispositions, if
     // it is a common case during prerenders.
     no_state_prefetch_contents_->Destroy(FINAL_STATUS_OPEN_URL);
-    return NULL;
+    return nullptr;
   }
 
   bool ShouldAllowRendererInitiatedCrossProcessNavigation(

@@ -134,7 +134,7 @@ class PhoneObject {
 
   PhoneObject& operator=(const PhoneObject& other);
 
-  bool IsValidNumber() const { return i18n_number_ != NULL; }
+  bool IsValidNumber() const { return i18n_number_ != nullptr; }
 
  private:
   // The region code for this phone number, inferred during parsing.
