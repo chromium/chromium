@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -32,6 +31,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
@@ -502,7 +502,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   Browser* app_browser() { return app_browser_; }
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
   PageActionIconView* pwa_install_view();
-  IntentChipButton* intent_chip_view();
+  views::Button* intent_chip_view();
 
   const net::EmbeddedTestServer& GetTestServerForSiteMode(Site site_mode) const;
 

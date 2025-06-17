@@ -55,6 +55,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -72,6 +73,7 @@
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -160,6 +162,7 @@
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
@@ -4717,7 +4720,15 @@ PageActionIconView* WebAppIntegrationTestDriver::pwa_install_view() {
   return pwa_install_view;
 }
 
-IntentChipButton* WebAppIntegrationTestDriver::intent_chip_view() {
+views::Button* WebAppIntegrationTestDriver::intent_chip_view() {
+  if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
+    page_actions::PageActionView* intent_chip_button =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar_button_provider()
+            ->GetPageActionView(kActionShowIntentPicker);
+    CHECK(intent_chip_button);
+    return intent_chip_button;
+  }
   IntentChipButton* intent_chip_button = GetIntentPickerIcon(browser());
   CHECK(intent_chip_button);
   return intent_chip_button;
