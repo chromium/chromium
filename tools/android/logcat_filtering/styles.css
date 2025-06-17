@@ -1,0 +1,294 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.light-mode {
+  --body-bg-color: white;
+  --body-text-color: black;
+  --controls-bg-color: white;
+  --google-button-bg-color: #4285f4;
+  --google-button-text-color: white;
+  --google-button-hover-bg-color: #357ae8;
+  --dropdown-border-color: #ccc;
+  --dropdown-header-bg-color: #f9f9f9;
+  --dropdown-header-text-color: #5f6368;
+  --dropdown-header-border-color: #eee;
+  --dropdown-header-icon-color: #5f6368;
+  --dropdown-list-border-color: #eee;
+  --dropdown-item-text-color: #202124;
+  --dropdown-item-hover-bg-color: #e8f0fe;
+  --dropdown-item-hover-text-color: #1a73e8;
+  --checkbox-accent-color: #4285f4;
+  --checkbox-border-color: #5f6368;
+  --checkbox-label-text-color: #202124;
+  --text-display-bg-color: white;
+  --text-display-text-color: black;
+  --log-dim-color: rgb(135, 135, 135);
+  --log-fore-yellow-color: rgb(160, 120, 80);
+  --log-fore-black-pid-color: rgb(0, 0, 0);
+  --log-fore-black-priority-color: rgb(0, 0, 0);
+  --log-back-red-color: rgb(200, 60, 50);
+  --log-back-yellow-color: rgb(160, 120, 80);
+  --log-back-green-color: rgb(35, 145, 110);
+  --log-back-blue-color: rgb(25, 70, 140);
+}
+
+.dark-mode {
+  --body-bg-color: #1e1e1e;
+  --body-text-color: #090a0a;
+  --controls-bg-color: #1e1e1e;
+  --google-button-bg-color: #5f6368;
+  --google-button-text-color: #e8eaed;
+  --google-button-hover-bg-color: #72767c;
+  --dropdown-border-color: #5f6368;
+  --dropdown-header-bg-color: #33363b;
+  --dropdown-header-text-color: #e8eaed;
+  --dropdown-header-border-color: #5f6368;
+  --dropdown-header-icon-color: #e8eaed;
+  --dropdown-list-border-color: #5f6368;
+  --dropdown-item-text-color: #e8eaed;
+  --dropdown-item-hover-bg-color: #3c4043;
+  --dropdown-item-hover-text-color: #8ab4f8;
+  --checkbox-accent-color: #8ab4f8;
+  --checkbox-border-color: #9aa0a6;
+  --checkbox-label-text-color: #e8eaed;
+  --text-display-bg-color: #1e1e1e;
+  --text-display-text-color: #e8eaed;
+  --log-dim-color: rgb(200, 200, 200);
+  --log-fore-yellow-color: rgb(160, 120, 80);
+  --log-fore-black-pid-color: rgb(140, 140, 140);
+  --log-fore-black-priority-color: rgb(0, 0, 0);
+  --log-back-red-color: rgb(200, 60, 50);
+  --log-back-yellow-color: rgb(160, 120, 80);
+  --log-back-green-color: rgb(35, 145, 110);
+  --log-back-blue-color: rgb(25, 70, 140);
+}
+
+.wrap-text {
+  /* Preserve whitespace and wrap text whenever necessary */
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.not-wrap-text {
+  /* Preserve whitespace and break text at newline characters only */
+  white-space: pre;
+}
+
+.hidden-element {
+  /* Hide the element by default */
+  display: none;
+}
+
+body {
+  /* Using Google's primary font */
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--body-bg-color);
+  color: var(--body-text-color);
+  /* Add a vertical and/or horizontal scrollbar if needed */
+  overflow: auto;
+}
+
+#controls {
+  /* Fixed at the top regardless of how much we scroll */
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* Prevent the content underneath from showing through */
+  background-color: var(--controls-bg-color);
+  /* Ensure the controls stay on top of other content */
+  z-index: 100;
+  width: 100%;
+  padding: 25px;
+  display: flex;
+  /* Adjust spacing between dropdowns and checkboxes */
+  gap: 20px;
+  /* Align items to the top */
+  align-items: flex-start;
+  /* Allow controls to wrap on smaller screens */
+  flex-wrap: wrap;
+}
+
+.google-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: var(--google-button-bg-color);
+  color: var(--google-button-text-color);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: background-color 0.3s ease;
+}
+
+.google-button:hover {
+  background-color: var(--google-button-hover-bg-color);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.google-button i {
+  margin-right: 8px;
+}
+
+.dropdown {
+  position: relative;
+  border: 1px solid var(--dropdown-border-color);
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  width: 300px;
+}
+
+.dropdown-header {
+  padding: 12px 16px;
+  background-color: var(--dropdown-header-bg-color);
+  color: var(--dropdown-header-text-color);
+  border-bottom: 1px solid var(--dropdown-header-border-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.dropdown-header i {
+  margin-right: 12px;
+  color: var(--dropdown-header-icon-color);
+}
+
+.dropdown-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--dropdown-list-border-color);
+  border-radius: 0 0 4px 4px;
+  /* To contain the rounded corners */
+  overflow: hidden;
+  /* Add a maximum height for scrollability */
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: var(--dropdown-header-bg-color);
+}
+
+.dropdown-item {
+  /* Adjust padding for checkbox and label */
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: var(--dropdown-item-text-color);
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: var(--dropdown-item-hover-bg-color);
+  color: var(--dropdown-item-hover-text-color);
+}
+
+.dropdown-item input[type="checkbox"] {
+  margin-right: 12px;
+  accent-color: var(--checkbox-accent-color);
+  border: 1.5px solid var(--checkbox-border-color);
+  border-radius: 2px;
+}
+
+.dropdown-item label {
+  /* Allow the label to take up remaining space */
+  flex-grow: 1;
+  /* Make the label clickable */
+  cursor: pointer;
+  /* Wrap text whenever necessary */
+  word-break: break-all;
+}
+
+#checkbox-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+#checkbox-controls .checkbox-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#checkbox-controls label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: var(--checkbox-label-text-color);
+  cursor: pointer;
+  margin-bottom: 6px;
+  margin-right: 12px;
+}
+
+#checkbox-controls input[type="checkbox"] {
+  margin-right: 8px;
+  accent-color: var(--checkbox-accent-color);
+  border: 1.5px solid var(--checkbox-border-color);
+  border-radius: 2px;
+}
+
+#text-display-area {
+  /* Monospace font for code-like text */
+  font-family: 'Roboto Mono', monospace;
+  font-size: 14px;
+  border: none;
+  background-color: var(--text-display-bg-color);
+  color: var(--text-display-text-color);
+  margin-left: 20px;
+}
+
+
+/* Styling applied to logcat lines */
+
+.log-normal {
+  font-weight: normal;
+}
+
+.log-bright {
+  font-weight: bold;
+}
+
+.log-dim {
+  color: var(--log-dim-color);
+}
+
+
+/* Foreground colors */
+
+.log-fore-yellow {
+  color: var(--log-fore-yellow-color);
+}
+
+.log-fore-black-pid {
+  color: var(--log-fore-black-pid-color);
+}
+
+.log-fore-black-priority {
+  color: var(--log-fore-black-priority-color);
+}
+
+
+/* Background colors */
+
+.log-back-red {
+  background-color: var(--log-back-red-color);
+}
+
+.log-back-yellow {
+  background-color: var(--log-back-yellow-color);
+}
+
+.log-back-green {
+  background-color: var(--log-back-green-color);
+}
+
+.log-back-blue {
+  background-color: var(--log-back-blue-color);
+}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logcat Viewer</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <script defer src="script.js"></script>
+</head>
+
+<body class="light-mode">
+  <div id="controls">
+    <div>
+      <label for="file-upload-button" class="google-button">
+        <i class="material-icons">upload_file</i> Upload File
+      </label>
+      <input type="file" id="file-upload-button" class="hidden-element">
+    </div>
+
+    <div>
+      <label for="next-exception-button" class="google-button">
+        <i class="material-icons">error</i> Jump to Next Exception
+      </label>
+      <input type="button" id="next-exception-button" class="hidden-element">
+    </div>
+
+    <div>
+      <label for="next-test-button" class="google-button">
+        <i class="material-icons">rule</i> Jump to Next Test
+      </label>
+      <input type="button" id="next-test-button" class="hidden-element">
+    </div>
+
+    <div class="dropdown">
+      <div id="dropdown-header-process" class="dropdown-header">
+        <i class="material-icons">memory</i> Filter Logcat By Process
+      </div>
+      <ol id="dropdown-list-process" class="dropdown-list hidden-element">
+        <li id="display-all-process-li" data-value="all"
+            data-type="main-process" class="dropdown-item selected">
+          <input id="display-all-process-checkbox" type="checkbox" checked>
+          <label>Display All Processes</label>
+        </li>
+        <li id="display-named-process-li" data-value="named"
+            data-type="main-process" class="dropdown-item selected">
+          <input id="display-named-process-checkbox" type="checkbox" checked>
+          <label>Display All Named Processes</label>
+        </li>
+      </ol>
+    </div>
+
+    <div class="dropdown">
+      <div id="dropdown-header-tag" class="dropdown-header">
+        <i class="material-icons">label</i> Filter Logcat By Tag
+      </div>
+      <ol id="dropdown-list-tag" class="dropdown-list hidden-element">
+        <li id="display-all-tag-li" data-value="all" data-type="main-tag"
+            class="dropdown-item selected">
+          <input id="display-all-tag-checkbox" type="checkbox" checked>
+          <label>Display All Tags</label>
+        </li>
+      </ol>
+    </div>
+
+    <div class="dropdown">
+      <div id="dropdown-header-priority" class="dropdown-header">
+        <i class="material-icons">warning</i> Filter Logcat By Priority
+      </div>
+      <ol id="dropdown-list-priority" class="dropdown-list hidden-element">
+        <li id="display-all-priority-li" data-value="all"
+            data-type="main-priority" class="dropdown-item selected">
+          <input id="display-all-priority-checkbox" type="checkbox" checked>
+          <label>Display All Priorities</label>
+        </li>
+        <li data-value="V" data-type="priority" class="dropdown-item selected">
+          <input type="checkbox" checked>
+          <label>Verbose</label>
+        </li>
+        <li data-value="D" data-type="priority" class="dropdown-item selected">
+          <input type="checkbox" checked>
+          <label>Debug</label>
+        </li>
+        <li data-value="I" data-type="priority" class="dropdown-item selected">
+          <input type="checkbox" checked>
+          <label>Info</label>
+        </li>
+        <li data-value="W" data-type="priority" class="dropdown-item selected">
+          <input type="checkbox" checked>
+          <label>Warning</label>
+        </li>
+        <li data-value="E" data-type="priority" class="dropdown-item selected">
+          <input type="checkbox" checked>
+          <label>Error</label>
+        </li>
+        <li data-value="F" data-type="priority" class="dropdown-item selected">
+          <input type="checkbox" checked>
+          <label>Fatal</label>
+        </li>
+        <li data-value="S" data-type="priority" class="dropdown-item selected">
+          <input type="checkbox" checked>
+          <label>Silent</label>
+        </li>
+      </ol>
+    </div>
+
+    <div id="checkbox-controls">
+      <div class="checkbox-column">
+        <label>
+          <input type="checkbox" id="hide-date-time-checkbox">
+          <span>Hide Date & Time</span>
+        </label>
+        <label>
+          <input type="checkbox" id="wrap-text-checkbox">
+          <span>Wrap Text</span>
+        </label>
+      </div>
+      <div class="checkbox-column">
+        <label>
+          <input type="checkbox" id="display-non-logcat-checkbox" checked>
+          <span>Display Non Logcat Lines</span>
+        </label>
+        <label>
+          <input type="checkbox" id="toggle-dark-mode-checkbox">
+          <span>Toggle Dark Mode</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div id="text-display-area" class="not-wrap-text">
+    <div>Please upload a text file containing your logcat.</div>
+  </div>
+</body>
+
+</html>
