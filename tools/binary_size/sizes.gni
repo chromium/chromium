@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/clang/clang.gni")
 import("//build/util/generate_wrapper.gni")
 if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
@@ -27,20 +26,15 @@ template("sizes_test") {
     if (defined(invoker.executable_args)) {
       executable_args += invoker.executable_args
     }
-
-    if (!defined(data)) {
-      data = []
-    }
-    data += [
-      "${clang_base_path}/bin/llvm-strip",
-      "${clang_base_path}/bin/llvm-objcopy",
-    ]
-
     if (is_mac) {
       executable_args += [
         "--size-path",
         mac_bin_path + "size",
       ]
+
+      if (!defined(data)) {
+        data = []
+      }
 
       # 'size' is a symlink to 'llvm-size', so throw both in there, but don't
       # add the entire bin path since it's large.
