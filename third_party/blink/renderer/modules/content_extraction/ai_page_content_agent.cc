@@ -105,11 +105,10 @@ void ComputeScrollerInfo(
   const auto visible_area = scrollable_area->VisibleContentRect();
 
   // If the visible area covers the scrollable area, scrolling this node will be
-  // a no-op.
-  if (scrolling_bounds == visible_area.size()) {
-    DCHECK_EQ(visible_area.x(), 0);
-    DCHECK_EQ(visible_area.y(), 0);
-
+  // a no-op. Allow 1px of slop due to differences in rounding.
+  constexpr int kTolerance = 1;
+  if (scrolling_bounds.width() - visible_area.width() < kTolerance &&
+      scrolling_bounds.height() - visible_area.height() < kTolerance) {
     return;
   }
 
