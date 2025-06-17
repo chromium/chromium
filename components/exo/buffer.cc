@@ -718,7 +718,8 @@ bool Buffer::ProduceTransferableResource(
   // require a secure output.
   if (secure_output_only &&
       protected_buffer_state_ == ProtectedBufferState::UNKNOWN &&
-      !gpu_memory_buffer_handle_.is_null() && protected_native_pixmap_query) {
+      gpu_memory_buffer_handle_.type == gfx::NATIVE_PIXMAP &&
+      protected_native_pixmap_query) {
     if (!gpu_memory_buffer_handle_.native_pixmap_handle().planes.empty()) {
       base::ScopedFD pixmap_handle(
           HANDLE_EINTR(dup(gpu_memory_buffer_handle_.native_pixmap_handle()
