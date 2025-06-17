@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -123,8 +122,6 @@ WebNNContextProviderImpl::CreateForTesting(
     mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
     WebNNStatus status,
     LoseAllContextsCallback lose_all_contexts_callback) {
-  CHECK_IS_TEST();
-
   gpu::GpuFeatureInfo gpu_feature_info;
   gpu::GPUInfo gpu_info;
 
@@ -278,7 +275,6 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 base::optional_ref<WebNNContextImpl>
 WebNNContextProviderImpl::GetWebNNContextImplForTesting(
     const blink::WebNNContextToken& handle) {
-  CHECK_IS_TEST();
   const auto it = impls_.find(handle);
   if (it == impls_.end()) {
     mojo::ReportBadMessage(kBadMessageInvalidContext);
