@@ -318,7 +318,8 @@ PasswordFormFillData CreatePasswordFormFillData(
         preferred_match.value().username_value;
     result.preferred_login.password_value =
         preferred_match.value().password_value;
-
+    result.preferred_login.backup_password_value =
+        preferred_match->GetPasswordBackup();
     result.preferred_login.uses_account_store =
         preferred_match->IsUsingAccountStore();
     result.preferred_login.is_grouped_affiliation =
@@ -342,6 +343,7 @@ PasswordFormFillData CreatePasswordFormFillData(
     PasswordAndMetadata value;
     value.username_value = match.username_value;
     value.password_value = match.password_value;
+    value.backup_password_value = match.GetPasswordBackup();
     value.uses_account_store = match.IsUsingAccountStore();
     value.is_grouped_affiliation =
         (GetMatchType(match) == GetLoginMatchType::kGrouped);

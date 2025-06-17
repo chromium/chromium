@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_COMMON_PASSWORD_FORM_FILL_DATA_H_
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "components/autofill/core/common/aliases.h"
@@ -33,6 +34,7 @@ struct PasswordAndMetadata {
 
   std::u16string username_value;
   std::u16string password_value;
+  std::optional<std::u16string> backup_password_value;
   std::string realm;
   bool uses_account_store = false;
   bool is_grouped_affiliation = false;

@@ -93,12 +93,6 @@ class MockPasswordChangeService : public PasswordChangeServiceInterface {
   MOCK_METHOD(bool, IsPasswordChangeSupported, (const GURL& url), (override));
 };
 
-// Matcher for PasswordAndMetadata.
-MATCHER_P3(IsLogin, username, password, uses_account_store, std::string()) {
-  return arg.username == username && arg.password == password &&
-         arg.uses_account_store == uses_account_store;
-}
-
 PasswordFormFillData::LoginCollection::const_iterator FindPasswordByUsername(
     const std::vector<autofill::PasswordAndMetadata>& logins,
     const std::u16string& username) {
@@ -133,6 +127,7 @@ class PasswordFormFillingTest : public testing::Test {
     saved_match_.action = GURL("https://accounts.google.com/a/ServiceLogin");
     saved_match_.username_value = u"test@gmail.com";
     saved_match_.password_value = u"test1";
+    saved_match_.SetPasswordBackupNote(u"backup_password");
     saved_match_.match_type = PasswordForm::MatchType::kExact;
 
     psl_saved_match_ = saved_match_;
@@ -186,6 +181,8 @@ TEST_F(PasswordFormFillingTest, Autofill) {
   PasswordForm another_saved_match = saved_match_;
   another_saved_match.username_value += u"1";
   another_saved_match.password_value += u"1";
+  // Reset the backup password
+  another_saved_match.SetPasswordBackupNote(u"");
   best_matches.push_back(another_saved_match);
 
   EXPECT_CALL(driver_, InformNoSavedCredentials).Times(0);
@@ -222,6 +219,9 @@ TEST_F(PasswordFormFillingTest, Autofill) {
             fill_data.preferred_login.username_value);
   EXPECT_EQ(saved_match_.password_value,
             fill_data.preferred_login.password_value);
+  ASSERT_TRUE(fill_data.preferred_login.backup_password_value.has_value());
+  EXPECT_EQ(saved_match_.GetPasswordBackup(),
+            fill_data.preferred_login.backup_password_value);
 
   // Check that information about non-preferred best matches is filled.
   ASSERT_EQ(1u, fill_data.additional_logins.size());
@@ -229,6 +229,8 @@ TEST_F(PasswordFormFillingTest, Autofill) {
             fill_data.additional_logins.begin()->username_value);
   EXPECT_EQ(another_saved_match.password_value,
             fill_data.additional_logins.begin()->password_value);
+  EXPECT_FALSE(
+      fill_data.additional_logins.begin()->backup_password_value.has_value());
   // Realm is empty for non-psl match.
   EXPECT_TRUE(fill_data.additional_logins.begin()->realm.empty());
 }
