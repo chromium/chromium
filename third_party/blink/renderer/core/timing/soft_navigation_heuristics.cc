@@ -413,8 +413,11 @@ bool SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
 
 SoftNavigationContext*
 SoftNavigationHeuristics::MaybeGetSoftNavigationContextForTiming(Node* node) {
-  if (context_for_current_url_ &&
-      context_for_current_url_->IsNeededForTiming(node)) {
+  if (!context_for_current_url_ ||
+      !context_for_current_url_->IsRecordingLargestContentfulPaint()) {
+    return nullptr;
+  }
+  if (context_for_current_url_->IsNeededForTiming(node)) {
     return context_for_current_url_;
   }
   return nullptr;

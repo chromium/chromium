@@ -77,6 +77,10 @@ class CORE_EXPORT SoftNavigationContext
   bool SatisfiesSoftNavNonPaintCriteria() const;
   bool SatisfiesSoftNavPaintCriteria(uint64_t required_paint_area) const;
 
+  bool IsRecordingLargestContentfulPaint() const {
+    return first_input_or_scroll_time_.is_null();
+  }
+
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
   void Trace(Visitor* visitor) const;
