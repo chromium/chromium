@@ -290,6 +290,28 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   if (!IsPropertyTreeIndexValid(trees.effect_tree(), wire.target_id)) {
     return base::unexpected("Invalid target_id for effect node");
   }
+  if (!IsOptionalPropertyTreeIndexValid(
+          trees.effect_tree(),
+          wire.closest_ancestor_with_cached_render_surface_id)) {
+    return base::unexpected(
+        "Invalid closest_ancestor_with_cached_render_surface_id for effect "
+        "node");
+  }
+  if (!IsOptionalPropertyTreeIndexValid(
+          trees.effect_tree(), wire.closest_ancestor_with_copy_request_id)) {
+    return base::unexpected(
+        "Invalid closest_ancestor_with_copy_request_id for effect node");
+  }
+  if (!IsOptionalPropertyTreeIndexValid(
+          trees.effect_tree(), wire.closest_ancestor_being_captured_id)) {
+    return base::unexpected(
+        "Invalid closest_ancestor_being_captured_id for effect node");
+  }
+  if (!IsOptionalPropertyTreeIndexValid(
+          trees.effect_tree(), wire.closest_ancestor_with_shared_element_id)) {
+    return base::unexpected(
+        "Invalid closest_ancestor_with_shared_element_id for effect node");
+  }
   node.transform_id = wire.transform_id;
   node.clip_id = wire.clip_id;
   node.element_id = wire.element_id;

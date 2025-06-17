@@ -873,6 +873,95 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
             "Invalid parent_id for non-root property tree node");
 }
 
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       InvalidClosestAncestorWithCachedRenderSurfaceId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  node_update->clip_id = cc::kRootPropertyNodeId;
+  node_update->target_id = cc::kRootPropertyNodeId;
+  node_update->closest_ancestor_with_cached_render_surface_id = next_effect_id_;
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid closest_ancestor_with_cached_render_surface_id for "
+            "effect node");
+
+  auto update_neg = CreateDefaultUpdate();
+  auto node_update_neg = mojom::EffectNode::New();
+  node_update_neg->id = cc::kSecondaryRootPropertyNodeId;
+  node_update_neg->parent_id = cc::kRootPropertyNodeId;
+  node_update_neg->transform_id = cc::kRootPropertyNodeId;
+  node_update_neg->clip_id = cc::kRootPropertyNodeId;
+  node_update_neg->target_id = cc::kRootPropertyNodeId;
+  node_update_neg->closest_ancestor_with_cached_render_surface_id = -2;
+  update_neg->effect_nodes.push_back(std::move(node_update_neg));
+
+  result = layer_context_impl_->DoUpdateDisplayTree(std::move(update_neg));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid closest_ancestor_with_cached_render_surface_id for "
+            "effect node");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       InvalidClosestAncestorWithCopyRequestId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  node_update->clip_id = cc::kRootPropertyNodeId;
+  node_update->target_id = cc::kRootPropertyNodeId;
+  node_update->closest_ancestor_with_copy_request_id = next_effect_id_;
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid closest_ancestor_with_copy_request_id for effect node");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       InvalidClosestAncestorBeingCapturedId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  node_update->clip_id = cc::kRootPropertyNodeId;
+  node_update->target_id = cc::kRootPropertyNodeId;
+  node_update->closest_ancestor_being_captured_id = next_effect_id_;
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid closest_ancestor_being_captured_id for effect node");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       InvalidClosestAncestorWithSharedElementId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;
+  node_update->parent_id = cc::kRootPropertyNodeId;
+  node_update->transform_id = cc::kRootPropertyNodeId;
+  node_update->clip_id = cc::kRootPropertyNodeId;
+  node_update->target_id = cc::kRootPropertyNodeId;
+  node_update->closest_ancestor_with_shared_element_id = next_effect_id_;
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid closest_ancestor_with_shared_element_id for effect node");
+}
+
 class LayerContextImplUpdateDisplayTreeScrollNodeTest
     : public LayerContextImplTest {
  protected:
