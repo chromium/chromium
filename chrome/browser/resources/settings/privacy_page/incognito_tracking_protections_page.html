@@ -1,15 +1,10 @@
 <style include="settings-shared settings-columned-section">
   #description {
-    padding: 0 var(--cr-section-padding) 16px;
+    padding: 0 var(--cr-section-padding) var(--cr-section-vertical-padding);
   }
 
   #explanationText,
   .settings-columned-section {
-    padding: 16px var(--cr-section-padding) 0;
-  }
-
-  settings-toggle-button,
-  .settings-columned-section .column {
     padding: 0 var(--cr-section-padding);
   }
 
@@ -19,7 +14,7 @@
 </div>
 <div id="generalControls">
   <div id="description" class="secondary">
-    <h2>$i18n{incognitoTrackingProtectionsHeader}</h2>
+    <h2 class="cr-title-text">$i18n{incognitoTrackingProtectionsHeader}</h2>
     <div>$i18nRaw{incognitoTrackingProtectionsDescription}</div>
   </div>
   <settings-toggle-button id="block3pcsToggle" disabled checked
