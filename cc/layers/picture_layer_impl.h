@@ -319,7 +319,7 @@ class CC_EXPORT PictureLayerImpl
   bool is_backdrop_filter_mask_ : 1 = false;
 
   bool was_screen_space_transform_animating_ : 1 = false;
-  bool only_used_low_res_last_append_quads_ : 1 = false;
+  bool produced_tile_last_append_quads_ : 1 = true;
 
   bool nearest_neighbor_ : 1 = false;
 
