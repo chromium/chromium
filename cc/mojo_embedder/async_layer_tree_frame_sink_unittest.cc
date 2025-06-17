@@ -445,8 +445,8 @@ class AsyncLayerTreeFrameSinkMetricsRefactorTest
     : public AsyncLayerTreeFrameSinkSimpleTest {
  public:
   AsyncLayerTreeFrameSinkMetricsRefactorTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
+    if (!GetParam()) {
+      scoped_feature_list_.InitAndDisableFeature(
           features::kExportFrameTimingAfterFrameDone);
     }
   }
