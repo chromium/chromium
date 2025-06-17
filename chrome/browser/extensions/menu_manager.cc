@@ -24,16 +24,16 @@
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/chrome_web_view_internal.h"
 #include "chrome/common/extensions/api/context_menus.h"
-#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/buildflags/buildflags.h"
+// Intentionally outside if BUILDFLAG(ENABLE_GUEST_VIEW) so we can use
+// kInstanceIDNone constant.
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -42,6 +42,12 @@
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/text_elider.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "chrome/common/extensions/api/chrome_web_view_internal.h"
+#include "components/guest_view/browser/guest_view_base.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 using content::ChildProcessHost;
 using content::WebContents;
@@ -118,6 +124,57 @@ bool GetStringList(const base::Value::Dict& dict,
 
   return true;
 }
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+// Constructs and dispatches an event related to a menu |item|, with an optional
+// |webview_guest|.
+void DispatchEventWithGuestView(const MenuItem& item,
+                                const events::HistogramValue& event_type,
+                                const std::string& event_name,
+                                base::Value::List* args,
+                                content::BrowserContext* context,
+                                WebViewGuest* webview_guest,
+                                EventRouter* event_router) {
+  auto event = std::make_unique<Event>(event_type, event_name, std::move(*args),
+                                       context);
+  event->user_gesture = EventRouter::UserGestureState::kEnabled;
+
+  if (webview_guest) {
+    event->filter_info->has_instance_id = true;
+    event->filter_info->instance_id = webview_guest->view_instance_id();
+  }
+
+  if (!item.extension_id().empty()) {
+    // For extensions and ChromeApps Webview.
+    event_router->DispatchEventToExtension(item.extension_id(),
+                                           std::move(event));
+  } else if (item.extension_id().empty() && webview_guest) {
+    // For Controlled Frame.
+    event_router->DispatchEventToURL(
+        webview_guest->owner_rfh()->GetLastCommittedURL(), std::move(event));
+  } else {
+    NOTREACHED();
+  }
+}
+#else
+// Constructs and dispatches an event related to a menu |item|.
+void DispatchEvent(const MenuItem& item,
+                   const events::HistogramValue& event_type,
+                   const std::string& event_name,
+                   base::Value::List* args,
+                   content::BrowserContext* context,
+                   EventRouter* event_router) {
+  auto event = std::make_unique<Event>(event_type, event_name, std::move(*args),
+                                       context);
+  event->user_gesture = EventRouter::UserGestureState::kEnabled;
+
+  if (!item.extension_id().empty()) {
+    // For extensions and ChromeApps Webview.
+    event_router->DispatchEventToExtension(item.extension_id(),
+                                           std::move(event));
+  }
+}
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 }  // namespace
 
@@ -671,8 +728,10 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
 
   properties.Set("editable", params.is_editable);
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   WebViewGuest* webview_guest =
       WebViewGuest::FromRenderFrameHost(render_frame_host);
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
   base::Value::List args;
   args.Append(std::move(properties));
@@ -727,6 +786,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
     // Dispatch to menu item's .onclick handler (this is the legacy API, from
     // before chrome.contextMenus.onClicked existed).
     auto args_cloned = args.Clone();
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
     if (webview_guest) {
       // This is used in
       // extensions/renderer/resources/context_menus_handlers.js.
@@ -734,55 +794,35 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
       args_cloned[0].GetDict().Set("webviewInstanceId",
                                    webview_guest->view_instance_id());
     }
-    auto event = std::make_unique<Event>(
+    DispatchEventWithGuestView(
+        *item,
         webview_guest ? events::WEB_VIEW_INTERNAL_CONTEXT_MENUS
                       : events::CONTEXT_MENUS,
         webview_guest ? (webview_guest->IsOwnedByControlledFrameEmbedder()
                              ? "controlledFrameInternal.contextMenus"
                              : kOnWebviewContextMenus)
                       : kOnContextMenus,
-        std::move(args_cloned), context);
-    event->user_gesture = EventRouter::UserGestureState::kEnabled;
-    if (webview_guest) {
-      event->filter_info->has_instance_id = true;
-      event->filter_info->instance_id = webview_guest->view_instance_id();
-    }
-    if (!item->extension_id().empty()) {
-      // For extensions and ChromeApps Webview.
-      event_router->DispatchEventToExtension(item->extension_id(),
-                                             std::move(event));
-    } else if (item->extension_id().empty() && webview_guest) {
-      // For Controlled Frame.
-      event_router->DispatchEventToURL(
-          webview_guest->owner_rfh()->GetLastCommittedURL(), std::move(event));
-    } else {
-      NOTREACHED();
-    }
+        &args_cloned, context, webview_guest, event_router);
+#else
+    DispatchEvent(*item, events::CONTEXT_MENUS, kOnContextMenus, &args_cloned,
+                  context, event_router);
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
   }
   {
     // Dispatch to .contextMenus.onClicked handler.
-    auto event = std::make_unique<Event>(
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+    DispatchEventWithGuestView(
+        *item,
         webview_guest ? events::CHROME_WEB_VIEW_INTERNAL_ON_CLICKED
                       : events::CONTEXT_MENUS_ON_CLICKED,
         webview_guest ? api::chrome_web_view_internal::OnClicked::kEventName
                       : api::context_menus::OnClicked::kEventName,
-        std::move(args), context);
-    event->user_gesture = EventRouter::UserGestureState::kEnabled;
-    if (webview_guest) {
-      event->filter_info->has_instance_id = true;
-      event->filter_info->instance_id = webview_guest->view_instance_id();
-    }
-    if (!item->extension_id().empty()) {
-      // For extensions and ChromeApps Webview.
-      event_router->DispatchEventToExtension(item->extension_id(),
-                                             std::move(event));
-    } else if (item->extension_id().empty() && webview_guest) {
-      // For Controlled Frame.
-      event_router->DispatchEventToURL(
-          webview_guest->owner_rfh()->GetLastCommittedURL(), std::move(event));
-    } else {
-      NOTREACHED();
-    }
+        &args, context, webview_guest, event_router);
+#else
+    DispatchEvent(*item, events::CONTEXT_MENUS_ON_CLICKED,
+                  api::context_menus::OnClicked::kEventName, &args, context,
+                  event_router);
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
   }
 }
 

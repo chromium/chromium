@@ -83,7 +83,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-#include "components/guest_view/common/guest_view.mojom.h"
+#include "components/guest_view/common/guest_view.mojom.h"  // nogncheck
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif

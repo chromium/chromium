@@ -28,6 +28,7 @@ group("api_implementations") {
   public_deps = [
     "//chrome/browser/extensions/api/activity_log_private",
     "//chrome/browser/extensions/api/browsing_data",
+    "//chrome/browser/extensions/api/context_menus",
     "//chrome/browser/extensions/api/cookies",
     "//chrome/browser/extensions/api/enterprise_hardware_platform",
     "//chrome/browser/extensions/api/extension_action",
@@ -49,7 +50,6 @@ group("api_implementations") {
       "//chrome/browser/extensions/api/braille_display_private",
       "//chrome/browser/extensions/api/command_line_private",
       "//chrome/browser/extensions/api/content_settings",
-      "//chrome/browser/extensions/api/context_menus",
       "//chrome/browser/extensions/api/debugger",
       "//chrome/browser/extensions/api/desktop_capture",
       "//chrome/browser/extensions/api/downloads_internal",

@@ -71,7 +71,6 @@ class WebContents;
 
 namespace extensions {
 class Extension;
-class MenuItem;
 }  // namespace extensions
 
 namespace gfx {
@@ -232,14 +231,6 @@ class RenderViewContextMenu
   friend class FormatUrlForClipboardTest;
 
   static bool IsDevToolsURL(const GURL& url);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  static bool ExtensionContextAndPatternMatch(
-      const content::ContextMenuParams& params,
-      const extensions::MenuItem::ContextList& contexts,
-      const extensions::URLPatternSet& target_url_patterns);
-  static bool MenuItemMatchesParams(const content::ContextMenuParams& params,
-                                    const extensions::MenuItem* item);
-#endif
 
   // Returns true if the command id is gated by fenced frame untrusted network
   // status.
@@ -314,7 +305,6 @@ class RenderViewContextMenu
   bool AppendAccessibilityLabelsItems();
   void AppendSearchProvider();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  void AppendAllExtensionItems();
   void AppendCurrentExtensionItems();
 #endif
   void AppendPrintPreviewItems();

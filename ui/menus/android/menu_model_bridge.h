@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/models/menu_model.h"
 
@@ -18,7 +19,7 @@
 // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/contextmenu/MenuModelBridge.java
 
 namespace ui {
-class MenuModelBridge {
+class COMPONENT_EXPORT(UI_MENUS) MenuModelBridge {
  public:
   MenuModelBridge();
   MenuModelBridge(const MenuModelBridge&) = delete;

@@ -4,8 +4,8 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("context_menus") {
   sources = [
@@ -19,6 +19,7 @@ source_set("context_menus") {
     "//base",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
+    "//chrome/common/extensions/api",
     "//extensions/browser",
     "//extensions/common",
   ]

@@ -247,6 +247,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/context_menu_helpers.h"
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
@@ -657,15 +658,6 @@ PrefService* GetPrefs(content::BrowserContext* context) {
   return user_prefs::UserPrefs::Get(context);
 }
 
-bool ExtensionPatternMatch(const extensions::URLPatternSet& patterns,
-                           const GURL& url) {
-  // No patterns means no restriction, so that implicitly matches.
-  if (patterns.is_empty()) {
-    return true;
-  }
-  return patterns.MatchesURL(url);
-}
-
 content::Referrer CreateReferrer(const GURL& url,
                                  const content::ContextMenuParams& params) {
   const GURL& referring_url = params.frame_url;
@@ -878,10 +870,13 @@ RenderViewContextMenu::RenderViewContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params)
     : RenderViewContextMenuBase(render_frame_host, params),
-      extension_items_(browser_context_,
-                       this,
-                       &menu_model_,
-                       base::BindRepeating(MenuItemMatchesParams, params_)),
+      extension_items_(
+          browser_context_,
+          this,
+          &menu_model_,
+          base::BindRepeating(
+              extensions::context_menu_helpers::MenuItemMatchesParams,
+              params_)),
       current_url_(render_frame_host.GetLastCommittedURL()),
       main_frame_url_(render_frame_host.GetMainFrame()->GetLastCommittedURL()),
       profile_link_submenu_model_(this),
@@ -914,131 +909,6 @@ RenderViewContextMenu::~RenderViewContextMenu() = default;
 // Menu construction functions -------------------------------------------------
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// static
-bool RenderViewContextMenu::ExtensionContextAndPatternMatch(
-    const content::ContextMenuParams& params,
-    const MenuItem::ContextList& contexts,
-    const extensions::URLPatternSet& target_url_patterns) {
-  const bool has_link = !params.link_url.is_empty();
-  const bool has_selection = !params.selection_text.empty();
-  const bool in_subframe = params.is_subframe;
-
-  if (contexts.Contains(MenuItem::ALL) ||
-      (has_selection && contexts.Contains(MenuItem::SELECTION)) ||
-      (params.is_editable && contexts.Contains(MenuItem::EDITABLE)) ||
-      (in_subframe && contexts.Contains(MenuItem::FRAME))) {
-    return true;
-  }
-
-  if (has_link && contexts.Contains(MenuItem::LINK) &&
-      ExtensionPatternMatch(target_url_patterns, params.link_url)) {
-    return true;
-  }
-
-  switch (params.media_type) {
-    case ContextMenuDataMediaType::kImage:
-      if (contexts.Contains(MenuItem::IMAGE) &&
-          ExtensionPatternMatch(target_url_patterns, params.src_url)) {
-        return true;
-      }
-      break;
-
-    case ContextMenuDataMediaType::kVideo:
-      if (contexts.Contains(MenuItem::VIDEO) &&
-          ExtensionPatternMatch(target_url_patterns, params.src_url)) {
-        return true;
-      }
-      break;
-
-    case ContextMenuDataMediaType::kAudio:
-      if (contexts.Contains(MenuItem::AUDIO) &&
-          ExtensionPatternMatch(target_url_patterns, params.src_url)) {
-        return true;
-      }
-      break;
-
-    default:
-      break;
-  }
-
-  // PAGE is the least specific context, so we only examine that if none of the
-  // other contexts apply (except for FRAME, which is included in PAGE for
-  // backwards compatibility).
-  if (!has_link && !has_selection && !params.is_editable &&
-      params.media_type == ContextMenuDataMediaType::kNone &&
-      contexts.Contains(MenuItem::PAGE)) {
-    return true;
-  }
-
-  return false;
-}
-
-// static
-bool RenderViewContextMenu::MenuItemMatchesParams(
-    const content::ContextMenuParams& params,
-    const extensions::MenuItem* item) {
-  bool match = ExtensionContextAndPatternMatch(params, item->contexts(),
-                                               item->target_url_patterns());
-  if (!match) {
-    return false;
-  }
-
-  return ExtensionPatternMatch(item->document_url_patterns(), params.frame_url);
-}
-
-void RenderViewContextMenu::AppendAllExtensionItems() {
-  extension_items_.Clear();
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser_context_);
-
-  MenuManager* menu_manager = MenuManager::Get(browser_context_);
-  if (!menu_manager) {
-    return;
-  }
-
-  std::u16string printable_selection_text = PrintableSelectionText();
-  EscapeAmpersands(&printable_selection_text);
-
-  // Get a list of extension id's that have context menu items, and sort by the
-  // top level context menu title of the extension.
-  std::vector<std::u16string> sorted_menu_titles;
-  std::map<std::u16string, std::vector<const Extension*>>
-      title_to_extensions_map;
-  for (const auto& id : menu_manager->ExtensionIds()) {
-    const Extension* extension =
-        registry->enabled_extensions().GetByID(id.extension_id);
-    // Platform apps have their context menus created directly in
-    // AppendPlatformAppItems.
-    if (extension && !extension->is_platform_app()) {
-      std::u16string menu_title = extension_items_.GetTopLevelContextMenuTitle(
-          id, printable_selection_text);
-      title_to_extensions_map[menu_title].push_back(extension);
-      sorted_menu_titles.push_back(menu_title);
-    }
-  }
-  if (sorted_menu_titles.empty()) {
-    return;
-  }
-
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
-  l10n_util::SortStrings16(app_locale, &sorted_menu_titles);
-  sorted_menu_titles.erase(
-      std::unique(sorted_menu_titles.begin(), sorted_menu_titles.end()),
-      sorted_menu_titles.end());
-
-  int index = 0;
-  for (const auto& title : sorted_menu_titles) {
-    const std::vector<const Extension*>& extensions =
-        title_to_extensions_map[title];
-    for (const Extension* extension : extensions) {
-      MenuItem::ExtensionKey extension_key(extension->id());
-      extension_items_.AppendExtensionItems(extension_key,
-                                            printable_selection_text, &index,
-                                            /*is_action_menu=*/false);
-    }
-  }
-}
-
 void RenderViewContextMenu::AppendCurrentExtensionItems() {
   // Avoid appending extension related items when |extension| is null.
   // For Panel, this happens when the panel is navigated to a url outside of the
@@ -1308,7 +1178,8 @@ void RenderViewContextMenu::InitMenu() {
           ContextMenuContentType::ITEM_GROUP_ALL_EXTENSION)) {
     DCHECK(!content_type_->SupportsGroup(
         ContextMenuContentType::ITEM_GROUP_CURRENT_EXTENSION));
-    AppendAllExtensionItems();
+    extensions::context_menu_helpers::PopulateExtensionItems(
+        browser_context_, params_, extension_items_);
   }
 
   if (content_type_->SupportsGroup(

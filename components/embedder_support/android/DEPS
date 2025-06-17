@@ -16,5 +16,6 @@ include_rules = [
   "+ui/accessibility",
   "+ui/android",
   "+ui/base",
-  "+ui/gfx"
+  "+ui/gfx",
+  "+ui/menus/android"
 ]

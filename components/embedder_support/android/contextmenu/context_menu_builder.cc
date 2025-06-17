@@ -13,6 +13,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
+#include "ui/menus/android/menu_model_bridge.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -24,6 +25,7 @@ namespace context_menu {
 
 base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
     const content::ContextMenuParams& params,
+    ui::MenuModel* menu_model,
     int initiator_process_id,
     std::optional<base::UnguessableToken> initiator_frame_token) {
   GURL sanitizedReferrer =
@@ -46,6 +48,11 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
         content::CreateJavaAdditionalNavigationParams(
             env, initiator_frame_token.value(), initiator_process_id,
             attribution_src_token);
+  }
+
+  ui::MenuModelBridge* menu_model_bridge = new ui::MenuModelBridge();
+  if (menu_model != nullptr) {
+    menu_model_bridge->AddExtensionItems(menu_model);
   }
 
   return base::android::ScopedJavaGlobalRef<jobject>(

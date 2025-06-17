@@ -7805,6 +7805,8 @@ static_library("browser") {
       # They should be removed.
       "extensions/desktop_android/desktop_android_extension_host_delegate.cc",
       "extensions/desktop_android/desktop_android_extension_host_delegate.h",
+      "extensions/extension_menu_delegate_android.cc",
+      "extensions/extension_menu_delegate_android.h",
     ]
 
     deps += [

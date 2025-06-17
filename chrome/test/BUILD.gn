@@ -9271,6 +9271,7 @@ test("unit_tests") {
       "../browser/extensions/chrome_app_icon_unittest.cc",
       "../browser/extensions/chrome_app_sorting_unittest.cc",
       "../browser/extensions/chrome_extension_function_unittest.cc",
+      "../browser/extensions/context_menu_helpers_unittest.cc",
       "../browser/extensions/context_menu_matcher_unittest.cc",
       "../browser/extensions/convert_user_script_unittest.cc",
       "../browser/extensions/error_console/error_console_unittest.cc",

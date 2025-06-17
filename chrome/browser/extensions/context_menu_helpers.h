@@ -18,21 +18,27 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/utils/extension_utils.h"
 
+namespace content {
+struct ContextMenuParams;
+}  // namespace content
+
 namespace extensions {
-namespace context_menu_helpers {
+class ContextMenuMatcher;
+}  // namespace extensions
+
+namespace extensions::context_menu_helpers {
 
 namespace {
 
 template <typename PropertyWithEnumT>
-std::unique_ptr<extensions::MenuItem::Id> GetParentId(
-    const PropertyWithEnumT& property,
-    bool is_off_the_record,
-    const MenuItem::ExtensionKey& key) {
+std::unique_ptr<MenuItem::Id> GetParentId(const PropertyWithEnumT& property,
+                                          bool is_off_the_record,
+                                          const MenuItem::ExtensionKey& key) {
   if (!property.parent_id)
     return nullptr;
 
-  std::unique_ptr<extensions::MenuItem::Id> parent_id(
-      new extensions::MenuItem::Id(is_off_the_record, key));
+  std::unique_ptr<MenuItem::Id> parent_id(
+      new MenuItem::Id(is_off_the_record, key));
   if (property.parent_id->as_integer) {
     parent_id->uid = *property.parent_id->as_integer;
   } else if (property.parent_id->as_string) {
@@ -62,11 +68,58 @@ MenuItem* GetParent(MenuItem::Id parent_id,
                     const MenuManager* menu_manager,
                     std::string* error);
 
-MenuItem::ContextList GetContexts(const std::vector<
-    extensions::api::context_menus::ContextType>& in_contexts);
+MenuItem::ContextList GetContexts(
+    const std::vector<api::context_menus::ContextType>& in_contexts);
 
-MenuItem::Type GetType(extensions::api::context_menus::ItemType type,
+MenuItem::Type GetType(api::context_menus::ItemType type,
                        MenuItem::Type default_type);
+
+// Determines if a context menu item should be shown for a given click context.
+// This checks if the properties of a right-click (the `params`) match the
+// requirements of an extension's context menu item, which are defined by its
+// allowed `contexts` and `target_url_patterns`.
+//
+// params The properties of the context menu click, such as the link
+//     URL, selected text, and media type.
+// contexts The set of contexts the menu item is registered for (e.g.,
+//     `MenuItem::IMAGE`, `MenuItem::LINK`).
+// target_url_patterns The set of URL patterns to match against for
+//     applicable contexts like links and media.
+// Returns whether the menu item is a match for the given context and should be
+// shown.
+bool ExtensionContextAndPatternMatch(const content::ContextMenuParams& params,
+                                     const MenuItem::ContextList& contexts,
+                                     const URLPatternSet& target_url_patterns);
+
+// Determines if a given MenuItem should be shown for a context menu click,
+// based on the context (e.g., link, image, or selection) and URL.
+//
+// params The properties of the context menu click.
+// item The extension menu item to be evaluated.
+// Returns whether the menu item should be displayed in the context menu.
+bool MenuItemMatchesParams(const content::ContextMenuParams& params,
+                           const MenuItem* item);
+
+// Prepares user-selected text for display in a context menu item, by truncating
+// the string to a maximum length (`kMaxSelectionTextLength`) and escaping
+// ampersands to prevent them from being interpreted as UI mnemonic character
+// shortcuts.
+//
+// selection_text The raw text selected by the user.
+// Returns a truncated and escaped version of the input string suitable for
+// display.
+std::u16string PrintableSelectionText(const std::u16string& selection_text);
+
+// Populates a ContextMenuMatcher with all relevant context menu items from
+// enabled extensions, sorted and grouped appropriately.
+//
+// params The parameters of the context menu click. This is used to get
+//     the selected text for menu items that include it (e.g., "Search for %s").
+// matcher The `ContextMenuMatcher` that will be cleared and then
+//     populated with the extension menu items.
+void PopulateExtensionItems(content::BrowserContext* browser_context,
+                            const content::ContextMenuParams& params,
+                            ContextMenuMatcher& matcher);
 
 // Creates and adds a menu item from `create_properties`.
 template <typename PropertyWithEnumT>
@@ -87,8 +140,8 @@ bool CreateMenuItem(const PropertyWithEnumT& create_properties,
   }
 
   if (menu_manager->GetItemById(item_id)) {
-    *error = ErrorUtils::FormatErrorMessage(kDuplicateIDError,
-                                            GetIDString(item_id));
+    *error =
+        ErrorUtils::FormatErrorMessage(kDuplicateIDError, GetIDString(item_id));
     return false;
   }
 
@@ -188,8 +241,8 @@ bool UpdateMenuItem(const PropertyWithEnumT& update_properties,
   MenuItem* item = menu_manager->GetItemById(item_id);
   const ExtensionId& extension_id = MaybeGetExtensionId(extension);
   if (!item || item->extension_id() != extension_id) {
-    *error = ErrorUtils::FormatErrorMessage(
-        kCannotFindItemError, GetIDString(item_id));
+    *error = ErrorUtils::FormatErrorMessage(kCannotFindItemError,
+                                            GetIDString(item_id));
     return false;
   }
 
@@ -197,8 +250,9 @@ bool UpdateMenuItem(const PropertyWithEnumT& update_properties,
   MenuItem::Type type = GetType(update_properties.type, item->type());
 
   if (type != item->type()) {
-    if (type == MenuItem::RADIO || item->type() == MenuItem::RADIO)
+    if (type == MenuItem::RADIO || item->type() == MenuItem::RADIO) {
       radio_item_updated = true;
+    }
     item->set_type(type);
   }
 
@@ -215,8 +269,7 @@ bool UpdateMenuItem(const PropertyWithEnumT& update_properties,
   // Checked state.
   if (update_properties.checked) {
     bool checked = *update_properties.checked;
-    if (checked &&
-        item->type() != MenuItem::CHECKBOX &&
+    if (checked && item->type() != MenuItem::CHECKBOX &&
         item->type() != MenuItem::RADIO) {
       *error = kCheckedError;
       return false;
@@ -290,7 +343,6 @@ bool UpdateMenuItem(const PropertyWithEnumT& update_properties,
   return true;
 }
 
-}  // namespace context_menu_helpers
-}  // namespace extensions
+}  // namespace extensions::context_menu_helpers
 
 #endif  // CHROME_BROWSER_EXTENSIONS_CONTEXT_MENU_HELPERS_H_
