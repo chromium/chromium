@@ -2527,12 +2527,8 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     }
 
     case CommandSwapWithActiveSplit: {
-      CHECK(base::FeatureList::IsEnabled(features::kSideBySide));
-      std::optional<split_tabs::SplitTabId> split_id =
-          GetTabAtIndex(active_index())->GetSplit();
-      CHECK(split_id.has_value());
-      UpdateActiveTabInSplit(split_id.value(), context_index,
-                             SplitUpdateType::kSwap);
+      // Do nothing. The submenu's delegate will invoke the correct subcommand
+      // later.
       break;
     }
 

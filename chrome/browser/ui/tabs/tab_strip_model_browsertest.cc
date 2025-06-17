@@ -428,25 +428,6 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
   EXPECT_TRUE(tab_strip_model->GetTabAtIndex(4)->GetSplit().has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandSwapWithActiveSplit) {
-  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
-  AddTabs(3);
-  tab_strip_model->ActivateTabAt(0);
-  tab_strip_model->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
-
-  EXPECT_TRUE(tab_strip_model->IsContextMenuCommandEnabled(
-      2, TabStripModel::CommandSwapWithActiveSplit));
-
-  tabs::TabInterface* tab_outside_split = tab_strip_model->GetTabAtIndex(2);
-
-  tab_strip_model->ExecuteContextMenuCommand(
-      2, TabStripModel::CommandSwapWithActiveSplit);
-
-  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(0)->IsSplit());
-  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(1)->IsSplit());
-  EXPECT_EQ(tab_outside_split, tab_strip_model->GetTabAtIndex(0));
-}
-
 // Calling duplicate on a tab that isn't selected doesn't affect selected tabs.
 IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandDuplicate) {
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();

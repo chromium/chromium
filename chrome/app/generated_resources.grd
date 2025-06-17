@@ -11407,7 +11407,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Arrange split view
         </message>
         <message name="IDS_TAB_CXMENU_SWAP_WITH_ACTIVE_SPLIT" desc="The label of the tab context menu item for swapping a tab with the current view in the split.">
-          Swap with current view
+          Move tab into split view
         </message>
         <message name="IDS_TAB_CXMENU_SUBMENU_NEW_GROUP" desc="The label of the tab context menu sub-menu item for adding one more tabs to a new group.">
           New group
@@ -11520,7 +11520,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Arrange Split View
         </message>
         <message name="IDS_TAB_CXMENU_SWAP_WITH_ACTIVE_SPLIT" desc="The label of the tab context menu item for swapping a tab with the current view in the split.">
-          Swap with Current View
+          Move Tab into Split View
         </message>
         <message name="IDS_TAB_CXMENU_SUBMENU_NEW_GROUP" desc="In Title Case: The label of the tab context menu sub-menu item for adding one more tabs to a new group.">
           New Group
@@ -11613,6 +11613,18 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_SPLIT_TAB_SEPARATE_VIEWS" translateable="false" desc="The label for a menu item that unsplits the split tab when clicked.">
           Separate views
         </message>
+        <message name="IDS_SPLIT_TAB_SWAP_LEFT_VIEW" translateable="false" desc="The label for a menu item that swaps the left view in the active split with the selected tab.">
+          Swap with left view
+        </message>
+        <message name="IDS_SPLIT_TAB_SWAP_RIGHT_VIEW" translateable="false" desc="The label for a menu item that swaps the right view in the active split with the selected tab.">
+          Swap with right view
+        </message>
+        <message name="IDS_SPLIT_TAB_SWAP_TOP_VIEW" translateable="false" desc="The label for a menu item that swaps the top view in the active split with the selected tab.">
+          Swap with top view
+        </message>
+        <message name="IDS_SPLIT_TAB_SWAP_BOTTOM_VIEW" translateable="false" desc="The label for a menu item that swaps the bottom view in the active split with the selected tab.">
+          Swap with bottom view
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_PIN_SPLIT_TAB_TOGGLE" translateable="false" desc="In title case: pins the split tabs button to the toolbar when toggled on.">
@@ -11644,6 +11656,18 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_SPLIT_TAB_SEPARATE_VIEWS" translateable="false" desc="In title case: the label for a menu item that unsplits the split tab when clicked.">
           Separate Views
+        </message>
+        <message name="IDS_SPLIT_TAB_SWAP_LEFT_VIEW" translateable="false" desc="In title case: The label for a menu item that swaps the left view in the active split with the selected tab.">
+          Swap with Left View
+        </message>
+        <message name="IDS_SPLIT_TAB_SWAP_RIGHT_VIEW" translateable="false" desc="In title case: The label for a menu item that swaps the right view in the active split with the selected tab.">
+          Swap with Right View
+        </message>
+        <message name="IDS_SPLIT_TAB_SWAP_TOP_VIEW" translateable="false" desc="In title case: The label for a menu item that swaps the top view in the active split with the selected tab.">
+          Swap with Top View
+        </message>
+        <message name="IDS_SPLIT_TAB_SWAP_BOTTOM_VIEW" translateable="false" desc="In title case: The label for a menu item that swaps the bottom view in the active split with the selected tab.">
+          Swap with Bottom View
         </message>
       </if>
 

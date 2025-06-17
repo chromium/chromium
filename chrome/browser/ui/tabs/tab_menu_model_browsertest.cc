@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/split_tab_swap_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -42,6 +43,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/menus/simple_menu_model.h"
 
 class TabMenuModelBrowserTest : public MenuModelTest,
                                 public InProcessBrowserTest {
@@ -54,6 +56,21 @@ class TabMenuModelBrowserTest : public MenuModelTest,
   }
 
   Profile* profile() { return browser()->profile(); }
+
+  void ActivateSwapWithSplitSubmenuCommand(
+      int tab_index,
+      SplitTabSwapMenuModel::CommandId command_id) {
+    TabMenuModel menu(&delegate_,
+                      browser()->GetFeatures().tab_menu_model_delegate(),
+                      browser()->tab_strip_model(), tab_index);
+    size_t submenu_index =
+        menu.GetIndexOfCommandId(TabStripModel::CommandSwapWithActiveSplit)
+            .value();
+    ui::SimpleMenuModel* submenu = static_cast<ui::SimpleMenuModel*>(
+        menu.GetSubmenuModelAt(submenu_index));
+    submenu->ActivatedAt(static_cast<size_t>(
+        submenu->GetIndexOfCommandId(static_cast<int>(command_id)).value()));
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -363,6 +380,65 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, MultiSelectTabs) {
     EXPECT_TRUE(index.has_value());
     EXPECT_FALSE(menu_model.IsEnabledAt(index.value()));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, SwapWithActiveTab) {
+  // Add 3 tabs to the browser.
+  chrome::NewTab(browser());
+  chrome::NewTab(browser());
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(tab_strip_model->count(), 3);
+
+  // Create a split. Assert that the last two tabs are split with the rightmost
+  // tab active.
+  tab_strip_model->ActivateTabAt(0);
+  tab_strip_model->AddToNewSplit(
+      {1},
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical));
+  EXPECT_TRUE(tab_strip_model->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(tab_strip_model->GetSplitForTab(1).has_value());
+  EXPECT_FALSE(tab_strip_model->GetSplitForTab(2).has_value());
+  EXPECT_EQ(tab_strip_model->active_index(), 0);
+
+  // Trigger the swap start tab command.
+  ActivateSwapWithSplitSubmenuCommand(
+      2, SplitTabSwapMenuModel::CommandId::kSwapStartTab);
+
+  // Check that now the left two tabs are in a split and the left (swapped) tab
+  // in the split is active.
+  EXPECT_TRUE(tab_strip_model->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(tab_strip_model->GetSplitForTab(1).has_value());
+  EXPECT_FALSE(tab_strip_model->GetSplitForTab(2).has_value());
+  EXPECT_EQ(tab_strip_model->active_index(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, SwapWithInctiveTab) {
+  // Add 3 tabs to the browser.
+  chrome::NewTab(browser());
+  chrome::NewTab(browser());
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(tab_strip_model->count(), 3);
+
+  // Create a split. Assert that the last two tabs are split with the rightmost
+  // tab active.
+  tab_strip_model->AddToNewSplit(
+      {1},
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical));
+  EXPECT_FALSE(tab_strip_model->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(tab_strip_model->GetSplitForTab(1).has_value());
+  EXPECT_TRUE(tab_strip_model->GetSplitForTab(2).has_value());
+  EXPECT_EQ(tab_strip_model->active_index(), 2);
+
+  // Trigger the swap start tab command.
+  ActivateSwapWithSplitSubmenuCommand(
+      0, SplitTabSwapMenuModel::CommandId::kSwapStartTab);
+
+  // Check that now the left two tabs are in a split and the right (swapped) tab
+  // in the split is active.
+  EXPECT_TRUE(tab_strip_model->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(tab_strip_model->GetSplitForTab(1).has_value());
+  EXPECT_FALSE(tab_strip_model->GetSplitForTab(2).has_value());
+  EXPECT_EQ(tab_strip_model->active_index(), 0);
 }
 
 class TabMenuModelCommerceProductSpecsTest : public TabMenuModelBrowserTest {

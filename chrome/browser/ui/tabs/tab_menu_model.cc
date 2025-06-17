@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
+#include "chrome/browser/ui/tabs/split_tab_swap_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -138,8 +139,11 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     if (!tab_strip->GetSplitForTab(index).has_value()) {
       if (tab_strip->GetActiveTab()->IsSplit()) {
-        AddItemWithStringId(TabStripModel::CommandSwapWithActiveSplit,
-                            IDS_TAB_CXMENU_SWAP_WITH_ACTIVE_SPLIT);
+        swap_with_split_submenu_ =
+            std::make_unique<SplitTabSwapMenuModel>(tab_strip, index);
+        AddSubMenuWithStringId(TabStripModel::CommandSwapWithActiveSplit,
+                               IDS_TAB_CXMENU_SWAP_WITH_ACTIVE_SPLIT,
+                               swap_with_split_submenu_.get());
         const int swap_with_split_index = GetItemCount() - 1;
         SetEnabledAt(swap_with_split_index, num_tabs == 1);
         SetElementIdentifierAt(swap_with_split_index, kSwapSplitTabsMenuItem);
