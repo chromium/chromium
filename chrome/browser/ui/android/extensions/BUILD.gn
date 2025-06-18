@@ -8,13 +8,22 @@ import("//extensions/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionKeybindingRegistry.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionKeybindingRegistry.java",
+    "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionService.java",
+  ]
   srcjar_deps = [ ":generate_buildflags" ]
 
   deps = [
+    "//base:base_java",
     "//base:lifetime_java",
     "//base:service_loader_java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//third_party/android_deps:material_design_java",
+    "//ui/android:ui_full_java",
   ]
 
   if (enable_extensions_core) {
@@ -22,7 +31,10 @@ android_library("java") {
       "//chrome/browser/flags:java",
       "//third_party/jni_zero:jni_zero_java",
     ]
-    sources += [ "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionKeybindingRegistryAndroid.java" ]
+    sources += [
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionKeybindingRegistryAndroid.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionServiceImpl.java",
+    ]
     srcjar_deps += [ ":jni_headers" ]
     resources_package = "org.chromium.chrome.browser.ui.extensions"
   }

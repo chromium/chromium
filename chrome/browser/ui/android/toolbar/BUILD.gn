@@ -63,7 +63,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsViewBinder.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/ScrollingBottomViewResourceFrameLayout.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/ScrollingBottomViewSceneLayer.java",
-    "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionToolbarManager.java",
     "java/src/org/chromium/chrome/browser/toolbar/home_button/HomeButton.java",
     "java/src/org/chromium/chrome/browser/toolbar/home_button/HomeButtonCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/home_page_button/HomePageButtonData.java",
@@ -243,7 +242,6 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionPopup.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionPopupContents.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsBridge.java",
-      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionToolbarManagerImpl.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuButtonCoordinator.java",
     ]
 
