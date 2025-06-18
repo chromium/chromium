@@ -53,27 +53,31 @@ class NET_EXPORT ParsedCookie {
   const std::string& Token() const { return Name(); }
   const std::string& Value() const { return pairs_[0].second; }
 
-  bool HasPath() const { return path_index_ != 0; }
-  const std::string& Path() const {
-    DCHECK(HasPath());
+  std::optional<std::string_view> Path() const {
+    if (path_index_ == 0) {
+      return std::nullopt;
+    }
     return pairs_[path_index_].second;
   }
   // Note that Domain() may return the empty string; in the case of cookie_line
-  // "domain=", HasDomain() will return true (as the empty string is an
-  // acceptable domain value), so Domain() will return std::string().
-  bool HasDomain() const { return domain_index_ != 0; }
-  const std::string& Domain() const {
-    DCHECK(HasDomain());
+  // "domain=", Domain().has_value() will return true (as the empty string is an
+  // acceptable domain value), and Domain().value() will be an empty string.
+  std::optional<std::string_view> Domain() const {
+    if (domain_index_ == 0) {
+      return std::nullopt;
+    }
     return pairs_[domain_index_].second;
   }
-  bool HasExpires() const { return expires_index_ != 0; }
-  const std::string& Expires() const {
-    DCHECK(HasExpires());
+  std::optional<std::string_view> Expires() const {
+    if (expires_index_ == 0) {
+      return std::nullopt;
+    }
     return pairs_[expires_index_].second;
   }
-  bool HasMaxAge() const { return maxage_index_ != 0; }
-  const std::string& MaxAge() const {
-    DCHECK(HasMaxAge());
+  std::optional<std::string_view> MaxAge() const {
+    if (maxage_index_ == 0) {
+      return std::nullopt;
+    }
     return pairs_[maxage_index_].second;
   }
   bool IsSecure() const { return secure_index_ != 0; }

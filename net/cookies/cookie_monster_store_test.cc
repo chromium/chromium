@@ -110,12 +110,13 @@ std::unique_ptr<CanonicalCookie> BuildCanonicalCookie(
   // This helper is simplistic in interpreting a parsed cookie, in order to
   // avoid duplicated CookieMonster's CanonPath() and CanonExpiration()
   // functions. Would be nice to export them, and re-use here.
-  EXPECT_FALSE(pc.HasMaxAge());
-  EXPECT_TRUE(pc.HasPath());
+  EXPECT_FALSE(pc.MaxAge());
+  EXPECT_TRUE(pc.Path());
   base::Time cookie_expires =
-      pc.HasExpires() ? cookie_util::ParseCookieExpirationTime(pc.Expires())
-                      : base::Time();
-  std::string cookie_path = pc.Path();
+      pc.Expires()
+          ? cookie_util::ParseCookieExpirationTime(pc.Expires().value())
+          : base::Time();
+  std::string cookie_path(pc.Path().value());
 
   return CanonicalCookie::CreateUnsafeCookieForTesting(
       pc.Name(), pc.Value(), "." + url.host(), cookie_path, creation_time,

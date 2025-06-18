@@ -112,8 +112,8 @@ std::optional<CookieCraving> CookieCraving::Create(
   // marked by a preceding dot, as per CookieBase::Domain(), whereas a host
   // cookie has no leading dot.
   std::string domain_attribute_value;
-  if (parsed_cookie.HasDomain()) {
-    domain_attribute_value = parsed_cookie.Domain();
+  if (parsed_cookie.Domain()) {
+    domain_attribute_value = parsed_cookie.Domain().value();
   }
   CookieInclusionStatus ignored_status;
   std::optional<std::string> domain = cookie_util::GetCookieDomainWithString(
@@ -125,8 +125,8 @@ std::optional<CookieCraving> CookieCraving::Create(
     return std::nullopt;
   }
 
-  std::string path = cookie_util::CanonPathWithString(
-      url, parsed_cookie.HasPath() ? parsed_cookie.Path() : "");
+  std::string path =
+      cookie_util::CanonPathWithString(url, parsed_cookie.Path().value_or(""));
 
   CookiePrefix prefix = cookie_util::GetCookiePrefix(name);
   if (!cookie_util::IsCookiePrefixValid(prefix, url, parsed_cookie)) {

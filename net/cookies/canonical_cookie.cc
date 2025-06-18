@@ -181,12 +181,12 @@ Time CanonicalCookie::ParseExpiration(const ParsedCookie& pc,
                                       const Time& current,
                                       const Time& server_time) {
   // First, try the Max-Age attribute.
-  if (pc.HasMaxAge()) {
+  if (pc.MaxAge().has_value()) {
     int64_t max_age = 0;
     // Use the output if StringToInt64 returns true ("perfect" conversion). This
     // case excludes overflow/underflow, leading/trailing whitespace, non-number
     // strings, and empty string. (ParsedCookie trims whitespace.)
-    if (base::StringToInt64(pc.MaxAge(), &max_age)) {
+    if (base::StringToInt64(pc.MaxAge().value(), &max_age)) {
       // RFC 6265bis algorithm for parsing Max-Age:
       // "If delta-seconds is less than or equal to zero (0), let expiry-
       // time be the earliest representable date and time. ... "
@@ -207,13 +207,14 @@ Time CanonicalCookie::ParseExpiration(const ParsedCookie& pc,
     }
   }
 
-  if (!pc.HasExpires() || pc.Expires().empty()) {
+  if (!pc.Expires().has_value() || pc.Expires().value().empty()) {
     // No expiration.
     return Time();
   }
 
   // Adjust for clock skew between server and host.
-  Time parsed_expiry = cookie_util::ParseCookieExpirationTime(pc.Expires());
+  Time parsed_expiry =
+      cookie_util::ParseCookieExpirationTime(pc.Expires().value());
   if (parsed_expiry.is_null()) {
     // Invalid expiration.
     return Time();
@@ -346,15 +347,15 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   if (collect_metrics) {
     // Record warning for non-ASCII octecs in the Domain attribute.
     // This should lead to rejection of the cookie in the future.
-    base::UmaHistogramBoolean("Cookie.DomainHasNonASCII.Subsampled",
-                              parsed_cookie.HasDomain() &&
-                                  !base::IsStringASCII(parsed_cookie.Domain()));
+    base::UmaHistogramBoolean(
+        "Cookie.DomainHasNonASCII.Subsampled",
+        parsed_cookie.Domain() &&
+            !base::IsStringASCII(parsed_cookie.Domain().value()));
   }
 
   std::optional<std::string> cookie_domain =
       cookie_util::GetCookieDomainWithString(
-          url, parsed_cookie.HasDomain() ? parsed_cookie.Domain() : "",
-          *status);
+          url, parsed_cookie.Domain().value_or(""), *status);
   if (!cookie_domain) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "Create() failed to get a valid cookie domain";
@@ -363,7 +364,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   }
 
   std::string cookie_path = cookie_util::CanonPathWithString(
-      url, parsed_cookie.HasPath() ? parsed_cookie.Path() : std::string());
+      url, parsed_cookie.Path().value_or(std::string_view()));
 
   Time cookie_server_time(creation_time);
   if (server_time.has_value() && !server_time->is_null())
