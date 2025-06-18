@@ -778,9 +778,6 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
   const int thread_id = content::WorkerThread::GetCurrentId();
   CHECK_NE(thread_id, kMainThreadId);
   auto* service_worker_data = WorkerThreadDispatcher::GetServiceWorkerData();
-  const ExtensionId& extension_id =
-      service_worker_data->context()->GetExtensionID();
-  CHECK(!extension_id.empty());
   if (base::FeatureList::IsEnabled(
           kSpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext)) {
     // `service_worker_data` can be nullptr if the extension is already unloaded
@@ -790,12 +787,18 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
     // `thread_state_` or `requested_to_terminate_` to confirm we're in
     // termination when `service_worker_data` is false here.
     if (service_worker_data) {
+      const ExtensionId& extension_id =
+          service_worker_data->context()->GetExtensionID();
+      CHECK(!extension_id.empty());
       service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
           extension_id, *service_worker_data->activation_sequence(),
           service_worker_scope, service_worker_version_id, thread_id);
     }
   } else {
     CHECK(service_worker_data);
+    const ExtensionId& extension_id =
+        service_worker_data->context()->GetExtensionID();
+    CHECK(!extension_id.empty());
     service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
         extension_id, *service_worker_data->activation_sequence(),
         service_worker_scope, service_worker_version_id, thread_id);
