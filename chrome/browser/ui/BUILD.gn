@@ -2541,8 +2541,6 @@ static_library("ui") {
       "//chromeos/ash/services/cellular_setup",
       "//chromeos/ash/services/cellular_setup/public/mojom",
       "//chromeos/ash/services/connectivity/public/mojom",
-      "//chromeos/ash/services/federated/public/cpp",
-      "//chromeos/ash/services/federated/public/mojom",
       "//chromeos/ash/services/hotspot_config",
       "//chromeos/ash/services/hotspot_config/public/cpp",
       "//chromeos/ash/services/hotspot_config/public/mojom",

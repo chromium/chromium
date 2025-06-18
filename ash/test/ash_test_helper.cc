@@ -123,9 +123,7 @@ class AshTestHelper::PowerPolicyControllerInitializer {
 
 AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
     : AuraTestHelper(context_factory),
-      system_monitor_(std::make_unique<base::SystemMonitor>()),
-      scoped_fake_federated_service_connection_for_test_(
-          &fake_federated_service_connection_) {
+      system_monitor_(std::make_unique<base::SystemMonitor>()) {
   views::ViewsTestHelperAura::SetFallbackTestViewsDelegateFactory(
       &MakeTestViewsDelegate);
 

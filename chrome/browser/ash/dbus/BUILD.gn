@@ -114,7 +114,6 @@ static_library("dbus") {
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/easy_unlock",
     "//chromeos/ash/components/dbus/featured",
-    "//chromeos/ash/components/dbus/federated",
     "//chromeos/ash/components/dbus/gnubby",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/dbus/human_presence",

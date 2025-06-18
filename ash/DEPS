@@ -133,7 +133,6 @@ include_rules = [
   "+chromeos/ash/services/bluetooth_config",
   "+chromeos/ash/services/coral/public",
   "+chromeos/ash/services/hotspot_config",
-  "+chromeos/ash/services/federated/public",
   "+chromeos/ash/services/libassistant/public",
   "+chromeos/ash/services/nearby/public",
   "+chromeos/ash/services/multidevice_setup/public",

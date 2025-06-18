@@ -23,8 +23,6 @@
 #include "base/types/pass_key.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
-#include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
-#include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 #include "ui/aura/test/aura_test_helper.h"
 
 class BrowserWithTestWindowTest;
@@ -258,10 +256,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   // global that is registered via InputMethodManager::Initialize().
   raw_ptr<input_method::MockInputMethodManagerImpl, DanglingUntriaged>
       input_method_manager_ = nullptr;
-
-  federated::FakeServiceConnectionImpl fake_federated_service_connection_;
-  federated::ScopedFakeServiceConnectionForTest
-      scoped_fake_federated_service_connection_for_test_;
 
   // True if a fake global `CrasAudioHandler` should be created.
   bool create_global_cras_audio_handler_ = true;

@@ -160,7 +160,6 @@
 #include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
-#include "ash/system/federated/federated_service_controller_impl.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/geolocation/geolocation_controller.h"
@@ -1212,7 +1211,6 @@ Shell::~Shell() {
   multi_capture_service_.reset();
 
   // Observes `SessionController` and must be destroyed before it.
-  federated_service_controller_.reset();
   brightness_control_delegate_.reset();
   keyboard_brightness_control_delegate_.reset();
 
@@ -1820,9 +1818,6 @@ void Shell::Init(
 
   multitask_menu_nudge_delegate_ =
       std::make_unique<MultitaskMenuNudgeDelegateAsh>();
-
-  federated_service_controller_ =
-      std::make_unique<federated::FederatedServiceControllerImpl>();
 
   if (features::IsUserEducationEnabled()) {
     user_education_controller_ = std::make_unique<UserEducationController>(
