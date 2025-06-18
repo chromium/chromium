@@ -24,7 +24,7 @@ ContentFiltersObserverBridge::ContentFiltersObserverBridge(
           kPropagateDeviceContentFiltersToSupervisedUser)) {
     // TODO(crbug.com/422435683): Link the java bridge class to relevant
     // unit-test binaries.
-    VLOG(1) << "ContentFiltersObserverBridge is disabled.";
+    LOG(INFO) << "ContentFiltersObserverBridge is disabled.";
     return;
   }
 
@@ -47,9 +47,11 @@ ContentFiltersObserverBridge::~ContentFiltersObserverBridge() {
 }
 
 void ContentFiltersObserverBridge::OnChange(JNIEnv* env, bool enabled) {
-  VLOG(1) << "ContentFiltersObserverBridge received onChange for setting "
-          << setting_name_ << " with value "
-          << (enabled ? "enabled" : "disabled");
+  // Logs in this unit are emitted once per external setting change, most likely
+  // once in the browser's process lifetime.
+  LOG(INFO) << "ContentFiltersObserverBridge received onChange for setting "
+            << setting_name_ << " with value "
+            << (enabled ? "enabled" : "disabled");
   if (enabled) {
     on_enabled_.Run();
   } else {

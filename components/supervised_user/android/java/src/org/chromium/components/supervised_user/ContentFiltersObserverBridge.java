@@ -51,13 +51,13 @@ class ContentFiltersObserverBridge {
                         boolean newEnabled = getValue(settingName);
 
                         if (mIsEnabled == newEnabled) {
-                            Log.d(TAG, "setting=%s discarding %s", settingName, newEnabled);
+                            Log.i(TAG, "setting=%s discarding %s", settingName, newEnabled);
                             return;
                         }
                         mIsEnabled = newEnabled;
                         ContentFiltersObserverBridgeJni.get()
                                 .onChange(nativeContentFiltersObserverBridge, mIsEnabled);
-                        Log.d(TAG, "setting=%s updating with %s", settingName, newEnabled);
+                        Log.i(TAG, "setting=%s updating with %s", settingName, newEnabled);
                     }
                 };
         ContextUtils.getApplicationContext()
@@ -71,7 +71,7 @@ class ContentFiltersObserverBridge {
         // Call the native first time to get the current value of the setting.
         ContentFiltersObserverBridgeJni.get()
                 .onChange(nativeContentFiltersObserverBridge, mIsEnabled);
-        Log.d(TAG, "setting=%s initial value %s", settingName, mIsEnabled);
+        Log.i(TAG, "setting=%s initial value %s", settingName, mIsEnabled);
     }
 
     @CalledByNative
