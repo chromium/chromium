@@ -206,6 +206,8 @@ class SupervisedUserService : public KeyedService {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
+  std::unique_ptr<SupervisedUserURLFilter> url_filter_;
+
   // Manages the status of parental controls and notifies this instance when the
   // state changes.
   SupervisedControlsState controls_state_;
@@ -231,8 +233,6 @@ class SupervisedUserService : public KeyedService {
 
   // True only when |Shutdown()| method has been called.
   bool did_shutdown_ = false;
-
-  std::unique_ptr<SupervisedUserURLFilter> url_filter_;
 
   // Manages remote web approvals.
   RemoteWebApprovalsManager remote_web_approvals_manager_;
