@@ -240,13 +240,13 @@
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "extensions/browser/view_type_utils.h"  // nogncheck
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/tab_helper.h"
+#include "extensions/browser/view_type_utils.h"
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -737,7 +737,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           web_contents, false));
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // If the web contents already have a view type, don't overwrite it here. One
   // case where this can happen is when the user opens undocked developer tools.
   // For all developer tools web contents, the view type is set to
@@ -747,6 +747,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     extensions::SetViewType(web_contents,
                             extensions::mojom::ViewType::kTabContents);
   }
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::AppTabHelper::CreateForWebContents(web_contents);
   extensions::NavigationExtensionEnabler::CreateForWebContents(web_contents);
   extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);
