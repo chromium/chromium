@@ -5068,7 +5068,7 @@ crbug.com/1322629 external/wpt/paint-timing/fcp-only/fcp-invisible-scale-transit
 # Sheriff 2019-03-04
 # Also crbug.com/1044418
 crbug.com/41444682 [ Linux Release ] http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-3.js [ Failure Pass ]
-crbug.com/41444682 [ Release Win ] http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-2.js [ Failure Pass Timeout ]
+
 
 # Caused a revert of a good change.
 crbug.com/931533 media/video-played-collapse.html [ Failure Pass ]

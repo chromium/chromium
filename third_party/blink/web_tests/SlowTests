@@ -928,7 +928,6 @@ crbug.com/1044823 [ Release Win ] http/tests/devtools/extensions/extensions-reso
 crbug.com/1044829 [ Release Win ] http/tests/devtools/cache-storage/cache-deletion.js [ Slow ]
 crbug.com/1044829 [ Mac12 Release ] http/tests/devtools/cache-storage/cache-deletion.js [ Slow ]
 crbug.com/1043901 [ Release Win ] external/wpt/preload/preload-with-type.html [ Slow ]
-crbug.com/1044418 [ Mac12 Release ] http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-2.js [ Slow ]
 crbug.com/1046784 [ Linux ] http/tests/devtools/elements/styles-4/styles-formatting.js [ Slow ]
 crbug.com/1046784 [ Mac12 ] http/tests/devtools/elements/styles-4/styles-formatting.js [ Slow ]
 crbug.com/1046784 [ Release Win ] http/tests/devtools/elements/styles-4/styles-formatting.js [ Slow ]
