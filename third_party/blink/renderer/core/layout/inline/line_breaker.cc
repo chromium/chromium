@@ -4566,7 +4566,9 @@ void LineBreaker::SetCurrentStyleForce(const ComputedStyle& style) {
           break;
         case EWordBreak::kBreakWord:
           line_break_type = LineBreakType::kNormal;
-          break_anywhere_if_overflow_ = true;
+          // overflow-wrap doesn't take effect if the line has a line-clamp
+          // ellipsis, and neither does `word-break: break-word`.
+          break_anywhere_if_overflow_ = !line_clamp_ellipsis_width_;
           break;
         case EWordBreak::kKeepAll:
           line_break_type = LineBreakType::kKeepAll;
@@ -4583,9 +4585,11 @@ void LineBreaker::SetCurrentStyleForce(const ComputedStyle& style) {
           break_anywhere_if_overflow_ = false;
           break;
       }
-      if (!break_anywhere_if_overflow_) {
+      if (!break_anywhere_if_overflow_ && !line_clamp_ellipsis_width_) {
         // `overflow-wrap: anywhere` affects both layout and min-content, while
         // `break-word` affects layout but not min-content.
+        // This only takes effect if this line doesn't have a line-clamp
+        // ellipsis.
         const EOverflowWrap overflow_wrap = style.OverflowWrap();
         break_anywhere_if_overflow_ =
             overflow_wrap == EOverflowWrap::kAnywhere ||
