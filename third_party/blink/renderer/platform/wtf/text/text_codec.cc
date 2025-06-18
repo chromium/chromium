@@ -25,9 +25,10 @@
  */
 
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
+
 #include "base/notreached.h"
 
-namespace WTF {
+namespace blink {
 
 TextCodec::~TextCodec() = default;
 
@@ -52,4 +53,4 @@ std::string TextCodec::GetUnencodableReplacement(UChar32 code_point,
   NOTREACHED();
 }
 
-}  // namespace WTF
+}  // namespace blink

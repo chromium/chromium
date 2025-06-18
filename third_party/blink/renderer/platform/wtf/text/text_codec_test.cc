@@ -32,7 +32,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -55,4 +55,4 @@ TEST(TextCodec, CSSEntityEncoding) {
 }
 
 }  // anonymous namespace
-}  // namespace WTF
+}  // namespace blink

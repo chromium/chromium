@@ -2959,7 +2959,7 @@ fuzzer_test("blink_storage_key_fuzzer") {
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
-# Fuzzer template for WTF::TextCodec.
+# Fuzzer template for blink::TextCodec.
 template("blink_text_codec_fuzzer") {
   forward_variables_from(invoker, "*")
   config(target_name + "_config") {

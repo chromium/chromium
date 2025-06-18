@@ -35,10 +35,8 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
-class TextEncoding;
-}  // namespace blink
 
-namespace WTF {
+class TextEncoding;
 
 // Specifies what will happen when a character is encountered that is
 // not encodable in the character set.
@@ -117,22 +115,12 @@ class WTF_EXPORT TextCodec {
 
 typedef void (*EncodingNameRegistrar)(const char* alias, const char* name);
 
-typedef std::unique_ptr<TextCodec> (*NewTextCodecFunction)(
-    const blink::TextEncoding&,
-    const void* additional_data);
+typedef std::unique_ptr<TextCodec> (
+    *NewTextCodecFunction)(const TextEncoding&, const void* additional_data);
 typedef void (*TextCodecRegistrar)(const char* name,
                                    NewTextCodecFunction,
                                    const void* additional_data);
 
-}  // namespace WTF
-
-// TODO(crbug.com/422768753): Remove these `using` directives.
-using WTF::TextCodec;
-namespace blink {
-using WTF::EncodingNameRegistrar;
-using WTF::FlushBehavior;
-using WTF::TextCodecRegistrar;
-using WTF::UnencodableHandling;
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_H_

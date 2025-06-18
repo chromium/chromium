@@ -19,12 +19,12 @@ class TextCodecReplacement final : public TextCodecUtf8 {
  public:
   TextCodecReplacement();
 
-  static void RegisterEncodingNames(WTF::EncodingNameRegistrar);
-  static void RegisterCodecs(WTF::TextCodecRegistrar);
+  static void RegisterEncodingNames(EncodingNameRegistrar);
+  static void RegisterCodecs(TextCodecRegistrar);
 
  private:
   String Decode(base::span<const uint8_t> data,
-                WTF::FlushBehavior,
+                FlushBehavior,
                 bool stop_on_error,
                 bool& saw_error) override;
 

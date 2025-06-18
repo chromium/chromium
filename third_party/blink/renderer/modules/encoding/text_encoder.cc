@@ -72,7 +72,7 @@ NotShared<DOMUint8Array> TextEncoder::encode(const String& input,
   // unencodable sequences (for instance, unpaired UTF-16 surrogates)
   // are present in the input.
   std::string result = WTF::VisitCharacters(input, [this](auto chars) {
-    return codec_->Encode(chars, WTF::kNoUnencodables);
+    return codec_->Encode(chars, UnencodableHandling::kNoUnencodables);
   });
   if (base::FeatureList::IsEnabled(kThrowExceptionWhenTextEncodeOOM)) {
     NotShared<DOMUint8Array> result_array(

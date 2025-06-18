@@ -32,22 +32,19 @@ namespace blink {
 
 class TextCodecLatin1 final : public TextCodec {
  public:
-  static void RegisterEncodingNames(WTF::EncodingNameRegistrar);
-  static void RegisterCodecs(WTF::TextCodecRegistrar);
+  static void RegisterEncodingNames(EncodingNameRegistrar);
+  static void RegisterCodecs(TextCodecRegistrar);
 
  private:
   String Decode(base::span<const uint8_t> data,
-                WTF::FlushBehavior,
+                FlushBehavior,
                 bool stop_on_error,
                 bool& saw_error) override;
-  std::string Encode(base::span<const UChar>,
-                     WTF::UnencodableHandling) override;
-  std::string Encode(base::span<const LChar>,
-                     WTF::UnencodableHandling) override;
+  std::string Encode(base::span<const UChar>, UnencodableHandling) override;
+  std::string Encode(base::span<const LChar>, UnencodableHandling) override;
 
   template <typename CharType>
-  std::string EncodeCommon(base::span<const CharType>,
-                           WTF::UnencodableHandling);
+  std::string EncodeCommon(base::span<const CharType>, UnencodableHandling);
 };
 
 }  // namespace blink

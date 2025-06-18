@@ -62,7 +62,7 @@ class TextEncoder final : public ScriptWrappable {
 
  private:
   TextEncoding encoding_;
-  std::unique_ptr<WTF::TextCodec> codec_;
+  std::unique_ptr<TextCodec> codec_;
 };
 
 }  // namespace blink

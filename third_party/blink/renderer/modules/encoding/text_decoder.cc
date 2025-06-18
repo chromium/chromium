@@ -112,8 +112,8 @@ String TextDecoder::Decode(base::span<const uint8_t> input,
 
   DCHECK(codec_);
   do_not_flush_ = options->stream();
-  WTF::FlushBehavior flush = do_not_flush_ ? WTF::FlushBehavior::kDoNotFlush
-                                           : WTF::FlushBehavior::kDataEOF;
+  FlushBehavior flush =
+      do_not_flush_ ? FlushBehavior::kDoNotFlush : FlushBehavior::kDataEOF;
 
   bool saw_error = false;
   String s = codec_->Decode(input, flush, fatal_, saw_error);

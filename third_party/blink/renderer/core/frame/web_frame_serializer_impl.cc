@@ -284,8 +284,8 @@ void WebFrameSerializerImpl::EncodeAndFlushBuffer(
   String content = data_buffer_.ToString();
   data_buffer_.Clear();
 
-  std::string encoded_content =
-      param->text_encoding.Encode(content, WTF::kEntitiesForUnencodables);
+  std::string encoded_content = param->text_encoding.Encode(
+      content, UnencodableHandling::kEntitiesForUnencodables);
 
   // Send result to the client.
   client_->DidSerializeDataForFrame(base::ToVector(encoded_content), status);

@@ -121,7 +121,7 @@ void EventSourceParser::ParseLine() {
 }
 
 String EventSourceParser::FromUTF8(base::span<const char> chars) {
-  return codec_->Decode(base::as_bytes(chars), WTF::FlushBehavior::kDataEOF);
+  return codec_->Decode(base::as_bytes(chars), FlushBehavior::kDataEOF);
 }
 
 void EventSourceParser::Trace(Visitor* visitor) const {

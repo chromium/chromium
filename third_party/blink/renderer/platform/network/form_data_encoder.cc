@@ -207,9 +207,10 @@ void FormDataEncoder::AddFilenameToMultiPartHeader(Vector<char>& buffer,
   // https://tools.ietf.org/html/rfc7578#section-4.2
   // https://tools.ietf.org/html/rfc5987#section-3.2
   Append(buffer, "; filename=\"");
-  AppendQuotedString(buffer,
-                     encoding.Encode(filename, WTF::kEntitiesForUnencodables),
-                     kDoNotNormalizeCRLF);
+  AppendQuotedString(
+      buffer,
+      encoding.Encode(filename, UnencodableHandling::kEntitiesForUnencodables),
+      kDoNotNormalizeCRLF);
   buffer.push_back('"');
 }
 

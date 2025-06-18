@@ -109,7 +109,7 @@ class KURLCharsetConverter final : public url::CharsetConverter {
   void ConvertFromUTF16(std::u16string_view input,
                         url::CanonOutput* output) override {
     std::string encoded = encoding_->Encode(
-        String(input), WTF::kURLEncodedEntitiesForUnencodables);
+        String(input), UnencodableHandling::kURLEncodedEntitiesForUnencodables);
     output->Append(encoded);
   }
 
@@ -784,8 +784,8 @@ String DecodeURLEscapeSequences(const StringView& string, DecodeURLMode mode) {
 }
 
 String EncodeWithURLEscapeSequences(const StringView& not_encoded_string) {
-  std::string utf8 =
-      Utf8Encoding().Encode(not_encoded_string, WTF::kNoUnencodables);
+  std::string utf8 = Utf8Encoding().Encode(
+      not_encoded_string, UnencodableHandling::kNoUnencodables);
 
   url::RawCanonOutputT<char> buffer;
   size_t input_length = utf8.length();

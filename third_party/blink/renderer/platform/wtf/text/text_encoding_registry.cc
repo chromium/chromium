@@ -58,9 +58,9 @@ namespace blink {
 const size_t kMaxEncodingNameLength = 63;
 
 struct TextCodecFactory {
-  WTF::NewTextCodecFunction function;
+  NewTextCodecFunction function;
   const void* additional_data;
-  explicit TextCodecFactory(WTF::NewTextCodecFunction f = nullptr,
+  explicit TextCodecFactory(NewTextCodecFunction f = nullptr,
                             const void* d = nullptr)
       : function(f), additional_data(d) {}
 };
@@ -146,7 +146,7 @@ static void AddToTextEncodingNameMap(const char* alias, const char* name) {
 }
 
 static void AddToTextCodecMap(const char* name,
-                              WTF::NewTextCodecFunction function,
+                              NewTextCodecFunction function,
                               const void* additional_data) {
   EncodingRegistryLock().AssertAcquired();
   g_text_codec_map->insert(AtomicString(name),

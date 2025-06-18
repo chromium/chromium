@@ -412,7 +412,7 @@ String TextResourceDecoder::Decode(base::span<const char> data,
     codec_ = NewTextCodec(encoding_);
 
   String result = codec_->Decode(
-      base::as_bytes(data_for_decode), WTF::FlushBehavior::kDoNotFlush,
+      base::as_bytes(data_for_decode), FlushBehavior::kDoNotFlush,
       options_.GetContentType() == TextResourceDecoderOptions::kXMLContent &&
           !options_.GetUseLenientXMLDecoding(),
       saw_error_);
@@ -440,7 +440,7 @@ String TextResourceDecoder::Flush() {
     codec_ = NewTextCodec(encoding_);
 
   String result = codec_->Decode(
-      base::as_byte_span(buffer_), WTF::FlushBehavior::kFetchEOF,
+      base::as_byte_span(buffer_), FlushBehavior::kFetchEOF,
       options_.GetContentType() == TextResourceDecoderOptions::kXMLContent &&
           !options_.GetUseLenientXMLDecoding(),
       saw_error_);

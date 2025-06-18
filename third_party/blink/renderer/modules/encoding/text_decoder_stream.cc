@@ -62,7 +62,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
           "Buffer size exceeds maximum heap object size.");
       return EmptyPromise();
     }
-    DecodeAndEnqueue(array_piece.ByteSpan(), WTF::FlushBehavior::kDoNotFlush,
+    DecodeAndEnqueue(array_piece.ByteSpan(), FlushBehavior::kDoNotFlush,
                      controller, exception_state);
     return ToResolvedUndefinedPromise(script_state_.Get());
   }
@@ -71,8 +71,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
   ScriptPromise<IDLUndefined> Flush(
       TransformStreamDefaultController* controller,
       ExceptionState& exception_state) override {
-    DecodeAndEnqueue({}, WTF::FlushBehavior::kDataEOF, controller,
-                     exception_state);
+    DecodeAndEnqueue({}, FlushBehavior::kDataEOF, controller, exception_state);
 
     return ToResolvedUndefinedPromise(script_state_.Get());
   }
@@ -88,7 +87,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
   // Implements the second part of "decode and enqueue a chunk" as well as the
   // "flush and enqueue" algorithm.
   void DecodeAndEnqueue(base::span<const uint8_t> data,
-                        WTF::FlushBehavior flush,
+                        FlushBehavior flush,
                         TransformStreamDefaultController* controller,
                         ExceptionState& exception_state) {
     const UChar kBOM = 0xFEFF;
@@ -127,7 +126,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
     return name == "UTF-8" || name == "UTF-16LE" || name == "UTF-16BE";
   }
 
-  std::unique_ptr<WTF::TextCodec> decoder_;
+  std::unique_ptr<TextCodec> decoder_;
   // There is no danger of ScriptState leaking across worlds because a
   // TextDecoderStream can only be accessed from the world that created it.
   Member<ScriptState> script_state_;

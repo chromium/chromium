@@ -14,7 +14,7 @@ TextCodecReplacement::TextCodecReplacement()
     : replacement_error_returned_(false) {}
 
 void TextCodecReplacement::RegisterEncodingNames(
-    WTF::EncodingNameRegistrar registrar) {
+    EncodingNameRegistrar registrar) {
   // Taken from the alias table at·https://encoding.spec.whatwg.org/
   registrar("replacement", "replacement");
   registrar("csiso2022kr", "replacement");
@@ -30,12 +30,12 @@ static std::unique_ptr<TextCodec> NewStreamingTextDecoderReplacement(
   return std::make_unique<TextCodecReplacement>();
 }
 
-void TextCodecReplacement::RegisterCodecs(WTF::TextCodecRegistrar registrar) {
+void TextCodecReplacement::RegisterCodecs(TextCodecRegistrar registrar) {
   registrar("replacement", NewStreamingTextDecoderReplacement, nullptr);
 }
 
 String TextCodecReplacement::Decode(base::span<const uint8_t> data,
-                                    WTF::FlushBehavior,
+                                    FlushBehavior,
                                     bool,
                                     bool& saw_error) {
   // https://encoding.spec.whatwg.org/#replacement-decoder

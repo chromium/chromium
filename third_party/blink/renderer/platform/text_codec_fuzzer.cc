@@ -14,17 +14,18 @@
 // so it must live in the latter directory. Once wtf/ moves into platform/wtf
 // this should move there as well.
 
-WTF::FlushBehavior kFlushBehavior[] = {WTF::FlushBehavior::kDoNotFlush,
-                                       WTF::FlushBehavior::kFetchEOF,
-                                       WTF::FlushBehavior::kDataEOF};
+constexpr blink::FlushBehavior kFlushBehavior[] = {
+    blink::FlushBehavior::kDoNotFlush, blink::FlushBehavior::kFetchEOF,
+    blink::FlushBehavior::kDataEOF};
 
-WTF::UnencodableHandling kUnencodableHandlingOptions[] = {
-    WTF::kEntitiesForUnencodables, WTF::kURLEncodedEntitiesForUnencodables,
-    WTF::kCSSEncodedEntitiesForUnencodables};
+constexpr blink::UnencodableHandling kUnencodableHandlingOptions[] = {
+    blink::UnencodableHandling::kEntitiesForUnencodables,
+    blink::UnencodableHandling::kURLEncodedEntitiesForUnencodables,
+    blink::UnencodableHandling::kCSSEncodedEntitiesForUnencodables};
 
 class TextCodecFuzzHarness {};
 
-// Fuzzer for WTF::TextCodec.
+// Fuzzer for blink::TextCodec.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static blink::BlinkFuzzerTestSupport test_support;
   blink::test::TaskEnvironment task_environment;
@@ -50,15 +51,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Initialize metadata using the fuzzed data.
   bool stop_on_error = fuzzed_data.ConsumeBool();
-  WTF::UnencodableHandling unencodable_handling =
+  blink::UnencodableHandling unencodable_handling =
       fuzzed_data.PickValueInArray(kUnencodableHandlingOptions);
-  WTF::FlushBehavior flush_behavior =
+  blink::FlushBehavior flush_behavior =
       fuzzed_data.PickValueInArray(kFlushBehavior);
 
   // Now, use the rest of the fuzzy data to stress test decoding and encoding.
   const std::string byte_string = fuzzed_data.ConsumeRemainingBytes();
   auto byte_span = base::as_byte_span(byte_string);
-  std::unique_ptr<TextCodec> codec = NewTextCodec(encoding);
+  std::unique_ptr<blink::TextCodec> codec = NewTextCodec(encoding);
 
   // Treat as bytes-off-the-wire.
   bool saw_error;
@@ -67,7 +68,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Treat as blink 8-bit string (latin1).
   if (size % sizeof(LChar) == 0) {
-    std::unique_ptr<TextCodec> lchar_codec = NewTextCodec(encoding);
+    std::unique_ptr<blink::TextCodec> lchar_codec = NewTextCodec(encoding);
     lchar_codec->Encode(byte_span, unencodable_handling);
   }
 
@@ -78,7 +79,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     auto uchar_span = UNSAFE_BUFFERS(
         base::span(reinterpret_cast<const UChar*>(byte_span.data()),
                    byte_span.size() / sizeof(UChar)));
-    std::unique_ptr<TextCodec> uchar_codec = NewTextCodec(encoding);
+    std::unique_ptr<blink::TextCodec> uchar_codec = NewTextCodec(encoding);
     uchar_codec->Encode(uchar_span, unencodable_handling);
   }
 

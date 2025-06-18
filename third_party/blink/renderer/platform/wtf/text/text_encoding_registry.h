@@ -32,17 +32,14 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
-class TextCodec;
-}
-
 namespace blink {
 
+class TextCodec;
 class TextEncoding;
 
 // Use TextResourceDecoder::decode to decode resources, since it handles BOMs.
 // Use TextEncoding::encode to encode, since it takes care of normalization.
-WTF_EXPORT std::unique_ptr<WTF::TextCodec> NewTextCodec(const TextEncoding&);
+WTF_EXPORT std::unique_ptr<TextCodec> NewTextCodec(const TextEncoding&);
 
 // Only TextEncoding should use the following functions directly.
 const char* AtomicCanonicalTextEncodingName(const char* alias);
