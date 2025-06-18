@@ -564,10 +564,15 @@ class FocusModeSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
   ~FocusModeSpokenFeedbackTest() override = default;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2,
+    FocusModeSpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo)));
+
 // Tests that when using `Search + Left/Right Arrow` key to navigate on the
 // focus panel, the user update the timer texfield and start a focus session,
 // which should also update the session duration for the controller.
-IN_PROC_BROWSER_TEST_F(FocusModeSpokenFeedbackTest,
+IN_PROC_BROWSER_TEST_P(FocusModeSpokenFeedbackTest,
                        AfterA11yFocusRingOnTimerTextfield) {
   chromevox_test_utils()->EnableChromeVox();
 

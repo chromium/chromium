@@ -22,8 +22,40 @@ namespace ash {
 
 using ::extensions::api::braille_display_private::StubBrailleController;
 
+// Spoken feedback tests in both a logged in browser window and guest mode.
+enum SpokenFeedbackTestVariant { kTestAsNormalUser, kTestAsGuestUser };
+
+// A class used to define the parameters of a spoken feedback test case.
+class SpokenFeedbackTestConfig {
+ public:
+  explicit SpokenFeedbackTestConfig(ManifestVersion manifest_version)
+      : manifest_version_(manifest_version) {}
+
+  SpokenFeedbackTestConfig(ManifestVersion manifest_version,
+                           SpokenFeedbackTestVariant variant)
+      : manifest_version_(manifest_version), variant_(variant) {}
+
+  SpokenFeedbackTestConfig(ManifestVersion manifest_version,
+                           SpokenFeedbackTestVariant variant,
+                           bool tablet_mode)
+      : manifest_version_(manifest_version),
+        variant_(variant),
+        tablet_mode_(tablet_mode) {}
+
+  ManifestVersion manifest_version() const { return manifest_version_; }
+  std::optional<SpokenFeedbackTestVariant> variant() const { return variant_; }
+  std::optional<bool> tablet_mode() const { return tablet_mode_; }
+
+ private:
+  ManifestVersion manifest_version_;
+  std::optional<SpokenFeedbackTestVariant> variant_;
+  std::optional<bool> tablet_mode_;
+};
+
 // Spoken feedback tests only in a logged in user's window.
-class LoggedInSpokenFeedbackTest : public AccessibilityFeatureBrowserTest {
+class LoggedInSpokenFeedbackTest
+    : public AccessibilityFeatureBrowserTest,
+      public ::testing::WithParamInterface<SpokenFeedbackTestConfig> {
  public:
   LoggedInSpokenFeedbackTest();
 
@@ -35,6 +67,7 @@ class LoggedInSpokenFeedbackTest : public AccessibilityFeatureBrowserTest {
 
   // AccessibilityFeatureBrowserTest:
   void SetUpInProcessBrowserTestFixture() override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 

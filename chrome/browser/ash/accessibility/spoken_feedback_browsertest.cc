@@ -125,6 +125,20 @@ void LoggedInSpokenFeedbackTest::SetUpInProcessBrowserTestFixture() {
   AccessibilityFeatureBrowserTest::SetUpInProcessBrowserTestFixture();
 }
 
+void LoggedInSpokenFeedbackTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  AccessibilityFeatureBrowserTest::SetUpCommandLine(command_line);
+
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+  if (GetParam().manifest_version() == ManifestVersion::kTwo) {
+    disabled_features.push_back(::features::kAccessibilityManifestV3ChromeVox);
+  } else if (GetParam().manifest_version() == ManifestVersion::kThree) {
+    enabled_features.push_back(::features::kAccessibilityManifestV3ChromeVox);
+  }
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+}
+
 void LoggedInSpokenFeedbackTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
   event_generator_ = std::make_unique<ui::test::EventGenerator>(
@@ -239,8 +253,15 @@ void LoggedInSpokenFeedbackTest::StablizeChromeVoxState() {
   sm()->ExpectSpeech("Click me");
 }
 
+// TODO(crbug.com/388867840): Add manifest v3 variant when migration is
+// complete.
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2,
+    LoggedInSpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo)));
+
 // Flaky test, crbug.com/1081563
-IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, DISABLED_AddBookmark) {
+IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest, DISABLED_AddBookmark) {
   chromevox_test_utils()->EnableChromeVox();
 
   // Open the bookmarks bar.
@@ -297,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, DISABLED_AddBookmark) {
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, ChromeVoxSpeaksIntro) {
+IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest, ChromeVoxSpeaksIntro) {
   chromevox_test_utils()->EnableChromeVox(/*check_for_intro=*/false);
   sm()->ExpectSpeech("ChromeVox spoken feedback is ready");
   sm()->Replay();
@@ -306,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, ChromeVoxSpeaksIntro) {
 
 // Test Learn Mode by pressing a few keys in Learn Mode. Only available while
 // logged in.
-IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeHardwareKeys) {
+IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest, LearnModeHardwareKeys) {
   chromevox_test_utils()->EnableChromeVox();
   sm()->Call([this]() {
     chromevox_test_utils()->ExecuteCommandHandlerCommand("showLearnModePage");
@@ -341,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeHardwareKeys) {
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
+IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
   chromevox_test_utils()->EnableChromeVox();
   sm()->Call([this]() {
     chromevox_test_utils()->ExecuteCommandHandlerCommand("showLearnModePage");
@@ -361,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest,
+IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest,
                        LearnModePressEscapeTwiceToExit) {
   chromevox_test_utils()->EnableChromeVox();
   sm()->Call([this]() {
@@ -393,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest,
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, OpenLogPage) {
+IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest, OpenLogPage) {
   // Enabling earcon logging should not crash ChromeVox at startup
   // (see b/318531241).
   AccessibilityManager::Get()->profile()->GetPrefs()->SetBoolean(
@@ -410,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, OpenLogPage) {
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest,
+IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest,
                        CheckChromeVoxPerformCommandMetric) {
   chromevox_test_utils()->EnableChromeVox(/*check_for_intro=*/false);
   base::HistogramTester histogram_tester;
@@ -462,7 +483,9 @@ class CaptionSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
  protected:
   ~CaptionSpokenFeedbackTest() override = default;
 
-  CaptionSpokenFeedbackTest() {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LoggedInSpokenFeedbackTest::SetUpCommandLine(command_line);
+
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kOnDeviceSpeechRecognition,
          ::features::kAccessibilityCaptionsOnBrailleDisplay},
@@ -504,7 +527,14 @@ class CaptionSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CaptionSpokenFeedbackTest, ToggleCaptions) {
+// TODO(crbug.com/388867840): Add manifest v3 variant when migration is
+// complete.
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2,
+    CaptionSpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo)));
+
+IN_PROC_BROWSER_TEST_P(CaptionSpokenFeedbackTest, ToggleCaptions) {
   PrefChangeRegistrar change_observer;
   chromevox_test_utils()->EnableChromeVox();
   sm()->Call([this, &change_observer]() {
@@ -530,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(CaptionSpokenFeedbackTest, ToggleCaptions) {
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionSpokenFeedbackTest, CaptionsNotToggled) {
+IN_PROC_BROWSER_TEST_P(CaptionSpokenFeedbackTest, CaptionsNotToggled) {
   PrefChangeRegistrar change_observer;
   chromevox_test_utils()->EnableChromeVox();
   sm()->Call([this, &change_observer]() {
@@ -546,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(CaptionSpokenFeedbackTest, CaptionsNotToggled) {
   sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionSpokenFeedbackTest, CaptionsChanged) {
+IN_PROC_BROWSER_TEST_P(CaptionSpokenFeedbackTest, CaptionsChanged) {
   std::string captions = "To be, or not to be";
   PrefChangeRegistrar change_observer;
   chromevox_test_utils()->EnableChromeVox();
@@ -603,9 +633,16 @@ class NotificationCenterSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
 
+// TODO(crbug.com/388867840): Add manifest v3 variant when migration is
+// complete.
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2,
+    NotificationCenterSpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo)));
+
 // Tests the spoken feedback text when using the notification center accelerator
 // to navigate to the notification center.
-IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest,
+IN_PROC_BROWSER_TEST_P(NotificationCenterSpokenFeedbackTest,
                        NavigateNotificationCenter) {
   chromevox_test_utils()->EnableChromeVox();
 
@@ -626,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest,
 
 // Tests that clicking the notification center tray does not crash when spoken
 // feedback is enabled.
-IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest, OpenBubble) {
+IN_PROC_BROWSER_TEST_P(NotificationCenterSpokenFeedbackTest, OpenBubble) {
   // Enable spoken feedback and add a notification to ensure the tray is
   // visible.
   chromevox_test_utils()->EnableChromeVox();
@@ -647,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest, OpenBubble) {
 // Tests that an incoming silent notification (i.e. a notification that goes
 // straight to the notification center without generating a popup) generates an
 // accessibility announcement.
-IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest,
+IN_PROC_BROWSER_TEST_P(NotificationCenterSpokenFeedbackTest,
                        SilentNotification) {
   // Enable spoken feedback.
   chromevox_test_utils()->EnableChromeVox();
@@ -680,21 +717,15 @@ IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest,
   sm()->Replay();
 }
 
-//
-// Spoken feedback tests in both a logged in browser window and guest mode.
-//
-
-enum SpokenFeedbackTestVariant { kTestAsNormalUser, kTestAsGuestUser };
-
-class SpokenFeedbackTest
-    : public LoggedInSpokenFeedbackTest,
-      public ::testing::WithParamInterface<SpokenFeedbackTestVariant> {
+class SpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
  protected:
   SpokenFeedbackTest() = default;
   virtual ~SpokenFeedbackTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (GetParam() == kTestAsGuestUser) {
+    LoggedInSpokenFeedbackTest::SetUpCommandLine(command_line);
+
+    if (GetParam().variant() == kTestAsGuestUser) {
       command_line->AppendSwitch(switches::kGuestSession);
       command_line->AppendSwitch(::switches::kIncognito);
       command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
@@ -704,10 +735,17 @@ class SpokenFeedbackTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
-                         SpokenFeedbackTest,
-                         ::testing::Values(kTestAsNormalUser,
-                                           kTestAsGuestUser));
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2NormalUser,
+    SpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsNormalUser)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2GuestUser,
+    SpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsGuestUser)));
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, EnableSpokenFeedback) {
   chromevox_test_utils()->EnableChromeVox();
@@ -1226,7 +1264,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
   sm()->ExpectSpeech("Battery");
 
   // Guest mode sign out button.
-  if (GetParam() == kTestAsGuestUser) {
+  if (GetParam().variant() == kTestAsGuestUser) {
     sm()->Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
     sm()->ExpectSpeech("Exit guest");
   }
@@ -2508,11 +2546,24 @@ class DeskTemplatesSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
       const DeskTemplatesSpokenFeedbackTest&) = delete;
   ~DeskTemplatesSpokenFeedbackTest() override = default;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LoggedInSpokenFeedbackTest::SetUpCommandLine(command_line);
+
+    scoped_feature_list_.InitWithFeatures({features::kDesksTemplates}, {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kDesksTemplates};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
+// TODO(crbug.com/388867840): Add manifest v3 variant when migration is
+// complete.
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2,
+    DeskTemplatesSpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo)));
+
+IN_PROC_BROWSER_TEST_P(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
   // TODO(http://b/350771229): This test tests clicking the "Save desk as
   // template" button that will not be shown if the Forest feature is enabled.
   // This test will be fixed before the button change is no longer hidden behind
@@ -2593,8 +2644,15 @@ class ShortcutsAppSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
   ~ShortcutsAppSpokenFeedbackTest() override = default;
 };
 
+// TODO(crbug.com/388867840): Add manifest v3 variant when migration is
+// complete.
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2,
+    ShortcutsAppSpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo)));
+
 // TODO(b/288602247): The test is flaky.
-IN_PROC_BROWSER_TEST_F(ShortcutsAppSpokenFeedbackTest,
+IN_PROC_BROWSER_TEST_P(ShortcutsAppSpokenFeedbackTest,
                        DISABLED_ShortcutCustomization) {
   chromevox_test_utils()->EnableChromeVox();
   sm()->Call(
@@ -2651,7 +2709,14 @@ class SpokenFeedbackWithCandidateWindowTest
   raw_ptr<ui::ime::CandidateWindowView> candidate_window_view_;
 };
 
-IN_PROC_BROWSER_TEST_F(SpokenFeedbackWithCandidateWindowTest,
+// TODO(crbug.com/388867840): Add manifest v3 variant when migration is
+// complete.
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2,
+    SpokenFeedbackWithCandidateWindowTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo)));
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackWithCandidateWindowTest,
                        SpeakSelectedItem) {
   chromevox_test_utils()->EnableChromeVox();
 
@@ -2702,9 +2767,9 @@ class SpokenFeedbackWithMagnifierTest : public SpokenFeedbackTest {
   SpokenFeedbackWithMagnifierTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    SpokenFeedbackTest::SetUpCommandLine(command_line);
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kAccessibilityMagnifierFollowsChromeVox);
-    SpokenFeedbackTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
@@ -2783,14 +2848,21 @@ class SpokenFeedbackWithMagnifierTest : public SpokenFeedbackTest {
   AutomationTestUtils* test_utils() { return test_utils_.get(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<AutomationTestUtils> test_utils_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
-                         SpokenFeedbackWithMagnifierTest,
-                         ::testing::Values(kTestAsNormalUser,
-                                           kTestAsGuestUser));
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2NormalUser,
+    SpokenFeedbackWithMagnifierTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsNormalUser)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2GuestUser,
+    SpokenFeedbackWithMagnifierTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsGuestUser)));
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackWithMagnifierTest,
                        FullscreenMagnifierButton) {

@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/spoken_feedback_browsertest.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
@@ -46,6 +47,9 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
+
+using SpokenFeedbackTestVariant = ash::SpokenFeedbackTestVariant;
+using SpokenFeedbackTestConfig = ::ash::SpokenFeedbackTestConfig;
 
 namespace ash {
 
@@ -177,12 +181,9 @@ void InitializeTestSearchProviders(
 
 }  // namespace
 
-enum SpokenFeedbackAppListTestVariant { kTestAsNormalUser, kTestAsGuestUser };
-
 class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
  public:
-  explicit SpokenFeedbackAppListBaseTest(
-      SpokenFeedbackAppListTestVariant variant)
+  explicit SpokenFeedbackAppListBaseTest(SpokenFeedbackTestVariant variant)
       : variant_(variant) {}
   ~SpokenFeedbackAppListBaseTest() override = default;
 
@@ -289,23 +290,28 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  const SpokenFeedbackAppListTestVariant variant_;
+  const SpokenFeedbackTestVariant variant_;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 };
 
-class SpokenFeedbackAppListTest
-    : public SpokenFeedbackAppListBaseTest,
-      public ::testing::WithParamInterface<SpokenFeedbackAppListTestVariant> {
+class SpokenFeedbackAppListTest : public SpokenFeedbackAppListBaseTest {
  public:
   SpokenFeedbackAppListTest()
-      : SpokenFeedbackAppListBaseTest(/*variant=*/GetParam()) {}
+      : SpokenFeedbackAppListBaseTest(GetParam().variant().value()) {}
   ~SpokenFeedbackAppListTest() override = default;
 };
 
-INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
-                         SpokenFeedbackAppListTest,
-                         ::testing::Values(kTestAsNormalUser,
-                                           kTestAsGuestUser));
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2NormalUser,
+    SpokenFeedbackAppListTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsNormalUser)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2GuestUser,
+    SpokenFeedbackAppListTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsGuestUser)));
 
 class NotificationSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
  protected:
@@ -318,19 +324,23 @@ class NotificationSpokenFeedbackAppListTest : public SpokenFeedbackAppListTest {
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
-                         NotificationSpokenFeedbackAppListTest,
-                         ::testing::Values(kTestAsNormalUser,
-                                           kTestAsGuestUser));
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2NormalUser,
+    NotificationSpokenFeedbackAppListTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsNormalUser)));
 
-class SpokenFeedbackAppListSearchTest
-    : public SpokenFeedbackAppListBaseTest,
-      public ::testing::WithParamInterface<
-          std::tuple<SpokenFeedbackAppListTestVariant, bool /*tablet_mode*/>> {
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2GuestUser,
+    NotificationSpokenFeedbackAppListTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsGuestUser)));
+
+class SpokenFeedbackAppListSearchTest : public SpokenFeedbackAppListBaseTest {
  public:
   SpokenFeedbackAppListSearchTest()
-      : SpokenFeedbackAppListBaseTest(/*variant=*/std::get<0>(GetParam())),
-        tablet_mode_(std::get<1>(GetParam())) {}
+      : SpokenFeedbackAppListBaseTest(GetParam().variant().value()),
+        tablet_mode_(GetParam().tablet_mode().value()) {}
   ~SpokenFeedbackAppListSearchTest() override = default;
 
   // SpokenFeedbackAppListTest:
@@ -394,12 +404,33 @@ class SpokenFeedbackAppListSearchTest
   raw_ptr<TestSearchProvider> image_provider_ = nullptr;
 };
 
-// Instantiate test by user variant and tablet mode state.
-INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUserInTabletAndClamshell,
-                         SpokenFeedbackAppListSearchTest,
-                         ::testing::Combine(::testing::Values(kTestAsNormalUser,
-                                                              kTestAsGuestUser),
-                                            ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2NormalUserTabletMode,
+    SpokenFeedbackAppListSearchTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsNormalUser,
+                                               /*tablet_mode=*/true)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2GuestUserTabletMode,
+    SpokenFeedbackAppListSearchTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsGuestUser,
+                                               /*tablet_mode=*/true)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2NormalUserDesktopMode,
+    SpokenFeedbackAppListSearchTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsNormalUser,
+                                               /*tablet_mode=*/false)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV2GuestUserDesktopMode,
+    SpokenFeedbackAppListSearchTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
+                                               kTestAsGuestUser,
+                                               /*tablet_mode=*/false)));
 
 // Checks that when an app list item with a notification badge is focused, an
 // announcement is made that the item requests your attention.
