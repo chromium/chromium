@@ -14,6 +14,7 @@ import {BridgeConstants} from './bridge_constants.js';
 import type {Command} from './command.js';
 import type {EarconId} from './earcon_id.js';
 import type {EventSourceType} from './event_source_type.js';
+import type {InternalKeyEvent} from './internal_key_event.js';
 import type {SerializableLog} from './log_types.js';
 import type {QueueMode, TtsSpeechProperties} from './tts_types.js';
 
@@ -34,6 +35,20 @@ interface ForcedAction {
 }
 
 export const BackgroundBridge = {
+  BackgroundKeyboardHandler: {
+    onKeyDown(evt: InternalKeyEvent): Promise<boolean> {
+      return BridgeHelper.sendMessage(
+          BridgeConstants.BackgroundKeyboardHandler.TARGET,
+          BridgeConstants.BackgroundKeyboardHandler.Action.ON_KEY_DOWN, evt);
+    },
+
+    onKeyUp(evt: InternalKeyEvent): Promise<boolean> {
+      return BridgeHelper.sendMessage(
+          BridgeConstants.BackgroundKeyboardHandler.TARGET,
+          BridgeConstants.BackgroundKeyboardHandler.Action.ON_KEY_UP, evt);
+    },
+  },
+
   Braille: {
     /**
      * Translate braille cells into text.

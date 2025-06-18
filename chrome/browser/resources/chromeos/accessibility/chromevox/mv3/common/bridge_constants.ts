@@ -21,6 +21,14 @@ export enum BridgeContext {
 }
 
 export const BridgeConstants = {
+  BackgroundKeyboardHandler: {
+    TARGET: 'BackgroundKeyboardHandler',
+    Action: {
+      ON_KEY_DOWN: 'onKeyDown',
+      ON_KEY_UP: 'onKeyUp',
+    },
+  },
+
   Braille: {
     TARGET: 'Braille',
     Action: {

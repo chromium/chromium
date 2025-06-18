@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {EarconEngine} from '../background/earcon_engine.js';
+import {BackgroundBridge} from '../common/background_bridge.js';
 import {InternalKeyEvent} from '../common/internal_key_event.js';
 import {LearnModeBridge} from '../common/learn_mode_bridge.js';
 import {OffscreenCommandType} from '../common/offscreen_command_type.js';
@@ -38,31 +39,28 @@ class OffscreenBackgroundKeyboardHandler {
    * Handles key down events using the offscreen DOM and forwards them to the
    * ChromeVox service worker.
    */
-  private onKeyDown_(evt: KeyboardEvent): void {
-    this.sendKeyEventToServiceWorker_(OffscreenCommandType.ON_KEY_DOWN, evt);
+  private async onKeyDown_(evt: KeyboardEvent): Promise<void> {
+    const internalEvt = new InternalKeyEvent(evt);
+    const stopPropagation =
+        await BackgroundBridge.BackgroundKeyboardHandler.onKeyDown(internalEvt);
+    if (stopPropagation) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
   }
 
   /**
    * Handles key up events using the offscreen DOM and forwards them to the
    * ChromeVox service worker.
    */
-  private onKeyUp_(evt: KeyboardEvent): void {
-    this.sendKeyEventToServiceWorker_(OffscreenCommandType.ON_KEY_UP, evt);
-  }
-
-
-  private sendKeyEventToServiceWorker_(
-      command: OffscreenCommandType, evt: KeyboardEvent) {
-    const extensionId = undefined;
-    const message = {command, internalEvent: new InternalKeyEvent(evt)};
-    const options = undefined;
-    const callback = (value: any) => {
-      if (value as boolean) {
-        evt.preventDefault();
-        evt.stopPropagation();
-      }
-    };
-    chrome.runtime.sendMessage(extensionId, message, options, callback);
+  private async onKeyUp_(evt: KeyboardEvent): Promise<void> {
+    const internalEvt = new InternalKeyEvent(evt);
+    const stopPropagation =
+        await BackgroundBridge.BackgroundKeyboardHandler.onKeyUp(internalEvt);
+    if (stopPropagation) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
   }
 }
 
