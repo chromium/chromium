@@ -20,6 +20,7 @@ ci/android-14-x64-rel
 ci/android-15-tablet-landscape-x64-rel
 ci/android-15-tablet-x64-rel
 ci/android-15-x64-rel
+ci/android-16-x64-rel
 ci/android-androidx-packager
 ci/android-binary-size-generator
 ci/android-cast-arm-dbg

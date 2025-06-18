@@ -375,8 +375,7 @@ try_.builder(
 
 try_.builder(
     name = "android-16-x64-rel",
-    # TODO(crbug.com/424231911): Enable when green.
-    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run Chromium tests on Android 16 emulator.",
     mirrors = [
         "ci/android-16-x64-rel",

@@ -4454,8 +4454,7 @@ ci.builder(
 
 ci.builder(
     name = "android-16-x64-rel",
-    # TODO(crbug.com/424231911): Enable when green.
-    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run chromium tests on Android 16 emulators.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -4563,9 +4562,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
-    gardener_rotations = args.ignore_default(None),
-    # TODO(crbug.com/424231911): Enable when green.
-    tree_closing = False,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x64|rel",
         short_name = "16",
