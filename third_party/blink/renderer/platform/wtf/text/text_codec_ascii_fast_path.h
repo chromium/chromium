@@ -24,14 +24,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_ASCII_FAST_PATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_ASCII_FAST_PATH_H_
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
 
 namespace blink {
@@ -41,11 +38,13 @@ struct UCharByteFiller;
 
 template <>
 struct UCharByteFiller<4> {
-  static void Copy(LChar* destination, const uint8_t* source) {
-    memcpy(destination, source, 4);
+  ALWAYS_INLINE static void Copy(base::span<LChar, 4> destination,
+                                 base::span<const uint8_t, 4> source) {
+    destination.copy_from_nonoverlapping(source);
   }
 
-  static void Copy(UChar* destination, const uint8_t* source) {
+  ALWAYS_INLINE static void Copy(base::span<UChar, 4> destination,
+                                 base::span<const uint8_t, 4> source) {
     destination[0] = source[0];
     destination[1] = source[1];
     destination[2] = source[2];
@@ -55,11 +54,13 @@ struct UCharByteFiller<4> {
 
 template <>
 struct UCharByteFiller<8> {
-  static void Copy(LChar* destination, const uint8_t* source) {
-    memcpy(destination, source, 8);
+  ALWAYS_INLINE static void Copy(base::span<LChar, 8> destination,
+                                 base::span<const uint8_t, 8> source) {
+    destination.copy_from_nonoverlapping(source);
   }
 
-  static void Copy(UChar* destination, const uint8_t* source) {
+  ALWAYS_INLINE static void Copy(base::span<UChar, 8> destination,
+                                 base::span<const uint8_t, 8> source) {
     destination[0] = source[0];
     destination[1] = source[1];
     destination[2] = source[2];
@@ -71,11 +72,17 @@ struct UCharByteFiller<8> {
   }
 };
 
-inline void CopyAsciiMachineWord(LChar* destination, const uint8_t* source) {
+// Source and destination should not overlap.
+ALWAYS_INLINE void CopyAsciiMachineWord(
+    base::span<LChar, sizeof(WTF::MachineWord)> destination,
+    base::span<const uint8_t, sizeof(WTF::MachineWord)> source) {
   UCharByteFiller<sizeof(WTF::MachineWord)>::Copy(destination, source);
 }
 
-inline void CopyAsciiMachineWord(UChar* destination, const uint8_t* source) {
+// Source and destination should not overlap.
+ALWAYS_INLINE void CopyAsciiMachineWord(
+    base::span<UChar, sizeof(WTF::MachineWord)> destination,
+    base::span<const uint8_t, sizeof(WTF::MachineWord)> source) {
   UCharByteFiller<sizeof(WTF::MachineWord)>::Copy(destination, source);
 }
 
