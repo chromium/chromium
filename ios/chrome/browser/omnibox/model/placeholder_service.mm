@@ -210,9 +210,8 @@ void PlaceholderService::PerformIconFetch(const TemplateURL* template_url,
     std::string empty_page_url = template_url->url_ref().ReplaceSearchTerms(
         TemplateURLRef::SearchTermsArgs(std::u16string()),
         template_url_service_->search_terms_data());
-    favicon_loader_->FaviconForPageUrl(
-        GURL(empty_page_url), icon_point_size, icon_point_size,
-        /*fallback_to_google_server=*/YES, favicon_completion);
+    favicon_loader_->FaviconForPageUrlOrHost(
+        GURL(empty_page_url), icon_point_size, favicon_completion);
   } else {
     // Download the favicon.
     favicon_loader_->FaviconForIconUrl(template_url->favicon_url(),
