@@ -48,6 +48,8 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   void SetIsInBackForwardCache(
       bool is_in_back_forward_cache,
       blink::mojom::PageRestoreParamsPtr page_restore_params);
+  // Returns true if the page is entering or has fully entered
+  // back/forward-cache.
   bool IsInBackForwardCache() const {
     return back_forward_cache_entered_ != BackForwardCacheEntered::kNo;
   }
@@ -77,6 +79,7 @@ class CONTENT_EXPORT PageLifecycleStateManager {
 
   void SetIsLeavingBackForwardCache(base::OnceClosure done_cb);
 
+  // Returns true if the page has fully entered back/foward-cache
   bool DidReceiveBackForwardCacheAck() const {
     return back_forward_cache_entered_ == BackForwardCacheEntered::kEntered;
   }
@@ -111,6 +114,11 @@ class CONTENT_EXPORT PageLifecycleStateManager {
     kEntering,
     kEntered,
   };
+  friend std::ostream& operator<<(std::ostream&,
+                                  const BackForwardCacheEntered&);
+
+  void SetBackForwardCacheEntered(BackForwardCacheEntered entered);
+
   BackForwardCacheEntered back_forward_cache_entered_ =
       BackForwardCacheEntered::kNo;
 
@@ -143,6 +151,10 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   // NOTE: This must be the last member.
   base::WeakPtrFactory<PageLifecycleStateManager> weak_ptr_factory_{this};
 };
+
+std::ostream& operator<<(
+    std::ostream& o,
+    const PageLifecycleStateManager::BackForwardCacheEntered& s);
 
 }  // namespace content
 
