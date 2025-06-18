@@ -128,6 +128,8 @@ function getPrefLogicalFn(prefName: string) {
 export class InternalsPage extends CustomElement {
   private browserProxy_: PrivacySandboxInternalsBrowserProxy =
       PrivacySandboxInternalsBrowserProxy.getInstance();
+  whenLoaded: Promise<void>|null = null;
+
   static get is() {
     return 'internals-page';
   }
@@ -137,7 +139,7 @@ export class InternalsPage extends CustomElement {
   }
 
   connectedCallback() {
-    this.load();
+    this.whenLoaded = this.load();
   }
 
   maybeAddPrefsToDom(parentElement: HTMLElement|null, prefNameList: string[]) {
@@ -171,13 +173,20 @@ export class InternalsPage extends CustomElement {
         this.shadowRoot!.querySelector<HTMLElement>('#tpcd-experiment-prefs'),
         [...tpcdExperimentPrefs.keys()]);
 
-
     const tabBox =
         this.shadowRoot!.querySelector<HTMLSelectElement>('#ps-page')!;
     const csPanels = new Map<string, HTMLElement>();
     const handler = this.browserProxy_.handler;
+    const shouldShowTpcdMetadataGrants =
+        this.browserProxy_.shouldShowTpcdMetadataGrants();
+
     for (let i = ContentSettingsType.MIN_VALUE;
          i <= ContentSettingsType.MAX_VALUE; i++) {
+      // Controls the visibility of the TPCD_METADATA_GRANTS tab.
+      if (ContentSettingsType[i] === 'TPCD_METADATA_GRANTS' &&
+          !shouldShowTpcdMetadataGrants) {
+        continue;
+      }
       const tab = document.createElement('div');
       tab.innerText = ContentSettingsType[i];
       tab.setAttribute('slot', 'tab');
@@ -199,6 +208,11 @@ export class InternalsPage extends CustomElement {
          i <= ContentSettingsType.MAX_VALUE; i++) {
       let mojoResponse;
       if (i === ContentSettingsType.TPCD_METADATA_GRANTS) {
+        // Prevents the TPCD Metadata Grants tab from loading and rendering if
+        // its flag is disabled.
+        if (!shouldShowTpcdMetadataGrants) {
+          continue;
+        }
         // This one is special and can't be read through readContentSettings().
         mojoResponse = await handler.getTpcdMetadataGrants();
       } else {

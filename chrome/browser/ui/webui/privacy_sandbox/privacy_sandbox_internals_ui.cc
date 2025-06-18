@@ -38,18 +38,18 @@ using ::private_state_tokens::mojom::PrivateStateTokensPageHandler;
 using ::related_website_sets::mojom::RelatedWebsiteSetsPageHandler;
 #endif
 
-bool PrivacySandboxInternalsUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(
-      privacy_sandbox::kPrivacySandboxInternalsDevUI);
-}
-
 PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIPrivacySandboxInternalsHost);
   webui::SetupWebUIDataSource(source, kPrivacySandboxInternalsResources,
                               IDR_PRIVACY_SANDBOX_INTERNALS_INDEX_HTML);
+
+  // Adds a flag boolean to UI source, mirroring kPrivacySandboxInternalsDevUI
+  // flag.
+  source->AddBoolean("isPrivacySandboxInternalsDevUIEnabled",
+                     base::FeatureList::IsEnabled(
+                         privacy_sandbox::kPrivacySandboxInternalsDevUI));
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsDevUI)) {

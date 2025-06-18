@@ -30,9 +30,6 @@ class PrivacySandboxInternalsUIConfig
   PrivacySandboxInternalsUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
                            chrome::kChromeUIPrivacySandboxInternalsHost) {}
-
-  // content::WebUIConfig:
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // MojoWebUIController for Privacy Sandbox Internals DevUI

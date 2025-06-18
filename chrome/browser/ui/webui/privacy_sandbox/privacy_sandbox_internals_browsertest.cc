@@ -37,27 +37,4 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsTest, PageLoadsWhenFeatureOn) {
   EXPECT_FALSE(web_contents->IsCrashed());
   EXPECT_THAT(web_contents->GetTitle(), Eq(u"Privacy Sandbox Internals"));
 }
-
-class PrivacySandboxInternalsDisabledTest : public InProcessBrowserTest {
- public:
-  PrivacySandboxInternalsDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        privacy_sandbox::kPrivacySandboxInternalsDevUI);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsDisabledTest,
-                       PageDoesNotLoadWhenFeatureIsOff) {
-  GURL kUrl(content::GetWebUIURL(chrome::kChromeUIPrivacySandboxInternalsHost));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  EXPECT_THAT(web_contents->GetLastCommittedURL(), Eq(kUrl));
-  EXPECT_FALSE(web_contents->IsCrashed());
-  EXPECT_THAT(web_contents->GetTitle(), Ne(u"Privacy Sandbox Internals"));
-}
 }  // namespace

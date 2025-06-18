@@ -12,8 +12,24 @@ import type {InternalsPage} from 'chrome://privacy-sandbox-internals/internals_p
 import type {PrefDisplayElement} from 'chrome://privacy-sandbox-internals/pref_display.js';
 import type {ValueDisplayElement} from 'chrome://privacy-sandbox-internals/value_display.js';
 import {timestampLogicalFn} from 'chrome://privacy-sandbox-internals/value_display.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DictionaryValue, ListValue, Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+function waitForElement(
+    root: ShadowRoot, selector: string): Promise<HTMLElement> {
+  return new Promise(resolve => {
+    const check = () => {
+      const element = root.querySelector<HTMLElement>(selector);
+      if (element) {
+        resolve(element);
+      } else {
+        requestAnimationFrame(check);
+      }
+    };
+    check();
+  });
+}
 
 // Test the <internals-page> element with the real PageHandler.
 suite('InternalsPageTest', function() {
@@ -25,43 +41,87 @@ suite('InternalsPageTest', function() {
     document.body.appendChild(internalsPage);
   });
 
-  const waitForElement = (selector: string): Promise<HTMLElement> => {
-    return new Promise(resolve => {
-      const check = () => {
-        const element =
-            internalsPage.shadowRoot!.querySelector<HTMLElement>(selector);
-        if (element) {
-          resolve(element);
-        } else {
-          requestAnimationFrame(check);
-        }
-      };
-      check();
-    });
-  };
-
   test('rendersAdvertisingPrefs', async () => {
-    const firstPrefElement =
-        await waitForElement('#advertising-prefs > pref-display');
+    const firstPrefElement = await waitForElement(
+        internalsPage.shadowRoot!, '#advertising-prefs > pref-display');
     assertTrue(
         !!firstPrefElement,
         'A <pref-display> element should be displayed for Advertising Prefs.');
   });
 
   test('rendersTrackingProtectionPrefs', async () => {
-    const firstPrefElement =
-        await waitForElement('#tracking-protection-prefs > pref-display');
+    const firstPrefElement = await waitForElement(
+        internalsPage.shadowRoot!, '#tracking-protection-prefs > pref-display');
     assertTrue(
         !!firstPrefElement,
         'A <pref-display> element should be displayed for Tracking Protection Prefs.');
   });
 
   test('rendersTpcdExperimentPrefs', async () => {
-    const firstPrefElement =
-        await waitForElement('#tpcd-experiment-prefs > pref-display');
+    const firstPrefElement = await waitForElement(
+        internalsPage.shadowRoot!, '#tpcd-experiment-prefs > pref-display');
     assertTrue(
         !!firstPrefElement,
         'A <pref-display> element should be displayed for TPCD Experiment Prefs.');
+  });
+});
+
+// Tests the <internals-page> element's display of the TPCD tab based on feature
+// flag status.
+suite('PSInternalsPageTpcdTabLoadingTest', function() {
+  let internalsPage: InternalsPage;
+
+  function setShouldShowTpcdMetadataGrants(isEnabled: boolean) {
+    loadTimeData.overrideValues({
+      isPrivacySandboxInternalsDevUIEnabled: isEnabled,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    internalsPage = document.createElement('internals-page');
+    document.body.appendChild(internalsPage);
+  }
+
+  async function findTpcdTab() {
+    const tabBox = await waitForElement(internalsPage.shadowRoot!, '#ps-page');
+    if (!tabBox) {
+      return false;
+    }
+
+    const tabs = tabBox.querySelectorAll<HTMLElement>('div[slot="tab"]');
+    const foundTab = Array.from(tabs).find(
+        (tab: HTMLElement) =>
+            tab.textContent?.trim() === 'TPCD_METADATA_GRANTS');
+
+    return foundTab;
+  }
+
+  test('NoTpcdPanelIfDisabled', async () => {
+    setShouldShowTpcdMetadataGrants(false);
+    await internalsPage.whenLoaded;
+    const anotherPanel = await waitForElement(
+        internalsPage.shadowRoot!, 'div[slot="panel"][title="COOKIES"]');
+    assertTrue(
+        !!anotherPanel,
+        'Panels that are not TPCD Metadata Grants should render normally.');
+    await new Promise(resolve => setTimeout(resolve, 0));
+    const tpcdPanel = internalsPage.shadowRoot!.querySelector(
+        'div[slot="panel"][title="TPCD_METADATA_GRANTS"]');
+    assertNull(
+        tpcdPanel,
+        'The panel for TPCD Metadata Grants should not exist when the flag is disabled.');
+  });
+
+  test('hidesTpcdMetadataGrantsTab', async () => {
+    setShouldShowTpcdMetadataGrants(false);
+    const tpcdTab = await findTpcdTab();
+    assertFalse(
+        !!tpcdTab, 'The TPCD tab should not exist when its flag is disabled.');
+  });
+
+  test('rendersTpcdMetadataGrantsTab', async () => {
+    setShouldShowTpcdMetadataGrants(true);
+    const tpcdTab = await findTpcdTab();
+    assertTrue(
+        !!tpcdTab, 'The TPCD tab should exist when its flag is enabled.');
   });
 });
 

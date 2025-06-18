@@ -1229,12 +1229,9 @@ void PopulateChromeWebUIFrameBinders(
   }
 #endif
 
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxInternalsDevUI)) {
-    RegisterWebUIControllerInterfaceBinder<
-        privacy_sandbox_internals::mojom::PageHandler,
-        privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      privacy_sandbox_internals::mojom::PageHandler,
+      privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsDevUI)) {
