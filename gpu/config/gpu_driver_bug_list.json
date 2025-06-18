@@ -3567,6 +3567,26 @@
       "features": [
         "disable_h264_accelerator_sw_brc"
       ]
+    },
+    {
+      "id": 450,
+      "cr_bugs": [425487302],
+      "description": "Video decoded into array texture may show artifacts on some Intel GPUs.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_series": [
+        "meteorlake",
+        "arrowlake"
+      ],
+      "features": [
+        "disable_decode_into_array_texture"
+      ],
+      "driver_version": {
+        "op": ">",
+        "value": "32.0.101.6078"
+      }
     }
   ]
 }
