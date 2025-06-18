@@ -13,8 +13,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import time
-
 import pytest
 from test_helpers import execute_command
 
@@ -69,7 +67,6 @@ async def uninstall(websocket, extension_id):
                          indirect=True)
 async def test_extensions_invalid_path(websocket, test_headless_mode):
     if test_headless_mode == "old":
-        time.sleep(0.1)
         pytest.xfail("Old headless mode does not support extensions")
         return
     with pytest.raises(Exception,
@@ -91,7 +88,6 @@ async def test_extensions_invalid_path(websocket, test_headless_mode):
 async def test_extensions_can_install(websocket, unpacked_extension_location,
                                       test_headless_mode):
     if test_headless_mode == "old":
-        time.sleep(0.1)
         pytest.xfail("Old headless mode does not support extensions")
         return
     path = unpacked_extension_location(SIMPLE_EXTENSION_FILES)
@@ -110,7 +106,6 @@ async def test_extensions_cannot_install(websocket,
                                          unpacked_extension_location,
                                          test_headless_mode):
     if test_headless_mode == "old":
-        time.sleep(0.1)
         pytest.xfail("Old headless mode does not support extensions")
         return
     path = unpacked_extension_location(SIMPLE_EXTENSION_FILES)
@@ -133,7 +128,6 @@ async def test_extensions_cannot_install(websocket,
 async def test_extensions_can_uninstall(websocket, unpacked_extension_location,
                                         test_headless_mode):
     if test_headless_mode == "old":
-        time.sleep(0.1)
         pytest.xfail("Old headless mode does not support extensions")
         return
     path = unpacked_extension_location(SIMPLE_EXTENSION_FILES)
@@ -152,7 +146,6 @@ async def test_extensions_can_uninstall(websocket, unpacked_extension_location,
                          indirect=True)
 async def test_extensions_no_such_exension(websocket, test_headless_mode):
     if test_headless_mode == "old":
-        time.sleep(0.1)
         pytest.xfail("Old headless mode does not support extensions")
         return
     with pytest.raises(Exception,
