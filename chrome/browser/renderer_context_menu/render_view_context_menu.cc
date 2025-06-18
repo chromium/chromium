@@ -4803,11 +4803,20 @@ void RenderViewContextMenu::OpenLinkInSplitView() {
     }
   } else {  // Create new split tab
     const int active_index = tab_strip_model->active_index();
+    // AddTabAt always adds an unpinned tab so if adding to an index within the
+    // pinned tabs, it will add to the first unpinned index instead.
+    // Additionally, it does not return a tab pointer or index, so we have to
+    // insert at the end of the tab strip, since it is the only place we can
+    // insert a tab and be guaranteed the final destination index is the same as
+    // the provided index.
+    const int new_tab_index = tab_strip_model->count();
     tab_strip_model->delegate()->AddTabAt(
-        params_.link_url, active_index + 1, true,
+        params_.link_url, new_tab_index, false,
         tab_strip_model->GetTabGroupForTab(active_index));
-    tab_strip_model->AddToNewSplit({active_index},
+    tabs::TabInterface* new_tab = tab_strip_model->GetTabAtIndex(new_tab_index);
+    tab_strip_model->AddToNewSplit({new_tab_index},
                                    split_tabs::SplitTabVisualData());
+    tab_strip_model->ActivateTabAt(tab_strip_model->GetIndexOfTab(new_tab));
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

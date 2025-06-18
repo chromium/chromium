@@ -3568,6 +3568,31 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenLinkInNewSplitTab) {
   EXPECT_TRUE(tab_strip_model->GetTabAtIndex(0)->IsSplit());
 }
 
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenLinkInNewPinnedSplitTab) {
+  const GURL test_url("http://www.example.com/");
+  const GURL wrong_url("http://www.example.com/wrong");
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeNone(test_url, test_url);
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW));
+
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  tab_strip_model->SetTabPinned(0, true);
+  tab_strip_model->delegate()->AddTabAt(wrong_url, 1, false, std::nullopt);
+  tab_strip_model->SetTabPinned(1, true);
+  tab_strip_model->delegate()->AddTabAt(wrong_url, 2, false, std::nullopt);
+  tab_strip_model->SetTabPinned(2, true);
+  ASSERT_EQ(tab_strip_model->count(), 3);
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, 0);
+  ASSERT_EQ(tab_strip_model->count(), 4);
+  EXPECT_EQ(test_url,
+            tab_strip_model->GetTabAtIndex(1)->GetContents()->GetURL());
+  EXPECT_EQ(tab_strip_model->active_index(), 1);
+  EXPECT_TRUE(tab_strip_model->GetActiveTab()->IsSplit());
+  EXPECT_EQ(tab_strip_model->GetActiveTab()->GetSplit(),
+            tab_strip_model->GetTabAtIndex(0)->GetSplit());
+}
+
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenLinkInExistingSplitTab) {
   const GURL test_url("http://www.example.com/");
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
