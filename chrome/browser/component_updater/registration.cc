@@ -40,6 +40,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #include "components/component_updater/installer_policies/history_search_strings_component_installer.h"
@@ -95,10 +96,10 @@
 #endif  // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "components/component_updater/installer_policies/amount_extraction_heuristic_regexes_component_installer.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
@@ -256,6 +257,13 @@ void RegisterComponentsForUpdate() {
   RegisterAmountExtractionHeuristicRegexesComponent(cus);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableAmountExtractionTesting)) {
+    RegisterAmountExtractionHeuristicRegexesComponent(cus);
+  }
+#endif  // BUIDLFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (features::IsWasmTtsComponentUpdaterEnabled()) {
