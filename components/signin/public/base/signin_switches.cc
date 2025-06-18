@@ -107,6 +107,13 @@ const char kForceFreDefaultBrowserStep[] = "force-fre-default-browser-step";
 // expiration of credentials during testing.
 const char kClearTokenService[] = "clear-token-service";
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_FEATURE(kWebSigninLeadsToImplicitlySignedInState,
+             "WebSigninLeadsToImplicitlySignedInState",
+             // THIS IS A TEST-ONLY FLAG AND SHOULD NEVER BE ENABLED.
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 // Enable experimental binding session credentials to the device.
 BASE_FEATURE(kEnableBoundSessionCredentials,

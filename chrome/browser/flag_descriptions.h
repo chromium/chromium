@@ -2625,6 +2625,11 @@ extern const char kWebrtcHwEncodingDescription[];
 extern const char kWebrtcUseMinMaxVEADimensionsName[];
 extern const char kWebrtcUseMinMaxVEADimensionsDescription[];
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+extern const char kWebSigninLeadsToImplicitlySignedInStateName[];
+extern const char kWebSigninLeadsToImplicitlySignedInStateDescription[];
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 extern const char kWebTransportDeveloperModeName[];
 extern const char kWebTransportDeveloperModeDescription[];
 

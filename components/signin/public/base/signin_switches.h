@@ -65,6 +65,12 @@ BASE_DECLARE_FEATURE(kEnableHistorySyncOptinFromTabHelper);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kClearTokenService[];
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// If enabled, web sign-in will implicitly sign the user in.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kWebSigninLeadsToImplicitlySignedInState);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableBoundSessionCredentials);

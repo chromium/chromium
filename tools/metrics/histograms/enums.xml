@@ -8732,6 +8732,8 @@ from previous Chrome versions.
       label="LensSearchSidePanelDefaultWidthChange:enabled"/>
   <int value="-1953145846" label="TargetEmbeddingLookalikes:disabled"/>
   <int value="-1953121360" label="EphemeralTab:disabled"/>
+  <int value="-1952346069"
+      label="WebSigninLeadsToImplicitlySignedInState:enabled"/>
   <int value="-1951046208" label="SidePanelPrototype:disabled"/>
   <int value="-1950469963" label="SeparatePointingStickSettings:enabled"/>
   <int value="-1949653354"
@@ -16231,6 +16233,8 @@ from previous Chrome versions.
   <int value="849315389"
       label="EnablePasswordsAccountStorageForNonSyncingUsers:disabled"/>
   <int value="849980462" label="RemoveNtpFakebox:disabled"/>
+  <int value="850686989"
+      label="WebSigninLeadsToImplicitlySignedInState:disabled"/>
   <int value="850779988" label="allow-popups-during-page-unload"/>
   <int value="851085848" label="enable-settings-window"/>
   <int value="851114149" label="SystemTransliterationPhysicalTyping:enabled"/>

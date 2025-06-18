@@ -4537,6 +4537,13 @@ const char kWebrtcUseMinMaxVEADimensionsDescription[] =
     "When enabled, WebRTC will only use the Video Encode Accelerator for "
     "video resolutions inside those published as supported.";
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+const char kWebSigninLeadsToImplicitlySignedInStateName[] =
+    "Web Signin leads To implicitly signed-in state";
+const char kWebSigninLeadsToImplicitlySignedInStateDescription[] =
+    "When enabled, web sign-in will implicitly sign the user in.";
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 const char kWebTransportDeveloperModeName[] = "WebTransport Developer Mode";
 const char kWebTransportDeveloperModeDescription[] =
     "When enabled, removes the requirement that all certificates used for "

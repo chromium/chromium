@@ -1533,3 +1533,106 @@ TEST_F(PrimaryAccountManagerTest,
         SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
   }
 }
+
+TEST_F(PrimaryAccountManagerTest,
+       ExplicitSigninPrefsClearedWhenImplicitlySigningIn) {
+  base::test::ScopedFeatureList feature;
+  feature.InitWithFeatures(
+      /*enabled_features=*/
+      {
+          switches::kEnablePreferencesAccountStorage,
+          switches::kEnableExtensionsExplicitBrowserSignin,
+          switches::kSyncEnableBookmarksInTransportMode,
+      },
+      /*disabled_features=*/{});
+  GaiaId gaia_id("account_id");
+  // Set prefs set during an explicit signin.
+  prefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+  prefs()->SetBoolean(prefs::kPrefsThemesSearchEnginesAccountStorageEnabled,
+                      true);
+  SigninPrefs(*prefs()).SetExtensionsExplicitBrowserSignin(gaia_id, true);
+  SigninPrefs(*prefs()).SetBookmarksExplicitBrowserSignin(gaia_id, true);
+
+  CreatePrimaryAccountManager();
+  CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
+
+  // Simulate an implicit signin.
+  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
+                                  signin::ConsentLevel::kSignin,
+                                  signin_metrics::AccessPoint::kWebSignin);
+
+  // The explicit signin pref should be cleared.
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Prefs, bookmarks and extensions explicit signin prefs should be cleared.
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
+  EXPECT_FALSE(
+      SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
+  EXPECT_FALSE(
+      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(
+    PrimaryAccountManagerTest,
+    ExplicitSigninPrefsNotSetFromChromeSigninInterceptBubbleIfTestFlagEnabled) {
+  base::test::ScopedFeatureList feature{
+      switches::kWebSigninLeadsToImplicitlySignedInState};
+  GaiaId gaia_id("account_id");
+
+  CreatePrimaryAccountManager();
+  CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
+
+  ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Simulate a signin through the Chrome Signin Intercept bubble.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
+
+  // The explicit signin pref should not be set.
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Prefs, bookmarks and extensions opt-in prefs should not be set.
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
+  EXPECT_FALSE(
+      SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
+  EXPECT_FALSE(
+      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(PrimaryAccountManagerTest,
+       ExplicitSigninPrefsNotSetUponSigninChoiceRememberedIfTestFlagEnabled) {
+  base::test::ScopedFeatureList feature{
+      switches::kWebSigninLeadsToImplicitlySignedInState};
+  GaiaId gaia_id("account_id");
+
+  CreatePrimaryAccountManager();
+  CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
+
+  ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Simulate a signin with the Chrome Signin Intercept bubble user choice
+  // remembered access point.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::kSigninChoiceRemembered);
+
+  // The explicit signin pref should not be set.
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Prefs, bookmarks and extensions opt-in prefs should not be set.
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
+  EXPECT_FALSE(
+      SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
+  EXPECT_FALSE(
+      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

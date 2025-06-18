@@ -751,55 +751,73 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
       CHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
       signin_metrics::AccessPoint access_point =
           event_details.GetSetPrimaryAccountAccessPoint().value();
+      GaiaId current_gaia_id =
+          event_details.GetCurrentState().primary_account.gaia;
 
-      if (access_point == signin_metrics::AccessPoint::kUnknown ||
-          access_point == signin_metrics::AccessPoint::kWebSignin) {
+      bool is_implicit_signin =
+          access_point == signin_metrics::AccessPoint::kUnknown ||
+          access_point == signin_metrics::AccessPoint::kWebSignin;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      if (base::FeatureList::IsEnabled(
+              switches::kWebSigninLeadsToImplicitlySignedInState)) {
+        // To allow easier testing, consider the following access points as
+        // implicit sign-in.
+        is_implicit_signin =
+            is_implicit_signin ||
+            access_point ==
+                signin_metrics::AccessPoint::kChromeSigninInterceptBubble ||
+            access_point ==
+                signin_metrics::AccessPoint::kSigninChoiceRemembered;
+      }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+      if (is_implicit_signin) {
         scoped_pref_commit.ClearPref(
             kExplicitBrowserSigninWithoutFeatureEnabled);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
         scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
 #endif
-      } else {
-        // All others access points are explicit sign ins except the Web
-        // Signin event.
+        // Reset explicit sign-in prefs for the relevant data types.
         scoped_pref_commit.SetBoolean(
-            kExplicitBrowserSigninWithoutFeatureEnabled, true);
+            prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false);
+        SigninPrefs(*client_->GetPrefs())
+            .SetExtensionsExplicitBrowserSignin(current_gaia_id, false);
+        SigninPrefs(*client_->GetPrefs())
+            .SetBookmarksExplicitBrowserSignin(current_gaia_id, false);
+        break;
+      }
+      // All others access points are explicit sign ins except the Web
+      // Signin event.
+      scoped_pref_commit.SetBoolean(kExplicitBrowserSigninWithoutFeatureEnabled,
+                                    true);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-        scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
+      scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
 #endif
-        if (base::FeatureList::IsEnabled(
-                switches::kEnablePreferencesAccountStorage)) {
-          scoped_pref_commit.SetBoolean(
-              prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, true);
-        }
-        if (access_point ==
-                signin_metrics::AccessPoint::kExtensionInstallBubble &&
-            switches::IsExtensionsExplicitBrowserSigninEnabled()) {
-          // Record an explicit signin for extensions for this account only.
-          auto current_gaia_id =
-              event_details.GetCurrentState().primary_account.gaia;
+      if (base::FeatureList::IsEnabled(
+              switches::kEnablePreferencesAccountStorage)) {
+        scoped_pref_commit.SetBoolean(
+            prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, true);
+      }
+      if (access_point ==
+              signin_metrics::AccessPoint::kExtensionInstallBubble &&
+          switches::IsExtensionsExplicitBrowserSigninEnabled()) {
+        // Record an opt in for the extensions explicit signin feature and use
+        // the existing pref to determine if it's a new or existing opt in.
+        bool is_new_opt_in =
+            !SigninPrefs(*client_->GetPrefs())
+                 .GetExtensionsExplicitBrowserSignin(current_gaia_id);
+        base::UmaHistogramBoolean(
+            "Signin.Extensions.ExplicitSigninFromExtensionInstallBubble",
+            is_new_opt_in);
 
-          // Record an opt in for the extensions explicit signin feature and use
-          // the existing pref to determine if it's a new or existing opt in.
-          bool is_new_opt_in =
-              !SigninPrefs(*client_->GetPrefs())
-                   .GetExtensionsExplicitBrowserSignin(current_gaia_id);
-          base::UmaHistogramBoolean(
-              "Signin.Extensions.ExplicitSigninFromExtensionInstallBubble",
-              is_new_opt_in);
-
-          SigninPrefs(*client_->GetPrefs())
-              .SetExtensionsExplicitBrowserSignin(current_gaia_id, true);
-        }
-        if (access_point == signin_metrics::AccessPoint::kBookmarkBubble &&
-            base::FeatureList::IsEnabled(
-                switches::kSyncEnableBookmarksInTransportMode)) {
-          // Record an explicit signin for bookmarks for this account only.
-          auto current_gaia_id =
-              event_details.GetCurrentState().primary_account.gaia;
-          SigninPrefs(*client_->GetPrefs())
-              .SetBookmarksExplicitBrowserSignin(current_gaia_id, true);
-        }
+        SigninPrefs(*client_->GetPrefs())
+            .SetExtensionsExplicitBrowserSignin(current_gaia_id, true);
+      }
+      if (access_point == signin_metrics::AccessPoint::kBookmarkBubble &&
+          base::FeatureList::IsEnabled(
+              switches::kSyncEnableBookmarksInTransportMode)) {
+        // Record an explicit signin for bookmarks for this account only.
+        SigninPrefs(*client_->GetPrefs())
+            .SetBookmarksExplicitBrowserSignin(current_gaia_id, true);
       }
   }
 
