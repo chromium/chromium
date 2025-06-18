@@ -27,7 +27,7 @@ namespace blink {
 // which embeds the document.
 //
 // See
-// https://github.com/w3c/webappsec-permissions-policy/blob/master/document-policy-explainer.md
+// https://github.com/WICG/document-policy/blob/main/document-policy-explainer.md
 //
 // Key concepts:
 //
