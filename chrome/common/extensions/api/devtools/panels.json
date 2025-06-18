@@ -120,7 +120,7 @@
               {
                 "name": "action",
                 "type": "string",
-                "description": "Type of search action being performed."
+                "description": "Type of search action being performed. One of  'cancelSearch', 'performSearch', 'nextSearchResult', or 'previousSearchResult'."
               },
               {
                 "name": "queryString",
