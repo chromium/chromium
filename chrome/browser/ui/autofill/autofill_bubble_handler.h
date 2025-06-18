@@ -14,15 +14,12 @@ namespace content {
 class WebContents;
 }
 
-namespace autofill_ai {
-class SaveOrUpdateAutofillAiDataController;
-}
-
 namespace autofill {
 class AutofillProfile;
 class AutofillBubbleBase;
 class OfferNotificationBubbleController;
 class SaveAddressBubbleController;
+class SaveOrUpdateAutofillAiDataController;
 class UpdateAddressBubbleController;
 class SaveCardBubbleController;
 class IbanBubbleController;
@@ -64,7 +61,7 @@ class AutofillBubbleHandler {
 
   virtual AutofillBubbleBase* ShowSaveAutofillAiDataBubble(
       content::WebContents* web_contents,
-      autofill_ai::SaveOrUpdateAutofillAiDataController* controller) = 0;
+      SaveOrUpdateAutofillAiDataController* controller) = 0;
 
   // Opens a save address bubble. The bubble's lifecycle is controlled by its
   // widget, and the controller must handle the widget closing to invalidate

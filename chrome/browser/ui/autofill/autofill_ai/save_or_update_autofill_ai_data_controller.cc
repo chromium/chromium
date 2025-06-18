@@ -6,7 +6,7 @@
 
 #include <string>
 
-namespace autofill_ai {
+namespace autofill {
 
 SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails::
     EntityAttributeUpdateDetails(std::u16string attribute_name,
@@ -41,4 +41,4 @@ SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails::operator=(
 SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails::
     ~EntityAttributeUpdateDetails() = default;
 
-}  // namespace autofill_ai
+}  // namespace autofill

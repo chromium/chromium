@@ -24,22 +24,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill_ai {
+namespace autofill {
 namespace {
 
-using ::autofill::AttributeInstance;
-using ::autofill::AttributeType;
-using ::autofill::AttributeTypeName;
-using ::autofill::AutofillField;
-using ::autofill::EntityInstance;
-using ::autofill::EntityType;
-using ::autofill::FieldType;
-using ::autofill::FormControlType;
 using ::testing::ElementsAre;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::UnorderedElementsAre;
-using enum autofill::AttributeTypeName;
+using enum AttributeTypeName;
 
 std::vector<std::string> GetMonths() {
   static const std::vector<std::string> kMonths = {
@@ -65,17 +57,16 @@ AttributeInstance CreateAttribute(AttributeTypeName name,
   AttributeType type = AttributeType(name);
   AttributeInstance instance = AttributeInstance(type);
   instance.SetRawInfo(type.field_type(), base::UTF8ToUTF16(value),
-                      autofill::VerificationStatus::kObserved);
+                      VerificationStatus::kObserved);
   instance.FinalizeInfo();
   return instance;
 }
 
 void AddPrediction(AutofillField& field, FieldType field_type) {
-  autofill::FieldPrediction prediction;
+  FieldPrediction prediction;
   prediction.set_type(field_type);
-  prediction.set_source(
-      autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-          FieldPrediction::SOURCE_AUTOFILL_AI);
+  prediction.set_source(AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+                            FieldPrediction::SOURCE_AUTOFILL_AI);
   field.set_server_predictions({prediction});
 }
 
@@ -85,11 +76,10 @@ std::unique_ptr<AutofillField> CreateInput(
     std::string_view value,
     std::string_view format_string = "",
     std::string_view initial_value = "") {
-  auto field =
-      std::make_unique<AutofillField>(autofill::test::CreateTestFormField(
-          /*label=*/"",
-          /*name=*/"",
-          /*value=*/initial_value, form_control_type));
+  auto field = std::make_unique<AutofillField>(test::CreateTestFormField(
+      /*label=*/"",
+      /*name=*/"",
+      /*value=*/initial_value, form_control_type));
   // Explicitly set the value here to ensure that it differs from the initial
   // value.
   field->set_value(base::UTF8ToUTF16(value));
@@ -108,12 +98,11 @@ std::unique_ptr<AutofillField> CreateSelect(std::vector<std::string> values,
                                             std::string value) {
   values.resize(std::max(values.size(), texts.size()));
   texts.resize(std::max(values.size(), texts.size()));
-  auto field =
-      std::make_unique<AutofillField>(autofill::test::CreateTestSelectField(
-          /*label=*/"", /*name=*/"", /*value=*/value,
-          /*autocomplete=*/"",
-          /*values=*/base::ToVector(values, &std::string::c_str),
-          /*contents=*/base::ToVector(texts, &std::string::c_str)));
+  auto field = std::make_unique<AutofillField>(test::CreateTestSelectField(
+      /*label=*/"", /*name=*/"", /*value=*/value,
+      /*autocomplete=*/"",
+      /*values=*/base::ToVector(values, &std::string::c_str),
+      /*contents=*/base::ToVector(texts, &std::string::c_str)));
   AddPrediction(*field, field_type);
   return field;
 }
@@ -121,8 +110,8 @@ std::unique_ptr<AutofillField> CreateSelect(std::vector<std::string> values,
 class AutofillAiImportUtilsTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_{
-      autofill::features::kAutofillAiWithDataSchema};
-  autofill::test::AutofillUnitTestEnvironment autofill_environment_;
+      features::kAutofillAiWithDataSchema};
+  test::AutofillUnitTestEnvironment autofill_environment_;
 };
 
 // Tests import that includes and a date distributed over three <input>
@@ -196,7 +185,7 @@ TEST_F(AutofillAiImportUtilsTest, ImportFromNonDateSelect) {
 TEST_F(AutofillAiImportUtilsTest, MaybeGetLocalizedDate) {
   using enum AttributeTypeName;
   EntityInstance entity =
-      autofill::test::GetPassportEntityInstance({.expiry_date = u"2025-12-30"});
+      test::GetPassportEntityInstance({.expiry_date = u"2025-12-30"});
   {
     AttributeInstance a =
         entity.attribute(AttributeType(kPassportExpirationDate)).value();
@@ -218,4 +207,4 @@ TEST_F(AutofillAiImportUtilsTest, MaybeGetLocalizedDate) {
 }
 
 }  // namespace
-}  // namespace autofill_ai
+}  // namespace autofill

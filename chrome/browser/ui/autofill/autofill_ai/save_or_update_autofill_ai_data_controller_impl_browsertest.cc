@@ -17,24 +17,23 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 namespace {
 // Helper method used to simulate an update entity dialog. Returns two
 // entities where the first is the new one and second is the old one. The new
 // one contains one updated and one edited attribute.
-std::pair<autofill::EntityInstance, autofill::EntityInstance>
-GetUpdateEntities() {
-  autofill::test::PassportEntityOptions new_entity_options;
+std::pair<EntityInstance, EntityInstance> GetUpdateEntities() {
+  test::PassportEntityOptions new_entity_options;
   new_entity_options.name = u"Jon doe";
-  autofill::EntityInstance new_entity =
-      autofill::test::GetPassportEntityInstance(new_entity_options);
+  EntityInstance new_entity =
+      test::GetPassportEntityInstance(new_entity_options);
 
-  autofill::test::PassportEntityOptions old_entity_options;
+  test::PassportEntityOptions old_entity_options;
   old_entity_options.name = u"Jonas doe";
   old_entity_options.country = nullptr;
-  autofill::EntityInstance old_entity =
-      autofill::test::GetPassportEntityInstance(old_entity_options);
+  EntityInstance old_entity =
+      test::GetPassportEntityInstance(old_entity_options);
   return std::make_pair(new_entity, old_entity);
 }
 }  // namespace
@@ -58,14 +57,13 @@ class SaveOrUpdateAutofillAiDataControllerImplTest : public DialogBrowserTest {
         SaveOrUpdateAutofillAiDataControllerImpl::FromWebContents(web_contents);
     CHECK(controller_);
     if (name == "UpdateEntity") {
-      std::pair<autofill::EntityInstance, autofill::EntityInstance> entities =
-          GetUpdateEntities();
+      std::pair<EntityInstance, EntityInstance> entities = GetUpdateEntities();
       controller_->ShowPrompt(std::move(entities.first),
                               std::move(entities.second), base::NullCallback());
       return;
     } else if (name == "SaveNewEntity") {
-      controller_->ShowPrompt(autofill::test::GetPassportEntityInstance(),
-                              std::nullopt, base::NullCallback());
+      controller_->ShowPrompt(test::GetPassportEntityInstance(), std::nullopt,
+                              base::NullCallback());
       return;
     }
     NOTREACHED();
@@ -140,4 +138,4 @@ IN_PROC_BROWSER_TEST_F(SaveOrUpdateAutofillAiDataControllerImplTest,
           kAccepted,
       1);
 }
-}  // namespace autofill_ai
+}  // namespace autofill

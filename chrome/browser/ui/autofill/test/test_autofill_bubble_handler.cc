@@ -69,7 +69,7 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowAddressSignInPromo(
 
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAutofillAiDataBubble(
     content::WebContents* contents,
-    autofill_ai::SaveOrUpdateAutofillAiDataController* controller) {
+    SaveOrUpdateAutofillAiDataController* controller) {
   if (!save_autofill_ai_data_bubble_view_) {
     save_autofill_ai_data_bubble_view_ = std::make_unique<TestAutofillBubble>();
   }

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/autofill/autofill_ai/mock_save_or_update_ai_data_controller.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 MockSaveOrUpdateAutofillAiDataController::
     MockSaveOrUpdateAutofillAiDataController() = default;
 MockSaveOrUpdateAutofillAiDataController::
     ~MockSaveOrUpdateAutofillAiDataController() = default;
 
-}  // namespace autofill_ai
+}  // namespace autofill

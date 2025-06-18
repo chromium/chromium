@@ -21,16 +21,15 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
+
 class EntityInstance;
-}
-namespace autofill_ai {
 
 // Implementation of per-tab class to control the save or update Autofill AI
 // data bubble.
 // TODO(crbug.com/361434879): Introduce tests when this class has more than
 // simple forwarding method.
 class SaveOrUpdateAutofillAiDataControllerImpl
-    : public autofill::AutofillBubbleControllerBase,
+    : public AutofillBubbleControllerBase,
       public SaveOrUpdateAutofillAiDataController,
       public content::WebContentsUserData<
           SaveOrUpdateAutofillAiDataControllerImpl> {
@@ -42,14 +41,12 @@ class SaveOrUpdateAutofillAiDataControllerImpl
   ~SaveOrUpdateAutofillAiDataControllerImpl() override;
 
   // SaveOrUpdateAutofillAiDataController:
-  void ShowPrompt(
-      autofill::EntityInstance new_entity,
-      std::optional<autofill::EntityInstance> old_entity,
-      autofill::AutofillClient::EntitySaveOrUpdatePromptResultCallback
-          save_prompt_acceptance_callback) override;
+  void ShowPrompt(EntityInstance new_entity,
+                  std::optional<EntityInstance> old_entity,
+                  AutofillClient::EntitySaveOrUpdatePromptResultCallback
+                      save_prompt_acceptance_callback) override;
   void OnSaveButtonClicked() override;
-  base::optional_ref<const autofill::EntityInstance> GetAutofillAiData()
-      const override;
+  base::optional_ref<const EntityInstance> GetAutofillAiData() const override;
   void OnBubbleClosed(AutofillAiBubbleClosedReason closed_reason) override;
   base::WeakPtr<SaveOrUpdateAutofillAiDataController> GetWeakPtr() override;
   std::u16string GetDialogTitle() const override;
@@ -79,15 +76,15 @@ class SaveOrUpdateAutofillAiDataControllerImpl
 
   // New entity prompted to the user to be saved. It can be a fresh new entity
   // or an update of `old_entity`.
-  std::optional<autofill::EntityInstance> new_entity_;
+  std::optional<EntityInstance> new_entity_;
 
   // Present for updates. Used to give users information about which attribute
   // was either added or changed in their old instance.
-  std::optional<autofill::EntityInstance> old_entity_;
+  std::optional<EntityInstance> old_entity_;
 
   // Callback to notify the data provider about the user decision for the save
   // or update prompt.
-  autofill::AutofillClient::EntitySaveOrUpdatePromptResultCallback
+  AutofillClient::EntitySaveOrUpdatePromptResultCallback
       save_prompt_acceptance_callback_;
 
   base::WeakPtrFactory<SaveOrUpdateAutofillAiDataControllerImpl>
@@ -96,6 +93,6 @@ class SaveOrUpdateAutofillAiDataControllerImpl
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-}  // namespace autofill_ai
+}  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_CONTROLLER_IMPL_H_

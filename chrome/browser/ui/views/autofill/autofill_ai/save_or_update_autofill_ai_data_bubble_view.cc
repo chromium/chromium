@@ -38,7 +38,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 namespace {
 
@@ -352,4 +352,4 @@ void SaveOrUpdateAutofillAiDataBubbleView::OnDialogAccepted() {
 
 BEGIN_METADATA(SaveOrUpdateAutofillAiDataBubbleView)
 END_METADATA
-}  // namespace autofill_ai
+}  // namespace autofill

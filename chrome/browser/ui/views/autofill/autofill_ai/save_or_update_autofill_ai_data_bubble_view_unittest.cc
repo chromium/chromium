@@ -28,7 +28,7 @@
 
 // TODO(crbug.com/362227379): Consider having an interactive UI test to evaluate
 // both the controller and the view working together.
-namespace autofill_ai {
+namespace autofill {
 
 namespace {
 
@@ -135,4 +135,4 @@ TEST_F(SaveOrUpdateAutofillAiDataBubbleViewTest, CancelInvokesTheController) {
 
 }  // namespace
 
-}  // namespace autofill_ai
+}  // namespace autofill

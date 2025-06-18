@@ -11,12 +11,11 @@
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 // This class displays a bubble to prompt the user whether they want save or
 // update an AutofillAi entity.
-class SaveOrUpdateAutofillAiDataBubbleView
-    : public autofill::AutofillLocationBarBubble {
+class SaveOrUpdateAutofillAiDataBubbleView : public AutofillLocationBarBubble {
   METADATA_HEADER(SaveOrUpdateAutofillAiDataBubbleView, views::View)
 
  public:
@@ -58,6 +57,6 @@ class SaveOrUpdateAutofillAiDataBubbleView
   base::WeakPtr<SaveOrUpdateAutofillAiDataController> controller_;
 };
 
-}  // namespace autofill_ai
+}  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_BUBBLE_VIEW_H_

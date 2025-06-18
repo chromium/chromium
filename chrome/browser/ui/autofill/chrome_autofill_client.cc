@@ -1207,9 +1207,8 @@ void ChromeAutofillClient::ShowEntitySaveOrUpdateBubble(
     std::optional<EntityInstance> old_entity,
     EntitySaveOrUpdatePromptResultCallback prompt_acceptance_callback) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto* controller =
-          autofill_ai::SaveOrUpdateAutofillAiDataController::GetOrCreate(
-              &*web_contents(), GetAppLocale())) {
+  if (auto* controller = SaveOrUpdateAutofillAiDataController::GetOrCreate(
+          &*web_contents(), GetAppLocale())) {
     controller->ShowPrompt(std::move(new_entity), std::move(old_entity),
                            std::move(prompt_acceptance_callback));
     return;

@@ -27,7 +27,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace autofill_ai {
+namespace autofill {
 
 namespace {
 
@@ -51,19 +51,19 @@ bool DidUserDeclineExplicitly(
 
 void EmitBubbleFunnelMetrics(
     bool is_save_prompt,
-    autofill::EntityType entity_type,
+    EntityType entity_type,
     SaveOrUpdateAutofillAiDataController::AutofillAiBubbleClosedReason
         close_reason) {
   auto get_save_or_update_histogram_string = [](bool is_save_prompt) {
     return is_save_prompt ? ".SavePrompt" : ".UpdatePrompt";
   };
-  auto get_entity_name_for_logging = [](autofill::EntityType entity_type) {
+  auto get_entity_name_for_logging = [](EntityType entity_type) {
     switch (entity_type.name()) {
-      case autofill::EntityTypeName::kVehicle:
+      case EntityTypeName::kVehicle:
         return "Vehicle";
-      case autofill::EntityTypeName::kPassport:
+      case EntityTypeName::kPassport:
         return "Passport";
-      case autofill::EntityTypeName::kDriversLicense:
+      case EntityTypeName::kDriversLicense:
         return "DriversLicense";
     }
     NOTREACHED();
@@ -108,9 +108,9 @@ SaveOrUpdateAutofillAiDataController::GetOrCreate(
 }
 
 void SaveOrUpdateAutofillAiDataControllerImpl::ShowPrompt(
-    autofill::EntityInstance new_entity,
-    std::optional<autofill::EntityInstance> old_entity,
-    autofill::AutofillClient::EntitySaveOrUpdatePromptResultCallback
+    EntityInstance new_entity,
+    std::optional<EntityInstance> old_entity,
+    AutofillClient::EntitySaveOrUpdatePromptResultCallback
         save_prompt_acceptance_callback) {
   // Don't show the bubble if it's already visible.
   if (bubble_view()) {
@@ -134,20 +134,20 @@ std::vector<SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails>
 SaveOrUpdateAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
   std::vector<EntityAttributeUpdateDetails> details;
 
-  auto get_attribute_update_type = [&](const autofill::AttributeInstance&
+  auto get_attribute_update_type = [&](const AttributeInstance&
                                            new_entity_attribute) {
     if (!old_entity_) {
       return kNewEntityAttributeAdded;
     }
 
-    base::optional_ref<const autofill::AttributeInstance> old_entity_attribute =
+    base::optional_ref<const AttributeInstance> old_entity_attribute =
         old_entity_->attribute(new_entity_attribute.type());
     if (!old_entity_attribute) {
       return kNewEntityAttributeAdded;
     }
 
     return std::ranges::all_of(new_entity_attribute.type().field_subtypes(),
-                               [&](autofill::FieldType type) {
+                               [&](FieldType type) {
                                  return old_entity_attribute->GetInfo(
                                             type, app_locale_,
                                             /*format_string=*/std::nullopt) ==
@@ -159,8 +159,7 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
                : kNewEntityAttributeUpdated;
   };
 
-  for (const autofill::AttributeInstance& attribute :
-       new_entity_->attributes()) {
+  for (const AttributeInstance& attribute : new_entity_->attributes()) {
     EntityAttributeUpdateType update_type =
         get_attribute_update_type(attribute);
     std::u16string attribute_value;
@@ -200,25 +199,25 @@ std::u16string SaveOrUpdateAutofillAiDataControllerImpl::GetDialogTitle()
     const {
   if (IsSavePrompt()) {
     switch (new_entity_->type().name()) {
-      case autofill::EntityTypeName::kVehicle:
+      case EntityTypeName::kVehicle:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE);
-      case autofill::EntityTypeName::kPassport:
+      case EntityTypeName::kPassport:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE);
-      case autofill::EntityTypeName::kDriversLicense:
+      case EntityTypeName::kDriversLicense:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
     }
   } else {
     switch (new_entity_->type().name()) {
-      case autofill::EntityTypeName::kVehicle:
+      case EntityTypeName::kVehicle:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE);
-      case autofill::EntityTypeName::kPassport:
+      case EntityTypeName::kPassport:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE);
-      case autofill::EntityTypeName::kDriversLicense:
+      case EntityTypeName::kDriversLicense:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
     }
@@ -267,21 +266,21 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetWeakPtr() {
 std::pair<int, int>
 SaveOrUpdateAutofillAiDataControllerImpl::GetTitleImagesResourceId() const {
   switch (new_entity_->type().name()) {
-    case autofill::EntityTypeName::kVehicle:
+    case EntityTypeName::kVehicle:
       return {IDR_SAVE_VEHICLE, IDR_SAVE_VEHICLE_DARK};
-    case autofill::EntityTypeName::kPassport:
+    case EntityTypeName::kPassport:
       return {IDR_SAVE_PASSPORT, IDR_SAVE_PASSPORT_DARK};
-    case autofill::EntityTypeName::kDriversLicense:
+    case EntityTypeName::kDriversLicense:
       return {IDR_SAVE_DRIVERS_LICENSE, IDR_SAVE_DRIVERS_LICENSE_DARK};
   }
   NOTREACHED();
 }
 
-base::optional_ref<const autofill::EntityInstance>
+base::optional_ref<const EntityInstance>
 SaveOrUpdateAutofillAiDataControllerImpl::GetAutofillAiData() const {
   return new_entity_;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveOrUpdateAutofillAiDataControllerImpl);
 
-}  // namespace autofill_ai
+}  // namespace autofill

@@ -219,8 +219,8 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowAddressSignInPromo(
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAutofillAiDataBubble(
     content::WebContents* web_contents,
-    autofill_ai::SaveOrUpdateAutofillAiDataController* controller) {
-  return ShowBubble<autofill_ai::SaveOrUpdateAutofillAiDataBubbleView>(
+    SaveOrUpdateAutofillAiDataController* controller) {
+  return ShowBubble<SaveOrUpdateAutofillAiDataBubbleView>(
       toolbar_button_provider_, kActionShowAddressesBubbleOrPage,
       PageActionIconType::kAutofillAddress, /*is_user_gesture=*/false,
       web_contents, controller);

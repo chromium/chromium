@@ -25,7 +25,7 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
-namespace autofill_ai {
+namespace autofill {
 namespace {
 
 using ::testing::Bool;
@@ -244,6 +244,6 @@ INSTANTIATE_TEST_SUITE_P(
     SaveOrUpdateAutofillAiDataBubbleViewBrowsertest::GetTestSuffix);
 
 }  // namespace
-}  // namespace autofill_ai
+}  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_AI_SAVE_OR_UPDATE_AUTOFILL_AI_DATA_BUBBLE_VIEW_BROWSERTEST_CC_H_
