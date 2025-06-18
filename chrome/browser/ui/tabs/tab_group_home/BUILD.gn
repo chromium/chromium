@@ -17,7 +17,7 @@ if (!is_android) {
     deps = [
       ":tab_group_home",
       "//base",
-      "//chrome/browser/resources/tabs/tab_group_home:resources",
+      "//chrome/browser/resources/tab_group_home:resources",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/top_chrome",

@@ -683,6 +683,9 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/support_tool/resources.grd": {
     "META": {"sizes": {"includes": [30]}},
     "includes": [5020],
+  }, "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_group_home/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [5030],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_search/resources.grd": {
     "META": {"sizes": {"includes": [90]}},
@@ -691,10 +694,6 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_strip/resources.grd": {
     "META": {"sizes": {"includes": [40]}},
     "includes": [5060],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tabs/tab_group_home/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
-    "includes": [5065],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tts_engine/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
