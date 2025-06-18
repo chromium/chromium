@@ -1336,9 +1336,12 @@ const base::FeatureParam<bool> kWebUIBundledCodeCacheGenerateResourceMap{
 // Previously, this was only supported on ChromeOS and Linux.
 // Intentionally enabled by default and will be used as a kill switch in case
 // of regressions.
+// TODO(crbug.com/399911225): enable by default and remove this feature once
+// major sources of JS errors are fixed. Currently this is only enabled on 1%
+// stable and 50% non-stable.
 BASE_FEATURE(kWebUIJSErrorReportingExtended,
             "WebUIJSErrorReportingExtended",
-            base::FEATURE_ENABLED_BY_DEFAULT);
+            base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Controls whether the WebUSB API is enabled:
