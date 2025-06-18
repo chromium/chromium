@@ -1,0 +1,21 @@
+Name: Chrome Enterprise Companion App
+URL: https://chromium.googlesource.com/chromium/src/+/main/chrome/enterprise_companion/README.md
+Version: N/A
+Revision: DEPS
+Update Mechanism: Manual (crbug.com/425922779)
+License: BSD-3-Clause
+License File: LICENSE
+Security Critical: no
+Shipped: no
+CPEPrefix: unknown
+
+Description:
+The Chrome Enterprise Companion App (CECA) is built from Chromium source, but
+placed into third_party to permit integration testing with version-skewed
+binaries. New versions of CECA are automatically imported into CIPD by
+the 3pp scripts in this directory, and //DEPS defines which versions of the
+CECA are pulled from CIPD into the source checkout.
+
+To update the versions of CECA in this directory, wait for the version
+you want to become available in CIPD, then update //DEPS to point to it. If the
+files change, you may also have to update //BUILD.gn.
