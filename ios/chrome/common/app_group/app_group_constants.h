@@ -65,6 +65,9 @@ extern NSString* const kChromeSupportShareDefaultBrowserStatusCapability;
 // command.
 extern const char kChromeAppGroupXCallbackCommand[];
 
+// The gaid id query name to add to a given URL.
+extern const char kGaiaIDQueryItemName[];
+
 // The key of a preference containing a dictionary of field trial values needed
 // in extensions.
 extern NSString* const kChromeExtensionFieldTrialPreference;

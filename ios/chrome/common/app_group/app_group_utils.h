@@ -22,6 +22,10 @@ void ClearAppGroupSandbox();
 // Returns `default_value` if the string is nil.
 NSString* UserDefaultsStringForKey(NSString* key, NSString* default_value);
 
+// Returns whether the share extension for multi profile is enabled based on the
+// value store in the shared defaults.
+BOOL MultiProfileShareExtensionEnabled();
+
 }  // namespace app_group
 
 #endif  // IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILS_H_

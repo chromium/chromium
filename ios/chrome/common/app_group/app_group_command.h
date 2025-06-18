@@ -48,6 +48,9 @@ typedef void (^URLOpenerBlock)(NSURL* URL);
 // Launches the main app and execute the receiver.
 - (void)executeInApp;
 
+// Launches the main app and execute the receiver for a given `gaiaID`.
+- (void)executeInAppWithGaiaID:(NSString*)gaiaID;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_COMMAND_H_

@@ -24,6 +24,8 @@ extern NSString* const kChromeSupportShareDefaultBrowserStatusCapability =
 
 const char kChromeAppGroupXCallbackCommand[] = "app-group-command";
 
+const char kGaiaIDQueryItemName[] = "gaia_id";
+
 NSString* const kChromeExtensionFieldTrialPreference = @"Extension.FieldTrial";
 
 const char kChromeAppGroupCommandPreference[] =

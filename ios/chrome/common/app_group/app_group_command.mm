@@ -8,6 +8,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_utils.h"
 
 namespace {
 // Using GURL in the extension is not wanted as it includes ICU which makes the
@@ -152,22 +153,43 @@ void PutSearchImageCommandInNSUserDefaults(NSMutableDictionary* command,
 }
 
 - (void)executeInApp {
+  if (NSURL* openURL = [self URLToOpenWithGaiaID:nil]) {
+    _opener(openURL);
+  }
+}
+
+- (void)executeInAppWithGaiaID:(NSString*)gaiaID {
+  CHECK(app_group::MultiProfileShareExtensionEnabled());
+  if (NSURL* openURL = [self URLToOpenWithGaiaID:gaiaID]) {
+    _opener(openURL);
+  }
+}
+
+#pragma mark - Private
+
+- (NSURL*)URLToOpenWithGaiaID:(NSString*)gaiaID {
   NSString* scheme =
       base::apple::ObjCCast<NSString>([base::apple::FrameworkBundle()
           objectForInfoDictionaryKey:@"KSChannelChromeScheme"]);
   if (!scheme) {
-    return;
+    return nil;
   }
-
   NSURLComponents* urlComponents = [[NSURLComponents alloc] init];
   urlComponents.scheme = scheme;
   urlComponents.host = kXCallbackURLHost;
   urlComponents.path = [@"/"
       stringByAppendingString:base::SysUTF8ToNSString(
                                   app_group::kChromeAppGroupXCallbackCommand)];
+  if (gaiaID) {
+    CHECK(app_group::MultiProfileShareExtensionEnabled());
+    CHECK(gaiaID.length);
+    urlComponents.queryItems = @[ [NSURLQueryItem
+        queryItemWithName:base::SysUTF8ToNSString(
+                              app_group::kGaiaIDQueryItemName)
+                    value:gaiaID] ];
+  }
 
-  NSURL* openURL = [urlComponents URL];
-  _opener(openURL);
+  return [urlComponents URL];
 }
 
 @end
