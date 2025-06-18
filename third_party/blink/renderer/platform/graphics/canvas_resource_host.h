@@ -63,8 +63,9 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   virtual CanvasResourceProvider* GetResourceProviderForCanvas2D() const = 0;
 
-  virtual std::unique_ptr<CanvasResourceProvider> ReplaceResourceProvider(
-      std::unique_ptr<CanvasResourceProvider>) = 0;
+  virtual std::unique_ptr<CanvasResourceProvider>
+      ReplaceResourceProviderForCanvas2D(
+          std::unique_ptr<CanvasResourceProvider>) = 0;
 
   virtual void DiscardResourceProvider();
 

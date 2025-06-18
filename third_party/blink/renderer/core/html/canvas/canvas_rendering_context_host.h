@@ -151,7 +151,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
     return GetResourceProviderWithoutContextCheck();
   }
 
-  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProvider(
+  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider>) override;
 
   void FlushRecordingForCanvas2D(FlushReason reason);

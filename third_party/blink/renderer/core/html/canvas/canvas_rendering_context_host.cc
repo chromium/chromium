@@ -499,8 +499,9 @@ bool CanvasRenderingContextHost::IsContextLost() const {
 }
 
 std::unique_ptr<CanvasResourceProvider>
-CanvasRenderingContextHost::ReplaceResourceProvider(
+CanvasRenderingContextHost::ReplaceResourceProviderForCanvas2D(
     std::unique_ptr<CanvasResourceProvider> new_resource_provider) {
+  CHECK(IsRenderingContext2D());
   std::unique_ptr<CanvasResourceProvider> old_resource_provider =
       std::move(resource_provider_);
   resource_provider_ = std::move(new_resource_provider);

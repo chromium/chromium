@@ -1795,7 +1795,7 @@ void HTMLCanvasElement::SetCanvas2DResourceProviderForTesting(
   SetIntegralAttribute(html_names::kHeightAttr, size.height());
   CanvasResourceHost::SetSize(size);
   hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
-  ReplaceResourceProvider(std::move(provider));
+  ReplaceResourceProviderForCanvas2D(std::move(provider));
 }
 
 void HTMLCanvasElement::DiscardResourceProvider() {
@@ -2213,7 +2213,7 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderForCanvas2D() {
   std::unique_ptr<MemoryManagedPaintRecorder> recorder =
       old_provider->ReleaseRecorder();
   ResetLayer();
-  ReplaceResourceProvider(nullptr);
+  ReplaceResourceProviderForCanvas2D(nullptr);
 
   // Bail out if the context is lost.
   if (context_->isContextLost() && !context_->IsContextBeingRestored()) {
