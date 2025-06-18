@@ -4,11 +4,13 @@
 
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_utils.h"
 
+#include <optional>
 #include <ranges>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_util.h"
 #include "base/types/zip.h"

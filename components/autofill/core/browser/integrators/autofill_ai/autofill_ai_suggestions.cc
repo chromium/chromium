@@ -9,10 +9,12 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
-#include "base/containers/extend.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -66,96 +68,84 @@ std::vector<Suggestion> AssignLabelsToSuggestions(
   return suggestions;
 }
 
-// Returns all labels that can be used to disambiguate a list of entities used
-// to build suggestions shown to a user, present in `suggestions_with_metadata`.
-// The vector of labels for each suggestion is sorted from highest to lowest
-// priority and only contain values that will be added to the second line of the
-// suggestion UI (so not the main text). The available labels are generated
-// based on the values held by the entity used to create a certain suggestion
-// and also `other_entities_that_can_fill_section`.
-// `other_entities_that_can_fill_section` while not being used by a suggestion,
-// is used here because the values used to generate labels should be consistent
-// in all fields in the `triggering_field_type` filling group.
+// Returns a vector of EntityLabels, with one entry for each
+// SuggestionWithMetadata in `suggestions`.
 //
-// This function retrieves the available labels by doing the following:
+// That is, the `i`th element of the returned vector corresponds to
+// `suggestions[i]`. The individual EntityLabels may be empty, but the strings
+// they contain are non-empty.
 //
-// 1. Retrieves the list of entities used to build each suggestion
-//    (`SuggestionWithMetadata::entity`) and concatenates
-//    `other_entities_that_can_fill_section` to it.
+// Labels are supposed to be shown by the UI in the second line of each
+// suggestion (not the main text).
 //
-// 2. Calls `GetLabelsForEntities()`, making sure use the
-//    `triggering_field_attribute` as the attribute type to exclude from the
-//    possible labels, since it will already be part of the suggestion main
-//    text.
+// Labels consist of the AttributeInstance values. Ideally, every suggestion is
+// uniquely identifiable by its label.
+//
+// More precisely, two kinds of EntityInstances are taken into account:
+// - `SuggestionWithMetadata::entity` for `suggestions`
+// - `other_entities_that_can_fill_section`
+// That is, a suggestion's label ideally not only uniquely identifies the
+// suggestion's entity among the other suggestions' entities, but also among
+// those entities that may be autofilled from some other field in the same
+// section.
+//
+// In reality, labels may not uniquely identify the underlying entity: for one
+// thing, the maximum length of the label is limited; for another, different
+// entities may agree on the values of the disambiguating attributes.
 std::vector<EntityLabel> GetLabelsForSuggestions(
-    base::span<const SuggestionWithMetadata> suggestions_with_metadata,
+    base::span<const SuggestionWithMetadata> suggestions,
     base::span<const EntityInstance*> other_entities_that_can_fill_section,
     const std::string& app_locale) {
-  CHECK(!suggestions_with_metadata.empty());
   std::vector<const EntityInstance*> entities = base::ToVector(
-      suggestions_with_metadata,
-      [](const SuggestionWithMetadata& suggestion_with_metadata) {
-        return &suggestion_with_metadata.entity.get();
+      suggestions, [](const SuggestionWithMetadata& suggestions) {
+        return &suggestions.entity.get();
       });
   entities.insert(entities.end(), other_entities_that_can_fill_section.begin(),
                   other_entities_that_can_fill_section.end());
 
-  // Note that `all_entities_labels` are for all entities, including
-  // those that were not used in suggestion generation.
-  std::vector<EntityLabel> all_entities_labels = GetLabelsForEntities(
+  std::vector<EntityLabel> labels = GetLabelsForEntities(
       entities, /*allow_only_disambiguating_types=*/true,
       /*allow_only_disambiguating_values=*/true, app_locale);
-  if (all_entities_labels.size() > suggestions_with_metadata.size()) {
-    all_entities_labels.resize(suggestions_with_metadata.size());
+  if (labels.size() > suggestions.size()) {
+    // Drop the labels for the `other_entities_that_can_fill_section`.
+    labels.resize(suggestions.size());
   }
-  return all_entities_labels;
+  return labels;
 }
 
-// Generates suggestions with labels given `suggestions_with_metadata` (which
-// holds both the suggestions and their respective entities), triggering field
-// of `AttributeType` and `other_entities_that_can_fill_section`. This function
-// works as follows:
+// Populates `Suggestion::labels` of the given `suggestions` and returns the
+// result.
 //
-// 1. Initializes the output (a vector of suggestions) and its default labels.
-//    The labels at this point are all the same (single string with the entity
-//    name).
+// The size of the returned vector is that of `suggestions`.
 //
-// 2. Get the disambiguating attributes to be used. Note that we take into
-//    account both the entities used to generate the suggestions and any other
-//    entities that can fill other fields in the form
-//    (`other_entities_that_can_fill_section`). This is because we want the
-//    labels to be consistent across all fields in the filling group.
-//
-// 4. Assigns the labels acquired in step #2 and return the updated suggestions.
+// See GetLabelsForSuggestions() for details on the label generation.
 std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
     AttributeType trigger_attribute,
-    std::vector<SuggestionWithMetadata> suggestions_with_metadata,
+    std::vector<SuggestionWithMetadata> suggestions,
     base::span<const EntityInstance*> other_entities_that_can_fill_section,
     const std::string& app_locale) {
-  std::vector<EntityLabel> labels =
-      GetLabelsForSuggestions(suggestions_with_metadata,
-                              other_entities_that_can_fill_section, app_locale);
+  std::vector<EntityLabel> labels = GetLabelsForSuggestions(
+      suggestions, other_entities_that_can_fill_section, app_locale);
+  DCHECK_EQ(suggestions.size(), labels.size());
 
-  for (auto [suggestion_with_metadata, label] :
-       base::zip(suggestions_with_metadata, labels)) {
-    const EntityInstance& entity = *suggestion_with_metadata.entity;
+  // Postprocess the labels:
+  // - Remove the trigger field's value (if present) because it's also shown in
+  //   the suggestions top row.
+  // - Prepend the entity type's name to each label.
+  for (auto [suggestion, label] : base::zip(suggestions, labels)) {
+    const EntityInstance& entity = *suggestion.entity;
     base::optional_ref<const AttributeInstance> attribute =
         entity.attribute(trigger_attribute);
-    // The entity used to build the suggestion must be able to fill the
-    // triggering field.
     CHECK(attribute);
-
-    // The value of the trigger field is redundant: the user sees the preview.
     std::erase(label, attribute->GetCompleteInfo(app_locale));
-
     label.insert(label.begin(), std::u16string(entity.type().GetNameForI18n()));
   }
 
   return AssignLabelsToSuggestions(
-      labels, base::ToVector(std::move(suggestions_with_metadata),
-                             [](SuggestionWithMetadata& s) {
-                               return std::move(s).suggestion;
-                             }));
+      labels,
+      base::ToVector(std::move(suggestions), [](SuggestionWithMetadata& s) {
+        return std::move(s).suggestion;
+      }));
 }
 
 // Returns a suggestion to manage AutofillAi data.

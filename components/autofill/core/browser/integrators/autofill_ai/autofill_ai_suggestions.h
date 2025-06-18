@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
@@ -18,8 +17,8 @@ class FormFieldData;
 class FormStructure;
 struct Suggestion;
 
-// Creates filling suggestions using `autofill::EntityInstance`s.
-std::vector<autofill::Suggestion> CreateFillingSuggestions(
+// Creates filling suggestions using `EntityInstance`s.
+std::vector<Suggestion> CreateFillingSuggestions(
     const FormStructure& form,
     const FormFieldData& trigger_field_data,
     base::span<const EntityInstance> entities,

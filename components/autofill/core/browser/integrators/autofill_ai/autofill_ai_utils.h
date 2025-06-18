@@ -5,11 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_UTILS_H_
 
-#include <set>
 #include <string>
 #include <vector>
 
-#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "base/containers/span.h"
 
 namespace autofill {
 
