@@ -164,6 +164,7 @@ const char kAdaptiveToolbarModelLabelVoice[] = "Voice";
 const char kAdaptiveToolbarModelLabelTranslate[] = "Translate";
 const char kAdaptiveToolbarModelLabelAddToBookmarks[] = "AddToBookmarks";
 const char kAdaptiveToolbarModelLabelReadAloud[] = "ReadAloud";
+const char kAdaptiveToolbarModelLabelOpenInBrowser[] = "OpenInBrowser";
 
 // Labels for contextual page actions model.
 const char kContextualPageActionModelLabelDiscounts[] = "discounts";

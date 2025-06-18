@@ -55,8 +55,13 @@ std::map<std::string, AdaptiveToolbarButtonVariant> GetEnumLabelMapping() {
                AdaptiveToolbarButtonVariant::kAddToBookmarks,
            },
            {
+
                segmentation_platform::kAdaptiveToolbarModelLabelReadAloud,
                AdaptiveToolbarButtonVariant::kReadAloud,
+           },
+           {
+               segmentation_platform::kAdaptiveToolbarModelLabelOpenInBrowser,
+               AdaptiveToolbarButtonVariant::kOpenInBrowser,
            }});
 
   return *enum_label_mapping;
