@@ -272,6 +272,10 @@ BASE_DECLARE_FEATURE(kExtensionBrowserNamespaceAlternative);
 // sender response callbacks.
 BASE_DECLARE_FEATURE(kRuntimeOnMessagePromiseReturnSupport);
 
+// Optimizes service worker start requests by checking readiness before
+// initiating a start.
+BASE_DECLARE_FEATURE(kOptimizeServiceWorkerStartRequests);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

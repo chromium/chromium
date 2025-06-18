@@ -217,10 +217,10 @@ void ServiceWorkerTaskQueue::SetObserverForTest(TestObserver* observer) {
 bool ServiceWorkerTaskQueue::ShouldEnqueueTask(
     BrowserContext* context,
     const Extension* extension) const {
-  // TODO(crbug.com/40276609): This is unnecessary, we should make it so we
-  // don't try to start a worker that is ready to run tasks. We request the
-  // worker to start every time we want to dispatch an event to an extension
-  // service worker.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kOptimizeServiceWorkerStartRequests)) {
+    return !IsReadyToRunTasks(context, extension);
+  }
   return true;
 }
 
@@ -245,12 +245,18 @@ bool ServiceWorkerTaskQueue::IsReadyToRunTasks(
       extension->id(), browser_context_->UniqueId(), *activation_token);
   const ServiceWorkerState* worker_state = GetWorkerState(context_id);
 
+  // If this feature is enabled, the worker state should be reliable
+  // and the single source of truth for worker readiness.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kOptimizeServiceWorkerStartRequests)) {
+    return worker_state && worker_state->IsReady();
+  }
+
   if (!worker_state || !worker_state->worker_id()) {
     // Assume the worker has not been started. It is likely in
     // blink::EmbeddedWorkerStatus::(kStarting|kStopped) status.
     return false;
   }
-
   // We must check both states since the worker could begin stopping and call
   // DidStopServiceWorkerContext after ServiceWorkerState::BrowserState::kReady.
   return (worker_state->browser_state() ==
@@ -281,28 +287,54 @@ void ServiceWorkerTaskQueue::AddPendingTask(
       lazy_context_id.extension_id(),
       lazy_context_id.browser_context()->UniqueId(), *activation_token};
 
-  // `HasPendingTasks(context_id)` `true` means the worker is starting.
-  // `HasPendingTasks(context_id)` `false` means that we don't know if the
-  // worker is started so we'll try to start it to ensure it'll be ready for the
-  // task. This efficiency relies on the assumption that only this boolean
-  // controls whether we request the worker to start below.
-  const bool worker_starting = HasPendingTasks(context_id);
-  AddPendingTaskForContext(std::move(task), context_id);
-
   if (!base::Contains(worker_registered_, context_id)) {
     // If the worker hasn't finished registration, wait for it to complete. The
     // worker can't be started until a registration is found for it in the
     // //content layer. `DidRegisterServiceWorker()` will start the worker to
     // run the `task` later.
+    // TODO(crbug.com/40276609): consider moving registration check logic into
+    // `ServiceWorkerState`, since registration could be considered part of
+    // starting.
+    AddPendingTaskForContext(std::move(task), context_id);
     return;
   }
 
-  if (worker_starting) {
-    // When the worker finishes starting, the task queue will run `task`.
-    return;
-  }
+  ServiceWorkerState* worker_state = GetWorkerState(context_id);
+  DCHECK(worker_state);
 
-  RunTasksAfterStartWorker(context_id);
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kOptimizeServiceWorkerStartRequests) &&
+      worker_state->IsReady()) {
+    DispatchTasksImmediately(context_id, base::span_from_ref(task));
+  } else {
+    // This is either the behavior always (OptimizeServiceWorkerStartRequests
+    // off) or (when OptimizeServiceWorkerStartRequests on) when the worker is
+    // not ready: queue task and maybe start.
+    AddPendingTaskForContext(std::move(task), context_id);
+    MaybeStartWorker(worker_state, context_id);
+  }
+}
+
+void ServiceWorkerTaskQueue::DispatchTasksImmediately(
+    const SequencedContextId& context_id,
+    base::span<PendingTask> tasks) {
+  ServiceWorkerState* worker_state = GetWorkerState(context_id);
+  DCHECK(worker_state);
+  DCHECK(!base::FeatureList::IsEnabled(
+             extensions_features::kOptimizeServiceWorkerStartRequests) ||
+         worker_state->IsReady());
+
+  const auto& worker_id = *worker_state->worker_id();
+  LazyContextTaskQueue::ContextInfo context_info(
+      context_id.extension_id,
+      content::RenderProcessHost::FromID(worker_id.render_process_id),
+      worker_id.version_id, worker_id.thread_id,
+      Extension::GetServiceWorkerScopeFromExtensionId(context_id.extension_id));
+
+  for (auto& task : tasks) {
+    std::move(task).Run(
+        std::make_unique<LazyContextTaskQueue::ContextInfo>(context_info));
+  }
 }
 
 void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
@@ -385,7 +417,9 @@ void ServiceWorkerTaskQueue::OnWorkerStart(const SequencedContextId& context_id,
     return;
   }
 
-  RunPendingTasksIfWorkerReady(context_id);
+  std::vector<PendingTask> tasks;
+  std::swap(GetOrAddPendingTasks(context_id), tasks);
+  DispatchTasksImmediately(context_id, tasks);
 }
 
 void ServiceWorkerTaskQueue::OnWorkerStartFail(
@@ -527,21 +561,6 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   StopObserving(service_worker_context);
 }
 
-void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
-    const SequencedContextId& context_id) {
-  CHECK_EQ(context_id.browser_context_id, browser_context_->UniqueId());
-
-  ServiceWorkerState* worker_state = GetWorkerState(context_id);
-  DCHECK_NE(ServiceWorkerState::BrowserState::kStarted,
-            worker_state->browser_state());
-
-  EmitWorkerWillBeStartedHistograms(context_id.extension_id);
-  worker_state->StartWorker(context_id);
-  if (g_test_observer) {
-    g_test_observer->RequestedWorkerStart(context_id.extension_id);
-  }
-}
-
 std::vector<ServiceWorkerTaskQueue::PendingTask>*
 ServiceWorkerTaskQueue::pending_tasks(const SequencedContextId& context_id) {
   return base::FindOrNull(pending_tasks_map_, context_id);
@@ -571,6 +590,20 @@ bool ServiceWorkerTaskQueue::HasPendingTasks(
     const SequencedContextId& context_id) {
   std::vector<PendingTask>* tasks = pending_tasks(context_id);
   return tasks ? !tasks->empty() : false;
+}
+
+void ServiceWorkerTaskQueue::MaybeStartWorker(
+    ServiceWorkerState* worker_state,
+    const SequencedContextId& context_id) {
+  if (worker_state->IsStarting()) {
+    return;
+  }
+
+  EmitWorkerWillBeStartedHistograms(context_id.extension_id);
+  worker_state->StartWorker(context_id);
+  if (g_test_observer) {
+    g_test_observer->RequestedWorkerStart(context_id.extension_id);
+  }
 }
 
 bool ServiceWorkerTaskQueue::ShouldRetryRegistrationRequest(
@@ -700,10 +733,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
       extension->id(), *GetCurrentActivationToken(extension->id()));
 
   if (HasPendingTasks(context_id)) {
-    // TODO(lazyboy): If worker for |context_id| is already running, consider
-    // not calling StartWorker. This should be straightforward now that service
-    // worker's internal state is on the UI thread rather than the IO thread.
-    RunTasksAfterStartWorker(context_id);
+    MaybeStartWorker(worker_state, context_id);
   }
 
   if (g_test_observer) {
@@ -810,39 +840,6 @@ void ServiceWorkerTaskQueue::RemoveRegisteredServiceWorkerInfo(
     ExtensionPrefs::Get(browser_context_)
         ->UpdateExtensionPref(extension_id, kPrefServiceWorkerRegistrationInfo,
                               std::nullopt);
-  }
-}
-
-void ServiceWorkerTaskQueue::RunPendingTasksIfWorkerReady(
-    const SequencedContextId& context_id) {
-  ServiceWorkerState* worker_state = GetWorkerState(context_id);
-  DCHECK(worker_state);
-  if (!worker_state->IsReady()) {
-    // Worker isn't ready yet, wait for next event and run the tasks then.
-    return;
-  }
-
-  // Running the pending tasks below marks the completion of both
-  // DidStartWorkerForScope and DidStartWorkerContext, change `browser_ready`
-  // state of the worker so that new tasks can be queued up.
-  worker_state->SetBrowserState(ServiceWorkerState::BrowserState::kReady);
-  if (g_test_observer) {
-    g_test_observer->DidStartWorker(context_id.extension_id);
-  }
-
-  DCHECK(HasPendingTasks(context_id)) << "Worker ready, but no tasks to run!";
-  std::vector<PendingTask> tasks;
-  std::swap(GetOrAddPendingTasks(context_id), tasks);
-  DCHECK(worker_state->worker_id());
-  const auto& worker_id = *worker_state->worker_id();
-  for (auto& task : tasks) {
-    auto context_info = std::make_unique<LazyContextTaskQueue::ContextInfo>(
-        context_id.extension_id,
-        content::RenderProcessHost::FromID(worker_id.render_process_id),
-        worker_id.version_id, worker_id.thread_id,
-        Extension::GetServiceWorkerScopeFromExtensionId(
-            context_id.extension_id));
-    std::move(task).Run(std::move(context_info));
   }
 }
 

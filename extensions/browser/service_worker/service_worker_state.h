@@ -27,13 +27,11 @@ class ServiceWorkerState
  public:
   // Browser process worker state of an activated extension.
   enum class BrowserState {
-    // Initial state, not started.
+    // Worker has not started or has been stopped/terminated.
     kNotStarted,
-    // Worker has completed starting at least once (i.e. has seen
-    // DidStartWorkerForScope).
+    // Worker has started (i.e. has seen DidStartWorkerForScope).
     kStarted,
-    // Worker has completed starting at least once and has run all pending
-    // tasks (i.e. has seen DidStartWorkerForScope and
+    // Worker has completed starting (i.e. has seen DidStartWorkerForScope and
     // DidStartServiceWorkerContext).
     kReady,
   };
@@ -74,6 +72,10 @@ class ServiceWorkerState
   void SetBrowserState(BrowserState browser_state);
   void SetRendererState(RendererState renderer_state);
   void Reset();
+
+  // Returns true if a request to start the worker has been made but the worker
+  // is not ready yet.
+  bool IsStarting() const;
 
   // Returns true if the worker is running and is ready to execute tasks.
   bool IsReady() const;

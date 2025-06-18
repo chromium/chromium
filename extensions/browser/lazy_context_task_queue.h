@@ -54,6 +54,10 @@ class LazyContextTaskQueue {
                 int64_t service_worker_version_id,
                 int worker_thread_id,
                 const GURL& url);
+
+    ContextInfo(const ContextInfo& other);
+    ContextInfo(ContextInfo&& other);
+    ~ContextInfo();
   };
   using PendingTask =
       base::OnceCallback<void(std::unique_ptr<ContextInfo> params)>;

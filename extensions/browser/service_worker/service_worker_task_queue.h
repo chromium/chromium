@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -157,6 +158,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
   bool IsReadyToRunTasks(content::BrowserContext* context,
                          const Extension* extension) const override;
 
+  // TODO(crbug.com/40276609): rename to AddPendingTaskAndMaybeDispatch.
   void AddPendingTask(const LazyContextId& context_id,
                       PendingTask task) override;
 
@@ -343,7 +345,10 @@ class ServiceWorkerTaskQueue : public KeyedService,
                              const SequencedContextId& context_id,
                              const Extension& extension);
 
-  void RunTasksAfterStartWorker(const SequencedContextId& context_id);
+  // Dispatches the given tasks to the service worker associated to the given
+  // context. Requires the worker to be ready.
+  void DispatchTasksImmediately(const SequencedContextId& context_id,
+                                base::span<PendingTask> tasks);
 
   // Checks if the `activation_token` has any more worker registration retries
   // left. Retries are only performed on registration timeout and up to 3 times
@@ -381,11 +386,6 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // Clears any record of registered Service Worker for the given extension with
   // `extension_id`.
   void RemoveRegisteredServiceWorkerInfo(const ExtensionId& extension_id);
-
-  // If the worker with `context_id` has seen worker start
-  // (DidStartWorkerForScope) and load (DidStartServiceWorkerContext) then runs
-  // all pending tasks for that worker.
-  void RunPendingTasksIfWorkerReady(const SequencedContextId& context_id);
 
   // Returns true if `activation_token` is the current activation for
   // `extension_id`.
@@ -441,6 +441,10 @@ class ServiceWorkerTaskQueue : public KeyedService,
 
   // Whether there are any pending tasks to run for the activated extension.
   bool HasPendingTasks(const SequencedContextId& context_id);
+
+  // Starts service worker, unless it's already in the process of starting.
+  void MaybeStartWorker(ServiceWorkerState* worker_state,
+                        const SequencedContextId& context_id);
 
   // Whether the task queue (as a keyed service) has been informed that the
   // browser context is shutting down. Used for metrics purposes.

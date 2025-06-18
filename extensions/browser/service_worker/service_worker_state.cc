@@ -8,6 +8,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 
 namespace extensions {
 
@@ -48,6 +49,10 @@ void ServiceWorkerState::Reset() {
   worker_id_.reset();
   browser_state_ = BrowserState::kNotStarted;
   renderer_state_ = RendererState::kNotActive;
+}
+
+bool ServiceWorkerState::IsStarting() const {
+  return worker_starting_;
 }
 
 bool ServiceWorkerState::IsReady() const {
@@ -156,6 +161,12 @@ void ServiceWorkerState::NotifyObserversIfReady(
     const SequencedContextId& context_id) {
   if (IsReady()) {
     worker_starting_ = false;
+
+    if (!base::FeatureList::IsEnabled(
+            extensions_features::kOptimizeServiceWorkerStartRequests)) {
+      SetBrowserState(ServiceWorkerState::BrowserState::kReady);
+    }
+
     for (auto& observer : observers_) {
       observer.OnWorkerStart(context_id, *worker_id_);
     }

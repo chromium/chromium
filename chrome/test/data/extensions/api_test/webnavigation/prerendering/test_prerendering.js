@@ -192,6 +192,7 @@ ready.then(async function() {
 
       let expectedPrerenderedOrder = ['onBeforeNavigate-2', 'onCommitted-2'];
 
+      // TODO(andreaorru): remove this if statement.
       if (!inServiceWorker) {
         expectedEvents.push(
           // TODO(crbug.com/40365717): Remove this expectation when the crbug

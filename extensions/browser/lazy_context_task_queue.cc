@@ -33,4 +33,9 @@ LazyContextTaskQueue::ContextInfo::ContextInfo(
       url(url),
       browser_context(render_process_host->GetBrowserContext()) {}
 
+LazyContextTaskQueue::ContextInfo::ContextInfo(const ContextInfo& other) =
+    default;
+LazyContextTaskQueue::ContextInfo::ContextInfo(ContextInfo&& other) = default;
+LazyContextTaskQueue::ContextInfo::~ContextInfo() = default;
+
 }  // namespace extensions
