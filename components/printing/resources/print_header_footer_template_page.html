@@ -100,8 +100,8 @@ function setupHeaderFooterTemplate(options) {
     <div id=-internal-print-header class='title text center'></div>`;
   footer.innerHTML = options['footerTemplate'] || `
     <div id=-internal-print-footer class='url text left grow'></div>
-    <div id=-internal-print-page class='text right'>
-      <span class='pageNumber' id=-internal-print-page></span>/<span class='totalPages' id=-internal-print-page></span>
+    <div id=-internal-print-page-number class='text right'>
+      <span class='pageNumber' id=-internal-print-page-number></span>/<span class='totalPages' id=-internal-print-page-number></span>
     </div>`;
 
   const date = new Date(options.date);
