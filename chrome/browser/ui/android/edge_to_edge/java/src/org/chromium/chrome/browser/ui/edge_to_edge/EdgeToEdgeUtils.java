@@ -37,6 +37,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -137,7 +138,11 @@ public class EdgeToEdgeUtils {
             return false;
         }
 
-        if (activity == null) {
+        // The root view's window insets is too soon to determine if we are in 3-button gesture nav
+        // mode.
+        if (activity == null
+                || activity.getWindow() == null
+                || activity.getWindow().getDecorView().getRootWindowInsets() == null) {
             return false;
         }
 
@@ -148,20 +153,22 @@ public class EdgeToEdgeUtils {
 
         return isBottomChinFeatureEnabled()
                 && !BuildInfo.getInstance().isAutomotive
-                // TODO(https://crbug.com/325356134) Look into using UiUtils#isGestureNavigationMode
-                // instead.
-                && isGestureNavigationMode(activity);
+                && !hasTappableNavigationBar(activity.getWindow());
     }
 
-    private static boolean isGestureNavigationMode(Activity activity) {
-        // The root view's window insets is too soon to determine if we are in 3-button gesture nav
-        // mode.
-        if (activity == null
-                || activity.getWindow() == null
-                || activity.getWindow().getDecorView().getRootWindowInsets() == null) {
-            return false;
-        }
-        return !hasTappableNavigationBar(activity.getWindow());
+    /**
+     * This is a sensitive check for whether all insets indicate or imply that the device is in
+     * gesture navigation mode, and not tappable (3-button) navigation mode.
+     *
+     * @param insetObserver The InsetObserver in the current activity, used to retrieve the last
+     *     seen root view window insets.
+     * @return Whether all insets indicate the device is in gesture navigation mode.
+     */
+    public static boolean doAllInsetsIndicateGestureNavigation(InsetObserver insetObserver) {
+        WindowInsetsCompat rootInsets = insetObserver.getLastRawWindowInsets();
+        return rootInsets != null
+                && isInGestureNavigationMode(rootInsets)
+                && !hasTappableBarIgnoringTop(() -> rootInsets);
     }
 
     /** Whether the edge-to-edge feature is enabled on tablet. */
@@ -433,6 +440,33 @@ public class EdgeToEdgeUtils {
         return (navigationBarInsets.bottom > 0 && tappableElementInsets.bottom > 0)
                 || (navigationBarInsets.left > 0 && tappableElementInsets.left > 0)
                 || (navigationBarInsets.right > 0 && tappableElementInsets.right > 0);
+    }
+
+    /**
+     * @param insetsSupplier Supplier for the root window insets.
+     * @return whether the given window's insets indicate a tappable bar, ignoring the top status
+     *     bar inset.
+     */
+    static boolean hasTappableBarIgnoringTop(Supplier<WindowInsetsCompat> insetsSupplier) {
+        if (sHas3ButtonNavBarForTesting != null) {
+            return sHas3ButtonNavBarForTesting;
+        }
+
+        var rootInsets = insetsSupplier.get();
+        assert rootInsets != null;
+
+        return hasTappableBarFromInsetsIgnoringTop(rootInsets);
+    }
+
+    /**
+     * Returns whether the given window's insets contains a tappable bar, ignoring the top status
+     * bar insets.
+     */
+    static boolean hasTappableBarFromInsetsIgnoringTop(WindowInsetsCompat insets) {
+        Insets tappableElementInsets = insets.getInsets(WindowInsetsCompat.Type.tappableElement());
+        return tappableElementInsets.bottom > 0
+                || tappableElementInsets.left > 0
+                || tappableElementInsets.right > 0;
     }
 
     /**
