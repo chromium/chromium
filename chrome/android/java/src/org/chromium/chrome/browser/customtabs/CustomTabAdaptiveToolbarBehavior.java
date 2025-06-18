@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs;
 
 import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT;
+import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_OFF;
 
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.SHARE;
@@ -63,6 +64,7 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
         if (isOpenInBrowserButtonEnabled()) {
             mValidButtons.add(AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER);
         }
+        if (!isShareButtonEnabled()) mValidButtons.remove(SHARE);
         if (ChromeFeatureList.sCctAdaptiveButtonEnableVoice.getValue()) {
             mValidButtons.add(AdaptiveToolbarButtonVariant.VOICE);
         }
@@ -147,8 +149,9 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
     @Override
     public boolean canShowManualOverride(@AdaptiveToolbarButtonVariant int manualOverride) {
         // Manual override should not be shown if the developer specified the same type
-        // in the custom action buttons.
-        return !isButtonDuplicated(manualOverride);
+        // in the custom action buttons or Chrome Actions is set to off.
+        return !(isButtonDuplicated(manualOverride)
+                || (manualOverride == SHARE && !isShareButtonEnabled()));
     }
 
     @Override
@@ -166,5 +169,9 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
         return ChromeFeatureList.sCctAdaptiveButtonEnableOpenInBrowser.getValue()
                 && mIntentDataProvider.getOpenInBrowserButtonState()
                         == OPEN_IN_BROWSER_STATE_DEFAULT;
+    }
+
+    private boolean isShareButtonEnabled() {
+        return mIntentDataProvider.getShareButtonState() != SHARE_STATE_OFF;
     }
 }

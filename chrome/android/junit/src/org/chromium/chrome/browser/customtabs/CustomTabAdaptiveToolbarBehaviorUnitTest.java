@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT;
 import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF;
 import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_ON;
+import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_OFF;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -168,6 +169,15 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void resultFilter_filterOutShareForDevOptionOff() {
+        when(mIntentDataProvider.getShareButtonState()).thenReturn(SHARE_STATE_OFF);
+        List<Integer> segmentationResults = List.of(SHARE, TRANSLATE);
+        initBehavior(List.of());
+        assertEquals(TRANSLATE, mBehavior.resultFilter(segmentationResults));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":contextual_only/true")
     public void resultFilter_skipStaticActionInContextualOnlyMode() {
         List<Integer> segmentationResults = List.of(READER_MODE, SHARE, TRANSLATE);
@@ -195,5 +205,9 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
         initBehavior(List.of(share));
         assertFalse(mBehavior.canShowManualOverride(SHARE));
         assertTrue(mBehavior.canShowManualOverride(OPEN_IN_BROWSER));
+
+        initBehavior(List.of());
+        when(mIntentDataProvider.getShareButtonState()).thenReturn(SHARE_STATE_OFF);
+        assertFalse(mBehavior.canShowManualOverride(SHARE));
     }
 }
