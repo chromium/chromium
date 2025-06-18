@@ -26,16 +26,16 @@ void GetMappedLocalePacksForChildProcess(
   for (auto& pak : locale_paks) {
     int descriptor;
     switch (pak.purpose) {
-      case ui::ResourceBundle::LocalePakPurpose::WEBVIEW_MAIN:
+      case ui::ResourceBundle::LocalePakPurpose::kWebViewMain:
         descriptor = kAndroidMainWebViewLocalePakDescriptor;
         break;
-      case ui::ResourceBundle::LocalePakPurpose::NON_WEBVIEW_MAIN:
+      case ui::ResourceBundle::LocalePakPurpose::kNonWebViewMain:
         descriptor = kAndroidMainNonWebViewLocalePakDescriptor;
         break;
-      case ui::ResourceBundle::LocalePakPurpose::WEBVIEW_FALLBACK:
+      case ui::ResourceBundle::LocalePakPurpose::kWebViewFallback:
         descriptor = kAndroidFallbackWebViewLocalePakDescriptor;
         break;
-      case ui::ResourceBundle::LocalePakPurpose::NON_WEBVIEW_FALLBACK:
+      case ui::ResourceBundle::LocalePakPurpose::kNonWebViewFallback:
         descriptor = kAndroidFallbackNonWebViewLocalePakDescriptor;
         break;
       default:

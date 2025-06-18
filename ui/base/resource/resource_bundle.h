@@ -68,15 +68,26 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     LargeFont,
   };
 
+  // The gender to use for languages that are grammatically gendered. kOther is
+  // the default.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.base
+  enum class Gender {
+    kOther = 0,
+    kFeminine,
+    kMasculine,
+    kNeuter,
+    kDefault = kOther,
+  };
+
 #if BUILDFLAG(IS_ANDROID)
   // The purpose for a pak file represented by an FdAndRegion. These correspond
   // to entries in the android_webview/common/aw_descriptors.h and
   // chrome/common/chrome_descriptors.h enums.
   enum class LocalePakPurpose {
-    WEBVIEW_MAIN = 0,
-    NON_WEBVIEW_MAIN,
-    WEBVIEW_FALLBACK,
-    NON_WEBVIEW_FALLBACK,
+    kWebViewMain = 0,
+    kNonWebViewMain,
+    kWebViewFallback,
+    kNonWebViewFallback,
   };
 
   struct FdAndRegion {
@@ -264,7 +275,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
       const base::MemoryMappedFile::Region& region);
 
   // Check if the .pak for the given locale exists.
-  static bool LocaleDataPakExists(std::string_view locale);
+  static bool LocaleDataPakExists(std::string_view locale, Gender gender);
 
   // Registers additional data pack files with this ResourceBundle.  When
   // looking for a DataResource, we will search these files after searching the

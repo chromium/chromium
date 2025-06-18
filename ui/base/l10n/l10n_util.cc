@@ -340,7 +340,8 @@ bool HasStringsForLocale(std::string_view locale,
   // under a system locale Chrome is not localized to (e.g. Farsi on Linux),
   // but it'd slow down the start up time a little bit for locales Chrome is
   // localized to. So, we don't call it here.
-  return ui::ResourceBundle::LocaleDataPakExists(locale);
+  return ui::ResourceBundle::LocaleDataPakExists(
+      locale, ui::ResourceBundle::Gender::kDefault);
 }
 
 // On Linux, the text layout engine Pango determines paragraph directionality

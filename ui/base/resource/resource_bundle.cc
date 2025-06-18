@@ -396,7 +396,9 @@ void ResourceBundle::LoadAdditionalLocaleDataWithPakFileRegion(
 
 #if !BUILDFLAG(IS_ANDROID)
 // static
-bool ResourceBundle::LocaleDataPakExists(std::string_view locale) {
+bool ResourceBundle::LocaleDataPakExists(std::string_view locale,
+                                         Gender gender) {
+  // TODO: Support gender translations on non-Android platforms.
   const auto path = GetLocaleFilePath(locale);
   if (path.empty()) {
     return false;
