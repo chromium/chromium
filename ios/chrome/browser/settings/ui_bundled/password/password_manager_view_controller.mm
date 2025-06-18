@@ -1075,6 +1075,10 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
         [self clearSectionWithIdentifier:SectionIdentifierWidgetPromo
                         withRowAnimation:UITableViewRowAnimationTop];
 
+        [self
+            clearSectionWithIdentifier:SectionIdentifierTrustedVaultWidgetPromo
+                      withRowAnimation:UITableViewRowAnimationTop];
+
         [self clearSectionWithIdentifier:SectionIdentifierManageAccountHeader
                         withRowAnimation:UITableViewRowAnimationTop];
 
@@ -1117,6 +1121,22 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
             withRowAnimation:UITableViewRowAnimationTop];
 
         sectionIndex++;
+        // Add the trusted vault promo section.
+        if (password_manager::features::
+                IsPasswordManagerTrustedVaultWidgetEnabled() &&
+            _shouldShowTrustedVaultWidgetPromo) {
+          [model insertSectionWithIdentifier:
+                     SectionIdentifierTrustedVaultWidgetPromo
+                                     atIndex:sectionIndex];
+          [self.tableView
+                insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+              withRowAnimation:UITableViewRowAnimationTop];
+          [model addItem:self.trustedVaultWidgetPromoItem
+              toSectionWithIdentifier:SectionIdentifierTrustedVaultWidgetPromo];
+
+          sectionIndex++;
+        }
+
         // Add widget promo section.
         if (_shouldShowPasswordManagerWidgetPromo) {
           [model insertSectionWithIdentifier:SectionIdentifierWidgetPromo
