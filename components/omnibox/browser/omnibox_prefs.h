@@ -50,6 +50,10 @@ inline constexpr char kKeywordSpaceTriggeringEnabled[] =
 inline constexpr char kShowGoogleLensShortcut[] =
     "omnibox.show_google_lens_shortcut";
 
+// Boolean that specifies whether to show the search tools at the bottom of the
+// omnibox.
+inline constexpr char kShowSearchTools[] = "omnibox.show_search_tools";
+
 // Boolean that specifies whether to always show full URLs in the omnibox.
 inline constexpr char kPreventUrlElisionsInOmnibox[] =
     "omnibox.prevent_url_elisions";

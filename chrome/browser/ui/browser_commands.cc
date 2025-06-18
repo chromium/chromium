@@ -2168,6 +2168,13 @@ void ToggleShowGoogleLensShortcut(Browser* browser) {
                                              !pref_enabled);
 }
 
+void ToggleShowSearchTools(Browser* browser) {
+  bool pref_enabled =
+      browser->profile()->GetPrefs()->GetBoolean(omnibox::kShowSearchTools);
+  browser->profile()->GetPrefs()->SetBoolean(omnibox::kShowSearchTools,
+                                             !pref_enabled);
+}
+
 void ShowAppMenu(Browser* browser) {
   // We record the user metric for this event in AppMenu::RunMenu.
   browser->window()->ShowAppMenu();

@@ -34,6 +34,7 @@
 #include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
@@ -394,6 +395,10 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
       (!config.keep_toolbelt_after_input && !input.IsZeroSuggest())) {
     return false;
   }
+  if (!client()->GetPrefs()->GetBoolean(omnibox::kShowSearchTools)) {
+    return false;
+  }
+
   AutocompleteMatch match(this, omnibox::kToolbeltRelevance, false,
                           AutocompleteMatchType::NULL_RESULT_MESSAGE);
   match.transition = ui::PAGE_TRANSITION_GENERATED;

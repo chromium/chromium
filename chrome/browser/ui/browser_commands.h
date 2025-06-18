@@ -272,6 +272,7 @@ void OpenFeedbackDialog(Browser* browser,
 void ToggleBookmarkBar(Browser* browser);
 void ToggleShowFullURLs(Browser* browser);
 void ToggleShowGoogleLensShortcut(Browser* browser);
+void ToggleShowSearchTools(Browser* browser);
 void ShowAppMenu(Browser* browser);
 void ShowAvatarMenu(Browser* browser);
 void OpenUpdateChromeDialog(Browser* browser);

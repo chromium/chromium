@@ -915,6 +915,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_GOOGLE_LENS_SHORTCUT:
       ToggleShowGoogleLensShortcut(browser_);
       break;
+    case IDC_SHOW_SEARCH_TOOLS:
+      ToggleShowSearchTools(browser_);
+      break;
     case IDC_PROFILING_ENABLED:
       content::Profiling::Toggle();
       break;
@@ -1357,6 +1360,11 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_FOCUS_PREV_TAB_GROUP, true);
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_TAB_GROUP, true);
 
+  // Omnibox commands
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_FULL_URLS, true);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_GOOGLE_LENS_SHORTCUT, true);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_SEARCH_TOOLS, true);
+
   // Window management commands
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_WINDOW, true);
   command_updater_.UpdateCommandEnabled(
@@ -1625,9 +1633,6 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
       extensions::ExtensionRegistrar::Get(profile);
   const bool enable_extensions =
       extension_registrar && extension_registrar->extensions_enabled();
-
-  command_updater->UpdateCommandEnabled(IDC_SHOW_FULL_URLS, true);
-  command_updater->UpdateCommandEnabled(IDC_SHOW_GOOGLE_LENS_SHORTCUT, true);
 
   // Bookmark manager and settings page/subpages are forced to open in normal
   // mode. For this reason we disable these commands when incognito is forced.
