@@ -6,6 +6,7 @@
 #define UI_WM_CORE_WINDOW_ANIMATIONS_H_
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/wm/core/window_properties.h"
@@ -19,15 +20,19 @@ class TimeDelta;
 
 namespace wm {
 
+using WindowVisibilityAnimationCallback =
+    base::RepeatingCallback<void(aura::Window*, bool visible)>;
+
 // A variety of canned animations for window transitions.
 enum WindowVisibilityAnimationType {
-  WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT = 0,     // Default. Lets the system
-                                                    // decide based on window
-                                                    // type.
-  WINDOW_VISIBILITY_ANIMATION_TYPE_DROP,            // Window shrinks in.
-  WINDOW_VISIBILITY_ANIMATION_TYPE_VERTICAL,        // Vertical Glenimation.
-  WINDOW_VISIBILITY_ANIMATION_TYPE_FADE,            // Fades in/out.
-  WINDOW_VISIBILITY_ANIMATION_TYPE_ROTATE,          // Window rotates in.
+  WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT = 0,  // Default. Lets the system
+                                                 // decide based on window
+                                                 // type.
+  WINDOW_VISIBILITY_ANIMATION_TYPE_DROP,         // Window shrinks in.
+  WINDOW_VISIBILITY_ANIMATION_TYPE_VERTICAL,     // Vertical Glenimation.
+  WINDOW_VISIBILITY_ANIMATION_TYPE_FADE,         // Fades in/out.
+  WINDOW_VISIBILITY_ANIMATION_TYPE_ROTATE,       // Window rotates in.
+  WINDOW_VISIBILITY_ANIMATION_TYPE_CUSTOM,       // Custom animation.
 
   // Downstream library animations start above this point.
   WINDOW_VISIBILITY_ANIMATION_MAX
@@ -45,6 +50,11 @@ COMPONENT_EXPORT(UI_WM)
 void SetWindowVisibilityAnimationType(aura::Window* window, int type);
 COMPONENT_EXPORT(UI_WM)
 int GetWindowVisibilityAnimationType(aura::Window* window);
+
+COMPONENT_EXPORT(UI_WM)
+void SetWindowVisibilityCustomAnimation(
+    aura::Window* window,
+    WindowVisibilityAnimationCallback callback);
 
 COMPONENT_EXPORT(UI_WM)
 void SetWindowVisibilityAnimationTransition(

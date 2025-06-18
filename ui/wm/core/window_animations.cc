@@ -43,8 +43,13 @@
 #include "ui/wm/core/wm_core_switches.h"
 #include "ui/wm/public/animation_host.h"
 
+DEFINE_UI_CLASS_PROPERTY_TYPE(wm::WindowVisibilityAnimationCallback*)
+
 namespace wm {
 namespace {
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(wm::WindowVisibilityAnimationCallback,
+                                   kWindowVisibilityCustomAnimationKey)
 
 // A base class for hiding animation observer which has two roles:
 // 1) Notifies AnimationHost at the end of hiding animation.
@@ -555,6 +560,12 @@ bool AnimateShowWindow(aura::Window* window) {
     case WINDOW_VISIBILITY_ANIMATION_TYPE_ROTATE:
       AnimateShowWindow_Rotate(window);
       return true;
+    case WINDOW_VISIBILITY_ANIMATION_TYPE_CUSTOM: {
+      auto* callback = window->GetProperty(kWindowVisibilityCustomAnimationKey);
+      CHECK(callback);
+      (*callback).Run(window, /*visible=*/true);
+    }
+      return true;
     default:
       return false;
   }
@@ -584,6 +595,12 @@ bool AnimateHideWindow(aura::Window* window) {
     case WINDOW_VISIBILITY_ANIMATION_TYPE_ROTATE:
       AnimateHideWindow_Rotate(window);
       return true;
+    case WINDOW_VISIBILITY_ANIMATION_TYPE_CUSTOM: {
+      auto* callback = window->GetProperty(kWindowVisibilityCustomAnimationKey);
+      CHECK(callback);
+      (*callback).Run(window, /*visible=*/false);
+      return true;
+    }
     default:
       return false;
   }
@@ -629,6 +646,15 @@ void SetWindowVisibilityAnimationType(aura::Window* window, int type) {
 
 int GetWindowVisibilityAnimationType(aura::Window* window) {
   return window->GetProperty(kWindowVisibilityAnimationTypeKey);
+}
+
+void SetWindowVisibilityCustomAnimation(
+    aura::Window* window,
+    WindowVisibilityAnimationCallback callback) {
+  SetWindowVisibilityAnimationType(
+      window,
+      WindowVisibilityAnimationType::WINDOW_VISIBILITY_ANIMATION_TYPE_CUSTOM);
+  window->SetProperty(kWindowVisibilityCustomAnimationKey, callback);
 }
 
 void SetWindowVisibilityAnimationTransition(

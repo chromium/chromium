@@ -276,9 +276,11 @@ class SharesheetBubbleViewNearbyShareBrowserTest : public InProcessBrowserTest {
   }
 
   void CloseBubble() {
-    bubble_delegate_->CloseBubble(::sharesheet::SharesheetResult::kCancel);
-    // |bubble_delegate_| and |sharesheet_bubble_view_| destruct on close.
+    auto* bubble_delegate = bubble_delegate_.get();
+    // |bubble_delegate_| will be deleted during CloseBubble.
     bubble_delegate_ = nullptr;
+    bubble_delegate->CloseBubble(::sharesheet::SharesheetResult::kCancel);
+    // |sharesheet_bubble_view_| wlil be deleted asynchronously.
     sharesheet_bubble_view_ = nullptr;
   }
 

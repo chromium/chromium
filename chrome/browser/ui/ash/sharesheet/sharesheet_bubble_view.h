@@ -105,12 +105,9 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void TargetButtonPressed(TargetInfo target);
   void SetToDefaultBubbleSizing();
   void ShowWidgetWithAnimateFadeIn();
-  void CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason closed_reason);
   void CloseWidgetWithReason(views::Widget::ClosedReason closed_reason);
 
-  // Owns this class.
-  raw_ptr<::sharesheet::SharesheetServiceDelegator, DanglingUntriaged>
-      delegator_;
+  raw_ptr<::sharesheet::SharesheetServiceDelegator> delegator_;
   std::optional<::sharesheet::ShareActionType> active_share_action_type_;
   apps::IntentPtr intent_;
   ::sharesheet::DeliveredCallback delivered_callback_;
@@ -119,7 +116,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   int width_ = 0;
   int height_ = 0;
   bool show_expanded_view_ = false;
-  bool is_bubble_closing_ = false;
   bool close_on_deactivate_ = true;
   bool escape_pressed_ = false;
 
