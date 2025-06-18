@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/scheduler_loop_quarantine_support.h"
+#include "partition_alloc/scheduler_loop_quarantine_support.h"
 
 namespace partition_alloc {
 ScopedSchedulerLoopQuarantineExclusion::
