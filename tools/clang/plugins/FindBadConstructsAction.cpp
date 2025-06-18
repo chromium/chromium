@@ -8,7 +8,6 @@
 #include "clang/Frontend/FrontendPluginRegistry.h"
 #include "llvm/Support/TimeProfiler.h"
 
-#include "FilteredASTConsumer.h"
 #include "FindBadConstructsConsumer.h"
 
 using namespace clang;
@@ -29,7 +28,7 @@ namespace chrome_checker {
 
 namespace {
 
-class PluginConsumer : public FilteredASTConsumer {
+class PluginConsumer : public ASTConsumer {
  public:
   PluginConsumer(CompilerInstance* instance, const Options& options)
       : visitor_(*instance, options) {}
@@ -37,7 +36,6 @@ class PluginConsumer : public FilteredASTConsumer {
   void HandleTranslationUnit(clang::ASTContext& context) override {
     llvm::TimeTraceScope TimeScope(
         "HandleTranslationUnit for find-bad-constructs plugin");
-    ApplyFilter(context);
     visitor_.Traverse(context);
   }
 

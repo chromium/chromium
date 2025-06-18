@@ -21,9 +21,6 @@ foreach(source ${plugin_sources})
 endforeach()
 set_property(TARGET clang APPEND PROPERTY SOURCES ${absolute_sources})
 
-# We need some way to depend on code in tools/clang/plugins
-target_include_directories(clang AFTER PRIVATE ../../..)
-
 cr_add_test(raw_ptr_plugin_test
   python3 tests/test.py
   ${CMAKE_BINARY_DIR}/bin/clang
