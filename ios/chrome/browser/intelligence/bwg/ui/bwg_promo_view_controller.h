@@ -13,7 +13,7 @@
 @protocol BWGPromoViewControllerDelegate;
 
 // BWG consent View Controller.
-@interface BWGPromoViewController : PromoStyleViewController
+@interface BWGPromoViewController : UIViewController
 
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<BWGConsentMutator> mutator;
@@ -21,7 +21,7 @@
 // NavigationController.
 @property(nonatomic, weak) id<BWGPromoViewControllerDelegate> BWGPromoDelegate;
 
-// Content height of the bottom sheet.
+// Content height of the BWG Promo UI.
 - (CGFloat)contentHeight;
 
 @end
