@@ -60,8 +60,8 @@ export interface ClearBrowsingDataResult {
  * updated Sync State.
  *
  * TODO(crbug.com/397187800): Clean up UpdateSyncStateEvent interface when
- * kDBDRevampDesktop is launched. We only need to fetch isNonGoogleDse for the
- * DBDv2 dialog.
+ * kDBDRevampDesktop is launched. We only need to fetch isNonGoogleDse &
+ * nonGoogleSearchHistoryString for the DBDv2 dialog.
  */
 export interface UpdateSyncStateEvent {
   signedIn: boolean;

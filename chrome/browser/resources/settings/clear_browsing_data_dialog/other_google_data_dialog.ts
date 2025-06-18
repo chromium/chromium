@@ -14,26 +14,38 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
+import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
 
+import type {ClearBrowsingDataBrowserProxy, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
+import {ClearBrowsingDataBrowserProxyImpl} from './clear_browsing_data_browser_proxy.js';
+import {isSignedIn} from './clear_browsing_data_signin_util.js';
 import {getTemplate} from './other_google_data_dialog.html.js';
 
 export interface SettingsOtherGoogleDataDialogElement {
   $: {
     dialog: CrDialogElement,
+    googleSearchHistoryLink: CrLinkRowElement,
     passwordManagerLink: CrLinkRowElement,
     myActivityLink: CrLinkRowElement,
-    searchHistoryLink: CrLinkRowElement,
+    nonGoogleSearchHistoryLink: HTMLElement,
   };
 }
 
-export class SettingsOtherGoogleDataDialogElement extends PolymerElement {
+const SettingsOtherGoogleDataDialogElementBase =
+    WebUiListenerMixin(PolymerElement);
+
+export class SettingsOtherGoogleDataDialogElement extends
+    SettingsOtherGoogleDataDialogElementBase {
   static get is() {
     return 'settings-other-google-data-dialog';
   }
@@ -43,20 +55,60 @@ export class SettingsOtherGoogleDataDialogElement extends PolymerElement {
   }
   static get properties() {
     return {
-      isGoogleDse: {
+      dialogTitle_: {
+        type: String,
+        computed: 'computeDialogTitle_(isGoogleDse_)',
+      },
+
+      isGoogleDse_: {
         type: Boolean,
         value: false,
       },
 
-      isSignedIn: {
-        type: Boolean,
-        value: false,
-      },
+      nonGoogleSearchHistorySubLabel_: String,
+
+      syncStatus_: Object,
     };
   }
 
-  declare isGoogleDse: boolean;
-  declare isSignedIn: boolean;
+  declare private dialogTitle_: string;
+  declare private isGoogleDse_: boolean;
+  declare private nonGoogleSearchHistorySubLabel_: TrustedHTML;
+  declare private syncStatus_: SyncStatus|undefined;
+
+  private clearBrowsingDataBrowserProxy_: ClearBrowsingDataBrowserProxy =
+      ClearBrowsingDataBrowserProxyImpl.getInstance();
+  private syncBrowserProxy_: SyncBrowserProxy =
+      SyncBrowserProxyImpl.getInstance();
+
+  override ready() {
+    super.ready();
+
+    this.addWebUiListener(
+        'sync-status-changed', this.handleSyncStatus_.bind(this));
+    this.syncBrowserProxy_.getSyncStatus().then(
+        this.handleSyncStatus_.bind(this));
+
+    this.addWebUiListener(
+        'update-sync-state', this.updateDseStatus_.bind(this));
+    this.clearBrowsingDataBrowserProxy_.getSyncState().then(
+        this.updateDseStatus_.bind(this));
+  }
+
+  private updateDseStatus_(event: UpdateSyncStateEvent) {
+    this.isGoogleDse_ = !event.isNonGoogleDse;
+    this.nonGoogleSearchHistorySubLabel_ =
+        sanitizeInnerHtml(event.nonGoogleSearchHistoryString);
+  }
+
+  private handleSyncStatus_(syncStatus: SyncStatus) {
+    this.syncStatus_ = syncStatus;
+  }
+
+  private computeDialogTitle_() {
+    return this.isGoogleDse_ ? loadTimeData.getString('otherGoogleDataTitle') :
+                               loadTimeData.getString('otherDataTitle');
+  }
 
   private onBackOrCancelClick_() {
     this.$.dialog.cancel();
@@ -67,22 +119,22 @@ export class SettingsOtherGoogleDataDialogElement extends PolymerElement {
         PasswordManagerPage.PASSWORDS);
   }
 
-  private onMyActivityClick_() {
+  private onMyActivityLinkClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('deleteBrowsingDataMyActivityUrl'));
   }
 
-  private onSearchHistoryClick_() {
+  private onGoogleSearchHistoryLinkClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('deleteBrowsingDataSearchHistoryUrl'));
   }
 
   private shouldShowMyActivityLink_() {
-    return this.isSignedIn;
+    return isSignedIn(this.syncStatus_);
   }
 
-  private shouldShowSearchHistoryLink_() {
-    return this.isSignedIn || !this.isGoogleDse;
+  private shouldShowGoogleSearchHistoryLink_() {
+    return isSignedIn(this.syncStatus_) && this.isGoogleDse_;
   }
 }
 

@@ -844,6 +844,9 @@
   <message name="IDS_SETTINGS_OTHER_DATA_TITLE" desc="Title for the 'Other data' subpage that is linked from the clear Browse data dialog." translateable="false">
     Other data
   </message>
+  <message name="IDS_SETTINGS_OTHER_GOOGLE_DATA_TITLE" desc="Title for the 'Other Google data' subpage that is linked from the clear Browse data dialog. This title is shown when Google is set as the default search engine on Chrome." translateable="false">
+    Other Google data
+  </message>
   <message name="IDS_SETTINGS_MY_ACTIVITY" desc="Label for the 'My Activity' option in 'Other Google Data' page." translateable="false">
     My Activity
   </message>
