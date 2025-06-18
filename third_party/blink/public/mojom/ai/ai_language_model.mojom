@@ -87,6 +87,8 @@ union AILanguageModelPromptContent {
 struct AILanguageModelPrompt {
   AILanguageModelPromptRole role;
   array<AILanguageModelPromptContent> content;
+  // Whether this prompt is an assistant response prefix.
+  bool is_prefix = false;
 };
 
 // This is used when creating a new AILanguageModel.

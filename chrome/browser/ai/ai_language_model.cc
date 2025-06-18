@@ -91,7 +91,9 @@ on_device_model::mojom::InputPtr ConvertToInput(
           break;
       }
     }
-    input->pieces.push_back(ml::Token::kEnd);
+    if (!prompt->is_prefix) {
+      input->pieces.push_back(ml::Token::kEnd);
+    }
   }
   return input;
 }
@@ -103,7 +105,9 @@ on_device_model::mojom::InputPtr ConvertToInputForExecute(
   if (!input) {
     return nullptr;
   }
-  input->pieces.push_back(ml::Token::kModel);
+  if (prompts.empty() || !prompts.back()->is_prefix) {
+    input->pieces.push_back(ml::Token::kModel);
+  }
   return input;
 }
 

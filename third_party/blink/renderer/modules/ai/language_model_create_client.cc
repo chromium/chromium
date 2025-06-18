@@ -148,6 +148,12 @@ void LanguageModelCreateClient::Create(
           kExceptionMessageSystemPromptIsNotTheFirst);
       return;
     }
+    if (message->prefix()) {
+      GetResolver()->Reject(DOMException::Create(
+          "initialPrompts cannot specify an assistant response prefix.",
+          DOMException::GetErrorName(DOMExceptionCode::kSyntaxError)));
+      return;
+    }
   }
 
   ConvertPromptInputsToMojo(

@@ -111,9 +111,10 @@ optimization_guide::proto::FeatureTextSafetyConfiguration CreateSafetyConfig() {
 
 // Build a mojo prompt struct with the specified `role` and `text`
 blink::mojom::AILanguageModelPromptPtr MakePrompt(Role role,
-                                                  const std::string& text) {
-  return blink::mojom::AILanguageModelPrompt::New(role,
-                                                  ToContentVector({text}));
+                                                  const std::string& text,
+                                                  bool is_prefix = false) {
+  return blink::mojom::AILanguageModelPrompt::New(role, ToContentVector({text}),
+                                                  is_prefix);
 }
 
 // Build a vector with a single prompt that has multiple user text contents.
@@ -121,7 +122,7 @@ std::vector<blink::mojom::AILanguageModelPromptPtr> MakeInput(
     std::initializer_list<std::string> texts) {
   std::vector<blink::mojom::AILanguageModelPromptPtr> prompts;
   prompts.push_back(blink::mojom::AILanguageModelPrompt::New(
-      Role::kUser, ToContentVector(std::move(texts))));
+      Role::kUser, ToContentVector(std::move(texts)), /*is_prefix=*/false));
   return prompts;
 }
 
@@ -910,7 +911,8 @@ TEST_F(AILanguageModelTest, MultimodalInputImageNotSpecified) {
     input.push_back(blink::mojom::AILanguageModelPrompt::New(
         Role::kUser,
         ToVector(blink::mojom::AILanguageModelPromptContent::NewBitmap(
-            CreateTestBitmap(10, 10)))));
+            CreateTestBitmap(10, 10))),
+        /*is_prefix=*/false));
     return input;
   };
   {
@@ -946,7 +948,8 @@ TEST_F(AILanguageModelTest, MultimodalInputAudioNotSpecified) {
     input.push_back(blink::mojom::AILanguageModelPrompt::New(
         Role::kUser,
         ToVector(blink::mojom::AILanguageModelPromptContent::NewAudio(
-            CreateTestAudio()))));
+            CreateTestAudio())),
+        /*is_prefix=*/false));
     return input;
   };
   {
@@ -984,11 +987,13 @@ TEST_F(AILanguageModelTest, MultimodalInput) {
   input.push_back(blink::mojom::AILanguageModelPrompt::New(
       Role::kUser,
       ToVector(blink::mojom::AILanguageModelPromptContent::NewBitmap(
-          CreateTestBitmap(10, 10)))));
+          CreateTestBitmap(10, 10))),
+      /*is_prefix=*/false));
   input.push_back(blink::mojom::AILanguageModelPrompt::New(
       Role::kUser,
       ToVector(blink::mojom::AILanguageModelPromptContent::NewAudio(
-          CreateTestAudio()))));
+          CreateTestAudio())),
+      /*is_prefix=*/false));
   EXPECT_THAT(Prompt(*session, std::move(input)),
               ElementsAreArray(FormatResponses({"UfooEU<image>EU<audio>EM"})));
 }
@@ -1178,6 +1183,15 @@ TEST_F(AILanguageModelTest, Constraint) {
       Prompt(*session, MakeInput("foo"),
              on_device_model::mojom::ResponseConstraint::NewRegex("reg")),
       ElementsAre("Constraint: regex reg", "UfooEM"));
+}
+
+TEST_F(AILanguageModelTest, Prefix) {
+  auto session = CreateSession();
+  std::vector<blink::mojom::AILanguageModelPromptPtr> prompts;
+  prompts.push_back(MakePrompt(Role::kUser, "foo"));
+  prompts.push_back(MakePrompt(Role::kAssistant, "bar", /*is_prefix=*/true));
+  // Expect no 'bar' end token, nor separate model response start token.
+  EXPECT_THAT(Prompt(*session, std::move(prompts)), ElementsAre("UfooEMbar"));
 }
 
 TEST_F(AILanguageModelTest, ServiceCrash) {

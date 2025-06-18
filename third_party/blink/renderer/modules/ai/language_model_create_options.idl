@@ -16,6 +16,9 @@ dictionary LanguageModelMessage {
 
   // The DOMString branch is shorthand for `[{ type: "text", value: providedValue }]`
   required (DOMString or sequence<LanguageModelMessageContent>) content;
+
+  // Whether this message is an assistant response prefix.
+  boolean prefix = false;
 };
 
 dictionary LanguageModelMessageContent {

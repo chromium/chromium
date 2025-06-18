@@ -269,7 +269,8 @@ void LanguageModelPromptBuilder::Build(const V8LanguageModelPrompt* input) {
     processed_prompts_.push_back(mojom::blink::AILanguageModelPrompt::New(
         LanguageModel::ConvertRoleToMojo(message->role()),
         Vector<mojom::blink::AILanguageModelPromptContentPtr>(
-            content_sequence.size())));
+            content_sequence.size()),
+        message->prefix()));
 
     bool is_multimodal = false;  // True if any content is not text.
     for (const auto& content : content_sequence) {
@@ -290,6 +291,27 @@ void LanguageModelPromptBuilder::Build(const V8LanguageModelPrompt* input) {
         Reject(DOMException::Create(
             "Multimodal input is not supported for the assistant role.",
             DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
+        return;
+      }
+    }
+    if (message->prefix()) {
+      if (!RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled(
+              ExecutionContext::From(script_state_))) {
+        Reject(DOMException::Create(
+            "Assistant response prefix is not supported.",
+            DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
+        return;
+      }
+      if (message->role() != V8LanguageModelMessageRole::Enum::kAssistant) {
+        Reject(DOMException::Create(
+            "Assistant response prefix must use the assistant role.",
+            DOMException::GetErrorName(DOMExceptionCode::kSyntaxError)));
+        return;
+      }
+      if (message != messages.back()) {
+        Reject(DOMException::Create(
+            "Assistant response prefix must be the last message.",
+            DOMException::GetErrorName(DOMExceptionCode::kSyntaxError)));
         return;
       }
     }
