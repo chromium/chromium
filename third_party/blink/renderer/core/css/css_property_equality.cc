@@ -496,7 +496,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kLeft:
       return a.Left() == b.Left();
     case CSSPropertyID::kLetterSpacing:
-      return a.LetterSpacing() == b.LetterSpacing();
+      return a.SpecifiedLetterSpacing() == b.SpecifiedLetterSpacing();
     case CSSPropertyID::kLightingColor:
       return a.LightingColor() == b.LightingColor();
     case CSSPropertyID::kLineBreak:

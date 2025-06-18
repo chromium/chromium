@@ -6213,7 +6213,7 @@ const CSSValue* LetterSpacing::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ParseSpacing(stream, context);
+  return css_parsing_utils::ParseLetterSpacing(stream, context);
 }
 
 const CSSValue* LetterSpacing::CSSValueFromComputedStyleInternal(
@@ -6221,6 +6221,16 @@ const CSSValue* LetterSpacing::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
+  if (RuntimeEnabledFeatures::CSSLetterSpacingPercentageEnabled()) {
+    const Length& spacing = style.SpecifiedLetterSpacing();
+    if (spacing.IsFixed()) {
+      if (spacing.IsZero()) {
+        return CSSIdentifierValue::Create(CSSValueID::kNormal);
+      }
+      return ZoomAdjustedPixelValue(spacing.Pixels(), style);
+    }
+    return CSSPrimitiveValue::Create(spacing, style.Zoom());
+  }
   if (!style.LetterSpacing()) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
@@ -12032,7 +12042,7 @@ const CSSValue* WordSpacing::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ParseSpacing(stream, context);
+  return css_parsing_utils::ParseWordSpacing(stream, context);
 }
 
 const CSSValue* WordSpacing::CSSValueFromComputedStyleInternal(

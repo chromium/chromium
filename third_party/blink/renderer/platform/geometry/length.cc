@@ -349,6 +349,15 @@ String Length::ToString() const {
   return builder.ToString();
 }
 
+unsigned Length::GetHash() const {
+  unsigned hash = 0;
+  WTF::AddFloatToHash(hash, value_);
+  WTF::AddIntToHash(hash, type_);
+  WTF::AddIntToHash(hash, quirk_);
+  WTF::AddIntToHash(hash, calculation_handle_);
+  return hash;
+}
+
 std::ostream& operator<<(std::ostream& ostream, const Length& value) {
   return ostream << value.ToString();
 }
