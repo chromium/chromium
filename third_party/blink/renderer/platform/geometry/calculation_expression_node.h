@@ -47,7 +47,6 @@ enum class CalculationOperator {
   kAcos,
   kAtan,
   kAtan2,
-  kInvalid
 };
 
 // Represents an expression composed of numbers, |PixelsAndPercent| and multiple

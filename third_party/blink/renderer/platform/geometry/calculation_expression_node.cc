@@ -452,8 +452,6 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       return MakeGarbageCollected<CalculationExpressionOperationNode>(
           std::move(children), op);
     }
-    case CalculationOperator::kInvalid:
-      NOTREACHED();
     case CalculationOperator::kAtan2: {
       DCHECK_EQ(children.size(), 2u);
       const auto* a =
@@ -653,8 +651,6 @@ float CalculationExpressionOperationNode::Evaluate(
               : std::nullopt;
       return EvaluateTrigonometricFunction(operator_, a, b);
     }
-    case CalculationOperator::kInvalid:
-      break;
       // TODO(crbug.com/1284199): Support other math functions.
   }
   NOTREACHED();
@@ -735,8 +731,6 @@ const CalculationExpressionNode* CalculationExpressionOperationNode::Zoom(
         cloned_operands.push_back(child->Zoom(factor));
       return CreateSimplified(std::move(cloned_operands), operator_);
     }
-    case CalculationOperator::kInvalid:
-      NOTREACHED();
   }
 }
 

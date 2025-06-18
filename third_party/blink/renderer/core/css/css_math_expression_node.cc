@@ -5008,8 +5008,6 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
       return CSSMathExpressionOperation::CreateSignRelatedFunction(
           std::move(operands), CSSValueID::kPow);
     }
-    case CalculationOperator::kInvalid:
-      NOTREACHED();
     case CalculationOperator::kSin:
     case CalculationOperator::kCos:
     case CalculationOperator::kTan:
