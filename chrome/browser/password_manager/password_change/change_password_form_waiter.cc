@@ -53,10 +53,20 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
       form_manager->GetParsedObservedForm();
   CHECK(parsed_form);
 
-  // New password field and password confirmation fields are indicators of
-  // a change password form.
-  if (!parsed_form->new_password_element_renderer_id ||
-      !parsed_form->confirmation_password_element_renderer_id) {
+  // Change password form shouldn't contain username field.
+  if (parsed_form->username_element_renderer_id) {
+    return;
+  }
+
+  // New password field must be present in a change password form.
+  if (!parsed_form->new_password_element_renderer_id) {
+    return;
+  }
+
+  // Either confirmation password or the old password must be present in a
+  // change password form.
+  if (!parsed_form->confirmation_password_element_renderer_id &&
+      !parsed_form->password_element_renderer_id) {
     return;
   }
 
