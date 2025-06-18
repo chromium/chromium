@@ -6412,6 +6412,8 @@ void RenderFrameImpl::BeginNavigationInternal(
         nav_start_diff);
     if (start_diff_under_threshold &&
         base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
+      DVLOG(0) << "Ignoring duplicate navigation to " << common_params->url
+               << " due to the short interval since the previous one.";
       return;
     }
   }

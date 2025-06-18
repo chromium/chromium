@@ -889,6 +889,10 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
         base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
       request->set_navigation_discard_reason(
           NavigationDiscardReason::kNeverStarted);
+      DVLOG(0) << "Ignoring duplicate navigation to "
+               << request->common_params().url
+               << " due to the short interval since the previous one.";
+
       return;
     } else {
       ongoing_navigation_request->set_navigation_discard_reason(
