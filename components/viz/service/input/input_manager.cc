@@ -197,10 +197,8 @@ void InputManager::OnCreateCompositorFrameSink(
         std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
             &InputManager::CreateOrReuseAndroidInputReceiver,
             weak_ptr_factory_.GetWeakPtr(), frame_sink_id, surface_handle));
-    // TODO(425353870): Remove the delay once the bug around redundant creation
-    // and destruction of root compositor frame sink is fixed.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, cancellable_task->callback(), base::Seconds(1));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, cancellable_task->callback());
     pending_create_input_receiver_callback_.emplace(
         std::make_pair(frame_sink_id, std::move(cancellable_task)));
     return;
