@@ -270,7 +270,10 @@ source_set("browser_tests") {
   }
 
   if (!is_android && !is_chromeos) {
-    deps += [ "//chrome/browser/ui/toasts" ]
+    deps += [
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/webui/signin:signin_utils",
+    ]
   }
 }
 
