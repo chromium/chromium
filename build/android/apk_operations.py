@@ -1375,12 +1375,21 @@ class _Command:
 
       if any(abi in app_abis for abi in device_abis):
         fully_supported.append(device)
-        if is_webview and not all(abi in app_abis for abi in device_abis):
-          logging.warning(
-              'Using a webview that supports only %s on a device that '
-              'supports %s. You probably need to set GN arg:\n\n'
-              '    enable_android_secondary_abi=true\n', ','.join(app_abis),
-              ','.join(device_abis))
+        if is_webview:
+          # Just ignore the "armeabi" arch if present in abis supported by the
+          # device. WebView do not support "armeabi".
+          missing_app_abis = [
+              abi for abi in device_abis
+              if abi not in app_abis and abi != 'armeabi'
+          ]
+          if missing_app_abis:
+            logging.warning(
+                'WARNING: Using a webview that supports only %s on a device '
+                'that supports %s.\nYou may need to use a build target '
+                'supporting multiple abis (e.g. trichrome_webview_64_32_apk) '
+                'and set GN arg:\n\n'
+                '    enable_android_secondary_abi=true\n', ','.join(app_abis),
+                ','.join(device_abis))
       else:  # No common supported ABIs between the device and app.
         if device_primary_abi == 'x86':
           target_cpu = 'x86'
