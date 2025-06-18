@@ -98,6 +98,8 @@ class OffscreenCanvasTest : public ::testing::Test,
 
   HTMLCanvasElement* GetCanvasElement() const { return canvas_element_; }
 
+  FakeGLES2Interface* GetGLInterface() { return &gl_; }
+
  private:
   test::TaskEnvironment task_environment_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
@@ -273,6 +275,16 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   offscreen_canvas().Commit(std::move(canvas_resource2),
                             SkIRect::MakeWH(10, 10));
   platform->RunUntilIdle();
+}
+
+TEST_P(OffscreenCanvasTest, GetRasterModeAutoRecovery) {
+  // Verifies that after a context loss, getting the raster mode from the
+  // canvas will restore the context and succeed.
+  GetGLInterface()->SetIsContextLost(true);
+  EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
+  offscreen_canvas().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  EXPECT_EQ(offscreen_canvas().GetRasterMode(), RasterMode::kGPU);
+  EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoring());
 }
 
 const TestParams kTestCases[] = {

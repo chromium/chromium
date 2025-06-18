@@ -186,19 +186,6 @@ TEST_F(SharedGpuContextTest, contextLossAutoRecovery) {
   EXPECT_FALSE(!!context);
 }
 
-TEST_F(SharedGpuContextTest, GetRasterModeAutoRecovery) {
-  // Verifies that after a context loss, getting the raster mode from
-  // CanvasResourceHost will restore the context and succeed.
-  GlInterface().SetIsContextLost(true);
-  EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
-  gfx::Size size(10, 10);
-  std::unique_ptr<FakeCanvasResourceHost> host =
-      std::make_unique<FakeCanvasResourceHost>(size);
-  host->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  EXPECT_EQ(host->GetRasterMode(), RasterMode::kGPU);
-  EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoring());
-}
-
 TEST_F(SharedGpuContextTest, IsValidWithoutRestoring) {
   EXPECT_NE(SharedGpuContext::ContextProviderWrapper(), nullptr);
   EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoring());
