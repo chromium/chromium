@@ -531,10 +531,8 @@ def disable_hardware_keyboard(udid: str) -> None:
     udid_val['ConnectHardwareKeyboard'] = False
     with open(path, 'wb') as f:
       plistlib.dump(plist, f, fmt=plistlib.FMT_BINARY)
-  except Exception as e:
-    message = 'Unable to disable hardware keyboard. Error: %s' % e.msg
-    LOGGER.error(message)
-
+  except Exception:
+    LOGGER.exception('Failed to disable hardware keyboard.')
 
 def disable_simulator_keyboard_tutorial(udid):
   """Disables keyboard tutorial for the given simulator.
