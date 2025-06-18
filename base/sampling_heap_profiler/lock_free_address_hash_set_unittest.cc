@@ -325,6 +325,7 @@ TEST_P(LockFreeAddressHashSetTest, BucketsUsage) {
   Lock lock;
   LockFreeAddressHashSet set(16, lock, GetParam());
   AutoLock auto_lock(lock);
+  EXPECT_EQ(set.GetBucketStats().chi_squared, 1.00);
   for (size_t i = 0; i < count; ++i) {
     set.Insert(reinterpret_cast<void*>(0x10000 + 0x10 * i));
   }
@@ -334,6 +335,11 @@ TEST_P(LockFreeAddressHashSetTest, BucketsUsage) {
     EXPECT_LT(average_per_bucket * 95 / 100, usage);
     EXPECT_GT(average_per_bucket * 105 / 100, usage);
   }
+  // A good hash function should always yield chi-squared values between 0.95
+  // and 1.05. If this fails, update LockFreeAddressHashSet::Hash. (See
+  // https://en.wikipedia.org/wiki/Hash_function#Testing_and_measurement.)
+  EXPECT_GE(set.GetBucketStats().chi_squared, 0.95);
+  EXPECT_LE(set.GetBucketStats().chi_squared, 1.05);
 }
 
 TEST_P(LockFreeAddressHashSetDeathTest, LockAsserts) {
@@ -353,14 +359,14 @@ TEST_P(LockFreeAddressHashSetDeathTest, LockAsserts) {
     set.Copy(set2);
     EXPECT_EQ(set.size(), 0u);
     EXPECT_EQ(set.load_factor(), 0.0);
-    EXPECT_EQ(set.GetBucketLengths().size(), 8u);
+    EXPECT_EQ(set.GetBucketStats().lengths.size(), 8u);
   }
   EXPECT_DCHECK_DEATH(set.Insert(&lock));
   EXPECT_DCHECK_DEATH(set.Remove(&lock));
   EXPECT_DCHECK_DEATH(set.Copy(set2));
   EXPECT_DCHECK_DEATH(set.size());
   EXPECT_DCHECK_DEATH(set.load_factor());
-  EXPECT_DCHECK_DEATH(set.GetBucketLengths());
+  EXPECT_DCHECK_DEATH(set.GetBucketStats());
 }
 
 }  // namespace base

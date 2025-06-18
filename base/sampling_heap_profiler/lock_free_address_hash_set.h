@@ -62,6 +62,21 @@ namespace base {
 // kDeletedKey in the first node that can be reused if needed.
 class BASE_EXPORT LockFreeAddressHashSet {
  public:
+  // Stats about the hash set's buckets, for metrics.
+  struct BASE_EXPORT BucketStats {
+    BucketStats(std::vector<size_t> lengths, double chi_squared);
+    ~BucketStats();
+
+    BucketStats(const BucketStats&);
+    BucketStats& operator=(const BucketStats&);
+
+    // Length of each bucket (ie. number of key slots that must be searched).
+    std::vector<size_t> lengths;
+
+    // Result of a chi-squared test that measures uniformity of bucket usage.
+    double chi_squared = 0.0;
+  };
+
   // Creates a hash set with `buckets_count` buckets. `lock` is a lock that
   // must be held by callers of |Insert|, |Remove| and |Copy|. |Contains| is
   // lock-free.
@@ -109,9 +124,9 @@ class BASE_EXPORT LockFreeAddressHashSet {
     return 1.f * size() / buckets_.size();
   }
 
-  // Returns the lengths of all buckets. Must not be called concurrently with
+  // Returns stats about the buckets. Must not be called concurrently with
   // |Insert|, |Remove| or |Copy|.
-  std::vector<size_t> GetBucketLengths() const;
+  BucketStats GetBucketStats() const;
 
  private:
   friend class LockFreeAddressHashSetTest;

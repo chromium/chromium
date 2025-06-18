@@ -201,13 +201,20 @@ void LogProfilerStats(std::optional<ProcessType> process_type,
           "HeapProfiling.InProcess.SampledAddressCacheMaxLoadFactor",
           process_type),
       100 * profiler_stats.address_cache_max_load_factor);
-  for (size_t bucket_length : profiler_stats.address_cache_bucket_lengths) {
+  for (size_t bucket_length :
+       profiler_stats.address_cache_bucket_stats.lengths) {
     base::UmaHistogramCounts100(
         ProcessHistogramName(
             "HeapProfiling.InProcess.SampledAddressCacheBucketLengths",
             process_type),
         bucket_length);
   }
+  // Expected to cluster around 100% - target range is around 95% to 105%.
+  base::UmaHistogramCustomCounts(
+      ProcessHistogramName(
+          "HeapProfiling.InProcess.SampledAddressCacheUniformity",
+          process_type),
+      100 * profiler_stats.address_cache_bucket_stats.chi_squared, 0, 200, 50);
 }
 
 // Retrieves a snapshot from the SamplingHeapProfiler and logs metrics about

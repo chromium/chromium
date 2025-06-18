@@ -915,6 +915,21 @@ chromium-metrics-reviews@google.com.
   <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
+<histogram
+    name="HeapProfiling.InProcess.SampledAddressCacheUniformity{Process}"
+    units="%" expires_after="2025-11-30">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The uniformity of results of PoissonAllocationSampler's hash function in
+    {Process}. This is the result of a chi-squared test, multiplied by 100 to
+    get a percentage. A value from 95% to 105% is acceptably uniform. Emitted
+    for each bucket each time a snapshot is taken when the in-process heap
+    profiler is enabled.
+  </summary>
+  <token key="Process" variants="ProfiledProcess"/>
+</histogram>
+
 <histogram name="HeapProfiling.InProcess.SamplesPerSnapshot{Process}"
     units="samples" expires_after="2025-10-19">
   <owner>joenotcharles@google.com</owner>

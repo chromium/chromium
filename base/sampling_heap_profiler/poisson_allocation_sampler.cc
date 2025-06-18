@@ -106,12 +106,12 @@ PoissonAllocationSamplerStats::PoissonAllocationSamplerStats(
     size_t address_cache_misses,
     size_t address_cache_max_size,
     float address_cache_max_load_factor,
-    std::vector<size_t> address_cache_bucket_lengths)
+    AddressCacheBucketStats address_cache_bucket_stats)
     : address_cache_hits(address_cache_hits),
       address_cache_misses(address_cache_misses),
       address_cache_max_size(address_cache_max_size),
       address_cache_max_load_factor(address_cache_max_load_factor),
-      address_cache_bucket_lengths(std::move(address_cache_bucket_lengths)) {}
+      address_cache_bucket_stats(std::move(address_cache_bucket_stats)) {}
 
 PoissonAllocationSamplerStats::~PoissonAllocationSamplerStats() = default;
 
@@ -254,7 +254,7 @@ PoissonAllocationSamplerStats PoissonAllocationSampler::GetAndResetStats() {
       address_cache_misses_.exchange(0, std::memory_order_relaxed),
       std::exchange(address_cache_max_size_, 0),
       std::exchange(address_cache_max_load_factor_, 0.0),
-      sampled_addresses_set().GetBucketLengths());
+      sampled_addresses_set().GetBucketStats());
 }
 
 // static

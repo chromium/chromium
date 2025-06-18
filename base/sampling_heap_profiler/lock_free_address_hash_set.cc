@@ -7,11 +7,40 @@
 #include <atomic>
 #include <bit>
 #include <limits>
+#include <numeric>
+#include <utility>
+#include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/synchronization/lock.h"
 
 namespace base {
+
+namespace {
+
+// Returns the result of a chi-squared test showing how evenly keys are
+// distributed. `bucket_key_counts` is the count of keys stored in each bucket.
+double ChiSquared(const std::vector<size_t>& bucket_key_counts) {
+  // Algorithm taken from
+  // https://en.wikipedia.org/wiki/Hash_function#Testing_and_measurement:
+  // "n is the number of keys, m is the number of buckets, and b[j] is the
+  // number of items in bucket j."
+  const size_t n =
+      std::accumulate(bucket_key_counts.begin(), bucket_key_counts.end(), 0u);
+  const size_t m = bucket_key_counts.size();
+  DCHECK(m);
+
+  const double numerator = std::accumulate(
+      bucket_key_counts.begin(), bucket_key_counts.end(), 0.0,
+      [](double sum, size_t b) { return sum + b * (b + 1) / 2.0; });
+  const double denominator = (n / (2.0 * m)) * (n + 2 * m - 1);
+  // `denominator` could be 0 if n == 0. An empty set has uniformity 1.0 by
+  // definition (all buckets have 0 keys).
+  return denominator ? (numerator / denominator) : 1.0;
+}
+
+}  // namespace
 
 void* const LockFreeAddressHashSet::kDeletedKey =
     reinterpret_cast<void*>(intptr_t{-1});
@@ -90,26 +119,47 @@ void LockFreeAddressHashSet::Copy(const LockFreeAddressHashSet& other) {
   }
 }
 
-std::vector<size_t> LockFreeAddressHashSet::GetBucketLengths() const {
+LockFreeAddressHashSet::BucketStats LockFreeAddressHashSet::GetBucketStats()
+    const {
   lock_->AssertAcquired();
   std::vector<size_t> lengths;
   lengths.reserve(buckets_.size());
+  std::vector<size_t> key_counts;
+  key_counts.reserve(buckets_.size());
   for (const std::atomic<Node*>& bucket : buckets_) {
+    // Bucket length includes all non-null values, including kDeletedKey, since
+    // they will need to be searched when iterating. Key count only includes
+    // real keys.
     size_t length = 0;
+    size_t key_count = 0;
     for (const Node* node = bucket.load(std::memory_order_relaxed);
          node != nullptr; node = node->next) {
-      // Count all non-null keys, including kDeletedKey, since they will need to
-      // be searched when iterating.
       for (const KeySlot& key_slot : GetKeySlots(node)) {
-        if (key_slot.load(std::memory_order_relaxed) == nullptr) {
+        void* key = key_slot.load(std::memory_order_relaxed);
+        if (key == nullptr) {
           break;
         }
         ++length;
+        if (key != kDeletedKey) {
+          ++key_count;
+        }
       }
     }
     lengths.push_back(length);
+    key_counts.push_back(key_count);
   }
-  return lengths;
+  return BucketStats(std::move(lengths), ChiSquared(key_counts));
 }
+
+LockFreeAddressHashSet::BucketStats::BucketStats(std::vector<size_t> lengths,
+                                                 double chi_squared)
+    : lengths(std::move(lengths)), chi_squared(chi_squared) {}
+
+LockFreeAddressHashSet::BucketStats::~BucketStats() = default;
+
+LockFreeAddressHashSet::BucketStats::BucketStats(const BucketStats&) = default;
+
+LockFreeAddressHashSet::BucketStats&
+LockFreeAddressHashSet::BucketStats::operator=(const BucketStats&) = default;
 
 }  // namespace base
