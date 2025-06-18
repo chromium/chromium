@@ -307,8 +307,10 @@ class PrintBackendServiceManager {
       RemoteSavedStructCallbacks<mojom::PrinterCapsAndInfoResult>;
   using RemoteSavedGetDefaultPrinterNameCallbacks =
       RemoteSavedStructCallbacks<mojom::DefaultPrinterNameResult>;
+#if BUILDFLAG(IS_CHROMEOS)
   using RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks =
       RemoteSavedStructCallbacks<mojom::PrinterSemanticCapsAndDefaultsResult>;
+#endif
 #if BUILDFLAG(IS_WIN)
   using RemoteSavedGetPaperPrintableAreaCallbacks =
       RemoteSavedCallbacks<const gfx::Rect&>;
@@ -486,8 +488,10 @@ class PrintBackendServiceManager {
   GetRemoteSavedFetchCapabilitiesCallbacks(bool sandboxed);
   RemoteSavedGetDefaultPrinterNameCallbacks&
   GetRemoteSavedGetDefaultPrinterNameCallbacks(bool sandboxed);
+#if BUILDFLAG(IS_CHROMEOS)
   RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks&
   GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(bool sandboxed);
+#endif
 #if BUILDFLAG(IS_WIN)
   RemoteSavedGetPaperPrintableAreaCallbacks&
   GetRemoteSavedGetPaperPrintableAreaCallbacks(bool sandboxed);
@@ -557,9 +561,11 @@ class PrintBackendServiceManager {
   void OnDidGetDefaultPrinterName(
       const CallbackContext& context,
       mojom::DefaultPrinterNameResultPtr printer_name);
+#if BUILDFLAG(IS_CHROMEOS)
   void OnDidGetPrinterSemanticCapsAndDefaults(
       const CallbackContext& context,
       mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps);
+#endif
 #if BUILDFLAG(IS_WIN)
   void OnDidGetPaperPrintableArea(const CallbackContext& context,
                                   const gfx::Rect& printable_area_um);
@@ -655,10 +661,12 @@ class PrintBackendServiceManager {
       sandboxed_saved_get_default_printer_name_callbacks_;
   RemoteSavedGetDefaultPrinterNameCallbacks
       unsandboxed_saved_get_default_printer_name_callbacks_;
+#if BUILDFLAG(IS_CHROMEOS)
   RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks
       sandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
   RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks
       unsandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
+#endif
 #if BUILDFLAG(IS_WIN)
   RemoteSavedGetPaperPrintableAreaCallbacks
       sandboxed_saved_get_paper_printable_area_callbacks_;

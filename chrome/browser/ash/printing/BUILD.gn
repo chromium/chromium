@@ -149,6 +149,10 @@ static_library("printing") {
     ]
   }
 
+  if (enable_oop_printing) {
+    deps += [ "//chrome/services/printing/public/mojom" ]
+  }
+
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
     "//chromeos:chromeos_export",

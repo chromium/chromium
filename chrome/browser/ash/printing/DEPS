@@ -52,4 +52,7 @@ specific_include_rules = {
     "+third_party/libipp/libipp/parser.h",
     "+third_party/libipp/libipp/validator.h",
   ],
+  "printer_setup_util.cc": [
+    "+chrome/services/printing/public/mojom"
+  ],
 }

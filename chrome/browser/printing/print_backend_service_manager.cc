@@ -1174,11 +1174,13 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
       GetRemoteSavedGetDefaultPrinterNameCallbacks(sandboxed), remote_id,
       mojom::DefaultPrinterNameResult::NewResultCode(
           mojom::ResultCode::kFailed));
+#if BUILDFLAG(IS_CHROMEOS)
   RunSavedCallbacksStructResult(
       GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(sandboxed),
       remote_id,
       mojom::PrinterSemanticCapsAndDefaultsResult::NewResultCode(
           mojom::ResultCode::kFailed));
+#endif
 #if BUILDFLAG(IS_WIN)
   RunSavedCallbacks(GetRemoteSavedGetPaperPrintableAreaCallbacks(sandboxed),
                     remote_id, gfx::Rect());
@@ -1228,6 +1230,7 @@ PrintBackendServiceManager::GetRemoteSavedGetDefaultPrinterNameCallbacks(
                    : unsandboxed_saved_get_default_printer_name_callbacks_;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 PrintBackendServiceManager::
     RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks&
     PrintBackendServiceManager::
@@ -1237,6 +1240,7 @@ PrintBackendServiceManager::
              ? sandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_
              : unsandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
 }
+#endif
 
 #if BUILDFLAG(IS_WIN)
 PrintBackendServiceManager::RemoteSavedGetPaperPrintableAreaCallbacks&
@@ -1405,6 +1409,7 @@ void PrintBackendServiceManager::OnDidGetDefaultPrinterName(
       context.remote_id, context.saved_callback_id, std::move(printer_name));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void PrintBackendServiceManager::OnDidGetPrinterSemanticCapsAndDefaults(
     const CallbackContext& context,
     mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps) {
@@ -1414,6 +1419,7 @@ void PrintBackendServiceManager::OnDidGetPrinterSemanticCapsAndDefaults(
                       context.remote_id, context.saved_callback_id,
                       std::move(printer_caps));
 }
+#endif
 
 #if BUILDFLAG(IS_WIN)
 void PrintBackendServiceManager::OnDidGetPaperPrintableArea(

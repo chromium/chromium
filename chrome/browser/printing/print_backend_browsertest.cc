@@ -332,12 +332,14 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     CheckForQuit();
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   void OnDidGetPrinterSemanticCapsAndDefaults(
       mojom::PrinterSemanticCapsAndDefaultsResultPtr& capture_printer_caps,
       mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps) {
     capture_printer_caps = std::move(printer_caps);
     CheckForQuit();
   }
+#endif
 
   void OnDidFetchCapabilities(
       mojom::PrinterCapsAndInfoResultPtr& capture_caps_and_info,

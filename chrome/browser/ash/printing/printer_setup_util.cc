@@ -30,6 +30,7 @@
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "chrome/browser/printing/oop_features.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #endif
 
 namespace ash {
