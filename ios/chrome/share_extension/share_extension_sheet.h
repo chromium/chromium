@@ -9,9 +9,9 @@
 
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/share_extension/account_info.h"
 
 @protocol ShareExtensionDelegate;
-
 @interface ShareExtensionSheet
     : ConfirmationAlertViewController <ConfirmationAlertActionHandler>
 
@@ -22,6 +22,7 @@
 @property(nonatomic, strong) NSURL* sharedURL;
 @property(nonatomic, copy) NSString* sharedTitle;
 @property(nonatomic, strong) UIImage* sharedURLPreview;
+@property(nonatomic, strong) AccountInfo* selectedAccountInfo;
 
 // The text to share.
 @property(nonatomic, copy) NSString* sharedText;

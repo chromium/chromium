@@ -51,6 +51,7 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 CGFloat const kMIMStackSpacing = 8.0;
 CGFloat const kAccountRowHeight = 57.0;
 CGFloat const kMIMViewCornerRadius = 10;
+CGFloat const kAvatarImageDimension = 30.0;
 
 }  // namespace
 
@@ -137,18 +138,7 @@ CGFloat const kMIMViewCornerRadius = 10;
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell =
       [tableView dequeueReusableCellWithIdentifier:@"Account"];
-  UIListContentConfiguration* content = cell.defaultContentConfiguration;
-
-  // TODO(crbug.com/425589952): Add real account info.
-  content.text = @"User name";
-  content.secondaryText = @"email@email.com";
-  content.image = [UIImage systemImageNamed:@"person.crop.circle"];
-
-  cell.contentConfiguration = content;
-  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-  return cell;
+  return [self configureAccountCell:cell];
 }
 
 #pragma mark - UITableViewDelegate
@@ -250,6 +240,34 @@ CGFloat const kMIMViewCornerRadius = 10;
 }
 
 #pragma mark - Private
+
+// Configures the account cell with the appropriate configuration based on
+// `selectedAccountInfo`.
+- (UITableViewCell*)configureAccountCell:(UITableViewCell*)cell {
+  CHECK(self.selectedAccountInfo);
+
+  UIListContentConfiguration* content = cell.defaultContentConfiguration;
+  if ([self.selectedAccountInfo.gaiaID isEqual:@"Default"]) {
+    // TODO(crbug.com/425571657): Add strings translation.
+    content.text = @"Signed out";
+    content.image = [[UIImage systemImageNamed:@"person.crop.circle"]
+        imageWithTintColor:[UIColor colorNamed:kGrey400Color]
+             renderingMode:UIImageRenderingModeAlwaysOriginal];
+
+  } else {
+    content.text = self.selectedAccountInfo.fullName;
+    content.secondaryText = self.selectedAccountInfo.email;
+    content.image = self.selectedAccountInfo.avatar;
+    UIListContentImageProperties* imageProperties = content.imageProperties;
+    imageProperties.cornerRadius = kAvatarImageDimension / 2.0;
+    imageProperties.maximumSize =
+        CGSize(kAvatarImageDimension, kAvatarImageDimension);
+  }
+  cell.contentConfiguration = content;
+  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  return cell;
+}
 
 // Configures the bottom sheet's presentation controller appearance.
 - (void)setUpBottomSheetPresentationController {

@@ -48,6 +48,8 @@ source_set("share") {
   ]
   if (ios_enable_extended_share_extension) {
     sources += [
+      "account_info.h",
+      "account_info.mm",
       "extended_share_view_controller.h",
       "extended_share_view_controller.mm",
       "share_extension_delegate.h",

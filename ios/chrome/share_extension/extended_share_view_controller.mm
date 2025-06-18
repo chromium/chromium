@@ -12,8 +12,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/app_group/app_group_command.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/common/extension_open_url.h"
+#import "ios/chrome/share_extension/account_info.h"
 #import "ios/chrome/share_extension/share_extension_delegate.h"
 #import "ios/chrome/share_extension/share_extension_sheet.h"
 #import "ios/chrome/share_extension/ui_util.h"
@@ -106,7 +108,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
     [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = kShareSheetCornerRadius;
-
+  [self loadSelectedAccountInfo];
   [self loadElementsFromContext];
 }
 
@@ -262,6 +264,54 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 #pragma mark - Private methods
+
+- (AccountInfo*)accountInfoWithGaiaID:(NSString*)gaiaID {
+  CHECK(app_group::MultiProfileShareExtensionEnabled());
+  AccountInfo* accountInfo = [[AccountInfo alloc] init];
+  if (!gaiaID) {
+    accountInfo.gaiaID = @"Default";
+    return accountInfo;
+  }
+
+  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+  NSDictionary* accounts =
+      [shared_defaults dictionaryForKey:app_group::kAccountsOnDevice];
+  if (!accounts || ![accounts isKindOfClass:[NSDictionary class]]) {
+    return nil;
+  }
+
+  // TODO(crbug.com/425571657): Rename the avatar folder path function.
+  NSURL* avatars_folder_path = app_group::WidgetsAvatarFolder();
+  NSURL* avatar_directory = [avatars_folder_path
+      URLByAppendingPathComponent:[NSString stringWithFormat:@"\%@%@", gaiaID,
+                                                             @".png"]];
+  UIImage* avatar = [UIImage imageWithContentsOfFile:[avatar_directory path]];
+
+  accountInfo.gaiaID = gaiaID;
+  accountInfo.avatar = avatar;
+  accountInfo.fullName = accounts[gaiaID][app_group::kFullName];
+  accountInfo.email = accounts[gaiaID][app_group::kEmail];
+
+  return accountInfo;
+}
+
+- (void)loadSelectedAccountInfo {
+  if (!app_group::MultiProfileShareExtensionEnabled()) {
+    return;
+  }
+  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+  NSString* primary_account =
+      [shared_defaults objectForKey:app_group::kPrimaryAccount];
+
+  if (!primary_account || ![primary_account length]) {
+    self.shareSheet.selectedAccountInfo = [self accountInfoWithGaiaID:nil];
+    return;
+  }
+
+  self.shareSheet.selectedAccountInfo =
+      [self accountInfoWithGaiaID:primary_account];
+  return;
+}
 
 - (void)handleImageSharingForCommand:(AppGroupCommand*)command
                            incognito:(BOOL)incognito {
