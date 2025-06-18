@@ -81,7 +81,7 @@ fidl::InterfaceHandle<fuchsia::io::Directory> GetSvcFromChildArgs(
       path = path.Append(directory_offer.subdir());
     }
     fidl::InterfaceHandle<fuchsia::io::Node> services_handle;
-    root_dir->Open3(
+    root_dir->Open(
         path.value(),
         fuchsia::io::PERM_READABLE | fuchsia::io::Flags::PROTOCOL_DIRECTORY, {},
         services_handle.NewRequest().TakeChannel());

@@ -924,7 +924,7 @@ TEST_F(CastRunnerIntegrationTest, InitialMinConsoleLogSeverity_DEBUG) {
       FakeApplicationConfigManager::CreateConfig(kTestAppId, app_url);
 
   *app_config.mutable_initial_min_console_log_severity() =
-      fuchsia::diagnostics::Severity::DEBUG;
+      fuchsia::diagnostics::types::Severity::DEBUG;
   app_config_manager().AddAppConfig(std::move(app_config));
 
   component.StartCastComponentWithQueryApi();
