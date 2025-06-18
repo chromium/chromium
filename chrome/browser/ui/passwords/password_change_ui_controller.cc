@@ -106,11 +106,10 @@ std::unique_ptr<ui::DialogModel> CreateOtpDetectedDialog(
       .SetBannerImage(
           ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_NEUTRAL),
           ui::ImageModel::FromResourceId(IDR_PASSWORD_CHANGE_NEUTRAL_DARK))
-      // TODO(crbug.com/417937595): Update strings once finalized by UXW.
-      .SetTitle(l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_UI_OTP_DURING_PASSWORD_CHANGE_TITLE))
+      .SetTitle(
+          l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_OTP_DIALOG_TITLE))
       .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_UI_OTP_DURING_PASSWORD_CHANGE_BODY)))
+          IDS_PASSWORD_MANAGER_UI_OTP_DIALOG_DETAILS)))
       .AddCancelButton(base::DoNothing(),
                        ui::DialogModel::Button::Params().SetLabel(
                            l10n_util::GetStringUTF16(IDS_CANCEL)))
