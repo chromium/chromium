@@ -592,7 +592,7 @@ OffscreenCanvas::GetOrCreateResourceProviderForImageBitmap() {
         CanvasResourceProvider::ShouldInitialize::kCallClear, this);
   }
 
-  SetResourceProviderWithoutContextCheck(std::move(provider));
+  SetResourceProviderForImageBitmap(std::move(provider));
 
   if (GetResourceProviderForImageBitmap() &&
       GetResourceProviderForImageBitmap()->IsValid()) {
@@ -694,7 +694,7 @@ OffscreenCanvas::GetOrCreateResourceProviderForCanvas2D() {
         CanvasResourceProvider::ShouldInitialize::kCallClear, this);
   }
 
-  SetResourceProviderWithoutContextCheck(std::move(provider));
+  SetResourceProviderForCanvas2D(std::move(provider));
 
   if (GetResourceProviderForCanvas2D() &&
       GetResourceProviderForCanvas2D()->IsValid()) {

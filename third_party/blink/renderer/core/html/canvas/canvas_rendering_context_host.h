@@ -143,15 +143,19 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   CanvasResourceProvider* GetResourceProviderForWebGL() const {
     CHECK(IsWebGL());
-    return GetResourceProviderWithoutContextCheck();
+    return resource_provider_for_webgl_.get();
   }
   CanvasResourceProvider* GetResourceProviderForWebGPU() const {
     CHECK(IsWebGPU());
-    return GetResourceProviderWithoutContextCheck();
+    return resource_provider_for_webgpu_.get();
   }
   CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
     CHECK(IsRenderingContext2D());
-    return GetResourceProviderWithoutContextCheck();
+    return resource_provider_for_canvas2d_.get();
+  }
+  CanvasResourceProvider* GetResourceProviderForImageBitmap() const {
+    CHECK(IsImageBitmapRenderingContext());
+    return resource_provider_for_image_bitmap_.get();
   }
 
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
@@ -163,20 +167,22 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
  protected:
   ~CanvasRenderingContextHost() override = default;
 
-  // Should be called only from within
-  // CreateCanvasResourceProvider<ContextType> methods.
   // `resource_provider_` must be null.
-  void SetResourceProviderWithoutContextCheck(
+  void SetResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider> resource_provider) {
-    CHECK(!resource_provider_);
-    resource_provider_ = std::move(resource_provider);
+    CHECK(IsRenderingContext2D());
+    CHECK(!resource_provider_for_canvas2d_);
+    resource_provider_for_canvas2d_ = std::move(resource_provider);
     UpdateMemoryUsage();
   }
 
-  // Should be called only from within
-  // GetResourceProviderFor<ContextType> methods.
-  CanvasResourceProvider* GetResourceProviderWithoutContextCheck() const {
-    return resource_provider_.get();
+  // `resource_provider_` must be null.
+  void SetResourceProviderForImageBitmap(
+      std::unique_ptr<CanvasResourceProvider> resource_provider) {
+    CHECK(IsImageBitmapRenderingContext());
+    CHECK(!resource_provider_for_image_bitmap_);
+    resource_provider_for_image_bitmap_ = std::move(resource_provider);
+    UpdateMemoryUsage();
   }
 
   scoped_refptr<StaticBitmapImage> CreateTransparentImage() const;
@@ -200,7 +206,10 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   void CreateCanvasResourceProviderWebGL();
   void CreateCanvasResourceProviderWebGPU();
 
-  std::unique_ptr<CanvasResourceProvider> resource_provider_;
+  std::unique_ptr<CanvasResourceProvider> resource_provider_for_canvas2d_;
+  std::unique_ptr<CanvasResourceProvider> resource_provider_for_image_bitmap_;
+  std::unique_ptr<CanvasResourceProvider> resource_provider_for_webgl_;
+  std::unique_ptr<CanvasResourceProvider> resource_provider_for_webgpu_;
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = HostType::kNone;
 };

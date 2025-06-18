@@ -210,10 +210,11 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
   CHECK(!GetResourceProviderForWebGPU());
 
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    SetResourceProviderWithoutContextCheck(
+    resource_provider_for_webgpu_ =
         CanvasResourceProvider::CreateWebGPUImageProvider(
             Size(), GetRenderingContextFormat(), GetRenderingContextAlphaType(),
-            GetRenderingContextColorSpace(), gpu::SharedImageUsageSet(), this));
+            GetRenderingContextColorSpace(), gpu::SharedImageUsageSet(), this);
+    UpdateMemoryUsage();
   }
 }
 
@@ -298,7 +299,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
         Size(), format, alpha_type, color_space, kShouldInitialize, this);
   }
 
-  SetResourceProviderWithoutContextCheck(std::move(provider));
+  resource_provider_for_webgl_ = std::move(provider);
+  UpdateMemoryUsage();
 }
 
 void CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
@@ -401,7 +403,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
     provider->SetResourceRecyclingEnabled(true);
   }
 
-  SetResourceProviderWithoutContextCheck(std::move(provider));
+  resource_provider_for_canvas2d_ = std::move(provider);
+  UpdateMemoryUsage();
 }
 
 SkAlphaType CanvasRenderingContextHost::GetRenderingContextAlphaType() const {
@@ -434,9 +437,20 @@ RasterMode CanvasRenderingContextHost::GetRasterMode() const {
   if (IsHibernating()) {
     return RasterMode::kCPU;
   }
-  if (resource_provider_) {
-    return resource_provider_->IsAccelerated() ? RasterMode::kGPU
-                                               : RasterMode::kCPU;
+  CanvasResourceProvider* resource_provider = nullptr;
+  if (IsRenderingContext2D()) {
+    resource_provider = GetResourceProviderForCanvas2D();
+  } else if (IsImageBitmapRenderingContext()) {
+    resource_provider = GetResourceProviderForImageBitmap();
+  } else if (IsWebGL()) {
+    resource_provider = GetResourceProviderForWebGL();
+  } else if (IsWebGPU()) {
+    resource_provider = GetResourceProviderForWebGPU();
+  }
+
+  if (resource_provider) {
+    return resource_provider->IsAccelerated() ? RasterMode::kGPU
+                                              : RasterMode::kCPU;
   }
 
   // Whether or not to accelerate is not yet resolved, the canvas cannot be
@@ -517,8 +531,8 @@ CanvasRenderingContextHost::ReplaceResourceProviderForCanvas2D(
     std::unique_ptr<CanvasResourceProvider> new_resource_provider) {
   CHECK(IsRenderingContext2D());
   std::unique_ptr<CanvasResourceProvider> old_resource_provider =
-      std::move(resource_provider_);
-  resource_provider_ = std::move(new_resource_provider);
+      std::move(resource_provider_for_canvas2d_);
+  resource_provider_for_canvas2d_ = std::move(new_resource_provider);
   UpdateMemoryUsage();
   if (old_resource_provider) {
     old_resource_provider->SetCanvasResourceHost(nullptr);
@@ -527,7 +541,10 @@ CanvasRenderingContextHost::ReplaceResourceProviderForCanvas2D(
 }
 
 void CanvasRenderingContextHost::DiscardResourceProvider() {
-  resource_provider_ = nullptr;
+  resource_provider_for_canvas2d_ = nullptr;
+  resource_provider_for_image_bitmap_ = nullptr;
+  resource_provider_for_webgl_ = nullptr;
+  resource_provider_for_webgpu_ = nullptr;
   UpdateMemoryUsage();
 }
 

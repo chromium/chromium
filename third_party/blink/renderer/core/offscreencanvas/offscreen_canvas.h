@@ -204,11 +204,6 @@ class CORE_EXPORT OffscreenCanvas final
 
   void Trace(Visitor*) const override;
 
-  CanvasResourceProvider* GetResourceProviderForImageBitmap() {
-    CHECK(IsImageBitmapRenderingContext());
-    return GetResourceProviderWithoutContextCheck();
-  }
-
   class ScopedInsideWorkerRAF {
     STACK_ALLOCATED();
 
