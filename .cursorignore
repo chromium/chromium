@@ -1,3 +1,6 @@
 # TODO(crbug.com/423945285): figure out less restricted blockage for
 # Chromium third_party/
 third_party/
+
+# No AI features or AI indexing is needed for out/ dir
+out/
