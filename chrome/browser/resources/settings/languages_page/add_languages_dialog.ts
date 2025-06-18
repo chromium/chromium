@@ -24,7 +24,7 @@ import type {SettingsCheckboxListEntryElement} from '../controls/settings_checkb
 import {ScrollableMixin} from '../scrollable_mixin.js';
 
 import {getTemplate} from './add_languages_dialog.html.js';
-import type {LanguageHelper} from './languages_types.js';
+import {getFullName} from './languages_util.js';
 
 export interface SettingsAddLanguagesDialogElement {
   $: {
@@ -56,7 +56,6 @@ export class SettingsAddLanguagesDialogElement extends
   static get properties() {
     return {
       languages: Object,
-      languageHelper: Object,
 
       languagesToAdd_: {
         type: Object,
@@ -78,7 +77,6 @@ export class SettingsAddLanguagesDialogElement extends
   }
 
   declare languages: chrome.languageSettingsPrivate.Language[];
-  declare languageHelper: LanguageHelper;
   declare private languagesToAdd_: Set<string>;
   declare private disableActionButton_: boolean;
   declare private filterValue_: string;
@@ -136,7 +134,7 @@ export class SettingsAddLanguagesDialogElement extends
 
   private getDisplayText_(language: chrome.languageSettingsPrivate.Language):
       string {
-    return this.languageHelper.getFullName(language);
+    return getFullName(language);
   }
 
   /**

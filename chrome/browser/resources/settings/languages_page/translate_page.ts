@@ -31,6 +31,7 @@ import type {SettingsToggleButtonElement} from '../controls/settings_toggle_butt
 import type {LanguageSettingsMetricsProxy} from './languages_settings_metrics_proxy.js';
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from './languages_settings_metrics_proxy.js';
 import type {LanguageHelper, LanguagesModel} from './languages_types.js';
+import {convertLanguageCodeForChrome, getFullName, isTranslateBaseLanguage} from './languages_util.js';
 import {getTemplate} from './translate_page.html.js';
 
 const SettingsTranslatePageElementBase = PrefsMixin(I18nMixin(PolymerElement));
@@ -85,7 +86,7 @@ export class SettingsTranslatePageElement extends
    */
   private getTargetLanguageDisplayOption_(
       item: chrome.languageSettingsPrivate.Language): string {
-    return this.languageHelper.getFullName(item);
+    return getFullName(item);
   }
 
   /**
@@ -95,8 +96,7 @@ export class SettingsTranslatePageElement extends
    */
   private translateLanguageEqual_(
       chromeItemCode: string, translateTarget: string): boolean {
-    return chromeItemCode ===
-        this.languageHelper.convertLanguageCodeForChrome(translateTarget);
+    return chromeItemCode === convertLanguageCodeForChrome(translateTarget);
   }
 
   /**
@@ -239,7 +239,7 @@ export class SettingsTranslatePageElement extends
    */
   private isTranslateSupported_(
       language: chrome.languageSettingsPrivate.Language): boolean {
-    return this.languageHelper.isTranslateBaseLanguage(language);
+    return isTranslateBaseLanguage(language);
   }
 }
 

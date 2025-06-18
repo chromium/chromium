@@ -83,15 +83,15 @@
   </div>
 </cr-collapse>
 <template is="dom-if" if="[[showAddAlwaysTranslateDialog_]]" restamp>
-  <settings-add-languages-dialog languages="[[addLanguagesDialogLanguages_]]"
-      language-helper="[[languageHelper]]" id="alwaysTranslateDialog"
+  <settings-add-languages-dialog id="alwaysTranslateDialog"
+      languages="[[addLanguagesDialogLanguages_]]"
       on-close="onAlwaysTranslateDialogClose_"
       on-languages-added="onAlwaysTranslateLanguagesAdded_">
   </settings-add-languages-dialog>
 </template>
 <template is="dom-if" if="[[showAddNeverTranslateDialog_]]" restamp>
-  <settings-add-languages-dialog languages="[[addLanguagesDialogLanguages_]]"
-      language-helper="[[languageHelper]]" id="neverTranslateDialog"
+  <settings-add-languages-dialog id="neverTranslateDialog"
+      languages="[[addLanguagesDialogLanguages_]]"
       on-close="onNeverTranslateDialogClose_"
       on-languages-added="onNeverTranslateLanguagesAdded_">
   </settings-add-languages-dialog>

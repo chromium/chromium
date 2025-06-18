@@ -5,7 +5,7 @@
 // clang-format off
 import type {LanguageHelper} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, isTranslateBaseLanguage, getBaseLanguage, convertLanguageCodeForTranslate, convertLanguageCodeForChrome} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {fakeDataBind, flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -90,14 +90,10 @@ suite('settings-languages', function() {
   });
 
   test('is translate base language', function() {
-    assertFalse(languageHelper.isTranslateBaseLanguage(
-        languageHelper.getLanguage('nb')!));
-    assertFalse(languageHelper.isTranslateBaseLanguage(
-        languageHelper.getLanguage('en-US')!));
-    assertTrue(languageHelper.isTranslateBaseLanguage(
-        languageHelper.getLanguage('en')!));
-    assertTrue(languageHelper.isTranslateBaseLanguage(
-        languageHelper.getLanguage('sw')!));
+    assertFalse(isTranslateBaseLanguage(languageHelper.getLanguage('nb')!));
+    assertFalse(isTranslateBaseLanguage(languageHelper.getLanguage('en-US')!));
+    assertTrue(isTranslateBaseLanguage(languageHelper.getLanguage('en')!));
+    assertTrue(isTranslateBaseLanguage(languageHelper.getLanguage('sw')!));
   });
 
   test('get language code without region', function() {
@@ -113,7 +109,7 @@ suite('settings-languages', function() {
     ];
 
     for (const [code, base] of cases) {
-      assertEquals(languageHelper.getBaseLanguage(code), base);
+      assertEquals(getBaseLanguage(code), base);
     }
   });
 
@@ -130,8 +126,7 @@ suite('settings-languages', function() {
     ];
 
     for (const [code, converted] of cases) {
-      assertEquals(
-          languageHelper.convertLanguageCodeForTranslate(code), converted);
+      assertEquals(convertLanguageCodeForTranslate(code), converted);
     }
   });
 
@@ -144,8 +139,7 @@ suite('settings-languages', function() {
     ];
 
     for (const [code, converted] of cases) {
-      assertEquals(
-          languageHelper.convertLanguageCodeForChrome(code), converted);
+      assertEquals(convertLanguageCodeForChrome(code), converted);
     }
   });
 

@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {LanguageHelper, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsCheckboxListEntryElement, CrActionMenuElement, CrButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, convertLanguageCodeForTranslate} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGE, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -300,11 +300,11 @@ suite('LanguagesPage', function() {
       const targetLanguageCode = languageHelper.languages!.translateTarget;
       assertTrue(!!targetLanguageCode);
       assertTrue(languageHelper.languages!.enabled.some(
-          l => languageHelper.convertLanguageCodeForTranslate(
-                   l.language.code) === targetLanguageCode));
+          l => convertLanguageCodeForTranslate(l.language.code) ===
+              targetLanguageCode));
       assertTrue(languageHelper.languages!.enabled.some(
-          l => languageHelper.convertLanguageCodeForTranslate(
-                   l.language.code) !== targetLanguageCode));
+          l => convertLanguageCodeForTranslate(l.language.code) !==
+              targetLanguageCode));
       let translateTargetLabel = null;
       let item = null;
 
@@ -324,8 +324,7 @@ suite('LanguagesPage', function() {
             num_visibles++;
             assertEquals(
                 targetLanguageCode,
-                languageHelper.convertLanguageCodeForTranslate(
-                    item.language.code));
+                convertLanguageCodeForTranslate(item.language.code));
           }
         }
         assertEquals(

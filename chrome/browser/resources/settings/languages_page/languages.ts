@@ -21,6 +21,7 @@ import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import type {LanguagesBrowserProxy} from './languages_browser_proxy.js';
 import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 import type {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
+import {convertLanguageCodeForChrome, convertLanguageCodeForTranslate, getBaseLanguage} from './languages_util.js';
 
 interface SpellCheckLanguages {
   on: SpellCheckLanguageState[];
@@ -28,28 +29,6 @@ interface SpellCheckLanguages {
 }
 
 const MoveType = chrome.languageSettingsPrivate.MoveType;
-
-// For some codes translate uses a different version from Chrome.  Some are
-// ISO 639 codes that have been renamed (e.g. "he" to "iw"). While others are
-// languages that Translate considers similar (e.g. "nb" and "no").
-// See also: components/language/core/common/language_util.cc.
-const kChromeToTranslateCode: Map<string, string> = new Map([
-  ['fil', 'tl'],
-  ['he', 'iw'],
-  ['jv', 'jw'],
-  ['kok', 'gom'],
-  ['nb', 'no'],
-]);
-
-// Reverse of the map above. Just the languages code that translate uses but
-// Chrome has a different code for.
-const kTranslateToChromeCode: Map<string, string> = new Map([
-  ['gom', 'kok'],
-  ['iw', 'he'],
-  ['jw', 'jv'],
-  ['no', 'nb'],
-  ['tl', 'fil'],
-]);
 
 // The fake language name used for ARC IMEs. The value must be in sync with the
 // one in ui/base/ime/ash/extension_ime_util.h.
@@ -393,7 +372,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     const blockedCodesSet = new Set(blockedCodes);
     const enabledCodes = getPrefAndDedupe('spellcheck.dictionaries');
 
-    const /** !Array<SpellCheckLanguageState> */ on = [];
+    const on: SpellCheckLanguageState[] = [];
     // We want to add newly enabled languages to the end of the "on" list, so we
     // should explicitly move the forced languages to the front of the list.
     for (const code of [...forcedCodes, ...enabledCodes]) {
@@ -420,7 +399,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     // We don't want to split this list in "forced" / "not-forced" like the
     // spell check on list above, as we don't want to explicitly surface / hide
     // blocked languages to the user.
-    const /** !Array<SpellCheckLanguageState> */ off = [];
+    const off: SpellCheckLanguageState[] = [];
 
     for (const language of supportedLanguages) {
       // If spell check is off for this language, it must either not be in any
@@ -648,7 +627,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       code: string, supportsTranslate: boolean,
       translateBlockedSet: Set<string>, translateTarget: string,
       prospectiveUILanguage: string|undefined): boolean {
-    const translateCode = this.convertLanguageCodeForTranslate(code);
+    const translateCode = convertLanguageCodeForTranslate(code);
     return supportsTranslate && !translateBlockedSet.has(translateCode) &&
         translateCode !== translateTarget &&
         (!prospectiveUILanguage || code !== prospectiveUILanguage);
@@ -743,65 +722,10 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
   // </if>
 
   /**
-   * @return The language code for ARC IMEs.
-   */
-  getArcImeLanguageCode(): string {
-    return kArcImeLanguage;
-  }
-
-  /**
-   * @param language
-   * @return the [displayName] - [nativeDisplayName] if displayName and
-   * nativeDisplayName are different.
-   * If they're the same than only returns the displayName.
-   */
-  getFullName(language: chrome.languageSettingsPrivate.Language): string {
-    let fullName = language.displayName;
-    if (language.displayName !== language.nativeDisplayName) {
-      fullName += ' - ' + language.nativeDisplayName;
-    }
-    return fullName;
-  }
-
-  /**
    * @return True if the language is for ARC IMEs.
    */
-  isLanguageCodeForArcIme(languageCode: string): boolean {
+  private isLanguageCodeForArcIme_(languageCode: string): boolean {
     return languageCode === kArcImeLanguage;
-  }
-
-  /**
-   *  @return True if the language is supported by Translate as a base and not
-   * an extended sub-code (i.e. "it-CH" and "es-MX" are both marked as
-   * supporting translation but only "it" and "es" are actually supported by the
-   * Translate server.
-   */
-  isTranslateBaseLanguage(language: chrome.languageSettingsPrivate.Language):
-      boolean {
-    // The language must be marked as translatable.
-    if (!language.supportsTranslate) {
-      return false;
-    }
-
-    if (language.code === 'zh-CN' || language.code === 'zh-TW') {
-      // In Translate, general Chinese is not used, and the sub code is
-      // necessary as a language code for the Translate server.
-      return true;
-    }
-
-    if (language.code === 'mni-Mtei') {
-      // Translate uses the Meitei Mayek script for Manipuri
-      return true;
-    }
-
-    const baseLanguage = this.getBaseLanguage(language.code);
-    if (baseLanguage === 'nb') {
-      // Norwegian Bokmål (nb) is listed as supporting translate but the
-      // Translate server only supports Norwegian (no).
-      return false;
-    }
-    // For all other languages only base languages are supported
-    return language.code === baseLanguage;
   }
 
   /**
@@ -859,7 +783,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     return !(
         (this.isLanguageEnabled(language.code) ||
          language.isProhibitedLanguage ||
-         this.isLanguageCodeForArcIme(language.code)) /* internal use only */);
+         this.isLanguageCodeForArcIme_(language.code)) /* internal use only */);
   }
 
   /**
@@ -941,35 +865,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     }
   }
 
-  /**
-   * Converts the language code to Translate server format where some deprecated
-   * ISO 639 codes are used. The only sub-codes that Translate supports are for
-   * "zh" where zh-HK is equivalent to zh-TW. For all other languages only
-   * the base language is returned.
-   */
-  convertLanguageCodeForTranslate(languageCode: string): string {
-    const base = this.getBaseLanguage(languageCode);
-    if (base === 'zh') {
-      return languageCode === 'zh-HK' ? 'zh-TW' : languageCode;
-    }
-
-    return kChromeToTranslateCode.get(base) || base;
-  }
-
-  /**
-   * Converts deprecated ISO 639 language codes to Chrome format.
-   */
-  convertLanguageCodeForChrome(languageCode: string): string {
-    return kTranslateToChromeCode.get(languageCode) || languageCode;
-  }
-
-  /**
-   * Given a language code, returns just the base language without sub-codes.
-   */
-  getBaseLanguage(languageCode: string): string {
-    return languageCode.split('-')[0];
-  }
-
   getLanguage(languageCode: string): chrome.languageSettingsPrivate.Language
       |undefined {
     if (this.supportedLanguageMap_.has(languageCode)) {
@@ -978,7 +873,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
 
     // If no languageCode is found, try the base Chrome format.
     const chromeLanguage =
-        this.convertLanguageCodeForChrome(this.getBaseLanguage(languageCode));
+        convertLanguageCodeForChrome(getBaseLanguage(languageCode));
     return this.supportedLanguageMap_.get(chromeLanguage);
   }
 

@@ -93,10 +93,9 @@
   </template>
 </template>
 <template is="dom-if" if="[[showAddLanguagesDialog_]]" restamp>
-  <settings-add-languages-dialog
+  <settings-add-languages-dialog id="addLanguagesDialog"
       languages="[[filterAvailableLanguagePacks_(availableLanguagePacks_,
                    installedLanguagePacks_)]]"
-      language-helper="[[languageHelper]]" id="addLanguagesDialog"
       on-close="onAddLanguagesDialogClose_"
       on-languages-added="onLanguagesAdded_">
   </settings-add-languages-dialog>

@@ -24,6 +24,7 @@ import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
+import {isTranslateBaseLanguage} from '../languages_page/languages_util.js';
 
 import {getTemplate} from './live_translate_section.html.js';
 
@@ -85,7 +86,7 @@ export class SettingsLiveTranslateElement extends
       this.translatableLanguages_ =
           this.languages?.supported
               .filter(language => {
-                return this.languageHelper.isTranslateBaseLanguage(language);
+                return isTranslateBaseLanguage(language);
               })
               .map(language => {
                 return {value: language.code, name: language.displayName};

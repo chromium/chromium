@@ -324,6 +324,7 @@ build_webui("build") {
       "languages_page/languages_browser_proxy.ts",
       "languages_page/languages_settings_metrics_proxy.ts",
       "languages_page/languages_types.ts",
+      "languages_page/languages_util.ts",
       "people_page/import_data_browser_proxy.ts",
       "people_page/manage_profile_browser_proxy.ts",
       "system_page/system_page_browser_proxy.ts",
