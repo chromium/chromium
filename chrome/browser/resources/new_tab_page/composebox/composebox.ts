@@ -51,6 +51,10 @@ export class ComposeboxElement extends CrLitElement {
         reflect: true,
         type: Boolean,
       },
+      submitting_: {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
@@ -60,7 +64,7 @@ export class ComposeboxElement extends CrLitElement {
   protected accessor imageFileTypes_: string =
       loadTimeData.getString('composeboxImageFileTypes');
   protected accessor submitEnabled_: boolean = false;
-
+  protected accessor submitting_: boolean = false;
   private maxFileSize_: number =
       loadTimeData.getInteger('composeboxFileMaxSize');
   private pageHandler_: ComposeboxPageHandlerRemote;
@@ -141,6 +145,10 @@ export class ComposeboxElement extends CrLitElement {
     } else {
       this.fire('toggle-composebox');
     }
+  }
+
+  protected onSubmitClick_() {
+    this.submitting_ = true;
   }
 }
 

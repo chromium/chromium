@@ -11,6 +11,9 @@ import type {ComposeboxElement} from './composebox.js';
 export function getHtml(this: ComposeboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+  <div class="gradient gradient-outer-glow"></div>
+  <div class="gradient"></div>
+  <div class="background"></div>
   <div id="composebox">
     <div id="inputContainer">
       <textarea autocomplete="off" id="input"
@@ -42,7 +45,8 @@ export function getHtml(this: ComposeboxElement) {
     <cr-icon-button
       class="action-icon icon-arrow-upward"
       id="submitIcon"
-      title="$i18n{composeboxSubmitButtonTitle}">
+      title="$i18n{composeboxSubmitButtonTitle}"
+      @click="${this.onSubmitClick_}">
     </cr-icon-button>
   </div>
   <ntp-composebox-file-carousel
