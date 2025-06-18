@@ -38,11 +38,8 @@ struct COMPONENT_EXPORT(VARIATIONS) ActiveGroupId {
 // Returns an ActiveGroupId struct for the given trial and group names.
 COMPONENT_EXPORT(VARIATIONS)
 ActiveGroupId MakeActiveGroupId(std::string_view trial_name,
-                                std::string_view group_name);
-COMPONENT_EXPORT(VARIATIONS)
-ActiveGroupId MakeActiveGroupId(std::string_view trial_name,
                                 std::string_view group_name,
-                                bool is_overridden);
+                                bool is_overridden = false);
 
 // We need to supply a Compare class for templates since ActiveGroupId is a
 // user-defined type.
@@ -51,8 +48,9 @@ struct COMPONENT_EXPORT(VARIATIONS) ActiveGroupIdCompare {
     // The group and name fields are just SHA-1 Hashes, so we just need to treat
     // them as IDs and do a less-than comparison. We test group first, since
     // name is more likely to collide.
-    if (lhs.group != rhs.group)
+    if (lhs.group != rhs.group) {
       return lhs.group < rhs.group;
+    }
     return lhs.name < rhs.name;
   }
 };
@@ -125,13 +123,13 @@ void GetSyntheticTrialGroupIdsAsString(std::vector<std::string>* output);
 // Returns true if a synthetic trial with the name `trial_name` is currently
 // active, i.e. the named trial has chosen a group. Returns false otherwise.
 COMPONENT_EXPORT(VARIATIONS)
-bool HasSyntheticTrial(const std::string& trial_name);
+bool HasSyntheticTrial(std::string_view trial_name);
 
 // Returns true if a synthetic trial with the name `trial_name` is active
 // with its chosen group matching `trial_group`. Returns false otherwise.
 COMPONENT_EXPORT(VARIATIONS)
-bool IsInSyntheticTrialGroup(const std::string& trial_name,
-                             const std::string& trial_group);
+bool IsInSyntheticTrialGroup(std::string_view trial_name,
+                             std::string_view trial_group);
 
 // Sets the version of the seed that the current set of FieldTrials was
 // generated from.

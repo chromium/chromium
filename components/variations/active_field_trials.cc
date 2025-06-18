@@ -76,11 +76,6 @@ ActiveGroupId MakeActiveGroupIdWithSuffix(std::string_view trial_name,
 }  // namespace
 
 ActiveGroupId MakeActiveGroupId(std::string_view trial_name,
-                                std::string_view group_name) {
-  return MakeActiveGroupId(trial_name, group_name, /*is_overridden=*/false);
-}
-
-ActiveGroupId MakeActiveGroupId(std::string_view trial_name,
                                 std::string_view group_name,
                                 bool is_overridden) {
   ActiveGroupId id;
@@ -149,7 +144,7 @@ void GetSyntheticTrialGroupIdsAsString(std::vector<std::string>* output) {
   AppendActiveGroupIdsAsStrings(name_group_ids, output);
 }
 
-bool HasSyntheticTrial(const std::string& trial_name) {
+bool HasSyntheticTrial(std::string_view trial_name) {
   std::vector<std::string> synthetic_trials;
   variations::GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
   std::string trial_hash = variations::HashNameAsHexString(trial_name);
@@ -159,8 +154,8 @@ bool HasSyntheticTrial(const std::string& trial_name) {
   });
 }
 
-bool IsInSyntheticTrialGroup(const std::string& trial_name,
-                             const std::string& trial_group) {
+bool IsInSyntheticTrialGroup(std::string_view trial_name,
+                             std::string_view trial_group) {
   std::vector<std::string> synthetic_trials;
   GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
   return base::Contains(
@@ -206,5 +201,4 @@ void TestGetFieldTrialActiveGroupIds(
 }
 
 }  // namespace testing
-
 }  // namespace variations
