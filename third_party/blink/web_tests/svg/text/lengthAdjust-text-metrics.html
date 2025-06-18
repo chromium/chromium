@@ -1,38 +1,40 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
+<!-- Test that assures that SVGTextContentElement API takes lengthAdjust & co into account. -->
+<title>Complete test of the SVGTextContentElement API</title>
 <script src="../../resources/ahem.js"></script>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 </head>
 <body>
 <script>
-// Test that assures that SVGTextContentElement API takes lengthAdjust & co into account.
-description("Complete test of the SVGTextContentElement API");
+// Prepare testcase.
+setup(function() {
+    var svgNS = "http://www.w3.org/2000/svg";
 
-// Prepare testcase
-var svgNS = "http://www.w3.org/2000/svg";
+    window.svgRoot = document.createElementNS(svgNS, "svg");
+    document.documentElement.appendChild(svgRoot);
 
-var svgRoot = document.createElementNS(svgNS, "svg");
-document.documentElement.appendChild(svgRoot);
+    window.svgText = document.createElementNS(svgNS, "text");
+    svgText.style.fontFamily = "Ahem";
+    svgText.style.fontSize = "20px";
+    svgText.setAttribute("x", "10");
+    svgText.setAttribute("y", "20");
+    svgText.setAttribute("lengthAdjust", "spacingAndGlyphs");
+    svgText.setAttribute("textLength", "200");
+    svgText.appendChild(document.createTextNode("Test"));
+    svgRoot.appendChild(svgText);
 
-var svgText = document.createElementNS(svgNS, "text");
-svgText.style.fontFamily = "Ahem";
-svgText.style.fontSize = "20px";
-svgText.setAttribute("x", "10");
-svgText.setAttribute("y", "20");
-svgText.setAttribute("lengthAdjust", "spacingAndGlyphs");
-svgText.setAttribute("textLength", "200");
-svgText.appendChild(document.createTextNode("Test"));
-svgRoot.appendChild(svgText);
-
-// Build scale matrix, we need to handle the spacingAndGlyphs transformation on our own.
-var startPosition = svgText.getStartPositionOfChar(0);
-var scale = svgText.textLength.baseVal.value / svgText.getComputedTextLength();
-var scaleMatrix = svgRoot.createSVGMatrix()
-                         .translate(startPosition.x, startPosition.y)
-                         .scaleNonUniform(scale, 1)
-                         .translate(-startPosition.x, -startPosition.y);
-var inverseScaleMatrix = scaleMatrix.inverse();
+    // Compute scale matrix for spacingAndGlyphs.
+    var startPosition = svgText.getStartPositionOfChar(0);
+    window.scale = svgText.textLength.baseVal.value / svgText.getComputedTextLength();
+    window.scaleMatrix = svgRoot.createSVGMatrix()
+                                .translate(startPosition.x, startPosition.y)
+                                .scaleNonUniform(scale, 1)
+                                .translate(-startPosition.x, -startPosition.y);
+    window.inverseScaleMatrix = scaleMatrix.inverse();
+});
 
 function transformPoint(point, matrix) {
     return point.matrixTransform(matrix);
@@ -57,148 +59,116 @@ function transformRect(rect, matrix) {
     return newRect;
 }
 
-// Helper functions
-function numberToString(number) {
-    return number.toFixed(1);    
+// Assertion helpers.
+function assert_point_equals(actual, expected, description) {
+    assert_approx_equals(actual.x, expected.x, 0.1, description + " (x)");
+    assert_approx_equals(actual.y, expected.y, 0.1, description + " (y)");
 }
 
-function lengthToString(number) {
-    return numberToString(number * scale);
+function assert_rect_equals(actual, expected, description) {
+    assert_approx_equals(actual.x, expected.x, 0.1, description + " (x)");
+    assert_approx_equals(actual.y, expected.y, 0.1, description + " (y)");
+    assert_approx_equals(actual.width, expected.width, 0.1, description + " (width)");
+    assert_approx_equals(actual.height, expected.height, 0.1, description + " (height)");
 }
 
-function pointToString(point) {
-    point = point.matrixTransform(scaleMatrix);
-    return "(" + numberToString(point.x) + "," + numberToString(point.y) + ")";
-}
+// === Subtests ===
 
-function rectToString(rect) {
-    rect = transformRect(rect, scaleMatrix);
-    return "(" + numberToString(rect.x) + "," + numberToString(rect.y) + ")-(" + numberToString(rect.width) + "x" + numberToString(rect.height) + ")";
-}
+test(function() {
+    assert_approx_equals(svgText.textLength.baseVal.value, 200, 0.1, "textLength");
+    assert_equals(svgText.lengthAdjust.baseVal, SVGTextContentElement.LENGTHADJUST_SPACINGANDGLYPHS, "lengthAdjust");
+}, "SVG DOM textLength and lengthAdjust");
 
-debug("Test SVGTextContentElement SVG DOM properties");
-shouldBeEqualToString("svgText.textLength.baseVal.value.toFixed(1)", "200.0");
-shouldBe("svgText.lengthAdjust.baseVal", "SVGTextContentElement.LENGTHADJUST_SPACINGANDGLYPHS");
+test(function() {
+    assert_equals(svgText.getNumberOfChars(), 4);
+}, "getNumberOfChars");
 
-debug("");
-debug("Test getNumberOfChars() API");
-shouldBe("svgText.getNumberOfChars()", "4");
+test(function() {
+    assert_approx_equals(svgText.getComputedTextLength() * scale, 200.0, 0.1, "getComputedTextLength");
+}, "getComputedTextLength");
 
-debug("");
-debug("Test getComputedTextLength() API");
-shouldBeEqualToString("lengthToString(svgText.getComputedTextLength())", "200.0");
+test(function() {
+    assert_approx_equals(svgText.getSubStringLength(0, 1) * scale, 50, 0.1, "getSubStringLength(0, 1)");
+    assert_approx_equals(svgText.getSubStringLength(0, 2) * scale, 100, 0.1, "getSubStringLength(0, 2)");
+    assert_approx_equals(svgText.getSubStringLength(0, 3) * scale, 150, 0.1, "getSubStringLength(0, 3)");
+    assert_approx_equals(svgText.getSubStringLength(0, 4) * scale, 200, 0.1, "getSubStringLength(0, 4)");
+    assert_approx_equals(svgText.getSubStringLength(1, 1) * scale, 50, 0.1, "getSubStringLength(1, 1)");
+    assert_approx_equals(svgText.getSubStringLength(1, 2) * scale, 100, 0.1, "getSubStringLength(1, 2)");
+    assert_approx_equals(svgText.getSubStringLength(1, 3) * scale, 150, 0.1, "getSubStringLength(1, 3)");
+    assert_approx_equals(svgText.getSubStringLength(2, 1) * scale, 50, 0.1, "getSubStringLength(2, 1)");
+    assert_approx_equals(svgText.getSubStringLength(2, 2) * scale, 100, 0.1, "getSubStringLength(2, 2)");
+    assert_approx_equals(svgText.getSubStringLength(3, 1) * scale, 50, 0.1, "getSubStringLength(3, 1)");
+}, "getSubStringLength");
 
-debug("");
-debug("Test getSubStringLength() API");
-shouldBeEqualToString("lengthToString(svgText.getSubStringLength(0, 1))", "50.0");
-shouldBeEqualToString("lengthToString(svgText.getSubStringLength(0, 2))", "100.0");
-shouldBeEqualToString("lengthToString(svgText.getSubStringLength(0, 3))", "150.0");;
-shouldBeEqualToString("lengthToString(svgText.getSubStringLength(0, 4))", "200.0");
-shouldBeEqualToString("lengthToString(svgText.getSubStringLength(1, 1))", "50.0");
-shouldBeEqualToString("lengthToString(svgText.getSubStringLength(1, 2))", "100.0");
-shouldBeEqualToString("lengthToString(svgText.getSubStringLength(1, 3))", "150.0");
-shouldBeEqualToString("lengthToString(svgText.getSubStringLength(2, 1))", "50.0");
-shouldBeEqualToString("lengthToString(svgText.getSubStringLength(2, 2))", "100.0");
-shouldBeEqualToString("lengthToString(svgText.getSubStringLength(3, 1))", "50.0");
+test(function() {
+    var expected = [
+        {x:10, y:20}, {x:60, y:20}, {x:110, y:20}, {x:160, y:20}
+    ];
+    for (var i = 0; i < 4; ++i) {
+        var pt = svgText.getStartPositionOfChar(i);
+        pt = pt.matrixTransform(scaleMatrix);
+        assert_point_equals(pt, expected[i], "getStartPositionOfChar(" + i + ")");
+    }
+}, "getStartPositionOfChar");
 
-debug("");
-debug("Test getStartPositionOfChar() API");
-shouldBeEqualToString("pointToString(svgText.getStartPositionOfChar(0))", "(10.0,20.0)");
-shouldBeEqualToString("pointToString(svgText.getStartPositionOfChar(1))", "(60.0,20.0)");
-shouldBeEqualToString("pointToString(svgText.getStartPositionOfChar(2))", "(110.0,20.0)");
-shouldBeEqualToString("pointToString(svgText.getStartPositionOfChar(3))", "(160.0,20.0)");
+test(function() {
+    var expected = [
+        {x:60, y:20}, {x:110, y:20}, {x:160, y:20}, {x:210, y:20}
+    ];
+    for (var i = 0; i < 4; ++i) {
+        var pt = svgText.getEndPositionOfChar(i);
+        pt = pt.matrixTransform(scaleMatrix);
+        assert_point_equals(pt, expected[i], "getEndPositionOfChar(" + i + ")");
+    }
+}, "getEndPositionOfChar");
 
-debug("");
-debug("Test getEndPositionOfChar() API");
-shouldBeEqualToString("pointToString(svgText.getEndPositionOfChar(0))", "(60.0,20.0)");
-shouldBeEqualToString("pointToString(svgText.getEndPositionOfChar(1))", "(110.0,20.0)");
-shouldBeEqualToString("pointToString(svgText.getEndPositionOfChar(2))", "(160.0,20.0)");
-shouldBeEqualToString("pointToString(svgText.getEndPositionOfChar(3))", "(210.0,20.0)");
+test(function() {
+    var expected = [
+        {x:10, y:4, width:50, height:20},
+        {x:60, y:4, width:50, height:20},
+        {x:110, y:4, width:50, height:20},
+        {x:160, y:4, width:50, height:20}
+    ];
+    for (var i = 0; i < 4; ++i) {
+        var rect = svgText.getExtentOfChar(i);
+        rect = transformRect(rect, scaleMatrix);
+        assert_rect_equals(rect, expected[i], "getExtentOfChar(" + i + ")");
+    }
+}, "getExtentOfChar");
 
-debug("");
-debug("Test getExtentOfChar() API");
-shouldBeEqualToString("rectToString(svgText.getExtentOfChar(0))", "(10.0,4.0)-(50.0x20.0)");
-shouldBeEqualToString("rectToString(svgText.getExtentOfChar(1))", "(60.0,4.0)-(50.0x20.0)");
-shouldBeEqualToString("rectToString(svgText.getExtentOfChar(2))", "(110.0,4.0)-(50.0x20.0)");
-shouldBeEqualToString("rectToString(svgText.getExtentOfChar(3))", "(160.0,4.0)-(50.0x20.0)");
+test(function() {
+    for (var i = 0; i < 4; ++i) {
+        assert_approx_equals(svgText.getRotationOfChar(i), 0.0, 0.1, "getRotationOfChar(" + i + ")");
+    }
+}, "getRotationOfChar");
 
-debug("");
-debug("Test getRotationOfChar() API");
-shouldBeEqualToString("svgText.getRotationOfChar(0).toFixed(1)", "0.0");
-shouldBeEqualToString("svgText.getRotationOfChar(1).toFixed(1)", "0.0");
-shouldBeEqualToString("svgText.getRotationOfChar(2).toFixed(1)", "0.0");
-shouldBeEqualToString("svgText.getRotationOfChar(3).toFixed(1)", "0.0");
+test(function() {
+    // Points to test, with expected char index.
+    var cases = [
+        {x:0.0, expected: -1},
+        {x:9.9, expected: -1},
+        {x:10.1, expected: 0},
+        {x:49.4, expected: 0},
+        {x:71.6, expected: 1},
+        {x:99.8, expected: 1},
+        {x:128.0, expected: 2},
+        {x:149.1, expected: 2},
+        {x:179.3, expected: 3},
+        {x:209.9, expected: 3},
+        {x:210.1, expected: -1},
+        {x:250.0, expected: -1},
+    ];
+    for (var i = 0; i < cases.length; ++i) {
+        var point = svgRoot.createSVGPoint();
+        point.x = cases[i].x;
+        point.y = 10.0;
+        point = point.matrixTransform(inverseScaleMatrix);
+        assert_equals(svgText.getCharNumAtPosition(point), cases[i].expected, "getCharNumAtPosition(" + cases[i].x + ")");
+    }
+}, "getCharNumAtPosition");
 
-var point = svgRoot.createSVGPoint();
-point.y = 10.0;
-
-debug("");
-debug("Test getCharNumAtPosition() API");
-
-point.x = 0.0;
-point = point.matrixTransform(inverseScaleMatrix);
-debug("> Testing point=" + pointToString(point));
-shouldBe("svgText.getCharNumAtPosition(point)", "-1");
-
-point.x = 9.9;
-point = point.matrixTransform(inverseScaleMatrix);
-debug("> Testing point=" + pointToString(point));
-shouldBe("svgText.getCharNumAtPosition(point)", "-1");
-
-point.x = 10.1;
-point = point.matrixTransform(inverseScaleMatrix);
-debug("> Testing point=" + pointToString(point));
-shouldBe("svgText.getCharNumAtPosition(point)", "0");
-
-point.x = 49.4;
-point = point.matrixTransform(inverseScaleMatrix);
-debug("> Testing point=" + pointToString(point));
-shouldBe("svgText.getCharNumAtPosition(point)", "0");
-
-point.x = 71.6;
-point = point.matrixTransform(inverseScaleMatrix);
-debug("> Testing point=" + pointToString(point));
-shouldBe("svgText.getCharNumAtPosition(point)", "1");
-
-point.x = 99.8;
-point = point.matrixTransform(inverseScaleMatrix);
-debug("> Testing point=" + pointToString(point));
-shouldBe("svgText.getCharNumAtPosition(point)", "1");
-
-point.x = 128.0;
-point = point.matrixTransform(inverseScaleMatrix);
-debug("> Testing point=" + pointToString(point));
-shouldBe("svgText.getCharNumAtPosition(point)", "2");
-
-point.x = 149.1;
-point = point.matrixTransform(inverseScaleMatrix);
-debug("> Testing point=" + pointToString(point));
-shouldBe("svgText.getCharNumAtPosition(point)", "2");
-
-point.x = 179.3;
-point = point.matrixTransform(inverseScaleMatrix);
-debug("> Testing point=" + pointToString(point));
-shouldBe("svgText.getCharNumAtPosition(point)", "3");
-
-point.x = 209.9;
-point = point.matrixTransform(inverseScaleMatrix);
-debug("> Testing point=" + pointToString(point));
-shouldBe("svgText.getCharNumAtPosition(point)", "3");
-
-point.x = 210.1;
-point = point.matrixTransform(inverseScaleMatrix);
-debug("> Testing point=" + pointToString(point));
-shouldBe("svgText.getCharNumAtPosition(point)", "-1");
-
-point.x = 250.0;
-point = point.matrixTransform(inverseScaleMatrix);
-debug("> Testing point=" + pointToString(point));
-shouldBe("svgText.getCharNumAtPosition(point)", "-1");
-
-// Cleanup
+// Cleanup.
 document.documentElement.removeChild(svgRoot);
-var successfullyParsed = true;
-
 </script>
 </body>
 </html>
