@@ -1461,6 +1461,7 @@ if (_is_default_toolchain) {
       "//content/test/data/media/getusermedia.html",
       "//content/test/data/media/session/",
       "//content/test/data/media/video-player.html",
+      "//content/test/data/media/video-player-pip.html",
       "//content/test/data/media/webrtc_test_utilities.js",
       "//media/test/data/bear-av1.mp4",
       "//media/test/data/bear-hevc-frag.mp4",
