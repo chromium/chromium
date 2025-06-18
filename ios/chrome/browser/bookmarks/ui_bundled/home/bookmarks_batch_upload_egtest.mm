@@ -86,11 +86,10 @@ void ExpectBatchUploadAlert(int count) {
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(alertTitle),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
-                         IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)),
-                     grey_sufficientlyVisible(), nil)]
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)]
       assertWithMatcher:grey_notNil()];
   // No checks for the "cancel" button since the cancel button is not shown on
   // iPads.
