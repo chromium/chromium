@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, SwapWithActiveTab) {
   EXPECT_EQ(tab_strip_model->active_index(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, SwapWithInctiveTab) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, SwapWithInactiveTab) {
   // Add 3 tabs to the browser.
   chrome::NewTab(browser());
   chrome::NewTab(browser());
@@ -433,12 +433,12 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, SwapWithInctiveTab) {
   ActivateSwapWithSplitSubmenuCommand(
       0, SplitTabSwapMenuModel::CommandId::kSwapStartTab);
 
-  // Check that now the left two tabs are in a split and the right (swapped) tab
-  // in the split is active.
-  EXPECT_TRUE(tab_strip_model->GetSplitForTab(0).has_value());
+  // Check that now the right two tabs are in a split and the right (swapped)
+  // tab in the split is active.
+  EXPECT_FALSE(tab_strip_model->GetSplitForTab(0).has_value());
   EXPECT_TRUE(tab_strip_model->GetSplitForTab(1).has_value());
-  EXPECT_FALSE(tab_strip_model->GetSplitForTab(2).has_value());
-  EXPECT_EQ(tab_strip_model->active_index(), 0);
+  EXPECT_TRUE(tab_strip_model->GetSplitForTab(2).has_value());
+  EXPECT_EQ(tab_strip_model->active_index(), 2);
 }
 
 class TabMenuModelCommerceProductSpecsTest : public TabMenuModelBrowserTest {

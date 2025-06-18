@@ -607,11 +607,13 @@ class TabStripModel {
   void UpdateSplitRatio(split_tabs::SplitTabId split_id,
                         double start_content_ratio);
 
-  // Updates the active tab within `split_id` with the tab at `update_index`.
+  // Updates the split tab at index `split_index` with the tab at
+  // `update_index`. The split that includes `split_index` must include the
+  // active tab in the tab strip.
   enum class SplitUpdateType { kReplace, kSwap };
-  void UpdateActiveTabInSplit(split_tabs::SplitTabId split_id,
-                              int update_index,
-                              SplitUpdateType update_type);
+  void UpdateTabInSplit(tabs::TabInterface* split_tab,
+                        int update_index,
+                        SplitUpdateType update_type);
 
   // Reverses the order of tabs with `split_id`.
   void ReverseTabsInSplit(split_tabs::SplitTabId split_id);
@@ -1119,9 +1121,9 @@ class TabStripModel {
   void RemoveSplitImpl(split_tabs::SplitTabId split_id,
                        SplitTabChange::SplitTabRemoveReason reason);
 
-  void UpdateActiveTabInSplitImpl(split_tabs::SplitTabId split_id,
-                                  int update_index,
-                                  SplitUpdateType update_type);
+  void UpdateTabInSplitImpl(tabs::TabInterface* split_tab,
+                            int update_index,
+                            SplitUpdateType update_type);
 
   // Adds tabs to newly-allocated group id |new_group|. This group must be new
   // and have no tabs in it.

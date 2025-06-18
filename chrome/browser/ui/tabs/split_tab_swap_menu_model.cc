@@ -89,23 +89,11 @@ void SplitTabSwapMenuModel::ExecuteCommand(int command_id, int event_flags) {
   CHECK_EQ(tabs_in_split.size(), 2U);
 
   if (id == CommandId::kSwapStartTab) {
-    // TODO(crbug.com/424560781): Perform the swap without activating the tab.
-    const int split_index = tab_strip_model_->GetIndexOfTab(tabs_in_split[0]);
-    if (split_index != tab_strip_model_->active_index()) {
-      tab_strip_model_->ActivateTabAt(split_index);
-    }
-
-    tab_strip_model_->UpdateActiveTabInSplit(
-        split_id, tab_index_, TabStripModel::SplitUpdateType::kSwap);
+    tab_strip_model_->UpdateTabInSplit(tabs_in_split[0], tab_index_,
+                                       TabStripModel::SplitUpdateType::kSwap);
   } else if (id == CommandId::kSwapEndTab) {
-    // TODO(crbug.com/424560781): Perform the swap without activating the tab.
-    const int split_index = tab_strip_model_->GetIndexOfTab(tabs_in_split[1]);
-    if (split_index != tab_strip_model_->active_index()) {
-      tab_strip_model_->ActivateTabAt(split_index);
-    }
-
-    tab_strip_model_->UpdateActiveTabInSplit(
-        split_id, tab_index_, TabStripModel::SplitUpdateType::kSwap);
+    tab_strip_model_->UpdateTabInSplit(tabs_in_split[1], tab_index_,
+                                       TabStripModel::SplitUpdateType::kSwap);
   }
 }
 

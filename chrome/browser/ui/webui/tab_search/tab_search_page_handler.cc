@@ -891,8 +891,8 @@ void TabSearchPageHandler::ReplaceActiveSplitTab(int32_t replacement_tab_id) {
         tabs::TabHandle(replacement_tab_id).Get();
     const int32_t replacement_index =
         browser_->tab_strip_model()->GetIndexOfTab(replacement_tab);
-    browser_->tab_strip_model()->UpdateActiveTabInSplit(
-        split_id.value(), replacement_index,
+    browser_->tab_strip_model()->UpdateTabInSplit(
+        browser_->tab_strip_model()->GetActiveTab(), replacement_index,
         TabStripModel::SplitUpdateType::kReplace);
   }
 }
