@@ -62,13 +62,6 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
     autofill_client_ = autofill_client;
   }
 
-  void SetVirtualCardEnrollmentFieldsLoadedCallback(
-      VirtualCardEnrollmentFieldsLoadedCallback
-          virtual_card_enrollment_fields_loaded_callback) {
-    virtual_card_enrollment_fields_loaded_callback_ =
-        std::move(virtual_card_enrollment_fields_loaded_callback);
-  }
-
   void set_ignore_strike_database(bool ignore_strike_database) {
     ignore_strike_database_ = ignore_strike_database;
   }
@@ -87,7 +80,8 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
       VirtualCardEnrollmentRequestType type,
       payments::PaymentsAutofillClient::PaymentsRpcResult result) override;
   void Reset() override;
-  void ShowVirtualCardEnrollBubble() override;
+  void ShowVirtualCardEnrollBubble(
+      VirtualCardEnrollmentFields* virtual_card_enrollment_fields) override;
 
   void OnVirtualCardEnrollmentBubbleCancelled();
 
