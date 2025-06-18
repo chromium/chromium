@@ -178,7 +178,7 @@ inline bool ShouldIgnore(UChar c) {
   // Unicode Default_Ignorable is not included because we need some of them
   // in the line breaker (e.g., SOFT HYPHEN.) HarfBuzz ignores them while
   // shaping.
-  return c == kCarriageReturnCharacter || c == kFormFeedCharacter;
+  return c == uchar::kCarriageReturn || c == uchar::kFormFeed;
 }
 
 // Characters needing a separate control item than other text items.
@@ -1206,7 +1206,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterSvgTextChunk(
   if (!block_flow_->IsSVGText() || !text_chunk_offsets_) [[likely]] {
     return;
   }
-  EnterBidiContext(nullptr, style, kLeftToRightIsolateCharacter,
+  EnterBidiContext(nullptr, style, uchar::kLeftToRightIsolate,
                    kRightToLeftIsolateCharacter,
                    kPopDirectionalIsolateCharacter);
   // This context is automatically popped by Exit(nullptr) in ExitBlock().
@@ -1449,7 +1449,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterBlock(
         break;
       case UnicodeBidi::kBidiOverride:
       case UnicodeBidi::kIsolateOverride:
-        EnterBidiContext(nullptr, style, kLeftToRightOverrideCharacter,
+        EnterBidiContext(nullptr, style, uchar::kLeftToRightOverride,
                          kRightToLeftOverrideCharacter,
                          kPopDirectionalFormattingCharacter);
         break;
@@ -1464,7 +1464,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterBlock(
     }
   } else {
     DCHECK_EQ(style->RtlOrdering(), EOrder::kVisual);
-    EnterBidiContext(nullptr, style, kLeftToRightOverrideCharacter,
+    EnterBidiContext(nullptr, style, uchar::kLeftToRightOverride,
                      kRightToLeftOverrideCharacter,
                      kPopDirectionalFormattingCharacter);
   }
@@ -1486,29 +1486,29 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
       case UnicodeBidi::kNormal:
         break;
       case UnicodeBidi::kEmbed:
-        EnterBidiContext(node, style, kLeftToRightEmbedCharacter,
+        EnterBidiContext(node, style, uchar::kLeftToRightEmbedding,
                          kRightToLeftEmbedCharacter,
                          kPopDirectionalFormattingCharacter);
         break;
       case UnicodeBidi::kBidiOverride:
-        EnterBidiContext(node, style, kLeftToRightOverrideCharacter,
+        EnterBidiContext(node, style, uchar::kLeftToRightOverride,
                          kRightToLeftOverrideCharacter,
                          kPopDirectionalFormattingCharacter);
         break;
       case UnicodeBidi::kIsolate:
-        EnterBidiContext(node, style, kLeftToRightIsolateCharacter,
+        EnterBidiContext(node, style, uchar::kLeftToRightIsolate,
                          kRightToLeftIsolateCharacter,
                          kPopDirectionalIsolateCharacter);
         break;
       case UnicodeBidi::kPlaintext:
         has_unicode_bidi_plain_text_ = true;
-        EnterBidiContext(node, kFirstStrongIsolateCharacter,
+        EnterBidiContext(node, uchar::kFirstStrongIsolate,
                          kPopDirectionalIsolateCharacter);
         break;
       case UnicodeBidi::kIsolateOverride:
-        EnterBidiContext(node, kFirstStrongIsolateCharacter,
+        EnterBidiContext(node, uchar::kFirstStrongIsolate,
                          kPopDirectionalIsolateCharacter);
-        EnterBidiContext(node, style, kLeftToRightOverrideCharacter,
+        EnterBidiContext(node, style, uchar::kLeftToRightOverride,
                          kRightToLeftOverrideCharacter,
                          kPopDirectionalFormattingCharacter);
         break;
@@ -1522,7 +1522,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
     if (!node->Parent()->IsInlineRuby()) {
       // This creates a ruby column with a placeholder-only ruby-base.
       AppendOpaque(InlineItem::kOpenRubyColumn,
-                   IsLtr(style->Direction()) ? kLeftToRightIsolateCharacter
+                   IsLtr(style->Direction()) ? uchar::kLeftToRightIsolate
                                              : kRightToLeftIsolateCharacter,
                    nullptr);
       AppendOpaque(InlineItem::kRubyLinePlaceholder, nullptr);
@@ -1548,7 +1548,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
   typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
   if (node->IsInlineRuby()) {
     AppendOpaque(InlineItem::kOpenRubyColumn,
-                 IsLtr(style->Direction()) ? kLeftToRightIsolateCharacter
+                 IsLtr(style->Direction()) ? uchar::kLeftToRightIsolate
                                            : kRightToLeftIsolateCharacter,
                  node);
     if (kDisableForcedBreakInRubyColumn) {
@@ -1651,7 +1651,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
       // The beginning part of this function removes such ruby-columns.
       AppendOpaque(InlineItem::kOpenRubyColumn,
                    IsLtr(node->Parent()->Style()->Direction())
-                       ? kLeftToRightIsolateCharacter
+                       ? uchar::kLeftToRightIsolate
                        : kRightToLeftIsolateCharacter,
                    ruby_container);
       AppendOpaque(InlineItem::kRubyLinePlaceholder, node);

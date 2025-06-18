@@ -54,10 +54,10 @@ bool BufferedLineReader::GetLine(String& line) {
     UChar c = buffer_.CurrentChar();
     buffer_.Advance();
 
-    if (c == kNewlineCharacter || c == kCarriageReturnCharacter) {
+    if (c == kNewlineCharacter || c == uchar::kCarriageReturn) {
       // We found a line ending. Return the accumulated line.
       should_return_line = true;
-      check_for_lf = (c == kCarriageReturnCharacter);
+      check_for_lf = (c == uchar::kCarriageReturn);
       break;
     }
 

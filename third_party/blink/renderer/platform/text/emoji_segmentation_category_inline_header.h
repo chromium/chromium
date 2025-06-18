@@ -24,10 +24,10 @@ EmojiSegmentationCategory GetEmojiSegmentationCategory(UChar32 codepoint) {
   // classes first, then expand towards more generic ones. So we match single
   // characters and small ranges first, then return EMOJI and
   // EMOJI_TEXT_PRESENTATION for the remaining ones.
-  if (codepoint == kCombiningEnclosingKeycapCharacter) {
+  if (codepoint == uchar::kCombiningEnclosingKeycap) {
     return EmojiSegmentationCategory::COMBINING_ENCLOSING_KEYCAP;
   }
-  if (codepoint == kCombiningEnclosingCircleBackslashCharacter) {
+  if (codepoint == uchar::kCombiningEnclosingCircleBackslash) {
     return EmojiSegmentationCategory::COMBINING_ENCLOSING_CIRCLE_BACKSLASH;
   }
   if (codepoint == kZeroWidthJoinerCharacter) {

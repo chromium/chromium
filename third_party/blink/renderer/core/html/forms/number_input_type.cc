@@ -143,7 +143,7 @@ String NumberInputType::NormalizeFullWidthNumberChars(const String& input) {
     UChar c = input[i];
     if (c >= uchar::kFullwidthDigitZero && c <= uchar::kFullwidthDigitNine) {
       // Convert full-width digits (０-９, U+FF10-U+FF19) to ASCII digits (0-9)
-      result.Append(c - uchar::kFullwidthDigitZero + kDigitZeroCharacter);
+      result.Append(c - uchar::kFullwidthDigitZero + uchar::kDigitZero);
     } else if (c == uchar::kKatakanaHiraganaProlongedSoundMark ||
                c == uchar::kFullwidthHyphenMinus) {
       // Convert full-width minus signs and the Japanese IME long sound symbol
@@ -162,10 +162,10 @@ String NumberInputType::NormalizeFullWidthNumberChars(const String& input) {
       //
       // Since users generally intend to input negative numbers in such cases,
       // we normalize both 'ー' and '－' to ASCII minus '-'.
-      result.Append(kHyphenMinusCharacter);
+      result.Append(uchar::kHyphenMinus);
     } else if (c == uchar::kFullwidthFullStop) {
       // Convert full-width period (．, U+FF0E) to ASCII dot (.)
-      result.Append(kFullstopCharacter);
+      result.Append(uchar::kFullStop);
     } else {
       // Preserve other characters
       result.Append(c);

@@ -1010,7 +1010,7 @@ String AXPosition::ToString() const {
 bool AXPosition::IsIgnoredCharacter(UChar character) {
   switch (character) {
     case kZeroWidthSpaceCharacter:
-    case kLeftToRightIsolateCharacter:
+    case uchar::kLeftToRightIsolate:
     case kRightToLeftIsolateCharacter:
     case kPopDirectionalIsolateCharacter:
       return true;

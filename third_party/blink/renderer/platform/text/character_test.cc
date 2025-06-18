@@ -273,10 +273,10 @@ TEST(CharacterTest, HanKerning) {
     UChar32 ch;
     HanKerningCharType type;
   } data_list[] = {
-      {kLeftDoubleQuotationMarkCharacter, HanKerningCharType::kOpenQuote},
+      {uchar::kLeftDoubleQuotationMark, HanKerningCharType::kOpenQuote},
       {kRightDoubleQuotationMarkCharacter, HanKerningCharType::kCloseQuote},
       {kMiddleDotCharacter, HanKerningCharType::kMiddle},
-      {kIdeographicSpaceCharacter, HanKerningCharType::kMiddle},
+      {uchar::kIdeographicSpace, HanKerningCharType::kMiddle},
       {uchar::kFullwidthComma, HanKerningCharType::kDot},
       {0x3008, HanKerningCharType::kOpen},
       {0xFF5F, HanKerningCharType::kOpen},

@@ -313,8 +313,8 @@ void InlineItem::CheckTextType(const String& text_content) const {
       DCHECK_EQ(Type(), InlineItemType::kControl);
       DCHECK_EQ(TextType(), TextItemType::kFlowControl);
       break;
-    case kCarriageReturnCharacter:
-    case kFormFeedCharacter:
+    case uchar::kCarriageReturn:
+    case uchar::kFormFeed:
     case kZeroWidthSpaceCharacter:
       if (Type() == InlineItemType::kControl) {
         DCHECK_EQ(Length(), 1u);

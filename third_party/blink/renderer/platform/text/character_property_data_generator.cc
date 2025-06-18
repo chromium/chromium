@@ -113,19 +113,19 @@ class CharacterPropertyValues {
 
   void SetHanKerning() {
     // https://drafts.csswg.org/css-text-4/#text-spacing-classes
-    Set(kLeftSingleQuotationMarkCharacter, HanKerningCharType::kOpenQuote);
-    Set(kLeftDoubleQuotationMarkCharacter, HanKerningCharType::kOpenQuote);
+    Set(uchar::kLeftSingleQuotationMark, HanKerningCharType::kOpenQuote);
+    Set(uchar::kLeftDoubleQuotationMark, HanKerningCharType::kOpenQuote);
     Set(kRightSingleQuotationMarkCharacter, HanKerningCharType::kCloseQuote);
     Set(kRightDoubleQuotationMarkCharacter, HanKerningCharType::kCloseQuote);
-    Set(kIdeographicSpaceCharacter, HanKerningCharType::kMiddle);
-    Set(kIdeographicCommaCharacter, HanKerningCharType::kDot);
-    Set(kIdeographicFullStopCharacter, HanKerningCharType::kDot);
+    Set(uchar::kIdeographicSpace, HanKerningCharType::kMiddle);
+    Set(uchar::kIdeographicComma, HanKerningCharType::kDot);
+    Set(uchar::kIdeographicFullStop, HanKerningCharType::kDot);
     Set(uchar::kFullwidthComma, HanKerningCharType::kDot);
     Set(uchar::kFullwidthFullStop, HanKerningCharType::kDot);
     Set(uchar::kFullwidthColon, HanKerningCharType::kColon);
     Set(uchar::kFullwidthSemicolon, HanKerningCharType::kSemicolon);
     Set(kMiddleDotCharacter, HanKerningCharType::kMiddle);
-    Set(kHyphenationPointCharacter, HanKerningCharType::kMiddle);
+    Set(uchar::kHyphenationPoint, HanKerningCharType::kMiddle);
     Set(uchar::kKatakanaMiddleDot, HanKerningCharType::kMiddle);
     SetForUnicodePattern("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Ps:]]",
                          HanKerningCharType::kOpen);

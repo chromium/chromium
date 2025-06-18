@@ -153,7 +153,7 @@ void PlainTextNode::SegmentText(const TextRun& run,
     BidiParagraph bidi;
     if (bidi_overridden) {
       // See BidiParagraph::StringWithDirectionalOverride().
-      DCHECK(original_text[0] == kLeftToRightOverrideCharacter ||
+      DCHECK(original_text[0] == uchar::kLeftToRightOverride ||
              original_text[0] == kRightToLeftOverrideCharacter)
           << original_text;
       DCHECK(original_text[original_text.length() - 1] ==

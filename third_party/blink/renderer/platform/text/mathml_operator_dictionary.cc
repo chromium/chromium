@@ -142,10 +142,10 @@ MathMLOperatorDictionaryCategory FindCategory(
     return MathMLOperatorDictionaryCategory::kForceDefault;
   }
   if (form == MathMLOperatorDictionaryForm::kPrefix &&
-      ((kDoubleStruckItalicCapitalDCharacter <= key &&
-        key <= kDoubleStruckItalicSmallDCharacter) ||
+      ((uchar::kDoubleStruckItalicCapitalD <= key &&
+        key <= uchar::kDoubleStruckItalicSmallD) ||
        key == uchar::kPartialDifferential ||
-       (kSquareRootCharacter <= key && key <= kFourthRootCharacter))) {
+       (kSquareRootCharacter <= key && key <= uchar::kFourthRoot))) {
     return MathMLOperatorDictionaryCategory::kL;
   }
   if (form == MathMLOperatorDictionaryForm::kInfix &&
@@ -154,7 +154,7 @@ MathMLOperatorDictionaryCategory FindCategory(
     return MathMLOperatorDictionaryCategory::kM;
   }
   // Calculate the key for the compact dictionary.
-  if (kEnQuadCharacter <= key && key <= uchar::kHellschreiberPauseSymbol) {
+  if (uchar::kEnQuad <= key && key <= uchar::kHellschreiberPauseSymbol) {
     // Map above range (U+2000–U+2BFF) to (U+0400-0x0FFF) to fit into
     // 12 bits by decrementing with (U+2000 - U+0400) == 0x1C00.
     key -= 0x1C00;

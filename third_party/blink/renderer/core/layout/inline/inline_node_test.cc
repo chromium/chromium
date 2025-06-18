@@ -469,7 +469,7 @@ static InlineNodeForTest CreateBidiIsolateNode(InlineNodeForTest node,
   node.Append("Hello ", layout_object);
   node.Append(kRightToLeftIsolateCharacter);
   node.Append(u"\u05E2\u05D1\u05E8\u05D9\u05EA ", layout_object);
-  node.Append(kLeftToRightIsolateCharacter);
+  node.Append(uchar::kLeftToRightIsolate);
   node.Append("A", layout_object);
   node.Append(kPopDirectionalIsolateCharacter);
   node.Append(u"\u05E2\u05D1\u05E8\u05D9\u05EA", layout_object);

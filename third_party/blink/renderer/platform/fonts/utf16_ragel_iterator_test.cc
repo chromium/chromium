@@ -16,8 +16,8 @@ namespace blink {
 
 TEST(UTF16RagelIteratorTest, CharacterClasses) {
   UChar32 class_examples_codepoints[] = {
-      kCombiningEnclosingKeycapCharacter,
-      kCombiningEnclosingCircleBackslashCharacter,
+      uchar::kCombiningEnclosingKeycap,
+      uchar::kCombiningEnclosingCircleBackslash,
       kZeroWidthJoinerCharacter,
       kVariationSelector15Character,
       kVariationSelector16Character,
@@ -112,7 +112,7 @@ TEST(UTF16RagelIteratorTest, InvalidOperationOnEmpty) {
 
 TEST(UTF16RagelIteratorTest, CursorPositioning) {
   UChar32 flags_codepoints[] = {0x1F99E, 0x1F99E, 0x1F99E,
-                                kLeftSpeechBubbleCharacter};
+                                uchar::kLeftSpeechBubble};
 
   icu::UnicodeString flags_unicode_string = icu::UnicodeString::fromUTF32(
       flags_codepoints, std::size(flags_codepoints));

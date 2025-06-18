@@ -43,7 +43,7 @@ int FindNextWordForward(base::span<const UChar> chars, int position) {
     // is alphanumeric or underscore.
     const auto prev = base::checked_cast<size_t>(position - 1);
     if (position < len && (unicode::IsAlphanumeric(chars[prev]) ||
-                           chars[prev] == kLowLineCharacter)) {
+                           chars[prev] == uchar::kLowLine)) {
       return position;
     }
 
@@ -62,7 +62,7 @@ int FindNextWordBackward(base::span<const UChar> chars, int position) {
     // is alphanumeric or underscore.
     const auto cur = base::checked_cast<size_t>(position);
     if (position > 0 && (unicode::IsAlphanumeric(chars[cur]) ||
-                         chars[cur] == kLowLineCharacter)) {
+                         chars[cur] == uchar::kLowLine)) {
       return position;
     }
 

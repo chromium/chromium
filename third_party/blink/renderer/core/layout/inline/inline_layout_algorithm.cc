@@ -1009,8 +1009,8 @@ LayoutUnit InlineLayoutAlgorithm::SetupLineClampEllipsis() {
   const SimpleFontData* font_data = font->PrimaryFont();
   DCHECK(font_data);
   String ellipsis_text =
-      font_data && font_data->GlyphForCharacter(kHorizontalEllipsisCharacter)
-          ? String(base::span_from_ref(kHorizontalEllipsisCharacter))
+      font_data && font_data->GlyphForCharacter(uchar::kHorizontalEllipsis)
+          ? String(base::span_from_ref(uchar::kHorizontalEllipsis))
           : String(u"...");
   HarfBuzzShaper shaper(ellipsis_text);
   const ShapeResult* shape_result = shaper.Shape(font, Node().BaseDirection());

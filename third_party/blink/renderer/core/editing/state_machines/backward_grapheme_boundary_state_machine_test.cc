@@ -20,7 +20,7 @@ namespace backward_grapheme_boundary_state_machine_test {
 
 // kWatch kVS16, kEye kVS16 are valid standardized variants.
 const UChar32 kWatch = 0x231A;
-const UChar32 kEye = uchar::kEyeCharacter;
+using uchar::kEye;
 const UChar32 kVS16 = 0xFE0F;
 
 // kHanBMP KVS17, kHanSIP kVS17 are valie IVD sequences.

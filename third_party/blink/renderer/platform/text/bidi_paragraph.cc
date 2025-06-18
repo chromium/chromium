@@ -96,7 +96,7 @@ String BidiParagraph::StringWithDirectionalOverride(const StringView& text,
                                                     TextDirection direction) {
   StringBuilder builder;
   builder.Reserve16BitCapacity(text.length() + 2);
-  builder.Append(IsLtr(direction) ? kLeftToRightOverrideCharacter
+  builder.Append(IsLtr(direction) ? uchar::kLeftToRightOverride
                                   : kRightToLeftOverrideCharacter);
   builder.Append(text);
   builder.Append(kPopDirectionalFormattingCharacter);

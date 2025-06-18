@@ -88,7 +88,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     // with the FAMILY emoji in the hope to find a suitable emoji font.
     // This should be improved by supporting fallback for character
     // sequences like DIGIT ONE + COMBINING keycap etc.
-    c = kFamilyCharacter;
+    c = uchar::kFamily;
   }
 
   // First try the specified font with standard style & weight.

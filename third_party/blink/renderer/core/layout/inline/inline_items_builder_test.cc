@@ -350,9 +350,9 @@ TEST_F(InlineItemsBuilderTest, CollapseEastAsianWidth) {
 TEST_F(InlineItemsBuilderTest, OpaqueToSpaceCollapsing) {
   InlineItemsBuilder builder(GetLayoutBlockFlow(), items());
   AppendText("Hello ", &builder);
-  builder.AppendOpaque(InlineItem::kBidiControl, kFirstStrongIsolateCharacter);
+  builder.AppendOpaque(InlineItem::kBidiControl, uchar::kFirstStrongIsolate);
   AppendText(" ", &builder);
-  builder.AppendOpaque(InlineItem::kBidiControl, kFirstStrongIsolateCharacter);
+  builder.AppendOpaque(InlineItem::kBidiControl, uchar::kFirstStrongIsolate);
   AppendText(" World", &builder);
   EXPECT_EQ(String(u"Hello \u2068\u2068World"), builder.ToString());
 }

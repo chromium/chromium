@@ -97,7 +97,7 @@ class PLATFORM_EXPORT FontFallbackList
       const FontDescription& font_description) {
     if (!cached_primary_simple_font_data_with_digit_zero_) {
       cached_primary_simple_font_data_with_digit_zero_ =
-          DeterminePrimarySimpleFontData(font_description, kDigitZeroCharacter);
+          DeterminePrimarySimpleFontData(font_description, uchar::kDigitZero);
       DCHECK(cached_primary_simple_font_data_with_digit_zero_);
     }
     return cached_primary_simple_font_data_with_digit_zero_;
@@ -107,7 +107,7 @@ class PLATFORM_EXPORT FontFallbackList
       const FontDescription& font_description) {
     if (!cached_primary_simple_font_data_with_cjk_water_) {
       cached_primary_simple_font_data_with_cjk_water_ =
-          DeterminePrimarySimpleFontData(font_description, kCjkWaterCharacter);
+          DeterminePrimarySimpleFontData(font_description, uchar::kCjkWater);
     }
     return cached_primary_simple_font_data_with_cjk_water_;
   }

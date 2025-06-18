@@ -2228,7 +2228,7 @@ TEST_F(HarfBuzzShaperTest, OverlyLongGraphemeCluster) {
   StringBuilder builder;
   builder.Append('e');
   for (unsigned i = 0; i < 35000; ++i)
-    builder.Append(kCombiningAcuteAccentCharacter);
+    builder.Append(uchar::kCombiningAcuteAccent);
   builder.Append('X');
   String string = builder.ToString();
 

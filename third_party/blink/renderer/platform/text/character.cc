@@ -219,8 +219,9 @@ unsigned Character::ExpansionOpportunityCount(
 
 bool Character::CanTextDecorationSkipInk(UChar32 codepoint) {
   if (codepoint == kSolidusCharacter || codepoint == kReverseSolidusCharacter ||
-      codepoint == kLowLineCharacter)
+      codepoint == uchar::kLowLine) {
     return false;
+  }
 
   if (Character::IsCJKIdeographOrSymbol(codepoint))
     return false;
@@ -252,13 +253,13 @@ bool Character::CanReceiveTextEmphasis(UChar32 c) {
   // Additional word-separator characters listed in CSS Text Level 3 Editor's
   // Draft 3 November 2010.
   // https://www.w3.org/TR/css-text-3/#word-separator
-  if (c == kEthiopicWordspaceCharacter ||
-      c == kAegeanWordSeparatorLineCharacter ||
-      c == kAegeanWordSeparatorDotCharacter ||
+  if (c == uchar::kEthiopicWordspace || c == uchar::kAegeanWordSeparatorLine ||
+      c == uchar::kAegeanWordSeparatorDot ||
       c == kUgariticWordDividerCharacter ||
       c == kTibetanMarkIntersyllabicTshegCharacter ||
-      c == kTibetanMarkDelimiterTshegBstarCharacter)
+      c == kTibetanMarkDelimiterTshegBstarCharacter) {
     return false;
+  }
 
   // Punctuation
   if (category &

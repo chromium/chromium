@@ -138,11 +138,11 @@ TEST(UnicodeUtilitiesTest, ContainsKanaLetters) {
 }
 
 TEST(UnicodeUtilitiesTest, FoldQuoteMarkOrSoftHyphenTest) {
-  const UChar kCharactersToFold[] = {kHebrewPunctuationGershayimCharacter,
-                                     kLeftDoubleQuotationMarkCharacter,
+  const UChar kCharactersToFold[] = {uchar::kHebrewPunctuationGershayim,
+                                     uchar::kLeftDoubleQuotationMark,
                                      kRightDoubleQuotationMarkCharacter,
-                                     kHebrewPunctuationGereshCharacter,
-                                     kLeftSingleQuotationMarkCharacter,
+                                     uchar::kHebrewPunctuationGeresh,
+                                     uchar::kLeftSingleQuotationMark,
                                      kRightSingleQuotationMarkCharacter,
                                      kSoftHyphenCharacter};
 

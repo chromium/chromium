@@ -927,10 +927,10 @@ String LayoutText::TransformAndSecureText(const String& original,
         mask = kWhiteBulletCharacter;
         break;
       case ETextSecurity::kDisc:
-        mask = kBulletCharacter;
+        mask = uchar::kBullet;
         break;
       case ETextSecurity::kSquare:
-        mask = kBlackSquareCharacter;
+        mask = uchar::kBlackSquare;
         break;
     }
     auto [masked, secure_map] = SecureText(transformed, mask);

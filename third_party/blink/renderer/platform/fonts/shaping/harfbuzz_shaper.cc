@@ -650,7 +650,7 @@ void HarfBuzzShaper::ExtractShapeResults(
       // https://docs.microsoft.com/en-us/typography/opentype/spec/recom#glyph-0-the-notdef-glyph
       glyph_result = kNotDef;
     } else if (glyph_id == space_glyph && !IsLastFontToShape(fallback_stage) &&
-               text_[current_cluster] == kIdeographicSpaceCharacter) {
+               text_[current_cluster] == uchar::kIdeographicSpace) {
       // HarfBuzz synthesizes U+3000 IDEOGRAPHIC SPACE using the space glyph.
       // This is not desired for run-splitting, applying features, and for
       // computing `line-height`. crbug.com/1193282

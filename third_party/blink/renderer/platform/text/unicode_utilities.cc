@@ -44,12 +44,12 @@ enum VoicedSoundMarkType {
 template <typename CharType>
 static inline CharType FoldQuoteMarkOrSoftHyphen(CharType c) {
   switch (static_cast<UChar>(c)) {
-    case kHebrewPunctuationGershayimCharacter:
-    case kLeftDoubleQuotationMarkCharacter:
+    case uchar::kHebrewPunctuationGershayim:
+    case uchar::kLeftDoubleQuotationMark:
     case kRightDoubleQuotationMarkCharacter:
       return '"';
-    case kHebrewPunctuationGereshCharacter:
-    case kLeftSingleQuotationMarkCharacter:
+    case uchar::kHebrewPunctuationGeresh:
+    case uchar::kLeftSingleQuotationMark:
     case kRightSingleQuotationMarkCharacter:
       return '\'';
     case kSoftHyphenCharacter:
@@ -69,10 +69,10 @@ void FoldQuoteMarksAndSoftHyphens(base::span<UChar> data) {
 }
 
 void FoldQuoteMarksAndSoftHyphens(String& s) {
-  s.Replace(kHebrewPunctuationGereshCharacter, '\'');
-  s.Replace(kHebrewPunctuationGershayimCharacter, '"');
-  s.Replace(kLeftDoubleQuotationMarkCharacter, '"');
-  s.Replace(kLeftSingleQuotationMarkCharacter, '\'');
+  s.Replace(uchar::kHebrewPunctuationGeresh, '\'');
+  s.Replace(uchar::kHebrewPunctuationGershayim, '"');
+  s.Replace(uchar::kLeftDoubleQuotationMark, '"');
+  s.Replace(uchar::kLeftSingleQuotationMark, '\'');
   s.Replace(kRightDoubleQuotationMarkCharacter, '"');
   s.Replace(kRightSingleQuotationMarkCharacter, '\'');
   // Replace soft hyphen with an ignorable character so that their presence or

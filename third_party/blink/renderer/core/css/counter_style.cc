@@ -475,7 +475,7 @@ String HebrewAlgorithm(unsigned number) {
 
   return StrCat(
       {HebrewAlgorithmUnder1000(number / 1000),
-       StringView(base::span_from_ref(kHebrewPunctuationGereshCharacter)),
+       StringView(base::span_from_ref(uchar::kHebrewPunctuationGeresh)),
        HebrewAlgorithmUnder1000(number % 1000)});
 }
 
@@ -556,10 +556,10 @@ String EthiopicNumericAlgorithm(unsigned value) {
     value /= 100;
     if (!odd_group) {
       // This adds an extra character for group 0. We'll remove it in the end.
-      result.push_back(kEthiopicNumberTenThousandCharacter);
+      result.push_back(uchar::kEthiopicNumberTenThousand);
     } else {
       if (group_value) {
-        result.push_back(kEthiopicNumberHundredCharacter);
+        result.push_back(uchar::kEthiopicNumberHundred);
       }
     }
     bool most_significant_group = !value;

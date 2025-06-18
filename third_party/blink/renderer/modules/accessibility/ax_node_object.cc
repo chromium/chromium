@@ -4574,13 +4574,13 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
       case ETextSecurity::kNone:
         break;  // Fall through to the non-password branch.
       case ETextSecurity::kDisc:
-        mask_character = kBulletCharacter;
+        mask_character = uchar::kBullet;
         break;
       case ETextSecurity::kCircle:
         mask_character = kWhiteBulletCharacter;
         break;
       case ETextSecurity::kSquare:
-        mask_character = kBlackSquareCharacter;
+        mask_character = uchar::kBlackSquare;
         break;
     }
     if (!mask_character)

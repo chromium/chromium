@@ -224,16 +224,18 @@ String TextControlElement::StrippedPlaceholder() const {
   const AtomicString& attribute_value =
       FastGetAttribute(html_names::kPlaceholderAttr);
   if (!attribute_value.Contains(kNewlineCharacter) &&
-      !attribute_value.Contains(kCarriageReturnCharacter))
+      !attribute_value.Contains(uchar::kCarriageReturn)) {
     return attribute_value;
+  }
 
   StringBuilder stripped;
   unsigned length = attribute_value.length();
   stripped.ReserveCapacity(length);
   for (unsigned i = 0; i < length; ++i) {
     UChar character = attribute_value[i];
-    if (character == kNewlineCharacter || character == kCarriageReturnCharacter)
+    if (character == kNewlineCharacter || character == uchar::kCarriageReturn) {
       continue;
+    }
     stripped.Append(character);
   }
   return stripped.ToString();

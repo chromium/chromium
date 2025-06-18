@@ -75,7 +75,7 @@ static base::span<const UChar> CenterTruncateToBuffer(
   DCHECK_LE(truncated_length, string.length());
 
   string.CopyTo(buffer.first(omit_start), 0);
-  buffer[omit_start] = kHorizontalEllipsisCharacter;
+  buffer[omit_start] = uchar::kHorizontalEllipsis;
   string.CopyTo(buffer.subspan(omit_start + 1, string.length() - omit_end),
                 omit_end);
 
@@ -93,7 +93,7 @@ static base::span<const UChar> RightTruncateToBuffer(const String& string,
   unsigned truncated_length = keep_length + 1;
 
   string.CopyTo(buffer.first(keep_length), 0);
-  buffer[keep_length] = kHorizontalEllipsisCharacter;
+  buffer[keep_length] = uchar::kHorizontalEllipsis;
 
   return buffer.first(truncated_length);
 }
@@ -117,7 +117,7 @@ static String TruncateString(const String& string,
   DCHECK_GE(max_width, 0);
 
   const float current_ellipsis_width =
-      StringWidth(font, base::span_from_ref(kHorizontalEllipsisCharacter));
+      StringWidth(font, base::span_from_ref(uchar::kHorizontalEllipsis));
 
   UChar string_buffer[STRING_BUFFER_SIZE];
   base::span<const UChar> truncated_string;

@@ -150,7 +150,7 @@ class PLATFORM_EXPORT Character {
   // `MaybeHanKerningClose` but has more cases where it returns `true` for other
   // characters.
   static bool MaybeHanKerningOpenOrCloseFast(UChar32 character) {
-    return IsInRange(character, kLeftSingleQuotationMarkCharacter, 0x301F) ||
+    return IsInRange(character, uchar::kLeftSingleQuotationMark, 0x301F) ||
            IsInRange(character, 0xFF08, 0xFF60);
   }
   static bool MayNeedEastAsianSpacing(UChar32);
@@ -159,12 +159,12 @@ class PLATFORM_EXPORT Character {
   // https://drafts.csswg.org/css-text-3/#collapsible-white-space
   static bool IsCollapsibleSpace(UChar c) {
     return c == kSpaceCharacter || c == kNewlineCharacter ||
-           c == kTabulationCharacter || c == kCarriageReturnCharacter;
+           c == kTabulationCharacter || c == uchar::kCarriageReturn;
   }
   static bool IsLineFeed(UChar c) { return c == kNewlineCharacter; }
   template <typename CharacterType>
   static bool IsOtherSpaceSeparator(CharacterType c) {
-    return c == kIdeographicSpaceCharacter;
+    return c == uchar::kIdeographicSpace;
   }
   static bool TreatAsSpace(UChar32 c) {
     return c == kSpaceCharacter || c == kTabulationCharacter ||
@@ -175,16 +175,16 @@ class PLATFORM_EXPORT Character {
            c == kZeroWidthNonJoinerCharacter || c == kZeroWidthJoinerCharacter;
   }
   static bool TreatAsZeroWidthSpaceInComplexScriptLegacy(UChar32 c) {
-    return c == kFormFeedCharacter || c == kCarriageReturnCharacter ||
+    return c == uchar::kFormFeed || c == uchar::kCarriageReturn ||
            c == kSoftHyphenCharacter || c == kZeroWidthSpaceCharacter ||
-           (c >= kLeftToRightMarkCharacter && c <= kRightToLeftMarkCharacter) ||
-           (c >= kLeftToRightEmbedCharacter &&
+           (c >= uchar::kLeftToRightMark && c <= kRightToLeftMarkCharacter) ||
+           (c >= uchar::kLeftToRightEmbedding &&
             c <= kRightToLeftOverrideCharacter) ||
            c == kZeroWidthNoBreakSpaceCharacter ||
            c == uchar::kObjectReplacementCharacter;
   }
   static bool TreatAsZeroWidthSpaceInComplexScript(UChar32 c) {
-    if (c == kFormFeedCharacter || c == kCarriageReturnCharacter ||
+    if (c == uchar::kFormFeed || c == uchar::kCarriageReturn ||
         c == uchar::kObjectReplacementCharacter) {
       return true;
     }
@@ -321,7 +321,7 @@ inline bool Character::IsEastAsianWidthFullwidth(UChar32 ch) {
   // All EAW=F characters are in the "Halfwidth and Fullwidth forms" block,
   // except U+3000 IDEOGRAPHIC SPACE.
   // https://util.unicode.org/UnicodeJsps/list-unicodeset.jsp?a=[:ea=F:]
-  return ch == kIdeographicSpaceCharacter ||
+  return ch == uchar::kIdeographicSpace ||
          (IsBlockHalfwidthAndFullwidthForms(ch) &&
           EastAsianWidth(ch) == UEastAsianWidth::U_EA_FULLWIDTH);
 }

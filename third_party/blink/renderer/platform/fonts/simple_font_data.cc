@@ -415,7 +415,7 @@ const std::optional<float>& SimpleFontData::IdeographicAdvanceWidth() const {
     // Use the advance of the CJK water character U+6C34 as the approximated
     // advance of fullwidth ideographic characters, as specified at
     // https://drafts.csswg.org/css-values-4/#ic.
-    if (const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter)) {
+    if (const Glyph cjk_water_glyph = GlyphForCharacter(uchar::kCjkWater)) {
       ideographic_advance_width_ = WidthForGlyph(cjk_water_glyph);
     }
   });
@@ -424,7 +424,7 @@ const std::optional<float>& SimpleFontData::IdeographicAdvanceWidth() const {
 
 const std::optional<float>& SimpleFontData::IdeographicAdvanceHeight() const {
   std::call_once(ideographic_advance_height_once_, [this] {
-    if (const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter)) {
+    if (const Glyph cjk_water_glyph = GlyphForCharacter(uchar::kCjkWater)) {
       const HarfBuzzFace* hb_face = platform_data_->GetHarfBuzzFace();
       const OpenTypeVerticalData& vertical_data = hb_face->VerticalData();
       ideographic_advance_height_ =

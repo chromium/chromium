@@ -104,12 +104,14 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
         return MoveToNextState(BackspaceState::kBeforeEmojiModifier);
       if (Character::IsEmoji(code_point))
         return MoveToNextState(BackspaceState::kBeforeZWJEmoji);
-      if (code_point == kCombiningEnclosingKeycapCharacter)
+      if (code_point == uchar::kCombiningEnclosingKeycap) {
         return MoveToNextState(BackspaceState::kBeforeKeycap);
+      }
       return Finish();
     case BackspaceState::kBeforeLF:
-      if (code_point == kCarriageReturnCharacter)
+      if (code_point == uchar::kCarriageReturn) {
         ++code_units_to_be_deleted_;
+      }
       return Finish();
     case BackspaceState::kBeforeKeycap:
       if (u_hasBinaryProperty(code_point, UCHAR_VARIATION_SELECTOR)) {

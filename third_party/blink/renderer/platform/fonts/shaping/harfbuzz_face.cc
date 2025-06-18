@@ -228,7 +228,7 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
     if (!typeface) {
       return false;
     }
-    if (unicode == kHyphenCharacter || unicode == uchar::kNonBreakingHyphen) {
+    if (unicode == uchar::kHyphen || unicode == uchar::kNonBreakingHyphen) {
       SkGlyphID sk_glyph_id = typeface->unicharToGlyph(unicode);
       *glyph = sk_glyph_id;
       return sk_glyph_id;
