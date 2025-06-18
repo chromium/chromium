@@ -258,9 +258,6 @@ class UkmRecorder;
 
 namespace features {
 
-// Feature to evict when accessibility events occur while in back/forward cache.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kEvictOnAXEvents);
-
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDoNotEvictOnAXLocationChange);
 
 }  // namespace features
@@ -683,16 +680,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // description of the latter method for complete details.
   std::optional<std::vector<std::u16string>> GetClipboardTypesIfPolicyApplied(
     const ui::ClipboardSequenceNumberToken& seqno);
-
-  // This is called when accessibility events arrive from renderer to browser.
-  // This could cause eviction if the page is in back/forward cache. Returns
-  // true if the eviction happens, and otherwise calls
-  // |RenderFrameHost::IsInactiveAndDisallowActivation()| and returns the value
-  // from there. This is only called when the flag to evict on accessibility
-  // events is on. When the flag is off, we do not evict the entry and keep
-  // processing the events, thus do not call this function.
-  bool IsInactiveAndDisallowActivationForAXEvents(
-      const std::vector<ui::AXEvent>& events);
 
   void SendAccessibilityEventsToManager(ui::AXUpdatesAndEvents& details);
   void ExerciseAccessibilityForTest();

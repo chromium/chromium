@@ -349,13 +349,6 @@
 
 namespace features {
 
-// Evict when accessibility events occur while in back/forward cache.
-// Disabling on all platforms since https://crbug.com/1341507 has been addressed
-// and no significant crashes are happening with experiments.
-BASE_FEATURE(kEvictOnAXEvents,
-             "EvictOnAXEvents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDoNotEvictOnAXLocationChange,
              "DoNotEvictOnAXLocationChange",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3841,14 +3834,6 @@ RenderFrameHostImpl::AccessibilityGetAcceleratedWidget() {
 
 gfx::NativeViewAccessible
 RenderFrameHostImpl::AccessibilityGetNativeViewAccessible() {
-  if (base::FeatureList::IsEnabled(features::kEvictOnAXEvents) &&
-      IsInactiveAndDisallowActivation(
-          DisallowActivationReasonId::kAXGetNativeView)) {
-    // |AccessibilityGetNativeViewAccessible()| should be only accessible when
-    // we process AX events. Otherwise this should not be used while in
-    // back/forward cache and the document should be evicted.
-    return gfx::NativeViewAccessible();
-  }
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
       render_view_host_->GetWidget()->GetView());
   if (view)
@@ -8580,10 +8565,8 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
     case LifecycleStateImpl::kInBackForwardCache: {
       // This function should not be called with kAXEvent when the page is in
       // back/forward cache, because |HandleAXevents()| will continue to process
-      // accessibility events without evicting unless the kEvictOnAXEvents flag
-      // is on.
-      if (!base::FeatureList::IsEnabled(features::kEvictOnAXEvents))
-        CHECK_NE(reason, kAXEvent);
+      // accessibility events without evicting.
+      CHECK_NE(reason, kAXEvent);
       // This function should not be called with kAXLocationChange when the
       // page is in back/forward cache, because `HandleAXLocationChange()` will
       // continue to process accessibility location changes unless
@@ -8623,21 +8606,6 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
     case LifecycleStateImpl::kActive:
       return false;
   }
-}
-
-bool RenderFrameHostImpl::IsInactiveAndDisallowActivationForAXEvents(
-    const std::vector<ui::AXEvent>& events) {
-  DCHECK(base::FeatureList::IsEnabled(features::kEvictOnAXEvents));
-  if (lifecycle_state_ != LifecycleStateImpl::kInBackForwardCache) {
-    return IsInactiveAndDisallowActivation(
-        DisallowActivationReasonId::kAXEvent);
-  }
-  // If the lifecycle state is |LifecycleStateImpl::kInBackForwardCache|, we
-  // cannot handle accessibility events any more. We should evict the entry.
-  BackForwardCacheCanStoreDocumentResult can_store_flat;
-  can_store_flat.NoDueToAXEvents(events);
-  EvictFromBackForwardCacheWithFlattenedReasons(can_store_flat);
-  return true;
 }
 
 void RenderFrameHostImpl::EvictFromBackForwardCache(
@@ -11245,21 +11213,13 @@ void RenderFrameHostImpl::HandleAXEvents(
   // TODO(accessibility): we should probably consolidate these two params.
   updates_and_events.ax_tree_id = tree_id;
 
-  if (base::FeatureList::IsEnabled(features::kEvictOnAXEvents)) {
-    // If the flag is on, evict the bfcache entry now that AX events are
-    // received.
-    if (IsInactiveAndDisallowActivationForAXEvents(updates_and_events.events)) {
-      return;
-    }
-  } else {
-    // If the page is in back/forward cache, do not return early and continue to
-    // apply AX tree updates.
-    // TODO(crbug.com/40841648): Define and implement the behavior for
-    // when the page is prerendering, too.
-    if (!IsInBackForwardCache() &&
-        IsInactiveAndDisallowActivation(DisallowActivationReasonId::kAXEvent)) {
-      return;
-    }
+  // If the page is in back/forward cache, do not return early and continue to
+  // apply AX tree updates.
+  // TODO(crbug.com/40841648): Define and implement the behavior for
+  // when the page is prerendering, too.
+  if (!IsInBackForwardCache() &&
+      IsInactiveAndDisallowActivation(DisallowActivationReasonId::kAXEvent)) {
+    return;
   }
 
   GetOrCreateBrowserAccessibilityManager();

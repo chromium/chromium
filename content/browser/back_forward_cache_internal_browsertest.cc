@@ -3748,30 +3748,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ScreenReaderOn) {
   ExpectRestored(FROM_HERE);
 }
 
-class BackForwardCacheBrowserTestWithFlagForAXEvents
-    : public BackForwardCacheBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (ShouldEvictOnAXEvents()) {
-      EnableFeatureAndSetParams(features::kEvictOnAXEvents, "", "true");
-    } else {
-      DisableFeature(features::kEvictOnAXEvents);
-    }
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  bool ShouldEvictOnAXEvents() { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BackForwardCacheBrowserTestWithFlagForAXEvents,
-                         ::testing::Bool());
-
-// Verify that the page will be evicted upon accessibility events if the
-// flag to evict on ax events is off, and evicted otherwise.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
-                       EvictOnAccessibilityEventsOrNot) {
+// Verify that the page will not be evicted upon accessibility events.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoNotEvictOnAccessibilityEventsOrNot) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -3825,23 +3804,17 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
 
   // 4) Navigate back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  if (ShouldEvictOnAXEvents()) {
-    const uint64_t reason = DisallowActivationReasonId::kAXEvent;
-    ExpectNotRestored({NotRestoredReason::kIgnoreEventAndEvict}, {}, {}, {},
-                      {reason}, FROM_HERE);
-  } else {
-    AccessibilityNotificationWaiter waiter_start(shell()->web_contents(),
-                                                 ax::mojom::Event::kLoadStart);
-    // Ensure that |rfh_a| is successfully restored from bfcache and that we see
-    // LOAD_START event.
-    EXPECT_EQ(current_frame_host(), rfh_a.get());
-    ExpectRestored(FROM_HERE);
+  AccessibilityNotificationWaiter waiter_start(shell()->web_contents(),
+                                               ax::mojom::Event::kLoadStart);
+  // Ensure that |rfh_a| is successfully restored from bfcache and that we see
+  // LOAD_START event.
+  EXPECT_EQ(current_frame_host(), rfh_a.get());
+  ExpectRestored(FROM_HERE);
 
-    ASSERT_TRUE(waiter_start.WaitForNotification());
-    auto* waiter_start_rfhi = static_cast<RenderFrameHostImpl*>(
-        waiter_start.event_browser_accessibility_manager()->delegate());
-    EXPECT_EQ(waiter_start_rfhi, rfh_a.get());
-  }
+  ASSERT_TRUE(waiter_start.WaitForNotification());
+  auto* waiter_start_rfhi = static_cast<RenderFrameHostImpl*>(
+      waiter_start.event_browser_accessibility_manager()->delegate());
+  EXPECT_EQ(waiter_start_rfhi, rfh_a.get());
 }
 
 class BackForwardCacheBrowserTestWithFlagForAXLocationChange

@@ -22,7 +22,6 @@
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/script_source_location.mojom.h"
-#include "ui/accessibility/ax_event.h"
 
 namespace content {
 
@@ -83,8 +82,6 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   void NoDueToDisableForRenderFrameHostCalled(
       const DisabledReasonsMap& reasons);
   void NoDueToDisallowActivation(uint64_t reason);
-  // TODO(crbug.com/40060145): Remove this function.
-  void NoDueToAXEvents(const std::vector<ui::AXEvent>& events);
 
   // The conditions for storing and restoring the pages are different in that
   // pages with cache-control:no-store can enter back/forward cache depending on
@@ -119,8 +116,6 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
     return disallow_activation_reasons_;
   }
 
-  const std::set<ax::mojom::Event>& ax_events() const { return ax_events_; }
-
   std::string ToString() const;
 
   void WriteIntoTrace(
@@ -146,8 +141,6 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   DisabledReasonsMap disabled_reasons_;
   std::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
   std::set<uint64_t> disallow_activation_reasons_;
-  // The list of the accessibility events that made the page bfcache ineligible.
-  std::set<ax::mojom::Event> ax_events_;
 };
 
 }  // namespace content
