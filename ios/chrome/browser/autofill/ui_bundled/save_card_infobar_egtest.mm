@@ -144,13 +144,6 @@ id<GREYMatcher> UploadBottomSheetTitleMatcher() {
 #endif
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-id<GREYMatcher> UploadBottomSheetSubTitleMatcher() {
-  return grey_accessibilityLabel(l10n_util::GetNSString(
-      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY));
-}
-#endif
-
 id<GREYMatcher> BottomSheetCardDescriptionMatcher() {
   NSString* cardDescriptionLabel =
       base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
@@ -795,9 +788,7 @@ void FillAndSubmitXframeCreditCardForm() {
   }
 }
 
-// TODO(crbug.com/419219302): Test is flaky.
-- (void)
-    DISABLED_testSaveCardBottomSheetShowsLoadingAndConfirmationAfterAcceptPushed {
+- (void)testSaveCardBottomSheetShowsLoadingAndConfirmationAfterAcceptPushed {
   [self fillAndSubmitFormWithID:kFillFullFormId
                paymentsResponse:kResponseGetUploadDetailsSuccess
                       errorCode:net::HTTP_OK
@@ -815,7 +806,10 @@ void FillAndSubmitXframeCreditCardForm() {
                      IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey selectElementWithMatcher:UploadBottomSheetSubTitleMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityValue(l10n_util::GetNSString(
+              IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY))]
       assertWithMatcher:grey_sufficientlyVisible()];
 #endif
 
