@@ -480,10 +480,13 @@ BookmarkManagerPrivateCanPasteFunction::RunOnReady() {
 
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateIsActiveTabInSplitFunction::RunOnReady() {
-  Browser* browser = ChromeExtensionFunctionDetails(this)
-                         .GetCurrentWindowController()
-                         ->GetBrowser();
+  WindowController* window_controller =
+      ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
+  if (!window_controller) {
+    return Error(ExtensionTabUtil::kNoCurrentWindowError);
+  }
 
+  Browser* browser = window_controller->GetBrowser();
   if (!browser) {
     return Error(kInvalidBrowserError);
   }
@@ -771,9 +774,13 @@ BookmarkManagerPrivateOpenInNewTabGroupFunction::RunOnReady() {
     return BadMessage();
   }
 
-  Browser* browser = ChromeExtensionFunctionDetails(this)
-                         .GetCurrentWindowController()
-                         ->GetBrowser();
+  WindowController* window_controller =
+      ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
+  if (!window_controller) {
+    return Error(ExtensionTabUtil::kNoCurrentWindowError);
+  }
+
+  Browser* browser = window_controller->GetBrowser();
   if (!browser) {
     return Error(kInvalidBrowserError);
   }
