@@ -353,7 +353,7 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(100, "siyua@chromium.org",
                        "Triggered after autofill popup appears.")));
 
-  // kIPHAutofillBnplSuggestionFeature:
+  // kIPHAutofillBnplAffirmOrZipSuggestionFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHAutofillBnplAffirmOrZipSuggestionFeature,
@@ -363,7 +363,24 @@ void MaybeRegisterChromeFeaturePromos(
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
           .SetMetadata(137, "yiwenqian@google.com",
-                       "Triggered when users see the BNPL chip.")));
+                       "Triggered when users see the BNPL chip. Used when the "
+                       "possible available BNPL issuers are Affirm and Zip.")));
+
+  // kIPHAutofillBnplAffirmZipOrKlarnaSuggestionFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::
+              kIPHAutofillBnplAffirmZipOrKlarnaSuggestionFeature,
+          autofill::PopupViewViews::
+              kAutofillBnplAffirmZipOrKlarnaSuggestionElementId,
+          IDS_AUTOFILL_CARD_BNPL_AFFIRM_ZIP_OR_KLARNA_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP,
+          IDS_AUTOFILL_CARD_BNPL_AFFIRM_ZIP_OR_KLARNA_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetMetadata(
+              139, "wilsonlow@google.com",
+              "Triggered when users see the BNPL chip. Used when the possible "
+              "available BNPL issuers are Affirm, Zip, and Klarna.")));
 
   // kIPHAutofillCardInfoRetrievalSuggestionFeature:
   registry.RegisterFeature(std::move(

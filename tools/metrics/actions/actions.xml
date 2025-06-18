@@ -49235,6 +49235,8 @@ should be able to be added at any place in this file.
   <suffix name="AutofillAiOptIn" label="For AutofillAiOptIn feature."/>
   <suffix name="AutofillBnplAffirmOrZipSuggestion"
       label="For AutofillBnplAffirmOrZipSuggestion IPH feature."/>
+  <suffix name="AutofillBnplAffirmZipOrKlarnaSuggestion"
+      label="For AutofillBnplAffirmZipOrKlarnaSuggestion IPH feature."/>
   <suffix name="AutofillCardInfoRetrievalSuggestion"
       label="For AutofillCardInfoRetrievalSuggestion feature."/>
   <suffix name="AutofillCreditCardBenefit"

@@ -907,13 +907,19 @@
   <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_LABEL_SCREENREADER" desc="Text shown in the `In-Product Help(IPH)` bubble for card info retrieval suggestions on Chrome Desktop. It is specifically for card info retrieval enrolled card. Card info will be copied after the user clicks the suggestion.">
       Now you can autofill your <ph name="CARD_ISSUER_NAME">$1<ex>PayPay</ex></ph> cards because your <ph name="CARD_ISSUER_NAME">$1<ex>PayPay</ex></ph> account is linked to Google Pay.
   </message>
-  <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_OR_ZIP_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop.">
+  <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_OR_ZIP_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop. Used when the possible available BNPL issuers are Affirm and Zip.">
       Now you can pay over time using Affirm or Zip
   </message>
-  <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_OR_ZIP_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop.">
+  <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_OR_ZIP_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop. Used when the possible available BNPL issuers are Affirm and Zip.">
       Now you can pay over time using Affirm or Zip
   </message>
-    <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY" desc="Text for the payment option button in the BNPL select provider screen, explaining that users can pay monthly or in installments. It is specifically for Affirm and Afterpay options.">
+  <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_ZIP_OR_KLARNA_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop. Used when the possible available BNPL issuers are Affirm, Zip, and Klarna.">
+      Now you can pay over time using Affirm, Zip, or Klarna
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_ZIP_OR_KLARNA_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop. Used when the possible available BNPL issuers are Affirm, Zip, and Klarna.">
+      Now you can pay over time using Affirm, Zip, or Klarna
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY" desc="Text for the payment option button in the BNPL select provider screen, explaining that users can pay monthly or in installments. It is specifically for Affirm and Afterpay options.">
       Pay monthly or in 4 interest-free installments (subject to eligibility)
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_ZIP" desc="Text for the payment option button in the BNPL select provider screen, explaining that users can pay monthly or in installments. It is specifically for Zip options.">

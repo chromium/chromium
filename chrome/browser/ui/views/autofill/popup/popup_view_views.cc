@@ -1072,6 +1072,12 @@ void PopupViewViews::CreateSuggestionViews() {
                                   kAutofillBnplAffirmOrZipSuggestionElementId);
           } else if (feature ==
                      &feature_engagement::
+                         kIPHAutofillBnplAffirmZipOrKlarnaSuggestionFeature) {
+            row_view->SetProperty(
+                views::kElementIdentifierKey,
+                kAutofillBnplAffirmZipOrKlarnaSuggestionElementId);
+          } else if (feature ==
+                     &feature_engagement::
                          kIPHAutofillHomeWorkProfileSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillHomeWorkSuggestionElementId);
@@ -1431,6 +1437,9 @@ END_METADATA
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
     PopupViewViews,
     kAutofillBnplAffirmOrZipSuggestionElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    PopupViewViews,
+    kAutofillBnplAffirmZipOrKlarnaSuggestionElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
                                       kAutofillCreditCardBenefitElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(

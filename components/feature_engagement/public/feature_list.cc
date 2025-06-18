@@ -269,6 +269,7 @@ const base::Feature* const kAllFeatures[] = {
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
     &kIPHAutofillAiOptInFeature,
     &kIPHAutofillBnplAffirmOrZipSuggestionFeature,
+    &kIPHAutofillBnplAffirmZipOrKlarnaSuggestionFeature,
     &kIPHAutofillCardInfoRetrievalSuggestionFeature,
     &kIPHAutofillCreditCardBenefitFeature,
     &kIPHAutofillDisabledVirtualCardSuggestionFeature,

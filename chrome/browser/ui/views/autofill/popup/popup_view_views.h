@@ -69,6 +69,8 @@ class PopupViewViews : public PopupBaseView,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kAutofillBnplAffirmOrZipSuggestionElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kAutofillBnplAffirmZipOrKlarnaSuggestionElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAutofillCreditCardBenefitElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kAutofillCreditCardSuggestionEntryElementId);

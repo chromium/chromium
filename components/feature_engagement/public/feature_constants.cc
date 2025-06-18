@@ -804,6 +804,9 @@ BASE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment,
 BASE_FEATURE(kIPHAutofillBnplAffirmOrZipSuggestionFeature,
              "IPH_AutofillBnplAffirmOrZipSuggestion",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAutofillBnplAffirmZipOrKlarnaSuggestionFeature,
+             "IPH_AutofillBnplAffirmZipOrKlarnaSuggestion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutofillCardInfoRetrievalSuggestionFeature,
              "IPH_AutofillCardInfoRetrievalSuggestion",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -70,6 +70,10 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AutofillBnplAffirmOrZipSuggestion"
       summary="message shown when users see the Autofill BNPL chip to educate
                users that they can now pay over time using Affirm or Zip."/>
+  <variant name="IPH_AutofillBnplAffirmZipOrKlarnaSuggestion"
+      summary="message shown when users see the Autofill BNPL chip to educate
+               users that they can now pay over time using Affirm, Zip, or
+               Klarna."/>
   <variant name="IPH_AutofillCardInfoRetrievalSuggestion"
       summary="message shown in the Autofill dropdown to educate users that a
                card info retrieval card appears because their account with

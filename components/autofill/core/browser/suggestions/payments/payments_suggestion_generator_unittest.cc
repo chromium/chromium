@@ -1818,7 +1818,14 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 }
 
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
-       MaybeUpdateSuggestionsWithBnpl_IphBubble) {
+       MaybeUpdateSuggestionsWithBnpl_IphBubble_KlarnaDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/
+      {features::kAutofillEnableBuyNowPayLaterForKlarna,
+       features::kAutofillEnableBuyNowPayLaterSyncingForKlarna});
+
   // Add a server card.
   payments_data().AddServerCreditCard(test::GetMaskedServerCardAmex());
   // Add BNPL issuers.
@@ -1842,6 +1849,42 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 
   EXPECT_EQ(bnpl_suggestion.iph_metadata.feature,
             &feature_engagement::kIPHAutofillBnplAffirmOrZipSuggestionFeature);
+}
+
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       MaybeUpdateSuggestionsWithBnpl_IphBubble_KlarnaEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterForKlarna,
+                            features::
+                                kAutofillEnableBuyNowPayLaterSyncingForKlarna},
+      /*disabled_features=*/
+      {});
+
+  // Add a server card.
+  payments_data().AddServerCreditCard(test::GetMaskedServerCardAmex());
+  // Add BNPL issuers.
+  payments_data().AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      *autofill_client(), FormFieldData(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      {}, CREDIT_CARD_NUMBER,
+      /*should_show_scan_credit_card=*/false, summary);
+  BnplSuggestionUpdateResult update_suggestions_result =
+      MaybeUpdateSuggestionsWithBnpl(suggestions,
+                                     payments_data().GetBnplIssuers(),
+                                     /*extracted_amount_in_micros=*/50'000'000);
+
+  ASSERT_TRUE(update_suggestions_result.is_bnpl_suggestion_added);
+  Suggestion bnpl_suggestion = *std::ranges::find_if(
+      update_suggestions_result.suggestions,
+      [](const Suggestion& s) { return s.type == SuggestionType::kBnplEntry; });
+
+  EXPECT_EQ(
+      bnpl_suggestion.iph_metadata.feature,
+      &feature_engagement::kIPHAutofillBnplAffirmZipOrKlarnaSuggestionFeature);
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
