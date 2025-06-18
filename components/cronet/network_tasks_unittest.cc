@@ -60,6 +60,17 @@ class NoOpCronetContextCallback : public CronetContext::Callback {
   void OnStopNetLogCompleted() override {}
 
   ~NoOpCronetContextCallback() override = default;
+
+  bool OnBeforeTunnelRequest(int chain_id,
+                             net::HttpRequestHeaders* extra_headers) override {
+    return true;
+  }
+
+  bool OnTunnelHeadersReceived(
+      int chain_id,
+      const net::HttpResponseHeaders& response_headers) override {
+    return true;
+  }
 };
 
 std::unique_ptr<URLRequestContextConfig> CreateSimpleURLRequestContextConfig() {
@@ -92,7 +103,9 @@ std::unique_ptr<URLRequestContextConfig> CreateSimpleURLRequestContextConfig() {
       // Enable Public Key Pinning bypass for local trust anchors.
       true,
       // Optional network thread priority.
-      std::nullopt);
+      std::nullopt,
+      // Optional proxy options.
+      std::optional<cronet::proto::ProxyOptions>());
 }
 
 class NetworkTasksTest : public testing::Test {

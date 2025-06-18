@@ -175,10 +175,15 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::optional<double>(42.0));
+          std::optional<double>(42.0),
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   EXPECT_FALSE(
       config->effective_experimental_options.contains("UnknownOption"));
   // Set a ProxyConfigService to avoid DCHECK failure when building.
@@ -361,10 +366,15 @@ TEST(URLRequestContextConfigTest, SetSupportedQuicVersionByAlpn) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -409,10 +419,15 @@ TEST(URLRequestContextConfigTest, SetUnsupportedQuicVersion) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -462,10 +477,15 @@ TEST(URLRequestContextConfigTest, SetObsoleteQuicVersion) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -510,10 +530,15 @@ TEST(URLRequestContextConfigTest, SetQuicServerMigrationOptions) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -562,10 +587,15 @@ TEST(URLRequestContextConfigTest,
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -619,10 +649,15 @@ TEST(URLRequestContextConfigTest, SetQuicConnectionMigrationV2Options) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -679,10 +714,15 @@ TEST(URLRequestContextConfigTest, SetQuicAllowPortMigration) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -726,10 +766,15 @@ TEST(URLRequestContextConfigTest, DisableQuicRetryWithoutAltSvcOnQuicErrors) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -775,10 +820,15 @@ TEST(URLRequestContextConfigTest, BrokenAlternativeServiceDelayParams1) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -829,10 +879,15 @@ TEST(URLRequestContextConfigTest, BrokenAlternativeServiceDelayParams2) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -881,10 +936,15 @@ TEST(URLRequestContextConfigTest, DelayMainJobWithAvailableSpdySession) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -928,10 +988,15 @@ TEST(URLRequestContextConfigTest, SetDisableTlsZeroRtt) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -976,10 +1041,15 @@ TEST(URLRequestContextConfigTest, SetQuicHostWhitelist) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -1027,10 +1097,15 @@ TEST(URLRequestContextConfigTest, SetQuicMaxTimeBeforeCryptoHandshake) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -1077,10 +1152,15 @@ TEST(URLURLRequestContextConfigTest, SetQuicConnectionOptions) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -1134,10 +1214,15 @@ TEST(URLURLRequestContextConfigTest, SetAcceptLanguageAndUserAgent) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -1182,10 +1267,15 @@ TEST(URLURLRequestContextConfigTest, TurningOffQuic) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -1203,7 +1293,10 @@ TEST(URLURLRequestContextConfigTest, DefaultEnableQuic) {
   URLRequestContextConfigBuilder config_builder;
   std::unique_ptr<URLRequestContextConfig> config = config_builder.Build();
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -1248,10 +1341,15 @@ TEST(URLRequestContextConfigTest, SetSpdyGoAwayOnIPChange) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(
@@ -1296,10 +1394,15 @@ TEST(URLRequestContextConfigTest, WrongSpdyGoAwayOnIPChangeValue) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   EXPECT_FALSE(config->effective_experimental_options.contains(
       "spdy_go_away_on_ip_change"));
 }
@@ -1338,10 +1441,15 @@ TEST(URLRequestContextConfigTest, BidiStreamDetectBrokenConnection) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   EXPECT_TRUE(config->effective_experimental_options.contains(
       "bidi_stream_detect_broken_connection"));
   EXPECT_TRUE(config->bidi_stream_detect_broken_connection);
@@ -1382,10 +1490,15 @@ TEST(URLRequestContextConfigTest, WrongBidiStreamDetectBrokenConnectionValue) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
 
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   EXPECT_FALSE(config->effective_experimental_options.contains(
       "bidi_stream_detect_broken_connection"));
 }
@@ -1432,9 +1545,14 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::nullopt);
+          std::nullopt,
+          // Optional proxy options.
+          std::optional<cronet::proto::ProxyOptions>());
   net::URLRequestContextBuilder builder;
-  config->ConfigureURLRequestContextBuilder(&builder);
+  // It's safe to pass a null `network_tasks` since `config` does not specify
+  // `ProxyOptions`.
+  config->ConfigureURLRequestContextBuilder(&builder,
+                                            /*network_tasks=*/nullptr);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(

@@ -1,9 +1,9 @@
 syntax = "proto2";
 
-package org.chromium.net;
+package cronet.proto;
 
 option java_multiple_files = true;
-option java_package = "org.chromium.net";
+option java_package = "org.chromium.net.impl.proto";
 option optimize_for = LITE_RUNTIME;  // crbug/800281
 
 message RequestContextConfigOptions {
@@ -21,4 +21,26 @@ message RequestContextConfigOptions {
   optional bool enable_network_quality_estimator = 12;
   optional bool bypass_public_key_pinning_for_local_trust_anchors = 13;
   optional int32 network_thread_priority = 14;
+  optional ProxyOptions proxy_options = 15;
+}
+
+// Maps to org.chromium.net.ProxyOptions.
+message ProxyOptions {
+  repeated Proxy proxies = 1;
+}
+
+// Maps to org.chromium.net.Proxy.
+message Proxy {
+  optional ProxyScheme scheme = 1;
+  optional string host = 2;
+  optional int32 port = 3;
+}
+
+// Maps to org.chromium.net.Proxy.Scheme.
+// Note: This defines the connection to the proxy, not to the
+// destination/target/origin server.
+enum ProxyScheme {
+  DIRECT = 0;
+  HTTP = 1;
+  HTTPS = 2;
 }

@@ -9,18 +9,22 @@ import android.os.SystemClock;
 import android.util.Base64;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
+import org.chromium.net.ProxyOptions;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.IDN;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -146,6 +150,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     private String mExperimentalOptions;
     protected long mMockCertVerifier;
     private boolean mNetworkQualityEstimatorEnabled;
+    private @Nullable ProxyOptions mProxyOptions;
 
     /**
      * Default config enables SPDY and QUIC, disables SDCH and HTTP cache.
@@ -496,6 +501,24 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     public CronetEngineBuilderImpl setThreadPriority(int priority) {
         // Not supported
         return this;
+    }
+
+    @Override
+    public CronetEngineBuilderImpl setProxyOptions(@Nullable ProxyOptions proxyOptions) {
+        mProxyOptions = proxyOptions;
+        return this;
+    }
+
+    @Nullable
+    ProxyOptions getProxyOptions() {
+        return mProxyOptions;
+    }
+
+    @Override
+    public Set<Integer> getSupportedConfigOptions() {
+        Set<Integer> supportedConfigOptions = new HashSet<>();
+        supportedConfigOptions.add(PROXY_OPTIONS);
+        return Collections.unmodifiableSet(supportedConfigOptions);
     }
 
     @Override

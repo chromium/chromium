@@ -22,6 +22,8 @@
 #include "components/prefs/json_pref_store.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
+#include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/effective_connection_type_observer.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -93,6 +95,31 @@ class CronetContext {
     // Callback for StopNetLog() that signals that it is safe to access
     // the NetLog files.
     virtual void OnStopNetLogCompleted() = 0;
+
+    // Called before sending a tunnel establishment request. This is used to
+    // forward //net's ProxyDelegate::OnBeforeTunnelRequest to, the embedder
+    // provided, org.chromium.net.Proxy.Callback#onBeforeTunnelRequest.
+    // `extra_headers` should be modified to add headers that will be sent only
+    // to the proxy, as part of the tunnel establishment request.
+    // Return `true` if the tunnel establishment request is allowed to continue,
+    // `false` if it should be canceled. When canceled, we will attempt to
+    // connect via the next proxy in the list (see org.chromium.net.ProxyOptions
+    // for more info).
+    virtual bool OnBeforeTunnelRequest(
+        int chain_id,
+        net::HttpRequestHeaders* extra_headers) = 0;
+
+    // Called after receiving a response to the tunnel establishment request.
+    // This is used to forward //net's ProxyDelegate::OnTunnelHeadersReceived
+    // to, the embedder provided,
+    // org.chromium.net.Proxy.Callback#onTunnelHeadersReceived.
+    // Return `true` to allow using the tunnel connection to proxy requests,
+    // `false` to cancel the tunnel connection. When canceled, we will attempt
+    // to connect via the next proxy in the list (see
+    // org.chromium.net.ProxyOptions for more info).
+    virtual bool OnTunnelHeadersReceived(
+        int chain_id,
+        const net::HttpResponseHeaders& response_headers) = 0;
   };
 
   // Constructs CronetContext using |context_config|. The |callback|
@@ -278,6 +305,15 @@ class CronetContext {
     // Callback for StopObserving() that unblocks the client thread and
     // signals that it is safe to access the NetLog files.
     void StopNetLogCompleted();
+
+    // See CronetContext::Callback::OnBeforeTunnelRequest.
+    bool OnBeforeTunnelRequest(int chain_id,
+                               net::HttpRequestHeaders* extra_headers);
+
+    // See CronetContext::Callback::OnTunnelHeadersReceived.
+    bool OnTunnelHeadersReceived(
+        int chain_id,
+        const net::HttpResponseHeaders& response_headers);
 
     // Initializes Network Quality Estimator (NQE) prefs manager on network
     // thread.

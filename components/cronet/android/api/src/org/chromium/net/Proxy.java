@@ -18,7 +18,7 @@ import java.util.Objects;
  * Represents a proxy that can be used by Cronet. Throughout this file we say "tunnel establishment
  * request". This is intentionally vague: establishing connections via a proxy is a complicated
  * subject, how it is established depends on many implementation details (e.g., it could end up
- * being a GET with connection upgrade, a CONNECT or an extended CONNECT).
+ * being a simple GET, a GET with connection upgrade, a CONNECT or an extended CONNECT).
  */
 public final class Proxy {
 
@@ -49,12 +49,18 @@ public final class Proxy {
          * computing the headers is going to take a non-negligible amount of time, cancel and retry
          * the request once they are ready.
          *
+         * <p>Returning headers which are not RFC 2616-compliant will cause a crash on the network
+         * thread. TODO(https://crbug.com/425666408): Find a better way to surface this. It's
+         * currently challenging since we're calling into the embedder code, not the other way
+         * around. Making this API async (https://crbug.com/421341906) could be a way of solving
+         * this, since we could throw IAE when the embedder calls back into Cronet.
+         *
          * @return A list of headers to be added to the tunnel establishment request. This list can
          *     be empty, in which case no headers will be added. If {@code null} is returned, the
-         *     tunnel connection will be canceled. TODO(https://crbug.com/422428959): Once the
-         *     implementation has landed, document what happens after canceling. Do we fallback onto
-         *     the next proxy in the list? Do we not fallback and just fail the HTTP request that
-         *     triggered the tunnel establishment request?
+         *     tunnel connection will be canceled. When a tunnel connection is canceled, Cronet will
+         *     interpret it as a failure to connect to this Proxy and will try the next Proxy in the
+         *     list passed to {@link org.chromium.net.ProxyOptions} (refer to that class
+         *     documentation for more info).
          */
         public abstract @Nullable List<Map.Entry<String, String>> onBeforeTunnelRequest();
 
@@ -63,18 +69,22 @@ public final class Proxy {
          * headers and status code of the response to the tunnel establishment request. This will
          * not be called for the actual HTTP requests that will go through the proxy.
          *
+         * <p>Note: This is currently called for any response, whether it is a success or failure.
+         * TODO(https://crbug.com/422429606): Do we really want this?
+         *
          * <p>Warning: This will be called directly on Cronet's network thread, do not block.
          *
          * @param responseHeaders The list of headers contained in the response to the tunnel
          *     establishment request.
          * @param statusCode The HTTP status code contained in the response to the tunnel
-         *     establishment request. TODO(https://crbug.com/422429606): Once the implementation has
-         *     landed, document whether this gets called in case of failure.
-         * @return {@code true} to allow using the tunnel connection to proxy requests. {@code
-         *     false} to cancel the tunnel connection. TODO(https://crbug.com/422428959): Once the
-         *     implementation has landed, document what happens after canceling. Do we fallback onto
-         *     the next proxy in the list? Do we not fallback and just fail the HTTP request that
-         *     triggered the tunnel establishment request?
+         *     establishment request.
+         * @return {@code true} to allow using the tunnel connection to proxy requests. Allowing
+         *     usage of a tunnel connection does not guarantee success, Cronet might still fail it
+         *     aftewards (e.g., if the status code returned by the proxy is 407). {@code false} to
+         *     cancel the tunnel connection. When a tunnel connection is canceled, Cronet will
+         *     interpret it as a failure to connect to this Proxy and will try the next Proxy in the
+         *     list passed to {@link org.chromium.net.ProxyOptions} (refer to that class
+         *     documentation for more info).
          */
         public abstract boolean onTunnelHeadersReceived(
                 @NonNull List<Map.Entry<String, String>> responseHeaders, int statusCode);
@@ -90,6 +100,9 @@ public final class Proxy {
      *     events.
      */
     public Proxy(@Scheme int scheme, @NonNull String host, int port, @NonNull Callback callback) {
+        if (scheme != HTTP && scheme != HTTPS) {
+            throw new IllegalArgumentException(String.format("Unknown scheme %s", scheme));
+        }
         this.mScheme = scheme;
         this.mHost = Objects.requireNonNull(host);
         this.mPort = port;

@@ -26,7 +26,10 @@ public final class ProxyOptions {
      * @param proxyList The list of {@link Proxy} that defines this configuration.
      */
     public ProxyOptions(@NonNull List<Proxy> proxyList) {
-        this.mProxyList = new ArrayList<>(Objects.requireNonNull(proxyList));
+        if (Objects.requireNonNull(proxyList).isEmpty()) {
+            throw new IllegalArgumentException("ProxyList cannot be empty");
+        }
+        this.mProxyList = new ArrayList<>(proxyList);
     }
 
     /** Returns the list of proxies that are part of this proxy configuration. */

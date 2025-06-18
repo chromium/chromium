@@ -110,6 +110,7 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
       "Controls details emitted by TaskAnnotator::EmitTaskTimingDetails"),
     perfetto::Category("content"),
     perfetto::Category("content_capture"),
+    perfetto::Category("cronet"),
     perfetto::Category("interactions"),
     perfetto::Category("delegated_ink_trails"),
     perfetto::Category("device"),

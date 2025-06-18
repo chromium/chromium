@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "components/cronet/cronet_context.h"
 #include "components/cronet/cronet_global_state.h"
@@ -395,6 +396,17 @@ class Cronet_EngineImpl::Callback : public CronetContext::Callback {
       int32_t timestamp_ms,
       net::NetworkQualityObservationSource source) override;
   void OnStopNetLogCompleted() override LOCKS_EXCLUDED(engine_->lock_);
+  bool OnBeforeTunnelRequest(int chain_id,
+                             net::HttpRequestHeaders* extra_headers) override {
+    NOTIMPLEMENTED();
+    return false;
+  }
+  bool OnTunnelHeadersReceived(
+      int chain_id,
+      const net::HttpResponseHeaders& response_headers) override {
+    NOTIMPLEMENTED();
+    return false;
+  }
 
  private:
   // The engine which owns context that owns |this| callback.

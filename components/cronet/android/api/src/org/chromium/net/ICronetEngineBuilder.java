@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.net;
 
+import androidx.annotation.Nullable;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
@@ -27,6 +29,7 @@ public abstract class ICronetEngineBuilder {
     public static final int CONNECTION_MIGRATION_OPTIONS = 1;
     public static final int DNS_OPTIONS = 2;
     public static final int QUIC_OPTIONS = 3;
+    public static final int PROXY_OPTIONS = 4;
 
     // Public API methods.
     public abstract ICronetEngineBuilder addPublicKeyPins(
@@ -66,7 +69,9 @@ public abstract class ICronetEngineBuilder {
         return this;
     }
 
-    public ICronetEngineBuilder setProxyOptions(ProxyOptions proxyOptions) {
+    public ICronetEngineBuilder setProxyOptions(@Nullable ProxyOptions proxyOptions) {
+        // API layer last resort: prevents calling setProxyOptions on an implementation that does
+        // not know about it.
         throw new UnsupportedOperationException(
                 "This Cronet implementation does not support ProxyOptions");
     }

@@ -361,7 +361,7 @@ CronetContext::NetworkTasks::BuildDefaultURLRequestContext(
   DCHECK(!network_quality_estimator_);
   DCHECK(!cronet_prefs_manager_);
   net::URLRequestContextBuilder context_builder;
-  context_config_->ConfigureURLRequestContextBuilder(&context_builder);
+  context_config_->ConfigureURLRequestContextBuilder(&context_builder, this);
   SetSharedURLRequestContextBuilderConfig(&context_builder);
 
   context_builder.set_proxy_resolution_service(
@@ -431,7 +431,8 @@ std::unique_ptr<net::URLRequestContext>
 CronetContext::NetworkTasks::BuildNetworkBoundURLRequestContext(
     net::handles::NetworkHandle network) {
   net::URLRequestContextBuilder context_builder;
-  context_config_->ConfigureURLRequestContextBuilder(&context_builder, network);
+  context_config_->ConfigureURLRequestContextBuilder(&context_builder, this,
+                                                     network);
   SetSharedURLRequestContextBuilderConfig(&context_builder);
 
   // On Android, Cronet doesn't handle PAC URL processing, instead it defers
@@ -875,6 +876,20 @@ void CronetContext::NetworkTasks::StopNetLog() {
 void CronetContext::NetworkTasks::StopNetLogCompleted() {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   callback_->OnStopNetLogCompleted();
+}
+
+bool CronetContext::NetworkTasks::OnBeforeTunnelRequest(
+    int chain_id,
+    net::HttpRequestHeaders* extra_headers) {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+  return callback_->OnBeforeTunnelRequest(chain_id, extra_headers);
+}
+
+bool CronetContext::NetworkTasks::OnTunnelHeadersReceived(
+    int chain_id,
+    const net::HttpResponseHeaders& response_headers) {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+  return callback_->OnTunnelHeadersReceived(chain_id, response_headers);
 }
 
 base::Value CronetContext::NetworkTasks::GetNetLogInfo() const {

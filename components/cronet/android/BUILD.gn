@@ -158,15 +158,6 @@ proto_java_library("flags_java_proto") {
   sources = [ "proto/flags.proto" ]
 }
 
-proto_library("request_context_config_proto") {
-  sources = [ "proto/request_context_config.proto" ]
-}
-
-proto_java_library("request_context_config_java_proto") {
-  proto_path = "."
-  sources = [ "proto/request_context_config.proto" ]
-}
-
 static_library("cronet_base_feature") {
   sources = [
     "cronet_base_feature.cc",
@@ -195,11 +186,11 @@ source_set("cronet_static") {
     ":cronet_base_feature",
     ":cronet_jni_headers",
     ":cronet_jni_registration",
-    ":request_context_config_proto",
     "//base",
     "//components/cronet:cronet_common",
     "//components/cronet:cronet_version_header",
     "//components/cronet:metrics_util",
+    "//components/cronet:request_context_config_proto",
     "//components/prefs",
     "//net",
     "//third_party/zlib:zlib",
@@ -445,6 +436,7 @@ android_library("cronet_impl_common_java") {
     "java/src/org/chromium/net/impl/UrlResponseInfoImpl.java",
     "java/src/org/chromium/net/impl/UserAgent.java",
     "java/src/org/chromium/net/impl/VersionSafeCallbacks.java",
+    "java/src/org/chromium/net/impl/VersionSafeProxyCallback.java",
     _generated_impl_version_java,
   ]
 
@@ -557,7 +549,7 @@ cronet_impl_native_java_srcjar_deps = [
 
 cronet_impl_native_java_deps_to_package = [
   ":cronet_urlconnection_impl_java",
-  ":request_context_config_java_proto",
+  "//components/cronet:request_context_config_java_proto",
   ":cronet_android_os_system_properties_java",
   "//base/version_info/android:version_constants_java",
   "//base:base_java",
