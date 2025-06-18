@@ -209,6 +209,7 @@ std::vector<views::View*> MagicBoostUserConsentView::GetFocusableViews() {
     focusable_views.push_back(this);
   }
   focusable_views.push_back(intent_chip_);
+  focusable_views.push_back(settings_button_);
   return focusable_views;
 }
 
