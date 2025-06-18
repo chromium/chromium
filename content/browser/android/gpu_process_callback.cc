@@ -8,7 +8,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/android/unguessable_token_android.h"
 #include "base/logging.h"
-#include "content/browser/android/scoped_surface_request_manager.h"
 #include "content/common/android/surface_wrapper.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
@@ -18,18 +17,6 @@
 #include "content/public/android/content_jni_headers/GpuProcessCallback_jni.h"
 
 namespace content {
-
-void JNI_GpuProcessCallback_CompleteScopedSurfaceRequest(
-    JNIEnv* env,
-    base::UnguessableToken& request_token,
-    const base::android::JavaParamRef<jobject>& surface) {
-  DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
-
-  base::android::ScopedJavaGlobalRef<jobject> jsurface;
-  jsurface.Reset(env, surface);
-  ScopedSurfaceRequestManager::GetInstance()->FulfillScopedSurfaceRequest(
-      request_token, gl::ScopedJavaSurface(jsurface, /*auto_release=*/true));
-}
 
 base::android::ScopedJavaLocalRef<jobject>
 JNI_GpuProcessCallback_GetViewSurface(
