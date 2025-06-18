@@ -225,7 +225,8 @@ void GlicProfileManager::DidSelectProfile(Profile* profile) {
   if (!GlicEnabling::HasConsentedForProfile(profile)) {
     // Open a browser and show the FRE in a new tab.
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-    service->OpenFreDialogInNewTab(displayer.browser());
+    service->OpenFreDialogInNewTab(displayer.browser(),
+                                   mojom::InvocationSource::kProfilePicker);
   } else {
     // Toggle glic but prevent close if it is already open for the selected
     // profile.

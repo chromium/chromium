@@ -69,7 +69,8 @@ IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicFreRequestOnOpenUI) {
 
   auto* glic_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
-  glic_service->OpenFreDialogInNewTab(browser());
+  glic_service->OpenFreDialogInNewTab(
+      browser(), mojom::InvocationSource::kTopChromeButton);
 
   std::vector<net::NetLogEntry> entries = net_log_observer().GetEntries();
   auto it = std::ranges::find_if(entries, [&](const auto& entry) {

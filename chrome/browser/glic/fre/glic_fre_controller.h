@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/host/auth_controller.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/views/widget/widget.h"
@@ -69,11 +70,12 @@ class GlicFreController {
 
   // Open the new tab page in the browser and show the FRE in that tab if
   // possible.
-  void OpenFreDialogInNewTab(BrowserWindowInterface* bwi);
+  void OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
+                             mojom::InvocationSource source);
 
   // Shows the FRE dialog. This should only be called if `ShouldShowFreDialog`
   // and `CanShowFreDialog` are both satisfied.
-  void ShowFreDialog(Browser* browser);
+  void ShowFreDialog(Browser* browser, mojom::InvocationSource source);
 
   // Closes the FRE dialog if it is open on the active tab of `browser`.
   void DismissFreIfOpenOnActiveTab(Browser* browser);
@@ -128,7 +130,8 @@ class GlicFreController {
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicFreControllerTest,
                            UpdateLauncherOnFreCompletion);
-  void ShowFreDialogAfterAuthCheck(base::WeakPtr<Browser> browser);
+  void ShowFreDialogAfterAuthCheck(base::WeakPtr<Browser> browser,
+                                   mojom::InvocationSource source);
   static void OnCheckIsDefaultBrowserFinished(
       version_info::Channel channel,
       shell_integration::DefaultWebClientState state);

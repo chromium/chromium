@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/glic.mojom-data-view.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
@@ -422,7 +423,7 @@ void GlicWindowControllerImpl::Toggle(BrowserWindowInterface* bwi,
       fre_controller_->DismissFreIfOpenOnActiveTab(new_attached_browser);
       return;
     }
-    fre_controller_->ShowFreDialog(new_attached_browser);
+    fre_controller_->ShowFreDialog(new_attached_browser, source);
     return;
   }
 

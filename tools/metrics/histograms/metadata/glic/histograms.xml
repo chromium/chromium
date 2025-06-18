@@ -171,6 +171,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.FRE.InvocationSource" enum="GlicInvocationSource"
+    expires_after="2026-01-15">
+  <owner>cuianthony@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    Records the entry point used to trigger the opening of the glic FRE modal.
+    Recorded when the FRE is shown to the user.
+  </summary>
+</histogram>
+
 <histogram name="Glic.FreModalWebUiState.FinishState2" enum="FreWebUiState"
     expires_after="2026-01-15">
   <owner>cuianthony@google.com</owner>

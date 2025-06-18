@@ -172,7 +172,8 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
   window_controller_->Toggle(bwi, prevent_close, source);
 }
 
-void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi) {
+void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
+                                             mojom::InvocationSource source) {
   // Glic may be disabled for certain user profiles (the user is browsing in
   // incognito or guest mode, policy, etc). In those cases, the entry points to
   // this method should already have been removed.
@@ -182,7 +183,7 @@ void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi) {
   if (glic_profile_manager) {
     glic_profile_manager->SetActiveGlic(this);
   }
-  window_controller_->fre_controller()->OpenFreDialogInNewTab(bwi);
+  window_controller_->fre_controller()->OpenFreDialogInNewTab(bwi, source);
 }
 
 void GlicKeyedService::CloseUI() {

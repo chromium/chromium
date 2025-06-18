@@ -99,18 +99,20 @@ bool GlicFreController::CanShowFreDialog(Browser* browser) {
   return tab && tab->CanShowModalUI();
 }
 
-void GlicFreController::OpenFreDialogInNewTab(BrowserWindowInterface* bwi) {
+void GlicFreController::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
+                                              mojom::InvocationSource source) {
   Browser* browser = bwi->GetBrowserForMigrationOnly();
   if (!ShouldShowFreDialog()) {
     return;
   }
   chrome::AddAndReturnTabAt(browser, GURL(), /*index=*/-1, /*foreground=*/true);
   if (CanShowFreDialog(browser)) {
-    ShowFreDialog(browser);
+    ShowFreDialog(browser, source);
   }
 }
 
-void GlicFreController::ShowFreDialog(Browser* browser) {
+void GlicFreController::ShowFreDialog(Browser* browser,
+                                      mojom::InvocationSource source) {
   CHECK(CanShowFreDialog(browser));
 
   show_start_time_ = base::TimeTicks::Now();
@@ -118,9 +120,10 @@ void GlicFreController::ShowFreDialog(Browser* browser) {
       prefs::kGlicCompletedFre,
       static_cast<int>(prefs::FreStatus::kIncomplete));
 
-  if (auth_controller_.CheckAuthBeforeShowSync(base::BindOnce(
-          &GlicFreController::OpenFreDialogInNewTab, GetWeakPtr(), browser))) {
-    ShowFreDialogAfterAuthCheck(browser->AsWeakPtr());
+  if (auth_controller_.CheckAuthBeforeShowSync(
+          base::BindOnce(&GlicFreController::OpenFreDialogInNewTab,
+                         GetWeakPtr(), browser, source))) {
+    ShowFreDialogAfterAuthCheck(browser->AsWeakPtr(), source);
   } else {
     // Sign-in required and handled by AuthController. In this case, do not
     // record the FRE load time metric.
@@ -129,7 +132,8 @@ void GlicFreController::ShowFreDialog(Browser* browser) {
 }
 
 void GlicFreController::ShowFreDialogAfterAuthCheck(
-    base::WeakPtr<Browser> browser) {
+    base::WeakPtr<Browser> browser,
+    mojom::InvocationSource source) {
   // Abort if the browser was closed, to avoid crashing. Note, the user
   // shouldn't have much chance to close the browser between ShowFreDialog() and
   // ShowFreDialogAfterAuthCheck().
@@ -167,6 +171,7 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
       &GlicFreController::CloseWithReason, base::Unretained(this)));
 
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
+  base::UmaHistogramEnumeration("Glic.FRE.InvocationSource", source);
   auth_controller_.OnGlicWindowOpened();
 
   // Recording the load latency time when FRE contents were preloaded.
