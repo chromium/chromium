@@ -5175,6 +5175,11 @@
       status: "stable",
     },
     {
+      // Fix for https://crbug.com/421314614
+      name: "UseSelectionInDOMTreeAnchorInExtendSelection",
+      status: "stable"
+    },
+    {
       name: "UseShadowHostStyleCheckEditable",
       status: "stable",
     },
