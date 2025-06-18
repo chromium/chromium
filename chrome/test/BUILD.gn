@@ -3928,6 +3928,7 @@ if (!is_android) {
         "//chromeos/components/quick_answers/public/cpp:constants",
         "//components/component_updater/ash:test_support",
         "//components/user_manager:test_support",
+        "//components/webapps/isolated_web_apps",
         "//mojo/public/cpp/test_support:test_utils",
       ]
     }

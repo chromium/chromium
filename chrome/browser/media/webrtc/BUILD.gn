@@ -263,6 +263,7 @@ source_set("webrtc") {
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/system",
       "//components/user_manager",
+      "//components/webapps/isolated_web_apps",
     ]
     allow_circular_includes_from = [
       "//chrome/browser/ash/policy/handlers",

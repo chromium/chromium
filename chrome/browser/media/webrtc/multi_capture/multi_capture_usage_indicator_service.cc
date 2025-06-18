@@ -10,6 +10,8 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/check_deref.h"
+#include "base/containers/contains.h"
+#include "base/containers/extend.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/message_formatter.h"
@@ -26,6 +28,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image.h"
@@ -35,6 +38,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
+namespace multi_capture {
 namespace {
 
 constexpr size_t kAppLength = 18;
@@ -47,30 +51,47 @@ const char kPrivacyIndicatorsMultiCaptureLoginNotifierId[] =
 // TODO(crbug.com/424104840): Change notification message in case that there are
 // apps that are allowed the active screen capture notification.
 std::u16string CreateFutureCaptureNotificationMessage(
-    const std::vector<std::string>& app_names) {
-  CHECK(!app_names.empty());
-  if (app_names.size() == 1) {
+    const MultiCaptureUsageIndicatorService::AllowListedAppNames& app_names) {
+  CHECK(!app_names.show_capture_notification_apps.empty() ||
+        !app_names.skip_capture_notification_apps.empty());
+
+  std::u16string message;
+  if (!app_names.show_capture_notification_apps.empty() &&
+      !app_names.skip_capture_notification_apps.empty()) {
+    message = l10n_util::GetStringUTF16(
+        IDS_MULTI_CAPTURE_MAY_CAPTURE_SOME_NOTIFY_NOTIFICATION_MESSAGE);
+  } else if (!app_names.show_capture_notification_apps.empty()) {
+    message = l10n_util::GetStringUTF16(
+        IDS_MULTI_CAPTURE_MAY_CAPTURE_ALL_NOTIFY_NOTIFICATION_MESSAGE);
+  } else {
+    message = l10n_util::GetStringUTF16(
+        IDS_MULTI_CAPTURE_MAY_CAPTURE_NONE_NOTIFY_NOTIFICATION_MESSAGE);
+  }
+
+  std::vector<std::string> merged_app_names =
+      app_names.skip_capture_notification_apps;
+  base::Extend(merged_app_names, app_names.show_capture_notification_apps);
+  if (merged_app_names.size() == 1) {
     return base::i18n::MessageFormatter::FormatWithNamedArgs(
-        l10n_util::GetStringUTF16(
-            IDS_MULTI_CAPTURE_MAY_CAPTURE_NOTIFICATION_MESSAGE),
-        "NUM_APPS", /*plurality=*/1, "APP0_NAME",
-        gfx::TruncateString(base::UTF8ToUTF16(app_names[0]), kAppLength,
+        message, "NUM_APPS", /*plurality=*/1, "APP0_NAME",
+        gfx::TruncateString(base::UTF8ToUTF16(merged_app_names[0]), kAppLength,
                             gfx::BreakType::WORD_BREAK));
   }
-  const std::u16string app_name_0 = gfx::TruncateString(
-      base::UTF8ToUTF16(app_names[0]), kAppLength, gfx::BreakType::WORD_BREAK);
-  const std::u16string app_name_1 = gfx::TruncateString(
-      base::UTF8ToUTF16(app_names[1]), kAppLength, gfx::BreakType::WORD_BREAK);
+  const std::u16string app_name_0 =
+      gfx::TruncateString(base::UTF8ToUTF16(merged_app_names[0]), kAppLength,
+                          gfx::BreakType::WORD_BREAK);
+  const std::u16string app_name_1 =
+      gfx::TruncateString(base::UTF8ToUTF16(merged_app_names[1]), kAppLength,
+                          gfx::BreakType::WORD_BREAK);
   return base::i18n::MessageFormatter::FormatWithNamedArgs(
-      l10n_util::GetStringUTF16(
-          IDS_MULTI_CAPTURE_MAY_CAPTURE_NOTIFICATION_MESSAGE),
-      "NUM_APPS", static_cast<int>(app_names.size()), "APP0_NAME", app_name_0,
-      "APP1_NAME", app_name_1);
+      message, "NUM_APPS", static_cast<int>(merged_app_names.size()),
+      "APP0_NAME", app_name_0, "APP1_NAME", app_name_1);
 }
 
 message_center::Notification CreateFutureCaptureNotification(
-    const std::vector<std::string>& app_names) {
-  CHECK(!app_names.empty());
+    const MultiCaptureUsageIndicatorService::AllowListedAppNames& app_names) {
+  CHECK(!app_names.show_capture_notification_apps.empty() ||
+        !app_names.skip_capture_notification_apps.empty());
 
   message_center::RichNotificationData optional_fields;
   // Make the notification low priority so that it is silently added (no
@@ -83,7 +104,8 @@ message_center::Notification CreateFutureCaptureNotification(
   message_center::Notification notification(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
       kPrivacyIndicatorsMultiCaptureLoginNotificationId, /*title=*/u"",
-      /*message=*/CreateFutureCaptureNotificationMessage(app_names),
+      /*message=*/
+      CreateFutureCaptureNotificationMessage(app_names),
       /*icon=*/ui::ImageModel(),
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(),
@@ -104,7 +126,14 @@ message_center::Notification CreateFutureCaptureNotification(
 
 }  // namespace
 
-namespace multi_capture {
+MultiCaptureUsageIndicatorService::AllowListedAppNames::AllowListedAppNames(
+    std::vector<std::string> show_capture_notification_apps,
+    std::vector<std::string> skip_capture_notification_apps)
+    : show_capture_notification_apps(std::move(show_capture_notification_apps)),
+      skip_capture_notification_apps(
+          std::move(skip_capture_notification_apps)) {}
+MultiCaptureUsageIndicatorService::AllowListedAppNames::~AllowListedAppNames() =
+    default;
 
 MultiCaptureUsageIndicatorService::MultiCaptureUsageIndicatorService(
     PrefService* prefs,
@@ -153,41 +182,53 @@ void MultiCaptureUsageIndicatorService::ShowUsageIndicatorsOnStart() {
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-std::vector<std::string>
+MultiCaptureUsageIndicatorService::AllowListedAppNames
 MultiCaptureUsageIndicatorService::GetInstalledAndAllowlistedAppNames() const {
   CHECK(provider_);
 
-  std::vector<std::string> installed_and_allowlisted_app_names;
+  const std::vector<std::string>
+      skip_capture_notification_bundle_ids_allowlist =
+          web_app::IwaKeyDistributionInfoProvider::GetInstance()
+              .GetSkipMultiCaptureNotificationBundleIds();
+
+  std::vector<std::string> show_capture_notification_apps;
+  std::vector<std::string> skip_capture_notification_apps;
   for (const base::Value& allowlisted_app_value :
        multi_screen_capture_allow_list_on_login_) {
     if (!allowlisted_app_value.is_string()) {
       continue;
     }
 
+    const GURL allowlisted_app_url(allowlisted_app_value.GetString());
     web_app::WebAppRegistrar& registrar = provider_->registrar_unsafe();
     const std::optional<webapps::AppId> app_id =
         registrar.FindBestAppWithUrlInScope(
-            GURL(allowlisted_app_value.GetString()),
-            web_app::WebAppFilter::IsIsolatedApp());
+            allowlisted_app_url, web_app::WebAppFilter::IsIsolatedApp());
 
     // App isn't installed yet.
     if (!app_id) {
       continue;
     }
 
-    installed_and_allowlisted_app_names.push_back(
-        registrar.GetAppShortName(*app_id));
+    if (base::Contains(skip_capture_notification_bundle_ids_allowlist,
+                       allowlisted_app_url.host())) {
+      skip_capture_notification_apps.push_back(
+          registrar.GetAppShortName(*app_id));
+    } else {
+      show_capture_notification_apps.push_back(
+          registrar.GetAppShortName(*app_id));
+    }
   }
 
-  return installed_and_allowlisted_app_names;
+  return {show_capture_notification_apps, skip_capture_notification_apps};
 }
 
 // TODO(crbug.com/424103935): Call again when a new app is installed that is
 // already on the screen capture allowlist on session start.
 void MultiCaptureUsageIndicatorService::ShowFutureMultiCaptureNotification() {
-  const std::vector<std::string> app_names =
-      GetInstalledAndAllowlistedAppNames();
-  if (app_names.empty()) {
+  const AllowListedAppNames app_names = GetInstalledAndAllowlistedAppNames();
+  if (app_names.show_capture_notification_apps.empty() &&
+      app_names.skip_capture_notification_apps.empty()) {
     return;
   }
 

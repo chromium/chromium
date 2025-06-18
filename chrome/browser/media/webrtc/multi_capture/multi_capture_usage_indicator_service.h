@@ -23,6 +23,16 @@ namespace multi_capture {
 
 class MultiCaptureUsageIndicatorService : public KeyedService {
  public:
+  struct AllowListedAppNames {
+    AllowListedAppNames(
+        std::vector<std::string> show_capture_notification_apps,
+        std::vector<std::string> skip_capture_notification_apps);
+    ~AllowListedAppNames();
+
+    std::vector<std::string> show_capture_notification_apps;
+    std::vector<std::string> skip_capture_notification_apps;
+  };
+
   ~MultiCaptureUsageIndicatorService() override;
 
   static std::unique_ptr<MultiCaptureUsageIndicatorService> Create(
@@ -42,7 +52,7 @@ class MultiCaptureUsageIndicatorService : public KeyedService {
       YouMayBeCapturedNotificationShowsIfAppInstalledAndAllowlisted);
 
   void ShowUsageIndicatorsOnStart();
-  std::vector<std::string> GetInstalledAndAllowlistedAppNames() const;
+  AllowListedAppNames GetInstalledAndAllowlistedAppNames() const;
   void ShowFutureMultiCaptureNotification();
 
   // As the keyed service is bound to the profile / browser context and the
