@@ -29,7 +29,6 @@ ci/android-cast-arm64-dbg
 ci/android-cast-arm64-rel
 ci/android-desktop-x64-compile-rel
 ci/android-desktop-x64-rel-15-tests
-ci/android-pie-arm64-dbg
 ci/android-webview-10-x86-rel-tests
 ci/android-webview-13-x64-hostside-rel
 ci/android-x86-rel

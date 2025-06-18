@@ -113,7 +113,6 @@ try/3pp-mac-amd64-packager
 try/android-11-x86-rel
 try/android-12-x64-dbg
 try/android-12l-x64-dbg
-try/android-arm-compile-dbg
 try/android-arm64-rel
 try/android-arm64-rel-compilator
 try/android-bfcache-rel
@@ -132,7 +131,6 @@ try/android-rust-arm64-rel
 try/android-webview-10-x86-rel-tests
 try/android-webview-12-x64-dbg
 try/android-webview-13-x64-dbg
-try/android_arm64_dbg_recipe
 try/android_blink_rel
 try/android_compile_dbg
 try/android_compile_x64_dbg

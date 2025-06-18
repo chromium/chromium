@@ -14,6 +14,7 @@ chromium/try/android-15-tablet-x64-rel
 chromium/try/android-15-x64-rel
 chromium/try/android-16-x64-rel
 chromium/try/android-arm-compile-dbg
+chromium/try/android-arm64-compile-dbg
 chromium/try/android-arm64-rel
 chromium/try/android-cast-arm-dbg
 chromium/try/android-cast-arm-rel
@@ -45,12 +46,10 @@ chromium/try/android-cronet-x86-rel
 chromium/try/android-desktop-15-x64-rel
 chromium/try/android-desktop-x64-rel
 chromium/try/android-official
-chromium/try/android-pie-arm64-dbg
 chromium/try/android-webview-10-x86-rel-tests
 chromium/try/android-webview-13-x64-hostside-rel
 chromium/try/android-x64-rel
 chromium/try/android-x86-rel
-chromium/try/android_arm64_dbg_recipe
 chromium/try/android_compile_dbg
 chromium/try/android_compile_x64_dbg
 chromium/try/android_compile_x86_dbg

@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/android_arm64_dbg_recipe/gn-args.json"
+        "infra/config/generated/builders/try/android-arm64-compile-dbg/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -224,7 +224,7 @@
         }
       ],
       "is_compile_only": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/try/android_arm64_dbg_recipe/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-arm64-compile-dbg/targets"
     }
   },
   "$build/siso": {

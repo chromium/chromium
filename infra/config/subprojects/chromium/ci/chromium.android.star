@@ -2716,9 +2716,11 @@ ci.builder(
     execution_timeout = 4 * time.hour,
 )
 
+# TODO(crbug.com/425745287): Remove this builder after android-10-arm64-rel
+# run properly as an optional CQ builder.
 ci.thin_tester(
     name = "android-pie-arm64-dbg",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
     parent = "ci/Android arm64 Builder (dbg)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -2751,6 +2753,7 @@ ci.thin_tester(
             "has_native_resultdb_integration",
         ],
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "tester|phone",
         short_name = "P",

@@ -430,6 +430,29 @@ try_.builder(
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = ["ci/Android arm Builder (dbg)"],
     gn_args = "ci/Android arm Builder (dbg)",
+    contact_team_email = "clank-engprod@google.com",
+)
+
+try_.builder(
+    name = "android-arm64-compile-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    mirrors = ["ci/Android arm64 Builder (dbg)"],
+    builder_config_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_try_builder",
+            "enable_android_secondary_abi",
+            "remoteexec",
+            "compile_only",
+            "arm64",
+            "android_fastbuild",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
 )
 
 try_.orchestrator_builder(
@@ -946,7 +969,7 @@ try_.builder(
 # run properly as an optional CQ builder.
 try_.builder(
     name = "android-pie-arm64-dbg",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Android arm64 Builder (dbg)",
         "ci/android-pie-arm64-dbg",
@@ -1117,28 +1140,6 @@ try_.compilator_builder(
     cores = 64 if settings.is_main else 32,
     contact_team_email = "clank-engprod@google.com",
     main_list_view = "try",
-)
-
-try_.builder(
-    name = "android_arm64_dbg_recipe",
-    mirrors = [
-        "ci/Android arm64 Builder (dbg)",
-    ],
-    builder_config_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
-        is_compile_only = True,
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder",
-            "debug_try_builder",
-            "enable_android_secondary_abi",
-            "remoteexec",
-            "compile_only",
-            "arm64",
-            "android_fastbuild",
-        ],
-    ),
 )
 
 try_.builder(
