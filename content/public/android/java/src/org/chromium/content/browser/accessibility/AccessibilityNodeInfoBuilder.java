@@ -49,6 +49,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.ParcelableSpan;
 import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
@@ -69,6 +70,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.ax.mojom.TextPosition;
 import org.chromium.ax.mojom.TextStyle;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -79,8 +81,10 @@ import org.chromium.ui.accessibility.AccessibilityFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeaturesMap;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Basic helper class to build AccessibilityNodeInfo objects for the WebContents in Chrome. This
@@ -498,24 +502,21 @@ public class AccessibilityNodeInfoBuilder {
     protected void setAccessibilityNodeInfoText(
             AccessibilityNodeInfoCompat node,
             String text,
-            String targetUrl,
             boolean annotateAsLink,
             boolean isEditableText,
-            String language,
-            int[] suggestionStarts,
-            int[] suggestionEnds,
-            String[] suggestions,
             String stateDescription,
             String containerTitle,
             String contentDescription,
             String supplementalDescription,
-            float textSize,
-            int textStyle,
-            int textColor,
-            int textBackgroundColor,
-            String fontFamily,
-            boolean isSubscript,
-            boolean isSuperscript) {
+            Map<String, int[][]> suggestions,
+            Map<String, int[][]> links,
+            Map<Float, int[][]> textSizes,
+            Map<Integer, int[][]> textStyles,
+            Map<Integer, int[][]> textPositions,
+            Map<Integer, int[][]> foregroundColors,
+            Map<Integer, int[][]> backgroundColors,
+            Map<String, int[][]> fontFamilies,
+            Map<String, int[][]> locales) {
         assert AccessibilityFeaturesMap.isEnabled(
                         AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING)
                 : "setAccessibilityNodeInfoText with text styling information was called when"
@@ -526,19 +527,15 @@ public class AccessibilityNodeInfoBuilder {
         CharSequence computedText =
                 computeText(
                         text,
-                        targetUrl,
-                        annotateAsLink,
-                        language,
-                        suggestionStarts,
-                        suggestionEnds,
                         suggestions,
-                        textSize,
-                        textStyle,
-                        textColor,
-                        textBackgroundColor,
-                        fontFamily,
-                        isSubscript,
-                        isSuperscript);
+                        links,
+                        textSizes,
+                        textStyles,
+                        textPositions,
+                        foregroundColors,
+                        backgroundColors,
+                        fontFamilies,
+                        locales);
 
         // We add the stateDescription attribute when it is non-null and not empty.
         if (stateDescription != null && !stateDescription.isEmpty()) {
@@ -723,96 +720,112 @@ public class AccessibilityNodeInfoBuilder {
 
     private CharSequence computeText(
             String text,
-            String targetUrl,
-            boolean annotateAsLink,
-            String language,
-            int[] suggestionStarts,
-            int[] suggestionEnds,
-            String[] suggestions,
-            float textSize,
-            int textStyle,
-            int textColor,
-            int textBackgroundColor,
-            String fontFamily,
-            boolean isSubscript,
-            boolean isSuperscript) {
+            Map<String, int[][]> suggestions,
+            Map<String, int[][]> links,
+            Map<Float, int[][]> textSizes,
+            Map<Integer, int[][]> textStyles,
+            Map<Integer, int[][]> textPositions,
+            Map<Integer, int[][]> foregroundColors,
+            Map<Integer, int[][]> backgroundColors,
+            Map<String, int[][]> fontFamilies,
+            Map<String, int[][]> locales) {
         assert AccessibilityFeaturesMap.isEnabled(
                         AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING)
                 : "computeText with text styling information was called when feature was not"
                         + " enabled.";
-
-        // The TextStyle from Blink is communicated as a bit flag. A piece of text can have multiple
-        // styles, these are applied to nodes as an IntAttribute by bit-shifting 1 by the value of
-        // the enum for that style.
-        // For example, a bold piece of text would have textStyle=2, and a piece of text that is
-        // bold, italic, and underline would have a value textStyle=14.
-        //
-        // There are 3 possible Spannables we may need to use here:
-        //    - StyleSpan - used for bold, italic, and bold+italic
-        //    - UnderlineSpan - used for underlines
-        //    - StrikethroughSpan - used for strikethroughs ("linethrough" in Blink)
-        //
-        // We do not have any use-cases for OVERLINE, and we do not use any Spannables for NONE.
-        boolean needsStyleSpan =
-                (textStyle & ((1 << TextStyle.BOLD) | (1 << TextStyle.ITALIC))) != 0;
-        boolean needsUnderlineSpan = (textStyle & (1 << TextStyle.UNDERLINE)) != 0;
-        boolean needsStrikethroughSpan = (textStyle & (1 << TextStyle.LINE_THROUGH)) != 0;
 
         // We previously would only create a SpannableString if needed, and would check each of
         // these specific cases within a separate if statement. Since every piece of text must have
         // a color, size, background color, etc, we are always making spans so we have removed that
         // extra check and will always return a Spannable.
         SpannableString spannable = new SpannableString(text);
-        if (annotateAsLink) {
-            spannable.setSpan(new URLSpan(targetUrl), 0, spannable.length(), 0);
-        }
-        if (!language.isEmpty() && !language.equals(mDelegate.getLanguageTag())) {
-            Locale locale = Locale.forLanguageTag(language);
-            spannable.setSpan(new LocaleSpan(locale), 0, spannable.length(), 0);
-        }
-        if (suggestionStarts != null && suggestionStarts.length > 0) {
-            addSuggestionSpans(spannable, suggestionStarts, suggestionEnds, suggestions);
-        }
-        if (needsStyleSpan) {
-            boolean isBold = (textStyle & (1 << TextStyle.BOLD)) != 0;
-            boolean isItalic = (textStyle & (1 << TextStyle.ITALIC)) != 0;
-
-            if (isBold && isItalic) {
-                spannable.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), 0, spannable.length(), 0);
-            } else if (isBold) {
-                spannable.setSpan(new StyleSpan(Typeface.BOLD), 0, spannable.length(), 0);
-            } else if (isItalic) {
-                spannable.setSpan(new StyleSpan(Typeface.ITALIC), 0, spannable.length(), 0);
-            }
-        }
-        if (needsUnderlineSpan) {
-            spannable.setSpan(new UnderlineSpan(), 0, spannable.length(), 0);
-        }
-        if (needsStrikethroughSpan) {
-            spannable.setSpan(new StrikethroughSpan(), 0, spannable.length(), 0);
-        }
-        // Subscript and superscript are mutually exclusive.
-        if (isSubscript) {
-            spannable.setSpan(new SubscriptSpan(), 0, spannable.length(), 0);
-        } else if (isSuperscript) {
-            spannable.setSpan(new SuperscriptSpan(), 0, spannable.length(), 0);
-        }
-        if (fontFamily != null && !fontFamily.isEmpty()) {
-            spannable.setSpan(new TypefaceSpan(fontFamily), 0, spannable.length(), 0);
-        }
-
-        spannable.setSpan(new ForegroundColorSpan(textColor), 0, spannable.length(), 0);
-        spannable.setSpan(new BackgroundColorSpan(textBackgroundColor), 0, spannable.length(), 0);
-        spannable.setSpan(
-                new TextAppearanceSpan(
-                        fontFamily,
-                        0,
-                        (int) textSize,
-                        ColorStateList.valueOf(textColor),
-                        ColorStateList.valueOf(0)),
-                0,
-                spannable.length(),
-                0);
+        addSpans(
+                spannable,
+                suggestions,
+                (suggestion) -> {
+                    int flags = SuggestionSpan.FLAG_MISSPELLED;
+                    return new SuggestionSpan(
+                            mDelegate.getContext(), new String[] {suggestion}, flags);
+                });
+        addSpans(
+                spannable,
+                links,
+                (link) -> {
+                    return new URLSpan(link);
+                });
+        addSpans(
+                spannable,
+                textSizes,
+                (textSize) -> {
+                    // TODO: aluh - This is already checked in C++, do we need to check again?
+                    // Zero font size is valid in CSS, which makes text invisible.
+                    if (textSize >= 0) {
+                        return new TextAppearanceSpan(
+                                "",
+                                0,
+                                Math.round(textSize),
+                                ColorStateList.valueOf(0),
+                                ColorStateList.valueOf(0));
+                    }
+                    return null;
+                });
+        addSpans(
+                spannable,
+                textStyles,
+                (textStyle) -> {
+                    if (textStyle == TextStyle.BOLD) {
+                        return new StyleSpan(Typeface.BOLD);
+                    } else if (textStyle == TextStyle.ITALIC) {
+                        return new StyleSpan(Typeface.ITALIC);
+                    } else if (textStyle == TextStyle.UNDERLINE) {
+                        return new UnderlineSpan();
+                    } else if (textStyle == TextStyle.LINE_THROUGH) {
+                        return new StrikethroughSpan();
+                    }
+                    return null;
+                });
+        addSpans(
+                spannable,
+                textPositions,
+                (textPosition) -> {
+                    if (textPosition == TextPosition.SUBSCRIPT) {
+                        return new SubscriptSpan();
+                    } else if (textPosition == TextPosition.SUPERSCRIPT) {
+                        return new SuperscriptSpan();
+                    }
+                    return null;
+                });
+        addSpans(
+                spannable,
+                foregroundColors,
+                (foregroundColor) -> {
+                    return new ForegroundColorSpan(foregroundColor);
+                });
+        addSpans(
+                spannable,
+                backgroundColors,
+                (backgroundColor) -> {
+                    return new BackgroundColorSpan(backgroundColor);
+                });
+        addSpans(
+                spannable,
+                fontFamilies,
+                (fontFamily) -> {
+                    // TODO: aluh - This is already checked in C++, do we need to check again?
+                    if (!fontFamily.isEmpty()) {
+                        return new TypefaceSpan(fontFamily);
+                    }
+                    return null;
+                });
+        addSpans(
+                spannable,
+                locales,
+                (locale) -> {
+                    if (!locale.isEmpty() && !locale.equals(mDelegate.getLanguageTag())) {
+                        return new LocaleSpan(Locale.forLanguageTag(locale));
+                    }
+                    return null;
+                });
 
         return spannable;
     }
@@ -827,16 +840,11 @@ public class AccessibilityNodeInfoBuilder {
         assert suggestions != null;
         assert suggestions.length == suggestionStarts.length;
 
-        int spannableLength = spannable.length();
         for (int i = 0; i < suggestionStarts.length; i++) {
             int start = suggestionStarts[i];
             int end = suggestionEnds[i];
             // Ignore any spans outside the range of the spannable string.
-            if (start < 0
-                    || start > spannableLength
-                    || end < 0
-                    || end > spannableLength
-                    || start > end) {
+            if (!isRangeInSpannable(spannable, start, end)) {
                 continue;
             }
 
@@ -845,6 +853,45 @@ public class AccessibilityNodeInfoBuilder {
                     new SuggestionSpan(
                             mDelegate.getContext(), new String[] {suggestions[i]}, flags);
             spannable.setSpan(suggestionSpan, start, end, 0);
+        }
+    }
+
+    private boolean isValidAttributeRanges(int[][] ranges) {
+        return ranges != null
+                && ranges.length == 2
+                && ranges[0] != null
+                && ranges[1] != null
+                && ranges[0].length > 0
+                && ranges[0].length == ranges[1].length;
+    }
+
+    private boolean isRangeInSpannable(SpannableString spannable, int start, int end) {
+        return start <= end && start >= 0 && end <= spannable.length();
+    }
+
+    @FunctionalInterface
+    private static interface SpanFactory<T> {
+        @Nullable ParcelableSpan createSpan(T param);
+    }
+
+    private <T> void addSpans(
+            SpannableString spannable, Map<T, int[][]> attributes, SpanFactory<T> spanFactory) {
+        if (attributes != null) {
+            attributes.forEach(
+                    (value, ranges) -> {
+                        if (isValidAttributeRanges(ranges)) {
+                            for (int i = 0; i < ranges[0].length; i++) {
+                                int start = ranges[0][i];
+                                int end = ranges[1][i];
+                                if (isRangeInSpannable(spannable, start, end)) {
+                                    ParcelableSpan span = spanFactory.createSpan(value);
+                                    if (span != null) {
+                                        spannable.setSpan(span, start, end, 0);
+                                    }
+                                }
+                            }
+                        }
+                    });
         }
     }
 
@@ -917,5 +964,36 @@ public class AccessibilityNodeInfoBuilder {
         } else if (rect.right < clippedLeft) {
             rect.right = clippedLeft;
         }
+    }
+
+    @CalledByNative
+    public static <K> Map<K, int[][]> createTextAttributeRangesMap() {
+        return new HashMap<K, int[][]>();
+    }
+
+    @CalledByNative
+    public static void setTextAttributeRangesMapFloatValue(
+            Map<Float, int[][]> map, float value, int[] starts, int[] ends) {
+        setTextAttributeRangesMapValue(map, value, starts, ends);
+    }
+
+    @CalledByNative
+    public static void setTextAttributeRangesMapIntValue(
+            Map<Integer, int[][]> map, int value, int[] starts, int[] ends) {
+        setTextAttributeRangesMapValue(map, value, starts, ends);
+    }
+
+    @CalledByNative
+    public static void setTextAttributeRangesMapStringValue(
+            Map<String, int[][]> map, String value, int[] starts, int[] ends) {
+        setTextAttributeRangesMapValue(map, value, starts, ends);
+    }
+
+    public static <T> void setTextAttributeRangesMapValue(
+            Map<T, int[][]> map, T value, int[] starts, int[] ends) {
+        if (map == null || value == null || starts == null || ends == null) {
+            return;
+        }
+        map.put(value, new int[][] {starts, ends});
     }
 }

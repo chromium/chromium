@@ -913,7 +913,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TextStyling_TextSizes) {
 
   ui::AXNodeData* last_node = &tree.nodes.emplace_back();
   last_node->id = ROOT_ID;
-  last_node->child_ids = {101, 102, 103};
+  last_node->child_ids = {101, 102, 103, 104, 105};
 
   last_node = &tree.nodes.emplace_back();
   last_node->id = 101;
@@ -929,6 +929,17 @@ TEST_F(BrowserAccessibilityAndroidTest, TextStyling_TextSizes) {
   last_node = &tree.nodes.emplace_back();
   last_node->id = 103;
   last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" and");
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 104;
+  last_node->role = ax::mojom::Role::kStaticText;
+  last_node->SetName(" invisible");
+  last_node->AddFloatAttribute(ax::mojom::FloatAttribute::kFontSize, 0.0f);
+
+  last_node = &tree.nodes.emplace_back();
+  last_node->id = 105;
+  last_node->role = ax::mojom::Role::kStaticText;
   last_node->SetName(" text");
 
   std::unique_ptr<ui::BrowserAccessibilityManager> manager(
@@ -940,10 +951,11 @@ TEST_F(BrowserAccessibilityAndroidTest, TextStyling_TextSizes) {
       static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(ROOT_ID));
   EXPECT_THAT(
       container->GetSubstringTextContentUTF16(std::nullopt, &style_data),
-      Eq(u"Some big text"));
+      Eq(u"Some big and invisible text"));
   ASSERT_TRUE(style_data.text_sizes);
   EXPECT_THAT(*style_data.text_sizes,
-              UnorderedElementsAre(Pair(24.0f, RangePairs{{5, 8}})));
+              UnorderedElementsAre(Pair(24.0f, RangePairs{{5, 8}}),
+                                   Pair(0.0f, RangePairs{{12, 22}})));
 }
 
 // TODO: aluh - Enable once super/subscript nodes are merged into text content.
@@ -1296,7 +1308,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TextStyling_IgnoreInvalidValues) {
   last_node->role = ax::mojom::Role::kStaticText;
   last_node->SetName("normal");
   last_node->AddIntAttribute(ax::mojom::IntAttribute::kTextStyle, 0);
-  last_node->AddFloatAttribute(ax::mojom::FloatAttribute::kFontSize, 0);
+  last_node->AddFloatAttribute(ax::mojom::FloatAttribute::kFontSize, -1.0);
   last_node->AddStringAttribute(ax::mojom::StringAttribute::kFontFamily, "");
   last_node->AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "");
 

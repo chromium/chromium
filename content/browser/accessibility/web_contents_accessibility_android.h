@@ -5,15 +5,19 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 
+#include <optional>
+
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/browser/accessibility/ax_style_data.h"
 #include "content/browser/accessibility/web_contents_accessibility.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/node_hash_map.h"
 #include "ui/accessibility/platform/ax_node_id_delegate.h"
 #include "ui/gfx/geometry/size.h"
@@ -326,13 +330,13 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   //       finite number of possibilities. Do not use it for page content.
   const base::android::ScopedJavaGlobalRef<jstring>& GetCanonicalJNIString(
       JNIEnv* env,
-      std::string str) {
+      std::string_view str) {
     return GetCanonicalJNIString(env, base::UTF8ToUTF16(str));
   }
 
   const base::android::ScopedJavaGlobalRef<jstring>& GetCanonicalJNIString(
       JNIEnv* env,
-      std::u16string str) {
+      std::u16string_view str) {
     auto& slot = common_string_cache_[str];
     if (!slot) {
       // Otherwise, convert the string and add it to the cache, then return.
@@ -420,6 +424,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       const base::android::JavaParamRef<jobject>& info,
       jint id,
       BrowserAccessibilityAndroid* node);
+
+  base::android::ScopedJavaLocalRef<jobject> ToJavaCanonicalStringRangesMap(
+      JNIEnv* env,
+      const std::optional<
+          absl::flat_hash_map<std::string, AXStyleData::RangePairs>>& attrs);
 
   // A weak reference to the Java WebContentsAccessibilityAndroid object.
   JavaObjectWeakGlobalRef java_ref_;

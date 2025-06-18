@@ -20,6 +20,7 @@
 #include "base/android/jni_string.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,6 +30,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/fixed_array.h"
 #include "content/browser/accessibility/accessibility_tree_snapshot_combiner.h"
+#include "content/browser/accessibility/ax_style_data.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
@@ -42,6 +44,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_prefs.h"
 #include "ui/accessibility/ax_assistant_structure.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
@@ -55,10 +58,13 @@
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using base::android::ToJavaIntArray;
 
 namespace content {
 
 namespace {
+
+using RangePairs = AXStyleData::RangePairs;
 
 // This map contains key value pairs of a string to a tree search predicate. The
 // set of keys represents the ways in which an AT can navigate a page by HTML
@@ -428,6 +434,83 @@ std::optional<int> MaybeFindRowColumn(ui::BrowserAccessibility* start_node,
   }
 
   return table_info->cell_ids[want_row_index][want_col_index];
+}
+
+// Converts RangePairs into a pair of int vectors.
+std::pair<std::vector<int>, std::vector<int>> ToVectorPair(
+    const RangePairs& range_pairs) {
+  std::vector<int> starts(range_pairs.size());
+  std::vector<int> ends(range_pairs.size());
+  for (size_t i = 0; i < range_pairs.size(); ++i) {
+    starts[i] = range_pairs[i].first;
+    ends[i] = range_pairs[i].second;
+  }
+  return {starts, ends};
+}
+
+template <class CppKeyType,
+          class CppConstructableType,
+          class JavaType,
+          class JniWrapperType>
+ScopedJavaLocalRef<jobject> ToJavaRangesMap(
+    JNIEnv* env,
+    const std::optional<absl::flat_hash_map<CppKeyType, RangePairs>>&
+        text_style_map,
+    void (*SetJavaMapValue)(JNIEnv*,
+                            const jni_zero::JavaRef<jobject>&,
+                            JniWrapperType,
+                            const jni_zero::JavaRef<jintArray>&,
+                            const jni_zero::JavaRef<jintArray>&),
+    base::RepeatingCallback<JavaType(CppConstructableType)> to_java_map_key) {
+  if (!text_style_map) {
+    return nullptr;
+  }
+  // Due to type erasure, the map key type is always `jobject`, so we must make
+  // sure to call with the correct actual key type.
+  ScopedJavaLocalRef<jobject> java_map =
+      Java_AccessibilityNodeInfoBuilder_createTextAttributeRangesMap(env);
+  for (const auto& entry : *text_style_map) {
+    JavaType java_map_key = to_java_map_key.Run(entry.first);
+    std::pair<std::vector<int>, std::vector<int>> pair =
+        ToVectorPair(entry.second);
+    auto java_starts = ToJavaIntArray(env, pair.first);
+    auto java_ends = ToJavaIntArray(env, pair.second);
+    SetJavaMapValue(env, java_map, std::move(java_map_key), java_starts,
+                    java_ends);
+  }
+  return java_map;
+}
+
+ScopedJavaLocalRef<jobject> ToJavaFloatRangesMap(
+    JNIEnv* env,
+    const std::optional<absl::flat_hash_map<float, RangePairs>>&
+        text_style_map) {
+  return ToJavaRangesMap(
+      env, text_style_map,
+      &Java_AccessibilityNodeInfoBuilder_setTextAttributeRangesMapFloatValue,
+      base::BindRepeating(
+          [](float value) { return static_cast<jfloat>(value); }));
+}
+
+template <class T>
+ScopedJavaLocalRef<jobject> ToJavaIntRangesMap(
+    JNIEnv* env,
+    const std::optional<absl::flat_hash_map<T, RangePairs>>& text_style_map) {
+  return ToJavaRangesMap(
+      env, text_style_map,
+      &Java_AccessibilityNodeInfoBuilder_setTextAttributeRangesMapIntValue,
+      base::BindRepeating([](T value) { return static_cast<jint>(value); }));
+}
+
+ScopedJavaLocalRef<jobject> ToJavaStringRangesMap(
+    JNIEnv* env,
+    const std::optional<absl::flat_hash_map<std::u16string, RangePairs>>&
+        text_style_map) {
+  return ToJavaRangesMap(
+      env, text_style_map,
+      &Java_AccessibilityNodeInfoBuilder_setTextAttributeRangesMapStringValue,
+      base::BindRepeating(&base::android::ConvertUTF16ToJavaString,
+                          base::Unretained(env)));
 }
 
 }  // anonymous namespace
@@ -1105,7 +1188,7 @@ WebContentsAccessibilityAndroid::GetAbsolutePositionForNode(JNIEnv* env,
       node->GetUnclippedRootFrameBoundsRect(), dip_scale, dip_scale);
   int rect[] = {absolute_rect.x(), absolute_rect.y(), absolute_rect.right(),
                 absolute_rect.bottom()};
-  return base::android::ToJavaIntArray(env, rect);
+  return ToJavaIntArray(env, rect);
 }
 
 static size_t ActualUnignoredChildCount(const ui::AXNode* node) {
@@ -1212,7 +1295,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   }
   if (child_ids.size()) {
     Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoChildren(
-        env, obj, info, base::android::ToJavaIntArray(env, child_ids));
+        env, obj, info, ToJavaIntArray(env, child_ids));
   }
 
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBooleanAttributes(
@@ -1247,37 +1330,35 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       GetCanonicalJNIString(env, node->GetBrailleRoleDescription()),
       node->ExpandedState(), node->GetChecked());
 
-  ScopedJavaLocalRef<jintArray> suggestion_starts_java;
-  ScopedJavaLocalRef<jintArray> suggestion_ends_java;
-  ScopedJavaLocalRef<jobjectArray> suggestion_text_java;
-  std::vector<int> suggestion_starts;
-  std::vector<int> suggestion_ends;
-  node->GetSuggestions(&suggestion_starts, &suggestion_ends);
-  if (suggestion_starts.size() && suggestion_ends.size()) {
-    suggestion_starts_java =
-        base::android::ToJavaIntArray(env, suggestion_starts);
-    suggestion_ends_java = base::android::ToJavaIntArray(env, suggestion_ends);
-
-    // Currently we don't retrieve the text of each suggestion, so
-    // store a blank string for now.
-    std::vector<std::string> suggestion_text(suggestion_starts.size());
-    suggestion_text_java =
-        base::android::ToJavaArrayOfStrings(env, suggestion_text);
-  }
-
   bool is_link = ui::IsLink(node->GetRole());
   if (::features::IsAccessibilityTextFormattingEnabled()) {
+    // TODO: aluh - Limit to accessibility focus.
+    AXStyleData style_data;
+    std::u16string text =
+        node->GetSubstringTextContentUTF16(std::nullopt, &style_data);
+
+    ScopedJavaLocalRef<jobject> java_suggestions =
+        ToJavaStringRangesMap(env, style_data.suggestions);
+    ScopedJavaLocalRef<jobject> java_links =
+        ToJavaStringRangesMap(env, style_data.links);
+    ScopedJavaLocalRef<jobject> java_text_sizes =
+        ToJavaFloatRangesMap(env, style_data.text_sizes);
+    ScopedJavaLocalRef<jobject> java_text_styles =
+        ToJavaIntRangesMap(env, style_data.text_styles);
+    ScopedJavaLocalRef<jobject> java_text_positions =
+        ToJavaIntRangesMap(env, style_data.text_positions);
+    ScopedJavaLocalRef<jobject> java_foreground_colors =
+        ToJavaIntRangesMap(env, style_data.foreground_colors);
+    ScopedJavaLocalRef<jobject> java_background_colors =
+        ToJavaIntRangesMap(env, style_data.background_colors);
+    ScopedJavaLocalRef<jobject> java_font_families =
+        ToJavaCanonicalStringRangesMap(env, style_data.font_families);
+    ScopedJavaLocalRef<jobject> java_locales =
+        ToJavaCanonicalStringRangesMap(env, style_data.locales);
+
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
-        env, obj, info,
-        base::android::ConvertUTF16ToJavaString(env,
-                                                node->GetTextContentUTF16()),
-        is_link
-            ? base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl())
-            : base::android::ConvertUTF16ToJavaString(env, std::u16string()),
+        env, obj, info, base::android::ConvertUTF16ToJavaString(env, text),
         is_link, node->IsTextField(),
-        GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
-                                       ax::mojom::StringAttribute::kLanguage)),
-        suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
         base::android::ConvertUTF16ToJavaString(env,
                                                 node->GetStateDescription()),
         base::android::ConvertUTF16ToJavaString(env, node->GetContainerTitle()),
@@ -1285,11 +1366,26 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
                                                 node->GetContentDescription()),
         base::android::ConvertUTF16ToJavaString(
             env, node->GetSupplementalDescription()),
-        node->GetTextSize(), node->GetTextStyle(), node->GetTextColor(),
-        node->GetTextBackgroundColor(),
-        GetCanonicalJNIString(env, node->GetFontFamily()), node->IsSubscript(),
-        node->IsSuperscript());
+        java_suggestions, java_links, java_text_sizes, java_text_styles,
+        java_text_positions, java_foreground_colors, java_background_colors,
+        java_font_families, java_locales);
   } else {
+    ScopedJavaLocalRef<jintArray> java_suggestion_starts;
+    ScopedJavaLocalRef<jintArray> java_suggestion_ends;
+    ScopedJavaLocalRef<jobjectArray> java_suggestion_text;
+    std::vector<int> suggestion_starts;
+    std::vector<int> suggestion_ends;
+    node->GetSuggestions(&suggestion_starts, &suggestion_ends);
+    if (suggestion_starts.size() && suggestion_ends.size()) {
+      java_suggestion_starts = ToJavaIntArray(env, suggestion_starts);
+      java_suggestion_ends = ToJavaIntArray(env, suggestion_ends);
+
+      // TODO: crbug.com/425974312 - Currently we don't retrieve the text of
+      // each suggestion, so store a blank string for now.
+      std::vector<std::string> suggestion_text(suggestion_starts.size());
+      java_suggestion_text =
+          base::android::ToJavaArrayOfStrings(env, suggestion_text);
+    }
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
         env, obj, info,
         base::android::ConvertUTF16ToJavaString(env,
@@ -1300,7 +1396,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         is_link, node->IsTextField(),
         GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
                                        ax::mojom::StringAttribute::kLanguage)),
-        suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
+        java_suggestion_starts, java_suggestion_ends, java_suggestion_text,
         base::android::ConvertUTF16ToJavaString(env,
                                                 node->GetStateDescription()),
         base::android::ConvertUTF16ToJavaString(env, node->GetContainerTitle()),
@@ -2001,7 +2097,7 @@ WebContentsAccessibilityAndroid::GetCharacterBoundingBoxes(JNIEnv* env,
     coords[4 * i + 2] = char_bounds.right();
     coords[4 * i + 3] = char_bounds.bottom();
   }
-  return base::android::ToJavaIntArray(env, coords);
+  return ToJavaIntArray(env, coords);
 }
 
 jboolean WebContentsAccessibilityAndroid::GetImageData(
@@ -2242,6 +2338,22 @@ void WebContentsAccessibilityAndroid::PopulateViewStructureNode(
       GetCanonicalJNIString(
           env, node->GetStringAttribute(ax::mojom::StringAttribute::kDisplay)),
       base::android::ToJavaArrayOfStringArray(env, html_attrs));
+}
+
+ScopedJavaLocalRef<jobject>
+WebContentsAccessibilityAndroid::ToJavaCanonicalStringRangesMap(
+    JNIEnv* env,
+    const std::optional<absl::flat_hash_map<std::string, RangePairs>>&
+        text_style_map) {
+  return ToJavaRangesMap(
+      env, text_style_map,
+      &Java_AccessibilityNodeInfoBuilder_setTextAttributeRangesMapStringValue,
+      base::BindRepeating(
+          [](WebContentsAccessibilityAndroid& node, JNIEnv* env,
+             const std::string& value) {
+            return node.GetCanonicalJNIString(env, value);
+          },
+          std::ref(*this), base::Unretained(env)));
 }
 
 base::WeakPtr<WebContentsAccessibilityAndroid>

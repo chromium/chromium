@@ -136,8 +136,8 @@ void PopulateStyleData(const content::BrowserAccessibilityAndroid& node,
     node.GetSuggestions(&suggestion_starts, &suggestion_ends);
     CHECK_EQ(suggestion_starts.size(), suggestion_ends.size());
     for (size_t i = 0; i < suggestion_starts.size(); ++i) {
-      // Currently we don't retrieve the text of each suggestion, so store a
-      // blank string for now.
+      // TODO: crbug.com/425974312 - Currently we don't retrieve the text of
+      // each suggestion, so store a blank string for now.
       AXStyleData::AddRange(style_data->suggestions, std::u16string(),
                             start + suggestion_starts[i],
                             start + suggestion_ends[i]);
@@ -149,8 +149,11 @@ void PopulateStyleData(const content::BrowserAccessibilityAndroid& node,
   }
 
   if (node.GetRole() == ax::mojom::Role::kStaticText) {
-    if (float size = node.GetTextSize(); size != 0) {
-      AXStyleData::AddRange(style_data->text_sizes, size, start, end);
+    if (node.HasFloatAttribute(ax::mojom::FloatAttribute::kFontSize)) {
+      // Zero font size is valid in CSS, which makes the text invisible.
+      if (float size = node.GetTextSize(); size >= 0) {
+        AXStyleData::AddRange(style_data->text_sizes, size, start, end);
+      }
     }
     if (node.GetTextStyle() != 0) {
       // GetTextStyle returns a bit field shifted by ax::mojom::TextStyle enum
