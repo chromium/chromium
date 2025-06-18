@@ -3211,8 +3211,6 @@ static_library("browser") {
       "profiles/profile_manager_android.cc",
       "profiles/profile_manager_android.h",
       "readaloud/android/read_aloud_features.cc",
-      "readaloud/android/synthetic_trial.cc",
-      "readaloud/android/synthetic_trial.h",
       "safe_browsing/android/notification_content_detection_manager_android.cc",
       "safe_browsing/android/notification_content_detection_manager_android.h",
       "safe_browsing/android/password_reuse_controller_android.cc",

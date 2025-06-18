@@ -11,7 +11,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,11 +53,6 @@ public class TapToSeekHandlerUnitTest {
         doReturn(false).when(mProfile).isOffTheRecord();
         when(mPlayback.getMetadata()).thenReturn(mMetadata);
         ReadAloudFeaturesJni.setInstanceForTesting(mReadAloudFeaturesNatives);
-    }
-
-    @After
-    public void tearDown() {
-        ReadAloudFeatures.shutdown();
     }
 
     @Test
