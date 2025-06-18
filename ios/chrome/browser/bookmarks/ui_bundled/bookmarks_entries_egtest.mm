@@ -420,8 +420,9 @@ id<GREYMatcher> AddBookmarkButton() {
                      IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN_INCOGNITO)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -659,9 +660,10 @@ id<GREYMatcher> AddBookmarkButton() {
                                           kBookmarksHomeContextMenuIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Verify options on context menu.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
+  // Verify Edit button is visible.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -710,8 +712,9 @@ id<GREYMatcher> AddBookmarkButton() {
       performAction:grey_tap()];
 
   // Tap on move, from context menu.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
       performAction:grey_tap()];
 
   // Verify folder picker appeared.
@@ -801,8 +804,9 @@ id<GREYMatcher> AddBookmarkButton() {
       performAction:grey_tap()];
 
   // Tap on move, from context menu.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
       performAction:grey_tap()];
 
   // Choose to move into Folder 1. Use grey_ancestor since
@@ -868,8 +872,9 @@ id<GREYMatcher> AddBookmarkButton() {
       performAction:grey_tap()];
 
   // Tap on move, from context menu.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
       performAction:grey_tap()];
 
   // Verify folder picker appeared.
