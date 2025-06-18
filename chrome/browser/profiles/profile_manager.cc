@@ -38,6 +38,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"
+#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
@@ -1303,12 +1304,16 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
     VLOG(1) << "RemoveKeepAlive(" << profile->GetDebugName() << ", " << origin
             << ") called before the Profile was added to the "
             << "ProfileManager. The keepalive was not removed.";
-    // TODO(crbug.com/368360956): Not incrementing the refcount will cause
-    // `profile` to get destroyed too early. Remove or convert to a CHECK() once
-    // the root cause is fixed.
-    SCOPED_CRASH_KEY_STRING32("ProfileKeepAlive", "origin",
-                              GetKeepAliveOriginName(origin));
-    base::debug::DumpWithoutCrashing();
+    // DumpWithoutCrashing turned off for a couple milestones until we fix the
+    // root cause, due to the high volume of reports. See crbug.com/368360956.
+    if (version_info::GetMajorVersionNumberAsInt() >= 141) {
+      // TODO(crbug.com/368360956): Not incrementing the refcount will cause
+      // `profile` to get destroyed too early. Remove or convert to a CHECK()
+      // once the root cause is fixed.
+      SCOPED_CRASH_KEY_STRING32("ProfileKeepAlive", "origin",
+                                GetKeepAliveOriginName(origin));
+      base::debug::DumpWithoutCrashing();
+    }
     return;
   }
 
