@@ -2036,8 +2036,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   friend class internal::RootView;
   friend class internal::ScopedChildrenLock;
   friend class FocusManager;
-  // TODO(https://crbug.com/422382420): unfriend this.
-  friend class TestBubbleFrameView;
   friend class ViewDebugWrapperImpl;
   friend class ViewLayerTest;
   friend class ViewLayerPixelCanvasTest;
