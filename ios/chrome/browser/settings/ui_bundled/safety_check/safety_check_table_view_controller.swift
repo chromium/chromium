@@ -26,7 +26,9 @@ extension SettingsEnum {
 }
 
 @objc
-class SafetyCheckTableViewController: SettingsRootTableViewController, SafetyCheckConsumer {
+class SafetyCheckTableViewController: SettingsRootTableViewController, @preconcurrency
+  SafetyCheckConsumer
+{
   // The accessibility identifier of the safety check table view.
   @objc static let accessibilityIdentifier = "kSafetyCheckTableViewId"
 
