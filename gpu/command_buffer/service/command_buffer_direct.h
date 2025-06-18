@@ -10,15 +10,16 @@
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/decoder_client.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 
 namespace gpu {
 
 class AsyncAPIInterface;
 
-class GPU_EXPORT CommandBufferDirect : public CommandBuffer,
-                                       public CommandBufferServiceClient,
-                                       public DecoderClient {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommandBufferDirect
+    : public CommandBuffer,
+      public CommandBufferServiceClient,
+      public DecoderClient {
  public:
   CommandBufferDirect();
   ~CommandBufferDirect() override;

@@ -12,9 +12,9 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/task_graph.h"
-#include "gpu/gpu_export.h"
 
 namespace gpu {
 
@@ -22,7 +22,7 @@ class Scheduler;
 
 // BlockingSequenceRunner owns a TaskGraph::Sequence and supports running
 // its tasks blockingly.
-class GPU_EXPORT BlockingSequenceRunner {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT BlockingSequenceRunner {
  public:
   explicit BlockingSequenceRunner(Scheduler* scheduler) LOCKS_EXCLUDED(lock());
 

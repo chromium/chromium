@@ -10,14 +10,14 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "ui/gl/gpu_preference.h"
 #include "url/gurl.h"
 
 namespace gpu {
 
-class GPU_EXPORT DecoderClient {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT DecoderClient {
  public:
   virtual ~DecoderClient() = default;
 

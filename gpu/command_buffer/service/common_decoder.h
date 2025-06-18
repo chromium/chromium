@@ -17,7 +17,7 @@
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/common/constants.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 
 // Forwardly declare a few GL types to avoid including GL header files.
 using GLsizei = int;
@@ -34,7 +34,7 @@ class DecoderClient;
 
 // This class is a helper base class for implementing the common parts of the
 // o3d/gl2 command buffer decoder.
-class GPU_EXPORT CommonDecoder {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommonDecoder {
  public:
   using Error = error::Error;
 
@@ -62,7 +62,7 @@ class GPU_EXPORT CommonDecoder {
   // arbitary size, the service puts the string in a bucket. The client can
   // then query the size of a bucket and request sections of the bucket to
   // be passed across shared memory.
-  class GPU_EXPORT Bucket {
+  class GPU_COMMAND_BUFFER_SERVICE_EXPORT Bucket {
    public:
     Bucket();
 

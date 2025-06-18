@@ -29,8 +29,8 @@
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 #include "gpu/command_buffer/service/sequence_id.h"
-#include "gpu/gpu_export.h"
 
 namespace gpu {
 
@@ -55,7 +55,7 @@ enum class ReleaseCause {
   kMaxValue = kForceRelease
 };
 
-class GPU_EXPORT SyncPointOrderData
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT SyncPointOrderData
     : public base::RefCountedThreadSafe<SyncPointOrderData> {
  public:
   SyncPointOrderData(const SyncPointOrderData&) = delete;
@@ -177,7 +177,7 @@ class GPU_EXPORT SyncPointOrderData
   OrderFenceQueue order_fence_queue_ GUARDED_BY(lock_);
 };
 
-class GPU_EXPORT SyncPointClientState
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT SyncPointClientState
     : public base::RefCountedThreadSafe<SyncPointClientState> {
  public:
   SyncPointClientState(const SyncPointClientState&) = delete;
@@ -280,7 +280,7 @@ class GPU_EXPORT SyncPointClientState
 
 // This class manages the sync points, which allow cross-channel
 // synchronization.
-class GPU_EXPORT SyncPointManager {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT SyncPointManager {
  public:
   SyncPointManager();
 

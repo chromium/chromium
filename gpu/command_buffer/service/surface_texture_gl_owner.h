@@ -7,7 +7,6 @@
 
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/service/texture_owner.h"
-#include "gpu/gpu_export.h"
 #include "ui/gl/android/surface_texture.h"
 
 namespace base {

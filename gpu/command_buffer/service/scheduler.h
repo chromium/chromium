@@ -16,9 +16,9 @@
 #include "base/time/time.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/task_graph.h"
-#include "gpu/gpu_export.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
@@ -27,9 +27,9 @@ class SingleThreadTaskRunner;
 
 namespace gpu {
 
-class GPU_EXPORT Scheduler {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT Scheduler {
  public:
-  struct GPU_EXPORT Task {
+  struct GPU_COMMAND_BUFFER_SERVICE_EXPORT Task {
     // Use the signature with TaskCallback if the task needs to determine when
     // to release fence sync during task execution. Please also see comments of
     // TaskCallback.
@@ -71,7 +71,7 @@ class GPU_EXPORT Scheduler {
     ReportingCallback report_callback;
   };
 
-  struct GPU_EXPORT ScopedSetSequencePriority {
+  struct GPU_COMMAND_BUFFER_SERVICE_EXPORT ScopedSetSequencePriority {
    public:
     ScopedSetSequencePriority(Scheduler* scheduler,
                               SequenceId sequence_id,
@@ -181,7 +181,8 @@ class GPU_EXPORT Scheduler {
 
   // All public methods except constructor must be accessed under TaskGraph's
   // lock. Please see locking annotation of individual methods.
-  class GPU_EXPORT Sequence : public TaskGraph::Sequence {
+  class GPU_COMMAND_BUFFER_SERVICE_EXPORT Sequence
+      : public TaskGraph::Sequence {
    public:
     Sequence(
         Scheduler* scheduler,

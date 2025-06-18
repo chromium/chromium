@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 
 namespace gpu {
 
-class GPU_EXPORT TextureBase {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT TextureBase {
  public:
   explicit TextureBase(unsigned int service_id);
   virtual ~TextureBase();

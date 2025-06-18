@@ -18,10 +18,10 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 #include "gpu/command_buffer/service/retaining_one_shot_timer_holder.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
-#include "gpu/gpu_export.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -33,7 +33,7 @@ class TaskGraph;
 
 // FenceSyncReleaseDelegate can be used to release fence sync during task
 // execution.
-class GPU_EXPORT FenceSyncReleaseDelegate {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT FenceSyncReleaseDelegate {
  public:
   explicit FenceSyncReleaseDelegate(SyncPointManager* sync_point_manager);
 
@@ -67,7 +67,7 @@ using ReportingCallback = base::OnceCallback<void(base::TimeTicks task_ready)>;
 // ScopedSyncPointClientState (if valid) destroys the corresponding
 // SyncPointClientState when it is destructed. It is move-only to avoid
 // calling destroy multiple times.
-class GPU_EXPORT ScopedSyncPointClientState {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT ScopedSyncPointClientState {
  public:
   ScopedSyncPointClientState() = default;
 
@@ -97,7 +97,7 @@ class GPU_EXPORT ScopedSyncPointClientState {
 
 // TaskGraph keeps track of task sequences and the sync point dependencies
 // between tasks.
-class GPU_EXPORT TaskGraph {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
  public:
   class Sequence;
 
@@ -143,7 +143,7 @@ class GPU_EXPORT TaskGraph {
   void ValidateSequenceTaskFenceDeps(Sequence* root_sequence)
       LOCKS_EXCLUDED(lock_);
 
-  class GPU_EXPORT Sequence {
+  class GPU_COMMAND_BUFFER_SERVICE_EXPORT Sequence {
    public:
     // `validation_runner` is used for task dependency validation when
     // graph-based validation is enabled. If not provided, validation is not

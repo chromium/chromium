@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 
 namespace gpu {
@@ -20,7 +20,7 @@ class MockMemoryTracker;
 // A MemoryTracker is used to propagate per-ContextGroup memory usage
 // statistics to the global GpuMemoryManager.
 // MemoryTracker is thread safe.
-class GPU_EXPORT MemoryTracker
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT MemoryTracker
     : public base::RefCountedThreadSafe<MemoryTracker> {
  public:
   // Observe all changes in memory notified to this MemoryTracker.
@@ -87,7 +87,7 @@ class GPU_EXPORT MemoryTracker
 // MemoryTracker. MemoryTypeTracker is thread-safe, but it must not outlive the
 // MemoryTracker which will be notified on the sequence the MemoryTypeTracker
 // was created on.
-class GPU_EXPORT MemoryTypeTracker {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT MemoryTypeTracker {
  public:
   explicit MemoryTypeTracker(scoped_refptr<MemoryTracker> memory_tracker);
 

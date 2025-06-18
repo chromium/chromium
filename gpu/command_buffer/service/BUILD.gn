@@ -46,6 +46,7 @@ target(link_target_type, "service_sources") {
     "common_decoder.cc",
     "common_decoder.h",
     "decoder_client.h",
+    "gpu_command_buffer_service_export.h",
     "gpu_switches.cc",
     "gpu_switches.h",
     "memory_tracking.cc",
