@@ -296,7 +296,8 @@ interface ConsumerHost {
   // existing tracing session.
   CloneSession(pending_receiver<TracingSessionHost> tracing_session_host,
                 pending_remote<TracingSessionClient> tracing_session_client,
-                mojo_base.mojom.UnguessableToken unguessable_name)
+                mojo_base.mojom.UnguessableToken unguessable_name,
+                bool privacy_filtering_enabled)
       => (bool success, string error, mojo_base.mojom.Token uuid);
 };
 

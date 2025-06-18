@@ -53,8 +53,8 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
     TracingSession(
         ConsumerHost* host,
         mojo::PendingReceiver<mojom::TracingSessionHost> tracing_session_host,
-        mojo::PendingRemote<mojom::TracingSessionClient>
-            tracing_session_client);
+        mojo::PendingRemote<mojom::TracingSessionClient> tracing_session_client,
+        bool privacy_filtering_enabled);
 
     TracingSession(const TracingSession&) = delete;
     TracingSession& operator=(const TracingSession&) = delete;
@@ -156,6 +156,7 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
       mojo::PendingReceiver<mojom::TracingSessionHost> tracing_session_host,
       mojo::PendingRemote<mojom::TracingSessionClient> tracing_session_client,
       const base::UnguessableToken& uuid,
+      bool privacy_filtering_enabled,
       CloneSessionCallback callback) override;
 
   // perfetto::Consumer implementation.
