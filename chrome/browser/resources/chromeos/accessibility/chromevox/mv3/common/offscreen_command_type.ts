@@ -17,8 +17,6 @@ export enum OffscreenCommandType {
   LEARN_MODE_REMOVE_LISTENERS = 'LearnModeRemoveListeners',
   LIBLOUIS_START_WORKER = 'LibLouisStartWorker',
   LIBLOUIS_RPC = 'LibLouisRPC',
-  LIBLOUIS_MESSAGE = 'LibLouisMessage',
-  LIBLOUIS_ERROR = 'LibLouisError',
   ON_CLIPBOARD_DATA_CHANGED = 'onClipboardDataChanged',
   ON_KEY_DOWN = 'onKeyDown',
   ON_KEY_UP = 'onKeyUp',

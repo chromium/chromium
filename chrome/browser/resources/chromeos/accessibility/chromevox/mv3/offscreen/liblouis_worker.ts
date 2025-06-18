@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BackgroundBridge} from '../common/background_bridge.js';
 import {OffscreenCommandType} from '../common/offscreen_command_type.js';
 
 type MessageSender = chrome.runtime.MessageSender;
@@ -56,14 +57,10 @@ export class LibLouisWorker {
   }
 
   private onInstanceMessage_(e: MessageEvent): void {
-    chrome.runtime.sendMessage(
-        undefined,
-        {command: OffscreenCommandType.LIBLOUIS_MESSAGE, data: e.data});
+    BackgroundBridge.LibLouis.message(e.data);
   }
 
   private onInstanceError_(e: ErrorEvent): void {
-    chrome.runtime.sendMessage(
-        undefined,
-        {command: OffscreenCommandType.LIBLOUIS_ERROR, message: e.message});
+    BackgroundBridge.LibLouis.error(e.message);
   }
 }

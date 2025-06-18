@@ -32,6 +32,13 @@ export const BridgeConstants = {
     },
   },
 
+  BrailleBackground: {
+    TARGET: 'BrailleBackground',
+    Action: {
+      BRAILLE_ROUTE: 'brailleRoute',
+    },
+  },
+
   ChromeVoxPrefs: {
     TARGET: 'ChromeVoxPrefs',
     Action: {
@@ -110,6 +117,14 @@ export const BridgeConstants = {
       ON_ACCESSIBILITY_GESTURE: 'onAccessibilityGesture',
       ON_BRAILLE_KEY_EVENT: 'onBrailleKeyEvent',
       READY: 'ready',
+    },
+  },
+
+  LibLouis: {
+    TARGET: 'LibLouis',
+    Action: {
+      MESSAGE: 'message',
+      ERROR: 'error',
     },
   },
 

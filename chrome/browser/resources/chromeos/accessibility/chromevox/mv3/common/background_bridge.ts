@@ -72,6 +72,15 @@ export const BackgroundBridge = {
     },
   },
 
+  BrailleBackground: {
+    brailleRoute(displayPosition: number): Promise<void> {
+      return BridgeHelper.sendMessage(
+          BridgeConstants.BrailleBackground.TARGET,
+          BridgeConstants.BrailleBackground.Action.BRAILLE_ROUTE,
+          displayPosition);
+    },
+  },
+
   ChromeVoxPrefs: {
     /**
      * Get the prefs (not including keys).
@@ -196,6 +205,20 @@ export const BackgroundBridge = {
       return BridgeHelper.sendMessage(
           BridgeConstants.ForcedActionPath.TARGET,
           BridgeConstants.ForcedActionPath.Action.ON_KEY_DOWN, event);
+    },
+  },
+
+  LibLouis: {
+    message(data: string): Promise<void> {
+      return BridgeHelper.sendMessage(
+          BridgeConstants.LibLouis.TARGET,
+          BridgeConstants.LibLouis.Action.MESSAGE, data);
+    },
+
+    error(message: string): Promise<void> {
+      return BridgeHelper.sendMessage(
+          BridgeConstants.LibLouis.TARGET,
+          BridgeConstants.LibLouis.Action.ERROR, message);
     },
   },
 
