@@ -10,6 +10,8 @@ import android.view.View;
 
 import androidx.core.widget.ImageViewCompat;
 
+import com.google.android.material.divider.MaterialDivider;
+
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -25,6 +27,7 @@ import org.chromium.ui.listmenu.ListMenuButton;
 public class ExtensionsMenuButtonCoordinator implements Destroyable {
 
     private final ListMenuButton mExtensionsMenuButton;
+    private final MaterialDivider mExtensionsMenuTabSwitcherDivider;
     private final ThemeColorProvider mThemeColorProvider;
     private final ObservableSupplier<Profile> mProfileSupplier;
 
@@ -36,10 +39,14 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
     public ExtensionsMenuButtonCoordinator(
             Context context,
             ListMenuButton extensionsMenuButton,
+            MaterialDivider extensionsMenuTabSwitcherDivider,
             ThemeColorProvider themeColorProvider,
             ObservableSupplier<Profile> profileSupplier) {
         mExtensionsMenuButton = extensionsMenuButton;
         mExtensionsMenuButton.setOnClickListener(this::onClick);
+
+        mExtensionsMenuTabSwitcherDivider = extensionsMenuTabSwitcherDivider;
+
         mProfileSupplier = profileSupplier;
 
         mThemeColorProvider = themeColorProvider;
@@ -66,6 +73,7 @@ public class ExtensionsMenuButtonCoordinator implements Destroyable {
         }
 
         mExtensionsMenuButton.setVisibility(visibility);
+        mExtensionsMenuTabSwitcherDivider.setVisibility(visibility);
     }
 
     void onClick(View view) {

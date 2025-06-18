@@ -81,4 +81,8 @@ found in the LICENSE file.
 
     <!-- Extension Action Popup dimensions -->
     <dimen name="extension_action_popup_elevation" tools:ignore="UnusedResources">6dp</dimen>
+
+    <!-- Divider dimensions -->
+    <dimen name="toolbar_divider_width" tools:ignore="UnusedResources">2dp</dimen>
+    <dimen name="toolbar_divider_height" tools:ignore="UnusedResources">16dp</dimen>
 </resources>

@@ -57,7 +57,11 @@ public class ExtensionToolbarManagerImpl implements ExtensionToolbarManager {
         mExtensionsMenuButton = container.findViewById(R.id.extensions_menu_button);
         mExtensionsMenuButtonCoordinator =
                 new ExtensionsMenuButtonCoordinator(
-                        context, mExtensionsMenuButton, themeColorProvider, profileSupplier);
+                        context,
+                        mExtensionsMenuButton,
+                        container.findViewById(R.id.extensions_divider),
+                        themeColorProvider,
+                        profileSupplier);
     }
 
     @Override
