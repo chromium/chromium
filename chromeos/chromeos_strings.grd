@@ -258,6 +258,9 @@
       <message name="IDS_QUICK_ANSWERS_USER_CONSENT_TITLE_UNIT_CONVERSION_INTENT" desc="Title text of the dialog that opens up to seek user-consent for the Quick Answers feature when the supported intent is generated from the query.">
         Convert "<ph name="query">$1<ex>1kg</ex></ph>"
       </message>
+      <message name="IDS_QUICK_ANSWERS_MAGIC_BOOST_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEXT" desc="A11y description text for the Quick Answers Magic Boost user notice view.">
+        Right-click or press and hold to get definitions, translations, or unit conversions. Use Left or Right arrow keys to manage this feature.
+      </message>
       <message name="IDS_QUICK_ANSWERS_MAGIC_BOOST_USER_CONSENT_DEFINITION_INTENT_LABEL_BUTTON" desc="Button label for Dictionary intent in the magic boost user consent view which leads to the magic boost disclaimer UI when clicked upon.">
         Define "<ph name="query">$1<ex>unfathomable</ex></ph>"
       </message>

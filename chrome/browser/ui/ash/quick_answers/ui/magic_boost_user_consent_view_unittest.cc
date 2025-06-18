@@ -161,4 +161,18 @@ TEST_F(MagicBoostUserConsentViewTest, OpenSettings) {
   GetEventGenerator()->ClickLeftButton();
 }
 
+TEST_F(MagicBoostUserConsentViewTest, A11yNameAndDescription) {
+  MagicBoostUserConsentView magic_boost_user_consent_view(
+      IntentType::kUnit,
+      /*intent_text=*/u"XYZ",
+      GetUiController()->GetReadWriteCardsUiController());
+
+  EXPECT_EQ(u"Convert \"XYZ\"",
+            magic_boost_user_consent_view.GetAccessibleName());
+  EXPECT_EQ(
+      u"Right-click or press and hold to get definitions, translations, or "
+      u"unit conversions. Use Left or Right arrow keys to manage this feature.",
+      magic_boost_user_consent_view.GetAccessibleDescription());
+}
+
 }  // namespace quick_answers

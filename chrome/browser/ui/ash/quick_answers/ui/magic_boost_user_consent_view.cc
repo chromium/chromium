@@ -67,10 +67,6 @@ constexpr int kButtonCornerRadius = 8;
 constexpr int kSettingsButtonSizeDip = 14;
 constexpr int kSettingsButtonBorderDip = 3;
 
-// TODO: crbug.com/414391121 - Updates the accessibility name and description.
-constexpr char kConsentViewAccessibilityName[] = "Magic Boost";
-constexpr char kConsentViewAccessibilityDescription[] = "Magic Boost";
-
 // Icon.
 constexpr gfx::Insets kIntentIconInsets = gfx::Insets(8);
 
@@ -179,8 +175,9 @@ MagicBoostUserConsentView::MagicBoostUserConsentView(
           .Build());
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
-  GetViewAccessibility().SetDescription(kConsentViewAccessibilityName);
-  GetViewAccessibility().SetName(kConsentViewAccessibilityDescription);
+  GetViewAccessibility().SetName(GetChipLabel(intent_type, intent_text));
+  GetViewAccessibility().SetDescription(l10n_util::GetStringUTF16(
+      IDS_QUICK_ANSWERS_MAGIC_BOOST_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEXT));
 
   // Focus should cycle to each of the buttons the view contains and back to it.
   SetFocusBehavior(FocusBehavior::ALWAYS);
