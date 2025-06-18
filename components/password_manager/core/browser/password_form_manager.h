@@ -116,6 +116,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       const base::LRUCache<PossibleUsernameFieldIdentifier,
                            PossibleUsernameData>& possible_usernames);
 
+  // Adds a |backup_password| to the already |ProvisionallySave|'ed
+  // |parsed_submitted_form_|
+  void UpdateBackupPassword(const std::u16string& backup_password);
   // If |submitted_form| is managed by *this then saves |submitted_form| to
   // |submitted_form_| field, sets |is_submitted| = true and returns true.
   // Otherwise returns false.

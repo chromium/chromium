@@ -162,7 +162,7 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
       base::BindOnce(
           &ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled,
           weak_ptr_factory_.GetWeakPtr(), driver,
-          form.new_password_element_renderer_id));
+          form.new_password_element_renderer_id, old_password));
 
   password_manager::PasswordForm form_to_save(form);
   form_to_save.username_value = username;
@@ -177,6 +177,7 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
 void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
     autofill::FieldRendererId field_id,
+    const std::u16string& backup_password,
     const std::optional<autofill::FormData>& submitted_form) {
   if (!driver) {
     return;
@@ -198,6 +199,7 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
       base::LRUCache<password_manager::PossibleUsernameFieldIdentifier,
                      password_manager::PossibleUsernameData>(
           password_manager::kMaxSingleUsernameFieldsToStore));
+  form_manager_->UpdateBackupPassword(backup_password);
   driver->SubmitFormWithEnter(
       field_id,
       base::BindOnce(

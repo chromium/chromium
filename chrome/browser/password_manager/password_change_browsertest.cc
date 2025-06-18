@@ -453,8 +453,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   }));
   CheckThatCredentialsStored(
       /*username=*/"test", base::UTF16ToUTF8(delegate->GetGeneratedPassword()),
-      /*backup_password*/ std::nullopt,
-      password_manager::PasswordForm::Type::kChangeSubmission);
+      "pa$$word", password_manager::PasswordForm::Type::kChangeSubmission);
 
   delegate->Stop();
   EXPECT_TRUE(base::test::RunUntil([&delegate]() {
@@ -526,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
   CheckThatCredentialsStored(
       base::UTF16ToUTF8(form.username_value),
       base::UTF16ToUTF8(delegate->GetGeneratedPassword()),
-      /*backup_password*/ std::nullopt,
+      base::UTF16ToUTF8(form.password_value),
       password_manager::PasswordForm::Type::kChangeSubmission);
 }
 

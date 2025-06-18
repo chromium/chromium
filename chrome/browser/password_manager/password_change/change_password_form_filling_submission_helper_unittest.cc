@@ -4,7 +4,11 @@
 
 #include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
 
+#include <string>
+
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -104,22 +108,31 @@ class MockStubPasswordManagerDriver
               (override));
 };
 
-autofill::FormData CreateTestPasswordFormData() {
+autofill::FormData CreateTestPasswordFormData(const std::string& old_password,
+                                              const std::string& new_password) {
   std::vector<autofill::FormFieldData> fields;
   fields.push_back(CreateTestFormField(
       /*label=*/"Password:", /*name=*/"password",
-      /*value=*/"", autofill::FormControlType::kInputPassword));
+      /*value=*/old_password, autofill::FormControlType::kInputPassword));
   fields.back().set_renderer_id(
       autofill::FieldRendererId(password_renderer_id));
   fields.push_back(CreateTestFormField(
       /*label=*/"New Password:", /*name=*/"new-password",
-      /*value=*/"", autofill::FormControlType::kInputPassword));
+      /*value=*/new_password, autofill::FormControlType::kInputPassword));
   fields.back().set_renderer_id(
       autofill::FieldRendererId(new_password_renderer_id));
   autofill::FormData form;
   form.set_url(GURL(kUrlString));
   form.set_fields(std::move(fields));
   return form;
+}
+autofill::FormData CreateEmptyTestPasswordFormData() {
+  return CreateTestPasswordFormData("", "");
+}
+
+autofill::FormData CreateFilledTestPasswordFormData() {
+  return CreateTestPasswordFormData(base::UTF16ToUTF8(kOldPassword),
+                                    base::UTF16ToUTF8(kNewPassword));
 }
 
 template <bool success>
@@ -203,7 +216,7 @@ class ChangePasswordFormFillingSubmissionHelperTest
   std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager(
       const std::vector<password_manager::PasswordForm>& credentials_to_seed) {
     auto form_manager = std::make_unique<password_manager::PasswordFormManager>(
-        client(), driver().AsWeakPtr(), CreateTestPasswordFormData(),
+        client(), driver().AsWeakPtr(), CreateEmptyTestPasswordFormData(),
         &form_fetcher(),
         std::make_unique<password_manager::PasswordSaveManagerImpl>(client()),
         /*metrics_recorder=*/nullptr);
@@ -276,10 +289,11 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   auto verifier =
       CreateVerifier(form_manager.get(), completion_future.GetCallback());
   password_manager::PasswordForm presaved_generated_password_form;
+  password_manager::PasswordForm saved_generated_password_form;
 
   base::RunLoop run_loop;
   EXPECT_CALL(driver(), FillChangePasswordForm)
-      .WillOnce(RunOnceCallback<5>(CreateTestPasswordFormData()));
+      .WillOnce(RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
   // Presave generated password as backup
   EXPECT_CALL(*profile_password_store(), UpdateLogin)
       .WillOnce(testing::SaveArg<0>(&presaved_generated_password_form));
@@ -333,7 +347,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, SucceededNewCredential) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(driver(), FillChangePasswordForm)
-      .WillOnce(RunOnceCallback<5>(CreateTestPasswordFormData()));
+      .WillOnce(RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
   // Presave generated password as backup
   EXPECT_CALL(*profile_password_store(), AddLogin)
       .WillOnce(testing::SaveArg<0>(&presaved_generated_password_form));
@@ -372,6 +386,47 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, SucceededNewCredential) {
   EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
 }
 
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest, SavePassword) {
+  auto form_manager =
+      CreateFormManager(/*credentials_to_seed=*/{*existing_credential()});
+
+  base::test::TestFuture<bool> completion_future;
+  auto verifier =
+      CreateVerifier(form_manager.get(), completion_future.GetCallback());
+  password_manager::PasswordForm saved_generated_password_form;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(driver(), FillChangePasswordForm)
+      .WillOnce(RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
+  // Presave generated password.
+  EXPECT_CALL(*profile_password_store(), UpdateLogin);
+  EXPECT_CALL(driver(), SubmitFormWithEnter)
+      .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
+                      RunOnceCallback<1>(/*success=*/true)));
+  run_loop.Run();
+  // Unblock fetch after presaving the generated password.
+  static_cast<password_manager::FakeFormFetcher*>(
+      verifier->form_manager()->GetFormFetcher())
+      ->NotifyFetchCompleted();
+
+  verifier->OnPasswordFormSubmission(web_contents());
+  base::RunLoop save_run_loop;
+  EXPECT_CALL(*profile_password_store(), UpdateLogin)
+      .WillOnce(DoAll(Invoke(&save_run_loop, &base::RunLoop::Quit),
+                      testing::SaveArg<0>(&saved_generated_password_form)));
+  verifier->SavePassword(kUsername);
+
+  save_run_loop.Run();
+
+  EXPECT_EQ(saved_generated_password_form.username_value,
+            existing_credential()->username_value);
+  EXPECT_EQ(saved_generated_password_form.password_value, kNewPassword);
+  EXPECT_EQ(saved_generated_password_form.url, existing_credential()->url);
+  EXPECT_EQ(saved_generated_password_form.signon_realm,
+            existing_credential()->signon_realm);
+  EXPECT_EQ(saved_generated_password_form.GetPasswordBackup(), kOldPassword);
+}
+
 TEST_F(ChangePasswordFormFillingSubmissionHelperTest, Failed) {
   auto form_manager =
       CreateFormManager(/*credentials_to_seed=*/{*existing_credential()});
@@ -383,7 +438,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, Failed) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(driver(), FillChangePasswordForm)
-      .WillOnce(RunOnceCallback<5>(CreateTestPasswordFormData()));
+      .WillOnce(RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
   // Presave generated password as backup
   EXPECT_CALL(*profile_password_store(), UpdateLogin)
       .WillOnce(testing::SaveArg<0>(&presaved_generated_password_form));
@@ -430,7 +485,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, OnTimeout) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(driver(), FillChangePasswordForm)
-      .WillOnce(RunOnceCallback<5>(CreateTestPasswordFormData()));
+      .WillOnce(RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
   // Presave generated password as backup
   EXPECT_CALL(*profile_password_store(), UpdateLogin)
       .WillOnce(testing::SaveArg<0>(&presaved_generated_password_form));
@@ -529,7 +584,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
 
   EXPECT_CALL(driver(), SubmitFormWithEnter)
       .WillOnce(RunOnceCallback<1>(/*success=*/true));
-  std::move(callback).Run(CreateTestPasswordFormData());
+  std::move(callback).Run(CreateFilledTestPasswordFormData());
 
   base::MockCallback<
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
@@ -558,7 +613,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
 
   base::RunLoop run_loop;
   EXPECT_CALL(driver(), FillChangePasswordForm)
-      .WillOnce(RunOnceCallback<5>(CreateTestPasswordFormData()));
+      .WillOnce(RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
   EXPECT_CALL(driver(), SubmitFormWithEnter)
       .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
                       RunOnceCallback<1>(/*success=*/true)));
@@ -602,7 +657,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
 
   base::RunLoop run_loop;
   EXPECT_CALL(driver(), FillChangePasswordForm)
-      .WillOnce(RunOnceCallback<5>(CreateTestPasswordFormData()));
+      .WillOnce(RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
   EXPECT_CALL(driver(), SubmitFormWithEnter)
       .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
                       RunOnceCallback<1>(/*success=*/false)));
@@ -636,7 +691,7 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   // Expects MES to be called for searching the submit button id.
   base::RunLoop run_loop;
   EXPECT_CALL(driver(), FillChangePasswordForm)
-      .WillOnce(RunOnceCallback<5>(CreateTestPasswordFormData()));
+      .WillOnce(RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
   EXPECT_CALL(driver(), SubmitFormWithEnter)
       .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
                       RunOnceCallback<1>(/*success=*/false)));

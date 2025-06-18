@@ -1346,6 +1346,12 @@ FormParsingResult PasswordFormManager::ParseFormAndMakeLogging(
   }
   return form_parsing_result;
 }
+void PasswordFormManager::UpdateBackupPassword(
+    const std::u16string& backup_password) {
+  CHECK(parsed_submitted_form_);
+  parsed_submitted_form_->SetPasswordBackupNote(backup_password);
+  CreatePendingCredentials();
+}
 
 void PasswordFormManager::PresaveGeneratedPasswordAsBackup(
     const PasswordFormManager& form_manager,

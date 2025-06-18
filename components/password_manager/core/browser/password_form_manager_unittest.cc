@@ -2107,6 +2107,18 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordAsBackup) {
   EXPECT_EQ(expected_form.signon_realm, saved_form.signon_realm);
 }
 
+TEST_P(PasswordFormManagerTest, UpdateBackupPassword) {
+  fetcher_->NotifyFetchCompleted();
+  const std::u16string backup_password = u"backup";
+
+  form_manager_->ProvisionallySave(submitted_form_, &driver_,
+                                   possible_usernames_);
+  form_manager_->UpdateBackupPassword(backup_password);
+
+  EXPECT_EQ(form_manager_->GetPendingCredentials().GetPasswordBackup(),
+            backup_password);
+}
+
 TEST_P(PasswordFormManagerTest, RecordsExactMatch) {
   PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
   base::HistogramTester histogram_tester;

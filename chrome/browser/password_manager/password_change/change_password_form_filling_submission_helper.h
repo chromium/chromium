@@ -74,7 +74,12 @@ class ChangePasswordFormFillingSubmissionHelper {
   PasswordChangeSubmissionVerifier* submission_verifier() {
     return submission_verifier_.get();
   }
+
   ButtonClickHelper* click_helper() { return click_helper_.get(); }
+
+  password_manager::PasswordFormManager* form_manager() {
+    return form_manager_.get();
+  }
 #endif
 
  private:
@@ -88,6 +93,7 @@ class ChangePasswordFormFillingSubmissionHelper {
   void ChangePasswordFormFilled(
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
       autofill::FieldRendererId field_id,
+      const std::u16string& backup_password,
       const std::optional<autofill::FormData>& submitted_form);
 
   void OnSubmitWithEnterResult(
