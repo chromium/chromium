@@ -8,7 +8,6 @@ load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/html.star", "linkify")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
-load("//lib/xcode.star", "xcode")
 
 try_.defaults.set(
     builder_group = "tryserver.chromium.infra",
@@ -290,5 +289,4 @@ try_.builder(
     },
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
-    xcode = xcode.xcode_default,
 )
