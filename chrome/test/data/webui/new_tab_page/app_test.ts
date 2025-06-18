@@ -100,6 +100,13 @@ suite('NewTabPageAppTest', () => {
     return $$(customizeButtons, '#wallpaperSearchButton')!;
   }
 
+  function getComposeButton(): HTMLElement|null {
+    const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
+    assertTrue(!!searchboxContainer);
+    return searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
+        '#composeButton');
+  }
+
   suite('Misc', () => {
     test('logs height', () => {
       // Assert.
@@ -992,6 +999,16 @@ suite('NewTabPageAppTest', () => {
   });
 
   suite('ComposeEntryPoint', () => {
+    const DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS = {
+      detail: {
+        button: 0,
+        ctrlKey: false,
+        metaKey: false,
+        shiftKey: false,
+      },
+      bubbles: true,
+      composed: true,
+    };
     suite('compose feature disabled', () => {
       suiteSetup(() => {
         loadTimeData.overrideValues({
@@ -1002,16 +1019,10 @@ suite('NewTabPageAppTest', () => {
 
       test('compose entrypoint not shown', () => {
         // Assert entrypoint is not shown.
-        const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
-        assertTrue(!!searchboxContainer);
-        const composeButton =
-            searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
-                '#composeButton');
-        assertFalse(!!composeButton);
+        assertFalse(!!getComposeButton());
 
         // Assert shown histogram not logged.
         assertEquals(0, metrics.count('NewTabPage.ComposeEntrypoint.Shown'));
-
         // Assert compose button shown count is not incremented.
         assertEquals(
             0, handler.getCallCount('incrementComposeButtonShownCount'));
@@ -1030,12 +1041,7 @@ suite('NewTabPageAppTest', () => {
         // Assert shown histogram logged.
         assertEquals(1, metrics.count('NewTabPage.ComposeEntrypoint.Shown'));
         // Assert entrypoint is shown.
-        const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
-        assertTrue(!!searchboxContainer);
-        const composeButton =
-            searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
-                '#composeButton');
-        assertTrue(!!composeButton);
+        assertTrue(!!getComposeButton());
       });
     });
 
@@ -1054,12 +1060,7 @@ suite('NewTabPageAppTest', () => {
         assertEquals(1, metrics.count('NewTabPage.ComposeEntrypoint.Shown'));
 
         // Assert button is present.
-        const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
-        assertTrue(!!searchboxContainer);
-        const composeButton =
-            searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
-                '#composeButton');
-        assertTrue(!!composeButton);
+        assertTrue(!!getComposeButton());
 
         // Assert increment compose button shown count is called on load.
         assertEquals(
@@ -1067,27 +1068,15 @@ suite('NewTabPageAppTest', () => {
       });
       test('compose entry point emits histograms when clicked', async () => {
         // Assert compose button is present.
-        const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
-        assertTrue(!!searchboxContainer);
-        const composeButton =
-            searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
-                '#composeButton');
+        const composeButton = getComposeButton();
         assertTrue(!!composeButton);
 
         // Dispatch the 'compose-click' event directly, which cr-searchbox
         // listens for. This simulates the `cr-searchbox-compose-button`
         // child `cr-button` being clicked and its `onClick_` function being
         // called.
-        composeButton.dispatchEvent(new CustomEvent('compose-click', {
-          detail: {
-            button: 0,
-            ctrlKey: false,
-            metaKey: false,
-            shiftKey: false,
-          },
-          bubbles: true,
-          composed: true,
-        }));
+        composeButton.dispatchEvent(new CustomEvent(
+            'compose-click', DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS));
 
         await microtasksFinished();
 
@@ -1107,29 +1096,18 @@ suite('NewTabPageAppTest', () => {
             // Assert compose button is present.
             const searchboxContainer =
                 app.shadowRoot.querySelector('cr-searchbox');
-            assertTrue(!!searchboxContainer);
-            const composeButton =
-                searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
-                    '#composeButton');
+            const composeButton = getComposeButton();
             assertTrue(!!composeButton);
 
-            searchboxContainer.shadowRoot!
+            searchboxContainer!.shadowRoot!
                 .querySelector<HTMLInputElement>('#input')!.value = 'hello';
 
             // Dispatch the 'compose-click' event directly, which cr-searchbox
             // listens for. This simulates the `cr-searchbox-compose-button`
             // child `cr-button` being clicked and its `onClick_` function being
             // called.
-            composeButton.dispatchEvent(new CustomEvent('compose-click', {
-              detail: {
-                button: 0,
-                ctrlKey: false,
-                metaKey: false,
-                shiftKey: false,
-              },
-              bubbles: true,
-              composed: true,
-            }));
+            composeButton.dispatchEvent(new CustomEvent(
+                'compose-click', DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS));
 
             // Metric should be recorded with user text present.
             assertEquals(
@@ -1147,6 +1125,16 @@ suite('NewTabPageAppTest', () => {
 
   suite('Composebox', () => {
     let composeboxHandler: TestMock<ComposeboxPageHandlerRemote>;
+    const DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS = {
+      detail: {
+        button: 0,
+        ctrlKey: false,
+        metaKey: false,
+        shiftKey: false,
+      },
+      bubbles: true,
+      composed: true,
+    };
     suiteSetup(() => {
       loadTimeData.overrideValues({
         searchboxShowComposeEntrypoint: true,
@@ -1184,25 +1172,12 @@ suite('NewTabPageAppTest', () => {
               metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
 
 
-          const searchboxContainer =
-              app.shadowRoot.querySelector('cr-searchbox');
-          assertTrue(!!searchboxContainer);
-          const composeButton =
-              searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
-                  '#composeButton');
+          const composeButton = getComposeButton();
           assertTrue(!!composeButton);
 
           // Simulate entry point click.
-          composeButton.dispatchEvent(new CustomEvent('compose-click', {
-            detail: {
-              button: 0,
-              ctrlKey: false,
-              metaKey: false,
-              shiftKey: false,
-            },
-            bubbles: true,
-            composed: true,
-          }));
+          composeButton.dispatchEvent(new CustomEvent(
+              'compose-click', DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS));
           await microtasksFinished();
 
           // Assert.
@@ -1223,26 +1198,15 @@ suite('NewTabPageAppTest', () => {
 
           const searchboxContainer =
               app.shadowRoot.querySelector('cr-searchbox');
-          assertTrue(!!searchboxContainer);
-          const composeButton =
-              searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
-                  '#composeButton');
+          const composeButton = getComposeButton();
           assertTrue(!!composeButton);
 
-          searchboxContainer.shadowRoot!
+          searchboxContainer!.shadowRoot!
               .querySelector<HTMLInputElement>('#input')!.value = 'hello';
 
           // Simulate entry point click with text present.
-          composeButton.dispatchEvent(new CustomEvent('compose-click', {
-            detail: {
-              button: 0,
-              ctrlKey: false,
-              metaKey: false,
-              shiftKey: false,
-            },
-            bubbles: true,
-            composed: true,
-          }));
+          composeButton.dispatchEvent(new CustomEvent(
+              'compose-click', DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS));
 
           await microtasksFinished();
 
