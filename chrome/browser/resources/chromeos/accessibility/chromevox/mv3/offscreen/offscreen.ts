@@ -4,6 +4,7 @@
 
 import {EarconEngine} from '../background/earcon_engine.js';
 import {InternalKeyEvent} from '../common/internal_key_event.js';
+import {LearnModeBridge} from '../common/learn_mode_bridge.js';
 import {OffscreenCommandType} from '../common/offscreen_command_type.js';
 
 import {LibLouisWorker} from './liblouis_worker.js';
@@ -115,35 +116,27 @@ class OffscreenLearnModeKeyboardHandler {
   }
 
   private onKeyDown_(evt: KeyboardEvent): void {
-    const extensionId = undefined;
-    const message = {
-      command: OffscreenCommandType.LEARN_MODE_ON_KEY_DOWN,
-      internalEvent: new InternalKeyEvent(evt)
-    };
-    const options = undefined;
-    const callback = (value: any) => {
-      if (value as boolean) {
+    const internalEvt = new InternalKeyEvent(evt);
+    LearnModeBridge.onKeyDown(internalEvt).then((stopProp: boolean) => {
+      if (stopProp) {
         evt.preventDefault();
         evt.stopPropagation();
       }
-    };
-    chrome.runtime.sendMessage(extensionId, message, options, callback);
+    });
   }
 
   private onKeyUp_(evt: KeyboardEvent): void {
     evt.preventDefault();
     evt.stopPropagation();
 
-    const message = {command: OffscreenCommandType.LEARN_MODE_ON_KEY_UP};
-    chrome.runtime.sendMessage(undefined, message)
+    LearnModeBridge.onKeyUp();
   }
 
   private onKeyPress_(evt: KeyboardEvent): void {
     evt.preventDefault();
     evt.stopPropagation();
 
-    const message = {command: OffscreenCommandType.LEARN_MODE_ON_KEY_PRESS};
-    chrome.runtime.sendMessage(undefined, message)
+    LearnModeBridge.onKeyPress();
   }
 }
 

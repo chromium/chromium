@@ -13,34 +13,47 @@ import type {BrailleKeyEvent} from './braille/braille_key_types.js';
 import {BridgeConstants} from './bridge_constants.js';
 import type {InternalKeyEvent} from './internal_key_event.js'
 
-const TARGET = BridgeConstants.LearnMode.TARGET;
-const Action = BridgeConstants.LearnMode.Action;
+const LearnModeTarget = BridgeConstants.LearnMode.TARGET;
+const LearnModeAction = BridgeConstants.LearnMode.Action;
+
+const LearnModeTestTarget = BridgeConstants.LearnModeTest.TARGET;
+const LearnModeTestAction = BridgeConstants.LearnModeTest.Action;
 
 export class LearnModeBridge {
-  static clearTouchExploreOutputTime(): Promise<void> {
+  static onKeyDown(internalEvent: InternalKeyEvent): Promise<boolean> {
     return BridgeHelper.sendMessage(
-        TARGET, Action.CLEAR_TOUCH_EXPLORE_OUTPUT_TIME);
+        LearnModeTarget, LearnModeAction.ON_KEY_DOWN, internalEvent);
   }
 
-  static onAccessibilityGesture(gesture: string): Promise<void> {
+  static onKeyUp(): Promise<void> {
+    return BridgeHelper.sendMessage(LearnModeTarget, LearnModeAction.ON_KEY_UP);
+  }
+
+  static onKeyPress(): Promise<void> {
     return BridgeHelper.sendMessage(
-        TARGET, Action.ON_ACCESSIBILITY_GESTURE, gesture);
+        LearnModeTarget, LearnModeAction.ON_KEY_PRESS);
   }
 
-  static onBrailleKeyEvent(event: BrailleKeyEvent): Promise<void> {
-    return BridgeHelper.sendMessage(TARGET, Action.ON_BRAILLE_KEY_EVENT, event);
+  static clearTouchExploreOutputTimeForTest(): Promise<void> {
+    return BridgeHelper.sendMessage(
+        LearnModeTestTarget,
+        LearnModeTestAction.CLEAR_TOUCH_EXPLORE_OUTPUT_TIME);
   }
 
-  static onKeyDown(event: InternalKeyEvent): Promise<void> {
-    return BridgeHelper.sendMessage(TARGET, Action.ON_KEY_DOWN, event);
+  static onAccessibilityGestureForTest(gesture: string): Promise<void> {
+    return BridgeHelper.sendMessage(
+        LearnModeTestTarget, LearnModeTestAction.ON_ACCESSIBILITY_GESTURE,
+        gesture);
   }
 
-  static onKeyUp(event: InternalKeyEvent): Promise<void> {
-    return BridgeHelper.sendMessage(TARGET, Action.ON_KEY_UP, event);
+  static onBrailleKeyEventForTest(event: BrailleKeyEvent): Promise<void> {
+    return BridgeHelper.sendMessage(
+        LearnModeTestTarget, LearnModeTestAction.ON_BRAILLE_KEY_EVENT, event);
   }
 
-  static ready(): Promise<void> {
-    return BridgeHelper.sendMessage(TARGET, Action.READY);
+  static readyForTest(): Promise<void> {
+    return BridgeHelper.sendMessage(
+        LearnModeTestTarget, LearnModeTestAction.READY);
   }
 }
 

@@ -22,13 +22,13 @@ import {Msgs} from '../common/msgs.js';
 import {OffscreenCommandType} from '../common/offscreen_command_type.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
-type SendResponse = (value: any) => void;
-
 import Gesture = chrome.accessibilityPrivate.Gesture;
 type Tab = chrome.tabs.Tab;
 
 const TARGET = BridgeConstants.LearnMode.TARGET;
 const Action = BridgeConstants.LearnMode.Action;
+const TestTARGET = BridgeConstants.LearnModeTest.TARGET;
+const TestAction = BridgeConstants.LearnModeTest.Action;
 
 declare namespace window {
   let backgroundWindow: Window;
@@ -51,10 +51,6 @@ export class LearnMode {
       command: OffscreenCommandType.LEARN_MODE_REGISTER_LISTENERS
     };
     chrome.runtime.sendMessage(undefined, message);
-    chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: chrome.runtime.MessageSender,
-         sendResponse: (value: any) => void) =>
-            this.handleMessageFromOffscreen_(message, sendResponse));
 
     chrome.brailleDisplayPrivate.onKeyEvent.addListener(
         LearnMode.onBrailleKeyEvent);
@@ -72,60 +68,41 @@ export class LearnMode {
     // Learn mode may be created more than once. Clear the listeners to avoid
     // duplicate assignment errors.
     BridgeHelper.clearAllHandlersForTarget(TARGET);
+    BridgeHelper.clearAllHandlersForTarget(TestTARGET);
+
+    BridgeHelper.registerHandler(
+        TARGET, Action.ON_KEY_DOWN,
+        (internalEvent: InternalKeyEvent) =>
+            LearnMode.onKeyDown(internalEvent));
+    BridgeHelper.registerHandler(
+        TARGET, Action.ON_KEY_UP, () => LearnMode.onKeyUp());
+    BridgeHelper.registerHandler(
+        TARGET, Action.ON_KEY_PRESS, () => LearnMode.onKeyPress());
 
     // The following BridgeHelper handlers are only used for testing.
     BridgeHelper.registerHandler(
-        TARGET, Action.CLEAR_TOUCH_EXPLORE_OUTPUT_TIME,
+        TestTARGET, TestAction.CLEAR_TOUCH_EXPLORE_OUTPUT_TIME,
         () => MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS = 0);
     BridgeHelper.registerHandler(
-        TARGET, Action.ON_ACCESSIBILITY_GESTURE,
+        TestTARGET, TestAction.ON_ACCESSIBILITY_GESTURE,
         (gesture: Gesture) => LearnMode.onAccessibilityGesture(gesture));
     BridgeHelper.registerHandler(
-        TARGET, Action.ON_BRAILLE_KEY_EVENT,
+        TestTARGET, TestAction.ON_BRAILLE_KEY_EVENT,
         (event: chrome.brailleDisplayPrivate.KeyEvent) =>
-          LearnMode.onBrailleKeyEvent(event));
+            LearnMode.onBrailleKeyEvent(event));
     BridgeHelper.registerHandler(
-        TARGET, Action.ON_KEY_DOWN,
-        (event: InternalKeyEvent) =>
-            LearnMode.onKeyDown(event, (_stopProp: boolean) => {}));
-    BridgeHelper.registerHandler(
-        TARGET, Action.ON_KEY_UP,
-        (_event: InternalKeyEvent) => LearnMode.onKeyUp());
-    BridgeHelper.registerHandler(TARGET, Action.READY, () => readyPromise);
+        TestTARGET, TestAction.READY, () => readyPromise);
 
     readyCallback();
   }
-
-  private static handleMessageFromOffscreen_(
-      message: any|undefined, sendResponse: SendResponse): boolean {
-    switch (message.command) {
-      case OffscreenCommandType.LEARN_MODE_ON_KEY_DOWN:
-        const internalEvent = message.internalEvent as InternalKeyEvent;
-        LearnMode.onKeyDown(internalEvent, sendResponse);
-        break;
-      case OffscreenCommandType.LEARN_MODE_ON_KEY_UP:
-        LearnMode.onKeyUp();
-        break;
-      case OffscreenCommandType.LEARN_MODE_ON_KEY_PRESS:
-        LearnMode.onKeyPress();
-        break;
-    }
-
-    // Returns false as the response is not asynchronous and the callback does
-    // not need to be kept alive.
-    return false;
-  }
-
 
   /**
    * Handles keydown events by speaking the human understandable name of the
    * key.
    * @param evt Serialized key event sent from offscreen document.
-   * @param stopPropogationCallback Callback function that takes a boolean: true
-   *          to prevent propogation, false to allow propogation.
+   * @return boolean True to stop event propogation, false otherwise.
    */
-  static onKeyDown(
-      evt: InternalKeyEvent, stopPropogationCallback: SendResponse): void {
+  static onKeyDown(evt: InternalKeyEvent): boolean {
     // Process this event only once; it isn't a repeat (i.e. a user is holding a
     // key down).
     if (!evt.repeat) {
@@ -134,15 +111,13 @@ export class LearnMode {
       // Allow Ctrl+W or escape to be handled.
       if ((evt.key === 'w' && evt.ctrlKey)) {
         LearnMode.close_();
-        stopPropogationCallback(false);
-        return;
+        return false;
       }
       if (evt.key === 'Escape') {
         // Escape must be pressed twice in a row to exit.
         if (LearnMode.prevKey === 'Escape') {
           LearnMode.close_();
-          stopPropogationCallback(false);
-          return;
+          return false;
         } else {
           // Append a message about pressing escape a second time.
           LearnMode.output(Msgs.getMsg('learn_mode_escape_to_exit'));
@@ -160,7 +135,7 @@ export class LearnMode {
           });
     }
 
-    stopPropogationCallback(true);
+    return true;
   }
 
   static onKeyUp(): void {
