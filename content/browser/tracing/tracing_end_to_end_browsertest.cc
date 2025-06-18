@@ -117,7 +117,7 @@ perfetto::protos::gen::TraceConfig TraceConfigWithMetadata(
 
   auto* data_source = perfetto_config.add_data_sources();
   auto* source_config = data_source->mutable_config();
-  source_config->set_name("org.chromium.trace_metadata");
+  source_config->set_name("org.chromium.trace_metadata2");
 
   return perfetto_config;
 }
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, Metadata) {
 
   result = ttp.RunQuery(
       "SELECT int_value > 0 AS has_num_cpus "
-      "FROM metadata WHERE name = 'cr-num-cpus'");
+      "FROM metadata WHERE name = 'cr-cpu-num-cores'");
   ASSERT_TRUE(result.has_value()) << result.error();
   EXPECT_THAT(result.value(),
               ::testing::ElementsAre(std::vector<std::string>{"has_num_cpus"},

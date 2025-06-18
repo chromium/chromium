@@ -976,10 +976,8 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     base_report.total_size = serialized_trace.size();
     base_report.skip_reason = skip_reason;
 
-    std::string serialized_system_profile;
-    if (system_profile_recorder_) {
-      serialized_system_profile = system_profile_recorder_.Run();
-    }
+    std::string serialized_system_profile =
+        delegate_->RecordSerializedSystemProfileMetrics();
 
     database_task_runner_->PostTask(
         FROM_HERE,
@@ -998,11 +996,6 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
         base::BindOnce(&BackgroundTracingManagerImpl::OnFinalizeComplete,
                        weak_factory_.GetWeakPtr(), std::nullopt));
   }
-}
-
-void BackgroundTracingManagerImpl::SetSystemProfileRecorder(
-    base::RepeatingCallback<std::string()> recorder) {
-  system_profile_recorder_ = std::move(recorder);
 }
 
 void BackgroundTracingManagerImpl::AddNamedTriggerObserver(

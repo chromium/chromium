@@ -18,34 +18,43 @@
 #include "third_party/metrics_proto/trace_log.pb.h"
 
 namespace tracing {
+namespace {
 
-BackgroundTracingMetricsProvider::BackgroundTracingMetricsProvider() = default;
-BackgroundTracingMetricsProvider::~BackgroundTracingMetricsProvider() = default;
+base::RepeatingCallback<void(metrics::SystemProfileProto&)>&
+GetSystemProfileMetricsRecorder() {
+  static base::NoDestructor<
+      base::RepeatingCallback<void(metrics::SystemProfileProto&)>>
+      recorder;
+  return *recorder;
+}
 
-void BackgroundTracingMetricsProvider::Init() {
+}  // namespace
+
+base::RepeatingCallback<void(metrics::SystemProfileProto&)>
+BackgroundTracingMetricsProvider::GetSystemProfileMetricsRecorder() {
+  return tracing::GetSystemProfileMetricsRecorder();
+}
+
+BackgroundTracingMetricsProvider::BackgroundTracingMetricsProvider() {
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::CPUMetricsProvider>());
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::GPUMetricsProvider>());
-
-  content::BackgroundTracingManager::GetInstance().SetSystemProfileRecorder(
-      base::BindRepeating(
-          [](base::WeakPtr<BackgroundTracingMetricsProvider> self) {
-            if (self) {
-              return self->RecordSystemProfileMetrics();
-            }
-            return std::string();
-          },
-          weak_factory_.GetWeakPtr()));
-
-  DoInit();
+  tracing::GetSystemProfileMetricsRecorder() = base::BindRepeating(
+      [](base::WeakPtr<BackgroundTracingMetricsProvider> self,
+         metrics::SystemProfileProto& system_profile_proto) {
+        if (self) {
+          self->RecordSystemProfileMetrics(system_profile_proto);
+        }
+      },
+      weak_factory_.GetWeakPtr());
 }
 
-std::string BackgroundTracingMetricsProvider::RecordSystemProfileMetrics() {
-  metrics::SystemProfileProto system_profile_proto;
-  RecordCoreSystemProfileMetrics(&system_profile_proto);
-  // RecordCoreSystemProfileMetrics is overridden by subclasses in
-  // Chrome/WebView to provide core system profile metrics.
+BackgroundTracingMetricsProvider::~BackgroundTracingMetricsProvider() = default;
+
+void BackgroundTracingMetricsProvider::RecordSystemProfileMetrics(
+    metrics::SystemProfileProto& system_profile_proto) {
+  RecordCoreSystemProfileMetrics(system_profile_proto);
   // BackgroundTracingManager stores the returned system profile together with
   // the trace in the trace database at trace recording time.
   // ProvideIndependentMetrics() later overrides the system_profile in the log
@@ -55,9 +64,6 @@ std::string BackgroundTracingMetricsProvider::RecordSystemProfileMetrics() {
     provider->ProvideSystemProfileMetricsWithLogCreationTime(
         base::TimeTicks::Now(), &system_profile_proto);
   }
-  std::string serialized_system_profile;
-  system_profile_proto.SerializeToString(&serialized_system_profile);
-  return serialized_system_profile;
 }
 
 bool BackgroundTracingMetricsProvider::HasIndependentMetrics() {

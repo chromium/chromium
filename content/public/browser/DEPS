@@ -22,7 +22,7 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/on_device_model/public",
   "+services/resource_coordinator/public",
-  "+services/tracing/public/mojom",
+  "+services/tracing/public",
   "+services/video_capture/public/mojom",
   "+services/video_effects/public/cpp/buildflags.h",
   "+services/video_effects/public/mojom",

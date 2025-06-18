@@ -48,7 +48,7 @@ const char kValidProtoTracingConfig[] = R"pb(
       manual_trigger_name: "upload_trigger"
     }
     trace_config: {
-      data_sources: { config: { name: "org.chromium.trace_metadata" } }
+      data_sources: { config: { name: "org.chromium.trace_metadata2" } }
     }
   }
 )pb";

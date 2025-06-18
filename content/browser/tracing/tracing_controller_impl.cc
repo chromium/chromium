@@ -51,6 +51,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/network_change_notifier.h"
 #include "net/log/net_log_util.h"
+#include "services/tracing/public/cpp/perfetto/metadata_data_source.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_metadata_source.h"
@@ -59,6 +60,7 @@
 #include "services/tracing/public/mojom/constants.mojom.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/perfetto/include/perfetto/protozero/message.h"
+#include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_event.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 #include "third_party/webrtc_overrides/init_webrtc.h"
@@ -97,6 +99,10 @@ namespace content {
 
 namespace {
 
+inline constexpr char kNetConstantMetadataPrefix[] = "net-constant-";
+inline constexpr char kUserAgentKey[] = "user-agent";
+inline constexpr char kRevisionMetadataKey[] = "revision";
+
 TracingControllerImpl* g_tracing_controller = nullptr;
 
 std::string GetNetworkTypeString() {
@@ -122,25 +128,6 @@ std::string GetNetworkTypeString() {
       break;
   }
   return "Unknown";
-}
-
-std::string GetClockString() {
-  switch (base::TimeTicks::GetClock()) {
-    case base::TimeTicks::Clock::FUCHSIA_ZX_CLOCK_MONOTONIC:
-      return "FUCHSIA_ZX_CLOCK_MONOTONIC";
-    case base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC:
-      return "LINUX_CLOCK_MONOTONIC";
-    case base::TimeTicks::Clock::IOS_CF_ABSOLUTE_TIME_MINUS_KERN_BOOTTIME:
-      return "IOS_CF_ABSOLUTE_TIME_MINUS_KERN_BOOTTIME";
-    case base::TimeTicks::Clock::MAC_MACH_ABSOLUTE_TIME:
-      return "MAC_MACH_ABSOLUTE_TIME";
-    case base::TimeTicks::Clock::WIN_QPC:
-      return "WIN_QPC";
-    case base::TimeTicks::Clock::WIN_ROLLOVER_PROTECTED_TIME_GET_TIME:
-      return "WIN_ROLLOVER_PROTECTED_TIME_GET_TIME";
-  }
-
-  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -219,6 +206,13 @@ void TracingControllerImpl::InitializeDataSources() {
   tracing::TracedProcessImpl::GetInstance()->SetTaskRunner(
       base::SequencedTaskRunner::GetCurrentDefault());
 
+  // Metadata only needs to be installed in the browser process.
+  tracing::MetadataDataSource::Register(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      {tracing_delegate()->CreateSystemProfileMetadataRecorder(),
+       base::BindRepeating(&TracingControllerImpl::RecorderMetadataToBundle)},
+      {base::BindRepeating(&TracingControllerImpl::GenerateMetadataPacket)});
+
 #if BUILDFLAG(IS_CHROMEOS)
   RegisterCrOSTracingDataSource();
 #elif defined(CAST_TRACING_AGENT)
@@ -233,8 +227,8 @@ void TracingControllerImpl::InitializeDataSources() {
   metadata_source->AddGeneratorFunction(base::BindRepeating(
       &TracingControllerImpl::GenerateMetadataPacketFieldTrials,
       base::Unretained(this)));
-  metadata_source->AddGeneratorFunction(base::BindRepeating(
-      &TracingControllerImpl::GenerateMetadataPacket, base::Unretained(this)));
+  metadata_source->AddGeneratorFunction(
+      base::BindRepeating(&TracingControllerImpl::GenerateMetadataPacket));
 }
 
 void TracingControllerImpl::GenerateMetadataPacketFieldTrials(
@@ -259,6 +253,20 @@ void TracingControllerImpl::ConnectToServiceIfNeeded() {
     GetTracingService().BindConsumerHost(
         consumer_host_.BindNewPipeAndPassReceiver());
     consumer_host_.reset_on_disconnect();
+  }
+}
+
+void TracingControllerImpl::RecorderMetadataToBundle(
+    perfetto::protos::pbzero::ChromeEventBundle* bundle) {
+  tracing::MetadataDataSource::AddMetadataToBundle(
+      kRevisionMetadataKey, version_info::GetLastChange(), bundle);
+  tracing::MetadataDataSource::AddMetadataToBundle(
+      kUserAgentKey, GetContentClient()->browser()->GetUserAgent(), bundle);
+  for (auto constant :
+       net::GetNetConstants(net::NetConstantsRequestMode::kTracing)) {
+    tracing::MetadataDataSource::AddMetadataToBundle(
+        base::StrCat({kNetConstantMetadataPrefix, constant.first}),
+        constant.second, bundle);
   }
 }
 
@@ -374,7 +382,8 @@ std::optional<base::Value::Dict> TracingControllerImpl::GenerateMetadataDict() {
 #endif
   metadata_dict.Set("gpu-features", GetFeatureStatus());
 
-  metadata_dict.Set("clock-domain", GetClockString());
+  metadata_dict.Set("clock-domain",
+                    tracing::GetClockString(base::TimeTicks::GetClock()));
   metadata_dict.Set("highres-ticks", base::TimeTicks::IsHighResolution());
 
   base::CommandLine::StringType command_line =
