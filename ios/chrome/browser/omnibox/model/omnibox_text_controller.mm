@@ -353,9 +353,7 @@ const char kOmniboxFocusResultedInNavigation[] =
     if (_inLensOverlay) {
       if (textField.userText.length) {
         _omniboxEditModel->SetUserText(textField.userText.cr_UTF16String);
-        _omniboxEditModel->StartAutocomplete(
-            /*has_selected_text=*/false,
-            /*prevent_inline_autocomplete=*/true);
+        [self startAutocompletePreventingInline:YES];
       } else if (OmniboxClient* client = self.client;
                  client &&
                  client->GetPageClassification(/*is_prefetch=*/false) ==
@@ -690,10 +688,29 @@ const char kOmniboxFocusResultedInNavigation[] =
   NSRange currentSelection = [self currentSelection];
   BOOL preventInlineAutocomplete =
       IMEComposing || NSMaxRange(currentSelection) != [textField.text length];
-  _omniboxEditModel->StartAutocomplete(currentSelection.length != 0,
-                                       preventInlineAutocomplete);
+  [self startAutocompletePreventingInline:preventInlineAutocomplete];
 
   [self updatePopupLayoutDirection];
+}
+
+/// Starts autocomplete with the state in `_omniboxTextModel` and the textfield
+/// selection bounds.
+- (void)startAutocompletePreventingInline:(BOOL)preventInlineAutocomplete {
+  const std::u16string inputText = _omniboxTextModel->user_text;
+
+  size_t start, cursorPosition;
+  [self getSelectionBounds:&start end:&cursorPosition];
+  BOOL hasSelectedText = start != cursorPosition;
+
+  preventInlineAutocomplete =
+      preventInlineAutocomplete || _omniboxTextModel->just_deleted_text ||
+      (hasSelectedText && _omniboxTextModel->inline_autocompletion.empty()) ||
+      _omniboxTextModel->paste_state != OmniboxPasteState::kNone;
+
+  [_omniboxAutocompleteController
+      startAutocompleteWithText:inputText
+                 cursorPosition:cursorPosition
+      preventInlineAutocomplete:preventInlineAutocomplete];
 }
 
 /// Sets the window text and the caret position. `notifyTextChanged` is true if
@@ -770,8 +787,7 @@ const char kOmniboxFocusResultedInNavigation[] =
         /*user_clobbered_permanent_text=*/true);
   } else {
     // Otherwise run the normal prefix (as-you-type) autocomplete.
-    _omniboxEditModel->StartAutocomplete(/* has_selected_text*/ false,
-                                         /*prevent_inline_autocomplete*/ true);
+    [self startAutocompletePreventingInline:YES];
   }
 
   [self notifyClientOnUserInputInProgressChange:changeToUserInputInProgress];

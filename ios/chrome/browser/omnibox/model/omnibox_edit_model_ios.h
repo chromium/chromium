@@ -119,11 +119,6 @@ class OmniboxEditModelIOS {
   // no user input in progress).
   void Revert();
 
-  // Directs the popup to start autocomplete.  Makes use of the `view_` text and
-  // selection, so make sure to set those before calling StartAutocomplete().
-  void StartAutocomplete(bool has_selected_text,
-                         bool prevent_inline_autocomplete);
-
   // Opens given selection. Most kinds of selection invoke an action or
   // otherwise call `OpenMatch`, but some may `AcceptInput` which is not
   // guaranteed to open a match or commit the omnibox.

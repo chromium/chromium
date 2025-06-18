@@ -210,24 +210,6 @@ void OmniboxEditModelIOS::Revert() {
   controller_->client()->OnRevert();
 }
 
-void OmniboxEditModelIOS::StartAutocomplete(bool has_selected_text,
-                                            bool prevent_inline_autocomplete) {
-  const std::u16string input_text = text_model_->user_text;
-
-  size_t start, cursor_position;
-  [text_controller_ getSelectionBounds:&start end:&cursor_position];
-
-  prevent_inline_autocomplete =
-      prevent_inline_autocomplete || text_model_->just_deleted_text ||
-      (has_selected_text && text_model_->inline_autocompletion.empty()) ||
-      text_model_->paste_state != OmniboxPasteState::kNone;
-
-  [omnibox_autocomplete_controller_
-      startAutocompleteWithText:input_text
-                 cursorPosition:cursor_position
-      preventInlineAutocomplete:prevent_inline_autocomplete];
-}
-
 void OmniboxEditModelIOS::OpenSelection(OmniboxPopupSelection selection,
                                         base::TimeTicks timestamp,
                                         WindowOpenDisposition disposition) {
