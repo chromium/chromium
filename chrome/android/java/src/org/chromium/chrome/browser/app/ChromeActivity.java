@@ -2667,6 +2667,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         if (id == R.id.reader_mode_menu_id) {
             openReaderMode();
+            RecordUserAction.record("MobileMenuReaderMode");
             return true;
         }
 

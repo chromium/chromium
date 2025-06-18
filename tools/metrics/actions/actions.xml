@@ -7338,6 +7338,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.PriceInsights.BottomSheetOpened">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records the price insights bottom sheet being opened through any UI.
+  </description>
+</action>
+
 <action name="Commerce.PriceInsights.HistoryGraphInteraction">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -9475,6 +9484,15 @@ should be able to be added at any place in this file.
     User opens the same url again after closing the previous custom tab.
     Starting with M84 this is is also recorded for webapps/WebAPKs. Filter the
     platform for just CCT/TWA data.
+  </description>
+</action>
+
+<action name="CustomTabsMenuPriceInsights">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    User pressed/clicked the &quot;Price Insights&quot; item in the app menu.
   </description>
 </action>
 
@@ -24633,6 +24651,14 @@ should be able to be added at any place in this file.
   <description>User pressed 'Listen to this page' in the app menu.</description>
 </action>
 
+<action name="MobileMenuReaderMode">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <description>
+    User pressed/clicked the &quot;Show Reading Mode&quot; item in the app menu.
+  </description>
+</action>
+
 <action name="MobileMenuReadingList">
   <owner>gambard@chromium.org</owner>
   <description>User pressed 'Reading List' in the app menu.</description>
@@ -25904,6 +25930,12 @@ should be able to be added at any place in this file.
 <action name="MobileQRScannerTorchOn">
   <owner>jif@chromium.org</owner>
   <description>User switched on torch in the QR Scanner.</description>
+</action>
+
+<action name="MobileReaderModeActivated">
+  <owner>mdjones@chromium.org</owner>
+  <owner>jinsukkim@chromium.org</owner>
+  <description>Recorded when reader mode gets activated.</description>
 </action>
 
 <action name="MobileReadingListAccessibilityClose">

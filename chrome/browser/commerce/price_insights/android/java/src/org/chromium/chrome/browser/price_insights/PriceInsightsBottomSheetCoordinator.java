@@ -12,6 +12,7 @@ import android.widget.ScrollView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -127,6 +128,7 @@ public class PriceInsightsBottomSheetCoordinator {
         mBottomSheetMediator.requestShowContent();
         if (mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true)) {
             mSheetOpenTimeMs = SystemClock.elapsedRealtime();
+            RecordUserAction.record("Commerce.PriceInsights.BottomSheetOpened");
         }
     }
 

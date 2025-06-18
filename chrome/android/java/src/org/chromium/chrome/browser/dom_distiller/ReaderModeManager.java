@@ -629,6 +629,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         } else {
             navigateToReaderMode();
         }
+        RecordUserAction.record("MobileReaderModeActivated");
     }
 
     private boolean shouldUseRegularTabsForDistillation() {
