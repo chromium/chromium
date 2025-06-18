@@ -2,6 +2,7 @@ Name: firebase-encoders
 Short Name: firebase-encoders
 URL: https://firebase.google.com
 Version: 17.0.0
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

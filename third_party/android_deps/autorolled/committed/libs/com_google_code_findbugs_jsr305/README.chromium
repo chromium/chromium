@@ -2,6 +2,7 @@ Name: FindBugs-jsr305
 Short Name: jsr305
 URL: http://findbugs.sourceforge.net/
 Version: 3.0.2
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

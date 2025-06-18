@@ -2,6 +2,7 @@ Name: javax.inject
 Short Name: javax.inject
 URL: http://code.google.com/p/atinject/
 Version: 1
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

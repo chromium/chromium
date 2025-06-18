@@ -2,6 +2,7 @@ Name: TestParameterInjector for JUnit4
 Short Name: test-parameter-injector
 URL: https://github.com/google/TestParameterInjector
 Version: 1.18
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

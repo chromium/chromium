@@ -2,6 +2,7 @@ Name: J2ObjC Annotations
 Short Name: j2objc-annotations
 URL: https://github.com/google/j2objc/
 Version: 3.0.0
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

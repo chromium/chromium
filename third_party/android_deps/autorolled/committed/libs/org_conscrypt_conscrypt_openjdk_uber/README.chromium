@@ -2,6 +2,7 @@ Name: org.conscrypt:conscrypt-openjdk-uber
 Short Name: conscrypt-openjdk-uber
 URL: https://conscrypt.org/
 Version: 2.5.2
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

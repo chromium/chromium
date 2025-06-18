@@ -2,6 +2,7 @@ Name: core-common
 Short Name: core-common
 URL: https://developers.google.com/android/guides/setup
 Version: 2.0.3
+Update Mechanism: Autoroll
 License: Android Software Development Kit License
 License File: LICENSE
 CPEPrefix: unknown

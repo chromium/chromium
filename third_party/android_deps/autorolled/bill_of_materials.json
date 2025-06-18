@@ -2,7 +2,7 @@
     {
         "name": "activity",
         "group": "androidx.activity",
-        "version": "1.12.0-alpha02"
+        "version": "1.12.0-alpha03"
     },
     {
         "name": "activity-compose",
@@ -347,7 +347,7 @@
     {
         "name": "core",
         "group": "androidx.core",
-        "version": "1.17.0-SNAPSHOT"
+        "version": "1.17.0-alpha01"
     },
     {
         "name": "core-animation",
@@ -362,7 +362,7 @@
     {
         "name": "core-ktx",
         "group": "androidx.core",
-        "version": "1.17.0-SNAPSHOT"
+        "version": "1.17.0-alpha01"
     },
     {
         "name": "core-viewtree",
@@ -382,7 +382,7 @@
     {
         "name": "credentials",
         "group": "androidx.credentials",
-        "version": "1.6.0-alpha02"
+        "version": "1.6.0-alpha03"
     },
     {
         "name": "credentials-play-services-auth",
@@ -757,12 +757,12 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-alpha02"
+        "version": "1.0.0-alpha03"
     },
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.0.0-alpha02"
+        "version": "1.0.0-alpha03"
     },
     {
         "name": "navigationevent-compose",
@@ -1287,7 +1287,7 @@
     {
         "name": "material",
         "group": "com.google.android.material",
-        "version": "1.14.0-alpha01"
+        "version": "1.14.0-alpha02"
     },
     {
         "name": "core-common",

@@ -2,6 +2,7 @@ Name: play-services-auth-base
 Short Name: play-services-auth-base
 URL: https://developers.google.com/android/guides/setup
 Version: 18.1.0
+Update Mechanism: Autoroll
 License: Android Software Development Kit License
 License File: LICENSE
 CPEPrefix: unknown

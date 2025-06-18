@@ -2,6 +2,7 @@ Name: utils
 Short Name: utils
 URL: http://robolectric.org
 Version: 4.15-beta-1
+Update Mechanism: Autoroll
 License: Apache-2.0, MIT
 License File: LICENSE
 CPEPrefix: unknown

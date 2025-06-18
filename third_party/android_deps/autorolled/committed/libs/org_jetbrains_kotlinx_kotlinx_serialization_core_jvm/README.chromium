@@ -2,6 +2,7 @@ Name: kotlinx-serialization-core
 Short Name: kotlinx-serialization-core-jvm
 URL: https://github.com/Kotlin/kotlinx.serialization
 Version: 1.7.2
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

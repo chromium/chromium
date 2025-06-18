@@ -2,6 +2,7 @@ Name: moshi
 Short Name: moshi
 URL: https://github.com/square/moshi/
 Version: 1.15.0
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

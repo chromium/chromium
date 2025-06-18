@@ -2,6 +2,7 @@ Name: play-services-tasks
 Short Name: play-services-tasks
 URL: https://developers.google.com/android/guides/setup
 Version: 18.3.0
+Update Mechanism: Autoroll
 License: Android Software Development Kit License
 License File: LICENSE
 CPEPrefix: unknown

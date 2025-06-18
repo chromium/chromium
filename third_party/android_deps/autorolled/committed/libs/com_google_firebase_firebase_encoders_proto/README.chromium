@@ -2,6 +2,7 @@ Name: firebase-encoders-proto
 Short Name: firebase-encoders-proto
 URL: https://firebase.google.com
 Version: 16.0.0
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

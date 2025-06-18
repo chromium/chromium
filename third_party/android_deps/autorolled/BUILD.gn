@@ -462,7 +462,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (!defined(material_design_target)) {
       android_aar_prebuilt("com_google_android_material_material_java") {
-        aar_path = "autorolled/cipd/libs/com_google_android_material_material/material-1.14.0-alpha01.aar"
+        aar_path = "autorolled/cipd/libs/com_google_android_material_material/material-1.14.0-alpha02.aar"
         info_path = "autorolled/committed/libs/com_google_android_material_material/com_google_android_material_material.info"
         enable_bytecode_checks = false
 

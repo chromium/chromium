@@ -2,6 +2,7 @@ Name: Checker Qual
 Short Name: checker-qual
 URL: https://checkerframework.org
 Version: 3.25.0
+Update Mechanism: Autoroll
 License: Apache-2.0, MIT, GPL-2.0-with-classpath-exception
 License File: LICENSE
 CPEPrefix: unknown

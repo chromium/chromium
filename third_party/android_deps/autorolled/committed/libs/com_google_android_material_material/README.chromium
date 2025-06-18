@@ -1,7 +1,8 @@
 Name: Material Components for Android
 Short Name: material
 URL: https://github.com/material-components/material-components-android
-Version: 1.14.0-alpha01
+Version: 1.14.0-alpha02
+Update Mechanism: Autoroll
 License: Android Software Development Kit License
 License File: LICENSE
 CPEPrefix: unknown
