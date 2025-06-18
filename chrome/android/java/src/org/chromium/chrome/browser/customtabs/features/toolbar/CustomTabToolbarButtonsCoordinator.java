@@ -22,6 +22,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TitleVisibility;
@@ -36,6 +37,8 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarB
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.top.OptionalBrowsingModeButtonController;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -45,7 +48,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.List;
 
 public class CustomTabToolbarButtonsCoordinator
-        implements MenuButtonCoordinator.VisibilityDelegate {
+        implements MenuButtonCoordinator.VisibilityDelegate,
+                OptionalBrowsingModeButtonController.Delegate {
     private final ListModelChangeProcessor<
                     PropertyListModel<PropertyModel, PropertyKey>, CustomTabToolbar, PropertyKey>
             mCustomActionButtonsMcp;
@@ -60,7 +64,8 @@ public class CustomTabToolbarButtonsCoordinator
             CustomTabMinimizeDelegate minimizeDelegate,
             @Nullable CustomTabFeatureOverridesManager featureOverridesManager,
             CustomTabToolbar.@Nullable OmniboxParams omniboxParams,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            ActivityTabProvider tabProvider) {
         var customActionButtons =
                 getCustomActionButtonsModel(
                         activity, intentDataProvider, customButtonClickCallback);
@@ -90,8 +95,8 @@ public class CustomTabToolbarButtonsCoordinator
                         // We will fill in the actual data in the mediator.
                         new MinimizeButtonData(),
                         closeButton,
-                        // TODO(crbug.com/402213312): Coordinate with MenuButtonCoordinator.
                         /* menuButtonVisible= */ true,
+                        /* optionalButtonVisible= */ false,
                         toolbarWidth,
                         omniboxEnabled,
                         titleVisible,
@@ -108,12 +113,15 @@ public class CustomTabToolbarButtonsCoordinator
         mMediator =
                 new CustomTabToolbarButtonsMediator(
                         mModel,
+                        view,
                         activity,
                         minimizeDelegate,
                         intentDataProvider,
                         featureOverridesManager,
-                        lifecycleDispatcher);
+                        lifecycleDispatcher,
+                        tabProvider);
         view.setOnNewWidthMeasuredListener(mMediator);
+        view.setOnColorSchemeChangedObserver(mMediator);
     }
 
     public void destroy() {
@@ -128,6 +136,16 @@ public class CustomTabToolbarButtonsCoordinator
     @Override
     public boolean isMenuButtonVisible() {
         return mModel.get(CustomTabToolbarButtonsProperties.MENU_BUTTON_VISIBLE);
+    }
+
+    @Override
+    public void setOptionalButtonData(@Nullable ButtonData buttonData) {
+        mMediator.setOptionalButtonData(buttonData);
+    }
+
+    @Override
+    public boolean isOptionalButtonVisible() {
+        return false;
     }
 
     /**

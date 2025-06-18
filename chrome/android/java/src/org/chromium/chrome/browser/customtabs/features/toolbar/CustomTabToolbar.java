@@ -208,6 +208,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private int mToolbarWidth;
     private FrameLayout mCustomButtonsParent;
     private ImageButton mSideSheetMaximizeButton;
+    private View mOptionalButton;
 
     /** Listener interface to be notified when the toolbar is measured with a new width. */
     public interface OnNewWidthMeasuredListener {
@@ -215,6 +216,19 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private @Nullable OnNewWidthMeasuredListener mOnNewWidthMeasuredListener;
+
+    /** Observer interface to be notified when the toolbar color scheme changes. */
+    public interface OnColorSchemeChangedObserver {
+        /**
+         * Called when the toolbar color scheme changes.
+         *
+         * @param toolbarColor The new toolbar color.
+         * @param colorScheme The {@link BrandedColorScheme}.
+         */
+        void onColorSchemeChanged(@ColorInt int toolbarColor, @BrandedColorScheme int colorScheme);
+    }
+
+    private @Nullable OnColorSchemeChangedObserver mOnColorSchemeChangedObserver;
 
     public static final class OmniboxParams {
         /** The {@link SearchActivityClient} instance used to request Omnibox. */
@@ -403,6 +417,22 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         return mCustomButtonsParent;
     }
 
+    /** Returns the optional button, inflating it first if necessary. */
+    View ensureOptionalButtonInflated() {
+        if (mOptionalButton != null) {
+            return mOptionalButton;
+        }
+
+        LayoutInflater.from(getContext()).inflate(R.layout.optional_button_layout, this, true);
+        mOptionalButton = findViewById(R.id.optional_button);
+        return mOptionalButton;
+    }
+
+    @Nullable
+    View getOptionalButton() {
+        return mOptionalButton;
+    }
+
     /**
      * Sets an {@link OnNewWidthMeasuredListener}.
      *
@@ -413,10 +443,26 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /**
-     * initialize the toolbar with menu,.
+     * Sets an {@link OnColorSchemeChangedObserver}.
+     *
+     * @param observer The {@link OnColorSchemeChangedObserver}. A null value clears the observer.
+     */
+    public void setOnColorSchemeChangedObserver(@Nullable OnColorSchemeChangedObserver observer) {
+        mOnColorSchemeChangedObserver = observer;
+    }
+
+    private void notifyColorSchemeChanged() {
+        if (mOnColorSchemeChangedObserver != null) {
+            mOnColorSchemeChangedObserver.onColorSchemeChanged(
+                    getBackground().getColor(), mBrandedColorScheme);
+        }
+    }
+
+    /**
+     * Initialize the toolbar with menu.
      *
      * @param activity The {@link Activity} that the toolbar is attached to.
-     * @param appMenuHandler Supplief of {@link AppMenuHandler}.
+     * @param appMenuHandler Supplier of {@link AppMenuHandler}.
      * @param intentDataProvider {@link BrowserServicesIntentDataProvider} for accessing CCT intent
      *     data.
      */
@@ -759,6 +805,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     protected void updateOptionalButton(ButtonData buttonData) {
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) return;
         if (!mIntentDataProvider.isOptionalButtonSupported()) return;
 
         mLocationBar.updateOptionalButton(buttonData);
@@ -1118,6 +1165,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         return (ColorDrawable) super.getBackground();
     }
 
+    public @BrandedColorScheme int getBrandedColorScheme() {
+        return mBrandedColorScheme;
+    }
+
     /**
      * For extending classes to override and carry out the changes related with the primary color
      * for the current tab changing.
@@ -1186,6 +1237,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mLocationBar.updateColors();
         setToolbarHairlineColor(background);
         notifyToolbarColorChanged(background);
+        notifyColorSchemeChanged();
     }
 
     @Override

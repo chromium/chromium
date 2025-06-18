@@ -504,6 +504,15 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
+     * Sets the delegate for the optional button.
+     *
+     * @param delegate The {@link OptionalBrowsingModeButtonController.Delegate}.
+     */
+    public void setOptionalButtonDelegate(OptionalBrowsingModeButtonController.Delegate delegate) {
+        mOptionalButtonController.setDelegate(delegate);
+    }
+
+    /**
      * Gives inheriting classes the chance to update the visibility of the forward button.
      *
      * @param canGoForward Whether or not the current tab has any history to go forward to.

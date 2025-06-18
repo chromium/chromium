@@ -7,6 +7,7 @@ found in the LICENSE file.
 
 <org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/optional_button"
     android:layout_height="match_parent"
     android:layout_width="52dp">
     <org.chromium.ui.widget.ChromeImageView

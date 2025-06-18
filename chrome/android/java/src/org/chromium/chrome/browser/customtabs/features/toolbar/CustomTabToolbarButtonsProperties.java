@@ -136,6 +136,10 @@ public class CustomTabToolbarButtonsProperties {
     public static final WritableBooleanPropertyKey MENU_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** Property key for whether the optional button is visible. */
+    public static final WritableBooleanPropertyKey OPTIONAL_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     /** Property key for the toolbar width. */
     public static final WritableIntPropertyKey TOOLBAR_WIDTH = new WritableIntPropertyKey();
 
@@ -155,6 +159,7 @@ public class CustomTabToolbarButtonsProperties {
             MinimizeButtonData minimizeButtonData,
             CloseButtonData closeButton,
             boolean menuButtonVisible,
+            boolean optionalButtonVisible,
             @Px int toolbarWidth,
             boolean omniboxEnabled,
             boolean titleVisible,
@@ -166,6 +171,7 @@ public class CustomTabToolbarButtonsProperties {
                         MINIMIZE_BUTTON,
                         CLOSE_BUTTON,
                         MENU_BUTTON_VISIBLE,
+                        OPTIONAL_BUTTON_VISIBLE,
                         TOOLBAR_WIDTH,
                         OMNIBOX_ENABLED,
                         TITLE_VISIBLE,
@@ -176,6 +182,7 @@ public class CustomTabToolbarButtonsProperties {
                 .with(MINIMIZE_BUTTON, minimizeButtonData)
                 .with(CLOSE_BUTTON, closeButton)
                 .with(MENU_BUTTON_VISIBLE, menuButtonVisible)
+                .with(OPTIONAL_BUTTON_VISIBLE, optionalButtonVisible)
                 .with(TOOLBAR_WIDTH, toolbarWidth)
                 .with(OMNIBOX_ENABLED, omniboxEnabled)
                 .with(TITLE_VISIBLE, titleVisible)
