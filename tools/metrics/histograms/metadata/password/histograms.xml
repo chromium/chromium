@@ -3676,16 +3676,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PostPasswordsMigrationSheet.Outcome"
-    enum="PostPasswordMigrationSheetOutcome" expires_after="2025-06-29">
-  <owner>izuzic@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    This histogram logs how the post password migration sheet was closed.
-    Android only.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.PotentialBestMatchFormType"
     enum="PasswordManagerMatchedFormType" expires_after="2025-10-26">
   <owner>sygiet@google.com</owner>

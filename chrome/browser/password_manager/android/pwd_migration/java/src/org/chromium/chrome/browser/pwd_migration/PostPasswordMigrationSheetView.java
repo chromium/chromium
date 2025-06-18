@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
-import static org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.logPostPasswordMigrationOutcome;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -24,7 +22,6 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
-import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PostPasswordMigrationSheetOutcome;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -42,8 +39,6 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
     private @MonotonicNonNull Callback<Integer> mDismissHandler;
     private final RelativeLayout mContentView;
 
-    private boolean mAcknowledged;
-
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
                 @Override
@@ -51,11 +46,6 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
                     assert mDismissHandler != null;
                     mDismissHandler.onResult(reason);
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
-
-                    logPostPasswordMigrationOutcome(
-                            mAcknowledged
-                                    ? PostPasswordMigrationSheetOutcome.GOT_IT
-                                    : PostPasswordMigrationSheetOutcome.DISMISS);
                 }
 
                 @Override
@@ -97,7 +87,6 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
         acknowledgeButton.setOnClickListener(
                 (unusedView) -> {
                     setVisible(false);
-                    mAcknowledged = true;
                 });
     }
 
