@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
@@ -124,6 +125,57 @@ void InitializeNewDatabase(sql::Database* db,
                   " key BLOB NOT NULL,"
                   " value BLOB NOT NULL,"
                   " UNIQUE (object_store_id, key))"));
+
+  // This table store blob metadata and its actual bytes. A blob should only
+  // appear once, regardless of how many records point to it. The columns in
+  // this table should be effectively const, as SQLite blob handles will be used
+  // to stream out of the table, and the associated row must never change while
+  // blob handles are active. Blobs will be removed from this table when no
+  // references remain (see `blob_references`).
+  //
+  // TODO(crbug.com/419208485): consider taking into account the blob's UUID to
+  // further avoid duplication.
+  TRANSIENT_CHECK(db->Execute(
+      "CREATE TABLE blobs "
+      // This row id will be used as the IndexedDBExternalObject::blob_number_.
+      "(row_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+      // Corresponds to `IndexedDBExternalObject::ObjectType`.
+      " object_type INTEGER NOT NULL,"
+      " mime_type TEXT NOT NULL,"
+      " size_bytes INTEGER NOT NULL,"
+      // This can be null if the blob is stored on disk, which will be the
+      // case for legacy blobs.
+      " bytes BLOB,"
+      " file_name BLOB,"         // only for files
+      " last_modified INTEGER)"  // only for files
+      ));
+
+  // Blobs may be referenced by rows in `records` or by active connections to
+  // clients.
+  TRANSIENT_CHECK(
+      db->Execute("CREATE TABLE blob_references "
+                  "(row_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                  " blob_row_id INTEGER NOT NULL,"
+                  // record_row_id will be null when the reference corresponds
+                  // to an active blob reference (represented in the browser by
+                  // ActiveBlobStreamer). Otherwise it will be the id of the
+                  // record row that holds the reference.
+                  " record_row_id INTEGER)"));
+
+  TRANSIENT_CHECK(db->Execute(
+      "CREATE TRIGGER delete_blob_references AFTER DELETE ON records "
+      "BEGIN"
+      "  DELETE FROM blob_references WHERE record_row_id = old.row_id; "
+      "END"));
+  // TODO(crbug.com/419208485): enable recursive triggers.
+  TRANSIENT_CHECK(db->Execute(
+      "CREATE TRIGGER delete_unreferenced_blobs"
+      "  AFTER DELETE ON blob_references "
+      "WHEN NOT EXISTS "
+      "  (SELECT 1 FROM blob_references WHERE blob_row_id = old.blob_row_id) "
+      "BEGIN"
+      "  DELETE FROM blobs WHERE row_id = old.blob_row_id; "
+      "END"));
 
   // Insert the initial metadata entry.
   sql::Statement statement(
@@ -286,7 +338,8 @@ CreateObjectStoreRecordIterator(sql::Database* db,
 // static
 StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
     const std::u16string& name,
-    const base::FilePath& file_path) {
+    const base::FilePath& file_path,
+    BackingStoreImpl& backing_store) {
   // TODO(crbug.com/40253999): Create new tag(s) for metrics.
   constexpr sql::Database::Tag kSqlTag = "Test";
   auto db = std::make_unique<sql::Database>(
@@ -319,17 +372,29 @@ StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
   // Database corruption can cause a mismatch.
   TRANSIENT_CHECK(metadata.name == name);
 
-  return base::WrapUnique(new DatabaseConnection(
-      std::move(db), std::move(meta_table), std::move(metadata)));
+  return base::WrapUnique(
+      new DatabaseConnection(std::move(db), std::move(meta_table),
+                             std::move(metadata), backing_store));
 }
 
 DatabaseConnection::DatabaseConnection(
     std::unique_ptr<sql::Database> db,
     std::unique_ptr<sql::MetaTable> meta_table,
-    blink::IndexedDBDatabaseMetadata metadata)
+    blink::IndexedDBDatabaseMetadata metadata,
+    BackingStoreImpl& backing_store)
     : db_(std::move(db)),
       meta_table_(std::move(meta_table)),
-      metadata_(std::move(metadata)) {}
+      metadata_(std::move(metadata)),
+      backing_store_(backing_store) {
+  // There should be no active blobs in this database at this point, so we can
+  // remove blob references that were associated with active blobs. These may
+  // have been left behind if Chromium crashed. Deleting the blob references
+  // should also delete the blob if appropriate.
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      "DELETE FROM blob_references WHERE record_row_id IS NULL"));
+  TRANSIENT_CHECK(statement.Run());
+}
 
 DatabaseConnection::~DatabaseConnection() = default;
 
@@ -371,9 +436,59 @@ Status DatabaseConnection::CommitTransactionPhaseOne(
     base::PassKey<BackingStoreTransactionImpl>,
     const BackingStoreTransactionImpl& transaction,
     BlobWriteCallback callback) {
-  return std::move(callback).Run(
-      BlobWriteResult::kRunPhaseTwoAndReturnResult,
-      storage::mojom::WriteBlobToFileResult::kSuccess);
+  if (transaction.mode() == blink::mojom::IDBTransactionMode::ReadOnly ||
+      blobs_to_write_.empty()) {
+    return std::move(callback).Run(
+        BlobWriteResult::kRunPhaseTwoAndReturnResult,
+        storage::mojom::WriteBlobToFileResult::kSuccess);
+  }
+
+  CHECK(blob_write_callback_.is_null());
+  CHECK(blob_writers_.empty());
+
+  blob_write_callback_ = std::move(callback);
+
+  auto blobs_to_write = std::move(blobs_to_write_);
+  for (auto& [blob_row_id, external_object] : blobs_to_write) {
+    std::optional<sql::StreamingBlobHandle> blob_for_writing =
+        db_->GetStreamingBlob("blobs", "bytes", blob_row_id,
+                              /*readonly=*/false);
+    TRANSIENT_CHECK(blob_for_writing);
+    std::unique_ptr<BlobWriter> writer = BlobWriter::WriteBlobIntoDatabase(
+        external_object, *std::move(blob_for_writing),
+        base::BindOnce(&DatabaseConnection::OnBlobWriteComplete,
+                       blob_writers_weak_factory_.GetWeakPtr(), blob_row_id));
+    if (!writer) {
+      blob_writers_.clear();
+      return std::move(blob_write_callback_)
+          .Run(BlobWriteResult::kRunPhaseTwoAndReturnResult,
+               storage::mojom::WriteBlobToFileResult::kError);
+    }
+
+    blob_writers_[blob_row_id] = std::move(writer);
+  }
+
+  return Status::OK();
+}
+
+void DatabaseConnection::OnBlobWriteComplete(int64_t blob_row_id,
+                                             bool success) {
+  CHECK_EQ(blob_writers_.erase(blob_row_id), 1U);
+
+  if (!success) {
+    blob_writers_weak_factory_.InvalidateWeakPtrs();
+    blob_writers_.clear();
+    std::move(blob_write_callback_)
+        .Run(BlobWriteResult::kRunPhaseTwoAsync,
+             storage::mojom::WriteBlobToFileResult::kError);
+    return;
+  }
+
+  if (blob_writers_.empty()) {
+    std::move(blob_write_callback_)
+        .Run(BlobWriteResult::kRunPhaseTwoAsync,
+             storage::mojom::WriteBlobToFileResult::kSuccess);
+  }
 }
 
 Status DatabaseConnection::CommitTransactionPhaseTwo(
@@ -399,8 +514,15 @@ void DatabaseConnection::RollBackTransaction(
     // Nothing to do.
     return;
   }
+
+  // Abort ongoing blob writes, if any.
+  // TODO(crbug.com/419208485): Be sure to test this case.
+  blob_writers_.clear();
+  blob_write_callback_ = BlobWriteCallback();
+
   active_rw_transaction_->Rollback();
   active_rw_transaction_.reset();
+
   if (transaction.mode() == blink::mojom::IDBTransactionMode::VersionChange) {
     CHECK(metadata_snapshot_.has_value());
     metadata_ = std::move(*metadata_snapshot_);
@@ -501,19 +623,51 @@ StatusOr<IndexedDBValue> DatabaseConnection::GetValue(
     base::PassKey<BackingStoreTransactionImpl>,
     int64_t object_store_id,
     const blink::IndexedDBKey& key) {
-  sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE,
-                              "SELECT value FROM records "
-                              "WHERE object_store_id = ? AND key = ?"));
-  statement.BindInt64(0, object_store_id);
-  statement.BindBlob(1, EncodeSortableIDBKey(key));
-  if (statement.Step()) {
-    IndexedDBValue value;
-    TRANSIENT_CHECK(statement.ColumnBlobAsVector(0, &value.bits));
-    return value;
+  IndexedDBValue value;
+  int64_t record_row_id;
+
+  {
+    sql::Statement statement(
+        db_->GetCachedStatement(SQL_FROM_HERE,
+                                "SELECT row_id, value FROM records "
+                                "WHERE object_store_id = ? AND key = ?"));
+    statement.BindInt64(0, object_store_id);
+    statement.BindBlob(1, EncodeSortableIDBKey(key));
+    if (!statement.Step()) {
+      TRANSIENT_CHECK(statement.Succeeded());
+      return IndexedDBValue();
+    }
+    record_row_id = statement.ColumnInt64(0);
+    TRANSIENT_CHECK(statement.ColumnBlobAsVector(1, &value.bits));
   }
-  TRANSIENT_CHECK(statement.Succeeded());
-  return IndexedDBValue();
+
+  {
+    sql::Statement statement(db_->GetCachedStatement(
+        SQL_FROM_HERE,
+        "SELECT "
+        "  blobs.row_id, mime_type, size_bytes "
+        "FROM blobs INNER JOIN blob_references"
+        "  ON blob_references.blob_row_id = blobs.row_id "
+        "WHERE"
+        "  blob_references.record_row_id = ?"));
+    statement.BindInt64(0, record_row_id);
+    while (statement.Step()) {
+      const int64_t blob_row_id = statement.ColumnInt64(0);
+      if (auto it = blobs_to_write_.find(blob_row_id);
+          it != blobs_to_write_.end()) {
+        // If the blob is being written in this transaction, copy the external
+        // object (and later the Blob mojo endpoint) from `blobs_to_write_`.
+        value.external_objects.emplace_back(it->second);
+      } else {
+        // Otherwise, create a new `IndexedDBExternalObject` from the
+        // database.
+        value.external_objects.emplace_back(
+            statement.ColumnString16(1), statement.ColumnInt64(2), blob_row_id);
+      }
+    }
+  }
+
+  return std::move(value);
 }
 
 StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
@@ -521,15 +675,65 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
     int64_t object_store_id,
     const blink::IndexedDBKey& key,
     IndexedDBValue value) {
-  sql::Statement statement(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      "INSERT OR REPLACE INTO records "
-      "(object_store_id, key, value) VALUES (?, ?, ?)"));
-  statement.BindInt64(0, object_store_id);
-  statement.BindBlob(1, EncodeSortableIDBKey(key));
-  statement.BindBlob(2, std::move(value.bits));
-  TRANSIENT_CHECK(statement.Run());
-  return BackingStore::RecordIdentifier{db_->GetLastInsertRowId()};
+  // Insert record, including inline data.
+  {
+    sql::Statement statement(db_->GetCachedStatement(
+        SQL_FROM_HERE,
+        "INSERT OR REPLACE INTO records "
+        "(object_store_id, key, value) VALUES (?, ?, ?)"));
+    statement.BindInt64(0, object_store_id);
+    statement.BindBlob(1, EncodeSortableIDBKey(key));
+    statement.BindBlob(2, std::move(value.bits));
+    TRANSIENT_CHECK(statement.Run());
+  }
+  const int64_t record_row_id = db_->GetLastInsertRowId();
+
+  // Insert external objects into relevant tables.
+  for (auto& external_object : value.external_objects) {
+    // TODO(crbug.com/419208485): Support other types of external objects.
+    TRANSIENT_CHECK(external_object.object_type() ==
+                    IndexedDBExternalObject::ObjectType::kBlob);
+    // Reserve space in the blob table. It's not actually written yet though.
+    {
+      sql::Statement statement(
+          db_->GetCachedStatement(SQL_FROM_HERE,
+                                  "INSERT INTO blobs "
+                                  "(object_type, mime_type, size_bytes, "
+                                  "bytes, file_name, last_modified) "
+                                  "VALUES (?, ?, ?, ?, ?, ?)"));
+      statement.BindInt(0, static_cast<int>(external_object.object_type()));
+      statement.BindString16(1, external_object.type());
+      statement.BindInt64(2, external_object.size());
+      statement.BindBlobForStreaming(3, external_object.size());
+      statement.BindNull(4);
+      statement.BindNull(5);
+      TRANSIENT_CHECK(statement.Run());
+    }
+
+    const int64_t blob_row_id = db_->GetLastInsertRowId();
+    external_object.set_blob_number(blob_row_id);
+
+    // Store the reference.
+    {
+      sql::Statement statement(
+          db_->GetCachedStatement(SQL_FROM_HERE,
+                                  "INSERT INTO blob_references "
+                                  "(blob_row_id, record_row_id) "
+                                  "VALUES (?, ?)"));
+      statement.BindInt64(0, blob_row_id);
+      statement.BindInt64(1, record_row_id);
+      TRANSIENT_CHECK(statement.Run());
+    }
+
+    // TODO(crbug.com/419208485): Consider writing the blobs eagerly (but still
+    // asynchronously) so that transaction commit is expedited.
+    auto rv = blobs_to_write_.emplace(blob_row_id,
+                                      // TODO(crbug.com/419208485): this type is
+                                      // copy only at the moment.
+                                      std::move(external_object));
+    CHECK(rv.second);
+  }
+  return BackingStore::RecordIdentifier{record_row_id};
 }
 
 StatusOr<uint32_t> DatabaseConnection::GetObjectStoreKeyCount(
@@ -561,6 +765,75 @@ StatusOr<uint32_t> DatabaseConnection::GetObjectStoreKeyCount(
   }
   TRANSIENT_CHECK(statement.Step());
   return statement.ColumnInt(0);
+}
+
+std::vector<blink::mojom::IDBExternalObjectPtr>
+DatabaseConnection::CreateAllExternalObjects(
+    base::PassKey<BackingStoreTransactionImpl>,
+    const std::vector<IndexedDBExternalObject>& objects) {
+  std::vector<blink::mojom::IDBExternalObjectPtr> mojo_objects;
+  IndexedDBExternalObject::ConvertToMojo(objects, &mojo_objects);
+
+  for (size_t i = 0; i < objects.size(); ++i) {
+    const IndexedDBExternalObject& object = objects[i];
+    blink::mojom::IDBExternalObjectPtr& mojo_object = mojo_objects[i];
+    if (object.object_type() != IndexedDBExternalObject::ObjectType::kBlob) {
+      NOTIMPLEMENTED();
+      continue;
+    }
+    mojo::PendingReceiver<blink::mojom::Blob> receiver =
+        mojo_object->get_blob_or_file()->blob.InitWithNewPipeAndPassReceiver();
+    // The remote will be valid if this is a pending blob i.e. came from
+    // `blobs_to_write_`.
+    if (object.is_remote_valid()) {
+      object.Clone(std::move(receiver));
+      continue;
+    }
+
+    // Otherwise the blob is in the database already. Look up or create the
+    // object that manages the active blob.
+    auto it = active_blobs_.find(object.blob_number());
+    if (it == active_blobs_.end()) {
+      std::optional<sql::StreamingBlobHandle> blob_for_reading =
+          db_->GetStreamingBlob("blobs", "bytes", object.blob_number(),
+                                /*readonly=*/true);
+      TRANSIENT_CHECK(blob_for_reading);
+      auto streamer = std::make_unique<ActiveBlobStreamer>(
+          object, *std::move(blob_for_reading),
+          base::BindOnce(&DatabaseConnection::OnBlobBecameInactive,
+                         base::Unretained(this), object.blob_number()));
+      it = active_blobs_.insert({object.blob_number(), std::move(streamer)})
+               .first;
+
+      {
+        sql::Statement statement(db_->GetCachedStatement(
+            SQL_FROM_HERE,
+            "INSERT INTO blob_references (blob_row_id) VALUES (?)"));
+        statement.BindInt64(0, object.blob_number());
+        TRANSIENT_CHECK(statement.Run());
+      }
+    }
+    it->second->AddReceiver(std::move(receiver),
+                            backing_store_->blob_storage_context());
+  }
+  return mojo_objects;
+}
+
+void DatabaseConnection::OnBlobBecameInactive(int64_t blob_number) {
+  CHECK_EQ(active_blobs_.erase(blob_number), 1U);
+  {
+    // TODO(crbug.com/419208485): If this operation happens in the middle of a
+    // r/w txn that is not committed (Chromium crashes or txn gets rolled back),
+    // the blob will come back from the dead! `this` should run this statement
+    // after any active r/w txn.
+    sql::Statement statement(
+        db_->GetCachedStatement(SQL_FROM_HERE,
+                                "DELETE FROM blob_references "
+                                "WHERE blob_row_id = ? "
+                                "AND record_row_id IS NULL"));
+    statement.BindInt64(0, blob_number);
+    TRANSIENT_CHECK(statement.Run());
+  }
 }
 
 StatusOr<std::unique_ptr<BackingStore::Cursor>>

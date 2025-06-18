@@ -208,7 +208,8 @@ blink::mojom::IDBValuePtr BackingStoreTransactionImpl::BuildMojoValue(
     mojo_value->bits = std::move(value.bits);
   }
   if (!value.external_objects.empty()) {
-    NOTIMPLEMENTED();
+    mojo_value->external_objects =
+        db_->CreateAllExternalObjects(PassKey(), value.external_objects);
   }
   return mojo_value;
 }

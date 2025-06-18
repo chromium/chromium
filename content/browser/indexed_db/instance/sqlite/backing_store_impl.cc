@@ -15,17 +15,23 @@
 namespace content::indexed_db::sqlite {
 
 std::tuple<std::unique_ptr<BackingStore>, Status, IndexedDBDataLossInfo, bool>
-BackingStoreImpl::OpenAndVerify(base::FilePath data_path) {
+BackingStoreImpl::OpenAndVerify(
+    base::FilePath data_path,
+    storage::mojom::BlobStorageContext& blob_storage_context) {
   return {
-      std::make_unique<BackingStoreImpl>(std::move(data_path)),
+      std::make_unique<BackingStoreImpl>(std::move(data_path),
+                                         blob_storage_context),
       Status::OK(),
       IndexedDBDataLossInfo(),
       false,
   };
 }
 
-BackingStoreImpl::BackingStoreImpl(base::FilePath data_path)
-    : data_path_(std::move(data_path)) {}
+BackingStoreImpl::BackingStoreImpl(
+    base::FilePath data_path,
+    storage::mojom::BlobStorageContext& blob_storage_context)
+    : data_path_(std::move(data_path)),
+      blob_storage_context_(blob_storage_context) {}
 
 BackingStoreImpl::~BackingStoreImpl() = default;
 
@@ -75,7 +81,7 @@ BackingStoreImpl::CreateOrOpenDatabase(const std::u16string& name) {
   auto it = open_connections_.find(name);
   if (it == open_connections_.end()) {
     ASSIGN_OR_RETURN(std::unique_ptr<DatabaseConnection> db,
-                     DatabaseConnection::Open(name, data_path_));
+                     DatabaseConnection::Open(name, data_path_, *this));
     it = open_connections_.emplace(name, std::move(db)).first;
   }
   return std::make_unique<BackingStoreDatabaseImpl>(it->second->GetWeakPtr());

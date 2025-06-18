@@ -26,9 +26,11 @@ class BackingStoreImpl : public BackingStore {
                     Status,
                     IndexedDBDataLossInfo,
                     bool /* is_disk_full */>
-  OpenAndVerify(base::FilePath data_path);
+  OpenAndVerify(base::FilePath data_path,
+                storage::mojom::BlobStorageContext& blob_storage_context);
 
-  BackingStoreImpl(base::FilePath data_path);
+  BackingStoreImpl(base::FilePath data_path,
+                   storage::mojom::BlobStorageContext& blob_storage_context);
   BackingStoreImpl(const BackingStoreImpl&) = delete;
   BackingStoreImpl& operator=(const BackingStoreImpl&) = delete;
   ~BackingStoreImpl() override;
@@ -47,8 +49,20 @@ class BackingStoreImpl : public BackingStore {
   uintptr_t GetIdentifierForMemoryDump() override;
   void FlushForTesting() override;
 
+  storage::mojom::BlobStorageContext& blob_storage_context() {
+    return *blob_storage_context_;
+  }
+
  private:
   const base::FilePath data_path_;
+
+  // This BlobStorageContext is owned by the BucketContext that owns `this`.
+  // The BlobStorageContext manages handles to web blobs (both coming from and
+  // being vended to the renderer). Despite this object's name, it does not
+  // store blobs. Those that are written into IndexedDB are stored in the SQLite
+  // DB.
+  raw_ref<storage::mojom::BlobStorageContext> blob_storage_context_;
+
   std::unordered_map<std::u16string, std::unique_ptr<DatabaseConnection>>
       open_connections_;
 };
