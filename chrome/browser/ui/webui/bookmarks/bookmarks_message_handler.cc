@@ -334,27 +334,11 @@ void BookmarksMessageHandler::HandleSingleUploadClicked(
   // point.
   CHECK(CanUploadBookmarkToAccountStorage(id_string));
 
-  const bookmarks::BookmarkNode* node =
-      bookmarks::GetBookmarkNodeByID(model, id);
-
-  // If the dialog is accepted, move it to the permanent account node
-  // corresponding to the permanent local node it is saved under.
-  const bookmarks::BookmarkPermanentNode* parent_node = nullptr;
-  if (node->HasAncestor(model->other_node())) {
-    parent_node = model->account_other_node();
-  } else if (node->HasAncestor(model->bookmark_bar_node())) {
-    parent_node = model->account_bookmark_bar_node();
-  } else if (node->HasAncestor(model->mobile_node())) {
-    parent_node = model->account_mobile_node();
-  }
-  CHECK(parent_node);
-
   // Show the dialog asking the user to confirm their choice to move the
   // bookmark.
-  ShowBookmarkAccountStorageMoveDialog(
-      chrome::FindLastActiveWithProfile(profile), node, parent_node,
-      parent_node->children().size(),
-      BookmarkAccountStorageMoveDialogType::kUpload);
+  ShowBookmarkAccountStorageUploadDialog(
+      chrome::FindLastActiveWithProfile(profile),
+      bookmarks::GetBookmarkNodeByID(model, id));
 }
 
 void BookmarksMessageHandler::UpdateCanEditBookmarks() {

@@ -77,7 +77,7 @@ void RecordDialogShown(BookmarkAccountStorageMoveDialogType type,
   RecordDialogMetrics("Shown", type, is_local_node);
 }
 
-void ShowBookmarkAccountStorageMoveDialogInternal(
+void ShowDialogOnRegularProfile(
     Browser* browser,
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* target_folder,
@@ -208,23 +208,16 @@ void OpenDialogInOriginalProfileBookmarksManager(
                        ui::PAGE_TRANSITION_LINK, false),
                    /*navigation_handle_callback=*/{});
 
-  ShowBookmarkAccountStorageMoveDialogInternal(browser, node, target_folder,
-                                               index, dialog_type,
-                                               std::move(closed_callback));
+  ShowDialogOnRegularProfile(browser, node, target_folder, index, dialog_type,
+                             std::move(closed_callback));
 }
 
-}  // namespace
-
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkAccountStorageMoveDialogOkButton);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkAccountStorageMoveDialogCancelButton);
-
-void ShowBookmarkAccountStorageMoveDialog(
-    Browser* browser,
-    const bookmarks::BookmarkNode* node,
-    const bookmarks::BookmarkNode* target_folder,
-    size_t index,
-    BookmarkAccountStorageMoveDialogType dialog_type,
-    base::OnceClosure closed_callback) {
+void ShowDialog(Browser* browser,
+                const bookmarks::BookmarkNode* node,
+                const bookmarks::BookmarkNode* target_folder,
+                size_t index,
+                BookmarkAccountStorageMoveDialogType dialog_type,
+                base::OnceClosure closed_callback) {
   CHECK(browser);
   if (browser->GetProfile()->IsOffTheRecord()) {
     // If we cannot open an original profile window, just ignore the request. If
@@ -246,7 +239,41 @@ void ShowBookmarkAccountStorageMoveDialog(
     return;
   }
 
-  ShowBookmarkAccountStorageMoveDialogInternal(browser, node, target_folder,
-                                               index, dialog_type,
-                                               std::move(closed_callback));
+  ShowDialogOnRegularProfile(browser, node, target_folder, index, dialog_type,
+                             std::move(closed_callback));
+}
+
+}  // namespace
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkAccountStorageMoveDialogOkButton);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkAccountStorageMoveDialogCancelButton);
+
+void ShowBookmarkAccountStorageMoveDialog(
+    Browser* browser,
+    const bookmarks::BookmarkNode* node,
+    const bookmarks::BookmarkNode* target_folder,
+    size_t index,
+    base::OnceClosure closed_callback) {
+  ShowDialog(browser, node, target_folder, index,
+             BookmarkAccountStorageMoveDialogType::kDownloadOrUpload,
+             std::move(closed_callback));
+}
+
+void ShowBookmarkAccountStorageUploadDialog(Browser* browser,
+                                            const bookmarks::BookmarkNode* node,
+                                            base::OnceClosure closed_callback) {
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser->profile());
+  const bookmarks::BookmarkPermanentNode* target = nullptr;
+  if (node->HasAncestor(model->other_node())) {
+    target = model->account_other_node();
+  } else if (node->HasAncestor(model->bookmark_bar_node())) {
+    target = model->account_bookmark_bar_node();
+  } else if (node->HasAncestor(model->mobile_node())) {
+    target = model->account_mobile_node();
+  }
+  CHECK(target);
+  ShowDialog(browser, node, target, target->children().size(),
+             BookmarkAccountStorageMoveDialogType::kUpload,
+             std::move(closed_callback));
 }

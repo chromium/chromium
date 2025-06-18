@@ -318,8 +318,7 @@ void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
   // like to move their bookmark to a different storage.
   CHECK(browser);
   ShowBookmarkAccountStorageMoveDialog(
-      browser, node, new_parent.as_non_permanent_folder(), index,
-      BookmarkAccountStorageMoveDialogType::kDownloadOrUpload);
+      browser, node, new_parent.as_non_permanent_folder(), index);
 }
 
 void BookmarkMergedSurfaceService::LoadForTesting(

@@ -88,10 +88,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
   const bookmarks::BookmarkNode* last_target_folder_node =
       bookmark_model->AddFolder(target_folder, 1, u"Last");
   base::test::TestFuture<void> closed_waiter;
-  ShowBookmarkAccountStorageMoveDialog(
-      browser(), node, target_folder,
-      /*index=*/1, BookmarkAccountStorageMoveDialogType::kDownloadOrUpload,
-      closed_waiter.GetCallback());
+  ShowBookmarkAccountStorageMoveDialog(browser(), node, target_folder,
+                                       /*index=*/1,
+                                       closed_waiter.GetCallback());
 
   RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogOkButton));
 
@@ -142,10 +141,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
   const bookmarks::BookmarkNode* last_target_folder_node =
       bookmark_model->AddFolder(target_folder, 1, u"Last");
   base::test::TestFuture<void> closed_waiter;
-  ShowBookmarkAccountStorageMoveDialog(
-      browser(), node, target_folder,
-      /*index=*/1, BookmarkAccountStorageMoveDialogType::kDownloadOrUpload,
-      closed_waiter.GetCallback());
+  ShowBookmarkAccountStorageMoveDialog(browser(), node, target_folder,
+                                       /*index=*/1,
+                                       closed_waiter.GetCallback());
 
   RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogCancelButton));
 
@@ -330,25 +328,23 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node =
       bookmark_model->AddFolder(source_folder, 0, u"Local");
-  const bookmarks::BookmarkNode* target_folder = bookmark_model->AddFolder(
-      bookmark_model->account_bookmark_bar_node(), 0, u"Account");
+  const bookmarks::BookmarkNode* target_folder =
+      bookmark_model->account_bookmark_bar_node();
   const bookmarks::BookmarkNode* first_target_folder_node =
       bookmark_model->AddFolder(target_folder, 0, u"First");
   const bookmarks::BookmarkNode* last_target_folder_node =
       bookmark_model->AddFolder(target_folder, 1, u"Last");
   base::test::TestFuture<void> closed_waiter;
-  ShowBookmarkAccountStorageMoveDialog(
-      browser(), node, target_folder,
-      /*index=*/1, BookmarkAccountStorageMoveDialogType::kUpload,
-      closed_waiter.GetCallback());
+  ShowBookmarkAccountStorageUploadDialog(browser(), node,
+                                         closed_waiter.GetCallback());
 
   RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogOkButton));
 
   ASSERT_TRUE(closed_waiter.Wait());
   ASSERT_EQ(target_folder->children().size(), 3u);
   EXPECT_EQ(target_folder->children()[0].get(), first_target_folder_node);
-  EXPECT_EQ(target_folder->children()[1].get(), node);
-  EXPECT_EQ(target_folder->children()[2].get(), last_target_folder_node);
+  EXPECT_EQ(target_folder->children()[1].get(), last_target_folder_node);
+  EXPECT_EQ(target_folder->children()[2].get(), node);
   EXPECT_EQ(source_folder->children().size(), 0u);
 
   histogram_tester.ExpectBucketCount(
@@ -384,17 +380,15 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node =
       bookmark_model->AddFolder(source_folder, 0, u"Local");
-  const bookmarks::BookmarkNode* target_folder = bookmark_model->AddFolder(
-      bookmark_model->account_bookmark_bar_node(), 0, u"Account");
+  const bookmarks::BookmarkNode* target_folder =
+      bookmark_model->account_bookmark_bar_node();
   const bookmarks::BookmarkNode* first_target_folder_node =
       bookmark_model->AddFolder(target_folder, 0, u"First");
   const bookmarks::BookmarkNode* last_target_folder_node =
       bookmark_model->AddFolder(target_folder, 1, u"Last");
   base::test::TestFuture<void> closed_waiter;
-  ShowBookmarkAccountStorageMoveDialog(
-      browser(), node, target_folder,
-      /*index=*/1, BookmarkAccountStorageMoveDialogType::kUpload,
-      closed_waiter.GetCallback());
+  ShowBookmarkAccountStorageUploadDialog(browser(), node,
+                                         closed_waiter.GetCallback());
 
   RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogCancelButton));
 
@@ -600,14 +594,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageMoveDialogInteractiveTest,
   const bookmarks::BookmarkNode* second_local_bookmark = bookmark_model->AddURL(
       bookmark_model->bookmark_bar_node(), 1, u"Local bookmark 2",
       GURL("http://local-bookmark-2/"));
-  const bookmarks::BookmarkNode* account_folder = bookmark_model->AddFolder(
-      bookmark_model->account_bookmark_bar_node(), 0, u"Account folder");
+  const bookmarks::BookmarkNode* account_folder =
+      bookmark_model->account_bookmark_bar_node();
 
   base::test::TestFuture<void> closed_waiter;
-  ShowBookmarkAccountStorageMoveDialog(
-      browser(), local_bookmark, account_folder,
-      /*index=*/0, BookmarkAccountStorageMoveDialogType::kUpload,
-      closed_waiter.GetCallback());
+  ShowBookmarkAccountStorageUploadDialog(browser(), local_bookmark,
+                                         closed_waiter.GetCallback());
 
   RunTestSequence(PressButton(kBookmarkAccountStorageMoveDialogOkButton),
                   Do([bookmark_model, second_local_bookmark] {
@@ -694,10 +686,9 @@ IN_PROC_BROWSER_TEST_F(
   bookmarks_manager_observer.StartWatchingNewWebContents();
 
   base::test::TestFuture<void> closed_waiter;
-  ShowBookmarkAccountStorageMoveDialog(
-      otr_browser, node, target_folder,
-      /*index=*/1, BookmarkAccountStorageMoveDialogType::kDownloadOrUpload,
-      closed_waiter.GetCallback());
+  ShowBookmarkAccountStorageMoveDialog(otr_browser, node, target_folder,
+                                       /*index=*/1,
+                                       closed_waiter.GetCallback());
 
   Browser* new_browser = browser_waiter.Get();
   ASSERT_TRUE(new_browser);

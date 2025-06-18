@@ -53,9 +53,8 @@ class BookmarkAccountStorageMoveDialogPixelTest : public DialogBrowserTest {
     ASSERT_TRUE(node_) << "Must call set_node() before showing the dialog";
     ASSERT_TRUE(target_folder_)
         << "Must call set_target_folder() before showing the dialog";
-    ShowBookmarkAccountStorageMoveDialog(
-        browser(), node_, target_folder_,
-        /*index=*/0, BookmarkAccountStorageMoveDialogType::kDownloadOrUpload);
+    ShowBookmarkAccountStorageMoveDialog(browser(), node_, target_folder_,
+                                         /*index=*/0);
   }
 
  protected:
@@ -126,11 +125,8 @@ class SingleBookmarkUploadDialogPixelTest
     : public BookmarkAccountStorageMoveDialogPixelTest {
   void ShowUi(const std::string& name) override {
     ASSERT_TRUE(node_) << "Must call set_node() before showing the dialog";
-    ASSERT_TRUE(target_folder_)
-        << "Must call set_target_folder() before showing the dialog";
-    ShowBookmarkAccountStorageMoveDialog(
-        browser(), node_, target_folder_,
-        /*index=*/0, BookmarkAccountStorageMoveDialogType::kUpload);
+    ASSERT_FALSE(target_folder_);
+    ShowBookmarkAccountStorageUploadDialog(browser(), node_);
   }
 };
 
@@ -140,9 +136,6 @@ IN_PROC_BROWSER_TEST_F(SingleBookmarkUploadDialogPixelTest, InvokeUi) {
   set_node(bookmark_model->AddURL(bookmark_model->bookmark_bar_node(),
                                   /*index=*/0, u"Local Bookmark",
                                   GURL("https://local.com")));
-  set_target_folder(
-      bookmark_model->AddFolder(bookmark_model->account_bookmark_bar_node(),
-                                /*index=*/0, u"Account Folder"));
 
   ShowAndVerifyUi();
 }
