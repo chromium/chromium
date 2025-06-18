@@ -125,12 +125,12 @@ coverage_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "android_pie_coverage_instrumentation_tests",
+            "android_coverage_instrumentation_tests",
             "chromium_junit_tests_scripts",
             "gtests_once",
         ],
         mixins = [
-            "chromium_pixel_2_pie",
+            "chromium_pixel_2_q",
             "has_native_resultdb_integration",
             "isolate_profile_data",
         ],
@@ -195,7 +195,7 @@ coverage_webview_builder(
             "webview_fyi_bot_all_gtests",
         ],
         mixins = [
-            "chromium_pixel_2_pie",
+            "chromium_pixel_2_q",
             "has_native_resultdb_integration",
             "isolate_profile_data",
         ],
@@ -487,7 +487,7 @@ coverage_builder(
             "gtests_once",
         ],
         mixins = [
-            "chromium_pixel_2_pie",
+            "chromium_pixel_2_q",
             "has_native_resultdb_integration",
             "isolate_profile_data",
         ],
@@ -521,18 +521,6 @@ coverage_builder(
             ),
             "content_shell_test_apk": targets.remove(
                 reason = "Does not generate profraw data.",
-            ),
-            "gin_unittests": targets.mixin(
-                args = [
-                    # https://crbug.com/1404782
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.gin_unittests.filter",
-                ],
-            ),
-            "gl_tests_validating": targets.mixin(
-                args = [
-                    # https://crbug.com/1034007
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter",
-                ],
             ),
             "mojo_test_apk": targets.remove(
                 reason = "Does not generate profraw data.",
@@ -625,7 +613,7 @@ coverage_webview_builder(
             "webview_native_coverage_bot_gtests",
         ],
         mixins = [
-            "chromium_pixel_2_pie",
+            "chromium_pixel_2_q",
             "has_native_resultdb_integration",
             "isolate_profile_data",
         ],

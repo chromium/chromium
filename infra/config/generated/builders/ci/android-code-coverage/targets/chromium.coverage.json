@@ -23,7 +23,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "PQ3A.190801.002",
+            "device_os": "QQ1A.191205.008",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
@@ -63,7 +63,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "PQ3A.190801.002",
+            "device_os": "QQ1A.191205.008",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
@@ -98,7 +98,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "PQ3A.190801.002",
+            "device_os": "QQ1A.191205.008",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
@@ -139,7 +139,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "PQ3A.190801.002",
+            "device_os": "QQ1A.191205.008",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
@@ -174,7 +174,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "PQ3A.190801.002",
+            "device_os": "QQ1A.191205.008",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
@@ -211,7 +211,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "PQ3A.190801.002",
+            "device_os": "QQ1A.191205.008",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
@@ -245,7 +245,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "PQ3A.190801.002",
+            "device_os": "QQ1A.191205.008",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
@@ -279,7 +279,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "PQ3A.190801.002",
+            "device_os": "QQ1A.191205.008",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
@@ -314,7 +314,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "PQ3A.190801.002",
+            "device_os": "QQ1A.191205.008",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
@@ -350,7 +350,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "PQ3A.190801.002",
+            "device_os": "QQ1A.191205.008",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",
@@ -385,7 +385,7 @@
         },
         "swarming": {
           "dimensions": {
-            "device_os": "PQ3A.190801.002",
+            "device_os": "QQ1A.191205.008",
             "device_os_flavor": "google",
             "device_os_type": "userdebug",
             "device_type": "walleye",

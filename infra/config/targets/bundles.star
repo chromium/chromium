@@ -380,6 +380,17 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_coverage_instrumentation_tests",
+    targets = [
+        "android_smoke_tests",
+        "android_specific_coverage_java_tests",
+        "chrome_public_tests",
+        "vr_android_specific_chromium_tests",
+        "webview_ui_instrumentation_tests",
+    ],
+)
+
+targets.bundle(
     name = "android_cronet_clang_coverage_gtests",
     targets = [
         "cronet_clang_coverage_additional_gtests",
@@ -679,17 +690,6 @@ targets.bundle(
             ),
         ),
     },
-)
-
-targets.bundle(
-    name = "android_pie_coverage_instrumentation_tests",
-    targets = [
-        "android_smoke_tests",
-        "android_specific_coverage_java_tests",
-        "chrome_public_tests",
-        "vr_android_specific_chromium_tests",
-        "webview_ui_instrumentation_tests",
-    ],
 )
 
 targets.bundle(
@@ -1741,7 +1741,7 @@ targets.bundle(
     per_test_modifications = {
         "android_webview_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1751,7 +1751,7 @@ targets.bundle(
         ),
         "base_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1761,7 +1761,7 @@ targets.bundle(
         ),
         "build_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1771,7 +1771,7 @@ targets.bundle(
         ),
         "chrome_java_test_pagecontroller_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1781,7 +1781,7 @@ targets.bundle(
         ),
         "chrome_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1791,7 +1791,7 @@ targets.bundle(
         ),
         "components_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1801,7 +1801,7 @@ targets.bundle(
         ),
         "content_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1811,7 +1811,7 @@ targets.bundle(
         ),
         "device_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1821,7 +1821,7 @@ targets.bundle(
         ),
         "junit_unit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1831,7 +1831,7 @@ targets.bundle(
         ),
         "keyboard_accessory_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1841,7 +1841,7 @@ targets.bundle(
         ),
         "media_base_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1851,7 +1851,7 @@ targets.bundle(
         ),
         "module_installer_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1861,7 +1861,7 @@ targets.bundle(
         ),
         "net_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1871,7 +1871,7 @@ targets.bundle(
         ),
         "paint_preview_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1881,7 +1881,7 @@ targets.bundle(
         ),
         "password_check_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1891,7 +1891,7 @@ targets.bundle(
         ),
         "password_manager_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1901,7 +1901,7 @@ targets.bundle(
         ),
         "services_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1911,7 +1911,7 @@ targets.bundle(
         ),
         "touch_to_fill_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1921,7 +1921,7 @@ targets.bundle(
         ),
         "ui_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1931,7 +1931,7 @@ targets.bundle(
         ),
         "webapk_client_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1941,7 +1941,7 @@ targets.bundle(
         ),
         "webapk_shell_apk_h2o_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
@@ -1951,7 +1951,7 @@ targets.bundle(
         ),
         "webapk_shell_apk_junit_tests": targets.per_test_modification(
             remove_mixins = [
-                "chromium_pixel_2_pie",
+                "chromium_pixel_2_q",
                 "emulator-4-cores",
                 "nougat-x86-emulator",
                 "oreo-x86-emulator",
