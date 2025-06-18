@@ -42,6 +42,7 @@ class NearbyShareSessionImplTest : public testing::Test {
   // Create a NearbyShareSessionImpl for sharing |share_info|. The share will
   // not commence until an ARC window is visible.
   NearbyShareSessionImpl* MakeSession(mojom::ShareIntentInfoPtr share_info) {
+    wm_helper_ = std::make_unique<exo::WMHelper>();
     shelf_model_ = std::make_unique<ash::ShelfModel>();
     shelf_controller_ =
         std::make_unique<ChromeShelfController>(&profile_, shelf_model_.get());
@@ -61,7 +62,7 @@ class NearbyShareSessionImplTest : public testing::Test {
     exo::SetShellApplicationId(
         window_.get(), "org.chromium.arc." + base::NumberToString(kTaskId));
     window_->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
-    session_->OnWindowVisibilityChanged(window_.get(), /*visible=*/true);
+    session_->OnExoWindowCreated(window_.get());
   }
 
   Profile* profile() { return &profile_; }
@@ -70,6 +71,7 @@ class NearbyShareSessionImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 
+  std::unique_ptr<exo::WMHelper> wm_helper_;
   std::unique_ptr<ash::ShelfModel> shelf_model_;
   std::unique_ptr<ChromeShelfController> shelf_controller_;
   mojo::PendingRemote<mojom::NearbyShareSessionHost> host_remote_;

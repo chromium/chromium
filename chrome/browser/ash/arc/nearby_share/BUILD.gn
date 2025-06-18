@@ -42,6 +42,7 @@ static_library("nearby_share") {
     "//chromeos/ash/experiences/arc/intent_helper",
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/components/sharesheet:constants",
+    "//components/exo",
     "//components/keyed_service/core",
     "//content/public/browser",
     "//net",

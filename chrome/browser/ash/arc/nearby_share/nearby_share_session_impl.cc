@@ -167,7 +167,7 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
                                   weak_ptr_factory_.GetWeakPtr(), arc_window));
   } else {
     VLOG(1) << "No ARC window found for task ID: " << task_id_;
-    env_observation_.Observe(aura::Env::GetInstance());
+    exo_observation_.Observe(exo::WMHelper::GetInstance());
     window_initialization_timer_.Start(FROM_HERE, kWindowInitializationTimeout,
                                        this,
                                        &NearbyShareSessionImpl::OnTimerFired);
@@ -200,38 +200,19 @@ void NearbyShareSessionImpl::OnNearbyShareClosed(
   CleanupSession(should_cleanup_files);
 }
 
-// Overridden from aura::EnvObserver:
-void NearbyShareSessionImpl::OnWindowInitialized(aura::Window* const window) {
+void NearbyShareSessionImpl::OnExoWindowCreated(aura::Window* const window) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(window);
 
   DVLOG(1) << __func__;
   if (!IsValidArcWindow(window, task_id_)) {
     return;
   }
 
-  env_observation_.Reset();
-  arc_window_observation_.Observe(window);
-}
-
-// Overridden from aura::WindowObserver
-void NearbyShareSessionImpl::OnWindowVisibilityChanged(
-    aura::Window* const window,
-    bool visible) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  DVLOG(1) << __func__;
-  if (!IsValidArcWindow(window, task_id_) || !visible) {
-    return;
-  }
-
-  VLOG(1) << "ARC Window is visible.";
+  VLOG(1) << "ARC Window is created.";
   if (window_initialization_timer_.IsRunning()) {
     window_initialization_timer_.Stop();
   }
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&NearbyShareSessionImpl::OnArcWindowFound,
-                                weak_ptr_factory_.GetWeakPtr(), window));
+  OnArcWindowFound(window);
 }
 
 void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
@@ -527,8 +508,6 @@ void NearbyShareSessionImpl::FinishSession() {
 
   DVLOG(1) << __func__;
   // Stop timers and destroy any lingering UI surfaces or observers.
-  arc_window_observation_.Reset();
-  env_observation_.Reset();
   if (window_initialization_timer_.IsRunning()) {
     window_initialization_timer_.Stop();
   }
