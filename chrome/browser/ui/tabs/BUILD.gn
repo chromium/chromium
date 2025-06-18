@@ -92,6 +92,8 @@ if (!is_android) {
       "tab_group_theme.h",
     ]
 
+    deps = [ "//ui/views" ]
+
     public_deps = [
       ":tab_strip_model_observer",
       "//base",
@@ -124,6 +126,7 @@ if (!is_android) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window:browser_window",
       "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/tabs:tab_strip",
 
       # TODO(370883612): depends on //chrome/browser/ui/tabs instead.
       "//components/saved_tab_groups/internal:tab_group_sync_bridge",

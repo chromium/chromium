@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -313,12 +315,6 @@ bool IsDialogKeepType(DeletionDialogController::DialogType type) {
              DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup;
 }
 
-void CreateDialogFromBrowser(BrowserWindowInterface* browser,
-                             std::unique_ptr<ui::DialogModel> dialog_model) {
-  chrome::ShowBrowserModal(browser->GetBrowserForMigrationOnly(),
-                           std::move(dialog_model));
-}
-
 }  // anonymous namespace
 
 // DialogMetadata
@@ -351,14 +347,24 @@ DeletionDialogController::DialogState::~DialogState() = default;
 DeletionDialogController::DeletionDialogController(
     BrowserWindowInterface* browser)
     : profile_(browser->GetProfile()),
-      show_dialog_model_fn_(
-          base::BindRepeating(&CreateDialogFromBrowser, browser)) {}
-DeletionDialogController::DeletionDialogController(
-    Profile* profile,
-    ShowDialogModelCallback show_dialog_model_fn)
-    : profile_(profile), show_dialog_model_fn_(show_dialog_model_fn) {}
+      show_dialog_model_fn_(base::BindRepeating(
+          &DeletionDialogController::CreateDialogFromBrowser,
+          base::Unretained(this),
+          browser)),
+      tab_strip_model_(browser->GetTabStripModel()) {
+  tab_strip_model_->AddObserver(this);
+}
 
-DeletionDialogController::~DeletionDialogController() = default;
+DeletionDialogController::DeletionDialogController(
+    BrowserWindowInterface* browser,
+    ShowDialogModelCallback show_dialog_model_fn)
+    : profile_(browser->GetProfile()),
+      show_dialog_model_fn_(show_dialog_model_fn),
+      tab_strip_model_(browser->GetTabStripModel()) {}
+
+DeletionDialogController::~DeletionDialogController() {
+  tab_strip_model_->RemoveObserver(this);
+}
 
 bool DeletionDialogController::CanShowDialog() const {
   return !IsShowingDialog();
@@ -366,6 +372,13 @@ bool DeletionDialogController::CanShowDialog() const {
 
 bool DeletionDialogController::IsShowingDialog() const {
   return !!state_;
+}
+
+void DeletionDialogController::CreateDialogFromBrowser(
+    BrowserWindowInterface* browser,
+    std::unique_ptr<ui::DialogModel> dialog_model) {
+  widget_ = chrome::ShowBrowserModal(browser->GetBrowserForMigrationOnly(),
+                                     std::move(dialog_model));
 }
 
 bool DeletionDialogController::MaybeShowDialog(
@@ -394,6 +407,15 @@ bool DeletionDialogController::MaybeShowDialog(
 
   show_dialog_model_fn_.Run(std::move(dialog_model));
   return true;
+}
+
+void DeletionDialogController::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (widget_) {
+    widget_->Close();
+  }
 }
 
 void DeletionDialogController::SetPrefsPreventShowingDialogForTesting(
@@ -464,6 +486,7 @@ std::unique_ptr<ui::DialogModel> DeletionDialogController::BuildDialogModel(
           base::Unretained(this)))
       .SetDialogDestroyingCallback(base::BindOnce(
           [](DeletionDialogController* dialog_controller) {
+            dialog_controller->widget_ = nullptr;
             dialog_controller->state_.reset();
           },
           base::Unretained(this)));

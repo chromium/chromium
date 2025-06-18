@@ -10,6 +10,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ui {
 class DialogModel;
@@ -17,7 +20,6 @@ class DialogModel;
 
 class BrowserWindowInterface;
 class Profile;
-
 namespace tab_groups {
 
 typedef base::RepeatingCallback<void(std::unique_ptr<ui::DialogModel>)>
@@ -27,7 +29,7 @@ typedef base::RepeatingCallback<void(std::unique_ptr<ui::DialogModel>)>
 // for group deletions. Manages the state on a per-browser basis. Browsers can
 // only have 1 of these dialogs at a time, therefore only 1 controller. An
 // example of this showing up is on Ungroup from the tab group editor bubble.
-class DeletionDialogController {
+class DeletionDialogController : public TabStripModelObserver {
  public:
   // Mapping of the different text strings and user preferences on this dialog.
   enum class DialogType {
@@ -89,12 +91,12 @@ class DeletionDialogController {
   };
 
   explicit DeletionDialogController(BrowserWindowInterface* browser);
-  DeletionDialogController(Profile* profile,
+  DeletionDialogController(BrowserWindowInterface* browser,
                            ShowDialogModelCallback show_dialog_model);
 
   DeletionDialogController(const DeletionDialogController&) = delete;
   DeletionDialogController& operator=(const DeletionDialogController&) = delete;
-  ~DeletionDialogController();
+  ~DeletionDialogController() override;
 
   // If the BrowserWindow is currently in state where the dialog can be shown.
   bool CanShowDialog() const;
@@ -106,6 +108,9 @@ class DeletionDialogController {
   // going through views code.
   void SimulateOkButtonForTesting() { OnDialogOk(); }
 
+  void CreateDialogFromBrowser(BrowserWindowInterface* browser,
+                               std::unique_ptr<ui::DialogModel> dialog_model);
+
   // Attempt to show the dialog. The dialog will only show if it is not already
   // showing, and if the skip dialog option hasn't been set to true.
   // `dialog_metadata` contains information that is used to help construct the
@@ -114,6 +119,12 @@ class DeletionDialogController {
       const DialogMetadata& dialog_metadata,
       base::OnceCallback<void(DeletionDialogTiming)> callback,
       std::optional<base::OnceCallback<void()>> keep_groups = std::nullopt);
+
+  // TabStripModelObserver implementation:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
   void SetPrefsPreventShowingDialogForTesting(bool should_prevent_dialog);
 
@@ -137,6 +148,9 @@ class DeletionDialogController {
   // The function used to show the dialog when requested. This is injected so
   // that tests can instrument showing the dialog model.
   ShowDialogModelCallback show_dialog_model_fn_;
+
+  raw_ptr<views::Widget> widget_;
+  raw_ptr<TabStripModel> tab_strip_model_;
 };
 
 }  // namespace tab_groups
