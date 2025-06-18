@@ -36,11 +36,13 @@ iron-list.cr-separators > *:not([first]) {
 [scrollable].can-scroll:not(.scrolled-to-bottom) {
   border-bottom-color: var(--cr-scrollable-border-color);
 }
-[scrollable] iron-list > :not(.no-outline):focus,
-[selectable]:focus,
-[selectable] > :focus {
-  background-color: var(--cr-focused-item-color);
-  outline: none;
+[scrollable] iron-list > :not(.no-outline):focus-visible,
+[selectable]:focus-visible,
+[selectable] > :focus-visible {
+  outline: solid 2px var(--cr-focus-outline-color);
+  /* Selectable lists usually take the full width of their containers and
+   * have their overflows clipped, so the outlines need to inset. */
+  outline-offset: -2px;
 }
 
 .scroll-container {
