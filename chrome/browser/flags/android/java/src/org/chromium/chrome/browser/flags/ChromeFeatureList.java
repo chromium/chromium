@@ -877,7 +877,10 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sNavBarColorAnimation =
-            newCachedFlag(NAV_BAR_COLOR_ANIMATION, false);
+            newCachedFlag(
+                    NAV_BAR_COLOR_ANIMATION,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sNavBarColorMatchesTabBackground =
             newCachedFlag(NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND, true);
     public static final CachedFlag sNewTabPageAndroidTriggerForPrerender2 =

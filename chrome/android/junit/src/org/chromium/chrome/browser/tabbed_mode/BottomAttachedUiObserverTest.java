@@ -54,6 +54,8 @@ import org.chromium.ui.insets.InsetObserver;
 import java.util.Optional;
 
 @RunWith(BaseRobolectricTestRunner.class)
+// TODO(crbug.com/425761643): Re-enable after nav bar color animations finch experiment.
+@DisableFeatures(ChromeFeatureList.NAV_BAR_COLOR_ANIMATION)
 public class BottomAttachedUiObserverTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
