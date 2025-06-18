@@ -2906,19 +2906,21 @@ bool NavigationRequest::ShouldAddCookieChangeListener() {
   // The `CookieChangeListener` will only be set up if all of these are true:
   // (1) the navigation's protocol is HTTP(s).
   // (2) we allow a document with `Cache-control: no-store` header to
-  // enter BFCache.
+  // enter back/forward.
   // (3) the navigation is neither a same-document navigation nor a page
   // activation, since in these cases, an existing `RenderFrameHost` will be
   // used, and it would already have an existing listener, so we should skip the
   // initialization.
-  // (4) the navigation is a primary main frame navigation, as the cookie
-  // change information will only be used in the inactive document control
-  // logic.
+  // (4) the navigation is a primary main frame navigation or it's for
+  // prerendering a main frame, as the cookie change information will only be
+  // used to determined if a page can be restored from back/forward cache, so
+  // subframe navigation can be ignored.
   return frame_tree_node_->navigator()
              .controller()
              .GetBackForwardCache()
              .should_allow_storing_pages_with_cache_control_no_store() &&
-         !IsPageActivation() && !IsSameDocument() && IsInPrimaryMainFrame() &&
+         !IsPageActivation() && !IsSameDocument() &&
+         (IsInPrimaryMainFrame() || IsInPrerenderedMainFrame()) &&
          common_params_->url.SchemeIsHTTPOrHTTPS();
 }
 
