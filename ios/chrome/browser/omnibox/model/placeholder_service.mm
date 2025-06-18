@@ -105,12 +105,8 @@ NSString* PlaceholderService::GetCurrentSearchOnlyPlaceholderText() {
     provider_name = search_provider->short_name();
   }
 
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
-    return l10n_util::GetNSStringF(IDS_IOS_OMNIBOX_PLACEHOLDER_SEARCH_ONLY,
-                                   provider_name);
-  } else {
-    return l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
-  }
+  return l10n_util::GetNSStringF(IDS_IOS_OMNIBOX_PLACEHOLDER_SEARCH_ONLY,
+                                 provider_name);
 }
 
 base::WeakPtr<PlaceholderService> PlaceholderService::AsWeakPtr() {
