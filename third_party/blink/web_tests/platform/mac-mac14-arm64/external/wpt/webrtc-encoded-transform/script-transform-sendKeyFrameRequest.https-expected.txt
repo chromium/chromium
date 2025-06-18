@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] sendKeyFrameRequest does not reject when the receiver is negotiated inactive, and resumes succeeding when negotiated back to active
+  assert_equals: expected "success" but got "failure: InvalidStateError"
+[FAIL] sendKeyFrameRequest does not rejects when the receiver is stopped
+  assert_equals: expected "success" but got "failure: InvalidStateError"
+Harness: the test ran to completion.
+

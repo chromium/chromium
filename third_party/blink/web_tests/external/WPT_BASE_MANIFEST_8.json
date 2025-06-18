@@ -336721,7 +336721,7 @@
        []
       ],
       "background-image-computed.sub-expected.txt": [
-       "f4048d60301b0afa2fcf0458a0d6077a702ad99a",
+       "34580bc8b2e8b7479e97f5a999130c31b7be1fa7",
        []
       ],
       "background-position-computed-expected.txt": [
@@ -368558,14 +368558,6 @@
        "9d895a5e5b25c85cf04e9be3d659232b64ec2ae3",
        []
       ],
-      "letter-spacing-computed-expected.txt": [
-       "6c45f23b1c3b1904f2ea0d83a4742f26e6a49d03",
-       []
-      ],
-      "letter-spacing-valid-expected.txt": [
-       "9decd1a95edf2debf45fcb504fc7d39127a5ade7",
-       []
-      ],
       "text-align-all-valid-expected.txt": [
        "eed49d7a26f16f94b0320cd9ee431ffdf2d4fc01",
        []
@@ -373833,10 +373825,6 @@
         "07301e286d4573309d66c3ca4323f6d736c2ddb2",
         []
        ],
-       "letter-spacing-expected.txt": [
-        "5d4fa8be30384b0b2d3ca29cafa98871e8777136",
-        []
-       ],
        "list-style-type-expected.txt": [
         "a88dfe45f1e20e09391d0643e07dbf635169a996",
         []
@@ -375449,12 +375437,6 @@
       "2248d3702b0c0276dbb2dd1f1f2ae2712fa654c8",
       []
      ],
-     "animations": {
-      "calc-interpolation-expected.txt": [
-       "9bfa4f27e43e6663f54dc91992bce453f9233c8f",
-       []
-      ]
-     },
      "attr-all-types-expected.txt": [
       "668de5de5e1f881149822e1952b06a8d1761892f",
       []
@@ -375513,10 +375495,6 @@
      ],
      "calc-infinity-nan-serialize-length-expected.txt": [
       "cced79a004c0e7f1acdd55298a1221212bdfe94d",
-      []
-     ],
-     "calc-letter-spacing-expected.txt": [
-      "4446bc0ab25d5af5c1d71ad94371386bb5ceecf2",
       []
      ],
      "calc-linear-radial-conic-gradient-001-expected.txt": [
@@ -375633,10 +375611,6 @@
      ],
      "ex-calc-expression-001-ref.html": [
       "888a51ea9b6ac04fb065ee5d84a18be8fe765aca",
-      []
-     ],
-     "hypot-pow-sqrt-serialize-expected.txt": [
-      "cdc2180e17ea741cee5baad0ade5a92e6e8b004e",
       []
      ],
      "minmax-percentage-serialize-expected.txt": [
@@ -428749,7 +428723,7 @@
        []
       ],
       "redirect-helper.sub.js": [
-       "a17eaabe2430090ce0554fec480480a261ae41aa",
+       "317a155377d4823e5bf1033b484dea0d6fddb0b0",
        []
       ],
       "ruleset.py": [
@@ -710000,6 +709974,15 @@
       {}
      ]
     ],
+    "extend-selection-in-shadow-tree.html": [
+     "f908fe824a81fd8c32c53cd92ec44a94b00601b9",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "fire-selectionchange-event-on-document-if-textcontrol-element-is-in-shadow-tree.html": [
      "7f40ce716e9a720132566bdc5f2fd0543e41f1c3",
      [
@@ -718131,7 +718114,7 @@
       ]
      ],
      "navigation-timing-requestStart-responseStart.https.html": [
-      "2687b5bf2c2d0aa46a202cd0552252c2735931e4",
+      "edcd83e699764ecbd9d87430d2af0306a0945ea4",
       [
        "speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?include=afterResponse",
        {}
@@ -743894,6 +743877,13 @@
         ]
        ]
       }
+     ]
+    ],
+    "urlpattern-constructor.html": [
+     "2d83b7dc0325b43068df6dd9b7603eb0a12be8ea",
+     [
+      null,
+      {}
      ]
     ],
     "urlpattern-generate.tentative.any.js": [
@@ -802934,7 +802924,7 @@
      ]
     ],
     "script-transform-sendKeyFrameRequest.https.html": [
-     "9bc75bd7a0e0894cdecab7ffb7eb70d9bf967159",
+     "b67627dcf1128785d59784363f38fdacc378ac52",
      [
       null,
       {
