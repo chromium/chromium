@@ -37,8 +37,7 @@ public interface SafetyNetApiHandler {
     interface Observer {
         void onVerifyAppsEnabledDone(long callbackId, @VerifyAppsResult int result);
 
-        // TODO(crbug.com/397407934): Replace this default implementation with the real one.
-        default void onGetSafetyNetIdDone(String result) {}
+        void onGetSafetyNetIdDone(String result);
     }
 
     /**
@@ -50,19 +49,8 @@ public interface SafetyNetApiHandler {
      *     checking is complete.
      * @return Enum value indicating which methods are supported for this installation.
      */
-    // TODO(crbug.com/397407934): Replace this default implementation with the real one.
-    // At least one of init() or initialize() must be implemented.
     @SafetyNetApiState
-    default int initialize(Observer observer) {
-        return init(observer) ? SafetyNetApiState.INITIALIZED : SafetyNetApiState.NOT_AVAILABLE;
-    }
-
-    // Temporary shim for the above.
-    // TODO(crbug.com/397407934): Remove this method in favor of the above.
-    // At least one of init() or initialize() must be implemented.
-    default boolean init(Observer observer) {
-        return initialize(observer) != SafetyNetApiState.NOT_AVAILABLE;
-    }
+    int initialize(Observer observer);
 
     /**
      * Start a check to determine if a uri is in an allowlist. If true, password protection service
@@ -100,6 +88,5 @@ public interface SafetyNetApiHandler {
      * the error is not likely recoverable during this process lifetime. May also return a non-empty
      * default value for some errors. Requires initialized state {@code INITIALIZED_FIRST_PARTY}.
      */
-    // TODO(crbug.com/397407934): Replace this default implementation with the real one.
-    default void getSafetyNetId() {}
+    void getSafetyNetId();
 }
