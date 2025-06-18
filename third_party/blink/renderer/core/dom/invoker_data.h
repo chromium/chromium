@@ -30,8 +30,6 @@ class InvokerData final : public GarbageCollected<InvokerData>,
 
   HTMLElement* GetInvokedPopover() const { return invoked_popover_; }
   void SetInvokedPopover(HTMLElement* popover) {
-    CHECK_NE(!popover, !invoked_popover_)
-        << "Invoked popover must be cleared before being reset";
     CHECK(!popover || popover->popoverOpen());
     invoked_popover_ = popover;
   }
