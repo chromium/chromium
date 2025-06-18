@@ -6,11 +6,13 @@
 
 #include <errno.h>
 #include <netinet/in.h>
+#include <stdio.h>
 #include <sys/socket.h>
 
 #include <memory>
 #include <utility>
 
+#include "base/debug/alias.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -515,7 +517,23 @@ void SocketPosix::ReadCompleted() {
 }
 
 int SocketPosix::DoWrite(IOBuffer* buf, int buf_len) {
-  int rv = HANDLE_EINTR(send(socket_fd_, buf->data(), buf_len, MSG_NOSIGNAL));
+  const char* data = buf->data();
+  const int flags = MSG_NOSIGNAL;
+
+  // TODO(crbug.com/40064248): Remove this once the crash is resolved.
+  char debug3[128];
+  snprintf(debug3, sizeof(debug3),
+           "socket_fd_=%d,data=%p,buf_len=%d,flags=0x%x", socket_fd_, data,
+           buf_len, flags);
+  base::debug::Alias(debug3);
+
+  int rv = HANDLE_EINTR(send(socket_fd_, buf->data(), buf_len, flags));
+
+  // TODO(crbug.com/40064248): Remove this once the crash is resolved.
+  char debug4[64];
+  snprintf(debug4, sizeof(debug4), "rv=%d,errno=%d", rv, rv < 0 ? errno : 0);
+  base::debug::Alias(debug4);
+
   if (rv >= 0) {
     CHECK_LE(rv, buf_len);
   }
