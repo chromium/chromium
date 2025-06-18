@@ -20,16 +20,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/client/fenced_allocator.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/constants.h"
-#include "gpu/gpu_export.h"
 
 namespace gpu {
 
 class CommandBufferHelper;
 
 // Manages a shared memory segment.
-class GPU_EXPORT MemoryChunk {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT MemoryChunk {
  public:
   MemoryChunk(int32_t shm_id,
               scoped_refptr<gpu::Buffer> shm,
@@ -124,7 +124,7 @@ class GPU_EXPORT MemoryChunk {
 };
 
 // Manages MemoryChunks.
-class GPU_EXPORT MappedMemoryManager {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappedMemoryManager {
  public:
   enum MemoryLimit {
     kNoLimit = 0,
@@ -233,7 +233,7 @@ class GPU_EXPORT MappedMemoryManager {
 };
 
 // A class that will manage the lifetime of a mapped memory allocation
-class GPU_EXPORT ScopedMappedMemoryPtr {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT ScopedMappedMemoryPtr {
  public:
   ScopedMappedMemoryPtr(uint32_t size,
                         CommandBufferHelper* helper,

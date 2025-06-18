@@ -13,11 +13,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_pool_id.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/shared_image_pool_client_interface.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -103,7 +103,7 @@ struct SharedImageInfo {
 // It is asynchronous in the same sense as GLES2Interface or RasterInterface in
 // that commands are executed asynchronously on the service side, but can be
 // synchronized using SyncTokens. See //docs/design/gpu_synchronization.md.
-class GPU_EXPORT SharedImageInterface
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
     : public base::RefCountedThreadSafe<SharedImageInterface> {
  public:
   // Creates a shared image of requested |format|, |size| and |color_space|.
@@ -261,7 +261,7 @@ class GPU_EXPORT SharedImageInterface
   virtual scoped_refptr<ClientSharedImage> ImportSharedImage(
       ExportedSharedImage exported_shared_image) = 0;
 
-  struct GPU_EXPORT SwapChainSharedImages {
+  struct GPU_COMMAND_BUFFER_CLIENT_EXPORT SwapChainSharedImages {
     SwapChainSharedImages(scoped_refptr<gpu::ClientSharedImage> front_buffer,
                           scoped_refptr<gpu::ClientSharedImage> back_buffer);
     SwapChainSharedImages(const SwapChainSharedImages& shared_images);
@@ -402,7 +402,7 @@ class GPU_EXPORT SharedImageInterface
 
 // |SharedImageInterfaceHolder| provides thread-safe access to
 // |SharedImageInterface| via a weak reference.
-class GPU_EXPORT SharedImageInterfaceHolder
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterfaceHolder
     : public base::RefCountedThreadSafe<SharedImageInterfaceHolder> {
  public:
   SharedImageInterfaceHolder(SharedImageInterface* sii);

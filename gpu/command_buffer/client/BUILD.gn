@@ -53,6 +53,10 @@ group("webgpu") {
   }
 }
 
+source_set("export") {
+  sources = [ "gpu_command_buffer_client_export.h" ]
+}
+
 source_set("client_sources") {
   # External code should depend on this via //gpu/client above rather than
   # depending on this directly or the component build will break.
@@ -87,6 +91,7 @@ source_set("client_sources") {
 
   public_deps = [
     ":client_gmb_manager",
+    ":export",
     "//base",
   ]
   deps = [
@@ -133,6 +138,7 @@ source_set("client_gmb_manager_sources") {
   ]
   configs += [ "//gpu:gpu_implementation" ]
   all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
+  public_deps = [ ":export" ]
   deps = [
     "//base",
     "//ui/gfx:memory_buffer",

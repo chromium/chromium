@@ -14,11 +14,11 @@
 #include "base/timer/timer.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_pool_id.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/shared_image_pool_client_interface.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/buffer_types.h"
@@ -30,7 +30,7 @@ class SharedImageInterface;
 // Structure holding the necessary information to create shared images and
 // describe its characteristics in the SharedImagePool. It will be constant for
 // all the shared images in the pool.
-struct GPU_EXPORT ImageInfo {
+struct GPU_COMMAND_BUFFER_CLIENT_EXPORT ImageInfo {
   gfx::Size size;
   viz::SharedImageFormat format;
   SharedImageUsageSet usage;
@@ -76,7 +76,8 @@ struct GPU_EXPORT ImageInfo {
 // addition to the shared image it wraps. This allow clients to create its own
 // custom pool of images of ClientImage type and are not limited to creating
 // pool of only ClientSharedImage. See unittests for example.
-class GPU_EXPORT ClientImage : public base::RefCountedThreadSafe<ClientImage> {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientImage
+    : public base::RefCountedThreadSafe<ClientImage> {
  public:
   explicit ClientImage(scoped_refptr<ClientSharedImage> shared_image);
 
@@ -127,7 +128,7 @@ class GPU_EXPORT ClientImage : public base::RefCountedThreadSafe<ClientImage> {
 // want it to be as thin as possible as it will also code generate for all
 // possible params and this will increase binary size. Clients will not use this
 // class directly.
-class GPU_EXPORT SharedImagePoolBase {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImagePoolBase {
  public:
   virtual ~SharedImagePoolBase();
 
@@ -180,7 +181,7 @@ class GPU_EXPORT SharedImagePoolBase {
 // additional functionality.
 // Clients will use this class and its apis for desired functionality.
 template <typename ClientImageType = ClientImage>
-class GPU_EXPORT SharedImagePool
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImagePool
     : public SharedImagePoolBase,
       public mojom::SharedImagePoolClientInterface {
  public:

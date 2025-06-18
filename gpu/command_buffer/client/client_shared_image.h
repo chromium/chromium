@@ -14,11 +14,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/task/single_thread_task_runner.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
-#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/exported_shared_image.mojom-shared.h"
 #include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -46,14 +46,14 @@ class TestSharedImageInterface;
 
 struct ExportedSharedImage;
 
-class GPU_EXPORT ClientSharedImage
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
     : public base::RefCountedThreadSafe<ClientSharedImage> {
  public:
   // Provides access to the CPU visible memory for the SharedImage if it is
   // being used for CPU READ/WRITE and underlying resource(native buffers/shared
   // memory) is CPU mappable. Memory and strides can be requested for each
   // plane.
-  class GPU_EXPORT ScopedMapping {
+  class GPU_COMMAND_BUFFER_CLIENT_EXPORT ScopedMapping {
    public:
     virtual ~ScopedMapping() = default;
 
@@ -391,7 +391,7 @@ class GPU_EXPORT ClientSharedImage
   base::Lock lock_;
 };
 
-struct GPU_EXPORT ExportedSharedImage {
+struct GPU_COMMAND_BUFFER_CLIENT_EXPORT ExportedSharedImage {
  public:
   ExportedSharedImage();
   ~ExportedSharedImage();
@@ -429,9 +429,9 @@ struct GPU_EXPORT ExportedSharedImage {
   uint32_t texture_target_ = 0;
 };
 
-class GPU_EXPORT SharedImageTexture {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageTexture {
  public:
-  class GPU_EXPORT ScopedAccess {
+  class GPU_COMMAND_BUFFER_CLIENT_EXPORT ScopedAccess {
    public:
     ScopedAccess(const ScopedAccess&) = delete;
     ScopedAccess& operator=(const ScopedAccess&) = delete;
@@ -481,7 +481,7 @@ class GPU_EXPORT SharedImageTexture {
   bool has_active_access_ = false;
 };
 
-class GPU_EXPORT RasterScopedAccess {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT RasterScopedAccess {
  public:
   RasterScopedAccess(const RasterScopedAccess&) = delete;
   RasterScopedAccess& operator=(const RasterScopedAccess&) = delete;

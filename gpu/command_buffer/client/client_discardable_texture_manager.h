@@ -9,7 +9,7 @@
 
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/client/client_discardable_manager.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 
 namespace gpu {
 
@@ -20,7 +20,7 @@ namespace gpu {
 // The underlying locking *only* allows calling TextureIsValid,
 // LockTexture, and TextureIsDeletedForTracing without holding the GL context
 // lock. All other calls still require that the context lock be held.
-class GPU_EXPORT ClientDiscardableTextureManager {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientDiscardableTextureManager {
  public:
   ClientDiscardableTextureManager();
 

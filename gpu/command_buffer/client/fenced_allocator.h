@@ -20,7 +20,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 
 namespace gpu {
 class CommandBufferHelper;
@@ -35,7 +35,7 @@ class CommandBufferHelper;
 // environment which is multi-process, this class isn't "thread safe", because
 // it isn't meant to be shared across modules. It is thread-compatible though
 // (see http://www.corp.google.com/eng/doc/cpp_primer.html#thread_safety).
-class GPU_EXPORT FencedAllocator {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT FencedAllocator {
  public:
   typedef uint32_t Offset;
   // Invalid offset, returned by Alloc in case of failure.

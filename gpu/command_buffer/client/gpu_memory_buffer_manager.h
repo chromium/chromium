@@ -9,14 +9,14 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/threading/platform_thread.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gpu {
 
-class GPU_EXPORT GpuMemoryBufferManager {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT GpuMemoryBufferManager {
  public:
   GpuMemoryBufferManager();
   virtual ~GpuMemoryBufferManager();

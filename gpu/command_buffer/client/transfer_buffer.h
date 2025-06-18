@@ -14,9 +14,9 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/client/ring_buffer.h"
 #include "gpu/command_buffer/common/buffer.h"
-#include "gpu/gpu_export.h"
 
 namespace gpu {
 
@@ -25,7 +25,7 @@ template <typename>
 class ScopedResultPtr;
 
 // Interface for managing the transfer buffer.
-class GPU_EXPORT TransferBufferInterface {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT TransferBufferInterface {
  public:
   TransferBufferInterface() = default;
   virtual ~TransferBufferInterface() = default;
@@ -82,7 +82,8 @@ class GPU_EXPORT TransferBufferInterface {
 };
 
 // Class that manages the transfer buffer.
-class GPU_EXPORT TransferBuffer : public TransferBufferInterface {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT TransferBuffer
+    : public TransferBufferInterface {
  public:
   TransferBuffer(CommandBufferHelper* helper);
   ~TransferBuffer() override;
@@ -179,7 +180,7 @@ class GPU_EXPORT TransferBuffer : public TransferBufferInterface {
 };
 
 // A class that will manage the lifetime of a transferbuffer allocation.
-class GPU_EXPORT ScopedTransferBufferPtr {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT ScopedTransferBufferPtr {
  public:
   ScopedTransferBufferPtr(unsigned int size,
                           CommandBufferHelper* helper,

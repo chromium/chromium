@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -128,7 +128,7 @@ class ReadbackYUVInterface;
 //
 // TODO(crbug.com/41405483): DEPRECATED. Please contact the crbug owner before
 // adding any new dependencies on this code.
-class GPU_EXPORT GLHelper {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT GLHelper {
  public:
   GLHelper(gles2::GLES2Interface* gl, ContextSupport* context_support);
 
@@ -368,7 +368,7 @@ class GPU_EXPORT GLHelper {
 
 // Splits an RGBA source texture's image into separate Y, U, and V planes. The U
 // and V planes are half-width and half-height, according to the I420 standard.
-class GPU_EXPORT I420Converter {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT I420Converter {
  public:
   I420Converter();
 
@@ -427,7 +427,7 @@ class GPU_EXPORT I420Converter {
 //
 // TODO(crbug.com/41405483): DEPRECATED. This will be removed soon in favor of
 // I420Converter.
-class GPU_EXPORT ReadbackYUVInterface {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT ReadbackYUVInterface {
  public:
   ReadbackYUVInterface() {}
   virtual ~ReadbackYUVInterface() {}

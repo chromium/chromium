@@ -16,8 +16,8 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/common/buffer.h"
-#include "gpu/gpu_export.h"
 
 namespace gpu {
 class CommandBufferHelper;
@@ -25,7 +25,7 @@ class CommandBufferHelper;
 // RingBuffer manages a piece of memory as a ring buffer. Memory is allocated
 // with Alloc and then a is freed pending a token with FreePendingToken.  Old
 // allocations must not be kept past new allocations.
-class GPU_EXPORT RingBuffer {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT RingBuffer {
  public:
   typedef uint32_t Offset;
 
