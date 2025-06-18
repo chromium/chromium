@@ -27,6 +27,8 @@
 #include "chrome/updater/util/util.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <shlobj.h>
+
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/task_scheduler.h"
 #include "chrome/updater/win/win_constants.h"
@@ -63,6 +65,15 @@ void CheckUpdaterHealthTask::CheckAndRecordUpdaterHealth(
               {"GoogleUpdate.UpdaterHealth.ServiceEnabled.", uma_suffix}),
           IsServiceEnabled(service_name));
     }
+  }
+
+  if (IsSystemInstall(scope_) && !::IsUserAnAdmin()) {
+    // When run at medium integrity, the task scheduler interfaces do not
+    // enumerate the system `updater` tasks, or in general, any tasks installed
+    // by an administrator. Since reliable metrics cannot be gathered on the
+    // scheduled tasks under these conditions, metrics are not recorded for
+    // this scenario.
+    return;
   }
 
   // Scheduled task metrics.
