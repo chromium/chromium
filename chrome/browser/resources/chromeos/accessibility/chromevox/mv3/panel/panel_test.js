@@ -24,37 +24,26 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   }
 
   fireMockEvent(key) {
-    chrome.runtime.sendMessage(
-        undefined, {command: TestPanelCommandType.FIRE_MOCK_EVENT, key});
+    PanelBridge.fireMockEventForTest(key);
   }
 
   fireMockQuery(query) {
-    chrome.runtime.sendMessage(
-        undefined, {command: TestPanelCommandType.FIRE_MOCK_QUERY, query});
+    PanelBridge.fireMockQueryForTest(query);
   }
 
-  assertActiveMenuItem(menuMsg, menuItemTitle, opt_menuItemShortcut) {
-    const callback = (response) => {
-      assertEquals(menuMsg, response.menuMsg);
-      assertEquals(menuItemTitle, response.menuItemTitle);
-      if (opt_menuItemShortcut) {
-        assertEquals(opt_menuItemShortcut, response.menuItemShortcut);
-      }
-    };
+  async assertActiveMenuItem(menuMsg, menuItemTitle, opt_menuItemShortcut) {
+    const response = await PanelBridge.getActiveMenuDataForTest()
 
-    chrome.runtime.sendMessage(
-        undefined, {command: TestPanelCommandType.GET_ACTIVE_MENU_DATA},
-        undefined, callback);
+    assertEquals(menuMsg, response.menuMsg);
+    assertEquals(menuItemTitle, response.menuItemTitle);
+    if (opt_menuItemShortcut) {
+      assertEquals(opt_menuItemShortcut, response.menuItemShortcut);
+    }
   }
 
-  assertActiveSearchMenuItem(menuItemTitle) {
-    const callback = (response) => {
-      assertEquals(menuItemTitle, response.menuItemTitle);
-    };
-
-    chrome.runtime.sendMessage(
-        undefined, {command: TestPanelCommandType.GET_ACTIVE_SEARCH_MENU_DATA},
-        undefined, callback);
+  async assertActiveSearchMenuItem(menuItemTitle) {
+    const response = await PanelBridge.getActiveSearchMenuDataForTest();
+    assertEquals(menuItemTitle, response.menuItemTitle);
   }
 
   enableTouchMode() {
@@ -62,15 +51,9 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   }
 
   async isMenuTitleMessage(menuTitleMessage) {
-    return new Promise(resolve => {
-      const callback = (response) => {
-        resolve(menuTitleMessage === response.menuMsg);
-      };
+    const response = await PanelBridge.getActiveMenuDataForTest()
 
-      chrome.runtime.sendMessage(
-          undefined, {command: TestPanelCommandType.GET_ACTIVE_MENU_DATA},
-          undefined, callback);
-    });
+    return menuTitleMessage === response.menuMsg;
   }
 
   async waitForMenu(menuTitleMessage) {
@@ -88,13 +71,11 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   }
 
   braillePanRight() {
-    chrome.runtime.sendMessage(
-        undefined, {command: TestPanelCommandType.BRAILLE_PAN_RIGHT});
+    PanelBridge.braillePanRightForTest();
   }
 
   braillePanLeft() {
-    chrome.runtime.sendMessage(
-        undefined, {command: TestPanelCommandType.BRAILLE_PAN_LEFT});
+    PanelBridge.braillePanLeftForTest();
   }
 
   get linksDoc() {
@@ -119,9 +100,10 @@ AX_TEST_F('ChromeVoxPanelTest', 'ActivateMenu', async function() {
   new PanelCommand(PanelCommandType.OPEN_MENUS).send();
   await this.waitForMenu('panel_search_menu');
   this.fireMockEvent('ArrowRight');
-  this.assertActiveMenuItem('panel_menu_jump', 'Go To Beginning Of Table');
+  await await this.assertActiveMenuItem(
+      'panel_menu_jump', 'Go To Beginning Of Table');
   this.fireMockEvent('ArrowRight');
-  this.assertActiveMenuItem(
+  await this.assertActiveMenuItem(
       'panel_menu_speech', 'Announce Current Battery Status');
 });
 
@@ -130,11 +112,11 @@ AX_TEST_F('ChromeVoxPanelTest', 'LinkMenu', async function() {
   CommandHandlerInterface.instance.onCommand('showLinksList');
   await this.waitForMenu('role_link');
   this.fireMockEvent('ArrowLeft');
-  this.assertActiveMenuItem('role_landmark', 'No items');
+  await this.assertActiveMenuItem('role_landmark', 'No items');
   this.fireMockEvent('ArrowRight');
-  this.assertActiveMenuItem('role_link', 'apple Internal link');
+  await this.assertActiveMenuItem('role_link', 'apple Internal link');
   this.fireMockEvent('ArrowUp');
-  this.assertActiveMenuItem('role_link', 'banana Internal link');
+  await this.assertActiveMenuItem('role_link', 'banana Internal link');
 });
 
 AX_TEST_F('ChromeVoxPanelTest', 'FormControlsMenu', async function() {
@@ -142,9 +124,9 @@ AX_TEST_F('ChromeVoxPanelTest', 'FormControlsMenu', async function() {
   CommandHandlerInterface.instance.onCommand('showFormsList');
   await this.waitForMenu('panel_menu_form_controls');
   this.fireMockEvent('ArrowDown');
-  this.assertActiveMenuItem('panel_menu_form_controls', 'OK Button');
+  await this.assertActiveMenuItem('panel_menu_form_controls', 'OK Button');
   this.fireMockEvent('ArrowUp');
-  this.assertActiveMenuItem('panel_menu_form_controls', 'Cancel Button');
+  await this.assertActiveMenuItem('panel_menu_form_controls', 'Cancel Button');
 });
 
 
@@ -156,24 +138,24 @@ AX_TEST_F('ChromeVoxPanelTest', 'SearchMenu', async function() {
 
   await mockFeedback
       .expectSpeech('Search the menus', /Type to search the menus/)
-      .call(() => {
+      .call(async () => {
         this.fireMockQuery('jump');
-        this.assertActiveSearchMenuItem('Jump To Details');
+        await this.assertActiveSearchMenuItem('Jump To Details');
       })
       .expectSpeech(/Jump/, 'Menu item', /[0-9]+ of [0-9]+/)
-      .call(() => {
+      .call(async () => {
         this.fireMockEvent('ArrowDown');
-        this.assertActiveSearchMenuItem('Jump To The Bottom Of The Page');
+        await this.assertActiveSearchMenuItem('Jump To The Bottom Of The Page');
       })
       .expectSpeech(/Jump/, 'Menu item', /[0-9]+ of [0-9]+/)
-      .call(() => {
+      .call(async () => {
         this.fireMockEvent('ArrowDown');
-        this.assertActiveSearchMenuItem('Jump To The Top Of The Page');
+        await this.assertActiveSearchMenuItem('Jump To The Top Of The Page');
       })
       .expectSpeech(/Jump/, 'Menu item', /[0-9]+ of [0-9]+/)
-      .call(() => {
+      .call(async () => {
         this.fireMockEvent('ArrowDown');
-        this.assertActiveSearchMenuItem('Jump To Details');
+        await this.assertActiveSearchMenuItem('Jump To Details');
       })
       .expectSpeech(/Jump/, 'Menu item', /[0-9]+ of [0-9]+/)
       .replay();
@@ -215,10 +197,11 @@ AX_TEST_F(
       CommandHandlerInterface.instance.onCommand('showFormsList');
       await this.waitForMenu('panel_menu_form_controls');
       this.fireMockEvent('ArrowDown');
-      this.assertActiveMenuItem(
+      await this.assertActiveMenuItem(
           'panel_menu_form_controls', 'español: Prueba Button');
       this.fireMockEvent('ArrowUp');
-      this.assertActiveMenuItem('panel_menu_form_controls', 'Test Button');
+      await this.assertActiveMenuItem(
+          'panel_menu_form_controls', 'Test Button');
     });
 
 AX_TEST_F('ChromeVoxPanelTest', 'ActionsMenu', async function() {
@@ -226,9 +209,11 @@ AX_TEST_F('ChromeVoxPanelTest', 'ActionsMenu', async function() {
   CommandHandlerInterface.instance.onCommand('showActionsMenu');
   await this.waitForMenu('panel_menu_actions');
   this.fireMockEvent('ArrowDown');
-  this.assertActiveMenuItem('panel_menu_actions', 'Start Or End Selection');
+  await this.assertActiveMenuItem(
+      'panel_menu_actions', 'Start Or End Selection');
   this.fireMockEvent('ArrowUp');
-  this.assertActiveMenuItem('panel_menu_actions', 'Click On Current Item');
+  await this.assertActiveMenuItem(
+      'panel_menu_actions', 'Click On Current Item');
 });
 
 AX_TEST_F('ChromeVoxPanelTest', 'ActionsMenuLongClick', async function() {
@@ -244,9 +229,11 @@ AX_TEST_F('ChromeVoxPanelTest', 'ActionsMenuLongClick', async function() {
   await this.waitForMenu('panel_menu_actions');
   // Go down three times
   this.fireMockEvent('ArrowUp');
-  this.assertActiveMenuItem('panel_menu_actions', 'Long click on current item');
+  await this.assertActiveMenuItem(
+      'panel_menu_actions', 'Long click on current item');
   this.fireMockEvent('ArrowDown');
-  this.assertActiveMenuItem('panel_menu_actions', 'Click On Current Item');
+  await this.assertActiveMenuItem(
+      'panel_menu_actions', 'Click On Current Item');
 });
 
 AX_TEST_F(
@@ -255,15 +242,15 @@ AX_TEST_F(
       new PanelCommand(PanelCommandType.OPEN_MENUS).send();
       await this.waitForMenu('panel_search_menu');
       this.fireMockEvent('ArrowRight');
-      this.assertActiveMenuItem(
+      await this.assertActiveMenuItem(
           'panel_menu_jump', 'Go To Beginning Of Table',
           'Search+Alt+Shift+ArrowLeft');
       this.fireMockEvent('ArrowRight');
-      this.assertActiveMenuItem(
+      await this.assertActiveMenuItem(
           'panel_menu_speech', 'Announce Current Battery Status',
           'Search+O, then B');
       this.fireMockEvent('ArrowRight');
-      this.assertActiveMenuItem(
+      await this.assertActiveMenuItem(
           'panel_menu_chromevox', 'Enable/Disable Sticky Mode',
           'Search+Search');
     });
@@ -296,7 +283,7 @@ AX_TEST_F(
         assertFalse(await this.isMenuTitleMessage('panel_search_menu'));
       } while (!await this.isMenuTitleMessage('panel_menu_touchgestures'));
 
-      this.assertActiveMenuItem(
+      await this.assertActiveMenuItem(
           'panel_menu_touchgestures', 'Click on current item');
     });
 
@@ -308,10 +295,12 @@ AX_TEST_F('ChromeVoxPanelTest', 'PerformDoDefaultAction', async function() {
   CommandHandlerInterface.instance.onCommand('showActionsMenu');
   await this.waitForMenu('panel_menu_actions');
   this.fireMockEvent('ArrowDown');
-  this.assertActiveMenuItem('panel_menu_actions', 'Start Or End Selection');
+  await this.assertActiveMenuItem(
+      'panel_menu_actions', 'Start Or End Selection');
   this.fireMockEvent('ArrowDown');
   this.fireMockEvent('ArrowDown');
-  this.assertActiveMenuItem('panel_menu_actions', 'Perform default action');
+  await this.assertActiveMenuItem(
+      'panel_menu_actions', 'Perform default action');
   this.fireMockEvent('Enter');
   await this.waitForEvent(button, chrome.automation.EventType.CLICKED);
 });

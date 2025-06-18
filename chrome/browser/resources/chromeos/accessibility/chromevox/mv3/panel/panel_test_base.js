@@ -14,7 +14,6 @@ ChromeVoxPanelTestBase = class extends ChromeVoxE2ETest {
     await super.setUpDeferred();
 
     await this.waitForPendingMethods();
-    chrome.runtime.sendMessage(
-        undefined, {command: TestPanelCommandType.DISABLE_ERROR_MSG});
+    await PanelBridge.disableMessagesForTest();
   }
 };

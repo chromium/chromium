@@ -124,8 +124,23 @@ export const BridgeConstants = {
   Panel: {
     TARGET: 'Panel',
     Action: {
+      IS_PANEL_INITIALIZED: 'IsPanelInitialized',
+      EXEC_COMMAND: 'execCommand',
       ADD_MENU_ITEM: 'addMenuItem',
       ON_CURRENT_RANGE_CHANGED: 'onCurrentRangeChanged',
+    },
+  },
+
+  PanelTest: {
+    TARGET: 'PanelTest',
+    Action: {
+      BRAILLE_PAN_RIGHT: 'braille_pan_right',
+      BRAILLE_PAN_LEFT: 'braille_pan_left',
+      DISABLE_ERROR_MSG: 'disable_error_msg',
+      FIRE_MOCK_EVENT: 'fire_mock_event',
+      FIRE_MOCK_QUERY: 'fire_mock_query',
+      GET_ACTIVE_MENU_DATA: 'get_active_menu_data',
+      GET_ACTIVE_SEARCH_MENU_DATA: 'get_active_search_menu_data'
     },
   },
 

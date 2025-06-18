@@ -8,17 +8,11 @@
 import {BridgeCallbackManager} from '/common/bridge_callback_manager.js';
 
 import {Msgs} from '../common/msgs.js';
-import type {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
+import type {MenuDataForTest, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
 import {PanelMenuItem} from './panel_menu_item.js';
 
 type MenuCallback = () => Promise<any>;
-
-type MenuDataForTest = {
-  menuMsg?: string,
-  menuItemTitle?: string,
-  menuItemShortcut?: string
-};
 
 export class PanelMenu {
   menuBarItemElement: HTMLElement;

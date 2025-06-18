@@ -8,6 +8,9 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+import {BridgeConstants} from './bridge_constants.js';
+import {PanelBridge} from './panel_bridge.js';
+
 /**
  * Create one command to pass to the ChromeVox Panel.
  */
@@ -29,20 +32,27 @@ export class PanelCommand {
   }
 
   waitForPanel(resolve: () => void) {
-    chrome.runtime.sendMessage(
-        undefined, {command: PanelCommandType.IS_PANEL_INITIALIZED}, undefined,
-        (initialized: any) => {
-          // Panel is not yet initialized
-          if (chrome.runtime.lastError) {
-            setTimeout(() => this.waitForPanel(resolve), 500);
-            return;
-          }
+    const message = {
+      target: BridgeConstants.Panel.TARGET,
+      action: BridgeConstants.Panel.Action.IS_PANEL_INITIALIZED,
+      args: []
+    };
+    const callback = (initialized: any) => {
+      // Panel is not yet initialized
+      if (chrome.runtime.lastError) {
+        setTimeout(() => this.waitForPanel(resolve), 500);
+        return;
+      }
 
-          // Panel is initialized.
-          if (initialized as boolean) {
-            resolve();
-          }
-        });
+      // Panel is initialized.
+      if (initialized as boolean) {
+        resolve();
+      }
+    };
+    // Instead of using the PanelBridge, we will call
+    // chrome.runtime.sendMessage directly, because we need to catch the
+    // possible error if the panel is not initialized.
+    chrome.runtime.sendMessage(undefined, message, undefined, callback);
   }
 
   /** Send this command to the ChromeVox Panel window. */
@@ -51,7 +61,7 @@ export class PanelCommand {
     // loading and is ready to receive commands.
     await PanelCommand.panelIsInitialized_;
 
-    chrome.runtime.sendMessage(undefined, {type: this.type, data: this.data});
+    PanelBridge.execCommand(this)
   }
 }
 
@@ -70,23 +80,7 @@ export enum PanelCommandType {
   OPEN_MENUS_MOST_RECENT = 'open_menus_most_recent',
   SEARCH = 'search',
   TUTORIAL = 'tutorial',
-  IS_PANEL_INITIALIZED = 'IsPanelInitialized',
-}
-
-/**
- * The types of commands that can be sent between the panel popup and the
- * ChromeVox service worker for testing purposes.
- */
-export enum TestPanelCommandType {
-  BRAILLE_PAN_RIGHT = 'braille_pan_right',
-  BRAILLE_PAN_LEFT = 'braille_pan_left',
-  DISABLE_ERROR_MSG = 'disable_error_msg',
-  FIRE_MOCK_EVENT = 'fire_mock_event',
-  FIRE_MOCK_QUERY = 'fire_mock_query',
-  GET_ACTIVE_MENU_DATA = 'get_active_menu_data',
-  GET_ACTIVE_SEARCH_MENU_DATA = 'get_active_search_menu_data'
 }
 
 TestImportManager.exportForTesting(
-    PanelCommand, ['PanelCommandType', PanelCommandType],
-    ['TestPanelCommandType', TestPanelCommandType]);
+    PanelCommand, ['PanelCommandType', PanelCommandType]);

@@ -15,8 +15,8 @@ import {BridgeConstants} from '../common/bridge_constants.js';
 import {Command} from '../common/command.js';
 import {Msgs} from '../common/msgs.js';
 import type {PanelCommand} from '../common/panel_command.js';
-import {PanelCommandType, TestPanelCommandType} from '../common/panel_command.js';
-import type {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
+import {PanelCommandType} from '../common/panel_command.js';
+import type {MenuDataForTest, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 import {SettingsManager} from '../common/settings_manager.js';
 
 import {ISearchUI} from './i_search_ui.js';
@@ -29,9 +29,6 @@ const $ = (id: string): HTMLElement | null => document.getElementById(id);
 
 type AsyncCallback = () => Promise<void>;
 type SessionState = chrome.loginState.SessionState;
-
-type MessageSender = chrome.runtime.MessageSender;
-type SendResponse = (value: any) => void;
 
 /** Class to manage the panel. */
 export class Panel implements PanelInterface {
@@ -60,11 +57,6 @@ export class Panel implements PanelInterface {
   }
 
   private initListeners_(): void {
-    chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: MessageSender,
-         sendResponse: SendResponse) =>
-            this.handleMessageFromServiceWorker_(message, sendResponse));
-
     chrome.loginState.getSessionState(
         (state: SessionState) => this.updateSessionState_(state));
     chrome.loginState.onSessionStateChanged.addListener(
@@ -95,6 +87,12 @@ export class Panel implements PanelInterface {
 
     BridgeHelper.registerHandler(
         BridgeConstants.Panel.TARGET,
+        BridgeConstants.Panel.Action.IS_PANEL_INITIALIZED, () => {return true});
+    BridgeHelper.registerHandler(
+        BridgeConstants.Panel.TARGET, BridgeConstants.Panel.Action.EXEC_COMMAND,
+        (panelCommand: PanelCommand) => this.exec_(panelCommand))
+    BridgeHelper.registerHandler(
+        BridgeConstants.Panel.TARGET,
         BridgeConstants.Panel.Action.ADD_MENU_ITEM,
         (itemData: PanelNodeMenuItemData) => this.menuManager_.addNodeMenuItem(
             itemData));
@@ -103,6 +101,36 @@ export class Panel implements PanelInterface {
         BridgeConstants.Panel.Action.ON_CURRENT_RANGE_CHANGED,
         () => this.onCurrentRangeChanged_());
     this.updateFromPrefs_();
+
+    // These handlers are all for tests.
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.BRAILLE_PAN_LEFT,
+        () => this.onPanLeft_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.BRAILLE_PAN_RIGHT,
+        () => this.onPanRight_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.DISABLE_ERROR_MSG,
+        () => this.disableErrorMsgForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.FIRE_MOCK_EVENT,
+        (key: string) => this.fireMockEventForTest_(key));
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.FIRE_MOCK_QUERY,
+        (query: string) => this.fireMockQueryForTest_(query));
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.GET_ACTIVE_MENU_DATA,
+        () => this.getActiveMenuDataForTest_());
+    BridgeHelper.registerHandler(
+        BridgeConstants.PanelTest.TARGET,
+        BridgeConstants.PanelTest.Action.GET_ACTIVE_SEARCH_MENU_DATA,
+        () => this.getActiveSearchMenuDataForTest_());
   }
 
   /** Initialize the panel. */
@@ -169,43 +197,6 @@ export class Panel implements PanelInterface {
     }
   }
 
-  private handleMessageFromServiceWorker_(
-      message: any|undefined, sendResponse: SendResponse): boolean {
-    switch (message.command) {
-      // Messages for testing purposes.
-      case TestPanelCommandType.BRAILLE_PAN_LEFT:
-        this.onPanLeft_();
-        break;
-      case TestPanelCommandType.BRAILLE_PAN_RIGHT:
-        this.onPanRight_();
-        break;
-      case TestPanelCommandType.DISABLE_ERROR_MSG:
-        this.disableErrorMsgForTest_();
-        break;
-      case TestPanelCommandType.FIRE_MOCK_EVENT:
-        this.fireMockEventForTest_(message['key']);
-        break;
-      case TestPanelCommandType.FIRE_MOCK_QUERY:
-        this.fireMockQueryForTest_(message['query']);
-        break;
-      case TestPanelCommandType.GET_ACTIVE_MENU_DATA:
-        this.getActiveMenuDataForTest_(sendResponse);
-        break;
-      case TestPanelCommandType.GET_ACTIVE_SEARCH_MENU_DATA:
-        this.getActiveSearchMenuDataForTest_(sendResponse);
-        break;
-
-      // Messages from PanelCommand.
-      case PanelCommandType.IS_PANEL_INITIALIZED:
-        sendResponse(true);
-        break;
-      default:
-        this.exec_({type: message.type, data: message.data} as PanelCommand)
-        break;
-    }
-    return false;
-  }
-
   private disableErrorMsgForTest_() {
     MenuManager.disableMissingMsgsErrorsForTesting = true;
   }
@@ -224,20 +215,20 @@ export class Panel implements PanelInterface {
     this.menuManager_.onSearchBarQuery(evt);
   }
 
-  private getActiveMenuDataForTest_(sendResponse: SendResponse) {
+  private getActiveMenuDataForTest_(): MenuDataForTest {
     const activeMenu = this.menuManager_.activeMenu;
     if (activeMenu) {
-      sendResponse(activeMenu.getMenuDataForTest());
+      return activeMenu.getMenuDataForTest();
     }
-    sendResponse({});
+    return {};
   }
 
-  private getActiveSearchMenuDataForTest_(sendResponse: SendResponse) {
+  private getActiveSearchMenuDataForTest_(): MenuDataForTest {
     const searchMenu = this.menuManager_.searchMenu;
     if (searchMenu) {
-      sendResponse(searchMenu.getMenuDataForTest());
+      return searchMenu.getMenuDataForTest();
     }
-    sendResponse({});
+    return {};
   }
 
   /**

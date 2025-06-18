@@ -66,6 +66,12 @@ export const ALL_PANEL_MENU_NODE_DATA: PanelNodeMenuData[] = [
   },
 ];
 
+export type MenuDataForTest = {
+  menuMsg?: string,
+  menuItemTitle?: string,
+  menuItemShortcut?: string
+};
+
 TestImportManager.exportForTesting(
     ['PanelNodeMenuId', PanelNodeMenuId],
     ['ALL_PANEL_MENU_NODE_DATA', ALL_PANEL_MENU_NODE_DATA]);
