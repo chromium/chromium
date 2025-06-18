@@ -136,6 +136,10 @@ BASE_DECLARE_FEATURE(kLensOverlayKeyboardSelection);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayPermissionBubbleAlt);
 
+// Enables the back to live page functionality in the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayBackToPage);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -985,6 +989,10 @@ extern bool IsLensOverlayKeyboardSelectionEnabled();
 // Whether to use alternate appearance for permission bubble.
 COMPONENT_EXPORT(LENS_FEATURES)
 bool IsLensOverlayPermissionBubbleAltEnabled();
+
+// Whether the back to live page functionality is enabled in the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayBackToPageEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

@@ -135,6 +135,10 @@ BASE_FEATURE(kLensOverlayPermissionBubbleAlt,
              "LensOverlayPermissionBubbleAlt",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayBackToPage,
+             "LensOverlayBackToPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -1302,6 +1306,10 @@ bool IsLensOverlayKeyboardSelectionEnabled() {
 
 bool IsLensOverlayPermissionBubbleAltEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayPermissionBubbleAlt);
+}
+
+bool IsLensOverlayBackToPageEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayBackToPage);
 }
 
 }  // namespace lens::features

@@ -11126,6 +11126,7 @@ from previous Chrome versions.
   <int value="-1062534902" label="SyncingCompromisedCredentials:disabled"/>
   <int value="-1062119671" label="enable-password-force-saving"/>
   <int value="-1061203892" label="VideoToolboxVp9Decoding:disabled"/>
+  <int value="-1060624091" label="LensOverlayBackToPage:disabled"/>
   <int value="-1060574877"
       label="PolicyBlocklistThrottleRequiresPoliciesLoaded:disabled"/>
   <int value="-1060541241" label="ForcePreferredIntervalForVideo:enabled"/>
@@ -14979,6 +14980,7 @@ from previous Chrome versions.
   <int value="377093001" label="WebRtcHWH264Encoding:disabled"/>
   <int value="378093891" label="PrecompileInlineScripts:disabled"/>
   <int value="378380475" label="ClipboardHistoryRefresh:disabled"/>
+  <int value="378412701" label="LensOverlayBackToPage:enabled"/>
   <int value="378948081"
       label="AutofillEnableInfoBarAccountIndicationFooter:disabled"/>
   <int value="378994579" label="Previews:enabled"/>
