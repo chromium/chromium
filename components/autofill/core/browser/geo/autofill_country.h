@@ -29,7 +29,7 @@ class AutofillCountry {
   // `locale` is used to translate the `name()` appropriately and can be ignored
   // if the name is not queried.
   explicit AutofillCountry(
-      const std::string& country_code,
+      std::string_view country_code,
       std::optional<std::string_view> locale = std::nullopt);
 
   AutofillCountry(const AutofillCountry&) = delete;

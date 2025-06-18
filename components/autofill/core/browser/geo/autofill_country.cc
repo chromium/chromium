@@ -50,7 +50,7 @@ constexpr auto kRequiredFieldMapping =
 
 }  // namespace
 
-AutofillCountry::AutofillCountry(const std::string& country_code,
+AutofillCountry::AutofillCountry(std::string_view country_code,
                                  std::optional<std::string_view> locale) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
 
@@ -58,7 +58,7 @@ AutofillCountry::AutofillCountry(const std::string& country_code,
   // code.
   country_code_ = country_data_map->HasCountryCodeAlias(country_code)
                       ? country_data_map->GetCountryCodeForAlias(country_code)
-                      : country_code;
+                      : std::string(country_code);
 
   required_fields_for_address_import_ =
       country_data_map->GetRequiredFieldsForAddressImport(country_code_);
