@@ -222,9 +222,9 @@ class EntityInstance final {
   struct CompareByGuid;
 
   // Comparator that returns the entity with the higher frecency score.
-  struct RankingOrder {
+  struct FrecencyOrder {
    public:
-    explicit RankingOrder(base::Time now);
+    explicit FrecencyOrder(base::Time now);
     bool operator()(const EntityInstance& lhs, const EntityInstance& rhs) const;
 
    private:

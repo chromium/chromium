@@ -236,7 +236,7 @@ TEST(AutofillEntityInstanceTest, GetEntityMergeability_EntitiesAreDisjoint) {
   EXPECT_FALSE(result.is_subset);
 }
 
-TEST(AutofillEntityInstanceTest, RankingOrder_SortEntitiesByFrecency) {
+TEST(AutofillEntityInstanceTest, FrecencyOrder_SortEntitiesByFrecency) {
   auto pp_with_random_guid = []() {
     return test::GetPassportEntityInstance(
         {.guid = base::Uuid::GenerateRandomV4().AsLowercaseString()});
@@ -244,7 +244,7 @@ TEST(AutofillEntityInstanceTest, RankingOrder_SortEntitiesByFrecency) {
   std::vector<EntityInstance> entities = {pp_with_random_guid(),
                                           pp_with_random_guid()};
   auto sort_entities = [&]() {
-    EntityInstance::RankingOrder comp(base::Time::Now());
+    EntityInstance::FrecencyOrder comp(base::Time::Now());
     std::ranges::sort(entities, comp);
   };
 

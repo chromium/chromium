@@ -397,9 +397,9 @@ std::vector<Suggestion> CreateFillingSuggestions(
   // Sort entities based on their frecency.
   std::vector<const EntityInstance*> sorted_entities = base::ToVector(
       entities, [](const EntityInstance& entity) { return &entity; });
-  EntityInstance::RankingOrder comp(base::Time::Now());
   std::ranges::sort(sorted_entities,
-                    [&](const EntityInstance* lhs, const EntityInstance* rhs) {
+                    [comp = EntityInstance::FrecencyOrder(base::Time::Now())](
+                        const EntityInstance* lhs, const EntityInstance* rhs) {
                       return comp(*lhs, *rhs);
                     });
 

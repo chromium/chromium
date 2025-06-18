@@ -433,10 +433,11 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
   return {std::move(mergeable_attributes), is_subset};
 }
 
-EntityInstance::RankingOrder::RankingOrder(base::Time now) : now_(now) {}
+EntityInstance::FrecencyOrder::FrecencyOrder(base::Time now) : now_(now) {}
 
-bool EntityInstance::RankingOrder::operator()(const EntityInstance& lhs,
-                                              const EntityInstance& rhs) const {
+bool EntityInstance::FrecencyOrder::operator()(
+    const EntityInstance& lhs,
+    const EntityInstance& rhs) const {
   // At days_since_last_use = 0, use_count = 0, the score is -1.
   // As days_since_last_use increases, the score becomes more negative.
   // As use_count increases, the score approaches 0.
