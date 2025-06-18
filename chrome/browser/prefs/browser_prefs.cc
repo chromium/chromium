@@ -1140,6 +1140,8 @@ inline constexpr char kVariationsLimitedEntropySyntheticTrialSeed[] =
     "variations_limited_entropy_synthetic_trial_seed";
 inline constexpr char kVariationsLimitedEntropySyntheticTrialSeedV2[] =
     "variations_limited_entropy_synthetic_trial_seed_v2";
+inline constexpr char kGaiaCookiePeriodicReportTimeDeprecated[] =
+    "gaia_cookie.periodic_report_time";
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Deprecated 06/2025.
@@ -1647,6 +1649,7 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 06/2025
   registry->RegisterBooleanPref(kStorageGarbageCollect, false);
+  registry->RegisterDoublePref(kGaiaCookiePeriodicReportTimeDeprecated, 0);
 }
 
 }  // namespace
@@ -2984,6 +2987,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 06/2025.
   profile_prefs->ClearPref(kStorageGarbageCollect);
+  profile_prefs->ClearPref(kGaiaCookiePeriodicReportTimeDeprecated);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

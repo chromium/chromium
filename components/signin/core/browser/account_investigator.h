@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -118,9 +119,8 @@ class AccountInvestigator : public KeyedService,
   raw_ptr<PrefService> pref_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
 
-  // Handles invoking our periodic logic at the right time. As part of our
-  // handling of this call we reset the timer for the next loop.
-  base::OneShotTimer timer_;
+  // Handles invoking our periodic logic at the right time.
+  signin::PersistentRepeatingTimer timer_;
 
   // If the GaiaCookieManagerService hasn't already cached the cookie data, it
   // will not be able to return enough information for us to always perform

@@ -30,6 +30,11 @@ using gaia::ListedAccount;
 using signin_metrics::AccountRelation;
 using signin_metrics::ReportingType;
 
+namespace {
+constexpr char kRelationHistogramName[] =
+    "Signin.CookieJar.ChromeAccountRelation2";
+}
+
 class AccountInvestigatorTest : public testing::Test {
  protected:
   AccountInvestigatorTest()
@@ -76,7 +81,6 @@ class AccountInvestigatorTest : public testing::Test {
   bool* previously_authenticated() {
     return &investigator_.previously_authenticated_;
   }
-  base::OneShotTimer* timer() { return &investigator_.timer_; }
 
   void ExpectRelationReport(
       const std::vector<ListedAccount> signed_in_accounts,
@@ -93,7 +97,7 @@ class AccountInvestigatorTest : public testing::Test {
                             const HistogramTester& histogram_tester,
                             const AccountRelation expected) {
     histogram_tester.ExpectUniqueSample(
-        "Signin.CookieJar.ChromeAccountRelation" + suffix_[type],
+        base::StrCat({kRelationHistogramName, suffix_[type]}),
         static_cast<int>(expected), 1);
   }
 
@@ -124,11 +128,11 @@ class AccountInvestigatorTest : public testing::Test {
         "Signin.CookieJar.TotalCount" + suffix_[type], total_count, 1);
     if (relation) {
       histogram_tester.ExpectUniqueSample(
-          "Signin.CookieJar.ChromeAccountRelation" + suffix_[type],
+          base::StrCat({kRelationHistogramName, suffix_[type]}),
           static_cast<int>(*relation), 1);
     } else {
       histogram_tester.ExpectTotalCount(
-          "Signin.CookieJar.ChromeAccountRelation" + suffix_[type], 0);
+          base::StrCat({kRelationHistogramName, suffix_[type]}), 0);
     }
     histogram_tester.ExpectUniqueSample("Signin.IsShared" + suffix_[type],
                                         is_shared, 1);
@@ -237,7 +241,7 @@ TEST_F(AccountInvestigatorTest, SignedInAccountRelationReport) {
   ExpectRelationReport({one}, {}, ReportingType::PERIODIC,
                        AccountRelation::WITH_SIGNED_IN_NO_MATCH);
   identity_test_env()->SetPrimaryAccount("1@mail.com",
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
   ExpectRelationReport({one}, {}, ReportingType::PERIODIC,
                        AccountRelation::SINGLE_SIGNED_IN_MATCH_NO_SIGNED_OUT);
   ExpectRelationReport({two}, {}, ReportingType::ON_CHANGE,
@@ -254,7 +258,7 @@ TEST_F(AccountInvestigatorTest, SharedCookieJarReportEmpty) {
 
 TEST_F(AccountInvestigatorTest, SharedCookieJarReportWithAccount) {
   identity_test_env()->SetPrimaryAccount("1@mail.com",
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
   base::Time now = base::Time::Now();
   pref_service()->SetDouble(prefs::kGaiaCookieChangedTime,
                             now.InSecondsFSinceUnixEpoch());
@@ -296,7 +300,7 @@ TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedSigninOnly) {
 
   const HistogramTester histogram_tester;
   identity_test_env()->SetPrimaryAccount("1@mail.com",
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
   pref_service()->SetString(prefs::kGaiaCookieHash, Hash({one}, {}));
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info(
       /*accounts_are_fresh=*/true, {one});
@@ -312,7 +316,7 @@ TEST_F(AccountInvestigatorTest,
        OnGaiaAccountsInCookieUpdatedSigninSignOutOfContent) {
   const HistogramTester histogram_tester;
   identity_test_env()->SetPrimaryAccount("1@mail.com",
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
   signin::AccountsInCookieJarInfo signed_in_account_in_cookies(
       /*accounts_are_fresh=*/true, /*accounts=*/{one});
   investigator()->OnAccountsInCookieUpdated(
@@ -332,21 +336,9 @@ TEST_F(AccountInvestigatorTest,
                                nullptr, 0, 1, 1, &expected_relation, true);
 }
 
-TEST_F(AccountInvestigatorTest, Initialize) {
-  EXPECT_FALSE(*previously_authenticated());
-  EXPECT_FALSE(timer()->IsRunning());
-
-  investigator()->Initialize();
-  EXPECT_FALSE(*previously_authenticated());
-  EXPECT_TRUE(timer()->IsRunning());
-
-  investigator()->Shutdown();
-  EXPECT_FALSE(timer()->IsRunning());
-}
-
 TEST_F(AccountInvestigatorTest, InitializeSignedIn) {
   identity_test_env()->SetPrimaryAccount("1@mail.com",
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
   EXPECT_FALSE(*previously_authenticated());
 
   investigator()->Initialize();
@@ -384,6 +376,26 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportWithPrimary) {
   std::string email("f@bar.com");
   identity_test_env()->SetCookieAccounts(
       {{email, signin::GetTestGaiaIdForEmail(email)}});
+  identity_test_env()->MakePrimaryAccountAvailable(
+      email, signin::ConsentLevel::kSignin);
+
+  const HistogramTester histogram_tester;
+  TryPeriodicReport();
+  EXPECT_FALSE(*periodic_pending());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CookieJar.SignedInCountWithPrimary.NoSyncConsumer",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.CookieJar.SignedInCountWithPrimary.SyncConsumer",
+      /*expected_count=*/0);
+}
+
+TEST_F(AccountInvestigatorTest, TryPeriodicReportWithPrimarySync) {
+  investigator()->Initialize();
+
+  std::string email("f@bar.com");
+  identity_test_env()->SetCookieAccounts(
+      {{email, signin::GetTestGaiaIdForEmail(email)}});
   identity_test_env()->MakePrimaryAccountAvailable(email,
                                                    signin::ConsentLevel::kSync);
 
@@ -392,10 +404,10 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportWithPrimary) {
   EXPECT_FALSE(*periodic_pending());
   histogram_tester.ExpectUniqueSample(
       "Signin.CookieJar.SignedInCountWithPrimary.SyncConsumer",
-      /*bucket=*/1, /*count=*/1);
+      /*sample=*/1, /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
       "Signin.CookieJar.SignedInCountWithPrimary.NoSyncConsumer",
-      /*count=*/0);
+      /*expected_count=*/0);
 }
 
 // Neither iOS nor Android support unconsented primary accounts.
@@ -414,10 +426,10 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportWithUnconsentedPrimary) {
   EXPECT_FALSE(*periodic_pending());
   histogram_tester.ExpectUniqueSample(
       "Signin.CookieJar.SignedInCountWithPrimary.NoSyncConsumer",
-      /*bucket=*/1, /*count=*/1);
+      /*sample=*/1, /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
       "Signin.CookieJar.SignedInCountWithPrimary.SyncConsumer",
-      /*count=*/0);
+      /*expected_count=*/0);
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
@@ -428,7 +440,7 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportWithEnterprisePrimary) {
   identity_test_env()->SetCookieAccounts(
       {{email, signin::GetTestGaiaIdForEmail(email)}});
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      email, signin::ConsentLevel::kSync);
+      email, signin::ConsentLevel::kSignin);
   account_info.hosted_domain = "bar.com";
   AccountCapabilitiesTestMutator(&account_info.capabilities)
       .set_is_subject_to_enterprise_policies(true);
@@ -438,11 +450,11 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportWithEnterprisePrimary) {
   TryPeriodicReport();
   EXPECT_FALSE(*periodic_pending());
   histogram_tester.ExpectUniqueSample(
-      "Signin.CookieJar.SignedInCountWithPrimary.SyncEnterprise",
-      /*bucket=*/1, /*count=*/1);
-  histogram_tester.ExpectTotalCount(
       "Signin.CookieJar.SignedInCountWithPrimary.NoSyncEnterprise",
-      /*count=*/0);
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.CookieJar.SignedInCountWithPrimary.SyncEnterprise",
+      /*expected_count=*/0);
 }
 
 TEST_F(AccountInvestigatorTest, TryPeriodicReportEmpty) {

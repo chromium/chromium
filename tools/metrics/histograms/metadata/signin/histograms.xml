@@ -1147,7 +1147,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram
-    name="Signin.CookieJar.ChromeAccountRelation{AccountInvestigationReportingType}"
+    name="Signin.CookieJar.ChromeAccountRelation2{AccountInvestigationReportingType}"
     enum="AccountRelation" expires_after="never">
 <!-- expires-never: this histogram gives important user information about user
   signin behavior, and is often used in UX design decisions -->
@@ -1157,6 +1157,8 @@ prefs when the profile is loaded.  -->
   <summary>
     The relation between the account signed into chrome, and the account(s) in
     the cookie jar. This metric is never recorded when not signed into chrome.
+    The version 1 of this histogram was recorded when the user was syncing ; the
+    version 2 is recorded for all signed in users (including non-syncing).
     {AccountInvestigationReportingType}
   </summary>
 </histogram>

@@ -63,7 +63,13 @@ const base::TimeDelta AccountInvestigator::kPeriodicReportingInterval =
 AccountInvestigator::AccountInvestigator(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager)
-    : pref_service_(pref_service), identity_manager_(identity_manager) {}
+    : pref_service_(pref_service),
+      identity_manager_(identity_manager),
+      timer_(pref_service,
+             prefs::kGaiaCookiePeriodicReportTime,
+             kPeriodicReportingInterval,
+             base::BindRepeating(&AccountInvestigator::TryPeriodicReport,
+                                 base::Unretained(this))) {}
 
 AccountInvestigator::~AccountInvestigator() = default;
 
@@ -71,29 +77,19 @@ AccountInvestigator::~AccountInvestigator() = default;
 void AccountInvestigator::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kGaiaCookieHash, std::string());
   registry->RegisterDoublePref(prefs::kGaiaCookieChangedTime, 0);
-  registry->RegisterDoublePref(prefs::kGaiaCookiePeriodicReportTime, 0);
+  registry->RegisterTimePref(prefs::kGaiaCookiePeriodicReportTime,
+                             base::Time());
 }
 
 void AccountInvestigator::Initialize() {
   identity_manager_->AddObserver(this);
   previously_authenticated_ =
-      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
-
-  // TODO(crbug.com/40715763): Refactor to use signin::PersistentRepeatingTimer
-  // instead.
-  Time previous = Time::FromSecondsSinceUnixEpoch(
-      pref_service_->GetDouble(prefs::kGaiaCookiePeriodicReportTime));
-  if (previous.is_null()) {
-    previous = Time::Now();
-  }
-  const base::TimeDelta delay =
-      CalculatePeriodicDelay(previous, Time::Now(), kPeriodicReportingInterval);
-  timer_.Start(FROM_HERE, delay, this, &AccountInvestigator::TryPeriodicReport);
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  timer_.Start();
 }
 
 void AccountInvestigator::Shutdown() {
   identity_manager_->RemoveObserver(this);
-  timer_.Stop();
 }
 
 void AccountInvestigator::OnAccountsInCookieUpdated(
@@ -119,7 +115,7 @@ void AccountInvestigator::OnAccountsInCookieUpdated(
   const std::string new_hash(
       HashAccounts(signed_in_accounts, signed_out_accounts));
   const bool currently_authenticated =
-      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   if (old_hash != new_hash) {
     SharedCookieJarReport(signed_in_accounts, signed_out_accounts, Time::Now(),
                           ReportingType::ON_CHANGE);
@@ -248,10 +244,6 @@ void AccountInvestigator::DoPeriodicReport(
   }
 
   periodic_pending_ = false;
-  pref_service_->SetDouble(prefs::kGaiaCookiePeriodicReportTime,
-                           Time::Now().InSecondsFSinceUnixEpoch());
-  timer_.Start(FROM_HERE, kPeriodicReportingInterval, this,
-               &AccountInvestigator::TryPeriodicReport);
 }
 
 void AccountInvestigator::SharedCookieJarReport(
@@ -272,7 +264,7 @@ void AccountInvestigator::SharedCookieJarReport(
   signin_metrics::LogCookieJarCounts(signed_in_count, signed_out_count,
                                      signed_in_count + signed_out_count, type);
 
-  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     SignedInAccountRelationReport(signed_in_accounts, signed_out_accounts,
                                   type);
   }
@@ -288,8 +280,8 @@ void AccountInvestigator::SignedInAccountRelationReport(
     const std::vector<ListedAccount>& signed_out_accounts,
     ReportingType type) {
   signin_metrics::LogAccountRelation(
-      DiscernRelation(
-          identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync),
-          signed_in_accounts, signed_out_accounts),
+      DiscernRelation(identity_manager_->GetPrimaryAccountInfo(
+                          signin::ConsentLevel::kSignin),
+                      signed_in_accounts, signed_out_accounts),
       type);
 }
