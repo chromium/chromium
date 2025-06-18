@@ -81,10 +81,10 @@ Browser* ReparentWebAppForActiveTab(Browser* browser);
 // - Otherwise a new browser window is created for `contents` to be reparented
 // into.
 // Returns the browser instance where the reparenting has happened, nullptr
-// otherwise. Runs `completion_callback` with the existing `contents`, if it was
-// reparented, or with the new `web_contents` that was created if the behavior
-// deemed it necessary (like for focus existing and navigate-existing
-// use-cases).
+// otherwise. Runs `completion_callback` synchronously with the existing
+// `contents`, if it was reparented, or with the new `web_contents` that was
+// created if the behavior deemed it necessary (like for focus existing and
+// navigate-existing use-cases).
 Browser* ReparentWebContentsIntoAppBrowser(
     content::WebContents* contents,
     const webapps::AppId& app_id,

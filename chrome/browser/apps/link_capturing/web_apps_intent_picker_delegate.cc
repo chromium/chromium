@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/task/bind_post_task.h"
 #include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
 #include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
@@ -260,8 +261,9 @@ void WebAppsIntentPickerDelegate::LaunchApp(content::WebContents* web_contents,
     // which will destroy this object.
     provider_->ui_manager().ReparentAppTabToWindow(
         web_contents, launch_name,
-        base::BindOnce(&OnAppReparentedRunInNewContents, launch_name,
-                       std::move(callback)));
+        base::BindOnce(
+            &OnAppReparentedRunInNewContents, launch_name,
+            base::BindPostTaskToCurrentDefault(std::move(callback))));
   } else if (entry_type == apps::PickerEntryType::kMacOs) {
 #if BUILDFLAG(IS_MAC)
     LaunchMacApp(url, launch_name, std::move(callback));
