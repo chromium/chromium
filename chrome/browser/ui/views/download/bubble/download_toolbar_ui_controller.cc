@@ -474,6 +474,8 @@ void DownloadToolbarUIController::Init() {
 
 void DownloadToolbarUIController::TearDownPreBrowserWindowDestruction() {
   immersive_revealed_lock_.reset();
+  // DownloadDisplayController depends on BrowserView.
+  controller_.reset();
   browser_view_ = nullptr;
 }
 
