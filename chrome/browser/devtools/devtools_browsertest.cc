@@ -1093,7 +1093,10 @@ class DevtoolsPanelForceUpdateTest : public DevToolsExtensionTest,
 // force update is enabled or not). Also confirms that we can manually browse to
 // an extension resource file before and after loading devtools. Regression test
 // for crbug.com/333670353.
-IN_PROC_BROWSER_TEST_P(DevtoolsPanelForceUpdateTest, NavigateToDevtoolsPanel) {
+//
+// TODO(crbug.com/425990330): Flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_P(DevtoolsPanelForceUpdateTest,
+                       DISABLED_NavigateToDevtoolsPanel) {
   // Install devtools panel extension.
   const Extension* extension = LoadExtensionFromPath(
       test_extensions_dir_.AppendASCII("devtools_extension_force_update"));
