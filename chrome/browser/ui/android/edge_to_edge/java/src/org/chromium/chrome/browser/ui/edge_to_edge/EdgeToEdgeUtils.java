@@ -642,8 +642,9 @@ public class EdgeToEdgeUtils {
                 }
             }
             mUploadMessage +=
-                    "\n\ncallSite: "
+                    "\nand\ncallSite: "
                             + callSite
+                            + "\nhasSeenNonZeroNavBar"
                             + hasSeenNonZeroNavBar
                             + "\nisSupportedConfiguration: "
                             + isSupportedConfiguration
