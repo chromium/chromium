@@ -4399,6 +4399,7 @@
       "fast/hidpi/2x",
       "fast/dom/HTMLImageElement/image-sizes-2x.html",
       "fast/dom/HTMLImageElement/image-sizes-js-change.html",
+      "fast/scrolling/same-page-navigate.html",
       "http/tests/loading/link-preload-image-sizes-2x.html",
       "http/tests/loading/link-preload-image-srcset-2x.html",
       "http/tests/loading/preload-image-sizes-2x.html",
