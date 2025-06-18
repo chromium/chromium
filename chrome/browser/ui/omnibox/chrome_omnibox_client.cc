@@ -47,6 +47,7 @@
 #include "chrome/browser/preloading/autocomplete_dictionary_preload_service_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service.h"
@@ -835,6 +836,13 @@ ChromeOmniboxClient::GetLensOverlaySuggestInputs() const {
 }
 
 void ChromeOmniboxClient::MaybePrewarmForDefaultSearchEngine() {
+  if (!features::kPrewarmZeroSuggestTrigger.Get()) {
+    // TODO(https://crbug.com/423465927): Consider to add a TriggerPlace enum
+    // argument for this method on adding another triggers, and gate triggers
+    // per the enum.
+    return;
+  }
+
   auto* prerender_manager = PrerenderManager::GetOrCreateForWebContents(
       location_bar_->GetWebContents());
   CHECK(prerender_manager);

@@ -1014,8 +1014,8 @@ class PrewarmOmniboxUIBrowserTest : public PrerenderOmniboxUIBrowserTest {
  public:
   PrewarmOmniboxUIBrowserTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPrewarm,
-        {{"url", "https://search.example.com/prewarm.html"}});
+        features::kPrewarm, {{"url", "https://search.example.com/prewarm.html"},
+                             {"zero_suggest_trigger", "true"}});
   }
   ~PrewarmOmniboxUIBrowserTest() override = default;
 
