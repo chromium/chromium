@@ -29,16 +29,19 @@
 # We may make an exception to the policy for extremely high-value warnings that backslide a lot
 # (such as unsafe buffers), but this is expected to be rare.
 
-# Formatting note: Don't put comments on the same line as a glob pattern! Clang
-# will get confused and the warning won't be suppressed.
+# Formatting Notes:
+# 1. Don't put comments on the same line as a glob pattern! Clang will get confused,
+#    and the warning won't be suppressed.
+# 2. The syntax {/,\\} matches either a backslash or forward slash. They can sometimes
+#    be intermixed in a single path when compiling on Windows.
 
 [unnecessary-virtual-specifier]
 # Can be removed when https://github.com/google/nearby/pull/3392 is merged and rolled
-src:*/third_party/nearby/*
+src:*{/,\\}third_party{/,\\}nearby{/,\\}*
 
 [unique-object-duplication]
 # This warning is extremely difficult to fix in code we don't directly control.
 # As an experiment, we're breaking the policy and suppressing it permanently.
-src:*/third_party/*
+src:*{/,\\}third_party{/,\\}*
 # v8's build system isn't amenable to fixes: https://crbug.com/408259026
-src:*/v8/*
+src:*{/,\\}v8{/,\\}*
