@@ -23,8 +23,6 @@ struct FormSuggestionMetadata {
   // True if the field that triggered the suggestion was (1) obfuscated and (2)
   // determined to be likely a real password field based on a best guess.
   bool likely_from_real_password_field = false;
-  // True if this is a recovery password suggestion.
-  bool is_recovery_password = false;
 };
 
 // Enum class used to determine the feature for in-product help for the
