@@ -2,13 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Note: all tests cases that return a promise from the listener are validating
+// that the behavior matches the behavior of
+// https://github.com/mozilla/webextension-polyfill.
+
 chrome.test.runTests([
   // Tests that a runtime.onMessage() listener can return a promise that will
-  // keep the message port alive until the promise has a chance to resolve.
-  async function onMessagePromiseResolve() {
+  // keep the message port alive until the promise has a chance to resolve to a
+  // string value.
+  async function onMessagePromiseResolveStringValue() {
     const response =
-        await chrome.runtime.sendMessage('return promise resolve value');
+        await chrome.runtime.sendMessage('return promise resolve value string');
     chrome.test.assertEq('promise resolved', response);
+    chrome.test.succeed();
+  },
+
+  // Tests that a runtime.onMessage() listener can return a promise that will
+  // keep the message port alive until the promise has a chance to resolve to a
+  // custom object value.
+  async function onMessagePromiseResolveObjectValue() {
+    const response =
+        await chrome.runtime.sendMessage('return promise resolve value object');
+    chrome.test.assertEq({test_key: 'promise resolved'}, response);
+    chrome.test.succeed();
+  },
+
+  // Tests that a runtime.onMessage() listener can return a promise that will
+  // keep the message port alive until the promise has a chance to resolve to an
+  // error object value. However, the Error object will not be sent along. It'll
+  // be sent as an empty object.
+  async function onMessagePromiseResolveErrorObjectValue() {
+    const response =
+        await chrome.runtime.sendMessage('return promise resolve an error');
+    chrome.test.assertEq({}, response);
     chrome.test.succeed();
   },
 

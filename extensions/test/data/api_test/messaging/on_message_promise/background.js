@@ -21,9 +21,17 @@ async function OnMessageListenerCallsSendResponseAsyncAfterPromise(
 
 function onMessageListener(message, sender, sendResponse) {
   switch (message) {
-    case 'return promise resolve value':
+    case 'return promise resolve value string':
       return new Promise((resolve) => {
         resolve('promise resolved');
+      });
+    case 'return promise resolve value object':
+      return new Promise((resolve) => {
+        resolve({test_key: 'promise resolved'});
+      });
+    case 'return promise resolve an error':
+      return new Promise((resolve) => {
+        resolve(new Error('promise resolve error object message'));
       });
     case 'return promise as an async function':
       return onMessageListenerReturnsPromiseAsAsyncFunction(
