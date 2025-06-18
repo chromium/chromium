@@ -999,25 +999,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="MobileFre.FragmentInflationSpeed{MobileFreFragmentInflationVsAppRestriction}"
-    units="ms" expires_after="2023-06-04">
-  <owner>skym@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Android: Enterprise FRE cannot fully show the first page until the
-    appRestrictions call returns. This suffixed histogram measures when fragment
-    inflation was slower or faster than the appRestrictions call, and wether the
-    UI had to wait. Note this is recorded for all clients, not just enterprise.
-    Not applicable for light weight FRE.
-    {MobileFreFragmentInflationVsAppRestriction}
-  </summary>
-  <token key="MobileFreFragmentInflationVsAppRestriction">
-    <variant name=".FasterThanAppRestriction" summary=""/>
-    <variant name=".SlowerThanAppRestriction" summary=""/>
-  </token>
-</histogram>
-
 <histogram name="MobileFre.FromLaunch.{Target}" units="ms"
     expires_after="2025-11-09">
   <owner>skym@chromium.org</owner>

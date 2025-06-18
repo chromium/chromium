@@ -24,9 +24,7 @@ import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.policy.AppRestrictionsProvider;
 import org.chromium.components.policy.PolicySwitches;
 
-import java.util.LinkedList;
 import java.util.Locale;
-import java.util.Queue;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
@@ -41,10 +39,8 @@ import java.util.concurrent.RejectedExecutionException;
 public class AppRestrictionSupplier implements OneshotSupplier<Boolean> {
     private static final String TAG = "AppRestriction";
 
-    private boolean mInitialized;
     private long mCompletionElapsedRealtimeMs;
     private final OneshotSupplierImpl<Boolean> mSupplier = new OneshotSupplierImpl<>();
-    private final Queue<Callback<Long>> mCompletionTimeCallbacks = new LinkedList<>();
 
     private @Nullable AsyncTask<Boolean> mFetchAppRestrictionAsyncTask;
 
@@ -65,22 +61,6 @@ public class AppRestrictionSupplier implements OneshotSupplier<Boolean> {
     @SuppressWarnings("NullAway")
     public @Nullable Boolean get() {
         return mSupplier.get();
-    }
-
-    /**
-     * Registers a callback for the timestamp from {@link SystemClock#elapsedRealtime} when the app
-     * restrictions call finished. If the restrictions have already been fetched, the callback will
-     * be invoked immediately.
-     *
-     * @param callback Callback to run with the timestamp of completing the fetch.
-     */
-    public void getCompletionElapsedRealtimeMs(Callback<Long> callback) {
-        ThreadUtils.assertOnUiThread();
-        if (mInitialized) {
-            callback.onResult(mCompletionElapsedRealtimeMs);
-        } else {
-            mCompletionTimeCallbacks.add(callback);
-        }
     }
 
     /** Start fetching app restriction on an async thread. */
@@ -129,8 +109,6 @@ public class AppRestrictionSupplier implements OneshotSupplier<Boolean> {
     }
 
     private void onRestrictionDetected(boolean isAppRestricted, long startTime) {
-        mInitialized = true;
-
         // Only record histogram when startTime is valid.
         if (startTime > 0) {
             mCompletionElapsedRealtimeMs = SystemClock.elapsedRealtime();
@@ -144,8 +122,5 @@ public class AppRestrictionSupplier implements OneshotSupplier<Boolean> {
                             isAppRestricted));
         }
         mSupplier.set(isAppRestricted);
-        while (!mCompletionTimeCallbacks.isEmpty()) {
-            mCompletionTimeCallbacks.remove().onResult(mCompletionElapsedRealtimeMs);
-        }
     }
 }

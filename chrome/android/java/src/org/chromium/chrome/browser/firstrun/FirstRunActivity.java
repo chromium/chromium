@@ -405,21 +405,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                         RecordHistogram.recordTimesHistogram(
                                 "MobileFre.FromLaunch.FirstFragmentInflatedV2",
                                 inflationCompletion - mIntentCreationElapsedRealtimeMs);
-                        getAppRestrictionSupplier()
-                                .getCompletionElapsedRealtimeMs(
-                                        restrictionsCompletion -> {
-                                            if (restrictionsCompletion > inflationCompletion) {
-                                                RecordHistogram.recordTimesHistogram(
-                                                        "MobileFre.FragmentInflationSpeed.FasterThanAppRestriction",
-                                                        restrictionsCompletion
-                                                                - inflationCompletion);
-                                            } else {
-                                                RecordHistogram.recordTimesHistogram(
-                                                        "MobileFre.FragmentInflationSpeed.SlowerThanAppRestriction",
-                                                        inflationCompletion
-                                                                - restrictionsCompletion);
-                                            }
-                                        });
                     }
                 };
         mFirstRunFlowSequencer.start();
