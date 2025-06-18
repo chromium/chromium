@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.url.GURL;
 
@@ -157,6 +158,14 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
         }
 
         if (tab == null) return;
+
+        // If ReaderModeDistillInApp is enabled and we're on a reading mode page, always show the
+        // button to give users a way to exit outside of a "back" navigation.
+        if (DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()
+                && DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
+            signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
+            return;
+        }
         final TabDistillabilityProvider tabDistillabilityProvider =
                 TabDistillabilityProvider.get(tab);
         if (tabDistillabilityProvider == null) return;
@@ -174,6 +183,12 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
         final boolean isReaderMode =
                 action == AdaptiveToolbarButtonVariant.READER_MODE
                         && mButtonVisibilitySupplier.getAsBoolean();
+
+        // When on a distilled page, return immediately and don't set reader mode as shown
+        if (DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()
+                && DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
+            return;
+        }
 
         new Handler(Looper.getMainLooper())
                 .postDelayed(

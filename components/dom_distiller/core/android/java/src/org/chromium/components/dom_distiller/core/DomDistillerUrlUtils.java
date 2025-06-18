@@ -20,7 +20,7 @@ import org.chromium.url.GURL;
 @NullMarked
 public final class DomDistillerUrlUtils {
     // Keep in sync with components/dom_distiller/core/url_constants.cc
-    private static final String DOM_DISTILLER_SCHEME = "chrome-distiller";
+    public static final String DOM_DISTILLER_SCHEME = "chrome-distiller";
 
     private DomDistillerUrlUtils() {}
 

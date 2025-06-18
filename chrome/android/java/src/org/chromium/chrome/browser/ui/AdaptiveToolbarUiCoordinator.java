@@ -146,10 +146,7 @@ public class AdaptiveToolbarUiCoordinator {
                         mCurrentTabPriceTrackingStateSupplier);
         ReaderModeToolbarButtonController readerModeToolbarButtonController =
                 new ReaderModeToolbarButtonController(
-                        mContext,
-                        mActivityTabProvider,
-                        mModalDialogManagerSupplier.get(),
-                        AppCompatResources.getDrawable(mContext, R.drawable.ic_mobile_friendly));
+                        mContext, mActivityTabProvider, mModalDialogManagerSupplier.get());
         ReadAloudToolbarButtonController readAloudButtonController =
                 new ReadAloudToolbarButtonController(
                         mContext,

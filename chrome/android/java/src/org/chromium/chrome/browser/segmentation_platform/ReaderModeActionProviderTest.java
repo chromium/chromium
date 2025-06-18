@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionCon
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
@@ -54,6 +55,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
@@ -64,7 +66,11 @@ import java.util.concurrent.TimeoutException;
 @DisableFeatures(DomDistillerFeatures.READER_MODE_USE_READABILITY)
 public class ReaderModeActionProviderTest {
 
+    private static final GURL TEST_URL = new GURL("https://test.com");
+    private static final GURL TEST_DISTILLER_URL = new GURL("chrome-distiller://test.com");
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Tab mMockTab;
     @Mock private WebContents mMockWebContents;
     @Mock private NavigationController mMockNavigationController;
@@ -75,6 +81,7 @@ public class ReaderModeActionProviderTest {
     @Mock private PrefService mPrefService;
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
     @Mock private DomDistillerTabUtilsJni mDomDistillerTabUtilsJni;
+    @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
 
     @Before
     public void setUp() {
@@ -84,9 +91,11 @@ public class ReaderModeActionProviderTest {
         mMockTab.getUserDataHost()
                 .setUserData(ReaderModeManager.USER_DATA_KEY, mMockReaderModeManager);
         when(mMockTab.getWebContents()).thenReturn(mMockWebContents);
+        when(mMockTab.getUrl()).thenReturn(TEST_URL);
         when(mMockWebContents.getNavigationController()).thenReturn(mMockNavigationController);
 
         DomDistillerTabUtilsJni.setInstanceForTesting(mDomDistillerTabUtilsJni);
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
     }
 
     private void initializeReaderModeBackend() {
@@ -272,6 +281,25 @@ public class ReaderModeActionProviderTest {
         verify(mMockSignalAccumulator, Mockito.times(0))
                 .setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
         readabilityHeuristicCallbackCaptor.getValue().onResult(true);
+        verify(mMockSignalAccumulator).setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
+    }
+
+    @Test
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
+    public void testActionAlwaysAvailableInReadingMode() {
+        ReaderModeActionProvider provider = new ReaderModeActionProvider(() -> true);
+
+        setReaderModeBackendSignal(false);
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        ShadowLooper.idleMainLooper();
+
+        verify(mMockSignalAccumulator).setSignal(AdaptiveToolbarButtonVariant.READER_MODE, false);
+
+        when(mMockTab.getUrl()).thenReturn(TEST_DISTILLER_URL);
+        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        ShadowLooper.idleMainLooper();
+
         verify(mMockSignalAccumulator).setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
     }
 }

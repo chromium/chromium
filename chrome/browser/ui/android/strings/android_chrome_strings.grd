@@ -4939,17 +4939,17 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_OPEN_IN_PRODUCT_DEFAULT" desc="Default title for menu item for opening link in browser. [CHAR_LIMIT=30]">
         Open in browser
       </message>
-      <message name="IDS_READER_VIEW_TEXT_ALT" desc='Message shown on the reader mode button bar, to invite the user to tap to open a reader mode. Reader mode extracts content and removes clutter from a web page and puts the result in a panel making it easier to read. This is used when "Reader Mode for Accessibility" is available.'>
+      <message name="IDS_SHOW_READING_MODE_TEXT" desc='Message shown on the reader mode button bar, to invite the user to tap to open a reading mode. Reading mode extracts content and removes clutter from a web page and puts the result in a panel making it easier to read. This is used when "Reader Mode for Accessibility" is available.'>
         Show Reading Mode
       </message>
-      <message name="IDS_READER_MODE_MESSAGE_TITLE" desc="Message shown on the reader mode prompt, to invite the user to tap to open a reader mode.">
+      <message name="IDS_HIDE_READING_MODE_TEXT" desc='Message shown on the reader mode button bar, to invite the user to tap to close reading mode. Returns user to a non-distilled version of the same web page.'>
+        Hide Reading Mode
+      </message>
+      <message name="IDS_READER_MODE_MESSAGE_TITLE" desc="Message shown on the reader mode prompt, to invite the user to tap to open a reading mode.">
         View Reading Mode?
       </message>
       <message name="IDS_READER_MODE_MESSAGE_BUTTON" desc="The label for the button to open the current page in reader mode.">
         View
-      </message>
-      <message name="IDS_READER_MODE_ACTION_CHIP_LABEL_SIMPLIFY_PAGE" desc="The label for the action chip shown on the toolbar to open the current page in reading mode. [CHAR_LIMIT=27]">
-        Reading Mode
       </message>
       <message name="IDS_CONTENT_PROVIDER_SEARCH_DESCRIPTION" desc="Description for Chrome's entry in QSB's list of search suggestion providers [CHAR_LIMIT=32]">
         Bookmarks and web history

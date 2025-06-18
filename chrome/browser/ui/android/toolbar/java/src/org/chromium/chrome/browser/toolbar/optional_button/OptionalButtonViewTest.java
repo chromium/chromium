@@ -159,7 +159,7 @@ public class OptionalButtonViewTest {
                 AppCompatResources.getDrawable(mActivity, R.drawable.ic_mic_white_24dp);
         OnClickListener clickListener = mock(OnClickListener.class);
         OnLongClickListener longClickListener = mock(OnLongClickListener.class);
-        String contentDescription = mActivity.getString(R.string.reader_view_text_alt);
+        String contentDescription = mActivity.getString(R.string.show_reading_mode_text);
 
         // Whether a button is static or dynamic is determined by the button variant.
         ButtonSpec buttonSpec =

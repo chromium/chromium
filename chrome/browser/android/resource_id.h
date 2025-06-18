@@ -60,7 +60,7 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SHIELD_GRAY, R.drawable.gray_shield)
 DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PASSWORD_MANAGER_ERROR,
                     R.drawable.ic_key_error)
 DECLARE_RESOURCE_ID(IDR_ANDROID_IC_MOBILE_FRIENDLY,
-                    R.drawable.ic_mobile_friendly)
+                    R.drawable.ic_mobile_friendly_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_LOCATION_OFF,
                     R.drawable.permission_location_off)
 

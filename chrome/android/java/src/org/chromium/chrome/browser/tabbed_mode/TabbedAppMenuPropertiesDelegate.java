@@ -654,7 +654,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 AppMenuHandler.AppMenuItemType.STANDARD,
                 buildModelForStandardMenuItem(
                         R.id.reader_mode_menu_id,
-                        R.string.reader_view_text_alt,
+                        R.string.show_reading_mode_text,
                         shouldShowIconBeforeItem() ? R.drawable.ic_reader_mode_24dp : 0));
     }
 
