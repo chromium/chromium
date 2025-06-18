@@ -3,6 +3,7 @@ Short Name: onnxruntime_headers
 URL: https://github.com/microsoft/onnxruntime
 Version: v1.22.0
 Revision: f217402897f40ebba457e2421bc0a4702771968e
+Update Mechanism: Manual
 License: MIT
 License File: src/LICENSE
 Shipped: Yes

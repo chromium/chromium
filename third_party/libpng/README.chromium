@@ -1,6 +1,7 @@
 Name: libpng
 URL: http://libpng.org/
 Version: 1.6.43
+Update Mechanism: Manual
 CPEPrefix: cpe:/a:libpng:libpng:1.6.43
 Security Critical: yes
 Shipped: yes

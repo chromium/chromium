@@ -2,6 +2,7 @@ Name: Kraken JavaScript Benchmark
 Short Name: kraken
 URL: http://krakenbenchmark.mozilla.org
 Version: 1.1
+Update Mechanism: Manual
 License: BSD-2-Clause, MPL-1.1, MIT, MPL-2.0
 License File: LICENSE
 Security Critical: no

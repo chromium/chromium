@@ -2,6 +2,7 @@ Name: LCOV - the LTP GCOV extension
 Short Name: lcov
 URL: http://ltp.sourceforge.net/coverage/lcov.php
 Version: 1.10
+Update Mechanism: Manual
 License: GPL-2.0
 License File: COPYING
 Security Critical: no

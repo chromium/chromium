@@ -2,6 +2,7 @@ Name: UnRAR source for decompressing .RAR and other files.
 Short Name: unrar
 URL: https://github.com/aawc/unrar.git
 Revision: b82477a7d45b6998fbcfc504a0fa59aca6345e4c
+Update Mechanism: Manual
 Version: 7.11.0
 License: UnRAR
 License File: src/license.txt

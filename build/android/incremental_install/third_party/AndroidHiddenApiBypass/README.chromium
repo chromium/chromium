@@ -2,6 +2,7 @@ Name: AndroidHiddenApiBypass
 URL: https://github.com/LSPosed/AndroidHiddenApiBypass
 Version: 71aaad4ce558530b4788da67d0e3d9bb3596e9d3
 Revision: 71aaad4ce558530b4788da67d0e3d9bb3596e9d3
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 Security Critical: no

@@ -3,6 +3,7 @@ Short Name: Windows webauthn.h
 URL: https://github.com/Microsoft/webauthn/
 Version: 8
 Revision: 706d98d73a8c3d888e77f0d524f630d551b194c3
+Update Mechanism: Manual
 License: MIT
 License File: LICENSE
 Security Critical: no

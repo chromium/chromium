@@ -3,6 +3,7 @@ Short Name: python-mako
 URL: https://www.makotemplates.org
 Version: 1.2.4
 Date: 2022-11-15
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no

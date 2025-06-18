@@ -2,6 +2,7 @@ Name: opus
 URL: https://gitlab.xiph.org/xiph/opus
 Version: 55513e81
 Revision: 55513e81d8f606bd75d0ff773d2144e5f2a732f5
+Update Mechanism: Manual
 License: Opus-Patent-BSD-3-Clause
 License File: src/COPYING
 Security Critical: yes

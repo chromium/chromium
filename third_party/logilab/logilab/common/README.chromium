@@ -1,6 +1,7 @@
 URL: http://www.logilab.org/project/logilab-common
 Name: logilab-common
 Version: 0.63.2
+Update Mechanism: Manual
 CPEPrefix: cpe:/a:logilab:logilab-common:0.63.2
 License: GPL-2.0
 License File: LICENSE.txt

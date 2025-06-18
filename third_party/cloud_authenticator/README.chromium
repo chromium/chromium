@@ -7,6 +7,7 @@ License Android Compatible: yes
 Security Critical: no
 Shipped: no
 Revision: 96f15a9936af37dcc13ac2994b0d05e067a91406
+Update Mechanism: Manual
 
 Description:
 This directory contains the partial source code for the passkeys enclave. The

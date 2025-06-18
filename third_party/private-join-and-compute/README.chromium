@@ -4,6 +4,7 @@ URL: https://github.com/google/private-join-and-compute
 Version: N/A
 Date: 2025-02-14
 Revision: 08df854f9fa14304fb4f19df48c7b6bc31f140d3
+Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSE
 Security Critical: yes

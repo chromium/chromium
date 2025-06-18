@@ -6,6 +6,7 @@ License File: LICENSE
 Version: 31.0
 CPEPrefix: cpe:/a:google:protobuf:31.0
 Revision: 3d4adad5c4c4e6a6f9f038769b8c90716065b0e4
+Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
 

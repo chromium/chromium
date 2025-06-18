@@ -3,6 +3,7 @@ Short Name: tflite-support
 URL: https://github.com/tensorflow/tflite-support
 Version: a1225b22c45137ed95d98564aac721060fe5515c
 Revision: a1225b22c45137ed95d98564aac721060fe5515c
+Update Mechanism: Manual
 Date: 2025-04-16
 License: Apache-2.0
 License File: LICENSE

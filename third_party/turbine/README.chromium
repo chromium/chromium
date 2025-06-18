@@ -3,6 +3,7 @@ Short Name: turbine
 URL: https://github.com/google/turbine
 Version: N/A
 Revision: DEPS
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 Security Critical: no

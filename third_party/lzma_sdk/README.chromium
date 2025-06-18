@@ -3,6 +3,7 @@ Short Name: lzma
 URL: http://www.7-zip.org/sdk.html
 Version: 24.09
 Date: 2024-12-13
+Update Mechanism: Manual
 License: LZMA-SDK-9.22
 License File: LICENSE
 Security Critical: yes

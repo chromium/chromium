@@ -1,6 +1,7 @@
 Name: Dagger
 Short Name: Dagger
 Version: 2.52
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 Security Critical: No

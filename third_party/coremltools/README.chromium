@@ -3,6 +3,7 @@ Short Name: coremltools
 URL: https://github.com/apple/coremltools
 Version: 8.2
 Revision: 1a0d051c945cfa06d2ef6c9745538ac803f6b2bb
+Update Mechanism: Manual
 License: BSD-3-Clause
 License File: mlmodel/format/LICENSE
 Shipped: yes

@@ -3,6 +3,7 @@ Short Name: gl-matrix
 URL: https://github.com/toji/gl-matrix
 Version: 2.5.1
 Revision: 168577e351366a8473be1a7c287a4876e0dfac77
+Update Mechanism: Manual
 Date: 2018-04-21
 License: MIT
 License File: LICENSE

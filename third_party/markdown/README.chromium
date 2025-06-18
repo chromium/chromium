@@ -5,6 +5,7 @@ Version: 2.3.1
 CPEPrefix: cpe:/a:cebe:markdown:2.3.1
 Date: 2013-03-22
 Revision: 0ea0bac85a749a13381b721cde44214d9193406c
+Update Mechanism: Manual
 License: BSD-3-Clause
 License File: LICENSE
 Security Critical: no

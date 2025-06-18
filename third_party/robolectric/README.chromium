@@ -1,6 +1,7 @@
 Name: Robolectric
 URL: http://robolectric.org
 Version: 15-robolectric-12650502
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 Security Critical: no

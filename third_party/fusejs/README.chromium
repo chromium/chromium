@@ -1,6 +1,7 @@
 Name: Fuse.js
 URL: https://fusejs.io
 Version: 6.4.1
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 License Android Compatible: yes

@@ -2,6 +2,7 @@ Name: Darwin
 URL: https://github.com/apple-oss-distributions/libmalloc
 Version: 409.40.6
 Revision: 387a5a03c017801ecdfe9cbe7f8d69a9b427df68
+Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
 License: APSL-2.0

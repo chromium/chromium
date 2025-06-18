@@ -6,6 +6,7 @@ License File: LICENSE
 Security Critical: no
 Shipped: no
 Version: 3.11
+Update Mechanism: Manual
 
 PLY is used by (at least) the Mojo python bindings, the PPAPI
 IDL generator, and the Blink IDL generator.

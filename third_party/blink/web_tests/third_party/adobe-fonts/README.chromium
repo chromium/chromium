@@ -2,6 +2,7 @@ Name: CSS Orientation Test OpenType Font
 Short Name: css-orientation-test
 URL: https://github.com/adobe-fonts/css-orientation-test
 Version: 1.001
+Update Mechanism: Manual
 License: OFL-1.1
 License File: LICENSE
 Security Critical: no

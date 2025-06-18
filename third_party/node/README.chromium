@@ -3,6 +3,7 @@ Short Name: node
 URL: https://github.com/nodejs/node
 Version: 22.11.0
 Revision: 4e0f2773ff9465148a654dd0a2c1668104c20fec
+Update Mechanism: Manual
 Date: 2024-10-29
 License: Unicode-DFS-2016, NAIST-2003, MIT, HPND, BSD-3-Clause, OpenSSL, Zlib, ISC, BSD-2-Clause, Artistic-2.0, ICU, SSLeay
 License File: LICENSE
@@ -21,6 +22,7 @@ Short Name: mocha
 URL: https://github.com/mochajs/mocha
 Version: 10.4.0
 Revision: 0501b9a278ae40a01f989d70801f4886ee686445
+Update Mechanism: Manual
 License: MIT
 License File: node_modules/mocha/LICENSE
 Security Critical: no
@@ -41,6 +43,7 @@ Short Name: chai
 URL: https://github.com/chaijs/chai
 Version: 5.1.1
 Revision: 37263c08b85f1f7a55d9522607a9b40f2ee651cd
+Update Mechanism: Manual
 Date: 2024-06-20
 License: MIT
 License File: node_modules/chai/LICENSE
@@ -62,6 +65,7 @@ URL: https://www.npmjs.com/package/svgo
 Version: 1.2.0
 Date: 2019-02-24
 Revision: 0cc1d0a3d6d6ea38eb2f764d17fb097d9ffe6b31
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -81,6 +85,7 @@ Name: Typescript Compiler
 Short Name: typescript
 URL: https://www.npmjs.com/package/typescript
 Version: 5.7.2
+Update Mechanism: Manual
 License: Apache-2.0
 Security Critical: no
 Shipped: no
@@ -103,6 +108,7 @@ Name: Type Definition for chai.js library
 Short Name: @types/chai
 URL: https://www.npmjs.com/package/@types/chai
 Version: 4.3.16
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -121,6 +127,7 @@ Name: Type Definition for D3 library
 Short Name: @types/d3
 URL: https://www.npmjs.com/package/@types/d3
 Version: 7.4.0
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -140,6 +147,7 @@ Name: Type Definition for W3C MediaStream Recording
 Short Name: @types/dom-mediacapture-record
 URL: https://www.npmjs.com/package/@types/dom-mediacapture-record
 Version: 1.0.11
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -159,6 +167,7 @@ Name: Type Definition for W3C Image Capture
 Short Name: @types/w3c-image-capture
 URL: https://www.npmjs.com/package/@types/w3c-image-capture
 Version: 1.0.10
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -178,6 +187,7 @@ Name: Type Definition for webrtc
 Short Name: @types/webrtc
 URL: https://www.npmjs.com/package/@types/webrtc
 Version: 0.0.44
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -196,6 +206,7 @@ Name: Type Definition for Google Analytics
 Short Name: @types/google.analytics
 URL: https://www.npmjs.com/package/@types/google.analytics
 Version: 0.0.42
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -216,6 +227,7 @@ Name: Type Definition for OffscreenCanvas
 Short Name: @types/offscreencanvas
 URL: https://www.npmjs.com/package/@types/offscreencanvas
 Version: 2019.6.4
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -235,6 +247,7 @@ Name: ESLint JSDoc Plugin
 Short Name: eslint-plugin-jsdoc
 URL: https://www.npmjs.com/package/eslint-plugin-jsdoc
 Version: 50.2.2
+Update Mechanism: Manual
 License: BSD-3-Clause
 Security Critical: no
 Shipped: no
@@ -253,6 +266,7 @@ Name: ESLint Plugin TypeScript
 Short Name: @typescript-eslint/eslint-plugin
 URL: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
 Version: 8.4.0
+Update Mechanism: Manual
 License: BSD-2-Clause
 Security Critical: no
 Shipped: no
@@ -271,6 +285,7 @@ Name: TypeScript ESLint Parser
 Short Name: @typescript-eslint/parser
 URL: https://www.npmjs.com/package/@typescript-eslint/parser
 Version: 8.4.0
+Update Mechanism: Manual
 License: BSD-2-Clause
 Security Critical: no
 Shipped: no
@@ -290,6 +305,7 @@ Name: Types for the TypeScript-ESTree AST spec
 Short Name: @typescript-eslint/parser
 URL: https://www.npmjs.com/package/@typescript-eslint/types
 Version: 8.4.0
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -310,6 +326,7 @@ Name: TypeScript ESLint Utilities
 Short Name: @typescript-eslint/utils
 URL: https://npmjs.com/package/@typescript-eslint/utils
 Version: 8.4.0
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -328,6 +345,7 @@ Name: Type Definition for Trusted Types
 Short Name: @types/trusted-types
 URL: https://www.npmjs.com/package/@types/trusted-types
 Version: 2.0.7
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -347,6 +365,7 @@ Name: Type Definition for FileSystem API
 Short Name: @types/filesystem
 URL: https://www.npmjs.com/package/@types/filesystem
 Version: 0.0.32
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -366,6 +385,7 @@ Name: Type Definition for FileWriter API
 Short Name: @types/filewriter
 URL: https://www.npmjs.com/package/@types/filewriter
 Version: 0.0.29
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -386,6 +406,7 @@ Name: Type Definition for WebCodecs
 Short Name: @types/dom-webcodecs
 URL: https://www.npmjs.com/package/@types/dom-webcodecs
 Version: 0.1.13
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -405,6 +426,7 @@ Name: Type Definition for MediaStreamTrack Processing
 Short Name: @types/dom-mediacapture-transform
 URL: https://www.npmjs.com/package/@types/dom-mediacapture-transform
 Version: 0.1.10
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -424,6 +446,7 @@ Name: Type Definition for Emscripten
 Short Name: @types/emscripten
 URL: https://www.npmjs.com/package/@types/emscripten
 Version: 1.39.6
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -442,6 +465,7 @@ Name: Lit
 Short Name: lit
 URL: https://lit.dev
 Version: 3.2.1
+Update Mechanism: Manual
 License: BSD-3-Clause
 License File: node_modules/lit/LICENSE
 Security Critical: no
@@ -467,6 +491,7 @@ Name: Mediapipe Tasks Vision
 Short Name: @mediapipe/tasks-vision
 URL: https://www.npmjs.com/package/@mediapipe/tasks-vision
 Version: 0.10.9
+Update Mechanism: Manual
 License: Apache-2.0
 License File: Apache-LICENSE-2.0.txt
 Security Critical: no
@@ -489,6 +514,7 @@ Name: Stylistic rules for ESLint, works for both JavaScript and TypeScript.
 Short Name: @stylistic/eslint-plugin
 URL: https://www.npmjs.com/package/@stylistic/eslint-plugin
 Version: 2.8.0
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -508,6 +534,7 @@ Name: An AST-based pattern checker for JavaScript.
 Short Name: eslint
 URL: https://www.npmjs.com/package/eslint
 Version: 9.10.0
+Update Mechanism: Manual
 License: MIT
 Security Critical: no
 Shipped: no
@@ -524,6 +551,7 @@ Name: Microsoft Authentication Library for JavaScript (MSAL.js) for Browser-Base
 Short Name: msal-browser
 URL: https://www.npmjs.com/package/@azure/msal-browser
 Version: 4.2.1
+Update Mechanism: Manual
 License: MIT
 License File: node_modules/@azure/msal-browser/LICENSE
 Security Critical: yes
@@ -542,6 +570,7 @@ Name: ts-proto
 Short Name: ts-proto
 URL: https://www.npmjs.com/package/ts-proto
 Version: 2.7.0
+Update Mechanism: Manual
 License: Apache-2.0
 License File: node_modules/ts-proto/LICENSE
 Security Critical: no
@@ -560,6 +589,7 @@ Name: @bufbuild/protobuf
 Short Name: bufbuild
 URL: https://www.npmjs.com/package/@bufbuild/protobuf
 Version: 2.2.5
+Update Mechanism: Manual
 License: Apache-2.0
 License File: Apache-LICENSE-2.0.txt
 Security Critical: no
@@ -578,6 +608,7 @@ Name: messageformat
 Short Name: messageformat
 URL: https://www.npmjs.com/package/messageformat
 Version: 4.0.0-11
+Update Mechanism: Manual
 License: Apache-2.0
 License File: Apache-LICENSE-2.0.txt
 License Android Compatible: Yes
@@ -597,6 +628,7 @@ Name: postcss
 Short Name: postcss
 URL: https://www.npmjs.com/package/postcss
 Version: 8.5.3
+Update Mechanism: Manual
 License: MIT
 License Android Compatible: Yes
 Security Critical: no
@@ -615,6 +647,7 @@ Name: postcss-minify
 Short Name: postcss-minify
 URL: https://www.npmjs.com/package/postcss-minify
 Version: 1.1.0
+Update Mechanism: Manual
 License: MIT
 License Android Compatible: Yes
 Security Critical: no

@@ -2,6 +2,7 @@ Name: libgudev
 URL: https://gitlab.gnome.org/GNOME/libgudev
 Version: 238
 Revision: df7c9c9940160307aaeb31347f4776a46f8736a9
+Update Mechanism: Manual
 License: LGPL-2.1
 License File: LICENSE
 Shipped: no

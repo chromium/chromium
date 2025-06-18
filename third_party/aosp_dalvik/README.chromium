@@ -2,6 +2,7 @@ Name: platform/dalvik dx
 Short Name: dalvik-dx
 URL: https://android.googlesource.com/platform/dalvik/+/main/dx/README.txt
 Version: 13.0.0_r24
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

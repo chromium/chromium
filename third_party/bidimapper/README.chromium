@@ -5,6 +5,7 @@ Version: 6.0.0
 Date: 2025-06-17
 Revision: 6acb8b14b4d9cb203da1f999bb1d3e8648504054
 SHA-512: 72ce02dd6f974c6b455df2655edd266cb7d6497ca90e9bd35991b1e7f86ca5334d042335b9cdcc7f5b8630aa0c915fbd49c67afb72ce9d57d9fc0d4a1c0331d2
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 Shipped: yes
@@ -42,6 +43,7 @@ URL: https://github.com/developit/mitt
 Version: 3.0.1
 License: MIT
 Revision: b240473b5707857ba2c6a8e6d707c28d1e39da49
+Update Mechanism: Manual
 Security Critical: no
 Shipped: yes
 License File: licenses/LICENSE.mitt
@@ -53,6 +55,7 @@ URL: https://zod.dev
 Version: 3.25.64
 License: MIT
 Revision: af88d743a7f6b8c1f5a2d43e3282c976833eeee7
+Update Mechanism: Manual
 Security Critical: no
 Shipped: yes
 License File: licenses/LICENSE.zod

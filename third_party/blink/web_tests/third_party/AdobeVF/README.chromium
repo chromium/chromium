@@ -2,6 +2,7 @@ Name: Adobe Variable Font Prototype
 Short Name: AdobeVF
 URL: https://github.com/adobe-fonts/adobe-variable-font-prototype
 Version: 1.003
+Update Mechanism: Manual
 License: OFL-1.1
 License File: LICENSE.md
 Security Critical: no

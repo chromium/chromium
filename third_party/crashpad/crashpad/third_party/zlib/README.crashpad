@@ -3,6 +3,7 @@ Short Name: zlib
 URL: https://zlib.net/
 Version: N/A
 Revision: See zlib/README.chromium
+Update Mechanism: Manual
 License: Zlib
 License File: zlib/LICENSE
 Security Critical: yes

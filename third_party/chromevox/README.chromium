@@ -2,6 +2,7 @@ Name: ChromeVox
 URL: http://code.google.com/p/google-axs-chrome/
 InfoURL: http://www.chromevox.com/
 Version: 1.31.4
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 Security Critical: Yes

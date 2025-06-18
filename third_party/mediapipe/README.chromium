@@ -3,6 +3,7 @@ Short Name: mediapipe
 URL: https://github.com/google/mediapipe
 Version: 5910fe878cc2921b5cba4f6e6efcf6d2fc46263b
 Revision: 5910fe878cc2921b5cba4f6e6efcf6d2fc46263b
+Update Mechanism: Manual
 Date: 2025-05-19
 License: Apache-2.0, X11-Lucent
 License File: LICENSE

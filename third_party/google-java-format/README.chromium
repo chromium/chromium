@@ -2,6 +2,7 @@ Name: google-java-format
 URL: https://github.com/google/google-java-format
 Version: 1.17.0
 Revision: d6b1bcc610a1aadfcbddaa22b9d3fbe1b4c429d7
+Update Mechanism: Manual
 License: NCSA, Apache-2.0
 License File: LICENSE
 Security Critical: no

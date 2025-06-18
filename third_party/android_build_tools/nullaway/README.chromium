@@ -1,6 +1,7 @@
 Name: NullAway
 Short Name: NullAway
 Version: 0.12.7
+Update Mechanism: Autoroll
 License: MIT
 License File: LICENSE
 Security Critical: No

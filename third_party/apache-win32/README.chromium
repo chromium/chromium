@@ -2,6 +2,7 @@ Name: Apache2 (+ PHP)
 Short Name: httpd
 URL: http://www.apache.org
 Version: 2.4.37
+Update Mechanism: Manual
 Security Critical: no
 Shipped: no
 License: Apache-2.0

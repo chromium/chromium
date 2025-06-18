@@ -2,6 +2,7 @@ Name: Libtess2
 URL: https://github.com/memononen/libtess2
 Version: 1.0.3
 Revision: 9a450cc9e5b4b79c36b89648f8b92fe65b6dd407
+Update Mechanism: Manual
 License: SGI-B-2.0
 License File: LICENSE
 Shipped: yes

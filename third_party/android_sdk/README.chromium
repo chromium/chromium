@@ -6,6 +6,7 @@ Version: 36
   Android SDK Emulator 31.2.10
   Android SDK Platform-Tools 36.0.0
   Android SDK Platform API 36
+Update Mechanism: Manual
 Security Critical: no
 Shipped: yes
 License: Apache-2.0

@@ -3,6 +3,7 @@ Short Name: GLFW
 URL: https://github.com/glfw/glfw
 Version: 3.3-dev
 Revision: 2de2589f910b1a85905f425be4d32f33cec092df
+Update Mechanism: Manual
 Security Critical: no
 Shipped: no
 License: Zlib

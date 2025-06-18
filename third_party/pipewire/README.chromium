@@ -2,6 +2,7 @@ Name: PipeWire
 URL: https://gitlab.freedesktop.org/pipewire/pipewire
 Version: 0.3.55
 Revision: 957e3a7b3832dbf61e5530f448bf7e4275fa8476
+Update Mechanism: Manual
 License: MIT
 License File: LICENSE
 Security Critical: no
