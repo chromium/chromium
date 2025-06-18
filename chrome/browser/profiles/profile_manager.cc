@@ -1262,6 +1262,12 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
             << "The keepalive was not added. This may cause a crash during "
             << "teardown. (except in unit tests, where Profiles may not be "
             << "registered with the ProfileManager)";
+    // TODO(crbug.com/368360956): Not incrementing the refcount will cause
+    // `profile` to get destroyed too early. Remove or convert to a CHECK() once
+    // the root cause is fixed.
+    SCOPED_CRASH_KEY_STRING32("ProfileKeepAlive", "origin",
+                              GetKeepAliveOriginName(origin));
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
