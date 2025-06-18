@@ -90,6 +90,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -848,10 +849,32 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 
 #if BUILDFLAG(IS_POSIX)
   g_browser_process_pid = base::GetCurrentProcId();
-  signal(SIGSEGV, SignalHandler);
 
-  if (handle_sigterm_)
-    signal(SIGTERM, SignalHandler);
+  struct sigaction action;
+  action.sa_handler = SignalHandler;
+  sigemptyset(&action.sa_mask);
+  action.sa_flags = 0;
+
+  struct sigaction old_action;
+
+  std::optional<struct sigaction> old_sigsegv_action =
+      sigaction(SIGSEGV, &action, &old_action) == 0 ? std::optional(old_action)
+                                                    : std::nullopt;
+
+  std::optional<struct sigaction> old_sigterm_action =
+      handle_sigterm_ && sigaction(SIGTERM, &action, &old_action) == 0
+          ? std::optional(old_action)
+          : std::nullopt;
+
+  absl::Cleanup restore_signal_handlers = [&old_sigsegv_action,
+                                           &old_sigterm_action] {
+    if (old_sigsegv_action) {
+      sigaction(SIGSEGV, &*old_sigsegv_action, nullptr);
+    }
+    if (old_sigterm_action) {
+      sigaction(SIGTERM, &*old_sigterm_action, nullptr);
+    }
+  };
 
   ShutdownHandler = base::BindOnce(&BrowserTestBase::SignalRunTestOnMainThread,
                                    base::Unretained(this));
