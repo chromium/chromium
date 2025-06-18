@@ -1702,7 +1702,8 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
 
 // Test if unscoped extension are grouped together in zps.
 // TODO(crbug.com/409601761): Test is flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/425974968): Test is flaky on ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MultipleUnscopedExtensionsZeroSuggest \
   DISABLED_MultipleUnscopedExtensionsZeroSuggest
 #else
