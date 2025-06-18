@@ -4439,12 +4439,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TestRawHeadersWithRedirects) {
   params.Set("url", redirect_url.spec());
   SendCommandAsync("Page.navigate", std::move(params));
 
-  // Wait for loadingFinished first, to make sure all redirects are buffered
-  // (this is a workaround for https://crbug.com/424871200, where we may
-  // receive a duplicate notification when one is not buffered at the time
-  // of the call).
-  WaitForNotification("Network.loadingFinished", true);
-
   {
     const base::Value::Dict orig_request =
         WaitForNotification("Network.requestWillBeSent", true);

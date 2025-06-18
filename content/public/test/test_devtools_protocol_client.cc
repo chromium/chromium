@@ -174,15 +174,16 @@ void TestDevToolsProtocolClient::DispatchProtocolMessage(
     }
   } else {
     const std::string* notification = parsed.GetDict().FindString("method");
-    notifications_.push_back(std::move(parsed).TakeDict());
-    if (waiting_for_notification_ != *notification)
+    if (waiting_for_notification_ != *notification) {
+      notifications_.push_back(std::move(parsed).TakeDict());
       return;
-    const base::Value* params = notifications_.back().Find(kParamsParam);
+    }
+    base::Value* params = parsed.GetDict().Find(kParamsParam);
     if (waiting_for_notification_matcher_.is_null() ||
         waiting_for_notification_matcher_.Run(params->GetDict())) {
       waiting_for_notification_ = std::string();
       waiting_for_notification_matcher_ = NotificationMatcher();
-      received_notification_params_ = params->GetDict().Clone();
+      received_notification_params_ = std::move(*params).TakeDict();
       std::move(run_loop_quit_closure_).Run();
     }
   }
