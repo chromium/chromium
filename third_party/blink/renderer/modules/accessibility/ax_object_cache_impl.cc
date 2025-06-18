@@ -6636,17 +6636,19 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
     return;
   }
 
+  // Maximum number of attempts to try to find a next object on the line or to
+  // navigate to a new line. Used to detect unlikely (but theoretically
+  // possible), loops.
+  constexpr int kMaxInlineCursorNextObjectCalls = 350000;
+  int runs = 0;
+
   do {
+    runs++;
     InlineCursor line_cursor = cursor;
 
     // Moves to first LayoutObject that a11y cares about.
     line_cursor.MoveToNextInlineLeaf();
 
-    // Maximum number of attempts to try to find a next object on the line. Used
-    // to
-    // detect unlikely (but theoretically possible), loops.
-    constexpr int kMaxInlineCursorNextObjectCalls = 250000;
-    int runs = 0;
     while (line_cursor) {
       runs++;
 
@@ -6695,7 +6697,7 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
       }
     }
     cursor.MoveToNextLine();
-  } while (cursor);
+  } while (cursor && runs < kMaxInlineCursorNextObjectCalls);
 }
 
 void AXObjectCacheImpl::ConnectToTrailingWhitespaceOnLine(
