@@ -118,6 +118,9 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   gfx::ColorSpace GetRenderingContextColorSpace() const;
   PlainTextPainter& GetPlainTextPainter();
 
+  // Actual RasterMode used for rendering 2d primitives.
+  RasterMode GetRasterMode() const;
+
   // blink::CanvasImageSource
   bool IsOffscreenCanvas() const override;
   bool IsAccelerated() const override;

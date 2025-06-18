@@ -430,6 +430,20 @@ PlainTextPainter& CanvasRenderingContextHost::GetPlainTextPainter() {
   return *plain_text_painter_;
 }
 
+RasterMode CanvasRenderingContextHost::GetRasterMode() const {
+  if (IsHibernating()) {
+    return RasterMode::kCPU;
+  }
+  if (resource_provider_) {
+    return resource_provider_->IsAccelerated() ? RasterMode::kGPU
+                                               : RasterMode::kCPU;
+  }
+
+  // Whether or not to accelerate is not yet resolved, the canvas cannot be
+  // accelerated if the gpu context is lost.
+  return ShouldTryToUseGpuRaster() ? RasterMode::kGPU : RasterMode::kCPU;
+}
+
 bool CanvasRenderingContextHost::IsOffscreenCanvas() const {
   return host_type_ == HostType::kOffscreenCanvasHost;
 }

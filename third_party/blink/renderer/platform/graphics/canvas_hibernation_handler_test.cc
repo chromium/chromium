@@ -230,7 +230,6 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
   SetPageVisible(&host, &handler, platform, true);
   EXPECT_FALSE(handler.is_encoded());
 
-  EXPECT_TRUE(host.GetRasterMode() == RasterMode::kGPU);
   EXPECT_FALSE(handler.IsHibernating());
   EXPECT_TRUE(host.GetResourceProviderForCanvas2D()->IsValid());
 }

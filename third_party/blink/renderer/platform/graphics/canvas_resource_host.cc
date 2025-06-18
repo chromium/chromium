@@ -35,18 +35,4 @@ bool CanvasResourceHost::ShouldTryToUseGpuRaster() const {
   return preferred_2d_raster_mode_ == RasterModeHint::kPreferGPU && CanUseGPU();
 }
 
-RasterMode CanvasResourceHost::GetRasterMode() const {
-  if (IsHibernating()) {
-    return RasterMode::kCPU;
-  }
-  if (resource_provider_) {
-    return resource_provider_->IsAccelerated() ? RasterMode::kGPU
-                                               : RasterMode::kCPU;
-  }
-
-  // Whether or not to accelerate is not yet resolved, the canvas cannot be
-  // accelerated if the gpu context is lost.
-  return ShouldTryToUseGpuRaster() ? RasterMode::kGPU : RasterMode::kCPU;
-}
-
 }  // namespace blink

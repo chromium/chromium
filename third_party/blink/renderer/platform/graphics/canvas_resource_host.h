@@ -76,9 +76,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   bool ShouldTryToUseGpuRaster() const;
   void SetPreferred2DRasterMode(RasterModeHint);
 
-  // Actual RasterMode used for rendering 2d primitives.
-  RasterMode GetRasterMode() const;
-
   // Called when the CC texture layer that this instance is holding (if any)
   // should be cleared. Subclasses that can hold a CC texture layer should
   // override this method. Should only be called if the context is
