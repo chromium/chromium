@@ -3826,6 +3826,8 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
 void WebGLRenderingContextWebGPUBase::Destroy() {
   if (context_) {
     DCHECK(display_ != EGL_NO_DISPLAY);
+    driver_egl_.fn.eglMakeCurrentFn(EGL_NO_DISPLAY, EGL_NO_CONTEXT,
+                                    EGL_NO_SURFACE, EGL_NO_SURFACE);
     driver_egl_.fn.eglDestroyContextFn(display_, context_);
     context_ = EGL_NO_CONTEXT;
   }
