@@ -446,6 +446,13 @@ BASE_FEATURE(kAutofillSupportLastNamePrefix,
              "AutofillSupportLastNamePrefix",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables splitting two-part zip codes into two fields while filling and
+// importing split zip codes from two adjacent fields.
+// TODO(crbug.com/369503318): Clean up when launched.
+BASE_FEATURE(kAutofillSupportSplitZipCode,
+             "AutofillSupportSplitZipCode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the form field parser won't try to match other attributes if
 // any of the negative patterns matched.
 BASE_FEATURE(kAutofillUseNegativePatternForAllAttributes,

@@ -641,6 +641,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillEnableSupportForParsingWithSharedLabels,
       features::kAutofillImproveCityFieldClassification,
       features::kAutofillUseNegativePatternForAllAttributes,
+      features::kAutofillSupportSplitZipCode,
   };
   std::vector<base::test::FeatureRef> disabled_features = {
       // TODO(crbug.com/320965828): Understand the changes to the expectations
