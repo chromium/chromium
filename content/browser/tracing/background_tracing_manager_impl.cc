@@ -580,23 +580,9 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenariosImpl(
       (data_filtering == ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME);
 
   std::vector<std::string> added_scenarios;
-  std::set<raw_ptr<TracingScenario>> conflicting_scenarios;
+  std::set<raw_ptr<TracingScenario>> conflicting_scenarios_set;
+  std::vector<std::unique_ptr<TracingScenario>> conflicting_scenarios;
   for (const auto& scenario_config : config.scenarios()) {
-    if (auto it = preset_scenarios_.find(scenario_config.scenario_name());
-        it != preset_scenarios_.end()) {
-      if (!overwrite_conflicts) {
-        continue;
-      }
-      if (active_scenario_ == it->second.get()) {
-        active_scenario_->Abort();
-        conflicting_scenarios.insert(it->second.get());
-      } else if (it->second->current_state() !=
-                 TracingScenario::State::kDisabled) {
-        it->second->Disable();
-        conflicting_scenarios.insert(it->second.get());
-      }
-    }
-
     auto scenario = TracingScenario::Create(
         scenario_config, enable_privacy_filter, /*is_local_scenario=*/true,
         enable_package_name_filter, true, this);
@@ -607,14 +593,33 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenariosImpl(
       continue;
     }
 
+    if (auto it = preset_scenarios_.find(scenario_config.scenario_name());
+        it != preset_scenarios_.end()) {
+      if (!overwrite_conflicts) {
+        continue;
+      }
+      if (active_scenario_ == it->second.get()) {
+        active_scenario_->Abort();
+        active_scenario_ = nullptr;
+        conflicting_scenarios_set.insert(it->second.get());
+        conflicting_scenarios.emplace_back(std::move(it->second));
+      } else if (it->second->current_state() !=
+                 TracingScenario::State::kDisabled) {
+        it->second->Disable();
+        conflicting_scenarios_set.insert(it->second.get());
+        conflicting_scenarios.emplace_back(std::move(it->second));
+      }
+    }
+
     added_scenarios.push_back(scenario->scenario_name());
     preset_scenarios_[scenario->scenario_name()] = std::move(scenario);
   }
   if (!conflicting_scenarios.empty()) {
     std::erase_if(enabled_scenarios_, [&](raw_ptr<TracingScenario> scenario) {
-      return conflicting_scenarios.contains(scenario);
+      return conflicting_scenarios_set.contains(scenario);
     });
   }
+  conflicting_scenarios_set.clear();
 
   return added_scenarios;
 }
