@@ -281,12 +281,8 @@ All changes to this list should go through Blink's feature review process: http:
     mask-repeat
     mask-size
     mask-type
-    masonry-auto-tracks
     masonry-direction
     masonry-fill
-    masonry-template-tracks
-    masonry-track-end
-    masonry-track-start
     math-depth
     math-shift
     math-style
@@ -802,9 +798,6 @@ All changes to this list should go through Blink's feature review process: http:
     masonry-flow
         masonry-direction
         masonry-fill
-    masonry-track
-        masonry-track-end
-        masonry-track-start
     offset
         offset-anchor
         offset-distance

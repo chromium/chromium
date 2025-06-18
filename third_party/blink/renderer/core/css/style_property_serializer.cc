@@ -642,8 +642,6 @@ String StylePropertySerializer::SerializeShorthand(
       return Get2Values(marginInlineShorthand());
     case CSSPropertyID::kMasonryFlow:
       return GetShorthandValue(masonryFlowShorthand());
-    case CSSPropertyID::kMasonryTrack:
-      return GetShorthandValueForMasonryTrack();
     case CSSPropertyID::kOffset:
       return OffsetValue();
     case CSSPropertyID::kOverflow:
@@ -2467,30 +2465,6 @@ String StylePropertySerializer::GetShorthandValueForGridLine(
   if (CSSOMUtils::IncludeDependentGridLineEndValue(line_start, line_end)) {
     result.Append(separator);
     result.Append(line_end->CssText());
-  }
-
-  return result.ReleaseString();
-}
-
-String StylePropertySerializer::GetShorthandValueForMasonryTrack() const {
-  CHECK_EQ(masonryTrackShorthand().length(), 2u);
-  CHECK_EQ(masonryTrackShorthand().properties()[0],
-           &GetCSSPropertyMasonryTrackStart());
-  CHECK_EQ(masonryTrackShorthand().properties()[1],
-           &GetCSSPropertyMasonryTrackEnd());
-
-  const auto* track_start =
-      property_set_.GetPropertyCSSValue(GetCSSPropertyMasonryTrackStart());
-  const auto* track_end =
-      property_set_.GetPropertyCSSValue(GetCSSPropertyMasonryTrackStart());
-
-  StringBuilder result;
-
-  // `masonry-track-start` is always included.
-  result.Append(track_start->CssText());
-  if (CSSOMUtils::IncludeDependentGridLineEndValue(track_start, track_end)) {
-    result.Append(" / ");
-    result.Append(track_end->CssText());
   }
 
   return result.ReleaseString();

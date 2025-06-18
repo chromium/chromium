@@ -7753,12 +7753,12 @@ Called by update_use_counter_css.py.-->
   <int value="799" label="view-transition-group"/>
   <int value="800" label="position-area"/>
   <int value="801" label="text-box"/>
-  <int value="802" label="masonry-track-end"/>
-  <int value="803" label="masonry-track-start"/>
-  <int value="804" label="masonry-template-tracks"/>
+  <int value="802" label="masonry-track-end (obsolete)"/>
+  <int value="803" label="masonry-track-start (obsolete)"/>
+  <int value="804" label="masonry-template-tracks (obsolete)"/>
   <int value="805" label="text-wrap-mode"/>
   <int value="806" label="text-wrap-style"/>
-  <int value="807" label="masonry-track"/>
+  <int value="807" label="masonry-track (obsolete)"/>
   <int value="808" label="item-tolerance"/>
   <int value="809" label="caret-animation"/>
   <int value="810" label="view-transition-capture-mode (obsolete)"/>
@@ -7766,7 +7766,7 @@ Called by update_use_counter_css.py.-->
   <int value="812" label="masonry-fill"/>
   <int value="813" label="masonry-direction"/>
   <int value="814" label="masonry-flow"/>
-  <int value="815" label="masonry-auto-tracks"/>
+  <int value="815" label="masonry-auto-tracks (obsolete)"/>
   <int value="816" label="result"/>
   <int value="817" label="animation-trigger-type"/>
   <int value="818" label="animation-trigger-timeline"/>

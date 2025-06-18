@@ -267,12 +267,8 @@ mask-position: 0% 0%
 mask-repeat: repeat
 mask-size: auto
 mask-type: luminance
-masonry-auto-tracks: auto
 masonry-direction: column
 masonry-fill: normal
-masonry-template-tracks: auto
-masonry-track-end: auto
-masonry-track-start: auto
 math-depth: 0
 math-shift: normal
 math-style: normal

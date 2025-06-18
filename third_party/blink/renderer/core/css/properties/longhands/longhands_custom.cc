@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/css/css_font_variation_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
-#include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
@@ -4905,7 +4904,7 @@ const CSSValue* GridAutoColumns::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForGridAutoTrackList(style.GridAutoColumns(),
+  return ComputedStyleUtils::ValueForGridAutoTrackList(kForColumns,
                                                        layout_object, style);
 }
 
@@ -4993,8 +4992,8 @@ const CSSValue* GridAutoRows::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForGridAutoTrackList(style.GridAutoRows(),
-                                                       layout_object, style);
+  return ComputedStyleUtils::ValueForGridAutoTrackList(kForRows, layout_object,
+                                                       style);
 }
 
 const CSSValue* GridAutoRows::InitialValue() const {
@@ -6684,23 +6683,6 @@ const CSSValue* MaskType::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.MaskType());
 }
 
-const CSSValue* MasonryAutoTracks::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeGridTrackList(
-      stream, context, css_parsing_utils::TrackListType::kGridAuto);
-}
-
-const CSSValue* MasonryAutoTracks::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForGridAutoTrackList(
-      style.MasonryAutoTracks(), layout_object, style);
-}
-
 const CSSValue* MasonryDirection::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
@@ -6731,63 +6713,6 @@ const CSSValue* ItemTolerance::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForItemTolerance(style.ItemTolerance(),
                                                    style);
-}
-
-const CSSValue* MasonryTemplateTracks::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeGridTemplatesRowsOrColumns(stream, context);
-}
-
-bool MasonryTemplateTracks::IsLayoutDependent(
-    const ComputedStyle* style,
-    LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutMasonry();
-}
-
-const CSSValue* MasonryTemplateTracks::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForMasonryTrackList(layout_object, style);
-}
-
-const CSSValue* MasonryTemplateTracks::InitialValue() const {
-  auto* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
-  return list;
-}
-
-const CSSValue* MasonryTrackEnd::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeGridLine(stream, context);
-}
-
-const CSSValue* MasonryTrackEnd::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForGridPosition(style.MasonryTrackEnd());
-}
-
-const CSSValue* MasonryTrackStart::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeGridLine(stream, context);
-}
-
-const CSSValue* MasonryTrackStart::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForGridPosition(style.MasonryTrackStart());
 }
 
 const CSSValue* MathShift::CSSValueFromComputedStyleInternal(

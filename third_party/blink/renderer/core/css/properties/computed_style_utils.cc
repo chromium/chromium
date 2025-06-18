@@ -1804,10 +1804,13 @@ void AddValuesForNamedGridLinesAtIndex(OrderedNamedLinesCollector& collector,
 }
 
 CSSValue* ComputedStyleUtils::ValueForGridAutoTrackList(
-    const NGGridTrackList& auto_track_list,
+    GridTrackSizingDirection track_direction,
     const LayoutObject* layout_object,
     const ComputedStyle& style) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  const NGGridTrackList& auto_track_list = track_direction == kForColumns
+                                               ? style.GridAutoColumns()
+                                               : style.GridAutoRows();
 
   if (auto_track_list.RepeaterCount() == 1) {
     for (wtf_size_t i = 0; i < auto_track_list.RepeatSize(0); ++i) {
@@ -2186,23 +2189,6 @@ CSSValue* ComputedStyleUtils::ValueForItemTolerance(
     const ComputedStyle& style) {
   return slack_length ? ZoomAdjustedPixelValueForLength(*slack_length, style)
                       : CSSIdentifierValue::Create(CSSValueID::kNormal);
-}
-
-CSSValue* ComputedStyleUtils::ValueForMasonryTrackList(
-    const LayoutObject* layout_object,
-    const ComputedStyle& style) {
-  const auto& computed_track_list = style.MasonryTemplateTracks();
-  DCHECK_GT(computed_track_list.track_list.RepeaterCount(), 0u);
-
-  auto* list = CSSValueList::CreateSpaceSeparated();
-  OrderedNamedLinesCollector collector(
-      computed_track_list.ordered_named_grid_lines,
-      computed_track_list.auto_repeat_ordered_named_grid_lines,
-      computed_track_list.IsSubgriddedAxis(), /*is_layout_grid=*/false);
-
-  PopulateGridTrackListComputedValues(list, collector,
-                                      computed_track_list.track_list, style);
-  return list;
 }
 
 static bool IsSVGObjectWithWidthAndHeight(const LayoutObject& layout_object) {

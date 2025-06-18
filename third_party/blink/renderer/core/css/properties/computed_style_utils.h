@@ -155,7 +155,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static const CSSValue* ValueForFontPalette(const ComputedStyle&);
   static CSSValue* SpecifiedValueForGridTrackSize(const GridTrackSize&,
                                                   const ComputedStyle&);
-  static CSSValue* ValueForGridAutoTrackList(const NGGridTrackList&,
+  static CSSValue* ValueForGridAutoTrackList(GridTrackSizingDirection,
                                              const LayoutObject*,
                                              const ComputedStyle&);
   static CSSValue* ValueForGridTrackList(GridTrackSizingDirection,
@@ -165,8 +165,6 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForGridPosition(const GridPosition&);
   static CSSValue* ValueForItemTolerance(const std::optional<Length>&,
                                          const ComputedStyle&);
-  static CSSValue* ValueForMasonryTrackList(const LayoutObject*,
-                                            const ComputedStyle&);
   static gfx::SizeF UsedBoxSize(const LayoutObject&);
   static CSSValue* RenderTextDecorationFlagsToCSSValue(TextDecorationLine);
   static CSSValue* ValueForTextDecorationStyle(ETextDecorationStyle);

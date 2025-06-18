@@ -2971,43 +2971,6 @@ const CSSValue* MasonryFlow::CSSValueFromComputedStyleInternal(
       value_phase);
 }
 
-bool MasonryTrack::ParseShorthand(
-    bool important,
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  const auto& shorthand = shorthandForProperty(CSSPropertyID::kMasonryTrack);
-  DCHECK_EQ(shorthand.length(), 2u);
-
-  CSSValue *start_value = nullptr, *end_value = nullptr;
-  if (!css_parsing_utils::ConsumeGridItemPositionShorthand(
-          important, stream, context, start_value, end_value)) {
-    return false;
-  }
-
-  css_parsing_utils::AddProperty(
-      shorthand.properties()[0]->PropertyID(), CSSPropertyID::kMasonryTrack,
-      *start_value, important,
-      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  css_parsing_utils::AddProperty(
-      shorthand.properties()[1]->PropertyID(), CSSPropertyID::kMasonryTrack,
-      *end_value, important,
-      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-
-  return true;
-}
-
-const CSSValue* MasonryTrack::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValuesForGridLineShorthand(
-      masonryTrackShorthand(), style, layout_object, allow_visited_style,
-      value_phase);
-}
-
 bool Offset::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
