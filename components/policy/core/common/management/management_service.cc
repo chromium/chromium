@@ -231,4 +231,10 @@ void ManagementService::NotifyEnterpriseLabelUpdated() {
   }
 }
 
+void ManagementService::NotifyEnterpriseLogoForBrowserUpdated() {
+  for (auto& observer : observers_) {
+    observer.OnEnterpriseLogoUpdatedForBrowser();
+  }
+}
+
 }  // namespace policy

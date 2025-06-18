@@ -50,6 +50,8 @@ NewTabFooterHandler::NewTabFooterHandler(
       handler_{this, std::move(pending_handler)} {
   extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
+  management_observation_.Observe(
+      policy::ManagementServiceFactory::GetForProfile(profile_));
   profile_pref_change_registrar_.Init(profile_->GetPrefs());
   profile_pref_change_registrar_.Add(
       prefs::kNTPFooterExtensionAttributionEnabled,
@@ -190,4 +192,8 @@ void NewTabFooterHandler::AttachedTabStateUpdated(const GURL& url) {
     ntp_type = new_tab_footer::mojom::NewTabPageType::kExtension;
   }
   document_->AttachedTabStateUpdated(ntp_type);
+}
+
+void NewTabFooterHandler::OnEnterpriseLogoUpdatedForBrowser() {
+  UpdateManagementNotice();
 }

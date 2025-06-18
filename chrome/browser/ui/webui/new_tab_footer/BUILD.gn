@@ -16,6 +16,7 @@ source_set("new_tab_footer") {
     ":mojo_bindings",
     "//chrome/browser/ui/webui/customize_buttons:mojo_bindings",
     "//chrome/browser/ui/webui/top_chrome",
+    "//components/policy/core/browser",
     "//components/prefs",
     "//extensions/browser:browser",
     "//ui/webui",

@@ -67,6 +67,7 @@ class BrowserManagementService : public ManagementService,
 
   std::unique_ptr<UserCloudPolicyStatusProvider> provider_;
   PrefChangeRegistrar pref_change_registrar_;
+  PrefChangeRegistrar local_state_pref_change_registrar_;
   ui::ImageModel management_icon_for_profile_;
   gfx::Image management_icon_for_browser_;
   base::ScopedObservation<PolicyStatusProvider, PolicyStatusProvider::Observer>

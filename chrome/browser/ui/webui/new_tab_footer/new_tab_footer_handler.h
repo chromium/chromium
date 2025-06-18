@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
@@ -19,7 +20,8 @@
 class Profile;
 
 class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
-                            public extensions::ExtensionRegistryObserver {
+                            public extensions::ExtensionRegistryObserver,
+                            public policy::ManagementService::Observer {
  public:
   NewTabFooterHandler(
       mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>
@@ -46,6 +48,9 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
   // Passes `AttachedTabStateUpdated` calls to the `document_`.
   void AttachedTabStateUpdated(const GURL& url);
 
+  // ManagementService::Observer
+  void OnEnterpriseLogoUpdatedForBrowser() override;
+
  private:
   void OpenUrlInCurrentTab(const GURL& url);
   std::string GetManagementNoticeText();
@@ -68,6 +73,9 @@ class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
+  base::ScopedObservation<policy::ManagementService,
+                          policy::ManagementService::Observer>
+      management_observation_{this};
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

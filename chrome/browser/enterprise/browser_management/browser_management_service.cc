@@ -120,6 +120,16 @@ void BrowserManagementService::StartListeningToPrefChanges(Profile* profile) {
       base::BindRepeating(
           &BrowserManagementService::UpdateEnterpriseLabelForProfile,
           weak_ptr_factory_.GetWeakPtr(), profile));
+
+  auto* browser_process = g_browser_process->local_state();
+  if (browser_process) {
+    local_state_pref_change_registrar_.Init(g_browser_process->local_state());
+    local_state_pref_change_registrar_.Add(
+        prefs::kEnterpriseLogoUrlForBrowser,
+        base::BindRepeating(
+            &BrowserManagementService::UpdateManagementIconForBrowser,
+            weak_ptr_factory_.GetWeakPtr(), profile));
+  }
 }
 
 void BrowserManagementService::UpdateManagementIconForProfile(
@@ -166,6 +176,7 @@ void BrowserManagementService::SetManagementIconForProfile(
 void BrowserManagementService::SetManagementIconForBrowser(
     const gfx::Image& management_icon) {
   management_icon_for_browser_ = management_icon;
+  NotifyEnterpriseLogoForBrowserUpdated();
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

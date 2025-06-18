@@ -519,4 +519,54 @@ TEST_F(NewTabFooterHandlerEnterpriseTest,
   document_.FlushForTesting();
   testing::Mock::VerifyAndClearExpectations(&document_);
 }
+
+TEST_F(NewTabFooterHandlerEnterpriseTest, SettingLogoPolicyUpdatesIcon) {
+  // Simulate browser management.
+  policy::ScopedManagementServiceOverrideForTesting
+      profile_supervised_management(
+          policy::ManagementServiceFactory::GetForProfile(profile()),
+          policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+
+  // Trigger a logo change to set the custom logo.
+  new_tab_footer::mojom::ManagementNoticePtr updated_notice;
+  EXPECT_CALL(document_, SetManagementNotice)
+      .WillOnce(
+          [&updated_notice](new_tab_footer::mojom::ManagementNoticePtr notice) {
+            updated_notice = std::move(notice);
+          });
+  gfx::Image custom_logo = gfx::test::CreateImage(256, 256);
+  policy::ManagementServiceFactory::GetForProfile(profile())
+      ->SetBrowserManagementIconForTesting(custom_logo);
+
+  handler_->OnEnterpriseLogoUpdatedForBrowser();
+
+  // Verify that the icon is set and recognized as a custom icon.
+  document_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&document_);
+  EXPECT_EQ("Managed by your organization", updated_notice->text);
+  // We only test the base URL as the data is very long and not readable.
+  EXPECT_TRUE(base::StartsWith(updated_notice->bitmap_data_url.spec(),
+                               "data:image/png;base64,"));
+  EXPECT_TRUE(updated_notice->is_custom_logo);
+
+  // Trigger a logo change to unset the custom logo.
+  EXPECT_CALL(document_, SetManagementNotice)
+      .WillOnce(
+          [&updated_notice](new_tab_footer::mojom::ManagementNoticePtr notice) {
+            updated_notice = std::move(notice);
+          });
+  policy::ManagementServiceFactory::GetForProfile(profile())
+      ->SetBrowserManagementIconForTesting(gfx::Image());
+
+  handler_->OnEnterpriseLogoUpdatedForBrowser();
+
+  // Verify that there is still a loge (default), and it is not a custom one.
+  document_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&document_);
+  EXPECT_EQ("Managed by your organization", updated_notice->text);
+  // We only test the base URL as the data is very long and not readable.
+  EXPECT_TRUE(base::StartsWith(updated_notice->bitmap_data_url.spec(),
+                               "data:image/png;base64,"));
+  EXPECT_FALSE(updated_notice->is_custom_logo);
+}
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
