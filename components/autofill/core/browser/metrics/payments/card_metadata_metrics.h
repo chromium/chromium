@@ -67,7 +67,20 @@ enum class CardBenefitFormEvent {
   // user had two or more server cards.
   kSuggestionWithBenefitShownWithMultipleServerCards = 1,
 
-  kMaxValue = kSuggestionWithBenefitShownWithMultipleServerCards
+  // TODO(crbug.com/417228483): "2" is reserved for
+  // `kSuggestionWithBenefitSelected`.
+
+  // TODO(crbug.com/417228483): "3" is reserved for
+  // `kSuggestionWithoutBenefitSelected`.
+
+  // A suggestion of a masked server card with a benefit available was selected
+  // when the user had two or more server cards.
+  kSuggestionWithBenefitSelectedWithMultipleServerCards = 4,
+
+  // TODO(crbug.com/417323667): "5" is reserved for
+  // `kSuggestionWithoutBenefitSelectedWithMultipleServerCards`.
+
+  kMaxValue = kSuggestionWithBenefitSelectedWithMultipleServerCards
 };
 
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:CardBenefitFormEvent)
@@ -182,6 +195,12 @@ void LogIsCreditCardBenefitsEnabledAtStartup(bool enabled);
 void LogBenefitFormEventToAllBenefitHistograms(
     const base::flat_map<int64_t, std::string>&
         instrument_ids_to_available_benefit_sources,
+    CardBenefitFormEvent event);
+
+// Log the given `event` to the general benefit histogram, as well as to the
+// `benefit_source`'s specific subhistogram.
+void LogBenefitFormEventToAllBenefitHistograms(
+    const std::string& benefit_source,
     CardBenefitFormEvent event);
 
 // Log the given `event` for card benefits on a benefit source level.
