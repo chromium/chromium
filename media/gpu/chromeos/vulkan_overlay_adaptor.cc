@@ -1011,11 +1011,17 @@ std::unique_ptr<VulkanOverlayAdaptor> VulkanOverlayAdaptor::Create(
       VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
       is_protected ? VK_IMAGE_CREATE_PROTECTED_BIT : 0,
       VK_IMAGE_TILING_OPTIMAL);
+  if (!pivot_image) {
+    return nullptr;
+  }
   auto pivot_texture = VulkanTextureImage::Create(
       *pivot_image, {out_format}, {pivot_image->size()},
       {VK_IMAGE_ASPECT_COLOR_BIT},
       /*is_framebuffer=*/true, convert_render_pass->Get(),
       vulkan_device_queue->GetVulkanDevice());
+  if (!pivot_texture) {
+    return nullptr;
+  }
 
   return base::WrapUnique(new VulkanOverlayAdaptor(
       std::move(vulkan_implementation), std::move(vulkan_device_queue),
