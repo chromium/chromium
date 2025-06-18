@@ -71,12 +71,10 @@ if (is_win) {
   }
 }
 
-component("tracing_metrics") {
+component("background_tracing_metrics_provider") {
   sources = [
     "common/background_tracing_metrics_provider.cc",
     "common/background_tracing_metrics_provider.h",
-    "common/system_profile_metadata_recorder.cc",
-    "common/system_profile_metadata_recorder.h",
     "tracing_export.h",
   ]
 

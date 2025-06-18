@@ -121,12 +121,10 @@ void AddDataSourceConfigs(
   }
 
   // Also capture global metadata.
-  auto* metadata_data_source =
-      AddDataSourceConfig(perfetto_config, tracing::mojom::kMetaData2SourceName,
-                          /*chrome_config_string=*/"",
-                          privacy_filtering_enabled, convert_to_legacy_json,
-                          json_agent_label_filter, enable_package_name_filter);
-  metadata_data_source->mutable_config()->set_target_buffer(1);
+  AddDataSourceConfig(perfetto_config, tracing::mojom::kMetaDataSourceName,
+                      chrome_config_string, privacy_filtering_enabled,
+                      convert_to_legacy_json, json_agent_label_filter,
+                      enable_package_name_filter);
 
   if (stripped_config.IsCategoryGroupEnabled(
           TRACE_DISABLED_BY_DEFAULT("histogram_samples"))) {
@@ -172,6 +170,22 @@ void AddDataSourceConfigs(
         perfetto_config, tracing::mojom::kJavaHeapProfilerSourceName,
         chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
         json_agent_label_filter, enable_package_name_filter);
+  }
+}
+
+size_t GetDefaultTraceBufferSize() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  std::string switch_value = command_line->GetSwitchValueASCII(
+      switches::kDefaultTraceBufferSizeLimitInKb);
+  size_t switch_kilobytes;
+  if (!switch_value.empty() &&
+      base::StringToSizeT(switch_value, &switch_kilobytes)) {
+    return switch_kilobytes;
+  } else {
+    // TODO(eseckler): Reduce the default buffer size after benchmarks set
+    // what they require. Should also invest some time to reduce the overhead
+    // of begin/end pairs further.
+    return 200 * 1024;
   }
 }
 
@@ -256,22 +270,6 @@ void AdaptDataSourceConfig(
 
 }  // namespace
 
-size_t GetDefaultTraceBufferSize() {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  std::string switch_value = command_line->GetSwitchValueASCII(
-      switches::kDefaultTraceBufferSizeLimitInKb);
-  size_t switch_kilobytes;
-  if (!switch_value.empty() &&
-      base::StringToSizeT(switch_value, &switch_kilobytes)) {
-    return switch_kilobytes;
-  } else {
-    // TODO(eseckler): Reduce the default buffer size after benchmarks set
-    // what they require. Should also invest some time to reduce the overhead
-    // of begin/end pairs further.
-    return 200 * 1024;
-  }
-}
-
 perfetto::TraceConfig GetDefaultPerfettoConfig(
     const base::trace_event::TraceConfig& chrome_config,
     bool privacy_filtering_enabled,
@@ -299,10 +297,6 @@ perfetto::TraceConfig GetDefaultPerfettoConfig(
     case base::trace_event::ECHO_TO_CONSOLE:
       NOTREACHED();
   }
-  auto* metadata_buffer_config = perfetto_config.add_buffers();
-  metadata_buffer_config->set_size_kb(kMetadataBufferSizeKb);
-  metadata_buffer_config->set_fill_policy(
-      perfetto::TraceConfig::BufferConfig::DISCARD);
 
   AdaptBuiltinDataSourcesConfig(perfetto_config.mutable_builtin_data_sources(),
                                 privacy_filtering_enabled);

@@ -45,6 +45,28 @@ using base::trace_event::TraceConfig;
 
 namespace content {
 
+namespace {
+
+bool KeyEquals(const base::Value::Dict& dict,
+               const char* key_name,
+               const char* expected) {
+  const std::string* content = dict.FindString(key_name);
+  if (!content)
+    return false;
+  return *content == expected;
+}
+
+bool KeyNotEquals(const base::Value::Dict& dict,
+                  const char* key_name,
+                  const char* expected) {
+  const std::string* content = dict.FindString(key_name);
+  if (!content)
+    return false;
+  return *content != expected;
+}
+
+}  // namespace
+
 class TracingControllerTestEndpoint
     : public TracingController::TraceDataEndpoint {
  public:
@@ -316,6 +338,8 @@ class TracingControllerTest : public ContentBrowserTest {
 #define MAYBE_EnableAndStopTracing DISABLED_EnableAndStopTracing
 #define MAYBE_DisableRecordingStoresMetadata \
   DISABLED_DisableRecordingStoresMetadata
+#define MAYBE_NotWhitelistedMetadataStripped \
+  DISABLED_NotWhitelistedMetadataStripped
 #define MAYBE_EnableAndStopTracingWithFilePath \
   DISABLED_EnableAndStopTracingWithFilePath
 #define MAYBE_EnableAndStopTracingWithCompression \
@@ -327,6 +351,7 @@ class TracingControllerTest : public ContentBrowserTest {
 #else
 #define MAYBE_EnableAndStopTracing EnableAndStopTracing
 #define MAYBE_DisableRecordingStoresMetadata DisableRecordingStoresMetadata
+#define MAYBE_NotWhitelistedMetadataStripped NotWhitelistedMetadataStripped
 #define MAYBE_EnableAndStopTracingWithFilePath EnableAndStopTracingWithFilePath
 #define MAYBE_EnableAndStopTracingWithCompression \
   EnableAndStopTracingWithCompression
@@ -365,6 +390,10 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
   auto* metadata_json = trace_json->GetDict().FindDict("metadata");
   ASSERT_TRUE(metadata_json);
 
+  std::string* network_type = metadata_json->FindString("network-type");
+  ASSERT_TRUE(network_type);
+  EXPECT_FALSE(network_type->empty());
+
   std::string* user_agent = metadata_json->FindString("user-agent");
   ASSERT_TRUE(user_agent);
   EXPECT_FALSE(user_agent->empty());
@@ -376,6 +405,38 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
   std::string* command_line = metadata_json->FindString("command_line");
   ASSERT_TRUE(command_line);
   EXPECT_FALSE(command_line->empty());
+
+  std::string* trace_config = metadata_json->FindString("trace-config");
+  ASSERT_TRUE(trace_config);
+  EXPECT_EQ(TraceConfig().ToString(), *trace_config);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::string* hardware_class = metadata_json->FindString("hardware-class");
+  ASSERT_TRUE(hardware_class);
+  EXPECT_EQ(*hardware_class, "test-hardware-class");
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(TracingControllerTest,
+                       MAYBE_NotWhitelistedMetadataStripped) {
+  TestStartAndStopTracingStringWithFilter();
+  // Check that a number of important keys exist in the metadata dictionary.
+  std::optional<base::Value> trace_json = base::JSONReader::Read(last_data());
+  ASSERT_TRUE(trace_json);
+  const base::Value::Dict* metadata_json =
+      trace_json->GetDict().FindDict("metadata");
+  ASSERT_TRUE(metadata_json);
+
+  EXPECT_TRUE(KeyNotEquals(*metadata_json, "cpu-brand", "__stripped__"));
+  EXPECT_TRUE(KeyNotEquals(*metadata_json, "network-type", "__stripped__"));
+  EXPECT_TRUE(KeyNotEquals(*metadata_json, "os-name", "__stripped__"));
+  EXPECT_TRUE(KeyNotEquals(*metadata_json, "user-agent", "__stripped__"));
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(KeyNotEquals(*metadata_json, "hardware-class", "__stripped__"));
+#endif
+
+  // The following field is not whitelisted and is supposed to be stripped.
+  EXPECT_TRUE(KeyEquals(*metadata_json, "v8-version", "__stripped__"));
 }
 
 IN_PROC_BROWSER_TEST_F(TracingControllerTest,

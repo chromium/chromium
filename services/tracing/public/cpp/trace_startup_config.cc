@@ -88,20 +88,6 @@ TraceStartupConfig& TraceStartupConfig::GetInstance() {
 // static
 perfetto::TraceConfig TraceStartupConfig::GetDefaultBackgroundStartupConfig() {
   perfetto::TraceConfig config;
-
-  {
-    auto* buffer_config = config.add_buffers();
-    buffer_config->set_size_kb(tracing::GetDefaultTraceBufferSize());
-    buffer_config->set_fill_policy(
-        perfetto::TraceConfig::BufferConfig::RING_BUFFER);
-  }
-  {
-    auto* buffer_config = config.add_buffers();
-    buffer_config->set_size_kb(kMetadataBufferSizeKb);
-    buffer_config->set_fill_policy(
-        perfetto::TraceConfig::BufferConfig::DISCARD);
-  }
-
   auto* track_event_data_source = config.add_data_sources()->mutable_config();
   perfetto::protos::gen::TrackEventConfig track_event_config;
   for (auto category : kDefaultStartupCategories) {
@@ -110,11 +96,8 @@ perfetto::TraceConfig TraceStartupConfig::GetDefaultBackgroundStartupConfig() {
   track_event_data_source->set_track_event_config_raw(
       track_event_config.SerializeAsString());
   track_event_data_source->set_name("track_event");
-  {
-    auto* source_config = config.add_data_sources()->mutable_config();
-    source_config->set_name(tracing::mojom::kMetaData2SourceName);
-    source_config->set_target_buffer(1);
-  }
+  config.add_data_sources()->mutable_config()->set_name(
+      tracing::mojom::kMetaDataSourceName);
 
 #if BUILDFLAG(IS_ANDROID)
   config.add_data_sources()->mutable_config()->set_name(

@@ -59,9 +59,6 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   bool ShouldSaveUnuploadedTrace() const override;
   std::unique_ptr<tracing::BackgroundTracingStateManager> CreateStateManager()
       override;
-  std::string RecordSerializedSystemProfileMetrics() const override;
-  tracing::MetadataDataSource::BundleRecorder
-  CreateSystemProfileMetadataRecorder() const override;
 
 #if BUILDFLAG(IS_WIN)
   void GetSystemTracingState(

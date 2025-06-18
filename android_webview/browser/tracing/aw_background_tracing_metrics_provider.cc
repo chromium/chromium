@@ -26,11 +26,10 @@ namespace tracing {
 
 AwBackgroundTracingMetricsProvider::AwBackgroundTracingMetricsProvider() =
     default;
-
 AwBackgroundTracingMetricsProvider::~AwBackgroundTracingMetricsProvider() =
     default;
 
-void AwBackgroundTracingMetricsProvider::Init() {
+void AwBackgroundTracingMetricsProvider::DoInit() {
   tracing::TraceStartupConfig::GetInstance().SetBackgroundStartupTracingEnabled(
       tracing::kStartupFieldTracing.Get());
   SetupFieldTracingFromFieldTrial();
@@ -63,11 +62,11 @@ AwBackgroundTracingMetricsProvider::GetEmbedderMetricsProvider() {
 }
 
 void AwBackgroundTracingMetricsProvider::RecordCoreSystemProfileMetrics(
-    metrics::SystemProfileProto& system_profile_proto) {
+    metrics::SystemProfileProto* system_profile_proto) {
   metrics::MetricsLog::RecordCoreSystemProfile(
       metrics::GetVersionString(),
       metrics::AsProtobufChannel(version_info::android::GetChannel()), false,
-      base::i18n::GetConfiguredLocale(), std::string(), &system_profile_proto);
+      base::i18n::GetConfiguredLocale(), std::string(), system_profile_proto);
 }
 
 }  // namespace tracing

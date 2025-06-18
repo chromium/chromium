@@ -164,7 +164,7 @@ TEST_F(BackgroundTracingManagerTest, SavedCountPreventsStart) {
         manual_trigger_name: "start_trigger"
       }
       trace_config: {
-        data_sources: { config: { name: "org.chromium.trace_metadata2" } }
+        data_sources: { config: { name: "org.chromium.trace_metadata" } }
       }
     }
   )pb";

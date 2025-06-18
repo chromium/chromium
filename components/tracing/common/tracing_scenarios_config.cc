@@ -175,7 +175,7 @@ CreateDefaultPresetTracingScenariosConfig() {
   }
   {
     auto* buffer = trace_config->add_buffers();
-    buffer->set_size_kb(256);
+    buffer->set_size_kb(128);
     buffer->set_fill_policy(
         perfetto::protos::gen::TraceConfig::BufferConfig::DISCARD);
   }

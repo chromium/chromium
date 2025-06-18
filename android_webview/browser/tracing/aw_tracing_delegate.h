@@ -28,9 +28,6 @@ class AwTracingDelegate : public content::TracingDelegate {
                           base::TimeTicks session_start) const override;
   std::unique_ptr<tracing::BackgroundTracingStateManager> CreateStateManager()
       override;
-  std::string RecordSerializedSystemProfileMetrics() const override;
-  tracing::MetadataDataSource::BundleRecorder
-  CreateSystemProfileMetadataRecorder() const override;
 };
 
 }  // namespace android_webview

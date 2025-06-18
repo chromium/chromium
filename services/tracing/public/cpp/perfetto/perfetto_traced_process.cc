@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/custom_event_recorder.h"
 #include "services/tracing/public/cpp/perfetto/histogram_samples_data_source.h"
+#include "services/tracing/public/cpp/perfetto/metadata_data_source.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
 #include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
@@ -377,6 +378,8 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   // kSystemMetricsSourceName.
   tracing::SystemMetricsSampler::Register(/*system_wide=*/enable_consumer);
   if (enable_consumer) {
+    // Metadata only needs to be installed in the browser process.
+    tracing::MetadataDataSource::Register();
 #if BUILDFLAG(IS_WIN)
     // Etw Data Source only needs to be installed in the browser process.
     if (base::FeatureList::IsEnabled(kWindowsSystemTracingInBrowser)) {

@@ -29,10 +29,10 @@ class AwBackgroundTracingMetricsProvider
   ~AwBackgroundTracingMetricsProvider() override;
 
   // metrics::MetricsProvider:
-  void Init() override;
+  void DoInit() override;
 
   void RecordCoreSystemProfileMetrics(
-      metrics::SystemProfileProto& system_profile_proto) override;
+      metrics::SystemProfileProto* system_profile_proto) override;
 
  private:
   // BackgroundTracingMetricsProvider:

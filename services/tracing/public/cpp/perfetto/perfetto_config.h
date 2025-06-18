@@ -20,10 +20,6 @@ class TraceConfig;
 
 namespace tracing {
 
-inline constexpr int kMetadataBufferSizeKb = 256;
-
-size_t COMPONENT_EXPORT(TRACING_CPP) GetDefaultTraceBufferSize();
-
 // Creates a perfetto trace config.
 perfetto::TraceConfig COMPONENT_EXPORT(TRACING_CPP) GetDefaultPerfettoConfig(
     const base::trace_event::TraceConfig& chrome_config,

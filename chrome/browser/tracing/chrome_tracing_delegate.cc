@@ -26,10 +26,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/tracing/common/background_tracing_metrics_provider.h"
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/background_tracing_utils.h"
-#include "components/tracing/common/system_profile_metadata_recorder.h"
 #include "components/tracing/common/tracing_scenarios_config.h"
 #include "components/variations/active_field_trials.h"
 #include "components/version_info/version_info.h"
@@ -143,25 +141,6 @@ std::unique_ptr<tracing::BackgroundTracingStateManager>
 ChromeTracingDelegate::CreateStateManager() {
   return tracing::BackgroundTracingStateManager::CreateInstance(
       g_browser_process->local_state());
-}
-
-std::string ChromeTracingDelegate::RecordSerializedSystemProfileMetrics()
-    const {
-  metrics::SystemProfileProto system_profile_proto;
-  auto recorder = tracing::BackgroundTracingMetricsProvider::
-      GetSystemProfileMetricsRecorder();
-  if (!recorder) {
-    return std::string();
-  }
-  recorder.Run(system_profile_proto);
-  std::string serialized_system_profile;
-  system_profile_proto.SerializeToString(&serialized_system_profile);
-  return serialized_system_profile;
-}
-
-tracing::MetadataDataSource::BundleRecorder
-ChromeTracingDelegate::CreateSystemProfileMetadataRecorder() const {
-  return base::BindRepeating(&tracing::RecordSystemProfileMetadata);
 }
 
 #if BUILDFLAG(IS_WIN)

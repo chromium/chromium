@@ -147,6 +147,11 @@ class BackgroundTracingManager {
                std::optional<std::string> /*serialized_system_profile*/,
                base::OnceClosure /*upload_complete_closure*/)> callback) = 0;
 
+  // Sets a callback that records `SystemProfileProto` when a trace is
+  // collected.
+  virtual void SetSystemProfileRecorder(
+      base::RepeatingCallback<std::string()> recorder) = 0;
+
   // For tests
   virtual void AbortScenarioForTesting() = 0;
   virtual void SaveTraceForTesting(std::string&& trace_data,

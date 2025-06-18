@@ -20,7 +20,6 @@ const string kPerfettoProducerNamePrefix = "org.chromium-";
 const string kTraceEventDataSourceName = "org.chromium.trace_event";
 const string kMemoryInstrumentationDataSourceName = "org.chromium.memory_instrumentation";
 const string kMetaDataSourceName = "org.chromium.trace_metadata";
-const string kMetaData2SourceName = "org.chromium.trace_metadata2";
 const string kSystemTraceDataSourceName = "org.chromium.trace_system";
 const string kArcTraceDataSourceName = "org.chromium.trace_arc";
 const string kSamplerProfilerSourceName = "org.chromium.sampler_profiler";

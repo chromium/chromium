@@ -130,7 +130,7 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
               }
             }
           }
-          data_sources: { config: { name: "org.chromium.trace_metadata2" } }
+          data_sources: { config: { name: "org.chromium.trace_metadata" } }
         }
       }
     )pb";
