@@ -573,11 +573,11 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         boolean titleVisible = !TextUtils.isEmpty(mTitleView.getText());
         boolean titleIconVisible = mTitleIcon.getDrawable() != null;
         boolean titleContainerVisible = titleVisible || titleIconVisible;
-        boolean messageParagraph1Visibile = !TextUtils.isEmpty(mMessageParagraph1.getText());
+        boolean messageParagraph1Visible = !TextUtils.isEmpty(mMessageParagraph1.getText());
         boolean messageParagraph2Visible = !TextUtils.isEmpty(mMessageParagraph2.getText());
         boolean scrollViewVisible =
                 (mTitleScrollable && titleContainerVisible)
-                        || messageParagraph1Visibile
+                        || messageParagraph1Visible
                         || messageParagraph2Visible;
         boolean footerMessageVisible = !TextUtils.isEmpty(mFooterMessageView.getText());
         boolean modalDialogScrollViewVisible =
@@ -586,7 +586,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mTitleView.setVisibility(titleVisible ? View.VISIBLE : View.GONE);
         mTitleIcon.setVisibility(titleIconVisible ? View.VISIBLE : View.GONE);
         mTitleContainer.setVisibility(titleContainerVisible ? View.VISIBLE : View.GONE);
-        mMessageParagraph1.setVisibility(messageParagraph1Visibile ? View.VISIBLE : View.GONE);
+        mMessageParagraph1.setVisibility(messageParagraph1Visible ? View.VISIBLE : View.GONE);
         mTitleScrollView.setVisibility(scrollViewVisible ? View.VISIBLE : View.GONE);
         mMessageParagraph2.setVisibility(messageParagraph2Visible ? View.VISIBLE : View.GONE);
         mModalDialogScrollView.setVisibility(
