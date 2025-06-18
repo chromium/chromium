@@ -25,11 +25,6 @@ CanvasResourceHost::CanvasResourceHost(gfx::Size size) : size_(size) {}
 
 CanvasResourceHost::~CanvasResourceHost() = default;
 
-void CanvasResourceHost::DiscardResourceProvider() {
-  resource_provider_ = nullptr;
-  UpdateMemoryUsage();
-}
-
 void CanvasResourceHost::SetPreferred2DRasterMode(RasterModeHint hint) {
   // TODO(junov): move code that switches between CPU and GPU rasterization
   // to here.

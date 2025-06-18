@@ -67,8 +67,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
       ReplaceResourceProviderForCanvas2D(
           std::unique_ptr<CanvasResourceProvider>) = 0;
 
-  virtual void DiscardResourceProvider();
-
   virtual bool IsPageVisible() const = 0;
 
   virtual bool IsPrinting() const { return false; }

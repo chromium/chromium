@@ -1808,7 +1808,7 @@ void HTMLCanvasElement::DiscardResourceProvider() {
     GetHibernationHandler()->Clear();
   }
   ResetLayer();
-  CanvasResourceHost::DiscardResourceProvider();
+  CanvasRenderingContextHost::DiscardResourceProvider();
   dirty_rect_ = gfx::Rect();
 }
 

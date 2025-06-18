@@ -512,6 +512,11 @@ CanvasRenderingContextHost::ReplaceResourceProviderForCanvas2D(
   return old_resource_provider;
 }
 
+void CanvasRenderingContextHost::DiscardResourceProvider() {
+  resource_provider_ = nullptr;
+  UpdateMemoryUsage();
+}
+
 void CanvasRenderingContextHost::FlushRecordingForCanvas2D(FlushReason reason) {
   CHECK(IsRenderingContext2D());
   if (auto* provider = GetResourceProviderForCanvas2D()) {
