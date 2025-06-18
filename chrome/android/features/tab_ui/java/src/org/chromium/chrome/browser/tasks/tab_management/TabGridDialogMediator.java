@@ -72,9 +72,10 @@ import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
@@ -605,25 +606,16 @@ public class TabGridDialogMediator
         }
 
         mBottomSheetObserver =
-                new BottomSheetObserver() {
+                new EmptyBottomSheetObserver() {
                     @Override
-                    public void onSheetOpened(int reason) {
+                    public void onSheetOpened(@SheetState int reason) {
                         mModel.set(TabGridDialogProperties.SUPPRESS_ACCESSIBILITY, true);
                     }
 
                     @Override
-                    public void onSheetClosed(int reason) {
+                    public void onSheetClosed(@SheetState int reason) {
                         mModel.set(TabGridDialogProperties.SUPPRESS_ACCESSIBILITY, false);
                     }
-
-                    @Override
-                    public void onSheetOffsetChanged(float heightFraction, float offsetPx) {}
-
-                    @Override
-                    public void onSheetStateChanged(int newState, int reason) {}
-
-                    @Override
-                    public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {}
                 };
         mBottomSheetController.addObserver(mBottomSheetObserver);
     }
