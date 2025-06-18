@@ -1814,6 +1814,23 @@ TEST_F(TabStripModelTest, CommandCloseOtherTabs) {
   EXPECT_EQ("0p 1", GetTabStripStateString(tabstrip()));
   tabstrip()->CloseAllTabs();
   EXPECT_TRUE(tabstrip()->empty());
+
+  // Unselected split tab.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 4, 1, {1}));
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->ActivateTabAt(3);
+  ASSERT_EQ("0p 1s 2s 3", GetTabStripStateString(tabstrip()));
+  EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
+      1, TabStripModel::CommandCloseOtherTabs));
+  EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
+      2, TabStripModel::CommandCloseOtherTabs));
+  tabstrip()->ExecuteContextMenuCommand(1,
+                                        TabStripModel::CommandCloseOtherTabs);
+  // The pinned tab and the other tab in the split shouldn't be closed.
+  EXPECT_EQ("0p 1s 2s", GetTabStripStateString(tabstrip()));
+  tabstrip()->CloseAllTabs();
+  EXPECT_TRUE(tabstrip()->empty());
 }
 
 // Tests IsContextMenuCommandEnabled and ExecuteContextMenuCommand with
@@ -1832,6 +1849,23 @@ TEST_F(TabStripModelTest, CommandCloseTabsToRight) {
   tabstrip()->ExecuteContextMenuCommand(0,
                                         TabStripModel::CommandCloseTabsToRight);
   EXPECT_EQ("0", GetTabStripStateString(tabstrip()));
+  tabstrip()->CloseAllTabs();
+  EXPECT_TRUE(tabstrip()->empty());
+
+  // Unselected split tab.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 4, 1, {1}));
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData());
+  tabstrip()->ActivateTabAt(3);
+  ASSERT_EQ("0p 1s 2s 3", GetTabStripStateString(tabstrip()));
+  EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
+      1, TabStripModel::CommandCloseTabsToRight));
+  EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
+      2, TabStripModel::CommandCloseTabsToRight));
+  tabstrip()->ExecuteContextMenuCommand(1,
+                                        TabStripModel::CommandCloseTabsToRight);
+  // The pinned tab and the other tab in the split shouldn't be closed.
+  EXPECT_EQ("0p 1s 2s", GetTabStripStateString(tabstrip()));
   tabstrip()->CloseAllTabs();
   EXPECT_TRUE(tabstrip()->empty());
 }

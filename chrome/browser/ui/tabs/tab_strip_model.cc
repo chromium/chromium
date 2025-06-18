@@ -3066,9 +3066,20 @@ std::vector<int> TabStripModel::GetIndicesClosedByCommand(
         is_selected ? *selection_model().selected_indices().rbegin() : index;
   }
 
+  // If the tab that the context menu command is invoked on is not selected and
+  // also in a split, also exclude tabs from that split from being closed. We
+  // don't have to worry about the case when a split is selected, because all
+  // indices in that split are guaranteed to be part of the selection model.
+  tabs::TabInterface* invoked_tab = GetTabAtIndex(index);
+  gfx::Range indices_to_exclude =
+      invoked_tab->IsSplit()
+          ? GetIndexRangeOfSplit(invoked_tab->GetSplit().value())
+          : gfx::Range(index, index + 1);
+
   // NOTE: callers expect the vector to be sorted in descending order.
   for (int i = count() - 1; i > last_unclosed_tab; --i) {
-    if (i != index && !IsTabPinned(i) && (!is_selected || !IsTabSelected(i))) {
+    if (!indices_to_exclude.Contains(gfx::Range(i, i + 1)) && !IsTabPinned(i) &&
+        (!is_selected || !IsTabSelected(i))) {
       indices.push_back(i);
     }
   }
