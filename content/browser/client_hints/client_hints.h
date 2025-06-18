@@ -71,6 +71,14 @@ CONTENT_EXPORT bool AreCriticalHintsMissing(
     ClientHintsControllerDelegate* delegate,
     const std::vector<network::mojom::WebClientHintsType>& critical_hints);
 
+// Return a list of client hints that are both allowed and cached based on
+// the Accept-CH response header
+// The algorithm follows the `AreCriticalHintsMissing` function.
+CONTENT_EXPORT std::vector<network::mojom::WebClientHintsType>
+GetAddedClientHints(const url::Origin& origin,
+                    FrameTreeNode* frame_tree_node,
+                    ClientHintsControllerDelegate* delegate);
+
 // Updates the user agent client hint headers. This is called if the value of
 // |override_ua| changes after the NavigationRequest was created.
 //

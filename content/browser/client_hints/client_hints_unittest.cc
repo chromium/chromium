@@ -20,6 +20,8 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "third_party/blink/public/common/client_hints/client_hints.h"
 
 namespace content {
 
@@ -309,6 +311,33 @@ TEST_F(ClientHintsTest, SubFrame) {
   delegate.GetAllowedClientHintsFromSource(url::Origin::Create(url),
                                            &current_hints);
   EXPECT_EQ(existing_hints, current_hints.GetEnabledHints());
+}
+
+TEST_F(ClientHintsTest, GetAddedClientHints) {
+  url::Origin origin = url::Origin::Create(GURL(ClientHintsTest::kOriginUrl));
+
+  FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
+  FrameTreeNode* main_frame_node = frame_tree.root();
+
+  blink::UserAgentMetadata ua_metadata;
+  MockClientHintsControllerDelegate delegate(ua_metadata);
+
+  std::vector<network::mojom::WebClientHintsType> expected_types = {
+      network::mojom::WebClientHintsType::kUAArch,
+      network::mojom::WebClientHintsType::kUAWoW64,
+  };
+  delegate.SetAdditionalClientHints(expected_types);
+  // Add default ClientHints.
+  for (const auto& [hint, _] : network::GetClientHintToNameMap()) {
+    if (blink::IsClientHintSentByDefault(hint)) {
+      expected_types.push_back(hint);
+    }
+  }
+  std::vector<network::mojom::WebClientHintsType> actual_types =
+      GetAddedClientHints(origin, main_frame_node, &delegate);
+
+  // We do not care the order of contents.
+  EXPECT_THAT(actual_types, testing::UnorderedElementsAreArray(expected_types));
 }
 
 }  // namespace content
