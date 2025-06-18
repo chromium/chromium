@@ -149,7 +149,7 @@ class SafariDataImporterTest : public testing::Test {
         base::test::RunUntil([&]() { return passwords_callback_called_; }));
   }
 
-  void ExecuteImportPasswords() {
+  void ExecuteImport() {
     passwords_callback_called_ = false;
     importer_.ContinueImport(
         std::vector<int>(),
@@ -221,6 +221,38 @@ class SafariDataImporterTest : public testing::Test {
              bookmarks_callback_called_ && history_callback_called_;
     })) << CallbackTimeoutMessage();
   }
+
+  void ImportFile() {
+    base::FilePath zip_archive_path;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &zip_archive_path));
+    zip_archive_path =
+        zip_archive_path.Append(FILE_PATH_LITERAL("test_archive.zip"));
+
+    passwords_callback_called_ = false;
+    bookmarks_callback_called_ = false;
+    history_callback_called_ = false;
+    payment_cards_callback_called_ = false;
+
+    importer_.StartImport(
+        zip_archive_path,
+        // Use of Unretained below is safe because the RunUntil loop below
+        // guarantees this outlives the tasks.
+        base::BindOnce(&SafariDataImporterTest::OnPasswordsConsumed,
+                       base::Unretained(this)),
+        base::BindOnce(&SafariDataImporterTest::OnBookmarksConsumed,
+                       base::Unretained(this)),
+        base::BindOnce(&SafariDataImporterTest::OnURLsConsumed,
+                       base::Unretained(this)),
+        base::BindOnce(&SafariDataImporterTest::OnPaymentCardsConsumed,
+                       base::Unretained(this)));
+
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return passwords_callback_called_ && payment_cards_callback_called_ &&
+             bookmarks_callback_called_ && history_callback_called_;
+    })) << CallbackTimeoutMessage();
+  }
+
+  void CancelImport() { importer_.CancelImport(); }
 
  private:
   // Formats an error message when timing out while waiting for callbacks.
@@ -328,7 +360,7 @@ TEST_F(SafariDataImporterTest, PasswordImport) {
   ASSERT_EQ(import_results.number_to_import, 3u);
 
   // Confirm password import.
-  ExecuteImportPasswords();
+  ExecuteImport();
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 3u);
   ASSERT_EQ(import_results.number_to_import, 0u);
@@ -353,7 +385,7 @@ TEST_F(SafariDataImporterTest, PasswordImportConflicts) {
   ASSERT_EQ(import_results.number_to_import, 3u);
 
   // Confirm password import.
-  ExecuteImportPasswords();
+  ExecuteImport();
   import_results = GetImportResults();
   ASSERT_EQ(import_results.number_imported, 3u);
   ASSERT_EQ(import_results.number_to_import, 0u);
@@ -378,6 +410,45 @@ TEST_F(SafariDataImporterTest, PasswordImportConflicts) {
 
 TEST_F(SafariDataImporterTest, CallbacksAreCalled) {
   ImportInvalidFile();
+}
+
+TEST_F(SafariDataImporterTest, CancelImport) {
+  ImportFile();
+
+  password_manager::ImportResults import_results = GetImportResults();
+  ASSERT_EQ(import_results.number_to_import, 3u);
+  // TODO(crbug.com/407587751): Update test when bookmarks parsing is
+  // implemented.
+  ASSERT_EQ(GetNumberOfBookmarksImported(), 0);
+  ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
+  ASSERT_EQ(GetNumberOfURLsImported(), 5);  // Note: Approximation.
+
+  CancelImport();
+}
+
+TEST_F(SafariDataImporterTest, ExecuteImport) {
+  ImportFile();
+
+  password_manager::ImportResults import_results = GetImportResults();
+  ASSERT_EQ(import_results.number_to_import, 3u);
+  ASSERT_EQ(import_results.number_imported, 0u);
+  // TODO(crbug.com/407587751): Update test when bookmarks parsing is
+  // implemented.
+  ASSERT_EQ(GetNumberOfBookmarksImported(), 0);
+  ASSERT_EQ(GetNumberOfPaymentCardsImported(), 3);
+  ASSERT_EQ(GetNumberOfURLsImported(), 5);  // Note: Approximation.
+
+  ExecuteImport();
+  import_results = GetImportResults();
+  ASSERT_EQ(import_results.number_imported, 3u);
+  ASSERT_EQ(import_results.number_to_import, 0u);
+  // TODO(crbug.com/407587751): Update test when bookmarks parsing is
+  // implemented.
+  ASSERT_EQ(GetNumberOfBookmarksImported(), 0);
+  // TODO(crbug.com/407587751): Update test when payment cards import is
+  // implemented.
+  ASSERT_EQ(GetNumberOfPaymentCardsImported(), 0);
+  ASSERT_EQ(GetNumberOfURLsImported(), 5);
 }
 
 }  // namespace user_data_importer

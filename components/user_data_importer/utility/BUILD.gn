@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/zip.gni")
 import("//build/rust/rust_static_library.gni")
 
 source_set("safari_data_importer") {
@@ -35,6 +36,37 @@ rust_static_library("zip_ffi_glue") {
   ]
 }
 
+copy("test_archive_files") {
+  sources = [
+    "Bookmarks.html",
+    "History.json",
+    "Passwords.csv",
+    "PaymentCards.json",
+  ]
+  outputs = [ "$target_out_dir/{{source_file_part}}" ]
+}
+
+zip("test_archive") {
+  testonly = true
+  output = "$root_out_dir/test_archive.zip"
+  inputs = [
+    "$target_out_dir/Bookmarks.html",
+    "$target_out_dir/History.json",
+    "$target_out_dir/Passwords.csv",
+    "$target_out_dir/PaymentCards.json",
+  ]
+  deps = [ ":test_archive_files" ]
+}
+
+if (is_ios) {
+  bundle_data("test_archive_bundle_data") {
+    testonly = true
+    public_deps = [ ":test_archive" ]
+    sources = [ "$root_out_dir/test_archive.zip" ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "safari_data_importer_unittest.cc" ]
@@ -55,8 +87,12 @@ source_set("unit_tests") {
   ]
 
   if (is_ios) {
-    deps += [ "//components/password_manager/services/csv_password/ios:fake_password_parser_service" ]
+    deps += [
+      ":test_archive_bundle_data",
+      "//components/password_manager/services/csv_password/ios:fake_password_parser_service",
+    ]
   } else {
+    data_deps = [ ":test_archive" ]
     deps += [ "//components/password_manager/services/csv_password:fake_password_parser_service" ]
   }
 }
