@@ -128,7 +128,12 @@ void PannerHandler::ProcessIfNecessary(uint32_t frames_to_process) {
           // to the downstream nodes.  (For example, a Gain node with a gain of
           // 0 will want to silence its output.)
           UnsilenceOutputs();
+          base::TimeTicks process_start_time = base::TimeTicks::Now();
           Process(frames_to_process);
+          base::TimeDelta process_duration =
+              base::TimeTicks::Now() - process_start_time;
+          uma_reporter_->AddProcessDuration(process_duration,
+                                            frames_to_process);
         }
       } else {
         // We must be in the middle of changing the properties of the panner.

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_HANDLER_H_
 
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_channel_count_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_channel_interpretation.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -25,6 +27,54 @@ class AudioNodeInput;
 class AudioNodeOutput;
 class DeferredTaskHandler;
 class ExceptionState;
+
+// Helper class for UMA reporting of AudioHandler related metrics.
+class AudioHandlerUmaReporter {
+ public:
+  explicit AudioHandlerUmaReporter(const std::string& handler_type_name,
+                                   float sample_rate)
+      : metric_name_("WebAudio.AudioNode.ProcessTimeRatio." +
+                     handler_type_name),
+        sample_rate_(sample_rate) {}
+
+  // Records processing duration and frame count for a Process() call.
+  // Reports the average processing time ratio to UMA after `kReportingInterval`
+  // calls. |duration|: Time taken by the Process() call. |process_frames|:
+  // Number of frames processed in the call.
+  void AddProcessDuration(base::TimeDelta duration, int process_frames) {
+    total_process_duration_ += duration;
+    total_process_frames_ += process_frames;
+    process_count_++;
+    if (process_count_ >= kReportingInterval) {
+      ReportAverageRatioAsPercentage();
+      total_process_duration_ = base::TimeDelta();
+      total_process_frames_ = 0;
+      process_count_ = 0;
+    }
+  }
+
+ private:
+  void ReportAverageRatioAsPercentage() {
+    float total_render_time = total_process_frames_ / sample_rate_;
+    float average_ratio =
+        total_process_duration_.InSecondsF() / total_render_time;
+    // Report as a percentage (e.g., 0.5 ratio -> 50%).
+    int percentage_to_report = static_cast<int>(average_ratio * 100.0);
+    base::UmaHistogramExactLinear(metric_name_.c_str(), percentage_to_report,
+                                  101);
+  }
+
+  static constexpr int kReportingInterval = 1000;
+  std::string metric_name_;
+  float sample_rate_;
+
+  // Total number of frames processed over kReportingInterval calls.
+  uint32_t total_process_frames_ = 0;
+  // Total processing duration accumulated over kReportingInterval calls.
+  base::TimeDelta total_process_duration_;
+  // Counter for Process() calls, reset every kReportingInterval.
+  int process_count_ = 0;
+};
 
 class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
  public:
@@ -240,6 +290,8 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   // The new channel interpretation that will be used to set the actual
   // interpretation in the pre or post rendering phase.
   AudioBus::ChannelInterpretation new_channel_interpretation_;
+
+  std::unique_ptr<AudioHandlerUmaReporter> uma_reporter_;
 
  private:
   void SetNodeType(NodeType);

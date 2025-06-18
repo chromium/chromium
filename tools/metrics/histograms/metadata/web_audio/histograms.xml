@@ -22,6 +22,32 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="NodeType">
+  <variant name="AnalyserNode"/>
+  <variant name="AudioBufferSourceNode"/>
+  <variant name="AudioDestinationNode"/>
+  <variant name="AudioWorkletNode"/>
+  <variant name="BiquadFilterNode"/>
+  <variant name="ChannelMergerNode"/>
+  <variant name="ChannelSplitterNode"/>
+  <variant name="ConstantSourceNode"/>
+  <variant name="ConvolverNode"/>
+  <variant name="DelayNode"/>
+  <variant name="DynamicsCompressorNode"/>
+  <variant name="GainNode"/>
+  <variant name="IIRFilterNode"/>
+  <variant name="MediaElementAudioSourceNode"/>
+  <variant name="MediaStreamAudioDestinationNode"/>
+  <variant name="MediaStreamAudioSourceNode"/>
+  <variant name="OscillatorNode"/>
+  <variant name="PannerNode"/>
+  <variant name="ScriptProcessorNode"/>
+  <variant name="StereoPannerNode"/>
+  <variant name="WaveShaperNode"/>
+<!-- Add any other AudioNode types that will use this UMA metric -->
+
+</variants>
+
 <variants name="RenderMode">
   <variant name="DualThread"
       summary="Dual thread rendering mode. This mode is active when an
@@ -387,6 +413,22 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="ModeTag" variants="RenderMode"/>
   <token key="LatencyTag" variants="WebAudioLatencyTag"/>
+</histogram>
+
+<histogram name="WebAudio.AudioNode.ProcessTimeRatio.{NodeTag}" units="%"
+    expires_after="2025-12-31">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    Reports the ratio of an AudioHandler's Process() method execution time to
+    its allocated time budget for a given render quantum. This is reported as a
+    percentage, averaged over 1000 Process() calls. For example, if Process()
+    consistently takes half the allocated time, 50 will be reported. The maximum
+    recorded percentage is capped at 100. The &quot;NodeTag&quot; suffix
+    indicates the specific type of AudioNode (e.g., GainNode, DelayNode).
+  </summary>
+  <token key="NodeTag" variants="NodeType"/>
 </histogram>
 
 <histogram name="WebAudio.AudioWorklet.PeakDedicatedBackingThreadCount"

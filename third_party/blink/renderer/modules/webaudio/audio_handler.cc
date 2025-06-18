@@ -49,6 +49,8 @@ AudioHandler::AudioHandler(NodeType node_type,
       InstanceCounters::CounterValue(InstanceCounters::kAudioHandlerCounter));
 #endif
   node.context()->WarnIfContextClosed(this);
+  uma_reporter_ = std::make_unique<AudioHandlerUmaReporter>(
+      std::string(NodeTypeName().Utf8()), sample_rate);
 }
 
 AudioHandler::~AudioHandler() {
@@ -324,7 +326,11 @@ void AudioHandler::ProcessIfNecessary(uint32_t frames_to_process) {
       // the downstream nodes.  (For example, a Gain node with a gain of 0 will
       // want to silence its output.)
       UnsilenceOutputs();
+      base::TimeTicks process_start_time = base::TimeTicks::Now();
       Process(frames_to_process);
+      base::TimeDelta process_duration =
+          base::TimeTicks::Now() - process_start_time;
+      uma_reporter_->AddProcessDuration(process_duration, frames_to_process);
     }
 
     if (!silent_inputs) {
