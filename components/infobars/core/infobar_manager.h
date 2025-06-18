@@ -84,8 +84,12 @@ class InfoBarManager {
   // Returns the new infobar if it was successfully added.
   //
   // NOTE: This does not perform any EqualsDelegate() checks like AddInfoBar().
-  InfoBar* ReplaceInfoBar(InfoBar* old_infobar,
-                          std::unique_ptr<InfoBar> new_infobar);
+  template <typename T>
+    requires std::derived_from<T, InfoBar>
+  T* ReplaceInfoBar(InfoBar* old_infobar, std::unique_ptr<T> new_infobar) {
+    return static_cast<T*>(
+        ReplaceInfoBarInternal(old_infobar, std::move(new_infobar)));
+  }
 
   // Returns managed infobars.
   const std::vector<raw_ptr<InfoBar, VectorExperimental>>& infobars() const {
@@ -120,6 +124,9 @@ class InfoBarManager {
 
   InfoBar* AddInfoBarInternal(std::unique_ptr<InfoBar> infobar,
                               bool replace_existing = false);
+
+  InfoBar* ReplaceInfoBarInternal(InfoBar* old_infobar,
+                                  std::unique_ptr<InfoBar> new_infobar);
 
   // InfoBars associated with this InfoBarManager. We own these pointers.
   // However, this is not a vector of unique_ptr, because we don't delete the

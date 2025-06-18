@@ -86,8 +86,9 @@ void InfoBarManager::RemoveAllInfoBars(bool animate) {
   }
 }
 
-InfoBar* InfoBarManager::ReplaceInfoBar(InfoBar* old_infobar,
-                                        std::unique_ptr<InfoBar> new_infobar) {
+InfoBar* InfoBarManager::ReplaceInfoBarInternal(
+    InfoBar* old_infobar,
+    std::unique_ptr<InfoBar> new_infobar) {
   DCHECK(old_infobar);
   DCHECK(new_infobar);
 
