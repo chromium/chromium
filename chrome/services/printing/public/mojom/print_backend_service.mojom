@@ -86,30 +86,27 @@ interface PrintBackendService {
   // If `remote` is valid, binds an interface that is used to communicate with
   // the browser process to parse XML in a separate process.
   Init(string locale,
-       [EnableIf=is_win]
-       pending_remote<PrinterXmlParser>? remote);
+       [EnableIf=is_win] pending_remote<PrinterXmlParser>? remote);
 
   // TODO(crbug.com/40775634)  Message with no arguments and no reply that is
   // useful to ensure that an idle timeout change takes effect.
   Poke();
 
   // Enumerates the list of installed local and network printers.
-  EnumeratePrinters()
-    => (PrinterListResult printer_list);
+  EnumeratePrinters() => (PrinterListResult printer_list);
 
   // Gets the default printer name from the data source.
-  GetDefaultPrinterName()
-    => (DefaultPrinterNameResult printer_name);
+  GetDefaultPrinterName() => (DefaultPrinterNameResult printer_name);
 
   // Gets the semantic capabilities and defaults for a specific printer.
   [EnableIf=is_chromeos]
   GetPrinterSemanticCapsAndDefaults(string printer_name)
-    => (PrinterSemanticCapsAndDefaultsResult printer_caps);
+      => (PrinterSemanticCapsAndDefaultsResult printer_caps);
 
   // Gets the basic info, paper sizes, and semantic capabilities and defaults
   // for a specific printer.
   FetchCapabilities(string printer_name)
-    => (PrinterCapsAndInfoResult printer_caps_and_info);
+      => (PrinterCapsAndInfoResult printer_caps_and_info);
 
   // Gets the printable area for a particular paper size.  Windows only, as a
   // workaround for the high cost of trying to get printable area for all paper
@@ -120,7 +117,7 @@ interface PrintBackendService {
   // fetch the all printable areas in a performant manner.
   [EnableIf=is_win]
   GetPaperPrintableArea(string printer_name, RequestedMedia media)
-    => (gfx.mojom.Rect printable_area_um);
+      => (gfx.mojom.Rect printable_area_um);
 
   // Creates a printing context that can persist across multiple calls.
   // Necessary to ensure that the context used for system dialogs is still
@@ -139,15 +136,14 @@ interface PrintBackendService {
   //   - The AskUserForSettings() call will be invoked.
   //   - (Windows-specific)  If the job settings provided to StartPrinting()
   //     signal to use a system dialog.
-  EstablishPrintingContext(uint32 context_id,
-                           [EnableIf=enable_oop_basic_print_dialog]
-                           uint32 parent_window_id);
+  EstablishPrintingContext(
+      uint32 context_id,
+      [EnableIf=enable_oop_basic_print_dialog] uint32 parent_window_id);
 
   // Generates a print settings object based upon the default settings for the
   // default printer.  `context_id` must be for a context previously created
   // by a call to `EstablishPrintingContext()`.
-  UseDefaultSettings(uint32 context_id)
-    => (PrintSettingsResult settings);
+  UseDefaultSettings(uint32 context_id) => (PrintSettingsResult settings);
 
   // Generates a print settings object from user-selected options via a system
   // print dialog.  `context_id` must be for a context previously created by a
@@ -160,7 +156,7 @@ interface PrintBackendService {
   //     dialog from a service utility process that is modal to a window in the
   //     browser process.  Achieving OOP support for a modal macOS system print
   //     may be possible if all of UI is moved out of the browser process.  See
-  //     https://docs.google.com/document/d/1uAxz9pk3twwkzamchxHTQiImIbKrc0cuKVDpzbn2wsQ
+  // https://docs.google.com/document/d/1uAxz9pk3twwkzamchxHTQiImIbKrc0cuKVDpzbn2wsQ
   //     for discussion on such an effort.
   //   - TODO(crbug.com/40561724):  Determine if Linux Wayland can be made to
   //     have a system dialog be modal against an application window in the
@@ -171,8 +167,7 @@ interface PrintBackendService {
   AskUserForSettings(uint32 context_id,
                      int32 max_pages,
                      bool has_selection,
-                     bool is_scripted)
-    => (PrintSettingsResult settings);
+                     bool is_scripted) => (PrintSettingsResult settings);
 
   // Updates the indicated printing context based upon the job settings used
   // with the device settings.  The driver to be used is expected to be
@@ -181,9 +176,9 @@ interface PrintBackendService {
   // previously created by a call to `EstablishPrintingContext()`.  The updated
   // print settings remain in the context for use when a system dialog is
   // initiated and/or printing of a document is started.
-  UpdatePrintSettings(uint32 context_id,
-                      mojo_base.mojom.DictionaryValue job_settings)
-    => (PrintSettingsResult settings);
+  UpdatePrintSettings(
+      uint32 context_id, mojo_base.mojom.DictionaryValue job_settings)
+      => (PrintSettingsResult settings);
 
   // Submit the document identified by `document_cookie` to be printed.
   // A printing context must already have been setup previously with a call to
@@ -204,37 +199,35 @@ interface PrintBackendService {
   // This value will be non-zero if the job was successfully started, and zero
   // if there is any error.  This matches the behavior for the job ID in
   // `PrintingContext`.
-  StartPrinting(uint32 context_id,
-                int32 document_cookie,
-                mojo_base.mojom.String16 document_name,
-                [EnableIfNot=enable_oop_basic_print_dialog]
-                PrintSettings? settings)
-    => (ResultCode result_code,
-        int32 job_id);
+  StartPrinting(
+      uint32 context_id,
+      int32 document_cookie,
+      mojo_base.mojom.String16 document_name,
+      [EnableIfNot=enable_oop_basic_print_dialog] PrintSettings? settings)
+      => (ResultCode result_code, int32 job_id);
 
   // Render the indicated page as part of print job for `document_cookie`.
   [EnableIf=is_win]
-  RenderPrintedPage(int32 document_cookie,
-                    uint32 page_index,
-                    MetafileDataType page_data_type,
-                    mojo_base.mojom.ReadOnlySharedMemoryRegion serialized_page,
-                    gfx.mojom.Size page_size,
-                    gfx.mojom.Rect page_content_rect,
-                    float shrink_factor)
-    => (ResultCode result_code);
+  RenderPrintedPage(
+      int32 document_cookie,
+      uint32 page_index,
+      MetafileDataType page_data_type,
+      mojo_base.mojom.ReadOnlySharedMemoryRegion serialized_page,
+      gfx.mojom.Size page_size,
+      gfx.mojom.Rect page_content_rect,
+      float shrink_factor) => (ResultCode result_code);
 
- // Render the print job document for `document_cookie`.
+  // Render the print job document for `document_cookie`.
   RenderPrintedDocument(
       int32 document_cookie,
       uint32 page_count,
       MetafileDataType data_type,
       mojo_base.mojom.ReadOnlySharedMemoryRegion serialized_doc)
-    => (ResultCode result_code);
+      => (ResultCode result_code);
 
   // Signals that all data for the document has been provided and final
   // processing and cleanup for the print job should be performed.
-  DocumentDone(int32 document_cookie)
-    => (ResultCode result_code);
+  DocumentDone(int32 document_cookie) => (ResultCode result_code);
 
   // Signal that the document has been canceled and its resources should
   // be released.
