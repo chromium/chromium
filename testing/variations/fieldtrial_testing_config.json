@@ -5238,6 +5238,24 @@
             ]
         }
     ],
+    "ChromnientPermissionBubbleAlt": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensOverlayPermissionBubbleAlt"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientSidePanelOpenInNewTab": [
         {
             "platforms": [
