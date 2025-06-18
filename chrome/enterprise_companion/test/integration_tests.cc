@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/app/app.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
@@ -881,4 +882,25 @@ TEST_F(IntegrationTests, GroupPolicyProxy_BadProxyServer) {
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(CHROMIUM_BRANDING)
+
+// The application should be able to install over a previous version.
+TEST_F(IntegrationTests, OverInstallRealOld) {
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().InstallOlderVersion());
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+
+  // The server process should be shut down by the install process. Reset the
+  // handle in the test fixture to ensure that a second shutdown is not
+  // attempted during `TearDown`.
+  EXPECT_EQ(WaitForProcess(server_process_), 0);
+  server_process_ = base::Process();
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
+}
+
+#endif  // BUILDFLAG(CHROMIUM_BRANDING)
 }  // namespace enterprise_companion

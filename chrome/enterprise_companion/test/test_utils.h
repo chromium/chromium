@@ -9,6 +9,7 @@
 
 #include "base/functional/function_ref.h"
 #include "base/process/process.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
 namespace enterprise_companion {
@@ -64,8 +65,16 @@ class TestMethods {
   // Installs the application under test via the bundled installer.
   virtual void Install();
 
+#if BUILDFLAG(CHROMIUM_BRANDING)
+  // Returns the path to an older application version's binary.
+  virtual base::FilePath GetOlderVersionExePath() = 0;
+
+  // Installs a real previously-built version of the application.
+  virtual void InstallOlderVersion();
+#endif
+
  private:
-  void RunAppUnderTest(const std::string& switch_string);
+  void RunApp(const base::FilePath& exe_path, const std::string& switch_string);
 };
 
 TestMethods& GetTestMethods();

@@ -195,6 +195,7 @@ source_set("test_utils") {
     ":version_header",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//chrome/enterprise_companion/device_management_storage:device_management_storage",
     "//testing/gtest",
   ]
@@ -286,7 +287,7 @@ test("enterprise_companion_integration_tests") {
     ":version_header",
     "//base",
     "//base/test:test_support",
-    "//base/test:test_support",
+    "//build:branding_buildflags",
     "//chrome/enterprise_companion/device_management_storage",
     "//chrome/enterprise_companion/proto",
     "//chrome/enterprise_companion/telemetry_logger/proto",
@@ -312,6 +313,11 @@ test("enterprise_companion_integration_tests") {
     data_deps += [ ":enterprise_companion_test" ]
   } else if (is_linux) {
     data_deps += [ ":enterprise_companion_test" ]
+  }
+
+  if (!is_chrome_branded) {
+    data_deps +=
+        [ "//third_party/enterprise_companion:old_enterprise_companion" ]
   }
 
   data_deps += [ ":integration_test_service_files" ]

@@ -26,6 +26,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/flags.h"
@@ -124,17 +125,24 @@ void TestMethods::ExpectInstalled() {
 }
 
 void TestMethods::Install() {
-  RunAppUnderTest(kInstallSwitch);
+  RunApp(GetTestExePath(), kInstallSwitch);
 }
 
-void TestMethods::RunAppUnderTest(const std::string& switch_string) {
+#if BUILDFLAG(CHROMIUM_BRANDING)
+void TestMethods::InstallOlderVersion() {
+  RunApp(GetOlderVersionExePath(), kInstallSwitch);
+}
+#endif  // #if BUILDFLAG(CHROMIUM_BRANDING)
+
+void TestMethods::RunApp(const base::FilePath& exe_path,
+                         const std::string& switch_string) {
   const base::FilePath test_exe_path = GetTestExePath();
   ASSERT_TRUE(base::PathExists(test_exe_path));
 
   base::CommandLine command_line(test_exe_path);
   command_line.AppendSwitch(switch_string);
-  base::Process installer_process = base::LaunchProcess(command_line, {});
-  ASSERT_EQ(WaitForProcess(installer_process), 0);
+  base::Process process = base::LaunchProcess(command_line, {});
+  ASSERT_EQ(WaitForProcess(process), 0);
 }
 
 }  // namespace enterprise_companion

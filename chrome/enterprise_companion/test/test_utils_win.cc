@@ -20,6 +20,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
 #include "chrome/enterprise_companion/installer.h"
@@ -72,6 +74,24 @@ class TestMethodsWin : public TestMethods {
                            KEY_QUERY_VALUE | KEY_WOW64_32KEY),
               ERROR_SUCCESS);
   }
+
+#if BUILDFLAG(CHROMIUM_BRANDING)
+  base::FilePath GetOlderVersionExePath() override {
+    return base::PathService::CheckedGet(base::DIR_EXE)
+        .Append(L"old_enterprise_companion")
+#if defined(ARCH_CPU_X86_64)
+        .Append(L"chromium_win_x86_64")
+#elif defined(ARCH_CPU_X86)
+        .Append(L"chromium_win_x86")
+#elif defined(ARCH_CPU_ARM64)
+        .Append(L"chromium_win_x86_64")
+#else
+#error Unsupported architecture
+#endif
+        .Append(L"cipd")
+        .Append(L"enterprise_companion.exe");
+  }
+#endif
 };
 
 }  // namespace

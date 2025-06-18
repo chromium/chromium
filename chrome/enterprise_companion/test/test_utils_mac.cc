@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,6 +52,31 @@ class TestMethodsMac : public TestMethods {
     InstallFakeKSAdmin(/*should_succeed=*/true);
     TestMethods::Install();
   }
+
+#if BUILDFLAG(CHROMIUM_BRANDING)
+  void InstallOlderVersion() override {
+    InstallFakeKSAdmin(/*should_succeed=*/true);
+    TestMethods::InstallOlderVersion();
+  }
+#endif  // #if BUILDFLAG(CHROMIUM_BRANDING)
+
+#if BUILDFLAG(CHROMIUM_BRANDING)
+  base::FilePath GetOlderVersionExePath() override {
+    return base::PathService::CheckedGet(base::DIR_EXE)
+        .Append("old_enterprise_companion")
+#if defined(ARCH_CPU_ARM64)
+        .Append("chromium_mac_arm64")
+#elif defined(ARCH_CPU_X86_64)
+        .Append("chromium_mac_amd64")
+#else
+#error Unsupported architecture
+#endif
+        .Append("cipd")
+        .Append(base::StrCat({PRODUCT_FULLNAME_STRING, ".app"}))
+        .Append("Contents/MacOS")
+        .Append(PRODUCT_FULLNAME_STRING);
+  }
+#endif
 };
 
 }  // namespace

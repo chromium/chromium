@@ -1,0 +1,41 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//chrome/enterprise_companion/buildflags.gni")
+
+if (enable_enterprise_companion) {
+  copy("old_enterprise_companion") {
+    assert(
+        !is_chrome_branded,
+        "Old enterprise companion versions are only available for Chromium-branded builds.")
+    testonly = true
+    outputs = [
+      "$root_build_dir/old_enterprise_companion/{{source_target_relative}}",
+    ]
+    sources = []
+
+    if (is_linux) {
+      sources += [ "chromium_linux64/cipd/enterprise_companion" ]
+    } else if (is_mac) {
+      foreach(arch,
+              [
+                "amd64",
+                "arm64",
+              ]) {
+        _bin_dir = "chromium_mac_" + arch + "/cipd"
+        sources += [
+          _bin_dir + "/ChromiumEnterpriseCompanion.app/Contents/MacOS/ChromiumEnterpriseCompanion",
+          _bin_dir + "/ChromiumEnterpriseCompanion.app/Contents/PkgInfo",
+          _bin_dir + "/ChromiumEnterpriseCompanion.app/Contents/Info.plist",
+        ]
+      }
+    } else if (is_win) {
+      sources += [
+        "chromium_win_x86/cipd/enterprise_companion.exe",
+        "chromium_win_x86_64/cipd/enterprise_companion.exe",
+      ]
+    }
+  }
+}
