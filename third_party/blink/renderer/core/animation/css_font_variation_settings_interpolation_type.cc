@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/length_units_checker.h"
 #include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_font_variation_value.h"
@@ -148,17 +149,21 @@ InterpolationValue CSSFontVariationSettingsInterpolationType::MaybeConvertValue(
     ConversionCheckers& conversion_checkers) const {
   if (const auto* value_list = DynamicTo<CSSValueList>(value)) {
     for (const CSSValue* feature : *value_list) {
-      if (To<cssvalue::CSSFontVariationValue>(feature)
-              ->Value()
-              ->IsElementDependent()) {
+      const CSSPrimitiveValue* primitive_value =
+          To<cssvalue::CSSFontVariationValue>(feature)->Value();
+      if (primitive_value->IsElementDependent()) {
         conversion_checkers.push_back(
             TreeCountingChecker::Create(state.CssToLengthConversionData()));
         break;
       }
+      CSSPrimitiveValue::LengthTypeFlags types;
+      primitive_value->AccumulateLengthUnitTypes(types);
+      if (CSSInterpolationType::ConversionChecker* length_units_checker =
+              LengthUnitsChecker::MaybeCreate(types, state)) {
+        conversion_checkers.push_back(length_units_checker);
+      }
     }
   }
-  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
-  // if necessary.
   scoped_refptr<FontVariationSettings> settings =
       StyleBuilderConverter::ConvertFontVariationSettings(state, value);
   return ConvertFontVariationSettings(settings.get());
