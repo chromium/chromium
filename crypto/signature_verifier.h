@@ -1,6 +1,9 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// This interface is deprecated and being removed: https://crbug.com/406190025.
+// New users should use crypto/sign instead.
 
 #ifndef CRYPTO_SIGNATURE_VERIFIER_H_
 #define CRYPTO_SIGNATURE_VERIFIER_H_
@@ -18,6 +21,7 @@ namespace crypto {
 
 // The SignatureVerifier class verifies a signature using a bare public key
 // (as opposed to a certificate).
+// TODO(https://crbug.com/406190025): Delete this.
 class CRYPTO_EXPORT SignatureVerifier {
  public:
   // The set of supported signature algorithms. Extend as required.

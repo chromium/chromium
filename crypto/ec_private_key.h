@@ -1,6 +1,9 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// This interface is deprecated and being removed: https://crbug.com/425863216.
+// New users should use crypto/keypair instead.
 
 #ifndef CRYPTO_EC_PRIVATE_KEY_H_
 #define CRYPTO_EC_PRIVATE_KEY_H_
@@ -21,9 +24,7 @@ namespace crypto {
 
 // Encapsulates an elliptic curve (EC) private key. Can be used to generate new
 // keys, export keys to other formats, or to extract a public key.
-// TODO(mattm): make this and RSAPrivateKey implement some PrivateKey interface.
-// (The difference in types of key() and public_key() make this a little
-// tricky.)
+// TODO(https://crbug.com/425863216): Delete this.
 class CRYPTO_EXPORT ECPrivateKey {
  public:
   ECPrivateKey(const ECPrivateKey&) = delete;

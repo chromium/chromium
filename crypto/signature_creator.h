@@ -1,6 +1,9 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// This interface is deprecated and being removed: https://crbug.com/406190025.
+// New users should use crypto/sign instead.
 
 #ifndef CRYPTO_SIGNATURE_CREATOR_H_
 #define CRYPTO_SIGNATURE_CREATOR_H_
@@ -20,6 +23,7 @@ class RSAPrivateKey;
 
 // Signs data using a bare private key (as opposed to a full certificate).
 // Currently can only sign data using SHA-1 or SHA-256 with RSA PKCS#1v1.5.
+// TODO(https://crbug.com/406190025): Delete this.
 class CRYPTO_EXPORT SignatureCreator {
  public:
   // The set of supported hash functions. Extend as required.

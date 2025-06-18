@@ -1,6 +1,9 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// This interface is deprecated and being removed: https://crbug.com/425863216.
+// New users should use crypto/keypair instead.
 
 #ifndef CRYPTO_RSA_PRIVATE_KEY_H_
 #define CRYPTO_RSA_PRIVATE_KEY_H_
@@ -20,7 +23,7 @@ namespace crypto {
 
 // Encapsulates an RSA private key. Can be used to generate new keys, export
 // keys to other formats, or to extract a public key.
-// TODO(hclam): This class should be ref-counted so it can be reused easily.
+// TODO(https://crbug.com/425863216): Delete this.
 class CRYPTO_EXPORT RSAPrivateKey {
  public:
   RSAPrivateKey(const RSAPrivateKey&) = delete;

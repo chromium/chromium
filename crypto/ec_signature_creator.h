@@ -1,6 +1,9 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// This interface is deprecated and being removed: https://crbug.com/406190025.
+// New users should use crypto/sign instead.
 
 #ifndef CRYPTO_EC_SIGNATURE_CREATOR_H_
 #define CRYPTO_EC_SIGNATURE_CREATOR_H_
@@ -22,6 +25,7 @@ class ECSignatureCreator;
 // Signs data using a bare private key (as opposed to a full certificate).
 // We need this class because SignatureCreator is hardcoded to use
 // RSAPrivateKey.
+// TODO(https://crbug.com/406190025): Delete this.
 class CRYPTO_EXPORT ECSignatureCreator {
  public:
   virtual ~ECSignatureCreator() {}
