@@ -51,11 +51,13 @@ const SharedImagePoolId& ClientImage::GetPoolIdForTesting() const {
 SharedImagePoolBase::SharedImagePoolBase(
     const SharedImagePoolId& pool_id,
     const ImageInfo& image_info,
+    std::string_view debug_label,
     const scoped_refptr<SharedImageInterface> sii,
     std::optional<uint8_t> max_pool_size,
     std::optional<base::TimeDelta> unused_resource_expiration_time)
     : pool_id_(pool_id),
       image_info_(image_info),
+      debug_label_(debug_label),
       sii_(std::move(sii)),
       max_pool_size_(std::move(max_pool_size)),
       unused_resource_expiration_time_(
@@ -84,13 +86,13 @@ SharedImagePoolBase::CreateSharedImageInternal() {
     return sii_->CreateSharedImage(
         {image_info_.format, image_info_.size, image_info_.color_space,
          image_info_.surface_origin, image_info_.alpha_type, image_info_.usage,
-         "SharedImagePoolMappable"},
+         debug_label_ + "Mappable"},
         gpu::kNullSurfaceHandle, image_info_.buffer_usage.value());
   } else {
     return sii_->CreateSharedImage(
         {image_info_.format, image_info_.size, image_info_.color_space,
          image_info_.surface_origin, image_info_.alpha_type, image_info_.usage,
-         "SharedImagePool"},
+         debug_label_},
         gpu::kNullSurfaceHandle);
   }
 }

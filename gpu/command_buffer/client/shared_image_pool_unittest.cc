@@ -66,7 +66,8 @@ class ExtendedClientImage : public ClientImage {
 TEST_F(SharedImagePoolTest, VerifyImage) {
   ImageInfo info = {
       gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
-  auto pool = SharedImagePool<ClientImage>::Create(info, test_sii_);
+  auto pool =
+      SharedImagePool<ClientImage>::Create(info, test_sii_, "SIPoolTest");
 
   auto image = pool->GetImage();
   // Verify shared image is created.
@@ -79,7 +80,8 @@ TEST_F(SharedImagePoolTest, VerifyImage) {
 TEST_F(SharedImagePoolTest, ReleaseAndRecycleImage) {
   ImageInfo info = {
       gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
-  auto pool = SharedImagePool<TestClientImage>::Create(info, test_sii_);
+  auto pool =
+      SharedImagePool<TestClientImage>::Create(info, test_sii_, "SIPoolTest");
 
   auto image1 = pool->GetImage();
   auto image1_id = image1->id;
@@ -96,8 +98,8 @@ TEST_F(SharedImagePoolTest, MaxPoolSizeBehavior) {
   ImageInfo info = {
       gfx::Size(1024, 768), viz::SinglePlaneFormat::kRGBA_8888, {}};
   const auto max_pool_size = 1;
-  auto pool =
-      SharedImagePool<TestClientImage>::Create(info, test_sii_, max_pool_size);
+  auto pool = SharedImagePool<TestClientImage>::Create(
+      info, test_sii_, "SIPoolTest", max_pool_size);
 
   auto image1 = pool->GetImage();
   auto image2 = pool->GetImage();
@@ -118,8 +120,8 @@ TEST_F(SharedImagePoolTest, MaxPoolSizeEnforcement) {
   ImageInfo info = {
       gfx::Size(1024, 768), viz::SinglePlaneFormat::kRGBA_8888, {}};
   const size_t max_pool_size = 1;
-  auto pool =
-      SharedImagePool<ClientImage>::Create(info, test_sii_, max_pool_size);
+  auto pool = SharedImagePool<ClientImage>::Create(info, test_sii_,
+                                                   "SIPoolTest", max_pool_size);
 
   auto image1 = pool->GetImage();
   auto image2 = pool->GetImage();
@@ -136,7 +138,8 @@ TEST_F(SharedImagePoolTest, MaxPoolSizeEnforcement) {
 TEST_F(SharedImagePoolTest, TokenConsistencyOnReuse) {
   ImageInfo info = {
       gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
-  auto pool = SharedImagePool<ClientImage>::Create(info, test_sii_);
+  auto pool =
+      SharedImagePool<ClientImage>::Create(info, test_sii_, "SIPoolTest");
 
   auto image = pool->GetImage();
   gpu::SyncToken release_token = test_sii_->GenUnverifiedSyncToken();
@@ -152,8 +155,8 @@ TEST_F(SharedImagePoolTest, ProperTokenHandlingBeforeReuse) {
   ImageInfo info = {
       gfx::Size(800, 600), viz::SinglePlaneFormat::kRGBA_8888, {}};
   const size_t max_pool_size = 1;
-  auto pool =
-      SharedImagePool<ClientImage>::Create(info, test_sii_, max_pool_size);
+  auto pool = SharedImagePool<ClientImage>::Create(info, test_sii_,
+                                                   "SIPoolTest", max_pool_size);
 
   auto image1 = pool->GetImage();
   auto image2 = pool->GetImage();
@@ -178,7 +181,8 @@ TEST_F(SharedImagePoolTest, ProperTokenHandlingBeforeReuse) {
 TEST_F(SharedImagePoolTest, ComplexClientUsage) {
   ImageInfo info = {
       gfx::Size(1280, 720), viz::SinglePlaneFormat::kRGBA_8888, {}};
-  auto pool = SharedImagePool<ExtendedClientImage>::Create(info, test_sii_);
+  auto pool = SharedImagePool<ExtendedClientImage>::Create(info, test_sii_,
+                                                           "SIPoolTest");
 
   scoped_refptr<ExtendedClientImage> extended_client_image = pool->GetImage();
   EXPECT_TRUE(extended_client_image);
@@ -199,9 +203,10 @@ TEST_F(SharedImagePoolTest, DiscardImageFromDifferentPool) {
   ImageInfo pool2_info = {
       gfx::Size(800, 600), viz::SinglePlaneFormat::kRGBA_8888, {}};
 
-  auto pool1 = SharedImagePool<ClientImage>::Create(pool1_info, test_sii_);
-  auto pool2 =
-      SharedImagePool<ClientImage>::Create(pool2_info, test_sii_.get());
+  auto pool1 =
+      SharedImagePool<ClientImage>::Create(pool1_info, test_sii_, "SIPoolTest");
+  auto pool2 = SharedImagePool<ClientImage>::Create(pool2_info, test_sii_.get(),
+                                                    "SIPoolTest");
 
   auto image_from_pool1 = pool1->GetImage();
   EXPECT_TRUE(image_from_pool1);
@@ -222,7 +227,7 @@ TEST_F(SharedImagePoolTest, ReconfigurePool) {
 
   // Create the pool with an initial configuration.
   auto pool = SharedImagePool<ClientImage>::Create(
-      initial_info, test_sii_.get(), /*max_pool_size=*/2);
+      initial_info, test_sii_.get(), "SIPoolTest", /*max_pool_size=*/2);
 
   // Create a different ImageInfo.
   ImageInfo new_info = {
@@ -258,7 +263,8 @@ TEST_F(SharedImagePoolTest, ReconfigurePool) {
 TEST_F(SharedImagePoolTest, SetReleaseSyncToken) {
   ImageInfo info = {
       gfx::Size(1024, 768), viz::SinglePlaneFormat::kRGBA_8888, {}};
-  auto pool = SharedImagePool<TestClientImage>::Create(info, test_sii_);
+  auto pool =
+      SharedImagePool<TestClientImage>::Create(info, test_sii_, "SIPoolTest");
 
   // Create a new ClientImage object from the pool.
   auto client_image = pool->GetImage();
@@ -286,7 +292,8 @@ TEST_F(SharedImagePoolTest, CreatesMappableSharedImageWhenBufferUsageIsSet) {
                     viz::SinglePlaneFormat::kRGBA_8888,
                     {},
                     gfx::BufferUsage::GPU_READ};
-  auto pool = SharedImagePool<ClientImage>::Create(info, test_sii_);
+  auto pool =
+      SharedImagePool<ClientImage>::Create(info, test_sii_, "SIPoolTest");
 
   // Expect CreateSharedImage to be called with buffer_usage specified.
   EXPECT_CALL(*test_sii_,
@@ -307,7 +314,8 @@ TEST_F(SharedImagePoolTest, DoesNotReuseSharedImageWithDifferentBufferUsage) {
                     viz::SinglePlaneFormat::kRGBA_8888,
                     {},
                     gfx::BufferUsage::GPU_READ};
-  auto pool = SharedImagePool<ClientImage>::Create(info, test_sii_);
+  auto pool =
+      SharedImagePool<ClientImage>::Create(info, test_sii_, "SIPoolTest");
 
   // Expect CreateSharedImage to be called with initial buffer_usage.
   EXPECT_CALL(*test_sii_,
@@ -356,7 +364,7 @@ TEST_F(SharedImagePoolTest, ReclaimTimerStartedOnRelease) {
       gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
   constexpr auto kExpirationTime = base::Seconds(30);
   auto pool = SharedImagePool<ClientImage>::Create(
-      info, test_sii_,
+      info, test_sii_, "SIPoolTest",
       /*max_pool_size=*/std::nullopt, kExpirationTime);
 
   auto image = pool->GetImage();
@@ -371,7 +379,7 @@ TEST_F(SharedImagePoolTest, ReclaimTimerNotStartedWhenExpirationTimeNotSet) {
   ImageInfo info = {
       gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
   auto pool = SharedImagePool<ClientImage>::Create(
-      info, test_sii_, /*max_pool_size=*/std::nullopt,
+      info, test_sii_, "SIPoolTest", /*max_pool_size=*/std::nullopt,
       /*unused_resource_expiration_time=*/std::nullopt);
 
   auto image = pool->GetImage();
@@ -386,7 +394,7 @@ TEST_F(SharedImagePoolTest, ReclaimTimerNotStartedWhenPoolIsEmpty) {
       gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
   constexpr auto kExpirationTime = base::Seconds(30);
   auto pool = SharedImagePool<ClientImage>::Create(
-      info, test_sii_,
+      info, test_sii_, "SIPoolTest",
       /*max_pool_size=*/std::nullopt, kExpirationTime);
 
   EXPECT_FALSE(pool->IsReclaimTimerRunningForTesting());
@@ -398,7 +406,7 @@ TEST_F(SharedImagePoolTest, UnusedResourcesReclaimedAfterExpiration) {
       gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
   constexpr auto kExpirationTime = base::Seconds(30);
   auto pool = SharedImagePool<ClientImage>::Create(
-      info, test_sii_,
+      info, test_sii_, "SIPoolTest",
       /*max_pool_size=*/std::nullopt, kExpirationTime);
 
   auto image1 = pool->GetImage();
@@ -418,7 +426,7 @@ TEST_F(SharedImagePoolTest, UnusedResourcesNotReclaimedBeforeExpiration) {
       gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
   constexpr auto kExpirationTime = base::Seconds(30);
   auto pool = SharedImagePool<ClientImage>::Create(
-      info, test_sii_,
+      info, test_sii_, "SIPoolTest",
       /*max_pool_size=*/std::nullopt, kExpirationTime);
 
   auto image1 = pool->GetImage();
@@ -439,7 +447,7 @@ TEST_F(SharedImagePoolTest, OnlyResourcesOlderThanExpirationAreReclaimed) {
       gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
   constexpr auto kExpirationTime = base::Seconds(30);
   auto pool = SharedImagePool<ClientImage>::Create(
-      info, test_sii_,
+      info, test_sii_, "SIPoolTest",
       /*max_pool_size=*/std::nullopt, kExpirationTime);
 
   auto image1 = pool->GetImage();
@@ -465,7 +473,7 @@ TEST_F(SharedImagePoolTest, ReclaimTimerRestartedAfterReclaiming) {
       gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
   constexpr auto kExpirationTime = base::Seconds(30);
   auto pool = SharedImagePool<ClientImage>::Create(
-      info, test_sii_,
+      info, test_sii_, "SIPoolTest",
       /*max_pool_size=*/std::nullopt, kExpirationTime);
 
   auto image1 = pool->GetImage();
@@ -488,11 +496,13 @@ TEST_F(SharedImagePoolTest, ReclaimTimerRestartedAfterReclaiming) {
 TEST_F(SharedImagePoolTest, DifferentPoolsHaveDifferentPoolIds) {
   ImageInfo info1 = {
       gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
-  auto pool1 = SharedImagePool<ClientImage>::Create(info1, test_sii_);
+  auto pool1 =
+      SharedImagePool<ClientImage>::Create(info1, test_sii_, "SIPoolTest");
 
   ImageInfo info2 = {
       gfx::Size(200, 200), viz::SinglePlaneFormat::kBGRA_8888, {}};
-  auto pool2 = SharedImagePool<ClientImage>::Create(info2, test_sii_);
+  auto pool2 =
+      SharedImagePool<ClientImage>::Create(info2, test_sii_, "SIPoolTest");
 
   auto image_from_first_pool = pool1->GetImage();
   auto image_from_second_pool = pool2->GetImage();

@@ -139,6 +139,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImagePoolBase {
   SharedImagePoolBase(
       const SharedImagePoolId& pool_id,
       const ImageInfo& image_info,
+      std::string_view debug_label,
       const scoped_refptr<SharedImageInterface> sii,
       std::optional<uint8_t> max_pool_size,
       std::optional<base::TimeDelta> unused_resource_expiration_time);
@@ -154,6 +155,8 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImagePoolBase {
 
   // Information used to create new ClientSharedImage.
   ImageInfo image_info_;
+
+  std::string debug_label_;
 
   // Interface to the GPU process for creating shared images.
   const scoped_refptr<SharedImageInterface> sii_;
@@ -188,12 +191,13 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImagePool
   static std::unique_ptr<SharedImagePool<ClientImageType>> Create(
       const ImageInfo& image_info,
       const scoped_refptr<SharedImageInterface> sii,
+      std::string_view debug_label,
       std::optional<uint8_t> max_pool_size = std::nullopt,
       std::optional<base::TimeDelta> unused_resource_expiration_time =
           std::nullopt) {
     CHECK(sii);
     return base::WrapUnique<SharedImagePool<ClientImageType>>(
-        new SharedImagePool(image_info, std::move(sii),
+        new SharedImagePool(image_info, debug_label, std::move(sii),
                             std::move(max_pool_size),
                             std::move(unused_resource_expiration_time)));
   }
@@ -261,11 +265,13 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImagePool
  private:
   SharedImagePool(
       const ImageInfo& image_info,
+      std::string_view debug_label,
       scoped_refptr<SharedImageInterface> sii,
       std::optional<uint8_t> max_pool_size,
       std::optional<base::TimeDelta> unused_resource_expiration_time)
       : SharedImagePoolBase(SharedImagePoolId::Create(),
                             image_info,
+                            debug_label,
                             sii,
                             std::move(max_pool_size),
                             std::move(unused_resource_expiration_time)) {
