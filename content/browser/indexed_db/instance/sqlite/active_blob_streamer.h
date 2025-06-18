@@ -84,6 +84,10 @@ class ActiveBlobStreamer : public blink::mojom::Blob,
   void BindRegistryBlob(storage::mojom::BlobStorageContext& blob_registry);
   void OnMojoDisconnect();
 
+  // Clamps `length` to fit within the blob given the starting position
+  // `offset`.
+  uint64_t ClampReadLength(uint64_t offset, uint64_t length) const;
+
   // This UUID is used for both the blob that's served via `blink::mojom::Blob`
   // and the blob in the registry. This is crucial because operations such as
   // copying the blob to a new file do so by identifying the blob to the blob

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/numerics/clamped_math.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "content/browser/indexed_db/blob_reader.h"
@@ -206,7 +207,8 @@ void ActiveBlobStreamer::ReadRange(
                                   return &streamer->readable_blob_handle_;
                                 },
                                 weak_factory_.GetWeakPtr()),
-                            blob_length_, offset, length, std::move(handle),
+                            blob_length_, offset,
+                            ClampReadLength(offset, length), std::move(handle),
                             std::move(client)))
       ->Start();
 }
@@ -266,13 +268,6 @@ void ActiveBlobStreamer::Read(
     uint64_t length,
     mojo::ScopedDataPipeProducerHandle pipe,
     storage::mojom::BlobDataItemReader::ReadCallback callback) {
-  uint64_t read_length = length;
-  if (offset >= blob_length_) {
-    read_length = 0;
-  } else if (offset + read_length > blob_length_) {
-    read_length = blob_length_ - offset;
-  }
-
   (new SqliteBlobToDataPipe(base::BindRepeating(
                                 [](base::WeakPtr<ActiveBlobStreamer> streamer)
                                     -> sql::StreamingBlobHandle* {
@@ -282,8 +277,8 @@ void ActiveBlobStreamer::Read(
                                   return &streamer->readable_blob_handle_;
                                 },
                                 weak_factory_.GetWeakPtr()),
-                            offset, read_length, std::move(pipe),
-                            std::move(callback)))
+                            offset, ClampReadLength(offset, length),
+                            std::move(pipe), std::move(callback)))
       ->Start();
 }
 
@@ -351,6 +346,11 @@ void ActiveBlobStreamer::OnMojoDisconnect() {
     std::move(on_became_inactive_).Run();
     // `this` is deleted.
   }
+}
+
+uint64_t ActiveBlobStreamer::ClampReadLength(uint64_t offset,
+                                             uint64_t length) const {
+  return base::ClampMin(length, base::ClampSub(blob_length_, offset));
 }
 
 }  // namespace content::indexed_db::sqlite

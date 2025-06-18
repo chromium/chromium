@@ -22,6 +22,7 @@ BackingStoreTransactionImpl::BackingStoreTransactionImpl(
 BackingStoreTransactionImpl::~BackingStoreTransactionImpl() = default;
 
 void BackingStoreTransactionImpl::Begin(std::vector<PartitionedLock> locks) {
+  locks_ = std::move(locks);
   db_->BeginTransaction(PassKey(), *this);
 }
 
@@ -103,9 +104,8 @@ StatusOr<BackingStore::RecordIdentifier> BackingStoreTransactionImpl::PutRecord(
 
 Status BackingStoreTransactionImpl::DeleteRange(
     int64_t object_store_id,
-    const blink::IndexedDBKeyRange&) {
-  NOTIMPLEMENTED();
-  return Status::InvalidArgument("Not implemented");
+    const blink::IndexedDBKeyRange& range) {
+  return db_->DeleteRange(object_store_id, range);
 }
 
 StatusOr<int64_t> BackingStoreTransactionImpl::GetKeyGeneratorCurrentNumber(

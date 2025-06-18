@@ -187,6 +187,8 @@ class CONTENT_EXPORT Database {
 
   bool CanBeDestroyed();
 
+  uint32_t id_for_locks() const { return id_for_locks_; }
+
  protected:
   friend class Transaction;
   friend class ConnectionCoordinator::ConnectionRequest;
@@ -296,6 +298,9 @@ class CONTENT_EXPORT Database {
   const blink::IndexedDBObjectStoreMetadata& GetObjectStoreMetadata(
       int64_t object_store_id) const;
 
+  // This ID uniquely identifies this database within this process. It's not
+  // persisted anywhere.
+  uint32_t id_for_locks_;
   std::u16string name_;
 
   // The object that owns `this`.

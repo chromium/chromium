@@ -75,6 +75,9 @@ using blink::IndexedDBObjectStoreMetadata;
 namespace content::indexed_db {
 namespace {
 
+// Used to generated IDs for `Database` objects, for use with PartitionedLockId.
+uint32_t g_unique_id = 0;
+
 // Values returned to the IDB client may contain a primary key value generated
 // by IDB. This is optional and only done when using a key generator. This key
 // value cannot (at least easily) be amended to the object being written to the
@@ -129,7 +132,8 @@ Database::OpenCursorOperationParams::OpenCursorOperationParams() = default;
 Database::OpenCursorOperationParams::~OpenCursorOperationParams() = default;
 
 Database::Database(const std::u16string& name, BucketContext& bucket_context)
-    : name_(name),
+    : id_for_locks_(g_unique_id++),
+      name_(name),
       bucket_context_(bucket_context),
       connection_coordinator_(this, bucket_context) {}
 

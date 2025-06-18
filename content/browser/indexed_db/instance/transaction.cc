@@ -1157,9 +1157,20 @@ Transaction::BuildLockRequests() const {
           ? PartitionedLockManager::LockType::kShared
           : PartitionedLockManager::LockType::kExclusive;
   for (int64_t object_store : scope()) {
-    lock_requests.emplace_back(
-        database_->backing_store_db()->GetLockId(object_store),
-        object_store_lock_type);
+    if (bucket_context_->ShouldUseSqlite()) {
+      lock_requests.emplace_back(
+          // TODO(crbug.com/40253999): this matches a constant in
+          // indexed_db_leveldb_coding.cc. Refactor lock partitioning so the
+          // constant isn't copied.
+          PartitionedLockId{/*kObjectStoreLockPartition=*/1,
+                            base::StringPrintf("%d|%d", object_store,
+                                               database_->id_for_locks())},
+          object_store_lock_type);
+    } else {
+      lock_requests.emplace_back(
+          database_->backing_store_db()->GetLockId(object_store),
+          object_store_lock_type);
+    }
   }
   return lock_requests;
 }

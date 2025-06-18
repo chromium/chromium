@@ -889,7 +889,7 @@ std::string BucketContext::SanitizeErrorMessage(const std::string& message) {
   return sanitized_message;
 }
 
-bool BucketContext::ShouldUseSqlite() {
+bool BucketContext::ShouldUseSqlite() const {
   // Additional checks may be added subsequently.
   return base::FeatureList::IsEnabled(kSqliteBackingStore);
 }

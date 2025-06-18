@@ -5,8 +5,11 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INSTANCE_SQLITE_BACKING_STORE_TRANSACTION_IMPL_H_
 #define CONTENT_BROWSER_INDEXED_DB_INSTANCE_SQLITE_BACKING_STORE_TRANSACTION_IMPL_H_
 
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
@@ -109,6 +112,7 @@ class BackingStoreTransactionImpl : public BackingStore::Transaction {
  private:
   blink::mojom::IDBTransactionDurability durability_;
   blink::mojom::IDBTransactionMode mode_;
+  std::vector<PartitionedLock> locks_;
 };
 
 }  // namespace content::indexed_db::sqlite

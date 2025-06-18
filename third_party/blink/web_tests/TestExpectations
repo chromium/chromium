@@ -6512,7 +6512,8 @@ crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstor
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_count.any.sharedworker.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_count.any.worker.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/blob-contenttype.any.html [ Pass ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/blob-valid-before-commit.any.js [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/blob-valid-after-deletion.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/blob-valid-before-commit.any.html [ Pass ]
 
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor-direction-objectstore-keyrange.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor-direction-objectstore.any.html [ Pass ]

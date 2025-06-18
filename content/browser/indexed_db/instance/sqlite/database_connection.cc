@@ -736,6 +736,37 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
   return BackingStore::RecordIdentifier{record_row_id};
 }
 
+Status DatabaseConnection::DeleteRange(
+    int64_t object_store_id,
+    const blink::IndexedDBKeyRange& key_range) {
+  // TODO(crbug.com/40253999): share code with GetObjectStoreKeyCount() and
+  // others.
+  std::vector<std::string_view> query_pieces{
+      "DELETE FROM records WHERE object_store_id = ?"};
+  if (key_range.lower().IsValid()) {
+    query_pieces.insert(
+        query_pieces.end(),
+        {" AND key ", key_range.lower_open() ? ">" : ">=", " ?"});
+  }
+  if (key_range.upper().IsValid()) {
+    query_pieces.insert(
+        query_pieces.end(),
+        {" AND key ", key_range.upper_open() ? "<" : "<=", " ?"});
+  }
+
+  sql::Statement statement(db_->GetUniqueStatement(base::StrCat(query_pieces)));
+  int param_index = 0;
+  statement.BindInt64(param_index++, object_store_id);
+  if (key_range.lower().IsValid()) {
+    statement.BindBlob(param_index++, EncodeSortableIDBKey(key_range.lower()));
+  }
+  if (key_range.upper().IsValid()) {
+    statement.BindBlob(param_index++, EncodeSortableIDBKey(key_range.upper()));
+  }
+  TRANSIENT_CHECK(statement.Run());
+  return Status::OK();
+}
+
 StatusOr<uint32_t> DatabaseConnection::GetObjectStoreKeyCount(
     base::PassKey<BackingStoreTransactionImpl>,
     int64_t object_store_id,

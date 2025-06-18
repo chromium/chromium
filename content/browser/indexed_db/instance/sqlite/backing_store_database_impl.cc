@@ -24,8 +24,7 @@ BackingStoreDatabaseImpl::GetMetadata() {
 
 PartitionedLockId BackingStoreDatabaseImpl::GetLockId(
     int64_t object_store_id) const {
-  NOTIMPLEMENTED();
-  return PartitionedLockId();
+  NOTREACHED();
 }
 
 std::unique_ptr<BackingStore::Transaction>

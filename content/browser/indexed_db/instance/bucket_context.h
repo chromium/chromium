@@ -156,7 +156,7 @@ class CONTENT_EXPORT BucketContext
   ~BucketContext() override;
 
   // True if the backing store is SQLite, or would be SQLite if it existed.
-  bool ShouldUseSqlite();
+  bool ShouldUseSqlite() const;
 
   void QueueRunTasks();
 
