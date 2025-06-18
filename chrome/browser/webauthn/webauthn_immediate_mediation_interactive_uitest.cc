@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_gpm_pin_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/combined_selector_sheet_view.h"
 #include "chrome/browser/webauthn/enclave_authenticator_browsertest_base.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -35,6 +36,8 @@ const char kHostname[] = "www.example.com";
 const char kPagePath[] = "/webauthn/get-immediate.html";
 
 const DeepQuery kGetImmediateButton{"#get-immediate-button"};
+const DeepQuery kGetImmediateUvRequiredButton{
+    "#get-immediate-uv-required-button"};
 const DeepQuery kGetImmediateUvDiscouragedButton{
     "#get-immediate-uv-discouraged-button"};
 const DeepQuery kSuccess{"#success-message"};
@@ -130,4 +133,20 @@ IN_PROC_BROWSER_TEST_F(WebAuthnImmediateMediationWithBootstrappedEnclaveTest,
       WaitForElementVisible(kTabId, kSuccess));
 }
 
+// TODO(crbug.com/422074323): Re-enable this test in ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SinglePasskeyUvRequired DISABLED_SinglePasskeyUvRequired
+#else
+#define MAYBE_SinglePasskeyUvRequired SinglePasskeyUvRequired
+#endif
+IN_PROC_BROWSER_TEST_F(WebAuthnImmediateMediationWithBootstrappedEnclaveTest,
+                       MAYBE_SinglePasskeyUvRequired) {
+  AddTestPasskeyToModel();
+  RunTestSequence(
+      GetStepsUntilButtonClick(kGetImmediateUvRequiredButton),
+      WaitForShow(CombinedSelectorSheetView::kCombinedSelectorSheetViewId),
+      PressButton(views::DialogClientView::kOkButtonElementId),
+      WaitForShow(AuthenticatorGpmPinSheetView::kGpmPinSheetViewId));
+  // TODO(crbug.com/422074323): Add more steps to complete the UV flow.
+}
 #endif  // !defined(MEMORY_SANITIZER)

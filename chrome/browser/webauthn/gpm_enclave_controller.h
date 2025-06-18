@@ -150,6 +150,12 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
     kReady,
   };
 
+  enum class AccountReadyState {
+    kNotReady,
+    kLoading,
+    kReady,
+  };
+
   explicit GPMEnclaveController(
       content::RenderFrameHost* render_frame_host,
       AuthenticatorRequestDialogModel* model,
@@ -185,8 +191,12 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   const std::vector<sync_pb::WebauthnCredentialSpecifics>& creds() const;
 
   AccountState account_state_for_testing() const;
-  // Returns true if the account is ready to use.
-  bool is_account_ready() const;
+
+  // Returns the ready state of the account.
+  AccountReadyState account_ready_state() const;
+  // Runs `callback` once the account state is no longer `kLoading` or
+  // `kChecking`. If it's already in such a state, runs it immediately.
+  void RunWhenAccountReady(base::OnceClosure callback);
 
   base::RepeatingCallback<
       void(std::unique_ptr<device::enclave::CredentialRequest>)>&

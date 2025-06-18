@@ -991,8 +991,19 @@ void ChromeAuthenticatorRequestDelegate::MaybeShowUI(
     PasswordCredentials passwords) {
   if (can_use_synced_phone_passkeys_ ||
       (enclave_controller_ && enclave_controller_->is_active())) {
-    GetPhoneContactableGpmPasskeysForRpId(&tai.recognized_credentials);
+    GetPhoneContactableGpmPasskeysForRpId(
+        std::move(tai),
+        base::BindOnce(&ChromeAuthenticatorRequestDelegate::FinishMaybeShowUI,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(passwords)));
+    return;
   }
+
+  FinishMaybeShowUI(std::move(passwords), std::move(tai));
+}
+
+void ChromeAuthenticatorRequestDelegate::FinishMaybeShowUI(
+    PasswordCredentials passwords,
+    TransportAvailabilityInfo tai) {
   FilterRecognizedCredentials(&tai);
 
   if (MaybeHandleImmediateMediation(tai, passwords)) {
@@ -1075,7 +1086,40 @@ void ChromeAuthenticatorRequestDelegate::OnCableEvent(
 }
 
 void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
-    std::vector<device::DiscoverableCredentialMetadata>* passkeys) {
+    TransportAvailabilityInfo tai,
+    base::OnceCallback<void(TransportAvailabilityInfo)> callback) {
+  // For immediate `get()` requests, the enclave might need to do an async check
+  // to see if the GPM PIN is still valid before it can be offered for user
+  // verification. In this case, the enclave account state will be `kLoading` or
+  // `kChecking`. This function waits for that check to complete before adding
+  // GPM passkeys to the request. For other request types, this runs
+  // synchronously. Note that if the account state check takes longer than the
+  // immediate mode timeout, enclave passkeys won't be offered.
+  if (dialog_controller_->ui_presentation() ==
+          UIPresentation::kModalImmediate &&
+      enclave_controller_) {
+    switch (enclave_controller_->account_ready_state()) {
+      case GPMEnclaveController::AccountReadyState::kLoading:
+        enclave_controller_->RunWhenAccountReady(
+            base::BindOnce(&ChromeAuthenticatorRequestDelegate::
+                               DoGetPhoneContactableGpmPasskeysForRpId,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(tai),
+                           std::move(callback)));
+        return;
+      case GPMEnclaveController::AccountReadyState::kReady:
+      case GPMEnclaveController::AccountReadyState::kNotReady:
+        // Fall through to run synchronously.
+        break;
+    }
+  }
+
+  DoGetPhoneContactableGpmPasskeysForRpId(std::move(tai), std::move(callback));
+}
+
+void ChromeAuthenticatorRequestDelegate::
+    DoGetPhoneContactableGpmPasskeysForRpId(
+        TransportAvailabilityInfo tai,
+        base::OnceCallback<void(TransportAvailabilityInfo)> callback) {
   device::AuthenticatorType type;
   std::vector<sync_pb::WebauthnCredentialSpecifics> credentials;
 
@@ -1093,14 +1137,15 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
 
   if (dialog_controller_->ui_presentation() ==
           UIPresentation::kModalImmediate &&
-      !credentials.empty()) {
-    if (enclave_controller_ && !enclave_controller_->is_account_ready()) {
-      base::UmaHistogramBoolean(
-          "WebAuthentication.GetAssertion.Immediate.EnclaveReady", false);
+      !credentials.empty() && enclave_controller_) {
+    bool enclave_ready = enclave_controller_->account_ready_state() ==
+                         GPMEnclaveController::AccountReadyState::kReady;
+    base::UmaHistogramBoolean(
+        "WebAuthentication.GetAssertion.Immediate.EnclaveReady", enclave_ready);
+    if (!enclave_ready) {
+      std::move(callback).Run(std::move(tai));
       return;
     }
-    base::UmaHistogramBoolean(
-        "WebAuthentication.GetAssertion.Immediate.EnclaveReady", true);
   }
 
   for (const sync_pb::WebauthnCredentialSpecifics& passkey : credentials) {
@@ -1108,7 +1153,7 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
         base::Microseconds(passkey.last_used_time_windows_epoch_micros()));
     const base::Time creation_time =
         base::Time::FromMillisecondsSinceUnixEpoch(passkey.creation_time());
-    passkeys->emplace_back(
+    tai.recognized_credentials.emplace_back(
         type, passkey.rp_id(),
         std::vector<uint8_t>(passkey.credential_id().begin(),
                              passkey.credential_id().end()),
@@ -1119,6 +1164,7 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
         /*provider_name=*/std::nullopt,
         last_used_time > creation_time ? last_used_time : creation_time);
   }
+  std::move(callback).Run(std::move(tai));
 }
 
 void ChromeAuthenticatorRequestDelegate::FilterRecognizedCredentials(

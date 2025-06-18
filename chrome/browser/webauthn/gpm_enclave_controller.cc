@@ -552,8 +552,31 @@ GPMEnclaveController::account_state_for_testing() const {
   return account_state_;
 }
 
-bool GPMEnclaveController::is_account_ready() const {
-  return account_state_ == AccountState::kReady;
+GPMEnclaveController::AccountReadyState
+GPMEnclaveController::account_ready_state() const {
+  switch (account_state_) {
+    case AccountState::kLoading:
+    case AccountState::kChecking:
+      return AccountReadyState::kLoading;
+    case AccountState::kReady:
+      return AccountReadyState::kReady;
+    case AccountState::kNone:
+    case AccountState::kRecoverable:
+    case AccountState::kIrrecoverable:
+    case AccountState::kEmpty:
+      return AccountReadyState::kNotReady;
+  }
+}
+
+void GPMEnclaveController::RunWhenAccountReady(base::OnceClosure callback) {
+  if (account_state_ != AccountState::kLoading &&
+      account_state_ != AccountState::kChecking) {
+    std::move(callback).Run();
+    return;
+  }
+
+  CHECK(!waiting_for_account_state_);
+  waiting_for_account_state_ = std::move(callback);
 }
 
 void GPMEnclaveController::OnEnclaveLoaded() {

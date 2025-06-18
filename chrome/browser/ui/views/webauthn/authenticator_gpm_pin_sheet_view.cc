@@ -12,12 +12,19 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_pin_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AuthenticatorGpmPinSheetView,
+                                      kGpmPinSheetViewId);
 
 AuthenticatorGpmPinSheetView::AuthenticatorGpmPinSheetView(
     std::unique_ptr<AuthenticatorGpmPinSheetModel> sheet_model)
-    : AuthenticatorRequestSheetView(std::move(sheet_model)) {}
+    : AuthenticatorRequestSheetView(std::move(sheet_model)) {
+  SetProperty(views::kElementIdentifierKey, kGpmPinSheetViewId);
+}
 
 AuthenticatorGpmPinSheetView::~AuthenticatorGpmPinSheetView() = default;
 
