@@ -157,10 +157,6 @@ bool IsBaselinePolicyAllowed(int sysno) {
     // //third_party/cpuinfo/ on those chips.
     case __NR_getcpu:
 #endif
-#if !defined(__LP64__)
-    // TODO(crbug.com/40528912): is this needed? bionic only uses getdents64...
-    case __NR_getdents:
-#endif
     case __NR_getdents64:
     case __NR_getpriority:
     case __NR_membarrier:  // https://crbug.com/966433
@@ -175,12 +171,6 @@ bool IsBaselinePolicyAllowed(int sysno) {
       // access. It may be possible to restrict the filesystem with SELinux.
       // Currently we rely on the app/service UID isolation to create a
       // filesystem "sandbox".
-#if !defined(__LP64__)
-    // bionic switched to openat(2) during the 64-bit transition,
-    // so old 32-bit versions of the OS still use open(2).
-    // TODO(crbug.com/40528912): that transition happened in L though, so this should be obsolete?
-    case __NR_open:
-#endif
     case __NR_openat:
     case __NR_pwrite64:
     case __NR_rt_sigtimedwait:
