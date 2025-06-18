@@ -412,8 +412,10 @@ cronet_impl_common_java_srcjar_deps = [
   ":rtt_throughput_values_java",
 ]
 
-cronet_impl_common_java_deps_to_package =
-    [ "//net/android:net_thread_stats_uid_java" ]
+cronet_impl_common_java_deps_to_package = [
+  "//net/android:net_thread_stats_uid_java",
+  "//components/cronet:request_context_config_java_proto",
+]
 
 # cronet_impl_common_java.jar - common Cronet code that is shared
 # by all Cronet engine implementations.
@@ -437,6 +439,7 @@ android_library("cronet_impl_common_java") {
     "java/src/org/chromium/net/impl/UserAgent.java",
     "java/src/org/chromium/net/impl/VersionSafeCallbacks.java",
     "java/src/org/chromium/net/impl/VersionSafeProxyCallback.java",
+    "java/src/org/chromium/net/impl/VersionSafeProxyOptions.java",
     _generated_impl_version_java,
   ]
 
@@ -452,6 +455,7 @@ android_library("cronet_impl_common_java") {
     ":cronet_api_java",
     ":cronet_shared_java",
     ":impl_version",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -549,7 +553,6 @@ cronet_impl_native_java_srcjar_deps = [
 
 cronet_impl_native_java_deps_to_package = [
   ":cronet_urlconnection_impl_java",
-  "//components/cronet:request_context_config_java_proto",
   ":cronet_android_os_system_properties_java",
   "//base/version_info/android:version_constants_java",
   "//base:base_java",
@@ -586,6 +589,7 @@ android_library("cronet_impl_native_java") {
     ":httpengine_native_provider_java",
     "//base:log_java",
     "//build/android:build_java",
+    "//components/cronet:request_context_config_java_proto",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -1451,6 +1455,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetManifestTest.java",
+    "test/javatests/src/org/chromium/net/impl/VersionSafeProxyOptionsTest.java",
     "test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java",
     "test/javatests/src/org/chromium/net/telemetry/ExperimentalOptionsTest.java",
     "test/javatests/src/org/chromium/net/telemetry/HashTest.java",
@@ -1480,6 +1485,7 @@ android_library("cronet_javatests") {
     ":cronet_api_helpers_java",
     ":cronet_stats_log_java",
     ":cronet_urlconnection_impl_java",
+    "//components/cronet:request_context_config_java_proto",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",

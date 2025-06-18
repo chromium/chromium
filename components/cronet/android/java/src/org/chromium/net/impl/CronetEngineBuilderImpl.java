@@ -150,7 +150,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     private String mExperimentalOptions;
     protected long mMockCertVerifier;
     private boolean mNetworkQualityEstimatorEnabled;
-    private @Nullable ProxyOptions mProxyOptions;
+    private @Nullable VersionSafeProxyOptions mProxyOptions;
 
     /**
      * Default config enables SPDY and QUIC, disables SDCH and HTTP cache.
@@ -505,12 +505,14 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
 
     @Override
     public CronetEngineBuilderImpl setProxyOptions(@Nullable ProxyOptions proxyOptions) {
-        mProxyOptions = proxyOptions;
+        if (proxyOptions != null) {
+            mProxyOptions = new VersionSafeProxyOptions(proxyOptions);
+        }
         return this;
     }
 
     @Nullable
-    ProxyOptions getProxyOptions() {
+    VersionSafeProxyOptions getProxyOptions() {
         return mProxyOptions;
     }
 

@@ -15,25 +15,23 @@ import java.util.Objects;
 
 /** Wraps a {@link org.chromium.net.Proxy.Callback} in a version safe manner. */
 final class VersionSafeProxyCallback {
-    private static final int SET_PROXY_OPTIONS_API_LEVEL = 38;
+    private static final int PROXY_CALLBACK_API_LEVEL = 38;
 
-    static boolean apiContainsProxyOptions() {
+    private boolean apiContainsProxyCallbackClass() {
         return VersionSafeCallbacks.ApiVersion.getMaximumAvailableApiLevel()
-                >= SET_PROXY_OPTIONS_API_LEVEL;
+                >= PROXY_CALLBACK_API_LEVEL;
     }
 
     private final @NonNull Proxy.Callback mBackend;
 
     VersionSafeProxyCallback(@NonNull Proxy.Callback backend) {
-        if (!apiContainsProxyOptions()) {
+        if (!apiContainsProxyCallbackClass()) {
             throw new AssertionError(
                     String.format(
-                            "The Cronet APIs being used have an ApiLevel of %s, setProxyOptions was"
-                                    + " added in ApiLevel %s. Since VersionSafeProxyCallback should"
-                                    + " only be created when ProxyOptions are specified, this is"
-                                    + " impossible!",
+                            "This should not have been created: the Cronet API being used has an"
+                                    + " ApiLevel of %s, but ProxyCallback was added in ApiLevel %s",
                             VersionSafeCallbacks.ApiVersion.getMaximumAvailableApiLevel(),
-                            SET_PROXY_OPTIONS_API_LEVEL));
+                            PROXY_CALLBACK_API_LEVEL));
         }
         mBackend = Objects.requireNonNull(backend);
     }
