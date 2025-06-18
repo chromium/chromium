@@ -224,11 +224,6 @@ export function getProxyStr(
       servers.push(`http=${proxyConfig.httpProxy}`);
     }
 
-    // FTP Proxy
-    if (proxyConfig.ftpProxy !== undefined) {
-      servers.push(`ftp=${proxyConfig.ftpProxy}`);
-    }
-
     // SSL Proxy (uses 'https' scheme)
     if (proxyConfig.sslProxy !== undefined) {
       // servers.push(proxyConfig.sslProxy);
@@ -264,7 +259,7 @@ export function getProxyStr(
     }
 
     if (servers.length === 0) {
-      // If 'manual' proxyType is chosen but no specific proxy servers (http, ftp, ssl, socks)
+      // If 'manual' proxyType is chosen but no specific proxy servers (http, ssl, socks)
       // are provided, it means no proxy server should be configured.
       return undefined;
     }

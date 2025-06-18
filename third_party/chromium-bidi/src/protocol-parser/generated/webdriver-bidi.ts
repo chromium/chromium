@@ -214,7 +214,6 @@ export namespace Session {
     z
       .object({
         proxyType: z.literal('manual'),
-        ftpProxy: z.string().optional(),
         httpProxy: z.string().optional(),
         sslProxy: z.string().optional(),
       })

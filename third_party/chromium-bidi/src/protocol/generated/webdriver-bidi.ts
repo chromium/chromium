@@ -156,7 +156,6 @@ export namespace Session {
 export namespace Session {
   export type ManualProxyConfiguration = {
     proxyType: 'manual';
-    ftpProxy?: string;
     httpProxy?: string;
     sslProxy?: string;
   } & ({} | Session.SocksProxyConfiguration) & {

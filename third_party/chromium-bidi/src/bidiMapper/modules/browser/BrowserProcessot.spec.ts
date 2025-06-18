@@ -68,14 +68,6 @@ describe('BrowserProcessor:getProxyStr', () => {
       expect(getProxyStr(proxyConfig)).to.equal('http=localhost:8080');
     });
 
-    it('should correctly format ftpProxy', () => {
-      const proxyConfig: Session.ProxyConfiguration = {
-        proxyType: 'manual',
-        ftpProxy: 'localhost:2121',
-      };
-      expect(getProxyStr(proxyConfig)).to.equal('ftp=localhost:2121');
-    });
-
     it('should correctly format sslProxy', () => {
       const proxyConfig: Session.ProxyConfiguration = {
         proxyType: 'manual',
@@ -177,12 +169,11 @@ describe('BrowserProcessor:getProxyStr', () => {
         proxyType: 'manual',
         httpProxy: 'http.proxy:80',
         sslProxy: 'https.proxy:443',
-        ftpProxy: 'ftp.proxy:21',
         socksProxy: 'socks.proxy:1080',
         socksVersion: 4,
       };
       const expected =
-        'http=http.proxy:80;ftp=ftp.proxy:21;https=https.proxy:443;socks=socks4://socks.proxy:1080';
+        'http=http.proxy:80;https=https.proxy:443;socks=socks4://socks.proxy:1080';
       expect(getProxyStr(proxyConfig)).to.equal(expected);
     });
 
@@ -192,11 +183,9 @@ describe('BrowserProcessor:getProxyStr', () => {
         socksProxy: 'socks.proxy:1080',
         socksVersion: 5,
         httpProxy: 'http.proxy:80',
-        ftpProxy: 'ftp.proxy:21',
       };
       // Order of servers in the output string is defined by the function's implementation
-      const expected =
-        'http=http.proxy:80;ftp=ftp.proxy:21;socks=socks5://socks.proxy:1080';
+      const expected = 'http=http.proxy:80;socks=socks5://socks.proxy:1080';
       expect(getProxyStr(proxyConfig)).to.equal(expected);
     });
   });
