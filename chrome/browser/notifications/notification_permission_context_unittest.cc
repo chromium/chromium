@@ -20,6 +20,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
@@ -55,27 +56,22 @@ namespace {
 
 using PermissionStatus = blink::mojom::PermissionStatus;
 
-void StoreContentSetting(ContentSetting* out_content_setting,
-                         ContentSetting content_setting) {
-  DCHECK(out_content_setting);
-  *out_content_setting = content_setting;
+void StorePermissionStatus(PermissionStatus* out_permission_status,
+                           PermissionStatus permission_status) {
+  DCHECK(out_permission_status);
+  *out_permission_status = permission_status;
 }
 
 class TestNotificationPermissionContext : public NotificationPermissionContext {
  public:
   explicit TestNotificationPermissionContext(Profile* profile)
-      : NotificationPermissionContext(profile),
-        permission_set_count_(0),
-        last_permission_set_persisted_(false),
-        last_permission_set_setting_(CONTENT_SETTING_DEFAULT) {}
+      : NotificationPermissionContext(profile) {}
 
   int permission_set_count() const { return permission_set_count_; }
   bool last_permission_set_persisted() const {
     return last_permission_set_persisted_;
   }
-  ContentSetting last_permission_set_setting() const {
-    return last_permission_set_setting_;
-  }
+  PermissionDecision last_set_decision() const { return last_set_decision_; }
 
   ContentSetting GetContentSettingFromMap(const GURL& url_a,
                                           const GURL& url_b) {
@@ -91,20 +87,20 @@ class TestNotificationPermissionContext : public NotificationPermissionContext {
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
-      ContentSetting content_setting,
+      PermissionDecision decision,
       bool is_one_time,
       bool is_final_decision) override {
     permission_set_count_++;
     last_permission_set_persisted_ = persist;
-    last_permission_set_setting_ = content_setting;
+    last_set_decision_ = decision;
     NotificationPermissionContext::NotifyPermissionSet(
-        request_data, std::move(callback), persist, content_setting,
+        request_data, std::move(callback), persist, decision,
         /*is_one_time=*/false, is_final_decision);
   }
 
-  int permission_set_count_;
-  bool last_permission_set_persisted_;
-  ContentSetting last_permission_set_setting_;
+  int permission_set_count_ = 0;
+  bool last_permission_set_persisted_ = false;
+  PermissionDecision last_set_decision_ = PermissionDecision::kNone;
 };
 
 }  // namespace
@@ -326,14 +322,14 @@ TEST_F(NotificationPermissionContextTest, WebNotificationsTopLevelOriginOnly) {
       web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
       permissions::PermissionRequestID::RequestLocalId());
 
-  ContentSetting result = CONTENT_SETTING_DEFAULT;
+  auto permission_status = PermissionStatus::ASK;
   context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
           &context, request_id,
           /*user_gesture=*/true, requesting_origin, embedding_origin),
-      base::BindOnce(&StoreContentSetting, &result));
+      base::BindOnce(&StorePermissionStatus, &permission_status));
 
-  ASSERT_EQ(result, CONTENT_SETTING_BLOCK);
+  ASSERT_EQ(permission_status, PermissionStatus::DENIED);
   EXPECT_EQ(
       PermissionStatus::ASK,
       context
@@ -422,8 +418,7 @@ TEST_F(NotificationPermissionContextTest, MAYBE_TestDenyInIncognitoAfterDelay) {
 
   ASSERT_EQ(0, permission_context.permission_set_count());
   ASSERT_FALSE(permission_context.last_permission_set_persisted());
-  ASSERT_EQ(CONTENT_SETTING_DEFAULT,
-            permission_context.last_permission_set_setting());
+  ASSERT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
@@ -470,8 +465,7 @@ TEST_F(NotificationPermissionContextTest, MAYBE_TestDenyInIncognitoAfterDelay) {
 
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            permission_context.last_permission_set_setting());
+  EXPECT_EQ(PermissionDecision::kDeny, permission_context.last_set_decision());
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context.GetContentSettingFromMap(url, url));
 }
@@ -495,8 +489,7 @@ TEST_F(NotificationPermissionContextTest, TestParallelDenyInIncognito) {
 
   ASSERT_EQ(0, permission_context.permission_set_count());
   ASSERT_FALSE(permission_context.last_permission_set_persisted());
-  ASSERT_EQ(CONTENT_SETTING_DEFAULT,
-            permission_context.last_permission_set_setting());
+  ASSERT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
@@ -524,8 +517,7 @@ TEST_F(NotificationPermissionContextTest, TestParallelDenyInIncognito) {
   // Only the first permission request receives a response (crbug.com/577336).
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            permission_context.last_permission_set_setting());
+  EXPECT_EQ(PermissionDecision::kDeny, permission_context.last_set_decision());
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context.GetContentSettingFromMap(url, url));
 
@@ -534,8 +526,7 @@ TEST_F(NotificationPermissionContextTest, TestParallelDenyInIncognito) {
   task_runner->FastForwardBy(base::Milliseconds(2500));
   EXPECT_EQ(2, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            permission_context.last_permission_set_setting());
+  EXPECT_EQ(PermissionDecision::kDeny, permission_context.last_set_decision());
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context.GetContentSettingFromMap(url, url));
 }

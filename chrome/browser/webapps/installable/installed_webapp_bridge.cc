@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
+#include "components/permissions/permission_decision.h"
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -30,12 +31,12 @@ static void JNI_InstalledWebappBridge_NotifyPermissionsChange(JNIEnv* env,
 static void JNI_InstalledWebappBridge_RunPermissionCallback(JNIEnv* env,
                                                             jlong callback_ptr,
                                                             int setting) {
-  DCHECK_LT(setting,
-            static_cast<int>(ContentSetting::CONTENT_SETTING_NUM_SETTINGS));
+  DCHECK_LE(setting, static_cast<int>(PermissionDecision::kMaxValue));
   auto* callback = reinterpret_cast<InstalledWebappBridge::PermissionCallback*>(
       callback_ptr);
-  std::move(*callback).Run(static_cast<ContentSetting>(setting),
-                           /*is_one_time=*/false, /*is_final_decision=*/true);
+  std::move(*callback).Run(
+      static_cast<PermissionDecision>(static_cast<PermissionDecision>(setting)),
+      /*is_one_time=*/false, /*is_final_decision=*/true);
   delete callback;
 }
 

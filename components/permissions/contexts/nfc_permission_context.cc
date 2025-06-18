@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_id.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
@@ -35,7 +36,7 @@ void NfcPermissionContext::DecidePermission(
     std::unique_ptr<PermissionRequestData> request_data,
     BrowserPermissionCallback callback) {
   if (!request_data->user_gesture) {
-    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }
   permissions::ContentSettingPermissionContextBase::DecidePermission(

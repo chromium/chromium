@@ -44,9 +44,9 @@ class TestPermissionContext : public payments::PaymentHandlerPermissionContext {
 
   bool permission_set() { return permission_set_; }
 
-  void TrackPermissionDecision(ContentSetting content_setting) {
+  void TrackPermissionDecision(PermissionStatus permission_status) {
     permission_set_ = true;
-    permission_granted_ = content_setting == CONTENT_SETTING_ALLOW;
+    permission_granted_ = permission_status == PermissionStatus::GRANTED;
   }
 
  private:

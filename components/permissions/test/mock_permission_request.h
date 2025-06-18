@@ -68,7 +68,7 @@ class MockPermissionRequest : public PermissionRequest {
   void RegisterOnPermissionDecidedCallback(base::OnceClosure callback);
 
   void PermissionDecided(
-      ContentSetting result,
+      PermissionDecision decision,
       bool is_one_time,
       bool is_final_decision,
       const permissions::PermissionRequestData& request_data);

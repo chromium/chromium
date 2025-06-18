@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
@@ -65,19 +66,17 @@ RegisterProtocolHandlerPermissionRequest::GetMessageTextFragment() const {
 }
 
 void RegisterProtocolHandlerPermissionRequest::PermissionDecided(
-    ContentSetting result,
+    PermissionDecision decision,
     bool is_one_time,
     bool is_final_decision,
     const permissions::PermissionRequestData& request_data) {
   DCHECK(!is_one_time);
   DCHECK(is_final_decision);
-  if (result == ContentSetting::CONTENT_SETTING_ALLOW) {
+  if (decision == PermissionDecision::kAllow) {
     base::RecordAction(
         base::UserMetricsAction("RegisterProtocolHandler.Infobar_Accept"));
     registry_->OnAcceptRegisterProtocolHandler(handler_);
   } else {
-    DCHECK(result == CONTENT_SETTING_BLOCK ||
-           result == CONTENT_SETTING_DEFAULT);
     base::RecordAction(
         base::UserMetricsAction("RegisterProtocolHandler.InfoBar_Deny"));
     registry_->OnIgnoreRegisterProtocolHandler(handler_);

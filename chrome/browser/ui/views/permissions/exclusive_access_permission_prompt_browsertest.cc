@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
   requests.emplace_back(CreateKeyboardRequest());
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
       CreatePrompt(std::move(requests));
-  EXPECT_CALL(keyboard_callback_, Run(CONTENT_SETTING_ALLOW,
+  EXPECT_CALL(keyboard_callback_, Run(PermissionDecision::kAllow,
                                       /*is_one_time=*/false, _, _));
   PressAllowButton(prompt.get());
 }
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
       CreatePrompt(std::move(requests));
   EXPECT_CALL(keyboard_callback_,
-              Run(CONTENT_SETTING_ALLOW, /*is_one_time=*/true, _, _));
+              Run(PermissionDecision::kAllow, /*is_one_time=*/true, _, _));
   PressAllowThisTimeButton(prompt.get());
 }
 
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
   requests.emplace_back(CreateKeyboardRequest());
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
       CreatePrompt(std::move(requests));
-  EXPECT_CALL(keyboard_callback_, Run(CONTENT_SETTING_BLOCK,
+  EXPECT_CALL(keyboard_callback_, Run(PermissionDecision::kDeny,
                                       /*is_one_time=*/false, _, _));
   PressDenyButton(prompt.get());
 }
@@ -164,9 +164,9 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
   requests.emplace_back(CreatePointerRequest());
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
       CreatePrompt(std::move(requests));
-  EXPECT_CALL(keyboard_callback_, Run(CONTENT_SETTING_ALLOW,
+  EXPECT_CALL(keyboard_callback_, Run(PermissionDecision::kAllow,
                                       /*is_one_time=*/false, _, _));
-  EXPECT_CALL(pointer_callback_, Run(CONTENT_SETTING_ALLOW,
+  EXPECT_CALL(pointer_callback_, Run(PermissionDecision::kAllow,
                                      /*is_one_time=*/false, _, _));
   PressAllowButton(prompt.get());
 }
@@ -178,9 +178,9 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
   requests.emplace_back(CreatePointerRequest());
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
       CreatePrompt(std::move(requests));
-  EXPECT_CALL(keyboard_callback_, Run(CONTENT_SETTING_BLOCK,
+  EXPECT_CALL(keyboard_callback_, Run(PermissionDecision::kDeny,
                                       /*is_one_time=*/false, _, _));
-  EXPECT_CALL(pointer_callback_, Run(CONTENT_SETTING_BLOCK,
+  EXPECT_CALL(pointer_callback_, Run(PermissionDecision::kDeny,
                                      /*is_one_time=*/false, _, _));
   PressDenyButton(prompt.get());
 }

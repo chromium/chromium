@@ -21,7 +21,7 @@ void PointerLockPermissionContext::NotifyPermissionSet(
     const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
-    ContentSetting content_setting,
+    PermissionDecision decision,
     bool is_one_time,
     bool is_final_decision) {
   if (is_one_time) {
@@ -32,7 +32,7 @@ void PointerLockPermissionContext::NotifyPermissionSet(
     persist = false;
   }
   permissions::ContentSettingPermissionContextBase::NotifyPermissionSet(
-      request_data, std::move(callback), persist, content_setting, is_one_time,
+      request_data, std::move(callback), persist, decision, is_one_time,
       is_final_decision);
 }
 

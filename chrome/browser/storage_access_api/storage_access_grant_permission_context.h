@@ -102,7 +102,7 @@ class StorageAccessGrantPermissionContext
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
-      ContentSetting content_setting,
+      PermissionDecision decision,
       bool is_one_time,
       bool is_final_decision) override;
 
@@ -126,7 +126,7 @@ class StorageAccessGrantPermissionContext
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
-      ContentSetting content_setting,
+      PermissionDecision decision,
       RequestOutcome outcome);
 
   // Checks First-Party Sets metadata to determine if auto-grants or

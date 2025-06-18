@@ -159,7 +159,7 @@ class PermissionManager : public KeyedService,
   void OnPermissionsRequestResponseStatus(
       PendingRequestLocalId request_local_id,
       int permission_id,
-      ContentSetting status);
+      PermissionStatus status);
 
   // permissions::Observer:
   void OnPermissionChanged(const ContentSettingsPattern& primary_pattern,

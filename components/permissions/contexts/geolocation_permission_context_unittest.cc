@@ -159,7 +159,7 @@ class GeolocationPermissionContextTests
       const GURL& requesting_origin);
 
   void PermissionResponse(const PermissionRequestID& id,
-                          ContentSetting content_setting);
+                          PermissionStatus permission_status);
   void CheckPermissionMessageSent(int request_id, bool allowed);
   void CheckPermissionMessageSentForTab(int tab, int request_id, bool allowed);
   void CheckPermissionMessageSentInternal(MockRenderProcessHost* process,
@@ -284,12 +284,12 @@ GeolocationPermissionContextTests::GetPermissionStatus(
 
 void GeolocationPermissionContextTests::PermissionResponse(
     const PermissionRequestID& id,
-    ContentSetting content_setting) {
+    PermissionStatus permission_status) {
   LOG(ERROR) << "GeolocationPermissionContextTests::PermissionResponse "
-             << id.ToString() << " " << content_setting;
+             << id.ToString() << " " << permission_status;
   responses_[id.global_render_frame_host_id().child_id] =
       std::make_pair(id.request_local_id_for_testing(),
-                     content_setting == CONTENT_SETTING_ALLOW);
+                     permission_status == PermissionStatus::GRANTED);
 }
 
 void GeolocationPermissionContextTests::OnPermissionChanged(

@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_prompt.h"
 #include "content/public/browser/permission_result.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
@@ -146,6 +147,14 @@ class PermissionUtil {
   // Helper method to convert PermissionStatus to ContentSetting.
   static ContentSetting PermissionStatusToContentSetting(
       blink::mojom::PermissionStatus status);
+
+  // Helper method to convert PermissionDecision to PermissionStatus.
+  static content::PermissionStatus PermissionDecisionToPermissionStatus(
+      PermissionDecision decision);
+
+  // Helper method to convert PermissionDecision to ContentSetting.
+  static ContentSetting PermissionDecisionToContentSetting(
+      PermissionDecision decision);
 
   // Helper methods to convert ContentSetting to PermissionStatus and vice
   // versa.

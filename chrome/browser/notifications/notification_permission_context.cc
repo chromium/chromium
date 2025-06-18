@@ -18,6 +18,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_descriptor_util.h"
@@ -143,7 +144,7 @@ void NotificationPermissionContext::DecidePermission(
   // around the restriction by posting a message to their Service Worker, where
   // showing a notification is allowed.
   if (request_data->requesting_origin != request_data->embedding_origin) {
-    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }
 
@@ -175,7 +176,7 @@ void NotificationPermissionContext::DecidePermission(
                   if (context) {
                     context->NotifyPermissionSet(
                         *request_data, std::move(callback),
-                        /*persist=*/true, CONTENT_SETTING_BLOCK,
+                        /*persist=*/true, PermissionDecision::kDeny,
                         /*is_one_time=*/false,
                         /*is_final_decision=*/true);
                   }

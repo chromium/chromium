@@ -19,6 +19,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
@@ -37,18 +38,13 @@ namespace {
 class TestDurablePermissionContext : public DurableStoragePermissionContext {
  public:
   explicit TestDurablePermissionContext(Profile* profile)
-      : DurableStoragePermissionContext(profile),
-        permission_set_count_(0),
-        last_permission_set_persisted_(false),
-        last_permission_set_setting_(CONTENT_SETTING_DEFAULT) {}
+      : DurableStoragePermissionContext(profile) {}
 
   int permission_set_count() const { return permission_set_count_; }
   bool last_permission_set_persisted() const {
     return last_permission_set_persisted_;
   }
-  ContentSetting last_permission_set_setting() const {
-    return last_permission_set_setting_;
-  }
+  PermissionDecision last_set_decision() const { return last_set_decision_; }
 
   ContentSetting GetContentSettingFromMap(const GURL& url_a,
                                           const GURL& url_b) {
@@ -64,20 +60,20 @@ class TestDurablePermissionContext : public DurableStoragePermissionContext {
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
-      ContentSetting content_setting,
+      PermissionDecision decision,
       bool is_one_time,
       bool is_final_decision) override {
     permission_set_count_++;
     last_permission_set_persisted_ = persist;
-    last_permission_set_setting_ = content_setting;
+    last_set_decision_ = decision;
     DurableStoragePermissionContext::NotifyPermissionSet(
-        request_data, std::move(callback), persist, content_setting,
-        is_one_time, is_final_decision);
+        request_data, std::move(callback), persist, decision, is_one_time,
+        is_final_decision);
   }
 
-  int permission_set_count_;
-  bool last_permission_set_persisted_;
-  ContentSetting last_permission_set_setting_;
+  int permission_set_count_ = 0;
+  bool last_permission_set_persisted_ = false;
+  PermissionDecision last_set_decision_ = PermissionDecision::kNone;
 };
 
 }  // namespace
@@ -104,8 +100,7 @@ TEST_F(DurableStoragePermissionContextTest, Bookmarked) {
 
   ASSERT_EQ(0, permission_context.permission_set_count());
   ASSERT_FALSE(permission_context.last_permission_set_persisted());
-  ASSERT_EQ(CONTENT_SETTING_DEFAULT,
-            permission_context.last_permission_set_setting());
+  ASSERT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
@@ -115,8 +110,7 @@ TEST_F(DurableStoragePermissionContextTest, Bookmarked) {
   // Success.
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            permission_context.last_permission_set_setting());
+  EXPECT_EQ(PermissionDecision::kAllow, permission_context.last_set_decision());
 }
 
 TEST_F(DurableStoragePermissionContextTest, BookmarkAndIncognitoMode) {
@@ -132,8 +126,7 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndIncognitoMode) {
 
   ASSERT_EQ(0, permission_context.permission_set_count());
   ASSERT_FALSE(permission_context.last_permission_set_persisted());
-  ASSERT_EQ(CONTENT_SETTING_DEFAULT,
-            permission_context.last_permission_set_setting());
+  ASSERT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
@@ -143,8 +136,7 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndIncognitoMode) {
   // Success.
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            permission_context.last_permission_set_setting());
+  EXPECT_EQ(PermissionDecision::kAllow, permission_context.last_set_decision());
 }
 
 TEST_F(DurableStoragePermissionContextTest, BookmarkAndNonPrimaryOTRProfile) {
@@ -162,8 +154,7 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndNonPrimaryOTRProfile) {
 
   ASSERT_EQ(0, permission_context.permission_set_count());
   ASSERT_FALSE(permission_context.last_permission_set_persisted());
-  ASSERT_EQ(CONTENT_SETTING_DEFAULT,
-            permission_context.last_permission_set_setting());
+  ASSERT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
@@ -173,8 +164,7 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndNonPrimaryOTRProfile) {
   // Success.
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            permission_context.last_permission_set_setting());
+  EXPECT_EQ(PermissionDecision::kAllow, permission_context.last_set_decision());
 }
 
 TEST_F(DurableStoragePermissionContextTest, NoBookmark) {
@@ -188,8 +178,7 @@ TEST_F(DurableStoragePermissionContextTest, NoBookmark) {
 
   ASSERT_EQ(0, permission_context.permission_set_count());
   ASSERT_FALSE(permission_context.last_permission_set_persisted());
-  ASSERT_EQ(CONTENT_SETTING_DEFAULT,
-            permission_context.last_permission_set_setting());
+  ASSERT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
@@ -200,8 +189,7 @@ TEST_F(DurableStoragePermissionContextTest, NoBookmark) {
   // We shouldn't be granted.
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_FALSE(permission_context.last_permission_set_persisted());
-  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
-            permission_context.last_permission_set_setting());
+  EXPECT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 }
 
 TEST_F(DurableStoragePermissionContextTest, CookiesNotAllowed) {
@@ -221,8 +209,7 @@ TEST_F(DurableStoragePermissionContextTest, CookiesNotAllowed) {
 
   ASSERT_EQ(0, permission_context.permission_set_count());
   ASSERT_FALSE(permission_context.last_permission_set_persisted());
-  ASSERT_EQ(CONTENT_SETTING_DEFAULT,
-            permission_context.last_permission_set_setting());
+  ASSERT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
@@ -232,8 +219,7 @@ TEST_F(DurableStoragePermissionContextTest, CookiesNotAllowed) {
   // We shouldn't be granted.
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_FALSE(permission_context.last_permission_set_persisted());
-  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
-            permission_context.last_permission_set_setting());
+  EXPECT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 }
 
 TEST_F(DurableStoragePermissionContextTest, EmbeddedFrame) {
@@ -249,8 +235,7 @@ TEST_F(DurableStoragePermissionContextTest, EmbeddedFrame) {
 
   ASSERT_EQ(0, permission_context.permission_set_count());
   ASSERT_FALSE(permission_context.last_permission_set_persisted());
-  ASSERT_EQ(CONTENT_SETTING_DEFAULT,
-            permission_context.last_permission_set_setting());
+  ASSERT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
@@ -260,8 +245,7 @@ TEST_F(DurableStoragePermissionContextTest, EmbeddedFrame) {
   // We shouldn't be granted.
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_FALSE(permission_context.last_permission_set_persisted());
-  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
-            permission_context.last_permission_set_setting());
+  EXPECT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 }
 
 TEST_F(DurableStoragePermissionContextTest, NonsecureOrigin) {

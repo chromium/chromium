@@ -55,7 +55,7 @@ std::optional<std::u16string> SmartCardPermissionRequest::GetBlockText() const {
 }
 
 void SmartCardPermissionRequest::OnPermissionDecided(
-    ContentSetting content_setting_result,
+    PermissionDecision decision,
     bool is_one_time,
     bool is_final_decision,
     const permissions::PermissionRequestData& request_data) {
@@ -65,7 +65,7 @@ void SmartCardPermissionRequest::OnPermissionDecided(
 
   Result result = Result::kDontAllow;
 
-  if (content_setting_result == ContentSetting::CONTENT_SETTING_ALLOW) {
+  if (decision == PermissionDecision::kAllow) {
     if (is_one_time) {
       result = Result::kAllowOnce;
     } else {

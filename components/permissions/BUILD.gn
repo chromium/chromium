@@ -83,6 +83,7 @@ source_set("permissions") {
     "permission_actions_history.h",
     "permission_context_base.cc",
     "permission_context_base.h",
+    "permission_decision.h",
     "permission_decision_auto_blocker.cc",
     "permission_decision_auto_blocker.h",
     "permission_hats_trigger_helper.cc",

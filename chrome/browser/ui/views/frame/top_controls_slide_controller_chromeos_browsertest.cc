@@ -35,6 +35,7 @@
 #include "chromeos/crosapi/mojom/cros_display_config.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
@@ -1385,7 +1386,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestPermissionBubble) {
 
   // Fire a geolocation permission request, which should show a permission
   // request bubble resulting in top chrome unhiding.
-  auto decided = [](ContentSetting, bool, bool,
+  auto decided = [](PermissionDecision, bool, bool,
                     const permissions::PermissionRequestData&) {};
   auto permission_request = std::make_unique<permissions::PermissionRequest>(
       std::make_unique<permissions::PermissionRequestData>(

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_manager.h"
@@ -100,13 +101,13 @@ class PerDeviceProvisioningPermissionRequest final
       const PerDeviceProvisioningPermissionRequest&) = delete;
 
   void PermissionDecided(
-      ContentSetting result,
+      PermissionDecision decision,
       bool is_one_time,
       bool is_final_decision,
       const permissions::PermissionRequestData& request_data) {
     DCHECK(!is_one_time);
     DCHECK(!is_final_decision);
-    const bool granted = result == ContentSetting::CONTENT_SETTING_ALLOW;
+    const bool granted = decision == PermissionDecision::kAllow;
     UpdateLastResponse(granted);
     std::move(callback_).Run(granted);
   }

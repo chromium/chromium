@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/request_type.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 
@@ -44,7 +45,7 @@ class PermissionResolver {
   // request.
   virtual base::Value ComputePermissionDecisionResult(
       const base::Value& previous_value,
-      ContentSetting decision,
+      PermissionDecision decision,
       const base::Value& prompt_options = base::Value()) const = 0;
 
   // Determines the `PromptParameters` for the current request given the

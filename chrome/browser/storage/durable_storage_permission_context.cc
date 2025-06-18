@@ -18,6 +18,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_thread.h"
@@ -62,7 +63,7 @@ void DurableStoragePermissionContext::DecidePermission(
   // origin is the last committed navigation origin to the web contents.
   if (request_data->requesting_origin != request_data->embedding_origin) {
     NotifyPermissionSet(*request_data, std::move(callback),
-                        /*persist=*/false, CONTENT_SETTING_DEFAULT,
+                        /*persist=*/false, PermissionDecision::kNone,
                         /*is_one_time=*/false,
                         /*is_final_decision=*/true);
     return;
@@ -85,7 +86,7 @@ void DurableStoragePermissionContext::DecidePermission(
           net::CookieSettingOverrides(),
           rfh->GetStorageKey().ToCookiePartitionKey())) {
     NotifyPermissionSet(*request_data, std::move(callback),
-                        /*persist=*/false, CONTENT_SETTING_DEFAULT,
+                        /*persist=*/false, PermissionDecision::kNone,
                         /*is_one_time=*/false,
                         /*is_final_decision=*/true);
     return;
@@ -105,7 +106,7 @@ void DurableStoragePermissionContext::DecidePermission(
           Profile::FromBrowserContext(browser_context()));
   if (base::Contains(installed_registerable_domains, registerable_domain)) {
     NotifyPermissionSet(*request_data, std::move(callback),
-                        /*persist=*/true, CONTENT_SETTING_ALLOW,
+                        /*persist=*/true, PermissionDecision::kAllow,
                         /*is_one_time=*/false,
                         /*is_final_decision=*/true);
     return;
@@ -121,7 +122,7 @@ void DurableStoragePermissionContext::DecidePermission(
   for (const auto& important_site : important_sites) {
     if (important_site.registerable_domain == registerable_domain) {
       NotifyPermissionSet(*request_data, std::move(callback),
-                          /*persist=*/true, CONTENT_SETTING_ALLOW,
+                          /*persist=*/true, PermissionDecision::kAllow,
                           /*is_one_time=*/false,
                           /*is_final_decision=*/true);
       return;
@@ -129,7 +130,7 @@ void DurableStoragePermissionContext::DecidePermission(
   }
 
   NotifyPermissionSet(*request_data, std::move(callback),
-                      /*persist=*/false, CONTENT_SETTING_DEFAULT,
+                      /*persist=*/false, PermissionDecision::kNone,
                       /*is_one_time=*/false,
                       /*is_final_decision=*/true);
 }

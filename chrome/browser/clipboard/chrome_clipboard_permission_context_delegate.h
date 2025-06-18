@@ -50,7 +50,7 @@ class ChromeClipboardPermissionContextDelegate
       extensions::WebViewPermissionHelper* web_view_permission_helper) const;
 
   void OnWebViewPermissionResult(
-      base::OnceCallback<void(ContentSetting)> callback,
+      permissions::BrowserPermissionCallback callback,
       permissions::PermissionRequestID request_id,
       bool allowed);
 

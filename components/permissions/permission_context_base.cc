@@ -34,6 +34,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_context_base.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_id.h"
@@ -110,7 +111,7 @@ void PermissionContextBase::RequestPermission(
 
   if (!rfh) {
     // Permission request is not allowed without a valid RenderFrameHost.
-    std::move(callback).Run(CONTENT_SETTING_ASK);
+    std::move(callback).Run(PermissionStatus::ASK);
     return;
   }
 
@@ -129,7 +130,7 @@ void PermissionContextBase::RequestPermission(
              << "," << request_data->embedding_origin << " (" << type_name
              << " is not supported in popups)";
     NotifyPermissionSet(*request_data, std::move(callback),
-                        /*persist=*/false, CONTENT_SETTING_BLOCK,
+                        /*persist=*/false, PermissionDecision::kDeny,
                         /*is_one_time=*/false,
                         /*is_final_decision=*/true);
     return;
@@ -165,7 +166,7 @@ void PermissionContextBase::RequestPermission(
                                     content_settings_type_);
         PermissionUmaUtil::RecordPermissionRequestedFromFrame(
             content_settings_type_, rfh);
-        std::move(callback).Run(CONTENT_SETTING_BLOCK);
+        std::move(callback).Run(PermissionStatus::DENIED);
         return;
       case content::PermissionStatusSource::MULTIPLE_DISMISSALS:
         static constexpr char kPermissionBlockedRepeatedDismissalsReason[] =
@@ -216,12 +217,13 @@ void PermissionContextBase::RequestPermission(
     // If we are under embargo, record the embargo reason for which we have
     // suppressed the prompt.
     PermissionUmaUtil::RecordEmbargoPromptSuppressionFromSource(result.source);
-    NotifyPermissionSet(
-        *request_data, std::move(callback),
-        /*persist=*/false,
-        PermissionUtil::PermissionStatusToContentSetting(result.status),
-        /*is_one_time=*/false,
-        /*is_final_decision=*/true);
+    NotifyPermissionSet(*request_data, std::move(callback),
+                        /*persist=*/false,
+                        result.status == blink::mojom::PermissionStatus::GRANTED
+                            ? PermissionDecision::kAllow
+                            : PermissionDecision::kDeny,
+                        /*is_one_time=*/false,
+                        /*is_final_decision=*/true);
     return;
   }
 
@@ -244,7 +246,7 @@ void PermissionContextBase::UserMadePermissionDecision(
     const PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
-    ContentSetting decision) {}
+    PermissionDecision decision) {}
 
 std::unique_ptr<PermissionRequest>
 PermissionContextBase::CreatePermissionRequest(
@@ -517,7 +519,7 @@ void PermissionContextBase::DecidePermission(
   // TODO(felt): sometimes |permission_request_manager| is null. This check is
   // meant to prevent crashes. See crbug.com/457091.
   if (!permission_request_manager) {
-    std::move(callback).Run(CONTENT_SETTING_ASK);
+    std::move(callback).Run(PermissionStatus::ASK);
     return;
   }
 
@@ -546,17 +548,14 @@ void PermissionContextBase::DecidePermission(
 }
 
 void PermissionContextBase::PermissionDecided(
-    ContentSetting decision,
+    PermissionDecision decision,
     bool is_one_time,
     bool is_final_decision,
     const PermissionRequestData& request_data) {
-  DCHECK(decision == CONTENT_SETTING_ALLOW ||
-         decision == CONTENT_SETTING_BLOCK ||
-         decision == CONTENT_SETTING_DEFAULT);
   UserMadePermissionDecision(request_data.id, request_data.requesting_origin,
                              request_data.embedding_origin, decision);
 
-  bool persist = decision != CONTENT_SETTING_DEFAULT;
+  bool persist = decision != PermissionDecision::kNone;
 
   auto request = pending_requests_.find(request_data.id.ToString());
   CHECK(request->second.first);
@@ -657,7 +656,7 @@ void PermissionContextBase::NotifyPermissionSet(
     const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
-    ContentSetting decision,
+    PermissionDecision decision,
     bool is_one_time,
     bool is_final_decision) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -679,18 +678,15 @@ void PermissionContextBase::NotifyPermissionSet(
 
   if (is_final_decision) {
     UpdateTabContext(request_data.id, request_data.requesting_origin,
-                     decision == CONTENT_SETTING_ALLOW);
-    if (decision == CONTENT_SETTING_ALLOW) {
+                     decision == PermissionDecision::kAllow);
+    if (decision == PermissionDecision::kAllow) {
       PermissionUmaUtil::RecordPermissionsUsageSourceAndPolicyConfiguration(
           content_settings_type_, rfh);
     }
   }
 
-  if (decision == CONTENT_SETTING_DEFAULT) {
-    decision = CONTENT_SETTING_ASK;
-  }
-
-  std::move(callback).Run(decision);
+  std::move(callback).Run(
+      PermissionUtil::PermissionDecisionToPermissionStatus(decision));
 }
 
 void PermissionContextBase::CleanUpRequest(

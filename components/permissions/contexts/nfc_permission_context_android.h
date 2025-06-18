@@ -25,7 +25,7 @@ class NfcPermissionContextAndroid : public NfcPermissionContext {
   void NotifyPermissionSet(const PermissionRequestData& request_data,
                            BrowserPermissionCallback callback,
                            bool persist,
-                           ContentSetting content_setting,
+                           PermissionDecision decision,
                            bool is_one_time,
                            bool is_final_decision) override;
 
@@ -34,7 +34,7 @@ class NfcPermissionContextAndroid : public NfcPermissionContext {
                                            const GURL& embedding_origin,
                                            BrowserPermissionCallback callback,
                                            bool persist,
-                                           ContentSetting content_setting);
+                                           PermissionDecision decision);
 
   // Overrides the NfcSystemLevelSetting object used to determine whether NFC is
   // enabled system-wide on the device.

@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -72,14 +73,16 @@ class TestPermissionContext : public ContentSettingPermissionContextBase {
 
   ~TestPermissionContext() override = default;
 
-  const std::vector<ContentSetting>& decisions() const { return decisions_; }
+  const std::vector<PermissionStatus>& permission_statuses() const {
+    return permission_statuses_;
+  }
 
   bool tab_context_updated() const { return tab_context_updated_; }
 
   // Once a decision for the requested permission has been made, run the
   // callback.
-  void TrackPermissionDecision(ContentSetting content_setting) {
-    decisions_.push_back(content_setting);
+  void TrackPermissionDecision(PermissionStatus permission_status) {
+    permission_statuses_.push_back(permission_status);
     // Null check required here as the quit_closure_ can also be run and reset
     // first from within DecidePermission.
     if (quit_closure_) {
@@ -138,8 +141,8 @@ class TestPermissionContext : public ContentSettingPermissionContextBase {
   bool UsesAutomaticEmbargo() const override { return uses_automatic_embargo_; }
 
  private:
-  std::vector<ContentSetting> decisions_;
-  bool tab_context_updated_;
+  std::vector<PermissionStatus> permission_statuses_;
+  bool tab_context_updated_ = false;
   base::OnceClosure quit_closure_;
   // Callback for responding to a permission once the request has been completed
   // (valid URL, kill switch disabled)
@@ -206,6 +209,23 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
   PermissionContextBaseTests() = default;
   ~PermissionContextBaseTests() override = default;
 
+  PermissionStatus ContentSettingToPermissionStatus(ContentSetting response) {
+    switch (response) {
+      case CONTENT_SETTING_DEFAULT:
+        return PermissionStatus::ASK;
+      case CONTENT_SETTING_ALLOW:
+        return PermissionStatus::GRANTED;
+      case CONTENT_SETTING_BLOCK:
+        return PermissionStatus::DENIED;
+      case CONTENT_SETTING_ASK:
+        return PermissionStatus::ASK;
+      case CONTENT_SETTING_SESSION_ONLY:
+      case CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
+      case CONTENT_SETTING_NUM_SETTINGS:
+        NOTREACHED();
+    }
+  }
+
   // Accept or dismiss the permission prompt.
   void RespondToPermission(TestPermissionContext* context,
                            const PermissionRequestID& id,
@@ -245,8 +265,9 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                                                 /*user_gesture=*/true, url),
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
-    ASSERT_EQ(1u, permission_context.decisions().size());
-    EXPECT_EQ(decision, permission_context.decisions()[0]);
+    ASSERT_EQ(1u, permission_context.permission_statuses().size());
+    EXPECT_EQ(ContentSettingToPermissionStatus(decision),
+              permission_context.permission_statuses()[0]);
     EXPECT_TRUE(permission_context.tab_context_updated());
 
     std::string decision_string;
@@ -386,8 +407,9 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
             static_cast<int>(PermissionEmbargoStatus::REPEATED_DISMISSALS), 1);
       }
 
-      ASSERT_EQ(1u, permission_context.decisions().size());
-      EXPECT_EQ(CONTENT_SETTING_ASK, permission_context.decisions()[0]);
+      ASSERT_EQ(1u, permission_context.permission_statuses().size());
+      EXPECT_EQ(ContentSettingToPermissionStatus(CONTENT_SETTING_ASK),
+                permission_context.permission_statuses()[0]);
       EXPECT_TRUE(permission_context.tab_context_updated());
     }
 
@@ -457,8 +479,9 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
           base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                          base::Unretained(&permission_context)));
 
-      EXPECT_EQ(1u, permission_context.decisions().size());
-      ASSERT_EQ(CONTENT_SETTING_ASK, permission_context.decisions()[0]);
+      EXPECT_EQ(1u, permission_context.permission_statuses().size());
+      ASSERT_EQ(ContentSettingToPermissionStatus(CONTENT_SETTING_ASK),
+                permission_context.permission_statuses()[0]);
       EXPECT_TRUE(permission_context.tab_context_updated());
       content::PermissionResult result = permission_context.GetPermissionStatus(
           content::PermissionDescriptorUtil::
@@ -531,8 +554,9 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
           base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                          base::Unretained(&permission_context)));
 
-      EXPECT_EQ(1u, permission_context.decisions().size());
-      ASSERT_EQ(CONTENT_SETTING_ASK, permission_context.decisions()[0]);
+      EXPECT_EQ(1u, permission_context.permission_statuses().size());
+      ASSERT_EQ(ContentSettingToPermissionStatus(CONTENT_SETTING_ASK),
+                permission_context.permission_statuses()[0]);
       EXPECT_TRUE(permission_context.tab_context_updated());
       content::PermissionResult result = permission_context.GetPermissionStatus(
           content::PermissionDescriptorUtil::
@@ -596,8 +620,9 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
-    ASSERT_EQ(1u, permission_context.decisions().size());
-    EXPECT_EQ(CONTENT_SETTING_BLOCK, permission_context.decisions()[0]);
+    ASSERT_EQ(1u, permission_context.permission_statuses().size());
+    EXPECT_EQ(ContentSettingToPermissionStatus(CONTENT_SETTING_BLOCK),
+              permission_context.permission_statuses()[0]);
     EXPECT_TRUE(permission_context.tab_context_updated());
     EXPECT_EQ(CONTENT_SETTING_ASK,
               permission_context.GetContentSettingFromMap(url, url));
@@ -626,8 +651,9 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
-    ASSERT_EQ(1u, permission_context.decisions().size());
-    EXPECT_EQ(CONTENT_SETTING_ALLOW, permission_context.decisions()[0]);
+    ASSERT_EQ(1u, permission_context.permission_statuses().size());
+    EXPECT_EQ(ContentSettingToPermissionStatus(CONTENT_SETTING_ALLOW),
+              permission_context.permission_statuses()[0]);
     EXPECT_TRUE(permission_context.tab_context_updated());
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               permission_context.GetContentSettingFromMap(url, url));
@@ -709,7 +735,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
-    EXPECT_EQ(0u, permission_context.decisions().size());
+    EXPECT_EQ(0u, permission_context.permission_statuses().size());
 
     // Set the callback, and make a second permission request.
     permission_context.SetRespondPermissionCallback(base::BindOnce(
@@ -721,9 +747,11 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
-    ASSERT_EQ(2u, permission_context.decisions().size());
-    EXPECT_EQ(response, permission_context.decisions()[0]);
-    EXPECT_EQ(response, permission_context.decisions()[1]);
+    ASSERT_EQ(2u, permission_context.permission_statuses().size());
+    EXPECT_EQ(ContentSettingToPermissionStatus(response),
+              permission_context.permission_statuses()[0]);
+    EXPECT_EQ(ContentSettingToPermissionStatus(response),
+              permission_context.permission_statuses()[1]);
     EXPECT_TRUE(permission_context.tab_context_updated());
 
     EXPECT_EQ(response, permission_context.GetContentSettingFromMap(url, url));

@@ -8,6 +8,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_manager.h"
 #include "extensions/buildflags/buildflags.h"
 
 namespace content {
@@ -41,7 +43,7 @@ class GeolocationPermissionContextExtensions {
   bool DecidePermission(const permissions::PermissionRequestID& request_id,
                         const GURL& requesting_frame,
                         bool user_gesture,
-                        base::OnceCallback<void(ContentSetting)>* callback,
+                        base::OnceCallback<void(PermissionStatus)>* callback,
                         bool* permission_set,
                         bool* new_permission);
 

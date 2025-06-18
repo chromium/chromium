@@ -13,10 +13,6 @@
 
 class GURL;
 
-namespace permissions {
-class PermissionRequestID;
-}
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class TopLevelStorageAccessRequestOutcome {
@@ -81,7 +77,7 @@ class TopLevelStorageAccessPermissionContext
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
-      ContentSetting content_setting,
+      PermissionDecision decision,
       bool is_one_time,
       bool is_final_decision) override;
 
@@ -99,12 +95,10 @@ class TopLevelStorageAccessPermissionContext
 
   // Internal implementation for NotifyPermissionSet.
   void NotifyPermissionSetInternal(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
+      const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
-      ContentSetting content_setting,
+      PermissionDecision decision,
       TopLevelStorageAccessRequestOutcome outcome);
 
   // Checks First-Party Sets metadata to determine whether the request should be

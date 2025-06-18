@@ -33,7 +33,7 @@ class WindowManagementPermissionContext
   void UserMadePermissionDecision(const PermissionRequestID& id,
                                   const GURL& requesting_origin,
                                   const GURL& embedding_origin,
-                                  ContentSetting content_setting) override;
+                                  PermissionDecision decision) override;
 };
 
 }  // namespace permissions

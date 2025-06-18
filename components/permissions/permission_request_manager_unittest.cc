@@ -666,7 +666,7 @@ class QuicklyDeletedRequest : public PermissionRequest {
                     PermissionRequestGestureType::GESTURE,
                 requesting_origin),
             base::BindLambdaForTesting(
-                [](ContentSetting result,
+                [](PermissionDecision decision,
                    bool is_one_time,
                    bool is_final_decision,
                    const PermissionRequestData&) { NOTREACHED(); })) {}

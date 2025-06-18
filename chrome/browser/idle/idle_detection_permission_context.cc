@@ -9,6 +9,7 @@
 #include "base/rand_util.h"
 #include "chrome/browser/visibility_timer_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -70,7 +71,7 @@ void IdleDetectionPermissionContext::DecidePermission(
                   if (context) {
                     context->NotifyPermissionSet(
                         *request_data, std::move(callback),
-                        /*persist=*/true, CONTENT_SETTING_BLOCK,
+                        /*persist=*/true, PermissionDecision::kDeny,
                         /*is_one_time=*/false, /*is_final_decision=*/true);
                   }
                 },

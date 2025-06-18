@@ -77,12 +77,12 @@ class TopLevelStorageAccessPermissionContextTest
     first_party_sets_handler_.SetGlobalSets(net::GlobalFirstPartySets());
   }
 
-  ContentSetting DecidePermissionSync(
+  PermissionStatus DecidePermissionSync(
       TopLevelStorageAccessPermissionContext* permission_context,
       bool user_gesture,
       const GURL& requester_url,
       const GURL& embedding_url) {
-    base::test::TestFuture<ContentSetting> future;
+    base::test::TestFuture<PermissionStatus> future;
     permission_context->DecidePermissionForTesting(
         std::make_unique<permissions::PermissionRequestData>(
             permission_context, CreateFakeID(), user_gesture, requester_url,
@@ -135,7 +135,7 @@ TEST_F(TopLevelStorageAccessPermissionContextTest,
 
   EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/false,
                                  GetRequesterURL(), GetTopLevelURL()),
-            CONTENT_SETTING_BLOCK);
+            PermissionStatus::DENIED);
 
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
@@ -178,7 +178,7 @@ TEST_F(TopLevelStorageAccessPermissionContextTest,
 
   EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
                                  GetRequesterURL(), GetDummyEmbeddingUrl()),
-            CONTENT_SETTING_BLOCK);
+            PermissionStatus::DENIED);
 
   // Check the `SessionModel::DURABLE` settings with
   // `decided_by_related_website_sets`. None were granted, and implicit denials
@@ -243,7 +243,7 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
                                  GetRequesterURL(), GetTopLevelURL()),
-            CONTENT_SETTING_ALLOW);
+            PermissionStatus::GRANTED);
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
                 TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet),
@@ -275,7 +275,7 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
                                  GetRequesterURL(), GetTopLevelURL()),
-            CONTENT_SETTING_ALLOW);
+            PermissionStatus::GRANTED);
 
   // Check the `SessionModel::DURABLE` setting with
   // `decided_by_related_website_sets` granted by FPS.
@@ -324,7 +324,7 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
                                  GetRequesterURL(), GetDummyEmbeddingUrl()),
-            CONTENT_SETTING_BLOCK);
+            PermissionStatus::DENIED);
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
                 TopLevelStorageAccessRequestOutcome::kDeniedByFirstPartySet),
@@ -357,7 +357,7 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
                                  GetRequesterURL(), GetDummyEmbeddingUrl()),
-            CONTENT_SETTING_BLOCK);
+            PermissionStatus::DENIED);
 
   // Check the `SessionModel::DURABLE` setting with
   // `decided_by_related_website_sets`. None were granted, and implicit denials

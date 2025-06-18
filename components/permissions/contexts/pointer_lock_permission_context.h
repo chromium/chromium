@@ -6,6 +6,7 @@
 #define COMPONENTS_PERMISSIONS_CONTEXTS_POINTER_LOCK_PERMISSION_CONTEXT_H_
 
 #include "components/permissions/content_setting_permission_context_base.h"
+#include "components/permissions/permission_decision.h"
 
 namespace permissions {
 
@@ -25,7 +26,7 @@ class PointerLockPermissionContext
   void NotifyPermissionSet(const PermissionRequestData& request_data,
                            BrowserPermissionCallback callback,
                            bool persist,
-                           ContentSetting content_setting,
+                           PermissionDecision decision,
                            bool is_one_time,
                            bool is_final_decision) override;
 

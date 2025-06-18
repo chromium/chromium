@@ -5,11 +5,13 @@
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 
@@ -39,10 +41,10 @@ ContentSettingPermissionResolver::DeterminePermissionStatus(
 
 base::Value ContentSettingPermissionResolver::ComputePermissionDecisionResult(
     const base::Value& previous_value,
-    ContentSetting decision,
+    PermissionDecision decision,
     const base::Value& prompt_options) const {
-  return decision == CONTENT_SETTING_DEFAULT ? base::Value(default_value_)
-                                             : base::Value(decision);
+  return base::Value(
+      PermissionUtil::PermissionDecisionToContentSetting(decision));
 }
 
 ContentSettingPermissionResolver::PromptParameters

@@ -8,6 +8,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/render_process_host.h"
@@ -19,18 +20,13 @@ class TestIdleDetectionPermissionContext
     : public IdleDetectionPermissionContext {
  public:
   explicit TestIdleDetectionPermissionContext(Profile* profile)
-      : IdleDetectionPermissionContext(profile),
-        permission_set_count_(0),
-        last_permission_set_persisted_(false),
-        last_permission_set_setting_(CONTENT_SETTING_DEFAULT) {}
+      : IdleDetectionPermissionContext(profile) {}
 
   int permission_set_count() const { return permission_set_count_; }
   bool last_permission_set_persisted() const {
     return last_permission_set_persisted_;
   }
-  ContentSetting last_permission_set_setting() const {
-    return last_permission_set_setting_;
-  }
+  PermissionDecision last_set_decision() const { return last_set_decision_; }
 
   ContentSetting GetContentSettingFromMap(const GURL& url_a,
                                           const GURL& url_b) {
@@ -46,20 +42,20 @@ class TestIdleDetectionPermissionContext
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
-      ContentSetting content_setting,
+      PermissionDecision decision,
       bool is_one_time,
       bool is_final_decision) override {
     permission_set_count_++;
     last_permission_set_persisted_ = persist;
-    last_permission_set_setting_ = content_setting;
+    last_set_decision_ = decision;
     IdleDetectionPermissionContext::NotifyPermissionSet(
-        request_data, std::move(callback), persist, content_setting,
-        is_one_time, is_final_decision);
+        request_data, std::move(callback), persist, decision, is_one_time,
+        is_final_decision);
   }
 
-  int permission_set_count_;
-  bool last_permission_set_persisted_;
-  ContentSetting last_permission_set_setting_;
+  int permission_set_count_ = 0;
+  bool last_permission_set_persisted_ = false;
+  PermissionDecision last_set_decision_ = PermissionDecision::kNone;
 };
 
 }  // namespace
@@ -85,8 +81,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
 
   ASSERT_EQ(0, permission_context.permission_set_count());
   ASSERT_FALSE(permission_context.last_permission_set_persisted());
-  ASSERT_EQ(CONTENT_SETTING_DEFAULT,
-            permission_context.last_permission_set_setting());
+  ASSERT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
@@ -133,8 +128,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
 
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            permission_context.last_permission_set_setting());
+  EXPECT_EQ(PermissionDecision::kDeny, permission_context.last_set_decision());
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context.GetContentSettingFromMap(url, url));
 }
@@ -156,8 +150,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestParallelDenyInIncognito) {
 
   ASSERT_EQ(0, permission_context.permission_set_count());
   ASSERT_FALSE(permission_context.last_permission_set_persisted());
-  ASSERT_EQ(CONTENT_SETTING_DEFAULT,
-            permission_context.last_permission_set_setting());
+  ASSERT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 
   permission_context.RequestPermission(
       std::make_unique<permissions::PermissionRequestData>(
@@ -185,8 +178,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestParallelDenyInIncognito) {
   // Only the first permission request receives a response (crbug.com/577336).
   EXPECT_EQ(1, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            permission_context.last_permission_set_setting());
+  EXPECT_EQ(PermissionDecision::kDeny, permission_context.last_set_decision());
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context.GetContentSettingFromMap(url, url));
 
@@ -195,8 +187,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestParallelDenyInIncognito) {
   task_environment()->FastForwardBy(base::Milliseconds(2500));
   EXPECT_EQ(2, permission_context.permission_set_count());
   EXPECT_TRUE(permission_context.last_permission_set_persisted());
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            permission_context.last_permission_set_setting());
+  EXPECT_EQ(PermissionDecision::kDeny, permission_context.last_set_decision());
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context.GetContentSettingFromMap(url, url));
 }

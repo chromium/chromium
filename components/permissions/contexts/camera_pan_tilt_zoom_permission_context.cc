@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
@@ -21,21 +22,6 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace permissions {
-
-// TODO(crbug.com/40205763): This method is a temporary solution because of
-// inconsistency between the new permissions API that is migrated to
-// `blink::mojom::PermissionStatus` and its callsites that still use
-// `ContentSetting`.
-void CallbackWrapper(base::OnceCallback<void(ContentSetting)> callback,
-                     blink::mojom::PermissionStatus status) {
-  ContentSetting result = CONTENT_SETTING_ASK;
-  if (status == blink::mojom::PermissionStatus::GRANTED) {
-    result = CONTENT_SETTING_ALLOW;
-  } else if (status == blink::mojom::PermissionStatus::DENIED) {
-    result = CONTENT_SETTING_BLOCK;
-  }
-  std::move(callback).Run(result);
-}
 
 CameraPanTiltZoomPermissionContext::CameraPanTiltZoomPermissionContext(
     content::BrowserContext* browser_context,
@@ -77,7 +63,7 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
 
   if (request_data->requesting_origin !=
       render_frame_host->GetLastCommittedOrigin().GetURL()) {
-    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }
   render_frame_host->GetBrowserContext()
@@ -89,7 +75,7 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
                   CreatePermissionDescriptorForPermissionType(
                       blink::PermissionType::VIDEO_CAPTURE),
               request_data->user_gesture),
-          base::BindOnce(&CallbackWrapper, std::move(callback)));
+          std::move(callback));
 }
 
 ContentSetting

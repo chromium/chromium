@@ -5,6 +5,7 @@
 #include "chrome/browser/display_capture/display_capture_permission_context.h"
 
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_decision.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 DisplayCapturePermissionContext::DisplayCapturePermissionContext(
@@ -18,7 +19,7 @@ void DisplayCapturePermissionContext::DecidePermission(
     std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
   NotifyPermissionSet(*request_data, std::move(callback),
-                      /*persist=*/false, CONTENT_SETTING_DEFAULT,
+                      /*persist=*/false, PermissionDecision::kNone,
                       /*is_one_time=*/false,
                       /*is_final_decision=*/true);
 }

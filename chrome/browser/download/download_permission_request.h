@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/download/download_request_limiter.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_data.h"
 #include "url/origin.h"
@@ -29,7 +30,7 @@ class DownloadPermissionRequest : public permissions::PermissionRequest {
 
  private:
   void PermissionDecided(
-      ContentSetting result,
+      PermissionDecision decision,
       bool is_one_time,
       bool is_final_decision,
       const permissions::PermissionRequestData& request_data);

@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 
 IdentityProviderPermissionRequest::IdentityProviderPermissionRequest(
@@ -26,19 +27,19 @@ IdentityProviderPermissionRequest::~IdentityProviderPermissionRequest() =
     default;
 
 void IdentityProviderPermissionRequest::PermissionDecided(
-    ContentSetting result,
+    PermissionDecision decision,
     bool is_one_time,
     bool is_final_decision,
     const permissions::PermissionRequestData& request_data) {
   DCHECK(!is_one_time);
   DCHECK(is_final_decision);
 
-  if (result == ContentSetting::CONTENT_SETTING_ALLOW) {
+  if (decision == PermissionDecision::kAllow) {
     std::move(callback_).Run(true);
-  } else if (result == ContentSetting::CONTENT_SETTING_BLOCK) {
+  } else if (decision == PermissionDecision::kDeny) {
     std::move(callback_).Run(false);
   } else {
-    DCHECK_EQ(CONTENT_SETTING_DEFAULT, result);
+    DCHECK_EQ(PermissionDecision::kNone, decision);
     std::move(callback_).Run(false);
   }
 }

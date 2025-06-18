@@ -44,7 +44,7 @@ class RegisterProtocolHandlerPermissionRequest
   std::u16string GetMessageTextFragment() const override;
 
   void PermissionDecided(
-      ContentSetting result,
+      PermissionDecision decision,
       bool is_one_time,
       bool is_final_decision,
       const permissions::PermissionRequestData& request_data);

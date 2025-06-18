@@ -22,6 +22,8 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_manager.h"
@@ -108,7 +110,7 @@ std::unique_ptr<permissions::PermissionRequest> CreateRequest(
               RequestTypeToContentSettingsType(type).value()),
           /*user_gesture=*/true, GURL(url)),
       base::BindRepeating(
-          [](ContentSetting, bool, bool, const PermissionRequestData&) {}));
+          [](PermissionDecision, bool, bool, const PermissionRequestData&) {}));
 }
 
 }  // namespace
