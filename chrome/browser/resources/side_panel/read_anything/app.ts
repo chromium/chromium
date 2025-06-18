@@ -39,8 +39,8 @@ export interface AppElement {
     toolbar: ReadAnythingToolbarElement,
     appFlexParent: HTMLElement,
     container: HTMLElement,
-    containerParent: HTMLElement,
     languageToast: LanguageToastElement,
+    containerScroller: HTMLElement,
   };
 }
 
@@ -239,7 +239,7 @@ export class AppElement extends AppElementBase implements
       }
     };
 
-    this.$.containerParent.onscroll = () => {
+    this.$.containerScroller.onscroll = () => {
       chrome.readingMode.onScroll(this.scrollingOnSelection_);
       this.scrollingOnSelection_ = false;
       if (this.isReadAloudEnabled_) {
