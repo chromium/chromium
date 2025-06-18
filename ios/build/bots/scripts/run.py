@@ -112,7 +112,8 @@ class Runner():
     # If xcode already exists in /Applications, then use that instead of
     # trying to cache another xcode in the work directory
     if xcode.check_xcode_exists_in_apps(self.args.xcode_build_version.lower()):
-      self.args.xcode_path = (f"xcode_{self.args.xcode_build_version.lower()}"
+      self.args.xcode_path = ("/Applications/"
+                              f"xcode_{self.args.xcode_build_version.lower()}"
                               ".app")
 
     try:

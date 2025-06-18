@@ -660,7 +660,7 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
     mock_install.assert_called_with(
         'mac_toolchain',
         'testXcodeVersion',
-        'xcode_testxcodeversion.app',
+        '/Applications/xcode_testxcodeversion.app',
         runtime_cache_folder='test/runtime-ios-14.4',
         ios_version='14.4')
     mock_construct_runtime_cache_folder.assert_called_once_with(
