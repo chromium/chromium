@@ -31,6 +31,10 @@ void StartBwgOverlay(
     raw_ptr<AuthenticationService> auth_service,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context);
 
+// Gets the portion of the PageContext script that checks whether PageContext
+// should be detached from the request.
+const std::u16string GetPageContextShouldDetachScript();
+
 }  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BWG_BWG_API_H_
