@@ -44,8 +44,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils.DisplayStage;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.webapps.R;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -60,8 +59,8 @@ import org.chromium.net.test.EmbeddedTestServer;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PwaRestoreBottomSheetIntegrationTest {
     @Rule
-    public final FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     private static final @DisplayStage int sFlagValueMissing = DisplayStage.UNKNOWN_STATUS;
 
@@ -135,7 +134,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         // At the beginning, there should be no signal, but at the end we should be ready to show
         // the promo during the next launch (see `testSecondLaunchAfterBeingNotified`).
         assertCurrentFlag(sFlagValueMissing);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(false);
         assertCurrentFlag(DisplayStage.SHOW_PROMO);
     }
@@ -150,7 +149,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
         assertCurrentFlag(DisplayStage.SHOW_PROMO);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(true);
         assertCurrentFlag(DisplayStage.ALREADY_LAUNCHED);
     }
@@ -165,7 +164,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         setAppsAvailableAndPromoStage(false, DisplayStage.SHOW_PROMO);
 
         assertCurrentFlag(DisplayStage.SHOW_PROMO);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(false);
         assertCurrentFlag(DisplayStage.NO_APPS_AVAILABLE);
     }
@@ -179,7 +178,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         setAppsAvailableAndPromoStage(true, DisplayStage.ALREADY_LAUNCHED);
 
         assertCurrentFlag(DisplayStage.ALREADY_LAUNCHED);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(false);
         assertCurrentFlag(DisplayStage.ALREADY_LAUNCHED);
     }
@@ -195,7 +194,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         mPreferences.writeBoolean(ChromePreferenceKeys.PWA_RESTORE_APPS_AVAILABLE, true);
 
         assertCurrentFlag(sFlagValueMissing);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(false);
         assertCurrentFlag(DisplayStage.PRE_EXISTING_PROFILE);
     }
@@ -209,7 +208,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         setAppsAvailableAndPromoStage(true, DisplayStage.PRE_EXISTING_PROFILE);
 
         assertCurrentFlag(DisplayStage.PRE_EXISTING_PROFILE);
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(false);
         assertCurrentFlag(DisplayStage.PRE_EXISTING_PROFILE);
     }
@@ -227,7 +226,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startMainActivityFromLauncher();
 
         // Verify we're in initial state for the dialog.
         assertDialogShown(true);
@@ -255,7 +254,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(true);
         onView(withId(R.id.review_button)).perform(click());
 
@@ -272,7 +271,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(true);
         onView(withId(R.id.review_button)).perform(click());
 
@@ -290,7 +289,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(true);
         onView(withId(R.id.review_button)).perform(click());
 
@@ -340,7 +339,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startMainActivityFromLauncher();
         onViewWaiting(withText("Restore your web apps")).check(matches(isDisplayed()));
 
         onView(withId(R.id.review_button)).perform(click());
@@ -356,7 +355,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Feature({"PwaRestore"})
     @DisableFeatures({ChromeFeatureList.PWA_RESTORE_UI_AT_STARTUP})
     public void testForceFlagOff() throws Exception {
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(false);
     }
 
@@ -365,7 +364,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Feature({"PwaRestore"})
     @EnableFeatures({ChromeFeatureList.PWA_RESTORE_UI_AT_STARTUP})
     public void testForceFlagOn() throws Exception {
-        mActivityTestRule.startFromLauncher();
+        mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(true);
     }
 

@@ -39,9 +39,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.webapps.AppType;
@@ -57,8 +55,8 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public final FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     private static final String TAG = "PwaUniInstallIntegrTest";
 
@@ -81,13 +79,12 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     private final CallbackHelper mOnInstallCallback = new CallbackHelper();
     private final CallbackHelper mOnAddShortcutCallback = new CallbackHelper();
     private final CallbackHelper mOnOpenAppCallback = new CallbackHelper();
-    private WebPageStation mPage;
 
     @Before
     public void setUp() throws Exception {
         PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetchingForTesting = true;
 
-        mPage = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startMainActivityOnBlankPage();
         runOnUiThreadBlocking(
                 () -> {
                     mBottomSheetController =
