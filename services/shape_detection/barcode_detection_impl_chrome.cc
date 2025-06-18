@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/shape_detection/barcode_detection_impl_barhopper.h"
+#include "services/shape_detection/barcode_detection_impl_chrome.h"
 
 #include <stdint.h>
 
@@ -140,13 +140,13 @@ barhopper::RecognitionOptions GetRecognitionOptions(
 
 }  // namespace
 
-BarcodeDetectionImplBarhopper::BarcodeDetectionImplBarhopper(
+BarcodeDetectionImplChrome::BarcodeDetectionImplChrome(
     mojom::BarcodeDetectorOptionsPtr options)
     : recognition_options_(GetRecognitionOptions(options)) {}
 
-BarcodeDetectionImplBarhopper::~BarcodeDetectionImplBarhopper() = default;
+BarcodeDetectionImplChrome::~BarcodeDetectionImplChrome() = default;
 
-void BarcodeDetectionImplBarhopper::Detect(
+void BarcodeDetectionImplChrome::Detect(
     const SkBitmap& bitmap,
     shape_detection::mojom::BarcodeDetection::DetectCallback callback) {
   int width = bitmap.width();
@@ -182,7 +182,7 @@ void BarcodeDetectionImplBarhopper::Detect(
 
 // static
 std::vector<mojom::BarcodeFormat>
-BarcodeDetectionImplBarhopper::GetSupportedFormats() {
+BarcodeDetectionImplChrome::GetSupportedFormats() {
   return {mojom::BarcodeFormat::AZTEC,   mojom::BarcodeFormat::CODE_128,
           mojom::BarcodeFormat::CODE_39, mojom::BarcodeFormat::CODE_93,
           mojom::BarcodeFormat::CODABAR, mojom::BarcodeFormat::DATA_MATRIX,

@@ -1,9 +1,9 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_BARHOPPER_H_
-#define SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_BARHOPPER_H_
+#ifndef SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_CHROME_H_
+#define SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_CHROME_H_
 
 #include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
@@ -12,14 +12,13 @@
 
 namespace shape_detection {
 
-class BarcodeDetectionImplBarhopper : public mojom::BarcodeDetection {
+class BarcodeDetectionImplChrome : public mojom::BarcodeDetection {
  public:
-  explicit BarcodeDetectionImplBarhopper(
-      mojom::BarcodeDetectorOptionsPtr options);
-  BarcodeDetectionImplBarhopper(const BarcodeDetectionImplBarhopper&) = delete;
-  BarcodeDetectionImplBarhopper& operator=(
-      const BarcodeDetectionImplBarhopper&) = delete;
-  ~BarcodeDetectionImplBarhopper() override;
+  explicit BarcodeDetectionImplChrome(mojom::BarcodeDetectorOptionsPtr options);
+  BarcodeDetectionImplChrome(const BarcodeDetectionImplChrome&) = delete;
+  BarcodeDetectionImplChrome& operator=(const BarcodeDetectionImplChrome&) =
+      delete;
+  ~BarcodeDetectionImplChrome() override;
 
   // mojom::BarcodeDetection:
   void Detect(const SkBitmap& bitmap,
@@ -35,4 +34,4 @@ class BarcodeDetectionImplBarhopper : public mojom::BarcodeDetection {
 
 }  // namespace shape_detection
 
-#endif  // SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_BARHOPPER_H_
+#endif  // SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_CHROME_H_

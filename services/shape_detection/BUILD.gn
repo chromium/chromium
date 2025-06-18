@@ -73,10 +73,10 @@ source_set("lib") {
     # No C++ sources needed, barcode detection is provided by Java.
   } else if (use_barhopper) {
     sources += [
-      "barcode_detection_impl_barhopper.cc",
-      "barcode_detection_impl_barhopper.h",
-      "barcode_detection_provider_barhopper.cc",
-      "barcode_detection_provider_barhopper.h",
+      "barcode_detection_impl_chrome.cc",
+      "barcode_detection_impl_chrome.h",
+      "barcode_detection_provider_chrome.cc",
+      "barcode_detection_provider_chrome.h",
     ]
     deps += [ "//third_party/barhopper" ]
   } else {
@@ -163,7 +163,7 @@ source_set("tests") {
   }
 
   if (use_barhopper) {
-    sources += [ "barcode_detection_impl_barhopper_unittest.cc" ]
+    sources += [ "barcode_detection_impl_chrome_unittest.cc" ]
   }
 
   deps = [

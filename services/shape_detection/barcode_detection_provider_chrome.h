@@ -1,26 +1,25 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_PROVIDER_BARHOPPER_H_
-#define SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_PROVIDER_BARHOPPER_H_
+#ifndef SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_PROVIDER_CHROME_H_
+#define SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_PROVIDER_CHROME_H_
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
 
 namespace shape_detection {
 
-// BarcodeDetectionProviderBarhopper class is a provider that binds to
+// BarcodeDetectionProviderChrome class is a provider that binds to
 // a BarcodeDetection implementation based on the barhopper library.
-class BarcodeDetectionProviderBarhopper
-    : public mojom::BarcodeDetectionProvider {
+class BarcodeDetectionProviderChrome : public mojom::BarcodeDetectionProvider {
  public:
-  BarcodeDetectionProviderBarhopper() = default;
-  BarcodeDetectionProviderBarhopper(const BarcodeDetectionProviderBarhopper&) =
+  BarcodeDetectionProviderChrome() = default;
+  BarcodeDetectionProviderChrome(const BarcodeDetectionProviderChrome&) =
       delete;
-  BarcodeDetectionProviderBarhopper& operator=(
-      const BarcodeDetectionProviderBarhopper&) = delete;
-  ~BarcodeDetectionProviderBarhopper() override = default;
+  BarcodeDetectionProviderChrome& operator=(
+      const BarcodeDetectionProviderChrome&) = delete;
+  ~BarcodeDetectionProviderChrome() override = default;
 
   static void Create(
       mojo::PendingReceiver<mojom::BarcodeDetectionProvider> receiver);
@@ -34,4 +33,4 @@ class BarcodeDetectionProviderBarhopper
 };
 
 }  // namespace shape_detection
-#endif  // SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_PROVIDER_BARHOPPER_H_
+#endif  // SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_PROVIDER_CHROME_H_

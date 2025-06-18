@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/shape_detection/barcode_detection_provider_barhopper.h"
+#include "services/shape_detection/barcode_detection_provider_chrome.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,21 +39,21 @@ constexpr struct TestParams {
     {FILE_PATH_LITERAL("upc_a.png"), "628318530714", 23, 10, 190, 75},
     {FILE_PATH_LITERAL("upc_e.png"), "06283186", 23, 10, 102, 75}};
 
-class BarcodeDetectionImplBarhopperTest
+class BarcodeDetectionImplChromeTest
     : public testing::TestWithParam<struct TestParams> {
  protected:
-  BarcodeDetectionImplBarhopperTest() = default;
-  BarcodeDetectionImplBarhopperTest(const BarcodeDetectionImplBarhopperTest&) =
+  BarcodeDetectionImplChromeTest() = default;
+  BarcodeDetectionImplChromeTest(const BarcodeDetectionImplChromeTest&) =
       delete;
-  BarcodeDetectionImplBarhopperTest& operator=(
-      const BarcodeDetectionImplBarhopperTest&) = delete;
-  ~BarcodeDetectionImplBarhopperTest() override = default;
+  BarcodeDetectionImplChromeTest& operator=(
+      const BarcodeDetectionImplChromeTest&) = delete;
+  ~BarcodeDetectionImplChromeTest() override = default;
 
   mojo::Remote<mojom::BarcodeDetection> ConnectToBarcodeDetector() {
     mojo::Remote<mojom::BarcodeDetectionProvider> provider;
     mojo::Remote<mojom::BarcodeDetection> barcode_service;
 
-    BarcodeDetectionProviderBarhopper::Create(
+    BarcodeDetectionProviderChrome::Create(
         provider.BindNewPipeAndPassReceiver());
 
     auto options = mojom::BarcodeDetectorOptions::New();
@@ -89,7 +89,7 @@ class BarcodeDetectionImplBarhopperTest
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_P(BarcodeDetectionImplBarhopperTest, Scan) {
+TEST_P(BarcodeDetectionImplChromeTest, Scan) {
   mojo::Remote<mojom::BarcodeDetection> barcode_detector =
       ConnectToBarcodeDetector();
 
@@ -113,7 +113,7 @@ TEST_P(BarcodeDetectionImplBarhopperTest, Scan) {
 }
 
 INSTANTIATE_TEST_SUITE_P(,
-                         BarcodeDetectionImplBarhopperTest,
+                         BarcodeDetectionImplChromeTest,
                          testing::ValuesIn(kTestParams));
 
 }  // namespace shape_detection

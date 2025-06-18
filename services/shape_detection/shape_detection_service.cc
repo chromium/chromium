@@ -22,7 +22,7 @@
 #elif BUILDFLAG(IS_ANDROID)
 // No C++ code, barcode detection comes from Java.
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-#include "services/shape_detection/barcode_detection_provider_barhopper.h"
+#include "services/shape_detection/barcode_detection_provider_chrome.h"
 #else
 #include "services/shape_detection/barcode_detection_provider_impl.h"
 #endif
@@ -55,7 +55,7 @@ void ShapeDetectionService::BindBarcodeDetectionProvider(
 #elif BUILDFLAG(IS_MAC)
   BarcodeDetectionProviderMac::Create(std::move(receiver));
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-  BarcodeDetectionProviderBarhopper::Create(std::move(receiver));
+  BarcodeDetectionProviderChrome::Create(std::move(receiver));
 #else
   BarcodeDetectionProviderImpl::Create(std::move(receiver));
 #endif
