@@ -958,7 +958,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
             newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
     public static final CachedFlag sTabletTabStripAnimation =
-            newCachedFlag(TABLET_TAB_STRIP_ANIMATION, false);
+            newCachedFlag(
+                    TABLET_TAB_STRIP_ANIMATION,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTestDefaultDisabled =
             newCachedFlag(TEST_DEFAULT_DISABLED, false);
     public static final CachedFlag sTestDefaultEnabled = newCachedFlag(TEST_DEFAULT_ENABLED, true);

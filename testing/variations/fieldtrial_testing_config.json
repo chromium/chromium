@@ -966,7 +966,8 @@
                         "AndroidThemeModule",
                         "CpaSpecUpdate",
                         "GridTabSwitcherSurfaceColorUpdate",
-                        "GridTabSwitcherUpdate"
+                        "GridTabSwitcherUpdate",
+                        "TabletTabStripAnimation"
                     ]
                 },
                 {

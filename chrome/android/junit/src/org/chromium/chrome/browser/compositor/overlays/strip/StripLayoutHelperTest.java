@@ -543,6 +543,8 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
+    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testResizeStripOnTabClose_DoNotAnimateIfNotMoving() {
         final int numTabs = 10;
         initializeTest(false, false, 0, numTabs);
@@ -580,6 +582,8 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
+    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void
             testResizeStripOnTabClose_DoNotAnimateIfNotVisible_OutsideVisibleBounds_ToTheRight() {
         final int numTabs = 50;
@@ -623,6 +627,8 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
+    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void
             testResizeStripOnTabClose_DoNotAnimateIfNotVisible_OutsideVisibleBounds_ToTheLeft() {
         final int numTabs = 50;
@@ -670,6 +676,8 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
+    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testResizeStripOnTabClose_AnimateTab_MovingIntoVisibleBounds() {
         final int numTabs = 50;
         initializeTest(false, false, 0, numTabs);
@@ -719,6 +727,8 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
+    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testComputeAndUpdateTabWidth_DontAnimateIfSizeNotChanging() {
         // Create a high number of tabs to ensure they're already at the minimum size
         final int numTabs = 50;
@@ -2487,6 +2497,8 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
+    @DisableFeatures(ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION)
     public void testBottomIndicatorWidthAfterTabResize_UngroupedTabClosed() {
         // Arrange
         int tabCount = 6;
@@ -3606,6 +3618,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testTabClosing_NoTabResize() {
         // Arrange
         int tabCount = 15;
@@ -3661,6 +3674,8 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
+    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testTabClosing_NonLastTab_TabResize() {
         // Arrange
         int tabCount = 4;
