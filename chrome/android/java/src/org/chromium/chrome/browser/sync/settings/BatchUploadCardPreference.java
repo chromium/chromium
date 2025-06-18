@@ -139,7 +139,7 @@ public class BatchUploadCardPreference extends Preference
                 getContext()
                         .getResources()
                         .getQuantityString(
-                                R.plurals.account_settings_bulk_upload_saved_snackbar_message,
+                                R.plurals.batch_upload_saved_snackbar_message,
                                 itemsCount,
                                 assumeNonNull(
                                                 identityManager.getPrimaryAccountInfo(
@@ -208,7 +208,7 @@ public class BatchUploadCardPreference extends Preference
         Context context = getContext();
 
         Button button = (Button) card.findViewById(R.id.signin_settings_card_button);
-        button.setText(R.string.account_settings_bulk_upload_section_save_button);
+        button.setText(R.string.batch_upload_card_save_button);
         button.setOnClickListener(
                 v -> {
                     BatchUploadDialogCoordinator.show(
@@ -247,8 +247,7 @@ public class BatchUploadCardPreference extends Preference
             text.setText(
                     context.getResources()
                             .getQuantityString(
-                                    R.plurals
-                                            .account_settings_bulk_upload_section_description_password,
+                                    R.plurals.batch_upload_card_description_password,
                                     localPasswordsCount,
                                     localPasswordsCount,
                                     accountInfo.getEmail()));
@@ -256,8 +255,7 @@ public class BatchUploadCardPreference extends Preference
             text.setText(
                     context.getResources()
                             .getQuantityString(
-                                    R.plurals
-                                            .account_settings_bulk_upload_section_description_other,
+                                    R.plurals.batch_upload_card_description_other,
                                     localItemsCountExcludingPasswords,
                                     localItemsCountExcludingPasswords,
                                     accountInfo.getEmail()));
@@ -265,8 +263,7 @@ public class BatchUploadCardPreference extends Preference
             text.setText(
                     context.getResources()
                             .getQuantityString(
-                                    R.plurals
-                                            .account_settings_bulk_upload_section_description_password_and_other,
+                                    R.plurals.batch_upload_card_description_password_and_other,
                                     localPasswordsCount,
                                     localPasswordsCount,
                                     accountInfo.getEmail()));

@@ -165,7 +165,7 @@ class BatchUploadCardMediator
         String snackbarMessage =
                 mContext.getResources()
                         .getQuantityString(
-                                R.plurals.account_settings_bulk_upload_saved_snackbar_message,
+                                R.plurals.batch_upload_saved_snackbar_message,
                                 itemsCount,
                                 coreAccountInfo.getEmail());
         mSnackbarManager.showSnackbar(
@@ -252,7 +252,7 @@ class BatchUploadCardMediator
                     BatchUploadCardProperties.DESCRIPTION_TEXT,
                     mContext.getResources()
                             .getQuantityString(
-                                    R.plurals.bookmarks_left_behind_bookmark,
+                                    R.plurals.batch_upload_card_description_bookmark,
                                     localBookmarksCount,
                                     localBookmarksCount,
                                     accountInfo.getEmail()));
@@ -261,7 +261,7 @@ class BatchUploadCardMediator
                     BatchUploadCardProperties.DESCRIPTION_TEXT,
                     mContext.getResources()
                             .getQuantityString(
-                                    R.plurals.bookmarks_left_behind_other,
+                                    R.plurals.batch_upload_card_description_other,
                                     localItemsCountExcludingBookmarks,
                                     localItemsCountExcludingBookmarks,
                                     accountInfo.getEmail()));
@@ -270,7 +270,7 @@ class BatchUploadCardMediator
                     BatchUploadCardProperties.DESCRIPTION_TEXT,
                     mContext.getResources()
                             .getQuantityString(
-                                    R.plurals.bookmarks_left_behind_bookmark_and_other,
+                                    R.plurals.batch_upload_card_description_bookmark_and_other,
                                     localBookmarksCount,
                                     localBookmarksCount,
                                     accountInfo.getEmail()));

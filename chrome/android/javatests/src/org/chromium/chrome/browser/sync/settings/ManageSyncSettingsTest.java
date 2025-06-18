@@ -972,8 +972,7 @@ public class ManageSyncSettingsTest {
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
         ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
-        onView(withText(R.string.account_settings_bulk_upload_section_save_button))
-                .perform(click());
+        onView(withText(R.string.batch_upload_card_save_button)).perform(click());
         ViewUtils.waitForVisibleView(withId(R.id.batch_upload_dialog));
 
         View view =
@@ -1020,8 +1019,7 @@ public class ManageSyncSettingsTest {
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
         ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
-        onView(withText(R.string.account_settings_bulk_upload_section_save_button))
-                .perform(click());
+        onView(withText(R.string.batch_upload_card_save_button)).perform(click());
         ViewUtils.waitForVisibleView(withId(R.id.batch_upload_dialog));
 
         View view =
@@ -1067,8 +1065,7 @@ public class ManageSyncSettingsTest {
         final ManageSyncSettings fragment = startManageSyncPreferences();
 
         ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
-        onView(withText(R.string.account_settings_bulk_upload_section_save_button))
-                .perform(click());
+        onView(withText(R.string.batch_upload_card_save_button)).perform(click());
         ViewUtils.waitForVisibleView(withId(R.id.batch_upload_dialog));
 
         View view =
