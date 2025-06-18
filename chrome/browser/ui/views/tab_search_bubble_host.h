@@ -27,6 +27,7 @@ class Widget;
 class BrowserWindowInterface;
 class Profile;
 class TabOrganizationService;
+class TabSearchBubbleHostObserver;
 class TabStrip;
 
 // TabSearchBubbleHost assumes responsibility for configuring its button,
@@ -35,12 +36,6 @@ class TabSearchBubbleHost : public views::WidgetObserver,
                             public TabOrganizationObserver,
                             public WebUIBubbleManagerObserver {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnBubbleInitializing() {}
-    virtual void OnBubbleDestroying() {}
-  };
-
   TabSearchBubbleHost(views::Button* button,
                       BrowserWindowInterface* browser_window_interface,
                       base::WeakPtr<TabStrip> tab_strip);
@@ -59,8 +54,8 @@ class TabSearchBubbleHost : public views::WidgetObserver,
   // WebUIBubbleManagerObserver:
   void BeforeBubbleWidgetShowed(views::Widget* widget) override;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void AddObserver(TabSearchBubbleHostObserver* observer);
+  void RemoveObserver(TabSearchBubbleHostObserver* observer);
 
   // When this is called the bubble may already be showing or be loading in.
   // This returns true if the method call results in the creation of a new Tab
@@ -102,7 +97,7 @@ class TabSearchBubbleHost : public views::WidgetObserver,
   // Timestamp for when the current bubble was created.
   std::optional<base::TimeTicks> bubble_created_time_;
 
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<TabSearchBubbleHostObserver> observers_;
 
   raw_ptr<views::MenuButtonController> menu_button_controller_ = nullptr;
 

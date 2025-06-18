@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
+#include "chrome/browser/ui/views/tab_search_bubble_host_observer.h"
 
 namespace actions {
 class ActionItem;
@@ -16,7 +17,7 @@ class ActionItem;
 
 class BrowserView;
 
-class TabSearchToolbarButtonController : public TabSearchBubbleHost::Observer {
+class TabSearchToolbarButtonController : public TabSearchBubbleHostObserver {
  public:
   TabSearchToolbarButtonController(BrowserView* browser_view,
                                    TabSearchBubbleHost* tab_search_bubble_host);
@@ -27,7 +28,7 @@ class TabSearchToolbarButtonController : public TabSearchBubbleHost::Observer {
   TabSearchToolbarButtonController& operator=(
       const TabSearchToolbarButtonController&) = delete;
 
-  // TabSearchBubbleHost::Observer:
+  // TabSearchBubbleHostObserver:
   void OnBubbleInitializing() override;
   void OnBubbleDestroying() override;
 
@@ -44,7 +45,7 @@ class TabSearchToolbarButtonController : public TabSearchBubbleHost::Observer {
   // into the controller.
   const raw_ptr<BrowserView> browser_view_;
 
-  base::ScopedObservation<TabSearchBubbleHost, TabSearchBubbleHost::Observer>
+  base::ScopedObservation<TabSearchBubbleHost, TabSearchBubbleHostObserver>
       tab_search_bubble_host_observation_{this};
 
   base::WeakPtrFactory<TabSearchToolbarButtonController> weak_ptr_factory_{

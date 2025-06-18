@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tab_search_bubble_host_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
@@ -219,11 +220,12 @@ void TabSearchBubbleHost::BeforeBubbleWidgetShowed(views::Widget* widget) {
           base::TimeTicks::Now()));
 }
 
-void TabSearchBubbleHost::AddObserver(Observer* observer) {
+void TabSearchBubbleHost::AddObserver(TabSearchBubbleHostObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void TabSearchBubbleHost::RemoveObserver(Observer* observer) {
+void TabSearchBubbleHost::RemoveObserver(
+    TabSearchBubbleHostObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
