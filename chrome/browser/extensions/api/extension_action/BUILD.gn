@@ -36,6 +36,7 @@ source_set("extension_action") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/toolbar",
     "//components/sessions",
     "//content/public/common",
     "//extensions/common:common_constants",

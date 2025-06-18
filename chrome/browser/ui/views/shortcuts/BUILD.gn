@@ -24,6 +24,7 @@ source_set("test_support") {
     "//chrome/browser/shortcuts:test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/toolbar",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support_ui",
     "//ui/views",

@@ -63,6 +63,7 @@ source_set("impl") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui/global_media_controls",
+    "//chrome/browser/ui/toolbar",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/media_message_center",

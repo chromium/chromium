@@ -72,6 +72,8 @@ source_set("toolbar") {
     "//chrome/browser/ui/global_error",
     "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/toolbar/chrome_labs",
+    "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/views",
     "//components/bookmarks/browser",
     "//components/prefs",

@@ -54,6 +54,7 @@ source_set("impl") {
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/tabs/tab_strip_api",
       "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toolbar/chrome_labs",
       "//chrome/browser/ui/unowned_user_data",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/new_tab_footer",

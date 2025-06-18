@@ -2,22 +2,56 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 source_set("toolbar") {
-  sources = []
-  public_deps = []
+  sources = [ "chrome_location_bar_model_delegate.h" ]
+  public_deps = [ "//components/omnibox/browser:location_bar" ]
 
   if (!is_android) {
     sources += [
+      "app_menu_icon_controller.h",
+      "app_menu_model.h",
+      "back_forward_menu_model.h",
+      "bookmark_sub_menu_model.h",
+      "reading_list_sub_menu_model.h",
       "toolbar_action_hover_card_types.h",
       "toolbar_action_view_controller.h",
+      "toolbar_action_view_delegate.h",
       "toolbar_actions_bar_bubble_delegate.h",
+      "toolbar_pref_names.h",
     ]
     public_deps += [
       "//base",
+      "//chrome/app:command_ids",
       "//chrome/browser/ui/extensions:extension_popup_types",
+      "//chrome/browser/ui/global_error",
+      "//chrome/browser/ui/safety_hub",
+      "//chrome/browser/upgrade_detector",
+      "//components/favicon/core",
+      "//components/prefs",
+      "//components/tabs:public",
+      "//components/translate/content/browser",
+      "//content/public/browser",
+      "//extensions/browser",
+      "//extensions/common",
       "//ui/base",
       "//ui/base:types",
       "//ui/base/mojom:ui_base_types",
+      "//ui/menus",
+    ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [
+      "toolbar_actions_model.h",
+      "toolbar_actions_model_factory.h",
+    ]
+    public_deps += [
+      "//chrome/browser/profiles:profile",
+      "//components/keyed_service/core",
+      "//components/prefs",
+      "//extensions/browser",
     ]
   }
 }

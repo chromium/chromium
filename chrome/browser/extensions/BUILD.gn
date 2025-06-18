@@ -486,6 +486,7 @@ source_set("extensions") {
     # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
     "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/ui/toolbar",
   ]
   deps = [
     "//base",
@@ -517,6 +518,7 @@ source_set("extensions") {
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/ui/toolbar",
     "//chrome/common",
     "//chrome/common/safe_browsing:proto",
     "//components/bookmarks/browser",
@@ -835,9 +837,8 @@ source_set("extensions") {
       "//chrome/browser/media/webrtc",
 
       "//chrome/browser/feedback",
-      "//chrome/browser/ui/views/toolbar",
-      "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/views/toolbar",
     ]
 
     # Since browser and browser_extensions actually depend on each other,
@@ -1579,6 +1580,7 @@ static_library("test_support") {
     "//chrome/browser",
     "//chrome/browser:test_support",
     "//chrome/browser/extensions",
+    "//chrome/browser/ui/toolbar",
     "//components/crx_file",
     "//components/policy/core/common:test_support",
     "//components/safe_browsing/core/browser/db:database_manager",

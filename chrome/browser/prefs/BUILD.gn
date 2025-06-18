@@ -82,6 +82,8 @@ source_set("impl") {
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/side_search",
     "//chrome/browser/ui/startup:startup_tab",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/toolbar/chrome_labs",
     "//chrome/browser/ui/webui/accessibility",
     "//chrome/browser/updates/announcement_notification",
     "//components/blocked_content",

@@ -265,6 +265,8 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/common:chrome_features",
     "//components/autofill/content/browser",

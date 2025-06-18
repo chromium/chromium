@@ -2052,6 +2052,10 @@ static_library("browser") {
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/side_search",
 
+    # TODO(crbug.com/369436587): Remove this dependency when
+    # c/b/policy/configuration_policy_handler_list_factory.cc gets modularized.
+    "//chrome/browser/ui/toolbar/chrome_labs",
+
     # TODO(417228688): Remove this dependency when both chrome/browser/serial and
     # chrome/browser/profiles/profile_manager.h get modularized.
     "//chrome/browser/infobars",

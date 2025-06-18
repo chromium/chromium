@@ -1,0 +1,31 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("pinned_toolbar") {
+  sources = []
+  public_deps = []
+
+  if (!is_android) {
+    sources += [
+      "pinned_toolbar_actions_model.h",
+      "pinned_toolbar_actions_model_factory.h",
+      "pinned_translate_action_listener.h",
+
+      # TODO(crbug.com/369436587): The header below causes various circular
+      # dependencies against //c/b/ui:ui. Needs to be handled after the componentization
+      # of its includes.
+      # "tab_search_toolbar_button_controller.h",
+    ]
+
+    public_deps += [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//components/keyed_service/core",
+      "//components/prefs",
+      "//components/tabs:public",
+      "//components/translate/content/browser",
+      "//ui/actions:actions_headers",
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("chrome_labs") {
+  sources = [
+    "chrome_labs_model.h",
+    "chrome_labs_prefs.h",
+    "chrome_labs_utils.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/version_info:channel",
+  ]
+}
