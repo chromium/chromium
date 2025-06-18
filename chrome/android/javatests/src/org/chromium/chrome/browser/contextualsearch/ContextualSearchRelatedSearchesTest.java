@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
+import android.os.Build;
+
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -22,6 +24,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -137,6 +140,7 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
 
     @Test
     @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.Q) // Run on Android 10 (API 29) and newer
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesInBarWithDefaultQuery_HighlightDefaultQuery() throws Exception {
         ContextualSearchFakeServer.FakeResolveSearch fakeSearch =

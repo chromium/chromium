@@ -7,6 +7,7 @@ package org.chromium.chrome.browser;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
+import android.os.Build;
 import android.util.JsonReader;
 
 import androidx.test.filters.MediumTest;
@@ -28,6 +29,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -345,6 +347,7 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.Q) // Run on Android 10 (API 29) and newer
     @DisabledTest(message = "crbug.com/421296274")
     public void testResizesVisualMetaTag() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/about.html");
