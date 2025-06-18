@@ -190,6 +190,8 @@ public class CustomTabToolbarUnitTest {
                 .thenReturn(CLOSE_BUTTON_POSITION_DEFAULT);
         when(mIntentDataProvider.isCloseButtonEnabled()).thenReturn(true);
         when(mIntentDataProvider.getActivityType()).thenReturn(CUSTOM_TAB);
+        when(mIntentDataProvider.isOptionalButtonSupported())
+                .thenReturn(ChromeFeatureList.sCctAdaptiveButton.isEnabled());
         when(mFeatureOverridesManager.isFeatureEnabled(anyString())).thenReturn(null);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.webapps;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -139,5 +140,15 @@ public class WebappIntentDataProviderTest {
                 "Should resolve to standalone",
                 DisplayMode.STANDALONE,
                 intentDataProvider.getResolvedDisplayMode());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testIsOptionalButtonSupported() {
+        var intentDataProvider =
+                buildWebAppIntentDataProvider(mIntent, buildWebAppExtras(DisplayMode.STANDALONE));
+        assertFalse(
+                "Webapp should not support optional button",
+                intentDataProvider.isOptionalButtonSupported());
     }
 }

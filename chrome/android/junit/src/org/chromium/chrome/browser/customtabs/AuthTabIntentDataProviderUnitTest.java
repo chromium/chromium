@@ -34,6 +34,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -199,5 +200,27 @@ public class AuthTabIntentDataProviderUnitTest {
                 icon,
                 ((BitmapDrawable) mIntentDataProvider.getCloseButtonDrawable()).getBitmap());
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testIsOptionalButtonSupported_normalAuthTab() {
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);
+        assertFalse(
+                "AuthTab should not support optional button",
+                mIntentDataProvider.isOptionalButtonSupported());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testIsOptionalButtonSupported_ephemeralAuthTab() {
+        mIntent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);
+        assertTrue(
+                "IntentDataProvider should be for ephemeral AuthTab",
+                AuthTabIntentDataProvider.isEphemeralTab(mIntent));
+        assertFalse(
+                "Ephemeral AuthTab should not support optional button",
+                mIntentDataProvider.isOptionalButtonSupported());
     }
 }

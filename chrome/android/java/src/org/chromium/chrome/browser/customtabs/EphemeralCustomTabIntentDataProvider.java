@@ -64,6 +64,11 @@ public class EphemeralCustomTabIntentDataProvider extends CustomTabIntentDataPro
     }
 
     @Override
+    public boolean isOptionalButtonSupported() {
+        return false;
+    }
+
+    @Override
     public @CustomTabProfileType int getCustomTabMode() {
         return CustomTabProfileType.EPHEMERAL;
     }

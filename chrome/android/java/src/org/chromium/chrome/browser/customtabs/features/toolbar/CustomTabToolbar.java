@@ -759,7 +759,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     protected void updateOptionalButton(ButtonData buttonData) {
-        if (!ChromeFeatureList.sCctAdaptiveButton.isEnabled()) return;
+        if (!mIntentDataProvider.isOptionalButtonSupported()) return;
 
         mLocationBar.updateOptionalButton(buttonData);
     }

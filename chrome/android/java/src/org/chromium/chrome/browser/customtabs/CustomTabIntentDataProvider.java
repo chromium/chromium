@@ -1721,6 +1721,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return mShareState;
     }
 
+    @Override
+    public boolean isOptionalButtonSupported() {
+        return ChromeFeatureList.sCctAdaptiveButton.isEnabled() && !isTrustedWebActivity();
+    }
+
     private @DisplayMode.EnumType int resolveDisplayMode() {
         TrustedWebActivityDisplayMode displayMode = getProvidedTwaDisplayMode();
         if (displayMode == null) {

@@ -1986,4 +1986,60 @@ public class CustomTabIntentDataProviderTest {
                 CustomTabsIntent.OPEN_IN_BROWSER_STATE_ON,
                 dataProvider.getOpenInBrowserButtonState());
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testIsOptionalButtonSupported_featureEnabled() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertTrue(
+                "Normal CCT should support optional button",
+                dataProvider.isOptionalButtonSupported());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testIsOptionalButtonSupported_featureDisabled() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertFalse(
+                "Should not support optional button if feature is disabled",
+                dataProvider.isOptionalButtonSupported());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testIsOptionalButtonSupported_trustedWebActivity() {
+        CustomTabsSession mSession =
+                CustomTabsSession.createMockSessionForTesting(
+                        new ComponentName(mContext, ChromeLauncherActivity.class));
+        var twaBuilder = new TrustedWebActivityIntentBuilder(getLaunchingUrl());
+        Intent intent = twaBuilder.build(mSession).getIntent();
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertTrue("IntentDataProvider should be for TWA", dataProvider.isTrustedWebActivity());
+        assertFalse(
+                "TWA should NOT support optional button", dataProvider.isOptionalButtonSupported());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testIsOptionalButtonSupported_ephemeralCct() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider =
+                new EphemeralCustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertFalse(
+                "eCCT should NOT support optional button",
+                dataProvider.isOptionalButtonSupported());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testIsOptionalButtonSupported_incognitoCct() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider =
+                new IncognitoCustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertFalse(
+                "iCCT should NOT support optional button",
+                dataProvider.isOptionalButtonSupported());
+    }
 }

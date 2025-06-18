@@ -777,6 +777,13 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
+     * @return if optional button on the toolbar can be shown.
+     */
+    public boolean isOptionalButtonSupported() {
+        return false;
+    }
+
+    /**
      * @return the TWA startup timestamp associated with an intent in the uptimeMillis timebase, or
      *     null.
      */
