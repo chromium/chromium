@@ -396,10 +396,18 @@ DatabaseConnection::DatabaseConnection(
   TRANSIENT_CHECK(statement.Run());
 }
 
-DatabaseConnection::~DatabaseConnection() = default;
+DatabaseConnection::~DatabaseConnection() {
+  // If in a zygotic state, the database should be deleted. For now, the
+  // database is only in memory, so no-op is fine.
+  // TODO(crbug.com/419203257): handle the on-disk case.
+}
 
 base::WeakPtr<DatabaseConnection> DatabaseConnection::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+bool DatabaseConnection::IsZygotic() const {
+  return metadata().version == blink::IndexedDBDatabaseMetadata::NO_VERSION;
 }
 
 std::unique_ptr<BackingStoreTransactionImpl>
@@ -875,15 +883,40 @@ DatabaseConnection::CreateAllExternalObjects(
 
 void DatabaseConnection::DeleteIdbDatabase(
     base::PassKey<BackingStoreDatabaseImpl>) {
-  // TODO(crbug.com/419208485): Active blobs need to keep the connection open.
-  // For now, just fail loudly if there are active blobs during shutdown.
-  CHECK(active_blobs_.empty());
-  backing_store_->DestroyConnection(metadata_.name);
-  // `this` is deleted.
+  metadata_ = blink::IndexedDBDatabaseMetadata(metadata_.name);
+  weak_factory_.InvalidateWeakPtrs();
+  CHECK(!blob_writers_weak_factory_.HasWeakPtrs());
+
+  if (active_blobs_.empty()) {
+    // Fast path: skip explicitly deleting data as the whole database will be
+    // dropped.
+    backing_store_->DestroyConnection(metadata_.name);
+    // `this` is deleted.
+    return;
+  }
+
+  // Since blobs are still active, reset to zygotic state instead of destroying.
+  TRANSIENT_CHECK(db_->Execute("DELETE FROM object_stores"));
+  TRANSIENT_CHECK(db_->Execute("DELETE FROM records"));
+  TRANSIENT_CHECK(db_->Execute(
+      "DELETE FROM blob_references WHERE record_row_id IS NOT NULL"));
+
+  {
+    sql::Statement statement(
+        db_->GetUniqueStatement("UPDATE indexed_db_metadata SET version = ?"));
+    statement.BindInt64(0, blink::IndexedDBDatabaseMetadata::NO_VERSION);
+    TRANSIENT_CHECK(statement.Run());
+  }
 }
 
 void DatabaseConnection::OnBlobBecameInactive(int64_t blob_number) {
   CHECK_EQ(active_blobs_.erase(blob_number), 1U);
+  if (active_blobs_.empty() && IsZygotic()) {
+    backing_store_->DestroyConnection(metadata_.name);
+    // `this` is deleted.
+    return;
+  }
+
   {
     // TODO(crbug.com/419208485): If this operation happens in the middle of a
     // r/w txn that is not committed (Chromium crashes or txn gets rolled back),

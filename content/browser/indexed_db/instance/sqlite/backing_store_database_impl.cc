@@ -38,8 +38,6 @@ Status BackingStoreDatabaseImpl::DeleteDatabase(
     std::vector<PartitionedLock> locks,
     base::OnceClosure on_complete) {
   db_->DeleteIdbDatabase(PassKey());
-  // For now, the database is only in memory, so we can just drop the
-  // connection. TODO(crbug.com/419203257): handle the on-disk case.
   CHECK(!db_);
   std::move(on_complete).Run();
   return Status::OK();
