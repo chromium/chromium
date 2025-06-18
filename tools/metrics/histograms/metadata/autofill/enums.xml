@@ -1182,6 +1182,11 @@ Called by update_autofill_enums.py.-->
   <int value="3025" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: accepted"/>
 </enum>
 
+<enum name="AutofillEmailOrLoyaltyCardAcceptanceMetricValue">
+  <int value="0" label="EMAIL: accepted"/>
+  <int value="1" label="LOYALTY_CARD: accepted"/>
+</enum>
+
 <enum name="AutofillErrorDialogType">
   <int value="0" label="VIRTUAL_CARD_TEMPORARY_ERROR"/>
   <int value="1" label="VIRTUAL_CARD_PERMANENT_ERROR"/>

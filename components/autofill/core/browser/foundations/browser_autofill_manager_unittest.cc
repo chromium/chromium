@@ -85,6 +85,7 @@
 #include "components/autofill/core/browser/integrators/plus_addresses/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/metrics/loyalty_cards_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_cache.h"
@@ -2241,6 +2242,72 @@ TEST_F(BrowserAutofillManagerTestValuables,
        Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS),
                   "", Suggestion::Icon::kSettings,
                   SuggestionType::kManageLoyaltyCard)});
+}
+
+// Tests that acceptance metric for EMAIL_OR_LOYALTY_MEMBERSHIP_ID field is
+// reported when email suggestion is selected.
+TEST_F(BrowserAutofillManagerTestValuables,
+       GetSuggestions_EmailAndLoyaltyCardsMetric_EmailSuggestionSelected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kAutofillEnableLoyaltyCardsFilling,
+       features::kAutofillEnableEmailOrLoyaltyCardsFilling},
+      {});
+
+  SetLoyaltyCards({test::CreateLoyaltyCard()});
+
+  FormData form_data =
+      test::GetFormData({.fields = {{.role = EMAIL_OR_LOYALTY_MEMBERSHIP_ID},
+                                    {.role = PASSWORD}}});
+  FormsSeen({form_data});
+  OnAskForValuesToFill(form_data, form_data.fields()[0]);
+
+  ASSERT_FALSE(external_delegate()->suggestions().empty());
+  EXPECT_EQ(external_delegate()->suggestions().front().type,
+            SuggestionType::kAddressEntry);
+
+  base::HistogramTester histogram_tester;
+
+  external_delegate()->DidAcceptSuggestion(
+      external_delegate()->suggestions().front(), {});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.EmailOrLoyaltyCardAcceptance",
+      autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
+          kEmailSelected,
+      1);
+}
+
+// Tests that acceptance metric for EMAIL_OR_LOYALTY_MEMBERSHIP_ID field is
+// reported when email suggestion is selected.
+TEST_F(
+    BrowserAutofillManagerTestValuables,
+    GetSuggestions_EmailAndLoyaltyCardsMetric_LoyaltyCardSuggestionSelected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kAutofillEnableLoyaltyCardsFilling,
+       features::kAutofillEnableEmailOrLoyaltyCardsFilling},
+      {});
+
+  SetLoyaltyCards({test::CreateLoyaltyCard()});
+
+  FormData form_data =
+      test::GetFormData({.fields = {{.role = EMAIL_OR_LOYALTY_MEMBERSHIP_ID},
+                                    {.role = PASSWORD}}});
+  FormsSeen({form_data});
+  OnAskForValuesToFill(form_data, form_data.fields()[0]);
+  base::HistogramTester histogram_tester;
+
+  external_delegate()->DidAcceptSuggestion(
+      Suggestion("1234", "Deutsche Bahn", Suggestion::Icon::kNoIcon,
+                 SuggestionType::kLoyaltyCardEntry),
+      {});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.LoyaltyCard.EmailOrLoyaltyCardAcceptance",
+      autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
+          kLoyaltyCardSelected,
+      1);
 }
 
 class BrowserAutofillManagerTestForMetadataCardSuggestions

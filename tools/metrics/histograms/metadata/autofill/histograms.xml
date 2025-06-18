@@ -4086,6 +4086,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.LoyaltyCard.EmailOrLoyaltyCardAcceptance"
+    enum="AutofillEmailOrLoyaltyCardAcceptanceMetricValue"
+    expires_after="2026-06-13">
+  <owner>vizcay@google.com</owner>
+  <owner>piotrwrotniak@google.com</owner>
+  <summary>
+    Metric to measure acceptance on `EMAIL_OR_LOYALTY_MEMBERSHIP_ID` fields.
+    This metric is emitted every time user selects email or loyalty card
+    suggestion presented for `EMAIL_OR_LOYALTY_MEMBERSHIP_ID` fields as long as
+    the user has any loyalty cards available.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.LoyaltyCard.FillingAcceptance.Affiliated"
     enum="BooleanAutofillFillingAcceptance" expires_after="2025-12-12">
   <owner>vizcay@google.com</owner>

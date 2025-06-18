@@ -393,6 +393,8 @@ static_library("browser") {
     "metrics/form_interactions_ukm_logger.h",
     "metrics/log_event.cc",
     "metrics/log_event.h",
+    "metrics/loyalty_cards_metrics.cc",
+    "metrics/loyalty_cards_metrics.h",
     "metrics/payments/amount_extraction_metrics.cc",
     "metrics/payments/amount_extraction_metrics.h",
     "metrics/payments/better_auth_metrics.cc",

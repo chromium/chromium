@@ -107,6 +107,7 @@
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/metrics/loyalty_cards_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/per_fill_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
@@ -1737,9 +1738,24 @@ void BrowserAutofillManager::FillOrPreviewField(
   form_filler_->FillOrPreviewField(action_persistence, action_type, field,
                                    autofill_field, value, filling_product,
                                    field_type_used);
-  if (action_persistence == mojom::ActionPersistence::kFill &&
-      type == SuggestionType::kAddressFieldByFieldFilling) {
+  if (action_persistence != mojom::ActionPersistence::kFill) {
+    return;
+  }
+  if (type == SuggestionType::kAddressFieldByFieldFilling) {
     metrics_->address_form_event_logger.OnFilledByFieldByFieldFilling(type);
+  }
+  if (autofill_field->Type().GetStorableType() ==
+      EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
+    if (field_type_used == LOYALTY_MEMBERSHIP_ID) {
+      LogEmailOrLoyaltyCardSuggestionAccepted(
+          autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
+              kLoyaltyCardSelected);
+    } else if (field_type_used == EMAIL_ADDRESS &&
+               !client().GetValuablesDataManager()->GetLoyaltyCards().empty()) {
+      LogEmailOrLoyaltyCardSuggestionAccepted(
+          autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
+              kLoyaltyCardSelected);
+    }
   }
 }
 
@@ -2696,6 +2712,13 @@ void BrowserAutofillManager::LogAndRecordProfileFill(
   if (!is_refill) {
     client().GetPersonalDataManager().address_data_manager().RecordUseOf(
         filled_profile);
+    if (trigger_autofill_field.Type().GetStorableType() ==
+            EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
+        !client().GetValuablesDataManager()->GetLoyaltyCards().empty()) {
+      LogEmailOrLoyaltyCardSuggestionAccepted(
+          autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
+              kEmailSelected);
+    }
   }
 }
 
