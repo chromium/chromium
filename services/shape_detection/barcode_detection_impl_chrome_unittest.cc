@@ -17,27 +17,48 @@
 
 namespace shape_detection {
 
-constexpr struct TestParams {
-  base::FilePath::StringViewType filename;
-  std::string_view expected_value;
+constexpr size_t kMaxNumExpectedValues = 2;
+
+struct ExpectedValue {
+  std::string_view raw_value;
   float x;
   float y;
   float width;
   float height;
+};
+
+constexpr struct TestParams {
+  base::FilePath::StringViewType filename;
+  size_t num_expected_values;
+  std::array<ExpectedValue, kMaxNumExpectedValues> expected_value;
 } kTestParams[] = {
-    {FILE_PATH_LITERAL("codabar.png"), "A6.2831853B", 24, 24, 448, 95},
-    {FILE_PATH_LITERAL("code_39.png"), "CHROMIUM", 20, 20, 318, 75},
-    {FILE_PATH_LITERAL("code_93.png"), "CHROMIUM", 20, 20, 216, 75},
-    {FILE_PATH_LITERAL("code_128.png"), "Chromium", 20, 20, 246, 75},
-    {FILE_PATH_LITERAL("data_matrix.png"), "Chromium", 11, 11, 53, 53},
-    {FILE_PATH_LITERAL("ean_8.png"), "62831857", 14, 10, 134, 75},
-    {FILE_PATH_LITERAL("ean_13.png"), "6283185307179", 27, 10, 190, 75},
-    {FILE_PATH_LITERAL("itf.png"), "62831853071795", 10, 10, 135, 39},
-    {FILE_PATH_LITERAL("pdf417.png"), "Chromium", 20, 20, 240, 44},
-    {FILE_PATH_LITERAL("qr_code.png"), "https://chromium.org", 40, 40, 250,
-     250},
-    {FILE_PATH_LITERAL("upc_a.png"), "628318530714", 23, 10, 190, 75},
-    {FILE_PATH_LITERAL("upc_e.png"), "06283186", 23, 10, 102, 75}};
+    {FILE_PATH_LITERAL("codabar.png"),
+     1u,
+     {{{"A6.2831853B", 24, 24, 448, 95}}}},
+    {FILE_PATH_LITERAL("code_39.png"), 1u, {{{"CHROMIUM", 20, 20, 318, 75}}}},
+    {FILE_PATH_LITERAL("code_93.png"), 1u, {{{"CHROMIUM", 20, 20, 216, 75}}}},
+    {FILE_PATH_LITERAL("code_128.png"), 1u, {{{"Chromium", 20, 20, 246, 75}}}},
+    {FILE_PATH_LITERAL("data_matrix.png"),
+     1u,
+     {{{"Chromium", 11, 11, 53, 53}}}},
+    {FILE_PATH_LITERAL("ean_8.png"), 1u, {{{"62831857", 14, 10, 134, 75}}}},
+    {FILE_PATH_LITERAL("ean_13.png"),
+     1u,
+     {{{"6283185307179", 27, 10, 190, 75}}}},
+    {FILE_PATH_LITERAL("itf.png"), 1u, {{{"62831853071795", 10, 10, 135, 39}}}},
+    {FILE_PATH_LITERAL("pdf417.png"), 1u, {{{"Chromium", 20, 20, 240, 44}}}},
+    {FILE_PATH_LITERAL("qr_code.png"),
+     1u,
+     {{{"https://chromium.org", 40, 40, 250, 250}}}},
+    {FILE_PATH_LITERAL("upc_a.png"), 1u, {{{"628318530714", 23, 10, 190, 75}}}},
+    {FILE_PATH_LITERAL("upc_e.png"), 1u, {{{"06283186", 23, 10, 102, 75}}}},
+    {FILE_PATH_LITERAL("two_upc_a.png"),
+     2u,
+     {{
+         {"326565565892", 191, 265, 358, 174},
+         {"565656545454", 731, 260, 357, 5},
+     }}},
+};
 
 class BarcodeDetectionImplChromeTest
     : public testing::TestWithParam<struct TestParams> {
@@ -104,12 +125,17 @@ TEST_P(BarcodeDetectionImplChromeTest, Scan) {
                    run_loop.Quit();
                  }));
   run_loop.Run();
-  EXPECT_EQ(1u, results.size());
-  EXPECT_EQ(GetParam().expected_value, results.front()->raw_value);
-  EXPECT_EQ(GetParam().x, results.front()->bounding_box.x());
-  EXPECT_EQ(GetParam().y, results.front()->bounding_box.y());
-  EXPECT_EQ(GetParam().width, results.front()->bounding_box.width());
-  EXPECT_EQ(GetParam().height, results.front()->bounding_box.height());
+  EXPECT_EQ(GetParam().num_expected_values, results.size());
+  ASSERT_LE(results.size(), kMaxNumExpectedValues);
+  for (size_t i = 0; i < results.size(); ++i) {
+    EXPECT_EQ(GetParam().expected_value[i].raw_value, results[i]->raw_value);
+    EXPECT_EQ(GetParam().expected_value[i].x, results[i]->bounding_box.x());
+    EXPECT_EQ(GetParam().expected_value[i].y, results[i]->bounding_box.y());
+    EXPECT_EQ(GetParam().expected_value[i].width,
+              results[i]->bounding_box.width());
+    EXPECT_EQ(GetParam().expected_value[i].height,
+              results[i]->bounding_box.height());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -858,6 +858,10 @@
 	path = remoting/tools/internal
 	url = https://chrome-internal.googlesource.com/chrome/remoting/tools/internal
 	gclient-condition = checkout_src_internal
+[submodule "services/shape_detection/internal"]
+	path = services/shape_detection/internal
+	url = https://chrome-internal.googlesource.com/chrome/services/shape_detection
+	gclient-condition = checkout_src_internal
 [submodule "signing_keys"]
 	path = signing_keys
 	url = https://chrome-internal.googlesource.com/clank/apptestkey

@@ -5,9 +5,9 @@
 #ifndef SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_CHROME_H_
 #define SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_CHROME_H_
 
+#include "services/shape_detection/chrome_shape_detection_api.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
-#include "third_party/barhopper/barhopper/barhopper.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace shape_detection {
@@ -29,7 +29,7 @@ class BarcodeDetectionImplChrome : public mojom::BarcodeDetection {
   GetSupportedFormats();
 
  private:
-  barhopper::RecognitionOptions recognition_options_;
+  const ChromeBarcodeFormat expected_formats_;
 };
 
 }  // namespace shape_detection

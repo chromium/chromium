@@ -2,10 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//services/shape_detection/features.gni")
 import("//testing/test.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
-use_barhopper = is_chrome_branded && is_chromeos
+source_set("api") {
+  public = [ "chrome_shape_detection_api.h" ]
+}
 
 source_set("lib") {
   sources = [
@@ -19,6 +22,12 @@ source_set("lib") {
     "//mojo/public/cpp/bindings",
     "//ui/gfx",
     "//ui/gfx/geometry",
+  ]
+
+  public_deps = [
+    "//base",
+    "//media/capture",
+    "//services/shape_detection/public/mojom",
   ]
 
   if (is_mac) {
@@ -71,14 +80,18 @@ source_set("lib") {
     ]
   } else if (is_android) {
     # No C++ sources needed, barcode detection is provided by Java.
-  } else if (use_barhopper) {
+  } else if (build_with_internal_shape_detection) {
     sources += [
       "barcode_detection_impl_chrome.cc",
       "barcode_detection_impl_chrome.h",
       "barcode_detection_provider_chrome.cc",
       "barcode_detection_provider_chrome.h",
+      "shape_detection_library_holder.cc",
+      "shape_detection_library_holder.h",
     ]
-    deps += [ "//third_party/barhopper" ]
+    public_deps += [ ":api" ]
+    data_deps =
+        [ "//services/shape_detection/internal:shape_detection_internal" ]
   } else {
     # Otherwise, use a stub implementation.
     sources += [
@@ -89,14 +102,14 @@ source_set("lib") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [
-    "//base",
-    "//media/capture",
-    "//services/shape_detection/public/mojom",
-  ]
-
   if (is_android) {
     deps += [ ":shape_detection_jni_headers" ]
+  } else if (is_chromeos) {
+    sources += [
+      "shape_detection_sandbox_hook.cc",
+      "shape_detection_sandbox_hook.h",
+    ]
+    deps += [ "//sandbox/policy" ]
   }
 }
 
@@ -162,7 +175,7 @@ source_set("tests") {
     ]
   }
 
-  if (use_barhopper) {
+  if (build_with_internal_shape_detection) {
     sources += [ "barcode_detection_impl_chrome_unittest.cc" ]
   }
 

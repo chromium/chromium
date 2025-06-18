@@ -242,6 +242,8 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<TtsProcessPolicy>();
     case sandbox::mojom::Sandbox::kNearby:
       return std::make_unique<NearbyProcessPolicy>();
+    case sandbox::mojom::Sandbox::kShapeDetection:
+      return std::make_unique<UtilityProcessPolicy>();
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case sandbox::mojom::Sandbox::kLibassistant:
       return std::make_unique<LibassistantProcessPolicy>();
@@ -300,6 +302,7 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
     case sandbox::mojom::Sandbox::kIme:
     case sandbox::mojom::Sandbox::kTts:
     case sandbox::mojom::Sandbox::kNearby:
+    case sandbox::mojom::Sandbox::kShapeDetection:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case sandbox::mojom::Sandbox::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
