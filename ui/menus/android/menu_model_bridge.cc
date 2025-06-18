@@ -18,7 +18,7 @@
 #include "ui/android/menu_model_bridge_jni_headers/MenuModelBridge_jni.h"
 
 using base::android::JavaParamRef;
-using base::android::ScopedJavaLocalRef;
+using base::android::ScopedJavaGlobalRef;
 using base::android::ToJniCallback;
 
 namespace ui {
@@ -90,6 +90,10 @@ void MenuModelBridge::AddExtensionItems(ui::MenuModel* menu_model) {
         /* Do nothing. */
     }
   }
+}
+
+ScopedJavaGlobalRef<jobject> MenuModelBridge::GetJavaObject() {
+  return java_obj_;
 }
 
 // private

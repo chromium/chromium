@@ -28,6 +28,8 @@ class COMPONENT_EXPORT(UI_MENUS) MenuModelBridge {
 
   void AddExtensionItems(ui::MenuModel* menu_model);
 
+  base::android::ScopedJavaGlobalRef<jobject> GetJavaObject();
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   base::WeakPtrFactory<MenuModelBridge> weak_ptr_factory_{this};
