@@ -79,6 +79,18 @@ bool ColorCSSValueIsCacheable(const CSSValue& value) {
   return IsA<CSSColor>(value);
 }
 
+bool PositionCSSValueIsDefault(const CSSValue* pos) {
+  if (IsA<CSSNumericLiteralValue>(pos)) {
+    const auto* value = To<CSSNumericLiteralValue>(pos);
+    return value->IsPercentage() && value->ComputePercentage() == 50.0;
+  }
+  if (IsA<CSSIdentifierValue>(pos)) {
+    // Center comoutes to 50%.
+    return To<CSSIdentifierValue>(pos)->GetValueID() == CSSValueID::kCenter;
+  }
+  return false;
+}
+
 bool AppendPosition(StringBuilder& result,
                     const CSSValue* x,
                     const CSSValue* y,
@@ -87,10 +99,7 @@ bool AppendPosition(StringBuilder& result,
     return false;
   }
 
-  if (IsA<CSSIdentifierValue>(x) &&
-      To<CSSIdentifierValue>(x)->GetValueID() == CSSValueID::kCenter &&
-      IsA<CSSIdentifierValue>(y) &&
-      To<CSSIdentifierValue>(y)->GetValueID() == CSSValueID::kCenter) {
+  if (PositionCSSValueIsDefault(x) && PositionCSSValueIsDefault(y)) {
     return false;
   }
 
@@ -1837,6 +1846,25 @@ void CSSRadialGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   CSSGradientValue::TraceAfterDispatch(visitor);
 }
 
+bool AppendAngle(StringBuilder& result,
+                 const CSSPrimitiveValue* angle,
+                 bool wrote_something) {
+  if (!angle) {
+    return false;
+  }
+
+  if (IsA<CSSNumericLiteralValue>(angle) &&
+      To<CSSNumericLiteralValue>(angle)->ComputeDegrees() == 0) {
+    // 0deg is the default, so we don't need to write it.
+    return false;
+  }
+
+  result.Append("from ");
+  result.Append(angle->CssText());
+
+  return true;
+}
+
 String CSSConicGradientValue::CustomCSSText() const {
   StringBuilder result;
 
@@ -1847,11 +1875,7 @@ String CSSConicGradientValue::CustomCSSText() const {
 
   bool wrote_something = false;
 
-  if (from_angle_) {
-    result.Append("from ");
-    result.Append(from_angle_->CssText());
-    wrote_something = true;
-  }
+  wrote_something |= AppendAngle(result, from_angle_, wrote_something);
 
   wrote_something |= AppendPosition(result, x_, y_, wrote_something);
 
