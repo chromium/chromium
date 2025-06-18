@@ -186,8 +186,9 @@ TabStripModel* TabLifecycleUnitSource::GetFocusedTabStripModel() const {
   return focused_browser->tab_strip_model();
 }
 
-void TabLifecycleUnitSource::UpdateFocusedTab() {
-  TabStripModel* const focused_tab_strip_model = GetFocusedTabStripModel();
+void TabLifecycleUnitSource::UpdateFocusedTab(Browser* browser) {
+  TabStripModel* const focused_tab_strip_model =
+      browser ? browser->tab_strip_model() : GetFocusedTabStripModel();
   content::WebContents* const focused_web_contents =
       focused_tab_strip_model ? focused_tab_strip_model->GetActiveWebContents()
                               : nullptr;
@@ -207,12 +208,15 @@ void TabLifecycleUnitSource::UpdateFocusedTab() {
 
 void TabLifecycleUnitSource::UpdateFocusedTabTo(
     TabLifecycleUnit* new_focused_lifecycle_unit) {
-  if (new_focused_lifecycle_unit == focused_lifecycle_unit_)
+  if (new_focused_lifecycle_unit == focused_lifecycle_unit_) {
     return;
-  if (focused_lifecycle_unit_)
+  }
+  if (focused_lifecycle_unit_) {
     focused_lifecycle_unit_->SetFocused(false);
-  if (new_focused_lifecycle_unit)
+  }
+  if (new_focused_lifecycle_unit) {
     new_focused_lifecycle_unit->SetFocused(true);
+  }
   focused_lifecycle_unit_ = new_focused_lifecycle_unit;
 }
 
@@ -233,8 +237,9 @@ void TabLifecycleUnitSource::OnTabInserted(TabStripModel* tab_strip_model,
         std::make_unique<TabLifecycleUnit>(this, contents, tab_strip_model));
     lifecycle_unit = holder->lifecycle_unit();
     lifecycle_unit_observations_.AddObservation(lifecycle_unit);
-    if (GetFocusedTabStripModel() == tab_strip_model && foreground)
+    if (GetFocusedTabStripModel() == tab_strip_model && foreground) {
       UpdateFocusedTabTo(lifecycle_unit);
+    }
 
     // Add a self-owned observers to record metrics and trace events.
     lifecycle_unit->AddObserver(new DiscardMetricsLifecycleUnitObserver());
@@ -294,8 +299,9 @@ void TabLifecycleUnitSource::OnTabStripModelChanged(
       break;
   }
 
-  if (selection.active_tab_changed() && !tab_strip_model->empty())
+  if (selection.active_tab_changed() && !tab_strip_model->empty()) {
     UpdateFocusedTab();
+  }
 }
 
 void TabLifecycleUnitSource::TabChangedAt(content::WebContents* contents,
@@ -321,7 +327,11 @@ void TabLifecycleUnitSource::OnBrowserRemoved(Browser* browser) {
 }
 
 void TabLifecycleUnitSource::OnBrowserSetLastActive(Browser* browser) {
-  UpdateFocusedTab();
+  // In this case, we know that `browser` is active. Pass it directly into
+  // `UpdateFocusedTab` since during startup
+  // `chrome::FindBrowserWithActiveWindow()` sometimes fails to return the
+  // proper browser.
+  UpdateFocusedTab(browser);
 }
 
 void TabLifecycleUnitSource::OnBrowserNoLongerActive(Browser* browser) {
