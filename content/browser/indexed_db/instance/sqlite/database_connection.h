@@ -32,6 +32,7 @@ class IndexedDBKey;
 namespace sql {
 class Database;
 class MetaTable;
+class Statement;
 class Transaction;
 }  // namespace sql
 
@@ -139,6 +140,17 @@ class DatabaseConnection {
   // keep `this` alive.
   void DeleteIdbDatabase(base::PassKey<BackingStoreDatabaseImpl>);
 
+  // These are exposed for `RecordIterator`s to access `Statement` resources
+  // associated with `db_`.
+  // Returns a unique ID and a pointer to a `Statement` whose lifetime is
+  // managed by `this`.
+  std::tuple<uint64_t, sql::Statement*> CreateLongLivedStatement(
+      std::string query);
+  // Called when a statement is no longer needed by a `RecordIterator`.
+  void ReleaseLongLivedStatement(uint64_t id);
+  // May return `nullptr` if the statement has been destroyed.
+  sql::Statement* GetLongLivedStatement(uint64_t id);
+
  private:
   DatabaseConnection(std::unique_ptr<sql::Database> db,
                      std::unique_ptr<sql::MetaTable> meta_table,
@@ -181,6 +193,11 @@ class DatabaseConnection {
   // database at a time.
   std::unique_ptr<sql::Transaction> active_rw_transaction_;
 
+  // Long-lived statements (those used for cursor iteration) are owned by `this`
+  // to ensure that database resources are freed before closing `db_`.
+  uint64_t next_statement_id_ = 0;
+  std::map<uint64_t, std::unique_ptr<sql::Statement>> statements_;
+
   // Only set while a version change transaction is active.
   std::optional<blink::IndexedDBDatabaseMetadata> metadata_snapshot_;
 
@@ -205,6 +222,10 @@ class DatabaseConnection {
   // blob has a corresponding entry in this map. These blobs must keep `this`
   // alive since they're backed by the SQLite database.
   std::map<int64_t, std::unique_ptr<ActiveBlobStreamer>> active_blobs_;
+
+  // TODO(crbug.com/419203257): this should invalidate its weak pointers when
+  // `db_` is closed.
+  base::WeakPtrFactory<DatabaseConnection> record_iterator_weak_factory_{this};
 
   // Only used for the callbacks passed to `blob_writers_`.
   base::WeakPtrFactory<DatabaseConnection> blob_writers_weak_factory_{this};

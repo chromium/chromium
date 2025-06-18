@@ -22,30 +22,27 @@
 
 namespace content::indexed_db::sqlite {
 
-RecordIterator::RecordIterator(std::unique_ptr<sql::Statement> statement,
-                               BindCallback bind_parameters,
-                               ReadCallback read_row,
-                               std::string initial_position)
-    : statement_(std::move(statement)),
-      bind_parameters_(std::move(bind_parameters)),
-      read_row_(std::move(read_row)),
-      current_position_(std::move(initial_position)) {}
-
+RecordIterator::RecordIterator() = default;
 RecordIterator::~RecordIterator() = default;
 
 StatusOr<std::unique_ptr<Record>> RecordIterator::Iterate(
     const blink::IndexedDBKey& key,
     const blink::IndexedDBKey& primary_key) {
-  statement_->Reset(/*clear_bound_vars=*/false);
-  bind_parameters_.Run(*statement_, *current_position_, key, primary_key,
-                       /*offset=*/0);
-  if (!statement_->Step()) {
-    TRANSIENT_CHECK(statement_->Succeeded());
+  sql::Statement* statement = GetStatement();
+  if (!statement) {
+    return base::unexpected(Status::IOError("Database connection lost"));
+  }
+
+  statement->Reset(/*clear_bound_vars=*/false);
+  BindParameters(*statement, key, primary_key,
+                 /*offset=*/0);
+  if (!statement->Step()) {
+    TRANSIENT_CHECK(statement->Succeeded());
     // End of range.
     current_position_.reset();
     return nullptr;
   }
-  return read_row_.Run(*statement_).transform([this](PositionAndRecord result) {
+  return ReadRow(*statement).transform([this](PositionAndRecord result) {
     current_position_ = std::move(result.first);
     return std::move(result.second);
   });
@@ -54,21 +51,27 @@ StatusOr<std::unique_ptr<Record>> RecordIterator::Iterate(
 StatusOr<std::unique_ptr<Record>> RecordIterator::Iterate(uint32_t count) {
   TRANSIENT_CHECK(count > 0);
 
+  sql::Statement* statement = GetStatement();
+  if (!statement) {
+    return base::unexpected(Status::IOError("Database connection lost"));
+  }
+
   // TODO(crbug.com/419208481): Implement a fast path where `statement_` is
   // stepped without being reset when no record has changed in the range.
-  statement_->Reset(/*clear_bound_vars=*/false);
+  statement->Reset(/*clear_bound_vars=*/false);
 
   // Iterate count times => offset by (i.e., skip) [count - 1] rows.
-  bind_parameters_.Run(*statement_, *current_position_, /*key=*/{},
-                       /*primary_key=*/{},
-                       /*offset=*/count - 1);
-  if (!statement_->Step()) {
-    TRANSIENT_CHECK(statement_->Succeeded());
+  BindParameters(*statement, /*target_key=*/{},
+                 /*target_primary_key=*/{},
+                 /*offset=*/count - 1);
+  if (!statement->Step()) {
+    TRANSIENT_CHECK(statement->Succeeded());
     // End of range.
     current_position_.reset();
     return nullptr;
   }
-  return read_row_.Run(*statement_).transform([this](PositionAndRecord result) {
+
+  return ReadRow(*statement).transform([this](PositionAndRecord result) {
     current_position_ = std::move(result.first);
     return std::move(result.second);
   });
