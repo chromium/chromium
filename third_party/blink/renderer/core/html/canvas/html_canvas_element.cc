@@ -1786,9 +1786,10 @@ void HTMLCanvasElement::SetNeedsPushProperties() {
   }
 }
 
-void HTMLCanvasElement::SetResourceProviderForTesting(
+void HTMLCanvasElement::SetCanvas2DResourceProviderForTesting(
     std::unique_ptr<CanvasResourceProvider> provider,
     const gfx::Size& size) {
+  CHECK(IsRenderingContext2D());
   DiscardResourceProvider();
   SetIntegralAttribute(html_names::kWidthAttr, size.width());
   SetIntegralAttribute(html_names::kHeightAttr, size.height());
