@@ -3507,6 +3507,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.Widevine.LibraryCdmAvailable"
+    enum="BooleanAvailable" expires_after="2026-01-15">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Whether the CDM is available for Widevine or not. In normal cases, this is
+    reported once per render process if the EME API is used. In rare cases it
+    could be reported more than once if the CDM is not available and then is
+    component updated.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.Widevine.SoftwareSecure.SystemCode"
     enum="CdmSystemCode" expires_after="2026-01-15">
   <owner>xhwang@chromium.org</owner>
@@ -3682,19 +3694,6 @@ chromium-metrics-reviews@google.com.
   <owner>media-dev-uma@chromium.org</owner>
   <summary>System code associated with key status for {KeySystem}.</summary>
   <token key="KeySystem" variants="KeySystemWithRobustness"/>
-</histogram>
-
-<histogram name="Media.EME.{KeySystem}.LibraryCdmAvailable"
-    enum="BooleanAvailable" expires_after="2026-01-15">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Whether the CDM is available for {KeySystem} or not. In normal cases, this
-    is reported once per render process if the EME API is used. In rare cases it
-    could be reported more than once if the CDM is not available and then is
-    component updated.
-  </summary>
-  <token key="KeySystem" variants="KeySystem"/>
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.TimeTo{ResolveOrReject}.{EmeApi}"
