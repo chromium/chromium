@@ -33,6 +33,20 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="BuyerAndSellerReportingId"/>
 </enum>
 
+<!-- LINT.IfChange(DetachKernelDriverOutcome) -->
+
+<enum name="DetachKernelDriverOutcome">
+  <int value="0" label="Interface was not attached to a kernel driver"/>
+  <int value="1" label="Kernel driver is not allowed to detach"/>
+  <int value="2" label="Kernel driver detaching failed"/>
+  <int value="3" label="Kernel driver detached: other"/>
+  <int value="4" label="Kernel driver detached: cdc_acm"/>
+  <int value="5" label="Kernel driver detached: usblp"/>
+  <int value="6" label="Kernel driver detached: ftdi_sio"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/device/usb/usb_device_handle_usbfs.cc:DetachKernelDriverOutcome) -->
+
 <enum name="EmbeddingModelLoadDlcStatus">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kInvalidUuid"/>
