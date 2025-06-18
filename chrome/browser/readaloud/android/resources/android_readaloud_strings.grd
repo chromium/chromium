@@ -298,7 +298,7 @@
         Playback Speed
       </message>
       <message name="IDS_READALOUD_SEEK_BAR" desc="Accessibility string for the 'seekbar'.">
-        Scrub Playback
+        Seek control. <ph name="ELAPSED">%1$s<ex>23 seconds</ex></ph> elapsed out of <ph name="TOTAL">%2$s<ex>30 seconds</ex></ph>.
       </message>
       <message name="IDS_READALOUD_OPTIONS_MENU_DESCRIPTION" desc="Accessibility string announced when the player options menu is opened.">
         Options menu

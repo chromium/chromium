@@ -70,6 +70,7 @@ public class ExpandedPlayerSheetContentUnitTest {
     private TextView mSpeedView;
     private TextView mTitleView;
     private TextView mPublisherView;
+    private View mPublisherContainerView;
     private ImageView mBackButton;
     private ImageView mForwardButton;
     private ImageView mPlayPauseButton;
@@ -98,6 +99,8 @@ public class ExpandedPlayerSheetContentUnitTest {
         mTitleView = (TextView) mContentView.findViewById(R.id.readaloud_expanded_player_title);
         mPublisherView =
                 (TextView) mContentView.findViewById(R.id.readaloud_expanded_player_publisher);
+        mPublisherContainerView =
+                mContentView.findViewById(R.id.readaloud_player_publisher_container);
         mSpeedView = (TextView) mContentView.findViewById(R.id.readaloud_playback_speed);
         mBackButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_back_button);
         mForwardButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_forward_button);
@@ -171,7 +174,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         verify(mInteractionHandler).onPlayPauseClick();
         verify(mInteractionHandler).onSeekForwardClick();
 
-        assertTrue(mPublisherView.performClick());
+        assertTrue(mPublisherContainerView.performClick());
         verify(mInteractionHandler).onPublisherClick();
     }
 
@@ -331,5 +334,17 @@ public class ExpandedPlayerSheetContentUnitTest {
 
       mContent.setRequestedPlaybackMode(PlaybackMode.CLASSIC);
       assertEquals(loadingText.getText(), mContext.getString(R.string.readaloud_playback_loading));
+    }
+
+
+    @Test
+    public void testFormatDuration() {
+      assertEquals("1 hour and 23 seconds", ExpandedPlayerSheetContent.formatDuration(3623));
+      assertEquals("1 hour, 2 minutes and 23 seconds", ExpandedPlayerSheetContent.formatDuration(3743));
+      assertEquals("1 minute and 23 seconds", ExpandedPlayerSheetContent.formatDuration(83));
+      assertEquals("2 minutes and 23 seconds", ExpandedPlayerSheetContent.formatDuration(143));
+      assertEquals("0 seconds", ExpandedPlayerSheetContent.formatDuration(0));
+      assertEquals("1 second", ExpandedPlayerSheetContent.formatDuration(1));
+      assertEquals("53 seconds", ExpandedPlayerSheetContent.formatDuration(53));
     }
 }

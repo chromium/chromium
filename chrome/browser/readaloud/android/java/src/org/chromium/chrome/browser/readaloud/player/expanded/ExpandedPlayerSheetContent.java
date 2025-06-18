@@ -20,6 +20,9 @@ import android.widget.TextView;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -76,6 +79,9 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private final LinearLayout mLoadingLayout;
 
     private final PlaybackModeIphController mPlaybackModeIphController;
+
+    private int mElapsedSeconds;
+    private int mTotalDurationSeconds;
 
     public ExpandedPlayerSheetContent(
             Context context,
@@ -342,11 +348,13 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     void setElapsed(Long nanos) {
+        mElapsedSeconds = (int) (nanos / 1_000_000_000L);
         ((TextView) mContentView.findViewById(R.id.readaloud_player_time))
                 .setText(formatTimeNanos(nanos));
     }
 
     void setDuration(Long nanos) {
+        mTotalDurationSeconds = (int) (nanos / 1_000_000_000L);
         ((TextView) mContentView.findViewById(R.id.readaloud_player_duration))
                 .setText(formatTimeNanos(nanos));
     }
@@ -364,8 +372,8 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         setOnClickListener(R.id.readaloud_play_pause_button, handler::onPlayPauseClick);
         setOnClickListener(R.id.readaloud_seek_back_button, handler::onSeekBackClick);
         setOnClickListener(R.id.readaloud_seek_forward_button, handler::onSeekForwardClick);
-        setOnClickListener(R.id.readaloud_expanded_player_publisher, handler::onPublisherClick);
-        setOnClickListener(R.id.readaloud_playback_speed, this::showSpeedMenu);
+        setOnClickListener(R.id.readaloud_player_publisher_container, handler::onPublisherClick);
+        setOnClickListener(R.id.readaloud_playback_speed_container, this::showSpeedMenu);
         setOnClickListener(R.id.readaloud_more_button, this::showOptionsMenu);
         setOnClickListener(R.id.readaloud_mode_selector, () -> onPlaybackModeChangeClick(handler));
         setOnClickListener(R.id.readaloud_thumb_down_button, () -> showNegativeFeedbackMenu());
@@ -421,7 +429,43 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
      */
     public void setProgress(float percent) {
         mSeekBar.setProgress((int) (percent * mSeekBar.getMax()), true);
+        mSeekBar.setContentDescription(mContext.getString(R.string.readaloud_seek_bar, formatDuration(mElapsedSeconds), formatDuration(mTotalDurationSeconds)));
     }
+
+    @VisibleForTesting
+    static String formatDuration(int totalSeconds) {
+        if (totalSeconds < 0) {
+            return "Invalid duration";
+        }
+        if (totalSeconds == 0) {
+            return "0 seconds";
+        }
+
+        int hours = totalSeconds / 3600;
+        int minutes = (totalSeconds % 3600) / 60;
+        int seconds = totalSeconds % 60;
+
+        List<String> parts = new ArrayList<>();
+
+        if (hours > 0) {
+            parts.add(hours + (hours == 1 ? " hour" : " hours"));
+        }
+        if (minutes > 0) {
+            parts.add(minutes + (minutes == 1 ? " minute" : " minutes"));
+        }
+        if (seconds > 0 || parts.isEmpty()) {
+            parts.add(seconds + (seconds == 1 ? " second" : " seconds"));
+        }
+
+        if (parts.size() == 1) {
+            return parts.get(0);
+        }
+
+        String lastPart = parts.remove(parts.size() - 1);
+        // String.join is available in Java 8+ (or with Android desugaring)
+        return String.join(", ", parts) + " and " + lastPart;
+    }
+
 
     @Nullable
     OptionsMenuSheetContent getOptionsMenu() {
