@@ -194,6 +194,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   RequestUnadjustedMovement() override;
   void LockMouse(aura::Window* window) override;
   void UnlockMouse(aura::Window* window) override;
+  void ClientDestroyedWidget() override;
 
   // Overridden from aura::client::AnimationHost
   void SetHostTransitionOffsets(

@@ -1369,6 +1369,17 @@ bool DesktopWindowTreeHostWin::AreScreenshotsAllowed() {
   return true;
 }
 
+void DesktopWindowTreeHostWin::ClientDestroyedWidget() {
+  if (native_widget_delegate_) {
+    // Send an explicit visibility change event when the delegate is reset. This
+    // ensures delegate's visibility state is updated appropriately before the
+    // delegate pointer is nullified.
+    native_widget_delegate_->OnNativeWidgetVisibilityChanged(false);
+    native_widget_delegate_ = nullptr;
+  }
+  DesktopWindowTreeHost::ClientDestroyedWidget();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // DesktopWindowTreeHostWin, private:
 
