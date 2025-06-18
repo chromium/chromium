@@ -364,6 +364,14 @@
       "50B8ECD18A36937668D1FCA9CEEE668BC25C39CC" // b/361094242 Beyondcorp Enterprise Extension
     ]
   },
+  "enterprise.reportingPrivate.onDataMaskingRulesTriggered": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "allowlist" : [
+      "31367E6C4D69B90D866289492A307C205AF8A32F", // crbug.com/361094242 Secure Enterprise Browser Extension
+      "50B8ECD18A36937668D1FCA9CEEE668BC25C39CC" // crbug.com/361094242 Beyondcorp Enterprise Extension
+    ]
+  },
   "experimental": {
     "channel": "stable",
     "command_line_switch": "experimental-extension-apis",
