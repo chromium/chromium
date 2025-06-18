@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">Vil du bruke et lagret passord eller en lagret passnøkkel?</translation>
 <translation id="5624120631404540903">Administrer passord</translation>
 <translation id="592182999816790476">Passord for <ph name="USERNAME" /> er lagret for <ph name="WEBSITE" /></translation>
-<translation id="593924516471361340">Midlertidig gjenopprettingspassord i tilfelle problemer for <ph name="USERNAME" /> er lagret for <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Passnøkkel for <ph name="USERNAME" /> – bruk skjermlåsen</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nytt passord for dette nettstedet}other{Nye passord for dette nettstedet}}</translation>
 <translation id="7286867818472074330">Velg passnøkkel</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> av <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Du har mottatt passord for <ph name="SITE_NAME" /></translation>
-<translation id="8202660122967066153">Midlertidig gjenopprettingspassord i tilfelle problemer for <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Midlertidig gjenoppretting i tilfelle problemer</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> har delt et passord med deg for <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Listen over legitimasjon er lukket.</translation>

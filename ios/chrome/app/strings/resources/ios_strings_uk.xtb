@@ -611,6 +611,7 @@
 <translation id="3557336313807607643">Додати до контактів</translation>
 <translation id="355765753469272474">Відмінити</translation>
 <translation id="3565930036634619844">Вкладка. <ph name="TAB_INDEX" /> з <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3570693105179140209">Двічі торкніться, щоб переглянути інші паролі.</translation>
 <translation id="3572607909481582402">В обліковому записі Google</translation>
 <translation id="3575234738189584619">Шукати через Об’єктив</translation>
 <translation id="3575426792457739946">Цей список містить усі завантажені профілі.</translation>
@@ -654,6 +655,7 @@
 <translation id="3779810277399252432">Немає з’єднання з Інтернетом</translation>
 <translation id="3782614601387961027">Закрити попередження</translation>
 <translation id="3789841737615482174">Установити</translation>
+<translation id="3795478177331815672">Відкриті вкладки й групи вкладок</translation>
 <translation id="380329542618494757">Повне ім’я</translation>
 <translation id="3803696231112616155">Пропонувати переклад для цього сайту</translation>
 <translation id="3808311849069021992">Показати відомості про пошукову систему</translation>
@@ -699,6 +701,7 @@
 <translation id="3955740319737378355">Готово</translation>
 <translation id="3955822496205734389">У вас є ненадійні паролі.</translation>
 <translation id="3958312024468322930">Перетягніть його на нижню панель головного екрана</translation>
+<translation id="3960218941754097036">Шукайте будь-що на екрані за допомогою Google Об’єктива</translation>
 <translation id="3962326069546168954">Зберегти</translation>
 <translation id="3967327056943561740">Закладки</translation>
 <translation id="3967822245660637423">Завантажено</translation>
@@ -965,6 +968,7 @@
 <translation id="4979397965658815378">Увійдіть в обліковий запис Google, щоб мати доступ до закладок, паролів, історії й інших налаштувань на всіх своїх пристроях</translation>
 <translation id="4985921635659180565">Якщо запланувати видалення файлу, цю дію не можна буде скасувати.</translation>
 <translation id="498624032394115435">Кожен, хто має посилання, може редагувати всі вкладки.</translation>
+<translation id="4989065233040279145">Виберіть, де зберегти <ph name="FILENAME" /></translation>
 <translation id="499122600724363620">Обліковим записом користувача <ph name="NAME" /> (<ph name="EMAIL" />) керує ваша організація.</translation>
 <translation id="4992255726304765516">Колір групи вкладок: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
@@ -1651,6 +1655,7 @@
 <translation id="7724085059277147439">{count,plural, =1{Об’єкт збережено у вашому обліковому записі Google ({email})}one{Об’єкти збережено у вашому обліковому записі Google ({email})}few{Об’єкти збережено у вашому обліковому записі Google ({email})}many{Об’єкти збережено у вашому обліковому записі Google ({email})}other{Об’єкти збережено у вашому обліковому записі Google ({email})}}</translation>
 <translation id="7729458878441927652">Увімкніть синхронізацію вкладок і історії, щоб переглядати вкладки з інших ваших пристроїв.</translation>
 <translation id="7730020510075123961">Ні, об’єднати дані</translation>
+<translation id="7730973429297233609">Виберіть обліковий запис, у якому ви хочете зберегти файл "<ph name="FILENAME" />" (<ph name="FILESIZE" />)</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Лише на цьому пристрої.</translation>
 <translation id="7744192722284567281">Знайдено в порушеннях безпеки даних</translation>
 <translation id="7749790401023484470">Ви не вибрали текст.</translation>
@@ -1811,7 +1816,6 @@
 <translation id="8343993175958086504">Створюйте резервні копії даних і використовуйте їх на будь-якому пристрої.</translation>
 <translation id="8348530355586151720">Натисніть меню додаткових параметрів.</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
-<translation id="8363484128299778310">Тимчасове відновлення в разі виникнення проблем</translation>
 <translation id="8364563001733875155">Щоб змінити PIN-код, спершу налаштуйте код доступу на своєму пристрої.</translation>
 <translation id="8366466717204352506">Паролі ніколи не перевірялися</translation>
 <translation id="8368001212524806591">Відстеження цін</translation>
@@ -1834,6 +1838,7 @@
 <translation id="8428045167754449968">Місто</translation>
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="8428634594422941299">Зрозуміло</translation>
+<translation id="8430694217306051839">Виберіть, де зберегти <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Відомості про групу вкладок</translation>
 <translation id="8438566539970814960">Покращувати пошук і вебперегляд</translation>
 <translation id="8439758443371991593">Сховати опцію "Додати в список читання"</translation>

@@ -867,7 +867,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
             <ph name="LIST_ITEM" />veidlapās ievadītā informācija.
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Perifērijas ierīces, kas ir pievienotas šai ierīcei, kamēr esat pieteicies</translation>
-<translation id="2450019289047528273">Maksājumu veidi un cita informācija no lietotnes Google maks</translation>
 <translation id="2451607499823206582">Izsekošana</translation>
 <translation id="2452098632681057184">Ekoloģija un vide</translation>
 <translation id="2452837234288608067">Pieprasījumu nevarēja izpildīt. Mēģiniet vēlreiz.</translation>
@@ -937,7 +936,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2546283357679194313">Sīkfaili un vietņu dati</translation>
 <translation id="254947805923345898">Politikas vērtība nav derīga.</translation>
 <translation id="2549836668759467704">Konsultācijas un līgumi par celtniecību</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> un vēl</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> nosūtīja nederīgu atbildi.</translation>
 <translation id="2551608178605132291">Adrese: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1048,7 +1046,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2743934314332613923">Vai atjaunināt autovadītāja apliecības informāciju?</translation>
 <translation id="2759299890026163685">Pirms mēģināt vēlreiz, pārbaudiet, vai ir izveidots stabils interneta savienojums</translation>
 <translation id="2759825833388495838">ievadīt jūsu paroli lietotnē <ph name="APP_NAME" /></translation>
-<translation id="2760805590727089264">MM/GG</translation>
 <translation id="2764001903315068341">Komiksi</translation>
 <translation id="2765217105034171413">Mazs</translation>
 <translation id="2768397283109119044">Jūs mēģinājāt piekļūt domēnam <ph name="DOMAIN" />, taču serveris uzrādīja nederīgu sertifikātu, kas izsniegts šim nosaukumam. Nosaukums ir rezervēta IP adrese vai iekšējs saimniekdatora nosaukums.</translation>
@@ -3048,7 +3045,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6177531123306197852">Aploksne C2</translation>
 <translation id="6180316780098470077">Intervāls starp atkārtotiem mēģinājumiem</translation>
 <translation id="6182972682129119950">A4x5</translation>
-<translation id="6184099524311454384">Meklēt cilnēs</translation>
 <translation id="6184868291074982484">Pārlūkā Chrome tiek automātiski ierobežoti trešo pušu sīkfaili</translation>
 <translation id="6190518157737269631">Ignorēt noteiktus tastatūras taustiņus, piemēram, atsoļa taustiņu</translation>
 <translation id="6194209731893739467">Skatiet visus savus izsekotos produktus šeit</translation>
@@ -3607,7 +3603,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="7130775116821607281">Bloķēta augšupielāde</translation>
 <translation id="7132939140423847331">Jūsu administrators ir aizliedzis šo datu kopēšanu.</translation>
 <translation id="7135130955892390533">Rādīt statusu</translation>
-<translation id="7135814714616751706">Meklēt īsinājumtaustiņus</translation>
 <translation id="7136009930065337683">Uzzināt vairāk par inkognito režīmu</translation>
 <translation id="7138472120740807366">Piegādes veids</translation>
 <translation id="7138678301420049075">Cits</translation>
@@ -4181,7 +4176,6 @@ Papildu informācija:
 <translation id="8092254339843485299">6 x 8 collas</translation>
 <translation id="8092774999298748321">Tumši violets</translation>
 <translation id="8094917007353911263">Iespējams, izmantotajā tīklā tiks pieprasīts apmeklēt vietni <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="809543534949702122">Meklēt vēsturē</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">Maksājuma veids</translation>
@@ -4821,7 +4815,6 @@ Papildu informācija:
 <translation id="9219103736887031265">Attēli</translation>
 <translation id="922152298093051471">Pielāgot pārlūkprogrammu Chrome</translation>
 <translation id="9222403027701923763">Pamatizglītība un vidējā izglītība (K-12)</translation>
-<translation id="9222463428840654067">Kartes numurs nav derīgs.</translation>
 <translation id="922849469395748170">Lojalitātes kartes</translation>
 <translation id="93020190163435405">Prakse</translation>
 <translation id="931598121743515856">Pirkuma summai ir jābūt lielākai par <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

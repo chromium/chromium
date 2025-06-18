@@ -109,7 +109,6 @@
 <translation id="1419753403124156396">Да се рестартира Chrome?</translation>
 <translation id="1428770807407000502">Да се исклучи синхронизацијата?</translation>
 <translation id="1430915738399379752">Печати</translation>
-<translation id="1433478348197382180">Режим на читање</translation>
 <translation id="1435593198351412143">Отворај ги PDF-датотеките автоматски</translation>
 <translation id="1437543266176261764">Се извршува во <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Организирајте ги следените производи во „Обележувачи“</translation>
@@ -546,6 +545,7 @@
 <translation id="3513019849832307207">Придружете се и отворете</translation>
 <translation id="3513704683820682405">Проширена реалност</translation>
 <translation id="3516053221628030540">Одете во Google Play</translation>
+<translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Отстранети се дозволите за известувања за еден сајт што не сте го посетиле неодамна}one{Отстранети се дозволите за известувања за # сајт што не сте ги посетиле неодамна}other{Отстранети се дозволите за известувања за # сајта што не сте ги посетиле неодамна}}</translation>
 <translation id="3518985090088779359">Прифати и продолжи</translation>
 <translation id="3519014757432845220">Помогнете да се подобри заштитата од спам така што ќе ги споделите содржините на известувањето и URL-адресата на сајтот со Google. Содржините може да ги прегледуваат луѓе.</translation>
 <translation id="3521388823983121502">Не може да продолжите со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -714,7 +714,6 @@
 <translation id="4298388696830689168">Поврзани сајтови</translation>
 <translation id="4300632303535881174">Оди на претходната страница</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="4306489587293957491">Внеси</translation>
 <translation id="4307992518367153382">Основи</translation>
 <translation id="4311652497846705514">Да се отвори PDF-датотеката?</translation>
 <translation id="4320177379694898372">Нема интернет поврзување</translation>
@@ -1081,6 +1080,7 @@
 <translation id="5956665950594638604">Отвори „Центар за помош на Chrome“ во нова картичка</translation>
 <translation id="59577092665511740">Изберете сметка.</translation>
 <translation id="5958275228015807058">Вашите датотеки и страници ќе ги најдете во „Преземања“</translation>
+<translation id="5958994127112619898">Поедностави ја страницата</translation>
 <translation id="5962718611393537961">Допрете за да се собере</translation>
 <translation id="5964869237734432770">Сопри описи на слики</translation>
 <translation id="5975083100439434680">Одзумирај</translation>
@@ -1283,7 +1283,6 @@
 <translation id="6764137532716892442">Споделена група картички <ph name="GROUP_TITLE" /> со нова активност</translation>
 <translation id="6767294960381293877">Списокот со уреди за споделување картичка е отворен на половина екран.</translation>
 <translation id="6785476624617658922">Дополнителни услови за користење на Chrome и Chrome OS</translation>
-<translation id="6786747875388722282">Наставки</translation>
 <translation id="6795633245022906657">Брзо отворете нова картичка. За да ја измените кратенкава, одете во „Поставки“.</translation>
 <translation id="679588508577699489">Поставете го Chrome како стандарден прелистувач</translation>
 <translation id="679956319013005046">За да ја поставите претпочитаната услуга за автоматско пополнување, прво додајте ја услугата во <ph name="BEGIN_LINK" />Поставките за Android<ph name="END_LINK" />.</translation>
@@ -1630,6 +1629,7 @@
 <translation id="8137562778192957619">Не треба да ја памтите лозинкава. Ќе се зачува во Google Password Manager.</translation>
 <translation id="8152331954420209374">Одете на Lens</translation>
 <translation id="8163820386638255770">За да користите и зачувувате лозинки во вашата сметка на Google, потврдете го вашиот идентитет</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923">Преостануваат <ph name="FILES" /> датотеки</translation>
 <translation id="8190358571722158785">Остана 1 ден</translation>
 <translation id="8192765420340770300">Долниот лист за најавување е отворен на целосна висина</translation>
@@ -1651,6 +1651,7 @@
 <translation id="8244387390464017490">Страница во нова картичка</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="8255617931166444521">Сајтовите може да ги користат колачињата само за да ја гледаат вашата активност од прелистувањето на сопствениот сајт</translation>
+<translation id="8256087213273124136">Chrome ве отпиша од известувањата</translation>
 <translation id="8258999165172757081">Додадено</translation>
 <translation id="8259179246279078674">Бидејќи однапред вчитаните страници се шифрирани, Google нема да дознае ништо за нивните содржини. Серверите на Google ќе знаат кои сајтови се приватно вчитани однапред. Податоциве се користат само за вчитување на страниците однапред и не се поврзани со други податоци од вашата сметка на Google.</translation>
 <translation id="8260126382462817229">Обидете се да се најавите повторно</translation>

@@ -786,6 +786,7 @@
 <translation id="1542524755306892917"><ph name="SUPERVISED_USER_NAME" /> কোনও প্রশ্ন জিজ্ঞাসা করলে এটির সাহায্যে Google Assistant আরও ভালোভাবে উত্তর দিতে পারে।</translation>
 <translation id="1543284117603151572">Edge থেকে আমদানি করা</translation>
 <translation id="1543538514740974167">এখান থেকে দ্রুত অ্যাক্সেস করুন</translation>
+<translation id="154420222899071768">আপনার পাসওয়ার্ড আপডেট করা হয়নি, তবে এখনও আপনার পুরনো পাসওয়ার্ড দিয়ে সাইট অ্যাক্সেস করার সুবিধা থাকা উচিত</translation>
 <translation id="1544588554445317666">একটি ছোট ফাইলের নাম ব্যবহার করার চেষ্টা করুন বা অন্য ফোল্ডারে সেভ করুন</translation>
 <translation id="1545177026077493356">স্বয়ংক্রিয় Kiosk মোড</translation>
 <translation id="1545749641540134597">QR কোড স্ক্যান করুন</translation>
@@ -2180,7 +2181,6 @@
 <translation id="24786041351753425">ডেটা আগের অবস্থায় ফেরানোর পরিষেবা চালু করুন।</translation>
 <translation id="2479541499757560845">অ্যাক্সেসিবিলিটি কীবোর্ডের সেটিংস</translation>
 <translation id="2480868415629598489">আপনি যে ডেটা কপি করে আটকান তা সংশোধন করুন</translation>
-<translation id="2480881140544300950">বর্তমান সার্চ ইঞ্জিন আপনার নতুন ট্যাব পৃষ্ঠা ম্যানেজ করছে</translation>
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
 <translation id="2482895651873876648">এই গ্রুপে ট্যাব সরানো হয়েছে: <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="2483627560139625913">Chrome ব্রাউজার সেটিংসে সার্চ ইঞ্জিন সেট করুন</translation>
@@ -2338,6 +2338,7 @@
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" />-এর ডিভাইসের নাম</translation>
 <translation id="2589658397149952302">Drive-এ থাকা ফাইল কখনই দেখাবেন না</translation>
 <translation id="2593499352046705383">চালু করার আগে, আপনার ডেটার ব্যাক-আপ নেওয়া আছে কিনা তা নিশ্চিত করুন। <ph name="DEVICE_OS" /> ইনস্টল করলে আপনার হার্ড ড্রাইভে থাকা সব ডেটা মুছে যাবে। g.co/flex/InstallGuide থেকে আরও জানুন।</translation>
+<translation id="2594832159966169099">ভি৮ সুরক্ষা ম্যানেজ করুন</translation>
 <translation id="2597073208962000830">কাছাকাছি ডিভাইস খুঁজে পেতে 'নিয়ারবাই শেয়ার' ব্লুটুথ স্ক্যানিং ব্যবহার করে।</translation>
 <translation id="2598136842498757793">কাস্টমাইজ টুলবার বোতাম</translation>
 <translation id="2598710988533271874">নতুন Chrome উপলভ্য</translation>
@@ -4567,6 +4568,7 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - এইচআইডি ডিভাইস কানেক্ট করা আছে</translation>
 <translation id="4139326893730851150">ফার্মওয়্যার আপডেট দেখুন</translation>
 <translation id="4142052906269098341">ফোন দিয়ে <ph name="DEVICE_TYPE" /> আনলক করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="4143606504420684845">AI কীভাবে আপনার অভিজ্ঞতা সমৃদ্ধ করে এবং আপনার গোপনীয়তা সম্পর্কে বুঝেশুনে সিদ্ধান্ত নেয় তা এক্সপ্লোর করুন</translation>
 <translation id="4146026355784316281">সর্বদা সিস্টেম নিরীক্ষকের সাথে খুলুন</translation>
 <translation id="4146785383423576110">রিসেট এবং সাফ করুন</translation>
 <translation id="4147099377280085053">ব্রেইল সারণী বেছে নিন</translation>
@@ -4782,7 +4784,6 @@
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" />-এ কপি করুন</translation>
 <translation id="4305817255990598646">পাল্টান</translation>
 <translation id="4306119971288449206">অ্যাপ "<ph name="CONTENT_TYPE" />" কন্টেন্ট-প্রকার সহ হওয়া উচিত</translation>
-<translation id="4306489587293957491">লিখুন</translation>
 <translation id="4306810703452026910">Chrome, এই সাইট থেকে আসা বিজ্ঞপ্তি স্প্যাম হিসেবে ফ্ল্যাগ করা বন্ধ করবে</translation>
 <translation id="4307992518367153382">বুনিয়াদি</translation>
 <translation id="4309165024397827958">লোকেশন অ্যাক্সেস করার অনুমতি আছে এমন Android অ্যাপ ও পরিষেবাকে আপনার ডিভাইসের লোকেশন ব্যবহার করার অনুমতি দিন। Google সময়ান্তরে লোকেশন ডেটা সংগ্রহ করতে এবং লোকেশন নির্ধারণের নির্ভুলতা ও লোকেশন ভিত্তিক পরিষেবার উন্নতি করার জন্য ব্যবহারকারীর পরিচয় গোপন রেখে ব্যবহার করতে পারে।</translation>
@@ -4840,7 +4841,6 @@
 <translation id="4350230709416545141">আপনার লোকেশন অ্যাক্সেস করা থেকে <ph name="HOST" />-কে সবসময় ব্লক করুন</translation>
 <translation id="4350782034419308508">হ্যালো Google</translation>
 <translation id="435185728237714178">ইনস্টল ও স্ট্রিম করা অ্যাপ ম্যানেজ করতে "<ph name="APP_NAME" />" অ্যাপে যান</translation>
-<translation id="4352913519324947509">আপনার পাসওয়ার্ড পরিবর্তন করা হয়নি, তবে এখনও আপনার বর্তমান পাসওয়ার্ড দিয়ে সাইট অ্যাক্সেস করার সুবিধা থাকা উচিত</translation>
 <translation id="4354073718307267720">কোনও সাইট আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে বা ক্যামেরার অবস্থান ট্র্যাক করতে চাইলে, একবার জিজ্ঞাসা করে নিন</translation>
 <translation id="4354344420232759511">আপনার দেখা সাইটগুলি এখানে দেখানো হবে</translation>
 <translation id="435527878592612277">আপনার ফটো বেছে নিন</translation>
@@ -5381,7 +5381,6 @@
 <translation id="4742970037960872810">হাইলাইট সরিয়ে দিন</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />অ্যাপ্লিকেশন কীভাবে আপডেট করতে হয় তা জানুন<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">ব্যবহারের অনুমতি দেওয়া হয়েছে – <ph name="PERMISSION_DETAILS" />। <ph name="LINK_BEGIN" />সিস্টেম মাইক্রোফোনের অ্যাক্সেস<ph name="LINK_END" /> চালু করুন।</translation>
-<translation id="4744172369799559159">এই ফিচার উন্নত করার জন্য পাসওয়ার্ড পৃষ্ঠা এবং সেই সম্পর্কিত তথ্য ম্যানুয়ালি পর্যালোচনা করা হয়, যদিও আপনার পাসওয়ার্ড এনক্রিপ্ট করা থাকে এবং অন্য কেউ তা কখনই দেখতে পায় না।</translation>
 <translation id="4744260496658845719">কীবোর্ড ব্যাকলাইটের উজ্জ্বলতা</translation>
 <translation id="4744268813103118742">সাইটে যান</translation>
 <translation id="4744571849207727284">Excel</translation>
@@ -6000,6 +5999,7 @@
 <translation id="5186381005592669696">কাজ করে এমন অ্যাপের জন্য ডিসপ্লে কাস্টমাইজ করুন</translation>
 <translation id="5186788525428341874">আপনার বিভিন্ন ডিভাইসে ঝটপট সাইন-ইন করার জন্য এই পাসকী ব্যবহার করতে পারবেন। <ph name="ACCOUNT_NAME" />-এর জন্য Google Password Manager-এ এটি সেভ করা হবে।</translation>
 <translation id="5187641678926990264">&amp;পেজ অ্যাপ হিসেবে ইনস্টল করুন...</translation>
+<translation id="5187671830619031922">'স্প্লিট ভিউ'তে ট্যাব যোগ করুন</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162"><ph name="USER_NAME" /> শেয়ার করেছেন</translation>
 <translation id="5188648870018555788">লোকেশন ব্যবহার করুন। লোকেশন অ্যাক্সেস করার অনুমতি থাকা ChromeOS ও Android অ্যাপ, ওয়েবসাইট ও পরিষেবাকে আপনার ডিভাইসের লোকেশন ব্যবহার করার অনুমতি দিন। 'লোকেশন অ্যাকুরেসি' সেটিং Android অ্যাপ ও পরিষেবার জন্য আরও নিখুঁত লোকেশন প্রদান করে। এটি করতে, নির্দিষ্ট সময়ের ব্যবধানে Google আপনার ডিভাইস থেকে ওয়্যারলেস সিগন্যাল ও ডিভাইস সেন্সর বিষয়ক তথ্য নিয়ে প্রসেস করে, যাতে ওয়্যারলেস সিগন্যালের লোকেশন ক্রাউডসোর্স করা যায়। এগুলি আপনাকে শনাক্ত না করেই করা হয়, যাতে 'লোকেশন অ্যাকুরেসি' সেটিং এবং লোকেশন-ভিত্তিক পরিষেবাকে আরও উন্নত করা যায় এবং ব্যবহারকারীর প্রয়োজনীয়তা পূরণ করতে, Google ও থার্ড-পার্টির আইনগত স্বার্থের উপর ভিত্তি করে, Google-এর পরিষেবা প্রদান ও উন্নতি করা যায় এবং তা বজায় রাখা যায়। <ph name="BEGIN_LINK1" />লোকেশন ব্যবহার করা সম্পর্কে আরও জানুন<ph name="END_LINK1" /></translation>
@@ -6341,7 +6341,6 @@
 <translation id="5434065355175441495">PKCS #1 RSA এনক্রিপশান</translation>
 <translation id="5435274640623994081">ইয়ারকন লগ-ইন চালু করুন</translation>
 <translation id="5435779377906857208">আপনার লোকেশন অ্যাক্সেস করতে দিতে, <ph name="HOST" />-কে সবসময় অনুমতি দিন</translation>
-<translation id="5436211819997237281">বর্তমান এক্সটেনশন আপনার নতুন ট্যাব পৃষ্ঠা ম্যানেজ করছে</translation>
 <translation id="5436492226391861498">প্রক্সি টানেলের জন্য প্রতীক্ষারত...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> খুঁজুন:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> উইন্ডো এখন <ph name="WINDOW_SIZE_PERCENT" /> চওড়া, <ph name="PANE_SIDE" /> প্যানেল এখন <ph name="PANE_SIZE_PERCENT" /> চওড়া।</translation>
@@ -7032,6 +7031,7 @@
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> ব্যবহার করে পৃষ্ঠা সার্চ করুন</translation>
 <translation id="5942779427914696408">ডিভাইসের দৃশ্যমানতা</translation>
 <translation id="5943127421590245687">আপনার যাচাইকরণ সম্পূর্ণ হয়েছে। আপনার স্থানীয় ডেটা আনলক করে ফিরিয়ে আনতে, আপনার পুরনো <ph name="DEVICE_TYPE" /> পাসওয়ার্ড লিখুন।</translation>
+<translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> আপনার নতুন ট্যাব পৃষ্ঠা ম্যানেজ করছে</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> বিপজ্জনক হতে পারে। স্ক্যান করতে Google Safe Browsing-এ পাঠাবেন?</translation>
 <translation id="5945192511027649793">টাচপ্যাড বন্ধ করুন</translation>
 <translation id="5945363896952315544">আপনার নিরাপত্তা কী এর থেকে বেশি ফিঙ্গারপ্রিন্ট স্টোর করতে পারবে না। নতুন ফিঙ্গারপ্রিন্ট যোগ করতে, প্রথমে, আগে থেকে থাকা একটি ফিঙ্গারপ্রিন্ট মুছুন।</translation>
@@ -8333,7 +8333,6 @@
 <translation id="686831807558000905">সাইন-ইন করবেন না</translation>
 <translation id="686839242150793617">'ছবির-মধ্যে-ছবি' মোডে অটোমেটিক প্রবেশ করার জন্য অনুমতি দেওয়া হয়েছে</translation>
 <translation id="6868934826811377550">বিবরণ দেখুন</translation>
-<translation id="6870470066213933201">জাভাস্ক্রিপ্ট অপ্টিমাইজেশন ও সুরক্ষা ম্যানেজ করুন</translation>
 <translation id="6871644448911473373">OCSP প্রতিক্রিয়াকারী: <ph name="LOCATION" /> </translation>
 <translation id="6871860225073478239">ভাষা...</translation>
 <translation id="6873571253135628430">সাইট সংক্রান্ত অনুমতি পরিবর্তন করুন</translation>
@@ -9235,7 +9234,6 @@
 <translation id="7529411698175791732">আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন। সমস্যাটি থেকে গেলে, সাইন আউট করে আবার প্রবেশ করার চেষ্টা করুন।</translation>
 <translation id="7529865045818406536">একাধিক নেটওয়ার্ক উপলভ্য থাকলে বেছে নেওয়া নেটওয়ার্ক ব্যবহার করা হবে</translation>
 <translation id="7530016656428373557">ওয়াটে ডিসচার্জের হার</translation>
-<translation id="7530215951451994972">ছবি তৈরি করুন</translation>
 <translation id="7531771599742723865">ডিভাইসটি ব্যবহার করা হচ্ছে</translation>
 <translation id="7531779363494549572">সেটিংস &gt; অ্যাপ এবং বিজ্ঞপ্তি &gt; বিজ্ঞপ্তিতে যান।</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> উত্তর দিচ্ছে না। অ্যাপটি বন্ধ করতে "জোর করে বন্ধ করুন" বিকল্পটি বেছে নিন।</translation>
@@ -11120,6 +11118,7 @@
 <translation id="8827125715368568315"><ph name="PERMISSION" /> এবং আরও <ph name="COUNT" />টি অনুমতি ব্লক করা হয়েছে</translation>
 <translation id="8827289157496676362">এক্সটেনশন পিন করুন</translation>
 <translation id="8828933418460119530">ডিএনএস নাম</translation>
+<translation id="8829979393064090868">স্প্লিট ভিউতে ট্যাব যোগ করুন</translation>
 <translation id="8830479210602243906">প্রোডাক্টিভিটি বুস্ট করুন</translation>
 <translation id="883062543841130884">প্রতিস্থাপন</translation>
 <translation id="8830779999439981481">আপডেট প্রয়োগ করতে রিস্টার্ট করা হচ্ছে</translation>

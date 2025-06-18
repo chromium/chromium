@@ -343,7 +343,6 @@
 <translation id="5775198138441669627">Құпия фразаны ұмытып қалған болсаңыз немесе осы параметрді өзгерту керек болса, аккаунтыңыздағы Chromium деректерін <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5800158606660203929">Chromium-ді бейімдеңіз және басқарыңыз. Chromium-ді әдепкі браузер етіп орнатыңыз.</translation>
 <translation id="5809516625706423866">Интернетке қосылу мүмкін емес. HTTP 401 бойынша рұқсат берілмейді. Прокси конфигурациясын тексеріңіз.</translation>
-<translation id="5817952762723416573">Chromium-нің V8 жүйесімен сайттар жылдам жұмыс істейді, бірақ Chromium-нің шабуылдарға төзімділігі сәл азаяды. Бұл параметр өшірулі.</translation>
 <translation id="5821520528363214608">Google аккаунтындағы Chromium деректерін пайдалану және сақтау үшін Chromium-ді жаңартыңыз.</translation>
 <translation id="5824893331272123205">Бұл панельді жүктеу мүмкін болмады. Әрекетті қайталаңыз</translation>
 <translation id="5862307444128926510">Chromium жүйесіне қош келдіңіз</translation>
@@ -433,7 +432,6 @@
 <translation id="6729124504294600478">Жекелендіру мен басқа функцияларды алу үшін Chromium-ді интернет пен қолданбаларды пайдалану тарихы мен байланысқан Google қызметтеріне қосыңыз.</translation>
 <translation id="6734291798041940871">Chromium компьютердегі барлық пайдаланушылар үшін әлдеқашан орнатылған.</translation>
 <translation id="674245979920622322">Жақында кірмедіңіз. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> рұқсаттарын және тағы <ph name="COUNT" /> рұқсатты өшірді.</translation>
-<translation id="6751374565094704799">Chromium-нің V8 жүйесімен сайттар жылдам жұмыс істейді, бірақ Chromium-нің шабуылдарға төзімділігі сәл азаяды. Бұл параметр қосулы.</translation>
 <translation id="67706546131546258">Chromium бұл файлды сканерлеуді ұсынады, себебі ол қауіпті болуы мүмкін.</translation>
 <translation id="6779406956731413166">ChromiumOS қосымша <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="6831043979455480757">Аудару</translation>
@@ -530,6 +528,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8118331347066725040">Lens-бен іздеуге қатысты пікіріңізді жазыңыз.</translation>
 <translation id="8133124826068723441">ChromiumOS деректеріңізді синхрондай алмады, себебі синхрондау функциясы доменіңіз үшін қолжетімді емес.</translation>
 <translation id="813913629614996137">Дайындауда…</translation>
+<translation id="8166782796394721554">Chromium-нің JavaScript және WebAssembly жүйелерінде қосымша қорғанысты қосу</translation>
 <translation id="81770708095080097">Бұл файл қауіпті болғандықтан, Chromium оны бөгеді.</translation>
 <translation id="8177472873527554730">Беттен ештеңе табылмады.</translation>
 <translation id="8200109504272824693">Chromium деректерін <ph name="USER_EMAIL" /> аккаунтында қолдану және сақтау үшін құпия фразаны енгізіңіз.</translation>

@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">Folosești parola sau cheia de acces salvată?</translation>
 <translation id="5624120631404540903">Gestionați parolele</translation>
 <translation id="592182999816790476">Parola pentru <ph name="USERNAME" /> este salvată pentru <ph name="WEBSITE" /></translation>
-<translation id="593924516471361340">Parola de recuperare temporară în caz de probleme pentru <ph name="USERNAME" /> este salvată pentru <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Parola pentru <ph name="USERNAME" />; folosește blocarea ecranului</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Parolă nouă pentru acest site}few{Parole noi pentru acest site}other{Parole noi pentru acest site}}</translation>
 <translation id="7286867818472074330">Selectează cheia de acces</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> din <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Ai primit parole pentru <ph name="SITE_NAME" /></translation>
-<translation id="8202660122967066153">Parola de recuperare temporară în caz de probleme pentru <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Recuperare temporară în cazul în care apar probleme</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> ți-a permis accesul la o parolă pentru <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Lista datelor de conectare este închisă.</translation>

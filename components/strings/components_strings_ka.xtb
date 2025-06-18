@@ -867,8 +867,6 @@
             <ph name="LIST_ITEM" />ფორმებში შეყვანილი ინფორმაცია
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">ამ მოწყობილობასთან მიერთებული პერიფერიული მოწყობილობები, როცა სისტემაში შესული ხართ</translation>
-<translation id="2450019289047528273">გადახდის მეთოდები და სხვა ინფორმაცია Google საფულიდან</translation>
-<translation id="2451201933352935301"><ph name="URL" />-ს სურს თქვენს ყველა ეკრანზე ფანჯრების მართვა</translation>
 <translation id="2451607499823206582">მიმდინარეობს თვალის მიდევნება</translation>
 <translation id="2452098632681057184">ეკოლოგია და გარემოს დაცვა</translation>
 <translation id="2452837234288608067">ამ კუთხით ვერ დაგეხმარებით. ცადეთ ხელახლა.</translation>
@@ -938,7 +936,6 @@
 <translation id="2546283357679194313">ქუქი-ფაილები და საიტის მონაცემები</translation>
 <translation id="254947805923345898">წესების მნიშვნელობა არასწორია.</translation>
 <translation id="2549836668759467704">სამშენებლო საკითხებში კონსულტაცია და ნარდობა</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> და სხვა</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" />-მა არასწორი პასუხი გამოაგზავნა.</translation>
 <translation id="2551608178605132291">მისამართი: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1049,7 +1046,6 @@
 <translation id="2743934314332613923">განვაახლოთ მართვის მოწმობა?</translation>
 <translation id="2759299890026163685">სანამ ხელახლა ცდით, შეამოწმეთ, რომ ინტერნეტ-კავშირი სტაბილურია</translation>
 <translation id="2759825833388495838">შეავსეთ თქვენი პაროლი <ph name="APP_NAME" />-ში</translation>
-<translation id="2760805590727089264">თთ / წწ</translation>
 <translation id="2764001903315068341">კომიქსები</translation>
 <translation id="2765217105034171413">პატარა</translation>
 <translation id="2768397283109119044">თქვენ ცადეთ <ph name="DOMAIN" />-ზე შეღწევა, მაგრამ სერვერზე წარმოდგენილია ამ სახელზე გაცემული არასწორი სერტიფიკატი. სახელი არის კერძო IP მისამართი ან შიდა სერვერის სახელი.</translation>
@@ -3051,7 +3047,6 @@
 <translation id="6177531123306197852">კონვერტი C2</translation>
 <translation id="6180316780098470077">ხელახლა მცდელობის ინტერვალი</translation>
 <translation id="6182972682129119950">A4x5</translation>
-<translation id="6184099524311454384">მოიძიეთ ჩანართებში</translation>
 <translation id="6184868291074982484">Chrome ავტომატურად ზღუდავს მესამე მხარის ქუქი-ჩანაწერებს</translation>
 <translation id="6190518157737269631">უგულებელყავით თქვენი კლავიატურის ზოგიერთი კლავიში, მაგალითად Esc</translation>
 <translation id="6194209731893739467">აქ შეგიძლიათ იხილოთ თქვენი ყველა თვალმიდევნებული პროდუქტი</translation>
@@ -3610,7 +3605,6 @@
 <translation id="7130775116821607281">ატვირთვა დაბლოკილია</translation>
 <translation id="7132939140423847331">თქვენი ადმინისტრატორი კრძალავს ამ მონაცემთა კოპირებას.</translation>
 <translation id="7135130955892390533">სტატუსის ჩვენება</translation>
-<translation id="7135814714616751706">მალსახმობების ძიება</translation>
 <translation id="7136009930065337683">შეიტყვეთ მეტი ინკოგნიტო რეჟიმის შესახებ</translation>
 <translation id="7138472120740807366">მიწოდების მეთოდი</translation>
 <translation id="7138678301420049075">სხვა</translation>
@@ -4183,7 +4177,6 @@
 <translation id="8092254339843485299">6 x 8 დუიმი</translation>
 <translation id="8092774999298748321">მუქი მეწამული</translation>
 <translation id="8094917007353911263">ქსელმა, რომელსაც თქვენ იყენებთ შესაძლოა მოგთხოვოთ სწუმრობა: <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="809543534949702122">ძიების ისტორია</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">გადახდის მეთოდი</translation>
@@ -4823,7 +4816,6 @@
 <translation id="9219103736887031265">გამოსახულებები</translation>
 <translation id="922152298093051471">Chrome-ის მორგება</translation>
 <translation id="9222403027701923763">დაწყებითი და საშუალო განათლება (K-12)</translation>
-<translation id="9222463428840654067">ბარათის ნომერი არასწორია</translation>
 <translation id="922849469395748170">ერთგული კლიენტის ბარათები</translation>
 <translation id="93020190163435405">სტაჟირება</translation>
 <translation id="931598121743515856">შესყიდვის თანხის ოდენობა <ph name="CHECKOUT_AMOUNT_MINIMUM" />-ზე მეტი უნდა იყოს</translation>

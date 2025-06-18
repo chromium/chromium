@@ -18,7 +18,6 @@
 <translation id="1054745118061919935">തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK" />സേവന നിബന്ധനകൾ<ph name="END_LINK" /> അംഗീകരിക്കുന്നു.</translation>
 <translation id="10614374240317010">ഒരിക്കലും സംരക്ഷിച്ചില്ല</translation>
 <translation id="1062138828266376352">നിങ്ങളുടെ പിൻ മാറ്റിയിട്ടില്ല. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
-<translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) എവിടെ സംരക്ഷിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1072476005125066234">നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ അടിസ്ഥാനമാക്കിയുള്ള അവലോകനങ്ങൾ</translation>
 <translation id="1074827084851510304">നിങ്ങൾ {password_count} പാസ്‌വേഡുകളും ഒരിക്കലും സൈൻ ഇൻ സംരക്ഷിക്കരുതെന്ന് തിരഞ്ഞെടുത്ത സൈറ്റുകളുടെയും ആപ്പുകളുടെയും ലിസ്റ്റും ഇല്ലാതാക്കാൻ പോകുകയാണ്. സൈറ്റുകൾക്കോ ആപ്പുകൾക്കോ ആയി നിങ്ങൾ സൃഷ്‌ടി‌ച്ച അക്കൗണ്ടുകളൊന്നും ഇല്ലാതാക്കില്ല.</translation>
 <translation id="1076421457278169141">കോഡ് സ്‌കാൻ ചെയ്‌തു</translation>
@@ -546,7 +545,6 @@
 <translation id="3227137524299004712">മൈക്രോഫോൺ</translation>
 <translation id="3235063766008841141">വഞ്ചനാപരമായ സൈറ്റിൽ നൽകിയ ക്രെഡൻഷ്യലുകൾ ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു</translation>
 <translation id="3235242129752692527">ഇവന്റ് വിശദാംശങ്ങൾ എഡിറ്റ് ചെയ്‌ത് “സംരക്ഷിക്കുക“ ടാപ്പ് ചെയ്യുക.</translation>
-<translation id="323863549127671026">നിലവിൽ തുറന്നിരിക്കുന്ന ടാബുകളും ടാബ് ഗ്രൂപ്പുകളും</translation>
 <translation id="3240426699337459095">ലിങ്ക് പകർത്തി</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">നിങ്ങൾ Chrome ഉപയോഗ റിപ്പോർട്ടുകളും പങ്കിടുന്നുവെങ്കിൽ ആ റിപ്പോർട്ടുകളിൽ നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കളും ഉൾപ്പെടും</translation>
@@ -594,7 +592,6 @@
 <translation id="3476450923187944815">മറ്റ് ആപ്പുകളിലുടനീളം നിങ്ങളുടെ പാസ്‍വേഡുകൾ ആക്സസ് ചെയ്യുക.</translation>
 <translation id="3488501490964659223">ടാബുകൾ അടയ്ക്കും, ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കും. നിങ്ങൾ സൈൻ ഔട്ട് ആയി</translation>
 <translation id="3493531032208478708">നിർദ്ദേശിച്ച ഉള്ളടക്കത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
-<translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" എവിടെ സംരക്ഷിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3504377992102007712">ക്രമീകരണം</translation>
 <translation id="35083190962747987">${url} തുറക്കുക</translation>
 <translation id="3511519535430890904">ബ്രൗസിംഗ് പരിരക്ഷ ചേർക്കുക</translation>
@@ -614,6 +611,7 @@
 <translation id="3557336313807607643">കോൺടാക്‌റ്റുകളിലേക്ക് ചേർക്കുക</translation>
 <translation id="355765753469272474">പഴയപടിയാക്കുക</translation>
 <translation id="3565930036634619844">ടാബ്. <ph name="NUMBER_OF_TABS" />-ൽ <ph name="TAB_INDEX" />-ാമത്തേത്.</translation>
+<translation id="3570693105179140209">കൂടുതൽ പാസ്‌വേഡുകൾക്ക് ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="3572607909481582402">നിങ്ങളുടെ Google Account-ൽ</translation>
 <translation id="3575234738189584619">Lens ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="3575426792457739946">ഈ ലിസ്റ്റിൽ ലോഡ് ചെയ്ത എല്ലാ പ്രൊഫൈലുകളും അടങ്ങിയിരിക്കുന്നു.</translation>
@@ -657,6 +655,7 @@
 <translation id="3779810277399252432">ഇന്റർനെറ്റ് കണക്ഷനില്ല.</translation>
 <translation id="3782614601387961027">മുന്നറിയിപ്പ് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
+<translation id="3795478177331815672">ടാബുകളും ടാബ് ഗ്രൂപ്പുകളും തുറക്കുക</translation>
 <translation id="380329542618494757">പേര്</translation>
 <translation id="3803696231112616155">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യാനുള്ള അനുമതി</translation>
 <translation id="3808311849069021992">തിരയൽ എഞ്ചിൻ വിശദാംശങ്ങൾ കാണിക്കുക</translation>
@@ -694,7 +693,6 @@
 <translation id="3922395466317605522">മെനു ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="3929457972718048006">വിലാസങ്ങള്‍</translation>
 <translation id="3931215329146376310">{count,plural, =1{ഈ സൈറ്റിനായുള്ള പുതിയ പാസ്‌വേഡ്}other{ഈ സൈറ്റിനായുള്ള പുതിയ പാസ്‌വേഡുകൾ}}</translation>
-<translation id="3934905113567851655">വലുപ്പം മാറ്റാൻ പിഞ്ച് ചെയ്യുക</translation>
 <translation id="3940195383040445971">ടാബുകളിൽ നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ടാബ് അടയ്ക്കുക}other{{COUNT} ടാബുകൾ അടയ്ക്കുക}}</translation>
 <translation id="3948600256434252210">അദൃശ്യ മോഡിൽ ബ്രൗസ് ചെയ്യാൻ നിങ്ങൾക്ക് വലത്തേക്ക് സ്വൈപ്പ് ചെയ്യാം.</translation>
@@ -703,6 +701,7 @@
 <translation id="3955740319737378355">പൂർത്തിയായി</translation>
 <translation id="3955822496205734389">നിങ്ങൾക്ക് ദുർബലമായ പാസ്‌വേഡുകളുണ്ട്.</translation>
 <translation id="3958312024468322930">ഇത് നിങ്ങളുടെ ഹോം സ്ക്രീനിന് ചുവടെയുള്ള ഡോക്കിലേക്ക് വലിച്ചിടുക</translation>
+<translation id="3960218941754097036">നിങ്ങളുടെ സ്‌ക്രീനിലുള്ളതെന്തും Google Lens ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="3962326069546168954">സംരക്ഷിക്കുക</translation>
 <translation id="3967327056943561740">ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="3967822245660637423">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
@@ -969,6 +968,7 @@
 <translation id="4979397965658815378">എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ, പാസ്‌വേഡുകൾ, ചരിത്രം, മറ്റ് ക്രമീകരണം എന്നിവ ലഭിക്കാൻ Google Account ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="4985921635659180565">ഒരു ഫയൽ ഇല്ലാതാക്കാൻ ഷെഡ്യൂൾ ചെയ്‌തുകഴിഞ്ഞാൽ, അത് റദ്ദാക്കാനാകില്ല.</translation>
 <translation id="498624032394115435">ലിങ്കുള്ള ആർക്ക് വേണമെങ്കിലും എല്ലാ ടാബുകളും എഡിറ്റ് ചെയ്യാം.</translation>
+<translation id="4989065233040279145"><ph name="FILENAME" /> എവിടെ സംരക്ഷിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്.</translation>
 <translation id="4992255726304765516">ടാബ് ഗ്രൂപ്പ് നിറം <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">പാസ്‌വേഡ് പകർത്തുക</translation>
@@ -1655,6 +1655,7 @@
 <translation id="7724085059277147439">{count,plural, =1{{email} എന്ന Google Account-ൽ ഇനം സംരക്ഷിച്ചു}other{{email} എന്ന Google Account-ൽ ഇനങ്ങൾ സംരക്ഷിച്ചു}}</translation>
 <translation id="7729458878441927652">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബുകൾ കാണാൻ, ടാബുകളും ചരിത്രവും സമന്വയിപ്പിക്കുക.</translation>
 <translation id="7730020510075123961">വേണ്ട, ഡാറ്റ ലയിപ്പിക്കുക</translation>
+<translation id="7730973429297233609"><ph name="FILENAME" /> - <ph name="FILESIZE" /> സംരക്ഷിക്കാൻ നിങ്ങൾ ഉപയോഗിക്കാൻ ആഗ്രഹിക്കുന്ന അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. ഈ ഉപകരണത്തിൽ മാത്രം.</translation>
 <translation id="7744192722284567281">ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തി</translation>
 <translation id="7749790401023484470">നിങ്ങൾ ടെക്സ്റ്റൊന്നും തിരഞ്ഞെടുത്തിട്ടില്ല.</translation>
@@ -1702,7 +1703,6 @@
 <translation id="7925108652071887026">യാന്ത്രിക പൂരിപ്പിക്കൽ ഡാറ്റ</translation>
 <translation id="7926975587469166629">കാർഡിന്റെ വിളിപ്പേര്</translation>
 <translation id="7927711904086083099">തിരഞ്ഞെടുക്കാത്തത്</translation>
-<translation id="7927902634113905831">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" - <ph name="FILESIZE" /> സംരക്ഷിക്കാൻ ഉപയോഗിക്കണമെന്ന് നിങ്ങൾ ആഗ്രഹിക്കുന്ന അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7930998711684428189">പാസ്‌വേഡുകൾ, ഡാറ്റാ ലംഘനത്തിന്റെ ഭാഗമായി വെളിപ്പെട്ടാൽ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു.</translation>
 <translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> തിരയുക</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -1816,7 +1816,6 @@
 <translation id="8343993175958086504">നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് ഏത് ഉപകരണത്തിലും ഉപയോഗിക്കുക.</translation>
 <translation id="8348530355586151720">'മൂന്ന് കുത്ത്' മെനുവിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="8349305172487531364">ബുക്മാര്‍ക്ക് ബാര്‍</translation>
-<translation id="8363484128299778310">പ്രശ്‌നമുണ്ടാകുമ്പോൾ താൽക്കാലികമായി വീണ്ടെടുക്കുക</translation>
 <translation id="8364563001733875155">പിൻ മാറ്റാൻ, നിങ്ങളുടെ ഉപകരണത്തിൽ ആദ്യം ഒരു പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="8366466717204352506">പരിശോധന ഒരിക്കലും റൺ ചെയ്യില്ല</translation>
 <translation id="8368001212524806591">നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>
@@ -1839,6 +1838,7 @@
 <translation id="8428045167754449968">നഗരം / പട്ടണം</translation>
 <translation id="8428213095426709021">ക്രമീകരണം</translation>
 <translation id="8428634594422941299">മനസ്സിലായി</translation>
+<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) എവിടെ സംരക്ഷിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8434837876193928924">ടാബ് ഗ്രൂപ്പ് വിശദാംശങ്ങൾ</translation>
 <translation id="8438566539970814960">തിരയലുകളും ബ്രൗസിംഗും മികച്ചതാക്കുക</translation>
 <translation id="8439758443371991593">'വായിക്കാനുള്ളവയുടെ ലിസ്റ്റിലേക്ക് ചേർക്കുക' മറയ്ക്കുക</translation>

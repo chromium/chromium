@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">要使用已儲存的密碼或密鑰嗎？</translation>
 <translation id="5624120631404540903">管理密碼</translation>
 <translation id="592182999816790476">為 <ph name="WEBSITE" /> 儲存嘅 <ph name="USERNAME" /> 密碼</translation>
-<translation id="593924516471361340">儲存咗 <ph name="WEBSITE" /> 嘅臨時備援密碼，可以喺登入唔到 <ph name="USERNAME" /> 嘅時候用</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> 嘅密鑰，用螢幕鎖定</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{收到此網站的新密碼}other{收到此網站的新密碼}}</translation>
 <translation id="7286867818472074330">選取密鑰</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />，第 <ph name="ITEM_POSITION" /> 個，共 <ph name="ITEMS_TOTAL" /> 個。</translation>
 <translation id="7738288782501322815">你已收到 <ph name="SITE_NAME" /> 的密碼</translation>
-<translation id="8202660122967066153">登入唔到 <ph name="USERNAME" /> 嘅時候可以用嘅臨時備援密碼</translation>
 <translation id="8363484128299778310">發生問題時的臨時復原選項</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" />已與你分享 <ph name="SITE_NAME" /> 的密碼</translation>
 <translation id="8891372124884726271">憑證清單閂咗。</translation>

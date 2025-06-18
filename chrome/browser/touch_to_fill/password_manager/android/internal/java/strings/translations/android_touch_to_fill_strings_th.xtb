@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">ใช้รหัสผ่านหรือพาสคีย์ที่บันทึกไว้ไหม</translation>
 <translation id="5624120631404540903">จัดการรหัสผ่าน</translation>
 <translation id="592182999816790476">บันทึกรหัสผ่านของ <ph name="USERNAME" /> ไว้สำหรับ <ph name="WEBSITE" /> แล้ว</translation>
-<translation id="593924516471361340">รหัสผ่านสำหรับการกู้คืนชั่วคราวในกรณีที่มีปัญหาสำหรับ <ph name="USERNAME" /> ที่บันทึกไว้สำหรับ <ph name="WEBSITE" /> แล้ว</translation>
 <translation id="6560306912274274630">พาสคีย์สำหรับ <ph name="USERNAME" /> ใช้การล็อกหน้าจอ</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{รหัสผ่านใหม่สำหรับเว็บไซต์นี้}other{รหัสผ่านใหม่สำหรับเว็บไซต์นี้}}</translation>
 <translation id="7286867818472074330">เลือกพาสคีย์</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" /> <ph name="ITEM_POSITION" /> จาก <ph name="ITEMS_TOTAL" /> รายการ</translation>
 <translation id="7738288782501322815">คุณได้รับรหัสผ่านสำหรับ <ph name="SITE_NAME" /></translation>
-<translation id="8202660122967066153">รหัสผ่านสำหรับการกู้คืนชั่วคราวในกรณีที่มีปัญหาสำหรับ <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">การกู้คืนชั่วคราวในกรณีที่มีปัญหา</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> ได้แชร์รหัสผ่านกับคุณสำหรับ <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">ปิดรายการข้อมูลเข้าสู่ระบบแล้ว</translation>

@@ -63,7 +63,6 @@
 <translation id="178701303897325119">Това разширение вече не се поддържа. Chrome препоръчва да го премахнете.</translation>
 <translation id="1812689907177901597">С изключването на тази функция можете да влизате в сайтовете на Google, като например Gmail, без да влизате в Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome препоръчва да поставите на пауза раздела, който забавя браузъра ви}other{Chrome препоръчва да поставите на пауза разделите, които забавят браузъра ви}}</translation>
-<translation id="1832046143430087831">Ускорява сайтовете с машината V8 на Chrome, но същевременно устойчивостта на браузъра срещу атаки леко намалява. Тази настройка е изключена.</translation>
 <translation id="1838374766361614909">Изчистване на търсенето</translation>
 <translation id="1860536484129686729">Chrome се нуждае от разрешение за достъп до камерата ви за този сайт</translation>
 <translation id="1873233029667955273">Google Chrome не е браузърът ви по подразбиране</translation>
@@ -446,12 +445,12 @@
 <translation id="6718739135284199302">Ускорете Chrome</translation>
 <translation id="6735387454586646204">Система ChromeOS Flex</translation>
 <translation id="6750954913813541382">С цел поправка на правописни грешки Chrome изпраща до Google текста, който въвеждате в браузъра</translation>
-<translation id="6760235774835597023">Ускорява сайтовете с машината V8 на Chrome, но същевременно устойчивостта на браузъра срещу атаки леко намалява. Тази настройка е включена.</translation>
 <translation id="677276454032249905">Искате ли да излезете от Chrome въпреки това?</translation>
 <translation id="6794858689789885890">Изтриване на данните за сайтовете от устройството ви при всяко затваряне на Chrome</translation>
 <translation id="6831043979455480757">Превод</translation>
 <translation id="683440813066116847">Правило за Google Chrome Canary за допускане на входящия трафик за mDNS.</translation>
 <translation id="684888714667046800">Не може да се установи връзка с интернет. Ако използвате защитна стена, уверете се, че <ph name="PRODUCT_EXE_NAME" /> е в списъка на разрешените.</translation>
+<translation id="6851981911629679515">Включване на допълнителната защита в машината на Chrome за JavaScript и WebAssembly</translation>
 <translation id="6877155553248388166">долен десен ъгъл на областта за търсене: <ph name="RIGHT" />% отдясно, <ph name="BOTTOM" />% отдолу</translation>
 <translation id="6881299373831449287">Chrome се актуализира</translation>
 <translation id="6885412569789873916">Приложения за Chrome бета</translation>

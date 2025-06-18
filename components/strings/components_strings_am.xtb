@@ -867,7 +867,6 @@
             <ph name="LIST_ITEM" />በቅጾች ውስጥ የገባ መረጃ
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">እርስዎ በመለያ ገብተው ሳለ ተቀጥላዎች ከዚህ መሣሪያ ጋር ተያይዘዋል</translation>
-<translation id="2450019289047528273">የመክፈያ ዘዴዎች እና ሌላ መረጃ ከGoogle Wallet</translation>
 <translation id="2451607499823206582">በመከታተል ላይ</translation>
 <translation id="2452098632681057184">ሥነ ምህዳር እና አካባቢ</translation>
 <translation id="2452837234288608067">በዚህ ላይ ማገዝ አልተቻለም። እንደገና ይሞክሩ።</translation>
@@ -937,7 +936,6 @@
 <translation id="2546283357679194313">ኩኪዎች እና የጣቢያ ውሂብ</translation>
 <translation id="254947805923345898">የመመሪያ እሴት የሚሰራ አይደለም።</translation>
 <translation id="2549836668759467704">የግንባታ ማማከር እና ውል መዋዋል</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />፣ <ph name="TOPIC_2" /> እና ተጨማሪ</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ልክ ያልኾነ ምላሽ ልኳል።</translation>
 <translation id="2551608178605132291">አድራሻ፦ <ph name="ADDRESS" />።</translation>
 <translation id="2552246211866555379">ሃጋኪ</translation>
@@ -1048,7 +1046,6 @@
 <translation id="2743934314332613923">የመንጃ ፈቃድ ይዘምን?</translation>
 <translation id="2759299890026163685">እንደገና ከመሞከርዎ በፊት የተረጋጋ የበይነመረብ ግንኙነት እንዳለዎት ያረጋግጡ።</translation>
 <translation id="2759825833388495838">የይለፍ ቃልዎን በ<ph name="APP_NAME" /> ላይ ይሙሉ</translation>
-<translation id="2760805590727089264">ወወ / ዓዓ</translation>
 <translation id="2764001903315068341">ኮሚክ</translation>
 <translation id="2765217105034171413">ትንሽ</translation>
 <translation id="2768397283109119044"><ph name="DOMAIN" /> የሚለውን ለመድረስ ሞክረዋል፣ ነገር ግን አገልጋዩ ለዚያ ስም የተሰጠ ልክ ያልሆነ የዕውቅና ማረጋገጫ አቅርቧል። ስሙ የተጠበቀ የአይ ፒ አድራሻ ወይም የውስጥ አስተናጋጅ ስም ነው።</translation>
@@ -3049,7 +3046,6 @@
 <translation id="6177531123306197852">ሲ2 ፖስታ</translation>
 <translation id="6180316780098470077">የዳግም መሞከር ክፍተት</translation>
 <translation id="6182972682129119950">A4x5</translation>
-<translation id="6184099524311454384">ትሮችን ይፈልጉ</translation>
 <translation id="6184868291074982484">Chrome የሦስተኛ ወገን ኩኪዎችን በራስ-ሰር ይገድባል</translation>
 <translation id="6190518157737269631">እንደ Esc ያሉ አንዳንድ ቁልፎችን በቁልፍ ሰሌዳዎ ላይ ይሻሩ</translation>
 <translation id="6194209731893739467">ሁሉንም ክትትል የተደረገባቸው ምርቶችዎን እዚህ ይመልከቱ</translation>
@@ -3608,7 +3604,6 @@
 <translation id="7130775116821607281">መስቀል ታግዷል</translation>
 <translation id="7132939140423847331">የእርስዎ አስተዳዳሪ ይህ ውሂብ እንዳይቀዳ ከልክሏል።</translation>
 <translation id="7135130955892390533">ሁኔታን አሳይ</translation>
-<translation id="7135814714616751706">የፍለጋ አቋራጮች</translation>
 <translation id="7136009930065337683">ማንነት ስለማያሳውቅ ሁነታ የበለጠ ይወቁ</translation>
 <translation id="7138472120740807366">የማድረሻ ስልት</translation>
 <translation id="7138678301420049075">ሌላ</translation>
@@ -4182,7 +4177,6 @@
 <translation id="8092254339843485299">6 x 8 ኢንች</translation>
 <translation id="8092774999298748321">ደማቅ ሐምራዊ</translation>
 <translation id="8094917007353911263">እየተጠቀሙበት ያለው አውታረ መረብ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ን እንዲጎበኙ ሊጠይቅዎት ይችላል።</translation>
-<translation id="809543534949702122">ታሪክ ፈልግ</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">የክፍያ ስልት</translation>
@@ -4823,7 +4817,6 @@
 <translation id="9219103736887031265">ምስሎች</translation>
 <translation id="922152298093051471">Chromeን አብጅ</translation>
 <translation id="9222403027701923763">የመጀመሪያ እና ሁለተኛ ደረጃ ትምህርት (K-12)</translation>
-<translation id="9222463428840654067">የካርድ ቁጥር ልክ ያልሆነ ነው</translation>
 <translation id="922849469395748170">የታማኝነት ካርዶች</translation>
 <translation id="93020190163435405">የስራ ልምምዶች</translation>
 <translation id="931598121743515856">ግዢ ከ<ph name="CHECKOUT_AMOUNT_MINIMUM" /> በላይ መሆን አለበት</translation>

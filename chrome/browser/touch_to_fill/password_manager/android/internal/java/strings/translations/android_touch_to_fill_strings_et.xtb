@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">Kas kasutada salvestatud parooli või pääsuvõtit?</translation>
 <translation id="5624120631404540903">Paroolide haldamine</translation>
 <translation id="592182999816790476">Kasutaja <ph name="USERNAME" /> jaoks salvestatud veebisaidi <ph name="WEBSITE" /> parool</translation>
-<translation id="593924516471361340">Ajutine taasteparool kasutaja <ph name="USERNAME" /> probleemide korral, mis on salvestatud veebilehe <ph name="WEBSITE" /> jaoks</translation>
 <translation id="6560306912274274630">Kasutaja <ph name="USERNAME" /> pääsuvõti, kasutage oma ekraanilukku</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Uus parool selle saidi jaoks}other{Uued paroolid selle saidi jaoks}}</translation>
 <translation id="7286867818472074330">Pääsuvõtme valimine</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Olete saanud saidi <ph name="SITE_NAME" /> paroolid</translation>
-<translation id="8202660122967066153">Ajutine taasteparool kasutaja <ph name="USERNAME" /> probleemide korral</translation>
 <translation id="8363484128299778310">Ajutine taaste probleemide korral</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> jagas teiega veebisaidi <ph name="SITE_NAME" /> parooli</translation>
 <translation id="8891372124884726271">Mandaatide loend on suletud.</translation>

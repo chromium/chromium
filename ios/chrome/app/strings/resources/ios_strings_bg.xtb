@@ -611,6 +611,7 @@
 <translation id="3557336313807607643">Добавяне към контактите</translation>
 <translation id="355765753469272474">Отмяна</translation>
 <translation id="3565930036634619844">Раздел. <ph name="TAB_INDEX" /> от <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3570693105179140209">Докоснете два пъти за още пароли.</translation>
 <translation id="3572607909481582402">В профила ви в Google</translation>
 <translation id="3575234738189584619">Търсене с Обектив</translation>
 <translation id="3575426792457739946">Този списък съдържа всички заредени потребителски профили.</translation>
@@ -654,6 +655,7 @@
 <translation id="3779810277399252432">Няма връзка с интернет.</translation>
 <translation id="3782614601387961027">Отхвърляне на предупреждението</translation>
 <translation id="3789841737615482174">Инсталиране</translation>
+<translation id="3795478177331815672">Отворени раздели и групи раздели</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Предлагане да се преведе този сайт</translation>
 <translation id="3808311849069021992">Показване на подробностите за търсещата машина</translation>
@@ -699,6 +701,7 @@
 <translation id="3955740319737378355">Готово</translation>
 <translation id="3955822496205734389">Имате ненадеждни пароли.</translation>
 <translation id="3958312024468322930">Преместете с плъзгане до лентата Dock в долната част на началния екран</translation>
+<translation id="3960218941754097036">Търсете цялото съдържание на екрана си посредством Google Обектив</translation>
 <translation id="3962326069546168954">Запазване</translation>
 <translation id="3967327056943561740">Отметки</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
@@ -965,6 +968,7 @@
 <translation id="4979397965658815378">Влезте с профила си в Google, за да получите своите отметки, пароли, история и други настройки на всичките си устройства</translation>
 <translation id="4985921635659180565">След като изтриването на даден файл бъде насрочено, то не може да бъде отменено.</translation>
 <translation id="498624032394115435">Всеки, който разполага с връзката, може да редактира всички раздели.</translation>
+<translation id="4989065233040279145">Изберете къде да се запази <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" /> (<ph name="EMAIL" />). Управлява се от организацията ви.</translation>
 <translation id="4992255726304765516">Цветът на групата раздели е <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
@@ -1651,6 +1655,7 @@
 <translation id="7724085059277147439">{count,plural, =1{Елементът е запазен в профила ви в Google {email}}other{Елементите са запазени в профила ви в Google {email}}}</translation>
 <translation id="7729458878441927652">За да виждате разделите от другите си устройства, синхронизирайте разделите и историята си.</translation>
 <translation id="7730020510075123961">Не, обединяване на данните</translation>
+<translation id="7730973429297233609">Изберете профила, който искате да използвате, за да запазите <ph name="FILENAME" /> – <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Само на това устройство.</translation>
 <translation id="7744192722284567281">Разкрита при нарушение на сигурността на данните</translation>
 <translation id="7749790401023484470">Не сте избрали текст.</translation>
@@ -1811,7 +1816,6 @@
 <translation id="8343993175958086504">Създайте резервно копие на нещата си и ги използвайте на всяко устройство.</translation>
 <translation id="8348530355586151720">Докоснете менюто с три точки.</translation>
 <translation id="8349305172487531364">Лента на отметките</translation>
-<translation id="8363484128299778310">Временно възстановяване при проблеми</translation>
 <translation id="8364563001733875155">За да промените ПИН кода си, първо настройте код за достъп на устройството си.</translation>
 <translation id="8366466717204352506">Проверката не се е изпълнявала</translation>
 <translation id="8368001212524806591">Проследяване на цената</translation>
@@ -1834,6 +1838,7 @@
 <translation id="8428045167754449968">Град/селище</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">Разбрах</translation>
+<translation id="8430694217306051839">Изберете къде да се запази <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Подробности за групата раздели</translation>
 <translation id="8438566539970814960">Подобряване на търсенията и сърфирането</translation>
 <translation id="8439758443371991593">Скриване на „Добавяне към списъка за четене“</translation>

@@ -18,7 +18,6 @@
 <translation id="1054745118061919935">ប្រសិនបើ​បន្ត មានន័យថា​អ្នកយល់ព្រមតាម​<ph name="BEGIN_LINK" />លក្ខខណ្ឌ​ប្រើប្រាស់<ph name="END_LINK" />។</translation>
 <translation id="10614374240317010">មិនដែលបានរក្សាទុក</translation>
 <translation id="1062138828266376352">កូដ PIN របស់អ្នក​មិនត្រូវបាន​ផ្លាស់ប្ដូរទេ។ សូមពិនិត្យការតភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក រួចព្យាយាមម្ដងទៀត</translation>
-<translation id="1063070031224282617">ជ្រើសរើស​កន្លែង​រក្សាទុក "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">មតិវាយតម្លៃ​ដែល​ផ្អែកលើ​ចំណាប់​អារម្មណ៍​របស់អ្នក</translation>
 <translation id="1074827084851510304">អ្នក​ហៀបនឹង​លុប​ពាក្យសម្ងាត់ {password_count} ព្រមទាំង​បញ្ជីគេហទំព័រ និង​កម្មវិធី​ដែលអ្នក​បានជ្រើសរើស​មិនរក្សាទុក​ព័ត៌មានចូល​គណនី។ គណនី​ដែលអ្នក​បានបង្កើត​សម្រាប់​គេហទំព័រ និងកម្មវិធី​នឹងមិន​ត្រូវបាន​លុបឡើយ។</translation>
 <translation id="1076421457278169141">បានស្កេនរកលេខកូដ</translation>
@@ -546,7 +545,6 @@
 <translation id="3227137524299004712">ម៉ៃក្រូហ្វូន</translation>
 <translation id="3235063766008841141">បានបញ្ចូល​នៅលើ​គេហទំព័រ​បញ្ឆោត និង​បានរកឃើញ​នៅក្នុង​ការបែកធ្លាយ​ទិន្នន័យ</translation>
 <translation id="3235242129752692527">កែ​ព័ត៌មាន​លម្អិត​អំពីព្រឹត្តិការណ៍ រួចចុច "រក្សាទុក"។</translation>
-<translation id="323863549127671026">ក្រុមផ្ទាំង និង​ផ្ទាំង​ដែលបើក​បច្ចុប្បន្ននេះ</translation>
 <translation id="3240426699337459095">បានចម្លងតំណ</translation>
 <translation id="3244271242291266297">ខែ</translation>
 <translation id="3245429137663807393">ប្រសិនបើអ្នកចែករំលែករបាយការណ៍ប្រើប្រាស់ Chrome ផងដែររបាយការណ៍ទាំងនោះរួមបញ្ចូល URL ដែលអ្នកចូលមើល</translation>
@@ -594,7 +592,6 @@
 <translation id="3476450923187944815">ចូលប្រើ​ពាក្យសម្ងាត់​របស់អ្នក​នៅលើ​កម្មវិធី​ផ្សេងទៀត។</translation>
 <translation id="3488501490964659223">ផ្ទាំងត្រូវបានបិទ ហើយទិន្នន័យរុករកត្រូវបានលុប។ អ្នកត្រូវបាននាំចេញពីគណនី</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" />អំពីមាតិកាដែលបានណែនាំ</translation>
-<translation id="349446645805573740">ជ្រើសរើស​កន្លែង​រក្សាទុក "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">ការកំណត់</translation>
 <translation id="35083190962747987">បើក ${url}</translation>
 <translation id="3511519535430890904">បញ្ចូល​ការការពារ​ការរុករក</translation>
@@ -614,6 +611,7 @@
 <translation id="3557336313807607643">បញ្ចូល​ទៅ​ក្នុង​ទំនាក់ទំនង</translation>
 <translation id="355765753469272474">ត្រឡប់វិញ</translation>
 <translation id="3565930036634619844">ផ្ទាំង។ <ph name="TAB_INDEX" /> នៃ <ph name="NUMBER_OF_TABS" />។</translation>
+<translation id="3570693105179140209">ចុចពីរដងសម្រាប់​ពាក្យ​សម្ងាត់​ច្រើនទៀត។</translation>
 <translation id="3572607909481582402">នៅក្នុង​គណនី Google របស់អ្នក</translation>
 <translation id="3575234738189584619">ស្វែងរកដោយប្រើ Lens</translation>
 <translation id="3575426792457739946">បញ្ជីនេះមានកម្រងព័ត៌មាន​ដែលបានផ្ទុកទាំងអស់។</translation>
@@ -657,6 +655,7 @@
 <translation id="3779810277399252432">គ្មានការតភ្ជាប់អ៊ីនធឺណិតទេ។</translation>
 <translation id="3782614601387961027">ច្រានចោល​សារប្រុងប្រយ័ត្ន</translation>
 <translation id="3789841737615482174">តំឡើង</translation>
+<translation id="3795478177331815672">បើក​ផ្ទាំង និង​ក្រុមផ្ទាំង</translation>
 <translation id="380329542618494757">ឈ្មោះ</translation>
 <translation id="3803696231112616155">ផ្ដល់ការបកប្រែ​គេហទំព័រនេះ</translation>
 <translation id="3808311849069021992">បង្ហាញ​ព័ត៌មានលម្អិត​អំពី​ម៉ាស៊ីន​ស្វែងរក</translation>
@@ -694,7 +693,6 @@
 <translation id="3922395466317605522">ប្ដូរម៉ឺនុយតាម​បំណង</translation>
 <translation id="3929457972718048006">អាសយដ្ឋាន</translation>
 <translation id="3931215329146376310">{count,plural, =1{ពាក្យសម្ងាត់​ថ្មី​សម្រាប់​គេហទំព័រ​នេះ}other{ពាក្យសម្ងាត់​ថ្មីៗ​សម្រាប់​គេហទំព័រ​នេះ}}</translation>
-<translation id="3934905113567851655">ច្បិច​ដើម្បី​ប្ដូរទំហំ</translation>
 <translation id="3940195383040445971">តាមដានតម្លៃនៅក្នុងផ្ទាំង</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{បិទ {COUNT} ផ្ទាំង}other{បិទ {COUNT} ផ្ទាំង}}</translation>
 <translation id="3948600256434252210">អ្នកអាចអូសទៅស្ដាំដើម្បីរុករកនៅក្នុងមុខងារឯកជន។</translation>
@@ -703,6 +701,7 @@
 <translation id="3955740319737378355">រួចរាល់</translation>
 <translation id="3955822496205734389">អ្នកមាន​ពាក្យសម្ងាត់​ខ្សោយ។</translation>
 <translation id="3958312024468322930">អូសវាទៅធ្នើរនៅផ្នែកខាងក្រោមនៃអេក្រង់ដើមរបស់អ្នក</translation>
+<translation id="3960218941754097036">ស្វែងរកអ្វីៗលើអេក្រង់របស់អ្នកដោយប្រើ Google Lens</translation>
 <translation id="3962326069546168954">រក្សាទុក</translation>
 <translation id="3967327056943561740">ចំណាំ</translation>
 <translation id="3967822245660637423">ការទាញយកបានបញ្ចប់</translation>
@@ -969,6 +968,7 @@
 <translation id="4979397965658815378">ចូលដោយប្រើគណនី Google របស់អ្នកដើម្បីទទួលយកចំណាំ ពាក្យសម្ងាត់ ប្រវត្តិ និងការកំណត់ផ្សេងទៀតរបស់អ្នកនៅលើឧបករណ៍ទាំងអស់របស់អ្នក</translation>
 <translation id="4985921635659180565">បន្ទាប់ពី​កំណត់ពេល​លុប​ឯកសាររួច នោះមិនអាច​បោះបង់​សកម្មភាពនេះ​បានទេ។</translation>
 <translation id="498624032394115435">គ្រប់គ្នា​ដែលមាន​តំណនេះអាច​កែផ្ទាំង​ទាំងអស់បាន។</translation>
+<translation id="4989065233040279145">ជ្រើសរើស​កន្លែង​ដែលត្រូវ​រក្សាទុក <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> ដែលស្ថិត​ក្រោម​ការ​គ្រប់គ្រង​របស់ស្ថាប័ន​អ្នក។</translation>
 <translation id="4992255726304765516">ពណ៌ក្រុមផ្ទាំង<ph name="COLOR" /></translation>
 <translation id="5005498671520578047">ថតចម្លងពាក្យសម្ងាត់</translation>
@@ -1655,6 +1655,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7724085059277147439">{count,plural, =1{បាន​រក្សាទុក​ធាតុនៅ​ក្នុង​គណនី Google របស់​អ្នក {email}}other{បាន​រក្សាទុក​ធាតុនៅ​ក្នុង​គណនី Google របស់​អ្នក {email}}}</translation>
 <translation id="7729458878441927652">ដើម្បីមើលឃើញផ្ទាំងពីឧបករណ៍ផ្សេងទៀតរបស់អ្នក សូមធ្វើសមកាលកម្មផ្ទាំង និងប្រវត្តិរបស់អ្នក។</translation>
 <translation id="7730020510075123961">ទេ ដាក់​ទិន្នន័យ​ចូលគ្នា</translation>
+<translation id="7730973429297233609">ជ្រើសរើស​គណនី​ដែល​អ្នក​ចង់​ប្រើ​ដើម្បីរក្សាទុក <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />។ តែ​នៅ​លើ​ឧបករណ៍​នេះ​ប៉ុណ្ណោះ។</translation>
 <translation id="7744192722284567281">បានរកឃើញនៅក្នុងការបែកធ្លាយ​ទិន្នន័យ​</translation>
 <translation id="7749790401023484470">អ្នក​មិនបាន​ជ្រើសរើស​អក្សរ​ទេ។</translation>
@@ -1702,7 +1703,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7925108652071887026">ទិន្នន័យបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="7926975587469166629">ឈ្មោះហៅក្រៅរបស់កាត</translation>
 <translation id="7927711904086083099">មិនត្រូវបានជ្រើសរើសទេ</translation>
-<translation id="7927902634113905831">ជ្រើសរើស​គណនី​ដែលអ្នក​ចង់ប្រើ ដើម្បី​រក្សាទុក "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" - <ph name="FILESIZE" /></translation>
 <translation id="7930998711684428189">ព្រមានអ្នក ប្រសិនបើ​ពាក្យសម្ងាត់​​បែកធ្លាយ​នៅក្នុង​ការបំពាន​ទិន្នន័យ។</translation>
 <translation id="7933880123415105005">ស្វែងរក <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -1816,7 +1816,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8343993175958086504">បម្រុង​ទុក​ទិន្នន័យ​របស់​អ្នក និង​ប្រើ​វា​នៅ​លើ​ឧបករណ៍​ណា​ក៏បាន។</translation>
 <translation id="8348530355586151720">ចុច​ម៉ឺនុយចុចបី</translation>
 <translation id="8349305172487531364">របាចំណាំ</translation>
-<translation id="8363484128299778310">ការស្ដារ​ឡើងវិញ​ជាបណ្ដោះ​អាសន្ន ក្នុងករណី​ដែលមាន​បញ្ហា</translation>
 <translation id="8364563001733875155">ដើម្បីប្ដូរ​កូដ PIN របស់អ្នក សូម​រៀបចំ​លេខ​កូដសម្ងាត់​នៅលើ​ឧបករណ៍​របស់អ្នក​ជាមុនសិន។</translation>
 <translation id="8366466717204352506">ពុំធ្លាប់ដំណើរការ​ការពិនិត្យ</translation>
 <translation id="8368001212524806591">តាម​ដាន​តម្លៃ​</translation>
@@ -1839,6 +1838,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8428045167754449968">រដ្ឋធានី ឬ ទីក្រុង</translation>
 <translation id="8428213095426709021">ការកំណត់</translation>
 <translation id="8428634594422941299">យល់ហើយ</translation>
+<translation id="8430694217306051839">ជ្រើសរើស​កន្លែង​ដែលត្រូវ​រក្សាទុក <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">ព័ត៌មានលម្អិត​អំពី​ក្រុមផ្ទាំង</translation>
 <translation id="8438566539970814960">ធ្វើ​ឱ្យ​ការស្វែងរក និងការរុករក​ប្រសើរ​ជាងមុន</translation>
 <translation id="8439758443371991593">លាក់ "បញ្ចូល​ទៅ​ក្នុងបញ្ជីអាន"</translation>

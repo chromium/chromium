@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">Naudoti išsaugotą slaptažodį arba „passkey“?</translation>
 <translation id="5624120631404540903">Tvarkyti slaptažodžius</translation>
 <translation id="592182999816790476">Svetainei <ph name="WEBSITE" /> skirtas <ph name="USERNAME" /> slaptažodis išsaugotas</translation>
-<translation id="593924516471361340">Laikinas atkūrimo slaptažodis, jei kiltų problemų dėl <ph name="USERNAME" />, išsaugotas <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> prieigos raktas, naudokite ekrano užraktą.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Naujas šios svetainės slaptažodis}one{Nauji šios svetainės slaptažodžiai}few{Nauji šios svetainės slaptažodžiai}many{Nauji šios svetainės slaptažodžiai}other{Nauji šios svetainės slaptažodžiai}}</translation>
 <translation id="7286867818472074330">Pasirinkti prieigos raktą</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> iš <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Gavote <ph name="SITE_NAME" /> slaptažodžius</translation>
-<translation id="8202660122967066153">Laikinas atkūrimo slaptažodis, jei kiltų problemų dėl <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Laikinas atkūrimas kilus problemų</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> bendrino su jumis <ph name="SITE_NAME" /> slaptažodį</translation>
 <translation id="8891372124884726271">Prisijungimo duomenų sąrašas uždarytas.</translation>

@@ -867,7 +867,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
             <ph name="LIST_ITEM" />údaje zadané do formulářů.
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Periferní zařízení připojená k tomuto zařízení, když jste přihlášeni</translation>
-<translation id="2450019289047528273">Platební metody a další informace z Peněženky Google</translation>
 <translation id="2451607499823206582">Sledování</translation>
 <translation id="2452098632681057184">Ekologie a životní prostředí</translation>
 <translation id="2452837234288608067">Pomoc se nepodařila. Zkuste to znovu.</translation>
@@ -937,7 +936,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2546283357679194313">Soubory cookie a data webových stránek</translation>
 <translation id="254947805923345898">Hodnota zásady není platná.</translation>
 <translation id="2549836668759467704">Poradenské a kontraktační služby v oblasti stavebnictví</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> a další</translation>
 <translation id="255002559098805027">Web <ph name="HOST_NAME" /> vrátil neplatnou odpověď.</translation>
 <translation id="2551608178605132291">Adresa: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1048,7 +1046,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2743934314332613923">Aktualizovat řidičský průkaz?</translation>
 <translation id="2759299890026163685">Než to zkusíte znovu, ujistěte se, že máte stabilní připojení k internetu</translation>
 <translation id="2759825833388495838">vyplnit vašeho heslo v aplikaci <ph name="APP_NAME" /></translation>
-<translation id="2760805590727089264">MM/RR</translation>
 <translation id="2764001903315068341">Komiksy</translation>
 <translation id="2765217105034171413">Malé</translation>
 <translation id="2768397283109119044">Pokusili jste se přejít do domény <ph name="DOMAIN" />, ale server předložil neplatný certifikát vydaný na toto jméno. Jméno je vyhrazená IP adresa nebo interní název hostitele.</translation>
@@ -3045,7 +3042,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6177531123306197852">Obálka C2</translation>
 <translation id="6180316780098470077">Interval opakování</translation>
 <translation id="6182972682129119950">A4x5</translation>
-<translation id="6184099524311454384">Hledat karty</translation>
 <translation id="6184868291074982484">Chrome automaticky omezuje soubory cookie třetích stran</translation>
 <translation id="6190518157737269631">Přepsat některé klávesy na klávesnici, například Esc</translation>
 <translation id="6194209731893739467">Tady zobrazíte všechny sledované produkty</translation>
@@ -3604,7 +3600,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7130775116821607281">Nahrání je blokováno</translation>
 <translation id="7132939140423847331">Váš správce kopírování těchto dat zakázal.</translation>
 <translation id="7135130955892390533">Zobrazit stav</translation>
-<translation id="7135814714616751706">Vyhledat zkratky</translation>
 <translation id="7136009930065337683">Další informace o anonymním režimu</translation>
 <translation id="7138472120740807366">Způsob doručení</translation>
 <translation id="7138678301420049075">Ostatní</translation>
@@ -4177,7 +4172,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8092254339843485299">6 × 8″</translation>
 <translation id="8092774999298748321">Tmavě nachová</translation>
 <translation id="8094917007353911263">Síť, kterou používáte, může vyžadovat, abyste navštívili stránku <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="809543534949702122">Historie vyhledávání</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">Platební metoda</translation>
@@ -4817,7 +4811,6 @@ Další podrobnosti:
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="922152298093051471">Přizpůsobit Chrome</translation>
 <translation id="9222403027701923763">Mateřské, základní a střední školy</translation>
-<translation id="9222463428840654067">Číslo karty není platné</translation>
 <translation id="922849469395748170">Věrnostní karty</translation>
 <translation id="93020190163435405">Praxe</translation>
 <translation id="931598121743515856">Nákup musí být v hodnotě vyšší než <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

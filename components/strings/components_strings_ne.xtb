@@ -867,8 +867,6 @@
             <ph name="LIST_ITEM" />फारमहरूमा भरिएको जानकारी
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">तपाईं लग इन भएका बेला यो डिभाइससँग एट्याच गरिएका सहायक डिभाइसहरू</translation>
-<translation id="2450019289047528273">Google Wallet मा भण्डारण गरिएका भुक्तानी विधि र अन्य जानकारी</translation>
-<translation id="2451201933352935301"><ph name="URL" /> तपाईंका सबै डिस्प्लेमा विन्डोहरू व्यवस्थापन गर्न चाहन्छ</translation>
 <translation id="2451607499823206582">ट्र्याक गरिँदै छ</translation>
 <translation id="2452098632681057184">पर्यावरण विज्ञान तथा वातावरण</translation>
 <translation id="2452837234288608067">यस सम्बन्धमा मद्दत गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
@@ -938,7 +936,6 @@
 <translation id="2546283357679194313">कुकीहरू र साइट डाटा</translation>
 <translation id="254947805923345898">नीतिको मान मान्य छैन।</translation>
 <translation id="2549836668759467704">निर्माणसम्बन्धी परामर्श तथा सम्झौता</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> र अरू विषय</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ले अमान्य प्रतिक्रिया पठायो।</translation>
 <translation id="2551608178605132291">ठेगाना: <ph name="ADDRESS" />।</translation>
 <translation id="2552246211866555379">हागाकी</translation>
@@ -1049,7 +1046,6 @@
 <translation id="2743934314332613923">सवारी चालक अनुमति पत्रसम्बन्धी जानकारी अपडेट गर्ने हो?</translation>
 <translation id="2759299890026163685">फेरि प्रयास गर्नुअघि आफ्नो इन्टरनेट कनेक्सन स्थिर छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> मा आफ्नो पासवर्ड भर्नुहोस्</translation>
-<translation id="2760805590727089264">महिना / साल</translation>
 <translation id="2764001903315068341">कमिक्स</translation>
 <translation id="2765217105034171413">सानो</translation>
 <translation id="2768397283109119044">तपाईंले <ph name="DOMAIN" /> मा जाने प्रयास गर्नुभयो तर सर्भरले उक्त नामलाई जारी गरिएको अवैध सर्टिफिकेट प्रस्तुत गर्‍यो। यो नाम कुनै आरक्षित IP एड्रेस वा आन्तरिक होस्टनेम हो।</translation>
@@ -3049,7 +3045,6 @@
 <translation id="6177531123306197852">Envelope C2</translation>
 <translation id="6180316780098470077">पुन: प्रयास गर्न पाइने अन्तराल</translation>
 <translation id="6182972682129119950">A4x5</translation>
-<translation id="6184099524311454384">ट्याब खोज्नुहोस्</translation>
 <translation id="6184868291074982484">Chrome ले तेस्रो पक्षीय कुकीहरू स्वतः सीमित पार्छ</translation>
 <translation id="6190518157737269631">किबोर्डका Esc जस्ता केही कीहरू ओभरराइड गर्नुहोस्</translation>
 <translation id="6194209731893739467">तपाईंले ट्र्याक गरेका सबै उत्पादन यहाँ देखिन्छन्</translation>
@@ -3608,7 +3603,6 @@
 <translation id="7130775116821607281">फाइल अपलोड गर्न पाइँदैन</translation>
 <translation id="7132939140423847331">तपाईंका एड्मिनले लगाएको प्रतिबन्धका कारण यो डेटा कपी गर्न मिल्दैन।</translation>
 <translation id="7135130955892390533">स्थिति देखाउनुहोस्</translation>
-<translation id="7135814714616751706">सर्टकटहरू खोज्नुहोस्</translation>
 <translation id="7136009930065337683">इन्कोग्निटो मोडका बारेमा थप जान्नुहोस्</translation>
 <translation id="7138472120740807366">डेलिभरीको विधि</translation>
 <translation id="7138678301420049075">अन्य</translation>
@@ -4181,7 +4175,6 @@
 <translation id="8092254339843485299">६ x ८ इन्च</translation>
 <translation id="8092774999298748321">गाढा बैजनी</translation>
 <translation id="8094917007353911263">तपाईँले प्रयोग गर्नुभएको सञ्जाललाई तपाईँले <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> भ्रमण गर्ने आवश्यकता हुन सक्छ।</translation>
-<translation id="809543534949702122">सर्च हिस्ट्री</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">भुक्तानी विधि</translation>
@@ -4821,7 +4814,6 @@
 <translation id="9219103736887031265">फोटो</translation>
 <translation id="922152298093051471">Chrome आफूले चाहे जस्तो बनाउनुहोस्</translation>
 <translation id="9222403027701923763">प्राथमिक र माध्यमिक विद्यालय (K-१२)</translation>
-<translation id="9222463428840654067">कार्ड नम्बर अवैध छ</translation>
 <translation id="922849469395748170">लोयल्टी कार्डहरू</translation>
 <translation id="93020190163435405">प्रशिक्षार्थी कर्मचारी</translation>
 <translation id="931598121743515856">खरिदको रकम अनिवार्य रूपमा <ph name="CHECKOUT_AMOUNT_MINIMUM" /> भन्दा बढी हुनु पर्छ</translation>

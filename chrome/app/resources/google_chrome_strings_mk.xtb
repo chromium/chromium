@@ -12,7 +12,7 @@
 <translation id="1065672644894730302">Вашите поставки не може да се прочитаат.
 
 Некои функции може да се недостапни и измените на поставките нема да се зачуваат.</translation>
-<translation id="1086486568852410168">Пребарувајте со Google Lens</translation>
+<translation id="1086486568852410168">Пребарај со Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> претходно користеше Chrome</translation>
 <translation id="110877069173485804">Ова е вашиот Chrome</translation>
 <translation id="1125124144982679672">Кој користи Chrome?</translation>
@@ -65,7 +65,6 @@
 <translation id="178701303897325119">Екстензијава веќе не е поддржана. Затоа, Chrome препорачува да ја отстраните.</translation>
 <translation id="1812689907177901597">Ако го исклучите ова, може да се најавувате на сајтови на Google, како што е Gmail, без да се најавите на Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome препорачува да ја паузирате картичката што го забавува прелистувачот}one{Chrome препорачува да ги паузирате картичките што го забавуваат прелистувачот}other{Chrome препорачува да ги паузирате картичките што го забавуваат прелистувачот}}</translation>
-<translation id="1832046143430087831">Ги забрзува сајтовите со пребарувачот V8 на Chrome, но го прави Chrome малку понеотпорен на напади. Поставкава е исклучена.</translation>
 <translation id="1838374766361614909">Исчисти го пребарувањето</translation>
 <translation id="1860536484129686729">На Chrome му треба дозвола за да пристапи до камерата за сајтов</translation>
 <translation id="1873233029667955273">Google Chrome не е вашиот стандарден прелистувач</translation>
@@ -452,12 +451,12 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6718739135284199302">Имајте побрз Chrome</translation>
 <translation id="6735387454586646204">Системот ChromeOS Flex</translation>
 <translation id="6750954913813541382">За исправка на правописни грешки, Chrome го испраќа текстот што го пишувате во прелистувачот до Google</translation>
-<translation id="6760235774835597023">Ги забрзува сајтовите со пребарувачот V8 на Chrome, но го прави Chrome малку понеотпорен на напади. Поставкава е вклучена.</translation>
 <translation id="677276454032249905">Сепак да се излезе од Chrome?</translation>
 <translation id="6794858689789885890">Секогаш бришете ги податоците од сајт од вашиот уред кога го затворате Chrome</translation>
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="683440813066116847">Дојдовно правило за Google Chrome Canary за да овозможи сообраќај mDNS.</translation>
 <translation id="684888714667046800">Не може да се поврзе на интернет. Ако користите заштитен ѕид, погрижете се <ph name="PRODUCT_EXE_NAME" /> да биде во списокот со дозволени.</translation>
+<translation id="6851981911629679515">Вклучување дополнителна заштита во пребарувачот на JavaScript и WebAssembly во Chrome</translation>
 <translation id="6877155553248388166">долен десен агол на областа за пребарување: десно <ph name="RIGHT" /> %, долу <ph name="BOTTOM" /> %</translation>
 <translation id="6881299373831449287">Chrome се ажурира</translation>
 <translation id="6885412569789873916">Апликации на Chrome Beta</translation>

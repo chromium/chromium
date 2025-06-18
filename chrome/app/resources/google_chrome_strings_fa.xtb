@@ -61,7 +61,6 @@
 <translation id="178701303897325119">‏دیگر از این افزونه پشتیبانی نمی‌شود. ‫Chrome توصیه می‌کند آن را حذف کنید.</translation>
 <translation id="1812689907177901597">‏با خاموش کردن این گزینه، می‌توانید بدون ورود به سیستم Chrome به سیستم سایت‌های Google مانند Gmail وارد شوید</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{‏‫Chrome توصیه می‌کند برگه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}one{‏‫Chrome توصیه می‌کند برگه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}other{‏‫Chrome توصیه می‌کند برگه‌هایی را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}}</translation>
-<translation id="1832046143430087831">‏با این کار سرعت سایت‌ها با موتور Chrome نسخه ۸ بالاتر می‌رود اما مقاومت Chrome دربرابر حمله‌ها مقداری کمتر می‌شود. این تنظیم خاموش است.</translation>
 <translation id="1838374766361614909">پاک کردن جستجو</translation>
 <translation id="1860536484129686729">‏Chrome برای این سایت به مجوز دسترسی به دوربین نیاز دارد</translation>
 <translation id="1873233029667955273">‏Google Chrome مرورگر پیش‌فرض شما نیست</translation>
@@ -444,12 +443,12 @@
 <translation id="6718739135284199302">‏سرعت Chrome را افزایش دهید</translation>
 <translation id="6735387454586646204">‏سیستم ChromeOS Flex</translation>
 <translation id="6750954913813541382">‏Chrome برای رفع غلط‌های املایی، نوشتاری را که در مرورگر تایپ می‌کنید به Google ارسال می‌کند</translation>
-<translation id="6760235774835597023">‏با این کار سرعت سایت‌ها با موتور Chrome نسخه ۸ بالاتر می‌رود اما مقاومت Chrome دربرابر حمله‌ها مقداری کمتر می‌شود. این تنظیم روشن است.</translation>
 <translation id="677276454032249905">‏درهرصورت از Chrome خارج می‌شوید؟</translation>
 <translation id="6794858689789885890">‏داده‌های سایت همواره بعداز بستن Chrome از دستگاه حذف شود</translation>
 <translation id="6831043979455480757">ترجمه</translation>
 <translation id="683440813066116847">‏قانون ترافیک ورودی برای Google Chrome Canary به منظور اجازه به ترافیک mDNS .</translation>
 <translation id="684888714667046800">نمی‌توان به اینترنت متصل شد. اگر از دیوار آتش استفاده می‌کنید، لطفاً مطمئن شوید <ph name="PRODUCT_EXE_NAME" /> در فهرست مجازها باشد.</translation>
+<translation id="6851981911629679515">‏روشن کردن محافظت بیشتر در موتور WebAssembly و جاوا اسکریپت Chrome</translation>
 <translation id="6877155553248388166">‏گوشه پایین سمت چپ ناحیه جستجو: ‎٪<ph name="RIGHT" /> سمت چپ، ‎٪<ph name="BOTTOM" /> پایین</translation>
 <translation id="6881299373831449287">‏درحال به‌روزرسانی Chrome</translation>
 <translation id="6885412569789873916">‏برنامه‌های Chrome نسخه بتا</translation>

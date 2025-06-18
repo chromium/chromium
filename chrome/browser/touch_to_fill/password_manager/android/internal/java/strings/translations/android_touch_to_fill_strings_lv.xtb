@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">Vai izmantot saglabāto paroli vai piekļuves atslēgu?</translation>
 <translation id="5624120631404540903">Pārvaldīt paroles</translation>
 <translation id="592182999816790476">Konta <ph name="USERNAME" /> parole vietnei <ph name="WEBSITE" /> ir saglabāta.</translation>
-<translation id="593924516471361340">Pagaidu atkopšanas parole problēmu gadījumā kontam <ph name="USERNAME" />, kas saglabāta vietnei <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Lietotāja <ph name="USERNAME" /> piekļuves atslēga. Izmantojiet ekrāna bloķēšanu.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Jauna parole šai vietnei}zero{Jaunas paroles šai vietnei}one{Jaunas paroles šai vietnei}other{Jaunas paroles šai vietnei}}</translation>
 <translation id="7286867818472074330">Atlasīt piekļuves atslēgu</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />. no <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Jūs saņēmāt paroles vietnei <ph name="SITE_NAME" /></translation>
-<translation id="8202660122967066153">Pagaidu atkopšanas parole problēmu gadījumā kontam <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Pagaidu atkopšana problēmu gadījumā</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> kopīgoja ar jums paroli vietnei <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Akreditācijas datu saraksts ir aizvērts.</translation>

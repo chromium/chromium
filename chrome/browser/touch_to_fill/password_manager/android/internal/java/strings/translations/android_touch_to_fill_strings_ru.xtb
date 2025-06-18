@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">Использовать сохраненный пароль или ключ доступа?</translation>
 <translation id="5624120631404540903">Настройки паролей</translation>
 <translation id="592182999816790476">Пароль пользователя <ph name="USERNAME" /> сохранен для сайта <ph name="WEBSITE" /></translation>
-<translation id="593924516471361340">Временный пароль пользователя <ph name="USERNAME" /> на сайте <ph name="WEBSITE" /> для восстановления в случае проблем</translation>
 <translation id="6560306912274274630">Ключ доступа для пользователя <ph name="USERNAME" />, используйте блокировку экрана</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Новый пароль для этого сайта}one{Новые пароли для этого сайта}few{Новые пароли для этого сайта}many{Новые пароли для этого сайта}other{Новые пароли для этого сайта}}</translation>
 <translation id="7286867818472074330">Выбрать ключ доступа</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, позиция <ph name="ITEM_POSITION" /> из <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Вы получили пароли для сайта <ph name="SITE_NAME" />.</translation>
-<translation id="8202660122967066153">Временный пароль пользователя <ph name="USERNAME" /> для восстановления в случае проблем</translation>
 <translation id="8363484128299778310">Временное восстановление в случае проблем</translation>
 <translation id="8614995815226664591">Пользователь <ph name="SENDER_NAME" /> передал вам пароль для сайта <ph name="SITE_NAME" />.</translation>
 <translation id="8891372124884726271">Список учетных данных закрыт.</translation>

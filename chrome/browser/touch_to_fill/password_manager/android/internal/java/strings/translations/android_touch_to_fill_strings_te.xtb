@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">సేవ్ చేసిన పాస్‌వర్డ్ లేదా పాస్‌కీని ఉపయోగించాలా?</translation>
 <translation id="5624120631404540903">పాస్‌వర్డ్‌లను నిర్వహించండి</translation>
 <translation id="592182999816790476"><ph name="USERNAME" /> పాస్‌వర్డ్ <ph name="WEBSITE" />‌లో సేవ్ అయింది</translation>
-<translation id="593924516471361340"><ph name="WEBSITE" /> వెబ్‌సైట్ విషయంలో సేవ్ చేసిన <ph name="USERNAME" />కు సంబంధించి సమస్య ఎదురైనప్పుడు తాత్కాలిక పునరుద్ధరణ పాస్‌వర్డ్</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" />‌కు సంబంధించిన పాస్-కీ కోసం, మీ స్క్రీన్ లాక్‌ను ఉపయోగించండి</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ఈ సైట్ కోసం కొత్త పాస్‌వర్డ్}other{ఈ సైట్ కోసం కొత్త పాస్‌వర్డ్‌లు}}</translation>
 <translation id="7286867818472074330">పాస్-కీని ఎంచుకోండి</translation>
 <translation id="7669320311687290322"><ph name="ITEMS_TOTAL" />లో <ph name="ITEM_POSITION" /> <ph name="ITEM_LABEL" />.</translation>
 <translation id="7738288782501322815"><ph name="SITE_NAME" />‌కు సంబంధించి మీరు పాస్‌వర్డ్‌లను అందుకున్నారు</translation>
-<translation id="8202660122967066153"><ph name="USERNAME" />కు సంబంధించి సమస్య ఎదురైనప్పుడు తాత్కాలిక రికవరీ పాస్‌వర్డ్</translation>
 <translation id="8363484128299778310">సమస్య ఉన్నప్పుడు ఉపయోగించే తాత్కాలిక రికవరీ</translation>
 <translation id="8614995815226664591"><ph name="SITE_NAME" />‌కు సంబంధించిన పాస్‌వర్డ్‌ను <ph name="SENDER_NAME" /> మీకు షేర్ చేశారు</translation>
 <translation id="8891372124884726271">ఆధారాల లిస్ట్ మూసివేయబడింది.</translation>

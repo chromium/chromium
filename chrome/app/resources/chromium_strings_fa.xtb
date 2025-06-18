@@ -341,7 +341,6 @@
 <translation id="5775198138441669627">‏اگر گذرعبارت را فراموش کرده‌اید یا می‌خواهید این تنظیم را تغییر دهید، داده‌های Chromium ذخیره‌شده در حسابتان را <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">‏‫Chromium را سفارشی‌سازی و کنترل کنید. ‫Chromium را به‌عنوان مرورگر پیش‌فرض تنظیم کنید.</translation>
 <translation id="5809516625706423866">‏اتصال به اینترنت برقرار نشد. HTTP ۴۰۱ مجاز نیست. لطفاً پیکربندی پروکسی‌تان را بررسی کنید.</translation>
-<translation id="5817952762723416573">‏با این کار سرعت سایت‌ها با موتور Chromium نسخه ۸ بالاتر می‌رود اما مقاومت Chromium دربرابر حمله‌ها مقداری کمتر می‌شود. این تنظیم خاموش است.</translation>
 <translation id="5821520528363214608">‏برای استفاده و ذخیره کردن داده‌های Chromium در «حساب Google» خود، Chromium را به‌روز کنید</translation>
 <translation id="5824893331272123205">این پانل بارگیری نشد، دوباره امتحان کنید</translation>
 <translation id="5862307444128926510">‏به Chromium خوش آمدید</translation>
@@ -431,7 +430,6 @@
 <translation id="6729124504294600478">‏برای دریافت شخصی‌سازی و ویژگی‌های دیگر، Chromium را به «فعالیت‌ها در وب و برنامه» و سرویس‌های پیوندشده Google اضافه کنید</translation>
 <translation id="6734291798041940871">‏Chromium از قبل برای همه کاربران این رایانه نصب شده است.</translation>
 <translation id="674245979920622322">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="COUNT" /> مورد دیگر را برداشت</translation>
-<translation id="6751374565094704799">‏با این کار سرعت سایت‌ها با موتور Chromium نسخه ۸ بالاتر می‌رود اما مقاومت Chromium دربرابر حمله‌ها مقداری کمتر می‌شود. این تنظیم روشن است.</translation>
 <translation id="67706546131546258">‏Chromium توصیه می‌کند این فایل را اسکن کنید زیرا ممکن است خطرناک باشد.</translation>
 <translation id="6779406956731413166">‏ارائه ChromiumOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>
 <translation id="6831043979455480757">ترجمه</translation>
@@ -527,6 +525,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8118331347066725040">درباره جستجو با «لنز»، بازخورد ارسال کنید</translation>
 <translation id="8133124826068723441">‏ChromiumOS نتوانست داده‌هایتان را همگام‌سازی کند زیرا «همگام‌سازی» برای دامنه شما دردسترس نیست.</translation>
 <translation id="813913629614996137">درحال مقداردهی اولیه…</translation>
+<translation id="8166782796394721554">‏روشن کردن محافظت بیشتر در موتور WebAssembly و جاوا اسکریپت Chromium</translation>
 <translation id="81770708095080097">‏این فایل خطرناک است، بنابراین Chromium آن را مسدود کرده است.</translation>
 <translation id="8177472873527554730">محتوای موردنظر در صفحه پیدا نشد</translation>
 <translation id="8200109504272824693">‏برای استفاده از داده‌های Chromium و ذخیره کردن آن‌ها در حسابتان (<ph name="USER_EMAIL" />)، گذرعبارت خود را وارد کنید</translation>

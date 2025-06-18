@@ -279,7 +279,7 @@
 <translation id="1458059624921545588">Људи и друштво</translation>
 <translation id="1458140305240870199">Доњи веш</translation>
 <translation id="1459693405370120464">Време</translation>
-<translation id="1461041542809785877">Учинак</translation>
+<translation id="1461041542809785877">Перформансе</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Користи фонтове на рачунару да бисте могли да правите садржај високе верности</translation>
 <translation id="1463793142714244641">Некретнине за тајмшер и одмор</translation>
@@ -867,8 +867,6 @@
             <ph name="LIST_ITEM" />информације које сте унели у обрасце
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Периферни уређаји прикључени на овај уређај док сте пријављени</translation>
-<translation id="2450019289047528273">Начини плаћања и друге информације из Google новчаника</translation>
-<translation id="2451201933352935301"><ph name="URL" /> жели да управља прозорима на свим екранима</translation>
 <translation id="2451607499823206582">Прати се</translation>
 <translation id="2452098632681057184">Екологија и животна средина</translation>
 <translation id="2452837234288608067">Нисмо успели да вам помогнемо с тиме. Пробајте поново.</translation>
@@ -938,7 +936,6 @@
 <translation id="2546283357679194313">Колачићи и подаци о сајтовима</translation>
 <translation id="254947805923345898">Вредност смерница није важећа.</translation>
 <translation id="2549836668759467704">Саветодавне услуге и извођење радова у грађевинарству</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> и друго</translation>
 <translation id="255002559098805027">Хост <ph name="HOST_NAME" /> је послао неважећи одговор.</translation>
 <translation id="2551608178605132291">Адреса: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Разгледница</translation>
@@ -1049,7 +1046,6 @@
 <translation id="2743934314332613923">Желите да ажурирате возачку дозволу?</translation>
 <translation id="2759299890026163685">Уверите се да имате стабилну интернет везу пре него што пробате поново</translation>
 <translation id="2759825833388495838">унесе лозинку на <ph name="APP_NAME" /></translation>
-<translation id="2760805590727089264">ММ/ГГ</translation>
 <translation id="2764001903315068341">Стрипови</translation>
 <translation id="2765217105034171413">Мала</translation>
 <translation id="2768397283109119044">Покушали сте да дођете до домена <ph name="DOMAIN" />, али је сервер послао неважећи сертификат издат на то име. Назив је резервисана IP адреса или интерно име хоста.</translation>
@@ -3050,7 +3046,6 @@
 <translation id="6177531123306197852">Коверта C2</translation>
 <translation id="6180316780098470077">Интервал између поновних покушаја</translation>
 <translation id="6182972682129119950">A4x5</translation>
-<translation id="6184099524311454384">Претражите картице</translation>
 <translation id="6184868291074982484">Chrome аутоматски ограничава колачиће треће стране</translation>
 <translation id="6190518157737269631">Замена уноса неких тастера на тастатури, као што је Esc</translation>
 <translation id="6194209731893739467">Погледајте све производе које пратите овде</translation>
@@ -3609,7 +3604,6 @@
 <translation id="7130775116821607281">Отпремање је блокирано</translation>
 <translation id="7132939140423847331">Администратор је забранио копирање ових података.</translation>
 <translation id="7135130955892390533">Прикажи статус</translation>
-<translation id="7135814714616751706">Претражите пречице</translation>
 <translation id="7136009930065337683">Сазнајте више о режиму без архивирања</translation>
 <translation id="7138472120740807366">Начин испоруке</translation>
 <translation id="7138678301420049075">Друго</translation>
@@ -4183,7 +4177,6 @@
 <translation id="8092254339843485299">6×8 in</translation>
 <translation id="8092774999298748321">Тамнољубичаста</translation>
 <translation id="8094917007353911263">Мрежа коју користите ће можда захтевати да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="809543534949702122">Историја претраге</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">Начин плаћања</translation>
@@ -4824,7 +4817,6 @@
 <translation id="9219103736887031265">Слике</translation>
 <translation id="922152298093051471">Прилагодите Chrome</translation>
 <translation id="9222403027701923763">Основно и средње образовање (K-12)</translation>
-<translation id="9222463428840654067">Број картице је неважећи</translation>
 <translation id="922849469395748170">Картице лојалности</translation>
 <translation id="93020190163435405">Стажирање</translation>
 <translation id="931598121743515856">Износ куповине мора да буде изнад <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

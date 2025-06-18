@@ -340,7 +340,6 @@
 <translation id="5775198138441669627">మీ రహస్య పదబంధాన్ని మీరు మర్చిపోయినా లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకున్నా, మీ ఖాతాలోని Chromium డేటాను <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">Chromiumను అనుకూలంగా మార్చండి, కంట్రోల్ చేయండి. Chromiumను మీ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి.</translation>
 <translation id="5809516625706423866">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు. HTTP 401 అనధికార యాక్సెస్. దయచేసి మీ ప్రాక్సీ కాన్ఫిగరేషన్‌ను చెక్ చేయండి.</translation>
-<translation id="5817952762723416573">Chromium V8 ఇంజిన్‌తో సైట్‌లను వేగవంతం చేస్తుంది కానీ Chromium అటాక్‌లకు కొద్దిగా తక్కువ నిరోధకతను కలిగిస్తుంది. ఈ సెట్టింగ్ ఆఫ్ చేయబడింది.</translation>
 <translation id="5821520528363214608">మీ Google ఖాతాలో Chromium డేటాను ఉపయోగించడానికి, సేవ్ చేయడానికి, Chromiumను అప్‌డేట్ చేయండి</translation>
 <translation id="5824893331272123205">ఈ ప్యానెల్‌ను లోడ్ చేయడం సాధ్యపడలేదు, మళ్లీ ట్రై చేయండి</translation>
 <translation id="5862307444128926510">Chromiumకు స్వాగతం</translation>
@@ -430,7 +429,6 @@
 <translation id="6729124504294600478">వ్యక్తిగతీకరణను, ఇతర ఫీచర్‌లను పొందడానికి, Chromiumను 'వెబ్ &amp; యాప్ యాక్టివిటీ'లో, లింక్ అయిన Google సర్వీస్‌లలో చేర్చండి</translation>
 <translation id="6734291798041940871">మీ కంప్యూటర్‌లోని వినియోగదారులందరికీ Chromium ఇప్పటికే ఇన్‌స్టాల్ చేయబడింది.</translation>
 <translation id="674245979920622322">మీరు ఇటీవల వెళ్లలేదు. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, అలాగే మరో <ph name="COUNT" />‌ను తీసివేసింది</translation>
-<translation id="6751374565094704799">Chromium V8 ఇంజిన్‌తో సైట్‌లను వేగవంతం చేస్తుంది కానీ Chromium అటాక్‌లకు కొద్దిగా తక్కువ నిరోధకతను కలిగిస్తుంది. ఈ సెట్టింగ్ ఆన్ చేయబడింది.</translation>
 <translation id="67706546131546258">ఈ ఫైల్ ప్రమాదకరమైనది కావచ్చు, కాబట్టి దీనిని స్కాన్ చేయమని Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="6779406956731413166">ChromiumOS అనేది అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="6831043979455480757">అనువదించు</translation>
@@ -525,6 +523,7 @@
 <translation id="8118331347066725040">Lensతో సెర్చ్ చేయడం కోసం ఫీడ్‌బ్యాక్‌ను పంపండి</translation>
 <translation id="8133124826068723441">మీ డొమైన్ కోసం సింక్ అందుబాటులో లేనందున, ChromiumOS మీ డేటాను సింక్ చేయలేకపోయింది.</translation>
 <translation id="813913629614996137">ప్రారంభిస్తోంది...</translation>
+<translation id="8166782796394721554">Chromium JavaScript, WebAssembly ఇంజిన్‌లో అదనపు రక్షణను ఆన్ చేయండి</translation>
 <translation id="81770708095080097">ఈ ఫైల్ అపాయకరమైనది, కాబట్టి Chromium దీన్ని బ్లాక్ చేసింది.</translation>
 <translation id="8177472873527554730">పేజీలో కంటెంట్ కనుగొనడం సాధ్యం కాలేదు</translation>
 <translation id="8200109504272824693">మీ ఖాతా, <ph name="USER_EMAIL" />‌లో Chromium డేటాను ఉపయోగించడానికి, సేవ్ చేయడానికి మీ రహస్య పదబంధాన్ని ఎంటర్ చేయండి</translation>

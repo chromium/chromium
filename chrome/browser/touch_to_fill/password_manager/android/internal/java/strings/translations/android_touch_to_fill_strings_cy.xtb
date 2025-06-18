@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">Defnyddio cyfrinair neu god pas sydd wedi'i gadw?</translation>
 <translation id="5624120631404540903">Rheoli cyfrineiriau</translation>
 <translation id="592182999816790476">Cyfrinair i <ph name="USERNAME" /> wedi'i gadw ar gyfer <ph name="WEBSITE" /></translation>
-<translation id="593924516471361340">Cyfrinair adfer dros dro rhag ofn trafferth i <ph name="USERNAME" /> wedi'i gadw ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Cod pas ar gyfer <ph name="USERNAME" />, defnyddiwch eich clo sgrîn</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Cyfrinair newydd ar gyfer y wefan hon}zero{Cyfrineiriau newydd ar gyfer y wefan hon}two{Cyfrineiriau newydd ar gyfer y wefan hon}few{Cyfrineiriau newydd ar gyfer y wefan hon}many{Cyfrineiriau newydd ar gyfer y wefan hon}other{Cyfrineiriau newydd ar gyfer y wefan hon}}</translation>
 <translation id="7286867818472074330">Dewis cod pas</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> o <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Rydych wedi derbyn cyfrineiriau ar gyfer <ph name="SITE_NAME" /></translation>
-<translation id="8202660122967066153">Cyfrinair adfer dros dro rhag ofn trafferth i <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Adferiad dros dro rhag ofn trafferth</translation>
 <translation id="8614995815226664591">Mae <ph name="SENDER_NAME" /> wedi rhannu cyfrinair gyda chi ar gyfer <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Rhestr o gymwysterau ar gau.</translation>

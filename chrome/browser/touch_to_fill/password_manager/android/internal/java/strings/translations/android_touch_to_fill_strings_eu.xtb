@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">Gordetako pasahitza edo sarbide-gakoa erabili nahi duzu?</translation>
 <translation id="5624120631404540903">Kudeatu pasahitzak</translation>
 <translation id="592182999816790476">Gorde da <ph name="USERNAME" /> erabiltzaileari dagokion pasahitza <ph name="WEBSITE" /> webgunerako</translation>
-<translation id="593924516471361340">Aldi baterako berreskurapen-pasahitza, <ph name="USERNAME" /> erabiltzaileak izateko kasuan erabiltzeko, <ph name="WEBSITE" /> webgunerako gordeta</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> erabiltzaile-kontuko sarbide-gakoa. Erabili pantailaren blokeoa.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Webgunerako pasahitz berria}other{Webgunerako pasahitz berriak}}</translation>
 <translation id="7286867818472074330">Hautatu sarbide-gakoa</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> posiziotatik <ph name="ITEM_POSITION" />garrena.</translation>
 <translation id="7738288782501322815"><ph name="SITE_NAME" /> webgunerako pasahitzak jaso dituzu</translation>
-<translation id="8202660122967066153">Aldi baterako berreskurapen-pasahitza, <ph name="USERNAME" /> erabiltzaileak arazoak izateko kasuan erabiltzeko</translation>
 <translation id="8363484128299778310">Aldi baterako berreskuratzea, arazorik balego</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> erabiltzaileak <ph name="SITE_NAME" /> webgunerako pasahitz bat partekatu du zurekin</translation>
 <translation id="8891372124884726271">Kredentzialen zerrenda itxita dago.</translation>

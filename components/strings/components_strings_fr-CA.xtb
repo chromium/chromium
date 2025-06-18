@@ -867,8 +867,6 @@
             <ph name="LIST_ITEM" />Les informations saisies dans les formulaires
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Périphériques branchés à cet appareil pendant que vous êtes connecté</translation>
-<translation id="2450019289047528273">Modes de paiement et autres renseignements de Google Portefeuille</translation>
-<translation id="2451201933352935301"><ph name="URL" /> veut gérer les fenêtres sur tous vos écrans</translation>
 <translation id="2451607499823206582">Suivi activé</translation>
 <translation id="2452098632681057184">Écologie et environnement</translation>
 <translation id="2452837234288608067">Impossible de vous aider avec cette requête. Réessayez.</translation>
@@ -938,7 +936,6 @@
 <translation id="2546283357679194313">Témoins et données des sites</translation>
 <translation id="254947805923345898">La valeur attribuée à la politique n'est pas valide.</translation>
 <translation id="2549836668759467704">Services conseil et sous traitance en construction</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> et autres</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> a envoyé une réponse non valide.</translation>
 <translation id="2551608178605132291">Adresse : <ph name="ADDRESS" /></translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1049,7 +1046,6 @@
 <translation id="2743934314332613923">Mettre à jour le permis de conduire?</translation>
 <translation id="2759299890026163685">Assurez-vous d'avoir une connexion Internet stable avant de réessayer</translation>
 <translation id="2759825833388495838">remplissez votre mot de passe dans <ph name="APP_NAME" /></translation>
-<translation id="2760805590727089264">MM/AA</translation>
 <translation id="2764001903315068341">Bandes dessinées</translation>
 <translation id="2765217105034171413">Petit</translation>
 <translation id="2768397283109119044">Vous avez essayé d'atteindre <ph name="DOMAIN" />, mais le serveur a présenté un certificat non valide émis pour ce nom. Le nom est une adresse IP réservée ou un nom d'hôte interne.</translation>
@@ -3051,7 +3047,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6177531123306197852">Enveloppe C2</translation>
 <translation id="6180316780098470077">Intervalle entre les nouveaux essais</translation>
 <translation id="6182972682129119950">A4 x 5</translation>
-<translation id="6184099524311454384">Rechercher des onglets</translation>
 <translation id="6184868291074982484">Chrome limite automatiquement les témoins tiers</translation>
 <translation id="6190518157737269631">Remplacer certaines touches de votre clavier, comme Échap</translation>
 <translation id="6194209731893739467">Vous pouvez voir tous vos produits suivis en cliquant ici</translation>
@@ -3610,7 +3605,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="7130775116821607281">Téléversement bloqué</translation>
 <translation id="7132939140423847331">Votre administrateur a interdit la copie de ces données.</translation>
 <translation id="7135130955892390533">Afficher l’état</translation>
-<translation id="7135814714616751706">Recherchez des raccourcis</translation>
 <translation id="7136009930065337683">En savoir plus à propos de la navigation privée</translation>
 <translation id="7138472120740807366">Mode de livraison rapide</translation>
 <translation id="7138678301420049075">Autre</translation>
@@ -4183,7 +4177,6 @@ Détails supplémentaires :
 <translation id="8092254339843485299">6 po x 8 po</translation>
 <translation id="8092774999298748321">Mauve foncé</translation>
 <translation id="8094917007353911263">Le réseau que vous utilisez peut vous demander de visiter <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> .</translation>
-<translation id="809543534949702122">Historique de recherche</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">Mode de paiement</translation>
@@ -4822,7 +4815,6 @@ Détails supplémentaires :
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Personnaliser Chrome</translation>
 <translation id="9222403027701923763">Enseignement primaire et secondaire</translation>
-<translation id="9222463428840654067">Le numéro de carte est incorrect</translation>
 <translation id="922849469395748170">Cartes de fidélité</translation>
 <translation id="93020190163435405">Stages</translation>
 <translation id="931598121743515856">L'achat doit être supérieur à <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

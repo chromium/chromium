@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">Kayıtlı şifre veya geçiş anahtarı kullanılsın mı?</translation>
 <translation id="5624120631404540903">Şifreleri yönetin</translation>
 <translation id="592182999816790476"><ph name="USERNAME" /> kullanıcısının <ph name="WEBSITE" /> şifresi kaydedildi</translation>
-<translation id="593924516471361340"><ph name="WEBSITE" /> sitesine kaydedilen <ph name="USERNAME" /> hesabıyla ilgili sorun olması ihtimaline karşı geçici kurtarma şifresi</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> için geçiş anahtarı, ekran kilidinizi kullanın</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Bu site için yeni şifre mevcut}other{Bu site için yeni şifreler mevcut}}</translation>
 <translation id="7286867818472074330">Geçiş anahtarı seç</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815"><ph name="SITE_NAME" /> için birden fazla şifre aldınız</translation>
-<translation id="8202660122967066153"><ph name="USERNAME" /> hesabıyla ilgili sorun olması ihtimaline karşı geçici kurtarma şifresi</translation>
 <translation id="8363484128299778310">Sorun olması halinde geçici kurtarma</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> sizinle <ph name="SITE_NAME" /> için bir şifre paylaştı</translation>
 <translation id="8891372124884726271">Kimlik bilgisi listesi kapatıldı.</translation>

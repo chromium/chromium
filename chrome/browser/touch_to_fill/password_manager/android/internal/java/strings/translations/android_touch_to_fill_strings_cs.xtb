@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">Použít uložené heslo nebo přístupový klíč?</translation>
 <translation id="5624120631404540903">Spravovat hesla</translation>
 <translation id="592182999816790476">Heslo uživatele <ph name="USERNAME" /> uložené pro web <ph name="WEBSITE" /></translation>
-<translation id="593924516471361340">Dočasné heslo pro obnovení v případě potíží pro účet <ph name="USERNAME" /> uložené pro web <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Přístupový klíč pro uživatele <ph name="USERNAME" />, použijte zámek obrazovky.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nové heslo pro tento web}few{Nová hesla pro tento web}many{Nová hesla pro tento web}other{Nová hesla pro tento web}}</translation>
 <translation id="7286867818472074330">Vybrat přístupový klíč</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> z <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Obdrželi jste hesla pro web <ph name="SITE_NAME" /></translation>
-<translation id="8202660122967066153">Dočasné heslo pro obnovení v případě potíží pro účet <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Dočasné obnovení v případě potíží</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> s vámi sdílí heslo pro web <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Seznam identifikačních údajů je zavřený.</translation>

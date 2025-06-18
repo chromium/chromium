@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">გსურთ შენახული პაროლის ან წვდომის გასაღების გამოყენება?</translation>
 <translation id="5624120631404540903">პაროლების მართვა</translation>
 <translation id="592182999816790476"><ph name="USERNAME" />-ის პაროლი შეინახა <ph name="WEBSITE" />-ისთვის</translation>
-<translation id="593924516471361340">დროებითი პაროლი ადღგენისთვის, <ph name="WEBSITE" />-ისთვის შენახულ <ph name="USERNAME" />-თან დაკავშირებით პრობლემების წარმოქმნის შემთხვევაში</translation>
 <translation id="6560306912274274630">წვდომის გასაღები <ph name="USERNAME" />-ისთვის, გამოიყენეთ ეკრანის დაბლოკვის მეთოდი</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ახალი პაროლი ამ საიტისთვის}other{ახალი პაროლები ამ საიტისთვის}}</translation>
 <translation id="7286867818472074330">აირჩიეთ წვდომის გასაღები</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> / <ph name="ITEMS_TOTAL" />-დან.</translation>
 <translation id="7738288782501322815">თქვენ მიიღეთ პაროლები <ph name="SITE_NAME" />-ისთვის</translation>
-<translation id="8202660122967066153">დროებითი პაროლი ადღგენისთვის, <ph name="USERNAME" />-თან დაკავშირებით პრობლემების წარმოქმნის შემთხვევაში</translation>
 <translation id="8363484128299778310">დროებით აღდგენა პრობლემის შემთხვევაში</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" />-მა გაგიზიარათ <ph name="SITE_NAME" />-ის პაროლი</translation>
 <translation id="8891372124884726271">ავტორიზაციის მონაცემების სია დახურულია</translation>

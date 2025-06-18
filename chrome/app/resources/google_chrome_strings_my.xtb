@@ -65,7 +65,6 @@
 <translation id="178701303897325119">ဤနောက်ဆက်တွဲကို မပံ့ပိုးတော့ပါ။ သို့ဖြစ်၍ ၎င်းကို ဖယ်ရှားရန် Chrome က အကြံပြုပါသည်။</translation>
 <translation id="1812689907177901597">၎င်းကိုပိတ်ခြင်းဖြင့် Chrome တွင် လက်မှတ်ထိုးမဝင်ဘဲ Gmail ကဲ့သို့ Google ဝဘ်ဆိုက်များသို့ လက်မှတ်ထိုးဝင်နိုင်ပါသည်</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{သင့်ဘရောင်ဇာအား နှေးစေသော တဘ်ကို ခဏရပ်ရန် Chrome က အကြံပြုသည်}other{သင့်ဘရောင်ဇာအား နှေးစေသော တဘ်များကို ခဏရပ်ရန် Chrome က အကြံပြုသည်}}</translation>
-<translation id="1832046143430087831">Chrome ၏ V8 အင်ဂျင်ဖြင့် ဝဘ်ဆိုက်များကို အရှိန်မြှင့်တင်ပါ။ သို့သော် Chrome ကို တိုက်ခိုက်ခံရခြင်းမှ ကာကွယ်နိုင်စွမ်း အနည်းငယ်လျော့သွားပါမည်။ ဤဆက်တင်ကို ပိတ်ထားသည်။</translation>
 <translation id="1838374766361614909">ရှာဖွေမှုကို ရှင်းပါ</translation>
 <translation id="1860536484129686729">ဤဝဘ်ဆိုက်အတွက် Chrome သည် သင်၏ကင်မရာကို အသုံးပြုခွင့်ရရန် လိုအပ်ပါသည်</translation>
 <translation id="1873233029667955273">Google Chrome သည် သင်၏ မူရင်းဘရောင်ဇာ မဟုတ်ပါ</translation>
@@ -452,12 +451,12 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6718739135284199302">Chrome ပိုမြန်အောင်လုပ်ခြင်း</translation>
 <translation id="6735387454586646204">ChromeOS Flex စနစ်</translation>
 <translation id="6750954913813541382">စာလုံးပေါင်း အမှားများ ပြင်ရန် Chrome က ဘရောင်ဇာတွင် သင်ရိုက်သည့် စာသားကို Google သို့ ပို့ပါသည်</translation>
-<translation id="6760235774835597023">Chrome ၏ V8 အင်ဂျင်ဖြင့် ဝဘ်ဆိုက်များကို အရှိန်မြှင့်တင်ပါ။ သို့သော် Chrome ကို တိုက်ခိုက်ခံရခြင်းမှ ကာကွယ်နိုင်စွမ်း အနည်းငယ်လျော့သွားပါမည်။ ဤဆက်တင်ကို ဖွင့်ထားသည်။</translation>
 <translation id="677276454032249905">မည်သို့ပင်ဖြစ်စေ Chrome မှ ထွက်လိုပါသလား။</translation>
 <translation id="6794858689789885890">Chrome ကို ပိတ်သည့်အခါ သင့်စက်မှ ဝဘ်ဆိုက်ဒေတာကို အမြဲဖျက်ရန်</translation>
 <translation id="6831043979455480757">ဘာသာပြန်ရန်</translation>
 <translation id="683440813066116847">Google Chrome ကိန္နရီ အတွက် mDNS သွားလာမှု ခွင့်ပြုရေး အဝင် စည်းကမ်းချက်</translation>
 <translation id="684888714667046800">အင်တာနက် ချိတ်ဆက်၍ မရပါ။ Firewall သုံးပါက <ph name="PRODUCT_EXE_NAME" /> သည် ခွင့်ပြုစာရင်းတွင် ရှိကြောင်း သေချာပါစေ။</translation>
+<translation id="6851981911629679515">Chrome ၏ JavaScript နှင့် WebAssembly အင်ဂျင်တွင် ထပ်ဆောင်းကာကွယ်မှု ဖွင့်နိုင်သည်</translation>
 <translation id="6877155553248388166">ရှာဖွေမှုနေရာ၏ ညာဘက်အောက်ခြေထောင့်- ညာ <ph name="RIGHT" />%၊ အောက်ခြေ <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome ကို အပ်ဒိတ်လုပ်နေသည်</translation>
 <translation id="6885412569789873916">Chrome စမ်းသပ် အက်ပ်များ</translation>

@@ -65,7 +65,6 @@
 <translation id="178701303897325119">Пашырэнне больш не падтрымліваецца. Chrome рэкамендуе выдаліць яго.</translation>
 <translation id="1812689907177901597">Выключыўшы гэта, вы зможаце ўваходзіць на сайты Google, такія як Gmail, не ўваходзячы ў Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome рэкамендуе прыпыніць укладку, якая запавольвае працу браўзера}one{Chrome рэкамендуе прыпыніць укладкі, якія запавольваюць працу браўзера}few{Chrome рэкамендуе прыпыніць укладкі, якія запавольваюць працу браўзера}many{Chrome рэкамендуе прыпыніць укладкі, якія запавольваюць працу браўзера}other{Chrome рэкамендуе прыпыніць укладкі, якія запавольваюць працу браўзера}}</translation>
-<translation id="1832046143430087831">Функцыя паскарае працу сайтаў на рухавіку Chrome V8, але робіць Chrome крыху менш устойлівым да атак. Гэта налада выключана.</translation>
 <translation id="1838374766361614909">Ачысціць поле пошуку</translation>
 <translation id="1860536484129686729">Chrome запытвае дазвол на доступ да вашай камеры для гэтага сайта</translation>
 <translation id="1873233029667955273">Google Chrome не з’яўляецца стандартным браўзерам</translation>
@@ -451,12 +450,12 @@
 <translation id="6718739135284199302">Паскорце працу Chrome</translation>
 <translation id="6735387454586646204">Сістэма Chrome OS Flex</translation>
 <translation id="6750954913813541382">Для выпраўлення арфаграфічных памылак Chrome адпраўляе ў Google тэкст, які вы набіраеце ў браўзеры</translation>
-<translation id="6760235774835597023">Функцыя паскарае працу сайтаў на рухавіку Chrome V8, але робіць Chrome крыху менш устойлівым да атак. Гэта налада ўключана.</translation>
 <translation id="677276454032249905">Усё роўна выйсці з Chrome?</translation>
 <translation id="6794858689789885890">Заўсёды выдаляць даныя сайтаў з прылады пры закрыцці Chrome</translation>
 <translation id="6831043979455480757">Перакласці</translation>
 <translation id="683440813066116847">Уваходнае правіла для Google Chrome Canary, якое дазваляе трафік mDNS.</translation>
 <translation id="684888714667046800">Не ўдалося падключыцца да інтэрнэту. Калі вы выкарыстоўваеце брандмаўар, упэўніцеся, што <ph name="PRODUCT_EXE_NAME" /> знаходзіцца ў белым спісе.</translation>
+<translation id="6851981911629679515">Уключыць дадатковую абарону рухавіка JavaScript і WebAssembly у Chrome</translation>
 <translation id="6877155553248388166">ніжні правы вугал поля пошуку: <ph name="RIGHT" />% справа, <ph name="BOTTOM" />% знізу</translation>
 <translation id="6881299373831449287">Ідзе абнаўленне браўзера Chrome</translation>
 <translation id="6885412569789873916">Праграмы бэта-версіі Chrome</translation>

@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">저장된 비밀번호 또는 패스키를 사용하시겠습니까?</translation>
 <translation id="5624120631404540903">비밀번호 관리</translation>
 <translation id="592182999816790476"><ph name="WEBSITE" />에 <ph name="USERNAME" />님의 비밀번호가 저장됨</translation>
-<translation id="593924516471361340"><ph name="USERNAME" />의 문제 발생 시 복구용 임시 비밀번호가 <ph name="WEBSITE" />에 저장됩니다.</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" />님의 패스키입니다. 화면 잠금을 사용하세요.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{이 사이트의 새 비밀번호}other{이 사이트의 새 비밀번호}}</translation>
 <translation id="7286867818472074330">패스키 선택</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" /></translation>
 <translation id="7738288782501322815"><ph name="SITE_NAME" />의 비밀번호를 받았습니다</translation>
-<translation id="8202660122967066153"><ph name="USERNAME" />의 문제 발생 시 사용할 임시 복구 비밀번호</translation>
 <translation id="8363484128299778310">문제 발생 시 임시 복구</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" />님이 <ph name="SITE_NAME" />의 비밀번호를 공유했습니다</translation>
 <translation id="8891372124884726271">사용자 인증 정보 목록이 닫힙니다.</translation>

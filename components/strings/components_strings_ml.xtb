@@ -867,8 +867,6 @@
             <ph name="LIST_ITEM" />ഫോമുകളിൽ നൽകിയ വിവരങ്ങൾ
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">നിങ്ങൾ ലോഗിൻ ചെയ്‌തിരിക്കുമ്പോൾ ഈ ഉപകരണത്തിൽ അറ്റാച്ച് ചെയ്തിരിക്കുന്ന പെരിഫറലുകൾ</translation>
-<translation id="2450019289047528273">പേയ്മെന്റ് രീതികളും Google Wallet-ൽ നിന്നുള്ള മറ്റ് വിവരങ്ങളും</translation>
-<translation id="2451201933352935301">നിങ്ങളുടെ എല്ലാ ഡിസ്‌പ്ലേകളിലും വിൻഡോകൾ മാനേജ് ചെയ്യണമെന്ന് <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="2451607499823206582">ട്രാക്ക് ചെയ്യൽ</translation>
 <translation id="2452098632681057184">പരിസ്ഥിതി ശാസ്ത്രവും പരിസ്ഥിതിയും</translation>
 <translation id="2452837234288608067">അതുമായി ബന്ധപ്പെട്ട് സഹായിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കൂ.</translation>
@@ -938,7 +936,6 @@
 <translation id="2546283357679194313">കുക്കികളും സൈറ്റ് ഡാറ്റയും</translation>
 <translation id="254947805923345898">നയത്തിൻ്റെ മൂല്യം അസാധുവാണ്.</translation>
 <translation id="2549836668759467704">നിർമാണ കൺസൾട്ടിംഗും കരാറും</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> എന്നിവയും മറ്റും</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> അസാധുവായ ഒരു പ്രതികരണം അയച്ചു.</translation>
 <translation id="2551608178605132291">വിലാസം: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">ഹഗാക്കി</translation>
@@ -1049,7 +1046,6 @@
 <translation id="2743934314332613923">ഡ്രൈവിംഗ് ലൈസൻസ് അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="2759299890026163685">വീണ്ടും ശ്രമിക്കുന്നതിന് മുമ്പ് നിങ്ങൾക്ക് സ്ഥിരതയുള്ള ഒരു ഇന്റർനെറ്റ് കണക്ഷനുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> ആപ്പിൽ നിങ്ങളുടെ പാസ്‌വേഡ് പൂരിപ്പിക്കുക</translation>
-<translation id="2760805590727089264">MM / YY</translation>
 <translation id="2764001903315068341">കോമിക്‌സ്</translation>
 <translation id="2765217105034171413">ചെറുത്</translation>
 <translation id="2768397283109119044">നിങ്ങൾ <ph name="DOMAIN" /> എന്നതിലെത്താൻ ശ്രമിച്ചു, എന്നാൽ ആ പേരിൽ അസാധുവായ സർട്ടിഫിക്കറ്റ് നൽകിയെന്ന് സെർവർ കാണിച്ചു. റിസർവ് ചെയ്തിട്ടുള്ള IP വിലാസമോ ഇന്റേണൽ ഹോസ്റ്റ് നാമമോ ആണ് പേര്.</translation>
@@ -3050,7 +3046,6 @@
 <translation id="6177531123306197852">Envelope C2</translation>
 <translation id="6180316780098470077">വീണ്ടും ശ്രമിക്കുന്നതിനുള്ള ഇടവേള</translation>
 <translation id="6182972682129119950">A4x5</translation>
-<translation id="6184099524311454384">ടാബുകൾ തിരയുക</translation>
 <translation id="6184868291074982484">മൂന്നാം കക്ഷി കുക്കികളെ Chrome സ്വയമേവ പരിമിതപ്പെടുത്തുന്നു</translation>
 <translation id="6190518157737269631">നിങ്ങളുടെ കീബോർഡിലെ Esc പോലുള്ള ചില കീകൾ അസാധുവാക്കുക</translation>
 <translation id="6194209731893739467">നിങ്ങൾ ട്രാക്ക് ചെയ്യുന്ന എല്ലാ ഉൽപ്പന്നങ്ങളും ഇവിടെ കാണാം</translation>
@@ -3609,7 +3604,6 @@
 <translation id="7130775116821607281">അപ്‌ലോഡ് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="7132939140423847331">ഈ ഡാറ്റ പകർത്തുന്നത് നിങ്ങളുടെ അഡ്‌മിൻ നിരോധിച്ചിരിക്കുന്നു.</translation>
 <translation id="7135130955892390533">സ്‌റ്റാറ്റസ് കാണിക്കുക</translation>
-<translation id="7135814714616751706">Search കുറുക്കുവഴികൾ</translation>
 <translation id="7136009930065337683">അദൃശ്യ മോഡിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="7138472120740807366">ഡെലിവറി രീതി</translation>
 <translation id="7138678301420049075">മറ്റുള്ളവ</translation>
@@ -4181,7 +4175,6 @@
 <translation id="8092254339843485299">6 x 8 ഇഞ്ച്</translation>
 <translation id="8092774999298748321">ഇരുണ്ട പർപ്പിൾ</translation>
 <translation id="8094917007353911263">നിങ്ങൾക്ക് ഉപയോഗിക്കുന്ന നെറ്റ്‌വർക്ക് <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> സന്ദർശിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടാം.</translation>
-<translation id="809543534949702122">തിരയൽ ചരിത്രം</translation>
 <translation id="8098855213644561659">A3 എക്‌സ്ട്രാ</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">പേയ്‌മെന്റ് രീതി</translation>
@@ -4821,7 +4814,6 @@
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="9222403027701923763">പ്രാഥമിക, സെക്കൻഡറി സ്‌കൂൾ വിദ്യാഭ്യാസം (K-12)</translation>
-<translation id="9222463428840654067">കാർഡ് നമ്പർ അസാധുവാണ്</translation>
 <translation id="922849469395748170">ലോയൽറ്റി കാർഡുകൾ</translation>
 <translation id="93020190163435405">ഇന്റേൺഷിപ്പുകൾ</translation>
 <translation id="931598121743515856"><ph name="CHECKOUT_AMOUNT_MINIMUM" /> എന്നതിൽ കൂടുതലായിരിക്കണം വാങ്ങൽ</translation>

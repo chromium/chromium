@@ -862,8 +862,6 @@
           <ph name="LIST_ITEM" />ఫారమ్‌లలో ఎంటర్ చేసిన సమాచారం
         <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">మీరు లాగిన్ చేసినప్పుడు, ఈ పరికరంలో జోడించబడిన పెరిఫెరల్స్</translation>
-<translation id="2450019289047528273">Google Walletలోని పేమెంట్ ఆప్షన్‌లు, ఇతర సమాచారం</translation>
-<translation id="2451201933352935301">మీ డిస్‌ప్లేలన్నింటిలో విండోలను మేనేజ్ చేయడానికి <ph name="URL" /> అనుమతి కోరుతోంది</translation>
 <translation id="2451607499823206582">ట్రాకింగ్</translation>
 <translation id="2452098632681057184">ఎకాలజీ &amp; పర్యావరణం</translation>
 <translation id="2452837234288608067">దానితో సహాయం చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి.</translation>
@@ -933,7 +931,6 @@
 <translation id="2546283357679194313">కుక్కీలు మరియు సైట్ డేటా</translation>
 <translation id="254947805923345898">విధానం విలువ చెల్లుబాటు కాదు.</translation>
 <translation id="2549836668759467704">నిర్మాణం కోసం సంప్రదించడం &amp; ఒప్పందం చేసుకోవడం</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" />, మరిన్ని</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> చెల్లని ప్రతిస్పందనను పంపింది.</translation>
 <translation id="2551608178605132291">అడ్రస్: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">హగాకీ</translation>
@@ -1044,7 +1041,6 @@
 <translation id="2743934314332613923">డ్రైవింగ్ లైసెన్స్‌ను అప్‌డేట్ చేయాలా?</translation>
 <translation id="2759299890026163685">మళ్లీ ట్రై చేయడానికి ముందు మీ వద్ద స్థిరమైన ఇంటర్నెట్ కనెక్షన్ ఉందని నిర్ధారించుకోండి</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" />పై మీ పాస్‌వర్డ్‌ను పూర్తి చేయండి</translation>
-<translation id="2760805590727089264">MM / YY</translation>
 <translation id="2764001903315068341">కామిక్స్</translation>
 <translation id="2765217105034171413">చిన్నది</translation>
 <translation id="2768397283109119044">మీరు <ph name="DOMAIN" />‌ను చేరుకోవడానికి ప్రయత్నించారు, కానీ సర్వర్ ఆ పేరుపై చెల్లని సర్టిఫికెట్ జారీ చేసింది. ఆ పేరు అనేది కేటాయించిన IP అడ్రస్ లేదా అంతర్గత హోస్ట్‌పేరు.</translation>
@@ -3046,7 +3042,6 @@
 <translation id="6177531123306197852">ఎన్వలప్ C2</translation>
 <translation id="6180316780098470077">పునఃప్రయత్నాల మధ్య విరామం</translation>
 <translation id="6182972682129119950">A4x5</translation>
-<translation id="6184099524311454384">ట్యాబ్‌లలో సెర్చ్ చేయండి</translation>
 <translation id="6184868291074982484">Chrome థర్డ్-పార్టీ కుక్కీలను ఆటోమేటిక్‌గా పరిమితం చేస్తుంది</translation>
 <translation id="6190518157737269631">మీ కీబోర్డ్‌లోని కొన్ని కీలను ఓవర్‌రైడ్ చేయండి, ఉదా., Esc</translation>
 <translation id="6194209731893739467">మీరు ట్రాక్ చేసిన అన్ని ప్రోడక్ట్‌లను ఇక్కడ చూడండి</translation>
@@ -3605,7 +3600,6 @@
 <translation id="7130775116821607281">అప్‌లోడ్ చేయకుండా బ్లాక్ చేయబడింది</translation>
 <translation id="7132939140423847331">మీ అడ్మిన్ ఈ డేటాను కాపీ చేయకుండా నిషేధించారు.</translation>
 <translation id="7135130955892390533">స్థితిని చూపు</translation>
-<translation id="7135814714616751706">షార్ట్‌కట్‌ల కోసం సెర్చ్ చేయండి</translation>
 <translation id="7136009930065337683">అజ్ఞాత మోడ్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="7138472120740807366">డెలివరీ పద్ధతి</translation>
 <translation id="7138678301420049075">ఇతర</translation>
@@ -4179,7 +4173,6 @@
 <translation id="8092254339843485299">6 x 8 అంగుళాలు</translation>
 <translation id="8092774999298748321">ముదురు ఊదా రంగు</translation>
 <translation id="8094917007353911263">మీరు ఉపయోగిస్తున్న నెట్‌వర్క్‌కు మీరు <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ను సందర్శించడం అవసరం.</translation>
-<translation id="809543534949702122">సెర్చ్ హిస్టరీ</translation>
 <translation id="8098855213644561659">A3 అదనం</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">పేమెంట్ ఆప్షన్‌</translation>
@@ -4819,7 +4812,6 @@
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="922152298093051471">Chromeను అనుకూలంగా మార్చండి</translation>
 <translation id="9222403027701923763">ప్రాథమిక &amp; మాధ్యమిక స్కూల్ (K-12)</translation>
-<translation id="9222463428840654067">కార్డ్ నంబర్ చెల్లదు</translation>
 <translation id="922849469395748170">లాయల్టీ కార్డ్‌లు</translation>
 <translation id="93020190163435405">ఇంటర్న్‌షిప్‌లు</translation>
 <translation id="931598121743515856">కొనుగోలు విలువ తప్పనిసరిగా <ph name="CHECKOUT_AMOUNT_MINIMUM" /> కంటే ఎక్కువగా ఉండాలి</translation>

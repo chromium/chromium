@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">Використати збережений пароль або ключ доступу?</translation>
 <translation id="5624120631404540903">Керувати паролями</translation>
 <translation id="592182999816790476">Пароль для вебсайту <ph name="WEBSITE" /> збережено в обліковому записі <ph name="USERNAME" /></translation>
-<translation id="593924516471361340">Тимчасовий резервний пароль відновлення для облікового запису <ph name="USERNAME" />, збережений для вебсайту <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Ключ доступу для користувача <ph name="USERNAME" />, застосуйте функцію блокування екрана</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Новий пароль для цього сайту}one{Нові паролі для цього сайту}few{Нові паролі для цього сайту}many{Нові паролі для цього сайту}other{Нові паролі для цього сайту}}</translation>
 <translation id="7286867818472074330">Вибрати ключ доступу</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> з <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Ви отримали паролі для сайту <ph name="SITE_NAME" /></translation>
-<translation id="8202660122967066153">Тимчасовий резервний пароль відновлення для облікового запису <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Тимчасове відновлення в разі виникнення проблем</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> надає вам доступ до пароля для сайту <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Список облікових даних закрито.</translation>

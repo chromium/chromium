@@ -65,7 +65,6 @@
 <translation id="178701303897325119">Бул кеңейтүү колдоого алынбай калган. Chrome аны өчүрүүнү сунуштайт.</translation>
 <translation id="1812689907177901597">Ушуну өчүрүү менен Gmail сыяктуу Google сайттарына Chrome'суз кире аласыз</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome браузерди жайлаткан өтмөктөрдү тындырууну сунуштайт}other{Chrome браузерди жайлаткан өтмөктөрдү тындырууну сунуштайт}}</translation>
-<translation id="1832046143430087831">Chrome'дун V8 каражаты менен сайттардын жүктөлүшүн тездетет, бирок Chrome'дун чабуулдарга туруктуулугун начарлатат. Бул параметр өчүк.</translation>
 <translation id="1838374766361614909">Изделип жаткан нерсени өчүрүү</translation>
 <translation id="1860536484129686729">Бул сайтта иштөө үчүн Chrome камераңызды колдонушу керек</translation>
 <translation id="1873233029667955273">Google Chrome сиздин демейки серепчиңиз эмес</translation>
@@ -452,12 +451,12 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6718739135284199302">Chrome'ду ылдамдатуу</translation>
 <translation id="6735387454586646204">ChromeOS Flex тутуму</translation>
 <translation id="6750954913813541382">Орфографиялык каталарды оңдоо үчүн Chrome серепчиде терилген текстти Google кызматтарына жөнөтүп турат</translation>
-<translation id="6760235774835597023">Chrome'дун V8 каражаты менен сайттардын жүктөлүшүн тездетет, бирок Chrome'дун чабуулдарга туруктуулугун начарлатат. Бул параметр күйүк.</translation>
 <translation id="677276454032249905">Баары бир Chrome'дон чыгасызбы?</translation>
 <translation id="6794858689789885890">Chrome'ду жапкан сайын түзмөгүңүздөгү сайттардын маалыматын өчүрүү</translation>
 <translation id="6831043979455480757">Которуу</translation>
 <translation id="683440813066116847">mDNS трафигине мүмкүндүк берүү үчүн Google Chrome Canary'нин кайрылуу эрежеси.</translation>
 <translation id="684888714667046800">Интернетке туташуу мүмкүн болбой жатат. Эгер тармактык коргоону колдонсоңуз, <ph name="PRODUCT_EXE_NAME" /> уруксат берилгендердин тизмесинде болушу керек.</translation>
+<translation id="6851981911629679515">Chrome'дун JavaScript жана WebAssembly куралында кошумча коргоону күйгүзүү</translation>
 <translation id="6877155553248388166">издөө аймагынын төмөнкү оң бурчу: оң жагы <ph name="RIGHT" />%, төмөн жагы <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome жаңыртылууда</translation>
 <translation id="6885412569789873916">Chrome Бета Колдонмолору</translation>

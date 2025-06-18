@@ -545,7 +545,6 @@
 <translation id="3227137524299004712">মাইক্রোফোন</translation>
 <translation id="3235063766008841141">এই পাসওয়ার্ড কোনও প্রতারণামূলক সাইটে ব্যবহার করা হয়েছিল এবং হ্যাক হওয়া ডেটাবেসেও এটি পাওয়া গেছে</translation>
 <translation id="3235242129752692527">ইভেন্টের বিবরণ এডিট করুন ও “সেভ করুন“ বিকল্পে ট্যাপ করুন।</translation>
-<translation id="323863549127671026">বর্তমানে খোলা ট্যাব ও ট্যাব গ্রুপ</translation>
 <translation id="3240426699337459095">লিঙ্ক কপি করা হয়েছে</translation>
 <translation id="3244271242291266297">মিমি</translation>
 <translation id="3245429137663807393">আপনি Chrome ব্যবহারের রিপোর্ট শেয়ার করলেও, আপনার দেখা URL তার মধ্যে অন্তর্ভুক্ত থাকে</translation>
@@ -612,6 +611,7 @@
 <translation id="3557336313807607643">পরিচিতিতে যোগ করুন</translation>
 <translation id="355765753469272474">আগের অবস্থায় ফিরুন</translation>
 <translation id="3565930036634619844">ট্যাব। <ph name="NUMBER_OF_TABS" />টির মধ্যে <ph name="TAB_INDEX" /> নম্বর।</translation>
+<translation id="3570693105179140209">আরও পাসওয়ার্ডের জন্য ডবল ট্যাপ করুন।</translation>
 <translation id="3572607909481582402">আপনার Google অ্যাকাউন্টে</translation>
 <translation id="3575234738189584619">Lens-এর মাধ্যমে সার্চ করুন</translation>
 <translation id="3575426792457739946">এই তালিকাতে লোড করা সব প্রোফাইল আছে।</translation>
@@ -655,6 +655,7 @@
 <translation id="3779810277399252432">কোনও ইন্টারনেট সংযোগ নেই৷</translation>
 <translation id="3782614601387961027">সতর্কতা বাতিল করুন</translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
+<translation id="3795478177331815672">ট্যাব ও ট্যাব গ্রুপ খুলুন</translation>
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803696231112616155">এই সাইট অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="3808311849069021992">সার্চ ইঞ্জিনের বিবরণ দেখুন</translation>
@@ -700,6 +701,7 @@
 <translation id="3955740319737378355">হয়ে গেছে</translation>
 <translation id="3955822496205734389">আপনার দুর্বল পাসওয়ার্ড আছে।</translation>
 <translation id="3958312024468322930">আপনার হোম স্ক্রিনের নিচে ডকে এটি টেনে নিয়ে আসুন</translation>
+<translation id="3960218941754097036">Google Lens ব্যবহার করে আপনার স্ক্রিনে যেকোনও জিনিস সার্চ করুন</translation>
 <translation id="3962326069546168954">সেভ করুন</translation>
 <translation id="3967327056943561740">বুকমার্ক</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
@@ -966,6 +968,7 @@
 <translation id="4979397965658815378">আপনার সব ডিভাইসে আপনার বুকমার্ক, পাসওয়ার্ড, ইতিহাস এবং অন্যান্য সেটিংস পেতে আপনার Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="4985921635659180565">কোনও একটি ফাইল মুছে ফেলার জন্য শিডিউল করা হলে, এটি বাতিল করা যাবে না।</translation>
 <translation id="498624032394115435">এই লিঙ্ক আছে এমন যেকোনও ব্যক্তি সব ট্যাব এডিট করতে পারবেন।</translation>
+<translation id="4989065233040279145"><ph name="FILENAME" /> কোথায় সেভ করবেন বেছে নিন</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> আপনার সংস্থা এটি ম্যানেজ করে।</translation>
 <translation id="4992255726304765516">ট্যাব গ্রুপের রঙ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">পাসওয়ার্ড কপি করুন</translation>
@@ -1653,6 +1656,7 @@
 <translation id="7724085059277147439">{count,plural, =1{আপনার Google অ্যাকাউন্ট, {email}-এ আইটেম সেভ করা হয়েছে}one{আপনার Google অ্যাকাউন্ট, {email}-এ আইটেম সেভ করা হয়েছে}other{আপনার Google অ্যাকাউন্ট, {email}-এ আইটেম সেভ করা হয়েছে}}</translation>
 <translation id="7729458878441927652">আপনার অন্য ডিভাইস থেকে ট্যাব দেখতে নিজের ট্যাব ও ইতিহাস সিঙ্ক করুন।</translation>
 <translation id="7730020510075123961">না, ডেটা মার্জ করুন</translation>
+<translation id="7730973429297233609"><ph name="FILENAME" /> - <ph name="FILESIZE" /> সেভ করার জন্য যে অ্যাকাউন্ট ব্যবহার করতে চান তা বেছে নিন</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />। শুধুমাত্র এই ডিভাইসে।</translation>
 <translation id="7744192722284567281">ডেটার নিরাপত্তা লঙ্ঘন দেখা গেছে</translation>
 <translation id="7749790401023484470">আপনি কোনও টেক্সট বেছে নিন।</translation>
@@ -1813,7 +1817,6 @@
 <translation id="8343993175958086504">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন।</translation>
 <translation id="8348530355586151720">তিন ডট মেনুতে ট্যাপ করুন</translation>
 <translation id="8349305172487531364">বুকমার্কস বার</translation>
-<translation id="8363484128299778310">সমস্যার ক্ষেত্রে অস্থায়ী ফাইল থেকে পাসওয়ার্ড ফেরানো</translation>
 <translation id="8364563001733875155">আপনার পিন পরিবর্তন করতে, প্রথমে নিজের ডিভাইসে পাসকোড সেট-আপ করুন।</translation>
 <translation id="8366466717204352506">কখনও চেক করা হয়নি</translation>
 <translation id="8368001212524806591">দাম ট্র্যাক করুন</translation>
@@ -1836,6 +1839,7 @@
 <translation id="8428045167754449968">নগর / ছোট শহর</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8428634594422941299">বুঝেছি</translation>
+<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) কোথায় সেভ করবেন বেছে নিন</translation>
 <translation id="8434837876193928924">ট্যাব গ্রুপ সম্পর্কিত বিবরণ</translation>
 <translation id="8438566539970814960">সার্চ এবং ব্রাউজিং অভিজ্ঞতা আরও উন্নত করুন</translation>
 <translation id="8439758443371991593">'পড়ার তালিকায় যোগ করুন' বিকল্পটি লুকান</translation>

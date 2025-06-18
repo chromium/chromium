@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">Gespeichertes Passwort oder gespeicherten Passkey verwenden?</translation>
 <translation id="5624120631404540903">Passwörter verwalten</translation>
 <translation id="592182999816790476">Passwort für <ph name="USERNAME" /> für <ph name="WEBSITE" /> gespeichert</translation>
-<translation id="593924516471361340">Temporäres Wiederherstellungspasswort für den Fall eines Problems bei der Anmeldung von <ph name="USERNAME" /> für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="6560306912274274630">Passkey für <ph name="USERNAME" />, verwende die Displaysperre</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Neues Passwort für diese Website}other{Neue Passwörter für diese Website}}</translation>
 <translation id="7286867818472074330">Passkey auswählen</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> von <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Du hast Passwörter für <ph name="SITE_NAME" /> erhalten</translation>
-<translation id="8202660122967066153">Temporäres Wiederherstellungspasswort für den Fall eines Problems bei der Anmeldung von <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Temporäres Wiederherstellungspasswort bei Problemen mit der Anmeldung</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> hat ein Passwort für <ph name="SITE_NAME" /> freigegeben</translation>
 <translation id="8891372124884726271">Die Liste mit den Anmeldedaten ist geschlossen.</translation>

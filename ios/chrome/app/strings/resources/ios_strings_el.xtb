@@ -18,7 +18,6 @@
 <translation id="1054745118061919935">Αν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK" />Όρους Παροχής Υπηρεσιών<ph name="END_LINK" />.</translation>
 <translation id="10614374240317010">Δεν έχει αποθηκευθεί ποτέ</translation>
 <translation id="1062138828266376352">Το PIN δεν άλλαξε. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά</translation>
-<translation id="1063070031224282617">Επιλέξτε πού θα αποθηκευτεί το αρχείο <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Αξιολογήσεις με βάση τα ενδιαφέροντά σας</translation>
 <translation id="1074827084851510304">Πρόκειται να διαγράψετε {password_count} κωδικούς πρόσβασης και τη λίστα ιστοτόπων και εφαρμογών που έχετε επιλέξει να μην αποθηκεύουν ποτέ πληροφορίες σύνδεσης. Τυχόν λογαριασμοί που δημιουργήσατε για ιστοτόπους και εφαρμογές δεν θα διαγραφούν.</translation>
 <translation id="1076421457278169141">Ο κώδικας σαρώθηκε</translation>
@@ -593,7 +592,6 @@
 <translation id="3476450923187944815">Αποκτήστε πρόσβαση στους κωδικούς πρόσβασής σας σε άλλες εφαρμογές.</translation>
 <translation id="3488501490964659223">Οι καρτέλες έκλεισαν και τα δεδομένα περιήγησης διαγράφηκαν. Αποσυνδεθήκατε</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με το προτεινόμενο περιεχόμενο</translation>
-<translation id="349446645805573740">Επιλέξτε πού θα αποθηκευτεί το αρχείο <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /></translation>
 <translation id="3504377992102007712">Ρυθμίσεις</translation>
 <translation id="35083190962747987">Άνοιγμα ${url}</translation>
 <translation id="3511519535430890904">Προσθήκη προστασίας περιήγησης</translation>
@@ -613,6 +611,7 @@
 <translation id="3557336313807607643">Προσθήκη στις επαφές</translation>
 <translation id="355765753469272474">Αναίρεση</translation>
 <translation id="3565930036634619844">Καρτέλα. <ph name="TAB_INDEX" /> από <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3570693105179140209">Πατήστε δύο φορές για περισσότερους κωδικούς πρόσβασης.</translation>
 <translation id="3572607909481582402">Στον Λογαριασμό σας Google</translation>
 <translation id="3575234738189584619">Αναζήτηση με το Lens</translation>
 <translation id="3575426792457739946">Αυτή η λίστα περιέχει όλα τα φορτωμένα προφίλ.</translation>
@@ -656,6 +655,7 @@
 <translation id="3779810277399252432">Δεν υπάρχει σύνδεση στο διαδίκτυο.</translation>
 <translation id="3782614601387961027">Παράβλεψη ειδοποίησης</translation>
 <translation id="3789841737615482174">Εγκατάσταση</translation>
+<translation id="3795478177331815672">Ανοικτές καρτέλες και ομάδες καρτελών</translation>
 <translation id="380329542618494757">Όνομα</translation>
 <translation id="3803696231112616155">Πρόταση για μετάφραση αυτού του ιστοτόπου</translation>
 <translation id="3808311849069021992">Εμφάνιση λεπτομερειών μηχανής αναζήτησης</translation>
@@ -693,7 +693,6 @@
 <translation id="3922395466317605522">Προσαρμογή μενού</translation>
 <translation id="3929457972718048006">Διευθύνσεις</translation>
 <translation id="3931215329146376310">{count,plural, =1{Νέος κωδικός πρόσβασης για αυτόν τον ιστότοπο}other{Νέοι κωδικοί πρόσβασης για αυτόν τον ιστότοπο}}</translation>
-<translation id="3934905113567851655">Πλησιάστε για αλλαγή μεγέθους</translation>
 <translation id="3940195383040445971">Παρακολούθηση τιμών σε καρτέλες</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Κλείσιμο {COUNT} καρτέλας}other{Κλείσιμο {COUNT} καρτελών}}</translation>
 <translation id="3948600256434252210">Μπορείτε να σύρετε προς τα δεξιά για ανώνυμη περιήγηση.</translation>
@@ -702,6 +701,7 @@
 <translation id="3955740319737378355">Τέλος</translation>
 <translation id="3955822496205734389">Έχετε ασθενείς κωδικούς πρόσβασης.</translation>
 <translation id="3958312024468322930">Σύρετέ το στη γραμμή εφαρμογών στο κάτω μέρος της αρχικής οθόνης</translation>
+<translation id="3960218941754097036">Αναζητήστε οτιδήποτε στην οθόνη σας με το Google Lens</translation>
 <translation id="3962326069546168954">Αποθήκευση</translation>
 <translation id="3967327056943561740">Σελιδοδείκτες</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
@@ -968,6 +968,7 @@
 <translation id="4979397965658815378">Συνδεθείτε στον Λογαριασμό σας Google για να λάβετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης, το ιστορικό και άλλες ρυθμίσεις σε όλες τις συσκευές σας.</translation>
 <translation id="4985921635659180565">Εάν ένα αρχείο έχει προγραμματιστεί για διαγραφή, δεν είναι δυνατή η ακύρωσή της.</translation>
 <translation id="498624032394115435">Όποιος διαθέτει τον σύνδεσμο μπορεί να επεξεργαστεί όλες τις καρτέλες.</translation>
+<translation id="4989065233040279145">Επιλέξτε τοποθεσία αποθήκευσης για το αρχείο <ph name="FILENAME" /></translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, υπό τη διαχείριση του οργανισμού σας.</translation>
 <translation id="4992255726304765516">Χρώμα ομάδας καρτελών <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Αντιγραφή κωδικού πρόσβασης</translation>
@@ -1655,6 +1656,7 @@
 <translation id="7724085059277147439">{count,plural, =1{Το στοιχείο αποθηκεύτηκε στον Λογαριασμό σας Google, {email}}other{Τα στοιχεία αποθηκεύτηκαν στον Λογαριασμό σας Google, {email}}}</translation>
 <translation id="7729458878441927652">Για να δείτε τις καρτέλες από τις άλλες συσκευές σας, συγχρονίστε τις καρτέλες και το ιστορικό.</translation>
 <translation id="7730020510075123961">Όχι, να γίνει συγχώνευση δεδομένων</translation>
+<translation id="7730973429297233609">Επιλέξτε τον λογαριασμό που θέλετε να χρησιμοποιήσετε για την αποθήκευση του αρχείου <ph name="FILENAME" /> - <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Μόνο σε αυτήν τη συσκευή.</translation>
 <translation id="7744192722284567281">Βρέθηκε σε παραβίαση δεδομένων</translation>
 <translation id="7749790401023484470">Δεν επιλέξατε κείμενο.</translation>
@@ -1702,7 +1704,6 @@
 <translation id="7925108652071887026">Δεδομένα αυτόματης συμπλήρωσης</translation>
 <translation id="7926975587469166629">Ψευδώνυμο κάρτας</translation>
 <translation id="7927711904086083099">Μη επιλεγμένο</translation>
-<translation id="7927902634113905831">Επιλέξτε τον λογαριασμό που θέλετε να χρησιμοποιήσετε για την αποθήκευση του αρχείου <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> - <ph name="FILESIZE" /></translation>
 <translation id="7930998711684428189">Σας προειδοποιεί σε περίπτωση που οι κωδικοί πρόσβασής σας αποκαλυφθούν στο πλαίσιο μιας παραβίασης δεδομένων.</translation>
 <translation id="7933880123415105005">Αναζήτηση <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -1816,7 +1817,6 @@
 <translation id="8343993175958086504">Δημιουργήστε αντίγραφα ασφαλείας των δεδομένων σας και χρησιμοποιήστε τα σε οποιαδήποτε συσκευή.</translation>
 <translation id="8348530355586151720">Πατήστε το μενού με τρεις κουκκίδες</translation>
 <translation id="8349305172487531364">Γραμμή σελιδοδεικτών</translation>
-<translation id="8363484128299778310">Προσωρινή ανάκτηση σε περίπτωση προβλημάτων</translation>
 <translation id="8364563001733875155">Για να αλλάξετε το PIN, ορίστε πρώτα έναν κωδικό πρόσβασης στη συσκευή σας.</translation>
 <translation id="8366466717204352506">Δεν εκτελέστηκε έλεγχος ποτέ</translation>
 <translation id="8368001212524806591">Παρακολούθηση τιμής</translation>
@@ -1839,6 +1839,7 @@
 <translation id="8428045167754449968">Πόλη / Κωμόπολη</translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8428634594422941299">Το κατάλαβα</translation>
+<translation id="8430694217306051839">Επιλέξτε τοποθεσία αποθήκευσης για το αρχείο <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8434837876193928924">Λεπτομέρειες ομάδας καρτελών</translation>
 <translation id="8438566539970814960">Βελτιώστε τις αναζητήσεις και την περιήγηση</translation>
 <translation id="8439758443371991593">Απόκρυψη της επιλογής Προσθήκη στη λίστα ανάγνωσης</translation>

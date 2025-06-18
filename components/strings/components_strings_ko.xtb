@@ -867,8 +867,6 @@
             <ph name="LIST_ITEM" />양식에 입력된 정보
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">로그인되어 있는 동안 이 기기에 연결된 주변기기</translation>
-<translation id="2450019289047528273">Google 월렛의 결제 수단 및 기타 정보</translation>
-<translation id="2451201933352935301"><ph name="URL" />에서 모든 디스플레이의 창을 관리하려고 합니다.</translation>
 <translation id="2451607499823206582">추적</translation>
 <translation id="2452098632681057184">생태학 및 환경</translation>
 <translation id="2452837234288608067">이와 관련해 도움을 드릴 수 없습니다. 다시 시도하세요.</translation>
@@ -938,7 +936,6 @@
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="254947805923345898">정책 값이 유효하지 않습니다.</translation>
 <translation id="2549836668759467704">건설 컨설팅 및 계약</translation>
-<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> 등</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" />에서 잘못된 응답을 전송했습니다.</translation>
 <translation id="2551608178605132291">주소: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">엽서</translation>
@@ -1049,7 +1046,6 @@
 <translation id="2743934314332613923">운전면허증을 업데이트하시겠습니까?</translation>
 <translation id="2759299890026163685">다시 시도하기 전에 인터넷 연결이 안정적인지 확인하세요.</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" />에 비밀번호 입력</translation>
-<translation id="2760805590727089264">MM/YY</translation>
 <translation id="2764001903315068341">만화</translation>
 <translation id="2765217105034171413">작게</translation>
 <translation id="2768397283109119044"><ph name="DOMAIN" />에 접속하려 했으나 서버가 해당 이름에 발급된 잘못된 인증서를 제시했습니다. 이름이 예약된 IP 주소 또는 내부 호스트 이름입니다.</translation>
@@ -3051,7 +3047,6 @@
 <translation id="6177531123306197852">봉투 C2</translation>
 <translation id="6180316780098470077">재시도 간격</translation>
 <translation id="6182972682129119950">A4x5</translation>
-<translation id="6184099524311454384">탭 검색</translation>
 <translation id="6184868291074982484">Chrome에서 자동으로 서드 파티 쿠키를 제한합니다.</translation>
 <translation id="6190518157737269631">Esc 키 등 키보드 키 재정의</translation>
 <translation id="6194209731893739467">추적 중인 모든 제품을 여기에서 확인</translation>
@@ -3610,7 +3605,6 @@
 <translation id="7130775116821607281">업로드 차단됨</translation>
 <translation id="7132939140423847331">관리자가 복사를 금지한 데이터입니다.</translation>
 <translation id="7135130955892390533">상태 보기</translation>
-<translation id="7135814714616751706">바로가기 검색</translation>
 <translation id="7136009930065337683">시크릿 모드 자세히 알아보기</translation>
 <translation id="7138472120740807366">배달 방법</translation>
 <translation id="7138678301420049075">기타</translation>
@@ -4183,7 +4177,6 @@
 <translation id="8092254339843485299">6x8인치</translation>
 <translation id="8092774999298748321">짙은 보라색</translation>
 <translation id="8094917007353911263">사용 중인 네트워크에서 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> 방문을 요청할 수 있습니다.</translation>
-<translation id="809543534949702122">검색 기록</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">결제 수단</translation>
@@ -4822,7 +4815,6 @@
 <translation id="9219103736887031265">이미지</translation>
 <translation id="922152298093051471">Chrome 맞춤설정</translation>
 <translation id="9222403027701923763">초중고교(K-12)</translation>
-<translation id="9222463428840654067">카드 번호가 잘못됨</translation>
 <translation id="922849469395748170">포인트 카드</translation>
 <translation id="93020190163435405">인턴십</translation>
 <translation id="931598121743515856">구매 금액이 <ph name="CHECKOUT_AMOUNT_MINIMUM" /> 이상이어야 함</translation>

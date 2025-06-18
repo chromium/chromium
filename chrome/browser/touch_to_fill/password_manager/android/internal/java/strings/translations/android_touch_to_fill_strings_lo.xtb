@@ -18,13 +18,11 @@
 <translation id="5591247451101092906">ໃຊ້ລະຫັດຜ່ານ ຫຼື ກະແຈຜ່ານທີ່ບັນທຶກໄວ້ບໍ?</translation>
 <translation id="5624120631404540903">ຈັດການລະ​ຫັດ​ຜ່ານ​</translation>
 <translation id="592182999816790476">ລະຫັດຜ່ານສໍາລັບ <ph name="USERNAME" /> ໄດ້ຖືກບັນທຶກໄວ້ສໍາລັບ <ph name="WEBSITE" /></translation>
-<translation id="593924516471361340">ລະຫັດຜ່ານການກູ້ຂໍ້ມູນຊົ່ວຄາວໃນກໍລະນີມີບັນຫາສຳລັບ <ph name="USERNAME" /> ທີ່ບັນທຶກໄວ້ສຳລັບ <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">ກະແຈຜ່ານສຳລັບ <ph name="USERNAME" />, ໃຊ້ການລັອກໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ລະຫັດຜ່ານໃໝ່ສຳລັບເວັບໄຊນີ້}other{ລະຫັດຜ່ານໃໝ່ສຳລັບເວັບໄຊນີ້}}</translation>
 <translation id="7286867818472074330">ເລືອກກະແຈຜ່ານ</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> ຈາກທັງໝົດ <ph name="ITEMS_TOTAL" /> ລາຍການ.</translation>
 <translation id="7738288782501322815">ທ່ານໄດ້ຮັບລະຫັດຜ່ານສຳລັບ <ph name="SITE_NAME" /> ແລ້ວ</translation>
-<translation id="8202660122967066153">ລະຫັດຜ່ານການກູ້ຂໍ້ມູນຊົ່ວຄາວໃນກໍລະນີມີບັນຫາສຳລັບ <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">ການກູ້ຄືນຊົ່ວຄາວໃນກໍລະນີທີ່ມີບັນຫາ</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> ໄດ້ແບ່ງປັນລະຫັດຜ່ານກັບທ່ານສຳລັບ <ph name="SITE_NAME" /> ແລ້ວ</translation>
 <translation id="8891372124884726271">ປິດລາຍຊື່ຂໍ້ມູນການເຂົ້າສູ່ລະບົບແລ້ວ.</translation>
