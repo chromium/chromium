@@ -30,15 +30,16 @@ enum class ManifestSilentUpdateCommandStage {
   kCompleteCommand,
 };
 
-// TODO(crbug.com/425468621): Add histograms to check for result.
+// This enum is recorded by UMA, the numeric values must not change.
 enum class ManifestSilentUpdateCheckResult {
-  kAppNotInstalled,
-  kAppUpdateFailedDuringInstall,
-  kSystemShutdown,
-  kAppSilentlyUpdated,
-  kAppUpToDate,
-  kIconReadFromDiskFailed,
-  kWebContentsDestroyed,
+  kAppNotInstalled = 0,
+  kAppUpdateFailedDuringInstall = 1,
+  kSystemShutdown = 2,
+  kAppSilentlyUpdated = 3,
+  kAppUpToDate = 4,
+  kIconReadFromDiskFailed = 5,
+  kWebContentsDestroyed = 6,
+  kMaxValue = kWebContentsDestroyed,
 };
 
 struct WebAppInstallInfo;

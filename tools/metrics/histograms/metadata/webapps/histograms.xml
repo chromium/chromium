@@ -2454,6 +2454,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Webapp.Update.ManifestSilentUpdateCheckResult"
+    enum="WebAppManifestSilentUpdateCheckResult" expires_after="2026-03-05">
+  <owner>msiem@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of web app manifest silently updating during page
+    navigations. Manifest updates are triggered on every page load of an app.
+    Note that &quot;App up to date&quot; is returned if there is no new manifest
+    (no changes to current). This operation can result in non-security sensitive
+    (not name and icon) fields of an installed web app to be updated. Updates to
+    security sensitive fields (name and icon) are saved as pending updates for
+    the user to confirm the changes.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.Update.ManifestUpdateResult"
     enum="WebAppManifestUpdateResult" expires_after="2025-10-28">
   <owner>alancutter@chromium.org</owner>

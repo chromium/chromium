@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 
 #include "base/i18n/time_formatting.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -171,6 +172,9 @@ void ManifestSilentUpdateCommand::StartWithLock(
   lock_ = std::move(lock);
 
   if (IsWebContentsDestroyed()) {
+    base::UmaHistogramEnumeration(
+        "Webapp.Update.ManifestSilentUpdateCheckResult",
+        ManifestSilentUpdateCheckResult::kWebContentsDestroyed);
     CompleteCommandAndSelfDestruct(
         ManifestSilentUpdateCheckResult::kWebContentsDestroyed);
     return;
@@ -202,6 +206,9 @@ void ManifestSilentUpdateCommand::StashNewManifestJson(
                              base::ToString(installable_status));
 
   if (installable_status != webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
+    base::UmaHistogramEnumeration(
+        "Webapp.Update.ManifestSilentUpdateCheckResult",
+        ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall);
     CompleteCommandAndSelfDestruct(
         ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall);
     return;
@@ -228,6 +235,9 @@ void ManifestSilentUpdateCommand::StashValidatedScopeExtensions(
   CHECK_EQ(stage_, ManifestSilentUpdateCommandStage::kFetchingNewManifestData);
 
   if (IsWebContentsDestroyed()) {
+    base::UmaHistogramEnumeration(
+        "Webapp.Update.ManifestSilentUpdateCheckResult",
+        ManifestSilentUpdateCheckResult::kWebContentsDestroyed);
     CompleteCommandAndSelfDestruct(
         ManifestSilentUpdateCheckResult::kWebContentsDestroyed);
     return;
@@ -249,6 +259,9 @@ void ManifestSilentUpdateCommand::OnAppLockRetrieved() {
   // ManifestSilentUpdateCommandStage::kLoadingExistingManifestData
   stage_ = ManifestSilentUpdateCommandStage::kLoadingExistingManifestData;
   if (!app_lock_->registrar().IsInRegistrar(app_id_)) {
+    base::UmaHistogramEnumeration(
+        "Webapp.Update.ManifestSilentUpdateCheckResult",
+        ManifestSilentUpdateCheckResult::kAppNotInstalled);
     CompleteCommandAndSelfDestruct(
         ManifestSilentUpdateCheckResult::kAppNotInstalled);
     return;
@@ -265,6 +278,9 @@ void ManifestSilentUpdateCommand::StashExistingAppIcons(
            ManifestSilentUpdateCommandStage::kLoadingExistingManifestData);
 
   if (icon_bitmaps.empty()) {
+    base::UmaHistogramEnumeration(
+        "Webapp.Update.ManifestSilentUpdateCheckResult",
+        ManifestSilentUpdateCheckResult::kIconReadFromDiskFailed);
     CompleteCommandAndSelfDestruct(
         ManifestSilentUpdateCheckResult::kIconReadFromDiskFailed);
     return;
@@ -299,6 +315,9 @@ void ManifestSilentUpdateCommand::
   if (!AreNonSecuritySensitiveDataChangesNeeded(
           *web_app, &existing_shortcuts_menu_icon_bitmaps_,
           *new_install_info_)) {
+    base::UmaHistogramEnumeration(
+        "Webapp.Update.ManifestSilentUpdateCheckResult",
+        ManifestSilentUpdateCheckResult::kAppUpToDate);
     CompleteCommandAndSelfDestruct(
         ManifestSilentUpdateCheckResult::kAppUpToDate);
   } else {
@@ -324,6 +343,9 @@ void ManifestSilentUpdateCommand::NonSecuritySensitiveFieldsApplied(
   stage_ = ManifestSilentUpdateCommandStage::kFinalizingSilentManifestChanges;
   if (!IsSuccess(code)) {
     GetMutableDebugValue().Set("installation_code", base::ToString(code));
+    base::UmaHistogramEnumeration(
+        "Webapp.Update.ManifestSilentUpdateCheckResult",
+        ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall);
     CompleteCommandAndSelfDestruct(
         ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall);
     return;
@@ -340,6 +362,9 @@ void ManifestSilentUpdateCommand::NonSecuritySensitiveFieldsApplied(
       *new_install_info_));
   CHECK_EQ(code, webapps::InstallResultCode::kSuccessAlreadyInstalled);
 
+  base::UmaHistogramEnumeration(
+      "Webapp.Update.ManifestSilentUpdateCheckResult",
+      ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
   CompleteCommandAndSelfDestruct(
       ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
 }

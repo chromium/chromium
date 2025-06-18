@@ -417,6 +417,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Manifest ID Mismatch"/>
 </enum>
 
+<enum name="WebAppManifestSilentUpdateCheckResult">
+  <int value="0" label="App not installed"/>
+  <int value="1" label="App update failed during installation"/>
+  <int value="2" label="System shutdown"/>
+  <int value="3" label="App silently updated"/>
+  <int value="4" label="App is up to date"/>
+  <int value="5" label="Icon read from disk failed"/>
+  <int value="6" label="WebContents destroyed"/>
+</enum>
+
 <enum name="WebAppManifestUpdateResult">
   <int value="0" label="No app in scope"/>
   <int value="1" label="Updating throttled"/>

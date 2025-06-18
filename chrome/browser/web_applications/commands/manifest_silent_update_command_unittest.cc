@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
@@ -109,6 +110,7 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
 
   GURL app_url() { return app_url_; }
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 
  private:
   const GURL app_url_{"https://www.foo.bar/web_apps/basic.html"};
@@ -125,6 +127,11 @@ TEST_F(ManifestSilentUpdateCommandTest, VerifyAppUpToDate) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppUpToDate);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "Webapp.Update.ManifestSilentUpdateCheckResult"),
+      BucketsAre(base::Bucket(ManifestSilentUpdateCheckResult::kAppUpToDate,
+                              /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, AppNotInstalledNotSilentlyUpdated) {
@@ -132,6 +139,11 @@ TEST_F(ManifestSilentUpdateCommandTest, AppNotInstalledNotSilentlyUpdated) {
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppNotInstalled);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "Webapp.Update.ManifestSilentUpdateCheckResult"),
+      BucketsAre(base::Bucket(ManifestSilentUpdateCheckResult::kAppNotInstalled,
+                              /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, StartUrlUpdatedSilently) {
@@ -151,6 +163,11 @@ TEST_F(ManifestSilentUpdateCommandTest, StartUrlUpdatedSilently) {
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
             new_start_url);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, ThemeColorUpdatedSilently) {
@@ -169,6 +186,11 @@ TEST_F(ManifestSilentUpdateCommandTest, ThemeColorUpdatedSilently) {
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
   EXPECT_EQ(provider().registrar_unsafe().GetAppThemeColor(app_id),
             SK_ColorYELLOW);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, BackgroundColorUpdatedSilently) {
@@ -187,6 +209,11 @@ TEST_F(ManifestSilentUpdateCommandTest, BackgroundColorUpdatedSilently) {
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
   EXPECT_EQ(provider().registrar_unsafe().GetAppBackgroundColor(app_id),
             SK_ColorYELLOW);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, DisplayModeUpdatedSilently) {
@@ -207,6 +234,11 @@ TEST_F(ManifestSilentUpdateCommandTest, DisplayModeUpdatedSilently) {
   EXPECT_EQ(
       provider().registrar_unsafe().GetEffectiveDisplayModeFromManifest(app_id),
       DisplayMode::kBrowser);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, ScopeUpdatedSilently) {
@@ -225,6 +257,11 @@ TEST_F(ManifestSilentUpdateCommandTest, ScopeUpdatedSilently) {
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
   EXPECT_EQ(provider().registrar_unsafe().GetAppScope(app_id), new_scope);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, DisplayOverrideUpdatedSilently) {
@@ -249,6 +286,11 @@ TEST_F(ManifestSilentUpdateCommandTest, DisplayOverrideUpdatedSilently) {
             new_display_override);
   EXPECT_EQ(provider().registrar_unsafe().GetAppEffectiveDisplayMode(app_id),
             DisplayMode::kMinimalUi);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, NoteTakingUrlUpdatedSilently) {
@@ -274,6 +316,11 @@ TEST_F(ManifestSilentUpdateCommandTest, NoteTakingUrlUpdatedSilently) {
                 .GetAppById(app_id)
                 ->note_taking_new_note_url(),
             new_note_url);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, ShortcutsMenuItemInfosUpdatedSilently) {
@@ -307,6 +354,11 @@ TEST_F(ManifestSilentUpdateCommandTest, ShortcutsMenuItemInfosUpdatedSilently) {
                                  u"New Shortcut"),
                   testing::Field(&web_app::WebAppShortcutsMenuItemInfo::url,
                                  GURL("https://www.foo.bar/new_shortcut")))));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, ShareTargetUpdatedSilently) {
@@ -334,6 +386,11 @@ TEST_F(ManifestSilentUpdateCommandTest, ShareTargetUpdatedSilently) {
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
   EXPECT_EQ(provider().registrar_unsafe().GetAppShareTarget(app_id)->action,
             GURL("https://www.foo.bar/share"));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, ProtocolHandlersUpdatedSilently) {
@@ -368,6 +425,11 @@ TEST_F(ManifestSilentUpdateCommandTest, ProtocolHandlersUpdatedSilently) {
           testing::Field(&apps::ProtocolHandlerInfo::protocol, "mailto"),
           testing::Field(&apps::ProtocolHandlerInfo::url,
                          GURL("http://example.com/handle=%s")))));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, FileHandlersUpdatedSilently) {
@@ -407,6 +469,11 @@ TEST_F(ManifestSilentUpdateCommandTest, FileHandlersUpdatedSilently) {
           testing::Field(&apps::FileHandler::action,
                          GURL("http://example.com/open-files")),
           testing::Field(&apps::FileHandler::display_name, u"Images"))));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, LaunchHandlerUpdatedSilently) {
@@ -429,6 +496,11 @@ TEST_F(ManifestSilentUpdateCommandTest, LaunchHandlerUpdatedSilently) {
       provider().registrar_unsafe().GetAppById(app_id)->launch_handler(),
       LaunchHandler(
           blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, ScopeExtensionsUpdatedSilently) {
@@ -464,6 +536,11 @@ TEST_F(ManifestSilentUpdateCommandTest, ScopeExtensionsUpdatedSilently) {
               url::Origin::Create(GURL("https://scope_extensions_new.com/"))),
           testing::Field(&web_app::ScopeExtensionInfo::has_origin_wildcard,
                          false))));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, TabStripUpdatedSilently) {
@@ -495,6 +572,11 @@ TEST_F(ManifestSilentUpdateCommandTest, TabStripUpdatedSilently) {
                 ->tab_strip()
                 ->new_tab_button.url->spec(),
             "https://www.random.com/");
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
 }
 
 // TODO(crbug.com/424246884): Check for lock_screen_start_url to update if the
