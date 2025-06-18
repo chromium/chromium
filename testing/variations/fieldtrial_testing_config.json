@@ -3397,28 +3397,6 @@
             ]
         }
     ],
-    "BlockAcceptClientHints": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "BlockedSite": "https://www.google.com"
-                    },
-                    "enable_features": [
-                        "BlockAcceptClientHints"
-                    ]
-                }
-            ]
-        }
-    ],
     "BlockTelephonyDevicePhoneMute": [
         {
             "platforms": [
