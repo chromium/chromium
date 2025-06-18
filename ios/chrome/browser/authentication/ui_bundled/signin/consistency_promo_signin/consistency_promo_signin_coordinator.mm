@@ -141,8 +141,12 @@
 
 - (void)dealloc {
   CHECK(!self.navigationController, base::NotFatalUntil::M142);
-  CHECK(!self.consistencyPromoSigninMediator, base::NotFatalUntil::M142);
   CHECK(!self.defaultAccountCoordinator, base::NotFatalUntil::M142);
+  CHECK(!self.alertCoordinator, base::NotFatalUntil::M142);
+  CHECK(!self.accountChooserCoordinator, base::NotFatalUntil::M142);
+  CHECK(!self.addAccountCoordinator, base::NotFatalUntil::M142);
+  CHECK(!self.reauthCoordinator, base::NotFatalUntil::M142);
+  CHECK(!self.consistencyPromoSigninMediator, base::NotFatalUntil::M142);
 }
 
 #pragma mark - ChromeCoordinator
@@ -231,7 +235,7 @@
                     completionIdentity:completionIdentity];
 }
 
-#pragma mark - StopAnimatedSigninCoordinator
+#pragma mark - AnimatedCoordinator
 
 - (void)stopAnimated:(BOOL)animated {
   [self stopAlertCoordinator];

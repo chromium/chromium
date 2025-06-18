@@ -216,6 +216,8 @@ NSString* GetPromoLabelString(
   DCHECK(!_syncService);
 }
 
+#pragma mark - Public
+
 - (void)disconnect {
   _identityManager = nullptr;
   _accountManagerService = nullptr;

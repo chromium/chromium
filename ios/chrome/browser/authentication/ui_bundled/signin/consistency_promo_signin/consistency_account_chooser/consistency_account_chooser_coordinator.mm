@@ -44,6 +44,13 @@
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!self.mediator, base::NotFatalUntil::M142);
+  CHECK(!self.accountChooserViewController, base::NotFatalUntil::M142);
+}
+
+#pragma mark - ChromeCoordinator
+
 - (void)start {
   [super start];
   base::RecordAction(

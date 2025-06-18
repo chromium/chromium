@@ -46,6 +46,13 @@
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!self.mediator, base::NotFatalUntil::M142);
+  CHECK(!self.defaultAccountViewController, base::NotFatalUntil::M142);
+}
+
+#pragma mark - ChromeCoordinator
+
 - (void)start {
   [super start];
   ProfileIOS* profile = self.profile;
@@ -64,19 +71,21 @@
   [self.defaultAccountViewController view];
 }
 
+- (void)stop {
+  [self.mediator disconnect];
+  self.mediator = nil;
+  self.defaultAccountViewController = nil;
+  [super stop];
+}
+
+#pragma mark - Public
+
 - (void)startSigninSpinner {
   [self.defaultAccountViewController startSpinner];
 }
 
 - (void)stopSigninSpinner {
   [self.defaultAccountViewController stopSpinner];
-}
-
-- (void)stop {
-  [self.mediator disconnect];
-  self.mediator = nil;
-  self.defaultAccountViewController = nil;
-  [super stop];
 }
 
 #pragma mark - Properties
