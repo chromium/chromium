@@ -645,6 +645,17 @@ void ArcPolicyBridge::GetPolicies(GetPoliciesCallback callback) {
 void ArcPolicyBridge::ReportCompliance(const std::string& request,
                                        ReportComplianceCallback callback) {
   VLOG(1) << "ArcPolicyBridge::ReportCompliance";
+  if(!is_dpc_first_compliance_reported_) {
+      VLOG(1) << "Reporting DPC compliance for the first time";
+      CertStoreService* cert_store_service =
+        CertStoreServiceFactory::GetForBrowserContext(context_);
+      if(cert_store_service != nullptr) {
+        VLOG(1) << "Calling OnClientCertStoreChanged to update certificates";
+        cert_store_service->OnClientCertStoreChanged();
+      }
+      is_dpc_first_compliance_reported_ = true;
+  }
+
   data_decoder::DataDecoder::ParseJsonIsolated(
       request,
       base::BindOnce(&ArcPolicyBridge::OnReportComplianceParse,

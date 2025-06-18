@@ -178,6 +178,7 @@ class ArcPolicyBridge : public KeyedService,
 
   bool is_managed_ = false;
   bool is_policy_service_observed = false;
+  bool is_dpc_first_compliance_reported_ = false;
 
   // HACK(b/73762796): A GUID that is regenerated whenever |this| is created,
   // ensuring that the first policy sent to CloudDPC is considered different
