@@ -114,12 +114,9 @@ class SelectAllScreensTest : public SelectAllScreensTestBase,
 };
 
 IN_PROC_BROWSER_TEST_P(SelectAllScreensTest, SelectAllScreensTestOrigins) {
-  base::test::TestFuture<bool> future;
-  capture_policy::CheckGetAllScreensMediaAllowed(GURL(GetParam().testing_url),
-                                                 future.GetCallback());
-  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(GetParam().expected_is_get_all_screens_media_allowed,
-            future.Get<bool>());
+            capture_policy::IsMultiScreenCaptureAllowed(
+                GURL(GetParam().testing_url)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -191,20 +188,14 @@ class SelectAllScreensDynamicRefreshTest
     DCHECK(current_web_contents);
     for (const auto& expected_allowed_origin :
          GetParam().expected_allowed_origins) {
-      base::test::TestFuture<bool> future;
-      capture_policy::CheckGetAllScreensMediaAllowed(
-          GURL(expected_allowed_origin), future.GetCallback());
-      ASSERT_TRUE(future.Wait());
-      EXPECT_TRUE(future.Get<bool>());
+      EXPECT_TRUE(capture_policy::IsMultiScreenCaptureAllowed(
+          GURL(expected_allowed_origin)));
     }
 
     for (const auto& expected_forbidden_origin :
          GetParam().expected_forbidden_origins) {
-      base::test::TestFuture<bool> future;
-      capture_policy::CheckGetAllScreensMediaAllowed(
-          GURL(expected_forbidden_origin), future.GetCallback());
-      ASSERT_TRUE(future.Wait());
-      EXPECT_FALSE(future.Get<bool>());
+      EXPECT_FALSE(capture_policy::IsMultiScreenCaptureAllowed(
+          GURL(expected_forbidden_origin)));
     }
   }
 };
@@ -292,19 +283,13 @@ class MultiCaptureTest
 };
 
 IN_PROC_BROWSER_TEST_P(MultiCaptureTest, IsMultiCaptureAllowedBasedOnPolicy) {
-  base::test::TestFuture<bool> future;
-  capture_policy::CheckGetAllScreensMediaAllowed(GURL(CurrentOrigin()),
-                                                 future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(ExpectedIsMultiCaptureAllowed(), future.Get<bool>());
+  EXPECT_EQ(ExpectedIsMultiCaptureAllowed(),
+            capture_policy::IsMultiScreenCaptureAllowed(GURL(CurrentOrigin())));
 }
 
 IN_PROC_BROWSER_TEST_P(MultiCaptureTest, IsMultiCaptureAllowedForAnyUrl) {
-  base::test::TestFuture<bool> future;
-  capture_policy::CheckGetAllScreensMediaAllowedForAnyOrigin(
-      future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(ExpectedIsMultiCaptureAllowedForAnyUrl(), future.Get<bool>());
+  EXPECT_EQ(ExpectedIsMultiCaptureAllowedForAnyUrl(),
+            capture_policy::IsMultiScreenCaptureAllowed(std::nullopt));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -322,15 +307,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 using CaptureUtilsBrowserTest = InProcessBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(CaptureUtilsBrowserTest, MultiCaptureServiceExists) {
-  EXPECT_TRUE(capture_policy::GetMultiCaptureService());
-}
-
 IN_PROC_BROWSER_TEST_F(CaptureUtilsBrowserTest,
                        NoPolicySetMultiCaptureServiceMaybeExists) {
-  base::test::TestFuture<bool> future;
-  capture_policy::CheckGetAllScreensMediaAllowed(GURL(kValidIsolatedAppId1),
-                                                 future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  EXPECT_FALSE(future.Get<bool>());
+  EXPECT_FALSE(
+      capture_policy::IsMultiScreenCaptureAllowed(GURL(kValidIsolatedAppId1)));
 }

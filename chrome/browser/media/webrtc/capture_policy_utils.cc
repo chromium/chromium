@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/policy/policy_util.h"
@@ -39,32 +38,13 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
 #include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
-#include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-namespace {
-
-#if BUILDFLAG(IS_CHROMEOS)
-crosapi::mojom::MultiCaptureService* g_multi_capture_service_for_testing =
-    nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-}  // namespace
 
 namespace capture_policy {
-
-#if BUILDFLAG(IS_CHROMEOS)
-// This pref connects to the MultiScreenCaptureAllowedForUrls policy and will
-// replace the deprecated GetDisplayMediaSetSelectAllScreensAllowedForUrls
-// policy once the pivot to IWAs is complete.
-const char kManagedMultiScreenCaptureAllowedForUrls[] =
-    "profile.managed_multi_screen_capture_allowed_for_urls";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace {
 
 struct RestrictedCapturePolicy {
@@ -73,25 +53,6 @@ struct RestrictedCapturePolicy {
 };
 
 }  // namespace
-
-#if BUILDFLAG(IS_CHROMEOS)
-void SetMultiCaptureServiceForTesting(
-    crosapi::mojom::MultiCaptureService* service) {
-  CHECK_IS_TEST();
-  CHECK(!service || !g_multi_capture_service_for_testing);
-  g_multi_capture_service_for_testing = service;
-}
-
-crosapi::mojom::MultiCaptureService* GetMultiCaptureService() {
-  if (g_multi_capture_service_for_testing) {
-    return g_multi_capture_service_for_testing;
-  }
-
-  return crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->multi_capture_service_ash();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsOriginInList(const GURL& request_origin,
                     const base::Value::List& allowed_origins) {
@@ -179,30 +140,29 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void CheckGetAllScreensMediaAllowedForAnyOrigin(
-    base::OnceCallback<void(bool)> callback) {
+bool IsMultiScreenCaptureAllowed(const std::optional<GURL>& url) {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (crosapi::mojom::MultiCaptureService* multi_capture_service =
-          GetMultiCaptureService()) {
-    multi_capture_service->IsMultiCaptureAllowedForAnyOriginOnMainProfile(
-        std::move(callback));
-    return;
+  content::BrowserContext* context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+          user_manager::UserManager::Get()->GetPrimaryUser());
+  if (!context) {
+    return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  std::move(callback).Run(/*result=*/false);
-}
+  auto* service =
+      policy::MultiScreenCapturePolicyServiceFactory::GetForBrowserContext(
+          context);
+  if (!service) {
+    return false;
+  }
 
-void CheckGetAllScreensMediaAllowed(const GURL& url,
-                                    base::OnceCallback<void(bool)> callback) {
-#if BUILDFLAG(IS_CHROMEOS)
-  crosapi::mojom::MultiCaptureService* multi_capture_service =
-      GetMultiCaptureService();
-  if (multi_capture_service) {
-    multi_capture_service->IsMultiCaptureAllowed(url, std::move(callback));
-    return;
+  if (url.has_value()) {
+    return service->IsMultiScreenCaptureAllowed(*url);
+  } else {
+    return service->GetAllowListSize() > 0;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  std::move(callback).Run(/*result=*/false);
+#else
+  return false;
+#endif
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)

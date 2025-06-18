@@ -105,8 +105,8 @@ void ShowLoginNotificationIfMultiCaptureAllowed() {
     return;
   }
 
-  capture_policy::CheckGetAllScreensMediaAllowedForAnyOrigin(
-      base::BindOnce(&MaybeShowLoginNotification));
+  MaybeShowLoginNotification(
+      capture_policy::IsMultiScreenCaptureAllowed(std::nullopt));
 }
 
 }  // namespace

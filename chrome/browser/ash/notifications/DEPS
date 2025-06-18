@@ -45,5 +45,6 @@ specific_include_rules = {
     "+chrome/browser/ash/crosapi/multi_capture_service_ash.h",
     "+chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h",
     "+chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h",
+    "+chrome/browser/prefs/browser_prefs.h",
   ],
 }

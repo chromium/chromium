@@ -115,6 +115,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/handlers:test_support",
     "//chrome/browser/ash/policy/multi_screen_capture",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/debug_daemon",

@@ -18,10 +18,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace crosapi::mojom {
-class MultiCaptureService;
-}  // namespace crosapi::mojom
-
 // This enum represents the various levels in priority order from most
 // restrictive to least restrictive, to which capture may be restricted by
 // enterprise policy. It should not be used in Logs, so that it's order may be
@@ -38,14 +34,12 @@ enum class AllowedScreenCaptureLevel {
 namespace capture_policy {
 
 #if BUILDFLAG(IS_CHROMEOS)
-extern const char kManagedMultiScreenCaptureAllowedForUrls[];
-
-// Sets a multi capture service mock for testing.
-void SetMultiCaptureServiceForTesting(
-    crosapi::mojom::MultiCaptureService* service);
-
-crosapi::mojom::MultiCaptureService* GetMultiCaptureService();
-#endif  // BUILDFLAG(IS_CHROMEOS)
+// This pref connects to the MultiScreenCaptureAllowedForUrls policy and will
+// replace the deprecated GetDisplayMediaSetSelectAllScreensAllowedForUrls
+// policy once the pivot to IWAs is complete.
+inline static constexpr char kManagedMultiScreenCaptureAllowedForUrls[] =
+    "profile.managed_multi_screen_capture_allowed_for_urls";
+#endif
 
 // Gets the highest capture level that the requesting origin is allowed to
 // request based on any configured enterprise policies. This is a convenience
@@ -79,11 +73,8 @@ void ShowCaptureTerminatedDialog(content::WebContents* contents);
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // TODO(crbug.com/40230867): Use Origin instead of GURL.
-void CheckGetAllScreensMediaAllowed(const GURL& url,
-                                    base::OnceCallback<void(bool)> callback);
-
-void CheckGetAllScreensMediaAllowedForAnyOrigin(
-    base::OnceCallback<void(bool)> callback);
+// Passing `std::nullopt` to `url` means "for any origin".
+bool IsMultiScreenCaptureAllowed(const std::optional<GURL>& url);
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 bool IsTransientActivationRequiredForGetDisplayMedia(

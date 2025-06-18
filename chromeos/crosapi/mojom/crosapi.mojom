@@ -26,7 +26,6 @@ import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
-import "chromeos/crosapi/mojom/multi_capture_service.mojom";
 import "chromeos/crosapi/mojom/network_change.mojom";
 import "chromeos/crosapi/mojom/networking_private.mojom";
 import "chromeos/crosapi/mojom/parent_access.mojom";
@@ -202,11 +201,7 @@ interface Crosapi {
 
   // BindNativeThemeService@38 was removed.
   // BindMetrics@106 was removed.
-
-  // Binds the MultiCaptureService interface that handles multi capture related
-  // usage indicators and notifications.
-  [MinVersion=100]
-  BindMultiCaptureService@104(pending_receiver<MultiCaptureService> receiver);
+  // BindMultiCaptureService@104 was removed.
 
   // Binds the NetworkChange interface for getting network change notification.
   [MinVersion=88]

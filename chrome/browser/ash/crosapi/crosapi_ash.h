@@ -51,7 +51,6 @@ class KeystoreServiceAsh;
 class LocalPrinterAsh;
 class LoginAsh;
 class MediaUIAsh;
-class MultiCaptureServiceAsh;
 class ParentAccessAsh;
 class VpnServiceAsh;
 
@@ -111,8 +110,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindMediaSessionController(
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
           receiver) override;
-  void BindMultiCaptureService(
-      mojo::PendingReceiver<mojom::MultiCaptureService> receiver) override;
   void BindNetworkChange(
       mojo::PendingReceiver<mojom::NetworkChange> receiver) override;
   void BindParentAccess(
@@ -168,10 +165,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   MediaUIAsh* media_ui_ash() { return media_ui_ash_.get(); }
 
-  MultiCaptureServiceAsh* multi_capture_service_ash() {
-    return multi_capture_service_ash_.get();
-  }
-
   ParentAccessAsh* parent_access_ash() { return parent_access_ash_.get(); }
 
   ash::printing::PrintPreviewWebcontentsAdapterAsh*
@@ -202,7 +195,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<LoginAsh> login_ash_;
   std::unique_ptr<MediaUIAsh> media_ui_ash_;
-  std::unique_ptr<MultiCaptureServiceAsh> multi_capture_service_ash_;
   std::unique_ptr<ParentAccessAsh> parent_access_ash_;
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>
       telemetry_diagnostic_routine_service_ash_;

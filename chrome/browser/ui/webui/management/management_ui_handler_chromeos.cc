@@ -487,10 +487,11 @@ void ManagementUIHandlerChromeOS::RegisterMessages() {
           &ManagementUIHandlerChromeOS::HandleGetFilesUploadToCloudInfo,
           base::Unretained(this)));
 
-  capture_policy::CheckGetAllScreensMediaAllowedForAnyOrigin(base::BindOnce(
-      &ManagementUIHandlerChromeOS::
-          CheckGetAllScreensMediaAllowedForAnyOriginResultReceived,
-      weak_factory_.GetWeakPtr()));
+  set_is_get_all_screens_media_allowed_for_any_origin(
+      capture_policy::IsMultiScreenCaptureAllowed(std::nullopt));
+  if (IsJavascriptAllowed()) {
+    NotifyThreatProtectionInfoUpdated();
+  }
 }
 
 // static

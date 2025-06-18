@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/crosapi/login_ash.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
-#include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -52,7 +51,6 @@
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
-#include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
@@ -103,7 +101,6 @@ CrosapiAsh::CrosapiAsh()
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
       login_ash_(std::make_unique<LoginAsh>()),
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
-      multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
       telemetry_diagnostic_routine_service_ash_(
           std::make_unique<ash::TelemetryDiagnosticsRoutineServiceAsh>()),
@@ -234,11 +231,6 @@ void CrosapiAsh::BindMediaSessionController(
         receiver) {
   content::GetMediaSessionService().BindMediaControllerManager(
       std::move(receiver));
-}
-
-void CrosapiAsh::BindMultiCaptureService(
-    mojo::PendingReceiver<mojom::MultiCaptureService> receiver) {
-  multi_capture_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindNetworkChange(

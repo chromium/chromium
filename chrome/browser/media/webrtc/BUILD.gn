@@ -260,6 +260,7 @@ source_set("webrtc") {
       "//chrome/browser/ui/ash/keyboard",
       "//chrome/browser/ui/ash/media_client",
       "//chrome/browser/web_applications:web_applications",
+      "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/system",
       "//components/user_manager",
     ]
