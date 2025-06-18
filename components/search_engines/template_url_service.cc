@@ -966,6 +966,20 @@ TemplateURLService::GetChoiceScreenData() {
       search_terms_data());
 }
 
+TemplateURL* TemplateURLService::GetEnterpriseSearchAggregatorEngine() const {
+  auto it = std::ranges::find_if(
+      enterprise_search_keyword_to_turl_, [](const auto& keyword_and_turl) {
+        return keyword_and_turl.second
+            ->CreatedByEnterpriseSearchAggregatorPolicy();
+      });
+  return it == enterprise_search_keyword_to_turl_.end() ? nullptr : it->second;
+}
+
+bool TemplateURLService::IsShortcutRequiredForSearchAggregatorEngine() const {
+  return enterprise_search_manager_ &&
+         enterprise_search_manager_->GetRequireShortcutValue();
+}
+
 TemplateURLService::TemplateURLVector
 TemplateURLService::GetFeaturedEnterpriseSiteSearchEngines() const {
   TemplateURLVector result;
@@ -977,21 +991,6 @@ TemplateURLService::GetFeaturedEnterpriseSiteSearchEngines() const {
     }
   }
   return result;
-}
-
-TemplateURL* TemplateURLService::GetEnterpriseSearchAggregatorEngine() const {
-  auto it = std::ranges::find_if(
-      enterprise_search_keyword_to_turl_, [](const auto& keyword_and_turl) {
-        return keyword_and_turl.second
-            ->CreatedByEnterpriseSearchAggregatorPolicy();
-      });
-  return it == enterprise_search_keyword_to_turl_.end() ? nullptr : it->second;
-}
-
-bool TemplateURLService::IsShortcutRequiredForSearchAggregatorEngine() const {
-  return enterprise_search_manager_
-             ? enterprise_search_manager_->GetRequireShortcutValue()
-             : false;
 }
 
 #if BUILDFLAG(IS_ANDROID)

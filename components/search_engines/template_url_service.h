@@ -311,9 +311,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // `search_engines::ChoiceScreenData` for more details.
   std::unique_ptr<search_engines::ChoiceScreenData> GetChoiceScreenData();
 
-  TemplateURLService::TemplateURLVector GetFeaturedEnterpriseSiteSearchEngines()
-      const;
-
   // Returns the TemplateURL created by the EnterpriseSearchAggregatorSettings
   // policy.
   TemplateURL* GetEnterpriseSearchAggregatorEngine() const;
@@ -322,6 +319,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // policy from the prefs indicating whether keyword mode is required for using
   // the enterprise search aggregator TemplateURL.
   bool IsShortcutRequiredForSearchAggregatorEngine() const;
+
+  TemplateURLService::TemplateURLVector GetFeaturedEnterpriseSiteSearchEngines()
+      const;
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the list prepopulated template URLs for `country_code`.

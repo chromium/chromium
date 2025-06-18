@@ -119,8 +119,10 @@ std::string IphTypeDebugString(IphType iph_type) {
       NOTREACHED();
     case IphType::kGemini:
       return "gemini";
+    case IphType::kEnterpriseSearchAggregator:
+      return "enterprise search aggregator";
     case IphType::kFeaturedEnterpriseSiteSearch:
-      return "featured enterprise search";
+      return "featured enterprise site search";
     case IphType::kHistoryEmbeddingsSettingsPromo:
       return "history embeddings settings promo";
     case IphType::kHistoryEmbeddingsDisclaimer:
@@ -129,8 +131,6 @@ std::string IphTypeDebugString(IphType iph_type) {
       return "history scope promo";
     case IphType::kHistoryEmbeddingsScopePromo:
       return "history embeddings scope promo";
-    case IphType::kEnterpriseSearchAggregator:
-      return "enterprise search aggregator";
   }
 }
 
