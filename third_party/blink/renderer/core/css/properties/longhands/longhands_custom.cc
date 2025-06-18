@@ -8074,30 +8074,8 @@ void PositionTryFallbacks::ApplyValue(StyleResolverState& state,
   }
   HeapVector<PositionTryFallback> fallbacks;
   for (const auto& fallback : To<CSSValueList>(value)) {
-    DCHECK(!IsA<CSSFunctionValue>(fallback.Get()))
-        << "position-area( <position-area> ) was deprecated/removed";
-    // <'position-area'>
-    if (IsA<CSSValuePair>(fallback.Get()) ||
-        IsA<CSSIdentifierValue>(fallback.Get())) {
-      blink::PositionArea position_area =
-          StyleBuilderConverter::ConvertPositionArea(state, *fallback.Get());
-      fallbacks.push_back(PositionTryFallback(position_area));
-      continue;
-    }
-    // [<dashed-ident> || <try-tactic>]
-    const ScopedCSSName* scoped_name = nullptr;
-    TryTacticList tactic_list = {TryTactic::kNone};
-    wtf_size_t tactic_index = 0;
-    for (const auto& name_or_tactic : To<CSSValueList>(*fallback)) {
-      if (const auto* name = DynamicTo<CSSCustomIdentValue>(*name_or_tactic)) {
-        scoped_name = StyleBuilderConverter::ConvertCustomIdent(state, *name);
-        continue;
-      }
-      CHECK_LT(tactic_index, tactic_list.size());
-      tactic_list[tactic_index++] =
-          To<CSSIdentifierValue>(*name_or_tactic).ConvertTo<TryTactic>();
-    }
-    fallbacks.push_back(PositionTryFallback(scoped_name, tactic_list));
+    fallbacks.push_back(StyleBuilderConverter::ConvertSinglePositionTryFallback(
+        state, *fallback));
   }
   DCHECK(!fallbacks.empty());
   state.StyleBuilder().SetPositionTryFallbacks(

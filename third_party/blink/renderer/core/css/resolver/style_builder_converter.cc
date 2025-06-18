@@ -3939,6 +3939,29 @@ PositionArea StyleBuilderConverter::ConvertPositionArea(
   return PositionArea(span[0], span[1], span[2], span[3]);
 }
 
+PositionTryFallback StyleBuilderConverter::ConvertSinglePositionTryFallback(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  // <'position-area'>
+  if (IsA<CSSValuePair>(value) || IsA<CSSIdentifierValue>(value)) {
+    return PositionTryFallback(ConvertPositionArea(state, value));
+  }
+  // [<dashed-ident> || <try-tactic>]
+  const ScopedCSSName* scoped_name = nullptr;
+  TryTacticList tactic_list = {TryTactic::kNone};
+  wtf_size_t tactic_index = 0;
+  for (const auto& name_or_tactic : To<CSSValueList>(value)) {
+    if (const auto* name = DynamicTo<CSSCustomIdentValue>(*name_or_tactic)) {
+      scoped_name = ConvertCustomIdent(state, *name);
+      continue;
+    }
+    CHECK_LT(tactic_index, tactic_list.size());
+    tactic_list[tactic_index++] =
+        To<CSSIdentifierValue>(*name_or_tactic).ConvertTo<TryTactic>();
+  }
+  return PositionTryFallback(scoped_name, tactic_list);
+}
+
 FitText StyleBuilderConverter::ConvertFitText(StyleResolverState& state,
                                               const CSSValue& value) {
   const auto& list = To<CSSValueList>(value);
