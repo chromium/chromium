@@ -8,6 +8,7 @@
 #include <unordered_set>
 
 #include "ash/public/cpp/system_notification_builder.h"
+#include "ash/style/system_dialog_delegate_view.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -26,6 +27,7 @@
 #include "components/component_updater/component_updater_service.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace apps::chrome_app_deprecation {
 
@@ -225,7 +227,8 @@ void ReportMetric(DeprecationCheckOutcome outcome) {
                                 outcome);
 }
 
-static bool fakeKioskSessionForTesting = false;
+bool g_fake_kiosk_session_for_testing = false;
+bool g_skip_system_dialog_for_testing = false;
 
 enum class AllowlistContext { UserInstalled, KioskSession };
 
@@ -265,6 +268,46 @@ void ShowNotification(const extensions::Extension& app, Profile* profile) {
       /*metadata=*/nullptr);
 }
 
+views::Widget* g_dialog_widget_;
+
+void OnDialogClosed() {
+  if (g_dialog_widget_) {
+    delete g_dialog_widget_;
+  }
+  g_dialog_widget_ = nullptr;
+}
+
+void ShowLaunchBlockedDialog(const std::string& app_name) {
+  if (g_dialog_widget_ != nullptr) {
+    return;
+  }
+
+  auto dialog =
+      views::Builder<ash::SystemDialogDelegateView>()
+          .SetTitleText(l10n_util::GetStringFUTF16(
+              IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_BLOCKED_LAUNCH_DIALOG_TITLE,
+              base::UTF8ToUTF16(app_name)))
+          .SetDescription(l10n_util::GetStringUTF16(
+              IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_BLOCKED_LAUNCH_DIALOG_MESSAGE))
+          .SetModalType(ui::mojom::ModalType::kSystem)
+          .SetAcceptButtonText(l10n_util::GetStringUTF16(
+              IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_BLOCKED_LAUNCH_DIALOG_CLOSE_BUTTON))
+          .SetModalType(ui::mojom::ModalType::kSystem)
+          .SetCloseCallback(base::BindOnce(&OnDialogClosed))
+          .Build();
+  dialog->SetCancelButtonVisible(false);
+
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
+  params.delegate = dialog.release();
+  params.name = "ChrAppDeprecation-LaunchBlocked";
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
+
+  g_dialog_widget_ = new views::Widget(std::move(params));
+  g_dialog_widget_->Show();
+}
+
 bool IsUserInstalled(std::string_view app_id, Profile* profile) {
   auto* prefs = extensions::ExtensionPrefs::Get(profile);
   if (!prefs) {
@@ -297,6 +340,9 @@ DeprecationStatus HandleUserInstalledApp(const extensions::Extension& app,
     return DeprecationStatus::kLaunchAllowed;
   }
 
+  if (!g_skip_system_dialog_for_testing) {
+    ShowLaunchBlockedDialog(app.name());
+  }
   ReportMetric(DeprecationCheckOutcome::kUserInstalledBlocked);
   return DeprecationStatus::kLaunchBlocked;
 }
@@ -390,7 +436,7 @@ DeprecationStatus HandleDeprecation(std::string_view app_id, Profile* profile) {
     return DeprecationStatus::kLaunchAllowed;
   }
 
-  if (chromeos::IsKioskSession() || fakeKioskSessionForTesting) {
+  if (chromeos::IsKioskSession() || g_fake_kiosk_session_for_testing) {
     return HandleKioskSessionApp(*app, profile);
   }
 
@@ -422,7 +468,7 @@ void AddAppToAllowlistForTesting(std::string_view app_id) {
 }
 
 void SetKioskSessionForTesting(bool value) {
-  fakeKioskSessionForTesting = value;
+  g_fake_kiosk_session_for_testing = value;
 }
 
 void AssignComponentUpdaterAllowlistsForTesting(
@@ -430,6 +476,10 @@ void AssignComponentUpdaterAllowlistsForTesting(
     std::optional<const ChromeAppDeprecation::DynamicAllowlists>
         component_data) {
   AssignComponentUpdaterAllowlists(component_version, component_data);
+}
+
+void SkipSystemDialogForTesting(bool value) {
+  g_skip_system_dialog_for_testing = value;
 }
 
 }  // namespace apps::chrome_app_deprecation

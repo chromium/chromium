@@ -30,11 +30,12 @@ void RegisterAllowlistComponentUpdater(
     component_updater::ComponentUpdateService* cus);
 
 void AddAppToAllowlistForTesting(std::string_view app_id);
-void SetKioskSessionForTesting(bool value = true);
+void SetKioskSessionForTesting(bool value);
 void AssignComponentUpdaterAllowlistsForTesting(
     const base::Version& component_version,
     std::optional<const ChromeAppDeprecation::DynamicAllowlists>
         component_data);
+void SkipSystemDialogForTesting(bool value);
 
 BASE_DECLARE_FEATURE(kAllowUserInstalledChromeApps);
 BASE_DECLARE_FEATURE(kAllowChromeAppsInKioskSessions);
