@@ -4671,9 +4671,8 @@ std::vector<gfx::Rect> PDFiumEngine::GetSelectionRects() {
   for (auto& selection : selection_) {
     std::vector<gfx::Rect> screen_rects = selection.GetScreenRects(
         GetVisibleRect().origin(), current_zoom_, GetCurrentOrientation());
-    for (auto& screen_rect : screen_rects) {
-      selection_rects.push_back(screen_rect);
-    }
+    selection_rects.insert(selection_rects.end(), screen_rects.begin(),
+                           screen_rects.end());
   }
   return selection_rects;
 }
