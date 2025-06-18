@@ -93,6 +93,13 @@ struct OmniboxTextModel;
                    cursorPosition:(size_t)cursorPosition
         preventInlineAutocomplete:(bool)preventInlineAutocomplete;
 
+/// Starts a request for zero-prefix suggestions if no query is currently
+/// running and the popup is closed. This can be called multiple times without
+/// harm, since it will early-exit if an earlier request is in progress or done.
+/// `text` should either be empty or the pre-edit text.
+- (void)startZeroSuggestRequestWithText:(const std::u16string&)text
+                          userClobbered:(BOOL)userClobberedPermanentText;
+
 /// Closes the omnibox popup.
 - (void)closeOmniboxPopup;
 

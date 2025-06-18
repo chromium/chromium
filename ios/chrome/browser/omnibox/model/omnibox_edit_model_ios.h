@@ -148,12 +148,6 @@ class OmniboxEditModelIOS {
   // Called when the view is gaining focus.
   void OnSetFocus();
 
-  // Starts a request for zero-prefix suggestions if no query is currently
-  // running and the popup is closed. This can be called multiple times without
-  // harm, since it will early-exit if an earlier request is in progress or
-  // done.
-  void StartZeroSuggestRequest(bool user_clobbered_permanent_text = false);
-
   // Called when the user pastes in text.
   void OnPaste();
 

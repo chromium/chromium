@@ -347,6 +347,56 @@ using base::UserMetricsAction;
   [self startAutocompleteWithInput:input];
 }
 
+- (void)startZeroSuggestRequestWithText:(const std::u16string&)text
+                          userClobbered:(BOOL)userClobberedPermanentText {
+  AutocompleteController* autocompleteController = self.autocompleteController;
+  OmniboxClient* client = self.client;
+  if (!autocompleteController || !client || !_omniboxTextModel) {
+    return;
+  }
+
+  // Early exit if a query is already in progress or the popup is already open.
+  // This is what allows this method to be called multiple times in multiple
+  // code locations without harm.
+  if (!autocompleteController->done() || self.hasSuggestions) {
+    return;
+  }
+
+  // Early exit if the page has not loaded yet, so we don't annoy users.
+  if (!client->CurrentPageExists()) {
+    return;
+  }
+
+  // Early exit if the user already has a navigation or search query in mind.
+  if (_omniboxTextModel->user_input_in_progress &&
+      !userClobberedPermanentText) {
+    return;
+  }
+
+  TRACE_EVENT0("omnibox",
+               "OmniboxTextController::startZeroSuggestRequestWithClobber");
+
+  // Send the textfield contents exactly as-is, as otherwise the verbatim
+  // match can be wrong. The full page URL is anyways in set_current_url().
+  // Don't attempt to use https as the default scheme for these requests.
+  _omniboxTextModel->input = AutocompleteInput(
+      text, client->GetPageClassification(/*is_prefetch=*/false),
+      client->GetSchemeClassifier(),
+      /*should_use_https_as_default_scheme=*/false,
+      client->GetHttpsPortForTesting(),
+      client->IsUsingFakeHttpsForHttpsUpgradeTesting());
+  AutocompleteInput& input = _omniboxTextModel->input;
+  input.set_current_url(client->GetURL());
+  input.set_current_title(client->GetTitle());
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  // Set the lens overlay suggest inputs, if available.
+  if (std::optional<lens::proto::LensOverlaySuggestInputs> suggestInputs =
+          client->GetLensOverlaySuggestInputs()) {
+    input.set_lens_overlay_suggest_inputs(*suggestInputs);
+  }
+  [self startAutocompleteWithInput:input];
+}
+
 - (void)closeOmniboxPopup {
   if (_omniboxController) {
     _omniboxController->StopAutocomplete(/*clear_result=*/true);

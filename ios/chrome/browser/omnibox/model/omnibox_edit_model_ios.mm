@@ -249,48 +249,6 @@ void OmniboxEditModelIOS::OnSetFocus() {
   text_model_->OnSetFocus();
 }
 
-void OmniboxEditModelIOS::StartZeroSuggestRequest(
-    bool user_clobbered_permanent_text) {
-  // Early exit if a query is already in progress or the popup is already open.
-  // This is what allows this method to be called multiple times in multiple
-  // code locations without harm.
-  if (!autocomplete_controller()->done() || PopupIsOpen()) {
-    return;
-  }
-
-  // Early exit if the page has not loaded yet, so we don't annoy users.
-  if (!controller_->client()->CurrentPageExists()) {
-    return;
-  }
-
-  // Early exit if the user already has a navigation or search query in mind.
-  if (text_model_->user_input_in_progress && !user_clobbered_permanent_text) {
-    return;
-  }
-
-  TRACE_EVENT0("omnibox", "OmniboxEditModelIOS::StartZeroSuggestRequest");
-
-  // Send the textfield contents exactly as-is, as otherwise the verbatim
-  // match can be wrong. The full page URL is anyways in set_current_url().
-  // Don't attempt to use https as the default scheme for these requests.
-  text_model_->input = AutocompleteInput(
-      GetText(), GetPageClassification(),
-      controller_->client()->GetSchemeClassifier(),
-      /*should_use_https_as_default_scheme=*/false,
-      controller_->client()->GetHttpsPortForTesting(),
-      controller_->client()->IsUsingFakeHttpsForHttpsUpgradeTesting());
-  text_model_->input.set_current_url(controller_->client()->GetURL());
-  text_model_->input.set_current_title(controller_->client()->GetTitle());
-  text_model_->input.set_focus_type(
-      metrics::OmniboxFocusType::INTERACTION_FOCUS);
-  // Set the lens overlay suggest inputs, if available.
-  if (std::optional<lens::proto::LensOverlaySuggestInputs> suggest_inputs =
-          controller_->client()->GetLensOverlaySuggestInputs()) {
-    text_model_->input.set_lens_overlay_suggest_inputs(*suggest_inputs);
-  }
-  controller_->StartAutocomplete(text_model_->input);
-}
-
 void OmniboxEditModelIOS::OnPaste() {
   UMA_HISTOGRAM_COUNTS_1M("Omnibox.Paste", 1);
   text_model_->paste_state = OmniboxPasteState::kPasting;

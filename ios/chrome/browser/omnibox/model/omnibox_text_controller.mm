@@ -361,10 +361,15 @@ const char kOmniboxFocusResultedInNavigation[] =
         // Zero suggest is only available with LENS_SIDE_PANEL_SEARCHBOX. The
         // lens omnibox should not be in a state where the text is empty and the
         // lens result no thumbnail. (crbug.com/419482108)
-        _omniboxEditModel->StartZeroSuggestRequest();
+        [_omniboxAutocompleteController
+            startZeroSuggestRequestWithText:textField.displayedText
+                                                .cr_UTF16String
+                              userClobbered:NO];
       }
     } else {
-      _omniboxEditModel->StartZeroSuggestRequest();
+      [_omniboxAutocompleteController
+          startZeroSuggestRequestWithText:textField.displayedText.cr_UTF16String
+                            userClobbered:NO];
     }
   }
 
@@ -783,8 +788,10 @@ const char kOmniboxFocusResultedInNavigation[] =
     // prefix autocomplete request is getting fuzzier, and should be fully
     // encapsulated by the AutocompleteInput::focus_type() member. We should
     // merge these two calls soon, lest we confuse future developers.
-    _omniboxEditModel->StartZeroSuggestRequest(
-        /*user_clobbered_permanent_text=*/true);
+    [_omniboxAutocompleteController
+        startZeroSuggestRequestWithText:self.textField.displayedText
+                                            .cr_UTF16String
+                          userClobbered:YES];
   } else {
     // Otherwise run the normal prefix (as-you-type) autocomplete.
     [self startAutocompletePreventingInline:YES];
