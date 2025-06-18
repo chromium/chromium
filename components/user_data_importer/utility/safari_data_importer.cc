@@ -7,21 +7,56 @@
 #include "base/containers/span_rust.h"
 #include "base/files/file_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/user_data_importer/utility/safari_data_import_manager.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
 
+namespace {
+
+std::u16string RustStringToUTF16(const rust::String& rust_string) {
+  return base::UTF8ToUTF16(
+      std::string_view(rust_string.data(), rust_string.length()));
+}
+
+autofill::CreditCard ConvertToAutofillCreditCard(
+    const user_data_importer::PaymentCardEntry& card,
+    const std::string& app_locale) {
+  autofill::CreditCard credit_card;
+
+  credit_card.SetNumber(RustStringToUTF16(card.card_number));
+  credit_card.SetNickname(RustStringToUTF16(card.card_name));
+  credit_card.SetExpirationMonth(card.card_expiration_month);
+  credit_card.SetExpirationYear(card.card_expiration_year);
+
+  // Import all cards as local cards initially. Adding other card types
+  // (server, etc) is too complex for an import flow.
+  credit_card.set_record_type(autofill::CreditCard::RecordType::kLocalCard);
+
+  credit_card.SetInfo(
+      autofill::CREDIT_CARD_NAME_FULL,
+      base::UTF8ToUTF16(std::string_view(card.cardholder_name.data(),
+                                         card.cardholder_name.length())),
+      app_locale);
+
+  return credit_card;
+}
+
+}  // namespace
+
 namespace user_data_importer {
 
 SafariDataImporter::SafariDataImporter(
     password_manager::SavedPasswordsPresenter* presenter,
-    std::unique_ptr<SafariDataImportManager> manager)
+    std::unique_ptr<SafariDataImportManager> manager,
+    std::string app_locale)
     : password_importer_(std::make_unique<password_manager::PasswordImporter>(
           presenter,
           /*user_confirmation_required=*/true)),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      manager_(std::move(manager)) {}
+      manager_(std::move(manager)),
+      app_locale_(std::move(app_locale)) {}
 
 SafariDataImporter::~SafariDataImporter() = default;
 
@@ -212,9 +247,17 @@ void SafariDataImporter::ImportPaymentCards(
     return;
   }
 
-  // TODO(crbug.com/407587751): Convert payment cards to autofill::CreditCard.
+  cards_to_import_.clear();
 
-  PostCallback(std::move(payment_cards_callback), payment_cards.size());
+  cards_to_import_.reserve(payment_cards.size());
+
+  std::ranges::transform(payment_cards, std::back_inserter(cards_to_import_),
+                         [this](const auto& card) {
+                           return ConvertToAutofillCreditCard(card,
+                                                              app_locale_);
+                         });
+
+  PostCallback(std::move(payment_cards_callback), cards_to_import_.size());
 }
 
 void SafariDataImporter::ImportBookmarks(std::string html_data,

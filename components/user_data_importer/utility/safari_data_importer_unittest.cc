@@ -46,7 +46,8 @@ class SafariDataImporterTest : public testing::Test {
   SafariDataImporterTest()
       : receiver_{&service_},
         importer_(&presenter_,
-                  std::make_unique<TestSafariDataImportManager>()) {
+                  std::make_unique<TestSafariDataImportManager>(),
+                  "en-US") {
     mojo::PendingRemote<password_manager::mojom::CSVPasswordParser>
         pending_remote{receiver_.BindNewPipeAndPassRemote()};
     importer_.password_importer_->SetServiceForTesting(

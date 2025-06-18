@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORTER_H_
 
 #include "base/task/sequenced_task_runner.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
 
@@ -31,7 +32,8 @@ class SafariDataImporter {
   using PasswordImportResults = password_manager::ImportResults;
 
   SafariDataImporter(password_manager::SavedPasswordsPresenter* presenter,
-                     std::unique_ptr<SafariDataImportManager> manager);
+                     std::unique_ptr<SafariDataImportManager> manager,
+                     std::string app_locale);
   ~SafariDataImporter();
 
   // Attempts to import various data types (passwords, payment cards, bookmarks
@@ -135,6 +137,12 @@ class SafariDataImporter {
   // Encapsulates model-layer logic that has to be injected (e.g.,
   // platform-specific logic).
   std::unique_ptr<SafariDataImportManager> manager_;
+
+  // Stores the credit cards parsed from the "PaymentCards" JSON file.
+  std::vector<autofill::CreditCard> cards_to_import_;
+
+  // The application locale, used to set credit card information.
+  const std::string app_locale_;
 };
 
 }  // namespace user_data_importer

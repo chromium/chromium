@@ -1,6 +1,6 @@
 include_rules = [
-  "+components/password_manager/core/browser",
   "+components/affiliations/core/browser",
+  "+components/autofill/core/browser/data_model/payments",
   "+components/password_manager/core/browser",
   "+components/password_manager/core/common",
   "+components/password_manager/services/csv_password",
