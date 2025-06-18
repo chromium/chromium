@@ -240,6 +240,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(double, kCubicBezierY2);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                                           kMaxAnimtionDuration);
 
+// When enabled, slim will receive CompositorFrameSink messages directly without
+// the intermediate IO-thread hop.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSlimDirectReceiverIpc);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

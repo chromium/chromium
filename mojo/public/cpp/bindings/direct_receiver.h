@@ -33,6 +33,10 @@ namespace cc::mojo_embedder {
 class AsyncLayerTreeFrameSink;
 }
 
+namespace cc::slim {
+class FrameSinkImpl;
+}
+
 namespace viz {
 class CompositorFrameSinkImpl;
 }
@@ -114,6 +118,7 @@ class DirectReceiverKey {
   // Update this list and get a mojo/OWNERS approval in order to gain access to
   // DirectReceiver construction.
   friend class cc::mojo_embedder::AsyncLayerTreeFrameSink;
+  friend class cc::slim::FrameSinkImpl;
   friend class mojo::test::direct_receiver_unittest::ServiceImpl;
   friend class blink::WidgetInputHandlerImpl;
   friend class viz::CompositorFrameSinkImpl;

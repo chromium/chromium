@@ -269,4 +269,8 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "max_animation_duration",
                    base::Milliseconds(700));
 
+BASE_FEATURE(kSlimDirectReceiverIpc,
+             "SlimDirectReceiverIpc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

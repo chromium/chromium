@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
@@ -28,6 +29,7 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -140,7 +142,12 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   // Separate from AssociatedRemote above for testing.
   raw_ptr<viz::mojom::CompositorFrameSink, DanglingUntriaged> frame_sink_ =
       nullptr;
-  mojo::Receiver<viz::mojom::CompositorFrameSinkClient> client_receiver_{this};
+
+  using Receiver = mojo::Receiver<viz::mojom::CompositorFrameSinkClient>;
+  using DirectReceiver =
+      mojo::DirectReceiver<viz::mojom::CompositorFrameSinkClient>;
+  std::variant<Receiver, DirectReceiver> client_receiver_;
+
   scoped_refptr<viz::RasterContextProvider> context_provider_;
   raw_ptr<FrameSinkImplClient> client_ = nullptr;
   viz::LocalSurfaceId local_surface_id_;
