@@ -93,7 +93,7 @@ Compiling all targets of builder "Win10 Tests x64 (dbg)":
 vpython3 run.py -B ci -b 'Win10 Tests x64 (dbg)' compile
 ```
 
-Compiling and running the "net_unittests" suite on "linux-chromeos-dbg":
+Compiling and running the "url_unittests" suite on "linux-chromeos-dbg":
 ```
 vpython3 run.py -B ci -b linux-chromeos-dbg -t url_unittests compile-and-test
 ```
