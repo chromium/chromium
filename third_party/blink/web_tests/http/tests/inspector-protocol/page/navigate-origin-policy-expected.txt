@@ -1,4 +1,12 @@
 Tests that Page.navigate() returns the results that match referrer-policy configs
+Invalid policy: {
+    error : {
+        code : -32602
+        message : Invalid referrerPolicy
+    }
+    id : <number>
+    sessionId : <string>
+}
 Request referrer: https://www.google.com/
 Request referrer-policy: origin
 
