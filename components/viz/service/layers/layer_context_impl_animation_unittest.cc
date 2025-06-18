@@ -213,15 +213,25 @@ class LayerContextImplAnimationTest : public LayerContextImplTest {
     return CreateMojomColorKeyframe(start_time, SK_ColorGREEN,
                                     CreateDefaultMojomTimingFunction());
   }
-  mojom::AnimationPtr CreateDefaultMojomAnimation(int animation_id,
-                                                  int model_id,
-                                                  int group_id) {
+
+  mojom::AnimationPtr CreateAnimationWithDefaultModel(
+      int animation_id,
+      int model_id,
+      int group_id,
+      cc::TargetProperty::Type target_property_type) {
     auto animation = mojom::Animation::New();
     animation->id = animation_id;
     animation->element_id = kDefaultElementId;
     animation->keyframe_models.push_back(CreateDefaultMojomKeyframeModel(
-        model_id, group_id, cc::TargetProperty::OPACITY));
+        model_id, group_id, target_property_type));
     return animation;
+  }
+
+  mojom::AnimationPtr CreateDefaultMojomAnimation(int animation_id,
+                                                  int model_id,
+                                                  int group_id) {
+    return CreateAnimationWithDefaultModel(animation_id, model_id, group_id,
+                                           cc::TargetProperty::OPACITY);
   }
 
   mojom::AnimationTimelinePtr CreateDefaultMojomTimeline(int timeline_id) {
@@ -503,17 +513,13 @@ TEST_F(LayerContextImplAnimationTest, DeserializeColorAnimationCurve) {
   update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
 
   auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
-  auto animation_mojom = mojom::Animation::New();
-  animation_mojom->id = kAnimationId;
-  animation_mojom->element_id = kDefaultElementId;
-  auto model_mojom = CreateDefaultMojomKeyframeModel(
-      kKeyframeModelId, kGroupId, cc::TargetProperty::BACKGROUND_COLOR);
-  model_mojom->keyframes.push_back(
+  auto animation_mojom =
+      CreateAnimationWithDefaultModel(kAnimationId, kKeyframeModelId, kGroupId,
+                                      cc::TargetProperty::BACKGROUND_COLOR);
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
       CreateMojomColorKeyframe(kDefaultKeyframeStartTime, kStartColor));
-  model_mojom->keyframes.push_back(
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
       CreateMojomColorKeyframe(kDefaultKeyframeEndOpacityTime, kEndColor));
-
-  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
   timeline_mojom->new_animations.push_back(std::move(animation_mojom));
   update->animation_timelines->push_back(std::move(timeline_mojom));
 
@@ -552,17 +558,13 @@ TEST_F(LayerContextImplAnimationTest, DeserializeSizeAnimationCurve) {
   update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
 
   auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
-  auto animation_mojom = mojom::Animation::New();
-  animation_mojom->id = kAnimationId;
-  animation_mojom->element_id = kDefaultElementId;
-  auto model_mojom = CreateDefaultMojomKeyframeModel(
-      kKeyframeModelId, kGroupId, cc::TargetProperty::BOUNDS);
-  model_mojom->keyframes.push_back(
+  auto animation_mojom = CreateAnimationWithDefaultModel(
+      kAnimationId, kKeyframeModelId, kGroupId, cc::TargetProperty::BOUNDS);
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
       CreateMojomSizeKeyframe(kDefaultKeyframeStartTime, kStartSize));
-  model_mojom->keyframes.push_back(
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
       CreateMojomSizeKeyframe(kDefaultKeyframeEndOpacityTime, kEndSize));
 
-  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
   timeline_mojom->new_animations.push_back(std::move(animation_mojom));
   update->animation_timelines->push_back(std::move(timeline_mojom));
 
@@ -600,17 +602,13 @@ TEST_F(LayerContextImplAnimationTest, DeserializeRectAnimationCurve) {
   update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
 
   auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
-  auto animation_mojom = mojom::Animation::New();
-  animation_mojom->id = kAnimationId;
-  animation_mojom->element_id = kDefaultElementId;
-  auto model_mojom = CreateDefaultMojomKeyframeModel(
-      kKeyframeModelId, kGroupId, cc::TargetProperty::BOUNDS);
-  model_mojom->keyframes.push_back(
+  auto animation_mojom = CreateAnimationWithDefaultModel(
+      kAnimationId, kKeyframeModelId, kGroupId, cc::TargetProperty::BOUNDS);
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
       CreateMojomRectKeyframe(kDefaultKeyframeStartTime, kStartRect));
-  model_mojom->keyframes.push_back(
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
       CreateMojomRectKeyframe(kDefaultKeyframeEndOpacityTime, kEndRect));
 
-  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
   timeline_mojom->new_animations.push_back(std::move(animation_mojom));
   update->animation_timelines->push_back(std::move(timeline_mojom));
 
@@ -656,17 +654,14 @@ TEST_F(LayerContextImplAnimationTest, DeserializeTransformAnimationCurve) {
   update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
 
   auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
-  auto animation_mojom = mojom::Animation::New();
-  animation_mojom->id = kAnimationId;
-  animation_mojom->element_id = kDefaultElementId;
-  auto model_mojom = CreateDefaultMojomKeyframeModel(
-      kKeyframeModelId, kGroupId, cc::TargetProperty::TRANSFORM);
-  model_mojom->keyframes.push_back(
+  auto animation_mojom = CreateAnimationWithDefaultModel(
+      kAnimationId, kKeyframeModelId, kGroupId, cc::TargetProperty::TRANSFORM);
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
       CreateMojomTransformKeyframe(kDefaultKeyframeStartTime, kStartTransform));
-  model_mojom->keyframes.push_back(CreateMojomTransformKeyframe(
-      kDefaultKeyframeEndOpacityTime, kEndTransform));
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
+      CreateMojomTransformKeyframe(kDefaultKeyframeEndOpacityTime,
+                                   kEndTransform));
 
-  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
   timeline_mojom->new_animations.push_back(std::move(animation_mojom));
   update->animation_timelines->push_back(std::move(timeline_mojom));
 
@@ -1067,19 +1062,16 @@ TEST_F(LayerContextImplAnimationTest,
   update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
 
   auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
-  auto animation_mojom = mojom::Animation::New();
-  animation_mojom->id = kAnimationId;
-  animation_mojom->element_id = kDefaultElementId;
-  auto model_mojom = CreateDefaultMojomKeyframeModel(
-      kKeyframeModelId, kGroupId, cc::TargetProperty::TRANSFORM);
+  auto animation_mojom = CreateAnimationWithDefaultModel(
+      kAnimationId, kKeyframeModelId, kGroupId, cc::TargetProperty::TRANSFORM);
   // Keyframe 1: TRANSFORM (sets the curve type)
-  model_mojom->keyframes.push_back(
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
       CreateMojomTransformKeyframeDefault(kDefaultKeyframeStartTime));
   // Keyframe 2: SCALAR (mismatches the curve type)
-  model_mojom->keyframes.push_back(CreateDefaultMojomScalarKeyframe(
-      kDefaultKeyframeEndOpacityTime, kDefaultKeyframeStartOpacity));
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
+      CreateDefaultMojomScalarKeyframe(kDefaultKeyframeEndOpacityTime,
+                                       kDefaultKeyframeStartOpacity));
 
-  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
   timeline_mojom->new_animations.push_back(std::move(animation_mojom));
   update->animation_timelines->push_back(std::move(timeline_mojom));
 
@@ -1099,19 +1091,16 @@ TEST_F(LayerContextImplAnimationTest,
   update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
 
   auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
-  auto animation_mojom = mojom::Animation::New();
-  animation_mojom->id = kAnimationId;
-  animation_mojom->element_id = kDefaultElementId;
-  auto model_mojom = CreateDefaultMojomKeyframeModel(
-      kKeyframeModelId, kGroupId, cc::TargetProperty::OPACITY);
+  auto animation_mojom = CreateAnimationWithDefaultModel(
+      kAnimationId, kKeyframeModelId, kGroupId, cc::TargetProperty::OPACITY);
   // Keyframe 1: SCALAR (sets the curve type for OPACITY)
-  model_mojom->keyframes.push_back(CreateDefaultMojomScalarKeyframe(
-      kDefaultKeyframeStartTime, kDefaultKeyframeStartOpacity));
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
+      CreateDefaultMojomScalarKeyframe(kDefaultKeyframeStartTime,
+                                       kDefaultKeyframeStartOpacity));
   // Keyframe 2: COLOR (mismatches the curve type)
-  model_mojom->keyframes.push_back(
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
       CreateMojomColorKeyframe(kDefaultKeyframeEndOpacityTime, SK_ColorRED));
 
-  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
   timeline_mojom->new_animations.push_back(std::move(animation_mojom));
   update->animation_timelines->push_back(std::move(timeline_mojom));
 
@@ -1131,19 +1120,16 @@ TEST_F(LayerContextImplAnimationTest,
   update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
 
   auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
-  auto animation_mojom = mojom::Animation::New();
-  animation_mojom->id = kAnimationId;
-  animation_mojom->element_id = kDefaultElementId;
-  auto model_mojom = CreateDefaultMojomKeyframeModel(
-      kKeyframeModelId, kGroupId, cc::TargetProperty::BACKGROUND_COLOR);
-  model_mojom->keyframes.clear();
+  auto animation_mojom =
+      CreateAnimationWithDefaultModel(kAnimationId, kKeyframeModelId, kGroupId,
+                                      cc::TargetProperty::BACKGROUND_COLOR);
   // Keyframe 1: COLOR (sets the curve type for BACKGROUND_COLOR)
-  model_mojom->keyframes.push_back(
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
       CreateMojomColorKeyframeDefault(kDefaultKeyframeStartTime));
   // Keyframe 2: RECT (mismatches the curve type)
-  model_mojom->keyframes.push_back(CreateMojomRectKeyframe(
-      kDefaultKeyframeEndOpacityTime, gfx::Rect(1, 2, 3, 4)));
-  animation_mojom->keyframe_models.push_back(std::move(model_mojom));
+  animation_mojom->keyframe_models[0]->keyframes.push_back(
+      CreateMojomRectKeyframe(kDefaultKeyframeEndOpacityTime,
+                              gfx::Rect(1, 2, 3, 4)));
 
   timeline_mojom->new_animations.push_back(std::move(animation_mojom));
   update->animation_timelines->push_back(std::move(timeline_mojom));
