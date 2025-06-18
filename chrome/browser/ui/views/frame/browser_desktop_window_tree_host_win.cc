@@ -442,6 +442,10 @@ bool BrowserDesktopWindowTreeHostWin::PreHandleMSG(UINT message,
 void BrowserDesktopWindowTreeHostWin::PostHandleMSG(UINT message,
                                                     WPARAM w_param,
                                                     LPARAM l_param) {
+  if (!GetWidget()) {
+    return;
+  }
+
   switch (message) {
     case WM_SETFOCUS: {
       UpdateWorkspace();
@@ -537,6 +541,7 @@ bool BrowserDesktopWindowTreeHostWin::ShouldWindowContentsBeTransparent()
 }
 
 void BrowserDesktopWindowTreeHostWin::ClientDestroyedWidget() {
+  profile_observation_.Reset();
   system_menu_.reset();
   browser_window_property_manager_.reset();
   browser_frame_ = nullptr;
