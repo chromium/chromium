@@ -41,18 +41,6 @@ using sandbox::bpf_dsl::ResultExpr;
 
 namespace sandbox {
 
-#ifndef UFFDIO_MOVE
-#define _UFFDIO_MOVE (0x05)
-struct uffdio_move {
-  __u64 dst;
-  __u64 src;
-  __u64 len;
-  __u64 mode;
-  __s64 move;
-};
-#define UFFDIO_MOVE _IOWR(UFFDIO, _UFFDIO_MOVE, struct uffdio_move)
-#endif
-
 namespace {
 
 // Restricts the arguments to sys_socket() to AF_UNIX. Returns a BoolExpr that
