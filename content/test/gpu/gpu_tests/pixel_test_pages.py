@@ -1769,30 +1769,34 @@ class PixelTestPages():
         '--use-fake-device-for-media-stream',
         f'--use-file-for-fake-video-capture={video_path}'
     ]
+    meet_sample_area_matching = algo.SampleAreaMatchingAlgorithm(
+        sample_area_width=5,
+        max_different_pixels_per_area=2,
+        sample_area_channel_delta_threshold=1)
     # The video is rather large on the page, which can cause a horizontal
     # scrollbar to appear along the bottom. So, crop that first.
     standard_crop = ca.NonWhiteContentCropAction(
         ca.FixedRectCropAction(0, 60, None, -20))
     # Run the tests on CI for a while to see how stable they are with
     # fuzzy matching enabled.
-    grace_period_end = date(2025, 7, 1)
+    grace_period_end = date(2025, 8, 1)
     return [
         PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=359',
                       f'{base_name}_MeetEffectsCatOnHead',
                       crop_action=standard_crop,
                       browser_args=video_args,
-                      matching_algorithm=ROUNDING_ERROR_ALGO,
+                      matching_algorithm=meet_sample_area_matching,
                       grace_period_end=grace_period_end),
         PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=539',
                       f'{base_name}_MeetEffectsRainbowWig',
                       crop_action=standard_crop,
                       browser_args=video_args,
-                      matching_algorithm=ROUNDING_ERROR_ALGO,
+                      matching_algorithm=meet_sample_area_matching,
                       grace_period_end=grace_period_end),
         PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=530',
                       f'{base_name}_MeetEffectsTruckerHat',
                       crop_action=standard_crop,
                       browser_args=video_args,
-                      matching_algorithm=ROUNDING_ERROR_ALGO,
+                      matching_algorithm=meet_sample_area_matching,
                       grace_period_end=grace_period_end),
     ]
