@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -156,6 +157,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private @Nullable Profile mProfile;
     private @Nullable PriceMessageService mPriceMessageService;
     private @Nullable IncognitoReauthPromoMessageService mIncognitoReauthPromoMessageService;
+    private @Nullable TabGroupSuggestionMessageService mTabGroupSuggestionMessageService;
     private @Nullable ArchivedTabsMessageService mArchivedTabsMessageService;
 
     /**
@@ -350,6 +352,16 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                             mLifecycleDispatcher);
             mMessageCardProviderCoordinator.subscribeMessageService(
                     mIncognitoReauthPromoMessageService);
+
+            if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()) {
+                mTabGroupSuggestionMessageService =
+                        new TabGroupSuggestionMessageService(
+                                mActivity,
+                                mCurrentTabGroupModelFilterSupplier,
+                                this::addTabGroupSuggestionMessage);
+                mMessageCardProviderCoordinator.subscribeMessageService(
+                        mTabGroupSuggestionMessageService);
+            }
         }
         setUpPriceTracking();
     }
@@ -400,6 +412,9 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         mTabGridIphDialogCoordinator.destroy();
         if (mIncognitoReauthPromoMessageService != null) {
             mIncognitoReauthPromoMessageService.destroy();
+        }
+        if (mTabGroupSuggestionMessageService != null) {
+            mTabGroupSuggestionMessageService.destroy();
         }
         if (mArchivedTabsMessageService != null) {
             mArchivedTabsMessageService.destroy();
@@ -699,5 +714,9 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         assert mPriceMessageService == null
                 : "setPriceMessageServiceForTesting() must be before initWithNative().";
         mPriceMessageService = priceMessageService;
+    }
+
+    private void addTabGroupSuggestionMessage() {
+        appendNextMessage(MessageType.TAB_GROUP_SUGGESTION_MESSAGE);
     }
 }

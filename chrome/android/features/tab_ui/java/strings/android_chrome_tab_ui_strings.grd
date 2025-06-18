@@ -424,6 +424,14 @@
         Tab group expanded
       </message>
 
+      <!-- GTS Tab Group Suggestions strings -->
+      <message name="IDS_TAB_GROUP_SUGGESTION_MESSAGE" desc="The message card title for tab group suggestions in the tab switcher.">
+        Group <ph name="NUMBER_OF_TABS">%1$s<ex>2</ex></ph> tabs to work faster?
+      </message>
+      <message name="IDS_TAB_GROUP_SUGGESTION_MESSAGE_ACTION_TEXT" desc="The label for the action button for tab group suggestion message cards in the tab switcher.">
+        Group
+      </message>
+
       <!-- Tab Grid Drag-and-drop IPH strings -->
       <message name="IDS_IPH_DRAG_AND_DROP_INTRODUCTION" desc="This text shows on the entry point for the in-product help for drag-and-drop. It introduces that this IPH is about how to use drag-and-drop.">
         Drag tabs to group them

@@ -29,6 +29,7 @@ public class MessageService {
         MessageType.ARCHIVED_TABS_MESSAGE,
         MessageType.ARCHIVED_TABS_IPH_MESSAGE,
         MessageType.COLLABORATION_ACTIVITY,
+        MessageType.TAB_GROUP_SUGGESTION_MESSAGE,
         MessageType.ALL
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -40,7 +41,8 @@ public class MessageService {
         int ARCHIVED_TABS_MESSAGE = 4;
         int ARCHIVED_TABS_IPH_MESSAGE = 5;
         int COLLABORATION_ACTIVITY = 6;
-        int ALL = 7;
+        int TAB_GROUP_SUGGESTION_MESSAGE = 7;
+        int ALL = 8;
     }
 
     /**

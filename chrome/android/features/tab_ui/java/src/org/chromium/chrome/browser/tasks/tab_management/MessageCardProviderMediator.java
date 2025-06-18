@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageService.Me
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.IPH;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.PRICE_MESSAGE;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.TAB_GROUP_SUGGESTION_MESSAGE;
 
 import android.content.Context;
 
@@ -135,6 +136,11 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
                 assert data instanceof ArchivedTabsMessageService.ArchivedTabsMessageData;
                 return CustomMessageCardViewModel.create(
                         ((ArchivedTabsMessageService.ArchivedTabsMessageData) data).getProvider());
+            case TAB_GROUP_SUGGESTION_MESSAGE:
+                assert data
+                        instanceof TabGroupSuggestionMessageService.TabGroupSuggestionMessageData;
+                return TabGroupSuggestionMessageViewModel.create(
+                        (TabGroupSuggestionMessageService.TabGroupSuggestionMessageData) data);
             default:
                 return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
                         .with(MessageCardViewProperties.IS_INCOGNITO, false)
