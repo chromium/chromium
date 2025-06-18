@@ -398,7 +398,7 @@ void TipsNotificationClient::OnNotificationRequested(TipsNotificationType type,
   }
 }
 
-bool TipsNotificationClient::IsSceneLevelForegroundActive() {
+bool TipsNotificationClient::IsSceneLevelForegroundActive() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetActiveForegroundBrowser() != nullptr;
 }
@@ -618,7 +618,7 @@ void TipsNotificationClient::OnGetDeliveredNotifications(
   local_state_->ClearPref(kTipsNotificationsLastTriggered);
 }
 
-bool TipsNotificationClient::IsPermitted() {
+bool TipsNotificationClient::IsPermitted() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/325279788): use
   // GetMobileNotificationPermissionStatusForClient to determine opt-in
@@ -628,7 +628,7 @@ bool TipsNotificationClient::IsPermitted() {
       .value_or(false);
 }
 
-bool TipsNotificationClient::CanSendReactivation() {
+bool TipsNotificationClient::CanSendReactivation() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If the user has opted-in for Tips, or First-Run was more than 4 weeks ago,
   // or if the feature is not enabled, Reactivation notifications should not

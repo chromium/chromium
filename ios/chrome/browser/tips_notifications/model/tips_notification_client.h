@@ -83,7 +83,7 @@ class TipsNotificationClient : public PushNotificationClient {
   void OnNotificationRequested(TipsNotificationType type, NSError* error);
 
   // Returns `true` if there is foreground active browser.
-  bool IsSceneLevelForegroundActive();
+  bool IsSceneLevelForegroundActive() const;
 
   // Helpers to handle notification interactions.
   void ShowUIForNotificationType(TipsNotificationType type, Browser* browser);
@@ -112,11 +112,11 @@ class TipsNotificationClient : public PushNotificationClient {
   void OnGetDeliveredNotifications(NSArray<UNNotification*>* notifications);
 
   // Returns true if Tips notifications are permitted.
-  bool IsPermitted();
+  bool IsPermitted() const;
 
   // Returns true if the app has provisional notification authorization and the
   // IOSReactivationNotifications feature is enabled.
-  bool CanSendReactivation();
+  bool CanSendReactivation() const;
 
   // Updates the instance variable that stores whether provisional
   // notifications are allowed by policy.

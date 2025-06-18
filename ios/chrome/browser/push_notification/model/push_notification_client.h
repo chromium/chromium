@@ -140,11 +140,11 @@ class PushNotificationClient {
   // client's scope. Encapsulates the logic for choosing between
   // Profile-specific and arbitrary browser lookups. Returns `nullptr` if no
   // suitable browser is found.
-  Browser* GetActiveForegroundBrowser();
+  Browser* GetActiveForegroundBrowser() const;
 
   // Returns the `ProfileIOS` associated with this client instance. Set during
   // construction, primarily for clients with `kPerProfile` scope.
-  ProfileIOS* GetProfile();
+  ProfileIOS* GetProfile() const;
 
  private:
   friend class ::CommercePushNotificationClientTest;
