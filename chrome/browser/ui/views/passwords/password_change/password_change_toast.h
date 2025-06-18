@@ -5,22 +5,21 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_CHANGE_PASSWORD_CHANGE_TOAST_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_CHANGE_PASSWORD_CHANGE_TOAST_H_
 
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/window/dialog_delegate.h"
+#include "ui/views/view.h"
 
 namespace views {
-class Throbber;
+class ImageButton;
 class ImageView;
 class Label;
 class MdTextButton;
-class ImageButton;
+class Throbber;
 }  // namespace views
 
 // Toast view displaying the progress of password change. Displayed content can
 // be updated using UpdateConfiguration() without closing the toast.
-// TODO(crbug.com/417938283): Stop using views::DialogDelegate and instead set
-// View directly into Widget.
-class PasswordChangeToast : public views::View, public views::DialogDelegate {
+class PasswordChangeToast : public views::View {
   METADATA_HEADER(PasswordChangeToast, views::View)
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordChangeViewId);
@@ -61,23 +60,18 @@ class PasswordChangeToast : public views::View, public views::DialogDelegate {
   // `configuration`.
   void UpdateLayout(ToastOptions configuration);
 
+  gfx::Insets CalculateMargins();
+
   views::Throbber* throbber() { return throbber_; }
   views::ImageView* icon_view() { return icon_view_; }
   views::Label* label() { return label_; }
   views::MdTextButton* action_button() { return action_button_; }
   views::ImageButton* close_button() { return close_button_; }
 
-  // views::BubbleDialogDelegateView:
-  views::Widget* GetWidget() override;
-  const views::Widget* GetWidget() const override;
-  views::View* GetContentsView() override;
-  ui::mojom::ModalType GetModalType() const override;
-
  private:
   void UpdateConfiguration(ToastOptions configuration);
 
   // views::View
-  void AddedToWidget() override;
   void OnThemeChanged() override;
 
   void OnActionButtonClicked();

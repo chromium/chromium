@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -139,8 +140,12 @@ void PasswordChangeUIController::UpdateState(
 
   if (std::holds_alternative<ToastOptions>(configuration)) {
     if (toast_view_) {
+      CHECK(toast_delegate_);
       toast_view_->UpdateLayout(
           std::move(std::get<ToastOptions>(configuration)));
+      toast_delegate_->set_margins(toast_view_->CalculateMargins());
+      toast_view_->GetWidget()->SetBounds(
+          toast_delegate_->GetDesiredWidgetBounds());
       return;
     }
     ShowToast(std::move(std::get<ToastOptions>(configuration)));
@@ -231,6 +236,8 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
 
 void PasswordChangeUIController::ShowToast(ToastOptions options) {
   CHECK(tab_interface_);
+
+  std::u16string title = options.text;
   auto toast_view = std::make_unique<PasswordChangeToast>(std::move(options));
   toast_view_ = toast_view.get();
   auto params = std::make_unique<tabs::TabDialogManager::Params>();
@@ -238,10 +245,34 @@ void PasswordChangeUIController::ShowToast(ToastOptions options) {
   params->close_on_detach = false;
   params->disable_input = false;
 
+  toast_delegate_ = std::make_unique<views::DialogDelegate>();
+  toast_delegate_->SetModalType(ui::mojom::ModalType::kChild);
+  toast_delegate_->SetOwnershipOfNewWidget(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  toast_delegate_->set_use_custom_frame(true);
+  toast_delegate_->SetShowCloseButton(false);
+  toast_delegate_->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  toast_delegate_->SetContentsView(std::move(toast_view));
+  toast_delegate_->set_corner_radius(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_TOAST_BUBBLE_HEIGHT));
+  toast_delegate_->set_margins(toast_view_->CalculateMargins());
+  toast_delegate_->SetAccessibleWindowRole(ax::mojom::Role::kAlert);
+  toast_delegate_->SetAccessibleTitle(title);
+  toast_delegate_->RegisterWidgetInitializedCallback(base::BindOnce(
+      [](views::DialogDelegate* delegate) {
+        views::BubbleFrameView* frame_view = delegate->GetBubbleFrameView();
+        if (frame_view) {
+          frame_view->SetBackgroundColor(ui::kColorToastBackgroundProminent);
+          frame_view->bubble_border()->set_draw_border_stroke(false);
+        }
+      },
+      base::Unretained(toast_delegate_.get())));
+
   toast_widget_ =
       tab_interface_->GetTabFeatures()
           ->tab_dialog_manager()
-          ->CreateAndShowDialog(toast_view.release(), std::move(params));
+          ->CreateAndShowDialog(toast_delegate_.get(), std::move(params));
   toast_widget_->MakeCloseSynchronous(
       base::BindOnce(&PasswordChangeUIController::CloseToastWidget,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -324,4 +355,5 @@ void PasswordChangeUIController::CloseToastWidget(
     views::Widget::ClosedReason reason) {
   toast_view_ = nullptr;
   toast_widget_.reset();
+  toast_delegate_.reset();
 }
