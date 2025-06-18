@@ -569,6 +569,12 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyEnableUserBypass;
 NET_EXPORT extern const base::FeatureParam<bool>
     kIpPrivacyDisableForEnterpriseByDefault;
 
+// Enables the ability for IP Protected requests to be marked and inspected
+// within the DevTools panel. Requests sent through IP Protection will include
+// an icon besides the Network entry, as well as be able to be filtered within
+// the Network panel. Tracked at https://crbug.com/425645896.
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyEnableIppInDevTools;
+
 // Maximum report body size (KB) to include in serialized reports. Bodies
 // exceeding this are omitted when kExcludeLargeBodyReports is enabled.  Use
 // Reporting.ReportBodySize UMA histogram to monitor report body sizes and

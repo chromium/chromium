@@ -533,6 +533,11 @@ const base::FeatureParam<bool> kIpPrivacyDisableForEnterpriseByDefault{
     /*name=*/"IpPrivacyDisableForEnterpriseByDefault",
     /*default_value=*/false};
 
+const base::FeatureParam<bool> kIpPrivacyEnableIppInDevTools{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyEnableIppInDevTools",
+    /*default_value=*/false};
+
 BASE_FEATURE(kExcludeLargeBodyReports,
              "ExcludeLargeReportBodies",
              base::FEATURE_ENABLED_BY_DEFAULT);

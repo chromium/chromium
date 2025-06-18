@@ -1859,6 +1859,14 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                       std::move(devtools_animation_styles_in_styles_tab_dict));
   }
 
+  if (net::features::kIpPrivacyEnableIppInDevTools.Get()) {
+    base::Value::Dict devtools_ip_protection_dict;
+    devtools_ip_protection_dict.Set(
+        "enabled", net::features::kIpPrivacyEnableIppInDevTools.Get());
+    response_dict.Set("devToolsIpProtectionInDevTools",
+                      std::move(devtools_ip_protection_dict));
+  }
+
   base::Value::Dict css_value_tracing_dict;
   css_value_tracing_dict.Set(
       "enabled",
