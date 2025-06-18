@@ -99,17 +99,20 @@ constexpr CGFloat kLogoSize = 22;
 
 #pragma mark - Private Methods
 
+// Stops and cleans up the sign-in coordinator.
 - (void)stopSigninCoordinator {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
 }
 
+// Handles sign-in coordinator completion by cleaning and dismissing the promo.
 - (void)signinCoordinatorCompletion {
   [self stopSigninCoordinator];
   [self.delegate dismissNonModalSignInPromo:self];
 }
 
-- (void)sendPromoDismissalNotification {
+// Notifies the feature engagement tracker that the promo has been dismissed.
+- (void)notifyFeatureEngagementDismissed {
   if (self.bannerWasPresented) {
     switch (_promoType) {
       case SignInPromoType::kPassword:
@@ -122,7 +125,10 @@ constexpr CGFloat kLogoSize = 22;
         break;
     }
   }
+}
 
+// Stops timers, hides banner UI, and dismisses the coordinator if needed.
+- (void)cleanupUIAndDismiss {
   [_mediator stopTimeOutTimers];
 
   [self hideBannerUI];
@@ -131,12 +137,15 @@ constexpr CGFloat kLogoSize = 22;
   }
 }
 
+// Dismisses the banner view controller when interaction is finished.
 - (void)hideBannerUI {
   if (self.bannerViewController) {
     [self.bannerViewController dismissWhenInteractionIsFinished];
   }
 }
 
+// Configures the banner with title, subtitle, button text, and icon based on
+// promo type.
 - (void)configureBanner {
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_NON_MODAL_SIGNIN_PROMO_PROMPT);
@@ -208,7 +217,7 @@ constexpr CGFloat kLogoSize = 22;
     return;
   }
 
-  [self sendPromoDismissalNotification];
+  [self cleanupUIAndDismiss];
 }
 
 #pragma mark - InfobarCoordinatorImplementation
@@ -286,7 +295,6 @@ constexpr CGFloat kLogoSize = 22;
 
 - (void)actionCallback {
   [self stopSigninCoordinator];
-  [self sendPromoDismissalNotification];
 }
 
 - (void)infobarBannerWillBeDismissed:(BOOL)userInitiated {
@@ -299,7 +307,8 @@ constexpr CGFloat kLogoSize = 22;
 }
 
 - (void)infobarWasDismissed {
-  [self sendPromoDismissalNotification];
+  [self notifyFeatureEngagementDismissed];
+  [self cleanupUIAndDismiss];
   self.bannerViewController = nil;
 }
 
