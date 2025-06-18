@@ -67,9 +67,11 @@ Pattern::RepeatMode CanvasPattern::ParseRepetitionType(
 
 CanvasPattern::CanvasPattern(scoped_refptr<Image> image,
                              Pattern::RepeatMode repeat,
-                             bool origin_clean)
+                             bool origin_clean,
+                             bool has_intervention_trigger)
     : pattern_(Pattern::CreateImagePattern(image, repeat)),
-      origin_clean_(origin_clean) {
+      origin_clean_(origin_clean),
+      has_intervention_trigger_(has_intervention_trigger) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kCreatePattern, image ? image->width() : 0,

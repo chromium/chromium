@@ -52,12 +52,17 @@ class MODULES_EXPORT CanvasPattern final : public ScriptWrappable {
   static Pattern::RepeatMode ParseRepetitionType(const String&,
                                                  ExceptionState&);
 
-  CanvasPattern(scoped_refptr<Image>, Pattern::RepeatMode, bool origin_clean);
+  CanvasPattern(scoped_refptr<Image>,
+                Pattern::RepeatMode,
+                bool origin_clean,
+                bool has_intervention_trigger);
 
   Pattern* GetPattern() const { return pattern_.get(); }
   const AffineTransform& GetTransform() const { return pattern_transform_; }
 
   bool OriginClean() const { return origin_clean_; }
+
+  bool HasInterventionTrigger() const { return has_intervention_trigger_; }
 
   void setTransform(DOMMatrix2DInit*, ExceptionState&);
 
@@ -71,7 +76,8 @@ class MODULES_EXPORT CanvasPattern final : public ScriptWrappable {
  private:
   scoped_refptr<Pattern> pattern_;
   AffineTransform pattern_transform_;
-  bool origin_clean_;
+  const bool origin_clean_;
+  const bool has_intervention_trigger_;
   IdentifiabilityStudyHelper identifiability_study_helper_;
 };
 

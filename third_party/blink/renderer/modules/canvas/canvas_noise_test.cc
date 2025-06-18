@@ -11,6 +11,7 @@
 #include "components/viz/test/test_context_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float16array_float32array_uint8clampedarray.h"
 #include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
@@ -558,4 +559,99 @@ TEST_F(CanvasNoiseTest, NumberOfNoisedReadbackPerPage) {
       "FingerprintingProtection.CanvasNoise.NoisedReadbacksPerContext", 3, 1);
 }
 
+TEST_F(CanvasNoiseTest, NoisedAfterPattern) {
+  NonThrowableExceptionState exception_state;
+  V8TestingScope scope;
+  SetHtmlInnerHTML(
+      "<body><canvas id='c1' width='300' height='300'></canvas><canvas id='c2' "
+      "width='300' height='300'></canvas</body>");
+  UpdateAllLifecyclePhasesForTest();
+  auto* canvas_1 = To<HTMLCanvasElement>(GetElementById("c1"));
+  auto* canvas_2 = To<HTMLCanvasElement>(GetElementById("c2"));
+
+  CanvasContextCreationAttributesCore attributes;
+  auto* context_1 = static_cast<CanvasRenderingContext2D*>(
+      canvas_1->GetCanvasRenderingContext("2d", attributes));
+  ASSERT_NE(context_1, nullptr);
+  auto* context_2 = static_cast<CanvasRenderingContext2D*>(
+      canvas_2->GetCanvasRenderingContext("2d", attributes));
+  ASSERT_NE(context_2, nullptr);
+
+  EXPECT_FALSE(context_1->HasTriggerForIntervention());
+
+  CanvasPattern* empty_pattern =
+      context_2->createPattern(canvas_1, "repeat", exception_state);
+  context_2->setFillStyle(
+      GetScriptState()->GetIsolate(),
+      ToV8Traits<CanvasPattern>::ToV8(GetScriptState(), empty_pattern),
+      exception_state);
+  EXPECT_FALSE(context_2->HasTriggerForIntervention());
+
+  context_1->setShadowBlur(10);
+  context_1->setShadowColor("red");
+  context_1->fillRect(0, 0, 10, 10);
+
+  EXPECT_TRUE(context_1->HasTriggerForIntervention());
+  EXPECT_FALSE(context_2->HasTriggerForIntervention());
+
+  CanvasPattern* to_be_noised_pattern =
+      context_2->createPattern(canvas_1, "repeat", exception_state);
+  context_2->setFillStyle(
+      GetScriptState()->GetIsolate(),
+      ToV8Traits<CanvasPattern>::ToV8(GetScriptState(), to_be_noised_pattern),
+      exception_state);
+  EXPECT_TRUE(context_2->HasTriggerForIntervention());
+}
+
+TEST_F(CanvasNoiseTest, NoisedAfterPatternFromOffscreenCanvas) {
+  V8TestingScope scope;
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope script_state_scope(script_state);
+  NonThrowableExceptionState exception_state;
+  auto* host = OffscreenCanvas::Create(scope.GetScriptState(), 300, 300);
+  OffscreenCanvasRenderingContext2D* context =
+      static_cast<OffscreenCanvasRenderingContext2D*>(
+          host->GetCanvasRenderingContext(
+              scope.GetExecutionContext(),
+              CanvasRenderingContext::CanvasRenderingAPI::k2D,
+              CanvasContextCreationAttributesCore()));
+  context->fillText("CanvasNoiseTest", 0, 0);
+  EXPECT_TRUE(context->ShouldTriggerIntervention());
+  EXPECT_FALSE(Context2D()->ShouldTriggerIntervention());
+
+  CanvasPattern* pattern =
+      Context2D()->createPattern(host, "repeat", exception_state);
+  Context2D()->setFillStyle(
+      script_state->GetIsolate(),
+      ToV8Traits<CanvasPattern>::ToV8(script_state, pattern), exception_state);
+  Context2D()->fillRect(0, 0, 10, 10);
+
+  EXPECT_TRUE(Context2D()->ShouldTriggerIntervention());
+}
+
+TEST_F(CanvasNoiseTest, NoisedAfterPatternOnOffscreenCanvas) {
+  V8TestingScope scope;
+  NonThrowableExceptionState exception_state;
+  DrawSomethingWithTrigger();
+
+  auto* host = OffscreenCanvas::Create(scope.GetScriptState(), 300, 300);
+  OffscreenCanvasRenderingContext2D* context =
+      static_cast<OffscreenCanvasRenderingContext2D*>(
+          host->GetCanvasRenderingContext(
+              scope.GetExecutionContext(),
+              CanvasRenderingContext::CanvasRenderingAPI::k2D,
+              CanvasContextCreationAttributesCore()));
+
+  EXPECT_FALSE(context->ShouldTriggerIntervention());
+
+  CanvasPattern* pattern =
+      context->createPattern(&CanvasElement(), "repeat", exception_state);
+  context->setFillStyle(
+      GetScriptState()->GetIsolate(),
+      ToV8Traits<CanvasPattern>::ToV8(GetScriptState(), pattern),
+      exception_state);
+  context->fillRect(0, 0, 10, 10);
+
+  EXPECT_TRUE(context->ShouldTriggerIntervention());
+}
 }  // namespace blink

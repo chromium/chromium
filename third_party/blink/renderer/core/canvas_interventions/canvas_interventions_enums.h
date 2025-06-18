@@ -41,7 +41,8 @@ enum class CanvasOperationType {
   kGlobalCompositionOperation = 16,
   kFillText = 32,
   kStrokeText = 64,
-  kMaxValue = kStrokeText
+  kCopyFromCanvas = 128,
+  kMaxValue = kCopyFromCanvas
 };
 
 inline constexpr CanvasOperationType operator|(CanvasOperationType a,
