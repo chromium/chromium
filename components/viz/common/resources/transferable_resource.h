@@ -27,6 +27,11 @@ namespace gpu {
 class ClientSharedImage;
 }
 
+namespace content {
+class PPB_Graphics3D_Impl;
+class PepperGraphics2DHost;
+}  // namespace content
+
 namespace viz {
 
 struct ReturnedResource;
@@ -92,23 +97,9 @@ struct VIZ_COMMON_EXPORT TransferableResource {
       const gpu::SyncToken& sync_token,
       const MetadataOverride& override = {});
 
-  // Following Make* functions are deprecated. Please use the one above.
-  static TransferableResource MakeSoftwareSharedImage(
-      const scoped_refptr<gpu::ClientSharedImage>& client_shared_image,
-      const gpu::SyncToken& sync_token,
-      const gfx::Size& size,
-      SharedImageFormat format,
-      ResourceSource source = ResourceSource::kUnknown);
+  // This function is deprecated. Please use the one above.
   static TransferableResource MakeGpu(
       const gpu::Mailbox& mailbox,
-      uint32_t texture_target,
-      const gpu::SyncToken& sync_token,
-      const gfx::Size& size,
-      SharedImageFormat format,
-      bool is_overlay_candidate,
-      ResourceSource source = ResourceSource::kUnknown);
-  static TransferableResource MakeGpu(
-      const scoped_refptr<gpu::ClientSharedImage>& client_shared_image,
       uint32_t texture_target,
       const gpu::SyncToken& sync_token,
       const gfx::Size& size,
@@ -245,6 +236,25 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   ResourceSource resource_source = ResourceSource::kUnknown;
 
  private:
+  // TODO(crbug.com/423939347): Following functions are deprecated and only used
+  // by pepper implementation. Remove one pepper is no longer alive.
+  friend class content::PepperGraphics2DHost;
+  friend class content::PPB_Graphics3D_Impl;
+  static TransferableResource MakeSoftwareSharedImage(
+      const scoped_refptr<gpu::ClientSharedImage>& client_shared_image,
+      const gpu::SyncToken& sync_token,
+      const gfx::Size& size,
+      SharedImageFormat format,
+      ResourceSource source = ResourceSource::kUnknown);
+  static TransferableResource MakeGpu(
+      const scoped_refptr<gpu::ClientSharedImage>& client_shared_image,
+      uint32_t texture_target,
+      const gpu::SyncToken& sync_token,
+      const gfx::Size& size,
+      SharedImageFormat format,
+      bool is_overlay_candidate,
+      ResourceSource source = ResourceSource::kUnknown);
+
   gpu::Mailbox memory_buffer_id_;
 
   // The SyncToken associated with the above buffer. Allows the receiver to wait
