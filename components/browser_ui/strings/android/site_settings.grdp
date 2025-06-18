@@ -1204,4 +1204,39 @@ Advanced Protection controls these Chrome settings:
 • "Always use secure connections" is on.
 • "Javascript optimizer" is off. <ph name="BEGIN_LINK2">&lt;link_javascript_optimizer&gt;</ph>Manage Site exceptions<ph name="END_LINK2">&lt;/link_javascript_optimizer&gt;</ph>
   </message>
+
+  <!-- Permission result announcement -->
+  <message name="IDS_PERMISSIONS_NOTIFICATION_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a notification permission requested has been granted.">
+    Notifications allowed
+  </message>
+  <message name="IDS_PERMISSIONS_NOTIFICATION_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a notification permission requested has been denied.">
+    Notifications not allowed
+  </message>
+  <message name="IDS_PERMISSIONS_GEOLOCATION_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a location permission requested has been granted.">
+    Location allowed
+  </message>
+  <message name="IDS_PERMISSIONS_GEOLOCATION_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a location permission requested has been granted once.">
+      Location allowed this time
+  </message>
+  <message name="IDS_PERMISSIONS_GEOLOCATION_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a location permission requested has been denied.">
+    Location not allowed
+  </message>
+  <message name="IDS_PERMISSIONS_CAMERA_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a camera permission requested has been granted.">
+    Camera allowed
+  </message>
+  <message name="IDS_PERMISSIONS_CAMERA_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a camera permission requested has been granted once.">
+      Camera allowed this time
+  </message>
+  <message name="IDS_PERMISSIONS_CAMERA_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a camera permission requested has been denied.">
+    Camera not allowed
+  </message>
+  <message name="IDS_PERMISSIONS_MICROPHONE_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a microphone permission requested has been granted.">
+    Microphone allowed
+  </message>
+  <message name="IDS_PERMISSIONS_MICROPHONE_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a microphone permission requested has been granted once.">
+      Microphone allowed this time
+  </message>
+  <message name="IDS_PERMISSIONS_MICROPHONE_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a microphone permission requested has been denied.">
+    Microphone not allowed
+  </message>
 </grit-part>

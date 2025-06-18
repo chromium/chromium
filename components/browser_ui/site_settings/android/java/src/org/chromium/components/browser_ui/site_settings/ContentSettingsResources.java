@@ -1026,4 +1026,58 @@ public class ContentSettingsResources {
         };
         return iconIDs;
     }
+
+    /**
+     * Returns the resource ID for permission result announcement.
+     *
+     * @return An integer of resource ID for permission result announcement.
+     */
+    public static int getPermissionResultAnnouncementForScreenReader(
+            @ContentSettingsType.EnumType int contentSettingsType,
+            @ContentSettingValues Integer value) {
+        if (value == ContentSettingValues.BLOCK) {
+            switch (contentSettingsType) {
+                case ContentSettingsType.NOTIFICATIONS:
+                    return R.string
+                            .permissions_notification_not_allowed_confirmation_screenreader_announcement;
+                case ContentSettingsType.GEOLOCATION:
+                    return R.string
+                            .permissions_geolocation_not_allowed_confirmation_screenreader_announcement;
+                case ContentSettingsType.MEDIASTREAM_CAMERA:
+                    return R.string
+                            .permissions_camera_not_allowed_confirmation_screenreader_announcement;
+                case ContentSettingsType.MEDIASTREAM_MIC:
+                    return R.string
+                            .permissions_microphone_not_allowed_confirmation_screenreader_announcement;
+            }
+        } else if (value == ContentSettingValues.SESSION_ONLY) {
+            switch (contentSettingsType) {
+                case ContentSettingsType.GEOLOCATION:
+                    return R.string
+                            .permissions_geolocation_allowed_once_confirmation_screenreader_announcement;
+                case ContentSettingsType.MEDIASTREAM_CAMERA:
+                    return R.string
+                            .permissions_camera_allowed_once_confirmation_screenreader_announcement;
+                case ContentSettingsType.MEDIASTREAM_MIC:
+                    return R.string
+                            .permissions_microphone_allowed_once_confirmation_screenreader_announcement;
+            }
+        } else if (value == ContentSettingValues.ALLOW) {
+            switch (contentSettingsType) {
+                case ContentSettingsType.NOTIFICATIONS:
+                    return R.string
+                            .permissions_notification_allowed_confirmation_screenreader_announcement;
+                case ContentSettingsType.GEOLOCATION:
+                    return R.string
+                            .permissions_geolocation_allowed_confirmation_screenreader_announcement;
+                case ContentSettingsType.MEDIASTREAM_CAMERA:
+                    return R.string
+                            .permissions_camera_allowed_confirmation_screenreader_announcement;
+                case ContentSettingsType.MEDIASTREAM_MIC:
+                    return R.string
+                            .permissions_microphone_allowed_confirmation_screenreader_announcement;
+            }
+        }
+        return 0;
+    }
 }
