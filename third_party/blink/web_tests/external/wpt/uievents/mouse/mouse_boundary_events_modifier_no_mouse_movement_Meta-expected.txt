@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Test metaKey of mouse boundary events (modifiers are changed before move): metaKey of mouseover should be true
+  assert_true: expected true got false
+[FAIL] Test metaKey of mouse boundary events (modifiers are changed before move): metaKey of mouseout should be true
+  assert_true: expected true got false
+[FAIL] Test metaKey of mouse boundary events (modifiers are changed after move): metaKey of mouseover should be true
+  assert_true: expected true got false
+[FAIL] Test metaKey of mouse boundary events (modifiers are changed after move): metaKey of mouseout should be true
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

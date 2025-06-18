@@ -2767,6 +2767,9 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/424798906 external/wpt/pointerevents/pointerevent_element_haspointercapture.html?touch [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+virtual/threaded/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
+virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
 crbug.com/425406130 external/wpt/css/css-fonts/font-variant-caps-invalidation-container-sizing.html [ Failure ]
 crbug.com/425406130 external/wpt/css/css-fonts/matching/font-unicode-presented-as-emoji-outline.html [ Failure ]
 crbug.com/425056982 [ Mac14 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/devicePixelRatio-undisplayed-iframe.tentative.html [ Crash ]

@@ -258760,6 +258760,35 @@
        }
       ]
      ],
+     "new-content-transform-change-001.html": [
+      "973a9931b71b9b09350e5de201035d922eefcba0",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/new-content-transform-change-001-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            75
+           ],
+           [
+            0,
+            10100
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "new-content-transform-position-fixed.html": [
       "4b27796c9b4fa224b82514fd0c05bea56a125ea1",
       [
@@ -288970,6 +288999,21 @@
       ]
      ]
     }
+   },
+   "gif": {
+    "reset-no-gce-1.html": [
+     "75a2b48dcd61a942f50e9b9a18a6e9d3223af3bb",
+     [
+      null,
+      [
+       [
+        "/gif/reset-no-gce-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ]
    },
    "html": {
     "browsers": {
@@ -376831,6 +376875,10 @@
       "729be2fcbf606723a4e3449bf3ffad97c8e6bf15",
       []
      ],
+     "new-content-transform-change-001-ref.html": [
+      "48147a55700701ee2cb67b5394e8491085ba4426",
+      []
+     ],
      "new-content-transform-position-fixed-ref.html": [
       "3c3a33d0b2ce23eeffc1dee733c12bf11e09cdb9",
       []
@@ -393656,6 +393704,20 @@
       []
      ]
     }
+   },
+   "gif": {
+    "META.yml": [
+     "1d051253be2da7b30e3f6aee27073661574dbcb4",
+     []
+    ],
+    "reset-no-gce-ref.html": [
+     "5bf308fd63b86f5ec81c79db512fb6ca337df9b1",
+     []
+    ],
+    "reset-no-gce.gif": [
+     "98e6bc61ac4a43e5d5e3df7165b87402a72c915b",
+     []
+    ]
    },
    "graphics-aam": {
     "DIR_METADATA": [
@@ -420726,6 +420788,22 @@
      "53c06b6443b553a17dc85314f1669d3dcae695d5",
      []
     ],
+    "pointerevent_boundary_events_modifier_no_pointer_movement_Alt-expected.txt": [
+     "912f5d7e89c8a893e75d2b4848dd1371b902f7f2",
+     []
+    ],
+    "pointerevent_boundary_events_modifier_no_pointer_movement_Control-expected.txt": [
+     "124b8a47fdca4cce6c26cc6bda99a59977447da1",
+     []
+    ],
+    "pointerevent_boundary_events_modifier_no_pointer_movement_Meta-expected.txt": [
+     "50b1a413b8fba1b0aaec33b58309c34385c79909",
+     []
+    ],
+    "pointerevent_boundary_events_modifier_no_pointer_movement_Shift-expected.txt": [
+     "c64900c2ddcd1ba490e802cea7435c1d1cb90e4c",
+     []
+    ],
     "pointerevent_click_during_parent_capture_pointerType=touch_preventDefault=-expected.txt": [
      "e320ae7b61c57fe7f87a4cd673b94a716ebd5680",
      []
@@ -432461,6 +432539,22 @@
      }
     },
     "mouse": {
+     "mouse_boundary_events_modifier_no_mouse_movement_Alt-expected.txt": [
+      "87e1b8dd53826363e282942d854ba4d5c7e9a764",
+      []
+     ],
+     "mouse_boundary_events_modifier_no_mouse_movement_Control-expected.txt": [
+      "5f35b8ae5ac02c8319d471b960fd8f34c5c96b8e",
+      []
+     ],
+     "mouse_boundary_events_modifier_no_mouse_movement_Meta-expected.txt": [
+      "83fefe73389cc737882a56dc8bf230a8ef2e9d10",
+      []
+     ],
+     "mouse_boundary_events_modifier_no_mouse_movement_Shift-expected.txt": [
+      "555580bf21ab17f5915834d6e225216c6f7de65e",
+      []
+     ],
      "resources": {
       "mouse-event-reporter-subframe.html": [
        "f12f429491342ebd04df786d1d88edacc8cd3e84",
@@ -491281,6 +491375,13 @@
      ],
      "script-src-1_4_2.html": [
       "217125df58c96d8be0adbfdba7f5e94c24ee2734",
+      [
+       null,
+       {}
+      ]
+     ],
+     "script-src-event-handler-on-inline-script.html": [
+      "cae3f23b75aaea0e909b68e8daa4d02bc6939aa3",
       [
        null,
        {}
@@ -646149,6 +646250,13 @@
         {}
        ]
       ],
+      "field-sizing-select-contain-size.html": [
+       "5e80003da0999dcd7b0c3b9f492a1c1f6ccac8ee",
+       [
+        null,
+        {}
+       ]
+      ],
       "field-sizing-select.html": [
        "d55898105e8f6884dc61bddf8b8dcf91cf62c3c0",
        [
@@ -649363,6 +649471,13 @@
          {}
         ]
        ],
+       "embed-allowed-schemas.sub.window.js": [
+        "887a6339655a129ea39a887228330eeeb0739fbe",
+        [
+         "html/semantics/embedded-content/the-embed-element/embed-allowed-schemas.sub.window.html",
+         {}
+        ]
+       ],
        "embed-change-src.html": [
         "4152d51b0c6658be2b05081f02ba455da39b5343",
         [
@@ -651543,6 +651658,13 @@
         "c7a577a9d417fdc063ce0aeab21a06ca5568fc6e",
         [
          null,
+         {}
+        ]
+       ],
+       "object-allowed-schemas.sub.window.js": [
+        "aed166bf9ad93254555fd009e9dce1a897334736",
+        [
+         "html/semantics/embedded-content/the-object-element/object-allowed-schemas.sub.window.html",
          {}
         ]
        ],
@@ -689375,6 +689497,33 @@
       }
      ]
     ],
+    "pointerevent_boundary_events_modifier_no_pointer_movement.html": [
+     "02646f07bc718aef283add10f8bcf913188b1dbc",
+     [
+      "pointerevents/pointerevent_boundary_events_modifier_no_pointer_movement.html?Alt",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_boundary_events_modifier_no_pointer_movement.html?Control",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_boundary_events_modifier_no_pointer_movement.html?Meta",
+      {
+       "testdriver": true
+      }
+     ],
+     [
+      "pointerevents/pointerevent_boundary_events_modifier_no_pointer_movement.html?Shift",
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "pointerevent_bubble_ancestors_none.html": [
      "8908079cc8b3de1e8cb7892bbd39088df850a6bb",
      [
@@ -710149,7 +710298,7 @@
        ]
       ],
       "Selection-getComposedRanges.html": [
-       "b433c7e415dfde464ba4ed4a2ec7e86678263658",
+       "8c0f2bb8e15cde9482c119b198abe4b643b846de",
        [
         null,
         {}
@@ -740483,6 +740632,33 @@
       "817c5d9ecc8bda182af96ad2fcf883ce737d86c7",
       [
        null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "mouse_boundary_events_modifier_no_mouse_movement.html": [
+      "f7f898ece1d22fc31de35be8b2b46ab522135ffb",
+      [
+       "uievents/mouse/mouse_boundary_events_modifier_no_mouse_movement.html?Alt",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "uievents/mouse/mouse_boundary_events_modifier_no_mouse_movement.html?Control",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "uievents/mouse/mouse_boundary_events_modifier_no_mouse_movement.html?Meta",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "uievents/mouse/mouse_boundary_events_modifier_no_mouse_movement.html?Shift",
        {
         "testdriver": true
        }
