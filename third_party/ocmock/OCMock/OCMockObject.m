@@ -30,7 +30,9 @@
 #import "OCProtocolMockObject.h"
 
 
-@implementation OCMockObject
+@implementation OCMockObject {
+  BOOL _mustBeVerified;
+}
 
 #pragma mark Class initialisation
 
@@ -119,6 +121,11 @@
 
 - (void)dealloc
 {
+    if(_mustBeVerified){
+        NSString *description = [NSString stringWithFormat:@"%@: was deallocated without being verified",
+                                          [self description]];
+        OCMReportFailure(nil, description);
+    }
     [stubs release];
     [expectations release];
     [exceptions release];
@@ -153,6 +160,7 @@
 
 - (void)addExpectation:(OCMInvocationExpectation *)anExpectation
 {
+    _mustBeVerified = YES;
     @synchronized(expectations)
     {
         [expectations addObject:anExpectation];
@@ -228,6 +236,7 @@
 
 - (id)verifyAtLocation:(OCMLocation *)location
 {
+    _mustBeVerified = NO;
     NSMutableArray *unsatisfiedExpectations = [NSMutableArray array];
     @synchronized(expectations)
     {

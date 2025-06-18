@@ -20,6 +20,11 @@ The License.txt and Changes.txt file are also present from /Source.
 
 Chromium adds gtest_support.h/.mm and ocmock_extensions.h/.mm.
 
+Each expectation must be followed by a verify. If the verify is
+ommitted, a failure is reported when the object is deallocated.
+See pending PR:
+ - https://github.com/erikdoe/ocmock/pull/547
+
 Chromium patches in a fix for iOS15 ptrauth failures in OCMArg to cache all
 OCMPassByRefSetters rather than checking with object_getClass. See pending
 PRs here:
