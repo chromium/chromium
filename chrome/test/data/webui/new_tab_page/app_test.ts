@@ -1149,12 +1149,15 @@ suite('NewTabPageAppTest', () => {
     let composeboxHandler: TestMock<ComposeboxPageHandlerRemote>;
     suiteSetup(() => {
       loadTimeData.overrideValues({
-        searchboxShowComposeButton: true,
+        searchboxShowComposeEntrypoint: true,
+        searchboxShowComposebox: true,
       });
       composeboxHandler = installMock(
           ComposeboxPageHandlerRemote,
           mock =>
               ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(mock)));
+      // Needed so `.click()` calls don't navigate.
+      window.open = () => null;
     });
     test('toggle composebox visibility', async () => {
       // Arrange.
@@ -1177,8 +1180,26 @@ suite('NewTabPageAppTest', () => {
           assertEquals(
               composeboxHandler.getCallCount('notifySessionStarted'), 0);
 
-          // Act.
-          $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
+
+          const searchboxContainer =
+              app.shadowRoot.querySelector('cr-searchbox');
+          assertTrue(!!searchboxContainer);
+          const composeButton =
+              searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
+                  '#composeButton');
+          assertTrue(!!composeButton);
+
+          // Simulate entry point click.
+          composeButton.dispatchEvent(new CustomEvent('compose-click', {
+            detail: {
+              button: 0,
+              ctrlKey: false,
+              metaKey: false,
+              shiftKey: false,
+            },
+            bubbles: true,
+            composed: true,
+          }));
           await microtasksFinished();
 
           // Assert.
@@ -1186,6 +1207,49 @@ suite('NewTabPageAppTest', () => {
           assertTrue(!!composebox);
           assertEquals(
               composeboxHandler.getCallCount('notifySessionStarted'), 1);
+        });
+    test(
+        'Clicking the searchbox composebox button with text navigates',
+        async () => {
+          composeboxHandler.reset();
+          assertEquals(
+              composeboxHandler.getCallCount('notifySessionStarted'), 0);
+
+          const searchboxContainer =
+              app.shadowRoot.querySelector('cr-searchbox');
+          assertTrue(!!searchboxContainer);
+          const composeButton =
+              searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
+                  '#composeButton');
+          assertTrue(!!composeButton);
+
+          searchboxContainer.shadowRoot!
+              .querySelector<HTMLInputElement>('#input')!.value = 'hello';
+
+          // Simulate entry point click with text present.
+          composeButton.dispatchEvent(new CustomEvent('compose-click', {
+            detail: {
+              button: 0,
+              ctrlKey: false,
+              metaKey: false,
+              shiftKey: false,
+            },
+            bubbles: true,
+            composed: true,
+          }));
+
+          await microtasksFinished();
+
+          // Assert that this click causes navigation and does not start a
+          // composebox session..
+          const composebox = app.shadowRoot.querySelector('ntp-composebox');
+          assertFalse(!!composebox);
+          assertEquals(
+              composeboxHandler.getCallCount('notifySessionStarted'), 0);
+          assertEquals(
+              1,
+              metrics.count(
+                  'NewTabPage.ComposeEntrypoint.Click.UserTextPresent', true));
         });
   });
 

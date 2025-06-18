@@ -835,7 +835,7 @@ export class SearchboxElement extends SearchboxElementBase {
   }
 
   private onComposeButtonClick_(e: CustomEvent<ComposeClickEventDetail>) {
-    if (!this.composeboxEnabled) {
+    if (!this.composeboxEnabled || this.$.input.value.trim()) {
       // Construct navigation url.
       const searchParams = new URLSearchParams();
       searchParams.append('sourceid', 'chrome');
