@@ -27327,6 +27327,25 @@
             ]
         }
     ],
+    "WidevinePersistentLicenseSupport": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_M140",
+                    "disable_features": [
+                        "WidevinePersistentLicenseSupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "WidgetsForMultiprofileExperiment": [
         {
             "platforms": [
