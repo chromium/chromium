@@ -182,7 +182,7 @@ class Iso2022JpEncoder {
     if ((state_ == State::kAscii || state_ == State::kRoman) &&
         (code_point == 0x000E || code_point == 0x000F ||
          code_point == 0x001B)) {
-      StatefulUnencodableHandler(kReplacementCharacter);
+      StatefulUnencodableHandler(uchar::kReplacementCharacter);
       return;
     }
     if (state_ == State::kAscii && IsASCII(code_point)) {
@@ -591,7 +591,7 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
         ParseByte(*std::exchange(prepended_byte_, std::nullopt), result) ==
             SawError::kYes) {
       saw_error = true;
-      result.Append(kReplacementCharacter);
+      result.Append(uchar::kReplacementCharacter);
       if (stop_on_error) {
         lead_ = 0x00;
         return result.ToString();
@@ -602,7 +602,7 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
                   result) == SawError::kYes &&
         stop_on_error) {
       saw_error = true;
-      result.Append(kReplacementCharacter);
+      result.Append(uchar::kReplacementCharacter);
       if (stop_on_error) {
         lead_ = 0x00;
         return result.ToString();
@@ -611,7 +611,7 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
     for (size_t i = 0; i < bytes.size(); ++i) {
       if (ParseByte(bytes[i], result) == SawError::kYes) {
         saw_error = true;
-        result.Append(kReplacementCharacter);
+        result.Append(uchar::kReplacementCharacter);
         if (stop_on_error) {
           lead_ = 0x00;
           return result.ToString();
@@ -621,7 +621,7 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
           ParseByte(*std::exchange(prepended_byte_, std::nullopt), result) ==
               SawError::kYes) {
         saw_error = true;
-        result.Append(kReplacementCharacter);
+        result.Append(uchar::kReplacementCharacter);
         if (stop_on_error) {
           lead_ = 0x00;
           return result.ToString();
@@ -632,7 +632,7 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
                     result) == SawError::kYes &&
           stop_on_error) {
         saw_error = true;
-        result.Append(kReplacementCharacter);
+        result.Append(uchar::kReplacementCharacter);
         if (stop_on_error) {
           lead_ = 0x00;
           return result.ToString();
@@ -652,11 +652,11 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
           [[fallthrough]];
         case State::kEscapeStart:
           saw_error = true;
-          result.Append(kReplacementCharacter);
+          result.Append(uchar::kReplacementCharacter);
           break;
         case State::kEscape:
           saw_error = true;
-          result.Append(kReplacementCharacter);
+          result.Append(uchar::kReplacementCharacter);
           if (lead_) {
             DCHECK(IsASCII(lead_));
             result.Append(std::exchange(lead_, 0x00));
@@ -899,17 +899,17 @@ class Gb18030Decoder : public TextCodecCjk::Decoder {
     if (third_) {
       if (byte < 0x30 || byte > 0x39) {
         *saw_error_ = true;
-        result.Append(kReplacementCharacter);
+        result.Append(uchar::kReplacementCharacter);
         first_ = 0x00;
         uint8_t second = std::exchange(second_, 0x00);
         uint8_t third = std::exchange(third_, 0x00);
         if (ParseByte(second, result) == SawError::kYes) {
           *saw_error_ = true;
-          result.Append(kReplacementCharacter);
+          result.Append(uchar::kReplacementCharacter);
         }
         if (ParseByte(third, result) == SawError::kYes) {
           *saw_error_ = true;
-          result.Append(kReplacementCharacter);
+          result.Append(uchar::kReplacementCharacter);
         }
         return ParseByte(byte, result);
       }
@@ -930,11 +930,11 @@ class Gb18030Decoder : public TextCodecCjk::Decoder {
         return SawError::kNo;
       }
       *saw_error_ = true;
-      result.Append(kReplacementCharacter);
+      result.Append(uchar::kReplacementCharacter);
       first_ = 0x00;
       if (ParseByte(std::exchange(second_, 0x00), result) == SawError::kYes) {
         *saw_error_ = true;
-        result.Append(kReplacementCharacter);
+        result.Append(uchar::kReplacementCharacter);
       }
       return ParseByte(byte, result);
     }
@@ -978,7 +978,7 @@ class Gb18030Decoder : public TextCodecCjk::Decoder {
       second_ = 0x00;
       third_ = 0x00;
       *saw_error_ = true;
-      result.Append(kReplacementCharacter);
+      result.Append(uchar::kReplacementCharacter);
     }
   }
 
@@ -1086,7 +1086,7 @@ String TextCodecCjk::Decoder::Decode(base::span<const uint8_t> bytes,
       ParseByte(*std::exchange(prepended_byte_, std::nullopt), result) ==
           SawError::kYes) {
     saw_error = true;
-    result.Append(kReplacementCharacter);
+    result.Append(uchar::kReplacementCharacter);
     if (stop_on_error) {
       lead_ = 0x00;
       return result.ToString();
@@ -1095,7 +1095,7 @@ String TextCodecCjk::Decoder::Decode(base::span<const uint8_t> bytes,
   for (size_t i = 0; i < bytes.size(); ++i) {
     if (ParseByte(bytes[i], result) == SawError::kYes) {
       saw_error = true;
-      result.Append(kReplacementCharacter);
+      result.Append(uchar::kReplacementCharacter);
       if (stop_on_error) {
         lead_ = 0x00;
         return result.ToString();
@@ -1105,7 +1105,7 @@ String TextCodecCjk::Decoder::Decode(base::span<const uint8_t> bytes,
         ParseByte(*std::exchange(prepended_byte_, std::nullopt), result) ==
             SawError::kYes) {
       saw_error = true;
-      result.Append(kReplacementCharacter);
+      result.Append(uchar::kReplacementCharacter);
       if (stop_on_error) {
         lead_ = 0x00;
         return result.ToString();
@@ -1116,7 +1116,7 @@ String TextCodecCjk::Decoder::Decode(base::span<const uint8_t> bytes,
   if (flush && lead_) {
     lead_ = 0x00;
     saw_error = true;
-    result.Append(kReplacementCharacter);
+    result.Append(uchar::kReplacementCharacter);
   }
 
   Finalize(flush, result);

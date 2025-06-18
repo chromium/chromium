@@ -223,7 +223,7 @@ InlineItem* LastItemToCollapseWith(InlineItems* items) {
 }
 
 inline bool IsNonOrc16BitCharacter(UChar ch) {
-  return ch >= 0x100 && ch != kObjectReplacementCharacter;
+  return ch >= 0x100 && ch != uchar::kObjectReplacementCharacter;
 }
 
 }  // anonymous namespace
@@ -1236,7 +1236,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendAtomicInline(
   typename MappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                  layout_object);
   RestoreTrailingCollapsibleSpaceIfRemoved();
-  Append(InlineItem::kAtomicInline, kObjectReplacementCharacter, layout_object);
+  Append(InlineItem::kAtomicInline, uchar::kObjectReplacementCharacter,
+         layout_object);
 
   // When this atomic inline is inside of an inline box, the height of the
   // inline box can be different from the height of the atomic inline. Ensure
@@ -1256,7 +1257,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendBlockInInline(
   // Before a block-in-inline is like after a forced break.
   RemoveTrailingCollapsibleSpaceIfExists();
   InlineItem& item = Append(InlineItem::kBlockInInline,
-                            kObjectReplacementCharacter, layout_object);
+                            uchar::kObjectReplacementCharacter, layout_object);
   // After a block-in-inline is like after a forced break. See
   // |AppendForcedBreak|.
   item.SetEndCollapseType(InlineItem::kCollapsible, false);
@@ -1279,7 +1280,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendBlockInInline(
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendFloating(
     LayoutObject* layout_object) {
-  AppendOpaque(InlineItem::kFloating, kObjectReplacementCharacter,
+  AppendOpaque(InlineItem::kFloating, uchar::kObjectReplacementCharacter,
                layout_object);
   has_floats_ = true;
   // Floats/exclusions require computing line heights, which is currently
@@ -1291,8 +1292,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendFloating(
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendOutOfFlowPositioned(
     LayoutObject* layout_object) {
-  AppendOpaque(InlineItem::kOutOfFlowPositioned, kObjectReplacementCharacter,
-               layout_object);
+  AppendOpaque(InlineItem::kOutOfFlowPositioned,
+               uchar::kObjectReplacementCharacter, layout_object);
 }
 
 template <typename MappingBuilder>

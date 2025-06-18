@@ -32,7 +32,7 @@ TEST_F(HanKerningTest, MayApply) {
       LayoutLocale::CreateForTesting(AtomicString("ja"));
   HanKerning::FontData ja_data(*noto_cjk_data, *ja, true);
 
-  for (UChar32 ch = 0; ch < kMaxCodepoint; ++ch) {
+  for (UChar32 ch = 0; ch < uchar::kMaxCodepoint; ++ch) {
     StringBuilder builder;
     builder.Append(ch);
     String text = builder.ToString();

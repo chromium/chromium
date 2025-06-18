@@ -95,22 +95,22 @@ MathMLOperatorDictionaryCategory FindCategory(
   uint16_t key{0};
   if (content.length() == 1) {
     UChar32 character = content[0];
-    if (character < kCombiningMinusSignBelow ||
-        character > kGreekCapitalReversedDottedLunateSigmaSymbol) {
+    if (character < uchar::kCombiningMinusSignBelow ||
+        character > uchar::kGreekCapitalReversedDottedLunateSigmaSymbol) {
       // Accept BMP characters that are not in the ranges where 2-ASCII-chars
       // operators are mapped below.
       key = character;
     }
   } else if (content.length() == 2) {
     UChar32 character = content.CharacterStartingAt(0);
-    if (character == kArabicMathematicalOperatorMeemWithHahWithTatweel ||
-        character == kArabicMathematicalOperatorHahWithDal) {
+    if (character == uchar::kArabicMathematicalOperatorMeemWithHahWithTatweel ||
+        character == uchar::kArabicMathematicalOperatorHahWithDal) {
       // Special handling of non-BMP Arabic operators.
       if (form == MathMLOperatorDictionaryForm::kPostfix)
         return MathMLOperatorDictionaryCategory::kI;
       return MathMLOperatorDictionaryCategory::kNone;
-    } else if (content[1] == kCombiningLongSolidusOverlay ||
-               content[1] == kCombiningLongVerticalLineOverlay) {
+    } else if (content[1] == uchar::kCombiningLongSolidusOverlay ||
+               content[1] == uchar::kCombiningLongVerticalLineOverlay) {
       // If the second character is COMBINING LONG SOLIDUS OVERLAY or
       // COMBINING LONG VERTICAL LINE OVERLAY, then use the property of the
       // first character.
@@ -125,8 +125,10 @@ MathMLOperatorDictionaryCategory FindCategory(
             return lhs[0] < rhs[0] ||
                    (lhs[0] == rhs[0] && UNSAFE_TODO(lhs[1] < rhs[1]));
           });
-      if (entry != last && content == *entry)
-        key = kCombiningMinusSignBelow + (entry - operators_2_ascii_chars);
+      if (entry != last && content == *entry) {
+        key =
+            uchar::kCombiningMinusSignBelow + (entry - operators_2_ascii_chars);
+      }
     }
   }
 
@@ -142,20 +144,21 @@ MathMLOperatorDictionaryCategory FindCategory(
   if (form == MathMLOperatorDictionaryForm::kPrefix &&
       ((kDoubleStruckItalicCapitalDCharacter <= key &&
         key <= kDoubleStruckItalicSmallDCharacter) ||
-       key == kPartialDifferential ||
+       key == uchar::kPartialDifferential ||
        (kSquareRootCharacter <= key && key <= kFourthRootCharacter))) {
     return MathMLOperatorDictionaryCategory::kL;
   }
   if (form == MathMLOperatorDictionaryForm::kInfix &&
-      (key == kComma || key == kColon || key == kSemiColon)) {
+      (key == uchar::kComma || key == uchar::kColon ||
+       key == uchar::kSemiColon)) {
     return MathMLOperatorDictionaryCategory::kM;
   }
   // Calculate the key for the compact dictionary.
-  if (kEnQuadCharacter <= key && key <= kHellschreiberPauseSymbol) {
+  if (kEnQuadCharacter <= key && key <= uchar::kHellschreiberPauseSymbol) {
     // Map above range (U+2000–U+2BFF) to (U+0400-0x0FFF) to fit into
     // 12 bits by decrementing with (U+2000 - U+0400) == 0x1C00.
     key -= 0x1C00;
-  } else if (key > kGreekCapitalReversedDottedLunateSigmaSymbol) {
+  } else if (key > uchar::kGreekCapitalReversedDottedLunateSigmaSymbol) {
     return MathMLOperatorDictionaryCategory::kNone;
   }
   // Bitmasks used to set form 2-bits (infix=00, prefix=01, postfix=10).

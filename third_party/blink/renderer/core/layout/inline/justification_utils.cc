@@ -69,7 +69,7 @@ String BuildJustificationText(const String& text_content,
                 base_end, base_line.MayHaveTextCombineOrRubyItem()));
           }
         } else {
-          line_text_builder.Append(kObjectReplacementCharacter);
+          line_text_builder.Append(uchar::kObjectReplacementCharacter);
         }
         continue;
       }
@@ -158,7 +158,8 @@ float JustifyResults(const String& text_content,
         item_result.inline_size += spacing_after;
         item_result.spacing_before = LayoutUnit(spacing_before);
       } else {
-        DCHECK_EQ(kObjectReplacementCharacter, line_text[line_text_offset]);
+        DCHECK_EQ(uchar::kObjectReplacementCharacter,
+                  line_text[line_text_offset]);
         item_result.inline_size += spacing_after;
         // |spacing_before| is non-zero only before CJK characters.
         DCHECK_EQ(spacing_before, 0.0f);

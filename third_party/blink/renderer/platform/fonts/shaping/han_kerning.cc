@@ -326,10 +326,10 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
       // Dot (full stop and comma) characters.
       // https://drafts.csswg.org/css-text-4/#fullwidth-dot-punctuation
       kIdeographicCommaCharacter, kIdeographicFullStopCharacter,
-      kFullwidthComma, kFullwidthFullStop,
+      uchar::kFullwidthComma, uchar::kFullwidthFullStop,
       // Colon characters.
       // https://drafts.csswg.org/css-text-4/#fullwidth-colon-punctuation
-      kFullwidthColon, kFullwidthSemicolon,
+      uchar::kFullwidthColon, uchar::kFullwidthSemicolon,
       // Quote characters. In a common convention, they are proportional (Latin)
       // in Japanese, but fullwidth in Chinese.
       kLeftDoubleQuotationMarkCharacter, kLeftSingleQuotationMarkCharacter,

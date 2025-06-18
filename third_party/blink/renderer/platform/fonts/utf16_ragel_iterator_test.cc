@@ -23,7 +23,7 @@ TEST(UTF16RagelIteratorTest, CharacterClasses) {
       kVariationSelector16Character,
       0x1f3f4,
       0xE0030,
-      kCancelTag,
+      uchar::kCancelTag,
       0x261D,
       0x1F3FB,
       0x1F1E6,

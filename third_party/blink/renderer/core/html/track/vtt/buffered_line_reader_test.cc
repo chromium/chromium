@@ -279,7 +279,7 @@ TEST(BufferedLineReaderTest, NormalizedNUL) {
   reader.Append(String(base::span_from_cstring("X\0Y\n")));
   String line;
   ASSERT_TRUE(reader.GetLine(line));
-  ASSERT_EQ(line[1], kReplacementCharacter);
+  ASSERT_EQ(line[1], uchar::kReplacementCharacter);
 }
 
 }  // namespace blink

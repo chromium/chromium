@@ -64,7 +64,7 @@ bool BufferedLineReader::GetLine(String& line) {
     // NULs are transformed into U+FFFD (REPLACEMENT CHAR.) in step 1 of
     // the WebVTT parser algorithm.
     if (c == '\0')
-      c = kReplacementCharacter;
+      c = uchar::kReplacementCharacter;
 
     line_buffer_.Append(c);
   }

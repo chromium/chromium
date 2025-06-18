@@ -35,7 +35,7 @@ testing::AssertionResult IsCJKIdeographOrSymbolWithMessage(UChar32 codepoint) {
 // These functions may need to be adjusted if Unicode changes.
 TEST(CharacterTest, Derived) {
   StringBuilder builder;
-  for (UChar32 ch = 0; ch < kMaxCodepoint; ++ch) {
+  for (UChar32 ch = 0; ch < uchar::kMaxCodepoint; ++ch) {
     if (Character::IsEmojiEmojiDefault(ch)) {
       EXPECT_TRUE(IsCJKIdeographOrSymbolWithMessage(ch));
     }
@@ -277,7 +277,7 @@ TEST(CharacterTest, HanKerning) {
       {kRightDoubleQuotationMarkCharacter, HanKerningCharType::kCloseQuote},
       {kMiddleDotCharacter, HanKerningCharType::kMiddle},
       {kIdeographicSpaceCharacter, HanKerningCharType::kMiddle},
-      {kFullwidthComma, HanKerningCharType::kDot},
+      {uchar::kFullwidthComma, HanKerningCharType::kDot},
       {0x3008, HanKerningCharType::kOpen},
       {0xFF5F, HanKerningCharType::kOpen},
       {0x3009, HanKerningCharType::kClose},
@@ -395,7 +395,7 @@ TEST(CharacterTest, Truncation) {
   test_char = kBase + 0x12;
   EXPECT_FALSE(Character::TreatAsZeroWidthSpaceInComplexScript(test_char));
   EXPECT_FALSE(Character::TreatAsZeroWidthSpaceInComplexScript(test_char));
-  test_char = kBase + kObjectReplacementCharacter;
+  test_char = kBase + uchar::kObjectReplacementCharacter;
   EXPECT_FALSE(Character::TreatAsZeroWidthSpaceInComplexScript(test_char));
 
   test_char = kBase + 0xA;
@@ -493,10 +493,10 @@ TEST(CharacterTest, IsVerticalMathCharacter) {
       0x290F, 0x2910, 0x294E, 0x2950, 0x2952, 0x2953, 0x2956, 0x2957, 0x295A,
       0x295B, 0x295E, 0x295F, 0x2B45, 0x2B46, 0xFE35, 0xFE36, 0xFE37, 0xFE38};
 
-  for (UChar32 test_char = 0; test_char < kMaxCodepoint; test_char++) {
-    if (test_char == kArabicMathematicalOperatorMeemWithHahWithTatweel) {
+  for (UChar32 test_char = 0; test_char < uchar::kMaxCodepoint; test_char++) {
+    if (test_char == uchar::kArabicMathematicalOperatorMeemWithHahWithTatweel) {
       EXPECT_FALSE(Character::IsVerticalMathCharacter(test_char));
-    } else if (test_char == kArabicMathematicalOperatorHahWithDal) {
+    } else if (test_char == uchar::kArabicMathematicalOperatorHahWithDal) {
       EXPECT_FALSE(Character::IsVerticalMathCharacter(test_char));
     } else {
       bool in_vertical = !std::binary_search(
@@ -537,7 +537,7 @@ TEST(CharacterTest, EmojiComponents) {
 // skipping any other categories that would be computed for the same cursor
 // position and codepoint.
 TEST(CharacterTest, MaybeEmojiPresentationNoIllegalShortcut) {
-  for (UChar32 ch = 0; ch < kMaxCodepoint; ++ch) {
+  for (UChar32 ch = 0; ch < uchar::kMaxCodepoint; ++ch) {
     const EmojiSegmentationCategory emoji = GetEmojiSegmentationCategory(ch);
     if (IsEmojiPresentationCategory(emoji)) {
       EXPECT_TRUE(Character::MaybeEmojiPresentation(ch));
@@ -689,7 +689,7 @@ bool ShouldBeNarrow(UChar32 test_char, UEastAsianWidth east_asian_width) {
 
 // Check the property based on https://www.unicode.org/reports/tr59/#data.
 TEST(CharacterTest, TestEastAsianSpacingPropertyRule) {
-  for (UChar32 test_char = 0; test_char < kMaxCodepoint; test_char++) {
+  for (UChar32 test_char = 0; test_char < uchar::kMaxCodepoint; test_char++) {
     if (U_GC_CN_MASK & U_GET_GC_MASK(test_char)) {
       continue;
     }

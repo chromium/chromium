@@ -277,8 +277,9 @@ bool Character::CanReceiveTextEmphasis(UChar32 c) {
 
 bool Character::IsEmojiTagSequence(UChar32 c) {
   // http://www.unicode.org/reports/tr51/proposed.html#valid-emoji-tag-sequences
-  return (c >= kTagDigitZero && c <= kTagDigitNine) ||
-         (c >= kTagLatinSmallLetterA && c <= kTagLatinSmallLetterZ);
+  return (c >= uchar::kTagDigitZero && c <= uchar::kTagDigitNine) ||
+         (c >= uchar::kTagLatinSmallLetterA &&
+          c <= uchar::kTagLatinSmallLetterZ);
 }
 
 bool Character::IsExtendedPictographic(UChar32 c) {
@@ -337,8 +338,9 @@ static const UChar stretchy_operator_with_inline_axis[]{
     0x295B, 0x295E, 0x295F, 0x2B45, 0x2B46, 0xFE35, 0xFE36, 0xFE37, 0xFE38};
 
 bool Character::IsVerticalMathCharacter(UChar32 text_content) {
-  return text_content != kArabicMathematicalOperatorMeemWithHahWithTatweel &&
-         text_content != kArabicMathematicalOperatorHahWithDal &&
+  return text_content !=
+             uchar::kArabicMathematicalOperatorMeemWithHahWithTatweel &&
+         text_content != uchar::kArabicMathematicalOperatorHahWithDal &&
          !std::binary_search(
              stretchy_operator_with_inline_axis,
              UNSAFE_TODO(stretchy_operator_with_inline_axis +

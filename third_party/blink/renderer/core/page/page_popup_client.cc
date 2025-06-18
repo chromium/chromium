@@ -75,8 +75,8 @@ void PagePopupClient::AddJavaScriptString(const StringView& str,
       // Need to avoid to add "</script>" because the resultant string is
       // typically embedded in <script>.
       builder.Append("\\x3C");
-    } else if (str[i] < 0x20 || str[i] == kLineSeparator ||
-               str[i] == kParagraphSeparator) {
+    } else if (str[i] < 0x20 || str[i] == uchar::kLineSeparator ||
+               str[i] == uchar::kParagraphSeparator) {
       builder.AppendFormat("\\u%04X", str[i]);
     } else {
       builder.Append(str[i]);

@@ -173,7 +173,7 @@ void TextCodecUtf8::HandleError(int character,
   if (stop_on_error)
     return;
   // Each error generates a replacement character and consumes 1-3 bytes.
-  *destination++ = kReplacementCharacter;
+  *destination++ = uchar::kReplacementCharacter;
   DCHECK(IsNonCharacter(character));
   int num_bytes_consumed = -character;
   DCHECK_GE(num_bytes_consumed, 1);
@@ -509,7 +509,7 @@ upConvertTo16Bit:
         // the negative of number of bytes comprising the broken encoding
         // detected. So subtracting c (when isNonCharacter(c)) adds the number
         // of broken bytes.
-        *destination16++ = kReplacementCharacter;
+        *destination16++ = uchar::kReplacementCharacter;
         source -= character;
         continue;
       }
@@ -541,7 +541,7 @@ std::string TextCodecUtf8::EncodeCommon(base::span<const CharType> characters) {
     // surrogate is encountered; we must convert it to a
     // U+FFFD (REPLACEMENT CHARACTER) here.
     if (0xD800 <= character && character <= 0xDFFF)
-      character = kReplacementCharacter;
+      character = uchar::kReplacementCharacter;
     U8_APPEND_UNSAFE(bytes.data(), bytes_written, character);
   }
 
@@ -567,7 +567,7 @@ TextCodec::EncodeIntoResult TextCodecUtf8::EncodeIntoCommon(
     // U16_NEXT will simply emit a surrogate code point if an unmatched
     // surrogate is encountered. See comment in EncodeCommon() for more info.
     if (0xD800 <= character && character <= 0xDFFF)
-      character = kReplacementCharacter;
+      character = uchar::kReplacementCharacter;
     U8_APPEND(destination, encode_into_result.bytes_written, destination.size(),
               character, is_error);
   }

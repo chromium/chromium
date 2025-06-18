@@ -419,10 +419,10 @@ TEST(StringBuilderTest, Substring) {
 TEST(StringBuilderTest, AppendNumberDoubleUChar) {
   const double kSomeNumber = 1.2345;
   StringBuilder reference;
-  reference.Append(kReplacementCharacter);  // Make it UTF-16.
+  reference.Append(blink::uchar::kReplacementCharacter);  // Make it UTF-16.
   reference.Append(String::Number(kSomeNumber));
   StringBuilder test;
-  test.Append(kReplacementCharacter);
+  test.Append(blink::uchar::kReplacementCharacter);
   test.AppendNumber(kSomeNumber);
   EXPECT_EQ(reference, test);
 }

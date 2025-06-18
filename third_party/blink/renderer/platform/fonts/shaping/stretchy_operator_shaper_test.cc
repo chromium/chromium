@@ -332,7 +332,7 @@ TEST_F(StretchyOperatorShaperTest, NonBMPCodePoint) {
   Font* math = CreateMathFont("operators.woff");
 
   StretchyOperatorShaper horizontal_shaper(
-      kArabicMathematicalOperatorHahWithDal,
+      uchar::kArabicMathematicalOperatorHahWithDal,
       OpenTypeMathStretchData::StretchAxis::Horizontal);
 
   float target_size = 10000;

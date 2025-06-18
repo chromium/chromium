@@ -45,7 +45,7 @@ EmojiSegmentationCategory GetEmojiSegmentationCategory(UChar32 codepoint) {
   if (Character::IsEmojiTagSequence(codepoint)) {
     return EmojiSegmentationCategory::TAG_SEQUENCE;
   }
-  if (codepoint == kCancelTag) {
+  if (codepoint == uchar::kCancelTag) {
     // http://www.unicode.org/reports/tr51/#def_emoji_tag_sequence
     // defines a TAG_TERM grammar rule for U+E007F CANCEL TAG.
     return EmojiSegmentationCategory::TAG_TERM;

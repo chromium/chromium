@@ -370,8 +370,8 @@ TEST_F(EventSourceParserTest, InvalidUTF8Sequence) {
   ASSERT_EQ(1u, Events().size());
   ASSERT_EQ(Type::kEvent, Events()[0].type);
   EXPECT_EQ("message", Events()[0].event);
-  String expected = String() + kReplacementCharacter + "hello" +
-                    kReplacementCharacter + "\nbye";
+  String expected = String() + uchar::kReplacementCharacter + "hello" +
+                    uchar::kReplacementCharacter + "\nbye";
   EXPECT_EQ(expected, Events()[0].data);
 }
 

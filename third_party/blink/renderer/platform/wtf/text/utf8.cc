@@ -341,7 +341,7 @@ ConversionStatus ConvertUTF8ToUTF16Internal(base::span<const uint8_t>& source,
           status = kSourceIllegal;
           break;
         }
-        target[target_cursor++] = kReplacementCharacter;
+        target[target_cursor++] = blink::uchar::kReplacementCharacter;
       } else {
         target[target_cursor++] = static_cast<UChar>(character);  // normal case
       }

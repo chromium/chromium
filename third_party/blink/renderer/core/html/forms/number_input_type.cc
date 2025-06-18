@@ -141,11 +141,11 @@ String NumberInputType::NormalizeFullWidthNumberChars(const String& input) {
   result.ReserveCapacity(len);
   for (wtf_size_t i = 0; i < len; ++i) {
     UChar c = input[i];
-    if (c >= kFullwidthDigitZero && c <= kFullwidthDigitNine) {
+    if (c >= uchar::kFullwidthDigitZero && c <= uchar::kFullwidthDigitNine) {
       // Convert full-width digits (０-９, U+FF10-U+FF19) to ASCII digits (0-9)
-      result.Append(c - kFullwidthDigitZero + kDigitZeroCharacter);
-    } else if (c == kKatakanaHiraganaProlongedSoundMark ||
-               c == kFullwidthHyphenMinus) {
+      result.Append(c - uchar::kFullwidthDigitZero + kDigitZeroCharacter);
+    } else if (c == uchar::kKatakanaHiraganaProlongedSoundMark ||
+               c == uchar::kFullwidthHyphenMinus) {
       // Convert full-width minus signs and the Japanese IME long sound symbol
       // ("ー", U+30FC) to ASCII '-'.
       // Note: On Japanese IMEs, typing a minus sign in full-width mode can
@@ -163,7 +163,7 @@ String NumberInputType::NormalizeFullWidthNumberChars(const String& input) {
       // Since users generally intend to input negative numbers in such cases,
       // we normalize both 'ー' and '－' to ASCII minus '-'.
       result.Append(kHyphenMinusCharacter);
-    } else if (c == kFullwidthFullStop) {
+    } else if (c == uchar::kFullwidthFullStop) {
       // Convert full-width period (．, U+FF0E) to ASCII dot (.)
       result.Append(kFullstopCharacter);
     } else {

@@ -116,7 +116,8 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
   // https://crbug.com/550275. To prevent that, we are replacing line and
   // paragraph separators with space, as it is said in unicode specification,
   // compare: https://www.unicode.org/faq/unsup_char.html#2.
-  if (unicode == kLineSeparator || unicode == kParagraphSeparator) {
+  if (unicode == uchar::kLineSeparator ||
+      unicode == uchar::kParagraphSeparator) {
     unicode = kSpaceCharacter;
   }
 
@@ -227,7 +228,7 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
     if (!typeface) {
       return false;
     }
-    if (unicode == kHyphenCharacter || unicode == kNonBreakingHyphen) {
+    if (unicode == kHyphenCharacter || unicode == uchar::kNonBreakingHyphen) {
       SkGlyphID sk_glyph_id = typeface->unicharToGlyph(unicode);
       *glyph = sk_glyph_id;
       return sk_glyph_id;

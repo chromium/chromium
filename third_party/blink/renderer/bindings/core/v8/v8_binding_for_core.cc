@@ -588,13 +588,13 @@ String ReplaceUnmatchedSurrogates(String string) {
     } else if (U16_IS_TRAIL(c)) {
       // 0xDC00 <= c <= 0xDFFF
       // Append to U a U+FFFD REPLACEMENT CHARACTER.
-      u[i] = kReplacementCharacter;
+      u[i] = uchar::kReplacementCharacter;
     } else {
       // 0xD800 <= c <= 0xDBFF
       DCHECK(U16_IS_LEAD(c));
       if (i == n - 1) {
         // 1. If i = n-1, then append to U a U+FFFD REPLACEMENT CHARACTER.
-        u[i] = kReplacementCharacter;
+        u[i] = uchar::kReplacementCharacter;
       } else {
         // 2. Otherwise, i < n-1:
         DCHECK_LT(i, n - 1);
@@ -611,7 +611,7 @@ String ReplaceUnmatchedSurrogates(String string) {
         } else {
           // 3. Otherwise, d < 0xDC00 or d > 0xDFFF. Append to U a U+FFFD
           //    REPLACEMENT CHARACTER.
-          u[i] = kReplacementCharacter;
+          u[i] = uchar::kReplacementCharacter;
         }
       }
     }

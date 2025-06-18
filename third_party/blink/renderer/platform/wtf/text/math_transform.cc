@@ -18,8 +18,8 @@ static UChar32 mathVariantGreek(UChar32 code_point, UChar32 base_char) {
   // number sequences) and to add the character point of the first character
   // within the number math_variant range. To this the base_char calculated
   // earlier is added to obtain the final code point.
-  auto ret = base_char + kMathBoldUpperAlpha +
-             (kMathItalicUpperAlpha - kMathBoldUpperAlpha);
+  auto ret = base_char + uchar::kMathBoldUpperAlpha +
+             (uchar::kMathItalicUpperAlpha - uchar::kMathBoldUpperAlpha);
   return ret;
 }
 
@@ -31,7 +31,8 @@ static UChar32 mathVariantLatin(UChar32 code_point, UChar32 base_char) {
   // within the number math_variant range. To this the base_char calculated
   // earlier is added to obtain the final code point.
   UChar32 transformed_char =
-      base_char + kMathBoldUpperA + (kMathItalicUpperA - kMathBoldUpperA);
+      base_char + uchar::kMathBoldUpperA +
+      (uchar::kMathItalicUpperA - uchar::kMathBoldUpperA);
   // https://w3c.github.io/mathml-core/#italic-mappings
   if (transformed_char == 0x1D455)
     return 0x210E;
@@ -40,16 +41,21 @@ static UChar32 mathVariantLatin(UChar32 code_point, UChar32 base_char) {
 
 UChar32 ItalicMathVariant(UChar32 code_point) {
   // Exceptional characters with at most one possible transformation.
-  if (code_point == kHoleGreekUpperTheta)
+  if (code_point == uchar::kHoleGreekUpperTheta) {
     return code_point;  // Nothing at this code point is transformed
-  if (code_point == kGreekLetterDigamma)
+  }
+  if (code_point == uchar::kGreekLetterDigamma) {
     return code_point;
-  if (code_point == kGreekSmallLetterDigamma)
+  }
+  if (code_point == uchar::kGreekSmallLetterDigamma) {
     return code_point;
-  if (code_point == kLatinSmallLetterDotlessI)
-    return kMathItalicSmallDotlessI;
-  if (code_point == kLatinSmallLetterDotlessJ)
-    return kMathItalicSmallDotlessJ;
+  }
+  if (code_point == uchar::kLatinSmallLetterDotlessI) {
+    return uchar::kMathItalicSmallDotlessI;
+  }
+  if (code_point == uchar::kLatinSmallLetterDotlessJ) {
+    return uchar::kMathItalicSmallDotlessJ;
+  }
 
   // The Unicode mathematical blocks are divided into four segments: Latin,
   // Greek, numbers and Arabic. In the case of the first three base_char
@@ -69,47 +75,50 @@ UChar32 ItalicMathVariant(UChar32 code_point) {
     // characters in the Unicode mathematical block. The constant subtraction
     // represents the number of characters between the start of the sequence
     // (capital A) and the first lowercase letter.
-    base_char =
-        kMathBoldSmallA - kMathBoldUpperA + code_point - kASCIILowerStart;
+    base_char = uchar::kMathBoldSmallA - uchar::kMathBoldUpperA + code_point -
+                kASCIILowerStart;
     var_type = kLatin;
-  } else if (kGreekUpperAlpha <= code_point && code_point <= kGreekUpperOmega) {
-    base_char = code_point - kGreekUpperAlpha;
+  } else if (uchar::kGreekUpperAlpha <= code_point &&
+             code_point <= uchar::kGreekUpperOmega) {
+    base_char = code_point - uchar::kGreekUpperAlpha;
     var_type = kGreekish;
-  } else if (kGreekLowerAlpha <= code_point && code_point <= kGreekLowerOmega) {
+  } else if (uchar::kGreekLowerAlpha <= code_point &&
+             code_point <= uchar::kGreekLowerOmega) {
     // Lowercase Greek comes after uppercase Greek.
     // Note in this instance the presence of an additional character (Nabla)
     // between the end of the uppercase Greek characters and the lowercase ones.
-    base_char = kMathBoldSmallAlpha - kMathBoldUpperAlpha + code_point -
-                kGreekLowerAlpha;
+    base_char = uchar::kMathBoldSmallAlpha - uchar::kMathBoldUpperAlpha +
+                code_point - uchar::kGreekLowerAlpha;
     var_type = kGreekish;
   } else {
     switch (code_point) {
-      case kGreekUpperTheta:
-        base_char = kMathBoldUpperTheta - kMathBoldUpperAlpha;
+      case uchar::kGreekUpperTheta:
+        base_char = uchar::kMathBoldUpperTheta - uchar::kMathBoldUpperAlpha;
         break;
-      case kNabla:
-        base_char = kMathBoldNabla - kMathBoldUpperAlpha;
+      case uchar::kNabla:
+        base_char = uchar::kMathBoldNabla - uchar::kMathBoldUpperAlpha;
         break;
-      case kPartialDifferential:
-        base_char = kMathBoldPartialDifferential - kMathBoldUpperAlpha;
+      case uchar::kPartialDifferential:
+        base_char =
+            uchar::kMathBoldPartialDifferential - uchar::kMathBoldUpperAlpha;
         break;
-      case kGreekLunateEpsilonSymbol:
-        base_char = kMathBoldEpsilonSymbol - kMathBoldUpperAlpha;
+      case uchar::kGreekLunateEpsilonSymbol:
+        base_char = uchar::kMathBoldEpsilonSymbol - uchar::kMathBoldUpperAlpha;
         break;
-      case kGreekThetaSymbol:
-        base_char = kMathBoldThetaSymbol - kMathBoldUpperAlpha;
+      case uchar::kGreekThetaSymbol:
+        base_char = uchar::kMathBoldThetaSymbol - uchar::kMathBoldUpperAlpha;
         break;
-      case kGreekKappaSymbol:
-        base_char = kMathBoldKappaSymbol - kMathBoldUpperAlpha;
+      case uchar::kGreekKappaSymbol:
+        base_char = uchar::kMathBoldKappaSymbol - uchar::kMathBoldUpperAlpha;
         break;
-      case kGreekPhiSymbol:
-        base_char = kMathBoldPhiSymbol - kMathBoldUpperAlpha;
+      case uchar::kGreekPhiSymbol:
+        base_char = uchar::kMathBoldPhiSymbol - uchar::kMathBoldUpperAlpha;
         break;
-      case kGreekRhoSymbol:
-        base_char = kMathBoldRhoSymbol - kMathBoldUpperAlpha;
+      case uchar::kGreekRhoSymbol:
+        base_char = uchar::kMathBoldRhoSymbol - uchar::kMathBoldUpperAlpha;
         break;
-      case kGreekPiSymbol:
-        base_char = kMathBoldPiSymbol - kMathBoldUpperAlpha;
+      case uchar::kGreekPiSymbol:
+        base_char = uchar::kMathBoldPiSymbol - uchar::kMathBoldUpperAlpha;
         break;
       default:
         return code_point;

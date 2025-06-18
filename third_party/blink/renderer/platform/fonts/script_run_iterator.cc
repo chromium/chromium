@@ -55,7 +55,7 @@ ScriptRunIterator::UScriptCodeList GetHanScriptExtensions() {
   list.resize(ScriptRunIterator::kMaxScriptCount - 1);
   // Get the list from one of the CJK punctuation in the CJK Symbols and
   // Punctuation block.
-  int count = uscript_getScriptExtensions(kLeftCornerBracket, &list[0],
+  int count = uscript_getScriptExtensions(uchar::kLeftCornerBracket, &list[0],
                                           list.size(), &status);
   if (U_SUCCESS(status)) {
     DCHECK_GT(count, 0);

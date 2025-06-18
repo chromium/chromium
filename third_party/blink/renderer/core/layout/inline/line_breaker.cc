@@ -1219,8 +1219,9 @@ bool LineBreaker::CanBreakAfter(const InlineItem& item) const {
 bool LineBreaker::MayBeAtomicInline(wtf_size_t offset) const {
   DCHECK_LT(offset, Text().length());
   const auto char_code = Text()[offset];
-  if (char_code == kObjectReplacementCharacter)
+  if (char_code == uchar::kObjectReplacementCharacter) {
     return true;
+  }
   return sticky_images_quirk_ && char_code == kNoBreakSpaceCharacter;
 }
 

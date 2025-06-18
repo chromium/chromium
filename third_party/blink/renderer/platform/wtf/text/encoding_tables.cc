@@ -173,7 +173,7 @@ const Jis0208EncodeIndex& EnsureJis0208EncodeIndexForDecode() {
         ucnv_toUnicode(icu_converter.converter, &output, output + 1, &input,
                        input + sizeof(icu_input), nullptr, true, &error);
         DCHECK(U_SUCCESS(error));
-        if (icu_output != kReplacementCharacter) {
+        if (icu_output != uchar::kReplacementCharacter) {
           uint16_t pointer = i * kRange + j;
           (*array)[array_index++] = {pointer, icu_output};
         }
@@ -232,7 +232,7 @@ const Jis0212EncodeIndex& EnsureJis0212EncodeIndexForDecode() {
         ucnv_toUnicode(icu_converter.converter, &output, output + 1, &input,
                        input + sizeof(icu_input), nullptr, true, &error);
         DCHECK(U_SUCCESS(error));
-        if (icu_output != kReplacementCharacter) {
+        if (icu_output != uchar::kReplacementCharacter) {
           uint16_t pointer = i * kRange + j;
           // ICU has some pointers above 7708 that are not in the encoding
           // standard.
@@ -272,8 +272,9 @@ const EucKrEncodeIndex& EnsureEucKrEncodeIndexForDecode() {
       ucnv_toUnicode(icu_converter.converter, &output, output + 2, &input,
                      input + sizeof(icu_input), nullptr, true, &error);
       DCHECK(U_SUCCESS(error));
-      if (icu_output[0] == kReplacementCharacter)
+      if (icu_output[0] == uchar::kReplacementCharacter) {
         return std::nullopt;
+      }
       return {{pointer, icu_output[0]}};
     };
     size_t array_index = 0;
@@ -330,7 +331,7 @@ const Gb18030EncodeTable& EnsureGb18030EncodeTable() {
       ucnv_toUnicode(icu_converter.converter, &output, output + 1, &input,
                      input + sizeof(icu_input), nullptr, true, &error);
       DCHECK(U_SUCCESS(error));
-      DCHECK_NE(icu_output, kReplacementCharacter);
+      DCHECK_NE(icu_output, uchar::kReplacementCharacter);
       (*array)[pointer] = icu_output;
     }
 

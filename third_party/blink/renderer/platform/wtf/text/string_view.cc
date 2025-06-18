@@ -111,7 +111,8 @@ std::string StringView::Utf8(Utf8ConversionMode mode) const {
           // There should be room left, since one UChar hasn't been
           // converted.
           auto [replacement_buffer, rest] = buffer.split_at<3u>();
-          PutUTF8Triple(replacement_buffer, kReplacementCharacter);
+          PutUTF8Triple(replacement_buffer,
+                        blink::uchar::kReplacementCharacter);
           buffer = rest;
           result.consumed++;
         }

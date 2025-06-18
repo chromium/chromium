@@ -79,7 +79,7 @@ TEST_F(InlineLayoutTest, BlockWithTextAndAtomicInline) {
 
   StringBuilder expected_text;
   expected_text.Append("Hello ");
-  expected_text.Append(kObjectReplacementCharacter);
+  expected_text.Append(uchar::kObjectReplacementCharacter);
   expected_text.Append('.');
   auto first_child = To<InlineNode>(node.FirstChild());
   EXPECT_EQ(expected_text.ToString(),

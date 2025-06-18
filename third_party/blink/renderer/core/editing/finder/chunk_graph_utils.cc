@@ -17,7 +17,7 @@ namespace blink {
 namespace {
 
 constexpr std::array<LChar, 1> kBaseLevel = {'0'};
-constexpr UChar kLevelDelimiter = kComma;
+constexpr UChar kLevelDelimiter = uchar::kComma;
 
 const AtomicString& AnyLevel() {
   return g_star_atom;

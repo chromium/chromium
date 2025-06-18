@@ -120,13 +120,13 @@ class CharacterPropertyValues {
     Set(kIdeographicSpaceCharacter, HanKerningCharType::kMiddle);
     Set(kIdeographicCommaCharacter, HanKerningCharType::kDot);
     Set(kIdeographicFullStopCharacter, HanKerningCharType::kDot);
-    Set(kFullwidthComma, HanKerningCharType::kDot);
-    Set(kFullwidthFullStop, HanKerningCharType::kDot);
-    Set(kFullwidthColon, HanKerningCharType::kColon);
-    Set(kFullwidthSemicolon, HanKerningCharType::kSemicolon);
+    Set(uchar::kFullwidthComma, HanKerningCharType::kDot);
+    Set(uchar::kFullwidthFullStop, HanKerningCharType::kDot);
+    Set(uchar::kFullwidthColon, HanKerningCharType::kColon);
+    Set(uchar::kFullwidthSemicolon, HanKerningCharType::kSemicolon);
     Set(kMiddleDotCharacter, HanKerningCharType::kMiddle);
     Set(kHyphenationPointCharacter, HanKerningCharType::kMiddle);
-    Set(kKatakanaMiddleDot, HanKerningCharType::kMiddle);
+    Set(uchar::kKatakanaMiddleDot, HanKerningCharType::kMiddle);
     SetForUnicodePattern("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Ps:]]",
                          HanKerningCharType::kOpen);
     SetForUnicodePattern("[[:blk=CJK_Symbols:][:ea=F:] & [:gc=Pe:]]",

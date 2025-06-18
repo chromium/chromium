@@ -151,11 +151,11 @@ String FromUChar32(UChar32 c) {
 }
 
 TEST(MathOperatorDictionaryTest, Infix) {
-  for (UChar32 ch = 0; ch < kMaxCodepoint; ch++) {
+  for (UChar32 ch = 0; ch < uchar::kMaxCodepoint; ch++) {
     String s = FromUChar32(ch);
     s.Ensure16Bit();
-    if (ch >= kCombiningMinusSignBelow &&
-        ch <= kGreekCapitalReversedDottedLunateSigmaSymbol) {
+    if (ch >= uchar::kCombiningMinusSignBelow &&
+        ch <= uchar::kGreekCapitalReversedDottedLunateSigmaSymbol) {
       EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kInfix) ==
                   MathMLOperatorDictionaryCategory::kNone);
     } else if (IsInCategory(category_a, ch)) {
@@ -178,11 +178,11 @@ TEST(MathOperatorDictionaryTest, Infix) {
 }
 
 TEST(MathOperatorDictionaryTest, Prefix) {
-  for (UChar32 ch = 0; ch < kMaxCodepoint; ch++) {
+  for (UChar32 ch = 0; ch < uchar::kMaxCodepoint; ch++) {
     String s = FromUChar32(ch);
     s.Ensure16Bit();
-    if (ch >= kCombiningMinusSignBelow &&
-        ch <= kGreekCapitalReversedDottedLunateSigmaSymbol) {
+    if (ch >= uchar::kCombiningMinusSignBelow &&
+        ch <= uchar::kGreekCapitalReversedDottedLunateSigmaSymbol) {
       EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPrefix) ==
                   MathMLOperatorDictionaryCategory::kNone);
     } else if (IsInCategory(category_d, ch)) {
@@ -208,15 +208,15 @@ TEST(MathOperatorDictionaryTest, Prefix) {
 }
 
 TEST(MathOperatorDictionaryTest, Postfix) {
-  for (UChar32 ch = 0; ch < kMaxCodepoint; ch++) {
+  for (UChar32 ch = 0; ch < uchar::kMaxCodepoint; ch++) {
     String s = FromUChar32(ch);
     s.Ensure16Bit();
-    if (ch >= kCombiningMinusSignBelow &&
-        ch <= kGreekCapitalReversedDottedLunateSigmaSymbol) {
+    if (ch >= uchar::kCombiningMinusSignBelow &&
+        ch <= uchar::kGreekCapitalReversedDottedLunateSigmaSymbol) {
       EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPostfix) ==
                   MathMLOperatorDictionaryCategory::kNone);
-    } else if (ch == kArabicMathematicalOperatorMeemWithHahWithTatweel ||
-               ch == kArabicMathematicalOperatorHahWithDal) {
+    } else if (ch == uchar::kArabicMathematicalOperatorMeemWithHahWithTatweel ||
+               ch == uchar::kArabicMathematicalOperatorHahWithDal) {
       EXPECT_TRUE(FindCategory(s, MathMLOperatorDictionaryForm::kPostfix) ==
                   MathMLOperatorDictionaryCategory::kI);
     } else if (IsInCategory(category_e, ch)) {

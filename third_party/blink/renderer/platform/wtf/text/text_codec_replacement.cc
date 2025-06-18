@@ -50,7 +50,7 @@ String TextCodecReplacement::Decode(base::span<const uint8_t> data,
   if (!replacement_error_returned_) {
     replacement_error_returned_ = true;
     saw_error = true;
-    return String(base::span_from_ref(kReplacementCharacter));
+    return String(base::span_from_ref(uchar::kReplacementCharacter));
   }
 
   // 3. Return finished.

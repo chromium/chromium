@@ -181,11 +181,11 @@ class PLATFORM_EXPORT Character {
            (c >= kLeftToRightEmbedCharacter &&
             c <= kRightToLeftOverrideCharacter) ||
            c == kZeroWidthNoBreakSpaceCharacter ||
-           c == kObjectReplacementCharacter;
+           c == uchar::kObjectReplacementCharacter;
   }
   static bool TreatAsZeroWidthSpaceInComplexScript(UChar32 c) {
     if (c == kFormFeedCharacter || c == kCarriageReturnCharacter ||
-        c == kObjectReplacementCharacter) {
+        c == uchar::kObjectReplacementCharacter) {
       return true;
     }
     return IsDefaultIgnorable(c);
@@ -329,7 +329,7 @@ inline bool Character::IsEastAsianWidthFullwidth(UChar32 ch) {
 inline bool Character::MayNeedEastAsianSpacing(UChar32 ch) {
   // `EastAsianSpacingType::kWide` may need the spacing. U+02C7 is the minimum
   // code point of `kWide`.
-  return ch >= 0x02C7 && ch != kObjectReplacementCharacter &&
+  return ch >= 0x02C7 && ch != uchar::kObjectReplacementCharacter &&
          // U+2000-206F General Punctuation has rather popular characters, such
          // as ZWSP and curly quotation marks. Exclude the largest range of
          // non-`kWide` that include them.

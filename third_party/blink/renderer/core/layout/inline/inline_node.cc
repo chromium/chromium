@@ -394,7 +394,7 @@ void CollectInlinesInternal(ItemsBuilder* builder,
         builder->AppendOpaque(InlineItem::kListMarker, node);
       } else if (node->IsInitialLetterBox()) [[unlikely]] {
         builder->AppendOpaque(InlineItem::kInitialLetterBox,
-                              kObjectReplacementCharacter, node);
+                              uchar::kObjectReplacementCharacter, node);
         builder->SetHasInititialLetterBox();
       } else {
         // For atomic inlines add a unicode "object replacement character" to
@@ -1734,7 +1734,7 @@ String CreateTextContentForStickyImagesQuirk(
   for (const Member<InlineItem>& item_ptr : items) {
     const InlineItem& item = *item_ptr;
     if (item.Type() == InlineItem::kAtomicInline && item.IsImage()) {
-      DCHECK_EQ(span[item.StartOffset()], kObjectReplacementCharacter);
+      DCHECK_EQ(span[item.StartOffset()], uchar::kObjectReplacementCharacter);
       span[item.StartOffset()] = kNoBreakSpaceCharacter;
     }
   }

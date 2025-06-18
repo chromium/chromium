@@ -596,7 +596,7 @@ void TextIteratorAlgorithm<Strategy>::HandleReplacedElement() {
   }
 
   if (EmitsObjectReplacementCharacter()) {
-    EmitChar16AsNode(kObjectReplacementCharacter, *node_);
+    EmitChar16AsNode(uchar::kObjectReplacementCharacter, *node_);
     return;
   }
 
