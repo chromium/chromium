@@ -11,6 +11,11 @@
   display: block;
 }
 
+:focus-visible {
+  box-shadow: 0 0 0 2px var(--focus-shadow-color);
+  outline: none;
+}
+
 .experiment {
   color: var(--secondary-color);
   line-height: 1.45;

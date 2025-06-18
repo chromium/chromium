@@ -17,8 +17,10 @@ export function getHtml(this: AppElement) {
           placeholder="$i18n{search-placeholder}"
           autocomplete="off" spellcheck="false"
           @input="${this.onSearchInput_}">
-      <input type="button" class="clear-search" title="$i18n{clear-search}"
+      <button class="clear-search" title="$i18n{clear-search}"
           @click="${this.onClearSearchClick_}">
+        <div class="clear-search-icon"></div>
+      </button>
     </div>
     <div class="flex">
       <cr-button id="experiment-reset-all" @click="${this.onResetAllClick_}"

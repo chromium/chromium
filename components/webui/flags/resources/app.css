@@ -44,7 +44,7 @@
   --secondary-color: var(--google-grey-700);
   --warning-color: var(--google-red-700);
 
-  --focus-shadow-color: rgba(var(--google-blue-600-rgb), 0.4);
+  --focus-shadow-color: rgb(11, 87, 208);
   --input-background: var(--google-grey-100);
   --link-color: var(--google-blue-700);
   --separator-color: rgba(0, 0, 0, .06);
@@ -60,7 +60,7 @@
     --secondary-color: var(--google-grey-500);
     --warning-color: var(--google-red-300);
 
-    --focus-shadow-color: rgba(var(--google-blue-300-rgb), 0.4);
+    --focus-shadow-color: rgb(168, 199, 250);
     --input-background: rgba(0, 0, 0, .3);
     --link-color: var(--google-blue-300);
     --separator-color: rgba(255, 255, 255, .1);
@@ -208,13 +208,12 @@ button {
 }
 
 .clear-search {
-  -webkit-mask-image: url(chrome://resources/images/icon_cancel.svg);
-  -webkit-mask-size: 20px;
-  background: var(--secondary-color);
   border: 0;
+  border-radius: 50%;
   display: none;
   height: 20px;
   opacity: 0.5;
+  padding: 0;
   position: absolute;
   right: 8px;
   top: calc(50% - 10px);
@@ -223,11 +222,19 @@ button {
 
 .clear-search:focus {
   opacity: 1;
-  outline: 0;
 }
 
 :host([searching]) .clear-search {
   display: inline-block;
+}
+
+.clear-search-icon {
+  background: var(--secondary-color);
+  border: 0;
+  mask-image: url(chrome://resources/images/icon_cancel.svg);
+  mask-size: 20px;
+  height: 100%;
+  width: 100%;
 }
 
 :host([searching]) .blurb-container,
@@ -259,6 +266,7 @@ button {
 }
 
 cr-tabs {
+  --cr-tabs-focus-outline: 2px solid var(--focus-shadow-color);
   border-bottom: 1px solid var(--cr-separator-color);
 }
 
