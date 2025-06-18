@@ -110,7 +110,7 @@ bool RemoteEventLoggingAllowed(
 
 bool AnyAppEnablesUsageStats(UpdaterScope scope) {
   return AnyAppEnablesUsageStats(
-      GetApplicationSupportDirectoriesForUsers(scope));
+      GetApplicationSupportDirectoriesForScope(scope));
 }
 
 bool RemoteEventLoggingAllowed(
@@ -119,7 +119,7 @@ bool RemoteEventLoggingAllowed(
     std::optional<EventLoggingPermissionProvider>
         event_logging_permission_provider) {
   return RemoteEventLoggingAllowed(
-      installed_app_ids, GetApplicationSupportDirectoriesForUsers(scope),
+      installed_app_ids, GetApplicationSupportDirectoriesForScope(scope),
       std::move(event_logging_permission_provider));
 }
 

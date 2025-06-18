@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/activity.h"
@@ -163,6 +164,11 @@ bool AppServer::IsIdle() {
 }
 
 void AppServer::Uninitialize() {
+  if (config_ && config_->GetEventLogger()) {
+    base::RunLoop run_loop;
+    config_->GetEventLogger()->Flush(run_loop.QuitClosure());
+    run_loop.Run();
+  }
   // Simply stopping the timer does not destroy its task. The task holds a
   // refcount to this AppServer; therefore the task must be replaced and then
   // the timer stopped.

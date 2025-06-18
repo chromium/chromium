@@ -5,6 +5,7 @@
 #include "chrome/updater/test/integration_tests_mac.h"
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -55,6 +56,8 @@
 #include "components/crx_file/crx_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/crashpad/crashpad/client/crash_report_database.h"
+#include "third_party/crashpad/crashpad/client/settings.h"
 #include "url/gurl.h"
 
 namespace updater::test {
@@ -788,6 +791,36 @@ void ExpectRegistrationTestAppRegisterSuccess() {
 
 void ExpectRegistrationTestAppInstallAndRegisterSuccess() {
   ExpectRegistrationTestAppSuccess("--install_and_register");
+}
+
+void SetAppAllowsUsageStats(UpdaterScope scope,
+                            const std::string& identifier,
+                            bool allowed) {
+  std::optional<base::FilePath> application_support_dir =
+      GetApplicationSupportDirectory(scope);
+  ASSERT_TRUE(application_support_dir);
+  base::FilePath app_dir =
+      application_support_dir->Append(COMPANY_SHORTNAME_STRING)
+          .Append(identifier);
+
+  LOG(ERROR) << __func__ << " : " << app_dir;
+
+  ASSERT_TRUE(base::CreateDirectory(app_dir));
+  std::unique_ptr<crashpad::CrashReportDatabase> database =
+      crashpad::CrashReportDatabase::Initialize(app_dir.Append("Crashpad"));
+  ASSERT_TRUE(database && database->GetSettings()->SetUploadsEnabled(allowed));
+}
+
+void ClearAppAllowsUsageStats(UpdaterScope scope,
+                              const std::string& identifier) {
+  std::optional<base::FilePath> application_support_dir =
+      GetApplicationSupportDirectory(scope);
+  ASSERT_TRUE(application_support_dir);
+  base::FilePath app_dir =
+      application_support_dir->Append(COMPANY_SHORTNAME_STRING)
+          .Append(identifier);
+
+  ASSERT_TRUE(base::DeletePathRecursively(app_dir));
 }
 
 }  // namespace updater::test

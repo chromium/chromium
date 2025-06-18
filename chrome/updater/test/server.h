@@ -107,6 +107,11 @@ class ScopedServer {
   std::string app_logo_path() const { return "/applogo/"; }
   GURL app_logo_url() const { return test_server_->GetURL(app_logo_path()); }
 
+  std::string event_logging_path() const { return "/event_logging/"; }
+  GURL event_logging_url() const {
+    return test_server_->GetURL(event_logging_path());
+  }
+
   std::string proxy_pac_path() const { return "/pac_script.pac"; }
   GURL proxy_pac_url() const { return test_server_->GetURL(proxy_pac_path()); }
 

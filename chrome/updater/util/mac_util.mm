@@ -141,9 +141,14 @@ std::optional<base::FilePath> GetApplicationSupportDirectory(
   return std::nullopt;
 }
 
-std::vector<base::FilePath> GetApplicationSupportDirectoriesForUsers(
+std::vector<base::FilePath> GetApplicationSupportDirectoriesForScope(
     UpdaterScope scope) {
   std::vector<base::FilePath> app_support_dirs;
+  std::optional<base::FilePath> application_support_dir =
+      GetApplicationSupportDirectory(scope);
+  if (application_support_dir) {
+    app_support_dirs.push_back(*application_support_dir);
+  }
   if (IsSystemInstall(scope)) {
     base::FilePath user_dir;
     if (!base::apple::GetLocalDirectory(NSUserDirectory, &user_dir)) {
@@ -155,10 +160,6 @@ std::vector<base::FilePath> GetApplicationSupportDirectoriesForUsers(
           app_support_dirs.push_back(
               name.Append("Library").Append("Application Support"));
         });
-  } else if (std::optional<base::FilePath> application_support_dir =
-                 GetApplicationSupportDirectory(UpdaterScope::kUser);
-             application_support_dir) {
-    app_support_dirs.push_back(*application_support_dir);
   }
   return app_support_dirs;
 }

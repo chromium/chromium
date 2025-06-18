@@ -913,6 +913,7 @@ if (is_win || is_mac || is_linux) {
       "//chrome/enterprise_companion:installer_paths",
       "//chrome/enterprise_companion:version_header",
       "//chrome/enterprise_companion/device_management_storage",
+      "//chrome/enterprise_companion/telemetry_logger/proto",
       "//chrome/updater/protos:omaha_proto",
       "//components/crx_file",
       "//components/policy/core/common:common_constants",

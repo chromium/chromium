@@ -10,7 +10,8 @@
 
 namespace updater {
 
-// Returns true if the app id is for the updater itself or its companion app.
+// Returns true if the app id is for the updater itself, its companion app, or a
+// legacy updater.
 bool IsUpdaterOrCompanionApp(const std::string& app_id);
 
 // Returns true if the updater should uninstall itself. `app_ids` is the set of

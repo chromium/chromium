@@ -158,8 +158,9 @@ scoped_refptr<update_client::NetworkFetcherFactory>
 PingConfigurator::GetNetworkFetcherFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!network_fetcher_factory_) {
-    network_fetcher_factory_ =
-        base::MakeRefCounted<NetworkFetcherFactory>(std::nullopt);
+    network_fetcher_factory_ = base::MakeRefCounted<NetworkFetcherFactory>(
+        /*policy_service_proxy_configuration=*/std::nullopt,
+        /*event_logger=*/nullptr);
   }
   return network_fetcher_factory_;
 }

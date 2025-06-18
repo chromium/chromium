@@ -253,4 +253,15 @@ void ExpectAppVersion(UpdaterScope scope,
   EXPECT_EQ(version, app_version);
 }
 
+void SetAppAllowsUsageStats(UpdaterScope scope,
+                            const std::string& identifier,
+                            bool allowed) {
+  ADD_FAILURE() << "Usage statistics are not supported on Linux.";
+}
+
+void ClearAppAllowsUsageStats(UpdaterScope scope,
+                              const std::string& identifier) {
+  ADD_FAILURE() << "Usage statistics are not supported on Linux.";
+}
+
 }  // namespace updater::test

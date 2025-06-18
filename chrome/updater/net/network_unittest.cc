@@ -126,7 +126,8 @@ class UpdaterNetworkTest : public ::testing::Test {
     server_handle_ = test_server_.StartAndReturnHandle();
     ASSERT_TRUE(server_handle_);
     network_fetcher_factory_ = base::MakeRefCounted<NetworkFetcherFactory>(
-        PolicyServiceProxyConfiguration::Get(test::CreateTestPolicyService()));
+        PolicyServiceProxyConfiguration::Get(test::CreateTestPolicyService()),
+        /*event_logger=*/nullptr);
     fetcher_ = network_fetcher_factory_->Create();
   }
 
@@ -204,7 +205,8 @@ TEST_F(UpdaterDownloadTest, NetworkFetcher) {
 
   base::RunLoop run_loop;
   auto factory = base::MakeRefCounted<NetworkFetcherFactory>(
-      PolicyServiceProxyConfiguration::Get(test::CreateTestPolicyService()));
+      PolicyServiceProxyConfiguration::Get(test::CreateTestPolicyService()),
+      /*event_logger=*/nullptr);
   ASSERT_NE(factory, nullptr);
   {
     base::ScopedDisallowBlocking no_blocking_allowed_on_sequence;

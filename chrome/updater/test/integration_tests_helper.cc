@@ -30,6 +30,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/unit_test_util.h"
@@ -228,6 +229,38 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
       }));
 }
 
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithEventLoggingPermissionProviderSwitch(
+    base::RepeatingCallback<bool(std::optional<EventLoggingPermissionProvider>,
+                                 Args...)> callback) {
+  return base::BindLambdaForTesting([=](Args... args) {
+    const base::CommandLine* command_line =
+        base::CommandLine::ForCurrentProcess();
+    if (!command_line->HasSwitch("event_logging_permission_provider_app_id")) {
+      LOG(ERROR) << "Missing switch: "
+                 << "event_logging_permission_provider_app_id";
+      return false;
+    }
+
+    EventLoggingPermissionProvider provider;
+    provider.app_id = command_line->GetSwitchValueUTF8(
+        "event_logging_permission_provider_app_id");
+
+#if BUILDFLAG(IS_MAC)
+    if (!command_line->HasSwitch(
+            "event_logging_permission_provider_directory_name")) {
+      LOG(ERROR) << "Missing switch: "
+                 << "event_logging_permission_provider_directory_name";
+      return false;
+    }
+    provider.directory_name = command_line->GetSwitchValueUTF8(
+        "event_logging_permission_provider_directory_name");
+#endif
+
+    return callback.Run(std::move(provider), std::move(args)...);
+  });
+}
+
 template <typename Arg, typename... RemainingArgs>
 base::RepeatingCallback<bool(RemainingArgs...)> WithArg(
     Arg arg,
@@ -286,18 +319,21 @@ void AppTestHelper::FirstTaskRun() {
           // and then use the With* helper functions to provide its arguments.
           {"clean", WithSystemScope(Wrap(&Clean))},
           {"enter_test_mode",
-           WithSwitch(
-               "ceca_connection_timeout",
+           WithEventLoggingPermissionProviderSwitch(
                WithSwitch(
-                   "server_keep_alive_time",
+                   "ceca_connection_timeout",
                    WithSwitch(
-                       "idle_timeout",
+                       "server_keep_alive_time",
                        WithSwitch(
-                           "app_logo_url",
-                            WithSwitch(
-                                "crash_upload_url",
-                                WithSwitch("update_url",
-                                           Wrap(&EnterTestMode)))))))},
+                           "idle_timeout",
+                           WithSwitch(
+                                "event_logging_url",
+                                WithSwitch(
+                                    "app_logo_url",
+                                    WithSwitch(
+                                        "crash_upload_url",
+                                        WithSwitch("update_url",
+                                                   Wrap(&EnterTestMode)))))))))},  // NOLINT
           {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
           {"set_dict_policies", WithSwitch("values", Wrap(&SetDictPolicies))},
           {"set_platform_policies",
@@ -544,6 +580,16 @@ void AppTestHelper::FirstTaskRun() {
            Wrap(&ExpectEnterpriseCompanionAppNotInstalled)},
           {"uninstall_enterprise_companion_app",
            Wrap(&UninstallEnterpriseCompanionApp)},
+          {"set_app_allows_usage_stats",
+           WithSwitch(
+               "allowed",
+               WithSwitch(
+                   "identifier",
+                   WithSystemScope(Wrap(&SetAppAllowsUsageStats))))},
+          {"clear_app_allows_usage_stats",
+           WithSwitch(
+               "identifier",
+               WithSystemScope(Wrap(&ClearAppAllowsUsageStats)))},
       };
 
   const base::CommandLine* command_line =

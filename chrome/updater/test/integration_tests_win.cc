@@ -2220,4 +2220,22 @@ void ExpectAppVersion(UpdaterScope scope,
   EXPECT_EQ(base::SysUTF8ToWide(version.GetString()), pv);
 }
 
+void SetAppAllowsUsageStats(UpdaterScope scope,
+                            const std::string& identifier,
+                            bool allowed) {
+  base::win::RegKey key;
+  ASSERT_EQ(
+      key.Create(UpdaterScopeToHKeyRoot(scope),
+                 GetAppClientStateKey(identifier).c_str(), Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  EXPECT_EQ(key.WriteValue(L"usagestats", static_cast<DWORD>(allowed)),
+            ERROR_SUCCESS);
+}
+
+void ClearAppAllowsUsageStats(UpdaterScope scope,
+                              const std::string& identifier) {
+  ASSERT_TRUE(DeleteRegKey(UpdaterScopeToHKeyRoot(scope),
+                           GetAppClientStateKey(identifier).c_str()));
+}
+
 }  // namespace updater::test

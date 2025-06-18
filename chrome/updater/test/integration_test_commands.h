@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/update_service.h"
@@ -36,9 +37,12 @@ class IntegrationTestCommands
   virtual void EnterTestMode(const GURL& update_url,
                              const GURL& crash_upload_url,
                              const GURL& app_logo_url,
+                             const GURL& event_logging_url,
                              base::TimeDelta idle_timeout,
                              base::TimeDelta server_keep_alive_time,
-                             base::TimeDelta ceca_connection_timeout) const = 0;
+                             base::TimeDelta ceca_connection_timeout,
+                             std::optional<EventLoggingPermissionProvider>
+                                 event_logging_permission_provider) const = 0;
   virtual void ExitTestMode() const = 0;
   virtual void SetDictPolicies(const base::Value::Dict& values) const = 0;
   virtual void SetPlatformPolicies(const base::Value::Dict& values) const = 0;
@@ -243,6 +247,9 @@ class IntegrationTestCommands
       const base::Value::Dict& external_overrides) = 0;
   virtual void ExpectEnterpriseCompanionAppNotInstalled() = 0;
   virtual void UninstallEnterpriseCompanionApp() = 0;
+  virtual void SetAppAllowsUsageStats(const std::string& identifier,
+                                      bool allowed) = 0;
+  virtual void ClearAppAllowsUsageStats(const std::string& identifier) = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<IntegrationTestCommands>;

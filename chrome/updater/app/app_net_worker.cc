@@ -183,9 +183,12 @@ void FetchServiceImpl::PostRequest(
     headers.emplace(header->name, header->value);
   }
   // Creates a network fetcher without any proxy configuration (let the system
-  // handle the proxy settings) to fetch data.
-  fetcher_ =
-      base::MakeRefCounted<NetworkFetcherFactory>(std::nullopt)->Create();
+  // handle the proxy settings) to fetch data. Network events are logged by the
+  // parent process.
+  fetcher_ = base::MakeRefCounted<NetworkFetcherFactory>(
+                 /*policy_service_proxy_configuration=*/std::nullopt,
+                 /*event_logger=*/nullptr)
+                 ->Create();
   fetcher_->PostRequest(
       url, post_data, content_type, headers,
       base::BindRepeating(&PostRequestObserverWrapper::OnResponseStarted,

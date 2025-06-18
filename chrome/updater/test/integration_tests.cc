@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
@@ -22,6 +23,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -44,8 +46,10 @@
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/installer_paths.h"
+#include "chrome/enterprise_companion/telemetry_logger/proto/log_request.pb.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/ping_configurator.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
@@ -53,6 +57,7 @@
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/test/dm_policy_builder.h"
+#include "chrome/updater/test/http_request.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/request_matcher.h"
@@ -313,9 +318,9 @@ class IntegrationTest : public ::testing::Test {
     ASSERT_TRUE(WaitForUpdaterExit());
     ASSERT_NO_FATAL_FAILURE(Clean());
     ASSERT_NO_FATAL_FAILURE(ExpectClean());
-    ASSERT_NO_FATAL_FAILURE(EnterTestMode(GURL("http://localhost:1234"),
-                                          GURL("http://localhost:1235"), {},
-                                          base::Minutes(5)));
+    ASSERT_NO_FATAL_FAILURE(EnterTestMode(
+        GURL("http://localhost:1234"), GURL("http://localhost:1235"),
+        /*app_logo_url=*/{}, /*event_logging_url=*/{}, base::Minutes(5)));
     ASSERT_NO_FATAL_FAILURE(SetMachineManaged(false));
 #if BUILDFLAG(IS_LINUX)
     // On LUCI the XDG_RUNTIME_DIR and DBUS_SESSION_BUS_ADDRESS environment
@@ -420,12 +425,16 @@ class IntegrationTest : public ::testing::Test {
       const GURL& update_url,
       const GURL& crash_upload_url,
       const GURL& app_logo_url,
+      const GURL& event_logging_url,
       base::TimeDelta idle_timeout,
       base::TimeDelta server_keep_alive_time = base::Seconds(2),
-      base::TimeDelta ceca_connection_timeout = base::Seconds(10)) {
-    test_commands_->EnterTestMode(update_url, crash_upload_url, app_logo_url,
-                                  idle_timeout, server_keep_alive_time,
-                                  ceca_connection_timeout);
+      base::TimeDelta ceca_connection_timeout = base::Seconds(10),
+      std::optional<EventLoggingPermissionProvider>
+          event_logging_permission_provider = std::nullopt) {
+    test_commands_->EnterTestMode(
+        update_url, crash_upload_url, app_logo_url, event_logging_url,
+        idle_timeout, server_keep_alive_time, ceca_connection_timeout,
+        event_logging_permission_provider);
   }
 
   void ExitTestMode() { test_commands_->ExitTestMode(); }
@@ -2368,9 +2377,9 @@ TEST_F(IntegrationTest, IdleServerExits) {
     GTEST_SKIP() << "System server startup is complicated on Windows.";
   }
 #endif
-  ASSERT_NO_FATAL_FAILURE(EnterTestMode(GURL("http://localhost:1234"),
-                                        GURL("http://localhost:1234"), {},
-                                        base::Seconds(1)));
+  ASSERT_NO_FATAL_FAILURE(EnterTestMode(
+      GURL("http://localhost:1234"), GURL("http://localhost:1234"),
+      /*app_logo_url=*/{}, /*event_logging_url=*/{}, base::Seconds(1)));
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(RunServer(kErrorIdle, true));
@@ -4731,7 +4740,8 @@ TEST_F(IntegrationTest, AppLogoUrl) {
   ScopedServer test_logo_server(test_commands_);
   EnterTestMode(test_update_server.update_url(),
                 test_update_server.crash_upload_url(),
-                test_logo_server.app_logo_url(), base::Minutes(5));
+                test_logo_server.app_logo_url(), /*event_logging_url=*/{},
+                base::Minutes(5));
 
   const std::string kAppId("googletest");
   const base::Version v1("1");
@@ -6065,5 +6075,129 @@ TEST_P(IntegrationInstallerResultsNewInstallsTest, OnDemandCancel) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+// Event logging is only implemented on Mac and Windows.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+class EventLoggingIntegrationTest : public IntegrationTest {
+ public:
+  void SetUp() override {
+    IntegrationTest::SetUp();
+    ClearPermissionProviderAllowsUsageStats();
+  }
+
+  void TearDown() override {
+    ClearPermissionProviderAllowsUsageStats();
+    IntegrationTest::TearDown();
+  }
+
+ protected:
+  // Configures whether the provided event logging permission provider enables
+  // usage stats.
+  void SetPermissionProviderAllowsUsageStats(bool allowed) {
+#if BUILDFLAG(IS_MAC)
+    test_commands_->SetAppAllowsUsageStats(provider().directory_name, allowed);
+#else
+    test_commands_->SetAppAllowsUsageStats(provider().app_id, allowed);
+#endif
+  }
+
+  void ClearPermissionProviderAllowsUsageStats() {
+#if BUILDFLAG(IS_MAC)
+    test_commands_->ClearAppAllowsUsageStats(provider().directory_name);
+#else
+    test_commands_->ClearAppAllowsUsageStats(provider().app_id);
+#endif
+  }
+
+  const EventLoggingPermissionProvider& provider() {
+    static base::NoDestructor<EventLoggingPermissionProvider> provider({
+        .app_id = "googletest",
+#if BUILDFLAG(IS_MAC)
+        .directory_name = "googletest",
+#endif
+    });
+    return *provider.get();
+  }
+};
+
+TEST_F(EventLoggingIntegrationTest, SendsLogs) {
+  const base::Version v1("1");
+
+  ScopedServer test_update_server(test_commands_);
+  ScopedServer test_event_logging_server(test_commands_);
+  EnterTestMode(
+      test_update_server.update_url(), test_update_server.crash_upload_url(),
+      /*app_logo_url=*/{}, test_event_logging_server.event_logging_url(),
+      base::Minutes(5), /*server_keep_alive_time=*/base::Seconds(2),
+      /*ceca_connection_timeout=*/base::Seconds(10), provider());
+
+  ExpectInstallEvent(test_update_server, kUpdaterAppId);
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_update_server, provider().app_id, /*install_data_index=*/"",
+      UpdateService::Priority::kForeground, base::Version({0, 0, 0, 0}), v1));
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      provider().app_id, /*is_silent_install=*/true, /*tag=*/""));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(
+      SetPermissionProviderAllowsUsageStats(/*allowed=*/true));
+
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectUpdateCheckSequence(&test_update_server, provider().app_id,
+                                UpdateService::Priority::kForeground, v1, v1));
+  test_event_logging_server.ExpectOnce(
+      {request::GetPathMatcher(test_event_logging_server.event_logging_path()),
+       base::BindRepeating([](const HttpRequest& request) {
+         enterprise_companion::telemetry_logger::proto::LogRequest log_request;
+         if (!log_request.ParseFromString(request.decoded_content)) {
+           ADD_FAILURE() << "Failed to parse log request";
+           return false;
+         }
+         return true;
+       })},
+      enterprise_companion::telemetry_logger::proto::LogResponse()
+          .SerializeAsString(),
+      net::HTTP_OK);
+  ASSERT_NO_FATAL_FAILURE(CheckForUpdate(provider().app_id));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_update_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(EventLoggingIntegrationTest, SkipsLoggingWhenDisallowed) {
+  const base::Version v1("1");
+
+  ScopedServer test_update_server(test_commands_);
+  ScopedServer test_event_logging_server(test_commands_);
+  EnterTestMode(
+      test_update_server.update_url(), test_update_server.crash_upload_url(),
+      /*app_logo_url=*/{}, test_event_logging_server.event_logging_url(),
+      base::Minutes(5), /*server_keep_alive_time=*/base::Seconds(2),
+      /*ceca_connection_timeout=*/base::Seconds(10), provider());
+
+  ExpectInstallEvent(test_update_server, kUpdaterAppId);
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_update_server, provider().app_id, /*install_data_index=*/"",
+      UpdateService::Priority::kForeground, base::Version({0, 0, 0, 0}), v1));
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      provider().app_id, /*is_silent_install=*/true, /*tag=*/""));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(
+      SetPermissionProviderAllowsUsageStats(/*allowed=*/false));
+
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectUpdateCheckSequence(&test_update_server, provider().app_id,
+                                UpdateService::Priority::kForeground, v1, v1));
+  ASSERT_NO_FATAL_FAILURE(CheckForUpdate(provider().app_id));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_update_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 }  // namespace updater::test

@@ -23,6 +23,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
@@ -148,14 +149,28 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void EnterTestMode(const GURL& update_url,
                      const GURL& crash_upload_url,
                      const GURL& app_logo_url,
+                     const GURL& event_logging_url,
                      base::TimeDelta idle_timeout,
                      base::TimeDelta server_keep_alive_time,
-                     base::TimeDelta ceca_connection_timeout) const override {
+                     base::TimeDelta ceca_connection_timeout,
+                     std::optional<EventLoggingPermissionProvider>
+                         event_logging_permission_provider) const override {
     RunCommand(
         "enter_test_mode",
         {Param("update_url", update_url.spec()),
          Param("crash_upload_url", crash_upload_url.spec()),
          Param("app_logo_url", app_logo_url.spec()),
+         Param("event_logging_url", event_logging_url.spec()),
+         Param("event_logging_permission_provider_app_id",
+               event_logging_permission_provider
+                   ? event_logging_permission_provider->app_id
+                   : ""),
+#if BUILDFLAG(IS_MAC)
+         Param("event_logging_permission_provider_directory_name",
+               event_logging_permission_provider
+                   ? event_logging_permission_provider->directory_name
+                   : ""),
+#endif
          Param("idle_timeout", base::NumberToString(idle_timeout.InSeconds())),
          Param("server_keep_alive_time",
                base::NumberToString(server_keep_alive_time.InSeconds())),
@@ -666,6 +681,18 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
   void UninstallEnterpriseCompanionApp() override {
     RunCommand("uninstall_enterprise_companion_app");
+  }
+
+  void SetAppAllowsUsageStats(const std::string& identifier,
+                              bool allowed) override {
+    RunCommand("set_app_allows_usage_stats",
+               {Param("identifier", identifier),
+                Param("allowed", BoolToString(allowed))});
+  }
+
+  void ClearAppAllowsUsageStats(const std::string& identifier) override {
+    RunCommand("clear_app_allows_usage_stats",
+               {Param("identifier", identifier)});
   }
 
  private:
