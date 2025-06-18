@@ -548,9 +548,6 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest, FailedFilling) {
   // Password change isn't verified.
   EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
 
-  task_environment()->AdvanceClock(
-      ChangePasswordFormFillingSubmissionHelper::kSubmissionWaitingTimeout);
-
   EXPECT_FALSE(completion_future.Get());
   EXPECT_EQ(presaved_generated_password_form.username_value,
             existing_credential()->username_value);
@@ -720,4 +717,40 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
 
   // Expects that form submission succeeded.
   EXPECT_TRUE(completion_future.Get());
+}
+
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
+       SubmissionWithEnterFailedButtonClickFailed) {
+  auto form_manager = CreateFormManager(/*credentials_to_seed=*/{});
+
+  base::test::TestFuture<bool> completion_future;
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+  EXPECT_CALL(capture_annotated_page_content, Run)
+      .WillOnce(base::test::RunOnceCallback<0>(
+          optimization_guide::AIPageContentResult()));
+  auto verifier =
+      CreateVerifier(form_manager.get(), completion_future.GetCallback(),
+                     capture_annotated_page_content.Get());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(driver(), FillChangePasswordForm)
+      .WillOnce(RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
+  EXPECT_CALL(driver(), SubmitFormWithEnter)
+      .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
+                      RunOnceCallback<1>(/*success=*/false)));
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(
+          WithArg<3>(Invoke(&PostResponseForSubmissionButtonClick<false>)));
+  run_loop.Run();
+
+  verifier->OnPasswordFormSubmission(web_contents());
+
+  task_environment()->RunUntilIdle();
+
+  EXPECT_FALSE(verifier->click_helper());
+  EXPECT_FALSE(verifier->submission_verifier());
+
+  EXPECT_FALSE(completion_future.Get());
 }
