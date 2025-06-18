@@ -126,6 +126,23 @@ builder.
   * [`//third_party/android_deps/fetch_all.py`](https://cs.chromium.org/search?q=+file:third_party/android_deps/fetch_all.py)
   * [`//third_party/android_deps/buildSrc/src/main/groovy/.+`](https://cs.chromium.org/chromium/src/third_party/android_deps/buildSrc/src/main/groovy/)
 
+* [android-10-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/android-10-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-10-arm64-rel""))
+
+  Location filters:
+  * [`//chrome/android/features/vr/.+`](https://cs.chromium.org/chromium/src/chrome/android/features/vr/)
+  * [`//chrome/android/java/src/org/chromium/chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/vr/)
+  * [`//chrome/android/javatests/src/org/chromium/chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/vr/)
+  * [`//chrome/browser/android/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/android/vr/)
+  * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
+  * [`//components/webxr/.+`](https://cs.chromium.org/chromium/src/components/webxr/)
+  * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
+  * [`//device/vr/.+`](https://cs.chromium.org/chromium/src/device/vr/)
+  * [`//third_party/cardboard/.+`](https://cs.chromium.org/chromium/src/third_party/cardboard/)
+  * [`//third_party/openxr/.+`](https://cs.chromium.org/chromium/src/third_party/openxr/)
+  * [`//third_party/gvr-android-sdk/.+`](https://cs.chromium.org/chromium/src/third_party/gvr-android-sdk/)
+  * [`//third_party/arcore-android-sdk/.+`](https://cs.chromium.org/chromium/src/third_party/arcore-android-sdk/)
+  * [`//third_party/arcore-android-sdk-client/.+`](https://cs.chromium.org/chromium/src/third_party/arcore-android-sdk-client/)
+
 * [android-cast-arm-dbg](https://ci.chromium.org/p/chromium/builders/try/android-cast-arm-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cast-arm-dbg""))
 
   Location filters:
@@ -209,34 +226,6 @@ builder.
   * [`//components/grpc_support/.+`](https://cs.chromium.org/chromium/src/components/grpc_support/)
   * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
   * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
-
-* [android-pie-arm64-dbg](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-pie-arm64-dbg""))
-
-  Location filters:
-  * [`//chrome/android/features/vr/.+`](https://cs.chromium.org/chromium/src/chrome/android/features/vr/)
-  * [`//chrome/android/java/src/org/chromium/chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/vr/)
-  * [`//chrome/android/javatests/src/org/chromium/chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/vr/)
-  * [`//chrome/browser/android/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/android/vr/)
-  * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
-  * [`//components/webxr/.+`](https://cs.chromium.org/chromium/src/components/webxr/)
-  * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
-  * [`//device/vr/.+`](https://cs.chromium.org/chromium/src/device/vr/)
-  * [`//third_party/cardboard/.+`](https://cs.chromium.org/chromium/src/third_party/cardboard/)
-  * [`//third_party/openxr/.+`](https://cs.chromium.org/chromium/src/third_party/openxr/)
-  * [`//third_party/gvr-android-sdk/.+`](https://cs.chromium.org/chromium/src/third_party/gvr-android-sdk/)
-  * [`//third_party/arcore-android-sdk/.+`](https://cs.chromium.org/chromium/src/third_party/arcore-android-sdk/)
-  * [`//third_party/arcore-android-sdk-client/.+`](https://cs.chromium.org/chromium/src/third_party/arcore-android-sdk-client/)
-  * [`//third_party/eigen3/.+`](https://cs.chromium.org/chromium/src/third_party/eigen3/)
-  * [`//third_party/farmhash/.+`](https://cs.chromium.org/chromium/src/third_party/farmhash/)
-  * [`//third_party/fft2d/.+`](https://cs.chromium.org/chromium/src/third_party/fft2d/)
-  * [`//third_party/flatbuffers/.+`](https://cs.chromium.org/chromium/src/third_party/flatbuffers/)
-  * [`//third_party/fp16/.+`](https://cs.chromium.org/chromium/src/third_party/fp16/)
-  * [`//third_party/fxdiv/.+`](https://cs.chromium.org/chromium/src/third_party/fxdiv/)
-  * [`//third_party/gemmlowp/.+`](https://cs.chromium.org/chromium/src/third_party/gemmlowp/)
-  * [`//third_party/pthreadpool/.+`](https://cs.chromium.org/chromium/src/third_party/pthreadpool/)
-  * [`//third_party/ruy/.+`](https://cs.chromium.org/chromium/src/third_party/ruy/)
-  * [`//third_party/tflite/.+`](https://cs.chromium.org/chromium/src/third_party/tflite/)
-  * [`//third_party/xnnpack/.+`](https://cs.chromium.org/chromium/src/third_party/xnnpack/)
 
 * [android_compile_x64_dbg](https://ci.chromium.org/p/chromium/builders/try/android_compile_x64_dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_compile_x64_dbg""))
 

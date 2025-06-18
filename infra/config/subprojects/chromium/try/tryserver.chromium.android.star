@@ -54,7 +54,27 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    builderless = False,
+    cores = 16,
     contact_team_email = "clank-engprod@google.com",
+    main_list_view = "try",
+    tryjob = try_.job(
+        location_filters = [
+            "chrome/android/features/vr/.+",
+            "chrome/android/java/src/org/chromium/chrome/browser/vr/.+",
+            "chrome/android/javatests/src/org/chromium/chrome/browser/vr/.+",
+            "chrome/browser/android/vr/.+",
+            "chrome/browser/vr/.+",
+            "components/webxr/.+",
+            "content/browser/xr/.+",
+            "device/vr/.+",
+            "third_party/cardboard/.+",
+            "third_party/openxr/.+",
+            "third_party/gvr-android-sdk/.+",
+            "third_party/arcore-android-sdk/.+",
+            "third_party/arcore-android-sdk-client/.+",
+        ],
+    ),
 )
 
 try_.builder(
@@ -922,6 +942,8 @@ try_.builder(
     ),
 )
 
+# TODO(crbug.com/425745287): Remove this builder after android-10-arm64-rel
+# run properly as an optional CQ builder.
 try_.builder(
     name = "android-pie-arm64-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
@@ -936,37 +958,6 @@ try_.builder(
     ),
     builderless = False,
     cores = 16,
-    main_list_view = "try",
-    tryjob = try_.job(
-        location_filters = [
-            "chrome/android/features/vr/.+",
-            "chrome/android/java/src/org/chromium/chrome/browser/vr/.+",
-            "chrome/android/javatests/src/org/chromium/chrome/browser/vr/.+",
-            "chrome/browser/android/vr/.+",
-            "chrome/browser/vr/.+",
-            "components/webxr/.+",
-            "content/browser/xr/.+",
-            "device/vr/.+",
-            "third_party/cardboard/.+",
-            "third_party/openxr/.+",
-            "third_party/gvr-android-sdk/.+",
-            "third_party/arcore-android-sdk/.+",
-            "third_party/arcore-android-sdk-client/.+",
-            # Diectories that have caused breakages in the past due to the
-            # TensorFlowLite roll.
-            "third_party/eigen3/.+",
-            "third_party/farmhash/.+",
-            "third_party/fft2d/.+",
-            "third_party/flatbuffers/.+",
-            "third_party/fp16/.+",
-            "third_party/fxdiv/.+",
-            "third_party/gemmlowp/.+",
-            "third_party/pthreadpool/.+",
-            "third_party/ruy/.+",
-            "third_party/tflite/.+",
-            "third_party/xnnpack/.+",
-        ],
-    ),
 )
 
 try_.builder(
