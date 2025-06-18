@@ -4,11 +4,11 @@
 
 import AppIntents
 
-public struct FooIntent: AppIntent {
+public struct ExampleIntent: AppIntent {
   public init() {}
 
-  public static var title = LocalizedStringResource("Foo")
-  public static var description = IntentDescription("Perform Foo.")
+  public static let title = LocalizedStringResource("Foo")
+  public static let description = IntentDescription("Perform Foo.")
 
   public func perform() async throws -> some IntentResult {
     return .result()

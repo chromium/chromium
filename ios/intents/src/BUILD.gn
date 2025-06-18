@@ -24,8 +24,8 @@ swift_source_set("src_swift") {
   generate_intents = true
   bridge_header = "intents_bridge_header.h"
   sources = [
-    "Bar.swift",
-    "Foo.swift",
+    "ExampleIntent.swift",
+    "ExampleShortcuts.swift",
   ]
   frameworks = [
     "Foundation.framework",

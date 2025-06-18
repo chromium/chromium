@@ -4,12 +4,12 @@
 
 import AppIntents
 
-public struct BarShortcuts: AppShortcutsProvider {
+public struct ExampleShortcuts: AppShortcutsProvider {
   public init() {}
 
   public static var appShortcuts: [AppShortcut] {
     AppShortcut(
-      intent: FooIntent(),
+      intent: ExampleIntent(),
       phrases: [
         "Foo",
         "Foo \(.applicationName)",
