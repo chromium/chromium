@@ -736,7 +736,6 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/util/RunnableTimerTest.java",
     "junit/src/org/chromium/ui/util/StyleUtilsTest.java",
     "junit/src/org/chromium/ui/util/TokenHolderTest.java",
-    "junit/src/org/chromium/ui/util/XrUtilsTest.java",
     "junit/src/org/chromium/ui/widget/AnchoredPopupWindowTest.java",
     "junit/src/org/chromium/ui/widget/LoadingViewTest.java",
     "junit/src/org/chromium/ui/widget/SpanBackgroundHelperTest.java",

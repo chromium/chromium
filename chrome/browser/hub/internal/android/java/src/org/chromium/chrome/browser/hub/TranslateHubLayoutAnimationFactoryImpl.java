@@ -11,7 +11,6 @@ import android.view.View;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.hub.HubColorMixer.StateChange;
 import org.chromium.ui.interpolators.Interpolators;
-import org.chromium.ui.util.XrUtils;
 
 /** Implementation of {@link TranslateHubLayoutAnimationFactory}. */
 @NullMarked
@@ -50,11 +49,7 @@ public class TranslateHubLayoutAnimationFactoryImpl {
                         animator.setDuration(durationMs);
                         animatorSet.play(animator);
 
-                        // The scrim is not needed on an XR device when in full space mode the
-                        // transparent background provides spatial look, so we skip it.
-                        if (!XrUtils.getInstance().isFsmOnXrDevice()) {
-                            scrimController.startShowingScrim();
-                        }
+                        scrimController.startShowingScrim();
                     }
 
                     @Override
