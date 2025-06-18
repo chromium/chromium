@@ -50,6 +50,7 @@
 #include "cc/layers/texture_layer_impl.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_record.h"
+#include "cc/paint/record_paint_canvas.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
@@ -121,6 +122,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 // UMA Histogram macros trigger a bug in IWYU.
 // https://github.com/include-what-you-use/include-what-you-use/issues/1546
@@ -770,23 +772,81 @@ void CanvasRenderingContext2D::DrawElementInternal(
 
   cc::PaintRecord paint_record = builder.EndRecording(property_tree_state);
 
-  WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
-           CanvasPerformanceMonitor::DrawType::kOther);
+  // The filter must have been resolved before calling Draw, because it
+  // immediately checks IsFilterResolved() and uses a null canvas if not.
+  StateGetFilter();
 
-  cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
-  canvas->save();
-  canvas->translate(x, y);
-  if (dwidth && dheight) {
-    canvas->scale(*dwidth / box_rect.width(), *dheight / box_rect.height());
-  }
+  // TODO(crbug.com/421834883): This code is based on image drawing. Maybe we
+  // need a distinct paint_type: kImagePaintType seems to do the right thing
+  // but maybe its treatment of anti-aliasing is incorrect. The kNoImage type
+  // controls drop shadow painting under transforms. It's not clear if we
+  // should behave like an opaque image here.
+  Draw<OverdrawOp::kNone>(
+      [paint_record, x, y, dwidth, dheight, box_rect](
+          cc::PaintCanvas* c, const cc::PaintFlags* flags) {
+        cc::RecordPaintCanvas::DisableFlushCheckScope disable_flush_check_scope(
+            static_cast<cc::RecordPaintCanvas*>(c));
+        int initial_save_count = c->getSaveCount();
 
-  canvas->clipRect(SkRect::MakeWH(box_rect.width(), box_rect.height()));
-  canvas->drawPicture(
-      paint_record,
-      // use a save at the beginning of the record to keep transforms local:
-      true);
+        gfx::RectF dst_rect(x, y, box_rect.width(), box_rect.height());
+        if (dwidth && dheight) {
+          dst_rect = gfx::RectF(x, y, *dwidth, *dheight);
+        }
 
-  canvas->restore();
+        if (flags->getImageFilter() ||
+            flags->getBlendMode() != SkBlendMode::kSrcOver ||
+            SkColorGetA(flags->getColor()) < 255) {
+          SkM44 ctm = c->getLocalToDevice();
+          SkM44 inv_ctm;
+          if (!ctm.invert(&inv_ctm)) {
+            // There is an earlier check for invertibility, but the arithmetic
+            // in AffineTransform is not exactly identical, so it is possible
+            // for SkMatrix to find the transform to be non-invertible at this
+            // stage. crbug.com/504687
+            return;
+          }
+          SkRect bounds = gfx::RectFToSkRect(dst_rect);
+          ctm.asM33().mapRect(&bounds);
+          if (!bounds.isFinite()) {
+            // There is an earlier check for the correctness of the bounds, but
+            // it is possible that after applying the matrix transformation we
+            // get a faulty set of bounds, so we want to catch this asap and
+            // avoid sending a draw command. crbug.com/1039125 We want to do
+            // this before the save command is sent.
+            return;
+          }
+          c->save();
+          c->concat(inv_ctm);
+
+          cc::PaintFlags layer_flags;
+          layer_flags.setBlendMode(flags->getBlendMode());
+          layer_flags.setImageFilter(flags->getImageFilter());
+          layer_flags.setColor(flags->getColor());
+
+          c->saveLayer(bounds, layer_flags);
+          c->concat(ctm);
+        }
+
+        c->save();
+        c->translate(x, y);
+        if (dwidth && dheight) {
+          c->scale(*dwidth / box_rect.width(), *dheight / box_rect.height());
+        }
+
+        c->clipRect(SkRect::MakeWH(box_rect.width(), box_rect.height()));
+
+        c->drawPicture(paint_record,
+                       // use a save at the beginning of the record to keep
+                       // transforms local:
+                       true);
+
+        c->restoreToCount(initial_save_count);
+      },
+      [](const SkIRect& rect) { return false; },  // overdraw test lambda
+      gfx::RectF(box_rect.width(), box_rect.height()),
+      CanvasRenderingContext2DState::kImagePaintType,
+      CanvasRenderingContext2DState::kNoImage,
+      CanvasPerformanceMonitor::DrawType::kElement);
 }
 
 void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
