@@ -464,6 +464,11 @@ def get_stories(benchmark: Benchmark, args: OptionsNamespace):
         f'--browser={args.android_browser}',
         '-vv',
     ]
+    if args.android_hostname:
+        print_stories_cmd += [
+            "--connect-to-device-over-network",
+            f"--device={args.android_hostname}",
+        ]
     _LOGGER.debug(f"Running command: {' '.join(print_stories_cmd)}")
 
     # Avoid setting check=True here since the return code is 111 for success.
