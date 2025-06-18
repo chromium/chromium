@@ -7,6 +7,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
+#include "chrome/browser/glic/media/glic_media_context.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/live_caption/live_caption_controller.h"
@@ -63,6 +64,10 @@ class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
   GlicMediaIntegration* GetIntegration() {
     scoped_feature_list_.emplace(media::kHeadlessLiveCaption);
     return GlicMediaIntegration::GetFor(web_contents());
+  }
+
+  GlicMediaContext* GetContext() {
+    return GlicMediaContext::GetIfExistsFor(web_contents());
   }
 
   captions::LiveCaptionController* live_caption_controller() {
@@ -173,6 +178,16 @@ TEST_F(GlicMediaIntegrationTest, NullWebContentsIsOkay) {
   optimization_guide::proto::ContentNode root_node;
   GetIntegration()->AppendContext(/*web_contents=*/nullptr, &root_node);
   // As long as nothing bad happens, it's good.
+}
+
+TEST_F(GlicMediaIntegrationTest, PeerConnectionPreventsTranscription) {
+  auto* integration = GetIntegration();
+
+  // This should prevent the transcription from being recorded.
+  integration->OnPeerConnectionAddedForTesting(web_contents());
+
+  auto* context = GetContext();
+  EXPECT_TRUE(context->is_excluded_from_transcript_for_testing());
 }
 
 }  // namespace glic

@@ -85,6 +85,10 @@ std::string GlicMediaContext::GetContext() const {
   return text_context_ + most_recent_nonfinal_;
 }
 
+void GlicMediaContext::OnPeerConnectionAdded() {
+  is_excluded_from_transcript_ = true;
+}
+
 bool GlicMediaContext::IsExcludedFromTranscript() const {
   if (is_excluded_from_transcript_) {
     // Skip checking if it's already excluded.

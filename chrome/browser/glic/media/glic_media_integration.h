@@ -37,6 +37,9 @@ class GlicMediaIntegration {
   virtual void AppendContext(
       content::WebContents* web_contents,
       optimization_guide::proto::ContentNode* context_root) = 0;
+
+  // Pretend that a peer connection has been added.
+  virtual void OnPeerConnectionAddedForTesting(content::WebContents*) = 0;
 };
 
 }  // namespace glic

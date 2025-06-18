@@ -17,12 +17,43 @@
 #include "components/live_caption/pref_names.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/peer_connection_tracker_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 
 namespace {
 
 constexpr char kGlicMediaIntegrationKey[] = "GlicMediaIntegration";
+
+class GlicMediaPeerConnectionObserver
+    : public content::PeerConnectionTrackerHostObserver {
+ public:
+  ~GlicMediaPeerConnectionObserver() override = default;
+
+  void OnPeerConnectionAdded(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      int lid,
+      base::ProcessId pid,
+      const std::string& url,
+      const std::string& rtc_configuration) override {
+    auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id);
+    if (!rfh) {
+      return;
+    }
+
+    auto* wc = content::WebContents::FromRenderFrameHost(rfh);
+    if (!wc) {
+      return;
+    }
+
+    auto* context = glic::GlicMediaContext::GetOrCreateFor(wc);
+    if (!context) {
+      return;
+    }
+
+    context->OnPeerConnectionAdded();
+  }
+};
 
 class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
                                  public base::SupportsUserData::Data {
@@ -34,6 +65,7 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
   void AppendContext(
       content::WebContents* web_contents,
       optimization_guide::proto::ContentNode* context_root) override;
+  void OnPeerConnectionAddedForTesting(content::WebContents*) override;
 
   void OnContextUpdated(glic::GlicMediaContext* context);
 
@@ -42,6 +74,8 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
   // Don't let the transcript grow unbounded.
   static constexpr size_t max_size_bytes_ = 20000;
   glic::GlicMediaPageCache page_cache_;
+
+  std::unique_ptr<GlicMediaPeerConnectionObserver> rtc_observer_;
 };
 
 class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
@@ -75,7 +109,8 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
 };
 
 GlicMediaIntegrationImpl::GlicMediaIntegrationImpl(Profile* profile)
-    : profile_(profile) {
+    : profile_(profile),
+      rtc_observer_(std::make_unique<GlicMediaPeerConnectionObserver>()) {
   auto* lc = captions::LiveCaptionControllerFactory::GetForProfile(profile_);
   lc->AddListener(std::make_unique<CaptionListenerImpl>(profile));
 
@@ -119,6 +154,13 @@ void GlicMediaIntegrationImpl::AppendContext(
 void GlicMediaIntegrationImpl::OnContextUpdated(
     glic::GlicMediaContext* context) {
   page_cache_.PlaceAtFront(context);
+}
+
+void GlicMediaIntegrationImpl::OnPeerConnectionAddedForTesting(
+    content::WebContents* web_contents) {
+  auto id = web_contents->GetPrimaryMainFrame()->GetGlobalId();
+  rtc_observer_->OnPeerConnectionAdded(id, /*lid=*/0, /*pid=*/{}, /*url=*/"",
+                                       /*rtc_configuration=*/"");
 }
 
 }  // namespace

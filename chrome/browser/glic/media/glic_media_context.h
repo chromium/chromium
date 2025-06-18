@@ -39,6 +39,12 @@ class GlicMediaContext : public base::SupportsUserData::Data,
   bool OnResult(const media::SpeechRecognitionResult&);
   std::string GetContext() const;
 
+  void OnPeerConnectionAdded();
+
+  bool is_excluded_from_transcript_for_testing() {
+    return IsExcludedFromTranscript();
+  }
+
  private:
   bool IsExcludedFromTranscript() const;
 

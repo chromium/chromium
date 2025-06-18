@@ -114,4 +114,14 @@ TEST_F(GlicMediaContextTest, AudioCaptureStopsTranscription) {
   stream.reset();
 }
 
+TEST_F(GlicMediaContextTest, PeerConnectionStopsTranscription) {
+  // Send a transcription and verify that it is ignored once a peer connection
+  // is added to the WebContents.
+  auto* context = GlicMediaContext::GetOrCreateFor(web_contents());
+  context->OnPeerConnectionAdded();
+  EXPECT_FALSE(context->OnResult(
+      media::SpeechRecognitionResult("ABC", /*is_final=*/true)));
+  EXPECT_EQ(context->GetContext(), "");
+}
+
 }  // namespace glic
