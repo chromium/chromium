@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 /// Consumer protocol for the TabStrip.
+@MainActor
 @objc protocol TabStripConsumer {
 
   /// Tells the consumer to replace its current set of items with `items`, item data with `itemData`

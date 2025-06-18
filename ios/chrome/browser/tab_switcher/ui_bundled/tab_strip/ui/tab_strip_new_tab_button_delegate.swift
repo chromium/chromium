@@ -5,6 +5,7 @@
 import Foundation
 
 /// Informs the receiver of actions on the new tab button.
+@MainActor
 protocol TabStripNewTabButtonDelegate {
   /// Informs the receiver that the new tab button was tapped.
   func newTabButtonTapped()
