@@ -6826,6 +6826,7 @@
     },
     {
       name: "mask-mode",
+      keywords: ["alpha", "luminance", "match-source"],
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "mask_layer",
       style_builder_template_args: {
@@ -6846,6 +6847,7 @@
     },
     {
       name: "mask-composite",
+      keywords: ["add", "subtract", "intersect", "exclude"],
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "mask_layer",
       style_builder_template_args: {
