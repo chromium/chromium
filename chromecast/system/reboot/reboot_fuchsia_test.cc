@@ -43,8 +43,9 @@ using ::testing::Eq;
 using ::testing::Ne;
 
 using fuchsia::feedback::RebootReason;
+using fuchsia::hardware::power::statecontrol::RebootOptions;
 using StateControlRebootReason =
-    fuchsia::hardware::power::statecontrol::RebootReason;
+    fuchsia::hardware::power::statecontrol::RebootReason2;
 
 struct RebootReasonParam {
   RebootReason reason;
@@ -103,8 +104,12 @@ class FakeAdmin
   }
 
  private:
-  void Reboot(StateControlRebootReason reason, RebootCallback callback) final {
-    last_reboot_reason_ = reason;
+  void PerformReboot(RebootOptions options,
+                     PerformRebootCallback callback) final {
+    if (options.has_reasons() && !options.reasons().empty()) {
+      last_reboot_reason_ = options.reasons()[0];
+    }
+
     callback(fpromise::ok());
   }
 
