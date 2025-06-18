@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/browser_ui/scoped_glic_button_indicator.h"
@@ -594,6 +595,8 @@ void GlicWindowControllerImpl::Show(Browser* browser,
   if (source == mojom::InvocationSource::kTopChromeButton &&
       window_config_.ShouldResetOnOpen()) {
     previous_position_.reset();
+    base::RecordAction(
+        base::UserMetricsAction("Glic.Widget.ResetPositionOnOpen"));
   }
   if (window_config_.ShouldResetOnNewSession()) {
     previous_position_.reset();
