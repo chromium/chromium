@@ -13,7 +13,7 @@ private let kSpacingAfterImage: CGFloat = 12
 @objcMembers
 class BringAndroidTabsPromptConfirmationAlertViewController:
   ConfirmationAlertViewController,  // super class
-  ConfirmationAlertActionHandler,  // protocol
+  @preconcurrency ConfirmationAlertActionHandler,  // protocol
   UIAdaptivePresentationControllerDelegate
 {
   // Delegate to handle user actions.
