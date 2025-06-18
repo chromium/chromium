@@ -144,7 +144,8 @@ std::vector<EntityLabel> GetLabelsForEntities(
                               allow_only_disambiguating_values, app_locale)) {
     // Potentially add `entity`'s value for `type` to the label.
     for (auto [entity, label] : base::zip(entities, labels)) {
-      if (label.size() == max_number_of_labels) {
+      if (entity->type() != type.entity_type() ||
+          label.size() == max_number_of_labels) {
         continue;
       }
       base::optional_ref<const AttributeInstance> attribute =
