@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import CoreSpotlight
+@preconcurrency import CoreSpotlight
 import UIKit
 
 /// Controller backed by SpotlightLogger known items, with filter function.
@@ -20,7 +20,7 @@ class ItemsController {
     }
   }
 
-  func fetchAllItems(completionHandler: @escaping () -> Void) {
+  func fetchAllItems(completionHandler: @escaping @Sendable () -> Void) {
     self.allItems = []
     let queryString = "title == *"
     let context = CSSearchQueryContext()
@@ -69,8 +69,10 @@ class SpotlightDebuggerAllItemsViewController: UIViewController {
     super.viewDidAppear(animated)
     collectionView.deselectAllItems(animated: animated)
     itemsController.fetchAllItems {
-      // Reload data by executing an empty filter query.
-      self.performQuery(with: "")
+      Task { @MainActor in
+        // Reload data by executing an empty filter query.
+        self.performQuery(with: "")
+      }
     }
   }
 }
