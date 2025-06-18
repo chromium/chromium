@@ -31,6 +31,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -340,6 +341,7 @@ public class PageInfoDiscoverabilityTest {
     @Feature({"PageInfoDiscoverability"})
     @ParameterAnnotations.UseMethodParameter(RequestTypeTestParams.class)
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE)
+    @DisabledTest(message = "Flaky - crbug.com/422700100")
     public void testPermissionRequestTypes(
             @ContentSettingsType.EnumType int contentSettingsType, boolean isInSiteSettings) {
         if (contentSettingsType == ContentSettingsType.BLUETOOTH_CHOOSER_DATA) {
