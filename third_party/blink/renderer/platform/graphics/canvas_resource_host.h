@@ -85,30 +85,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual void SetTransferToGPUTextureWasInvoked() {}
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
 
- protected:
-  // Should be called only from within subclasses'
-  // CreateCanvasResourceProvider<ContextType> methods.
-  // `resource_provider_` must be null.
-  void SetResourceProviderWithoutContextCheck(
-      std::unique_ptr<CanvasResourceProvider> resource_provider) {
-    CHECK(!resource_provider_);
-    resource_provider_ = std::move(resource_provider);
-    UpdateMemoryUsage();
-  }
-
-  // Should be called only from within subclasses'
-  // GetResourceProviderFor<ContextType> methods.
-  // TODO(crbug.com/352263194): Explode `resource_provider_` into one ivar for
-  // each context type.
-  CanvasResourceProvider* GetResourceProviderWithoutContextCheck() const {
-    return resource_provider_.get();
-  }
-
- protected:
-  // TODO(crbug.com/352263194): Move `resource_provider_` into
-  // CanvasRenderingContextHost/FakeCanvasResourceHost.
-  std::unique_ptr<CanvasResourceProvider> resource_provider_;
-
  private:
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
   gfx::Size size_;

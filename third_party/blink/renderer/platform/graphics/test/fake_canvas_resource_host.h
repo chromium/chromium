@@ -36,7 +36,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   }
 
   CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
-    return GetResourceProviderWithoutContextCheck();
+    return resource_provider_.get();
   }
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
       std::unique_ptr<CanvasResourceProvider> provider) override {
@@ -74,7 +74,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
           gfx::ColorSpace::CreateSRGB(), kShouldInitialize, this);
     }
 
-    SetResourceProviderWithoutContextCheck(std::move(provider));
+    resource_provider_ = std::move(provider);
 
     return GetResourceProviderForCanvas2D();
   }
@@ -87,6 +87,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   }
 
  private:
+  std::unique_ptr<CanvasResourceProvider> resource_provider_;
   bool page_visible_ = true;
   bool is_hibernating_ = false;
 };

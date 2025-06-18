@@ -163,6 +163,22 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
  protected:
   ~CanvasRenderingContextHost() override = default;
 
+  // Should be called only from within
+  // CreateCanvasResourceProvider<ContextType> methods.
+  // `resource_provider_` must be null.
+  void SetResourceProviderWithoutContextCheck(
+      std::unique_ptr<CanvasResourceProvider> resource_provider) {
+    CHECK(!resource_provider_);
+    resource_provider_ = std::move(resource_provider);
+    UpdateMemoryUsage();
+  }
+
+  // Should be called only from within
+  // GetResourceProviderFor<ContextType> methods.
+  CanvasResourceProvider* GetResourceProviderWithoutContextCheck() const {
+    return resource_provider_.get();
+  }
+
   scoped_refptr<StaticBitmapImage> CreateTransparentImage() const;
 
   bool ContextHasOpenLayers(const CanvasRenderingContext*) const;
@@ -184,6 +200,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   void CreateCanvasResourceProviderWebGL();
   void CreateCanvasResourceProviderWebGPU();
 
+  std::unique_ptr<CanvasResourceProvider> resource_provider_;
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = HostType::kNone;
 };
