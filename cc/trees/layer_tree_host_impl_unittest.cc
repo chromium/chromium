@@ -682,6 +682,8 @@ class LayerTreeHostImplTestBase : public testing::Test,
     scroll_state_data.delta_y_hint = delta_hint.y();
     scroll_state_data.is_direct_manipulation =
         type == ui::ScrollInputType::kTouchscreen;
+    scroll_state_data.is_scrollbar_interaction =
+        type == ui::ScrollInputType::kScrollbar;
     std::unique_ptr<ScrollState> scroll_state(
         new ScrollState(scroll_state_data));
     return scroll_state;
@@ -697,6 +699,8 @@ class LayerTreeHostImplTestBase : public testing::Test,
     scroll_state_data.position_y = point.y();
     scroll_state_data.is_direct_manipulation =
         type == ui::ScrollInputType::kTouchscreen;
+    scroll_state_data.is_scrollbar_interaction =
+        type == ui::ScrollInputType::kScrollbar;
     return ScrollState(scroll_state_data);
   }
 
@@ -17745,6 +17749,72 @@ TEST_P(LayerTreeHostImplTest, PageBasedScroll) {
 
   EXPECT_EQ(kExpectedOffset, kCurrentOffset);
 
+  GetInputHandler().ScrollEnd();
+}
+
+TEST_P(LayerTreeHostImplTest, PageBasedScrollSnap) {
+  gfx::Size view_size(100, 100);
+  gfx::Size overflow_size(100, 300);
+  gfx::RectF snap_area_1(0, 0, 100, 20);
+  // This snap area should be skipped because it is too close.
+  gfx::RectF snap_area_2(0, 20, 100, 40);
+  // This snap area should be snapped to because scrolling to the next one
+  // would skip over content.
+  gfx::RectF snap_area_3(0, 60, 100, 60);
+  // Scrolling to this snap area would skip over content.
+  gfx::RectF snap_area_4(0, 120, 100, 100);
+  // Regression test for https://crbug.com/41483533. This snap area
+  // should not be selected by a page down.
+  gfx::RectF snap_area_5(0, 220, 100, 80);
+
+  SetupViewportLayersInnerScrolls(view_size, view_size);
+  LayerImpl* overflow =
+      AddScrollableLayer(OuterViewportScrollLayer(), view_size, overflow_size);
+
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 200));
+  ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
+  container.AddSnapAreaData(
+      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
+  container.AddSnapAreaData(
+      SnapAreaData(start, snap_area_2, false, false, ElementId(20)));
+  container.AddSnapAreaData(
+      SnapAreaData(start, snap_area_3, false, false, ElementId(30)));
+  container.AddSnapAreaData(
+      SnapAreaData(start, snap_area_4, false, false, ElementId(40)));
+  container.AddSnapAreaData(
+      SnapAreaData(start, snap_area_5, false, false, ElementId(50)));
+  GetScrollNode(overflow)->snap_container_data.emplace(container);
+  DrawFrame();
+
+  gfx::Point position(95, 75);
+  gfx::Vector2dF kPageDelta(0, 1);
+
+  auto begin_state = BeginState(
+      position, kPageDelta, ui::ScrollInputType::kScrollbar);
+  begin_state->data()->delta_granularity = ui::ScrollGranularity::kScrollByPage;
+  EXPECT_EQ(ScrollThread::kScrollOnImplThread,
+          GetInputHandler()
+              .ScrollBegin(begin_state.get(), ui::ScrollInputType::kScrollbar)
+              .thread);
+
+  auto update_state = UpdateState(
+      position, kPageDelta, ui::ScrollInputType::kScrollbar);
+  update_state.data()->delta_granularity = ui::ScrollGranularity::kScrollByPage;
+  GetInputHandler().ScrollUpdate(update_state);
+
+  viz::BeginFrameArgs begin_frame_args =
+      viz::CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1);
+
+  base::TimeTicks start_time = base::TimeTicks() + base::Milliseconds(100);
+  BeginImplFrameAndAnimate(begin_frame_args, start_time);
+  BeginImplFrameAndAnimate(begin_frame_args,
+                           start_time + base::Milliseconds(50));
+  BeginImplFrameAndAnimate(begin_frame_args,
+                           start_time + base::Milliseconds(2000));
+
+  EXPECT_POINTF_EQ(gfx::PointF(0, 60), CurrentScrollOffset(overflow));
   GetInputHandler().ScrollEnd();
 }
 

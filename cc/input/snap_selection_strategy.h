@@ -50,16 +50,15 @@ class CC_EXPORT SnapSelectionStrategy {
       bool use_fractional_offsets,
       SnapStopAlwaysFilter filter = SnapStopAlwaysFilter::kIgnore);
 
-  // Similar to the previous strategy, this prefers scrolling by the given
-  // displacement. However, it additionally prefers snap points that scroll
-  // within the given range.
+  // This prefers scrolling by the optimal displacement of about a page size
+  // in the given displacement unit vector direction.
+  // It additionally prefers snap points that scroll at most a page.
   // |use_fractional_offsets| should be true when the current position is
   // provided in fractional pixels.
-  static std::unique_ptr<SnapSelectionStrategy> CreateForPreferredDisplacement(
+  static std::unique_ptr<SnapSelectionStrategy> CreateForPageScroll(
       gfx::PointF current_position,
-      gfx::Vector2dF displacement,
-      gfx::Vector2dF min_displacement,
-      gfx::Vector2dF max_displacement,
+      gfx::Vector2dF direction,
+      gfx::Size page_size,
       bool use_fractional_offsets,
       SnapStopAlwaysFilter filter = SnapStopAlwaysFilter::kIgnore);
 

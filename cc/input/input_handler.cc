@@ -449,19 +449,28 @@ void InputHandler::AdjustScrollDeltaForScrollbarSnap(
   if (!scroll_node || !scroll_node->snap_container_data)
     return;
 
-  // Ideally, scrollbar track and arrow interactions would have
-  // kScrollByPage and kScrollByLine, respectively. Currently, both have
-  // kScrollByPixel granularity.
-  // TODO(crbug.com/41456637): Update snap strategy once the granularity is
-  // properly set. Currently, track and arrow scrolls both use a direction
-  // strategy; however, the track should be using an "end and direction"
-  // strategy.
   gfx::PointF current_position = GetVisualScrollOffset(*scroll_node);
+  std::unique_ptr<SnapSelectionStrategy> strategy;
   const SnapContainerData& data = scroll_node->snap_container_data.value();
-  std::unique_ptr<SnapSelectionStrategy> strategy =
-      SnapSelectionStrategy::CreateForDirection(
-          current_position,
-          gfx::Vector2dF(scroll_state.delta_x(), scroll_state.delta_y()), true);
+  if (scroll_state.delta_granularity() ==
+      ui::ScrollGranularity::kScrollByPage) {
+    strategy = SnapSelectionStrategy::CreateForPageScroll(
+        current_position,
+        gfx::Vector2dF(scroll_state.delta_x(), scroll_state.delta_y()),
+        PageSize(*scroll_node),
+        /*use_fractional_offsets=*/true);
+  } else {
+    // Ideally, scrollbar track and arrow interactions would always have
+    // kScrollByPage and kScrollByLine, respectively. Native scrollbars have
+    // kScrollByPixel granularity currently.
+    strategy = SnapSelectionStrategy::CreateForDirection(
+        current_position,
+        ResolveScrollGranularityToPixels(
+            *scroll_node,
+            gfx::Vector2dF(scroll_state.delta_x(), scroll_state.delta_y()),
+            scroll_state.delta_granularity()),
+        /*use_fractional_offsets=*/true);
+  }
 
   SnapPositionData snap = data.FindSnapPosition(*strategy);
   if (snap.type == SnapPositionData::Type::kNone) {
@@ -470,6 +479,8 @@ void InputHandler::AdjustScrollDeltaForScrollbarSnap(
 
   scroll_state.data()->delta_x = snap.position.x() - current_position.x();
   scroll_state.data()->delta_y = snap.position.y() - current_position.y();
+  scroll_state.data()->delta_granularity =
+      ui::ScrollGranularity::kScrollByPixel;
 }
 
 void InputHandler::InsertPendingScrollendContainer(
@@ -715,7 +726,7 @@ void InputHandler::SetSynchronousInputHandlerRootScrollOffset(
   }
 
   compositor_delegate_->DidScrollContent(OuterViewportScrollNode()->element_id,
-                                         /*is_animated_scroll=*/false,
+                                         /*animated=*/false,
                                          consumed_delta);
   SetNeedsCommit();
 
@@ -1465,6 +1476,22 @@ FrameSequenceTrackerType InputHandler::GetTrackerTypeForScroll(
     case ui::ScrollInputType::kAutoscroll:
       return FrameSequenceTrackerType::kMaxType;
   }
+}
+
+gfx::Size InputHandler::PageSize(const ScrollNode& scroll_node) const {
+  gfx::SizeF scroller_size = gfx::SizeF(scroll_node.container_bounds);
+  gfx::SizeF viewport_size(compositor_delegate_->VisualDeviceViewportSize());
+
+  // Convert from rootframe coordinates to screen coordinates (physical
+  // pixels if --use-zoom-for-dsf enabled, DIPs otherwise).
+  scroller_size.Scale(compositor_delegate_->PageScaleFactor());
+
+  // Convert from physical pixels to screen coordinates (if --use-zoom-for-dsf
+  // enabled, `DeviceScaleFactor()` returns 1).
+  viewport_size.InvScale(compositor_delegate_->DeviceScaleFactor());
+
+  return gfx::Size(std::min(scroller_size.width(), viewport_size.width()),
+                   std::min(scroller_size.height(), viewport_size.height()));
 }
 
 float InputHandler::LineStep() const {

@@ -472,6 +472,9 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
                                   const gfx::Point& viewport_point,
                                   bool is_direct_manipulation);
 
+  // Returns the size of one page of the given scroll node in physical pixels
+  // for the purposes of scrolling.
+  gfx::Size PageSize(const ScrollNode& scroll_node) const;
   float LineStep() const;
 
   // Resolves a delta in the given granularity for the |scroll_node| into

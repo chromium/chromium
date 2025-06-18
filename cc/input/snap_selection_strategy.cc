@@ -7,6 +7,7 @@
 #include <cmath>
 #include <limits>
 
+#include "cc/input/scroll_utils.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
@@ -43,13 +44,32 @@ SnapSelectionStrategy::CreateForDisplacement(gfx::PointF current_position,
 }
 
 std::unique_ptr<SnapSelectionStrategy>
-SnapSelectionStrategy::CreateForPreferredDisplacement(
+SnapSelectionStrategy::CreateForPageScroll(
     gfx::PointF current_position,
-    gfx::Vector2dF displacement,
-    gfx::Vector2dF min_displacement,
-    gfx::Vector2dF max_displacement,
+    gfx::Vector2dF direction,
+    gfx::Size page_size,
     bool use_fractional_offsets,
     SnapStopAlwaysFilter filter) {
+  // When scrolling by a page, we prefer that we scroll no more than a page,
+  // but at least by a reasonable proportion of that page.
+  gfx::Vector2dF displacement(
+      direction.x() * ScrollUtils::CalculatePageStep(page_size.width()),
+      direction.y() * ScrollUtils::CalculatePageStep(page_size.height()));
+  gfx::Vector2dF min_displacement = gfx::Vector2dF(
+    direction.x() * ScrollUtils::CalculateMinPageSnap(page_size.width()),
+    direction.y() * ScrollUtils::CalculateMinPageSnap(page_size.height()));
+  gfx::Vector2dF max_displacement = gfx::Vector2dF(
+    direction.x() * ScrollUtils::CalculateMaxPageSnap(page_size.width()),
+    direction.y() * ScrollUtils::CalculateMaxPageSnap(page_size.height()));
+
+  // No limit to the maximum displacement of preferred snap areas in the
+  // other axis.
+  if (direction.x() == 0.f) {
+    max_displacement.set_x(std::numeric_limits<float>::max());
+  }
+  if (direction.y() == 0.f) {
+    max_displacement.set_y(std::numeric_limits<float>::max());
+  }
   return std::make_unique<DirectionStrategy>(
       current_position, displacement,
       DirectionStrategy::StepPreference::kDistance, min_displacement,
