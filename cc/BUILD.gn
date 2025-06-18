@@ -782,6 +782,7 @@ cc_test("cc_unittests") {
     "layers/surface_layer_unittest.cc",
     "layers/texture_layer_impl_unittest.cc",
     "layers/texture_layer_unittest.cc",
+    "layers/tile_display_layer_impl_unittest.cc",
     "layers/touch_action_region_unittest.cc",
     "layers/ui_resource_layer_impl_unittest.cc",
     "layers/ui_resource_layer_unittest.cc",
