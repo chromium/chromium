@@ -170,6 +170,43 @@ IN_PROC_BROWSER_TEST_F(
       2, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
+                       AddCreditCard_Metrics_CardAddedWithoutExistingCards) {
+  base::HistogramTester histogram_tester;
+
+  autofill::TestPersonalDataManager& personal_data_manager =
+      autofill_client()->GetPersonalDataManager();
+  ASSERT_TRUE(
+      personal_data_manager.payments_data_manager().GetCreditCards().empty());
+
+  ASSERT_TRUE(RunAutofillSubtest("addNewCreditCard")) << message_;
+
+  // With no cards before this one was added, the histogram should log true.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentMethodsSettingsPage.CardAddedWithoutExistingCards", true,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutofillPrivateApiTest,
+    AddCreditCard_Metrics_CardAddedWithExistingCards) {
+  base::HistogramTester histogram_tester;
+
+  autofill::TestPersonalDataManager& personal_data_manager =
+      autofill_client()->GetPersonalDataManager();
+  personal_data_manager.payments_data_manager().AddCreditCard(
+      autofill::test::GetCreditCard2());
+  ASSERT_FALSE(
+      personal_data_manager.payments_data_manager().GetCreditCards().empty());
+
+  ASSERT_TRUE(RunAutofillSubtest("addNewCreditCard")) << message_;
+
+  // As there was an existing card, the histogram should log false.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentMethodsSettingsPage.CardAddedWithoutExistingCards",
+      false, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddCreditCard_NoCvc) {
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(RunAutofillSubtest("addNewCreditCardWithoutCvc")) << message_;
