@@ -9,3 +9,27 @@ source_set("features") {
   sources = [ "features.cc" ]
   public_deps = [ "//base" ]
 }
+
+source_set("prefs") {
+  public = [ "prefs.h" ]
+  sources = [ "prefs.cc" ]
+  public_deps = [
+    ":features",
+    "//base",
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "prefs_unittest.cc" ]
+  deps = [
+    ":features",
+    ":prefs",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+  ]
+}

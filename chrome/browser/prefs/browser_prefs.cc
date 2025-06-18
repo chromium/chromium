@@ -51,6 +51,7 @@
 #include "chrome/browser/notifications/notifier_state_tracker.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
+#include "chrome/browser/platform_experience/prefs.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -1929,6 +1930,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   // TODO(b/328668317): Default pref should be set to true once this is
   // launched.
   registry->RegisterBooleanPref(prefs::kOsUpdateHandlerEnabled, false);
+  platform_experience::prefs::RegisterPrefs(*registry);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(ENABLE_PDF)

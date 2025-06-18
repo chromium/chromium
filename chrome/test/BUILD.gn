@@ -7417,7 +7417,10 @@ test("unit_tests") {
       data_deps +=
           [ "//components/update_client:recovery_component_tests_bundle_data" ]
 
-      deps += [ "//chrome/browser/win/installer_downloader:unit_tests" ]
+      deps += [
+        "//chrome/browser/platform_experience:unit_tests",
+        "//chrome/browser/win/installer_downloader:unit_tests",
+      ]
     }
   }
 

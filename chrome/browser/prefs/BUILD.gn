@@ -66,6 +66,7 @@ source_set("impl") {
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/permissions",
+    "//chrome/browser/platform_experience:prefs",
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/privacy_sandbox/notice:core",
     "//chrome/browser/profiles",

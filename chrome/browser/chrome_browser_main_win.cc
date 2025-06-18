@@ -64,6 +64,7 @@
 #include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/first_run/upgrade_util_win.h"
 #include "chrome/browser/performance_manager/public/dll_pre_read_policy_win.h"
+#include "chrome/browser/platform_experience/prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/shell_integration_win.h"
@@ -750,6 +751,8 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(
             &platform_experience::MaybeInstallPlatformExperienceHelper));
+    platform_experience::prefs::SetPrefOverrides(
+        *g_browser_process->local_state());
   }
 #endif  // GOOGLE_CHROME_BRANDING
 

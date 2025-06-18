@@ -6443,6 +6443,7 @@ static_library("browser") {
       "//chrome/app:chrome_exe_main_exports",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/os_crypt",
+      "//chrome/browser/platform_experience:prefs",
       "//chrome/browser/shortcuts",
       "//chrome/browser/web_applications/chrome_pwa_launcher:util",
       "//chrome/browser/win:cloud_synced_folder_checker",
