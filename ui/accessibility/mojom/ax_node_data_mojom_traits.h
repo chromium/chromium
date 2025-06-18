@@ -29,9 +29,21 @@ struct StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData> {
   float_attributes(const ui::AXNodeData& p) {
     return p.float_attributes;
   }
-  static const std::vector<std::pair<ax::mojom::BoolAttribute, bool>>&
-  bool_attributes(const ui::AXNodeData& p) {
-    return p.bool_attributes;
+  static std::vector<std::pair<ax::mojom::BoolAttribute, bool>> bool_attributes(
+      const ui::AXNodeData& p) {
+    if (auto bool_vector =
+            std::get_if<std::vector<std::pair<ax::mojom::BoolAttribute, bool>>>(
+                &p.bool_attributes)) {
+      return *bool_vector;
+    }
+    // TODO: crbug.com/422234724 - Avoid conversion to and from a vector of
+    // pairs.
+    std::vector<std::pair<ax::mojom::BoolAttribute, bool>> result;
+    std::get<ui::AXBitset<ax::mojom::BoolAttribute>>(p.bool_attributes)
+        .ForEach([&result](ax::mojom::BoolAttribute attr, bool value) {
+          result.emplace_back(attr, value);
+        });
+    return result;
   }
   static const std::vector<
       std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&

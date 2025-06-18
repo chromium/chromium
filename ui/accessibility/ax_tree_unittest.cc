@@ -1387,8 +1387,10 @@ TEST(AXTreeTest, AttributeChangeCallbacks) {
   ASSERT_EQ(9U, change_log.size());
   EXPECT_EQ("name changed from N1 to N2", change_log[0]);
   EXPECT_EQ("description changed from D1 to D2", change_log[1]);
-  EXPECT_EQ("liveAtomic changed to false", change_log[2]);
-  EXPECT_EQ("busy changed to true", change_log[3]);
+  // Ordering of bool attributes changes depending on the storage, check for
+  // presence.
+  EXPECT_TRUE(base::Contains(change_log, "busy changed to true"));
+  EXPECT_TRUE(base::Contains(change_log, "liveAtomic changed to false"));
   EXPECT_EQ("minValueForRange changed from 1 to 2", change_log[4]);
   EXPECT_EQ("maxValueForRange changed from 10 to 9", change_log[5]);
   EXPECT_EQ("stepValueForRange changed from 3 to 0.5", change_log[6]);

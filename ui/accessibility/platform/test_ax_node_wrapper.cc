@@ -423,12 +423,12 @@ void TestAXNodeWrapper::ReplaceFloatAttribute(
 void TestAXNodeWrapper::ReplaceBoolAttribute(ax::mojom::BoolAttribute attribute,
                                              bool value) {
   AXNodeData new_data = GetData();
-  std::vector<std::pair<ax::mojom::BoolAttribute, bool>>& attributes =
-      new_data.bool_attributes;
-
-  std::erase_if(attributes,
-                [attribute](auto& pair) { return pair.first == attribute; });
-
+  if (auto bool_vector =
+          std::get_if<std::vector<std::pair<ax::mojom::BoolAttribute, bool>>>(
+              &new_data.bool_attributes)) {
+    std::erase_if(*bool_vector,
+                  [attribute](auto& pair) { return pair.first == attribute; });
+  }
   new_data.AddBoolAttribute(attribute, value);
   node_->SetData(new_data);
 }

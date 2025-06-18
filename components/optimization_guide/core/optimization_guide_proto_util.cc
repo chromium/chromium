@@ -553,10 +553,25 @@ void PopulateAXNode(const ui::AXNodeData& source,
     destination_attribute->set_float_value(attribute.second);
   }
 
-  for (const auto& attribute : source.bool_attributes) {
-    auto* destination_attribute = destination->add_attributes();
-    destination_attribute->set_bool_type(BoolAttributeToProto(attribute.first));
-    destination_attribute->set_bool_value(attribute.second);
+  auto add_bool_attribute = [&destination](ax::mojom::BoolAttribute attr,
+                                           bool value) {
+    auto* dest_attr = destination->add_attributes();
+    dest_attr->set_bool_type(BoolAttributeToProto(attr));
+    dest_attr->set_bool_value(value);
+  };
+
+  if (auto source_bool_vector =
+          std::get_if<std::vector<std::pair<ax::mojom::BoolAttribute, bool>>>(
+              &source.bool_attributes)) {
+    for (const auto& attribute : *source_bool_vector) {
+      add_bool_attribute(attribute.first, attribute.second);
+    }
+  } else if (auto source_bool_bitset =
+                 std::get_if<ui::AXBitset<ax::mojom::BoolAttribute>>(
+                     &source.bool_attributes)) {
+    // TODO: crbug.com/422234724 - Cleanup once expressed as an int pair in the
+    // protobuff.
+    source_bool_bitset->ForEach(add_bool_attribute);
   }
 
   for (const auto& attribute : source.intlist_attributes) {

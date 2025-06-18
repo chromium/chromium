@@ -75,6 +75,11 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityPerformanceMeasurementExperiment);
 AX_BASE_EXPORT bool IsAccessibilityPerformanceMeasurementExperimentEnabled();
 
+// Use AXBitset to save boolean attributes in ui/accessibility instead of a
+// vector.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityUseAXBitset);
+AX_BASE_EXPORT bool IsAccessibilityUseAXBitsetEnabled();
+
 enum class AccessibilityPerformanceMeasurementExperimentGroup {
   kAXModeComplete,
   kWebContentsOnly,

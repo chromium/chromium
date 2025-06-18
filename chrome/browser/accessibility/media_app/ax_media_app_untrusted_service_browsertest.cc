@@ -35,6 +35,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -71,30 +72,6 @@ constexpr float kTestDisplayPixelRatio = 1.5f;
 // 26 pages are needed, more characters can be added.
 constexpr std::string_view kTestPageIds = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-constexpr std::string_view kLoadingMessage =
-    "AXTree has_parent_tree title=PDF document\n"
-    "id=1 pdfRoot FOCUSABLE url=fakepdfurl.pdf clips_children child_ids=10000 "
-    "(0, 0)-(0, 0) "
-    "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
-    "scrollable=true is_line_breaking_object=true\n"
-    "  id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
-    "-1)-(1, 1) text_align=left is_page_breaking_object=true "
-    "is_line_breaking_object=true has_aria_attribute=true\n"
-    "    id=10001 status <div> child_ids=10002 offset_container_id=10000 (0, "
-    "0)-(1, 1) text_align=left container_relevant=additions text "
-    "container_live=polite relevant=additions text live=polite "
-    "container_atomic=true container_busy=false atomic=true "
-    "is_line_breaking_object=true has_aria_attribute=true\n"
-    "      id=10002 staticText name=This PDF is inaccessible. Extracting text, "
-    "powered by Google AI child_ids=10003 offset_container_id=10001 (0, 0)-(1, "
-    "1) text_align=left container_relevant=additions text "
-    "container_live=polite relevant=additions text live=polite "
-    "container_atomic=true container_busy=false atomic=true "
-    "is_line_breaking_object=true\n"
-    "        id=10003 inlineTextBox name=This PDF is inaccessible. Extracting "
-    "text, powered by Google AI offset_container_id=10002 (0, 0)-(1, 1) "
-    "text_align=left\n";
-
 class AXMediaAppUntrustedServiceTest : public InProcessBrowserTest {
  public:
   AXMediaAppUntrustedServiceTest() = default;
@@ -125,6 +102,39 @@ class AXMediaAppUntrustedServiceTest : public InProcessBrowserTest {
     service_->SetMediaAppForTesting(&fake_media_app_);
     service_->CreateFakeOpticalCharacterRecognizerForTesting(
         /*return_empty=*/false, /*is_successful=*/true);
+    kLoadingMessage =
+        "AXTree has_parent_tree title=PDF document\n"
+        "id=1 pdfRoot FOCUSABLE url=fakepdfurl.pdf clips_children "
+        "child_ids=10000 "
+        "(0, 0)-(0, 0) "
+        "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+        "scrollable=true is_line_breaking_object=true\n"
+        "  id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
+        "-1)-(1, 1) text_align=left ";
+    kLoadingMessage +=
+        features::IsAccessibilityUseAXBitsetEnabled()
+            ? "is_line_breaking_object=true is_page_breaking_object=true "
+            : "is_page_breaking_object=true is_line_breaking_object=true ";
+    kLoadingMessage +=
+        "has_aria_attribute=true\n"
+        "    id=10001 status <div> child_ids=10002 offset_container_id=10000 "
+        "(0, "
+        "0)-(1, 1) text_align=left container_relevant=additions text "
+        "container_live=polite relevant=additions text live=polite "
+        "container_atomic=true container_busy=false atomic=true "
+        "is_line_breaking_object=true has_aria_attribute=true\n"
+        "      id=10002 staticText name=This PDF is inaccessible. Extracting "
+        "text, "
+        "powered by Google AI child_ids=10003 offset_container_id=10001 (0, "
+        "0)-(1, "
+        "1) text_align=left container_relevant=additions text "
+        "container_live=polite relevant=additions text live=polite "
+        "container_atomic=true container_busy=false atomic=true "
+        "is_line_breaking_object=true\n"
+        "        id=10003 inlineTextBox name=This PDF is inaccessible. "
+        "Extracting "
+        "text, powered by Google AI offset_container_id=10002 (0, 0)-(1, 1) "
+        "text_align=left\n";
   }
 
   void TearDownOnMainThread() override {
@@ -133,6 +143,7 @@ class AXMediaAppUntrustedServiceTest : public InProcessBrowserTest {
   }
 
  protected:
+  std::string kLoadingMessage;
   // Create fake page metadata with pages of the same size positioned(
   // kTestPageWidth + kTestPageGap) unit spaced apart.
   std::vector<PageMetadataPtr> CreateFakePageMetadata(
@@ -232,17 +243,17 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, IsAccessibilityEnabled) {
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
                        OcrServiceInitializedFailed) {
-  service_->CreateFakeOpticalCharacterRecognizerForTesting(
-      /*return_empty=*/false, /*is_successful=*/false);
-  EnableScreenReaderForTesting();
-  EXPECT_FALSE(service_->IsOcrServiceEnabled());
-  EXPECT_TRUE(service_->IsAccessibilityEnabled());
-  EXPECT_EQ(
+  std::string inaccessible_pdf_tree =
       "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot child_ids=10000 (0, 0)-(0, 0)\n"
       "  id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
-      "-1)-(1, 1) text_align=left is_page_breaking_object=true "
-      "is_line_breaking_object=true has_aria_attribute=true\n"
+      "-1)-(1, 1) text_align=left ";
+  inaccessible_pdf_tree +=
+      features::IsAccessibilityUseAXBitsetEnabled()
+          ? "is_line_breaking_object=true is_page_breaking_object=true "
+          : "is_page_breaking_object=true is_line_breaking_object=true ";
+  inaccessible_pdf_tree +=
+      "has_aria_attribute=true\n"
       "    id=10001 status <div> child_ids=10002 offset_container_id=10000 (0, "
       "0)-(1, 1) text_align=left container_relevant=additions text "
       "container_live=polite relevant=additions text live=polite "
@@ -256,8 +267,14 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
       "container_busy=false atomic=true is_line_breaking_object=true\n"
       "        id=10003 inlineTextBox name=This PDF is inaccessible. Couldn't "
       "download text extraction files. Please try again later. "
-      "offset_container_id=10002 (0, 0)-(1, 1) text_align=left\n",
-      service_->GetDocumentTreeToStringForTesting());
+      "offset_container_id=10002 (0, 0)-(1, 1) text_align=left\n";
+  service_->CreateFakeOpticalCharacterRecognizerForTesting(
+      /*return_empty=*/false, /*is_successful=*/false);
+  EnableScreenReaderForTesting();
+  EXPECT_FALSE(service_->IsOcrServiceEnabled());
+  EXPECT_TRUE(service_->IsAccessibilityEnabled());
+  EXPECT_EQ(inaccessible_pdf_tree,
+            service_->GetDocumentTreeToStringForTesting());
 
   DisableScreenReaderForTesting();
   EXPECT_FALSE(service_->IsOcrServiceEnabled());
@@ -270,27 +287,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   service_->OnOCRServiceInitialized(/*successful*/ false);
   EXPECT_FALSE(service_->IsOcrServiceEnabled());
   EXPECT_TRUE(service_->IsAccessibilityEnabled());
-  EXPECT_EQ(
-      "AXTree has_parent_tree title=PDF document\n"
-      "id=1 pdfRoot child_ids=10000 (0, 0)-(0, 0)\n"
-      "  id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
-      "-1)-(1, 1) text_align=left is_page_breaking_object=true "
-      "is_line_breaking_object=true has_aria_attribute=true\n"
-      "    id=10001 status <div> child_ids=10002 offset_container_id=10000 (0, "
-      "0)-(1, 1) text_align=left container_relevant=additions text "
-      "container_live=polite relevant=additions text live=polite "
-      "container_atomic=true container_busy=false atomic=true "
-      "is_line_breaking_object=true has_aria_attribute=true\n"
-      "      id=10002 staticText name=This PDF is inaccessible. Couldn't "
-      "download text extraction files. Please try again later. child_ids=10003 "
-      "offset_container_id=10001 (0, 0)-(1, 1) text_align=left "
-      "container_relevant=additions text container_live=polite "
-      "relevant=additions text live=polite container_atomic=true "
-      "container_busy=false atomic=true is_line_breaking_object=true\n"
-      "        id=10003 inlineTextBox name=This PDF is inaccessible. Couldn't "
-      "download text extraction files. Please try again later. "
-      "offset_container_id=10002 (0, 0)-(1, 1) text_align=left\n",
-      service_->GetDocumentTreeToStringForTesting());
+  EXPECT_EQ(inaccessible_pdf_tree,
+            service_->GetDocumentTreeToStringForTesting());
 
   DisableSelectToSpeakForTesting();
   EXPECT_FALSE(service_->IsAccessibilityEnabled());
@@ -2108,7 +2106,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, StatusNodes) {
   // Note that the region nodes under the document root node have the (0,0)
   // offset. Each page will be correctly offset as the root node of its (child)
   // tree has a correct offset.
-  EXPECT_EQ(
+  std::string expected =
       "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
       "name_from=attribute url=fakepdfurl.pdf clips_children "
@@ -2116,8 +2114,13 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, StatusNodes) {
       "scroll_x_min=0 scroll_y_min=0 restriction=readonly text_align=left "
       "scrollable=true is_line_breaking_object=true\n"
       "  id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
-      "-1)-(1, 1) text_align=left is_page_breaking_object=true "
-      "is_line_breaking_object=true has_aria_attribute=true\n"
+      "-1)-(1, 1) text_align=left ";
+  expected +=
+      features::IsAccessibilityUseAXBitsetEnabled()
+          ? "is_line_breaking_object=true is_page_breaking_object=true "
+          : "is_page_breaking_object=true is_line_breaking_object=true ";
+  expected +=
+      "has_aria_attribute=true\n"
       "    id=10001 status <div> child_ids=10002 offset_container_id=10000 (0, "
       "0)-(1, 1) text_align=left container_relevant=additions text "
       "container_live=polite relevant=additions text live=polite "
@@ -2137,8 +2140,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, StatusNodes) {
       "8) restriction=readonly is_page_breaking_object=true\n"
       "  id=3 region name=Page 2 name_from=attribute "
       "has_child_tree (0, 0)-(3, "
-      "8) restriction=readonly is_page_breaking_object=true\n",
-      service_->GetDocumentTreeToStringForTesting());
+      "8) restriction=readonly is_page_breaking_object=true\n";
+  EXPECT_EQ(expected, service_->GetDocumentTreeToStringForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
@@ -2159,7 +2162,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   // Note that the region nodes under the document root node have the (0,0)
   // offset. Each page will be correctly offset as the root node of its (child)
   // tree has a correct offset.
-  EXPECT_EQ(
+  std::string expected =
       "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
       "name_from=attribute url=fakepdfurl.pdf clips_children "
@@ -2167,8 +2170,13 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
       "scroll_x_min=0 scroll_y_min=0 restriction=readonly text_align=left "
       "scrollable=true is_line_breaking_object=true\n"
       "  id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
-      "-1)-(1, 1) text_align=left is_page_breaking_object=true "
-      "is_line_breaking_object=true has_aria_attribute=true\n"
+      "-1)-(1, 1) text_align=left ";
+  expected +=
+      features::IsAccessibilityUseAXBitsetEnabled()
+          ? "is_line_breaking_object=true is_page_breaking_object=true "
+          : "is_page_breaking_object=true is_line_breaking_object=true ";
+  expected +=
+      "has_aria_attribute=true\n"
       "    id=10001 status <div> child_ids=10002 offset_container_id=10000 (0, "
       "0)-(1, 1) text_align=left container_relevant=additions text "
       "container_live=polite relevant=additions text live=polite "
@@ -2186,8 +2194,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
       "8) restriction=readonly is_page_breaking_object=true\n"
       "  id=3 region name=Page 2 name_from=attribute "
       "has_child_tree (0, 0)-(3, "
-      "8) restriction=readonly is_page_breaking_object=true\n",
-      service_->GetDocumentTreeToStringForTesting());
+      "8) restriction=readonly is_page_breaking_object=true\n";
+  EXPECT_EQ(expected, service_->GetDocumentTreeToStringForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,

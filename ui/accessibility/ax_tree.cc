@@ -31,7 +31,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-#include "ui/accessibility/ax_bitset.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_language_detection.h"
@@ -2327,8 +2326,23 @@ void AXTree::NotifyNodeAttributesHaveBeenChanged(
     observers_.Notify(&AXTreeObserver::OnBoolAttributeChanged, this, node, attr,
                       new_bool);
   };
-  CallIfAttributeValuesChanged(old_data.bool_attributes,
-                               new_data.bool_attributes, false, bool_callback);
+
+  if (auto old_data_bool_vector =
+          std::get_if<std::vector<std::pair<ax::mojom::BoolAttribute, bool>>>(
+              &old_data.bool_attributes)) {
+    CallIfAttributeValuesChanged(
+        *old_data_bool_vector,
+        std::get<std::vector<std::pair<ax::mojom::BoolAttribute, bool>>>(
+            new_data.bool_attributes),
+        false, bool_callback);
+  } else if (auto old_data_bool_bitset =
+                 std::get_if<AXBitset<ax::mojom::BoolAttribute>>(
+                     &old_data.bool_attributes)) {
+    CallIfAttributeValuesChanged(
+        *old_data_bool_bitset,
+        std::get<AXBitset<ax::mojom::BoolAttribute>>(new_data.bool_attributes),
+        false, bool_callback);
+  }
 
   auto float_callback = [this, node](ax::mojom::FloatAttribute attr,
                                      const float& old_float,

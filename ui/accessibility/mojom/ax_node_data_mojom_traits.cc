@@ -50,7 +50,21 @@ bool StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData>::Read(
   base::flat_map<ax::mojom::BoolAttribute, bool> bool_attributes;
   if (!data.ReadBoolAttributes(&bool_attributes))
     return false;
-  out->bool_attributes = std::move(bool_attributes).extract();
+  if (auto bool_vector =
+          std::get_if<std::vector<std::pair<ax::mojom::BoolAttribute, bool>>>(
+              &out->bool_attributes)) {
+    *bool_vector = std::move(bool_attributes).extract();
+  } else if (auto bool_bitset =
+                 std::get_if<ui::AXBitset<ax::mojom::BoolAttribute>>(
+                     &out->bool_attributes)) {
+    // TODO: crbug.com/422234724 - Send as an integer pair in flight (set_bits,
+    // values) rather than converting to and from a flat_map.
+    for (const auto& pair : bool_attributes) {
+      bool_bitset->Set(pair.first, pair.second);
+    }
+  } else {
+    return false;
+  }
 
   base::flat_map<ax::mojom::IntListAttribute, std::vector<int32_t>>
       intlist_attributes;

@@ -15,6 +15,10 @@
 namespace ui {
 
 // A helper class to store AX-related boolean enums.
+// IMPORTANT: This AXBitset implementation uses single uint64_t bitmasks and is
+// therefore limited to managing enums whose underlying integer values are
+// strictly less than 64 (i.e., in the range [0, 63]). Enum values outside
+// this range will lead to incorrect behavior or will be ignored.
 template <typename T>
 class AXBitset {
  public:
@@ -72,7 +76,7 @@ class AXBitset {
       // in 'remainder'. This corresponds to the enum's integer value.
       // std::countr_zero counts trailing zeros; e.g., for 0b...1000, it
       // returns 3.
-      uint64_t index = std::countr_zero(remainder);
+      int index = std::countr_zero(remainder);
 
       T attribute = static_cast<T>(index);
       uint64_t mask = 1ULL << index;
@@ -106,12 +110,27 @@ class AXBitset {
 
   // Returns the number of attributes that are currently explicitly set
   // (i.e., have been Set to true or false and not subsequently Unset).
-  size_t Size() const { return std::popcount(set_bits_); }
+  size_t size() const { return std::popcount(set_bits_); }
+
+  template <typename U>
+  friend bool operator==(const AXBitset<U>& lhs, const AXBitset<U>& rhs);
 
  private:
   uint64_t set_bits_ = 0;
   uint64_t values_ = 0;
 };
+
+template <typename T>
+bool operator==(const AXBitset<T>& lhs, const AXBitset<T>& rhs) {
+  // Check if the set of active attributes is the same.
+  if (lhs.set_bits_ != rhs.set_bits_) {
+    return false;
+  }
+
+  // If the set_bits_ are identical, then  compare the values for the bits that
+  // are actually set.
+  return (lhs.values_ & lhs.set_bits_) == (rhs.values_ & lhs.set_bits_);
+}
 
 }  // namespace ui
 

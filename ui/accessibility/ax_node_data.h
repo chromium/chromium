@@ -11,10 +11,12 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/strings/string_split.h"
 #include "ui/accessibility/ax_base_export.h"
+#include "ui/accessibility/ax_bitset.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_relative_bounds.h"
@@ -39,6 +41,10 @@ AX_BASE_EXPORT bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr);
 struct AX_BASE_EXPORT AXNodeData final {
   // Defines the type used for AXNode IDs.
   using AXID = AXNodeID;
+
+  // Boolean attribute storage.
+  using BoolAttrBitset = AXBitset<ax::mojom::BoolAttribute>;
+  using BoolAttrList = std::vector<std::pair<ax::mojom::BoolAttribute, bool>>;
 
   // If a node is not yet or no longer valid, its ID should have a value of
   // kInvalidAXID.
@@ -375,7 +381,7 @@ struct AX_BASE_EXPORT AXNodeData final {
       string_attributes;
   std::vector<std::pair<ax::mojom::IntAttribute, int32_t>> int_attributes;
   std::vector<std::pair<ax::mojom::FloatAttribute, float>> float_attributes;
-  std::vector<std::pair<ax::mojom::BoolAttribute, bool>> bool_attributes;
+  std::variant<BoolAttrBitset, BoolAttrList> bool_attributes;
   std::vector<std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>
       intlist_attributes;
   std::vector<

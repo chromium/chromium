@@ -509,10 +509,19 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
   // element to element is possible by walking the snapshots in parallel.
 
   auto total_attribute_count = [](const ui::AXNodeData& node_data) {
+    size_t bool_attr_size = 0;
+    if (auto bool_vector =
+            std::get_if<std::vector<std::pair<ax::mojom::BoolAttribute, bool>>>(
+                &node_data.bool_attributes)) {
+      bool_attr_size = bool_vector->size();
+    } else if (auto bool_bitset =
+                   std::get_if<ui::AXBitset<ax::mojom::BoolAttribute>>(
+                       &node_data.bool_attributes)) {
+      bool_attr_size = bool_bitset->size();
+    }
     return node_data.string_attributes.size() +
            node_data.int_attributes.size() + node_data.float_attributes.size() +
-           node_data.bool_attributes.size() +
-           node_data.intlist_attributes.size() +
+           bool_attr_size + node_data.intlist_attributes.size() +
            node_data.stringlist_attributes.size() +
            node_data.html_attributes.size();
   };
