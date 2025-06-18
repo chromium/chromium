@@ -445,6 +445,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     protected void openTabProgrammatically(GURL url, int index) {}
 
     @Override
+    protected void moveTabToIndex(int index, int newIndex) {}
+
+    @Override
     protected Tab[] getAllTabs() {
         return new Tab[0];
     }

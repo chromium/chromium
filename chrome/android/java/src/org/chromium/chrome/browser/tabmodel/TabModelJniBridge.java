@@ -220,6 +220,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     protected abstract void openTabProgrammatically(GURL url, int index);
 
     @CalledByNative
+    protected abstract void moveTabToIndex(int index, int newIndex);
+
+    @CalledByNative
     protected abstract Tab[] getAllTabs();
 
     @NativeMethods

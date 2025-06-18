@@ -266,8 +266,9 @@ void TabModelJniBridge::HighlightTabs(std::set<int> indicies) {
 }
 
 void TabModelJniBridge::MoveTab(int from_index, int to_index) {
-  // TODO(crbug.com/415351293): Implement.
-  NOTIMPLEMENTED();
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  Java_TabModelJniBridge_moveTabToIndex(env, jobj, from_index, to_index);
 }
 
 void TabModelJniBridge::CloseTab(int index) {

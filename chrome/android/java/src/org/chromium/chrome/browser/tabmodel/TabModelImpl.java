@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabClosureDelegate;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tasks.tab_management.MoveTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -1170,6 +1171,16 @@ public class TabModelImpl extends TabModelJniBridge {
                         TabLaunchType.FROM_TAB_LIST_INTERFACE,
                         /* parent= */ null,
                         index);
+    }
+
+    @Override
+    public void moveTabToIndex(int index, int newIndex) {
+        Tab tab = getTabAt(index);
+        if (tab != null) {
+            TabGroupModelFilter filter = TabModelUtils.getTabGroupModelFilterByTab(tab);
+            assumeNonNull(filter);
+            MoveTabUtils.moveSingleTab(this, filter, tab, index, newIndex);
+        }
     }
 
     @Override
