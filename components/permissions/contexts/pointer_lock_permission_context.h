@@ -27,7 +27,6 @@ class PointerLockPermissionContext
                            BrowserPermissionCallback callback,
                            bool persist,
                            PermissionDecision decision,
-                           bool is_one_time,
                            bool is_final_decision) override;
 
 #if !BUILDFLAG(IS_ANDROID)

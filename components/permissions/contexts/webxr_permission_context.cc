@@ -53,7 +53,6 @@ void WebXrPermissionContext::NotifyPermissionSet(
     BrowserPermissionCallback callback,
     bool persist,
     PermissionDecision decision,
-    bool is_one_time,
     bool is_final_decision) {
   DCHECK(is_final_decision);
 
@@ -81,7 +80,7 @@ void WebXrPermissionContext::NotifyPermissionSet(
       permission_granted && (is_ar || is_openxr || is_hands);
   if (!additional_permissions_needed) {
     ContentSettingPermissionContextBase::NotifyPermissionSet(
-        request_data, std::move(callback), persist, decision, is_one_time,
+        request_data, std::move(callback), persist, decision,
         is_final_decision);
     return;
   }
@@ -103,7 +102,8 @@ void WebXrPermissionContext::NotifyPermissionSet(
             request_data.prompt_options));
 
     ContentSettingPermissionContextBase::UpdateContentSetting(
-        request_data, new_setting, is_one_time);
+        request_data, new_setting,
+        decision == PermissionDecision::kAllowThisTime);
   }
 
   content::WebContents* web_contents =
@@ -171,7 +171,6 @@ void WebXrPermissionContext::OnAndroidPermissionDecided(
                                                    : PermissionDecision::kDeny;
   ContentSettingPermissionContextBase::NotifyPermissionSet(
       request_data, std::move(callback), false /*persist*/, decision,
-      /*is_one_time=*/false,
       /*is_final_decision=*/true);
 }
 

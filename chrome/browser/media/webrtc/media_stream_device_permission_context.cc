@@ -121,7 +121,6 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
     permissions::BrowserPermissionCallback callback,
     bool persist,
     PermissionDecision decision,
-    bool is_one_time,
     bool is_final_decision) {
   DCHECK(is_final_decision);
 
@@ -157,7 +156,7 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
   // they were actually allowed:
   if (decision != PermissionDecision::kAllow) {
     ContentSettingPermissionContextBase::NotifyPermissionSet(
-        request_data, std::move(callback), persist, decision, is_one_time,
+        request_data, std::move(callback), persist, decision,
         is_final_decision);
     return;
   }
@@ -181,7 +180,8 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
             base::Value(previous_content_setting), decision,
             request_data.prompt_options));
 
-    UpdateContentSetting(request_data, new_content_setting, is_one_time);
+    UpdateContentSetting(request_data, new_content_setting,
+                         decision == PermissionDecision::kAllowThisTime);
   }
 
   content::WebContents* web_contents =
@@ -206,7 +206,7 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
   const auto* request = FindPermissionRequest(request_data.id);
   if (request && request->IsEmbeddedPermissionElementInitiated()) {
     ContentSettingPermissionContextBase::NotifyPermissionSet(
-        request_data, std::move(callback), persist, decision, is_one_time,
+        request_data, std::move(callback), persist, decision,
         is_final_decision);
     return;
   }
@@ -277,7 +277,6 @@ void MediaStreamDevicePermissionContext::OnAndroidPermissionDecided(
                               content_settings_type_))),
           requesting_origin, embedding_origin),
       std::move(callback), false /*persist*/, decision,
-      /*is_one_time=*/false,
       /*is_final_decision=*/true);
 }
 

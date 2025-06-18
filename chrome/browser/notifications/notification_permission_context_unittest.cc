@@ -88,14 +88,13 @@ class TestNotificationPermissionContext : public NotificationPermissionContext {
       permissions::BrowserPermissionCallback callback,
       bool persist,
       PermissionDecision decision,
-      bool is_one_time,
       bool is_final_decision) override {
     permission_set_count_++;
     last_permission_set_persisted_ = persist;
     last_set_decision_ = decision;
     NotificationPermissionContext::NotifyPermissionSet(
         request_data, std::move(callback), persist, decision,
-        /*is_one_time=*/false, is_final_decision);
+        is_final_decision);
   }
 
   int permission_set_count_ = 0;

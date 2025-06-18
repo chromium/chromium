@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
@@ -56,22 +57,11 @@ std::optional<std::u16string> SmartCardPermissionRequest::GetBlockText() const {
 
 void SmartCardPermissionRequest::OnPermissionDecided(
     PermissionDecision decision,
-    bool is_one_time,
     bool is_final_decision,
     const permissions::PermissionRequestData& request_data) {
   if (!is_final_decision) {
     return;
   }
 
-  Result result = Result::kDontAllow;
-
-  if (decision == PermissionDecision::kAllow) {
-    if (is_one_time) {
-      result = Result::kAllowOnce;
-    } else {
-      result = Result::kAllowAlways;
-    }
-  }
-
-  std::move(result_callback_).Run(result);
+  std::move(result_callback_).Run(decision);
 }

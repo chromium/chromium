@@ -38,7 +38,6 @@ bool GeolocationPermissionContextDelegate::DecidePermission(
                                                    : PermissionDecision::kDeny;
       context->NotifyPermissionSet(request_data, std::move(*callback),
                                    /*persist=*/false, decision,
-                                   /*is_one_time=*/false,
                                    /*is_final_decision=*/true);
     }
     return true;

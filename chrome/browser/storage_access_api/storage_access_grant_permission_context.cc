@@ -598,9 +598,8 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
     permissions::BrowserPermissionCallback callback,
     bool persist,
     PermissionDecision decision,
-    bool is_one_time,
     bool is_final_decision) {
-  CHECK(!is_one_time);
+  CHECK(decision != PermissionDecision::kAllowThisTime);
   CHECK(is_final_decision);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   RequestOutcome outcome = RequestOutcomeFromPrompt(decision, persist);
@@ -651,6 +650,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   ContentSetting content_setting;
   switch (decision) {
     case PermissionDecision::kAllow:
+    case PermissionDecision::kAllowThisTime:
       content_setting = CONTENT_SETTING_ALLOW;
       break;
     case PermissionDecision::kDeny:

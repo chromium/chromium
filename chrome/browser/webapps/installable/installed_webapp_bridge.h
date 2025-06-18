@@ -16,7 +16,6 @@ class GURL;
 class InstalledWebappBridge {
  public:
   using PermissionCallback = base::OnceCallback<void(PermissionDecision setting,
-                                                     bool is_one_time,
                                                      bool is_final_decision)>;
 
   InstalledWebappBridge() = delete;

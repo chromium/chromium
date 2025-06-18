@@ -32,7 +32,6 @@ class MediaStreamDevicePermissionContext
       permissions::BrowserPermissionCallback callback,
       bool persist,
       PermissionDecision decision,
-      bool is_one_time,
       bool is_final_decision) override;
 #endif
   void ResetPermission(const GURL& requesting_origin,

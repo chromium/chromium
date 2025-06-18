@@ -34,6 +34,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/content_setting_permission_context_base.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
@@ -424,17 +425,18 @@ void SmartCardPermissionContext::OnPermissionRequestDecided(
     const url::Origin& origin,
     const std::string& reader_name,
     RequestReaderPermissionCallback callback,
-    SmartCardPermissionRequest::Result result) {
-  switch (result) {
-    case SmartCardPermissionRequest::Result::kAllowOnce:
+    PermissionDecision decision) {
+  switch (decision) {
+    case PermissionDecision::kAllowThisTime:
       GrantEphemeralReaderPermission(origin, reader_name);
       std::move(callback).Run(true);
       break;
-    case SmartCardPermissionRequest::Result::kAllowAlways:
+    case PermissionDecision::kAllow:
       GrantPersistentReaderPermission(origin, reader_name);
       std::move(callback).Run(true);
       break;
-    case SmartCardPermissionRequest::Result::kDontAllow:
+    case PermissionDecision::kDeny:
+    case PermissionDecision::kNone:
       std::move(callback).Run(false);
       break;
   }

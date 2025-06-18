@@ -36,7 +36,7 @@ static void JNI_InstalledWebappBridge_RunPermissionCallback(JNIEnv* env,
       callback_ptr);
   std::move(*callback).Run(
       static_cast<PermissionDecision>(static_cast<PermissionDecision>(setting)),
-      /*is_one_time=*/false, /*is_final_decision=*/true);
+      /*is_final_decision=*/true);
   delete callback;
 }
 

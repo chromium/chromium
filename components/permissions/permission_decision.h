@@ -16,8 +16,9 @@
 // decision.
 enum class PermissionDecision {
   kAllow = 0,
-  kDeny = 1,
-  kNone = 2,  // No decision made / cancelled.
+  kAllowThisTime = 1,
+  kDeny = 2,
+  kNone = 3,  // No decision made / cancelled.
   kMaxValue = kNone,
 };
 

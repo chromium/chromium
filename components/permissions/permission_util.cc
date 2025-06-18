@@ -566,6 +566,7 @@ PermissionUtil::PermissionDecisionToPermissionStatus(
   content::PermissionStatus status = content::PermissionStatus::ASK;
   switch (decision) {
     case PermissionDecision::kAllow:
+    case PermissionDecision::kAllowThisTime:
       return status = content::PermissionStatus::GRANTED;
     case PermissionDecision::kDeny:
       return content::PermissionStatus::DENIED;
@@ -578,6 +579,7 @@ ContentSetting PermissionUtil::PermissionDecisionToContentSetting(
     PermissionDecision decision) {
   switch (decision) {
     case PermissionDecision::kAllow:
+    case PermissionDecision::kAllowThisTime:
       return CONTENT_SETTING_ALLOW;
     case PermissionDecision::kDeny:
       return CONTENT_SETTING_BLOCK;

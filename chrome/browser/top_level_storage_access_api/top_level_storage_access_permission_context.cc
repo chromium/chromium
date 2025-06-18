@@ -181,9 +181,8 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSet(
     permissions::BrowserPermissionCallback callback,
     bool persist,
     PermissionDecision decision,
-    bool is_one_time,
     bool is_final_decision) {
-  CHECK(!is_one_time);
+  CHECK(decision != PermissionDecision::kAllowThisTime);
   CHECK(is_final_decision);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

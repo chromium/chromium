@@ -667,7 +667,6 @@ class QuicklyDeletedRequest : public PermissionRequest {
                 requesting_origin),
             base::BindLambdaForTesting(
                 [](PermissionDecision decision,
-                   bool is_one_time,
                    bool is_final_decision,
                    const PermissionRequestData&) { NOTREACHED(); })) {}
 

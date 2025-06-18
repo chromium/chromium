@@ -31,7 +31,6 @@ class DownloadPermissionRequest : public permissions::PermissionRequest {
  private:
   void PermissionDecided(
       PermissionDecision decision,
-      bool is_one_time,
       bool is_final_decision,
       const permissions::PermissionRequestData& request_data);
 

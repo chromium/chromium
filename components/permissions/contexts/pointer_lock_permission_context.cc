@@ -5,6 +5,7 @@
 #include "components/permissions/contexts/pointer_lock_permission_context.h"
 
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_decision.h"
 #include "components/permissions/permissions_client.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
@@ -22,9 +23,8 @@ void PointerLockPermissionContext::NotifyPermissionSet(
     BrowserPermissionCallback callback,
     bool persist,
     PermissionDecision decision,
-    bool is_one_time,
     bool is_final_decision) {
-  if (is_one_time) {
+  if (decision == PermissionDecision::kAllowThisTime) {
     // When `persist` is true, one-time permissions persist for a short period
     // of time (managed by OneTimePermissionProvider), which we do not want for
     // pointer lock. If another request is made (e.g. after a page navigation),
@@ -32,8 +32,7 @@ void PointerLockPermissionContext::NotifyPermissionSet(
     persist = false;
   }
   permissions::ContentSettingPermissionContextBase::NotifyPermissionSet(
-      request_data, std::move(callback), persist, decision, is_one_time,
-      is_final_decision);
+      request_data, std::move(callback), persist, decision, is_final_decision);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

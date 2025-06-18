@@ -130,7 +130,7 @@ void GeolocationPermissionContextAndroid::RequestPermission(
                                 request_data->user_gesture)) {
     NotifyPermissionSet(*request_data, std::move(callback),
                         /*persist=*/false, PermissionDecision::kDeny,
-                        /*is_one_time=*/false, /*is_final_decision=*/true);
+                        /*is_final_decision=*/true);
     return;
   }
 
@@ -192,7 +192,6 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
     BrowserPermissionCallback callback,
     bool persist,
     PermissionDecision decision,
-    bool is_one_time,
     bool is_final_decision) {
   DCHECK(is_final_decision);
 
@@ -210,7 +209,7 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
       FinishNotifyPermissionSet(request_data.id, request_data.requesting_origin,
                                 request_data.embedding_origin,
                                 std::move(callback), false /* persist */,
-                                PermissionDecision::kDeny, is_one_time);
+                                PermissionDecision::kDeny);
       return;
     }
 
@@ -230,7 +229,7 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
       FinishNotifyPermissionSet(request_data.id, request_data.requesting_origin,
                                 request_data.embedding_origin,
                                 std::move(callback), false /* persist */,
-                                PermissionDecision::kDeny, is_one_time);
+                                PermissionDecision::kDeny);
       return;
     }
 
@@ -242,13 +241,13 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
         base::BindOnce(
             &GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown,
             weak_factory_.GetWeakPtr(), request_data.requesting_origin,
-            request_data.embedding_origin, persist, decision, is_one_time));
+            request_data.embedding_origin, persist, decision));
     return;
   }
 
   FinishNotifyPermissionSet(request_data.id, request_data.requesting_origin,
                             request_data.embedding_origin, std::move(callback),
-                            persist, decision, is_one_time);
+                            persist, decision);
 }
 
 content::PermissionResult
@@ -402,7 +401,7 @@ void GeolocationPermissionContextAndroid::HandleUpdateAndroidPermissions(
                                         blink::PermissionType::GEOLOCATION)),
                             requesting_frame_origin, embedding_origin),
       std::move(callback), false /* persist */, decision,
-      /*is_one_time=*/false, /*is_final_decision=*/true);
+      /*is_final_decision=*/true);
 }
 
 bool GeolocationPermissionContextAndroid::CanShowLocationSettingsDialog(
@@ -426,7 +425,6 @@ void GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown(
     const GURL& embedding_origin,
     bool persist,
     PermissionDecision decision,
-    bool is_one_time,
     LocationSettingsDialogOutcome prompt_outcome) {
   bool is_default_search = IsRequestingOriginDSE(requesting_origin);
   if (prompt_outcome == GRANTED) {
@@ -442,10 +440,9 @@ void GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown(
   if (!location_settings_dialog_callback_)
     return;
 
-  FinishNotifyPermissionSet(location_settings_dialog_request_id_,
-                            requesting_origin, embedding_origin,
-                            std::move(location_settings_dialog_callback_),
-                            persist, decision, is_one_time);
+  FinishNotifyPermissionSet(
+      location_settings_dialog_request_id_, requesting_origin, embedding_origin,
+      std::move(location_settings_dialog_callback_), persist, decision);
 
   location_settings_dialog_request_id_ =
       PermissionRequestID(content::GlobalRenderFrameHostId(0, 0),
@@ -458,8 +455,7 @@ void GeolocationPermissionContextAndroid::FinishNotifyPermissionSet(
     const GURL& embedding_origin,
     BrowserPermissionCallback callback,
     bool persist,
-    PermissionDecision decision,
-    bool is_one_time) {
+    PermissionDecision decision) {
   GeolocationPermissionContext::NotifyPermissionSet(
       PermissionRequestData(this, id,
                             content::PermissionRequestDescription(
@@ -467,8 +463,7 @@ void GeolocationPermissionContextAndroid::FinishNotifyPermissionSet(
                                     CreatePermissionDescriptorForPermissionType(
                                         blink::PermissionType::GEOLOCATION)),
                             requesting_origin),
-      std::move(callback), persist, decision, is_one_time,
-      /*is_final_decision=*/true);
+      std::move(callback), persist, decision, /*is_final_decision=*/true);
 }
 
 void GeolocationPermissionContextAndroid::SetLocationSettingsForTesting(

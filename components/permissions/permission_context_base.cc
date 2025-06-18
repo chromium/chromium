@@ -131,7 +131,6 @@ void PermissionContextBase::RequestPermission(
              << " is not supported in popups)";
     NotifyPermissionSet(*request_data, std::move(callback),
                         /*persist=*/false, PermissionDecision::kDeny,
-                        /*is_one_time=*/false,
                         /*is_final_decision=*/true);
     return;
   }
@@ -222,7 +221,6 @@ void PermissionContextBase::RequestPermission(
                         result.status == blink::mojom::PermissionStatus::GRANTED
                             ? PermissionDecision::kAllow
                             : PermissionDecision::kDeny,
-                        /*is_one_time=*/false,
                         /*is_final_decision=*/true);
     return;
   }
@@ -549,7 +547,6 @@ void PermissionContextBase::DecidePermission(
 
 void PermissionContextBase::PermissionDecided(
     PermissionDecision decision,
-    bool is_one_time,
     bool is_final_decision,
     const PermissionRequestData& request_data) {
   UserMadePermissionDecision(request_data.id, request_data.requesting_origin,
@@ -565,10 +562,10 @@ void PermissionContextBase::PermissionDecided(
   // origin about it.
   if (request->second.second) {
     NotifyPermissionSet(request_data, std::move(request->second.second),
-                        persist, decision, is_one_time, is_final_decision);
+                        persist, decision, is_final_decision);
   } else {
     NotifyPermissionSet(request_data, base::DoNothing(), persist, decision,
-                        is_one_time, is_final_decision);
+                        is_final_decision);
   }
 }
 
@@ -657,7 +654,6 @@ void PermissionContextBase::NotifyPermissionSet(
     BrowserPermissionCallback callback,
     bool persist,
     PermissionDecision decision,
-    bool is_one_time,
     bool is_final_decision) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -673,12 +669,15 @@ void PermissionContextBase::NotifyPermissionSet(
       previous_value, decision, request_data.prompt_options);
 
   if (persist) {
-    UpdateSetting(request_data, std::move(new_value), is_one_time);
+    // Clone new value, because we need it again for the callback.
+    UpdateSetting(request_data, std::move(new_value),
+                  decision == PermissionDecision::kAllowThisTime);
   }
 
   if (is_final_decision) {
     UpdateTabContext(request_data.id, request_data.requesting_origin,
-                     decision == PermissionDecision::kAllow);
+                     decision == PermissionDecision::kAllow ||
+                         decision == PermissionDecision::kAllowThisTime);
     if (decision == PermissionDecision::kAllow) {
       PermissionUmaUtil::RecordPermissionsUsageSourceAndPolicyConfiguration(
           content_settings_type_, rfh);

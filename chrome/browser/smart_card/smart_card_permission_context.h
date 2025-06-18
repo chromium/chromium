@@ -115,7 +115,7 @@ class SmartCardPermissionContext
   void OnPermissionRequestDecided(const url::Origin& origin,
                                   const std::string& reader_name,
                                   RequestReaderPermissionCallback callback,
-                                  SmartCardPermissionRequest::Result result);
+                                  PermissionDecision decision);
 
   SmartCardReaderTracker& GetReaderTracker() const;
 

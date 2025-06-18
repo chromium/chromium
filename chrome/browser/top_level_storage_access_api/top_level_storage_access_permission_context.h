@@ -78,7 +78,6 @@ class TopLevelStorageAccessPermissionContext
       permissions::BrowserPermissionCallback callback,
       bool persist,
       PermissionDecision decision,
-      bool is_one_time,
       bool is_final_decision) override;
 
   // ContentSettingPermissionContextBase

@@ -194,7 +194,6 @@ class PermissionContextBase : public content_settings::Observer {
                                    BrowserPermissionCallback callback,
                                    bool persist,
                                    PermissionDecision decision,
-                                   bool is_one_time,
                                    bool is_final_decision);
 
   // Implementors can override this method to update the icons on the
@@ -269,7 +268,6 @@ class PermissionContextBase : public content_settings::Observer {
   // This is the callback for PermissionRequest and is called once the user
   // allows/blocks/dismisses a permission prompt.
   void PermissionDecided(PermissionDecision decision,
-                         bool is_one_time,
                          bool is_final_decision,
                          const PermissionRequestData& request_data);
 

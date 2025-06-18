@@ -114,11 +114,11 @@ void MockPermissionRequest::RegisterOnPermissionDecidedCallback(
 
 void MockPermissionRequest::PermissionDecided(
     PermissionDecision decision,
-    bool is_one_time,
     bool is_final_decision,
     const permissions::PermissionRequestData& request_data) {
   if (request_state_) {
-    request_state_->granted = decision == PermissionDecision::kAllow;
+    request_state_->granted = (decision == PermissionDecision::kAllow) ||
+                              (decision == PermissionDecision::kAllowThisTime);
 
     if (decision == PermissionDecision::kNone) {
       request_state_->cancelled = true;

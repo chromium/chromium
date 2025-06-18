@@ -64,7 +64,6 @@ void DurableStoragePermissionContext::DecidePermission(
   if (request_data->requesting_origin != request_data->embedding_origin) {
     NotifyPermissionSet(*request_data, std::move(callback),
                         /*persist=*/false, PermissionDecision::kNone,
-                        /*is_one_time=*/false,
                         /*is_final_decision=*/true);
     return;
   }
@@ -87,7 +86,6 @@ void DurableStoragePermissionContext::DecidePermission(
           rfh->GetStorageKey().ToCookiePartitionKey())) {
     NotifyPermissionSet(*request_data, std::move(callback),
                         /*persist=*/false, PermissionDecision::kNone,
-                        /*is_one_time=*/false,
                         /*is_final_decision=*/true);
     return;
   }
@@ -107,7 +105,6 @@ void DurableStoragePermissionContext::DecidePermission(
   if (base::Contains(installed_registerable_domains, registerable_domain)) {
     NotifyPermissionSet(*request_data, std::move(callback),
                         /*persist=*/true, PermissionDecision::kAllow,
-                        /*is_one_time=*/false,
                         /*is_final_decision=*/true);
     return;
   }
@@ -123,7 +120,6 @@ void DurableStoragePermissionContext::DecidePermission(
     if (important_site.registerable_domain == registerable_domain) {
       NotifyPermissionSet(*request_data, std::move(callback),
                           /*persist=*/true, PermissionDecision::kAllow,
-                          /*is_one_time=*/false,
                           /*is_final_decision=*/true);
       return;
     }
@@ -131,7 +127,6 @@ void DurableStoragePermissionContext::DecidePermission(
 
   NotifyPermissionSet(*request_data, std::move(callback),
                       /*persist=*/false, PermissionDecision::kNone,
-                      /*is_one_time=*/false,
                       /*is_final_decision=*/true);
 }
 

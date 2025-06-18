@@ -28,10 +28,9 @@ IdentityProviderPermissionRequest::~IdentityProviderPermissionRequest() =
 
 void IdentityProviderPermissionRequest::PermissionDecided(
     PermissionDecision decision,
-    bool is_one_time,
     bool is_final_decision,
     const permissions::PermissionRequestData& request_data) {
-  DCHECK(!is_one_time);
+  DCHECK(decision != PermissionDecision::kAllowThisTime);
   DCHECK(is_final_decision);
 
   if (decision == PermissionDecision::kAllow) {

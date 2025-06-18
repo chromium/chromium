@@ -177,7 +177,6 @@ void NotificationPermissionContext::DecidePermission(
                     context->NotifyPermissionSet(
                         *request_data, std::move(callback),
                         /*persist=*/true, PermissionDecision::kDeny,
-                        /*is_one_time=*/false,
                         /*is_final_decision=*/true);
                   }
                 },

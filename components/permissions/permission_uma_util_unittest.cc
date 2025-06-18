@@ -110,7 +110,7 @@ std::unique_ptr<permissions::PermissionRequest> CreateRequest(
               RequestTypeToContentSettingsType(type).value()),
           /*user_gesture=*/true, GURL(url)),
       base::BindRepeating(
-          [](PermissionDecision, bool, bool, const PermissionRequestData&) {}));
+          [](PermissionDecision, bool, const PermissionRequestData&) {}));
 }
 
 }  // namespace

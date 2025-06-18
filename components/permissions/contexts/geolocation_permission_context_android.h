@@ -91,7 +91,6 @@ class GeolocationPermissionContextAndroid
                            BrowserPermissionCallback callback,
                            bool persist,
                            PermissionDecision decision,
-                           bool is_one_time,
                            bool is_final_decision) override;
   content::PermissionResult UpdatePermissionStatusWithDeviceStatus(
       content::WebContents* web_contents,
@@ -137,7 +136,6 @@ class GeolocationPermissionContextAndroid
       const GURL& embedding_origin,
       bool persist,
       PermissionDecision decision,
-      bool is_one_time,
       LocationSettingsDialogOutcome prompt_outcome);
 
   void FinishNotifyPermissionSet(const PermissionRequestID& id,
@@ -145,8 +143,7 @@ class GeolocationPermissionContextAndroid
                                  const GURL& embedding_origin,
                                  BrowserPermissionCallback callback,
                                  bool persist,
-                                 PermissionDecision decision,
-                                 bool is_one_time);
+                                 PermissionDecision decision);
 
   std::unique_ptr<LocationSettings> location_settings_;
 

@@ -43,8 +43,7 @@ class PermissionRequest {
   // If `is_one_time` is true, the decision will last until all tabs of
   // `requesting_origin_` are closed or navigated away from.
   using PermissionDecidedCallback = base::RepeatingCallback<void(
-      PermissionDecision /*result*/,
-      bool /*is_one_time*/,
+      PermissionDecision /*decision*/,
       bool /*is_final_decision*/,
       const PermissionRequestData& /*request_data*/)>;
 
