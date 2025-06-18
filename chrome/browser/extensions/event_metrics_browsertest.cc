@@ -570,16 +570,15 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
     ready_observer.WaitForWorkerStarted(extension->id());
   }
   // TODO(crbug.com/40276609): Once we no longer unnecessarily start the
-  // worker
-  // this will become 0.
+  // worker this will become 0.
   // Since we don't check if a worker is ready before dispatching the the
   // event we will attempt to start the worker.
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground."
       "RequestedWorkerStartForStartedWorker3",
       /*expected_count=*/1);
-  // Verify that the value is `true` since the worker
-  // will be unnecessarily started.
+  // Verify that the value is `true` since the worker will be unnecessarily
+  // started.
   histogram_tester.ExpectBucketCount(
       "Extensions.ServiceWorkerBackground."
       "RequestedWorkerStartForStartedWorker3",

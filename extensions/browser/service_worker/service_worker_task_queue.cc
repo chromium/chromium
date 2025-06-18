@@ -87,102 +87,6 @@ ServiceWorkerTaskQueue* ServiceWorkerTaskQueue::Get(BrowserContext* context) {
   return ServiceWorkerTaskQueueFactory::GetForBrowserContext(context);
 }
 
-void ServiceWorkerTaskQueue::DidStartWorkerForScope(
-    const SequencedContextId& context_id,
-    base::Time start_time,
-    int64_t version_id,
-    int process_id,
-    int thread_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const ExtensionId& extension_id = context_id.extension_id;
-  const base::UnguessableToken& activation_token = context_id.token;
-  if (!IsCurrentActivation(extension_id, activation_token)) {
-    // Extension run with |activation_token| was already deactivated.
-    // TODO(lazyboy): Add a DCHECK that the worker in question is actually
-    // shutting down soon.
-    DCHECK(!GetWorkerState(context_id));
-    return;
-  }
-
-  // HACK: The service worker layer might invoke this callback with an ID for a
-  // RenderProcessHost that has already terminated. This isn't the right fix for
-  // this, because it results in the internal state here stalling out - we'll
-  // wait on the browser side to be ready, which will never happen. This should
-  // be cleaned up on the next activation sequence, but this still isn't good.
-  // The proper fix here is that the service worker layer shouldn't be invoking
-  // this callback with stale processes.
-  // https://crbug.com/1335821.
-  if (!content::RenderProcessHost::FromID(process_id)) {
-    // This is definitely hit, and often enough that we can't NOTREACHED(),
-    // CHECK(), or DumpWithoutCrashing(). Instead, log an error and gracefully
-    // return.
-    // TODO(crbug.com/40913640): Investigate and fix.
-    LOG(ERROR) << "Received bad DidStartWorkerForScope() message. "
-                  "No corresponding RenderProcessHost.";
-    return;
-  }
-
-  // Note: If the worker has already stopped on worker thread
-  // (DidStopServiceWorkerContext) before we got here (i.e. the browser has
-  // finished starting the worker), then |worker_state_map_| will hold the
-  // worker until deactivation.
-  // TODO(lazyboy): We need to ensure that the worker is not stopped in the
-  // renderer before we execute tasks in the browser process. This will also
-  // avoid holding the worker in |worker_state_map_| until deactivation as noted
-  // above.
-  const WorkerId worker_id = {extension_id, process_id, version_id, thread_id};
-  ServiceWorkerState* worker_state = GetWorkerState(context_id);
-  DCHECK(worker_state);
-  worker_state->DidStartWorkerForScope(worker_id, start_time);
-  RunPendingTasksIfWorkerReady(context_id);
-}
-
-void ServiceWorkerTaskQueue::DidStartWorkerFail(
-    const SequencedContextId& context_id,
-    base::Time start_time,
-    content::StatusCodeResponse status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!IsCurrentActivation(context_id.extension_id, context_id.token)) {
-    // This can happen is when the registration got unregistered right before we
-    // tried to start it. See crbug.com/999027 for details.
-    DCHECK(!GetWorkerState(context_id));
-    // In that case, we expect `DeactivateExtension` to have been called
-    // already, and for the registration records to have already been cleared.
-    DCHECK(!pending_storage_registrations_.contains(context_id.extension_id));
-    return;
-  }
-
-  if (IsStartWorkerFailureUnexpected(status.status_code)) {
-    base::UmaHistogramBoolean(
-        "Extensions.ServiceWorkerBackground.StartWorkerStatus", false);
-    base::UmaHistogramEnumeration(
-        "Extensions.ServiceWorkerBackground.StartWorker_FailStatus",
-        status.status_code);
-    base::UmaHistogramTimes(
-        "Extensions.ServiceWorkerBackground.StartWorkerTime_Fail",
-        base::Time::Now() - start_time);
-    LOG(ERROR)
-        << "DidStartWorkerFail " << context_id.extension_id << ": "
-        << static_cast<std::underlying_type_t<blink::ServiceWorkerStatusCode>>(
-               status.status_code);
-  }
-
-  ServiceWorkerState* worker_state = GetWorkerState(context_id);
-  DCHECK(worker_state);
-  if (g_test_observer) {
-    std::vector<PendingTask>* tasks = pending_tasks(context_id);
-    g_test_observer->DidStartWorkerFail(
-        context_id.extension_id, tasks ? tasks->size() : 0, status.status_code);
-  }
-  DeleteAllPendingTasks(context_id);
-  // TODO(https://crbug/1062936): Needs more thought: extension would be in
-  // perma-broken state after this as the registration wouldn't be stored if
-  // this happens.
-
-  // If there was a pending registration for this extension, erase it.
-  pending_storage_registrations_.erase(context_id.extension_id);
-}
-
 bool ServiceWorkerTaskQueue::IsStartWorkerFailureUnexpected(
     blink::ServiceWorkerStatusCode status) {
   if (status != blink::ServiceWorkerStatusCode::kErrorAbort) {
@@ -249,8 +153,7 @@ void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
   ServiceWorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
 
-  worker_state->DidStartServiceWorkerContext(worker_id);
-  RunPendingTasksIfWorkerReady(context_id);
+  worker_state->DidStartServiceWorkerContext(context_id, worker_id);
 }
 
 void ServiceWorkerTaskQueue::RenderProcessForWorkerExited(
@@ -378,7 +281,7 @@ void ServiceWorkerTaskQueue::AddPendingTask(
       lazy_context_id.extension_id(),
       lazy_context_id.browser_context()->UniqueId(), *activation_token};
 
-  // `HasPendingTasks(context_id)`  `true` means the worker is starting.
+  // `HasPendingTasks(context_id)` `true` means the worker is starting.
   // `HasPendingTasks(context_id)` `false` means that we don't know if the
   // worker is started so we'll try to start it to ensure it'll be ready for the
   // task. This efficiency relies on the assumption that only this boolean
@@ -461,6 +364,73 @@ void ServiceWorkerTaskQueue::VerifyRegistration(
 
 void ServiceWorkerTaskQueue::Shutdown() {
   browser_context_shutting_down_ = true;
+}
+
+void ServiceWorkerTaskQueue::OnWorkerStart(const SequencedContextId& context_id,
+                                           const WorkerId& worker_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!IsCurrentActivation(context_id.extension_id, context_id.token)) {
+    // Extension run with |activation_token| was already deactivated.
+    // TODO(lazyboy): Add a DCHECK that the worker in question is actually
+    // shutting down soon.
+    DCHECK(!GetWorkerState(context_id));
+    return;
+  }
+
+  if (g_test_observer) {
+    g_test_observer->DidStartWorker(context_id.extension_id);
+  }
+
+  if (!HasPendingTasks(context_id)) {
+    return;
+  }
+
+  RunPendingTasksIfWorkerReady(context_id);
+}
+
+void ServiceWorkerTaskQueue::OnWorkerStartFail(
+    const SequencedContextId& context_id,
+    base::Time start_time,
+    content::StatusCodeResponse status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!IsCurrentActivation(context_id.extension_id, context_id.token)) {
+    // This can happen when the registration got unregistered right before we
+    // tried to start it. See crbug.com/999027 for details.
+    DCHECK(!GetWorkerState(context_id));
+    // In that case, we expect `DeactivateExtension` to have been called
+    // already, and for the registration records to have already been cleared.
+    DCHECK(!pending_storage_registrations_.contains(context_id.extension_id));
+    return;
+  }
+
+  if (IsStartWorkerFailureUnexpected(status.status_code)) {
+    base::UmaHistogramBoolean(
+        "Extensions.ServiceWorkerBackground.StartWorkerStatus", false);
+    base::UmaHistogramEnumeration(
+        "Extensions.ServiceWorkerBackground.StartWorker_FailStatus",
+        status.status_code);
+    base::UmaHistogramTimes(
+        "Extensions.ServiceWorkerBackground.StartWorkerTime_Fail",
+        base::Time::Now() - start_time);
+    LOG(ERROR)
+        << "DidStartWorkerFail " << context_id.extension_id << ": "
+        << static_cast<std::underlying_type_t<blink::ServiceWorkerStatusCode>>(
+               status.status_code);
+  }
+
+  if (g_test_observer) {
+    std::vector<PendingTask>* tasks = pending_tasks(context_id);
+    g_test_observer->DidStartWorkerFail(
+        context_id.extension_id, tasks ? tasks->size() : 0, status.status_code);
+  }
+
+  DeleteAllPendingTasks(context_id);
+  // TODO(crbug.com/40680422): Needs more thought: extension would be in
+  // perma-broken state after this as the registration wouldn't be stored if
+  // this happens.
+
+  // If there was a pending registration for this extension, erase it.
+  pending_storage_registrations_.erase(context_id.extension_id);
 }
 
 void ServiceWorkerTaskQueue::OnWorkerStop(
@@ -565,20 +535,8 @@ void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
   DCHECK_NE(ServiceWorkerState::BrowserState::kStarted,
             worker_state->browser_state());
 
-  content::ServiceWorkerContext* service_worker_context =
-      GetServiceWorkerContext(context_id.extension_id);
-
-  const GURL scope =
-      Extension::GetServiceWorkerScopeFromExtensionId(context_id.extension_id);
-
   EmitWorkerWillBeStartedHistograms(context_id.extension_id);
-  service_worker_context->StartWorkerForScope(
-      scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
-      base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerForScope,
-                     weak_factory_.GetWeakPtr(), context_id, base::Time::Now()),
-      base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerFail,
-                     weak_factory_.GetWeakPtr(), context_id,
-                     base::Time::Now()));
+  worker_state->StartWorker(context_id);
   if (g_test_observer) {
     g_test_observer->RequestedWorkerStart(context_id.extension_id);
   }

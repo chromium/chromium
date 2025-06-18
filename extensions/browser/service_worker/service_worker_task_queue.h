@@ -215,6 +215,11 @@ class ServiceWorkerTaskQueue : public KeyedService,
       const ExtensionId& extension_id);
 
   // ServiceWorkerState::Observer:
+  void OnWorkerStart(const SequencedContextId& context_id,
+                     const WorkerId& worker_id) override;
+  void OnWorkerStartFail(const SequencedContextId& context_id,
+                         base::Time start_time,
+                         content::StatusCodeResponse status) override;
   void OnWorkerStop(
       int64_t version_id,
       const content::ServiceWorkerRunningInfo& worker_info) override;
@@ -364,15 +369,6 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // determines if the registration can be accepted as successful from the
   // extension's perspective.
   bool IsWorkerRegistrationSuccess(blink::ServiceWorkerStatusCode status);
-
-  void DidStartWorkerForScope(const SequencedContextId& context_id,
-                              base::Time start_time,
-                              int64_t version_id,
-                              int process_id,
-                              int thread_id);
-  void DidStartWorkerFail(const SequencedContextId& context_id,
-                          base::Time start_time,
-                          content::StatusCodeResponse status);
 
   bool IsStartWorkerFailureUnexpected(
       blink::ServiceWorkerStatusCode status_code);
