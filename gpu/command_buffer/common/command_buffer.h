@@ -10,12 +10,12 @@
 
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/constants.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 
 namespace gpu {
 
 // Common interface for CommandBuffer implementations.
-class GPU_EXPORT CommandBuffer {
+class GPU_COMMAND_BUFFER_COMMON_EXPORT CommandBuffer {
  public:
   struct State {
     State()

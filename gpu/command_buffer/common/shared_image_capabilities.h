@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include "build/build_config.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 
 namespace gpu {
 
-struct GPU_EXPORT SharedImageCapabilities {
+struct GPU_COMMAND_BUFFER_COMMON_EXPORT SharedImageCapabilities {
   SharedImageCapabilities();
   SharedImageCapabilities(const SharedImageCapabilities& other);
   ~SharedImageCapabilities();

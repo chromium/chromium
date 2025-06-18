@@ -7,7 +7,7 @@
 
 #include "base/containers/enum_set.h"
 #include "build/build_config.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -23,12 +23,12 @@ struct Capabilities;
 
 // Returns true if creating an image for a GpuMemoryBuffer with |format| is
 // supported by |capabilities|.
-GPU_EXPORT bool IsImageFromGpuMemoryBufferFormatSupported(
+GPU_COMMAND_BUFFER_COMMON_EXPORT bool IsImageFromGpuMemoryBufferFormatSupported(
     gfx::BufferFormat format,
     const Capabilities& capabilities);
 
 // Returns true if |size| is valid for plane |plane| of |format|.
-GPU_EXPORT bool IsImageSizeValidForGpuMemoryBufferFormat(
+GPU_COMMAND_BUFFER_COMMON_EXPORT bool IsImageSizeValidForGpuMemoryBufferFormat(
     const gfx::Size& size,
     gfx::BufferFormat format);
 

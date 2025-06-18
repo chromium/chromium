@@ -13,7 +13,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 
 namespace gpu {
 
@@ -23,7 +23,7 @@ typedef uint32_t ResourceId;
 static const ResourceId kInvalidResource = 0u;
 
 // A class to manage the allocation of resource IDs.
-class GPU_EXPORT IdAllocator {
+class GPU_COMMAND_BUFFER_COMMON_EXPORT IdAllocator {
  public:
   IdAllocator();
 

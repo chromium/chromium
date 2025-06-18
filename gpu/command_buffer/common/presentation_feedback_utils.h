@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 
 namespace gfx {
 struct PresentationFeedback;
@@ -17,7 +17,7 @@ namespace gpu {
 
 // Returns true if command buffer should update vsync timing paramters based on
 // presentation feedback.
-GPU_EXPORT bool ShouldUpdateVsyncParams(
+GPU_COMMAND_BUFFER_COMMON_EXPORT bool ShouldUpdateVsyncParams(
     const gfx::PresentationFeedback& feedback);
 
 }  // namespace gpu

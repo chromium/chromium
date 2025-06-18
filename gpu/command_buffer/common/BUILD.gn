@@ -45,6 +45,10 @@ group("webgpu") {
   public_deps = [ ":webgpu_sources" ]
 }
 
+source_set("export") {
+  sources = [ "gpu_command_buffer_common_export.h" ]
+}
+
 # Minimal set of definitions which don't have GPU dependencies outside of this
 # directory.
 source_set("common_base_sources") {
@@ -60,6 +64,7 @@ source_set("common_base_sources") {
     "sync_token.h",
   ]
   public_deps = [
+    ":export",
     ":mailbox",
     "//base",
   ]
@@ -114,6 +119,7 @@ source_set("common_sources") {
 
   public_deps = [
     ":common_base_sources",
+    ":export",
     ":mailbox",
     "//base",
     "//mojo/public/cpp/system",

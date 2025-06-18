@@ -6,11 +6,12 @@
 #define GPU_COMMAND_BUFFER_COMMON_CAPABILITIES_H_
 
 #include <stdint.h>
+
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
-#include "gpu/gpu_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/surface_origin.h"
 
@@ -30,7 +31,7 @@ namespace gpu {
 // NOTE: When adding members to this struct, also add corresponding
 // entries in gpu/ipc/common/gpu_command_buffer_traits_multi.h.
 
-struct GPU_EXPORT Capabilities {
+struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
   Capabilities();
   Capabilities(const Capabilities& other);
   ~Capabilities();
@@ -81,7 +82,7 @@ struct GPU_EXPORT Capabilities {
   uint64_t drm_device_id = 0;
 };
 
-struct GPU_EXPORT GLCapabilities {
+struct GPU_COMMAND_BUFFER_COMMON_EXPORT GLCapabilities {
   GLCapabilities();
   GLCapabilities(const GLCapabilities& other);
   ~GLCapabilities();
@@ -93,7 +94,7 @@ struct GPU_EXPORT GLCapabilities {
     int precision;
   };
 
-  struct GPU_EXPORT PerStagePrecisions {
+  struct GPU_COMMAND_BUFFER_COMMON_EXPORT PerStagePrecisions {
     PerStagePrecisions();
     ShaderPrecision low_int;
     ShaderPrecision medium_int;

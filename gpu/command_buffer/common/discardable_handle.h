@@ -8,7 +8,7 @@
 #include "base/atomicops.h"
 #include "base/memory/ref_counted.h"
 #include "base/types/id_type.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 
 namespace gpu {
 
@@ -46,7 +46,7 @@ struct SerializableSkiaHandle {
 //         └───────────<──────────┘
 //
 // Note that a handle can be locked multiple times, and stores a lock-count.
-class GPU_EXPORT DiscardableHandleBase {
+class GPU_COMMAND_BUFFER_COMMON_EXPORT DiscardableHandleBase {
  public:
   int32_t shm_id() const { return shm_id_; }
   uint32_t byte_offset() const { return byte_offset_; }
@@ -82,7 +82,8 @@ class GPU_EXPORT DiscardableHandleBase {
 
 // ClientDiscardableHandle enables the instantiation of a new discardable
 // handle (via the constructor), and can Lock an existing handle.
-class GPU_EXPORT ClientDiscardableHandle : public DiscardableHandleBase {
+class GPU_COMMAND_BUFFER_COMMON_EXPORT ClientDiscardableHandle
+    : public DiscardableHandleBase {
  public:
   using Id = base::IdType32<ClientDiscardableHandle>;
 
@@ -109,7 +110,8 @@ class GPU_EXPORT ClientDiscardableHandle : public DiscardableHandleBase {
 
 // ServiceDiscardableHandle can wrap an existing handle (via the constructor),
 // and can unlock and delete this handle.
-class GPU_EXPORT ServiceDiscardableHandle : public DiscardableHandleBase {
+class GPU_COMMAND_BUFFER_COMMON_EXPORT ServiceDiscardableHandle
+    : public DiscardableHandleBase {
  public:
   ServiceDiscardableHandle();  // Constructs an invalid handle.
   ServiceDiscardableHandle(scoped_refptr<Buffer> buffer,

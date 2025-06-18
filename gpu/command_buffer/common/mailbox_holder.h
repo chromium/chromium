@@ -8,9 +8,9 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/gpu_export.h"
 
 namespace gpu {
 
@@ -21,7 +21,7 @@ namespace gpu {
 // |texture_target| is that texture's type.
 // See here for OpenGL texture types:
 // https://www.opengl.org/wiki/Texture#Texture_Objects
-struct GPU_EXPORT MailboxHolder {
+struct GPU_COMMAND_BUFFER_COMMON_EXPORT MailboxHolder {
   MailboxHolder();
   MailboxHolder(const gpu::Mailbox& mailbox,
                 const gpu::SyncToken& sync_token,
