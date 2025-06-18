@@ -255,6 +255,12 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<GlicEnterpriseCheckStrategy>
     kGlicUserStatusEnterpriseCheckStrategy;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool> kGlicUserStatusRefreshApi;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kGlicUserStatusThrottleInterval;
+
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicFreURLConfig);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kGlicFreURL;

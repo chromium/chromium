@@ -7,13 +7,16 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -45,6 +48,7 @@ enum class SettingsPolicyState;
 // - Periodically: Subsequent requests are scheduled to occur every
 //   `kGlicUserStatusRequestDelay` (currently 23 hours) after a successful
 //   response.
+// See comments on the timer members for more info.
 //
 // Error Handling:
 // If the server responds with an HTTP error (non-200 status code) or fails to
@@ -64,6 +68,9 @@ enum class SettingsPolicyState;
 // clock adjustment if any.
 class GlicUserStatusFetcher : public signin::IdentityManager::Observer {
  public:
+  using FetchOverrideCallback = base::RepeatingCallback<void(
+      base::OnceCallback<void(const CachedUserStatus&)>)>;
+
   explicit GlicUserStatusFetcher(Profile* profile,
                                  base::RepeatingClosure callback);
   ~GlicUserStatusFetcher() override;
@@ -76,11 +83,22 @@ class GlicUserStatusFetcher : public signin::IdentityManager::Observer {
   void ScheduleUserStatusUpdate(base::TimeDelta time_to_next_update);
   void CancelUserStatusUpdateIfNeeded();
 
+  // Updates the user status when information suggests that it might have
+  // changed recently. This is internally throttled to avoid excessive
+  // requests, for signals that might be received multiple times.
+  void UpdateUserStatusWithThrottling();
+
   void SetGlicUserStatusUrlForTest(GURL test_url) { endpoint_ = test_url; }
+  void SetFetchOverrideForTest(FetchOverrideCallback fetch_override) {
+    fetch_override_for_test_ = std::move(fetch_override);
+  }
 
  private:
   static std::optional<signin::GaiaIdHash> GetGaiaIdHashForPrimaryAccount(
       Profile* profile);
+
+  // Updates the user status and schedules another update in the future.
+  void UpdateUserStatusAndScheduleNextRefresh();
 
   // Called when the account managed status is found, if it was not available
   // when `UpdateUserStatus` was called.
@@ -103,7 +121,7 @@ class GlicUserStatusFetcher : public signin::IdentityManager::Observer {
   void OnGeminiSettingsChanged();
 
   void ProcessResponse(const std::string& account_id_hash,
-                       CachedUserStatus user_status);
+                       const CachedUserStatus& user_status);
 
   // If true, the user status update could not proceed because the refresh token
   // was not yet available, and it should be retried when it becomes available.
@@ -124,9 +142,26 @@ class GlicUserStatusFetcher : public signin::IdentityManager::Observer {
   const base::RepeatingClosure callback_;
   GURL endpoint_;
   std::string oauth2_scope_;
+
+  // Ensures we run a request at least as often as
+  // `features::kGlicUserStatusRequestDelay`. Reset on browser start, when a
+  // periodic refresh is running, and when any request (periodic or otherwise)
+  // completes successfully.
   base::WallClockTimer refresh_status_timer_;
+
+  // Ensures certain events which might trigger sooner refreshes don't occur
+  // more often than every `features::kGlicUserStatusThrottleInterval`.
+  base::OneShotTimer throttle_timer_;
+
+  // If true, a throttled update was requested too soon after the last one.
+  // Always false when `throttle_timer_` is not running.
+  bool update_was_throttled_ = false;
+
   std::unique_ptr<google_apis::RequestSender> request_sender_;
   base::OnceClosure cancel_closure_;
+
+  // When set, replaces the actual fetch with a callback.
+  FetchOverrideCallback fetch_override_for_test_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

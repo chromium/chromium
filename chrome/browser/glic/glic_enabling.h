@@ -167,6 +167,19 @@ class GlicEnabling : public signin::IdentityManager::Observer {
     glic_user_status_fetcher_->SetGlicUserStatusUrlForTest(test_url);
   }
 
+  void SetUserStatusFetchOverrideForTest(
+      GlicUserStatusFetcher::FetchOverrideCallback fetch_override) {
+    glic_user_status_fetcher_->SetFetchOverrideForTest(
+        std::move(fetch_override));
+  }
+
+  // Updates the user status when information suggests that it might have
+  // changed recently. This is internally debounced to avoid excessive
+  // requests, for signals that might be received multiple times.
+  void UpdateUserStatusWithThrottling() {
+    glic_user_status_fetcher_->UpdateUserStatusWithThrottling();
+  }
+
   // This is called anytime IsAllowed() might return a different value.
   using EnableChangedCallback = base::RepeatingClosure;
   base::CallbackListSubscription RegisterAllowedChanged(

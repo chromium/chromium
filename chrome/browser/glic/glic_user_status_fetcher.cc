@@ -98,6 +98,7 @@ GlicUserStatusFetcher::GlicUserStatusFetcher(Profile* profile,
 
   // if it has passed default delay after last update time,
   // run immediately. Otherwise, wait until the default delay.
+  const base::Time now = base::Time::Now();
   base::Time next_update_time;
   if (auto cached_user_status =
           GlicUserStatusFetcher::GetCachedUserStatus(profile);
@@ -106,15 +107,15 @@ GlicUserStatusFetcher::GlicUserStatusFetcher(Profile* profile,
     // now + 24hrs.
     next_update_time = std::min(cached_user_status->last_updated +
                                     features::kGlicUserStatusRequestDelay.Get(),
-                                base::Time::Now() + base::Hours(24));
+                                now + base::Hours(24));
   }
 
   // If when Chrome starts and user has already signed-in, we also send a
   // request to check user status.
-  if (next_update_time <= base::Time::Now()) {
-    UpdateUserStatus();
+  if (next_update_time <= now) {
+    UpdateUserStatusAndScheduleNextRefresh();
   } else {
-    ScheduleUserStatusUpdate(next_update_time - base::Time::Now());
+    ScheduleUserStatusUpdate(next_update_time - now);
   }
 }
 
@@ -171,10 +172,6 @@ void GlicUserStatusFetcher::UpdateUserStatusIfNeeded() {
 }
 
 void GlicUserStatusFetcher::UpdateUserStatus() {
-  if (refresh_status_timer_.IsRunning()) {
-    refresh_status_timer_.Stop();
-  }
-
   // If the admin has disabled Gemini, we don't need to send the request.
   if (profile_->GetPrefs()->GetInteger(::prefs::kGeminiSettings) ==
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled)) {
@@ -265,11 +262,17 @@ void GlicUserStatusFetcher::UpdateUserStatus() {
   // finished.
   CancelUserStatusUpdateIfNeeded();
 
-  // schedule next run regardless.
-  ScheduleUserStatusUpdate(features::kGlicUserStatusRequestDelay.Get());
-
   auto gaia_id_hash = GetGaiaIdHashForPrimaryAccount(profile_);
   if (!gaia_id_hash.has_value()) {
+    return;
+  }
+
+  auto callback = base::BindOnce(&GlicUserStatusFetcher::ProcessResponse,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 gaia_id_hash.value().ToBase64());
+
+  if (fetch_override_for_test_) {
+    fetch_override_for_test_.Run(std::move(callback));
     return;
   }
 
@@ -287,10 +290,7 @@ void GlicUserStatusFetcher::UpdateUserStatus() {
       /*custom_user_agent=*/std::string(), kTrafficAnnotation);
 
   auto request = std::make_unique<GlicUserStatusRequest>(
-      request_sender_.get(), endpoint_,
-      base::BindOnce(&GlicUserStatusFetcher::ProcessResponse,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     gaia_id_hash.value().ToBase64()));
+      request_sender_.get(), endpoint_, std::move(callback));
   cancel_closure_ =
       request_sender_->StartRequestWithAuthRetry(std::move(request));
 }
@@ -308,9 +308,8 @@ void GlicUserStatusFetcher::ScheduleUserStatusUpdate(
       base::Time::Now() + jitter_factor * time_to_next_update;
 
   refresh_status_timer_.Start(
-      FROM_HERE, scheduled_time,
-      base::BindOnce(&GlicUserStatusFetcher::UpdateUserStatus,
-                     base::Unretained(this)));
+      FROM_HERE, scheduled_time, this,
+      &GlicUserStatusFetcher::UpdateUserStatusAndScheduleNextRefresh);
 }
 
 std::optional<signin::GaiaIdHash>
@@ -330,6 +329,38 @@ GlicUserStatusFetcher::GetGaiaIdHashForPrimaryAccount(Profile* profile) {
 void GlicUserStatusFetcher::CancelUserStatusUpdateIfNeeded() {
   if (cancel_closure_) {
     std::move(cancel_closure_).Run();
+  }
+}
+
+void GlicUserStatusFetcher::UpdateUserStatusAndScheduleNextRefresh() {
+  UpdateUserStatus();
+  ScheduleUserStatusUpdate(features::kGlicUserStatusRequestDelay.Get());
+}
+
+void GlicUserStatusFetcher::UpdateUserStatusWithThrottling() {
+  // If it has been less than the throttle interval since the last update,
+  // don't update the user status immediately but schedule it to run after
+  // the throttle interval.
+  //
+  // This limits the rate at which certain kinds of potentially frequent
+  // events can cause requests to be sent, while still making the update
+  // immediate most of the time.
+  if (!throttle_timer_.IsRunning()) {
+    UpdateUserStatus();
+
+    const base::TimeDelta throttle_interval =
+        features::kGlicUserStatusThrottleInterval.Get();
+    base::OnceClosure update_cb = base::BindOnce(
+        [](GlicUserStatusFetcher* self) {
+          if (self->update_was_throttled_) {
+            self->update_was_throttled_ = false;
+            self->UpdateUserStatus();
+          }
+        },
+        base::Unretained(this));
+    throttle_timer_.Start(FROM_HERE, throttle_interval, std::move(update_cb));
+  } else {
+    update_was_throttled_ = true;
   }
 }
 
@@ -400,8 +431,9 @@ void GlicUserStatusFetcher::OnGeminiSettingsChanged() {
   cached_gemini_settings_value_ = updated_gemini_settings_value;
 }
 
-void GlicUserStatusFetcher::ProcessResponse(const std::string& account_id_hash,
-                                            CachedUserStatus user_status) {
+void GlicUserStatusFetcher::ProcessResponse(
+    const std::string& account_id_hash,
+    const CachedUserStatus& user_status) {
   // We don't overwrite the previous GlicUserStatus when UserStatusCode is
   // SERVER_UNAVAILABLE.
   if (user_status.user_status_code != UserStatusCode::SERVER_UNAVAILABLE) {
@@ -414,6 +446,9 @@ void GlicUserStatusFetcher::ProcessResponse(const std::string& account_id_hash,
 
     profile_->GetPrefs()->SetDict(glic::prefs::kGlicUserStatus,
                                   std::move(data));
+
+    // Given this was a successful refresh, we can delay the normal refresh.
+    ScheduleUserStatusUpdate(features::kGlicUserStatusRequestDelay.Get());
   }
   if (callback_) {
     callback_.Run();

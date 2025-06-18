@@ -447,6 +447,22 @@ BASE_FEATURE_ENUM_PARAM(GlicEnterpriseCheckStrategy,
                         GlicEnterpriseCheckStrategy::kManaged,
                         &kGlicEnterpriseCheckStrategyOptions);
 
+// When true, the Glic API exposes a method to propose refreshing the
+// user status.
+BASE_FEATURE_PARAM(bool,
+                   kGlicUserStatusRefreshApi,
+                   &kGlicUserStatusCheck,
+                   "glic-user-status-refresh-api",
+                   true);
+
+// The minimum time between user status update requests, when triggered by
+// the Glic API (or another reason that might occur frequently).
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kGlicUserStatusThrottleInterval,
+                   &kGlicUserStatusCheck,
+                   "glic-user-status-throttle-interval",
+                   base::Seconds(5));
+
 BASE_FEATURE(kGlicFreURLConfig,
              "GlicFreURLConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
