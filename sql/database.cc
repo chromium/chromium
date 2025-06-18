@@ -69,6 +69,7 @@
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
+#include "sql/streaming_blob_handle.h"
 #include "sql/transaction.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -490,6 +491,10 @@ void Database::CloseInternal(bool forced) {
   TRACE_EVENT0("sql", "Database::CloseInternal");
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK_EQ(outstanding_blob_count_, 0U)
+      << "All StreamingBlobHandles should be destroyed before closing "
+         "sql::Database";
 
   // TODO(shess): Calling "PRAGMA journal_mode = DELETE" at this point
   // will delete the -journal file.  For ChromiumOS or other more
@@ -1783,6 +1788,43 @@ scoped_refptr<Database::StatementRef> Database::GetStatementImpl(
   return base::MakeRefCounted<StatementRef>(this, sqlite_statement, true);
 }
 
+std::optional<StreamingBlobHandle> Database::GetStreamingBlob(
+    base::cstring_view table,
+    base::cstring_view column,
+    int64_t row_id,
+    bool readonly) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_) {
+    DCHECK(poisoned_) << "Illegal use of Database without a db";
+    return std::nullopt;
+  }
+
+  sqlite3_blob* blob_handle = nullptr;
+  auto sqlite_result_code =
+      sqlite3_blob_open(db_, kSqliteMainDatabaseName, table.c_str(),
+                        column.c_str(), row_id, readonly ? 0 : 1, &blob_handle);
+  if (sqlite_result_code != SQLITE_OK) {
+    OnSqliteError(ToSqliteErrorCode(ToSqliteResultCode((sqlite_result_code))),
+                  nullptr, "-- sqlite3_blob_open()");
+
+    return std::nullopt;
+  }
+
+  CHECK(blob_handle);
+  ++outstanding_blob_count_;
+  return StreamingBlobHandle(base::PassKey<Database>(), blob_handle,
+                             base::BindOnce(&Database::OnStreamingBlobClosed,
+                                            weak_factory_.GetWeakPtr()));
+}
+
+void Database::OnStreamingBlobClosed(SqliteResultCode result,
+                                     const char* error_source) {
+  --outstanding_blob_count_;
+  if (handling_error_nesting_ == 0 && !IsSqliteSuccessCode(result)) {
+    OnSqliteError(ToSqliteErrorCode(result), nullptr, error_source);
+  }
+}
+
 std::string Database::GetSchema() {
   // The ORDER BY should not be necessary, but relying on organic
   // order for something like this is questionable.
@@ -2429,6 +2471,10 @@ void Database::OnSqliteError(SqliteErrorCode sqlite_error_code,
   DCHECK_NE(statement != nullptr, sql_statement != nullptr)
       << __func__ << " should either get a Statement or a raw SQL string";
 
+  base::WeakPtr<Database> weak_this =
+      weak_factory_lifetime_tracker_.GetWeakPtr();
+  ++handling_error_nesting_;
+
   // Use `base::UmaHistogramSparse` because sqlite result codes aren't
   // sequential. The large integers they represent make it so that the
   // non-sparse histograms end up with too many buckets.
@@ -2479,7 +2525,10 @@ void Database::OnSqliteError(SqliteErrorCode sqlite_error_code,
     // subtle source of use-after-frees. See https://crbug.com/254584.
     ErrorCallback error_callback_copy = error_callback_;
     error_callback_copy.Run(static_cast<int>(sqlite_error_code), statement);
-    return;
+  }
+
+  if (weak_this) {
+    --weak_this->handling_error_nesting_;
   }
 }
 

@@ -40,6 +40,7 @@
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement_id.h"
+#include "sql/streaming_blob_handle.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
 // Forward declaration for SQLite structures. Headers in the public sql:: API
@@ -692,6 +693,17 @@ class COMPONENT_EXPORT(SQL) Database {
   scoped_refptr<Database::StatementRef> GetReadonlyStatement(
       base::cstring_view sql);
 
+  // Opens a blob for streaming. Returns nullopt on failure. Note that this
+  // should only be called if the given table, column, and row is known to
+  // exist --- everything else is an error. For a list of failure modes, see
+  // https://www.sqlite.org/c3ref/blob_open.html
+  //
+  // See `StreamingBlobHandle` docs for notes on lifetime.
+  std::optional<StreamingBlobHandle> GetStreamingBlob(base::cstring_view table,
+                                                      base::cstring_view column,
+                                                      int64_t row_id,
+                                                      bool readonly);
+
   // Performs a passive checkpoint on the main attached database if it is in
   // WAL mode. Returns true if the checkpoint was successful and false in case
   // of an error. It is a no-op if the database is not in WAL mode.
@@ -823,6 +835,7 @@ class COMPONENT_EXPORT(SQL) Database {
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, RegisterIntentToUpload);
   FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, WALNoClose);
   FRIEND_TEST_ALL_PREFIXES(SQLEmptyPathDatabaseTest, EmptyPathTest);
+  FRIEND_TEST_ALL_PREFIXES(StreamingBlobHandleTest, Basic);
 
   // A scoped utility to setup error reporting during the `Open()` operation
   class ScopedOpenErrorReporter {
@@ -866,6 +879,11 @@ class COMPONENT_EXPORT(SQL) Database {
   // Internal close function used by Close() and RazeAndPoison().
   // |forced| indicates that orderly-shutdown checks should not apply.
   void CloseInternal(bool forced);
+
+  // Called when a blob opened with `GetStreamingBlob()` is closed. `result` may
+  // or may not be an error; if it is, `error_source` identifies which sqlite3
+  // call caused the error.
+  void OnStreamingBlobClosed(SqliteResultCode result, const char* error_source);
 
   // Construct a ScopedBlockingCall to annotate IO calls, but only if
   // database wasn't open in memory. ScopedBlockingCall uses |from_here| to
@@ -1121,6 +1139,12 @@ class COMPONENT_EXPORT(SQL) Database {
   // any open statements when we encounter an error.
   std::set<raw_ptr<StatementRef>> open_statements_;
 
+  // The number of blobs open for streaming, tracked for debugging purposes.
+  size_t outstanding_blob_count_ = 0;
+
+  // When non-zero, indicates that `this` is inside `OnSqliteError()`.
+  size_t handling_error_nesting_ = 0;
+
   // Number of currently-nested transactions.
   int transaction_nesting_ = 0;
 
@@ -1175,6 +1199,11 @@ class COMPONENT_EXPORT(SQL) Database {
   // during `OpenInternal` or `Execute`s triggered from `Open`.
   base::RepeatingCallback<void(SqliteResultCode)>
       open_error_reporting_callback_;
+
+  // Weak factory for tracking lifetime of `this` (as opposed to
+  // `weak_factory_`, which will also invalidate pointers if the database is
+  // closed).
+  base::WeakPtrFactory<Database> weak_factory_lifetime_tracker_{this};
 
   // Vends WeakPtr<Database> for internal scoping helpers.
   base::WeakPtrFactory<Database> weak_factory_{this};

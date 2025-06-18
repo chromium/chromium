@@ -452,6 +452,18 @@ void Statement::BindBlob(int param_index, base::span<const uint8_t> blob) {
   BindBlob(param_index, base::MakeRefCounted<base::RefCountedBytes>(blob));
 }
 
+void Statement::BindBlobForStreaming(int param_index, uint64_t size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!is_valid()) {
+    return;
+  }
+
+  // SQLite param indexes start at 1.
+  CHECK_EQ(SQLITE_OK, sqlite3_bind_zeroblob(ref_->stmt(), param_index + 1,
+                                            base::checked_cast<int>(size)));
+}
+
 int Statement::ColumnCount() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

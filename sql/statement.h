@@ -151,6 +151,11 @@ class COMPONENT_EXPORT(SQL) Statement {
   void BindBlob(int param_index, std::vector<uint8_t> blob);
   void BindBlob(int param_index, base::span<const uint8_t> value);
 
+  // Reserves `size` bytes of space for a blob. The actual bytes should be set
+  // via a `StreamingBlobHandle`. This method will assert if `size` is too big
+  // for the database, which by default means > 1GB.
+  void BindBlobForStreaming(int param_index, uint64_t size);
+
   // Conforms with base::Time serialization recommendations.
   //
   // This is equivalent to the following snippets, which should be replaced.
