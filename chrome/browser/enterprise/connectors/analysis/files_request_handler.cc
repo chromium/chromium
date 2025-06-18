@@ -361,8 +361,9 @@ void FilesRequestHandler::FileRequestCallback(
       profile_, url_, url_, source_, destination_, path.AsUTF8Unsafe(),
       file_info_[index].sha256, file_info_[index].mime_type,
       AccessPointToTriggerString(access_point_), content_transfer_method_,
-      access_point_, file_info_[index].size,
-      content_analysis_info_->referrer_chain(), upload_result, response,
+      content_analysis_info_->GetContentAreaAccountEmail(), access_point_,
+      file_info_[index].size, content_analysis_info_->referrer_chain(),
+      upload_result, response,
       CalculateEventResult(analysis_settings, request_handler_result.complies,
                            result_is_warning));
 

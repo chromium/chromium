@@ -371,6 +371,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
     const std::string& trigger,
     const std::string& scan_id,
     const std::string& content_transfer_method,
+    const std::string& source_email,
     safe_browsing::DeepScanAccessPoint access_point,
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size,
@@ -386,8 +387,8 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
   } else if (result.tag() == "dlp") {
     OnSensitiveDataEvent(url, tab_url, source, destination, file_name,
                          download_digest_sha256, mime_type, trigger, scan_id,
-                         content_transfer_method, result, content_size,
-                         referrer_chain, event_result);
+                         content_transfer_method, source_email, result,
+                         content_size, referrer_chain, event_result);
   }
 }
 
@@ -466,6 +467,7 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
     const std::string& trigger,
     const std::string& scan_id,
     const std::string& content_transfer_method,
+    const std::string& source_email,
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size,
     const safe_browsing::ReferrerChain& referrer_chain,
@@ -512,6 +514,9 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
           Profile::FromBrowserContext(context_), tab_url);
   if (!content_area_account_email.empty()) {
     event.Set(kKeyWebAppSignedInAccount, content_area_account_email);
+  }
+  if (!source_email.empty()) {
+    event.Set(kKeySourceWebAppSignedInAccount, source_email);
   }
 
   AddAnalysisConnectorVerdictToEvent(result, event);

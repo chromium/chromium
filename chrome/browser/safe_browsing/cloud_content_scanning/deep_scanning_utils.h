@@ -73,6 +73,7 @@ void MaybeReportDeepScanningVerdict(
     const std::string& mime_type,
     const std::string& trigger,
     const std::string& content_transfer_method,
+    const std::string& source_email,
     DeepScanAccessPoint access_point,
     const int64_t content_size,
     const safe_browsing::ReferrerChain& referrer_chain,

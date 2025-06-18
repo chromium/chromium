@@ -668,9 +668,10 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
     const auto& file_metadata = file_metadata_.at(current_path);
     report_callbacks_.AddUnsafe(base::BindOnce(
         &MaybeReportDeepScanningVerdict, profile, metadata_->GetURL(),
-        metadata_->GetTabUrl(), "", "", file_metadata.filename,
-        file_metadata.sha256, file_metadata.mime_type,
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload, "",
+        metadata_->GetTabUrl(), /*source=*/"", /*destination=*/"",
+        file_metadata.filename, file_metadata.sha256, file_metadata.mime_type,
+        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        /*content_transfer_method=*/"", GetContentAreaAccountEmail(),
         DeepScanAccessPoint::DOWNLOAD, file_metadata.size, referrers, result,
         file_metadata.scan_response));
 

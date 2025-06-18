@@ -249,7 +249,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
             GURL(kUrl), GURL(kTabUrl), kSource, kDestination,
             "sensitive_data.txt", "sha256_of_data", "text/plain",
             SafeBrowsingPrivateEventRouter::kTriggerFileUpload, "scan_id",
-            "content_transfer_method",
+            "content_transfer_method", "source_email",
             safe_browsing::DeepScanAccessPoint::UPLOAD, result, 12345,
             referrer_chain, event_result);
   }
@@ -903,6 +903,13 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
   EXPECT_EQ(SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger));
+  EXPECT_EQ("content_transfer_method",
+            *event->FindString(
+                SafeBrowsingPrivateEventRouter::kKeyContentTransferMethod));
+  EXPECT_EQ(
+      "source_email",
+      *event->FindString(
+          SafeBrowsingPrivateEventRouter::kKeySourceWebAppSignedInAccount));
 
   const base::Value::List* triggered_rule_info =
       event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
@@ -964,6 +971,13 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
   EXPECT_EQ(SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger));
+  EXPECT_EQ("content_transfer_method",
+            *event->FindString(
+                SafeBrowsingPrivateEventRouter::kKeyContentTransferMethod));
+  EXPECT_EQ(
+      "source_email",
+      *event->FindString(
+          SafeBrowsingPrivateEventRouter::kKeySourceWebAppSignedInAccount));
 
   const base::Value::List* triggered_rule_info =
       event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
