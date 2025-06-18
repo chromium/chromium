@@ -844,12 +844,12 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
 
   if (builder.GetFontDescription().LetterSpacing() >
       kMaximumLetterSpacingToFontSizeRatio * builder.FontSize()) {
-    builder.SetLetterSpacing(Length::Fixed(
-        builder.FontSize() * kMaximumLetterSpacingToFontSizeRatio));
+    builder.SetLetterSpacing(builder.FontSize() *
+                             kMaximumLetterSpacingToFontSizeRatio);
   } else if (builder.GetFontDescription().LetterSpacing() <
              kMinimumLetterSpacingToFontSizeRatio * builder.FontSize()) {
-    builder.SetLetterSpacing(Length::Fixed(
-        builder.FontSize() * kMinimumLetterSpacingToFontSizeRatio));
+    builder.SetLetterSpacing(builder.FontSize() *
+                             kMinimumLetterSpacingToFontSizeRatio);
   }
 
   builder.SetMinHeight(AdjustedBoundedLength(

@@ -286,8 +286,7 @@ class StyleBuilderConverter {
                                   const CSSValue&);
   static ShadowList* ConvertShadowList(StyleResolverState&, const CSSValue&);
   static ShapeValue* ConvertShapeValue(StyleResolverState&, const CSSValue&);
-  static Length ConvertLetterSpacing(StyleResolverState&, const CSSValue&);
-  static float ConvertWordSpacing(StyleResolverState&, const CSSValue&);
+  static float ConvertSpacing(StyleResolverState&, const CSSValue&);
   template <CSSValueID IdForNone>
   static AtomicString ConvertString(StyleResolverState&, const CSSValue&);
   static scoped_refptr<SVGDashArray> ConvertStrokeDasharray(StyleResolverState&,

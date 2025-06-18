@@ -891,9 +891,6 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // letter-spacing
   float LetterSpacing() const { return GetFontDescription().LetterSpacing(); }
-  const Length& SpecifiedLetterSpacing() const {
-    return GetFontDescription().SpecifiedLetterSpacing();
-  }
 
   // word-spacing
   float WordSpacing() const { return GetFontDescription().WordSpacing(); }
@@ -3152,7 +3149,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
 
   // letter-spacing
-  void SetLetterSpacing(const Length& letter_spacing) {
+  void SetLetterSpacing(float letter_spacing) {
     FontDescription description(GetFontDescription());
     description.SetLetterSpacing(letter_spacing);
     SetFontDescription(description);

@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/text_spacing_trim.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
-#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -315,10 +314,7 @@ class PLATFORM_EXPORT FontDescription {
 
   FontSelectionRequest GetFontSelectionRequest() const;
   float WordSpacing() const { return word_spacing_; }
-
-  float LetterSpacing() const;
-  const Length& SpecifiedLetterSpacing() const { return letter_spacing_; }
-
+  float LetterSpacing() const { return letter_spacing_; }
   FontOrientation Orientation() const {
     return static_cast<FontOrientation>(fields_.orientation_);
   }
@@ -438,7 +434,7 @@ class PLATFORM_EXPORT FontDescription {
     fields_.variant_emoji_ = variant_emoji;
   }
   void SetWordSpacing(float s) { word_spacing_ = s; }
-  void SetLetterSpacing(const Length& s) {
+  void SetLetterSpacing(float s) {
     letter_spacing_ = s;
     UpdateTypesettingFeatures();
   }
@@ -515,7 +511,7 @@ class PLATFORM_EXPORT FontDescription {
   // as well as a computed size is.
   float adjusted_size_;
 
-  Length letter_spacing_;
+  float letter_spacing_;
   float word_spacing_;
 
   FontSizeAdjust size_adjust_;

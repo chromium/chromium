@@ -394,7 +394,7 @@ void CanvasRenderingContext2DState::SetFont(
     // Convert letter spacing to pixel length and set it in font_description.
     float letter_spacing_in_pixel = conversion_data.ZoomedComputedPixels(
         letter_spacing_, letter_spacing_unit_);
-    font_description.SetLetterSpacing(Length::Fixed(letter_spacing_in_pixel));
+    font_description.SetLetterSpacing(letter_spacing_in_pixel);
   }
   font_description.SetKerning(font_kerning_);
   font_description.SetTextRendering(
@@ -891,7 +891,7 @@ void CanvasRenderingContext2DState::SetLetterSpacing(
   float letter_spacing_in_pixel =
       conversion_data.ZoomedComputedPixels(num_spacing, unit);
 
-  font_description.SetLetterSpacing(Length::Fixed(letter_spacing_in_pixel));
+  font_description.SetLetterSpacing(letter_spacing_in_pixel);
   if (selector) {
     SetFontInternal(font_description, selector);
   }

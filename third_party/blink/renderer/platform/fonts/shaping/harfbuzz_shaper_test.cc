@@ -963,7 +963,7 @@ TEST_F(HarfBuzzShaperTest, NegativeLetterSpacing) {
 
   ShapeResultSpacing<String> spacing(string);
   FontDescription font_description;
-  font_description.SetLetterSpacing(Length::Fixed(-5));
+  font_description.SetLetterSpacing(-5);
   spacing.SetSpacing(font_description);
   result->ApplySpacing(spacing);
 
@@ -980,7 +980,7 @@ TEST_F(HarfBuzzShaperTest, NegativeLetterSpacingTo0) {
 
   ShapeResultSpacing<String> spacing(string);
   FontDescription font_description;
-  font_description.SetLetterSpacing(Length::Fixed(-char_width));
+  font_description.SetLetterSpacing(-char_width);
   spacing.SetSpacing(font_description);
   result->ApplySpacing(spacing);
 
@@ -997,7 +997,7 @@ TEST_F(HarfBuzzShaperTest, NegativeLetterSpacingToNegative) {
 
   ShapeResultSpacing<String> spacing(string);
   FontDescription font_description;
-  font_description.SetLetterSpacing(Length::Fixed(-2 * char_width));
+  font_description.SetLetterSpacing(-2 * char_width);
   spacing.SetSpacing(font_description);
   result->ApplySpacing(spacing);
 

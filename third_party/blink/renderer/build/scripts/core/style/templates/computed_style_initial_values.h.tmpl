@@ -61,9 +61,10 @@ class ComputedStyleInitialValues{
     return GridAxisType::kStandaloneAxis;
   }
 
-  // FIXME: Remove word-spacing and replace them with respective
+  // FIXME: Remove letter-spacing/word-spacing and replace them with respective
   // FontBuilder calls.
   static float InitialWordSpacing() { return 0.0f; }
+  static float InitialLetterSpacing() { return 0.0f; }
 
   static EVerticalAlign InitialVerticalAlign() {
     return EVerticalAlign::kBaseline;

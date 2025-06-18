@@ -7,7 +7,7 @@
    div { font: 24px/1 Ahem; width: 15em; background: yellow; color: aqua; margin: 0 0 0 2em; }
    .eight {letter-spacing: 48px;}
    .nine {letter-spacing: normal;}
-   .ten {letter-spacing: -50%;}
+   .ten {letter-spacing: 300%;}
    .eleven {letter-spacing: -0.5em;}
   </style>
   <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#spacing-props" title="16.4 Letter and word spacing: the 'letter-spacing' and 'word-spacing' properties">
@@ -18,7 +18,7 @@
   <div class="test">x  x    xx xx </div>
   <div class="test">x  x    xx xx </div>
   <div class="eight"> xx <span class="nine">xx xx</span> </div> <!-- this test assumes letter-spacing is distributed evenly on both sides of each letter (half on each side), which is not specified in the spec (the spec leaves this undefined) -->
-  <div class="ten">x     x         x x   x x </div>
+  <div class="ten">x  x    xx xx </div>
   <div class="eleven">x     x         x x   x x </div>
  </body>
 </html>

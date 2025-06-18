@@ -31,7 +31,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/values_equivalent.h"
-#include "base/notreached.h"
 #include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_font_description.h"
@@ -56,8 +55,7 @@ struct SameSizeAsFontDescription {
   scoped_refptr<FontPalette> palette_;
   scoped_refptr<FontVariantAlternates> font_variant_alternates_;
   AtomicString locale;
-  float sizes[4];
-  Length letter_spacing;
+  float sizes[5];
   FontSizeAdjust size_adjust_;
   FontSelectionRequest selection_request_;
   FieldsAsUnsignedType bitfields;
@@ -84,7 +82,7 @@ FontDescription::FontDescription()
     : specified_size_(0),
       computed_size_(0),
       adjusted_size_(0),
-      letter_spacing_(Length(0, Length::kFixed)),
+      letter_spacing_(0),
       word_spacing_(0),
       font_selection_request_(kNormalWeightValue,
                               kNormalWidthValue,
@@ -191,20 +189,6 @@ FontDescription::Size FontDescription::SmallerSize(const Size& size) {
 
 FontSelectionRequest FontDescription::GetFontSelectionRequest() const {
   return font_selection_request_;
-}
-
-float FontDescription::LetterSpacing() const {
-  switch (letter_spacing_.GetType()) {
-    case Length::kFixed:
-      return letter_spacing_.Pixels();
-    case Length::kPercent:
-      return letter_spacing_.Percent() / 100 * computed_size_;
-    case Length::kCalculated:
-      return letter_spacing_.NonNanCalculatedValue(LayoutUnit(computed_size_),
-                                                   {});
-    default:
-      NOTREACHED();
-  }
 }
 
 FontDescription::VariantLigatures FontDescription::GetVariantLigatures() const {
@@ -345,7 +329,7 @@ void FontDescription::UpdateTypesettingFeatures() {
   // When the effective letter-spacing between two characters is not zero (due
   // to either justification or non-zero computed letter-spacing), user agents
   // should not apply optional ligatures.
-  if (letter_spacing_.IsZero()) {
+  if (letter_spacing_ == 0) {
     switch (CommonLigaturesState()) {
       case FontDescription::kDisabledLigaturesState:
         fields_.typesetting_features_ &= ~blink::kLigatures;
@@ -396,7 +380,7 @@ unsigned FontDescription::StyleHashWithoutFamilyList() const {
   WTF::AddFloatToHash(hash, specified_size_);
   WTF::AddFloatToHash(hash, computed_size_);
   WTF::AddFloatToHash(hash, adjusted_size_);
-  WTF::AddIntToHash(hash, letter_spacing_.GetHash());
+  WTF::AddFloatToHash(hash, letter_spacing_);
   WTF::AddFloatToHash(hash, word_spacing_);
   WTF::AddIntToHash(hash, fields_as_unsigned_.parts[0]);
   WTF::AddIntToHash(hash, fields_as_unsigned_.parts[1]);
@@ -753,7 +737,7 @@ String FontDescription::ToString() const {
       // string method.
       (locale_ ? locale_->LocaleString().Ascii().c_str() : ""), specified_size_,
       computed_size_, adjusted_size_, size_adjust_.ToString().Ascii().c_str(),
-      LetterSpacing(), word_spacing_,
+      letter_spacing_, word_spacing_,
       font_selection_request_.ToString().Ascii().c_str(),
       blink::ToString(
           static_cast<TypesettingFeatures>(fields_.typesetting_features_))

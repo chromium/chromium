@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Can set 'letter-spacing' to a percent: 0%
+  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+[FAIL] Can set 'letter-spacing' to a percent: -3.14%
+  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+[FAIL] Can set 'letter-spacing' to a percent: 3.14%
+  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+[FAIL] Can set 'letter-spacing' to a percent: calc(0% + 0%)
+  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+Harness: the test ran to completion.
+

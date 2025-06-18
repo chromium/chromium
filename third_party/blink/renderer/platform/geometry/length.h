@@ -394,8 +394,6 @@ class PLATFORM_EXPORT Length {
 
   WTF::String ToString() const;
 
-  unsigned GetHash() const;
-
  private:
   float GetFloatValue() const {
     DCHECK(!IsNone());
