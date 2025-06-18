@@ -28,9 +28,9 @@ class ServiceWorkerState
   // Browser process worker state of an activated extension.
   enum class BrowserState {
     // Worker has not started or has been stopped/terminated.
-    kNotStarted,
+    kNotActive,
     // Worker has started (i.e. has seen DidStartWorkerForScope).
-    kStarted,
+    kActive,
     // Worker has completed starting (i.e. has seen DidStartWorkerForScope and
     // DidStartServiceWorkerContext).
     kReady,
@@ -125,7 +125,7 @@ class ServiceWorkerState
   void SetWorkerId(const WorkerId& worker_id);
   void NotifyObserversIfReady(const SequencedContextId& context_id);
 
-  BrowserState browser_state_ = BrowserState::kNotStarted;
+  BrowserState browser_state_ = BrowserState::kNotActive;
   RendererState renderer_state_ = RendererState::kNotActive;
 
   // Whether the service worker is in the process of starting.

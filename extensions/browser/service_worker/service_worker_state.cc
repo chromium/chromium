@@ -47,7 +47,7 @@ void ServiceWorkerState::SetRendererState(RendererState renderer_state) {
 
 void ServiceWorkerState::Reset() {
   worker_id_.reset();
-  browser_state_ = BrowserState::kNotStarted;
+  browser_state_ = BrowserState::kNotActive;
   renderer_state_ = RendererState::kNotActive;
 }
 
@@ -56,7 +56,7 @@ bool ServiceWorkerState::IsStarting() const {
 }
 
 bool ServiceWorkerState::IsReady() const {
-  return browser_state_ == BrowserState::kStarted &&
+  return browser_state_ == BrowserState::kActive &&
          renderer_state_ == RendererState::kActive && worker_id_.has_value();
 }
 
@@ -107,7 +107,7 @@ void ServiceWorkerState::DidStartWorkerForScope(
   UMA_HISTOGRAM_TIMES("Extensions.ServiceWorkerBackground.StartWorkerTime",
                       base::Time::Now() - start_time);
 
-  DCHECK_NE(BrowserState::kStarted, browser_state())
+  DCHECK_NE(BrowserState::kActive, browser_state())
       << "Worker was already loaded";
 
   const ExtensionId& extension_id = context_id.extension_id;
@@ -132,7 +132,7 @@ void ServiceWorkerState::DidStartWorkerForScope(
   }
 
   SetWorkerId(worker_id);
-  SetBrowserState(BrowserState::kStarted);
+  SetBrowserState(BrowserState::kActive);
   NotifyObserversIfReady(context_id);
 }
 
@@ -202,7 +202,7 @@ void ServiceWorkerState::OnStopped(
     int64_t version_id,
     const content::ServiceWorkerRunningInfo& worker_info) {
   // If `OnStopping` was not called for some reason, try again here.
-  if (browser_state_ != BrowserState::kNotStarted) {
+  if (browser_state_ != BrowserState::kNotActive) {
     OnStopping(version_id, worker_info);
   }
 }

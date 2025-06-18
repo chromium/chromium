@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_P(
     OnStoppedUpdatesBrowserAndRendererState_BeforeRenderStopNotification) {
   const bool wakeup_optimization_enabled = IsParamFeatureEnabled();
   const auto kExpectedBrowserState =
-      wakeup_optimization_enabled ? ServiceWorkerState::BrowserState::kStarted
+      wakeup_optimization_enabled ? ServiceWorkerState::BrowserState::kActive
                                   : ServiceWorkerState::BrowserState::kReady;
 
   ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtension());
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_P(
   // Confirm the worker state does still exist, and that the browser stop
   // notification reset it to no longer ready.
   EXPECT_EQ(worker_state->browser_state(),
-            ServiceWorkerState::BrowserState::kNotStarted);
+            ServiceWorkerState::BrowserState::kNotActive);
   EXPECT_EQ(worker_state->renderer_state(),
             ServiceWorkerState::RendererState::kNotActive);
 
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Confirm the worker state still exists and state remains the same.
   EXPECT_EQ(worker_state->browser_state(),
-            ServiceWorkerState::BrowserState::kNotStarted);
+            ServiceWorkerState::BrowserState::kNotActive);
   EXPECT_EQ(worker_state->renderer_state(),
             ServiceWorkerState::RendererState::kNotActive);
 }
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_P(
     OnStoppedUpdatesBrowserAndRendererState_AfterRenderStopNotification) {
   const bool wakeup_optimization_enabled = IsParamFeatureEnabled();
   const auto kExpectedBrowserState =
-      wakeup_optimization_enabled ? ServiceWorkerState::BrowserState::kStarted
+      wakeup_optimization_enabled ? ServiceWorkerState::BrowserState::kActive
                                   : ServiceWorkerState::BrowserState::kReady;
 
   ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtension());
@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_P(
   // Confirm the worker state still exists and browser and renderer state are
   // not ready.
   EXPECT_EQ(worker_state->browser_state(),
-            ServiceWorkerState::BrowserState::kNotStarted);
+            ServiceWorkerState::BrowserState::kNotActive);
   EXPECT_EQ(worker_state->renderer_state(),
             ServiceWorkerState::RendererState::kNotActive);
 
@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_P(
   // Confirm the worker state still exists, and browser and renderer state
   // remain not ready.
   EXPECT_EQ(worker_state->browser_state(),
-            ServiceWorkerState::BrowserState::kNotStarted);
+            ServiceWorkerState::BrowserState::kNotActive);
   EXPECT_EQ(worker_state->renderer_state(),
             ServiceWorkerState::RendererState::kNotActive);
 
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_P(
     DisablingExtensionUntracksWorker) {
   const bool wakeup_optimization_enabled = IsParamFeatureEnabled();
   const auto kExpectedBrowserState =
-      wakeup_optimization_enabled ? ServiceWorkerState::BrowserState::kStarted
+      wakeup_optimization_enabled ? ServiceWorkerState::BrowserState::kActive
                                   : ServiceWorkerState::BrowserState::kReady;
 
   ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtension());
@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
   // Confirm the worker state still exists and browser and renderer states have
   // been set to inactive by `ServiceWorkerHost::RenderProcessForWorkerExited`.
   EXPECT_EQ(worker_state->browser_state(),
-            ServiceWorkerState::BrowserState::kNotStarted);
+            ServiceWorkerState::BrowserState::kNotActive);
   EXPECT_EQ(worker_state->renderer_state(),
             ServiceWorkerState::RendererState::kNotActive);
 }
@@ -899,7 +899,7 @@ IN_PROC_BROWSER_TEST_P(
     StoppingSubScopeWorkerDoesNotAffectExtensionWorker) {
   const bool wakeup_optimization_enabled = IsParamFeatureEnabled();
   const auto kExpectedBrowserState =
-      wakeup_optimization_enabled ? ServiceWorkerState::BrowserState::kStarted
+      wakeup_optimization_enabled ? ServiceWorkerState::BrowserState::kActive
                                   : ServiceWorkerState::BrowserState::kReady;
 
   // Load the extension service worker. This method will wait for its
