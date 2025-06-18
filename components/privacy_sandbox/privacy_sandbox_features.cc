@@ -161,7 +161,7 @@ BASE_FEATURE(kTrackingProtectionUserBypassPwaTrigger,
 
 BASE_FEATURE(kDisplayWildcardInContentSettings,
              "DisplayWildcardInContentSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
