@@ -60,6 +60,7 @@ class PlaceholderServiceTest : public PlatformTest {
         template_url_service().Add(std::make_unique<TemplateURL>(data));
     template_url_service().SetUserSelectedDefaultSearchProvider(
         default_search_provider_);
+    template_url_service().Load();
   }
 
   void TearDown() override {
@@ -212,9 +213,6 @@ TEST_F(PlaceholderServiceTest, TestDSESwitchesDuringFetch) {
 
   // 3. Change DSE to DSE2 *before* DSE1 icon fetch completes
   template_url_service().SetUserSelectedDefaultSearchProvider(dse2);
-  // TODO(crbug.com/424382890): Change is not propagated, remove this line when
-  // the bug is fixed.
-  placeholder_service_.OnTemplateURLServiceChanged();
 
   // 4. Complete DSE1 icon fetch (which should now be ignored)
   dse1_favicon_callback_block(dse1_fetched_attributes);
