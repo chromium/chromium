@@ -827,6 +827,9 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         if (mOnItemTouchListener != null) {
             mRecyclerView.removeOnItemTouchListener(mOnItemTouchListener);
         }
+        if (mTabSwitcherDragHandler != null) {
+            mTabSwitcherDragHandler.destroy();
+        }
         mTabListFaviconProvider.destroy();
     }
 
