@@ -100,6 +100,9 @@ class UserEducationStorageService : public UserEducationTimeProvider {
   // Returns the count of previous snoozes for `iph_feature`.
   int GetSnoozeCount(const base::Feature& iph_feature) const;
 
+  // Returns the current session number.
+  int GetSessionNumber() const;
+
   // Gets the time when the current profile was created.
   base::Time profile_creation_time() const { return profile_creation_time_; }
 

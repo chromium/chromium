@@ -23,6 +23,10 @@
 
 namespace user_education {
 
+namespace {
+constexpr int kInitialSessionValue = 4;
+}
+
 // Base class that uses a test idle observer to test basic functionality of a
 // UserEducationSessionManager.
 class UserEducationSessionManagerTest : public testing::Test {
@@ -38,20 +42,24 @@ class UserEducationSessionManagerTest : public testing::Test {
 
   void InitSession(base::Time session_start,
                    base::Time last_active,
-                   base::Time now) {
+                   base::Time now,
+                   int session_number) {
     clock_.SetNow(now);
     UserEducationSessionData previous_data;
     previous_data.start_time = session_start;
     previous_data.most_recent_active_time = last_active;
+    previous_data.session_number = session_number;
     storage_service_.set_clock_for_testing(&clock_);
     storage_service_.SaveSessionData(previous_data);
   }
 
   void CheckSessionData(base::Time expected_session_start,
-                        base::Time expected_last_active) {
+                        base::Time expected_last_active,
+                        int session_number) {
     const auto data = storage_service().ReadSessionData();
     EXPECT_EQ(expected_session_start, data.start_time);
     EXPECT_EQ(expected_last_active, data.most_recent_active_time);
+    EXPECT_EQ(session_number, data.session_number);
   }
 
  private:
@@ -63,7 +71,7 @@ TEST_F(UserEducationSessionManagerTest, CreateVanillaSessionManager) {
   const auto now = base::Time::Now();
   const auto last_active = now - base::Hours(2);
   const auto start_time = now - base::Hours(4);
-  InitSession(start_time, last_active, now);
+  InitSession(start_time, last_active, now, kInitialSessionValue);
   auto observer_ptr =
       std::make_unique<test::TestIdleObserver>(base::Time::Now());
   auto policy_ptr = std::make_unique<UserEducationIdlePolicy>();
@@ -78,7 +86,7 @@ TEST_F(UserEducationSessionManagerTest, CheckIdlePolicyDefaults) {
   // Start in the middle of a session, currently active.
   const auto now = base::Time::Now();
   const auto start_time = now - base::Hours(4);
-  InitSession(start_time, now, now);
+  InitSession(start_time, now, now, kInitialSessionValue);
 
   auto observer_ptr = std::make_unique<test::TestIdleObserver>(now);
   auto policy_ptr = std::make_unique<UserEducationIdlePolicy>();
@@ -94,7 +102,7 @@ TEST_F(UserEducationSessionManagerTest, CheckIdlePolicyDefaults) {
   const auto kALittleLaterNow = kALittleLater + base::Milliseconds(500);
   clock().SetNow(kALittleLaterNow);
   observer->SetLastActiveTime(kALittleLater, /*send_update=*/true);
-  CheckSessionData(start_time, kALittleLater);
+  CheckSessionData(start_time, kALittleLater, kInitialSessionValue);
 
   // Moving to a much later time will result in a new session if everything is
   // configured properly.
@@ -102,14 +110,14 @@ TEST_F(UserEducationSessionManagerTest, CheckIdlePolicyDefaults) {
   const auto kMuchLaterNow = kMuchLater + base::Seconds(1);
   clock().SetNow(kMuchLaterNow);
   observer->SetLastActiveTime(kMuchLater, /*send_update=*/true);
-  CheckSessionData(kMuchLater, kMuchLater);
+  CheckSessionData(kMuchLater, kMuchLater, kInitialSessionValue + 1);
 }
 
 TEST_F(UserEducationSessionManagerTest, CheckCallbackNoInitialSession) {
   UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, new_session_callback);
   const auto now = base::Time::Now();
   const auto start_time = now - base::Hours(4);
-  InitSession(start_time, now, now);
+  InitSession(start_time, now, now, kInitialSessionValue);
 
   auto observer_ptr = std::make_unique<test::TestIdleObserver>(now);
   auto policy_ptr = std::make_unique<UserEducationIdlePolicy>();
@@ -125,7 +133,7 @@ TEST_F(UserEducationSessionManagerTest, CheckCallbackWithInitialSession) {
   UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, new_session_callback);
   const auto now = base::Time::Now();
   const auto start_time = now - base::Hours(4);
-  InitSession(start_time, now, now);
+  InitSession(start_time, now, now, kInitialSessionValue);
 
   auto observer_ptr = std::make_unique<test::TestIdleObserver>(now);
   auto policy_ptr = std::make_unique<UserEducationIdlePolicy>();
@@ -149,7 +157,7 @@ TEST_F(UserEducationSessionManagerTest, CheckCallbackCalledOnNewSession) {
   UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, new_session_callback);
   const auto now = base::Time::Now();
   const auto start_time = now - base::Hours(4);
-  InitSession(start_time, now, now);
+  InitSession(start_time, now, now, kInitialSessionValue);
 
   auto observer_ptr = std::make_unique<test::TestIdleObserver>(now);
   auto policy_ptr = std::make_unique<UserEducationIdlePolicy>();
@@ -207,6 +215,7 @@ class UserEducationSessionManagerWithMockManagerTest
                    bool expect_new_session,
                    bool suppress_last_active_update = false) {
     const bool send_update = new_last_active && !suppress_last_active_update;
+    const int old_session = storage_service().GetSessionNumber();
     if (send_update) {
       EXPECT_CALL(session_manager(),
                   OnLastActiveTimeUpdating(*new_last_active));
@@ -224,7 +233,8 @@ class UserEducationSessionManagerWithMockManagerTest
     CheckSessionData(expect_new_session ? *new_last_active : data.start_time,
                      new_last_active && !suppress_last_active_update
                          ? *new_last_active
-                         : data.most_recent_active_time);
+                         : data.most_recent_active_time,
+                     expect_new_session ? old_session + 1 : old_session);
   }
 
  private:
@@ -253,8 +263,10 @@ class UserEducationSessionManagerWithMockPolicyTest
   void Init(base::Time session_start,
             base::Time previous_last_active,
             base::Time now,
+            int previous_session_number,
             bool new_session) {
-    InitSession(session_start, previous_last_active, now);
+    InitSession(session_start, previous_last_active, now,
+                previous_session_number);
     CHECK(!idle_policy_);
     auto policy_ptr =
         std::make_unique<testing::StrictMock<test::MockIdlePolicy>>();
@@ -268,7 +280,9 @@ class UserEducationSessionManagerWithMockPolicyTest
                   OnNewSession(session_start, previous_last_active, now));
     }
     InitSessionManager(std::move(policy_ptr));
-    CheckSessionData(new_session ? now : session_start, now);
+    CheckSessionData(
+        new_session ? now : session_start, now,
+        new_session ? previous_session_number + 1 : previous_session_number);
   }
 
  private:
@@ -278,28 +292,29 @@ class UserEducationSessionManagerWithMockPolicyTest
 TEST_F(UserEducationSessionManagerWithMockPolicyTest,
        StartJustAfterLastActive_NoNewSession) {
   const auto now = base::Time::Now();
-  Init(now - base::Hours(4), now - base::Minutes(2), now,
+  Init(now - base::Hours(4), now - base::Minutes(2), now, kInitialSessionValue,
        /*new_session=*/false);
 }
 
 TEST_F(UserEducationSessionManagerWithMockPolicyTest,
        StartWellAfterLastActive_NewSession) {
   const auto now = base::Time::Now();
-  Init(now - base::Days(2), now - base::Days(1), now,
+  Init(now - base::Days(2), now - base::Days(1), now, kInitialSessionValue,
        /*new_session=*/true);
 }
 
 TEST_F(UserEducationSessionManagerWithMockPolicyTest,
        StartApplicationInactive_NoNewSession) {
   const auto now = base::Time::Now();
-  Init(now - base::Days(2), now - base::Days(1), now,
+  Init(now - base::Days(2), now - base::Days(1), now, kInitialSessionValue,
        /*new_session=*/false);
 }
 
 TEST_F(UserEducationSessionManagerWithMockPolicyTest, SystemInactiveNoUpdate) {
   const auto now = base::Time::Now();
   const auto session_start = now - base::Hours(4);
-  Init(session_start, now - base::Minutes(2), now, /*new_session=*/false);
+  Init(session_start, now - base::Minutes(2), now, kInitialSessionValue,
+       /*new_session=*/false);
   const auto new_active_time = now + base::Hours(1);
   const auto new_now = new_active_time + base::Seconds(10);
 
@@ -309,7 +324,8 @@ TEST_F(UserEducationSessionManagerWithMockPolicyTest, SystemInactiveNoUpdate) {
 TEST_F(UserEducationSessionManagerWithMockPolicyTest, NoNewSession) {
   const auto now = base::Time::Now();
   const auto session_start = now - base::Hours(4);
-  Init(session_start, now - base::Minutes(2), now, /*new_session=*/false);
+  Init(session_start, now - base::Minutes(2), now, kInitialSessionValue,
+       /*new_session=*/false);
   const auto new_active_time = now + base::Hours(1);
   const auto new_now = new_active_time + base::Seconds(10);
   EXPECT_CALL(idle_policy(), IsNewSession(session_start, now, new_active_time))
@@ -320,7 +336,8 @@ TEST_F(UserEducationSessionManagerWithMockPolicyTest, NoNewSession) {
 TEST_F(UserEducationSessionManagerWithMockPolicyTest, NewSession) {
   const auto now = base::Time::Now();
   const auto session_start = now - base::Hours(4);
-  Init(session_start, now - base::Minutes(2), now, /*new_session=*/false);
+  Init(session_start, now - base::Minutes(2), now, kInitialSessionValue,
+       /*new_session=*/false);
   const auto new_active_time = now + base::Hours(1);
   const auto new_now = new_active_time + base::Seconds(10);
 
@@ -346,8 +363,10 @@ class UserEducationIdlePolicyTest
   // the mock session manager will be wrong, and the test will fail.
   bool Init(base::Time session_start,
             base::Time previous_last_active,
-            base::Time now) {
-    InitSession(session_start, previous_last_active, now);
+            base::Time now,
+            int previous_session_number) {
+    InitSession(session_start, previous_last_active, now,
+                previous_session_number);
     const bool new_session =
         (now - previous_last_active) >= kIdleTimeBetweenSessions &&
         (now - session_start) >= kMinimumSessionLength;
@@ -357,7 +376,9 @@ class UserEducationIdlePolicyTest
     }
     InitSessionManager(base::WrapUnique(new UserEducationIdlePolicy(
         kIdleTimeBetweenSessions, kMinimumSessionLength)));
-    CheckSessionData(new_session ? now : session_start, now);
+    CheckSessionData(
+        new_session ? now : session_start, now,
+        new_session ? previous_session_number + 1 : previous_session_number);
     return new_session;
   }
 
@@ -367,7 +388,8 @@ class UserEducationIdlePolicyTest
     const auto start = base::Time::Now();
     const auto first_active = start + base::Minutes(1);
     const auto second_active = start + base::Minutes(2);
-    const bool new_session = Init(start, first_active, second_active);
+    const bool new_session =
+        Init(start, first_active, second_active, kInitialSessionValue);
     CHECK(!new_session);
     return storage_service().ReadSessionData();
   }
@@ -387,14 +409,15 @@ class UserEducationIdlePolicyTest
 TEST_F(UserEducationIdlePolicyTest, InitApplicationNotActive) {
   const auto start_time = base::Time::Now();
   const auto new_now = start_time + base::Hours(2);
-  EXPECT_FALSE(Init(start_time, start_time + base::Hours(1), new_now));
+  EXPECT_FALSE(Init(start_time, start_time + base::Hours(1), new_now,
+                    kInitialSessionValue));
 }
 
 TEST_F(UserEducationIdlePolicyTest, InitApplicationActiveNoNewSession) {
   const auto start_time = base::Time::Now();
   const auto old_time = start_time + kIdleTimeBetweenSessions / 4;
   const auto update_time = start_time + kIdleTimeBetweenSessions / 2;
-  EXPECT_FALSE(Init(start_time, old_time, update_time));
+  EXPECT_FALSE(Init(start_time, old_time, update_time, kInitialSessionValue));
 }
 
 TEST_F(UserEducationIdlePolicyTest, InitApplicationActiveNewSession) {
@@ -402,7 +425,7 @@ TEST_F(UserEducationIdlePolicyTest, InitApplicationActiveNewSession) {
   const auto old_time = start_time + kIdleTimeBetweenSessions / 2;
   const auto update_time =
       old_time + kIdleTimeBetweenSessions + base::Minutes(5);
-  EXPECT_TRUE(Init(start_time, old_time, update_time));
+  EXPECT_TRUE(Init(start_time, old_time, update_time, kInitialSessionValue));
 }
 
 TEST_F(UserEducationIdlePolicyTest,
@@ -489,25 +512,25 @@ TEST_F(UserEducationIdlePolicyTest, MaybeUpdateSessionStateNoNewSession) {
   const base::Time session_start = base::Time::Now();
   const base::Time last_active = session_start + base::Minutes(30);
   const base::Time browser_start = last_active + kIdleTimeBetweenSessions / 2;
-  Init(session_start, last_active, browser_start);
+  Init(session_start, last_active, browser_start, kInitialSessionValue);
   // Advance less than a new session, but a significant time, and update the
   // last active time in the observer, but do not propagate to the session
   // manager (which would trigger an update).
   const base::Time now = browser_start + base::Seconds(15);
   clock().SetNow(now);
   idle_observer().SetLastActiveTime(now, false);
-  CheckSessionData(session_start, browser_start);
+  CheckSessionData(session_start, browser_start, kInitialSessionValue);
   // This will check to see if a new session would be warranted; in this case it
   // is not, so no update happens.
   session_manager().MaybeUpdateSessionState();
-  CheckSessionData(session_start, browser_start);
+  CheckSessionData(session_start, browser_start, kInitialSessionValue);
 }
 
 TEST_F(UserEducationIdlePolicyTest, MaybeUpdateSessionStateNewSession) {
   const base::Time session_start = base::Time::Now();
   const base::Time last_active = session_start + base::Minutes(30);
   const base::Time browser_start = last_active + base::Minutes(30);
-  Init(session_start, last_active, browser_start);
+  Init(session_start, last_active, browser_start, kInitialSessionValue);
   // Advance more than a new session and update the last active time in the
   // observer, but do not propagate to the session manager (which would trigger
   // an immediate update).
@@ -515,7 +538,7 @@ TEST_F(UserEducationIdlePolicyTest, MaybeUpdateSessionStateNewSession) {
       browser_start + kIdleTimeBetweenSessions + base::Seconds(15);
   clock().SetNow(now);
   idle_observer().SetLastActiveTime(now, false);
-  CheckSessionData(session_start, browser_start);
+  CheckSessionData(session_start, browser_start, kInitialSessionValue);
   // Because more than the session length has passed, calling
   // `MaybeUpdateSessionState()` will trigger another check, and cause an update
   // and a new session.
@@ -523,7 +546,7 @@ TEST_F(UserEducationIdlePolicyTest, MaybeUpdateSessionStateNewSession) {
   EXPECT_CALL(session_manager(),
               OnNewSession(session_start, browser_start, now));
   session_manager().MaybeUpdateSessionState();
-  CheckSessionData(now, now);
+  CheckSessionData(now, now, kInitialSessionValue + 1);
 }
 
 }  // namespace user_education

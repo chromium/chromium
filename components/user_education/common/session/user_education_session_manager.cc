@@ -147,6 +147,7 @@ void UserEducationSessionManager::UpdateLastActiveTime(
       old_start_time, old_active_time, new_active_time);
   if (is_new_session) {
     session_data.start_time = new_active_time;
+    ++session_data.session_number;
   }
   // Save the session data before calling OnNewSession, since some listeners
   // will be relying on the data being current.

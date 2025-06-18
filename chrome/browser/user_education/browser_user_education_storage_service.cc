@@ -55,6 +55,8 @@ constexpr char kIPHSessionStartPath[] = "in_product_help.session_start_time";
 // Path to the most recent active time.
 constexpr char kIPHSessionLastActiveTimePath[] =
     "in_product_help.session_last_active_time";
+// Path to the current session number.
+constexpr char kIPHSessionNumberPath[] = "in_product_help.session_number";
 
 // Path to the time of the most recent heavyweight promo.
 constexpr char kIPHPolicyLastHeavyweightPromoPath[] =
@@ -164,6 +166,7 @@ void BrowserUserEducationStorageService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kIPHPromoDataPath);
   registry->RegisterDictionaryPref(kNewBadgePath);
   registry->RegisterTimePref(kIPHSessionStartPath, base::Time());
+  registry->RegisterIntegerPref(kIPHSessionNumberPath, 0);
   // This pref is updated frequently and an exact value is not required on e.g.
   // browser crash, so marking as `LOSSY_PREF` will prevent frequent disk
   // writes that could harm performance. The pref should still be written both
@@ -306,6 +309,7 @@ void BrowserUserEducationStorageService::ResetSession() {
   auto* const prefs = profile_->GetPrefs();
   prefs->ClearPref(kIPHSessionStartPath);
   prefs->ClearPref(kIPHSessionLastActiveTimePath);
+  prefs->ClearPref(kIPHSessionNumberPath);
 }
 
 user_education::UserEducationSessionData
@@ -314,6 +318,9 @@ BrowserUserEducationStorageService::ReadSessionData() const {
   auto* const prefs = profile_->GetPrefs();
   data.start_time = prefs->GetTime(kIPHSessionStartPath);
   data.most_recent_active_time = prefs->GetTime(kIPHSessionLastActiveTimePath);
+  // Zero is an invalid/null value. The first session after this pref is added
+  // should be 1.
+  data.session_number = std::max(1, prefs->GetInteger(kIPHSessionNumberPath));
   return data;
 }
 
@@ -321,10 +328,14 @@ void BrowserUserEducationStorageService::SaveSessionData(
     const user_education::UserEducationSessionData& session_data) {
   auto* const prefs = profile_->GetPrefs();
 
-  // Only write session start time if it has changed.
+  // Only write session start time and number if they have changed.
   const auto old_session_time = prefs->GetTime(kIPHSessionStartPath);
   if (old_session_time != session_data.start_time) {
     prefs->SetTime(kIPHSessionStartPath, session_data.start_time);
+  }
+  const auto old_session_number = prefs->GetInteger(kIPHSessionNumberPath);
+  if (old_session_number != session_data.session_number) {
+    prefs->SetInteger(kIPHSessionNumberPath, session_data.session_number);
   }
 
   // This is a "lossy" pref which means we can write it whenever; it will get

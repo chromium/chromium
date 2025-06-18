@@ -28,6 +28,11 @@ int UserEducationStorageService::GetSnoozeCount(
   return data ? data->snooze_count : 0;
 }
 
+int UserEducationStorageService::GetSessionNumber() const {
+  const auto data = ReadSessionData();
+  return data.session_number;
+}
+
 KeyedFeaturePromoDataMap UserEducationStorageService::GetKeyedPromoData(
     const base::Feature& iph_feature) const {
   const auto data = ReadPromoData(iph_feature);

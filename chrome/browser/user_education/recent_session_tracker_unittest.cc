@@ -40,9 +40,11 @@ class FakeSessionManager
   void SimulateNewSession() {
     const auto old_session = storage_service_->ReadSessionData();
     const auto now = storage_service_->GetCurrentTime();
-    user_education::UserEducationSessionData new_session;
+    user_education::UserEducationSessionData new_session =
+        storage_service_->ReadSessionData();
     new_session.most_recent_active_time = now;
     new_session.start_time = now;
+    ++new_session.session_number;
     storage_service_->SaveSessionData(new_session);
     OnNewSession(old_session.start_time, old_session.most_recent_active_time,
                  now);

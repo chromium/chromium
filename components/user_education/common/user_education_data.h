@@ -99,6 +99,15 @@ struct UserEducationSessionData {
 
   // The last known time the browser was active.
   base::Time most_recent_active_time;
+
+  // The (potentially non-monotonic but generally increasing) session number.
+  // Any code which relies on this number should respond to an out-of-order
+  // value as a cue to reset anything session-count-related, as it likely means
+  // the user has reset session data from the User Education internals page.
+  //
+  // Note that zero is a null/invalid value and should never be returned from a
+  // data read.
+  int session_number = 1;
 };
 
 // Data that must be kept across browser restart to support the feature promo
