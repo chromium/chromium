@@ -1117,28 +1117,19 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, MAYBE_LearnMore) {
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
-  content::TestNavigationObserver nav_observer(nullptr);
-  nav_observer.StartWatchingNewWebContents();
+  content::TestNavigationObserver nav_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
   SendCommand(security_interstitials::CMD_OPEN_HELP_CENTER);
-  nav_observer.Wait();
+  nav_observer.WaitForNavigationFinished();
 
-  // A new tab has been opened.
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  // A new tab has not been opened.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   // Interstitial does not display in the foreground tab.
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-  WebContents* new_tab = browser()->tab_strip_model()->GetWebContentsAt(1);
-  ASSERT_TRUE(new_tab);
-  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(new_tab));
-
-  // Interstitial still displays in the background tab.
-  browser()->tab_strip_model()->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
   EXPECT_EQ(interstitial_tab,
             browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents()));
 }
 

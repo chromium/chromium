@@ -171,7 +171,7 @@ TestSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
       IsExtendedReportingEnabled(*prefs),
       IsExtendedReportingPolicyManaged(*prefs),
       IsEnhancedProtectionEnabled(*prefs), is_proceed_anyway_disabled,
-      true,  // should_open_links_in_new_tab
+      false,  // should_open_links_in_new_tab
       always_show_back_to_safety_,
       /*is_enhanced_protection_message_enabled=*/true,
       IsSafeBrowsingPolicyManaged(*prefs),
