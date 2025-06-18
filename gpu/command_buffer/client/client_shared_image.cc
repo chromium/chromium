@@ -628,16 +628,6 @@ ClientSharedImage::HelperGpuMemoryBufferManager::HelperGpuMemoryBufferManager(
 ClientSharedImage::HelperGpuMemoryBufferManager::
     ~HelperGpuMemoryBufferManager() = default;
 
-std::unique_ptr<gfx::GpuMemoryBuffer>
-ClientSharedImage::HelperGpuMemoryBufferManager::CreateGpuMemoryBuffer(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    gpu::SurfaceHandle surface_handle,
-    base::WaitableEvent* shutdown_event) {
-  NOTREACHED();
-}
-
 void ClientSharedImage::HelperGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion memory_region,

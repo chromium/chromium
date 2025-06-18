@@ -11,6 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
+#include "ui/gfx/gpu_memory_buffer.h"
+
+namespace base {
+class WaitableEvent;
+}
 
 namespace gpu {
 
@@ -34,13 +39,12 @@ class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
     fail_on_create_ = fail_on_create;
   }
 
-  // Overridden from gpu::GpuMemoryBufferManager:
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
-      base::WaitableEvent* shutdown_event) override;
+      base::WaitableEvent* shutdown_event);
 
  private:
   // This class is called by multiple threads at the same time. Hold this lock

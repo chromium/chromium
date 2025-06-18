@@ -24,6 +24,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace media {
@@ -279,15 +280,6 @@ class GPU_EXPORT ClientSharedImage
     ~HelperGpuMemoryBufferManager() override;
 
     // GpuMemoryBufferManager interface implementation.
-    // This method should not be used via this interface. Hence marking it as
-    // NOTREACHED.
-    std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
-        const gfx::Size& size,
-        gfx::BufferFormat format,
-        gfx::BufferUsage usage,
-        gpu::SurfaceHandle surface_handle,
-        base::WaitableEvent* shutdown_event) final;
-
     void CopyGpuMemoryBufferAsync(
         gfx::GpuMemoryBufferHandle buffer_handle,
         base::UnsafeSharedMemoryRegion memory_region,
