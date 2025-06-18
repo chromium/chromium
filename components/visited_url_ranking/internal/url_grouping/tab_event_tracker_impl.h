@@ -19,7 +19,8 @@ class TabEventTrackerImpl : public TabEventTracker {
   static const char kAndroidNativeNewTabPageURL[];
 
   using OnNewEventCallback = base::RepeatingClosure;
-  explicit TabEventTrackerImpl(OnNewEventCallback on_new_event_callback);
+  explicit TabEventTrackerImpl(OnNewEventCallback trigger_event_callback,
+                               OnNewEventCallback invalidate_cache_callback);
   ~TabEventTrackerImpl() override;
 
   TabEventTrackerImpl(const TabEventTrackerImpl&) = delete;
@@ -60,7 +61,8 @@ class TabEventTrackerImpl : public TabEventTracker {
   std::map<int, std::vector<TabSelection>> tab_id_selection_map_;
   std::set<int> closing_tabs_;
   std::optional<TabSelection> current_selection_;
-  OnNewEventCallback on_new_event_callback_;
+  OnNewEventCallback trigger_event_callback_;
+  OnNewEventCallback invalidate_cache_callback_;
   const bool tab_switcher_trigger_only_;
   const bool trigger_on_navigation_;
 };

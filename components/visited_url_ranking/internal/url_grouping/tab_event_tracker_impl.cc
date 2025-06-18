@@ -18,8 +18,10 @@ const char TabEventTrackerImpl::kAndroidNativeNewTabPageURL[] =
     "chrome-native://newtab/";
 
 TabEventTrackerImpl::TabEventTrackerImpl(
-    OnNewEventCallback on_new_event_callback)
-    : on_new_event_callback_(on_new_event_callback),
+    OnNewEventCallback trigger_event_callback,
+    OnNewEventCallback invalidate_cache_callback)
+    : trigger_event_callback_(trigger_event_callback),
+      invalidate_cache_callback_(invalidate_cache_callback),
       tab_switcher_trigger_only_(
           features::kGroupSuggestionEnableTabSwitcherOnly.Get()),
       trigger_on_navigation_(
@@ -37,8 +39,11 @@ TabEventTrackerImpl::TabSelection::TabSelection(
 TabEventTrackerImpl::TabSelection::~TabSelection() = default;
 
 void TabEventTrackerImpl::DidAddTab(int tab_id, int tab_launch_type) {
+  // The cache could have suggestions without the opened tab, which may need
+  // to be included.
+  invalidate_cache_callback_.Run();
   if (!tab_switcher_trigger_only_) {
-    on_new_event_callback_.Run();
+    trigger_event_callback_.Run();
   }
 }
 
@@ -56,7 +61,7 @@ void TabEventTrackerImpl::DidSelectTab(int tab_id,
   current_selection_->committed = true;
   tab_id_selection_map_[tab_id].emplace_back(*current_selection_);
   if (!tab_switcher_trigger_only_) {
-    on_new_event_callback_.Run();
+    trigger_event_callback_.Run();
   }
 }
 
@@ -66,6 +71,9 @@ void TabEventTrackerImpl::WillCloseTab(int tab_id) {
 
 void TabEventTrackerImpl::TabClosureUndone(int tab_id) {
   closing_tabs_.erase(tab_id);
+  // The cache could have suggestions without the reopened tab, which may need
+  // to be included.
+  invalidate_cache_callback_.Run();
 }
 
 void TabEventTrackerImpl::TabClosureCommitted(int tab_id) {
@@ -95,13 +103,13 @@ void TabEventTrackerImpl::OnDidFinishNavigation(
     tab_id_selection_map_[tab_id].emplace_back(*current_selection_);
   }
   if (!tab_switcher_trigger_only_ && trigger_on_navigation_) {
-    on_new_event_callback_.Run();
+    trigger_event_callback_.Run();
   }
 }
 
 void TabEventTrackerImpl::DidEnterTabSwitcher() {
   if (tab_switcher_trigger_only_) {
-    on_new_event_callback_.Run();
+    trigger_event_callback_.Run();
   }
 }
 

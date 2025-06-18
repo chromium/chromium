@@ -17,6 +17,10 @@ class PrefRegistrySimple;
 
 namespace visited_url_ranking {
 
+using CachedSuggestionsAndInputs =
+    std::pair<GroupSuggestions,
+              std::vector<scoped_refptr<segmentation_platform::InputContext>>>;
+
 class GroupSuggestionsTracker {
  public:
   static const char kGroupSuggestionsTrackerStatePref[];
@@ -45,10 +49,15 @@ class GroupSuggestionsTracker {
           inputs);
 
   // Caches the provided suggestions. Overwrites any previously cached data.
-  void CacheSuggestions(GroupSuggestions suggestions);
+  void CacheSuggestions(
+      GroupSuggestions suggestions,
+      std::vector<scoped_refptr<segmentation_platform::InputContext>> inputs);
 
   // Retrieves a copy of the last cached suggestions. Does not clear the cache.
-  std::optional<GroupSuggestions> GetCachedSuggestions() const;
+  std::optional<CachedSuggestionsAndInputs> GetCachedSuggestions() const;
+
+  // Invalidates the cached suggestions.
+  void InvalidateCache();
 
  private:
   struct ShownSuggestion {
@@ -80,9 +89,9 @@ class GroupSuggestionsTracker {
   raw_ptr<PrefService> pref_service_;
   std::vector<ShownSuggestion> suggestions_;
 
-  // Holds the last set of computed suggestions for the GetCachedSuggestions
-  // API.
-  std::optional<GroupSuggestions> last_cached_suggestions_;
+  // Holds the last set of computed suggestions and their input contexts for the
+  // GetCachedSuggestions API.
+  std::optional<CachedSuggestionsAndInputs> last_cached_suggestions_and_inputs_;
 };
 
 }  // namespace visited_url_ranking

@@ -507,4 +507,30 @@ TEST_F(GroupSuggestionsTrackerTest,
   EXPECT_TRUE(tracker_->ShouldShowSuggestion(candidate2, inputs_candidate2));
 }
 
+TEST_F(GroupSuggestionsTrackerTest, InvalidateCache) {
+  // 1. Cache some suggestions.
+  GroupSuggestions suggestions_to_cache;
+  suggestions_to_cache.suggestions.emplace_back();
+  suggestions_to_cache.suggestions.back().tab_ids = {1, 2};
+  suggestions_to_cache.suggestions.back().suggestion_reason =
+      GroupSuggestion::SuggestionReason::kRecentlyOpened;
+  auto inputs = CreateTestInputs(
+      {{1, "https://hosta.com/p1"}, {2, "https://hostb.com/p2"}});
+  tracker_->CacheSuggestions(suggestions_to_cache.DeepCopy(), inputs);
+
+  // 2. Verify cache is populated.
+  std::optional<CachedSuggestionsAndInputs> cached_data =
+      tracker_->GetCachedSuggestions();
+  ASSERT_TRUE(cached_data.has_value());
+  ASSERT_FALSE(cached_data->first.suggestions.empty());
+  EXPECT_EQ(cached_data->first.suggestions.front().tab_ids.size(), 2u);
+
+  // 3. Invalidate cache.
+  tracker_->InvalidateCache();
+
+  // 4. Verify cache is empty.
+  cached_data = tracker_->GetCachedSuggestions();
+  EXPECT_FALSE(cached_data.has_value());
+}
+
 }  // namespace visited_url_ranking

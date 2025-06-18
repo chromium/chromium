@@ -319,4 +319,78 @@ TEST_F(GroupSuggestionsManagerTest,
            GetSuggestionReasonString(shown_suggestion.suggestion_reason)}),
       4, 1);
 }
+
+TEST_F(GroupSuggestionsManagerTest,
+       GetCachedSuggestions_RunCallbackAndRecordUKM) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_enable_recently_opened", "true"}});
+  // Reinitialize manager to pick up feature changes for heuristics.
+  suggestions_manager_ = std::make_unique<GroupSuggestionsManager>(
+      mock_ranking_service_.get(), &pref_service_);
+
+  // 1. Set up data for caching.
+  std::vector<URLVisitAggregate> candidates_for_cache;
+  candidates_for_cache.push_back(
+      CreateVisitForTab(101, base::Seconds(30), 2, true));
+  candidates_for_cache.push_back(
+      CreateVisitForTab(102, base::Seconds(60), 1, false));
+
+  std::vector<scoped_refptr<segmentation_platform::InputContext>>
+      inputs_for_cache;
+  for (const auto& candidate : candidates_for_cache) {
+    inputs_for_cache.push_back(
+        AsInputContext(kSuggestionsPredictionSchema, candidate));
+  }
+
+  GroupSuggestion suggestion_to_cache;
+  suggestion_to_cache.tab_ids = {101, 102};
+  suggestion_to_cache.suggestion_reason =
+      GroupSuggestion::SuggestionReason::kRecentlyOpened;
+  suggestion_to_cache.suggestion_id =
+      UrlGroupingSuggestionId::FromUnsafeValue(13);
+
+  GroupingHeuristics::SuggestionsResult result_for_cache;
+  result_for_cache.suggestions = GroupSuggestions();
+  result_for_cache.suggestions->suggestions.push_back(
+      suggestion_to_cache.DeepCopy());
+  result_for_cache.inputs = inputs_for_cache;
+
+  // Call OnFinishComputeSuggestions to populate the cache.
+  OnFinishComputeSuggestions(GroupSuggestionsService::Scope(),
+                             std::move(result_for_cache));
+
+  // 2. Get cached suggestions.
+  std::optional<CachedSuggestions> cached_suggestions_optional =
+      suggestions_manager_->GetCachedSuggestions(
+          GroupSuggestionsService::Scope());
+  ASSERT_TRUE(cached_suggestions_optional.has_value());
+  ASSERT_FALSE(cached_suggestions_optional->response_callback.is_null());
+
+  // 3. Trigger another suggestion computation, which should invalidate the
+  // cache.
+  //    We don't need to wait for it to complete, just ensure it's called.
+  EXPECT_CALL(*mock_ranking_service_, FetchURLVisitAggregates(_, _)).Times(1);
+  suggestions_manager_->MaybeTriggerSuggestions(
+      GroupSuggestionsService::Scope());
+
+  // 4. Verify cache is now empty.
+  std::optional<CachedSuggestions> invalidated_cached_suggestions =
+      suggestions_manager_->GetCachedSuggestions(
+          GroupSuggestionsService::Scope());
+  EXPECT_FALSE(invalidated_cached_suggestions.has_value());
+
+  // 5. Run the callback from the original cached item (still valid in memory).
+  UserResponseMetadata user_response_data;
+  user_response_data.suggestion_id = suggestion_to_cache.suggestion_id;
+  user_response_data.user_response = UserResponse::kAccepted;
+  std::move(cached_suggestions_optional->response_callback)
+      .Run(user_response_data);
+
+  // 6. Verify UKM recording.
+  VerifyUkmResults(candidates_for_cache, ukm_recorder,
+                   suggestion_to_cache.suggestion_reason,
+                   user_response_data.user_response);
+}
 }  // namespace visited_url_ranking

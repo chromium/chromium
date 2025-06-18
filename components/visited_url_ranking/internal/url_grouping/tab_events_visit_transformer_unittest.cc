@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "components/visited_url_ranking/internal/transformer/transformer_test_support.h"
 #include "components/visited_url_ranking/internal/url_grouping/tab_event_tracker_impl.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
@@ -49,7 +50,8 @@ class TabEventsVisitTransformerTest : public URLVisitAggregatesTransformerTest {
     auto transformer = std::make_unique<TabEventsVisitTransformer>();
     tab_transformer_impl_ = transformer.get();
     transformer_ = std::move(transformer);
-    tab_tracker_ = std::make_unique<TabEventTrackerImpl>(base::DoNothing());
+    tab_tracker_ = std::make_unique<TabEventTrackerImpl>(base::DoNothing(),
+                                                         base::DoNothing());
     tab_transformer_impl_->set_tab_event_tracker(tab_tracker_.get());
   }
 

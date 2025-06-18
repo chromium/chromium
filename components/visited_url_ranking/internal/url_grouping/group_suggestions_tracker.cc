@@ -285,16 +285,24 @@ bool GroupSuggestionsTracker::HasOverlappingHosts(
          kReasonToMaxOverlappingTabs.at(suggestion.suggestion_reason);
 }
 
-void GroupSuggestionsTracker::CacheSuggestions(GroupSuggestions suggestions) {
-  last_cached_suggestions_ = std::move(suggestions);
+void GroupSuggestionsTracker::CacheSuggestions(
+    GroupSuggestions suggestions,
+    std::vector<scoped_refptr<segmentation_platform::InputContext>> inputs) {
+  last_cached_suggestions_and_inputs_ =
+      std::make_pair(std::move(suggestions), std::move(inputs));
 }
 
-std::optional<GroupSuggestions> GroupSuggestionsTracker::GetCachedSuggestions()
-    const {
-  if (last_cached_suggestions_) {
-    return last_cached_suggestions_->DeepCopy();
+std::optional<CachedSuggestionsAndInputs>
+GroupSuggestionsTracker::GetCachedSuggestions() const {
+  if (last_cached_suggestions_and_inputs_) {
+    return std::make_pair(last_cached_suggestions_and_inputs_->first.DeepCopy(),
+                          last_cached_suggestions_and_inputs_->second);
   }
   return std::nullopt;
+}
+
+void GroupSuggestionsTracker::InvalidateCache() {
+  last_cached_suggestions_and_inputs_.reset();
 }
 
 }  // namespace visited_url_ranking

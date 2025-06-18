@@ -23,6 +23,8 @@ GroupSuggestionsServiceImpl::GroupSuggestionsServiceImpl(
                                                     pref_service)) {
   tab_tracker_ = std::make_unique<TabEventTrackerImpl>(
       base::BindRepeating(&GroupSuggestionsServiceImpl::OnNewSuggestionTabEvent,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&GroupSuggestionsServiceImpl::InvalidateCache,
                           weak_ptr_factory_.GetWeakPtr()));
   tab_events_transformer_->set_tab_event_tracker(tab_tracker_.get());
 }
@@ -61,6 +63,10 @@ void GroupSuggestionsServiceImpl::OnNewSuggestionTabEvent() {
   // TODO(ssid): Plumb in the scope from the trigger events.
   group_suggestions_manager_->MaybeTriggerSuggestions(
       GroupSuggestionsService::Scope());
+}
+
+void GroupSuggestionsServiceImpl::InvalidateCache() {
+  group_suggestions_manager_->InvalidateCache();
 }
 
 void GroupSuggestionsServiceImpl::SetConfigForTesting(

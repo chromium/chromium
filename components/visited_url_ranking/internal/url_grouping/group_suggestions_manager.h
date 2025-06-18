@@ -52,6 +52,9 @@ class GroupSuggestionsManager {
   std::optional<CachedSuggestions> GetCachedSuggestions(
       const GroupSuggestionsService::Scope& scope);
 
+  // Invalidates the cached suggestions in the tracker.
+  void InvalidateCache();
+
  private:
   friend class GroupSuggestionsManagerTest;
 

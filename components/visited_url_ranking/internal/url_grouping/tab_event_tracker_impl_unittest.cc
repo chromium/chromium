@@ -24,8 +24,8 @@ class TabEventTrackerImplTest : public testing::Test {
 
   void SetUp() override {
     Test::SetUp();
-    tab_event_tracker_ =
-        std::make_unique<TabEventTrackerImpl>(mock_callback_.Get());
+    tab_event_tracker_ = std::make_unique<TabEventTrackerImpl>(
+        mock_callback_.Get(), mock_invalidate_callback_.Get());
   }
 
   void TearDown() override {
@@ -38,16 +38,25 @@ class TabEventTrackerImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList features_;
   base::MockCallback<TabEventTrackerImpl::OnNewEventCallback> mock_callback_;
+  base::MockCallback<TabEventTrackerImpl::OnNewEventCallback>
+      mock_invalidate_callback_;
   std::unique_ptr<TabEventTrackerImpl> tab_event_tracker_;
 };
 
 TEST_F(TabEventTrackerImplTest, CallbackCalled) {
+  // DidAddTab should trigger both callbacks.
+  EXPECT_CALL(mock_invalidate_callback_, Run());
   EXPECT_CALL(mock_callback_, Run());
   tab_event_tracker_->DidAddTab(1, 0);
 
+  // DidSelectTab should only trigger the main event callback.
   EXPECT_CALL(mock_callback_, Run());
   tab_event_tracker_->DidSelectTab(
       1, GURL(kTestUrl), TabEventTracker::TabSelectionType::kFromUser, 2);
+
+  // TabClosureUndone should trigger invalidation.
+  EXPECT_CALL(mock_invalidate_callback_, Run());
+  tab_event_tracker_->TabClosureUndone(1);
 }
 
 TEST_F(TabEventTrackerImplTest, SwitchedCount) {
@@ -172,8 +181,8 @@ TEST_F(TabEventTrackerImplTest, DidEnterTabSwitcher) {
       features::kGroupSuggestionService,
       {{"group_suggestion_enable_tab_switcher_only", "true"}});
   tab_event_tracker_.reset();
-  tab_event_tracker_ =
-      std::make_unique<TabEventTrackerImpl>(mock_callback_.Get());
+  tab_event_tracker_ = std::make_unique<TabEventTrackerImpl>(
+      mock_callback_.Get(), mock_invalidate_callback_.Get());
 
   EXPECT_CALL(mock_callback_, Run()).Times(1);
   tab_event_tracker_->DidEnterTabSwitcher();
@@ -257,8 +266,8 @@ TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_TriggerCallback) {
       features::kGroupSuggestionService,
       {{"group_suggestion_enable_recently_opened", "true"}});
   tab_event_tracker_.reset();
-  tab_event_tracker_ =
-      std::make_unique<TabEventTrackerImpl>(mock_callback_.Get());
+  tab_event_tracker_ = std::make_unique<TabEventTrackerImpl>(
+      mock_callback_.Get(), mock_invalidate_callback_.Get());
 
   tab_event_tracker_->DidSelectTab(
       kTabId, GURL(kTestUrl),
@@ -276,8 +285,8 @@ TEST_F(TabEventTrackerImplTest, OnDidFinishNavigation_NotTriggerCallback) {
       features::kGroupSuggestionService,
       {{"group_suggestion_trigger_calculation_on_page_load", "false"}});
   tab_event_tracker_.reset();
-  tab_event_tracker_ =
-      std::make_unique<TabEventTrackerImpl>(mock_callback_.Get());
+  tab_event_tracker_ = std::make_unique<TabEventTrackerImpl>(
+      mock_callback_.Get(), mock_invalidate_callback_.Get());
 
   tab_event_tracker_->DidSelectTab(
       kTabId, GURL(kTestUrl),

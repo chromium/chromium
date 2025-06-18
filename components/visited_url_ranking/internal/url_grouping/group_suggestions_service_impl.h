@@ -51,6 +51,9 @@ class GroupSuggestionsServiceImpl : public GroupSuggestionsService,
     return group_suggestions_manager_.get();
   }
 
+  // Invalidates the cached suggestions.
+  void InvalidateCache();
+
  private:
   void OnNewSuggestionTabEvent();
 

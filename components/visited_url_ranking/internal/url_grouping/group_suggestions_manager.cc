@@ -16,6 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
+#include "components/visited_url_ranking/internal/url_grouping/group_suggestions_tracker.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_delegate.h"
@@ -236,6 +237,9 @@ GroupSuggestionsManager::~GroupSuggestionsManager() = default;
 
 void GroupSuggestionsManager::MaybeTriggerSuggestions(
     const GroupSuggestionsService::Scope& scope) {
+  // Invalidate any existing cache as new events might change suggestions.
+  suggestion_tracker_->InvalidateCache();
+
   // Skip computation if it ran recently to avoid overhead.
   if (!last_computation_time_.is_null() &&
       base::Time::Now() - last_computation_time_ <
@@ -318,7 +322,8 @@ void GroupSuggestionsManager::OnFinishComputeSuggestions(
   // Cache the suggestions before sending to delegates, in case the delegate
   // requests the cache.
   if (!suggestions->suggestions.empty()) {
-    suggestion_tracker_->CacheSuggestions(suggestions->DeepCopy());
+    suggestion_tracker_->CacheSuggestions(suggestions->DeepCopy(),
+                                          result.inputs);
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -374,19 +379,25 @@ void GroupSuggestionsManager::OnSuggestionResult(
 std::optional<CachedSuggestions> GroupSuggestionsManager::GetCachedSuggestions(
     const GroupSuggestionsService::Scope& scope) {
   // TODO(ssid): Use `scope` here to fetch the correct cached suggestions.
-  auto suggestions = suggestion_tracker_->GetCachedSuggestions();
-  if (!suggestions || suggestions->suggestions.empty()) {
+  std::optional<CachedSuggestionsAndInputs> cached_data =
+      suggestion_tracker_->GetCachedSuggestions();
+
+  if (!cached_data || cached_data->first.suggestions.empty()) {
     return std::nullopt;
   }
+
   CachedSuggestions result;
-  result.suggestions = std::move(*suggestions);
-  result.response_callback = base::BindOnce(
-      &GroupSuggestionsManager::OnSuggestionResult,
-      weak_ptr_factory_.GetWeakPtr(),
-      result.suggestions.suggestions.front().DeepCopy(),
-      // TODO(ssid): Cache the input context as well.
-      std::vector<scoped_refptr<segmentation_platform::InputContext>>());
+  result.suggestions = std::move(cached_data->first);
+  auto inputs = cached_data->second;
+  result.response_callback =
+      base::BindOnce(&GroupSuggestionsManager::OnSuggestionResult,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     result.suggestions.suggestions.front().DeepCopy(), inputs);
   return std::move(result);
+}
+
+void GroupSuggestionsManager::InvalidateCache() {
+  suggestion_tracker_->InvalidateCache();
 }
 
 }  // namespace visited_url_ranking
