@@ -60,6 +60,7 @@ public class ScreenCapture {
     // While capture is running these references should only be modified on the background thread.
     private @Nullable VirtualDisplay mVirtualDisplay;
     private @Nullable ImageReader mImageReader;
+    private int mAcquiredImageCount;
 
     private ScreenCapture(long nativeDesktopCapturerAndroid) {
         mNativeDesktopCapturerAndroid = nativeDesktopCapturerAndroid;
@@ -151,11 +152,14 @@ public class ScreenCapture {
     private class ImageListener implements ImageReader.OnImageAvailableListener {
         private @Nullable Image maybeAcquireImage(ImageReader reader) {
             assert mBackgroundThread.getLooper().isCurrentThread();
+            // If we have acquired the maximum number of images `acquireLatestImage`
+            // will print warning level logspam, so avoid this.
+            if (mAcquiredImageCount >= reader.getMaxImages()) return null;
+
             try {
-                // TODO(crbug.com/352187279): If we have acquired the maximum number of images this
-                // will print warning level logspam. This isn't functionally problem but would be
-                // nice to avoid.
-                return reader.acquireLatestImage();
+                Image image = reader.acquireLatestImage();
+                if (image != null) mAcquiredImageCount++;
+                return image;
             } catch (IllegalStateException ex) {
                 // This happens if we have acquired the maximum number of images without closing
                 // them. We will eventually close the images so this is not an error condition.
@@ -174,6 +178,11 @@ public class ScreenCapture {
             // already have been closed since the ImageReader is closed, but it's safe to call close
             // again here.
             image.close();
+
+            // `mAcquiredImageCount` is only for the current ImageReader, so don't incorrectly
+            // decrement it for an old ImageReader.
+            if (reader == mImageReader) mAcquiredImageCount--;
+
             // Now that we closed an image, we may be able to acquire a new image.
             onImageAvailable(reader);
         }
@@ -256,6 +265,7 @@ public class ScreenCapture {
         if (mImageReader != null) {
             mImageReader.close();
             mImageReader = null;
+            mAcquiredImageCount = 0;
         }
         if (mVirtualDisplay != null) {
             mVirtualDisplay.release();
