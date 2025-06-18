@@ -56,18 +56,23 @@ class IncognitoClearBrowsingDataDialogTest : public InProcessBrowserTest {
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 };
 
-// Used to test that the bubble widget is destroyed before the browser.
+// Used to test that the bubble widget is destroyed before the host browser.
 class BubbleWidgetDestroyedObserver : public views::WidgetObserver {
  public:
-  explicit BubbleWidgetDestroyedObserver(views::Widget* bubble_widget) {
+  BubbleWidgetDestroyedObserver(BrowserWindowInterface* host_browser,
+                                views::Widget* bubble_widget)
+      : host_browser_(host_browser->GetWeakPtr()) {
     bubble_widget->AddObserver(this);
   }
   ~BubbleWidgetDestroyedObserver() override = default;
 
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override {
-    ASSERT_GT(BrowserList::GetIncognitoBrowserCount(), 0u);
+    ASSERT_TRUE(host_browser_);
   }
+
+ private:
+  base::WeakPtr<BrowserWindowInterface> host_browser_;
 };
 
 }  // namespace
@@ -104,8 +109,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
                        TestCloseWindowsButton) {
   base::HistogramTester histogram_tester;
   OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble);
-  auto destroyed_observer =
-      BubbleWidgetDestroyedObserver(GetDialogView()->GetWidget());
+  auto destroyed_observer = BubbleWidgetDestroyedObserver(
+      GetIncognitoBrowser(), GetDialogView()->GetWidget());
 
   GetDialogView()->AcceptDialog();
   histogram_tester.ExpectBucketCount(
@@ -134,7 +139,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest, TestCancelButton) {
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
                        TestBrowserCloseEventClosesDialogFirst) {
   OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble);
-  auto destroyed_observer = BubbleWidgetDestroyedObserver(GetDialogWidget());
+  auto destroyed_observer =
+      BubbleWidgetDestroyedObserver(GetIncognitoBrowser(), GetDialogWidget());
 
   CloseBrowserSynchronously(GetIncognitoBrowser());
 
