@@ -3107,16 +3107,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
 
-// TODO(crbug.com/392058349): Re-enable the test.
-// TODO(crbug.com/331650494): Flaky on Linux debug build.
-#if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
-#define MAYBE_TestRawHeadersWithRedirectAndHSTS \
-  DISABLED_TestRawHeadersWithRedirectAndHSTS
-#else
-#define MAYBE_TestRawHeadersWithRedirectAndHSTS \
-  TestRawHeadersWithRedirectAndHSTS
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestRawHeadersWithRedirectAndHSTS) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestRawHeadersWithRedirectAndHSTS) {
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
