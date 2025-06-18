@@ -476,12 +476,6 @@ def delete_simulator_runtime(runtime_id, should_wait=False):
     LOGGER.debug('Runtime successfully deleted!')
 
 
-def delete_simulator_runtime_after_days(days):
-  cmd = ['xcrun', 'simctl', 'runtime', 'delete', '--notUsedSinceDays', days]
-  LOGGER.debug('Deleting unused runtime with command %s' % cmd)
-  subprocess.run(cmd, check=False)
-
-
 def delete_least_recently_used_simulator_runtimes(
     max_to_keep=constants.MAX_RUNTIME_KEPT_COUNT):
   """Delete least recently used simulator runtimes.
@@ -513,16 +507,6 @@ def delete_least_recently_used_simulator_runtimes(
       keep_count += 1
     else:
       delete_simulator_runtime(runtime_id, True)
-
-
-def delete_simulator_runtime_and_wait(ios_version):
-  runtime_to_delete = get_simulator_runtime_info(ios_version)
-  if runtime_to_delete == None:
-    LOGGER.debug('Runtime %s does not exist in Xcode, no need to cleanup...' %
-                 ios_version)
-    return
-
-  delete_simulator_runtime(runtime_to_delete['identifier'], True)
 
 
 def disable_hardware_keyboard(udid: str) -> None:

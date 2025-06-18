@@ -403,31 +403,6 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     check_output_mock.assert_has_calls(calls)
     self.assertEqual(check_output_mock.call_count, 1)
 
-  def test_delete_simulator_runtime_and_wait_success(self, _, _2):
-    with mock.patch('iossim_util.get_simulator_runtime_info_by_id') \
-        as mock_get_runtime_info_by_id, \
-        mock.patch('iossim_util.get_simulator_runtime_info') \
-        as mock_get_runtime_info, \
-        mock.patch('iossim_util.delete_simulator_runtime') \
-        as mock_delete_runtime:
-      mock_get_runtime_info_by_id.side_effect = [
-          {
-              'identifier': '111111',
-              'state': 'deleting'
-          },
-          None,
-      ]
-      mock_get_runtime_info.return_value = {
-          'identifier': '111111',
-          'state': 'ready'
-      }
-      mock_delete_runtime.return_value = None
-
-      iossim_util.delete_simulator_runtime_and_wait('13.1')
-
-      mock_get_runtime_info.assert_called_with('13.1')
-      mock_delete_runtime.assert_called_once_with('111111', True)
-
   def test_delete_least_recently_used_simulator_runtimes(self, _, _2):
     with mock.patch('iossim_util.delete_simulator_runtime') \
        as mock_delete_simulator_runtime:
