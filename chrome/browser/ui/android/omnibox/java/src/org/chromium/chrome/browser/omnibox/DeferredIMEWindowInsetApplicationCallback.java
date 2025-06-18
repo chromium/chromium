@@ -160,7 +160,15 @@ public class DeferredIMEWindowInsetApplicationCallback
                 new WindowInsetsCompat.Builder(windowInsetsCompat)
                         .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE);
         if (imeInsets.bottom > 0) {
-            builder.setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE);
+            Insets navigationInsets =
+                    windowInsetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars());
+            builder.setInsets(
+                    WindowInsetsCompat.Type.navigationBars(),
+                    Insets.of(
+                            navigationInsets.left,
+                            navigationInsets.top,
+                            navigationInsets.right,
+                            /* bottom= */ 0));
         }
         return builder.build();
     }

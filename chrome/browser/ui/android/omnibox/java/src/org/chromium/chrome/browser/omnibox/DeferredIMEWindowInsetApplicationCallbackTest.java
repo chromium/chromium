@@ -115,6 +115,27 @@ public class DeferredIMEWindowInsetApplicationCallbackTest {
     }
 
     @Test
+    public void testAnimatedkeyboardShow_horizontalNavBar() {
+        Insets horizontalNavbarInsets = Insets.of(0, 0, 84, 0);
+
+        mCallback.attach(mWindowAndroid);
+        mCallback.onPrepare(mAnimation);
+
+        WindowInsetsCompat windowInsets =
+                mBaseWindowInsets
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), horizontalNavbarInsets)
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 384))
+                        .build();
+        WindowInsetsCompat modifiedInsets = mCallback.onApplyWindowInsets(mView, windowInsets);
+
+        assertEquals(
+                horizontalNavbarInsets,
+                modifiedInsets.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(Insets.NONE, modifiedInsets.getInsets(WindowInsetsCompat.Type.ime()));
+        verify(mUpdateRunnable, never()).run();
+    }
+
+    @Test
     public void testUnanimatedChange_appliedImmediately() {
         WindowInsetsCompat windowInsets =
                 mBaseWindowInsets
