@@ -44,6 +44,8 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
+#import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
+#import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/ios/uikit_util.h"
 
@@ -62,6 +64,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 // Voice Search, depending on if Lens is enabled.
 const CGFloat kEndButtonFakeboxTrailingSpace = 13.0;
 const CGFloat kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace = 7.0;
+const CGFloat kEndButtonMIAEnlargedFakebox = 20.0;
 const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 
 // The constants for the constraints the leading-edge aligned UI elements.
@@ -87,6 +90,20 @@ const CGFloat kErrorSymbolPointSize = 16.0;
 // The offset from the center of the customization button for where to show the
 // new feature badge.
 const CGFloat kCustomizationNewBadgeOffset = 14.0;
+
+// The name of the animation for the MIA button.
+NSString* const kMIAGlowingCircleAnimation = @"mia_glowing_circle_animation";
+
+// The value that makes the Lottie animation loop indefinitely.
+const CGFloat kLottieInfiniteLoopFlag = -1;
+
+// The value of the sides of the MIA circle animation for the normal size of the
+// fakebox.
+const CGFloat kMIACircleAnimationSizeNormal = 40.0;
+
+// The value of the sides of the MIA circle animation for the enlarged size of
+// the fakebox.
+const CGFloat kMIACircleAnimationSizeEnlarged = 48.0;
 
 // The amount to inset the Fakebox from the rest of the modules on Home.
 CGFloat FakeboxHorizontalMargin(id<UITraitEnvironment> environment) {
@@ -168,6 +185,18 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   return from + (to - from) * percent;
 }
 
+// Computes the opacity of the MIA animation given the scroll percent of the
+// view.
+CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
+  // The progress is inversely proportional with the scroll percentage, meaning
+  // that a scroll percent of 0 corresponds to full opacity.
+  //
+  // To avoid showing a mostly faded animation view for intermediary scrolls,
+  // follow a scaled exponential curve that will ease in the animation.
+  CGFloat unboundOpacity = 1 - 6 * pow(percent, 4);
+  return MIN(MAX(unboundOpacity, 0), 1);
+}
+
 }  // namespace
 
 @interface NewTabPageHeaderView ()
@@ -202,6 +231,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 @property(nonatomic, readonly) BOOL useSingleButtonMIA;
 // Whether the MIA entry point is being shown.
 @property(nonatomic, readonly) BOOL shouldShowMIAEntrypoint;
+// Whether the fakebox is enlarged due to a MIA entry point variation.
+@property(nonatomic, readonly) BOOL useMIAEnlargedFakebox;
 
 @end
 
@@ -227,6 +258,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // `tabGroupIndicatorView`'s visibility.
   NSLayoutConstraint* _toolbarNoTabGroupIndicartorConstraint;
   NSLayoutConstraint* _toolbarTabGroupIndicartorConstraint;
+
+  // Maintains the MIA circle animation.
+  id<LottieAnimation> _miaAnimation;
+  UIView* _miaAnimationView;
 }
 
 #pragma mark - Public
@@ -382,6 +417,12 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [_buttonStack addArrangedSubview:self.miaButton];
     if (self.useInlineMIA) {
       [self addMIAAndVoiceDivider];
+    } else if (self.useSingleButtonMIA) {
+      _miaAnimationView = [self createMIAAnimationView];
+      [_miaAnimation play];
+      [self.miaButton addSubview:_miaAnimationView];
+      AddSameCenterConstraints(_miaAnimationView, self.miaButton);
+      AddSizeConstraints(_miaAnimationView, [self miaAnimationSize]);
     }
   }
 
@@ -520,6 +561,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       content_suggestions::SearchFieldWidth(contentWidth, self.traitCollection);
 
   CGFloat percent = [self searchFieldProgressForOffset:offset];
+
+  _miaAnimationView.alpha = MIAAnimationOpacityForScrollProgress(percent);
+
   [self updateTabGroupIndicatorAvailabilityWithOffset:offset];
 
   // Update the opacity of the header background color as the user scrolls so
@@ -950,6 +994,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // Returns end button fakebox trailing space depending on fakebox size and
 // whether the new badge is displayed.
 - (CGFloat)endButtonFakeboxTrailingSpace {
+  // If the MIA entry point is shown add a bigger space to the trailing edge to
+  // accomodate the animation view.
+  if (self.useMIAEnlargedFakebox) {
+    return kEndButtonMIAEnlargedFakebox;
+  }
   // If normal sized fakebox and new bade is showing, reduce trailing space.
   if (_useNewBadgeForLensButton && !ShouldEnlargeLogoAndFakebox()) {
     return kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace;
@@ -995,6 +1044,45 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 - (BOOL)shouldShowMIAEntrypoint {
   return self.useInlineMIA || self.useSingleButtonMIA;
+}
+
+// Creates an animation view for the MIA entry point.
+- (UIView*)createMIAAnimationView {
+  if (!_miaAnimation) {
+    _miaAnimation = [self createMIAAnimation];
+  }
+
+  UIView* animationView = _miaAnimation.animationView;
+  animationView.translatesAutoresizingMaskIntoConstraints = NO;
+  animationView.contentMode = UIViewContentModeScaleAspectFit;
+
+  return animationView;
+}
+
+// Creates and returns the LottieAnimation for the MIA button.
+- (id<LottieAnimation>)createMIAAnimation {
+  LottieAnimationConfiguration* config =
+      [[LottieAnimationConfiguration alloc] init];
+  config.animationName = kMIAGlowingCircleAnimation;
+  config.loopAnimationCount = kLottieInfiniteLoopFlag;
+  return ios::provider::GenerateLottieAnimation(config);
+}
+
+// The size for the animation view dependant on the fakebox size.
+- (CGSize)miaAnimationSize {
+  if (self.useMIAEnlargedFakebox) {
+    return CGSizeMake(kMIACircleAnimationSizeEnlarged,
+                      kMIACircleAnimationSizeEnlarged);
+  } else {
+    return CGSizeMake(kMIACircleAnimationSizeNormal,
+                      kMIACircleAnimationSizeNormal);
+  }
+}
+
+- (BOOL)useMIAEnlargedFakebox {
+  return self.isGoogleDefaultSearchEngine &&
+         (GetNTPMIAEntrypointVariation() ==
+          NTPMIAEntrypointVariation::kOmniboxContainedEnlargedFakebox);
 }
 
 @end
