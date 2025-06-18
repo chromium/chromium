@@ -160,6 +160,7 @@ SystemIdentityManager::IteratorResult SystemAccountUpdater::IdentitiesOnDevice(
     id<SystemIdentity> identity) {
   NSMutableDictionary* account = [[NSMutableDictionary alloc] init];
   [account setObject:identity.userEmail forKey:app_group::kEmail];
+  [account setObject:identity.userFullName ?: @"" forKey:app_group::kFullName];
   // Add the account to the dictionary of accounts.
   [accounts setObject:account forKey:identity.gaiaID];
 

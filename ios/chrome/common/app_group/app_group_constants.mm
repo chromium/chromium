@@ -101,6 +101,7 @@ NSString* const kOpenExtensionOutcomeFailureUnsupportedScheme =
 
 NSString* const kAccountsOnDevice = @"ios.registered_accounts_on_device";
 NSString* const kEmail = @"email";
+NSString* const kFullName = @"fullName";
 NSString* const kDefaultAccount = @"Default";
 
 NSString* const kYoutubeBundleID = @"com.google.youtube";
