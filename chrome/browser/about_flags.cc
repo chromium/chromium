@@ -12979,6 +12979,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kWebSigninLeadsToImplicitlySignedInState)},
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+    {"autofill-enable-downstream-card-awareness-iph",
+     flag_descriptions::kAutofillEnableDownstreamCardAwarenessIphName,
+     flag_descriptions::kAutofillEnableDownstreamCardAwarenessIphDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableDownstreamCardAwarenessIph)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

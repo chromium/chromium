@@ -10066,6 +10066,8 @@ from previous Chrome versions.
       label="PageInfoAboutThisSiteKeepSidePanelOnSameTabNavs:disabled"/>
   <int value="-1454278433" label="ReduceIPAddressChangeNotification:enabled"/>
   <int value="-1454264660" label="ProminentDarkModeActiveTabTitle:disabled"/>
+  <int value="-1454104936"
+      label="AutofillEnableDownstreamCardAwarenessIph:disabled"/>
   <int value="-1453647118" label="PasswordLeakDetection:disabled"/>
   <int value="-1452786530" label="ChromeOSZramWriteback:enabled"/>
   <int value="-1452178473" label="EnablePixDetection:enabled"/>
@@ -10275,6 +10277,8 @@ from previous Chrome versions.
   <int value="-1383145700"
       label="AutofillDoNotMigrateUnsupportedLocalCards:enabled"/>
   <int value="-1382918690" label="VirtualKeyboardApi:enabled"/>
+  <int value="-1382709842"
+      label="AutofillEnableDownstreamCardAwarenessIph:enabled"/>
   <int value="-1382671832" label="OmniboxUIExperimentVerticalMargin:enabled"/>
   <int value="-1381231225" label="OmniboxNumWebZpsMostVisitedUrls:enabled"/>
   <int value="-1379844383" label="MacLoopbackAudioForCast:enabled"/>

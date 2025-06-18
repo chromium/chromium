@@ -796,6 +796,12 @@ const char kAutofillEnableCardInfoRuntimeRetrievalDescription[] =
     "When enabled, runtime retrieval of CVC along with card number and expiry "
     "from issuer for enrolled cards will be enabled during form fill.";
 
+const char kAutofillEnableDownstreamCardAwarenessIphName[] =
+    "Enable showing in-product help UI for downstream card awareness";
+const char kAutofillEnableDownstreamCardAwarenessIphDescription[] =
+    "When enabled, in-product help UI will be shown the first time a card "
+    "added outside of Chrome appears in Autofill card suggestions.";
+
 const char kAutofillEnableFlatRateCardBenefitsFromCurinosName[] =
     "Enable showing flat rate card benefits sourced from Curinos";
 const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[] =
