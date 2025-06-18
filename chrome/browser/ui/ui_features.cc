@@ -209,7 +209,7 @@ BASE_FEATURE(kPinnedCastButton,
 // toolbar.
 BASE_FEATURE(kEnterpriseProfileBadgingForAvatar,
              "EnterpriseProfileBadgingForAvatar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables enterprise profile badging for managed profiles on the toolbar avatar
 // and in the profile menu. On managed profiles, a building icon will be used as
