@@ -663,4 +663,11 @@ TEST(WinUtil, IsServicePresent_IsServiceEnabled) {
   EXPECT_FALSE(IsServiceEnabled(service_name));
 }
 
+TEST(WinUtil, IsServicePresent_IsServiceEnabled_NonAdmin) {
+  EXPECT_TRUE(IsServicePresent(L"Schedule"));
+  EXPECT_TRUE(IsServiceEnabled(L"Schedule"));
+  EXPECT_FALSE(IsServicePresent(L"ScheduleFooBar"));
+  EXPECT_FALSE(IsServiceEnabled(L"ScheduleFooBar"));
+}
+
 }  // namespace updater::test

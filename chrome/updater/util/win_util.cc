@@ -240,6 +240,41 @@ std::optional<std::vector<std::wstring>> CommandLineToArgv(
       std::vector<std::wstring>(argv.get(), argv.get() + num_args));
 }
 
+[[nodiscard]] bool IsServicePresentNonAdmin(const std::wstring& service_name) {
+  ScopedScHandle scm(
+      ::OpenSCManager(nullptr, nullptr, SC_MANAGER_CONNECT | GENERIC_READ));
+  if (!scm.IsValid()) {
+    return false;
+  }
+
+  ScopedScHandle service(
+      ::OpenService(scm.Get(), service_name.c_str(), SERVICE_QUERY_CONFIG));
+  return service.IsValid() || (::GetLastError() == ERROR_ACCESS_DENIED);
+}
+
+[[nodiscard]] bool IsServicePresentAdmin(const std::wstring& service_name) {
+  ScopedScHandle scm(::OpenSCManager(
+      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE));
+  if (!scm.IsValid()) {
+    return false;
+  }
+
+  ScopedScHandle service(
+      ::OpenService(scm.Get(), service_name.c_str(),
+                    SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG));
+  if (!service.IsValid()) {
+    return ::GetLastError() == ERROR_ACCESS_DENIED;
+  }
+
+  // Detects the specific case where a service shows as present, but is marked
+  // for deletion.
+  return ::ChangeServiceConfig(service.Get(), SERVICE_NO_CHANGE,
+                               SERVICE_NO_CHANGE, SERVICE_NO_CHANGE, nullptr,
+                               nullptr, nullptr, nullptr, nullptr, nullptr,
+                               nullptr) ||
+         (::GetLastError() != ERROR_SERVICE_MARKED_FOR_DELETE);
+}
+
 }  // namespace
 
 NamedObjectAttributes::NamedObjectAttributes(const std::wstring& name,
@@ -1484,24 +1519,8 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
 }
 
 [[nodiscard]] bool IsServicePresent(const std::wstring& service_name) {
-  ScopedScHandle scm(::OpenSCManager(
-      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE));
-  if (!scm.IsValid()) {
-    return false;
-  }
-
-  ScopedScHandle service(
-      ::OpenService(scm.Get(), service_name.c_str(),
-                    SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG));
-  if (!service.IsValid()) {
-    return false;
-  }
-
-  return ::ChangeServiceConfig(service.Get(), SERVICE_NO_CHANGE,
-                               SERVICE_NO_CHANGE, SERVICE_NO_CHANGE, nullptr,
-                               nullptr, nullptr, nullptr, nullptr, nullptr,
-                               nullptr) ||
-         (::GetLastError() != ERROR_SERVICE_MARKED_FOR_DELETE);
+  return ::IsUserAnAdmin() ? IsServicePresentAdmin(service_name)
+                           : IsServicePresentNonAdmin(service_name);
 }
 
 [[nodiscard]] bool IsServiceEnabled(const std::wstring& service_name) {
