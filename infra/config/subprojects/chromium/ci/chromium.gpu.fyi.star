@@ -2039,6 +2039,27 @@ ci.thin_tester(
             "mac_mini_intel_gpu_stable",
         ],
         per_test_modifications = {
+            "pixel_skia_gold_gl_passthrough_ganesh_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 2,
+                    ),
+                ),
+            ),
+            "pixel_skia_gold_metal_passthrough_ganesh_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 2,
+                    ),
+                ),
+            ),
+            "pixel_skia_gold_metal_passthrough_graphite_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 2,
+                    ),
+                ),
+            ),
             "trace_test": targets.per_test_modification(
                 mixins = targets.mixin(
                     args = [
