@@ -34,6 +34,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/session/user_education_session_manager.h"
 #include "components/user_education/common/tutorial/tutorial_description.h"
 #include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_features.h"
@@ -98,6 +99,13 @@ user_education::UserEducationStorageService* GetStorageService(
   auto* const service =
       UserEducationServiceFactory::GetForBrowserContext(profile);
   return service ? &service->user_education_storage_service() : nullptr;
+}
+
+user_education::UserEducationSessionManager* GetSessionManager(
+    Profile* profile) {
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(profile);
+  return service ? &service->user_education_session_manager() : nullptr;
 }
 
 std::string GetPromoTypeString(
@@ -493,6 +501,8 @@ void UserEducationInternalsPageHandlerImpl::GetSessionData(
 
     // Current session.
     data.emplace_back(
+        FormatDemoPageData("Session number", session_data.session_number));
+    data.emplace_back(
         FormatDemoPageData("Session start", session_data.start_time));
     data.emplace_back(FormatDemoPageData("Last active at",
                                          session_data.most_recent_active_time));
@@ -711,19 +721,64 @@ void UserEducationInternalsPageHandlerImpl::ClearSessionData(
     std::move(callback).Run(std::string("No storage service."));
     return;
   }
+  auto* const session_manager = GetSessionManager(profile_);
+  if (!session_manager) {
+    std::move(callback).Run(std::string("No session manager."));
+    return;
+  }
 
   storage_service->ResetPolicy();
+  storage_service->ResetSession();
+  storage_service->set_profile_creation_time(storage_service->GetCurrentTime());
+  session_manager->MaybeUpdateSessionState();
 
-  // Create a session with start time well in the past to avoid grace period,
-  // and most recent active time as now to prevent a new session from
-  // immediately starting.
-  user_education::UserEducationSessionData session_data;
-  session_data.most_recent_active_time = storage_service->GetCurrentTime();
+  std::move(callback).Run(std::string());
+}
+
+void UserEducationInternalsPageHandlerImpl::RemoveGracePeriods(
+    RemoveGracePeriodsCallback callback) {
+  auto* const storage_service = GetStorageService(profile_);
+  if (!storage_service) {
+    std::move(callback).Run(std::string("No storage service."));
+    return;
+  }
+
+  // Move session start far enough into the past that grace periods don't apply.
+  auto session_data = storage_service->ReadSessionData();
+  session_data.start_time = base::Time();
   storage_service->SaveSessionData(session_data);
+
+  // Move last heavyweight promo far enough into the past that cooldowns don't
+  // apply.
+  auto policy_data = storage_service->ReadPolicyData();
+  policy_data.last_heavyweight_promo_time = base::Time();
+  storage_service->SavePolicyData(policy_data);
 
   // Push the profile creation date far enough into the past that the grace
   // period isn't relevant.
   storage_service->set_profile_creation_time(base::Time());
+
+  std::move(callback).Run(std::string());
+}
+
+void UserEducationInternalsPageHandlerImpl::ForceNewSession(
+    ForceNewSessionCallback callback) {
+  auto* const storage_service = GetStorageService(profile_);
+  if (!storage_service) {
+    std::move(callback).Run(std::string("No storage service."));
+    return;
+  }
+
+  // Create a session with start time well in the past to avoid grace period,
+  // and most recent active time as now to prevent a new session from
+  // immediately starting.
+  user_education::UserEducationSessionData session_data =
+      storage_service->ReadSessionData();
+  const base::Time now = storage_service->GetCurrentTime();
+  session_data.start_time = now;
+  session_data.most_recent_active_time = now;
+  ++session_data.session_number;
+  storage_service->SaveSessionData(session_data);
 
   std::move(callback).Run(std::string());
 }

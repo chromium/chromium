@@ -171,12 +171,17 @@ export function getHtml(this: UserEducationInternalsElement) {
             ${this.sessionData_.map(item => html`
               <p><b>${item.name}</b> ${item.value}</p>`)}
             <p>
-              Clicking the button below will clear all session, grace period,
-              and cooldown data. This has the side-effect of negating all
-              current grace periods and cooldowns. However, to disable these
-              exclusions at startup so that all IPH can show, prefer to use the
-              <code>--disable-user-education-rate-limiting</code> flag.
+              Clicking the buttons below will modify the current session, last
+              heavyweight promo, and/or profile creation times. The information
+              above will be updated to show the current state of these values.
             </p>
+            <cr-button id="forceNewSession" @click="${this.forceNewSession_}">
+              Force New Session
+            </cr-button>
+            <cr-button id="removeGracePeriods"
+                       @click="${this.removeGracePeriods_}">
+              Remove Grace Period
+            </cr-button>
             <cr-button id="clearSession" @click="${this.clearSessionData_}">
               Clear Session Data
             </cr-button>

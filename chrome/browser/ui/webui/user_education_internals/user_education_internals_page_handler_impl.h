@@ -49,6 +49,8 @@ class UserEducationInternalsPageHandlerImpl
   void ClearFeaturePromoData(const std::string& feature_name,
                              ClearFeaturePromoDataCallback callback) override;
   void ClearSessionData(ClearSessionDataCallback callback) override;
+  void ForceNewSession(ForceNewSessionCallback callback) override;
+  void RemoveGracePeriods(RemoveGracePeriodsCallback callback) override;
   void GetNewBadges(GetNewBadgesCallback callback) override;
   void ClearNewBadgeData(const std::string& feature_name,
                          ClearNewBadgeDataCallback callback) override;

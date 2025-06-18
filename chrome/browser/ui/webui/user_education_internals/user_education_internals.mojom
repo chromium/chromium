@@ -97,6 +97,14 @@ interface UserEducationInternalsPageHandler {
   // Returns an error message if the operation fails; empty string on success.
   ClearSessionData() => (string error_message);
 
+  // Starts a new session at the current time.
+  // Returns an error message if the operation fails; empty string on success.
+  ForceNewSession() => (string error_message);
+
+  // Eliminates all current grace periods, allowing all eligible promos to show.
+  // Returns an error message if the operation fails; empty string on success.
+  RemoveGracePeriods() => (string error_message);
+
   // Retrieves "New" Badge data.
   GetNewBadges() => (array<FeaturePromoDemoPageInfo> new_badges);
 
