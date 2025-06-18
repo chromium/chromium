@@ -131,6 +131,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-betty-chrome-tfc",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-betty-chrome-dchecks",
 )
 
