@@ -750,6 +750,13 @@
             android:text="@string/show_action_button_text" />
 
         <CheckBox
+            android:id="@+id/show_additional_action_button_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "true"
+            android:text="@string/show_additional_action_button_text" />
+
+        <CheckBox
             android:id="@+id/show_close_button_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

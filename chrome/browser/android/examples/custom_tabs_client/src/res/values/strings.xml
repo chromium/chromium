@@ -80,6 +80,7 @@
     <string name="open_in_browser_button_on_text">On</string>
     <string name="open_in_browser_button_off_text">Off</string>
     <string name="show_action_button_text">Show the action button</string>
+    <string name="show_additional_action_button_text">Show an additional action button</string>
     <string name="show_close_button_text">Show the close button</string>
     <string name="ephemeral_cct_text">Enable Ephemeral Browsing</string>
     <string name="custom_scheme">Custom scheme:</string>

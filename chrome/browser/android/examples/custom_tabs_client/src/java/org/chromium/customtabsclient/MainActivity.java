@@ -125,6 +125,8 @@ public class MainActivity extends AppCompatActivity
     private static final String SHARED_PREF_SIDE_SHEET_MAX_BUTTON = "SideSheetMaxButton";
     private static final String SHARED_PREF_OPEN_IN_BROWSER_STATE = "OpenInBrowserToggle";
     private static final String SHARED_PREF_SHOW_ACTION_BUTTON = "ShowActionButton";
+    private static final String SHARED_PREF_SHOW_ADDITIONAL_ACTION_BUTTON =
+            "ShowAdditionalActionButton";
     private static final String SHARED_PREF_SHOW_CLOSE_BUTTON = "ShowCloseButton";
     private static final String SHARED_PREF_EPHEMERAL_BROWSING = "EphemeralBrowsing";
     private static final String SHARED_PREF_SHARE_STATE = "ShareStateToggle";
@@ -193,6 +195,7 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mBackgroundInteractCheckbox;
     private CheckBox mSideSheetMaxButtonCheckbox;
     private CheckBox mShowActionButtonCheckbox;
+    private CheckBox mShowAdditionalActionButtonCheckbox;
     private CheckBox mShowCloseButtonCheckbox;
     private CheckBox mEphemeralCctCheckbox;
     private CheckBox mSideSheetRoundedCornerCheckbox;
@@ -778,6 +781,10 @@ public class MainActivity extends AppCompatActivity
         mShowActionButtonCheckbox = findViewById(R.id.show_action_button_checkbox);
         mShowActionButtonCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SHOW_ACTION_BUTTON, CHECKED) == CHECKED);
+        mShowAdditionalActionButtonCheckbox =
+                findViewById(R.id.show_additional_action_button_checkbox);
+        mShowAdditionalActionButtonCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_SHOW_ADDITIONAL_ACTION_BUTTON, CHECKED) == CHECKED);
         mShowCloseButtonCheckbox = findViewById(R.id.show_close_button_checkbox);
         mShowCloseButtonCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SHOW_CLOSE_BUTTON, CHECKED) == CHECKED);
@@ -1092,6 +1099,9 @@ public class MainActivity extends AppCompatActivity
         if (mShowActionButtonCheckbox.isChecked()) {
             prepareActionButton(builder);
         }
+        if (mShowAdditionalActionButtonCheckbox.isChecked()) {
+            addToolbarItem(builder, 0);
+        }
         boolean isPcct = mCctType.equals(CCT_OPTION_PARTIAL);
         prepareAesthetics(builder, isPcct);
 
@@ -1225,6 +1235,9 @@ public class MainActivity extends AppCompatActivity
         editor.putInt(
                 SHARED_PREF_SHOW_ACTION_BUTTON,
                 mShowActionButtonCheckbox.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(
+                SHARED_PREF_SHOW_ADDITIONAL_ACTION_BUTTON,
+                mShowAdditionalActionButtonCheckbox.isChecked() ? CHECKED : UNCHECKED);
         editor.putInt(
                 SHARED_PREF_SHOW_CLOSE_BUTTON,
                 mShowCloseButtonCheckbox.isChecked() ? CHECKED : UNCHECKED);
@@ -1410,6 +1423,14 @@ public class MainActivity extends AppCompatActivity
                 PendingIntent.getActivity(this, 0, actionIntent, PendingIntent.FLAG_IMMUTABLE);
         Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.baseline_send_white);
         builder.setActionButton(icon, "send email", pi, true);
+    }
+
+    private void addToolbarItem(CustomTabsIntent.Builder builder, int id) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.example.com/item1"));
+        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        Bitmap firstIcon =
+                BitmapFactory.decodeResource(getResources(), R.drawable.baseline_check_white);
+        builder.addToolbarItem(id, firstIcon, "View Item 1", pi);
     }
 
     private void prepareBottombar(CustomTabsIntent.Builder builder) {
