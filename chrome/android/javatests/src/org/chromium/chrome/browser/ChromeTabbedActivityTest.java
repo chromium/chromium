@@ -42,6 +42,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -169,7 +170,8 @@ public class ChromeTabbedActivityTest {
     /** Verifies that the focused tab is IMPORTANT and unfocused tabs are MODERATE. */
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY)
+    @EnableFeatures({ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY})
+    @DisableFeatures({ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID})
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testTabImportance() {
         mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
