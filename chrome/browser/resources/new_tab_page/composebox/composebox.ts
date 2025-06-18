@@ -9,6 +9,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ComposeboxPageHandlerRemote} from '../composebox.mojom-webui.js';
+import {recordLoadDuration} from '../metrics_utils.js';
+import {WindowProxy} from '../window_proxy.js';
 
 import type {ComposeboxFile} from './common.js';
 import {getCss} from './composebox.css.js';
@@ -67,6 +69,9 @@ export class ComposeboxElement extends CrLitElement {
     super();
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
     this.pageHandler_.notifySessionStarted();
+    recordLoadDuration(
+        'NewTabPage.Composebox.FromNTPLoadToSessionStart',
+        WindowProxy.getInstance().now());
   }
 
   override connectedCallback() {

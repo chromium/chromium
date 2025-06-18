@@ -252,16 +252,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Composebox.FromNTPLoadToSessionStart" units="ms"
+    expires_after="2026-06-17">
+  <owner>niharm@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Recorded when the user clicks on the compose entrypoint on desktop. This
+    only gets recorded if the compose button leads to a compose session starting
+    (i.e. the composebox opening). This records the amount of time it takes from
+    when the new tab page is loaded to when a compose session starts.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.ComposeEntrypoint.Click.UserTextPresent"
     enum="Boolean" expires_after="2026-06-10">
   <owner>niharm@google.com</owner>
   <owner>ananyaseelam@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
-    Recorded when the user clicks on the compose entrypoint in the NTP realbox.
-    Records whether the user had text in the realbox at the time they clicked
-    the compose entrypoint. This metric is only recorded when the entry point is
-    used to navigate rather than open the compose box.
+    Recorded when the user clicks on the compose entrypoint in the desktop NTP
+    realbox. Records whether the user had text in the realbox at the time they
+    clicked the compose entrypoint. This metric is only recorded when the entry
+    point is used to navigate rather than open the compose box.
   </summary>
 </histogram>
 
@@ -271,8 +284,8 @@ chromium-metrics-reviews@google.com.
   <owner>ananyaseelam@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
-    Recorded when the compose entrypoint is shown in the NTP realbox. This is
-    recorded once when the NTP is attached to DOM. It is not shown for
+    Recorded when the compose entrypoint is shown in the desktop NTP realbox.
+    This is recorded once when the NTP is attached to DOM. It is not shown for
     enterprise if the enterprise policies don't allow AIMode settings.
   </summary>
 </histogram>

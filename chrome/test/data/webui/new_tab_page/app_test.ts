@@ -1179,6 +1179,9 @@ suite('NewTabPageAppTest', () => {
           composeboxHandler.reset();
           assertEquals(
               composeboxHandler.getCallCount('notifySessionStarted'), 0);
+          assertEquals(
+              0,
+              metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
 
 
           const searchboxContainer =
@@ -1207,6 +1210,9 @@ suite('NewTabPageAppTest', () => {
           assertTrue(!!composebox);
           assertEquals(
               composeboxHandler.getCallCount('notifySessionStarted'), 1);
+          assertEquals(
+              1,
+              metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
         });
     test(
         'Clicking the searchbox composebox button with text navigates',
