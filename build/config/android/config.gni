@@ -73,13 +73,7 @@ if (is_android) {
 
     # The default to use for android:minSdkVersion for targets that do
     # not explicitly set it.
-    default_min_sdk_version = 26
-    if (is_asan) {
-      default_min_sdk_version = 27
-    }
-    if (enable_javaless_renderers) {
-      default_min_sdk_version = 29
-    }
+    default_min_sdk_version = 29
 
     # Static analysis can be either "on" or "off" or "build_server". This
     # controls how android lint, error-prone, bytecode checks are run. This

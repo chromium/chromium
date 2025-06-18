@@ -20,7 +20,7 @@
   </queries>  # DIFF-ANCHOR: ac70d2a8
   <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
   <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
-  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35"/>
+  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="35"/>
   <application>
     <activity  # DIFF-ANCHOR: 28dc9019
         android:name="com.google.ar.core.InstallActivity"
