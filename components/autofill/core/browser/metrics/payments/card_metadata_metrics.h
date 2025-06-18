@@ -86,8 +86,9 @@ enum class CardBenefitFormEvent {
   // TODO(crbug.com/417323667): "7" is reserved for
   // `kSuggestionWithoutBenefitFilled`.
 
-  // TODO(crbug.com/417323667): "8" is reserved for
-  // `kSuggestionWithBenefitFilledWithMultipleServerCards`.
+  // A suggestion of a masked server card with a benefit available was filled
+  // when the user had two or more server cards.
+  kSuggestionWithBenefitFilledWithMultipleServerCards = 8,
 
   // TODO(crbug.com/417323667): "9" is reserved for
   // `kSuggestionWithoutBenefitFilledWithMultipleServerCards`.

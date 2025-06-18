@@ -301,6 +301,12 @@ void LogCardWithBenefitFormEventMetric(
       break;
     case CardMetadataLoggingEvent::kFilled:
       if (context.SelectedCardHasBenefitAvailable()) {
+        if (context.masked_server_card_count >= 2) {
+          LogBenefitFormEventToAllBenefitHistograms(
+              context.selected_benefit_source,
+              CardBenefitFormEvent::
+                  kSuggestionWithBenefitFilledWithMultipleServerCards);
+        }
         LogBenefitFormEventToBenefitSourceHistogramDeprecated(
             context.selected_benefit_source,
             FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE);
