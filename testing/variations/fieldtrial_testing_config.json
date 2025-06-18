@@ -939,6 +939,21 @@
             ]
         }
     ],
+    "AndroidTabGroupsColorUpdateGm3": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidTabGroupsColorUpdateGM3"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidTabStripLayoutOptimization": [
         {
             "platforms": [
