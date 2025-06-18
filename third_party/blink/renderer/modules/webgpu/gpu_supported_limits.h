@@ -19,8 +19,8 @@ class GPUSupportedLimits final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // TODO(crbug.com/421950205) Make this more like dawn::utils::ComboLimits (for
-  // chaining safety) or replace it with a similar webgpu_cpp.h helper.
+  // TODO(crbug.com/421950205): Make this more like dawn::utils::ComboLimits
+  // (for chaining safety) or replace it with a similar webgpu_cpp.h helper.
   struct ComboLimits : public wgpu::Limits
 #ifdef WGPU_BREAKING_CHANGE_COMPATIBILITY_MODE_LIMITS
       ,

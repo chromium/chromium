@@ -111,6 +111,59 @@ WGPUStringView MakeStringView() {
   return {nullptr, 0};
 }
 
+// This variable is set to DawnWireServer's parent decoder during execution of
+// HandleCommands. It is cleared to nullptr after.
+class WebGPUDecoderImpl;
+constinit thread_local WebGPUDecoderImpl* parent_decoder = nullptr;
+
+// DawnWireServer is a wrapper around dawn::wire::WireServer which allows
+// overriding some of the WGPU procs the server delegates calls to.
+// It has a special feature that around HandleDawnCommands, its owning
+// WebGPUDecoderImpl is stored in thread-local storage. This enables
+// some of the overridden procs to be overridden with a WebGPUDecoderImpl
+// member function. The proc will be set to a plain-old C function pointer,
+// which loads the WebGPUDecoderImpl from thread-local storage and forwards
+// the call to the member function.
+class DawnWireServer : public dawn::wire::WireServer {
+ public:
+  template <typename... Procs>
+  static std::unique_ptr<DawnWireServer> Create(
+      WebGPUDecoderImpl* decoder,
+      dawn::wire::CommandSerializer* serializer,
+      dawn::wire::server::MemoryTransferService* memory_transfer_service,
+      const DawnProcTable& procs) {
+    dawn::wire::WireServerDescriptor descriptor = {};
+    descriptor.procs = &procs;
+    descriptor.serializer = serializer;
+    descriptor.memoryTransferService = memory_transfer_service;
+
+    return base::WrapUnique(new DawnWireServer(decoder, descriptor));
+  }
+
+  ~DawnWireServer() override = default;
+
+  base::AutoReset<WebGPUDecoderImpl*> ScopedParentDecoder() {
+    return base::AutoReset<WebGPUDecoderImpl*>{&parent_decoder, decoder_};
+  }
+
+  // Handle Dawn commands. Forward the call to the base class, but
+  // set |parent_decoder| around it.
+  const volatile char* HandleCommands(const volatile char* commands,
+                                      size_t size) override {
+    const auto resetter = ScopedParentDecoder();
+    const volatile char* rv =
+        dawn::wire::WireServer::HandleCommands(commands, size);
+    return rv;
+  }
+
+ private:
+  DawnWireServer(WebGPUDecoderImpl* decoder,
+                 const dawn::wire::WireServerDescriptor& desc)
+      : dawn::wire::WireServer(desc), decoder_(decoder) {}
+
+  raw_ptr<WebGPUDecoderImpl> decoder_;
+};
+
 class WebGPUDecoderImpl final : public WebGPUDecoder {
  public:
   WebGPUDecoderImpl(
@@ -308,15 +361,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     uint16_t arg_count;  // How many arguments are expected for this command.
   };
 
-  // Since requesting a device may be a deferred operation depending on whether
-  // an isolation key has been assigned from the browser process asynchronously,
-  // define storable callbacks that invoke device creation to be scheduled
-  // later. The argument to the callback should be true iff the device request
-  // should be executed. Passing false will effectively cancel the request with
-  // RequestDeviceStatus_Unknown. Cancelling is used on destroy to ensure that
-  // all callbacks are resolved.
-  using QueuedRequestDeviceCallback = base::OnceCallback<void(bool)>;
-
   // A table of CommandInfo for all the commands.
   static const CommandInfo command_info[kNumCommands - kFirstWebGPUCommand];
 
@@ -351,12 +395,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   WGPUFuture RequestDeviceImpl(WGPUAdapter adapter,
                                const WGPUDeviceDescriptor* descriptor,
                                CallbackInfo callback_info);
-
-  template <typename CallbackInfo>
-  QueuedRequestDeviceCallback CreateQueuedRequestDeviceCallback(
-      const wgpu::Adapter& adapter,
-      const WGPUDeviceDescriptor* descriptor,
-      CallbackInfo callback_info);
 
   class SharedImageRepresentationAndAccess;
 
@@ -419,7 +457,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   // differentiate between an empty isolation key, and an unset one.
   std::optional<std::string> isolation_key_;
 
-  std::unique_ptr<dawn::wire::WireServer> wire_server_;
+  std::unique_ptr<DawnWireServer> wire_server_;
   std::unique_ptr<DawnServiceSerializer> wire_serializer_;
 
   // Raw pointer to the isolation key provider because the provider must outlive
@@ -427,10 +465,16 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   // GpuChannel which is required to outlive the decoder.
   raw_ptr<IsolationKeyProvider> isolation_key_provider_;
 
-  // A queue of request device calls that were deferred because the decoder had
-  // yet to receive a notification from the browser process regarding the
-  // isolation key to use for devices created via this decoder.
-  std::vector<QueuedRequestDeviceCallback> queued_request_device_calls_;
+  // A queue of RequestAdapter callbacks that were deferred because the
+  // isolation key wasn't available yet.
+  // The boolean argument should be true iff the device request should be
+  // executed. (Passing false will drop the adapter and call back with status
+  // RequestDeviceStatus_CallbackCancelled. Cancelling is used on destroy to
+  // ensure that all callbacks are resolved. Note the adapter itself is always
+  // created immediately, only the callback itself is deferred.)
+  using DeferredRequestAdapterCallback = base::OnceCallback<void(bool)>;
+  std::vector<DeferredRequestAdapterCallback>
+      deferred_request_adapter_callbacks_;
 
   // Helper class whose derived implementations holds a representation
   // and its ScopedAccess, ensuring safe destruction order.
@@ -1021,55 +1065,6 @@ constexpr WebGPUDecoderImpl::CommandInfo WebGPUDecoderImpl::command_info[] = {
 #undef WEBGPU_CMD_OP
 };
 
-// This variable is set to DawnWireServer's parent decoder during execution of
-// HandleCommands. It is cleared to nullptr after.
-constinit thread_local WebGPUDecoderImpl* parent_decoder = nullptr;
-
-// DawnWireServer is a wrapper around dawn::wire::WireServer which allows
-// overriding some of the WGPU procs the server delegates calls to.
-// It has a special feature that around HandleDawnCommands, its owning
-// WebGPUDecoderImpl is stored in thread-local storage. This enables
-// some of the overridden procs to be overridden with a WebGPUDecoderImpl
-// member function. The proc will be set to a plain-old C function pointer,
-// which loads the WebGPUDecoderImpl from thread-local storage and forwards
-// the call to the member function.
-class DawnWireServer : public dawn::wire::WireServer {
- public:
-  template <typename... Procs>
-  static std::unique_ptr<DawnWireServer> Create(
-      WebGPUDecoderImpl* decoder,
-      dawn::wire::CommandSerializer* serializer,
-      dawn::wire::server::MemoryTransferService* memory_transfer_service,
-      const DawnProcTable& procs) {
-    dawn::wire::WireServerDescriptor descriptor = {};
-    descriptor.procs = &procs;
-    descriptor.serializer = serializer;
-    descriptor.memoryTransferService = memory_transfer_service;
-
-    return base::WrapUnique(new DawnWireServer(decoder, descriptor));
-  }
-
-  ~DawnWireServer() override = default;
-
-  // Handle Dawn commands. Forward the call to the base class, but
-  // set |parent_decoder| around it.
-  const volatile char* HandleCommands(const volatile char* commands,
-                                      size_t size) override {
-    const base::AutoReset<WebGPUDecoderImpl*> resetter_(&parent_decoder,
-                                                        decoder_);
-    const volatile char* rv =
-        dawn::wire::WireServer::HandleCommands(commands, size);
-    return rv;
-  }
-
- private:
-  DawnWireServer(WebGPUDecoderImpl* decoder,
-                 const dawn::wire::WireServerDescriptor& desc)
-      : dawn::wire::WireServer(desc), decoder_(decoder) {}
-
-  raw_ptr<WebGPUDecoderImpl> decoder_;
-};
-
 }  // namespace
 
 WebGPUDecoder* CreateWebGPUDecoderImpl(
@@ -1221,10 +1216,13 @@ WebGPUDecoderImpl::~WebGPUDecoderImpl() {
 void WebGPUDecoderImpl::Destroy(bool have_context) {
   // Resolve all outstanding callbacks for queued device requests if they
   // exist.
-  for (auto& request : queued_request_device_calls_) {
+  if (isolation_key_) {
+    DCHECK(deferred_request_adapter_callbacks_.empty());
+  }
+  for (auto& request : deferred_request_adapter_callbacks_) {
     std::move(request).Run(false);
   }
-  queued_request_device_calls_.clear();
+  deferred_request_adapter_callbacks_.clear();
 
   associated_shared_image_map_.clear();
   associated_shared_buffer_map_.clear();
@@ -1362,9 +1360,38 @@ WGPUFuture WebGPUDecoderImpl::RequestAdapterImpl(
                            callback_info.userdata1, callback_info.userdata2);
     return {};
   }
-  callback_info.callback(WGPURequestAdapterStatus_Success,
-                         adapter.MoveToCHandle(), MakeStringView(),
-                         callback_info.userdata1, callback_info.userdata2);
+
+  if (isolation_key_) {
+    callback_info.callback(WGPURequestAdapterStatus_Success,
+                           adapter.MoveToCHandle(), MakeStringView(),
+                           callback_info.userdata1, callback_info.userdata2);
+  } else {
+    // We can't RequestDevice until we have an isolation key. Defer the
+    // RequestAdapter callback until we do. (This is simpler than deferring
+    // RequestDevice.)
+    DCHECK_NE(isolation_key_provider_, nullptr);
+    deferred_request_adapter_callbacks_.emplace_back(base::BindOnce(
+        [](WebGPUDecoderImpl* self, wgpu::Adapter adapter,
+           CallbackInfo callback_info, bool run) {
+          // Set parent_decoder so that the callback can call into webgpu procs.
+          const auto resetter = self->wire_server_->ScopedParentDecoder();
+          if (run) {
+            callback_info.callback(WGPURequestAdapterStatus_Success,
+                                   adapter.MoveToCHandle(), MakeStringView(),
+                                   callback_info.userdata1,
+                                   callback_info.userdata2);
+          } else {
+            callback_info.callback(
+                WGPURequestAdapterStatus_CallbackCancelled, nullptr,
+                MakeStringView("Deferred request adapter callback cancelled."),
+                callback_info.userdata1, callback_info.userdata2);
+          }
+        },
+        // Note that it is ok to bind the decoder as unretained in this case
+        // because the decoder's dtor explicitly resolves all these callbacks.
+        base::Unretained(this), adapter, callback_info));
+    return {};
+  }
   return {};
 }
 
@@ -1407,17 +1434,6 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
     const WGPUDeviceDescriptor* descriptor,
     CallbackInfo callback_info) {
   wgpu::Adapter adapter_obj(adapter);
-
-  // We can only request a device if we have received an isolation key from an
-  // async gpu->browser mojo. As a result, we do a check here and if we don't
-  // have the isolation key yet, we queue this request to be handled as soon as
-  // we get an isolation key.
-  if (!isolation_key_) {
-    DCHECK_NE(isolation_key_provider_, nullptr);
-    queued_request_device_calls_.emplace_back(CreateQueuedRequestDeviceCallback(
-        adapter_obj, descriptor, callback_info));
-    return {};
-  }
 
   // Copy the descriptor so we can modify it.
   wgpu::DeviceDescriptor desc;
@@ -1514,6 +1530,10 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
   } else {
     require_device_disabled_toggles.push_back("timestamp_quantization");
   }
+
+  // We need the isolation key to create a device. We should already have it
+  // because RequestAdapter waits to reply until we do.
+  CHECK(isolation_key_.has_value());
   // Disable the blob cache if we don't have an isolation key.
   if (isolation_key_->empty()) {
     require_device_enabled_toggles.push_back("disable_blob_cache");
@@ -1569,91 +1589,6 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
   // here, but it would require careful handling of the decoder lifetime.
   CHECK(called);
   return f;
-}
-
-namespace {
-
-// A deep copy of WGPUDeviceDescriptor copies owns a copy of all it's members.
-// Note that the deep copy does NOT copy/own chained structs.
-struct WGPUDeviceDescriptorDeepCopy : WGPUDeviceDescriptor {
-  explicit WGPUDeviceDescriptorDeepCopy(const WGPUDeviceDescriptor& desc)
-      : WGPUDeviceDescriptor(desc) {
-    // Since the deep copy does NOT copy chained structs, CHECK all relevant
-    // chained structs for safety.
-    CHECK_EQ(desc.nextInChain, nullptr);
-    CHECK(desc.requiredLimits == nullptr ||
-          desc.requiredLimits->nextInChain == nullptr);
-    CHECK_EQ(desc.defaultQueue.nextInChain, nullptr);
-
-    device_label_ = WGPUStringViewToString(desc.label);
-    if (device_label_) {
-      label = {device_label_->data(), device_label_->size()};
-    }
-    if (desc.requiredFeatures) {
-      required_features_ = std::vector<WGPUFeatureName>(
-          desc.requiredFeatures,
-          desc.requiredFeatures + desc.requiredFeatureCount);
-      requiredFeatures = required_features_.data();
-    }
-    if (desc.requiredLimits) {
-      required_limits_ = *desc.requiredLimits;
-      requiredLimits = &required_limits_;
-    }
-    queue_label_ = WGPUStringViewToString(desc.defaultQueue.label);
-    if (queue_label_) {
-      defaultQueue.label = {queue_label_->data(), queue_label_->size()};
-    }
-  }
-
-  // Memory backed members.
-  std::optional<std::string> WGPUStringViewToString(WGPUStringView sv) {
-    if (sv.data == nullptr && sv.length == WGPU_STRLEN) {
-      return {};
-    }
-    size_t length = sv.length == WGPU_STRLEN ? std::strlen(sv.data) : sv.length;
-    return std::string(sv.data, length);
-  }
-
-  std::optional<std::string> device_label_;
-  std::optional<std::string> queue_label_;
-  std::vector<WGPUFeatureName> required_features_;
-  WGPULimits required_limits_;
-};
-
-}  // namespace
-
-template <typename CallbackInfo>
-WebGPUDecoderImpl::QueuedRequestDeviceCallback
-WebGPUDecoderImpl::CreateQueuedRequestDeviceCallback(
-    const wgpu::Adapter& adapter,
-    const WGPUDeviceDescriptor* descriptor,
-    CallbackInfo callback_info) {
-  // We need to create a deep copy of the descriptor for these queued requests
-  // since they are a temporary allocation that is freed at the end of
-  // RequestDeviceImpl.
-  std::unique_ptr<WGPUDeviceDescriptorDeepCopy> desc =
-      descriptor != nullptr
-          ? std::make_unique<WGPUDeviceDescriptorDeepCopy>(*descriptor)
-          : nullptr;
-
-  // Note that it is ok to bind the decoder as unretained in this case because
-  // the decoder's dtor explicitly resolves all these callbacks.
-  return base::BindOnce(
-      [](WebGPUDecoderImpl* decoder, wgpu::Adapter adapter,
-         std::unique_ptr<WGPUDeviceDescriptorDeepCopy> descriptor,
-         CallbackInfo callback_info, bool run) {
-        if (run) {
-          DCHECK(decoder->isolation_key_);
-          decoder->RequestDeviceImpl(adapter.Get(), descriptor.get(),
-                                     callback_info);
-        } else {
-          callback_info.callback(
-              WGPURequestDeviceStatus_CallbackCancelled, nullptr,
-              MakeStringView("Queued device request cancelled."),
-              callback_info.userdata1, callback_info.userdata2);
-        }
-      },
-      base::Unretained(this), adapter, std::move(desc), callback_info);
 }
 
 bool WebGPUDecoderImpl::use_blocklist() const {
@@ -2543,13 +2478,13 @@ bool WebGPUDecoderImpl::ClearSharedImageWithSkia(const Mailbox& mailbox) {
 }
 
 void WebGPUDecoderImpl::OnGetIsolationKey(const std::string& isolation_key) {
+  DCHECK(!isolation_key_.has_value());
   isolation_key_ = isolation_key;
 
-  // Iterate and run all the potentially queued request device requests.
-  for (auto& request : queued_request_device_calls_) {
-    std::move(request).Run(true);
+  for (auto& callback : deferred_request_adapter_callbacks_) {
+    std::move(callback).Run(true);
   }
-  queued_request_device_calls_.clear();
+  deferred_request_adapter_callbacks_.clear();
 
   // The requests have been handled, but they may need to be flushed, so perform
   // polling work.
