@@ -237,14 +237,12 @@ void MojoMjpegDecodeAcceleratorService::Decode(
     return;
   }
 
-  uint8_t* shm_memory = mapping.GetMemoryAsSpan<uint8_t>().data();
   scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapExternalData(
       media::PIXEL_FORMAT_I420,  // format
       coded_size,                // coded_size
       gfx::Rect(coded_size),     // visible_rect
       coded_size,                // natural_size
-      shm_memory,                // data
-      output_buffer_size,        // data_size
+      mapping,                   // data
       base::TimeDelta());        // timestamp
   if (!frame.get()) {
     LOG(ERROR) << "Could not create VideoFrame for input buffer id "

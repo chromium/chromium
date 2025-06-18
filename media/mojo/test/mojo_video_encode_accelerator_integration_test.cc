@@ -290,8 +290,8 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest, EncodeOneFrame) {
     ASSERT_TRUE(shmem.IsValid());
     const scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
         PIXEL_FORMAT_I420, kInputVisibleSize, gfx::Rect(kInputVisibleSize),
-        kInputVisibleSize, static_cast<uint8_t*>(shmem.mapping.memory()),
-        shmem.mapping.size(), base::TimeDelta());
+        kInputVisibleSize, shmem.mapping.GetMemoryAsSpan<uint8_t>(),
+        base::TimeDelta());
     video_frame->BackWithSharedMemory(&shmem.region);
     const bool is_keyframe = true;
 
@@ -335,8 +335,7 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
     const scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
         PIXEL_FORMAT_I420, kInvalidInputVisibleSize,
         gfx::Rect(kInvalidInputVisibleSize), kInvalidInputVisibleSize,
-        static_cast<uint8_t*>(shmem.mapping.memory()), shmem.mapping.size(),
-        base::TimeDelta());
+        shmem.mapping.GetMemoryAsSpan<uint8_t>(), base::TimeDelta());
     video_frame->BackWithSharedMemory(&shmem.region);
     const bool is_keyframe = true;
 

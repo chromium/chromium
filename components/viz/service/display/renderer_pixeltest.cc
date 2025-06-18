@@ -440,16 +440,13 @@ void CreateTestY16TextureDrawQuad_TwoColor(
     const gfx::Rect& rect,
     const gfx::Rect& visible_rect,
     const gfx::Rect& foreground_rect) {
-  std::unique_ptr<unsigned char, base::AlignedFreeDeleter> memory(
-      static_cast<unsigned char*>(
-          base::AlignedAlloc(rect.size().GetArea() * 2,
-                             media::VideoFrame::kFrameAddressAlignment)));
+  auto memory = base::AlignedUninit<uint8_t>(
+      rect.size().GetArea() * 2, media::VideoFrame::kFrameAddressAlignment);
   const gfx::Rect video_visible_rect = gfx::Rect(rect.width(), rect.height());
   scoped_refptr<media::VideoFrame> video_frame =
       media::VideoFrame::WrapExternalData(
           media::PIXEL_FORMAT_Y16, rect.size(), video_visible_rect,
-          visible_rect.size(), memory.get(), rect.size().GetArea() * 2,
-          base::TimeDelta());
+          visible_rect.size(), memory, base::TimeDelta());
   DCHECK_EQ(video_frame->rows(0) % 2, 0);
   DCHECK_EQ(video_frame->stride(0) % 2, 0ul);
 

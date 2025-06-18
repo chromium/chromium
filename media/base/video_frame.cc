@@ -547,22 +547,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalData(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    const uint8_t* data,
-    size_t data_size,
-    base::TimeDelta timestamp) {
-  auto layout = GetDefaultLayout(format, coded_size);
-  if (!layout)
-    return nullptr;
-  return WrapExternalDataWithLayout(*layout, visible_rect, natural_size, data,
-                                    data_size, timestamp);
-}
-
-// static
-scoped_refptr<VideoFrame> VideoFrame::WrapExternalData(
-    VideoPixelFormat format,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
     base::span<const uint8_t> data,
     base::TimeDelta timestamp) {
   auto layout = GetDefaultLayout(format, coded_size);

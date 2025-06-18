@@ -113,10 +113,9 @@ scoped_refptr<VideoFrame> SharedMemoryVideoFramePool::WrapBuffer(
   // and 2) the mapped memory remains valid until the
   // WritableSharedMemoryMapping goes out-of-scope (when the OnceClosure is
   // destroyed).
-  scoped_refptr<VideoFrame> frame = VideoFrame::WrapExternalData(
-      format, size, gfx::Rect(size), size,
-      static_cast<uint8_t*>(pooled_buffer.mapping.memory()),
-      pooled_buffer.mapping.size(), base::TimeDelta());
+  scoped_refptr<VideoFrame> frame =
+      VideoFrame::WrapExternalData(format, size, gfx::Rect(size), size,
+                                   pooled_buffer.mapping, base::TimeDelta());
   CHECK(frame);
   // Sanity-check the assumption being made for SetMarkedBuffer():
   CHECK_EQ(frame->data(0), pooled_buffer.mapping.memory());

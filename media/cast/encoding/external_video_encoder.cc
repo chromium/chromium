@@ -284,8 +284,8 @@ class ExternalVideoEncoder::VEAClientImpl final
           video_frame->format(), frame_coded_size_,
           gfx::Rect(video_frame->visible_rect().size()),
           video_frame->visible_rect().size(),
-          static_cast<uint8_t*>(mapped_region.mapping.memory()),
-          mapped_region.mapping.size(), video_frame->timestamp());
+          mapped_region.mapping.GetMemoryAsSpan<uint8_t>(),
+          video_frame->timestamp());
       if (!frame || !media::I420CopyWithPadding(*video_frame, frame.get())) {
         LOG(DFATAL) << "Error: ExternalVideoEncoder: copy failed.";
         AbortLatestEncodeAttemptDueToErrors();

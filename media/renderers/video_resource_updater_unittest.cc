@@ -96,9 +96,9 @@ class VideoResourceUpdaterTest : public testing::Test {
   scoped_refptr<VideoFrame> CreateTestYUVVideoFrame(
       const gfx::Size& size = gfx::Size(10, 10)) {
     constexpr int kMaxDimension = 100;
-    static uint8_t y_data[kMaxDimension * kMaxDimension] = {};
-    static uint8_t u_data[kMaxDimension * kMaxDimension / 2] = {};
-    static uint8_t v_data[kMaxDimension * kMaxDimension / 2] = {};
+    static std::array<uint8_t, kMaxDimension * kMaxDimension> y_data{};
+    static std::array<uint8_t, kMaxDimension * kMaxDimension / 2> u_data{};
+    static std::array<uint8_t, kMaxDimension * kMaxDimension / 2> v_data{};
 
     CHECK_LE(size.width() * size.height(), kMaxDimension * kMaxDimension);
 
@@ -118,43 +118,17 @@ class VideoResourceUpdaterTest : public testing::Test {
     return video_frame;
   }
 
-  scoped_refptr<VideoFrame> CreateWonkyTestYUVVideoFrame() {
-    const int kDimension = 10;
-    const int kYWidth = kDimension + 5;
-    const int kUWidth = (kYWidth + 1) / 2 + 200;
-    const int kVWidth = (kYWidth + 1) / 2 + 1;
-    static uint8_t y_data[kYWidth * kDimension] = {};
-    static uint8_t u_data[kUWidth * kDimension] = {};
-    static uint8_t v_data[kVWidth * kDimension] = {};
-
-    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalYuvData(
-        PIXEL_FORMAT_I422,                        // format
-        gfx::Size(kYWidth, kDimension),           // coded_size
-        gfx::Rect(2, 0, kDimension, kDimension),  // visible_rect
-        gfx::Size(kDimension, kDimension),        // natural_size
-        -kYWidth,                                 // y_stride (negative)
-        kUWidth,                                  // u_stride
-        kVWidth,                                  // v_stride
-        y_data + kYWidth * (kDimension - 1),      // y_data
-        u_data,                                   // u_data
-        v_data,                                   // v_data
-        base::TimeDelta());                       // timestamp
-    EXPECT_TRUE(video_frame);
-    return video_frame;
-  }
-
   scoped_refptr<VideoFrame> CreateTestRGBVideoFrame(VideoPixelFormat format) {
     constexpr int kMaxDimension = 10;
     constexpr gfx::Size kSize = gfx::Size(kMaxDimension, kMaxDimension);
-    static uint32_t rgb_data[kMaxDimension * kMaxDimension] = {};
-    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
-        format,                                // format
-        kSize,                                 // coded_size
-        gfx::Rect(kSize),                      // visible_rect
-        kSize,                                 // natural_size
-        reinterpret_cast<uint8_t*>(rgb_data),  // data,
-        sizeof(rgb_data),                      // data_size
-        base::TimeDelta());                    // timestamp
+    static std::array<uint8_t, 4 * kMaxDimension * kMaxDimension> rgb_data{};
+    scoped_refptr<VideoFrame> video_frame =
+        VideoFrame::WrapExternalData(format,              // format
+                                     kSize,               // coded_size
+                                     gfx::Rect(kSize),    // visible_rect
+                                     kSize,               // natural_size
+                                     rgb_data,            // data,
+                                     base::TimeDelta());  // timestamp
     EXPECT_TRUE(video_frame);
     return video_frame;
   }
@@ -164,23 +138,23 @@ class VideoResourceUpdaterTest : public testing::Test {
     constexpr int kMaxDimension = 5;
     constexpr gfx::Size kSize = gfx::Size(kMaxDimension, kMaxDimension);
     constexpr gfx::Rect kVisibleRect = gfx::Rect(2, 1, 3, 3);
-    constexpr uint32_t kPix = 0xFFFFFFFF;
-    static uint32_t rgb_data[kMaxDimension * kMaxDimension] = {
-        0x00, 0x00, 0x00, 0x00, 0x00,  //
-        0x00, 0x00, kPix, kPix, kPix,  //
-        0x00, 0x00, kPix, kPix, kPix,  //
-        0x00, 0x00, kPix, kPix, kPix,  //
-        0x00, 0x00, 0x00, 0x00, 0x00,  //
+#define PIX 0xFF, 0xFF, 0xFF, 0xFF
+    static std::array<uint8_t, 4 * kMaxDimension * kMaxDimension> rgb_data{
+        0, 0, 0, 0, 0, 0, 0, 0, 0,   0,   0,   0, 0, 0, 0, 0, 0, 0, 0, 0,  //
+        0, 0, 0, 0, 0, 0, 0, 0, PIX, PIX, PIX,                             //
+        0, 0, 0, 0, 0, 0, 0, 0, PIX, PIX, PIX,                             //
+        0, 0, 0, 0, 0, 0, 0, 0, PIX, PIX, PIX,                             //
+        0, 0, 0, 0, 0, 0, 0, 0, 0,   0,   0,   0, 0, 0, 0, 0, 0, 0, 0, 0,  //
     };
+#undef PIX
 
-    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
-        format,                                // format
-        kSize,                                 // coded_size
-        kVisibleRect,                          // visible_rect
-        kVisibleRect.size(),                   // natural_size
-        reinterpret_cast<uint8_t*>(rgb_data),  // data,
-        sizeof(rgb_data),                      // data_size
-        base::TimeDelta());                    // timestamp
+    scoped_refptr<VideoFrame> video_frame =
+        VideoFrame::WrapExternalData(format,               // format
+                                     kSize,                // coded_size
+                                     kVisibleRect,         // visible_rect
+                                     kVisibleRect.size(),  // natural_size
+                                     rgb_data,             // data,
+                                     base::TimeDelta());   // timestamp
     EXPECT_TRUE(video_frame);
     return video_frame;
   }
@@ -189,23 +163,21 @@ class VideoResourceUpdaterTest : public testing::Test {
     constexpr int kMaxDimension = 5;
     constexpr gfx::Size kSize = gfx::Size(kMaxDimension, kMaxDimension);
     constexpr gfx::Rect kVisibleRect = gfx::Rect(2, 1, 3, 3);
-    constexpr uint16_t kPix = 0xFFFF;
-    static uint16_t y16_data[kMaxDimension * kMaxDimension] = {
-        0x00, 0x00, 0x00, 0x00, 0x00,  //
-        0x00, 0x00, kPix, kPix, kPix,  //
-        0x00, 0x00, kPix, kPix, kPix,  //
-        0x00, 0x00, kPix, kPix, kPix,  //
-        0x00, 0x00, 0x00, 0x00, 0x00,  //
+    static std::array<uint8_t, 2 * kMaxDimension * kMaxDimension> y16_data = {
+        0, 0, 0, 0, 0,    0,    0,    0,    0,    0,
+        0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0, 0, 0, 0, 0,    0,    0,    0,    0,    0,
     };
 
-    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
-        PIXEL_FORMAT_Y16,
-        kSize,                                 // coded_size
-        kVisibleRect,                          // visible_rect
-        kVisibleRect.size(),                   // natural_size
-        reinterpret_cast<uint8_t*>(y16_data),  // data,
-        sizeof(y16_data),                      // data_size
-        base::TimeDelta());                    // timestamp
+    scoped_refptr<VideoFrame> video_frame =
+        VideoFrame::WrapExternalData(PIXEL_FORMAT_Y16,
+                                     kSize,                // coded_size
+                                     kVisibleRect,         // visible_rect
+                                     kVisibleRect.size(),  // natural_size
+                                     y16_data,             // data,
+                                     base::TimeDelta());   // timestamp
     EXPECT_TRUE(video_frame);
     return video_frame;
   }

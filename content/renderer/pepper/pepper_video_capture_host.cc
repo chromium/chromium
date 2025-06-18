@@ -165,8 +165,11 @@ void PepperVideoCaptureHost::OnFrameReady(
         scoped_refptr<media::VideoFrame> dst_frame =
             media::VideoFrame::WrapExternalData(
                 media::PIXEL_FORMAT_I420, frame->natural_size(),
-                gfx::Rect(frame->natural_size()), frame->natural_size(), dst,
-                buffers_[i].buffer->size(), frame->timestamp());
+                gfx::Rect(frame->natural_size()), frame->natural_size(),
+                // TODO(crbug.com/40511450): Remove PPAPI altogether
+                UNSAFE_TODO(
+                    base::span<uint8_t>(dst, buffers_[i].buffer->size())),
+                frame->timestamp());
         media::EncoderStatus status =
             frame_converter_.ConvertAndScale(*mapped_frame, *dst_frame);
         if (!status.is_ok()) {

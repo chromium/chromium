@@ -523,8 +523,11 @@ scoped_refptr<media::VideoFrame> PepperVideoEncoderHost::CreateVideoFrame(
   // ppapi/shared_impl/media_stream_buffer_manager.h for details.
   scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapExternalData(
       media_input_format_, input_coded_size_, gfx::Rect(input_coded_size_),
-      input_coded_size_, static_cast<uint8_t*>(buffer->video.data),
-      buffer->video.data_size, base::TimeDelta());
+      input_coded_size_,
+      // TODO(crbug.com/40511450): Remove PPAPI altogether
+      UNSAFE_TODO(
+          base::span<uint8_t>(buffer->video.data, buffer->video.data_size)),
+      base::TimeDelta());
   if (!frame) {
     NotifyPepperError(PP_ERROR_FAILED);
     return frame;
