@@ -96,4 +96,8 @@ void BackingStoreImpl::FlushForTesting() {
   NOTIMPLEMENTED();
 }
 
+void BackingStoreImpl::DestroyConnection(const std::u16string& name) {
+  CHECK(open_connections_.erase(name) == 1);
+}
+
 }  // namespace content::indexed_db::sqlite

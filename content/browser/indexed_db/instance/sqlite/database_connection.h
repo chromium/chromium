@@ -89,6 +89,8 @@ class DatabaseConnection {
                            std::u16string name,
                            blink::IndexedDBKeyPath key_path,
                            bool auto_increment);
+  Status DeleteObjectStore(base::PassKey<BackingStoreTransactionImpl>,
+                           int64_t object_store_id);
 
   StatusOr<int64_t> GetKeyGeneratorCurrentNumber(
       base::PassKey<BackingStoreTransactionImpl>,
@@ -131,6 +133,11 @@ class DatabaseConnection {
   std::vector<blink::mojom::IDBExternalObjectPtr> CreateAllExternalObjects(
       base::PassKey<BackingStoreTransactionImpl>,
       const std::vector<IndexedDBExternalObject>& objects);
+
+  // Called when the IDB database associated with this connection is deleted.
+  // This should drop all data with the exception of active blobs, which may
+  // keep `this` alive.
+  void DeleteIdbDatabase(base::PassKey<BackingStoreDatabaseImpl>);
 
  private:
   DatabaseConnection(std::unique_ptr<sql::Database> db,

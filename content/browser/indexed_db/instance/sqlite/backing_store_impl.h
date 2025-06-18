@@ -49,6 +49,8 @@ class BackingStoreImpl : public BackingStore {
   uintptr_t GetIdentifierForMemoryDump() override;
   void FlushForTesting() override;
 
+  void DestroyConnection(const std::u16string& name);
+
   storage::mojom::BlobStorageContext& blob_storage_context() {
     return *blob_storage_context_;
   }

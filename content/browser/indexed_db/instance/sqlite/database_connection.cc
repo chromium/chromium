@@ -574,6 +574,29 @@ Status DatabaseConnection::CreateObjectStore(
   return Status::OK();
 }
 
+Status DatabaseConnection::DeleteObjectStore(
+    base::PassKey<BackingStoreTransactionImpl>,
+    int64_t object_store_id) {
+  CHECK(HasActiveVersionChangeTransaction());
+
+  {
+    sql::Statement statement(db_->GetCachedStatement(
+        SQL_FROM_HERE, "DELETE FROM records WHERE object_store_id = ?"));
+    statement.BindInt64(0, object_store_id);
+    TRANSIENT_CHECK(statement.Run());
+  }
+
+  {
+    sql::Statement statement(db_->GetCachedStatement(
+        SQL_FROM_HERE, "DELETE FROM object_stores WHERE id = ?"));
+    statement.BindInt64(0, object_store_id);
+    TRANSIENT_CHECK(statement.Run());
+  }
+
+  CHECK(metadata_.object_stores.erase(object_store_id) == 1);
+  return Status::OK();
+}
+
 StatusOr<int64_t> DatabaseConnection::GetKeyGeneratorCurrentNumber(
     base::PassKey<BackingStoreTransactionImpl>,
     int64_t object_store_id) {
@@ -848,6 +871,15 @@ DatabaseConnection::CreateAllExternalObjects(
                             backing_store_->blob_storage_context());
   }
   return mojo_objects;
+}
+
+void DatabaseConnection::DeleteIdbDatabase(
+    base::PassKey<BackingStoreDatabaseImpl>) {
+  // TODO(crbug.com/419208485): Active blobs need to keep the connection open.
+  // For now, just fail loudly if there are active blobs during shutdown.
+  CHECK(active_blobs_.empty());
+  backing_store_->DestroyConnection(metadata_.name);
+  // `this` is deleted.
 }
 
 void DatabaseConnection::OnBlobBecameInactive(int64_t blob_number) {

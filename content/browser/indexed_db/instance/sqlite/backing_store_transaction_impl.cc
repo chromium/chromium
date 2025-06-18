@@ -52,8 +52,7 @@ Status BackingStoreTransactionImpl::CreateObjectStore(
 }
 
 Status BackingStoreTransactionImpl::DeleteObjectStore(int64_t object_store_id) {
-  NOTIMPLEMENTED();
-  return Status::InvalidArgument("Not implemented");
+  return db_->DeleteObjectStore(PassKey(), object_store_id);
 }
 
 Status BackingStoreTransactionImpl::RenameObjectStore(
