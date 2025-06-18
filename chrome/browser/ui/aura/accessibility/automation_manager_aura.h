@@ -62,6 +62,10 @@ class AutomationManagerAura : public views::ViewsAXManager,
                            GetFocusOnChildTree);
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest,
                            TransientFocusChangesAreSuppressed);
+  FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest,
+                           ViewAddedAndRemovedFromParent);
+  FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest,
+                           ViewReparentedBetweenViews);
 
   AutomationManagerAura();
   ~AutomationManagerAura() override;

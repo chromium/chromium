@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 
+#include <algorithm>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -777,4 +779,128 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
   manager->HandleAlert("hello");
   manager->PerformAction(ui::AXActionData());
   manager->OnChildWindowRemoved(nullptr);
+}
+
+// Verify that adding and removing a view from its parent gets serialized.
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
+                       ViewAddedAndRemovedFromParent) {
+  auto cache = std::make_unique<views::AXAuraObjCache>();
+  auto* cache_ptr = cache.get();
+  AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
+  manager->set_ax_aura_obj_cache_for_testing(std::move(cache));
+  manager->send_window_state_on_enable_ = false;
+  manager->Enable();
+  AutomationEventWaiter waiter;
+
+  views::Widget* widget = new views::Widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = {0, 0, 200, 200};
+  widget->Init(std::move(params));
+  widget->Show();
+  widget->Activate();
+
+  views::View* view1 = new views::View();
+  view1->GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  view1->GetViewAccessibility().SetName("view1",
+                                        ax::mojom::NameFrom::kAttribute);
+  widget->GetRootView()->AddChildViewRaw(view1);
+  auto* wrapper1 = cache_ptr->GetOrCreate(view1);
+
+  auto added_event = waiter.WaitForEvent(ax::mojom::Event::kChildrenChanged);
+  ASSERT_NE(nullptr, added_event.get());
+
+  auto view1_unique_id = wrapper1->GetUniqueId();
+
+  // Validate that view1 is in the tree before removal.
+  ui::AXNode* node1_before = waiter.ax_tree()->GetFromId(view1_unique_id);
+  EXPECT_NE(nullptr, node1_before);
+
+  // Remove view1 and wait for children-changed
+  widget->GetRootView()->RemoveChildViewT(view1);
+
+  auto removal_event = waiter.WaitForEvent(ax::mojom::Event::kChildrenChanged);
+  ASSERT_NE(nullptr, removal_event.get());
+
+  // Validate that, after removal, view1 is no longer in the tree.
+  ui::AXNode* node1_after = waiter.ax_tree()->GetFromId(view1_unique_id);
+  EXPECT_EQ(nullptr, node1_after);
+  RunAccessibilityChecks(widget);
+}
+
+// Verify that reparenting a view gets serialized correctly.
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
+                       ViewReparentedBetweenViews) {
+  auto cache = std::make_unique<views::AXAuraObjCache>();
+  auto* cache_ptr = cache.get();
+  AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
+  manager->set_ax_aura_obj_cache_for_testing(std::move(cache));
+  manager->send_window_state_on_enable_ = false;
+  manager->Enable();
+  AutomationEventWaiter waiter;
+
+  views::Widget* widget = new views::Widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = {0, 0, 200, 200};
+  widget->Init(std::move(params));
+  widget->Show();
+  widget->Activate();
+
+  // Create two sibling views under the root.
+  views::View* view1 = new views::View();
+  view1->GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  view1->GetViewAccessibility().SetName("view1",
+                                        ax::mojom::NameFrom::kAttribute);
+  widget->GetRootView()->AddChildViewRaw(view1);
+  auto* wrapper1 = cache_ptr->GetOrCreate(view1);
+  auto view1_unique_id = wrapper1->GetUniqueId();
+
+  views::View* view2 = new views::View();
+  view2->GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  view2->GetViewAccessibility().SetName("view2",
+                                        ax::mojom::NameFrom::kAttribute);
+  widget->GetRootView()->AddChildViewRaw(view2);
+  auto* wrapper2 = cache_ptr->GetOrCreate(view2);
+  auto view2_unique_id = wrapper2->GetUniqueId();
+
+  // Add view3 to view1.
+  views::View* view3 = new views::View();
+  view3->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  view3->GetViewAccessibility().SetName("view3",
+                                        ax::mojom::NameFrom::kAttribute);
+  view1->AddChildViewRaw(view3);
+  auto* wrapper3 = cache_ptr->GetOrCreate(view3);
+  auto view3_unique_id = wrapper3->GetUniqueId();
+
+  auto add_event = waiter.WaitForEvent(ax::mojom::Event::kChildrenChanged);
+  ASSERT_NE(nullptr, add_event.get());
+
+  // Verify initial parent of view3 is view1.
+  ui::AXNode* node3_initial = waiter.ax_tree()->GetFromId(view3_unique_id);
+  ASSERT_NE(nullptr, node3_initial);
+  EXPECT_EQ(view1_unique_id, node3_initial->parent()->id());
+
+  // Reparent view3 to view2.
+  view2->AddChildViewRaw(view3);
+  auto reparent_event = waiter.WaitForEvent(ax::mojom::Event::kChildrenChanged);
+  ASSERT_NE(nullptr, reparent_event.get());
+
+  // Verify view3 was removed from view1.
+  ui::AXNode* node1 = waiter.ax_tree()->GetFromId(view1_unique_id);
+  ASSERT_NE(nullptr, node1);
+  EXPECT_TRUE(
+      std::none_of(node1->children().begin(), node1->children().end(),
+                   [&](const auto& c) { return c->id() == view3_unique_id; }));
+
+  // Verify view3 now appears under view2.
+  ui::AXNode* node2 = waiter.ax_tree()->GetFromId(view2_unique_id);
+  ASSERT_NE(nullptr, node2);
+  EXPECT_TRUE(
+      std::any_of(node2->children().begin(), node2->children().end(),
+                  [&](const auto& c) { return c->id() == view3_unique_id; }));
+
+  RunAccessibilityChecks(widget);
 }

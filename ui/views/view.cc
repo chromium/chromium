@@ -3112,6 +3112,11 @@ void View::DoRemoveChildView(View* view,
     widget->LayerTreeChanged();
   }
 
+  if (view->parent_) {
+    view->parent_->GetViewAccessibility().NotifyEvent(
+        ax::mojom::Event::kChildrenChanged, true);
+  }
+
   view->parent_ = nullptr;
 
   if (delete_removed_view && !view->owned_by_client_) {
