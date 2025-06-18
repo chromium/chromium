@@ -243,6 +243,7 @@ Name: ${dependency.displayName}
 Short Name: ${dependency.name}
 URL: ${dependency.url}
 Version: ${dependency.version}
+Update Mechanism: ${(dependency.isAutorolled || dependency.isAndroidx) ? 'Autoroll' : 'Manual'}
 License: ${licenseString}
 License File: LICENSE
 CPEPrefix: ${cpePrefix}
