@@ -76,35 +76,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
           return this;
         },
       },
-
-      /**
-       * PromiseResolver to be resolved when the singleton has been initialized.
-       */
-      resolver_: {
-        type: Object,
-        value: () => new PromiseResolver(),
-      },
-
-      /**
-       * Hash map of supported languages by language codes for fast lookup.
-       */
-      supportedLanguageMap_: {
-        type: Object,
-        value: () => new Map(),
-      },
-
-      /**
-       * Hash set of enabled language codes for membership testing.
-       */
-      enabledLanguageSet_: {
-        type: Object,
-        value: () => new Set(),
-      },
-
-      // <if expr="is_win">
-      /** Prospective UI language when the page was loaded. */
-      originalProspectiveUILanguage_: String,
-      // </if>
     };
   }
 
@@ -142,13 +113,15 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
 
   declare languages?: LanguagesModel|undefined;
   declare languageHelper: LanguageHelper;
-  declare private resolver_: PromiseResolver<void>;
-  declare private supportedLanguageMap_:
-      Map<string, chrome.languageSettingsPrivate.Language>;
-  declare private enabledLanguageSet_: Set<string>;
+
+  private resolver_: PromiseResolver<void> = new PromiseResolver();
+  private supportedLanguageMap_:
+      Map<string, chrome.languageSettingsPrivate.Language> = new Map();
+  private enabledLanguageSet_: Set<string> = new Set();
 
   // <if expr="is_win">
-  declare private originalProspectiveUILanguage_: string;
+  /** Prospective UI language when the page was loaded. */
+  private originalProspectiveUILanguage_: string;
   // </if>
 
   // <if expr="not is_macosx">
