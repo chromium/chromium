@@ -17802,6 +17802,12 @@ void RenderFrameHostImpl::OnTextCopiedToClipboard(
   delegate_->OnTextCopiedToClipboard(this, copied_text);
 }
 
+std::optional<std::vector<std::u16string>>
+  RenderFrameHostImpl::GetClipboardTypesIfPolicyApplied(
+      const ui::ClipboardSequenceNumberToken& seqno) {
+  return delegate_->GetClipboardTypesIfPolicyApplied(seqno);
+}
+
 RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocument() const {
   return frame_tree_node()->GetParentOrOuterDocumentHelper(
       /*escape_guest_view=*/false, /*include_prospective=*/true);

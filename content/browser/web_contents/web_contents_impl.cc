@@ -11406,6 +11406,13 @@ void WebContentsImpl::IsClipboardPasteAllowedWrapperCallback(
   --suppress_unresponsive_renderer_count_;
 }
 
+std::optional<std::vector<std::u16string>>
+WebContentsImpl::GetClipboardTypesIfPolicyApplied(
+    const ui::ClipboardSequenceNumberToken& seqno) {
+  return GetContentClient()->browser()->GetClipboardTypesIfPolicyApplied(
+      seqno);
+}
+
 void WebContentsImpl::BindScreenOrientation(
     RenderFrameHost* rfh,
     mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>

@@ -170,29 +170,39 @@ void ClipboardHostImpl::ReadAvailableTypes(
   auto* clipboard = ui::Clipboard::GetForCurrentThread();
   auto data_endpoint = CreateDataEndpoint();
 
-  // ReadAvailableTypes() returns 'text/uri-list' if either files are provided,
-  // or if it was set as a custom web type. If it is set because files are
-  // available, do not include other types such as text/plain which contain the
-  // full path on some platforms (http://crbug.com/1214108). But do not exclude
-  // other types when it is set as a custom web type (http://crbug.com/1241671).
-  bool file_type_only =
-      clipboard->IsFormatAvailable(ui::ClipboardFormatType::FilenamesType(),
-                                   clipboard_buffer, data_endpoint.get());
+  // If an enterprise Data Controls rule modified the clipboard, get the last
+  // replaced clipboard types instead.
+  if (auto policy_types =
+          static_cast<RenderFrameHostImpl&>(render_frame_host())
+              .GetClipboardTypesIfPolicyApplied(
+                  clipboard->GetSequenceNumber(clipboard_buffer))) {
+    types = std::move(*policy_types);
+  } else {
+    // ReadAvailableTypes() returns 'text/uri-list' if either files are
+    // provided, or if it was set as a custom web type. If it is set because
+    // files are available, do not include other types such as text/plain which
+    // contain the full path on some platforms (http://crbug.com/1214108). But
+    // do not exclude other types when it is set as a custom web type
+    // (http://crbug.com/1241671).
+    bool file_type_only =
+        clipboard->IsFormatAvailable(ui::ClipboardFormatType::FilenamesType(),
+                                     clipboard_buffer, data_endpoint.get());
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS FilesApp must include the custom 'fs/sources', etc data for
-  // paste that it put on the clipboard during copy (b/271078230).
-  if (render_frame_host().GetMainFrame()->GetLastCommittedURL().SchemeIs(
-          kChromeUIScheme)) {
-    file_type_only = false;
-  }
+    // ChromeOS FilesApp must include the custom 'fs/sources', etc data for
+    // paste that it put on the clipboard during copy (crbug.com/271078230).
+    if (render_frame_host().GetMainFrame()->GetLastCommittedURL().SchemeIs(
+            kChromeUIScheme)) {
+      file_type_only = false;
+    }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (file_type_only) {
-    types = {ui::kMimeTypeUriList16};
-  } else {
-    clipboard->ReadAvailableTypes(clipboard_buffer, data_endpoint.get(),
-                                  &types);
+    if (file_type_only) {
+      types = {ui::kMimeTypeUriList16};
+    } else {
+      clipboard->ReadAvailableTypes(clipboard_buffer, data_endpoint.get(),
+                                    &types);
+    }
   }
   std::move(callback).Run(types);
 }

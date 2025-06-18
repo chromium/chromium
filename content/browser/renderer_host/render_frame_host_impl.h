@@ -677,6 +677,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHostDelegate::OnTextCopiedToClipboard.
   void OnTextCopiedToClipboard(const std::u16string& copied_text);
 
+  // If the clipboard has been modified due to an enterprise data controls
+  // policy, return the original clipboard types. The implementation delegates
+  // to RenderFrameHostDelegate::GetClipboardTypesIfPolicyApplied(). See the
+  // description of the latter method for complete details.
+  std::optional<std::vector<std::u16string>> GetClipboardTypesIfPolicyApplied(
+    const ui::ClipboardSequenceNumberToken& seqno);
+
   // This is called when accessibility events arrive from renderer to browser.
   // This could cause eviction if the page is in back/forward cache. Returns
   // true if the eviction happens, and otherwise calls

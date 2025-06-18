@@ -1212,6 +1212,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::KeepAliveRequestTracker::IsContextDetachedCallback
           is_context_detached_callback) override;
 
+  std::optional<std::vector<std::u16string>> GetClipboardTypesIfPolicyApplied(
+      const ui::ClipboardSequenceNumberToken& seqno) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

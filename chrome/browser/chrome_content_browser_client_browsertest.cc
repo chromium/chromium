@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
@@ -45,6 +46,7 @@
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
@@ -86,6 +88,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
@@ -1833,6 +1836,65 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, DISABLED_SomeFilesBlocked) {
             EXPECT_EQ(clipboard_paste_data->file_paths[0], paths[0]);
           }));
 }
+
+// Verifies that the available clipboard types are correctly reported when
+// clipboard data is replaced by a Data Controls policy.
+IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest,
+                       GetClipboardTypesIfPolicyApplied) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+
+  // Set policy that blocks copying to the OS clipboard for a specific source.
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+      "name": "test rule",
+      "sources": {
+        "urls": ["https://google.com"]
+      },
+      "destinations": {
+        "os_clipboard": true
+      },
+      "restrictions": [
+        {"class": "CLIPBOARD", "level": "BLOCK"}
+      ]
+    })"});
+
+  content::ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.text = u"foo";
+  clipboard_paste_data.custom_data[u"custom/data"] = u"custom data";
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+
+  // Initiates a copy request and verify that replacement is written as per the
+  // policy.
+  client()->IsClipboardCopyAllowedByPolicy(
+      /*source=*/content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com")),
+          base::BindLambdaForTesting(
+              [&contents]() { return contents->GetBrowserContext(); }),
+          *contents->GetPrimaryMainFrame()),
+      /*metadata=*/{.size = 1234}, clipboard_paste_data,
+      future.GetCallback());
+  auto replacement = future.Get<std::optional<std::u16string>>();
+  EXPECT_TRUE(replacement.has_value());
+
+  // Triggers the clipboard observer started by `IsClipboardCopyAllowedByPolicy`
+  // so that it's aware of the new seqno.
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  // Verifies that the last replaced clipboard types are retrieved correctly.
+  auto types = client()->GetClipboardTypesIfPolicyApplied(
+      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste));
+
+  ASSERT_TRUE(types.has_value());
+  ASSERT_EQ(types->size(), 2u);
+  EXPECT_EQ((*types)[0], u"text/plain");
+  EXPECT_EQ((*types)[1], u"custom/data");
+}
+
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 class AutomaticBeaconCredentialsBrowserTest : public InProcessBrowserTest,

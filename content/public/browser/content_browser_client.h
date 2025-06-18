@@ -3319,6 +3319,14 @@ class CONTENT_EXPORT ContentBrowserClient {
       std::optional<ukm::SourceId> ukm_source_id,
       KeepAliveRequestTracker::IsContextDetachedCallback
           is_context_detached_callback);
+
+  // Allows embedder to override the clipboard types if a policy has inspected
+  // or modified the clipboard content. This is called by the browser process
+  // when a renderer needs to read available formats. Returns `std::nullopt` if
+  // there is no override for the current clipboard state.
+  virtual std::optional<std::vector<std::u16string>>
+  GetClipboardTypesIfPolicyApplied(
+      const ui::ClipboardSequenceNumberToken& seqno);
 };
 
 }  // namespace content

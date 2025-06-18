@@ -2002,4 +2002,10 @@ ContentBrowserClient::MaybeCreateKeepAliveRequestTracker(
   return nullptr;
 }
 
+std::optional<std::vector<std::u16string>>
+ContentBrowserClient::GetClipboardTypesIfPolicyApplied(
+    const ui::ClipboardSequenceNumberToken& seqno) {
+  return std::nullopt;
+}
+
 }  // namespace content

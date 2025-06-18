@@ -165,6 +165,12 @@ void RenderFrameHostDelegate::IsClipboardPasteAllowedByPolicy(
   std::move(callback).Run(std::move(clipboard_paste_data));
 }
 
+std::optional<std::vector<std::u16string>>
+RenderFrameHostDelegate::GetClipboardTypesIfPolicyApplied(
+    const ui::ClipboardSequenceNumberToken& seqno) {
+  return std::nullopt;
+}
+
 bool RenderFrameHostDelegate::IsTransientActivationRequiredForHtmlFullscreen() {
   return true;
 }
