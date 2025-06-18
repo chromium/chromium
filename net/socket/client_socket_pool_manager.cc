@@ -31,15 +31,37 @@ namespace net {
 
 namespace {
 
-// Limit of sockets of each socket pool.
-auto g_max_sockets_per_pool = std::to_array<int>({
-    256,  // NORMAL_SOCKET_POOL
-    256   // WEBSOCKET_SOCKET_POOL
-});
+// This returns the correct socket pool size information for the given context,
+// but should not be used directly as it constructs a new array each time.
+// Call `GlobalMaxSocketsPerPool` instead to allow caching and save time.
+const std::array<int, HttpNetworkSession::NUM_SOCKET_POOL_TYPES>
+GlobalMaxSocketsPerPoolImpl() {
+  // See crbug.com/415691664 for more details on the connection pool size trial.
+  if (base::FeatureList::IsEnabled(features::kTcpConnectionPoolSizeTrial)) {
+    // TODO(crbug.com/415691664): If we run out of file descriptors due to the
+    // new pool size and see a spike in errors, that should be addressed.
+    return std::to_array<int>({
+        features::kTcpConnectionPoolSizeTrialNormal
+            .Get(),  // NORMAL_SOCKET_POOL
+        features::kTcpConnectionPoolSizeTrialWebSocket
+            .Get()  // WEBSOCKET_SOCKET_POOL
+    });
+  }
+  return std::to_array<int>({
+      256,  // NORMAL_SOCKET_POOL
+      256   // WEBSOCKET_SOCKET_POOL
+  });
+}
 
-static_assert(std::size(g_max_sockets_per_pool) ==
-                  HttpNetworkSession::NUM_SOCKET_POOL_TYPES,
-              "max sockets per pool length mismatch");
+// Returns the limit for active sockets across all socket pools for this network
+// process. This may be modified by set_max_sockets_per_pool in tests, but
+// should otherwise align with `GlobalMaxSocketsPerPoolImpl`.
+std::array<int, HttpNetworkSession::NUM_SOCKET_POOL_TYPES>&
+GlobalMaxSocketsPerPool() {
+  static std::array<int, HttpNetworkSession::NUM_SOCKET_POOL_TYPES>
+      g_max_sockets_per_pool = GlobalMaxSocketsPerPoolImpl();
+  return g_max_sockets_per_pool;
+}
 
 // Default to allow up to 6 connections per host. Experiment and tuning may
 // try other values (greater than 0).  Too large may cause many problems, such
@@ -145,7 +167,7 @@ ClientSocketPoolManager::~ClientSocketPoolManager() = default;
 int ClientSocketPoolManager::max_sockets_per_pool(
     HttpNetworkSession::SocketPoolType pool_type) {
   DCHECK_LT(pool_type, HttpNetworkSession::NUM_SOCKET_POOL_TYPES);
-  return g_max_sockets_per_pool[pool_type];
+  return GlobalMaxSocketsPerPool()[pool_type];
 }
 
 // static
@@ -155,8 +177,8 @@ void ClientSocketPoolManager::set_max_sockets_per_pool(
   DCHECK_LT(0, socket_count);     // At least one socket must be allowed.
   DCHECK_GE(2048, socket_count);  // For now, we pick a ceiling of 2^11.
   DCHECK_LT(pool_type, HttpNetworkSession::NUM_SOCKET_POOL_TYPES);
-  g_max_sockets_per_pool[pool_type] = socket_count;
-  DCHECK_GE(g_max_sockets_per_pool[pool_type],
+  GlobalMaxSocketsPerPool()[pool_type] = socket_count;
+  DCHECK_GE(GlobalMaxSocketsPerPool()[pool_type],
             g_max_sockets_per_group[pool_type]);
 }
 
@@ -176,7 +198,7 @@ void ClientSocketPoolManager::set_max_sockets_per_group(
   DCHECK_LT(pool_type, HttpNetworkSession::NUM_SOCKET_POOL_TYPES);
   g_max_sockets_per_group[pool_type] = socket_count;
 
-  DCHECK_GE(g_max_sockets_per_pool[pool_type],
+  DCHECK_GE(GlobalMaxSocketsPerPool()[pool_type],
             g_max_sockets_per_group[pool_type]);
   DCHECK_GE(g_max_sockets_per_proxy_chain[pool_type],
             g_max_sockets_per_group[pool_type]);

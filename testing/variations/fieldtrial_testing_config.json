@@ -24256,6 +24256,29 @@
             ]
         }
     ],
+    "TcpConnectionPoolSizeTrial": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Dogfood",
+                    "params": {
+                        "TcpConnectionPoolSizeTrialNormal": "256",
+                        "TcpConnectionPoolSizeTrialWebSocket": "256"
+                    },
+                    "enable_features": [
+                        "TcpConnectionPoolSizeTrial"
+                    ]
+                }
+            ]
+        }
+    ],
     "TcpPortRandomizationWin": [
         {
             "platforms": [

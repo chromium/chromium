@@ -786,4 +786,20 @@ BASE_FEATURE(kTLSTrustAnchorIDs,
              "TLSTrustAnchorIDs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTcpConnectionPoolSizeTrial,
+             "TcpConnectionPoolSizeTrial",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kTcpConnectionPoolSizeTrialNormal,
+                   &kTcpConnectionPoolSizeTrial,
+                   "TcpConnectionPoolSizeTrialNormal",
+                   256);
+
+BASE_FEATURE_PARAM(int,
+                   kTcpConnectionPoolSizeTrialWebSocket,
+                   &kTcpConnectionPoolSizeTrial,
+                   "TcpConnectionPoolSizeTrialWebSocket",
+                   256);
+
 }  // namespace net::features
