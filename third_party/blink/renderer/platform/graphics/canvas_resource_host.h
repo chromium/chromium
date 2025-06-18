@@ -63,8 +63,8 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   virtual CanvasResourceProvider* GetResourceProviderForCanvas2D() const = 0;
 
-  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProvider(
-      std::unique_ptr<CanvasResourceProvider>);
+  virtual std::unique_ptr<CanvasResourceProvider> ReplaceResourceProvider(
+      std::unique_ptr<CanvasResourceProvider>) = 0;
 
   virtual void DiscardResourceProvider();
 
@@ -108,8 +108,12 @@ class PLATFORM_EXPORT CanvasResourceHost {
     return resource_provider_.get();
   }
 
- private:
+ protected:
+  // TODO(crbug.com/352263194): Move `resource_provider_` into
+  // CanvasRenderingContextHost/FakeCanvasResourceHost.
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
+
+ private:
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
   gfx::Size size_;
 };

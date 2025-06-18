@@ -498,6 +498,19 @@ bool CanvasRenderingContextHost::IsContextLost() const {
   return !context || context->isContextLost();
 }
 
+std::unique_ptr<CanvasResourceProvider>
+CanvasRenderingContextHost::ReplaceResourceProvider(
+    std::unique_ptr<CanvasResourceProvider> new_resource_provider) {
+  std::unique_ptr<CanvasResourceProvider> old_resource_provider =
+      std::move(resource_provider_);
+  resource_provider_ = std::move(new_resource_provider);
+  UpdateMemoryUsage();
+  if (old_resource_provider) {
+    old_resource_provider->SetCanvasResourceHost(nullptr);
+  }
+  return old_resource_provider;
+}
+
 void CanvasRenderingContextHost::FlushRecordingForCanvas2D(FlushReason reason) {
   CHECK(IsRenderingContext2D());
   if (auto* provider = GetResourceProviderForCanvas2D()) {

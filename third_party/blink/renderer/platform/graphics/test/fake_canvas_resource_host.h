@@ -38,6 +38,12 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
     return GetResourceProviderWithoutContextCheck();
   }
+  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProvider(
+      std::unique_ptr<CanvasResourceProvider> provider) override {
+    auto old_provider = std::move(resource_provider_);
+    resource_provider_ = std::move(provider);
+    return old_provider;
+  }
 
   size_t GetMemoryUsage() const override { return 0; }
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D()

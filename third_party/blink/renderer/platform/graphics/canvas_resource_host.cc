@@ -25,19 +25,6 @@ CanvasResourceHost::CanvasResourceHost(gfx::Size size) : size_(size) {}
 
 CanvasResourceHost::~CanvasResourceHost() = default;
 
-std::unique_ptr<CanvasResourceProvider>
-CanvasResourceHost::ReplaceResourceProvider(
-    std::unique_ptr<CanvasResourceProvider> new_resource_provider) {
-  std::unique_ptr<CanvasResourceProvider> old_resource_provider =
-      std::move(resource_provider_);
-  resource_provider_ = std::move(new_resource_provider);
-  UpdateMemoryUsage();
-  if (old_resource_provider) {
-    old_resource_provider->SetCanvasResourceHost(nullptr);
-  }
-  return old_resource_provider;
-}
-
 void CanvasResourceHost::DiscardResourceProvider() {
   resource_provider_ = nullptr;
   UpdateMemoryUsage();
