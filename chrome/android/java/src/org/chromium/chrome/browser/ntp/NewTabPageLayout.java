@@ -684,6 +684,9 @@ public class NewTabPageLayout extends LinearLayout
         // Hide or show the views above the most visited tiles as needed, including search box, and
         // spacers. The visibility of Logo is handled by LogoCoordinator.
         mSearchBoxCoordinator.setVisibility(mSearchProviderHasLogo);
+        if (mIsComposeplateEnabled) {
+            updateActionButtonVisibility();
+        }
 
         onUrlFocusAnimationChanged();
 
@@ -935,15 +938,18 @@ public class NewTabPageLayout extends LinearLayout
             return;
         }
 
-        boolean shouldShowComposeplateButton = shouldShowVoiceSearchButton && shouldShowLensButton;
+        boolean shouldShowComposeplateButton =
+                mSearchProviderIsGoogle && shouldShowVoiceSearchButton && shouldShowLensButton;
         boolean isVoiceSearchButtonVisible =
                 !shouldShowComposeplateButton && shouldShowVoiceSearchButton;
         boolean isLensButtonVisible = !shouldShowComposeplateButton && shouldShowLensButton;
         mSearchBoxCoordinator.setVoiceSearchButtonVisibility(isVoiceSearchButtonVisible);
         mSearchBoxCoordinator.setLensButtonVisibility(isLensButtonVisible);
         mSearchBoxCoordinator.setComposeplateButtonVisibility(shouldShowComposeplateButton);
-        mComposeplateCoordinator.setVisibility(
-                shouldShowComposeplateButton, mManager.isCurrentPage());
+        if (mComposeplateCoordinator != null) {
+            mComposeplateCoordinator.setVisibility(
+                    shouldShowComposeplateButton, mManager.isCurrentPage());
+        }
 
         updatePreviousButtonVisibilityAndRecordMetrics(
                 isVoiceSearchButtonVisible, isLensButtonVisible, shouldShowComposeplateButton);
