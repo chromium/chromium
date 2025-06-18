@@ -182,8 +182,9 @@ gfx::CALayerResult FromTileQuad(
     return gfx::kCALayerFailedTileNotCandidate;
   ca_layer_overlay->resource_id = resource_id;
   ca_layer_overlay->uv_rect = quad->tex_coord_rect;
-  ca_layer_overlay->uv_rect.InvScale(quad->texture_size.width(),
-                                     quad->texture_size.height());
+  auto texture_size = resource_provider->GetResourceBackedSize(resource_id);
+  ca_layer_overlay->uv_rect.InvScale(texture_size.width(),
+                                     texture_size.height());
   ca_layer_overlay->nearest_neighbor_filter = quad->nearest_neighbor;
   return gfx::kCALayerSuccess;
 }
