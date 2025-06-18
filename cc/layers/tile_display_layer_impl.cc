@@ -198,8 +198,7 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
     return;
   }
 
-  const float max_contents_scale =
-      tilings_.empty() ? 1.0f : tilings_.front()->contents_scale_key();
+  const float max_contents_scale = tilings_.front()->contents_scale_key();
 
   // If this layer is used as a backdrop filter, don't create and append a quad
   // as that will be done in RenderSurfaceImpl::AppendQuads.
@@ -315,8 +314,7 @@ void TileDisplayLayerImpl::GetContentsResourceId(
   CHECK(is_backdrop_filter_mask_);
   CHECK_EQ(tilings_.size(), 1u);
 
-  const float max_contents_scale =
-      tilings_.empty() ? 1.0f : tilings_.front()->contents_scale_key();
+  const float max_contents_scale = tilings_.front()->contents_scale_key();
   gfx::Rect content_rect =
       gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), max_contents_scale);
   const auto ideal_scale = GetIdealContentsScale();
