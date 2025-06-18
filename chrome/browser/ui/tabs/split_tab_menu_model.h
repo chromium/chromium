@@ -39,7 +39,7 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExitSplitMenuItem);
 
   // Enum class denoting which close tab menu item the menu should show.
-  enum class CloseTabMenuItem { kNone, kCloseStartEndTab, kCloseSpecifiedTab };
+  enum class CloseTabMenuItem { kCloseStartEndTab, kCloseSpecifiedTab };
 
   // Start command IDs at 1701 to avoid conflicts with other submenus.
   enum class CommandId {

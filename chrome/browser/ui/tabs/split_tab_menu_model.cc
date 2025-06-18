@@ -65,6 +65,8 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
     SetElementIdentifierAt(
         GetIndexOfCommandId(static_cast<int>(CommandId::kCloseEndTab)).value(),
         kCloseEndTabMenuItem);
+  } else {
+    NOTREACHED() << "Unknown close menu item option";
   }
 
   AddItemWithStringIdAndIcon(
