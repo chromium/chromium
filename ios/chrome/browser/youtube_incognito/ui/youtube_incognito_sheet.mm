@@ -28,6 +28,8 @@ CGFloat const kAnimationDuration = 0.3;
 CGFloat const kAnimationDelay = 1;
 CGFloat const kAnimationTranslationOffset = 5;
 CGFloat const kAnimationScalFactor = 0.5;
+CGFloat const kHalfSheetCornerRadius = 20;
+CGFloat const kHalfSheetFullHeightProportion = 0.9;
 
 }  // namespace
 
@@ -42,14 +44,13 @@ CGFloat const kAnimationScalFactor = 0.5;
 
 - (void)viewDidLoad {
   self.actionHandler = self;
+  self.topAlignedLayout = YES;
   self.showDismissBarButton = NO;
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   self.aboveTitleView = [self animatedTitleView];
 
   self.titleString =
       l10n_util::GetNSString(IDS_IOS_YOUTUBE_INCOGNITO_SHEET_TITLE);
-  self.subtitleString =
-      l10n_util::GetNSString(IDS_IOS_YOUTUBE_INCOGNITO_SHEET_SUBTITLE);
   self.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_YOUTUBE_INCOGNITO_SHEET_PRIMARY_BUTTON_TITLE);
 
@@ -88,6 +89,8 @@ CGFloat const kAnimationScalFactor = 0.5;
   ]];
 
   [super viewDidLoad];
+  [self setUpBottomSheetPresentationController];
+  [self setUpBottomSheetDetents];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -115,6 +118,32 @@ CGFloat const kAnimationScalFactor = 0.5;
 }
 
 #pragma mark - Private
+
+// Configures the bottom sheet's presentation controller appearance.
+- (void)setUpBottomSheetPresentationController {
+  self.modalPresentationStyle = UIModalPresentationFormSheet;
+  UISheetPresentationController* presentationController =
+      self.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
+}
+
+// Configures the bottom sheet's detents.
+- (void)setUpBottomSheetDetents {
+  UISheetPresentationController* presentationController =
+      self.sheetPresentationController;
+  auto resolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return context.maximumDetentValue * kHalfSheetFullHeightProportion;
+  };
+  UISheetPresentationControllerDetent* customDetent =
+      [UISheetPresentationControllerDetent
+          customDetentWithIdentifier:@"customMaximizedDetent"
+                            resolver:resolver];
+  presentationController.detents = @[ customDetent ];
+  presentationController.selectedDetentIdentifier = @"customMaximizedDetent";
+}
 
 - (UIView*)animatedTitleView {
   UIView* chromeIconView = [[UIView alloc] init];
