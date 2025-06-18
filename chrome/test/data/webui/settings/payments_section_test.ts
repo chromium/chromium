@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 import {createCreditCardEntry} from './autofill_fake_data.js';
-import {createPaymentsSection, getLocalAndServerCreditCardListItems, getDefaultExpectations, getCardRowShadowRoot} from './payments_section_utils.js';
+import {createPaymentsSection, getLocalAndServerCreditCardListItems, getDefaultExpectations, getCardRowShadowRoot, verifyBooleanHistogramRecorded, verifyBooleanHistogramNotRecorded} from './payments_section_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -52,32 +52,6 @@ suite('PaymentsSection', function() {
       deviceAuthAvailable: true,
     });
   });
-
-  /**
-   * Verifies that a given boolean `histogramName` was recorded exactly once and
-   * with the given `value`.
-   */
-  async function verifyBooleanHistogramRecorded(
-      testMetricsBrowserProxy: TestMetricsBrowserProxy, histogramName: string,
-      value: boolean) {
-    const recordedHistograms =
-        await testMetricsBrowserProxy.getArgs('recordBooleanHistogram');
-    const filteredHistograms =
-        recordedHistograms.filter(histogram => histogram[0] === histogramName);
-    assertEquals(1, filteredHistograms.length);
-    assertEquals(value, filteredHistograms[0][1]);
-  }
-
-  /**
-   * Verifies that a given boolean `histogramName` was not recorded.
-   */
-  async function verifyBooleanHistogramNotRecorded(
-      testMetricsBrowserProxy: TestMetricsBrowserProxy, histogramName: string) {
-    const recordedHistograms =
-        await testMetricsBrowserProxy.getArgs('recordBooleanHistogram');
-    assertFalse(
-        recordedHistograms.some(histogram => histogram[0] === histogramName));
-  }
 
   test('ManagePaymentMethodsLink_RecordsMetrics', async function() {
     const testMetricsBrowserProxy = new TestMetricsBrowserProxy();

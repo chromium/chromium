@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrButtonElement} from 'chrome://settings/settings.js';
-import {loadTimeData} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
 import type {CrInputElement, SettingsCreditCardEditDialogElement, SettingsIbanEditDialogElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -15,6 +15,8 @@ import {eventToPromise, isVisible, microtasksFinished, whenAttributeIs} from 'ch
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createCreditCardEntry, createIbanEntry, TestPaymentsManager} from './autofill_fake_data.js';
+import {verifyBooleanHistogramRecorded} from './payments_section_utils.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 // clang-format on
 
 /**
@@ -76,10 +78,11 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
    * Creates the Add Credit Card dialog. Simulate clicking "Add" button in
    * payments section.
    */
-  async function createAddCreditCardDialog():
+  async function createAddCreditCardDialog(
+      existingCards?: chrome.autofillPrivate.CreditCardEntry[]):
       Promise<SettingsCreditCardEditDialogElement> {
     const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[]);
+        existingCards !== undefined ? existingCards : [], /*ibans=*/[]);
     // Simulate clicking "Add" button in payments section.
     assertFalse(!!section.shadowRoot!.querySelector(
         'settings-credit-card-edit-dialog'));
@@ -232,6 +235,9 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
   }
 
   test('add card dialog', async function() {
+    const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
     loadTimeData.overrideValues({
       showIbansSettings: false,
     });
@@ -261,6 +267,14 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Verify the card number field is autofocused when nickname management is
     // enabled.
     assertTrue(numberInput.matches(':focus-within'));
+
+    await verifyBooleanHistogramRecorded(
+        testMetricsBrowserProxy,
+        'Autofill.PaymentMethodsSettingsPage.AddCardClicked2', true);
+    await verifyBooleanHistogramRecorded(
+        testMetricsBrowserProxy,
+        'Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards2',
+        true);
   });
 
   test('add card dialog from dropdown list', async function() {
@@ -287,6 +301,28 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Verify the card number field is autofocused when nickname management is
     // enabled.
     assertTrue(numberInput.matches(':focus-within'));
+  });
+
+  test('add card with existing cards', async function() {
+    const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
+    loadTimeData.overrideValues({
+      showIbansSettings: false,
+    });
+    const existingCreditCard = createCreditCardEntry();
+    const creditCardDialog =
+        await createAddCreditCardDialog([existingCreditCard]);
+
+    // Wait for the dialog to open.
+    await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
+
+    // The only additional thing to verify here versus other tests is that the
+    // metric is recorded correctly.
+    await verifyBooleanHistogramRecorded(
+        testMetricsBrowserProxy,
+        'Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards2',
+        false);
   });
 
   test('save new card', async function() {
