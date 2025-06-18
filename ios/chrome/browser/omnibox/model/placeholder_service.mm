@@ -20,6 +20,7 @@ PlaceholderService::PlaceholderService(FaviconLoader* favicon_loader,
                                        TemplateURLService* template_url_service)
     : favicon_loader_(favicon_loader),
       template_url_service_(template_url_service),
+      current_dse_(nullptr),
       icon_callbacks_() {
   template_url_service->AddObserver(this);
   icon_cache_ = [[NSCache alloc] init];
@@ -124,6 +125,11 @@ void PlaceholderService::RemoveObserver(PlaceholderServiceObserver* observer) {
 #pragma mark - TemplateURLServiceObserver
 
 void PlaceholderService::OnTemplateURLServiceChanged() {
+  if (!template_url_service_ ||
+      template_url_service_->GetDefaultSearchProvider() == current_dse_) {
+    return;
+  }
+  current_dse_ = template_url_service_->GetDefaultSearchProvider();
   [icon_cache_ removeAllObjects];
   icon_callbacks_.clear();
   for (auto& observer : model_observers_) {

@@ -64,13 +64,6 @@ using base::UserMetricsAction;
 // The latest URL used to fetch the favicon.
 @property(nonatomic, assign) GURL latestFaviconURL;
 
-// The latest URL used to fetch the default search engine favicon.
-@property(nonatomic, assign) const TemplateURL* latestDefaultSearchEngine;
-
-// The favicon for the current default search engine. Cached to prevent
-// needing to load it each time.
-@property(nonatomic, strong) UIImage* currentDefaultSearchEngineFavicon;
-
 @end
 
 @implementation OmniboxMediator {
@@ -105,7 +98,10 @@ using base::UserMetricsAction;
 - (void)setConsumer:(id<OmniboxConsumer>)consumer {
   _consumer = consumer;
 
-  [self updateConsumerEmptyTextAndImage];
+  // Initializes consumer values.
+  [self placeholderTextUpdated];
+  [self placeholderImageUpdated];
+  [self searchEngineChanged];
   // Forces the layout of the leading image.
   [self setDefaultLeftImage];
 }
@@ -165,14 +161,37 @@ using base::UserMetricsAction;
       search_engines::SupportsSearchByImage(templateUrlService);
   self.searchEngineSupportsLens =
       search_engines::SupportsSearchImageWithLens(templateUrlService);
-  self.currentDefaultSearchEngineFavicon = nil;
-  [self updateConsumerEmptyTextAndImage];
+  [self.consumer
+      updateSearchByImageSupported:self.searchEngineSupportsSearchByImage];
+  [self.consumer updateLensImageSupported:self.searchEngineSupportsLens];
 }
 
 #pragma mark - PlaceholderServiceObserving
 
 - (void)placeholderTextUpdated {
-  [self updateConsumerEmptyTextAndImage];
+  if (self.placeholderService) {
+    [self.consumer setPlaceholderText:self.placeholderService
+                                          ->GetCurrentPlaceholderText()];
+    [self.consumer
+        setSearchOnlyPlaceholderText:
+            self.placeholderService->GetCurrentSearchOnlyPlaceholderText()];
+  }
+}
+
+- (void)placeholderImageUpdated {
+  // Show Default Search Engine favicon.
+  // Remember what is the Default Search Engine provider that the icon is
+  // for, in case the user changes Default Search Engine while this is being
+  // loaded.
+  __weak __typeof(self) weakSelf = self;
+  [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
+    [weakSelf.consumer setEmptyTextLeadingImage:image];
+  }];
+}
+
+- (void)placeholderServiceShuttingDown:(PlaceholderService*)service {
+  // Removes observation.
+  self.placeholderService = nil;
 }
 
 #pragma mark - OmniboxMutator
@@ -344,107 +363,10 @@ using base::UserMetricsAction;
 // thread.
 - (void)loadDefaultSearchEngineFaviconWithCompletion:
     (void (^)(UIImage* image))completion {
-  const CGFloat faviconSize = self.faviconSize;
-  // If default search engine image is currently loaded, just use it.
-  if (self.currentDefaultSearchEngineFavicon) {
-    if (completion) {
-      completion(self.currentDefaultSearchEngineFavicon);
-    }
-  }
-
-  const TemplateURL* defaultProvider =
-      self.templateURLService
-          ? self.templateURLService->GetDefaultSearchProvider()
-          : nullptr;
-
-  if (!defaultProvider) {
-    // Service isn't available or default provider is disabled - either way we
-    // can't get the icon.
-    return;
-  }
-
-  // When the DSE is Google, use the bundled icon.
-  if (defaultProvider && defaultProvider->GetEngineType(
-                             self.templateURLService->search_terms_data()) ==
-                             SEARCH_ENGINE_GOOGLE) {
-    UIImage* bundledLogo = ios::provider::GetBrandedImage(
-        ios::provider::BrandedImage::kOmniboxAnswer);
-    if (_isLensOverlay) {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-      bundledLogo = MakeSymbolMulticolor(
-          CustomSymbolWithPointSize(kGoogleIconSymbol, faviconSize));
-#endif
-    }
-    if (bundledLogo) {
-      self.currentDefaultSearchEngineFavicon = bundledLogo;
-      if (completion) {
-        completion(bundledLogo);
-      }
-      return;
-    }
-  }
-
-  // Can't load favicons without a favicon loader.
-  DCHECK(self.faviconLoader);
-
-  __weak __typeof(self) weakSelf = self;
-  self.latestDefaultSearchEngine = defaultProvider;
-  auto handleFaviconResult = ^void(FaviconAttributes* faviconCacheResult) {
-    DCHECK_LE(faviconCacheResult.faviconImage.size.width, faviconSize);
-    if (weakSelf.latestDefaultSearchEngine != defaultProvider ||
-        !faviconCacheResult.faviconImage ||
-        faviconCacheResult.usesDefaultImage) {
-      return;
-    }
-    UIImage* favicon = faviconCacheResult.faviconImage;
-    weakSelf.currentDefaultSearchEngineFavicon = favicon;
-    if (completion) {
-      completion(favicon);
-    }
-  };
-
-  // Prepopulated search engines don't have a favicon URL, so the favicon is
-  // loaded with an empty query search page URL.
-  if (defaultProvider->prepopulate_id() != 0) {
-    // Fake up a page URL for favicons of prepopulated search engines, since
-    // favicons may be fetched from Google server which doesn't suppoprt
-    // icon URL.
-    std::string emptyPageUrl = defaultProvider->url_ref().ReplaceSearchTerms(
-        TemplateURLRef::SearchTermsArgs(std::u16string()),
-        _templateURLService->search_terms_data());
-    self.faviconLoader->FaviconForPageUrl(
-        GURL(emptyPageUrl), faviconSize, faviconSize,
-        /*fallback_to_google_server=*/YES, handleFaviconResult);
-  } else {
-    // Download the favicon.
-    // The code below mimics that in OmniboxPopupMediator.
-    self.faviconLoader->FaviconForIconUrl(defaultProvider->favicon_url(),
-                                          faviconSize, faviconSize,
-                                          handleFaviconResult);
-  }
-}
-
-- (void)updateConsumerEmptyTextAndImage {
-  [_consumer
-      updateSearchByImageSupported:self.searchEngineSupportsSearchByImage];
-  [_consumer updateLensImageSupported:self.searchEngineSupportsLens];
-
   if (self.placeholderService) {
-    [self.consumer setPlaceholderText:self.placeholderService
-                                          ->GetCurrentPlaceholderText()];
-    [self.consumer
-        setSearchOnlyPlaceholderText:
-            self.placeholderService->GetCurrentSearchOnlyPlaceholderText()];
+    self.placeholderService->FetchDefaultSearchEngineIcon(
+        self.faviconSize, base::BindRepeating(completion));
   }
-
-  // Show Default Search Engine favicon.
-  // Remember what is the Default Search Engine provider that the icon is
-  // for, in case the user changes Default Search Engine while this is being
-  // loaded.
-  __weak __typeof(self) weakSelf = self;
-  [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
-    [weakSelf.consumer setEmptyTextLeadingImage:image];
-  }];
 }
 
 #pragma mark - OmniboxViewControllerPasteDelegate
