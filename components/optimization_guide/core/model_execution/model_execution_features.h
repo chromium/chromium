@@ -35,10 +35,6 @@ BASE_DECLARE_FEATURE(kComposeGraduated);
 BASE_DECLARE_FEATURE(kTabOrganizationGraduated);
 BASE_DECLARE_FEATURE(kWallpaperSearchGraduated);
 
-// Feature for controlling the users who are eligible to see the IPH promo for
-// experimental AI.
-BASE_DECLARE_FEATURE(kExperimentalAIIPHPromoRampUp);
-
 // Feature for disabling the model execution user account capability check.
 BASE_DECLARE_FEATURE(kModelExecutionCapabilityDisable);
 

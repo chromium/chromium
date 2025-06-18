@@ -567,30 +567,6 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered when there is atleast one "
                        "new module on the NTP page.")));
 
-  // kIPHExperimentalAIPromoFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHExperimentalAIPromoFeature,
-          kToolbarAppMenuButtonElementId, IDS_IPH_EXPERIMENTAL_AI_PROMO_BODY,
-          IDS_IPH_EXPERIMENTAL_AI_PROMO_BUTTON_CONTINUE,
-          base::BindRepeating(
-              [](ui::ElementContext ctx,
-                 user_education::FeaturePromoHandle promo_handle) {
-                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
-                chrome::ShowSettingsSubPage(
-                    browser, chrome::kExperimentalAISettingsSubPage);
-                base::RecordAction(base::UserMetricsAction(
-                    "ExperimentalAI_IPHPromo_SettingsPageOpened"));
-              }))
-          .SetBubbleTitleText(IDS_IPH_EXPERIMENTAL_AI_PROMO)
-          .SetCustomActionDismissText(IDS_NO_THANKS)
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetCustomActionIsDefault(true)
-          .OverrideFocusOnShow(false)));
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // kIPHExtensionsMenuFeature:
   registry.RegisterFeature(std::move(

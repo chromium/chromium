@@ -9889,17 +9889,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         More options for split view
       </message>
 
-      <!-- Strings for experimental AI promo -->
-      <message name="IDS_IPH_EXPERIMENTAL_AI_PROMO" desc="The title text of the IPH promo for experimental AI." translateable="false">
-        Try out experimental AI features
-      </message>
-      <message name="IDS_IPH_EXPERIMENTAL_AI_PROMO_BODY" desc="The body text of the IPH promo for experimental AI." translateable="false">
-        Get help writing, organizing tabs and creating custom themes
-      </message>
-      <message name="IDS_IPH_EXPERIMENTAL_AI_PROMO_BUTTON_CONTINUE" desc="The text of the continue button for the experimental AI IPH promo." translateable="false">
-        Continue
-      </message>
-
       <!-- Strings for intent picker -->
       <if expr="not is_android">
         <message name="IDS_TOOLTIP_INTENT_PICKER_ICON" desc="The tooltip for the intent picker bubble icon">

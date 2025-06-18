@@ -275,7 +275,6 @@ class OptimizationGuideKeyedService
   GetModelExecutionFeaturesController();
 
  private:
-  friend class BrowserView;
   friend class ChromeBrowserMainExtraPartsOptimizationGuide;
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class contextual_cueing::ZeroStateSuggestionsPageData;
@@ -356,10 +355,6 @@ class OptimizationGuideKeyedService
           callback,
       std::optional<optimization_guide::proto::RequestContextMetadata>
           request_context_metadata = std::nullopt) override;
-
-  // Returns whether all conditions are met to show the IPH promo for
-  // experimental AI.
-  bool ShouldShowExperimentalAIPromo() const;
 
   download::BackgroundDownloadService* BackgroundDownloadServiceProvider();
 

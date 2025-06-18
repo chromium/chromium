@@ -1119,9 +1119,6 @@ class BrowserView : public BrowserWindow,
   // whenever the touch mode changes.
   void MaybeShowReadingListInSidePanelIPH();
 
-  // Attempts to show IPH promo for experimental AI.
-  void MaybeShowExperimentalAIIPH();
-
   // Attempts to show IPH promo for the tab search toolbar button.
   void MaybeShowTabStripToolbarButtonIPH();
 

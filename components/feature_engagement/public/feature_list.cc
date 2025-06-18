@@ -206,7 +206,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDesktopNewTabPageModulesCustomizeFeature,
     &kIPHDiscardRingFeature,
     &kIPHDownloadEsbPromoFeature,
-    &kIPHExperimentalAIPromoFeature,
     &kIPHExplicitBrowserSigninPreferenceRememberedFeature,
     &kIPHGlicPromoFeature,
     &kIPHHistorySearchFeature,

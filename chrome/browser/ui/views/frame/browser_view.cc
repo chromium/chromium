@@ -3192,17 +3192,6 @@ void BrowserView::MaybeShowReadingListInSidePanelIPH() {
   }
 }
 
-void BrowserView::MaybeShowExperimentalAIIPH() {
-  if (!browser()->is_type_normal()) {
-    return;
-  }
-  auto* opt_guide_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(browser_->profile());
-  if (opt_guide_service && opt_guide_service->ShouldShowExperimentalAIPromo()) {
-    MaybeShowFeaturePromo(feature_engagement::kIPHExperimentalAIPromoFeature);
-  }
-}
-
 void BrowserView::MaybeShowTabStripToolbarButtonIPH() {
   if (!browser()->is_type_normal()) {
     return;
@@ -5360,16 +5349,6 @@ void BrowserView::AddedToWidget() {
       base::BindOnce(&BrowserView::MaybeShowReadingListInSidePanelIPH,
                      GetAsWeakPtr()),
       base::Minutes(5));
-
-  // Show the promo delayed after a while at startup. This is not the right way
-  // to show delayed promos, as this does not take user actions into account
-  // such as user typing, user navigating, while the promo is displayed. Contact
-  // the user education team for the right approach.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&BrowserView::MaybeShowExperimentalAIIPH, GetAsWeakPtr()),
-      user_education::features::GetSessionStartGracePeriod() +
-          base::Minutes(5));
 
   // Accessible name of the tab is dependent on the visibility state of the chip
   // view, so it needs to be made aware of any changes.

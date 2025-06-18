@@ -52,10 +52,6 @@ BASE_FEATURE(kWallpaperSearchGraduated,
              "WallpaperSearchGraduated",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExperimentalAIIPHPromoRampUp,
-             "ExperimentalAIIPHPromoRampUp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kModelExecutionCapabilityDisable,
              "ModelExecutionCapabilityDisable",
              base::FEATURE_DISABLED_BY_DEFAULT);
