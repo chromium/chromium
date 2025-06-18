@@ -1,9 +1,0 @@
-SVG scale transform with negative scale values should be correctly converted to strings.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS g.getAttribute('transform') is "scale(-2 -4)"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
