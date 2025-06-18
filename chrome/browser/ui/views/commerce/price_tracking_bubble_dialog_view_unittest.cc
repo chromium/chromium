@@ -73,15 +73,17 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
                 BookmarkModelFactory::GetDefaultFactory()}});
   }
 
-  void CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type type) {
+  void CreateBubbleViewAndShow(
+      PriceTrackingBubbleDialogView::Type type,
+      std::optional<std::u16string> bookmark_folder_name = std::nullopt) {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(1, 1);
-    bubble_coordinator_->Show(
-        browser()->tab_strip_model()->GetWebContentsAt(0), profile(),
-        GURL(kTestURL),
-        ui::ImageModel::FromImage(
-            gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap))),
-        Callback().Get(), OnDialogClosingCallback().Get(), type);
+    bubble_coordinator_->Show(browser()->tab_strip_model()->GetWebContentsAt(0),
+                              profile(), GURL(kTestURL),
+                              ui::ImageModel::FromImage(gfx::Image(
+                                  gfx::ImageSkia::CreateFrom1xBitmap(bitmap))),
+                              Callback().Get(), OnDialogClosingCallback().Get(),
+                              type, bookmark_folder_name);
   }
 
   base::MockCallback<PriceTrackingBubbleDialogView::OnTrackPriceCallback>&
@@ -136,7 +138,7 @@ class PriceTrackingBubbleDialogViewLayoutUnitTest
     if (BookmarkWasCreated()) {
       return bookmark_folder_name_;
     } else {
-      return u"";
+      return u"Shopping list";
     }
   }
 
@@ -162,7 +164,8 @@ class PriceTrackingBubbleDialogViewLayoutUnitTest
 
 TEST_P(PriceTrackingBubbleDialogViewLayoutUnitTest, FUEBubble) {
   CreateBubbleViewAndShow(
-      PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE);
+      PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE,
+      GetFolderName());
 
   auto* bubble = BubbleCoordinator()->GetBubble();
   EXPECT_TRUE(bubble);
@@ -191,7 +194,8 @@ TEST_P(PriceTrackingBubbleDialogViewLayoutUnitTest, NormalBubble) {
     return;
   }
 
-  CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
+  CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type::TYPE_NORMAL,
+                          GetFolderName());
 
   auto* bubble = BubbleCoordinator()->GetBubble();
   EXPECT_TRUE(bubble);
@@ -257,7 +261,8 @@ TEST_F(PriceTrackingBubbleDialogViewActionUnitTest, CancelNormalBubble) {
 
 TEST_F(PriceTrackingBubbleDialogViewActionUnitTest,
        ClickLinkInTheNormalBubble) {
-  CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
+  CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type::TYPE_NORMAL,
+                          /*bookmark_folder_name=*/u"Shopping list");
 
   auto* bubble = BubbleCoordinator()->GetBubble();
   EXPECT_TRUE(bubble);

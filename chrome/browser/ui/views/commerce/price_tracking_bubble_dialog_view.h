@@ -41,13 +41,15 @@ class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
     TYPE_NORMAL
   };
 
-  PriceTrackingBubbleDialogView(View* anchor_view,
-                                content::WebContents* web_contents,
-                                Profile* profile,
-                                const GURL& url,
-                                ui::ImageModel image_model,
-                                OnTrackPriceCallback on_track_price_callback,
-                                Type type);
+  PriceTrackingBubbleDialogView(
+      View* anchor_view,
+      content::WebContents* web_contents,
+      Profile* profile,
+      const GURL& url,
+      ui::ImageModel image_model,
+      OnTrackPriceCallback on_track_price_callback,
+      Type type,
+      std::optional<std::u16string> bookmark_folder_name = std::nullopt);
   ~PriceTrackingBubbleDialogView() override;
 
   Type GetTypeForTesting() { return type_; }
@@ -80,7 +82,8 @@ class PriceTrackingBubbleCoordinator : public views::WidgetObserver {
             ui::ImageModel image_model,
             PriceTrackingBubbleDialogView::OnTrackPriceCallback callback,
             base::OnceClosure on_dialog_closing_callback,
-            PriceTrackingBubbleDialogView::Type type);
+            PriceTrackingBubbleDialogView::Type type,
+            std::optional<std::u16string> bookmark_folder_name = std::nullopt);
   void Hide();
 
   PriceTrackingBubbleDialogView* GetBubble() const;

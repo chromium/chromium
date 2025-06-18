@@ -4902,6 +4902,7 @@ if (!is_android) {
         "../browser/ui/views/commerce/discounts_bubble_dialog_view_browsertest.cc",
         "../browser/ui/views/commerce/discounts_icon_view_browsertest.cc",
         "../browser/ui/views/commerce/price_insights_icon_view_browsertest.cc",
+        "../browser/ui/views/commerce/price_tracking_bubble_dialog_view_browsertest.cc",
         "../browser/ui/views/commerce/price_tracking_icon_view_browsertest.cc",
         "../browser/ui/views/commerce/product_specifications_button_browsertest.cc",
         "../browser/ui/views/commerce/product_specifications_icon_view_browsertest.cc",
