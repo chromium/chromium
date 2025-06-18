@@ -9,6 +9,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/remove_obsolete_bundle_versions_cache_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -43,11 +44,15 @@ class IwaBundleCacheManager : public WebAppInstallManagerObserver {
   // Guest Session is launched, cache will be cleaned only for Managed Guest
   // Session and not for kiosk. And vice versa.
   void CleanCacheForIwasDeletedFromPolicy();
-  void OnCleanCacheForIwasDeletedFromPolicy(
-      base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>
-          result);
+  void OnCleanCacheForIwasDeletedFromPolicy(CleanupBundleCacheResult result);
 
   void TriggerIwaUpdateCheck(const WebApp& iwa);
+
+  // Keep only currently installed version in cache and cleanup all other
+  // bundles for `iwa`.
+  void RemoveObsoleteIwaVersionsCache(const WebApp& iwa);
+  void OnRemoveObsoleteIwaVersionsCache(
+      RemoveObsoleteBundleVersionsResult result);
 
   const raw_ref<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;

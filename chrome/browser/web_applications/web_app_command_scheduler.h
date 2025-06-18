@@ -85,6 +85,8 @@ class CopyBundleToCacheSuccess;
 enum class CopyBundleToCacheError;
 class GetBundleCachePathSuccess;
 enum class GetBundleCachePathError;
+class RemoveObsoleteBundleVersionsError;
+class RemoveObsoleteBundleVersionsSuccess;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
@@ -335,6 +337,14 @@ class WebAppCommandScheduler {
       base::OnceCallback<void(
           base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>)>
           callback,
+      const base::Location& call_location = FROM_HERE);
+
+  void RemoveObsoleteIsolatedWebAppVersionsCache(
+      const IsolatedWebAppUrlInfo& url_info,
+      IwaCacheClient::SessionType session_type,
+      base::OnceCallback<
+          void(base::expected<RemoveObsoleteBundleVersionsSuccess,
+                              RemoveObsoleteBundleVersionsError>)> callback,
       const base::Location& call_location = FROM_HERE);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

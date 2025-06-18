@@ -103,6 +103,11 @@ void WaitUntilPathExists(const base::FilePath& path) {
   ASSERT_TRUE(base::test::RunUntil([&]() { return base::PathExists(path); }));
 }
 
+void CheckPathExists(const base::FilePath& path) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(base::PathExists(path));
+}
+
 void WaitUntilPathDoesNotExist(const base::FilePath& path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(base::test::RunUntil([&]() { return !base::PathExists(path); }));
@@ -485,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(IwaCacheTest, PRE_InstallIsolatedWebAppOnLogin) {
 
 IN_PROC_BROWSER_TEST_P(IwaCacheTest, InstallIsolatedWebAppOnLogin) {
   // Checks that the bundle is still in cache from the PRE test.
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
 
   RemoveBundleFromUpdateServer();
   LaunchSession(kWebBundleId);
@@ -517,15 +522,16 @@ IN_PROC_BROWSER_TEST_P(IwaCacheTest, PRE_UpdateApplyTaskFinishedOnSessionExit) {
 // Checks that on session exit in PRE_ test, pending update apply task is
 // successfully finished and it updated the cache.
 IN_PROC_BROWSER_TEST_P(IwaCacheTest, UpdateApplyTaskFinishedOnSessionExit) {
-  // TODO(crbug.com/392069400): update to check old version is deleted from
-  // cache.
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
 
   RemoveBundleFromUpdateServer();
   LaunchSession(kWebBundleId);
 
   AssertAppInstalledAtVersion(kWebBundleId, kUpdateVersion);
+  // After session start the previously cached bundle version should be deleted.
+  WaitUntilPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheTest, PRE_UpdateNotFound) {
@@ -548,7 +554,7 @@ IN_PROC_BROWSER_TEST_P(IwaCacheTest, PRE_UpdateNotFound) {
 // In PRE_ test, update discovery task did not find the update, check that the
 // cache was not updated on the session exit.
 IN_PROC_BROWSER_TEST_P(IwaCacheTest, UpdateNotFound) {
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId, kBaseVersion));
   CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
 
   RemoveBundleFromUpdateServer();
@@ -583,12 +589,15 @@ IN_PROC_BROWSER_TEST_P(IwaCacheTest, PRE_UpdateTaskIsTriggeredAutomatically) {
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheTest, UpdateTaskIsTriggeredAutomatically) {
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
 
   RemoveBundleFromUpdateServer();
   LaunchSession(kWebBundleId);
 
   AssertAppInstalledAtVersion(kWebBundleId, kUpdateVersion);
+  // After session start the previously cached bundle version should be deleted.
+  WaitUntilPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kBaseVersion));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -670,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(IwaMgsCacheTest, UpdateAppWhenAppNotOpened) {
   EXPECT_TRUE(WaitForUpdateApplyTaskResult().has_value());
   AssertAppInstalledAtVersion(kWebBundleId, kUpdateVersion,
                               /*wait_for_initial_installation=*/false);
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
 }
 
 IN_PROC_BROWSER_TEST_F(IwaMgsCacheTest, UpdateApplyTaskWhenAppClosed) {
@@ -689,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(IwaMgsCacheTest, UpdateApplyTaskWhenAppClosed) {
   EXPECT_TRUE(WaitForUpdateApplyTaskResult().has_value());
   AssertAppInstalledAtVersion(kWebBundleId, kUpdateVersion,
                               /*wait_for_initial_installation=*/false);
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
 }
 
 IN_PROC_BROWSER_TEST_F(IwaMgsCacheTest, CopyToCacheFailed) {
@@ -714,8 +723,5 @@ IN_PROC_BROWSER_TEST_F(IwaMgsCacheTest, CopyToCacheFailed) {
                               /*wait_for_initial_installation=*/false);
   CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
 }
-
-// TODO(crbug.com/392069400): add more browser tests when cleaning old IWA
-// versions from cache is implemented.
 
 }  // namespace web_app

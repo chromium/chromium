@@ -15,12 +15,14 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/remove_obsolete_bundle_versions_cache_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
@@ -106,6 +108,10 @@ void IwaBundleCacheManager::OnWebAppInstalled(const webapps::AppId& app_id) {
   // the update check manually here after the IWA installation to avoid waiting
   // for the next scheduled update check.
   TriggerIwaUpdateCheck(iwa);
+
+  // Both update command and remove obsolete versions command take app lock,
+  // so it is fine to call them here at the same time.
+  RemoveObsoleteIwaVersionsCache(iwa);
 }
 
 void IwaBundleCacheManager::OnWebAppInstallManagerDestroyed() {
@@ -125,13 +131,31 @@ void IwaBundleCacheManager::CleanCacheForIwasDeletedFromPolicy() {
 }
 
 void IwaBundleCacheManager::OnCleanCacheForIwasDeletedFromPolicy(
-    base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError> result) {
+    CleanupBundleCacheResult result) {
   // TODO(crbug.com/388728155): add result to log.
 }
 
 void IwaBundleCacheManager::TriggerIwaUpdateCheck(const WebApp& iwa) {
   CHECK(iwa.isolation_data());
   provider_->iwa_update_manager().MaybeDiscoverUpdatesForApp(iwa.app_id());
+  // TODO(crbug.com/388728155): add result to log.
+}
+
+void IwaBundleCacheManager::RemoveObsoleteIwaVersionsCache(const WebApp& iwa) {
+  auto url_info = *IsolatedWebAppUrlInfo::Create(iwa.start_url());
+
+  provider_->scheduler().RemoveObsoleteIsolatedWebAppVersionsCache(
+      url_info, IwaCacheClient::GetCurrentSessionType(),
+      base::BindOnce(&IwaBundleCacheManager::OnRemoveObsoleteIwaVersionsCache,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void IwaBundleCacheManager::OnRemoveObsoleteIwaVersionsCache(
+    RemoveObsoleteBundleVersionsResult result) {
+  if (!result.has_value()) {
+    LOG(ERROR) << "Remove obsolete IWA versions from cached failed: "
+               << RemoveObsoleteBundleVersionsErrorToString(result.error());
+  }
   // TODO(crbug.com/388728155): add result to log.
 }
 
