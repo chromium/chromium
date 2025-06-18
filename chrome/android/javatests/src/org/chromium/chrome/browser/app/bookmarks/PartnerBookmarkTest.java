@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerTestingDelegate;
@@ -107,6 +108,7 @@ public class PartnerBookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky - crbug.com/425906562")
     public void testMoveButtonsGoneForPartnerBookmarks() {
         // Open partner bookmarks folder.
         BookmarkId partnerFolder = runOnUiThreadBlocking(() -> mBookmarkModel.getPartnerFolderId());
