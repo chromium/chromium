@@ -30,6 +30,7 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.RectProvider;
@@ -263,6 +264,13 @@ public class ChipView extends LinearLayout {
                         chipBorderWidthId,
                         verticalInset);
         setIcon(INVALID_ICON_ID, false);
+
+        // Apply RTL layout changes.
+        int layoutDirection =
+                LocalizationUtils.isLayoutRtl()
+                        ? View.LAYOUT_DIRECTION_RTL
+                        : View.LAYOUT_DIRECTION_LTR;
+        setLayoutDirection(layoutDirection);
     }
 
     /**

@@ -39,6 +39,7 @@ android_library("test_java") {
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetRenderTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetViewTest.java",
+    "javatests/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryChipViewRenderTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryTestHelper.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryViewTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetRenderTest.java",
