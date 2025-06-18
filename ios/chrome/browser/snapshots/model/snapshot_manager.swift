@@ -1,138 +1,28 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import UIKit
+// A protocol that takes care of creating, storing and retrieving snapshots.
+@objc public protocol SnapshotManager {
+  // Asynchronously retrieves a snapshot for the current page, calling
+  // `completion` once it has been retrieved. The image will be nil if
+  // the snapshot cannot be retrieved or generated.
+  @objc func retrieveSnaphot(kind: SnapshotKind, completion: @escaping (UIImage?) -> Void)
 
-// A class that takes care of creating, storing and returning snapshots of a tab's web page. This
-// lives on the UI thread.
-@objcMembers public class SnapshotManager: NSObject {
-  // The snapshot generator which is used to generate snapshots.
-  private let snapshotGenerator: SnapshotGenerator
+  // Asynchronously generates a new snapshot, update the storage and
+  // invokes `completion` with the generated image.
+  @objc func updateSnapshot(completion: @escaping ((UIImage?) -> Void))
 
-  // The snapshot storage which is used to store and retrieve snapshots.
-  var snapshotStorage: SnapshotStorage?
+  // Synchronously generates and returns a new snapshot image with the
+  // UIKit-based snapshot API. This does not update the snapshot storage.
+  @objc func generateUIViewSnapshot() -> UIImage?
 
-  // The unique ID for WebState's snapshot.
-  let snapshotID: SnapshotIDWrapper
+  // Updates the storage with `image`.
+  @objc func updateSnapshotStorage(image: UIImage?)
 
-  // The timestamp associated to the latest snapshot stored.
-  private var latestCommitedTimestamp: Date = .distantPast
+  // Sets the SnapshotGeneratorDelegate used to generate snapshots.
+  @objc func setDelegate(_ delegate: SnapshotGeneratorDelegate)
 
-  // Designated initializer.
-  init(generator: SnapshotGenerator, snapshotID: SnapshotIDWrapper) {
-    assert(snapshotID.valid(), "snapshot ID should be valid")
-    self.snapshotGenerator = generator
-    self.snapshotStorage = nil
-    self.snapshotID = snapshotID
-    super.init()
-  }
-
-  // Gets a color snapshot for the current page, calling `completion` once it has been retrieved.
-  // Invokes `completion` with nil if a snapshot does not exist.
-  func retrieveSnapshot(completion: @escaping (UIImage?) -> Void) {
-    if let storage = snapshotStorage {
-      storage.retrieveImage(
-        snapshotID: snapshotID, snapshotKind: SnapshotKind.color, completion: completion)
-    } else {
-      completion(nil)
-    }
-  }
-
-  // Gets a grey snapshot for the current page, calling `completion` once it has been retrieved or
-  // regenerated. If the snapshot cannot be generated, the `completion` will be called with nil.
-  func retrieveGreySnapshot(completion: @escaping (UIImage?) -> Void) {
-    weak var weakSelf = self
-    let wrappedCompletion: (UIImage?) -> Void = { image in
-      weakSelf?.greySnapshotRetrieved(image: image, completion: completion)
-    }
-
-    if let storage = snapshotStorage {
-      storage.retrieveImage(
-        snapshotID: snapshotID, snapshotKind: SnapshotKind.greyscale, completion: wrappedCompletion)
-    } else {
-      wrappedCompletion(nil)
-    }
-  }
-
-  // Generates a new snapshot, updates the snapshot storage, and runs a callback with the new
-  // snapshot image.
-  func updateSnapshot(completion: ((UIImage?) -> Void)?) {
-    weak var weakSelf = self
-
-    // Since the snapshotting strategy may change, the order of snapshot updates
-    // cannot be guaranteed. To prevent older snapshots from overwriting newer
-    // ones, the timestamp of each snapshot request is recorded.
-    let timestamp: Date = .now
-    let wrappedCompletion: (UIImage?) -> Void = { image in
-      // Update the snapshot storage with the latest snapshot. The old image is deleted if `image`
-      // is nil.
-      weakSelf?.updateSnapshotStorage(image: image, timestamp: timestamp)
-
-      // Callback is called if it exists.
-      completion?(image)
-    }
-
-    snapshotGenerator.generateSnapshot(completion: wrappedCompletion)
-  }
-
-  // Generates and returns a new snapshot image with UIKit-based snapshot API. This does not update
-  // the snapshot storage.
-  func generateUIViewSnapshot() -> UIImage? {
-    return snapshotGenerator.generateUIViewSnapshot()
-  }
-
-  // Sets the delegate to SnapshotGenerator. Generating snapshots before setting a delegate will
-  // fail. The delegate is not owned by the tab helper.
-  func setDelegate(_ delegate: SnapshotGeneratorDelegate) {
-    snapshotGenerator.delegate = delegate
-  }
-
-  // Updates the snapshot storage with `image`.
-  func updateSnapshotStorage(image: UIImage?) {
-    // This method is bridging into Objective-C and cannot have a default value
-    // for timestamp. For this reason, fallback to clasic method overloading
-    // approach.
-    updateSnapshotStorage(image: image, timestamp: .now)
-  }
-
-  /// Updates the snapshot storage with the provided image.
-  ///
-  /// - Parameters:
-  ///   - image: The image to store as a snapshot. If `nil`, any existing
-  ///   snapshot is removed.
-  ///   - timestamp: The timestamp of when the snapshot was taken. If the
-  ///    timestamp is earlier than the last commited one this method is NO-OP.
-  private func updateSnapshotStorage(image: UIImage?, timestamp: Date) {
-    guard let image = image else {
-      latestCommitedTimestamp = .distantPast
-      return
-    }
-
-    guard timestamp > latestCommitedTimestamp else { return }
-
-    latestCommitedTimestamp = timestamp
-    snapshotStorage?.setImage(image, withSnapshotID: snapshotID)
-  }
-
-  // Helper method used to retrieve a grey snapshot.
-  private func greySnapshotRetrieved(
-    image: UIImage?, completion: @escaping (UIImage?) -> Void
-  ) {
-    // Found an image in SnapshotStorage.
-    if image != nil {
-      completion(image)
-      return
-    }
-
-    // Generate an image because it doesn't exist in SnapshotStorage.
-    let generatedImage = snapshotGenerator.generateUIViewSnapshotWithOverlays()
-    updateSnapshotStorage(image: generatedImage)
-    if generatedImage != nil {
-      let greyImage = UiKitUtils.greyImage(generatedImage)
-      completion(greyImage)
-    } else {
-      completion(nil)
-    }
-  }
+  // Sets the SnapshotStorage used to manager the storage.
+  @objc func setStorage(_ storage: SnapshotStorage)
 }

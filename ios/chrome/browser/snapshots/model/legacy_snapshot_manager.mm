@@ -13,6 +13,9 @@
 #import "ios/web/public/thread/web_thread.h"
 
 @implementation LegacySnapshotManager {
+  // The snapshot storage.
+  id<SnapshotStorage> _snapshotStorage;
+
   // The snapshot generator which is used to generate snapshots.
   LegacySnapshotGenerator* _snapshotGenerator;
 
@@ -33,6 +36,61 @@
   }
   return self;
 }
+
+- (void)retrieveSnaphotWithKind:(SnapshotKind)snapshotKind
+                     completion:(void (^)(UIImage*))completion {
+  DCHECK(completion);
+  switch (snapshotKind) {
+    case SnapshotKindColor:
+      [self retrieveSnapshot:completion];
+      break;
+
+    case SnapshotKindGreyscale:
+      [self retrieveGreySnapshot:completion];
+      break;
+  }
+}
+
+- (void)updateSnapshotWithCompletion:(void (^)(UIImage*))completion {
+  DCHECK(_snapshotGenerator);
+
+  __weak LegacySnapshotManager* weakSelf = self;
+
+  // Since the snapshotting strategy may change, the order of snapshot updates
+  // cannot be guaranteed. To prevent older snapshots from overwriting newer
+  // ones, the timestamp of each snapshot request is recorded.
+  NSDate* timestamp = [NSDate now];
+  void (^wrappedCompletion)(UIImage*) = ^(UIImage* image) {
+    // Update the snapshot storage with the latest snapshot. The old image is
+    // deleted if `image` is nil.
+    [weakSelf updateSnapshotStorageWithImage:image timestamp:timestamp];
+
+    if (completion) {
+      completion(image);
+    }
+  };
+  [_snapshotGenerator generateSnapshotWithCompletion:wrappedCompletion];
+}
+
+- (UIImage*)generateUIViewSnapshot {
+  CHECK(_snapshotGenerator);
+  return [_snapshotGenerator generateUIViewSnapshot];
+}
+
+// Updates the snapshot storage with `snapshot`.
+- (void)updateSnapshotStorageWithImage:(UIImage*)snapshot {
+  [self updateSnapshotStorageWithImage:snapshot timestamp:[NSDate now]];
+}
+
+- (void)setDelegate:(id<SnapshotGeneratorDelegate>)delegate {
+  _snapshotGenerator.delegate = delegate;
+}
+
+- (void)setStorage:(id<SnapshotStorage>)storage {
+  _snapshotStorage = storage;
+}
+
+#pragma mark - Private methods
 
 - (void)retrieveSnapshot:(void (^)(UIImage*))callback {
   DCHECK(callback);
@@ -70,43 +128,6 @@
                                    snapshotKind:SnapshotKindGreyscale
                                      completion:wrappedCallback];
 }
-
-- (void)updateSnapshotWithCompletion:(void (^)(UIImage*))completion {
-  DCHECK(_snapshotGenerator);
-
-  __weak LegacySnapshotManager* weakSelf = self;
-
-  // Since the snapshotting strategy may change, the order of snapshot updates
-  // cannot be guaranteed. To prevent older snapshots from overwriting newer
-  // ones, the timestamp of each snapshot request is recorded.
-  NSDate* timestamp = [NSDate now];
-  void (^wrappedCompletion)(UIImage*) = ^(UIImage* image) {
-    // Update the snapshot storage with the latest snapshot. The old image is
-    // deleted if `image` is nil.
-    [weakSelf updateSnapshotStorageWithImage:image timestamp:timestamp];
-
-    if (completion) {
-      completion(image);
-    }
-  };
-  [_snapshotGenerator generateSnapshotWithCompletion:wrappedCompletion];
-}
-
-- (UIImage*)generateUIViewSnapshot {
-  CHECK(_snapshotGenerator);
-  return [_snapshotGenerator generateUIViewSnapshot];
-}
-
-- (void)setDelegate:(id<SnapshotGeneratorDelegate>)delegate {
-  _snapshotGenerator.delegate = delegate;
-}
-
-// Updates the snapshot storage with `snapshot`.
-- (void)updateSnapshotStorageWithImage:(UIImage*)snapshot {
-  [self updateSnapshotStorageWithImage:snapshot timestamp:[NSDate now]];
-}
-
-#pragma mark - Private methods
 
 - (void)updateSnapshotStorageWithImage:(UIImage*)snapshot
                              timestamp:(NSDate*)timestamp {

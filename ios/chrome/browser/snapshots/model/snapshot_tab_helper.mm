@@ -40,23 +40,13 @@ SnapshotTabHelper::~SnapshotTabHelper() {
 }
 
 void SnapshotTabHelper::SetDelegate(id<SnapshotGeneratorDelegate> delegate) {
-  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
-    CHECK(snapshot_manager_);
-    [snapshot_manager_ setDelegate:delegate];
-  } else {
-    CHECK(legacy_snapshot_manager_);
-    [legacy_snapshot_manager_ setDelegate:delegate];
-  }
+  CHECK(snapshot_manager_);
+  [snapshot_manager_ setDelegate:delegate];
 }
 
 void SnapshotTabHelper::SetSnapshotStorage(id<SnapshotStorage> storage) {
-  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
-    CHECK(snapshot_manager_);
-    snapshot_manager_.snapshotStorage = storage;
-  } else {
-    CHECK(legacy_snapshot_manager_);
-    legacy_snapshot_manager_.snapshotStorage = storage;
-  }
+  CHECK(snapshot_manager_);
+  [snapshot_manager_ setStorage:storage];
 }
 
 void SnapshotTabHelper::RetrieveColorSnapshot(void (^callback)(UIImage*)) {
@@ -70,13 +60,9 @@ void SnapshotTabHelper::RetrieveColorSnapshot(void (^callback)(UIImage*)) {
     }
   };
 
-  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
-    CHECK(snapshot_manager_);
-    [snapshot_manager_ retrieveSnapshotWithCompletion:wrapped_callback];
-  } else {
-    CHECK(legacy_snapshot_manager_);
-    [legacy_snapshot_manager_ retrieveSnapshot:wrapped_callback];
-  }
+  CHECK(snapshot_manager_);
+  [snapshot_manager_ retrieveSnaphotWithKind:SnapshotKindColor
+                                  completion:wrapped_callback];
 }
 
 void SnapshotTabHelper::RetrieveGreySnapshot(void (^callback)(UIImage*)) {
@@ -90,13 +76,9 @@ void SnapshotTabHelper::RetrieveGreySnapshot(void (^callback)(UIImage*)) {
     }
   };
 
-  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
-    CHECK(snapshot_manager_);
-    [snapshot_manager_ retrieveGreySnapshotWithCompletion:wrapped_callback];
-  } else {
-    CHECK(legacy_snapshot_manager_);
-    [legacy_snapshot_manager_ retrieveGreySnapshot:wrapped_callback];
-  }
+  CHECK(snapshot_manager_);
+  [snapshot_manager_ retrieveSnaphotWithKind:SnapshotKindGreyscale
+                                  completion:wrapped_callback];
 }
 
 void SnapshotTabHelper::UpdateSnapshotWithCallback(void (^callback)(UIImage*)) {
@@ -119,33 +101,18 @@ void SnapshotTabHelper::UpdateSnapshotWithCallback(void (^callback)(UIImage*)) {
     }
   };
 
-  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
-    CHECK(snapshot_manager_);
-    [snapshot_manager_ updateSnapshotWithCompletion:wrapped_callback];
-  } else {
-    CHECK(legacy_snapshot_manager_);
-    [legacy_snapshot_manager_ updateSnapshotWithCompletion:wrapped_callback];
-  }
+  CHECK(snapshot_manager_);
+  [snapshot_manager_ updateSnapshotWithCompletion:wrapped_callback];
 }
 
 void SnapshotTabHelper::UpdateSnapshotStorageWithImage(UIImage* image) {
-  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
-    CHECK(snapshot_manager_);
-    [snapshot_manager_ updateSnapshotStorageWithImage:image];
-  } else {
-    CHECK(legacy_snapshot_manager_);
-    [legacy_snapshot_manager_ updateSnapshotStorageWithImage:image];
-  }
+  CHECK(snapshot_manager_);
+  [snapshot_manager_ updateSnapshotStorageWithImage:image];
 }
 
 UIImage* SnapshotTabHelper::GenerateSnapshotWithoutOverlays() {
-  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
-    CHECK(snapshot_manager_);
-    return [snapshot_manager_ generateUIViewSnapshot];
-  } else {
-    CHECK(legacy_snapshot_manager_);
-    return [legacy_snapshot_manager_ generateUIViewSnapshot];
-  }
+  CHECK(snapshot_manager_);
+  return [snapshot_manager_ generateUIViewSnapshot];
 }
 
 void SnapshotTabHelper::IgnoreNextLoad() {
@@ -157,7 +124,7 @@ SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state)
   DCHECK(web_state_);
   const SnapshotID snapshot_id(web_state_->GetUniqueIdentifier());
   if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
-    snapshot_manager_ = [[SnapshotManager alloc]
+    snapshot_manager_ = [[SnapshotManagerImpl alloc]
         initWithGenerator:
             [[SnapshotGenerator alloc]
                 initWithWebStateInfo:[[WebStateSnapshotInfo alloc]
@@ -165,7 +132,7 @@ SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state)
                snapshotID:[[SnapshotIDWrapper alloc]
                               initWithSnapshotID:snapshot_id]];
   } else {
-    legacy_snapshot_manager_ = [[LegacySnapshotManager alloc]
+    snapshot_manager_ = [[LegacySnapshotManager alloc]
         initWithGenerator:[[LegacySnapshotGenerator alloc]
                               initWithWebState:web_state_]
                snapshotID:snapshot_id];

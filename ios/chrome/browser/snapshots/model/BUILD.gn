@@ -75,6 +75,7 @@ swift_source_set("model_swift") {
     "snapshot_generator_delegate.swift",
     "snapshot_lru_cache.swift",
     "snapshot_manager.swift",
+    "snapshot_manager_impl.swift",
     "snapshot_storage.swift",
     "snapshot_storage_impl.swift",
     "snapshot_storage_observer.swift",

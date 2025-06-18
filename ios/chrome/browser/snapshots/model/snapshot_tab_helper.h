@@ -13,8 +13,7 @@
 #include "ios/web/public/web_state_observer.h"
 #include "ios/web/public/web_state_user_data.h"
 
-@class LegacySnapshotManager;
-@class SnapshotManager;
+@protocol SnapshotManager;
 @protocol SnapshotStorage;
 @protocol SnapshotGeneratorDelegate;
 
@@ -81,8 +80,7 @@ class SnapshotTabHelper : public web::WebStateObserver,
   void WebStateDestroyed(web::WebState* web_state) override;
 
   raw_ptr<web::WebState> web_state_ = nullptr;
-  SnapshotManager* snapshot_manager_ = nil;
-  LegacySnapshotManager* legacy_snapshot_manager_ = nil;
+  id<SnapshotManager> snapshot_manager_ = nil;
 
   // Manages this object as an observer of `web_state_`.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
