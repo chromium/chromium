@@ -129,7 +129,7 @@ jint ExtensionActionsBridge::RunAction(
 
   WebContents* web_contents =
       WebContents::FromJavaWebContents(web_contents_java);
-  if (extension == nullptr) {
+  if (web_contents == nullptr) {
     return static_cast<jint>(ExtensionAction::ShowAction::kNone);
   }
 
