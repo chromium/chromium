@@ -2657,7 +2657,7 @@
                         'odejesush+watch@chromium.org'],
     'blink_clipboard': ['dcheng+clipboard@chromium.org'],
     'blink_common': ['kinuko+watch@chromium.org'],
-    'blink_content_extraction': ['mfoltz+watch@chromium.org'],
+    'blink_content_extraction': ['mfoltz+watch@chromium.org', 'aleventhal+watch@chromium.org'],
     'blink_controller': [],
     'blink_css': ['alexis.menard@intel.com',
                   'apavlov+blink@chromium.org',
