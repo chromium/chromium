@@ -20,8 +20,8 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_config_export.h"
 #include "gpu/config/gpu_preferences.h"
-#include "gpu/gpu_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_implementation.h"
@@ -161,7 +161,7 @@ enum VideoCodecProfile {
 // clang-format on
 
 // Specification of a decoding profile supported by a hardware decoder.
-struct GPU_EXPORT VideoDecodeAcceleratorSupportedProfile {
+struct GPU_CONFIG_EXPORT VideoDecodeAcceleratorSupportedProfile {
   VideoCodecProfile profile;
   gfx::Size max_resolution;
   gfx::Size min_resolution;
@@ -171,7 +171,7 @@ struct GPU_EXPORT VideoDecodeAcceleratorSupportedProfile {
 using VideoDecodeAcceleratorSupportedProfiles =
     std::vector<VideoDecodeAcceleratorSupportedProfile>;
 
-struct GPU_EXPORT VideoDecodeAcceleratorCapabilities {
+struct GPU_CONFIG_EXPORT VideoDecodeAcceleratorCapabilities {
   VideoDecodeAcceleratorCapabilities();
   VideoDecodeAcceleratorCapabilities(
       const VideoDecodeAcceleratorCapabilities& other);
@@ -181,7 +181,7 @@ struct GPU_EXPORT VideoDecodeAcceleratorCapabilities {
 };
 
 // Specification of an encoding profile supported by a hardware encoder.
-struct GPU_EXPORT VideoEncodeAcceleratorSupportedProfile {
+struct GPU_CONFIG_EXPORT VideoEncodeAcceleratorSupportedProfile {
   VideoCodecProfile profile;
   gfx::Size min_resolution;
   gfx::Size max_resolution;
@@ -207,7 +207,7 @@ enum class ImageDecodeAcceleratorSubsampling {
 };
 
 // Specification of an image decoding profile supported by a hardware decoder.
-struct GPU_EXPORT ImageDecodeAcceleratorSupportedProfile {
+struct GPU_CONFIG_EXPORT ImageDecodeAcceleratorSupportedProfile {
   ImageDecodeAcceleratorSupportedProfile();
   ImageDecodeAcceleratorSupportedProfile(
       const ImageDecodeAcceleratorSupportedProfile& other);
@@ -241,9 +241,9 @@ enum class OverlaySupport {
   kSoftware = 3
 };
 
-GPU_EXPORT const char* OverlaySupportToString(OverlaySupport support);
+GPU_CONFIG_EXPORT const char* OverlaySupportToString(OverlaySupport support);
 
-struct GPU_EXPORT OverlayInfo {
+struct GPU_CONFIG_EXPORT OverlayInfo {
   OverlayInfo() = default;
   OverlayInfo(const OverlayInfo& other) = default;
   OverlayInfo& operator=(const OverlayInfo& other) = default;
@@ -273,11 +273,11 @@ struct GPU_EXPORT OverlayInfo {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-GPU_EXPORT bool ValidateMacOSSpecificTextureTarget(int target);
+GPU_CONFIG_EXPORT bool ValidateMacOSSpecificTextureTarget(int target);
 #endif  // BUILDFLAG(IS_MAC)
 
-struct GPU_EXPORT GPUInfo {
-  struct GPU_EXPORT GPUDevice {
+struct GPU_CONFIG_EXPORT GPUInfo {
+  struct GPU_CONFIG_EXPORT GPUDevice {
     GPUDevice();
     GPUDevice(const GPUDevice& other);
     GPUDevice(GPUDevice&& other) noexcept;

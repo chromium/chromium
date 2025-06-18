@@ -13,7 +13,7 @@
 
 namespace gpu {
 
-class GPU_EXPORT GpuBlocklist : public GpuControlList {
+class GPU_CONFIG_EXPORT GpuBlocklist : public GpuControlList {
  public:
   GpuBlocklist(const GpuBlocklist&) = delete;
   GpuBlocklist& operator=(const GpuBlocklist&) = delete;

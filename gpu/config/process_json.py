@@ -961,7 +961,7 @@ def process_software_rendering_list(script_dir, output_dir, os_filter):
                    'software_rendering_list_arrays_and_structs_autogen.h'),
       os.path.join(output_dir, 'software_rendering_list_exceptions_autogen.h'),
       'gpu/config',
-      'GPU_EXPORT ',
+      'GPU_CONFIG_EXPORT ',
       False,
       os_filter,
       'Software')
@@ -982,7 +982,7 @@ def process_gpu_driver_bug_list(script_dir, output_dir, os_filter):
                    'gpu_driver_bug_list_arrays_and_structs_autogen.h'),
       os.path.join(output_dir, 'gpu_driver_bug_list_exceptions_autogen.h'),
       'gpu/config',
-      'GPU_EXPORT ',
+      'GPU_CONFIG_EXPORT ',
       False,
       os_filter,
       'Workarounds')

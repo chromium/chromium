@@ -7,19 +7,19 @@
 
 #include <stddef.h>
 
-#include "gpu/gpu_export.h"
+#include "gpu/config/gpu_config_export.h"
 
 namespace gpu {
 
-GPU_EXPORT void DetermineGraphiteImageProviderCacheLimits(
+GPU_CONFIG_EXPORT void DetermineGraphiteImageProviderCacheLimits(
     size_t* max_gpu_main_image_provider_cache_bytes,
     size_t* max_viz_compositor_image_provider_cache_bytes);
 
-GPU_EXPORT void DetermineGrCacheLimitsFromAvailableMemory(
+GPU_CONFIG_EXPORT void DetermineGrCacheLimitsFromAvailableMemory(
     size_t* max_resource_cache_bytes,
     size_t* max_glyph_cache_texture_bytes);
 
-GPU_EXPORT void DefaultGrCacheLimitsForTests(
+GPU_CONFIG_EXPORT void DefaultGrCacheLimitsForTests(
     size_t* max_resource_cache_bytes,
     size_t* max_glyph_cache_texture_bytes);
 

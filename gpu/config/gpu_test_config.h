@@ -11,13 +11,13 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "gpu/gpu_export.h"
+#include "gpu/config/gpu_config_export.h"
 
 namespace gpu {
 
 struct GPUInfo;
 
-class GPU_EXPORT GPUTestConfig {
+class GPU_CONFIG_EXPORT GPUTestConfig {
  public:
   enum OS {
     kOsUnknown = 0,
@@ -125,7 +125,7 @@ class GPU_EXPORT GPUTestConfig {
   int32_t command_decoder_;
 };
 
-class GPU_EXPORT GPUTestBotConfig : public GPUTestConfig {
+class GPU_CONFIG_EXPORT GPUTestBotConfig : public GPUTestConfig {
  public:
   GPUTestBotConfig() = default;
   ~GPUTestBotConfig() override;

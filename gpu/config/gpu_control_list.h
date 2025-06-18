@@ -16,13 +16,13 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_span.h"
 #include "base/values.h"
+#include "gpu/config/gpu_config_export.h"
 #include "gpu/config/gpu_info.h"
-#include "gpu/gpu_export.h"
 
 namespace gpu {
 struct GPUInfo;
 
-class GPU_EXPORT GpuControlList {
+class GPU_CONFIG_EXPORT GpuControlList {
  public:
   typedef std::unordered_map<int, std::string> FeatureMap;
 
@@ -110,7 +110,7 @@ class GPU_EXPORT GpuControlList {
     kDontCare,
   };
 
-  struct GPU_EXPORT Version {
+  struct GPU_CONFIG_EXPORT Version {
     NumericOp op;
     VersionStyle style;
     VersionSchema schema;
@@ -140,14 +140,14 @@ class GPU_EXPORT GpuControlList {
                        VersionStyle version_style);
   };
 
-  struct GPU_EXPORT DriverInfo {
+  struct GPU_CONFIG_EXPORT DriverInfo {
     const char* driver_vendor;
     Version driver_version;
 
     bool Contains(const std::vector<GPUInfo::GPUDevice>& gpus) const;
   };
 
-  struct GPU_EXPORT GLStrings {
+  struct GPU_CONFIG_EXPORT GLStrings {
     const char* gl_vendor;
     const char* gl_renderer;
     const char* gl_extensions;
@@ -156,14 +156,14 @@ class GPU_EXPORT GpuControlList {
     bool Contains(const GPUInfo& gpu_info) const;
   };
 
-  struct GPU_EXPORT MachineModelInfo {
+  struct GPU_CONFIG_EXPORT MachineModelInfo {
     base::raw_span<const char* const> machine_model_names;
     Version machine_model_version;
 
     bool Contains(const GPUInfo& gpu_info) const;
   };
 
-  struct GPU_EXPORT More {
+  struct GPU_CONFIG_EXPORT More {
     // These are just part of Entry fields that are less common.
     // Putting them to a separate struct to save Entry data size.
     GLType gl_type;
@@ -186,12 +186,12 @@ class GPU_EXPORT GpuControlList {
     bool Contains(const GPUInfo& gpu_info) const;
   };
 
-  struct GPU_EXPORT Device {
+  struct GPU_CONFIG_EXPORT Device {
     uint32_t device_id;
     uint32_t revision = 0u;
   };
 
-  struct GPU_EXPORT IntelConditions {
+  struct GPU_CONFIG_EXPORT IntelConditions {
     base::raw_span<const IntelGpuSeriesType> intel_gpu_series_list;
     Version intel_gpu_generation;
 
@@ -199,7 +199,7 @@ class GPU_EXPORT GpuControlList {
                   const GPUInfo& gpu_info) const;
   };
 
-  struct GPU_EXPORT Conditions {
+  struct GPU_CONFIG_EXPORT Conditions {
     OsType os_type;
     Version os_version;
     uint32_t vendor_id;
@@ -239,7 +239,7 @@ class GPU_EXPORT GpuControlList {
     bool NeedsMoreInfo(const GPUInfo& gpu_info) const;
   };
 
-  struct GPU_EXPORT Entry {
+  struct GPU_CONFIG_EXPORT Entry {
     uint32_t id;
     const char* description;
     // `Entry` is used extensively in

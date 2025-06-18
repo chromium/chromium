@@ -10,12 +10,12 @@
 #include <string_view>
 #include <vector>
 
-#include "gpu/gpu_export.h"
+#include "gpu/config/gpu_config_export.h"
 #include "ui/gfx/extension_set.h"
 
 namespace gpu {
 
-class GPU_EXPORT VulkanPhysicalDeviceInfo {
+class GPU_CONFIG_EXPORT VulkanPhysicalDeviceInfo {
  public:
   VulkanPhysicalDeviceInfo();
   VulkanPhysicalDeviceInfo(const VulkanPhysicalDeviceInfo& other);
@@ -39,7 +39,7 @@ class GPU_EXPORT VulkanPhysicalDeviceInfo {
   std::vector<VkQueueFamilyProperties> queue_families;
 };
 
-class GPU_EXPORT VulkanInfo {
+class GPU_CONFIG_EXPORT VulkanInfo {
  public:
   VulkanInfo();
   VulkanInfo(const VulkanInfo& other);

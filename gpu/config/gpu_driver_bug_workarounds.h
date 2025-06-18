@@ -10,15 +10,15 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "gpu/config/gpu_config_export.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
-#include "gpu/gpu_export.h"
 
 // Forwardly declare a few GL types to avoid including GL header files.
 typedef int GLint;
 
 namespace gpu {
 
-class GPU_EXPORT GpuDriverBugWorkarounds {
+class GPU_CONFIG_EXPORT GpuDriverBugWorkarounds {
  public:
   GpuDriverBugWorkarounds();
   explicit GpuDriverBugWorkarounds(const std::vector<int32_t>&);

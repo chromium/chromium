@@ -10,12 +10,12 @@
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "gpu/config/gpu_config_export.h"
 #include "gpu/config/gpu_control_list.h"
-#include "gpu/gpu_export.h"
 
 namespace gpu {
 
-class GPU_EXPORT GpuDriverBugList : public GpuControlList {
+class GPU_CONFIG_EXPORT GpuDriverBugList : public GpuControlList {
  public:
   GpuDriverBugList(const GpuDriverBugList&) = delete;
   GpuDriverBugList& operator=(const GpuDriverBugList&) = delete;

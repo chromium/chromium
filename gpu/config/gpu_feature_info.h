@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "gpu/config/gpu_config_export.h"
 #include "gpu/config/gpu_feature_type.h"
-#include "gpu/gpu_export.h"
 
 namespace gfx {
 enum class BufferFormat : uint8_t;
@@ -35,7 +35,7 @@ enum GpuFeatureStatus {
   kGpuFeatureStatusMax
 };
 
-struct GPU_EXPORT GpuFeatureInfo {
+struct GPU_CONFIG_EXPORT GpuFeatureInfo {
   GpuFeatureInfo();
   GpuFeatureInfo(const GpuFeatureInfo&);
   GpuFeatureInfo(GpuFeatureInfo&&);

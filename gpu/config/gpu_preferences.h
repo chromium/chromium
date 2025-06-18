@@ -6,11 +6,12 @@
 #define GPU_CONFIG_GPU_PREFERENCES_H_
 
 #include <stddef.h>
+
 #include <string>
 #include <vector>
 
 #include "build/build_config.h"
-#include "gpu/gpu_export.h"
+#include "gpu/config/gpu_config_export.h"
 #include "ui/gfx/buffer_types.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -27,7 +28,7 @@ const size_t kDefaultMaxProgramCacheMemoryBytes = 2 * 1024 * 1024;
 const size_t kLowEndMaxProgramCacheMemoryBytes = 128 * 1024;
 #endif
 
-GPU_EXPORT size_t GetDefaultGpuDiskCacheSize();
+GPU_CONFIG_EXPORT size_t GetDefaultGpuDiskCacheSize();
 
 enum class VulkanImplementationName : uint32_t {
   kNone = 0,
@@ -67,7 +68,7 @@ enum class GrContextType : uint32_t {
   kGraphiteMetal,
 };
 
-GPU_EXPORT std::string GrContextTypeToString(GrContextType type);
+GPU_CONFIG_EXPORT std::string GrContextTypeToString(GrContextType type);
 
 // Used to represent the Skia backend that the GPU process has initialized.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -87,7 +88,7 @@ enum class SkiaBackendType {
   kMaxValue = kGraphiteMetal
 };
 
-GPU_EXPORT std::string SkiaBackendTypeToString(SkiaBackendType type);
+GPU_CONFIG_EXPORT std::string SkiaBackendTypeToString(SkiaBackendType type);
 
 enum class DawnBackendValidationLevel : uint32_t {
   kDisabled = 0,
@@ -99,7 +100,7 @@ enum class DawnBackendValidationLevel : uint32_t {
 // following two files to keep them in sync:
 //   src/gpu/ipc/common/gpu_preferences.mojom
 //   src/gpu/ipc/common/gpu_preferences_mojom_traits.h
-struct GPU_EXPORT GpuPreferences {
+struct GPU_CONFIG_EXPORT GpuPreferences {
  public:
   GpuPreferences();
 

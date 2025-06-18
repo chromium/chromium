@@ -87,7 +87,14 @@ action("workaround_list") {
   }
 }
 
+source_set("export") {
+  sources = [ "gpu_config_export.h" ]
+}
+
 if (enable_vulkan) {
+  # TODO(crbug.com/422797572): This component doesn't use separate export,
+  # which is problematic. Once //gpu/config becomes its own component it
+  # should be possible to merge it into //gpu/config.
   component("vulkan_info") {
     sources = [
       "vulkan_info.cc",
@@ -98,6 +105,7 @@ if (enable_vulkan) {
 
     deps = [ "//gpu/ipc/common:vulkan_interface" ]
     public_deps = [
+      ":export",
       "//third_party/vulkan-headers/src:vulkan_headers",
       "//ui/gfx",
     ]
@@ -179,7 +187,10 @@ source_set("config_sources") {
 
   configs += [ "//gpu:gpu_implementation" ]
 
-  public_deps = [ "//components/crash/core/common:crash_key" ]
+  public_deps = [
+    ":export",
+    "//components/crash/core/common:crash_key",
+  ]
 
   if (enable_vulkan) {
     public_deps += [ ":vulkan_info" ]

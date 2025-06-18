@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "gpu/gpu_export.h"
+#include "gpu/config/gpu_config_export.h"
 
 namespace wgpu {
 class Adapter;
@@ -20,7 +20,7 @@ struct WebGPUBlocklistResult {
   std::string reason;
 };
 
-GPU_EXPORT WebGPUBlocklistResult
+GPU_CONFIG_EXPORT WebGPUBlocklistResult
 IsWebGPUAdapterBlocklisted(const wgpu::Adapter& adapter);
 
 }  // namespace gpu

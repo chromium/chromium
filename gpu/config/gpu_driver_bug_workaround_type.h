@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "gpu/config/gpu_config_export.h"
 #include "gpu/config/gpu_driver_bug_workaround_autogen.h"
-#include "gpu/gpu_export.h"
 
 namespace gpu {
 
@@ -20,7 +20,7 @@ enum GpuDriverBugWorkaroundType {
   NUMBER_OF_GPU_DRIVER_BUG_WORKAROUND_TYPES
 };
 
-GPU_EXPORT std::string GpuDriverBugWorkaroundTypeToString(
+GPU_CONFIG_EXPORT std::string GpuDriverBugWorkaroundTypeToString(
     GpuDriverBugWorkaroundType type);
 
 }  // namespace gpu

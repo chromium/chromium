@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "build/build_config.h"
-#include "gpu/gpu_export.h"
+#include "gpu/config/gpu_config_export.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <d3dcommon.h>
@@ -45,7 +45,7 @@ enum class HasDiscreteGpu {
   kMaxValue = kUnknown,
 };
 
-struct GPU_EXPORT DevicePerfInfo {
+struct GPU_CONFIG_EXPORT DevicePerfInfo {
   uint32_t total_physical_memory_mb = 0u;
   uint32_t total_disk_space_mb = 0u;
   uint32_t hardware_concurrency = 0u;
@@ -64,8 +64,9 @@ struct GPU_EXPORT DevicePerfInfo {
 };
 
 // Thread-safe getter and setter of global instance of DevicePerfInfo.
-GPU_EXPORT std::optional<DevicePerfInfo> GetDevicePerfInfo();
-GPU_EXPORT void SetDevicePerfInfo(const DevicePerfInfo& device_perf_info);
+GPU_CONFIG_EXPORT std::optional<DevicePerfInfo> GetDevicePerfInfo();
+GPU_CONFIG_EXPORT void SetDevicePerfInfo(
+    const DevicePerfInfo& device_perf_info);
 
 }  // namespace gpu
 
