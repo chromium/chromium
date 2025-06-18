@@ -22,6 +22,7 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium_tvos",
+                "host_platform": "mac",
                 "target_bits": 64,
                 "target_platform": "ios"
               },
@@ -38,7 +39,8 @@
           "builder": "tvos-rel-fyi",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/tvos-rel-fyi/targets"
     }
   },
   "$build/siso": {

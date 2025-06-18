@@ -207,6 +207,13 @@ targets.compile_target(
 )
 
 targets.compile_target(
+    name = "content_shell",
+    label = "//content/shell:content_shell",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+)
+
+targets.compile_target(
     name = "content_nocompile_tests",
     label = "//content/test:content_nocompile_tests",
     # All references have been moved to starlark

@@ -712,6 +712,11 @@
     "type": "additional_compile_target",
     "skip_usage_check": True,
   },
+  "content_shell": {
+    "label": "//content/shell:content_shell",
+    "type": "additional_compile_target",
+    "skip_usage_check": True,
+  },
   "content_shell_crash_test": {
     "label": "//content/shell:content_shell_crash_test",
     "type": "script",
