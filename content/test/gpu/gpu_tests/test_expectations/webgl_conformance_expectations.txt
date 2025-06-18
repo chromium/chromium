@@ -393,6 +393,7 @@ crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-o
 
 [ linux debug ] conformance/rendering/multisample-corruption.html [ Slow ]
 [ linux angle-opengl debug nvidia-0x2184 passthrough ] conformance/uniforms/uniform-samplers-test.html [ Slow ]
+crbug.com/401988385 [ chromeos angle-opengles mesa_ge_21.0 passthrough ] conformance/uniforms/uniform-samplers-test.html [ Slow ]
 
 ###################
 # Failures/Flakes #
