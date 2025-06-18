@@ -36,8 +36,6 @@ BASE_DECLARE_FEATURE(kOptimizationHints);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kRemoteOptimizationGuideFetching);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kRemoteOptimizationGuideFetchingAnonymousDataConsent);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideFetchingForSRP);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationTargetPrediction);
@@ -192,11 +190,6 @@ bool IsOptimizationHintsEnabled();
 // Service is enabled. This controls the fetching of both hints and models.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsRemoteFetchingEnabled();
-
-// Returns true if the feature to fetch data for users that have consented to
-// anonymous data collection is enabled but are not Data Saver users.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsRemoteFetchingForAnonymousDataConsentEnabled();
 
 // Returns true if the feature to use push notifications is enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

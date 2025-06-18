@@ -95,9 +95,6 @@ class OptimizationGuideServiceTest : public PlatformTest {
     enabled_features.push_back(
         optimization_guide::features::kRemoteOptimizationGuideFetching);
     if (url_keyed_anonymized_data_collection_enabled_) {
-      enabled_features.push_back(
-          optimization_guide::features::
-              kRemoteOptimizationGuideFetchingAnonymousDataConsent);
       testing_prefs->SetBoolean(
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
           true);

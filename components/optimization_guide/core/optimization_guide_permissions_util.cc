@@ -16,11 +16,6 @@ namespace {
 
 bool IsUserConsentedToAnonymousDataCollectionAndAllowedToFetchFromRemoteService(
     PrefService* pref_service) {
-  if (!optimization_guide::features::
-          IsRemoteFetchingForAnonymousDataConsentEnabled()) {
-    return false;
-  }
-
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper> helper =
       unified_consent::UrlKeyedDataCollectionConsentHelper::
           NewAnonymizedDataCollectionConsentHelper(pref_service);

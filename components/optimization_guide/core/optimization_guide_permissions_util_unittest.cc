@@ -49,15 +49,11 @@ TEST_F(OptimizationGuidePermissionsUtilTest,
       /*is_off_the_record=*/false, pref_service()));
 }
 
-TEST_F(
-    OptimizationGuidePermissionsUtilTest,
-    IsUserPermittedToFetchHintsDefaultUserAnonymousDataCollectionEnabledFeatureEnabled) {
+TEST_F(OptimizationGuidePermissionsUtilTest,
+       IsUserPermittedToFetchHintsDefaultUserAnonymousDataCollectionEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {optimization_guide::features::kRemoteOptimizationGuideFetching,
-       optimization_guide::features::
-           kRemoteOptimizationGuideFetchingAnonymousDataConsent},
-      {});
+      {optimization_guide::features::kRemoteOptimizationGuideFetching}, {});
   SetUrlKeyedAnonymizedDataCollectionEnabled(true);
 
   EXPECT_TRUE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
@@ -68,25 +64,8 @@ TEST_F(OptimizationGuidePermissionsUtilTest,
        IsUserPermittedToFetchHintsDefaultUserAnonymousDataCollectionDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {optimization_guide::features::kRemoteOptimizationGuideFetching,
-       optimization_guide::features::
-           kRemoteOptimizationGuideFetchingAnonymousDataConsent},
-      {});
+      {optimization_guide::features::kRemoteOptimizationGuideFetching}, {});
   SetUrlKeyedAnonymizedDataCollectionEnabled(false);
-
-  EXPECT_FALSE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
-      /*is_off_the_record=*/false, pref_service()));
-}
-
-TEST_F(
-    OptimizationGuidePermissionsUtilTest,
-    IsUserPermittedToFetchHintsDefaultUserAnonymousDataCollectionEnabledFeatureNotEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {optimization_guide::features::kRemoteOptimizationGuideFetching},
-      {optimization_guide::features::
-           kRemoteOptimizationGuideFetchingAnonymousDataConsent});
-  SetUrlKeyedAnonymizedDataCollectionEnabled(true);
 
   EXPECT_FALSE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
       /*is_off_the_record=*/false, pref_service()));

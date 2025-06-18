@@ -1756,7 +1756,7 @@ class HintsManagerFetchingTest : public HintsManagerTest {
                   base::NumberToString(batch_concurrency_limit_)}},
             },
         },
-        {features::kRemoteOptimizationGuideFetchingAnonymousDataConsent});
+        {});
   }
 
   size_t batch_concurrency_limit() const { return batch_concurrency_limit_; }
@@ -3777,7 +3777,7 @@ class HintsManagerProactivePersonalizationFetchingTest
                 {{"allowed_optimization_types", "SHOPPING_DISCOUNTS"}},
             },
         },
-        {features::kRemoteOptimizationGuideFetchingAnonymousDataConsent});
+        {});
   }
 
   void SetUp() override {

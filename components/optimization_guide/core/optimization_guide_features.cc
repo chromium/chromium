@@ -57,10 +57,6 @@ BASE_FEATURE(kRemoteOptimizationGuideFetching,
              "OptimizationHintsFetching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRemoteOptimizationGuideFetchingAnonymousDataConsent,
-             "OptimizationHintsFetchingAnonymousDataConsent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the prediction of optimization targets.
 BASE_FEATURE(kOptimizationTargetPrediction,
              "OptimizationTargetPrediction",
@@ -359,11 +355,6 @@ bool IsSRPFetchingEnabled() {
 
 bool IsPushNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kPushNotifications);
-}
-
-bool IsRemoteFetchingForAnonymousDataConsentEnabled() {
-  return base::FeatureList::IsEnabled(
-      kRemoteOptimizationGuideFetchingAnonymousDataConsent);
 }
 
 int MaxServerBloomFilterByteSize() {

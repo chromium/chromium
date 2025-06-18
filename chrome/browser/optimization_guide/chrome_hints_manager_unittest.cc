@@ -63,8 +63,7 @@ class ChromeHintsManagerFetchingTest
          },
          {optimization_guide::features::kOptimizationHints,
           {{"max_host_keyed_hint_cache_size", "1"}}}},
-        {optimization_guide::features::
-             kRemoteOptimizationGuideFetchingAnonymousDataConsent});
+        {});
   }
   ChromeHintsManagerFetchingTest(const ChromeHintsManagerFetchingTest&) =
       delete;
