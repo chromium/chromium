@@ -41,7 +41,6 @@ class NET_EXPORT URLRequestRedirectJob : public URLRequestJob {
   void Start() override;
   void Kill() override;
   bool CopyFragmentOnRedirect(const GURL& location) const override;
-  void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
 
  private:
   void StartAsync();
@@ -53,8 +52,6 @@ class NET_EXPORT URLRequestRedirectJob : public URLRequestJob {
   std::string redirect_reason_;
 
   scoped_refptr<HttpResponseHeaders> fake_headers_;
-
-  RequestHeadersCallback request_headers_callback_;
 
   base::WeakPtrFactory<URLRequestRedirectJob> weak_factory_{this};
 };

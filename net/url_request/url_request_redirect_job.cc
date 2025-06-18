@@ -97,30 +97,11 @@ void URLRequestRedirectJob::StartAsync() {
       NetLogEventType::URL_REQUEST_FAKE_RESPONSE_HEADERS_CREATED,
       fake_headers_.get());
 
-  // Send request headers along if there's a callback
-  if (request_headers_callback_) {
-    HttpRawRequestHeaders raw_request_headers;
-    for (const auto& header : request_headers.GetHeaderVector()) {
-      raw_request_headers.Add(header.key, header.value);
-    }
-
-    // Just to make extra sure everyone knows this is an internal header
-    raw_request_headers.set_request_line(
-        base::StringPrintf("%s %s HTTP/1.1\r\n", request_->method().c_str(),
-                           request_->url().PathForRequest().c_str()));
-    request_headers_callback_.Run(std::move(raw_request_headers));
-  }
-
   // TODO(mmenke):  Consider calling the NetworkDelegate with the headers here.
   // There's some weirdness about how to handle the case in which the delegate
   // tries to modify the redirect location, in terms of how IsSafeRedirect
   // should behave, and whether the fragment should be copied.
   URLRequestJob::NotifyHeadersComplete();
-}
-
-void URLRequestRedirectJob::SetRequestHeadersCallback(
-    RequestHeadersCallback callback) {
-  request_headers_callback_ = std::move(callback);
 }
 
 }  // namespace net

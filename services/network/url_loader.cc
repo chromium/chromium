@@ -770,9 +770,7 @@ void URLLoader::FollowRedirect(
                           *factory_params_, *origin_access_list_,
                           request_credentials_mode_);
 
-  // Set seen_raw_request_headers_ to false in order to make sure this redirect
-  // also calls the devtools observer.
-  seen_raw_request_headers_ = false;
+  ResetRawHeadersForRedirect();
 
   // Removing headers can't make the set of pre-existing headers unsafe, but
   // adding headers can.
@@ -2067,9 +2065,9 @@ void URLLoader::MaybeNotifyEarlyResponseToDevtools(
 
 void URLLoader::SetRawRequestHeadersAndNotify(
     net::HttpRawRequestHeaders headers) {
-  // If we have seen_raw_request_headers_, then don't notify DevTools to prevent
-  // duplicate ExtraInfo events.
-  if (!seen_raw_request_headers_ && devtools_observer_ &&
+  // If we have emitted_devtools_raw_request_, don't notify DevTools
+  // to prevent duplicate ExtraInfo events.
+  if (!emitted_devtools_raw_request_ && devtools_observer_ &&
       devtools_request_id()) {
     std::vector<network::mojom::HttpRawHeaderPairPtr> header_array;
     header_array.reserve(headers.headers().size());
@@ -2129,8 +2127,6 @@ void URLLoader::DispatchOnRawRequest(
     std::vector<network::mojom::HttpRawHeaderPairPtr> headers) {
   DCHECK(devtools_observer_ && devtools_request_id());
 
-  seen_raw_request_headers_ = true;
-
   net::LoadTimingInfo load_timing_info;
   url_request_->GetLoadTimingInfo(&load_timing_info);
 
@@ -2169,28 +2165,29 @@ void URLLoader::DispatchOnRawRequest(
       std::move(other_partition_info));
 }
 
-bool URLLoader::DispatchOnRawResponse() {
-  if (url_request_->response_headers() && !seen_raw_request_headers_) {
-    // Record request metrics here instead of in NotifyCompleted to account for
-    // redirects.
-    url_loader_util::RecordURLLoaderRequestMetrics(
-        *url_request_, raw_request_line_size_, raw_request_headers_size_);
+void URLLoader::DispatchOnRawResponse() {
+  if (!emitted_devtools_raw_request_) {
+    // TODO(ortuno): not sure why emitting of metrics is gated upon request not
+    // having been dispatched to DevTools, but this has been so since it raw
+    // header size metrics have been introduced by https://crrev.com/c/5824030.
+    if (url_request_->response_headers()) {
+      // Record request metrics here instead of in NotifyCompleted to account
+      // for redirects.
+      url_loader_util::RecordURLLoaderRequestMetrics(
+          *url_request_, raw_request_line_size_, raw_request_headers_size_);
+    }
+    // If there were no raw request headers, we assume no raw response headers
+    // either, to make client logic simpler.
+    // TODO(caseq): ensure this is actually an invariant?
+    return;
   }
 
-  if (!devtools_observer_ || !devtools_request_id() ||
-      !url_request_->response_headers()) {
-    return false;
-  }
+  // Per `if (emitted_devtools_raw_request_)` above.
+  CHECK(devtools_observer_);
+  CHECK(devtools_request_id());
 
-  if (url_request_->was_cached() && !seen_raw_request_headers_) {
-    // If a response in a redirect chain has been cached,
-    // we need to clear the emitted_devtools_raw_request_ and
-    // emitted_devtools_raw_response_ flags to prevent misreporting
-    // that extra info was available on the response. We also suppress
-    // reporting the extra info events here.
-    emitted_devtools_raw_request_ = false;
-    emitted_devtools_raw_response_ = false;
-    return false;
+  if (!url_request_->response_headers()) {
+    return;
   }
 
   // This is gated by enable_reporting_raw_headers_ to be backwards compatible
@@ -2221,12 +2218,6 @@ bool URLLoader::DispatchOnRawResponse() {
             response_headers->raw_headers()));
   }
 
-  if (!seen_raw_request_headers_) {
-    // If we send OnRawResponse(), make sure we send OnRawRequest() event if
-    // we haven't had the callback from net, to make the client life easier.
-    DispatchOnRawRequest({});
-  }
-
   emitted_devtools_raw_response_ = true;
   devtools_observer_->OnRawResponse(
       devtools_request_id().value(), url_request_->maybe_stored_cookies(),
@@ -2234,8 +2225,6 @@ bool URLLoader::DispatchOnRawResponse() {
       private_network_access_interceptor_.ResponseAddressSpace().value_or(
           mojom::IPAddressSpace::kUnknown),
       response_headers->response_code(), url_request_->cookie_partition_key());
-
-  return true;
 }
 
 void URLLoader::SendUploadProgress(const net::UploadProgress& progress) {
@@ -2580,6 +2569,14 @@ const mojom::ClientSecurityState* URLLoader::GetClientSecurityState() {
   return url_loader_util::SelectClientSecurityState(
       factory_params_->client_security_state.get(),
       client_security_state_.get());
+}
+
+void URLLoader::ResetRawHeadersForRedirect() {
+  emitted_devtools_raw_request_ = false;
+  emitted_devtools_raw_response_ = false;
+  raw_request_line_size_ = 0;
+  raw_request_headers_size_ = 0;
+  raw_response_headers_ = nullptr;
 }
 
 }  // namespace network

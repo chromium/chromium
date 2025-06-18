@@ -120,6 +120,7 @@
 
 using testing::ElementsAre;
 using testing::Eq;
+using testing::Pointee;
 
 namespace content {
 
@@ -4402,6 +4403,125 @@ IN_PROC_BROWSER_TEST_F(SharedStorageDevToolsProtocolTest,
   ASSERT_TRUE(result());
   EXPECT_THAT(result()->FindDoubleByDottedPath("metadata.remainingBudget"),
               testing::Optional(kBudgetAllowed));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TestRawHeadersWithRedirects) {
+  net::EmbeddedTestServer& https_test_server = embedded_https_test_server();
+  https_test_server.AddDefaultHandlers();
+  https_test_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_test_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  ASSERT_TRUE(https_test_server.Start());
+  ASSERT_TRUE(embedded_test_server()->Start());  // For first redirect.
+  // Localhost does not support HSTS, so we must serve from "a.test" instead.
+  GURL https_url = https_test_server.GetURL("a.test", "/hello.html");
+  base::Time expiry = base::Time::Now() + base::Days(1000);
+  bool include_subdomains = false;
+  content::StoragePartition* partition = shell()
+                                             ->web_contents()
+                                             ->GetBrowserContext()
+                                             ->GetDefaultStoragePartition();
+  base::RunLoop run_loop;
+  partition->GetNetworkContext()->AddHSTS(
+      https_url.host(), expiry, include_subdomains, run_loop.QuitClosure());
+  run_loop.Run();
+
+  GURL::Replacements replace_scheme;
+  replace_scheme.SetSchemeStr("http");
+  GURL http_url = https_url.ReplaceComponents(replace_scheme);
+  GURL redirect_url =
+      embedded_test_server()->GetURL("/server-redirect?" + http_url.spec());
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+  Attach();
+  SendCommandSync("Network.enable");
+
+  base::Value::Dict params;
+  params.Set("url", redirect_url.spec());
+  SendCommandAsync("Page.navigate", std::move(params));
+
+  // Wait for loadingFinished first, to make sure all redirects are buffered
+  // (this is a workaround for https://crbug.com/424871200, where we may
+  // receive a duplicate notification when one is not buffered at the time
+  // of the call).
+  WaitForNotification("Network.loadingFinished", true);
+
+  {
+    const base::Value::Dict orig_request =
+        WaitForNotification("Network.requestWillBeSent", true);
+    EXPECT_THAT(orig_request.FindStringByDottedPath("request.url"),
+                Pointee(redirect_url));
+    EXPECT_THAT(orig_request.FindDict("redirectResponse"), testing::IsNull());
+  }
+  {
+    // The first redirect is a real, server-issued redirect:
+    // http://127.0.0.1:N/server-redirect?http://a.test:M/hello.html =>
+    // http://a.test:M/hello.html
+
+    const base::Value::Dict redirected_request =
+        WaitForNotification("Network.requestWillBeSent", true);
+    EXPECT_THAT(redirected_request.FindStringByDottedPath("request.url"),
+                Pointee(http_url));
+    EXPECT_THAT(redirected_request.FindBool("redirectHasExtraInfo"),
+                testing::Optional(true));
+    EXPECT_THAT(
+        redirected_request.FindIntByDottedPath("redirectResponse.status"),
+        testing::Optional(301));
+    EXPECT_THAT(redirected_request.FindStringByDottedPath(
+                    "redirectResponse.headers.Location"),
+                Pointee(http_url.spec()));
+  }
+  {
+    // The second redirect is an interan HSTS redirect:
+    // http://a.test:M/hello.html => https://a.test:M/hello.html
+    const base::Value::Dict redirected_request =
+        WaitForNotification("Network.requestWillBeSent", true);
+    EXPECT_THAT(redirected_request.FindStringByDottedPath("request.url"),
+                Pointee(https_url));
+    EXPECT_THAT(redirected_request.FindBool("redirectHasExtraInfo"),
+                testing::Optional(false));
+    EXPECT_THAT(
+        redirected_request.FindIntByDottedPath("redirectResponse.status"),
+        testing::Optional(307));
+    EXPECT_THAT(redirected_request.FindStringByDottedPath(
+                    "redirectResponse.headers.Location"),
+                Pointee(https_url.spec()));
+  }
+
+  // Nothing of interest to check for the request headers, except that the event
+  // is there.
+  WaitForNotification("Network.requestWillBeSentExtraInfo", true);
+
+  {
+    const base::Value::Dict response_extra_info =
+        WaitForNotification("Network.responseReceivedExtraInfo", true);
+    EXPECT_THAT(response_extra_info.FindIntByDottedPath("statusCode"),
+                testing::Optional(301));
+    EXPECT_THAT(response_extra_info.FindStringByDottedPath("headers.Location"),
+                Pointee(http_url.spec()));
+  }
+
+  // Nothing of interest to check for the request headers, except that the event
+  // is there.
+  WaitForNotification("Network.requestWillBeSentExtraInfo", true);
+
+  {
+    const base::Value::Dict response_extra_info =
+        WaitForNotification("Network.responseReceivedExtraInfo", true);
+    EXPECT_THAT(response_extra_info.FindIntByDottedPath("statusCode"),
+                testing::Optional(200));
+    EXPECT_THAT(response_extra_info.FindStringByDottedPath("headers.Location"),
+                testing::IsNull());
+  }
+  {
+    const base::Value::Dict response_received =
+        WaitForNotification("Network.responseReceived", true);
+    EXPECT_THAT(response_received.FindBool("hasExtraInfo"),
+                testing::Optional(true));
+    EXPECT_THAT(response_received.FindIntByDottedPath("response.status"),
+                testing::Optional(200));
+    EXPECT_THAT(response_received.FindStringByDottedPath("response.statusText"),
+                Pointee(std::string("OK")));
+  }
 }
 
 }  // namespace content

@@ -461,7 +461,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   bool IsSharedDictionaryReadAllowed();
   void DispatchOnRawRequest(
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers);
-  bool DispatchOnRawResponse();
+  void DispatchOnRawResponse();
   void SendUploadProgress(const net::UploadProgress& progress);
   void OnUploadProgressACK();
   void OnSSLCertificateErrorResponse(const net::SSLInfo& ssl_info,
@@ -538,6 +538,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // value from the request (if present), the URLLoaderFactoryParams, or null.
   const mojom::ClientSecurityState* GetClientSecurityState();
 
+  // Resets raw headers retrieved from underlying net::URLRequest before
+  // starting another network transaction (such as following a redirect).
+  void ResetRawHeadersForRedirect();
+
   const raw_ptr<net::URLRequestContext> url_request_context_;
 
   const raw_ptr<mojom::NetworkContextClient> network_context_client_;
@@ -613,11 +617,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   std::unique_ptr<ResourceScheduler::ScheduledResourceRequest>
       resource_scheduler_request_handle_;
 
-  bool enable_reporting_raw_headers_ = false;
-  bool seen_raw_request_headers_ = false;
-  // Used for metrics.
-  size_t raw_request_line_size_ = 0;
-  size_t raw_request_headers_size_ = 0;
   scoped_refptr<const net::HttpResponseHeaders> raw_response_headers_;
 
   std::unique_ptr<UploadProgressTracker> upload_progress_tracker_;
@@ -715,8 +714,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // body.
   const bool has_fetch_streaming_upload_body_;
 
+  // Whether DevToolsObserver::OnRaw{Request,Response} should be emitted
+  // (i.e. the request being loaded is monitored by DevTools).
+  bool enable_reporting_raw_headers_ = false;
+
+  // Whether DevToolsObserver::OnRaw{Request,Response} have been emitted for
+  // the current redirect hop. This assures we report raw request/response
+  // not more than once per redirect and that we only either report both
+  // or neither request and response.
   bool emitted_devtools_raw_request_ = false;
   bool emitted_devtools_raw_response_ = false;
+
+  // Used for metrics.
+  size_t raw_request_line_size_ = 0;
+  size_t raw_request_headers_size_ = 0;
 
   // Handles processing of the ACCEPT_CH frame during connection, if enabled
   // and an observer exists. May be nullptr.
