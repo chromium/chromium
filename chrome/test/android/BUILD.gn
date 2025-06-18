@@ -308,6 +308,7 @@ android_library("chrome_java_transit") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/browsing_data/android:java",
     "//chrome/browser/collaboration:factory_java",
+    "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/hub:factory_java",
     "//chrome/browser/hub:java",

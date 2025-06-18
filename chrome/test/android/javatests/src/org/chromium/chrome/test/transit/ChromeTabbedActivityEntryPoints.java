@@ -6,9 +6,11 @@ package org.chromium.chrome.test.transit;
 
 import android.content.Intent;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.EntryPointSentinelStation;
 import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -22,6 +24,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 public class ChromeTabbedActivityEntryPoints {
     /** Start the ChromeTabbedActivity in a blank page. */
     public static WebPageStation startOnBlankPage(ChromeTabbedActivityTestRule ctaTestRule) {
+        disableFirstRunFlow();
+
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
 
@@ -31,6 +35,8 @@ public class ChromeTabbedActivityEntryPoints {
 
     /** Start the ChromeTabbedActivity in a web page at the given |url|. */
     public static WebPageStation startOnUrl(ChromeTabbedActivityTestRule ctaTestRule, String url) {
+        disableFirstRunFlow();
+
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
 
@@ -43,6 +49,8 @@ public class ChromeTabbedActivityEntryPoints {
     /** Start the ChromeTabbedActivity in an NTP as if it was started from the launcher. */
     public static RegularNewTabPageStation startFromLauncher(
             ChromeTabbedActivityTestRule ctaTestRule) {
+        disableFirstRunFlow();
+
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
         RegularNewTabPageStation entryPageStation =
@@ -70,6 +78,8 @@ public class ChromeTabbedActivityEntryPoints {
      */
     public static <T extends Station<?>> T startWithIntent(
             ChromeTabbedActivityTestRule ctaTestRule, Intent intent, T expectedStation) {
+        disableFirstRunFlow();
+
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
         return sentinel.travelToSync(
@@ -102,5 +112,9 @@ public class ChromeTabbedActivityEntryPoints {
 
         WebPageStation entryPageStation = WebPageStation.newBuilder().withEntryPoint().build();
         return sentinel.travelToSync(entryPageStation, /* trigger= */ null);
+    }
+
+    private static void disableFirstRunFlow() {
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
     }
 }
