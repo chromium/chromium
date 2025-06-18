@@ -80,7 +80,6 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.util.XrUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -183,6 +182,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     public void moveTabToOtherWindow(Tab tab) {
         if (MultiWindowUtils.getInstanceCount() == 1) {
             moveTabToNewWindow(tab);
+
+            // Close the source instance window, if needed.
+            closeChromeWindowIfEmpty(mInstanceId);
             return;
         }
 
@@ -225,11 +227,19 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         if (targetActivity != null) {
             reparentTabToRunningActivity((ChromeTabbedActivity) targetActivity, tab, tabAtIndex);
         } else {
+            TabModelSelector selector =
+                    TabWindowManagerSingleton.getInstance()
+                            .getTabModelSelectorById(getCurrentInstanceId());
+            // If the source Chrome instance still has tabs (including incognito), allow
+            // launching the new window adjacently. Otherwise, skip
+            // FLAG_ACTIVITY_LAUNCH_ADJACENT to avoid a black screen caused by the source
+            // window closing before the new one launches.
+            boolean openAdjacently = selector.getTotalTabCount() > 1;
             moveAndReparentTabToNewWindow(
                     tab,
                     info.instanceId,
                     /* preferNew= */ false,
-                    /* openAdjacently= */ true,
+                    openAdjacently,
                     /* addTrustedIntentExtras= */ true);
         }
     }
@@ -1278,20 +1288,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     /**
-     * Determine if a Chrome instance can be closed based on the environment.
-     *
-     * @param instanceId Instance Id of the Chrome window that needs to be closed.
-     */
-    private boolean canCloseChromeWindow(int instanceId) {
-        // Close the source instance window after tab reparenting if permitted by the feature flag
-        // or if the app is in a desktop window, and the source instance is known.
-        if (instanceId == INVALID_WINDOW_ID) return false;
-
-        return XrUtils.isXrDevice()
-                || AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManagerSupplier.get());
-    }
-
-    /**
      * Close a Chrome window instance only if it contains no open tabs including incognito ones.
      *
      * @param instanceId Instance id of the Chrome window that needs to be closed.
@@ -1299,7 +1295,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
      */
     @Override
     public boolean closeChromeWindowIfEmpty(int instanceId) {
-        if (canCloseChromeWindow(instanceId)) {
+        if (instanceId != INVALID_WINDOW_ID) {
             TabModelSelector selector =
                     TabWindowManagerSingleton.getInstance().getTabModelSelectorById(instanceId);
             // Determine if the drag source Chrome instance window has any tabs including incognito

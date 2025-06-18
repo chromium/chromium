@@ -1311,7 +1311,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // Also reparentTabToRunningActivity is not called.
         verify(mMultiInstanceManager, times(1))
                 .moveAndReparentTabToNewWindow(
-                        eq(mTab1), eq(NON_EXISTENT_INSTANCE_ID), eq(false), eq(true), eq(true));
+                        eq(mTab1), eq(NON_EXISTENT_INSTANCE_ID), eq(false), eq(false), eq(true));
         verify(mMultiInstanceManager, times(0))
                 .reparentTabToRunningActivity(any(), eq(mTab1), eq(0));
     }
@@ -1381,7 +1381,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    public void testCloseChromeWindowIfEmpty_inDesktopWindow() {
+    public void testCloseChromeWindowIfEmpty() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
         // Create an empty instance before asking it to close.
@@ -1397,24 +1397,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
         verify(mMultiInstanceManager, times(1))
                 .closeInstance(anyInt(), eq(MultiWindowUtils.INVALID_TASK_ID));
-    }
-
-    @Test
-    public void testCloseChromeWindowIfEmpty_notInDesktopWindow() {
-        mMultiInstanceManager.mTestBuildInstancesList = true;
-        MultiWindowTestUtils.enableMultiInstance();
-        // Create an empty instance before asking it to close.
-        assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
-        assertEquals(1, mMultiInstanceManager.getInstanceInfo().size());
-        // Assume that Chrome is not in a desktop window.
-        when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
-
-        // Action
-        assertFalse(
-                "Chrome instance should not be closed.",
-                mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1));
-
-        verify(mMultiInstanceManager, never()).closeInstance(anyInt(), anyInt());
     }
 
     @Test
