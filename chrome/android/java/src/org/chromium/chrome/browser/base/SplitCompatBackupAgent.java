@@ -67,7 +67,9 @@ public class SplitCompatBackupAgent extends BackupAgent {
         }
 
         public abstract void onBackup(
-                ParcelFileDescriptor oldState, BackupDataOutput data, ParcelFileDescriptor newState)
+                @Nullable ParcelFileDescriptor oldState,
+                BackupDataOutput data,
+                ParcelFileDescriptor newState)
                 throws IOException;
 
         public abstract void onRestore(

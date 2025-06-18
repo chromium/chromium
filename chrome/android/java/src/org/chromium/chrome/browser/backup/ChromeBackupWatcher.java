@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.backup;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.backup.BackupManager;
 import android.content.Context;
 
@@ -13,6 +15,7 @@ import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
@@ -22,11 +25,14 @@ import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 
+import java.util.Objects;
+
 /**
  * Class for watching for changes to the Android preferences that are backed up using Android
  * key/value backup.
  */
 @JNINamespace("android")
+@NullMarked
 class ChromeBackupWatcher {
     private final BackupManager mBackupManager;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
@@ -52,7 +58,7 @@ class ChromeBackupWatcher {
                         (prefs, key) -> {
                             // Update the backup if any of the backed up Android preferences change.
                             for (String pref : ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS) {
-                                if (key.equals(pref)) {
+                                if (Objects.equals(key, pref)) {
                                     onBackupPrefsChanged();
                                     return;
                                 }
@@ -69,6 +75,7 @@ class ChromeBackupWatcher {
         // Update the backup if the sign-in status changes.
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
+        assumeNonNull(identityManager);
         identityManager.addObserver(
                 new IdentityManager.Observer() {
                     @Override

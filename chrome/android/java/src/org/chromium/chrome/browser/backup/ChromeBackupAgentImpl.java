@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.backup;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.backup.BackupDataInput;
 import android.app.backup.BackupDataOutput;
 import android.app.backup.BackupManager;
@@ -13,7 +16,6 @@ import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JniType;
@@ -27,6 +29,8 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
@@ -68,6 +72,7 @@ import java.util.function.Predicate;
 
 /** Backup agent for Chrome, using Android key/value backup. */
 @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
+@NullMarked
 public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     private static final String ANDROID_DEFAULT_PREFIX = "AndroidDefault.";
 
@@ -178,12 +183,16 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
      * and compare a copy of the data.
      */
     private static final class BackupState {
-        private ArrayList<String> mNames;
-        private ArrayList<byte[]> mValues;
+        private final ArrayList<String> mNames;
+        private final ArrayList<byte[]> mValues;
 
         @SuppressWarnings("unchecked")
-        public BackupState(ParcelFileDescriptor parceledState) throws IOException {
-            if (parceledState == null) return;
+        public BackupState(@Nullable ParcelFileDescriptor parceledState) throws IOException {
+            if (parceledState == null) {
+                mNames = new ArrayList<>();
+                mValues = new ArrayList<>();
+                return;
+            }
             try {
                 FileInputStream instream = new FileInputStream(parceledState.getFileDescriptor());
                 ObjectInputStream in = new ObjectInputStream(instream);
@@ -240,7 +249,9 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
 
     @Override
     public void onBackup(
-            ParcelFileDescriptor oldState, BackupDataOutput data, ParcelFileDescriptor newState)
+            @Nullable ParcelFileDescriptor oldState,
+            BackupDataOutput data,
+            ParcelFileDescriptor newState)
             throws IOException {
         final ArrayList<String> backupNames = new ArrayList<>();
         final ArrayList<byte[]> backupValues = new ArrayList<>();
@@ -260,6 +271,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                             Profile profile = ProfileManager.getLastUsedRegularProfile();
                             IdentityManager identityManager =
                                     IdentityServicesProvider.get().getIdentityManager(profile);
+                            assumeNonNull(identityManager);
                             signedInAccount.set(
                                     identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
 
@@ -484,10 +496,11 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             return;
         }
 
-        @Nullable
-        CoreAccountInfo signedInAccountInfo = getDeviceAccountWithGaiaId(restoredSignedInUserID);
-        @Nullable
-        CoreAccountInfo syncAccountInfo = getDeviceAccountWithEmail(restoredSyncUserEmail);
+        @Nullable CoreAccountInfo signedInAccountInfo =
+                getDeviceAccountWithGaiaId(restoredSignedInUserID);
+
+        @Nullable CoreAccountInfo syncAccountInfo =
+                getDeviceAccountWithEmail(restoredSyncUserEmail);
 
         // If the previously signed-in account not found on the device, then don't restore
         // anything.
@@ -519,6 +532,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                     final boolean shouldRestoreSelectedTypesAsAccountSettings =
                             syncAccountInfo != null;
                     if (shouldRestoreSelectedTypesAsAccountSettings) {
+                        assumeNonNull(syncAccountInfo);
                         ChromeBackupAgentImplJni.get()
                                 .migrateGlobalDataTypePrefsToAccount(
                                         prefService, syncAccountInfo.getGaiaId());
@@ -549,6 +563,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             signInAndWaitForResult(signedInAccountInfo);
         } else {
             // syncAccountInfo must be non-null at this point.
+            assumeNonNull(syncAccountInfo);
             editor.apply();
             signInAndWaitForResult(syncAccountInfo);
         }
@@ -639,7 +654,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             return null;
         }
 
-        return PostTask.runSynchronously(
+        return PostTask.<@Nullable CoreAccountInfo>runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     return AccountUtils.findAccountByEmail(getAccounts(), accountEmail);
@@ -651,7 +666,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             return null;
         }
 
-        return PostTask.runSynchronously(
+        return PostTask.<@Nullable CoreAccountInfo>runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     return AccountUtils.findAccountByGaiaId(getAccounts(), accountGaiaId);
@@ -708,6 +723,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                     SigninManager signinManager =
                             IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile());
+                    assertNonNull(signinManager);
                     final AccountManagerFacade accountManagerFacade =
                             AccountManagerFacadeProvider.getInstance();
 
