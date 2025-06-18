@@ -152,6 +152,12 @@ inline constexpr base::FeatureParam<base::TimeDelta>
                                    "SideBySideShowDropTargetDelay",
                                    base::Seconds(1));
 
+// The padding inside the drop target that determines the overall width.
+inline constexpr base::FeatureParam<int> kSideBySideDropTargetInnerPadding(
+    &kSideBySide,
+    "SideBySideDropTargetInnerPadding",
+    37);
+
 BASE_DECLARE_FEATURE(kSideBySideLinkMenuNewBadge);
 
 bool IsNtpFooterEnabledWithoutSideBySide();

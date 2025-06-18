@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -36,7 +37,6 @@ namespace {
 
 constexpr float kInnerCornerRadius = 6;
 constexpr int kOuterPadding = 8;
-constexpr int kInnerPadding = 8;
 constexpr int kIconSize = 24;
 constexpr int kAnimationDurationMs = 450;
 
@@ -71,7 +71,8 @@ MultiContentsDropTargetView::MultiContentsDropTargetView(
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetInteriorMargin(gfx::Insets(kInnerPadding))
+      .SetInteriorMargin(
+          gfx::Insets(features::kSideBySideDropTargetInnerPadding.Get()))
       .SetDefault(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
