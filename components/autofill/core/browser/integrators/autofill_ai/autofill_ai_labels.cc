@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_utils.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
 
 #include <optional>
 #include <ranges>
@@ -24,6 +24,11 @@
 namespace autofill {
 
 namespace {
+
+// The maximum number of entity values/labels that can be used when
+// disambiguating suggestions/entities. Used by suggestion generation and the
+// settings page.
+constexpr size_t kMaxNumberOfLabels = 2;
 
 // Returns the types for which at least two of the given `entities` define
 // distinct values.
@@ -123,13 +128,6 @@ size_t CountUniqueNonEmptyLabels(const std::vector<EntityLabel>& labels) {
 }
 
 }  // namespace
-
-bool IsFormEligibleForFilling(const FormStructure& form) {
-  return std::ranges::any_of(
-      form.fields(), [](const std::unique_ptr<AutofillField>& field) {
-        return field->GetAutofillAiServerTypePredictions().has_value();
-      });
-}
 
 std::vector<EntityLabel> GetLabelsForEntities(
     base::span<const EntityInstance*> entities,

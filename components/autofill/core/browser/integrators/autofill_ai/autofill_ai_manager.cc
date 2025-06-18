@@ -45,7 +45,6 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_suggestions.h"
-#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
@@ -170,6 +169,13 @@ std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,
   };
 
   return base::ToVector(entity.type().strike_keys(), value_for_strike_key);
+}
+
+bool IsFormEligibleForFilling(const FormStructure& form) {
+  return std::ranges::any_of(
+      form.fields(), [](const std::unique_ptr<AutofillField>& field) {
+        return field->GetAutofillAiServerTypePredictions().has_value();
+      });
 }
 
 }  // namespace

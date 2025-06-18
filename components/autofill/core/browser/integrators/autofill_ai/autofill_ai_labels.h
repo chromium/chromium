@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_UTILS_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_UTILS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_LABELS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_LABELS_H_
 
 #include <string>
 #include <vector>
@@ -12,24 +12,15 @@
 
 namespace autofill {
 
-class FormStructure;
 class EntityInstance;
 
 // Separator to use between a certain entity label attributes, for example:
 // "Passport · Jon Doe · Germany".
 inline constexpr char16_t kLabelSeparator[] = u" · ";
 
-// The maximum number of entity values/labels that can be used when
-// disambiguating suggestions/entities. Used by suggestion generation and the
-// settings page.
-inline constexpr size_t kMaxNumberOfLabels = 2;
-
 // During label computation, every entity's label is a vector of non-empty
 // strings (which the UI later concatenates).
 using EntityLabel = std::vector<std::u16string>;
-
-// Returns whether the form is eligible for the filling journey.
-bool IsFormEligibleForFilling(const FormStructure& form);
 
 // Returns a vector of EntityLabels, with one entry for each EntityInstance in
 // `entities`.
@@ -55,4 +46,4 @@ std::vector<EntityLabel> GetLabelsForEntities(
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_UTILS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_LABELS_H_
