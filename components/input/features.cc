@@ -37,6 +37,6 @@ BASE_FEATURE(kScrollBubblingFix,
 // Flag guard for fix for crbug.com/404464598.
 BASE_FEATURE(kUseFirstCoalescedFrameAsFlingGenerationTimestamp,
              "UseFirstCoalescedFrameAsFlingGenerationTimestamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace input::features
