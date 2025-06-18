@@ -757,7 +757,9 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DesktopLoadTabs) {
+// TODO(crbug.com/408022331): enable this flaky test.
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
+                       DISABLED_DesktopLoadTabs) {
   ASSERT_TRUE(
       CreateExtensionAndRunTest("desktop/load_tabs.js", kPermissionsWindows))
       << message_;
