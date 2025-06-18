@@ -24,7 +24,6 @@
 #include "components/input/event_with_latency_info.h"
 #include "components/input/render_input_router.h"
 #include "components/input/render_widget_host_view_input.h"
-#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
