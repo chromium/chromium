@@ -475,8 +475,9 @@ class PdfInkModule {
 
   // Helper to convert `position` to a canonical position and record it into
   // `current_tool_state_` for the indicated `timestamp` and `tool_type`.
-  // Can only be called when drawing.
-  void RecordStrokePosition(const gfx::PointF& position,
+  // Can only be called when drawing. Returns whether the operation succeeded or
+  // not.
+  bool RecordStrokePosition(const gfx::PointF& position,
                             base::TimeTicks timestamp,
                             ink::StrokeInput::ToolType tool_type);
 

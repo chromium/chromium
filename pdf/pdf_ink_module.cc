@@ -19,7 +19,6 @@
 
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -714,9 +713,10 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
     if (boundary_position != last_position) {
       // Record the last point before leaving the page, if `last_position` was
       // not already on the page boundary.
-      RecordStrokePosition(boundary_position, timestamp, tool_type);
-      client_->Invalidate(GetDrawingBrush().GetInvalidateArea(
-          last_position, boundary_position));
+      if (RecordStrokePosition(boundary_position, timestamp, tool_type)) {
+        client_->Invalidate(GetDrawingBrush().GetInvalidateArea(
+            last_position, boundary_position));
+      }
     }
 
     // Remember `position` and `timestamp` for use in the next event and treat
@@ -737,17 +737,18 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
         last_position);
     if (boundary_position != position) {
       // Record the first point after entering the page.
-      RecordStrokePosition(boundary_position, timestamp, tool_type);
-      invalidation_position = boundary_position;
+      if (RecordStrokePosition(boundary_position, timestamp, tool_type)) {
+        invalidation_position = boundary_position;
+      }
     }
   }
 
-  RecordStrokePosition(position, timestamp, tool_type);
-
-  // Invalidate area covering a straight line between this position and the
-  // previous one.
-  client_->Invalidate(
-      GetDrawingBrush().GetInvalidateArea(position, invalidation_position));
+  if (RecordStrokePosition(position, timestamp, tool_type)) {
+    // Invalidate area covering a straight line between this position and the
+    // previous one.
+    client_->Invalidate(
+        GetDrawingBrush().GetInvalidateArea(position, invalidation_position));
+  }
 
   // Remember `position` and `timestamp` for use in the next event.
   state.input_last_event =
@@ -1485,7 +1486,7 @@ gfx::PointF PdfInkModule::ConvertEventPositionToCanonicalPosition(
                                           client_->GetZoom());
 }
 
-void PdfInkModule::RecordStrokePosition(const gfx::PointF& position,
+bool PdfInkModule::RecordStrokePosition(const gfx::PointF& position,
                                         base::TimeTicks timestamp,
                                         ink::StrokeInput::ToolType tool_type) {
   CHECK(is_drawing_stroke());
@@ -1495,12 +1496,7 @@ void PdfInkModule::RecordStrokePosition(const gfx::PointF& position,
   base::TimeDelta time_diff = timestamp - state.start_time.value();
   auto result = state.inputs.back().Append(
       CreateInkStrokeInput(tool_type, canonical_position, time_diff));
-  if (!result.ok()) {
-    // TODO(crbug.com/421120183): Fix crash and remove.
-    SCOPED_CRASH_KEY_STRING256("PdfInkModule", "RecordStrokePosition",
-                               result.message());
-    CHECK(result.ok()) << result.message();
-  }
+  return result.ok();
 }
 
 void PdfInkModule::ApplyUndoRedoCommands(
