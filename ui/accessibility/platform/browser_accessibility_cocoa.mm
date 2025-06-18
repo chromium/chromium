@@ -630,6 +630,16 @@ bool ui::IsNSRange(id value) {
       AXPlatformNodeCocoa* child =
           base::apple::ObjCCastStrict<AXPlatformNodeCocoa>(
               it->GetNativeViewAccessible().Get());
+      if (![child instanceActive]) {
+        // TODO(crbug.com/425758499): change to CHECK once root cause addressed.
+        DCHECK(false) << "Tried to add destroyed child, parent = " << _owner;
+        continue;
+      }
+      if (![child nodeDelegate]) {
+        // TODO(crbug.com/425758499): change to CHECK once root cause addressed.
+        DCHECK(false) << "No delegate for child, parent = " << _owner;
+        continue;
+      }
       [_children addObject:child];
     }
 
