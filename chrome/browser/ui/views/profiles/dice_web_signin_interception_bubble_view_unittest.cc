@@ -9,6 +9,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -67,6 +68,8 @@ class DiceWebSigninInterceptionBubbleViewTestBase : public testing::Test {
     enterprise_account_ =
         identity_test_env->MakeAccountAvailable("bob@example.com");
     enterprise_account_.hosted_domain = "example.com";
+    AccountCapabilitiesTestMutator(&enterprise_account_.capabilities)
+        .set_is_subject_to_enterprise_policies(true);
     identity_test_env->UpdateAccountInfoForAccount(enterprise_account_);
     personal_account_ =
         identity_test_env->MakeAccountAvailable("alice@gmail.com");

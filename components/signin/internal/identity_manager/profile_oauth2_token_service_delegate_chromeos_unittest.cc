@@ -31,6 +31,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -237,6 +238,8 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     account_info.picture_url = "https://example.com";
     account_info.account_id = account_tracker_service_.PickAccountIdForAccount(
         account_info.gaia, account_info.email);
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_is_subject_to_enterprise_policies(true);
 
     // Cannot use |ASSERT_TRUE| due to a |void| return type in an |ASSERT_TRUE|
     // branch.

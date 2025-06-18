@@ -469,12 +469,13 @@ class FirstRunParameterizedInteractiveUiTest
 
     account_info =
         signin::WithGeneratedUserInfo(account_info, account_given_name);
-    if (account_email == kTestEnterpriseEmail) {
-      account_info.hosted_domain = "chromium.org";
-    }
 
     // Controls behavior of sync buttons and supervision.
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    if (account_email == kTestEnterpriseEmail) {
+      account_info.hosted_domain = "chromium.org";
+      mutator.set_is_subject_to_enterprise_policies(true);
+    }
 
     if (GetParam().with_supervision.has_value()) {
       mutator.set_is_subject_to_parental_controls(WithSupervisedUser());

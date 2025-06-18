@@ -76,6 +76,9 @@ AccountInfo CreateAccount(GaiaId gaia_id,
   account_info.full_name = full_name;
   account_info.email = email;
   account_info.hosted_domain = hosted_domain;
+  AccountCapabilitiesTestMutator(&account_info.capabilities)
+      .set_is_subject_to_enterprise_policies(hosted_domain !=
+                                             kNoHostedDomainFound);
   return account_info;
 }
 

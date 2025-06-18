@@ -21,6 +21,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -735,6 +736,15 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
   AccountTrackerService* account_tracker_service =
       identity_manager->GetAccountTrackerService();
   account_tracker_service->SetAccountInfoFromUserInfo(account_id, user_info);
+
+  bool managed =
+      !hosted_domain.empty() && hosted_domain != kNoHostedDomainFound;
+  AccountCapabilities capabilities;
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_is_subject_to_enterprise_policies(managed);
+  account_tracker_service->SetAccountCapabilities(account_id, capabilities);
+  CHECK_EQ(account_tracker_service->GetAccountInfo(account_id).IsManaged(),
+           signin::TriboolFromBool(managed));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

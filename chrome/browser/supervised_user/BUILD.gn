@@ -20,6 +20,7 @@ static_library("test_support") {
     "//components/content_settings/core/browser",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser:test_support",
     "//components/supervised_user/core/common",

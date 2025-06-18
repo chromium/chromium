@@ -15,6 +15,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
@@ -98,6 +99,8 @@ void PopulateAccountInfoWithName(AccountInfo& info,
   info.hosted_domain = "example.com";
   info.locale = "en";
   info.picture_url = "https://example.com";
+  AccountCapabilitiesTestMutator(&info.capabilities)
+      .set_is_subject_to_enterprise_policies(true);
 
   CHECK(info.IsValid());
 }

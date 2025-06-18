@@ -59,6 +59,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -544,6 +545,8 @@ class TurnSyncOnHelperTest : public testing::Test {
         identity_manager()->FindExtendedAccountInfo(core_account_info);
     EXPECT_FALSE(account_info.IsEmpty());
     account_info.hosted_domain = kEnterpriseHostedDomain;
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_is_subject_to_enterprise_policies(true);
     signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
   }
 

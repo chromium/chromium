@@ -14,6 +14,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -429,6 +430,8 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportWithEnterprisePrimary) {
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       email, signin::ConsentLevel::kSync);
   account_info.hosted_domain = "bar.com";
+  AccountCapabilitiesTestMutator(&account_info.capabilities)
+      .set_is_subject_to_enterprise_policies(true);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   const HistogramTester histogram_tester;

@@ -52,6 +52,8 @@ TEST_F(AccountInfoTest, IsValid) {
 
   info.full_name = info.given_name = "test_name";
   info.hosted_domain = "test_domain";
+  AccountCapabilitiesTestMutator(&info.capabilities)
+      .set_is_subject_to_enterprise_policies(true);
   info.picture_url = "test_picture_url";
   EXPECT_TRUE(info.IsValid());
 }
@@ -159,6 +161,8 @@ TEST_F(AccountInfoTest, UpdateWithDefaultValuesNoOverride) {
   info.email = "test_id";
   info.account_id = CoreAccountId::FromGaiaId(info.gaia);
   info.hosted_domain = "test_domain";
+  AccountCapabilitiesTestMutator(&info.capabilities)
+      .set_is_subject_to_enterprise_policies(true);
   info.picture_url = "test_url";
 
   AccountInfo other;

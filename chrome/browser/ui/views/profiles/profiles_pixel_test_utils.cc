@@ -47,10 +47,12 @@ AccountInfo FillAccountInfo(
           : kNoHostedDomainFound;
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_is_subject_to_enterprise_policies(
+      management_status == AccountManagementStatus::kManaged);
 
   if (can_show_history_sync_opt_ins_without_minor_mode_restrictions !=
       signin::Tribool::kUnknown) {
-    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
         signin::TriboolToBoolOrDie(
             can_show_history_sync_opt_ins_without_minor_mode_restrictions));

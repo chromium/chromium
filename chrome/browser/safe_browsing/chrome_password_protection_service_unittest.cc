@@ -58,6 +58,7 @@
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -260,6 +261,9 @@ class MockChromePasswordProtectionService
     account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
     account_info.email = username;
     account_info.hosted_domain = hosted_domain;
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_is_subject_to_enterprise_policies(hosted_domain !=
+                                               kNoHostedDomainFound);
     account_info_ = account_info;
   }
 

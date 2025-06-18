@@ -51,6 +51,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -1578,6 +1579,8 @@ TEST_F(PeopleHandlerTest, HandleStartSigninManaged) {
   SetExplicitSignin(true);
   // Make the account managed and disallow signout.
   account.hosted_domain = "managedchrome.com";
+  AccountCapabilitiesTestMutator(&account.capabilities)
+      .set_is_subject_to_enterprise_policies(true);
   identity_test_env()->UpdateAccountInfoForAccount(account);
   SigninClient* client = ChromeSigninClientFactory::GetForProfile(profile());
   client->set_is_clear_primary_account_allowed_for_testing(

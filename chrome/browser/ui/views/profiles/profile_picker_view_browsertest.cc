@@ -178,6 +178,9 @@ AccountInfo FillAccountInfo(
   account_info.hosted_domain = hosted_domain;
   account_info.locale = "en";
   account_info.picture_url = "https://get-avatar.com/foo";
+  AccountCapabilitiesTestMutator(&account_info.capabilities)
+      .set_is_subject_to_enterprise_policies(hosted_domain !=
+                                             kNoHostedDomainFound);
   return account_info;
 }
 

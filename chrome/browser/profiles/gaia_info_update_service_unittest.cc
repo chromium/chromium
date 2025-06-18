@@ -77,6 +77,9 @@ AccountInfo GetValidAccountInfo(std::string email,
   account_info.hosted_domain = hosted_domain;
   account_info.locale = email;
   account_info.picture_url = "example.com";
+  AccountCapabilitiesTestMutator(&account_info.capabilities)
+      .set_is_subject_to_enterprise_policies(hosted_domain !=
+                                             kNoHostedDomainFound);
   return account_info;
 }
 

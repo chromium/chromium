@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -239,6 +240,8 @@ TEST_P(PlusAddressSubmissionTestWithParam, SubmittingFormRecordsUkm) {
       kGaiaAccount, {signin::ConsentLevel::kSignin});
   if (input.is_managed_profile) {
     account_info.hosted_domain = kManagedDomain;
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_is_subject_to_enterprise_policies(true);
     identity_env().UpdateAccountInfoForAccount(account_info);
   }
   autofill_client().set_last_committed_primary_main_frame_url(

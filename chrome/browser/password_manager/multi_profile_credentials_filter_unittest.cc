@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/sync_username_test_base.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
@@ -125,6 +126,8 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
     account_info.full_name = "fullname";
     account_info.given_name = "givenname";
     account_info.hosted_domain = kNoHostedDomainFound;
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_is_subject_to_enterprise_policies(false);
     account_info.locale = "en";
     account_info.picture_url = "https://example.com";
     DCHECK(account_info.IsValid());
@@ -343,6 +346,8 @@ TEST_F(MultiProfileCredentialsFilterTest, SigninNotIntercepted) {
   account_info.full_name = "fullname";
   account_info.given_name = "givenname";
   account_info.hosted_domain = kNoHostedDomainFound;
+  AccountCapabilitiesTestMutator(&account_info.capabilities)
+      .set_is_subject_to_enterprise_policies(false);
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
   DCHECK(account_info.IsValid());

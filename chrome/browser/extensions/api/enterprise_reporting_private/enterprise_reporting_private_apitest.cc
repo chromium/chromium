@@ -25,6 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/version_info/version_info.h"
@@ -160,6 +161,8 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
           ->store()
           ->set_policy_data_for_testing(std::move(profile_policy_data));
     }
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_is_subject_to_enterprise_policies(as_managed);
 
     return account_info;
   }
