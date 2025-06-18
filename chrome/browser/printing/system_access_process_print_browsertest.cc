@@ -536,11 +536,11 @@ class TestPrinterQueryOop : public PrinterQueryOop {
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   void OnDidUseDefaultSettings(
       SettingsCallback callback,
-      mojom::PrintSettingsResultPtr print_settings) override {
+      mojom::PrintBackendService::UseDefaultSettingsResult print_settings)
+      override {
     DVLOG(1) << "Observed: use default settings";
-    mojom::ResultCode result = print_settings->is_result_code()
-                                   ? print_settings->get_result_code()
-                                   : mojom::ResultCode::kSuccess;
+    mojom::ResultCode result =
+        print_settings.error_or(mojom::ResultCode::kSuccess);
     callbacks_->error_check_callback.Run(result);
     PrinterQueryOop::OnDidUseDefaultSettings(std::move(callback),
                                              std::move(print_settings));
@@ -549,11 +549,11 @@ class TestPrinterQueryOop : public PrinterQueryOop {
 
   void OnDidAskUserForSettings(
       SettingsCallback callback,
-      mojom::PrintSettingsResultPtr print_settings) override {
+      mojom::PrintBackendService::AskUserForSettingsResult print_settings)
+      override {
     DVLOG(1) << "Observed: ask user for settings";
-    mojom::ResultCode result = print_settings->is_result_code()
-                                   ? print_settings->get_result_code()
-                                   : mojom::ResultCode::kSuccess;
+    mojom::ResultCode result =
+        print_settings.error_or(mojom::ResultCode::kSuccess);
     callbacks_->error_check_callback.Run(result);
     if (terminate_service_after_ask_user_for_settings_callback_) {
       std::move(terminate_service_after_ask_user_for_settings_callback_).Run();
@@ -586,11 +586,11 @@ class TestPrinterQueryOop : public PrinterQueryOop {
   void OnDidUpdatePrintSettings(
       const std::string& device_name,
       SettingsCallback callback,
-      mojom::PrintSettingsResultPtr print_settings) override {
+      mojom::PrintBackendService::UpdatePrintSettingsResult print_settings)
+      override {
     DVLOG(1) << "Observed: update print settings";
-    mojom::ResultCode result = print_settings->is_result_code()
-                                   ? print_settings->get_result_code()
-                                   : mojom::ResultCode::kSuccess;
+    mojom::ResultCode result =
+        print_settings.error_or(mojom::ResultCode::kSuccess);
     callbacks_->error_check_callback.Run(result);
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG) && BUILDFLAG(IS_WIN)
     if (terminate_service_after_update_print_settings_callback_) {

@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
+#include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -279,6 +280,9 @@ class PrintBackendServiceManager {
     kPrintDocument,
   };
 
+  // Type that maps to the return of all settings calls.
+  using PrintSettingsResult = base::expected<PrintSettings, mojom::ResultCode>;
+
   // Types to track saved callbacks associated with currently executing mojom
   // service calls.  These will be run either after a Mojom call finishes
   // executing or if the service should disconnect before the mojom service
@@ -297,32 +301,32 @@ class PrintBackendServiceManager {
   // the remote ID does not necessarily mean the printer name.
   template <class... T>
   using RemoteSavedCallbacks = base::flat_map<RemoteId, SavedCallbacks<T...>>;
-  template <class... T>
-  using RemoteSavedStructCallbacks =
-      RemoteSavedCallbacks<mojo::StructPtr<T...>>;
 
+  // Note: these follow the signature of the generated mojo callbacks after
+  // typemapping, as seen in the generated print_backend_service.mojom.h.
   using RemoteSavedEnumeratePrintersCallbacks =
-      RemoteSavedStructCallbacks<mojom::PrinterListResult>;
+      RemoteSavedCallbacks<mojom::PrintBackendService::EnumeratePrintersResult>;
   using RemoteSavedFetchCapabilitiesCallbacks =
-      RemoteSavedStructCallbacks<mojom::PrinterCapsAndInfoResult>;
-  using RemoteSavedGetDefaultPrinterNameCallbacks =
-      RemoteSavedStructCallbacks<mojom::DefaultPrinterNameResult>;
+      RemoteSavedCallbacks<mojom::PrintBackendService::FetchCapabilitiesResult>;
+  using RemoteSavedGetDefaultPrinterNameCallbacks = RemoteSavedCallbacks<
+      mojom::PrintBackendService::GetDefaultPrinterNameResult>;
 #if BUILDFLAG(IS_CHROMEOS)
   using RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks =
-      RemoteSavedStructCallbacks<mojom::PrinterSemanticCapsAndDefaultsResult>;
+      RemoteSavedCallbacks<
+          mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsResult>;
 #endif
 #if BUILDFLAG(IS_WIN)
   using RemoteSavedGetPaperPrintableAreaCallbacks =
       RemoteSavedCallbacks<const gfx::Rect&>;
 #endif
   using RemoteSavedUseDefaultSettingsCallbacks =
-      RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
+      RemoteSavedCallbacks<PrintSettingsResult>;
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   using RemoteSavedAskUserForSettingsCallbacks =
-      RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
+      RemoteSavedCallbacks<PrintSettingsResult>;
 #endif
   using RemoteSavedUpdatePrintSettingsCallbacks =
-      RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
+      RemoteSavedCallbacks<PrintSettingsResult>;
   using RemoteSavedStartPrintingCallbacks =
       RemoteSavedCallbacks<mojom::ResultCode, int /*job_id*/>;
 #if BUILDFLAG(IS_WIN)
@@ -553,31 +557,34 @@ class PrintBackendServiceManager {
                            X... data);
 
   // Local callback wrappers for mojom calls.
-  void OnDidEnumeratePrinters(const CallbackContext& context,
-                              mojom::PrinterListResultPtr printer_list);
+  void OnDidEnumeratePrinters(
+      const CallbackContext& context,
+      mojom::PrintBackendService::EnumeratePrintersResult printer_list);
   void OnDidFetchCapabilities(
       const CallbackContext& context,
-      mojom::PrinterCapsAndInfoResultPtr printer_caps_and_info);
+      mojom::PrintBackendService::FetchCapabilitiesResult
+          printer_caps_and_info);
   void OnDidGetDefaultPrinterName(
       const CallbackContext& context,
-      mojom::DefaultPrinterNameResultPtr printer_name);
+      mojom::PrintBackendService::GetDefaultPrinterNameResult printer_name);
 #if BUILDFLAG(IS_CHROMEOS)
   void OnDidGetPrinterSemanticCapsAndDefaults(
       const CallbackContext& context,
-      mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps);
+      mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsResult
+          printer_caps);
 #endif
 #if BUILDFLAG(IS_WIN)
   void OnDidGetPaperPrintableArea(const CallbackContext& context,
                                   const gfx::Rect& printable_area_um);
 #endif
   void OnDidUseDefaultSettings(const CallbackContext& context,
-                               mojom::PrintSettingsResultPtr settings);
+                               PrintSettingsResult settings);
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   void OnDidAskUserForSettings(const CallbackContext& context,
-                               mojom::PrintSettingsResultPtr settings);
+                               PrintSettingsResult settings);
 #endif
   void OnDidUpdatePrintSettings(const CallbackContext& context,
-                                mojom::PrintSettingsResultPtr printer_caps);
+                                PrintSettingsResult printer_caps);
   void OnDidStartPrinting(const CallbackContext& context,
                           mojom::ResultCode result,
                           int job_id);
@@ -593,15 +600,15 @@ class PrintBackendServiceManager {
 
   // Helper functions to run outstanding callbacks when a remote has become
   // disconnected.
-  template <class T>
-  void RunSavedCallbacksStructResult(
-      RemoteSavedStructCallbacks<T>& saved_callbacks,
-      const RemoteId& remote_id,
-      mojo::StructPtr<T> result_to_clone);
   template <class... T>
   void RunSavedCallbacks(RemoteSavedCallbacks<T...>& saved_callbacks,
                          const RemoteId& remote_id,
                          typename std::remove_reference<T>::type... result);
+  template <class... T>
+  void RunSavedResultCallbacks(
+      RemoteSavedCallbacks<T...>& saved_callbacks,
+      const RemoteId& remote_id,
+      typename std::remove_reference<T>::type... result);
 
   // Test support for client ID management.
   static void SetClientsForTesting(

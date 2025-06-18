@@ -16,46 +16,10 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 [EnableIf=is_win]
 import "chrome/services/printing/public/mojom/printer_xml_parser.mojom";
 
-// The default printer name, or the `ResultCode` if there was an error when
-// trying to retrieve this data.
-union DefaultPrinterNameResult {
-  string default_printer_name;
-  ResultCode result_code;
-};
-
-// The list of installed printers, or the `ResultCode` if there was an error
-// when trying to retrieve this data.
-union PrinterListResult {
-  array<PrinterBasicInfo> printer_list;
-  ResultCode result_code;
-};
-
-// The capabilities and defaults of a printer, or the `ResultCode` if there was
-// an error when trying to retrieve this data.
-union PrinterSemanticCapsAndDefaultsResult {
-  PrinterSemanticCapsAndDefaults printer_caps;
-  ResultCode result_code;
-};
-
 // The set of basic info and capabilities/defaults for a printer.
 struct PrinterCapsAndInfo {
   PrinterBasicInfo printer_info;
   PrinterSemanticCapsAndDefaults printer_caps;
-};
-
-// The set of basic info, paper details, and capabilities/defaults for a
-// printer, or the `ResultCode` if there was an error when trying to retrieve
-// this data.
-union PrinterCapsAndInfoResult {
-  PrinterCapsAndInfo printer_caps_and_info;
-  ResultCode result_code;
-};
-
-// The print settings for a job, or the `ResultCode` if there was an error when
-// trying to update this data.
-union PrintSettingsResult {
-  PrintSettings settings;
-  ResultCode result_code;
 };
 
 // Hosts the PrintBackendService but does so without sandboxing the service -
@@ -93,20 +57,20 @@ interface PrintBackendService {
   Poke();
 
   // Enumerates the list of installed local and network printers.
-  EnumeratePrinters() => (PrinterListResult printer_list);
+  EnumeratePrinters() => result<array<PrinterBasicInfo>, ResultCode>;
 
   // Gets the default printer name from the data source.
-  GetDefaultPrinterName() => (DefaultPrinterNameResult printer_name);
+  GetDefaultPrinterName() => result<string, ResultCode>;
 
   // Gets the semantic capabilities and defaults for a specific printer.
   [EnableIf=is_chromeos]
   GetPrinterSemanticCapsAndDefaults(string printer_name)
-      => (PrinterSemanticCapsAndDefaultsResult printer_caps);
+      => result<PrinterSemanticCapsAndDefaults, ResultCode>;
 
   // Gets the basic info, paper sizes, and semantic capabilities and defaults
   // for a specific printer.
   FetchCapabilities(string printer_name)
-      => (PrinterCapsAndInfoResult printer_caps_and_info);
+      => result<PrinterCapsAndInfo, ResultCode>;
 
   // Gets the printable area for a particular paper size.  Windows only, as a
   // workaround for the high cost of trying to get printable area for all paper
@@ -143,7 +107,7 @@ interface PrintBackendService {
   // Generates a print settings object based upon the default settings for the
   // default printer.  `context_id` must be for a context previously created
   // by a call to `EstablishPrintingContext()`.
-  UseDefaultSettings(uint32 context_id) => (PrintSettingsResult settings);
+  UseDefaultSettings(uint32 context_id) => result<PrintSettings, ResultCode>;
 
   // Generates a print settings object from user-selected options via a system
   // print dialog.  `context_id` must be for a context previously created by a
@@ -167,7 +131,7 @@ interface PrintBackendService {
   AskUserForSettings(uint32 context_id,
                      int32 max_pages,
                      bool has_selection,
-                     bool is_scripted) => (PrintSettingsResult settings);
+                     bool is_scripted) => result<PrintSettings, ResultCode>;
 
   // Updates the indicated printing context based upon the job settings used
   // with the device settings.  The driver to be used is expected to be
@@ -178,7 +142,7 @@ interface PrintBackendService {
   // initiated and/or printing of a document is started.
   UpdatePrintSettings(
       uint32 context_id, mojo_base.mojom.DictionaryValue job_settings)
-      => (PrintSettingsResult settings);
+      => result<PrintSettings, ResultCode>;
 
   // Submit the document identified by `document_cookie` to be printed.
   // A printing context must already have been setup previously with a call to

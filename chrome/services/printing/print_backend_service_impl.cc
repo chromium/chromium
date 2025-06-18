@@ -492,11 +492,10 @@ void PrintBackendServiceImpl::EnumeratePrinters(
   PrinterList printer_list;
   mojom::ResultCode result = print_backend_->EnumeratePrinters(printer_list);
   if (result != mojom::ResultCode::kSuccess) {
-    std::move(callback).Run(mojom::PrinterListResult::NewResultCode(result));
+    std::move(callback).Run(base::unexpected(result));
     return;
   }
-  std::move(callback).Run(
-      mojom::PrinterListResult::NewPrinterList(std::move(printer_list)));
+  std::move(callback).Run(base::ok(std::move(printer_list)));
 }
 
 void PrintBackendServiceImpl::GetDefaultPrinterName(
@@ -506,12 +505,10 @@ void PrintBackendServiceImpl::GetDefaultPrinterName(
   mojom::ResultCode result =
       print_backend_->GetDefaultPrinterName(default_printer);
   if (result != mojom::ResultCode::kSuccess) {
-    std::move(callback).Run(
-        mojom::DefaultPrinterNameResult::NewResultCode(result));
+    std::move(callback).Run(base::unexpected(result));
     return;
   }
-  std::move(callback).Run(
-      mojom::DefaultPrinterNameResult::NewDefaultPrinterName(default_printer));
+  std::move(callback).Run(base::ok(default_printer));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -528,13 +525,10 @@ void PrintBackendServiceImpl::GetPrinterSemanticCapsAndDefaults(
       print_backend_->GetPrinterSemanticCapsAndDefaults(printer_name,
                                                         &printer_caps);
   if (result != mojom::ResultCode::kSuccess) {
-    std::move(callback).Run(
-        mojom::PrinterSemanticCapsAndDefaultsResult::NewResultCode(result));
+    std::move(callback).Run(base::unexpected(result));
     return;
   }
-  std::move(callback).Run(
-      mojom::PrinterSemanticCapsAndDefaultsResult::NewPrinterCaps(
-          std::move(printer_caps)));
+  std::move(callback).Run(base::ok(std::move(printer_caps)));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -549,8 +543,7 @@ void PrintBackendServiceImpl::FetchCapabilities(
   mojom::ResultCode result =
       print_backend_->GetPrinterBasicInfo(printer_name, &printer_info);
   if (result != mojom::ResultCode::kSuccess) {
-    std::move(callback).Run(
-        mojom::PrinterCapsAndInfoResult::NewResultCode(result));
+    std::move(callback).Run(base::unexpected(result));
     return;
   }
 
@@ -558,20 +551,18 @@ void PrintBackendServiceImpl::FetchCapabilities(
   result =
       print_backend_->GetPrinterSemanticCapsAndDefaults(printer_name, &caps);
   if (result != mojom::ResultCode::kSuccess) {
-    std::move(callback).Run(
-        mojom::PrinterCapsAndInfoResult::NewResultCode(result));
+    std::move(callback).Run(base::unexpected(result));
     return;
   }
 
 #if BUILDFLAG(IS_WIN)
   if (xml_parser_remote_.is_bound() &&
       base::FeatureList::IsEnabled(features::kReadPrinterCapabilitiesWithXps)) {
-    ASSIGN_OR_RETURN(
-        XpsCapabilities xps_capabilities, GetXpsCapabilities(printer_name),
-        [&](mojom::ResultCode error) {
-          return std::move(callback).Run(
-              mojom::PrinterCapsAndInfoResult::NewResultCode(error));
-        });
+    ASSIGN_OR_RETURN(XpsCapabilities xps_capabilities,
+                     GetXpsCapabilities(printer_name),
+                     [&](mojom::ResultCode error) {
+                       return std::move(callback).Run(base::unexpected(error));
+                     });
 
     MergeXpsCapabilities(std::move(xps_capabilities), caps);
   }
@@ -596,9 +587,7 @@ void PrintBackendServiceImpl::FetchCapabilities(
 
   mojom::PrinterCapsAndInfoPtr caps_and_info =
       mojom::PrinterCapsAndInfo::New(std::move(printer_info), std::move(caps));
-  std::move(callback).Run(
-      mojom::PrinterCapsAndInfoResult::NewPrinterCapsAndInfo(
-          std::move(caps_and_info)));
+  std::move(callback).Run(base::ok(std::move(caps_and_info)));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -650,11 +639,10 @@ void PrintBackendServiceImpl::UseDefaultSettings(
     DLOG(ERROR) << "Failure getting default settings of default printer, "
                 << "error: " << result;
     persistent_printing_contexts_.erase(context_id);
-    std::move(callback).Run(mojom::PrintSettingsResult::NewResultCode(result));
+    std::move(callback).Run(base::unexpected(result));
     return;
   }
-  std::move(callback).Run(mojom::PrintSettingsResult::NewSettings(
-      *context->TakeAndResetSettings()));
+  std::move(callback).Run(base::ok(*context->TakeAndResetSettings()));
 }
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
@@ -708,12 +696,11 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
 
   if (result != mojom::ResultCode::kSuccess) {
     persistent_printing_contexts_.erase(context_id);
-    std::move(callback).Run(mojom::PrintSettingsResult::NewResultCode(result));
+    std::move(callback).Run(base::unexpected(result));
     return;
   }
 
-  std::move(callback).Run(
-      mojom::PrintSettingsResult::NewSettings(context->settings()));
+  std::move(callback).Run(base::ok(context->settings()));
 }
 
 void PrintBackendServiceImpl::StartPrinting(
@@ -863,7 +850,7 @@ void PrintBackendServiceImpl::OnDidAskUserForSettings(
   if (result != mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "Did not get user settings, error: " << result;
     persistent_printing_contexts_.erase(context_id);
-    std::move(callback).Run(mojom::PrintSettingsResult::NewResultCode(result));
+    std::move(callback).Run(base::unexpected(result));
     return;
   }
 
@@ -873,8 +860,7 @@ void PrintBackendServiceImpl::OnDidAskUserForSettings(
   crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
       printer_name, print_backend_->GetPrinterDriverInfo(printer_name));
 
-  std::move(callback).Run(mojom::PrintSettingsResult::NewSettings(
-      *context->TakeAndResetSettings()));
+  std::move(callback).Run(base::ok(*context->TakeAndResetSettings()));
 }
 #endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 

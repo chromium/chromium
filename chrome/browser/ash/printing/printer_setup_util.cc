@@ -127,16 +127,15 @@ void CapabilitiesFetchedFromService(
     const std::string& printer_id,
     bool elevated_privileges,
     GetPrinterCapabilitiesCallback cb,
-    ::printing::mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps) {
-  if (printer_caps->is_result_code()) {
+    ::printing::mojom::PrintBackendService::
+        GetPrinterSemanticCapsAndDefaultsResult printer_caps) {
+  if (!printer_caps.has_value()) {
     LOG(WARNING) << "Failure fetching printer capabilities from service for "
-                 << printer_id << " - error "
-                 << printer_caps->get_result_code();
+                 << printer_id << " - error " << printer_caps.error();
 
     // If we failed because of access denied then we could retry at an elevated
     // privilege (if not already elevated).
-    if (printer_caps->get_result_code() ==
-            ::printing::mojom::ResultCode::kAccessDenied &&
+    if (printer_caps.error() == ::printing::mojom::ResultCode::kAccessDenied &&
         !elevated_privileges) {
       // Register that this printer requires elevated privileges.
       ::printing::PrintBackendServiceManager& service_mgr =
@@ -166,7 +165,7 @@ void CapabilitiesFetchedFromService(
 
   VLOG(1) << "Successfully received printer capabilities from service for "
           << printer_id;
-  std::move(cb).Run(printer_caps->get_printer_caps());
+  std::move(cb).Run(printer_caps.value());
 }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 

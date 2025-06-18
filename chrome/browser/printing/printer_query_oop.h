@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
@@ -41,11 +42,11 @@ class PrinterQueryOop : public PrinterQuery {
   // wrappers are virtual to support testing.
   virtual void OnDidUseDefaultSettings(
       SettingsCallback callback,
-      mojom::PrintSettingsResultPtr print_settings);
+      base::expected<PrintSettings, mojom::ResultCode> print_settings);
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   virtual void OnDidAskUserForSettings(
       SettingsCallback callback,
-      mojom::PrintSettingsResultPtr print_settings);
+      base::expected<PrintSettings, mojom::ResultCode> print_settings);
 #else
   virtual void OnDidAskUserForSettings(
       SettingsCallback callback,
@@ -55,7 +56,7 @@ class PrinterQueryOop : public PrinterQuery {
   virtual void OnDidUpdatePrintSettings(
       const std::string& device_name,
       SettingsCallback callback,
-      mojom::PrintSettingsResultPtr print_settings);
+      base::expected<PrintSettings, mojom::ResultCode> print_settings);
 #if BUILDFLAG(IS_WIN)
   void OnDidGetPaperPrintableArea(PrintSettings* print_settings,
                                   OnDidUpdatePrintableAreaCallback callback,

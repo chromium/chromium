@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/oop_features.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
@@ -63,11 +64,11 @@ void PrinterQueryOop::SetClientId(
 
 void PrinterQueryOop::OnDidUseDefaultSettings(
     SettingsCallback callback,
-    mojom::PrintSettingsResultPtr print_settings) {
+    base::expected<PrintSettings, mojom::ResultCode> print_settings) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   mojom::ResultCode result;
-  if (print_settings->is_result_code()) {
-    result = print_settings->get_result_code();
+  if (!print_settings.has_value()) {
+    result = print_settings.error();
     DCHECK_NE(result, mojom::ResultCode::kSuccess);
     PRINTER_LOG(ERROR) << "Error trying to use default settings via service: "
                        << result;
@@ -77,7 +78,7 @@ void PrinterQueryOop::OnDidUseDefaultSettings(
   } else {
     VLOG(1) << "Use default settings from service complete";
     result = mojom::ResultCode::kSuccess;
-    printing_context()->SetPrintSettings(print_settings->get_settings());
+    printing_context()->SetPrintSettings(print_settings.value());
   }
 
   InvokeSettingsCallback(std::move(callback), result);
@@ -86,13 +87,13 @@ void PrinterQueryOop::OnDidUseDefaultSettings(
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 void PrinterQueryOop::OnDidAskUserForSettings(
     SettingsCallback callback,
-    mojom::PrintSettingsResultPtr print_settings) {
+    base::expected<PrintSettings, mojom::ResultCode> print_settings) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   mojom::ResultCode result;
-  if (print_settings->is_settings()) {
+  if (print_settings.has_value()) {
     VLOG(1) << "Ask user for settings from service complete";
     result = mojom::ResultCode::kSuccess;
-    printing_context()->SetPrintSettings(print_settings->get_settings());
+    printing_context()->SetPrintSettings(print_settings.value());
 
     // Use the same PrintBackendService for querying and printing, so that the
     // same device context can be used with both.
@@ -108,7 +109,7 @@ void PrinterQueryOop::OnDidAskUserForSettings(
              "service or renderer likely has terminated";
     }
   } else {
-    result = print_settings->get_result_code();
+    result = print_settings.error();
     DCHECK_NE(result, mojom::ResultCode::kSuccess);
     if (result != mojom::ResultCode::kCanceled) {
       PRINTER_LOG(ERROR) << "Error getting settings from user via service: "
@@ -253,11 +254,11 @@ void PrinterQueryOop::UpdatePrintSettings(base::Value::Dict new_settings,
 void PrinterQueryOop::OnDidUpdatePrintSettings(
     const std::string& device_name,
     SettingsCallback callback,
-    mojom::PrintSettingsResultPtr print_settings) {
+    base::expected<PrintSettings, mojom::ResultCode> print_settings) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   mojom::ResultCode result;
-  if (print_settings->is_result_code()) {
-    result = print_settings->get_result_code();
+  if (!print_settings.has_value()) {
+    result = print_settings.error();
     DCHECK_NE(result, mojom::ResultCode::kSuccess);
     PRINTER_LOG(ERROR) << "Error updating print settings via service for `"
                        << device_name << "`: " << result;
@@ -281,7 +282,7 @@ void PrinterQueryOop::OnDidUpdatePrintSettings(
   } else {
     VLOG(1) << "Update print settings via service complete for " << device_name;
     result = mojom::ResultCode::kSuccess;
-    printing_context()->SetPrintSettings(print_settings->get_settings());
+    printing_context()->SetPrintSettings(print_settings.value());
 
     if (query_with_ui_client_id_.has_value()) {
       // Use the same PrintBackendService for querying and printing, so that the

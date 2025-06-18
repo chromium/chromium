@@ -145,7 +145,7 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
 
   void OnDidGetDefaultPrinterName(
       mojom::PrintBackendService::GetDefaultPrinterNameCallback callback,
-      mojom::DefaultPrinterNameResultPtr printer_name);
+      mojom::PrintBackendService::GetDefaultPrinterNameResult printer_name);
 
   void TerminateConnection();
 
