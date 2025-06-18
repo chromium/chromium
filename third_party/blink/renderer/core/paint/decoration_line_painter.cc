@@ -145,9 +145,9 @@ void DecorationLinePainter::Paint(const Color& color,
 
 void DecorationLinePainter::PaintWavyTextDecoration(
     const AutoDarkMode& auto_dark_mode) {
-  // The wavy line is larger than the line, as we add whole waves before and
-  // after the line in TextDecorationInfo::PrepareWavyStrokePath().
-  gfx::PointF origin = decoration_info_.Bounds().origin();
+  // The wavy paint rect, which has the height of the wavy tile rect but the
+  // width needed by the actual decoration, for the DrawRect operation.
+  const gfx::RectF paint_rect = decoration_info_.WavyPaintRect();
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
@@ -156,13 +156,9 @@ void DecorationLinePainter::PaintWavyTextDecoration(
       gfx::RectFToSkRect(decoration_info_.WavyTileRect()), SkTileMode::kRepeat,
       SkTileMode::kDecal, nullptr));
 
-  // We need this because of the clipping we're doing below, as we paint both
-  // overlines and underlines here. That clip would hide the overlines, when
-  // painting the underlines.
   GraphicsContextStateSaver state_saver(context_);
-  context_.SetShouldAntialias(true);
-  context_.Translate(origin.x(), origin.y());
-  context_.DrawRect(gfx::RectFToSkRect(decoration_info_.WavyPaintRect()), flags,
+  context_.Translate(paint_rect.x(), paint_rect.y());
+  context_.DrawRect(gfx::RectFToSkRect(gfx::RectF(paint_rect.size())), flags,
                     auto_dark_mode);
 }
 

@@ -699,36 +699,28 @@ gfx::RectF TextDecorationInfo::BoundsForDottedOrDashed() const {
 
 // Returns the wavy bounds, which is the same size as the wavy paint rect but
 // at the origin needed by the actual decoration, for the global transform.
-//
-// The origin is the sum of the local origin, line offset, (wavy) double offset,
-// and the origin of the wavy pattern rect (around minus half the amplitude).
 gfx::RectF TextDecorationInfo::BoundsForWavy() const {
-  gfx::SizeF size = WavyPaintRect().size();
-  gfx::PointF origin = line_data_.wavy_pattern_rect.origin();
-  origin += StartPoint().OffsetFromOrigin();
-  origin += gfx::Vector2dF{0.f, DoubleOffset() * line_data_.wavy_offset_factor};
-  return {origin, size};
+  return WavyPaintRect();
 }
 
 // Returns the wavy paint rect, which has the height of the wavy tile rect but
 // the width needed by the actual decoration, for the DrawRect operation.
-//
-// The origin is still (0,0) so that the shader local matrix is independent of
-// the origin of the decoration, allowing Skia to cache the tile. To determine
-// the origin of the decoration, use Bounds().origin().
 gfx::RectF TextDecorationInfo::WavyPaintRect() const {
-  gfx::RectF result = WavyTileRect();
-  result.set_width(width_);
-  return result;
+  // The origin is the sum of the local origin, line offset, (wavy) double
+  // offset, and the origin of the wavy pattern rect (around minus half the
+  // amplitude).
+  gfx::PointF origin =
+      StartPoint() + line_data_.wavy_pattern_rect.OffsetFromOrigin() +
+      gfx::Vector2dF{0.f, DoubleOffset() * line_data_.wavy_offset_factor};
+  // Get the height of the wavy tile, and the width of the decoration.
+  gfx::SizeF size(width_, line_data_.wavy_pattern_rect.height());
+  return {origin, size};
 }
 
 // Returns the wavy tile rect, which is the same size as the wavy pattern rect
 // but at origin (0,0), for converting the PaintRecord to a PaintShader.
 gfx::RectF TextDecorationInfo::WavyTileRect() const {
-  gfx::RectF result = line_data_.wavy_pattern_rect;
-  result.set_x(0.f);
-  result.set_y(0.f);
-  return result;
+  return gfx::RectF(line_data_.wavy_pattern_rect.size());
 }
 
 cc::PaintRecord TextDecorationInfo::WavyTileRecord() const {
