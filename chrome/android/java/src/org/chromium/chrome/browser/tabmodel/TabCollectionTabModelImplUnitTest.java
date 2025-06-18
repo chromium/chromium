@@ -10,7 +10,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,6 +50,7 @@ public class TabCollectionTabModelImplUnitTest {
     @Mock private TabModelOrderController mOrderController;
     @Mock private TabModelDelegate mTabModelDelegate;
     @Mock private AsyncTabParamsManager mAsyncTabParamsManager;
+    @Mock private TabRemover mTabRemover;
     @Mock private TabModelObserver mTabModelObserver;
 
     private TabCollectionTabModelImpl mTabModel;
@@ -86,7 +87,8 @@ public class TabCollectionTabModelImplUnitTest {
                         mIncognitoTabCreator,
                         mOrderController,
                         mTabModelDelegate,
-                        mAsyncTabParamsManager);
+                        mAsyncTabParamsManager,
+                        mTabRemover);
         mTabModel.addObserver(mTabModelObserver);
     }
 
@@ -95,6 +97,11 @@ public class TabCollectionTabModelImplUnitTest {
         mTabModel.destroy();
         verify(mTabModelJniBridgeJni).destroy(eq(TAB_MODEL_JNI_BRIDGE_PTR), any());
         verify(mTabCollectionTabModelImplJni).destroy(eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR));
+    }
+
+    @Test
+    public void testGetTabRemover() {
+        assertEquals(mTabRemover, mTabModel.getTabRemover());
     }
 
     @Test

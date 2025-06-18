@@ -45,7 +45,8 @@ public class TabModelHolderFactory {
                     incognitoTabCreator,
                     orderController,
                     modelDelegate,
-                    asyncTabParamsManager);
+                    asyncTabParamsManager,
+                    tabRemover);
         }
         return createLegacyTabModelHolder(
                 profile,
@@ -120,7 +121,8 @@ public class TabModelHolderFactory {
             TabCreator incognitoTabCreator,
             TabModelOrderController orderController,
             TabModelDelegate modelDelegate,
-            AsyncTabParamsManager asyncTabParamsManager) {
+            AsyncTabParamsManager asyncTabParamsManager,
+            TabRemover tabRemover) {
         TabCollectionTabModelImpl regularTabModel =
                 new TabCollectionTabModelImpl(
                         profile,
@@ -130,7 +132,8 @@ public class TabModelHolderFactory {
                         incognitoTabCreator,
                         orderController,
                         modelDelegate,
-                        asyncTabParamsManager);
+                        asyncTabParamsManager,
+                        tabRemover);
 
         return new TabModelHolder(regularTabModel, regularTabModel);
     }

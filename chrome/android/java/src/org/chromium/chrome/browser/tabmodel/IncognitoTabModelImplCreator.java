@@ -81,7 +81,8 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
                     mIncognitoTabCreator,
                     mOrderController,
                     mModelDelegate,
-                    mAsyncTabParamsManager);
+                    mAsyncTabParamsManager,
+                    mTabRemover);
         }
         return new TabModelImpl(
                 assumeNonNull(mProfileProvider.getOffTheRecordProfile(true)),

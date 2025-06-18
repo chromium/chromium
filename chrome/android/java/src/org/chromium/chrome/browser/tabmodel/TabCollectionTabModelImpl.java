@@ -27,10 +27,6 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.ResourceRequestBody;
-import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -67,6 +63,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     private final TabModelOrderController mOrderController;
     private final TabModelDelegate mModelDelegate;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
+    private final TabRemover mTabRemover;
     // TODO(crbug.com/405343634): Replace this with the appropriate TabUngrouper.
     private final TabUngrouper mTabUngrouper = new PassthroughTabUngrouper(() -> this);
 
@@ -85,6 +82,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
      * @param orderController Controls logic for selecting and positioning tabs.
      * @param modelDelegate The {@link TabModelDelegate} for interacting outside the tab model.
      * @param asyncTabParamsManager To detect if an async tab operation is in progress.
+     * @param tabRemover For removing tabs.
      */
     public TabCollectionTabModelImpl(
             Profile profile,
@@ -94,7 +92,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             TabCreator incognitoTabCreator,
             TabModelOrderController orderController,
             TabModelDelegate modelDelegate,
-            AsyncTabParamsManager asyncTabParamsManager) {
+            AsyncTabParamsManager asyncTabParamsManager,
+            TabRemover tabRemover) {
         super(profile);
         assertOnUiThread();
         mIsArchivedTabModel = isArchivedTabModel;
@@ -103,6 +102,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         mOrderController = orderController;
         mModelDelegate = modelDelegate;
         mAsyncTabParamsManager = asyncTabParamsManager;
+        mTabRemover = tabRemover;
 
         initializeNative(activityType, isArchivedTabModel);
     }
@@ -198,7 +198,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public TabRemover getTabRemover() {
-        return new EmptyTabRemover();
+        assert mTabRemover != null;
+        return mTabRemover;
     }
 
     @Override
@@ -397,52 +398,20 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public void forceCloseAllTabs() {}
-
-    @Override
-    public boolean closeTabAt(int index) {
-        return false;
+    protected TabCreator getTabCreator(boolean incognito) {
+        return incognito ? mIncognitoTabCreator : mRegularTabCreator;
     }
 
     @Override
-    protected boolean createTabWithWebContents(
-            Tab parent, Profile profile, WebContents webContents, boolean select) {
-        return false;
+    protected List<Tab> getTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
+        return Collections.emptyList();
     }
-
-    @Override
-    public void openNewTab(
-            Tab parent,
-            GURL url,
-            @Nullable Origin initiatorOrigin,
-            String extraHeaders,
-            ResourceRequestBody postData,
-            int disposition,
-            boolean persistParentage,
-            boolean isRendererInitiated) {}
-
-    @Override
-    protected @Nullable Tab createNewTabForDevTools(GURL url, boolean newWindow) {
-        // TODO(crbug.com/405343634): This should be non-null once implemented.
-        return null;
-    }
-
-    @Override
-    protected int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
-        return 0;
-    }
-
-    @Override
-    protected void closeTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {}
 
     @Override
     protected boolean isSessionRestoreInProgress() {
         assertOnUiThread();
         return !mModelDelegate.isTabModelRestored();
     }
-
-    @Override
-    protected void openTabProgrammatically(GURL url, int index) {}
 
     @Override
     protected void moveTabToIndex(int index, int newIndex) {}
@@ -663,10 +632,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {}
 
     // Internal methods.
-
-    private TabCreator getTabCreator(boolean incognito) {
-        return incognito ? mIncognitoTabCreator : mRegularTabCreator;
-    }
 
     @NativeMethods
     interface Natives {
