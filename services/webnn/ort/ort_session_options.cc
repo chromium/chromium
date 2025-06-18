@@ -21,17 +21,31 @@ base::expected<scoped_refptr<SessionOptions>, mojom::ErrorPtr>
 SessionOptions::Create(mojom::Device device_type) {
   ScopedTrace scoped_trace("SessionOptions::Create");
 
-  if (device_type != mojom::Device::kCpu) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kNotSupportedError,
-        "The ONNX Runtime backend only supports CPU device type currently."));
-  }
-
   scoped_trace.AddStep("Create session options");
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   ScopedOrtSessionOptions session_options;
   CHECK_STATUS(ort_api->CreateSessionOptions(
       ScopedOrtSessionOptions::Receiver(session_options).get()));
+
+  // TODO(crbug.com/425487285): Map WebNN power preference to ORT auto EP
+  // selection policy
+  OrtExecutionProviderDevicePolicy device_policy;
+  switch (device_type) {
+    case mojom::Device::kCpu:
+      device_policy = OrtExecutionProviderDevicePolicy::
+          OrtExecutionProviderDevicePolicy_PREFER_CPU;
+      break;
+    case mojom::Device::kGpu:
+      device_policy = OrtExecutionProviderDevicePolicy::
+          OrtExecutionProviderDevicePolicy_PREFER_GPU;
+      break;
+    case mojom::Device::kNpu:
+      device_policy = OrtExecutionProviderDevicePolicy::
+          OrtExecutionProviderDevicePolicy_PREFER_NPU;
+      break;
+  }
+  CHECK_STATUS(ort_api->SessionOptionsSetEpSelectionPolicy(
+      session_options.get(), device_policy));
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtDumpModel)) {
@@ -54,8 +68,6 @@ SessionOptions::Create(mojom::Device device_type) {
       /*config_key=*/kOrtSessionOptionsConfigStrictShapeTypeInference,
       /*config_value=*/"1"));
 
-  // Use CPU EP by default.
-  //
   // TODO(crbug.com/412841630): Investigate how to apply layout optimizations
   // (ORT_ENABLE_ALL).
   // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
