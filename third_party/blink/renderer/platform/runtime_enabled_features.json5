@@ -3969,6 +3969,13 @@
         "default": "experimental"},
     },
     {
+      // This feature acts as a kill switch for ISO-2022-JP auto-detection.
+      // This will be shipped in M139, and it can be removed in M141.
+      // See https://chromestatus.com/feature/6576566521561088.
+      name: "RemoveCharsetAutoDetectionForISO2022JP",
+      status: "stable",
+    },
+    {
       name: "RemoveDanglingMarkupInTarget",
       status: "stable",
     },

@@ -185,4 +185,19 @@ TEST(TextResourceDecoderTest, ContentSniffingStopsAfterSuccess) {
   EXPECT_EQ(Utf8Encoding(), decoder->Encoding());
 }
 
+TEST(TextResourceDecoderTest, DoNotAutoDetectISO2022JP) {
+  test::TaskEnvironment task_environment;
+  std::unique_ptr<TextResourceDecoder> decoder =
+      std::make_unique<TextResourceDecoder>(
+          TextResourceDecoderOptions::CreateWithAutoDetection(
+              TextResourceDecoderOptions::kHTMLContent, Utf8Encoding(),
+              UnknownEncoding(), NullURL()));
+  // ISO-2022-JP escape sequences.
+  const unsigned char kISO2022JP[] = {0x1b, 0x24, 0x42, 0x30, 0x42,
+                                      0x30, 0x44, 0x1b, 0x28, 0x42};
+  String auto_detected_charset;
+  decoder->Decode(base::span(kISO2022JP), &auto_detected_charset);
+  EXPECT_TRUE(auto_detected_charset.empty());
+}
+
 }  // namespace blink

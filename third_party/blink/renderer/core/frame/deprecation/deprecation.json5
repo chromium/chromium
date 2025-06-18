@@ -80,15 +80,6 @@
       chrome_status_feature: 5735596811091968,
     },
     {
-      name: "CharsetAutoDetectionISO2022JP",
-      message: "Auto-detection of ISO-2022-JP character set is deprecated and it will be disabled in the near future. Please specify character set in the Content Type header or by using a meta tag (https://developer.mozilla.org/en-US/docs/Glossary/Character_encoding).",
-      translation_note: "Warning displayed to developers that they did not specify character encoding for HTML document, and that auto-detection of specific character set (i.e. ISO-2022-JP) used by the webiste won't be supported in the near futre.",
-      web_features: [
-        "kCharsetAutoDetectionISO2022JP",
-      ],
-      chrome_status_feature: 6576566521561088,
-    },
-    {
       name: "ChromeLoadTimesConnectionInfo",
       message: "`chrome.loadTimes()` is deprecated, instead use standardized API: Navigation Timing 2.",
       translation_note: "This warning occurs when the website attempts to invoke the deprecated `chrome.loadTimes().connectionInfo` API.",

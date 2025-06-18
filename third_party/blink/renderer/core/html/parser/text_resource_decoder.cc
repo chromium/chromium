@@ -28,6 +28,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/html/parser/html_meta_charset_parser.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_encoding_detector.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
@@ -342,14 +343,21 @@ void TextResourceDecoder::AutoDetectEncodingIfAllowed(
   if (DetectTextEncoding(
           base::as_bytes(data), options_.HintEncoding().Utf8().c_str(),
           options_.HintURL(), options_.HintLanguage(), &detected_encoding)) {
-    SetEncoding(detected_encoding, kEncodingFromContentSniffing);
-    if (auto_detected_charset != nullptr &&
-        (options_.GetContentType() ==
-             TextResourceDecoderOptions::kHTMLContent ||
-         options_.GetContentType() ==
-             TextResourceDecoderOptions::kXMLContent)) {
-      *auto_detected_charset = detected_encoding.GetName();
+    if (options_.GetContentType() == TextResourceDecoderOptions::kHTMLContent ||
+        options_.GetContentType() == TextResourceDecoderOptions::kXMLContent) {
+      const AtomicString& charset = detected_encoding.GetName();
+      if (charset == "ISO-2022-JP" &&
+          RuntimeEnabledFeatures::
+              RemoveCharsetAutoDetectionForISO2022JPEnabled()) {
+        // Auto-detection of ISO-2022-JP is disabled: crbug.com/40089450
+        return;
+      }
+
+      if (auto_detected_charset != nullptr) {
+        *auto_detected_charset = charset;
+      }
     }
+    SetEncoding(detected_encoding, kEncodingFromContentSniffing);
   }
   if (detected_encoding != UnknownEncoding()) {
     detection_completed_ = true;
