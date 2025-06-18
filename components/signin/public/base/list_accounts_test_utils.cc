@@ -26,10 +26,14 @@ void SetListAccountsResponseHttpNotFound(
 
 void SetListAccountsResponseWithUnexpectedServiceResponse(
     TestURLLoaderFactory* test_url_loader_factory) {
+  // This value is chosen to be an invalid string so that it fails to parse.
+  const std::string content = "-";
   std::string source = GaiaConstants::kChromeSource;
+
   // Set response for first request that will lead to a one time retry request.
   test_url_loader_factory->AddResponse(
-      GaiaUrls::GetInstance()->ListAccountsURLWithSource(source).spec(), "");
+      GaiaUrls::GetInstance()->ListAccountsURLWithSource(source).spec(),
+      content);
 
   // Seconde request would have the source with the error as a suffix.
   test_url_loader_factory->AddResponse(
@@ -37,7 +41,7 @@ void SetListAccountsResponseWithUnexpectedServiceResponse(
           ->ListAccountsURLWithSource(source +
                                       GaiaConstants::kUnexpectedServiceResponse)
           .spec(),
-      "");
+      content);
 }
 
 void SetListAccountsResponseWithParams(

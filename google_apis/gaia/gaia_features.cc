@@ -10,6 +10,6 @@ namespace gaia::features {
 // response depends on the presence of laf=b64bin parameter in the called url.
 BASE_FEATURE(kListAccountsUsesBinaryFormat,
              "ListAccountsUsesBinaryFormat",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace gaia::features
