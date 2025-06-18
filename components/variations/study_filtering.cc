@@ -139,11 +139,7 @@ bool CheckStudyCountry(const Study::Filter& filter,
 }
 
 bool CheckStudyPlatform(const Study::Filter& filter, Study::Platform platform) {
-  for (int i = 0; i < filter.platform_size(); ++i) {
-    if (filter.platform(i) == platform)
-      return true;
-  }
-  return false;
+  return base::Contains(filter.platform(), platform);
 }
 
 bool CheckStudyLowEndDevice(const Study::Filter& filter,
