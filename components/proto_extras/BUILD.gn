@@ -2,27 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 if (current_toolchain == host_toolchain) {
   executable("proto_extras_plugin") {
     sources = [ "proto_extras_plugin.cc" ]
     deps = [
       "//base",
-      "//third_party/protobuf:protoc_lib",
       "//third_party/protobuf:protoc_cpp",
+      "//third_party/protobuf:protoc_lib",
     ]
   }
 }
 
-component("proto_extras_lib") {
+source_set("proto_extras_lib") {
   public = [ "proto_extras_lib.h" ]
-  sources = [
-    "proto_extras_lib.cc"
-  ]
   public_deps = [
     "//base",
     "//third_party/protobuf:protobuf_lite",
   ]
-  defines = [ "IS_PROTO_EXTRAS_IMPL" ]
+}
+
+if (use_fuzzing_engine_with_lpm) {
+  # Component for protobuf_full support of our serialization, which is required
+  # by proto fuzzers.
+  source_set("protobuf_full_support") {
+    public = [ "protobuf_full_support.h" ]
+    sources = [ "protobuf_full_support.cc" ]
+    public_deps = [
+      ":proto_extras_lib",
+      "//base",
+      "//third_party/protobuf:protobuf_full",
+    ]
+  }
 }
 
 source_set("unit_tests") {

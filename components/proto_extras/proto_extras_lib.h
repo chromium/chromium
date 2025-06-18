@@ -13,39 +13,19 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "third_party/protobuf/src/google/protobuf/message.h"
-#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace google::protobuf {
-class UnknownFieldSet;
+class MessageLite;
 }  // namespace google::protobuf
 
 namespace proto_extras {
 
-COMPONENT_EXPORT(PROTO_EXTRAS) base::DictValue Serialize(
-    const google::protobuf::UnknownFieldSet& unknown_fields);
-
-// Specialization for Message protos, which use the UnknownFieldSet type
-// allowing for more readable serialization.
-template <typename MessageType,
-          typename std::enable_if_t<
-              std::is_base_of<google::protobuf::Message, MessageType>::value,
-              int> = 0>
-void SerializeUnknownFields(const MessageType& message, base::DictValue& dict) {
-  if (message.unknown_fields().empty()) {
-    return;
+// Specialization for MessageLite protos, which always returns a std::string
+// for unknown fields.
+template <typename MessageType>
+  requires requires(MessageType message) {
+    { message.unknown_fields() } -> std::same_as<const std::string&>;
   }
-  dict.Set("unknown_fields", Serialize(message.unknown_fields()));
-}
-
-// Specialization for MessageLite protos. These types don't use the
-// UnknownFieldSet, and instead store all unknown fields in a string of bytes.
-template <
-    typename MessageType,
-    typename std::enable_if<
-        std::is_base_of<google::protobuf::MessageLite, MessageType>::value &&
-            !std::is_base_of<google::protobuf::Message, MessageType>::value,
-        int>::type = 0>
 void SerializeUnknownFields(const MessageType& message, base::DictValue& dict) {
   if (message.unknown_fields().empty()) {
     return;

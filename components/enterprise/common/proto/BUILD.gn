@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import(
-    "//components/proto_extras/proto_extras.gni")
+import("//components/proto_extras/proto_extras.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -29,6 +28,9 @@ proto_extras("connectors_proto_extras") {
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:csd_proto_extras",
   ]
+
+  # The fuzzable_proto_library rule above uses the full protobuf runtime.
+  protobuf_full_support = true
 }
 
 proto_library("dlp_policy_event_proto") {

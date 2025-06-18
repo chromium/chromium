@@ -24,6 +24,9 @@ fuzzable_proto_library("csd_proto") {
 proto_extras("csd_proto_extras") {
   sources = [ "csd.proto" ]
   deps = [ ":csd_proto" ]
+
+  # The fuzzable_proto_library rule above uses the full protobuf runtime.
+  protobuf_full_support = true
 }
 
 proto_library("webui_proto") {
@@ -48,6 +51,9 @@ proto_extras("realtimeapi_proto_extras") {
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:connectors_proto_extras",
   ]
+
+  # The fuzzable_proto_library rule above uses the full protobuf runtime.
+  protobuf_full_support = true
 }
 
 fuzzable_proto_library("client_model_proto") {
