@@ -32,7 +32,6 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/coreml/buffer_content_coreml.h"
 #include "services/webnn/coreml/context_impl_coreml.h"
@@ -587,26 +586,6 @@ void GraphImplCoreml::DidCreateAndBuild(
   std::move(callback).Run(base::WrapUnique(new GraphImplCoreml(
       std::move(receiver), static_cast<ContextImplCoreml*>(context.get()),
       *std::move(result))));
-}
-
-// static
-MLFeatureValue* GraphImplCoreml::CreateMultiArrayFeatureValueFromBytes(
-    MLMultiArrayConstraint* multi_array_constraint,
-    mojo_base::BigBuffer data) {
-  NSError* error;
-  __block mojo_base::BigBuffer captured_data = std::move(data);
-  MLMultiArray* multi_array = [[MLMultiArray alloc]
-      initWithDataPointer:captured_data.data()
-                    shape:multi_array_constraint.shape
-                 dataType:multi_array_constraint.dataType
-                  strides:CalculateStrides(multi_array_constraint)
-              deallocator:^(void* bytes) {
-                mojo_base::BigBuffer destroy_in_block =
-                    std::move(captured_data);
-              }
-                    error:&error];
-  CHECK(!error);
-  return [MLFeatureValue featureValueWithMultiArray:multi_array];
 }
 
 GraphImplCoreml::ScopedModelPath::ScopedModelPath(base::ScopedTempDir file_dir)

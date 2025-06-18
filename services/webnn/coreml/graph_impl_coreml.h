@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
@@ -112,10 +111,6 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
   GraphImplCoreml(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
                   ContextImplCoreml* context,
                   std::unique_ptr<Params> params);
-
-  static MLFeatureValue* CreateMultiArrayFeatureValueFromBytes(
-      MLMultiArrayConstraint* multi_array_constraint,
-      mojo_base::BigBuffer data);
 
   // Compile the CoreML model to a temporary .modelc file.
   static void CreateAndBuildOnBackgroundThread(
