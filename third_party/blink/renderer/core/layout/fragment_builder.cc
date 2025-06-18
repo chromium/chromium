@@ -193,6 +193,14 @@ PhysicalAnchorQuery& FragmentBuilder::EnsureAnchorQuery() {
 
 void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
                                             const LogicalOffset& child_offset) {
+  if (!has_final_size_) {
+    // The container size isn't known yet. It needs to finish layout before
+    // anchors can be propagated, since they are stored in physical coordinates.
+    children_with_size_dependent_propagation_.push_back(
+        LogicalFragmentLink(child, child_offset));
+    return;
+  }
+
   std::optional<PhysicalAnchorQuery::SetOptions> options;
   Element* context = nullptr;
   if (auto* node = child.GetNode()) {
@@ -303,16 +311,7 @@ void FragmentBuilder::PropagateFromFragment(
   if (child.HasAnchorQueryToPropagate()) {
     // This child either is an anchor, or has anchors inside (or both). They are
     // to be propagated as soon as the container size is known.
-    LogicalOffset total_offset = child_offset + relative_offset;
-    if (HasFinalSize()) {
-      // When handling OOFs (after in-flow layout is finished) and an OOF wants
-      // to propagate anchors, it needs to be done right away, since there may
-      // be subsequent OOFs that have queries against those anchors.
-      PropagateChildAnchors(child, total_offset);
-    } else {
-      children_with_size_dependent_propagation_.push_back(
-          LogicalFragmentLink(child, total_offset));
-    }
+    PropagateChildAnchors(child, child_offset + relative_offset);
   }
 
   PropagateStickyDescendants(child);
