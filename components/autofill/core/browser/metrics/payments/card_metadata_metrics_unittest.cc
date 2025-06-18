@@ -1601,6 +1601,103 @@ TEST_P(CardBenefitFormEventMetricsTest,
               0)));
 }
 
+// Tests that when we have one server card with a benefit available and a local
+// card, when we submit the server card with a benefit available, we don't log
+// `kSuggestionWithBenefitSubmittedWithMultipleServerCards`.
+TEST_P(
+    CardBenefitFormEventMetricsTest,
+    Metrics_OneServerCardWithBenefitAndOneLocalCard_DoesNotLogSuggestionWithBenefitSubmittedWithMultipleServerCards) {
+  base::HistogramTester histogram_tester;
+
+  // Add server card with a benefit available.
+  AddBenefitToCard(card());
+
+  // Add local card.
+  CreditCard local_card = test::GetCreditCard();
+  personal_data().payments_data_manager().AddCreditCard(local_card);
+
+  // Simulate submitting the server card with a benefit available.
+  ShowSuggestionsThenSelectAndFillCard(GetCreditCard());
+  SubmitForm(form());
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Benefits",
+      CardBenefitFormEvent::
+          kSuggestionWithBenefitSubmittedWithMultipleServerCards,
+      0);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"Autofill.FormEvents.CreditCard.Benefits.", GetSuffix()}),
+      CardBenefitFormEvent::
+          kSuggestionWithBenefitSubmittedWithMultipleServerCards,
+      0);
+}
+
+// Tests that when we have multiple server cards with one having benefits
+// available, we log `kSuggestionWithBenefitSubmittedWithMultipleServerCards`
+// when the server card with benefits available is submitted.
+TEST_P(
+    CardBenefitFormEventMetricsTest,
+    Metrics_MultipleServerCardsWithOneBenefitAvailable_LogSuggestionWithBenefitSubmittedWithMultipleServerCards) {
+  base::HistogramTester histogram_tester;
+
+  // Add server card with benefit available.
+  AddBenefitToCard(card());
+
+  // Add a server card without a benefit available.
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      test::GetMaskedServerCard2());
+
+  // Simulate submitting the server card with a benefit available.
+  ShowSuggestionsThenSelectAndFillCard(GetCreditCard());
+  SubmitForm(form());
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Benefits",
+      CardBenefitFormEvent::
+          kSuggestionWithBenefitSubmittedWithMultipleServerCards,
+      1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"Autofill.FormEvents.CreditCard.Benefits.", GetSuffix()}),
+      CardBenefitFormEvent::
+          kSuggestionWithBenefitSubmittedWithMultipleServerCards,
+      1);
+}
+
+// Tests that when we have multiple server cards without any benefits available,
+// after submitting any server card,
+// `kSuggestionWithBenefitSubmittedWithMultipleServerCards` will not be logged.
+TEST_P(
+    CardBenefitFormEventMetricsTest,
+    Metrics_MultipleServerCardsWithoutBenefitsAvailable_DoesNotLogSuggestionWithBenefitSubmittedWithMultipleServerCards) {
+  base::HistogramTester histogram_tester;
+
+  // Add a server card without a benefit available.
+  CreditCard server_card_1 = test::GetMaskedServerCard();
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      server_card_1);
+
+  // Add another server card without a benefit available.
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      test::GetMaskedServerCard2());
+
+  // Simulate submitting the server card without a benefit available.
+  ShowSuggestionsThenSelectAndFillCard(
+      personal_data().payments_data_manager().GetCreditCardByGUID(
+          server_card_1.guid()));
+  SubmitForm(form());
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Benefits",
+      CardBenefitFormEvent::
+          kSuggestionWithBenefitSubmittedWithMultipleServerCards,
+      0);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"Autofill.FormEvents.CreditCard.Benefits.", GetSuffix()}),
+      CardBenefitFormEvent::
+          kSuggestionWithBenefitSubmittedWithMultipleServerCards,
+      0);
+}
+
 class CardBenefitFormEventMetricsInvalidBenefitSourceTest
     : public AutofillMetricsBaseTest,
       public testing::Test {
@@ -1628,6 +1725,18 @@ class CardBenefitFormEventMetricsInvalidBenefitSourceTest
 
   // Simulate selecting a card from a list of suggestions.
   void ShowSuggestionsAndSelectCard(const CreditCard* card) {
+    ShowCardSuggestions();
+    autofill_manager().FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, form(),
+        form().fields()[credit_card_number_field_index()].global_id(), card,
+        AutofillTriggerSource::kPopup);
+  }
+
+  // Simulating selecting and filling the given `card` from a list of
+  // suggestions.
+  void ShowSuggestionsThenSelectAndFillCard(const CreditCard* card) {
+    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+        .WillOnce(base::test::RunOnceCallback<1>(*card));
     ShowCardSuggestions();
     autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form(),
@@ -1675,11 +1784,10 @@ class CardBenefitFormEventMetricsInvalidBenefitSourceTest
 
 // Tests that when we have multiple server cards with one having an invalid
 // benefit source, when the server card with an invalid benefit source is
-// selected, `kSuggestionWithBenefitSelectedWithMultipleServerCards` will not be
-// logged.
+// selected, no multiple server card metrics will be logged.
 TEST_F(
     CardBenefitFormEventMetricsInvalidBenefitSourceTest,
-    Metrics_MultipleServerCardsWithOneInvalidBenefitSource_DoesNotLogSuggestionWithBenefitSelectedWithMultipleServerCards) {
+    Metrics_MultipleServerCardsWithOneInvalidBenefitSource_DoesNotLogAnyMultipleServerCardMetrics) {
   base::HistogramTester histogram_tester;
 
   // Add a server card with an invalid benefit source.
@@ -1693,21 +1801,17 @@ TEST_F(
   personal_data().test_payments_data_manager().AddServerCreditCard(
       test::GetMaskedServerCard2());
 
-  // Simulate selecting a server card with an invalid benefit source.
-  ShowSuggestionsAndSelectCard(
+  // Simulate submitting the server card with an invalid benefit source.
+  ShowSuggestionsThenSelectAndFillCard(
       personal_data().payments_data_manager().GetCreditCardByGUID(
           server_card_1.guid()));
+  SubmitForm(form());
 
-  histogram_tester.ExpectBucketCount(
-      "Autofill.FormEvents.CreditCard.Benefits",
-      CardBenefitFormEvent::
-          kSuggestionWithBenefitSelectedWithMultipleServerCards,
-      0);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester.ExpectTotalCount("Autofill.FormEvents.CreditCard.Benefits",
+                                    0);
+  histogram_tester.ExpectTotalCount(
       base::StrCat({"Autofill.FormEvents.CreditCard.Benefits.",
                     GetCardBenefitSourceSuffix("UnknownSource")}),
-      CardBenefitFormEvent::
-          kSuggestionWithBenefitSelectedWithMultipleServerCards,
       0);
 }
 

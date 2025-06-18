@@ -80,7 +80,32 @@ enum class CardBenefitFormEvent {
   // TODO(crbug.com/417323667): "5" is reserved for
   // `kSuggestionWithoutBenefitSelectedWithMultipleServerCards`.
 
-  kMaxValue = kSuggestionWithBenefitSelectedWithMultipleServerCards
+  // TODO(crbug.com/417323667): "6" is reserved for
+  // `kSuggestionWithBenefitFilled`.
+
+  // TODO(crbug.com/417323667): "7" is reserved for
+  // `kSuggestionWithoutBenefitFilled`.
+
+  // TODO(crbug.com/417323667): "8" is reserved for
+  // `kSuggestionWithBenefitFilledWithMultipleServerCards`.
+
+  // TODO(crbug.com/417323667): "9" is reserved for
+  // `kSuggestionWithoutBenefitFilledWithMultipleServerCards`.
+
+  // TODO(crbug.com/417323667): "10" is reserved for
+  // `kSuggestionWithBenefitSubmitted`.
+
+  // TODO(crbug.com/417323667): "11" is reserved for
+  // `kSuggestionWithoutBenefitSubmitted`.
+
+  // A suggestion of a masked server card with a benefit available was submitted
+  // when the user had two or more server cards.
+  kSuggestionWithBenefitSubmittedWithMultipleServerCards = 12,
+
+  // TODO(crbug.com/417323667): "13" is reserved for
+  // `kSuggestionWithoutBenefitSubmittedWithMultipleServerCards`.
+
+  kMaxValue = kSuggestionWithBenefitSubmittedWithMultipleServerCards
 };
 
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:CardBenefitFormEvent)
