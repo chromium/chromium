@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/animation/interpolable_dynamic_range_limit.h"
 #include "third_party/blink/renderer/core/animation/length_units_checker.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/css/css_dynamic_range_limit_mix_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -63,11 +64,14 @@ InterpolationValue CSSDynamicRangeLimitInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
   if (auto* mix_value =
           DynamicTo<cssvalue::CSSDynamicRangeLimitMixValue>(value)) {
     CSSPrimitiveValue::LengthTypeFlags types;
     for (const CSSPrimitiveValue* primitive_value : mix_value->Percentages()) {
+      if (primitive_value->IsElementDependent()) {
+        conversion_checkers.push_back(
+            TreeCountingChecker::Create(state.CssToLengthConversionData()));
+      }
       primitive_value->AccumulateLengthUnitTypes(types);
       if (InterpolationType::ConversionChecker* length_units_checker =
               LengthUnitsChecker::MaybeCreate(types, state)) {
