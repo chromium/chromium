@@ -145,6 +145,7 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
     _confirmationButtonColor = [UIColor colorNamed:kBlue100Color];
     _confirmationCheckmarkColor = [UIColor colorNamed:kBlue700Color];
     _imageBackgroundColor = [UIColor colorNamed:kBackgroundColor];
+    _mainBackgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   }
   return self;
 }
@@ -152,7 +153,7 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  self.view.backgroundColor = self.mainBackgroundColor;
 
   if (self.hasNavigationBar) {
     self.navigationBar = [self createNavigationBar];
@@ -520,6 +521,13 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   return height;
 }
 
+- (void)scrollToBottom {
+  CGFloat scrollLimit = self.scrollView.contentSize.height -
+                        self.scrollView.bounds.size.height +
+                        self.scrollView.contentInset.bottom;
+  [self.scrollView setContentOffset:CGPointMake(0, scrollLimit) animated:YES];
+}
+
 #pragma mark - Private
 
 - (CGFloat)detentForPreferredHeightInContext:
@@ -588,7 +596,7 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   UINavigationBar* navigationBar = [[UINavigationBar alloc] init];
   navigationBar.translucent = NO;
   [navigationBar setShadowImage:[[UIImage alloc] init]];
-  [navigationBar setBarTintColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+  [navigationBar setBarTintColor:self.mainBackgroundColor];
 
   UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
   if (self.helpButtonAvailable) {

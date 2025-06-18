@@ -19,6 +19,10 @@
 // controller.
 @interface ConfirmationAlertViewController : UIViewController
 
+// The background color to apply to the main view. If needed, must be set before
+// the view is loaded.
+@property(nonatomic, copy) UIColor* mainBackgroundColor;
+
 // The navigation bar title view. Nil if not needed. If needed, must be set
 // before the view is loaded.
 @property(nonatomic, strong) UIView* titleView;
@@ -223,6 +227,9 @@
 
 // Calculates the preferred height of the content.
 - (CGFloat)preferredHeightForContent;
+
+// Scrolls the view to the end.
+- (void)scrollToBottom;
 
 @end
 
