@@ -165,24 +165,6 @@ bool GlicEnabling::ShouldShowSettingsPage(Profile* profile) {
 }
 
 void GlicEnabling::OnGlicSettingsPolicyChanged() {
-  glic::prefs::SettingsPolicyState updated_gemini_settings_value =
-      glic::prefs::SettingsPolicyState{
-          profile_->GetPrefs()->GetInteger(::prefs::kGeminiSettings)};
-
-  // If the policy changed from either not set or Disabled to Enabled, trigger a
-  // rpc fetch to update the possible user status change sooner.
-  if ((!cached_gemini_settings_value_.has_value() ||
-       cached_gemini_settings_value_.value() ==
-           glic::prefs::SettingsPolicyState::kDisabled) &&
-      updated_gemini_settings_value ==
-          (glic::prefs::SettingsPolicyState::kEnabled)) {
-    if (glic_user_status_fetcher_) {
-      glic_user_status_fetcher_->UpdateUserStatus();
-    }
-  }
-  // Update the stored value for the next comparison.
-  cached_gemini_settings_value_ = updated_gemini_settings_value;
-
   // Update the overall enabled status as the policy has changed.
   UpdateEnabledStatus();
 }
@@ -215,8 +197,6 @@ GlicEnabling::GlicEnabling(Profile* profile,
     glic_user_status_fetcher_ = std::make_unique<GlicUserStatusFetcher>(
         profile_, base::BindRepeating(&GlicEnabling::UpdateEnabledStatus,
                                       base::Unretained(this)));
-    cached_gemini_settings_value_ = glic::prefs::SettingsPolicyState{
-        profile_->GetPrefs()->GetInteger(::prefs::kGeminiSettings)};
   }
 }
 GlicEnabling::~GlicEnabling() = default;
@@ -244,33 +224,9 @@ base::CallbackListSubscription GlicEnabling::RegisterOnShowSettingsPageChanged(
   return show_settings_page_changed_callback_list_.Add(std::move(callback));
 }
 
-void GlicEnabling::UpdateUserStatus(
-    const signin::PrimaryAccountChangeEvent& event_details) {
-  if (!glic_user_status_fetcher_) {
-    return;
-  }
-
-  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
-      if (glic_user_status_fetcher_) {
-        glic_user_status_fetcher_->UpdateUserStatus();
-      }
-      break;
-    // Ignore until primary account is set.
-    case signin::PrimaryAccountChangeEvent::Type::kNone:
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      if (glic_user_status_fetcher_) {
-        glic_user_status_fetcher_->InvalidateCachedStatus();
-        glic_user_status_fetcher_->CancelUserStatusUpdateIfNeeded();
-      }
-      break;
-  }
-}
 void GlicEnabling::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   UpdateEnabledStatus();
-  UpdateUserStatus(event_details);
 }
 
 void GlicEnabling::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
@@ -283,16 +239,6 @@ void GlicEnabling::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
 
 void GlicEnabling::OnRefreshTokensLoaded() {
   UpdateEnabledStatus();
-}
-
-// It happens that when the request is sent upon sign-in, the refresh token is
-// not available yet, the request would hence be cancelled. In such cases, we
-// re-send the request when refresh token becomes available.
-void GlicEnabling::OnRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info) {
-  if (glic_user_status_fetcher_) {
-    glic_user_status_fetcher_->UpdateUserStatusIfNeeded();
-  }
 }
 
 void GlicEnabling::OnRefreshTokenRemovedForAccount(
@@ -315,17 +261,6 @@ void GlicEnabling::OnErrorStateOfRefreshTokenUpdatedForAccount(
     return;
   }
   UpdateEnabledStatus();
-
-  if (glic_user_status_fetcher_) {
-    glic_user_status_fetcher_->CancelUserStatusUpdateIfNeeded();
-  }
-}
-
-void GlicEnabling::OnIdentityManagerShutdown(
-    signin::IdentityManager* identity_manager) {
-  if (glic_user_status_fetcher_) {
-    glic_user_status_fetcher_->CancelUserStatusUpdateIfNeeded();
-  }
 }
 
 void GlicEnabling::UpdateEnabledStatus() {

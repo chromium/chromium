@@ -58,6 +58,7 @@ struct TestAccount {
 TestAccount nonEnterpriseAccount = {"foo@testbar.com", ""};
 TestAccount enterpriseAccount = {"foo@testenterprise.com",
                                  "testenterprise.com"};
+TestAccount googleDotComAccount = {"foo@google.com", "google.com"};
 
 class GlicUserStatusBrowserTest : public InProcessBrowserTest {
  protected:
@@ -446,6 +447,125 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   std::optional<base::Value::Dict> cached_dict = GetCachedStatusDict();
   EXPECT_EQ(cached_dict->FindInt(kUserStatus).value_or(-1),
             UserStatusCode::DISABLED_OTHER);
+  EXPECT_EQ(*cached_dict->FindString(kAccountId), GetGaiaIdHashBase64());
+
+  // Verify GlicEnabling status - Should be disabled by this status
+  EXPECT_FALSE(IsGlicEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicUserStatusBrowserTest,
+    EnterpriseSignInDisabledButManagedStatusNotImmediatelyKnown) {
+  RegisterUserStatusHandler(
+      net::HTTP_OK,
+      R"({"isGlicEnabled": false, "isAccessDeniedByAdmin": true})");
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  SetGlicUserStatusUrlForTest();
+
+  identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
+  AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
+      enterpriseAccount.email, signin::ConsentLevel::kSync);
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_use_model_execution_features(true);
+  identity_test_env_->UpdateAccountInfoForAccount(account_info);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetCachedStatusDict().has_value());
+
+  // Only now, after the fetch would have happened, does the information about
+  // the account's managed status become available. This should cause an RPC
+  // to be sent.
+  SimulateSuccessfulFetchOfAccountInfo(&enterpriseAccount, &account_info);
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  // Verify Prefs
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetCachedStatusDict().has_value(); }));
+
+  std::optional<base::Value::Dict> cached_dict = GetCachedStatusDict();
+  EXPECT_EQ(cached_dict->FindInt(kUserStatus).value_or(-1),
+            UserStatusCode::DISABLED_BY_ADMIN);
+  EXPECT_EQ(*cached_dict->FindString(kAccountId), GetGaiaIdHashBase64());
+
+  // Verify GlicEnabling status - Should be disabled by this status
+  EXPECT_FALSE(IsGlicEnabled());
+}
+
+// It happens that google.com accounts are always considered enterprise
+// accounts, even before extended account info is available.
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
+                       EnterpriseSignInDisabledByAdminGoogleDotCom) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  RegisterUserStatusHandler(
+      net::HTTP_OK,
+      R"({"isGlicEnabled": false, "isAccessDeniedByAdmin": true})");
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  SetGlicUserStatusUrlForTest();
+
+  SimulatePrimaryAccountChangedSignIn(&googleDotComAccount);
+
+  // Verify Prefs
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetCachedStatusDict().has_value(); }));
+
+  std::optional<base::Value::Dict> cached_dict = GetCachedStatusDict();
+  EXPECT_EQ(cached_dict->FindInt(kUserStatus).value_or(-1),
+            UserStatusCode::DISABLED_BY_ADMIN);
+  EXPECT_EQ(*cached_dict->FindString(kAccountId), GetGaiaIdHashBase64());
+
+  // Verify GlicEnabling status - Should be disabled by this status
+  EXPECT_FALSE(IsGlicEnabled());
+}
+
+// This ensures that the check using the policy management service still works,
+// until/unless we need to switch back to it.
+class GlicUserStatusBrowserTestWithPolicyManagementService
+    : public GlicUserStatusBrowserTest {
+ protected:
+  GlicUserStatusBrowserTestWithPolicyManagementService() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicUserStatusCheck,
+        {{features::kGlicUserStatusEnterpriseCheckStrategy.name, "policy"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTestWithPolicyManagementService,
+                       EnterpriseSignInDisabledByAdmin) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  RegisterUserStatusHandler(
+      net::HTTP_OK,
+      R"({"isGlicEnabled": false, "isAccessDeniedByAdmin": true})");
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  SetGlicUserStatusUrlForTest();
+
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+
+  // Verify Prefs
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetCachedStatusDict().has_value(); }));
+
+  std::optional<base::Value::Dict> cached_dict = GetCachedStatusDict();
+  EXPECT_EQ(cached_dict->FindInt(kUserStatus).value_or(-1),
+            UserStatusCode::DISABLED_BY_ADMIN);
   EXPECT_EQ(*cached_dict->FindString(kAccountId), GetGaiaIdHashBase64());
 
   // Verify GlicEnabling status - Should be disabled by this status

@@ -245,6 +245,16 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 // sample from the chosen deviation. The value should be less than 1.
 extern const base::FeatureParam<double> kGlicUserStatusRequestDelayJitter;
 
+enum class GlicEnterpriseCheckStrategy {
+  // Use ManagementService to check if the account is managed.
+  kPolicy,
+  // Use AccountManagedStatusFinder to check if the account is managed.
+  kManaged,
+};
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<GlicEnterpriseCheckStrategy>
+    kGlicUserStatusEnterpriseCheckStrategy;
+
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicFreURLConfig);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kGlicFreURL;

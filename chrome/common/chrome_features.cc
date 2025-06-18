@@ -434,6 +434,19 @@ BASE_FEATURE_PARAM(double,
                    &kGlicUserStatusCheck,
                    "glic-user-status-request-delay-jitter",
                    0.005);
+
+constexpr base::FeatureParam<GlicEnterpriseCheckStrategy>::Option
+    kGlicEnterpriseCheckStrategyOptions[] = {
+        {GlicEnterpriseCheckStrategy::kPolicy, "policy"},
+        {GlicEnterpriseCheckStrategy::kManaged, "managed"},
+};
+BASE_FEATURE_ENUM_PARAM(GlicEnterpriseCheckStrategy,
+                        kGlicUserStatusEnterpriseCheckStrategy,
+                        &kGlicUserStatusCheck,
+                        "glic-user-status-enterprise-check-strategy",
+                        GlicEnterpriseCheckStrategy::kManaged,
+                        &kGlicEnterpriseCheckStrategyOptions);
+
 BASE_FEATURE(kGlicFreURLConfig,
              "GlicFreURLConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);

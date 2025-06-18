@@ -11,11 +11,17 @@
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace glic {
+
+namespace prefs {
+enum class SettingsPolicyState;
+}
 
 // This class, GlicUserStatusFetcher, is responsible for asynchronously fetching
 // the Glic user status from a Google-owned API. The response is processed in a
@@ -56,15 +62,14 @@ namespace glic {
 // system clock errors could lead to unexpected timing of the status updates and
 // potentially affect the QPS too. However, we expect it is only minor system
 // clock adjustment if any.
-class GlicUserStatusFetcher {
+class GlicUserStatusFetcher : public signin::IdentityManager::Observer {
  public:
   explicit GlicUserStatusFetcher(Profile* profile,
                                  base::RepeatingClosure callback);
-  ~GlicUserStatusFetcher();
+  ~GlicUserStatusFetcher() override;
 
   static std::optional<CachedUserStatus> GetCachedUserStatus(Profile* profile);
 
-  bool IsEnterpriseAccount();
   void InvalidateCachedStatus();
   void UpdateUserStatus();
   void UpdateUserStatusIfNeeded();
@@ -77,10 +82,44 @@ class GlicUserStatusFetcher {
   static std::optional<signin::GaiaIdHash> GetGaiaIdHashForPrimaryAccount(
       Profile* profile);
 
+  // Called when the account managed status is found, if it was not available
+  // when `UpdateUserStatus` was called.
+  void OnAccountManagedStatusFound();
+
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
+
+  // Called when the Gemini settings pref changes.
+  void OnGeminiSettingsChanged();
+
   void ProcessResponse(const std::string& account_id_hash,
                        CachedUserStatus user_status);
 
+  // If true, the user status update could not proceed because the refresh token
+  // was not yet available, and it should be retried when it becomes available.
   bool is_user_status_waiting_for_refresh_token_ = false;
+
+  // Stores the previous value of `prefs::kGeminiSettings` to detect
+  // transitions.
+  glic::prefs::SettingsPolicyState cached_gemini_settings_value_;
+
+  // Used to find the account managed status of the primary account.
+  // A finder will exist only if the status is pending.
+  std::unique_ptr<signin::AccountManagedStatusFinder>
+      account_managed_status_finder_;
+  signin::AccountManagedStatusFinderOutcome account_managed_status_ =
+      signin::AccountManagedStatusFinderOutcome::kPending;
+
   raw_ptr<Profile> profile_;
   const base::RepeatingClosure callback_;
   GURL endpoint_;
@@ -88,6 +127,11 @@ class GlicUserStatusFetcher {
   base::WallClockTimer refresh_status_timer_;
   std::unique_ptr<google_apis::RequestSender> request_sender_;
   base::OnceClosure cancel_closure_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<GlicUserStatusFetcher> weak_ptr_factory_{this};
 };
