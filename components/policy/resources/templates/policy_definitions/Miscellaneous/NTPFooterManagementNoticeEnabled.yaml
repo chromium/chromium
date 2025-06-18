@@ -10,8 +10,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome.*
+supported_on:
+- chrome.*:139-
 items:
 - caption: Enable management notice on NTP Footer
   value: true
