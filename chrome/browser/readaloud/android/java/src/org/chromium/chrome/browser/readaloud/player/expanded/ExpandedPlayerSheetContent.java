@@ -259,7 +259,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
       if (playbackMode == PlaybackMode.OVERVIEW) {
             mIsModeActive = true;
             mModeSelectorButton.setSelected(true);
-            mModeSelectorButton.setContentDescription(mContext.getString(R.string.readaloud_playback_mode_selector_overview));
+            mModeSelectorButton.setContentDescription(mContext.getString(R.string.readaloud_playback_mode_selector_classic));
             chromeNowPlaying.setText(
                     mContext.getString(R.string.readaloud_chrome_now_playing_audio_overview));
             if (ReadAloudFeatures.isAudioOverviewsFeedbackAllowed()) {
@@ -271,7 +271,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         } else {
             mIsModeActive = false;
             mModeSelectorButton.setSelected(false);
-            mModeSelectorButton.setContentDescription(mContext.getString(R.string.readaloud_playback_mode_selector_classic));
+            mModeSelectorButton.setContentDescription(mContext.getString(R.string.readaloud_playback_mode_selector_overview));
             chromeNowPlaying.setText(mContext.getString(R.string.readaloud_chrome_now_playing));
             hideFeedbackButtons();
             showMoreOptions();
