@@ -23494,7 +23494,7 @@ INSTANTIATE_TEST_SUITE_P(
     ValidateCommitOriginTest,
     testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
                      testing::Bool()),
-    ValidateCommitOriginTest::DescribeParams);
+    NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(
     All,
     LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
