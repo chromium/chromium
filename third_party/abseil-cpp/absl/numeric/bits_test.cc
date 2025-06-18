@@ -151,6 +151,9 @@ TEST(Rotate, Left) {
   EXPECT_EQ(rotl(uint32_t{0x12345678UL}, -4), uint32_t{0x81234567UL});
   EXPECT_EQ(rotl(uint64_t{0x12345678ABCDEF01ULL}, -4),
             uint64_t{0x112345678ABCDEF0ULL});
+
+  EXPECT_EQ(rotl(uint32_t{1234}, std::numeric_limits<int>::min()),
+            uint32_t{1234});
 }
 
 TEST(Rotate, Right) {
@@ -190,6 +193,9 @@ TEST(Rotate, Right) {
   EXPECT_EQ(rotr(uint32_t{0x12345678UL}, -4), uint32_t{0x23456781UL});
   EXPECT_EQ(rotr(uint64_t{0x12345678ABCDEF01ULL}, -4),
             uint64_t{0x2345678ABCDEF011ULL});
+
+  EXPECT_EQ(rotl(uint32_t{1234}, std::numeric_limits<int>::min()),
+            uint32_t{1234});
 }
 
 TEST(Rotate, Symmetry) {

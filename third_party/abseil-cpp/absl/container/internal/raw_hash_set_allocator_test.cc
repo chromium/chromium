@@ -180,7 +180,7 @@ struct Policy {
 
   static slot_type& element(slot_type* slot) { return *slot; }
 
-  template <class Hash>
+  template <class Hash, bool kIsDefault>
   static constexpr HashSlotFn get_hash_slot_fn() {
     return nullptr;
   }

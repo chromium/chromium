@@ -386,7 +386,7 @@ struct ValuePolicy {
         std::forward<F>(f), std::forward<Args>(args)...);
   }
 
-  template <class Hash>
+  template <class Hash, bool kIsDefault>
   static constexpr HashSlotFn get_hash_slot_fn() {
     return nullptr;
   }
@@ -534,7 +534,7 @@ class StringPolicy {
                       PairArgs(std::forward<Args>(args)...));
   }
 
-  template <class Hash>
+  template <class Hash, bool kIsDefault>
   static constexpr HashSlotFn get_hash_slot_fn() {
     return nullptr;
   }
@@ -1131,7 +1131,7 @@ struct DecomposePolicy {
     return std::forward<F>(f)(x, x);
   }
 
-  template <class Hash>
+  template <class Hash, bool kIsDefault>
   static constexpr HashSlotFn get_hash_slot_fn() {
     return nullptr;
   }
@@ -2814,12 +2814,12 @@ TYPED_TEST(RawHashSamplerTest, Sample) {
   // Expect that we sampled at the requested sampling rate of ~1%.
   EXPECT_NEAR((end_size - start_size) / static_cast<double>(tables.size()),
               0.01, 0.005);
-  EXPECT_EQ(observed_checksums.size(), 5);
+  ASSERT_EQ(observed_checksums.size(), 5);
   for (const auto& [_, count] : observed_checksums) {
     EXPECT_NEAR((100 * count) / static_cast<double>(tables.size()), 0.2, 0.05);
   }
 
-  EXPECT_EQ(reservations.size(), 10);
+  ASSERT_EQ(reservations.size(), 10);
   for (const auto& [reservation, count] : reservations) {
     EXPECT_GE(reservation, 0);
     EXPECT_LT(reservation, 100);
@@ -4057,7 +4057,7 @@ TEST(Table, GrowExtremelyLargeTable) {
   CommonFields& common = RawHashSetTestOnlyAccess::GetCommon(t);
   // Set 0 seed so that H1 is always 0.
   common.set_no_seed_for_testing();
-  ASSERT_EQ(H1(t.hash_function()(75), common.seed()), 0);
+  ASSERT_EQ(H1(t.hash_function()(75)), 0);
   uint8_t inserted_till = 210;
   for (uint8_t i = 0; i < inserted_till; ++i) {
     t.insert(i);
@@ -4079,6 +4079,16 @@ TEST(Table, GrowExtremelyLargeTable) {
     }
   }
   EXPECT_EQ(t.capacity(), kTargetCapacity);
+}
+
+// Test that after calling generate_new_seed(), the high bits of the returned
+// seed are non-zero.
+TEST(PerTableSeed, HighBitsAreNonZero) {
+  HashtableSize hs(no_seed_empty_tag_t{});
+  for (int i = 0; i < 100; ++i) {
+    hs.generate_new_seed();
+    ASSERT_GT(hs.seed().seed() >> 16, 0);
+  }
 }
 
 }  // namespace

@@ -12,25 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "absl/hash/internal/low_level_hash.h"
-
 #include <cstddef>
 #include <cstdint>
+#include <string>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/hash/hash.h"
 #include "absl/strings/escaping.h"
+#include "absl/strings/string_view.h"
 
 #define UPDATE_GOLDEN 0
 
 namespace {
 
 TEST(LowLevelHashTest, VerifyGolden) {
-  constexpr size_t kNumGoldenOutputs = 94;
+  constexpr size_t kNumGoldenOutputs = 95;
   static struct {
     absl::string_view base64_data;
     uint64_t seed;
-  } cases[] = {
+  } cases[kNumGoldenOutputs] = {
       {"VprUGNH+5NnNRaORxgH/ySrZFQFDL+4VAodhfBNinmn8cg==",
        uint64_t{0x531858a40bfa7ea1}},
       {"gc1xZaY+q0nPcUvOOnWnT3bqfmT/geth/f7Dm2e/DemMfk4=",
@@ -357,9 +358,12 @@ TEST(LowLevelHashTest, VerifyGolden) {
        uint64_t{0xc9ae5c8759b4877a}},
   };
 
-#if defined(ABSL_IS_BIG_ENDIAN)
+#if defined(ABSL_IS_BIG_ENDIAN) || !defined(ABSL_HAVE_INTRINSIC_INT128) || \
+    UINTPTR_MAX != UINT64_MAX
   constexpr uint64_t kGolden[kNumGoldenOutputs] = {};
-  GTEST_SKIP() << "We only maintain golden data for little endian systems.";
+  GTEST_SKIP()
+      << "We only maintain golden data for little endian 64 bit systems with "
+         "128 bit intristics.";
 #else
   constexpr uint64_t kGolden[kNumGoldenOutputs] = {
       0x669da02f8d009e0f, 0xceb19bf2255445cd, 0x0e746992d6d43a7c,
@@ -393,9 +397,14 @@ TEST(LowLevelHashTest, VerifyGolden) {
       0xb8116dd26cf6feec, 0x7a77a6e4ed0cf081, 0xb71eec2d5a184316,
       0x6fa932f77b4da817, 0x795f79b33909b2c4, 0x1b8755ef6b5eb34e,
       0x2255b72d7d6b2d79, 0xf2bdafafa90bd50a, 0x442a578f02cb1fc8,
-      0xc25aefe55ecf83db,
+      0xc25aefe55ecf83db, 0x3114c056f9c5a676,
   };
 #endif
+
+  auto hash_fn = [](absl::string_view s, uint64_t state) {
+    return absl::hash_internal::CombineLargeContiguousImplOn64BitLengthGt32(
+        reinterpret_cast<const unsigned char*>(s.data()), s.size(), state);
+  };
 
 #if UPDATE_GOLDEN
   (void)kGolden;  // Silence warning.
@@ -403,8 +412,7 @@ TEST(LowLevelHashTest, VerifyGolden) {
     std::string str;
     ASSERT_TRUE(absl::Base64Unescape(cases[i].base64_data, &str));
     ASSERT_GT(str.size(), 32);
-    uint64_t h = absl::hash_internal::LowLevelHashLenGt32(
-        str.data(), str.size(), cases[i].seed);
+    uint64_t h = hash_fn(str, cases[i].seed);
     printf("0x%016" PRIx64 ", ", h);
     if (i % 3 == 2) {
       printf("\n");
@@ -419,9 +427,7 @@ TEST(LowLevelHashTest, VerifyGolden) {
     std::string str;
     ASSERT_TRUE(absl::Base64Unescape(cases[i].base64_data, &str));
     ASSERT_GT(str.size(), 32);
-    EXPECT_EQ(absl::hash_internal::LowLevelHashLenGt32(str.data(), str.size(),
-                                                       cases[i].seed),
-              kGolden[i]);
+    EXPECT_EQ(hash_fn(str, cases[i].seed), kGolden[i]);
   }
 #endif
 }

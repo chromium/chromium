@@ -298,12 +298,11 @@ const T& Detect(int);
 
 // This overload triggers when the call is ambiguous.
 // It means that T is either one from this list or printed as one from this
-// list. Eg an enum that decays to `int` for printing.
+// list. Eg an unscoped enum that decays to `int` for printing.
 // We ask the overload set to give us the type we want to convert it to.
 template <typename T>
-decltype(detect_specialization::operator<<(std::declval<std::ostream&>(),
-                                           std::declval<const T&>()))
-Detect(char);
+decltype(detect_specialization::operator<<(
+    std::declval<std::ostream&>(), std::declval<const T&>())) Detect(char);
 
 // A sink for AbslStringify which redirects everything to a std::ostream.
 class StringifySink {
@@ -344,6 +343,35 @@ template <typename T>
 std::enable_if_t<HasAbslStringify<T>::value,
                  StringifyToStreamWrapper<T>>
 Detect(...);  // Ellipsis has lowest preference when int passed.
+
+// is_streamable is true for types that have an output stream operator<<.
+template <class T, class = void>
+struct is_streamable : std::false_type {};
+
+template <class T>
+struct is_streamable<T, std::void_t<decltype(std::declval<std::ostream&>()
+                                             << std::declval<T>())>>
+    : std::true_type {};
+
+// This overload triggers when T is a scoped enum that has not defined an output
+// stream operator (operator<<) or AbslStringify. It causes the enum value to be
+// converted to a type that can be streamed. For consistency with other enums, a
+// scoped enum backed by a bool or char is converted to its underlying type, and
+// one backed by another integer is converted to (u)int64_t.
+template <typename T>
+std::enable_if_t<
+    std::conjunction_v<
+        std::is_enum<T>, std::negation<std::is_convertible<T, int>>,
+        std::negation<is_streamable<T>>, std::negation<HasAbslStringify<T>>>,
+    std::conditional_t<
+        std::is_same_v<std::underlying_type_t<T>, bool> ||
+            std::is_same_v<std::underlying_type_t<T>, char> ||
+            std::is_same_v<std::underlying_type_t<T>, signed char> ||
+            std::is_same_v<std::underlying_type_t<T>, unsigned char>,
+        std::underlying_type_t<T>,
+        std::conditional_t<std::is_signed_v<std::underlying_type_t<T>>, int64_t,
+                           uint64_t>>>
+Detect(...);
 }  // namespace detect_specialization
 
 template <typename T>

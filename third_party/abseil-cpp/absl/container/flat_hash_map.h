@@ -660,10 +660,10 @@ struct FlatHashMapPolicy {
                                                    std::forward<Args>(args)...);
   }
 
-  template <class Hash>
+  template <class Hash, bool kIsDefault>
   static constexpr HashSlotFn get_hash_slot_fn() {
     return memory_internal::IsLayoutCompatible<K, V>::value
-               ? &TypeErasedApplyToSlotFn<Hash, K>
+               ? &TypeErasedApplyToSlotFn<Hash, K, kIsDefault>
                : nullptr;
   }
 

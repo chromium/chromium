@@ -158,8 +158,6 @@ set(ABSL_INTERNAL_DLL_FILES
   "hash/internal/hash.h"
   "hash/internal/hash.cc"
   "hash/internal/spy_hash_state.h"
-  "hash/internal/low_level_hash.h"
-  "hash/internal/low_level_hash.cc"
   "hash/internal/weakly_mixed_integer.h"
   "log/absl_check.h"
   "log/absl_log.h"

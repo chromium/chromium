@@ -469,6 +469,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::config
+    absl::hash
     absl::memory
     absl::type_traits
     absl::utility
@@ -786,6 +787,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
+    absl::base
     absl::bits
     absl::common_policy_traits
     absl::compressed_tuple

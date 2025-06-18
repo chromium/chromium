@@ -79,7 +79,6 @@
 #include "absl/base/port.h"
 #include "absl/container/fixed_array.h"
 #include "absl/hash/internal/city.h"
-#include "absl/hash/internal/low_level_hash.h"
 #include "absl/hash/internal/weakly_mixed_integer.h"
 #include "absl/meta/type_traits.h"
 #include "absl/numeric/bits.h"
@@ -351,6 +350,15 @@ struct CombineRaw {
   template <typename H>
   H operator()(H state, uint64_t value) const {
     return H::combine_raw(std::move(state), value);
+  }
+};
+
+// For use in `raw_hash_set` to pass a seed to the hash function.
+struct HashWithSeed {
+  template <typename Hasher, typename T>
+  size_t hash(const Hasher& hasher, const T& value, size_t seed) const {
+    // NOLINTNEXTLINE(clang-diagnostic-sign-conversion)
+    return hasher.hash_with_seed(value, seed);
   }
 };
 
@@ -940,6 +948,186 @@ inline uint64_t PrecombineLengthMix(uint64_t state, size_t len) {
   return state + (uint64_t{len} << 24);
 }
 
+ inline constexpr uint64_t kMul = uint64_t{0xdcb22ca68cb134ed};
+
+// Random data taken from the hexadecimal digits of Pi's fractional component.
+// https://en.wikipedia.org/wiki/Nothing-up-my-sleeve_number
+ABSL_CACHELINE_ALIGNED inline constexpr uint64_t kStaticRandomData[] = {
+    0x243f'6a88'85a3'08d3, 0x1319'8a2e'0370'7344, 0xa409'3822'299f'31d0,
+    0x082e'fa98'ec4e'6c89, 0x4528'21e6'38d0'1377,
+};
+
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline uint64_t Mix(uint64_t lhs, uint64_t rhs) {
+  // For 32 bit platforms we are trying to use all 64 lower bits.
+  if constexpr (sizeof(size_t) < 8) {
+    uint64_t m = lhs * rhs;
+    return m ^ (m >> 32);
+  }
+  // absl::uint128 is not an alias or a thin wrapper around the intrinsic.
+  // We use the intrinsic when available to improve performance.
+  // TODO(b/399425325): Try to remove MulType since compiler seem to generate
+  // the same code with just absl::uint128.
+  // See https://gcc.godbolt.org/z/s3hGarraG for details.
+#ifdef ABSL_HAVE_INTRINSIC_INT128
+  using MulType = __uint128_t;
+#else   // ABSL_HAVE_INTRINSIC_INT128
+  using MulType = absl::uint128;
+#endif  // ABSL_HAVE_INTRINSIC_INT128
+  // Though the 128-bit product on AArch64 needs two instructions, it is
+  // still a good balance between speed and hash quality.
+  MulType m = lhs;
+  m *= rhs;
+  return Uint128High64(m) ^ Uint128Low64(m);
+}
+
+// Reads 8 bytes from p.
+inline uint64_t Read8(const unsigned char* p) {
+// Suppress erroneous array bounds errors on GCC.
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+  return absl::base_internal::UnalignedLoad64(p);
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+}
+
+// Reads 9 to 16 bytes from p.
+// The first 8 bytes are in .first, and the rest of the bytes are in .second
+// along with duplicated bytes from .first if len<16.
+inline std::pair<uint64_t, uint64_t> Read9To16(const unsigned char* p,
+                                               size_t len) {
+  return {Read8(p), Read8(p + len - 8)};
+}
+
+// Reads 4 to 8 bytes from p.
+// Bytes are permuted and some input bytes may be duplicated in output.
+inline uint64_t Read4To8(const unsigned char* p, size_t len) {
+  // If `len < 8`, we duplicate bytes. We always put low memory at the end.
+  // E.g., on little endian platforms:
+  // `ABCD` will be read as `ABCDABCD`.
+  // `ABCDE` will be read as `BCDEABCD`.
+  // `ABCDEF` will be read as `CDEFABCD`.
+  // `ABCDEFG` will be read as `DEFGABCD`.
+  // `ABCDEFGH` will be read as `EFGHABCD`.
+  // We also do not care about endianness. On big-endian platforms, bytes will
+  // be permuted differently. We always shift low memory by 32, because that
+  // can be pipelined earlier. Reading high memory requires computing
+  // `p + len - 4`.
+  uint64_t most_significant =
+      static_cast<uint64_t>(absl::base_internal::UnalignedLoad32(p)) << 32;
+  uint64_t least_significant =
+      absl::base_internal::UnalignedLoad32(p + len - 4);
+  return most_significant | least_significant;
+}
+
+// Reads 1 to 3 bytes from p. Some input bytes may be duplicated in output.
+inline uint32_t Read1To3(const unsigned char* p, size_t len) {
+  // The trick used by this implementation is to avoid branches.
+  // We always read three bytes by duplicating.
+  // E.g.,
+  // `A` is read as `AAA`.
+  // `AB` is read as `ABB`.
+  // `ABC` is read as `ABC`.
+  // We always shift `p[0]` so that it can be pipelined better.
+  // Other bytes require extra computation to find indices.
+  uint32_t mem0 = (static_cast<uint32_t>(p[0]) << 16) | p[len - 1];
+  uint32_t mem1 = static_cast<uint32_t>(p[len / 2]) << 8;
+  return mem0 | mem1;
+}
+
+// Slow dispatch path for calls to CombineContiguousImpl with a size argument
+// larger than inlined size. Has the same effect as calling
+// CombineContiguousImpl() repeatedly with the chunk stride size.
+uint64_t CombineLargeContiguousImplOn32BitLengthGt8(const unsigned char* first,
+                                                    size_t len, uint64_t state);
+uint64_t CombineLargeContiguousImplOn64BitLengthGt32(const unsigned char* first,
+                                                     size_t len,
+                                                     uint64_t state);
+
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline uint64_t CombineSmallContiguousImpl(
+    uint64_t state, const unsigned char* first, size_t len) {
+  ABSL_ASSUME(len <= 8);
+  uint64_t v;
+  if (len >= 4) {
+    v = Read4To8(first, len);
+  } else if (len > 0) {
+    v = Read1To3(first, len);
+  } else {
+    // Empty string must modify the state.
+    v = 0x57;
+  }
+  return Mix(state ^ v, kMul);
+}
+
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline uint64_t CombineContiguousImpl9to16(
+    uint64_t state, const unsigned char* first, size_t len) {
+  ABSL_ASSUME(len >= 9);
+  ABSL_ASSUME(len <= 16);
+  // Note: any time one half of the mix function becomes zero it will fail to
+  // incorporate any bits from the other half. However, there is exactly 1 in
+  // 2^64 values for each side that achieve this, and only when the size is
+  // exactly 16 -- for smaller sizes there is an overlapping byte that makes
+  // this impossible unless the seed is *also* incredibly unlucky.
+  auto p = Read9To16(first, len);
+  return Mix(state ^ p.first, kMul ^ p.second);
+}
+
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline uint64_t CombineContiguousImpl17to32(
+    uint64_t state, const unsigned char* first, size_t len) {
+  ABSL_ASSUME(len >= 17);
+  ABSL_ASSUME(len <= 32);
+  // Do two mixes of overlapping 16-byte ranges in parallel to minimize
+  // latency.
+  const uint64_t m0 =
+      Mix(Read8(first) ^ kStaticRandomData[1], Read8(first + 8) ^ state);
+
+  const unsigned char* tail_16b_ptr = first + (len - 16);
+  const uint64_t m1 = Mix(Read8(tail_16b_ptr) ^ kStaticRandomData[3],
+                          Read8(tail_16b_ptr + 8) ^ state);
+  return m0 ^ m1;
+}
+
+// Implementation of the base case for combine_contiguous where we actually
+// mix the bytes into the state.
+// Dispatch to different implementations of combine_contiguous depending
+// on the value of `sizeof(size_t)`.
+inline uint64_t CombineContiguousImpl(
+    uint64_t state, const unsigned char* first, size_t len,
+    std::integral_constant<int, 4> /* sizeof_size_t */) {
+  // For large values we use CityHash, for small ones we use custom low latency
+  // hash.
+  if (len <= 8) {
+    return CombineSmallContiguousImpl(PrecombineLengthMix(state, len), first,
+                                      len);
+  }
+  return CombineLargeContiguousImplOn32BitLengthGt8(first, len, state);
+}
+
+inline uint64_t CombineContiguousImpl(
+    uint64_t state, const unsigned char* first, size_t len,
+    std::integral_constant<int, 8> /* sizeof_size_t */) {
+  // For large values we use LowLevelHash or CityHash depending on the platform,
+  // for small ones we use custom low latency hash.
+  if (len <= 8) {
+    return CombineSmallContiguousImpl(PrecombineLengthMix(state, len), first,
+                                      len);
+  }
+  if (len <= 16) {
+    return CombineContiguousImpl9to16(PrecombineLengthMix(state, len), first,
+                                      len);
+  }
+  if (len <= 32) {
+    return CombineContiguousImpl17to32(PrecombineLengthMix(state, len), first,
+                                       len);
+  }
+  // We must not mix length into the state here because calling
+  // CombineContiguousImpl twice with PiecewiseChunkSize() must be equivalent
+  // to calling CombineLargeContiguousImpl once with 2 * PiecewiseChunkSize().
+  return CombineLargeContiguousImplOn64BitLengthGt32(first, len, state);
+}
+
 #if defined(ABSL_INTERNAL_LEGACY_HASH_NAMESPACE) && \
     ABSL_META_INTERNAL_STD_HASH_SFINAE_FRIENDLY_
 #define ABSL_HASH_INTERNAL_SUPPORT_LEGACY_HASH_ 1
@@ -1044,21 +1232,10 @@ struct is_hashable
     : std::integral_constant<bool, HashSelect::template Apply<T>::value> {};
 
 class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
-  // absl::uint128 is not an alias or a thin wrapper around the intrinsic.
-  // We use the intrinsic when available to improve performance.
-#ifdef ABSL_HAVE_INTRINSIC_INT128
-  using uint128 = __uint128_t;
-#else   // ABSL_HAVE_INTRINSIC_INT128
-  using uint128 = absl::uint128;
-#endif  // ABSL_HAVE_INTRINSIC_INT128
-
   template <typename T>
   using IntegralFastPath =
       conjunction<std::is_integral<T>, is_uniquely_represented<T>,
                   FitsIn64Bits<T>>;
-
-  static constexpr uint64_t kMul =
-   uint64_t{0xdcb22ca68cb134ed};
 
  public:
   // Move only
@@ -1076,20 +1253,25 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
   }
   using MixingHashState::HashStateBase::combine_contiguous;
 
+  template <typename T>
+  static size_t hash(const T& value) {
+    return hash_with_seed(value, Seed());
+  }
+
   // For performance reasons in non-opt mode, we specialize this for
   // integral types.
   // Otherwise we would be instantiating and calling dozens of functions for
   // something that is just one multiplication and a couple xor's.
   // The result should be the same as running the whole algorithm, but faster.
   template <typename T, absl::enable_if_t<IntegralFastPath<T>::value, int> = 0>
-  static size_t hash(T value) {
+  static size_t hash_with_seed(T value, size_t seed) {
     return static_cast<size_t>(
-        Mix(Seed() ^ static_cast<std::make_unsigned_t<T>>(value), kMul));
+        Mix(seed ^ static_cast<std::make_unsigned_t<T>>(value), kMul));
   }
 
   template <typename T, absl::enable_if_t<!IntegralFastPath<T>::value, int> = 0>
-  static size_t hash(const T& value) {
-    return static_cast<size_t>(combine(MixingHashState{}, value).state_);
+  static size_t hash_with_seed(const T& value, size_t seed) {
+    return static_cast<size_t>(combine(MixingHashState{seed}, value).state_);
   }
 
  private:
@@ -1153,151 +1335,6 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
     return MixingHashState::combine(std::move(state), unordered_state);
   }
 
-  // Implementation of the base case for combine_contiguous where we actually
-  // mix the bytes into the state.
-  // Dispatch to different implementations of the combine_contiguous depending
-  // on the value of `sizeof(size_t)`.
-  static uint64_t CombineContiguousImpl(uint64_t state,
-                                        const unsigned char* first, size_t len,
-                                        std::integral_constant<int, 4>
-                                        /* sizeof_size_t */);
-  static uint64_t CombineContiguousImpl(uint64_t state,
-                                        const unsigned char* first, size_t len,
-                                        std::integral_constant<int, 8>
-                                        /* sizeof_size_t */);
-
-  ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t CombineSmallContiguousImpl(
-      uint64_t state, const unsigned char* first, size_t len) {
-    ABSL_ASSUME(len <= 8);
-    uint64_t v;
-    if (len >= 4) {
-      v = Read4To8(first, len);
-    } else if (len > 0) {
-      v = Read1To3(first, len);
-    } else {
-      // Empty string must modify the state.
-      v = 0x57;
-    }
-    return Mix(state ^ v, kMul);
-  }
-
-  ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t CombineContiguousImpl9to16(
-      uint64_t state, const unsigned char* first, size_t len) {
-    ABSL_ASSUME(len >= 9);
-    ABSL_ASSUME(len <= 16);
-    // Note: any time one half of the mix function becomes zero it will fail to
-    // incorporate any bits from the other half. However, there is exactly 1 in
-    // 2^64 values for each side that achieve this, and only when the size is
-    // exactly 16 -- for smaller sizes there is an overlapping byte that makes
-    // this impossible unless the seed is *also* incredibly unlucky.
-    auto p = Read9To16(first, len);
-    return Mix(state ^ p.first, kMul ^ p.second);
-  }
-
-  ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t CombineContiguousImpl17to32(
-      uint64_t state, const unsigned char* first, size_t len) {
-    ABSL_ASSUME(len >= 17);
-    ABSL_ASSUME(len <= 32);
-    // Do two mixes of overlapping 16-byte ranges in parallel to minimize
-    // latency.
-    const uint64_t m0 =
-        Mix(Read8(first) ^ kStaticRandomData[1], Read8(first + 8) ^ state);
-
-    const unsigned char* tail_16b_ptr = first + (len - 16);
-    const uint64_t m1 = Mix(Read8(tail_16b_ptr) ^ kStaticRandomData[3],
-                            Read8(tail_16b_ptr + 8) ^ state);
-    return m0 ^ m1;
-  }
-
-  // Slow dispatch path for calls to CombineContiguousImpl with a size argument
-  // larger than PiecewiseChunkSize().  Has the same effect as calling
-  // CombineContiguousImpl() repeatedly with the chunk stride size.
-  static uint64_t CombineLargeContiguousImpl32(const unsigned char* first,
-                                               size_t len, uint64_t state);
-  static uint64_t CombineLargeContiguousImpl64(const unsigned char* first,
-                                               size_t len, uint64_t state);
-
-  // Reads 9 to 16 bytes from p.
-  // The first 8 bytes are in .first, and the rest of the bytes are in .second
-  // along with duplicated bytes from .first if len<16.
-  static std::pair<uint64_t, uint64_t> Read9To16(const unsigned char* p,
-                                                 size_t len) {
-    return {Read8(p), Read8(p + len - 8)};
-  }
-
-  // Reads 8 bytes from p.
-  static uint64_t Read8(const unsigned char* p) {
-    // Suppress erroneous array bounds errors on GCC.
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
-#endif
-    return absl::base_internal::UnalignedLoad64(p);
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
-  }
-
-  // Reads 4 to 8 bytes from p.
-  // Bytes are permuted and some input bytes may be duplicated in output.
-  static uint64_t Read4To8(const unsigned char* p, size_t len) {
-    // If `len < 8`, we duplicate bytes. We always put low memory at the end.
-    // E.g., on little endian platforms:
-    // `ABCD` will be read as `ABCDABCD`.
-    // `ABCDE` will be read as `BCDEABCD`.
-    // `ABCDEF` will be read as `CDEFABCD`.
-    // `ABCDEFG` will be read as `DEFGABCD`.
-    // `ABCDEFGH` will be read as `EFGHABCD`.
-    // We also do not care about endianness. On big-endian platforms, bytes will
-    // be permuted differently. We always shift low memory by 32, because that
-    // can be pipelined earlier. Reading high memory requires computing
-    // `p + len - 4`.
-    uint64_t most_significant =
-        static_cast<uint64_t>(absl::base_internal::UnalignedLoad32(p)) << 32;
-    uint64_t least_significant =
-        absl::base_internal::UnalignedLoad32(p + len - 4);
-    return most_significant | least_significant;
-  }
-
-  // Reads 1 to 3 bytes from p. Some input bytes may be duplicated in output.
-  static uint32_t Read1To3(const unsigned char* p, size_t len) {
-    // The trick used by this implementation is to avoid branches.
-    // We always read three bytes by duplicating.
-    // E.g.,
-    // `A` is read as `AAA`.
-    // `AB` is read as `ABB`.
-    // `ABC` is read as `ABC`.
-    // We always shift `p[0]` so that it can be pipelined better.
-    // Other bytes require extra computation to find indices.
-    uint32_t mem0 = (static_cast<uint32_t>(p[0]) << 16) | p[len - 1];
-    uint32_t mem1 = static_cast<uint32_t>(p[len / 2]) << 8;
-    return mem0 | mem1;
-  }
-
-  ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t Mix(uint64_t lhs, uint64_t rhs) {
-    // For 32 bit platforms we are trying to use all 64 lower bits.
-    if constexpr (sizeof(size_t) < 8) {
-      uint64_t m = lhs * rhs;
-      return m ^ (m >> 32);
-    }
-    // Though the 128-bit product on AArch64 needs two instructions, it is
-    // still a good balance between speed and hash quality.
-    uint128 m = lhs;
-    m *= rhs;
-    return Uint128High64(m) ^ Uint128Low64(m);
-  }
-
-  ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t Hash64(const unsigned char* data,
-                                                      size_t len,
-                                                      uint64_t state) {
-#ifdef ABSL_HAVE_INTRINSIC_INT128
-    return LowLevelHashLenGt32(data, len, state);
-#else
-    return hash_internal::CityHash64WithSeed(
-        reinterpret_cast<const char*>(data), len, state);
-#endif
-  }
-
   // A non-deterministic seed.
   //
   // The current purpose of this seed is to generate non-deterministic results
@@ -1312,66 +1349,20 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
   //
   // On other platforms this is still going to be non-deterministic but most
   // probably per-build and not per-process.
-  ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t Seed() {
+  ABSL_ATTRIBUTE_ALWAYS_INLINE static size_t Seed() {
 #if (!defined(__clang__) || __clang_major__ > 11) && \
     (!defined(__apple_build_version__) ||            \
      __apple_build_version__ >= 19558921)  // Xcode 12
-    return static_cast<uint64_t>(reinterpret_cast<uintptr_t>(&kSeed));
+    return static_cast<size_t>(reinterpret_cast<uintptr_t>(&kSeed));
 #else
     // Workaround the absence of
     // https://github.com/llvm/llvm-project/commit/bc15bf66dcca76cc06fe71fca35b74dc4d521021.
-    return static_cast<uint64_t>(reinterpret_cast<uintptr_t>(kSeed));
+    return static_cast<size_t>(reinterpret_cast<uintptr_t>(kSeed));
 #endif
   }
 
   uint64_t state_;
 };
-
-inline uint64_t MixingHashState::CombineContiguousImpl(
-    uint64_t state, const unsigned char* first, size_t len,
-    std::integral_constant<int, 4> /* sizeof_size_t */) {
-  // For large values we use CityHash, for small ones we use custom low latency
-  // hash.
-  if (len <= 8) {
-    return CombineSmallContiguousImpl(PrecombineLengthMix(state, len), first,
-                                      len);
-  }
-  if (ABSL_PREDICT_TRUE(len <= PiecewiseChunkSize())) {
-    // TODO(b/417141985): expose and use CityHash32WithSeed.
-    return Mix(PrecombineLengthMix(state, len) ^
-                   hash_internal::CityHash32(
-                       reinterpret_cast<const char*>(first), len),
-               kMul);
-  }
-  return CombineLargeContiguousImpl32(first, len, state);
-}
-
-inline uint64_t MixingHashState::CombineContiguousImpl(
-    uint64_t state, const unsigned char* first, size_t len,
-    std::integral_constant<int, 8> /* sizeof_size_t */) {
-  // For large values we use LowLevelHash or CityHash depending on the platform,
-  // for small ones we use custom low latency hash.
-  if (len <= 8) {
-    return CombineSmallContiguousImpl(PrecombineLengthMix(state, len), first,
-                                      len);
-  }
-  if (len <= 16) {
-    return CombineContiguousImpl9to16(PrecombineLengthMix(state, len), first,
-                                      len);
-  }
-  if (len <= 32) {
-    return CombineContiguousImpl17to32(PrecombineLengthMix(state, len), first,
-                                       len);
-  }
-  if (ABSL_PREDICT_TRUE(len <= PiecewiseChunkSize())) {
-    // Length is mixed into the state inside of Hash64.
-    return Hash64(first, len, state);
-  }
-  // We must not mix length to the state here because calling
-  // CombineContiguousImpl twice with PiecewiseChunkSize() must be equivalent
-  // to calling CombineLargeContiguousImpl once with 2 * PiecewiseChunkSize().
-  return CombineLargeContiguousImpl64(first, len, state);
-}
 
 struct AggregateBarrier {};
 
@@ -1388,6 +1379,13 @@ template <typename T>
 struct HashImpl {
   size_t operator()(const T& value) const {
     return MixingHashState::hash(value);
+  }
+
+ private:
+  friend struct HashWithSeed;
+
+  size_t hash_with_seed(const T& value, size_t seed) const {
+    return MixingHashState::hash_with_seed(value, seed);
   }
 };
 

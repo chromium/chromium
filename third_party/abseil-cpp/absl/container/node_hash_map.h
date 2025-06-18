@@ -663,10 +663,10 @@ class NodeHashMapPolicy
   static Value& value(value_type* elem) { return elem->second; }
   static const Value& value(const value_type* elem) { return elem->second; }
 
-  template <class Hash>
+  template <class Hash, bool kIsDefault>
   static constexpr HashSlotFn get_hash_slot_fn() {
     return memory_internal::IsLayoutCompatible<Key, Value>::value
-               ? &TypeErasedDerefAndApplyToSlotFn<Hash, Key>
+               ? &TypeErasedDerefAndApplyToSlotFn<Hash, Key, kIsDefault>
                : nullptr;
   }
 };

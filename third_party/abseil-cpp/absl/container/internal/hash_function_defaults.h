@@ -79,6 +79,18 @@ struct StringHash {
   size_t operator()(const absl::Cord& v) const {
     return absl::Hash<absl::Cord>{}(v);
   }
+
+ private:
+  friend struct absl::hash_internal::HashWithSeed;
+
+  size_t hash_with_seed(absl::string_view v, size_t seed) const {
+    return absl::hash_internal::HashWithSeed().hash(
+        absl::Hash<absl::string_view>{}, v, seed);
+  }
+  size_t hash_with_seed(const absl::Cord& v, size_t seed) const {
+    return absl::hash_internal::HashWithSeed().hash(absl::Hash<absl::Cord>{}, v,
+                                                    seed);
+  }
 };
 
 struct StringEq {
