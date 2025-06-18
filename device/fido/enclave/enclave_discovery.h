@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "crypto/ec_private_key.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/fido_discovery_base.h"
 #include "services/network/public/mojom/network_context.mojom.h"

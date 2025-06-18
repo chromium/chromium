@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "crypto/ec_signature_creator.h"
 #include "crypto/sha2.h"
 #include "device/fido/enclave/enclave_authenticator.h"
 #include "device/fido/enclave/enclave_protocol_utils.h"

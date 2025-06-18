@@ -18,9 +18,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
-#include "crypto/ec_private_key.h"
-#include "crypto/ec_signature_creator.h"
 #include "crypto/hash.h"
+#include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/large_blob.h"
@@ -565,19 +564,12 @@ std::vector<uint8_t> VirtualFidoDevice::GetAttestationKey() {
   return fido_parsing_utils::Materialize(kAttestationKey);
 }
 
-bool VirtualFidoDevice::Sign(crypto::ECPrivateKey* private_key,
-                             base::span<const uint8_t> sign_buffer,
-                             std::vector<uint8_t>* signature) {
-  auto signer = crypto::ECSignatureCreator::Create(private_key);
-  return signer->Sign(sign_buffer, signature);
-}
-
 std::optional<std::vector<uint8_t>>
 VirtualFidoDevice::GenerateAttestationCertificate(
     bool individual_attestation_requested,
     bool include_transports) const {
-  std::unique_ptr<crypto::ECPrivateKey> attestation_private_key =
-      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(GetAttestationKey());
+  auto attestation_private_key =
+      crypto::keypair::PrivateKey::FromPrivateKeyInfo(GetAttestationKey());
   constexpr uint32_t kAttestationCertSerialNumber = 1;
 
   // https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-authenticator-transports-extension-v1.2-ps-20170411.html#fido-u2f-certificate-transports-extension

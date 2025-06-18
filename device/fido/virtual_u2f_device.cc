@@ -16,7 +16,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/apdu/apdu_command.h"
 #include "components/apdu/apdu_response.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
+#include "crypto/sign.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 
@@ -163,11 +164,11 @@ std::optional<std::vector<uint8_t>> VirtualU2fDevice::DoRegister(
   // Sign with attestation key.
   // Note: Non-deterministic, you need to mock this out if you rely on
   // deterministic behavior.
-  std::vector<uint8_t> sig;
-  std::unique_ptr<crypto::ECPrivateKey> attestation_private_key =
-      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(GetAttestationKey());
-  bool status = Sign(attestation_private_key.get(), sign_buffer, &sig);
-  DCHECK(status);
+  auto key =
+      crypto::keypair::PrivateKey::FromPrivateKeyInfo(GetAttestationKey());
+  CHECK(key && key->IsEc());
+  std::vector<uint8_t> sig = crypto::sign::Sign(
+      crypto::sign::SignatureKind::ECDSA_SHA256, *key, sign_buffer);
 
   // The spec says that the other bits of P1 should be zero. However, Chrome
   // sends Test User Presence (0x03) so we ignore those bits.
