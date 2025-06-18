@@ -62,10 +62,14 @@ void SafariDataImporter::ContinueImport(
 
   // TODO(crbug.com/407587751): Import other types here.
   PostCallback(std::move(bookmarks_callback), /*number_of_imports=*/0);
-  PostCallback(std::move(history_callback), /*number_of_imports=*/0);
   PostCallback(std::move(payment_cards_callback), /*number_of_imports=*/0);
 
-  CloseZipFileArchive();
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&SafariDataImporter::ImportHistory, base::Unretained(this),
+                     std::move(history_callback))
+          .Then(base::BindOnce(&SafariDataImporter::CloseZipFileArchive,
+                               base::Unretained(this))));
 }
 
 // Called after calling "Import" in order to cancel the import process.
@@ -165,14 +169,16 @@ void SafariDataImporter::LaunchImportPasswordsTask(
 
 void SafariDataImporter::LaunchImportPaymentCardsTask(
     ImportCallback payment_cards_callback) {
-  std::string json_data = Unzip(FileType::PaymentCards);
-  if (json_data.empty()) {
+  std::vector<PaymentCardEntry> payment_cards;
+  if (!zip_file_archive_ ||
+      !(*zip_file_archive_)->parse_payment_cards(payment_cards)) {
     PostCallback(std::move(payment_cards_callback), /*number_of_imports=*/0);
   } else {
     task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&SafariDataImporter::ImportPaymentCards,
-                                  base::Unretained(this), std::move(json_data),
-                                  std::move(payment_cards_callback)));
+        FROM_HERE,
+        base::BindOnce(&SafariDataImporter::ImportPaymentCards,
+                       base::Unretained(this), std::move(payment_cards),
+                       std::move(payment_cards_callback)));
   }
 }
 
@@ -199,15 +205,16 @@ void SafariDataImporter::ImportPasswords(
 }
 
 void SafariDataImporter::ImportPaymentCards(
-    std::string json_data,
+    std::vector<PaymentCardEntry> payment_cards,
     ImportCallback payment_cards_callback) {
-  if (json_data.empty()) {
+  if (payment_cards.empty()) {
     PostCallback(std::move(payment_cards_callback), /*number_of_imports=*/0);
     return;
   }
 
-  // TODO(crbug.com/407587751): Import payment cards.
-  PostCallback(std::move(payment_cards_callback), /*number_of_imports=*/0);
+  // TODO(crbug.com/407587751): Convert payment cards to autofill::CreditCard.
+
+  PostCallback(std::move(payment_cards_callback), payment_cards.size());
 }
 
 void SafariDataImporter::ImportBookmarks(std::string html_data,
@@ -224,7 +231,7 @@ void SafariDataImporter::ImportBookmarks(std::string html_data,
 void SafariDataImporter::StartImportHistory(ImportCallback history_callback) {
   // This is an approximation of the number of bytes per URL entry in the
   // history file.
-  static const size_t kBytesPerURL = 200;
+  static const size_t kBytesPerURL = 250;
   size_t file_size = UncompressedFileSize(FileType::History);
   size_t approximate_number_of_urls =
       (file_size > 0) ? (file_size / kBytesPerURL) + 1 : 0;
@@ -233,11 +240,19 @@ void SafariDataImporter::StartImportHistory(ImportCallback history_callback) {
 }
 
 void SafariDataImporter::ImportHistory(ImportCallback history_callback) {
-  // TODO(crbug.com/407587751): Import history.
   // Note: Because the history file can be very large, the parsing will happen
   // entirely in Rust, so that we can stream the unzipper's output to the JSON
   // parser's input.
-  PostCallback(std::move(history_callback), /*number_of_imports=*/0);
+  std::vector<HistoryEntry> history_entries;
+  if (!zip_file_archive_ ||
+      !(*zip_file_archive_)->parse_history(history_entries)) {
+    PostCallback(std::move(history_callback), /*number_of_imports=*/0);
+    return;
+  }
+
+  // TODO(crbug.com/407587751): Save imported history.
+
+  PostCallback(std::move(history_callback), history_entries.size());
 }
 
 }  // namespace user_data_importer

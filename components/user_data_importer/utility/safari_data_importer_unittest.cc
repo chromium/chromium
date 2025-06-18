@@ -185,10 +185,10 @@ class SafariDataImporterTest : public testing::Test {
         base::test::RunUntil([&]() { return passwords_callback_called_; }));
   }
 
-  void ImportPaymentCards(std::string json_data) {
+  void ImportPaymentCards(std::vector<PaymentCardEntry> payment_cards) {
     payment_cards_callback_called_ = false;
     importer_.ImportPaymentCards(
-        std::move(json_data),
+        std::move(payment_cards),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
         base::BindOnce(&SafariDataImporterTest::OnPaymentCardsConsumed,
@@ -310,7 +310,7 @@ TEST_F(SafariDataImporterTest, NoPassword) {
 }
 
 TEST_F(SafariDataImporterTest, NoPaymentCard) {
-  ImportPaymentCards("");
+  ImportPaymentCards(std::vector<PaymentCardEntry>());
 
   ASSERT_EQ(GetNumberOfPaymentCardsImported(), 0);
 }

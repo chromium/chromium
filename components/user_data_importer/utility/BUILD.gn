@@ -29,6 +29,8 @@ rust_static_library("zip_ffi_glue") {
   visibility = [ ":safari_data_importer" ]
   deps = [
     "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serde_json_lenient/v0_2:lib",
     "//third_party/rust/zip/v4:lib",
   ]
 }

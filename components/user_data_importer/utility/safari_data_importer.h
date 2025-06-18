@@ -100,9 +100,9 @@ class SafariDataImporter {
   void ImportPasswords(std::string csv_data,
                        PasswordImportCallback passwords_callback);
 
-  // Attempts to import payment cards by parsing the provided JSON data.
+  // Converts payment_cards to autofill::CreditCard objects.
   // Calls "payment_cards_callback" when done.
-  void ImportPaymentCards(std::string json_data,
+  void ImportPaymentCards(std::vector<PaymentCardEntry> payment_cards,
                           ImportCallback payment_cards_callback);
 
   // Launches the task which will call "ImportBookmarks".
