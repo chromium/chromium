@@ -1544,27 +1544,29 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
         state_.per_commit_explicit_release_callback_) {
       state_.buffer->buffer()->SkipLegacyRelease();
     }
+    // TODO(crbug.com/421207623): Update ProduceTransferableResource to return
+    // optional instead.
+    if (!current_resource_) {
+      current_resource_.emplace();
+    }
+
     if (state_.buffer->buffer()->ProduceTransferableResource(
             resource_manager, std::move(state_.acquire_fence),
             state_.basic_state.only_visible_on_secure_output,
-            &current_resource_, buffer_color_space,
+            &current_resource_.value(), buffer_color_space,
             window_->GetToplevelWindow()->GetProperty(
                 kProtectedNativePixmapQueryDelegate),
             std::move(state_.per_commit_explicit_release_callback_))) {
       current_resource_has_alpha_ =
           FormatHasAlpha(state_.buffer->buffer()->GetFormat());
-      current_resource_.color_space = state_.basic_state.color_space;
+      current_resource_->color_space = state_.basic_state.color_space;
     } else {
-      current_resource_.id = viz::kInvalidResourceId;
-      // Use the buffer's size, so the AppendContentsToFrame() will append
-      // a SolidColorDrawQuad with the buffer's size.
-      current_resource_.size = state_.buffer->size();
+      current_resource_.reset();
       SkColor4f color = state_.buffer->buffer()->GetColor();
       current_resource_has_alpha_ = !color.isOpaque();
     }
   } else {
-    current_resource_.id = viz::kInvalidResourceId;
-    current_resource_.size = gfx::Size();
+    current_resource_.reset();
     current_resource_has_alpha_ = false;
     ImmediateExplicitRelease(
         std::move(state_.per_commit_explicit_release_callback_));
@@ -1765,14 +1767,16 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
   if (IsOccludedByPreviousSqs(render_pass, quad_to_target_transform, quad_rect,
                               msk)) {
     render_pass->damage_rect.Union(gfx::ToEnclosedRect(damage_rect_px));
-    if (current_resource_.id) {
-      frame->resource_list.push_back(current_resource_);
+    if (current_resource_) {
+      CHECK(current_resource_->id);
+      frame->resource_list.push_back(*current_resource_);
     }
     UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.Occluded", true);
     return;
   }
 
-  if (current_resource_.id) {
+  if (current_resource_) {
+    CHECK(current_resource_->id);
     gfx::RectF uv_crop(gfx::SizeF(1, 1));
     if (!state_.basic_state.crop.IsEmpty()) {
       // The crop rectangle is a post-transformation rectangle. To get the UV
@@ -1780,7 +1784,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       // pass them through the inverse of the buffer transformation.
       uv_crop = gfx::RectF(state_.basic_state.crop);
       gfx::Size transformed_buffer_size(ToTransformedSize(
-          current_resource_.size, state_.basic_state.buffer_transform));
+          current_resource_->size, state_.basic_state.buffer_transform));
       if (!transformed_buffer_size.IsEmpty()) {
         uv_crop.InvScale(transformed_buffer_size.width(),
                          transformed_buffer_size.height());
@@ -1812,7 +1816,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
           render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
       texture_quad->SetNew(
           quad_state, quad_rect, quad_rect,
-          /* needs_blending=*/!are_contents_opaque, current_resource_.id,
+          /* needs_blending=*/!are_contents_opaque, current_resource_->id,
           uv_crop.origin(), uv_crop.bottom_right(), background_color,
           /* nearest*/ false, state_.basic_state.only_visible_on_secure_output,
           gfx::ProtectedVideoType::kClear);
@@ -1844,7 +1848,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       // Clear handled damage so it will not be added to the |render_pass|.
       damage_rect_px = gfx::RectF();
     }
-    frame->resource_list.push_back(current_resource_);
+    frame->resource_list.push_back(*current_resource_);
   } else if (state_.basic_state.alpha != 0.0f) {
     UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.SolidColorDrawQuad", true);
     viz::SharedQuadState* quad_state =
