@@ -24,20 +24,20 @@ GlicTabIndicatorHelper::GlicTabIndicatorHelper(tabs::TabInterface* tab)
   auto* const service = GlicKeyedServiceFactory::GetGlicKeyedService(
       tab_->GetBrowserWindowInterface()->GetProfile());
 
-  focus_change_subscription_ =
+  subscriptions_.push_back(
       service->sharing_manager().AddFocusedTabChangedCallback(
           base::BindRepeating(&GlicTabIndicatorHelper::OnFocusedTabChanged,
-                              base::Unretained(this)));
-  indicator_change_subscription_ =
+                              base::Unretained(this))));
+  subscriptions_.push_back(
       service->AddContextAccessIndicatorStatusChangedCallback(
           base::BindRepeating(&GlicTabIndicatorHelper::OnIndicatorStatusChanged,
-                              base::Unretained(this)));
+                              base::Unretained(this))));
 
   // TODO(crbug.com/393525654): This code should not be necessary.
-  will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
-      &GlicTabIndicatorHelper::OnTabWillDetach, base::Unretained(this)));
-  did_insert_subscription_ = tab_->RegisterDidInsert(base::BindRepeating(
-      &GlicTabIndicatorHelper::OnTabDidInsert, base::Unretained(this)));
+  subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
+      &GlicTabIndicatorHelper::OnTabWillDetach, base::Unretained(this))));
+  subscriptions_.push_back(tab_->RegisterDidInsert(base::BindRepeating(
+      &GlicTabIndicatorHelper::OnTabDidInsert, base::Unretained(this))));
 }
 
 GlicTabIndicatorHelper::~GlicTabIndicatorHelper() = default;

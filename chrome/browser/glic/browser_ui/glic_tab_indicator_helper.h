@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_TAB_INDICATOR_HELPER_H_
 #define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_TAB_INDICATOR_HELPER_H_
 
+#include <vector>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -51,10 +53,7 @@ class GlicTabIndicatorHelper {
   raw_ptr<tabs::TabInterface> tab_;
   bool tab_is_focused_ = false;
   bool is_detached_ = false;
-  base::CallbackListSubscription focus_change_subscription_;
-  base::CallbackListSubscription indicator_change_subscription_;
-  base::CallbackListSubscription will_detach_subscription_;
-  base::CallbackListSubscription did_insert_subscription_;
+  std::vector<base::CallbackListSubscription> subscriptions_;
 };
 
 }  // namespace glic
