@@ -632,23 +632,6 @@
             ]
         }
     ],
-    "AndroidGridTabSwitcherUpdate": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidThemeModule",
-                        "GridTabSwitcherSurfaceColorUpdate",
-                        "GridTabSwitcherUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidHatsNext": [
         {
             "platforms": [
@@ -966,6 +949,32 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TabStripLayoutOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidThemeModule": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidThemeModule",
+                        "CpaSpecUpdate",
+                        "GridTabSwitcherSurfaceColorUpdate",
+                        "GridTabSwitcherUpdate"
+                    ]
+                },
+                {
+                    "name": "Enabled_Gts",
+                    "enable_features": [
+                        "AndroidThemeModule",
+                        "GridTabSwitcherSurfaceColorUpdate",
+                        "GridTabSwitcherUpdate"
                     ]
                 }
             ]
