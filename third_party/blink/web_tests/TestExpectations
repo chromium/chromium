@@ -9166,3 +9166,6 @@ crbug.com/414257771 [ Mac ] external/wpt/notifications/shownotification.https.wi
 # Gardener 2025-06-16
 crbug.com/424918655 [ Mac ] external/wpt/soft-navigation-heuristics/lcp/tentative/contracted-image.html [ Failure Pass ]
 crbug.com/420596996 [ Win ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/parallel-dispatch.https.any.serviceworker.html?gpu [ Failure Pass ]
+
+# Gardener 2025-06-18
+crbug.com/425936609 external/wpt/resource-timing/tentative/document-initiated.html [ Pass Timeout ]
