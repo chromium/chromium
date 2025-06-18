@@ -44,7 +44,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 
     /* package */ final RelativeLayout mContentView;
     /* package */ final ScrollView mScrollView;
-    /* package */ final ImageView mHeaderImage;
+    /* package */ final ImageView mHeaderIllustration;
     /* package */ final LinearLayout mHeaderLogosRow;
     /* package */ final View mHeaderLogosDivider;
     /* package */ final ImageView mHeaderLogoPrimary;
@@ -61,7 +61,8 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
                         LayoutInflater.from(context)
                                 .inflate(R.layout.secure_payment_confirmation, null);
         mScrollView = mContentView.findViewById(R.id.scroll_view);
-        mHeaderImage = mContentView.findViewById(R.id.secure_payment_confirmation_header_image);
+        mHeaderIllustration =
+                mContentView.findViewById(R.id.secure_payment_confirmation_header_illustration);
         mHeaderLogosRow = mContentView.findViewById(R.id.header_logos_row);
         mHeaderLogosDivider = mContentView.findViewById(R.id.header_logos_divider);
         mHeaderLogoPrimary = mContentView.findViewById(R.id.header_logo_primary);

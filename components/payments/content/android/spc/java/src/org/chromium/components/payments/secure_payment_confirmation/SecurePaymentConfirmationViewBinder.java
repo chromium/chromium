@@ -29,7 +29,7 @@ import java.util.List;
             List<PaymentEntityLogo> logos =
                     model.get(SecurePaymentConfirmationProperties.HEADER_LOGOS);
             if (logos.isEmpty()) {
-                view.mHeaderImage.setVisibility(View.VISIBLE);
+                view.mHeaderIllustration.setVisibility(View.VISIBLE);
                 view.mHeaderLogosRow.setVisibility(View.GONE);
             } else {
                 view.mHeaderLogoPrimary.setImageBitmap(logos.get(0).getIcon());
@@ -50,7 +50,7 @@ import java.util.List;
                 }
 
                 view.mHeaderLogosRow.setVisibility(View.VISIBLE);
-                view.mHeaderImage.setVisibility(View.GONE);
+                view.mHeaderIllustration.setVisibility(View.GONE);
             }
         } else if (SecurePaymentConfirmationProperties.TITLE == propertyKey) {
             view.mTitle.setText(model.get(SecurePaymentConfirmationProperties.TITLE));

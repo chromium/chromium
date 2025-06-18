@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 payments_java_resources = [
+  "//components/payments/content/android/java/res/drawable-night/secure_payment_confirmation_header_illustration.xml",
+  "//components/payments/content/android/java/res/drawable/secure_payment_confirmation_header_illustration.xml",
   "//components/payments/content/android/java/res/layout/payment_handler_content.xml",
   "//components/payments/content/android/java/res/layout/payment_option_edit_icon.xml",
   "//components/payments/content/android/java/res/layout/payment_request.xml",

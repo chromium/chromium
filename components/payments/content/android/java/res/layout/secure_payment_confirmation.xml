@@ -20,7 +20,6 @@ found in the LICENSE file.
       android:paddingVertical="@dimen/secure_payment_confirmation_ui_drag_handle_spacing"
       android:importantForAccessibility="no"
       android:layout_centerHorizontal="true"
-      android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"
       android:src="@drawable/drag_handlebar" />
 
   <ScrollView
@@ -40,22 +39,23 @@ found in the LICENSE file.
 
       <!-- Default header image -->
       <ImageView
-          android:id="@+id/secure_payment_confirmation_header_image"
+          android:id="@+id/secure_payment_confirmation_header_illustration"
           android:layout_height="wrap_content"
           android:layout_width="match_parent"
-          android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"
+          android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_small_padding"
           android:scaleType="centerInside"
           android:importantForAccessibility="no"
-          android:src="@drawable/save_card" />
+          android:src="@drawable/secure_payment_confirmation_header_illustration" />
 
       <!-- Header logos row -->
       <LinearLayout
           android:id="@+id/header_logos_row"
-          android:layout_below="@id/secure_payment_confirmation_header_image"
+          android:layout_below="@id/secure_payment_confirmation_header_illustration"
           android:layout_height="wrap_content"
           android:layout_width="match_parent"
           android:orientation="horizontal"
           android:gravity="center"
+          android:layout_marginTop="@dimen/secure_payment_confirmation_ui_small_padding"
           android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"
           android:visibility="gone">
 

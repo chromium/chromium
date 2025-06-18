@@ -112,15 +112,17 @@ public class SecurePaymentConfirmationViewBinderTest {
 
     @Test
     @SmallTest
-    public void testHeaderImage() {
-        assertEquals(R.id.secure_payment_confirmation_header_image, mView.mHeaderImage.getId());
-        assertEquals(View.VISIBLE, mView.mHeaderImage.getVisibility());
-        assertNotNull(mView.mHeaderImage.getDrawable());
+    public void testHeaderIllustration() {
+        assertEquals(
+                R.id.secure_payment_confirmation_header_illustration,
+                mView.mHeaderIllustration.getId());
+        assertEquals(View.VISIBLE, mView.mHeaderIllustration.getVisibility());
+        assertNotNull(mView.mHeaderIllustration.getDrawable());
         assertEquals(View.GONE, mView.mHeaderLogosRow.getVisibility());
 
         bind(mModelBuilder.with(SecurePaymentConfirmationProperties.HEADER_LOGOS, emptyList()));
 
-        assertEquals(View.VISIBLE, mView.mHeaderImage.getVisibility());
+        assertEquals(View.VISIBLE, mView.mHeaderIllustration.getVisibility());
         assertEquals(View.GONE, mView.mHeaderLogosRow.getVisibility());
     }
 
@@ -148,7 +150,7 @@ public class SecurePaymentConfirmationViewBinderTest {
 
         bind(mModelBuilder.with(SecurePaymentConfirmationProperties.HEADER_LOGOS, headerLogos));
 
-        assertEquals(View.GONE, mView.mHeaderImage.getVisibility());
+        assertEquals(View.GONE, mView.mHeaderIllustration.getVisibility());
         assertEquals(View.VISIBLE, mView.mHeaderLogosRow.getVisibility());
 
         assertEquals(R.id.header_logos_divider, mView.mHeaderLogosDivider.getId());
@@ -185,7 +187,7 @@ public class SecurePaymentConfirmationViewBinderTest {
 
         bind(mModelBuilder.with(SecurePaymentConfirmationProperties.HEADER_LOGOS, headerLogos));
 
-        assertEquals(View.GONE, mView.mHeaderImage.getVisibility());
+        assertEquals(View.GONE, mView.mHeaderIllustration.getVisibility());
         assertEquals(View.VISIBLE, mView.mHeaderLogosRow.getVisibility());
 
         assertEquals(View.GONE, mView.mHeaderLogosDivider.getVisibility());
