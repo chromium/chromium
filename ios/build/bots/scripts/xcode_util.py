@@ -371,7 +371,7 @@ def install(mac_toolchain, xcode_build_version, xcode_app_path, **runtime_args):
     if not runtime_cache_folder or not ios_version:
       raise test_runner_errors.IOSRuntimeHandlingError(
           'Insufficient runtime_args. runtime_cache_folder: %s, ios_version: %s'
-          % s(runtime_cache_folder, ios_version))
+          % (runtime_cache_folder, ios_version))
 
     # Try to install the runtime to it's cache folder. mac_toolchain will test
     # and install only when the runtime doesn't exist in cache.
