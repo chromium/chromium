@@ -309,6 +309,10 @@ class ExtensionService : public ExtensionServiceInterface,
   // other disable reasons associated with them.
   void OnDeveloperModePrefChanged();
 
+  // Logs a warning if --extensions-on-chrome-urls switch is used in Google
+  // Chrome.
+  void LogExtensionsOnChromeUrlsSwitchWarningIfNeeded();
+
   raw_ptr<const base::CommandLine> command_line_ = nullptr;
 
   // The normal profile associated with this ExtensionService.

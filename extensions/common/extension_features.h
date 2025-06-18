@@ -253,6 +253,11 @@ BASE_DECLARE_FEATURE(kDisableDisableExtensionsExceptCommandLineSwitch);
 // Disables loading extensions via the `--load-extension` command line switch.
 BASE_DECLARE_FEATURE(kDisableLoadExtensionCommandLineSwitch);
 
+// Disables the `--extensions-on-chrome-urls` flag's functionality on
+// `chrome://` URLs. Extension can still run on extension URLs using the new
+// flag `--extensions-on-extension-urls` flag.
+BASE_DECLARE_FEATURE(kDisableExtensionsOnChromeUrlsSwitch);
+
 // Changes the chrome.userScript API to be enabled by a per-extension toggle
 // rather than the developer mode toggle on chrome://extensions.
 BASE_DECLARE_FEATURE(kUserScriptUserExtensionToggle);

@@ -365,6 +365,8 @@ void ExtensionService::Init() {
   // rather than running immediately at startup.
   external_provider_manager_->CheckForExternalUpdates();
 
+  LogExtensionsOnChromeUrlsSwitchWarningIfNeeded();
+
   safe_browsing_verdict_handler_.Init();
 
   // Must be called after extensions are loaded.
@@ -946,6 +948,20 @@ void ExtensionService::OnInstalledExtensionsLoaded() {
 
 void ExtensionService::OnDeveloperModePrefChanged() {
   CheckManagementPolicy();
+}
+
+void ExtensionService::LogExtensionsOnChromeUrlsSwitchWarningIfNeeded() {
+  bool allow_on_chrome_urls = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kExtensionsOnChromeURLs);
+
+  if (allow_on_chrome_urls &&
+      base::FeatureList::IsEnabled(
+          extensions_features::kDisableExtensionsOnChromeUrlsSwitch)) {
+    LOG(WARNING) << "--extensions-on-chrome-urls is not allowed in Google "
+                    "Chrome, ignoring. "
+                    "Use --extensions-on-extension-urls instead to allow for "
+                    "extensions to run on extension URLs.";
+  }
 }
 
 }  // namespace extensions

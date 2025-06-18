@@ -4894,6 +4894,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionsOnChromeUrlsName,
      flag_descriptions::kExtensionsOnChromeUrlsDescription, kOsAll,
      SINGLE_VALUE_TYPE(extensions::switches::kExtensionsOnChromeURLs)},
+    {"extensions-on-extension-urls",
+     flag_descriptions::kExtensionsOnExtensionUrlsName,
+     flag_descriptions::kExtensionsOnExtensionUrlsDescription, kOsAll,
+     SINGLE_VALUE_TYPE(extensions::switches::kExtensionsOnExtensionURLs)},
 #endif  // ENABLE_EXTENSIONS
 #if BUILDFLAG(IS_ANDROID)
     {"contextual-search-suppress-short-view",

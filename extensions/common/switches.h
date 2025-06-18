@@ -55,6 +55,11 @@ extern const char kExtensionProcess[];
 // manifest.
 extern const char kExtensionsOnChromeURLs[];
 
+// Enables extensions running scripts on chrome-extension:// URLs.
+// Extensions still need to explicitly request access to chrome-extension://
+// URLs in the manifest.
+extern const char kExtensionsOnExtensionURLs[];
+
 // Comma-separated list of paths to apps to load at startup. The first app in
 // the list will be launched.
 extern const char kLoadApps[];
@@ -114,6 +119,13 @@ extern const char kZeroStatePromoCustomUiChipIph[];
 // presents the user with different collections of extensions to explore,
 // each in a plain text link.
 extern const char kZeroStatePromoCustomUiPlainLinkIph[];
+
+// Checks if extensions are allowed to run on chrome:// URLs.
+bool AreExtensionsOnChromeURLsAllowed();
+
+// Checks if extensions are allowed to run on chrome-extension:// URLs.
+bool AreExtensionsOnExtensionURLsAllowed();
+
 }  // namespace extensions::switches
 
 #endif  // EXTENSIONS_COMMON_SWITCHES_H_

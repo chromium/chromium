@@ -4849,6 +4849,13 @@
     "expiry_milestone": -1
   },
   {
+    "name": "extensions-on-extension-urls",
+    "owners": [ "//extensions/OWNERS" ],
+    // This enables the use of extensions on chrome-extension:// URLs. This is useful for
+    // a11y extensions as well as for debugging.
+    "expiry_milestone": -1
+  },
+  {
     "name": "extensions-toolbar-zero-state-variation",
     "owners": [
       "chrome-web-store-consumer-eng-team@google.com"

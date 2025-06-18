@@ -1211,6 +1211,9 @@ extern const char kExtensionTelemetryForEnterpriseDescription[];
 extern const char kExtensionsOnChromeUrlsName[];
 extern const char kExtensionsOnChromeUrlsDescription[];
 
+extern const char kExtensionsOnExtensionUrlsName[];
+extern const char kExtensionsOnExtensionUrlsDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kFacilitatedPaymentsEnableA2APaymentName[];
 extern const char kFacilitatedPaymentsEnableA2APaymentDescription[];

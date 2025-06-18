@@ -2127,6 +2127,12 @@ const char kExtensionsOnChromeUrlsDescription[] =
     "Enables running extensions on chrome:// URLs, where extensions explicitly "
     "request this permission.";
 
+const char kExtensionsOnExtensionUrlsName[] =
+    "Extensions on chrome-extension:// URLs";
+const char kExtensionsOnExtensionUrlsDescription[] =
+    "Enables running extensions on chrome-extension:// URLs, where extensions "
+    "explicitly request this permission.";
+
 const char kFractionalScrollOffsetsName[] = "Fractional Scroll Offsets";
 const char kFractionalScrollOffsetsDescription[] =
     "Enables fractional scroll offsets inside Blink, exposing non-integer "

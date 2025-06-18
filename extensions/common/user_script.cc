@@ -119,8 +119,7 @@ int UserScript::ValidUserScriptSchemes(bool can_execute_script_everywhere) {
     return URLPattern::SCHEME_ALL;
   }
   int valid_schemes = kValidUserScriptSchemes;
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kExtensionsOnChromeURLs)) {
+  if (!switches::AreExtensionsOnChromeURLsAllowed()) {
     valid_schemes &= ~URLPattern::SCHEME_CHROMEUI;
   }
   return valid_schemes;

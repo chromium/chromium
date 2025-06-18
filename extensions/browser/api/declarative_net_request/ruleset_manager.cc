@@ -516,9 +516,7 @@ bool RulesetManager::ShouldEvaluateRulesetForRequest(
   // switch overrides that restriction.
   // Note: For discussions regarding handling of extension initiated navigations
   //       see https://crbug.com/918137 and https://crbug.com/382670035.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kExtensionsOnChromeURLs) &&
-      request.initiator &&
+  if (!switches::AreExtensionsOnExtensionURLsAllowed() && request.initiator &&
       request.web_request_type != WebRequestResourceType::MAIN_FRAME) {
     // Checking the precursor is necessary here since requests initiated by
     // manifest sandbox pages have an opaque initiator origin, but still

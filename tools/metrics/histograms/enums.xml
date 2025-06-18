@@ -18103,6 +18103,7 @@ from previous Chrome versions.
   <int value="1534561775" label="HeavyAdPrivacyMitigations:disabled"/>
   <int value="1535497541" label="FillingAcrossGroupedSites:disabled"/>
   <int value="1536024579" label="OverscrollHistoryNavigationSetting:enabled"/>
+  <int value="1536337926" label="extensions-on-extension-urls"/>
   <int value="1536568742" label="SyncAndroidPromosWithIllustration:enabled"/>
   <int value="1536921097" label="NavigationMojoResponse:disabled"/>
   <int value="1537685016" label="NtpDriveModuleSegmentation:disabled"/>

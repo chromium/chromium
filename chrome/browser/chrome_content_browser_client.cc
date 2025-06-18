@@ -2931,6 +2931,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         extensions::switches::kDisableExtensionsHttpThrottling,
         extensions::switches::kEnableExperimentalExtensionApis,
         extensions::switches::kExtensionsOnChromeURLs,
+        extensions::switches::kExtensionsOnExtensionURLs,
         extensions::switches::kSetExtensionThrottleTestParams,  // For tests
                                                                 // only.
         extensions::switches::kAllowlistedExtensionID,

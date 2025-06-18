@@ -85,6 +85,7 @@
   "enable-windows-gaming-input-data-fetcher",
   "enable-zero-copy",
   "extensions-on-chrome-urls",
+  "extensions-on-extension-urls",
   "external-navigation-debug-logs",
   "force-color-profile",
   "force-effective-connection-type",

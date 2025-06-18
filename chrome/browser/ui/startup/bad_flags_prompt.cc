@@ -90,8 +90,10 @@ const char* const kBadFlags[] = {
     translate::switches::kTranslateScriptURL,
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    // This flag gives extensions more powers.
+    // These flags enable extensions running scripts on chrome:// and
+    // chrome-extension:// URLs.
     extensions::switches::kExtensionsOnChromeURLs,
+    extensions::switches::kExtensionsOnExtensionURLs,
 #endif
 
 #if BUILDFLAG(IS_LINUX)

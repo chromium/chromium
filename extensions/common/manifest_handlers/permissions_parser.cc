@@ -74,8 +74,7 @@ bool CanSpecifyHostPermission(const Extension* extension,
       return true;
     }
 
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kExtensionsOnChromeURLs)) {
+    if (switches::AreExtensionsOnChromeURLsAllowed()) {
       return true;
     }
 
