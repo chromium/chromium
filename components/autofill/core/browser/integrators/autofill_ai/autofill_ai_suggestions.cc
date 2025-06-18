@@ -43,14 +43,6 @@ namespace autofill {
 namespace {
 
 struct SuggestionWithMetadata {
-  SuggestionWithMetadata(
-      Suggestion suggestion,
-      raw_ref<const EntityInstance> entity,
-      base::flat_map<FieldGlobalId, std::u16string> field_to_value)
-      : suggestion(std::move(suggestion)),
-        entity(entity),
-        field_to_value(std::move(field_to_value)) {}
-
   // A suggestion whose payload is of type `Suggestion::AutofillAiPayload`.
   Suggestion suggestion;
 
@@ -62,21 +54,15 @@ struct SuggestionWithMetadata {
   base::flat_map<FieldGlobalId, std::u16string> field_to_value;
 };
 
-// For each suggestion in `suggestions`, create its label.
-// `labels_for_all_suggestions` contain for each suggestion all the strings that
-// should be concatenated to generate the final label.
 std::vector<Suggestion> AssignLabelsToSuggestions(
-    std::vector<EntityLabel> labels_for_all_suggestions,
+    base::span<const EntityLabel> labels,
     std::vector<Suggestion> suggestions) {
-  CHECK_EQ(labels_for_all_suggestions.size(), suggestions.size());
-
-  size_t suggestion_index = 0;
-  for (Suggestion& suggestion : suggestions) {
-    suggestion.labels.push_back({Suggestion::Text(base::JoinString(
-        labels_for_all_suggestions[suggestion_index], kLabelSeparator))});
-    suggestion_index++;
+  DCHECK_EQ(labels.size(), suggestions.size());
+  for (auto [suggestion, label] : base::zip(suggestions, labels)) {
+    DCHECK(suggestion.labels.empty());
+    suggestion.labels.push_back(
+        {Suggestion::Text(base::JoinString(label, kLabelSeparator))});
   }
-
   return suggestions;
 }
 
@@ -166,10 +152,10 @@ std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
   }
 
   return AssignLabelsToSuggestions(
-      std::move(labels), base::ToVector(std::move(suggestions_with_metadata),
-                                        [](SuggestionWithMetadata& s) {
-                                          return std::move(s).suggestion;
-                                        }));
+      labels, base::ToVector(std::move(suggestions_with_metadata),
+                             [](SuggestionWithMetadata& s) {
+                               return std::move(s).suggestion;
+                             }));
 }
 
 // Returns a suggestion to manage AutofillAi data.
