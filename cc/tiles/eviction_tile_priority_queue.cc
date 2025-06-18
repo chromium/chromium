@@ -12,8 +12,7 @@ namespace {
 
 class EvictionOrderComparator {
  public:
-  explicit EvictionOrderComparator(TreePriority tree_priority)
-      : tree_priority_(tree_priority) {}
+  EvictionOrderComparator() = default;
 
   // Note that in this function, we have to return true if and only if
   // b is strictly lower priority than a.
@@ -25,7 +24,6 @@ class EvictionOrderComparator {
 
     const TilePriority& a_priority = a_tile.priority();
     const TilePriority& b_priority = b_tile.priority();
-    bool prioritize_smoothness = tree_priority_ == SMOOTHNESS_TAKES_PRIORITY;
 
     // If the priority bin is the same but one of the tiles is from a
     // non-drawing layer, then the drawing layer has a higher priority.
@@ -39,25 +37,12 @@ class EvictionOrderComparator {
     if (a_priority.priority_bin != b_priority.priority_bin)
       return b_priority.priority_bin > a_priority.priority_bin;
 
-    // Otherwise if the resolution differs, then the order will be determined by
-    // whether we prioritize low res or not.
+    // Otherwise if the resolution differs, the tile with non-ideal resolution
+    // is lower priority.
     // TODO(vmpstr): Remove this when TilePriority is no longer a member of Tile
     // class but instead produced by the iterators.
     if (b_priority.resolution != a_priority.resolution) {
-      // Non ideal resolution should be sorted higher than other resolutions.
-      if (a_priority.resolution == NON_IDEAL_RESOLUTION)
-        return false;
-
-      if (b_priority.resolution == NON_IDEAL_RESOLUTION)
-        return true;
-
-      if (prioritize_smoothness) {
-        // TODO(crbug.com/418234930): This line is not actually reachable; clean
-        // it up.
-        return false;
-      }
-
-      return a_priority.resolution == HIGH_RESOLUTION;
+      return b_priority.resolution == NON_IDEAL_RESOLUTION;
     }
 
     // Otherwise if the occlusion differs, b is lower priority if it is
@@ -70,9 +55,6 @@ class EvictionOrderComparator {
     // b is lower priorty if it is farther from visible.
     return b_priority.distance_to_visible > a_priority.distance_to_visible;
   }
-
- private:
-  TreePriority tree_priority_;
 };
 
 void CreateTilingSetEvictionQueues(
@@ -90,8 +72,7 @@ void CreateTilingSetEvictionQueues(
     if (!tiling_set_queue->IsEmpty())
       queues->push_back(std::move(tiling_set_queue));
   }
-  std::make_heap(queues->begin(), queues->end(),
-                 EvictionOrderComparator(tree_priority));
+  std::make_heap(queues->begin(), queues->end(), EvictionOrderComparator());
 }
 
 }  // namespace
@@ -128,7 +109,7 @@ void EvictionTilePriorityQueue::Pop() {
 
   auto& next_queues = GetNextQueues();
   std::pop_heap(next_queues.begin(), next_queues.end(),
-                EvictionOrderComparator(tree_priority_));
+                EvictionOrderComparator());
   TilingSetEvictionQueue* queue = next_queues.back().get();
   queue->Pop();
 
@@ -137,7 +118,7 @@ void EvictionTilePriorityQueue::Pop() {
     next_queues.pop_back();
   } else {
     std::push_heap(next_queues.begin(), next_queues.end(),
-                   EvictionOrderComparator(tree_priority_));
+                   EvictionOrderComparator());
   }
 }
 
