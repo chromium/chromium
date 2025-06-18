@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2011-2022 The Rust Project Developers. See the COPYRIGHT
+# Copyright 2011-2025 The Rust Project Developers. See the COPYRIGHT
 # file at the top-level directory of this distribution and at
 # http://rust-lang.org/COPYRIGHT.
 #
@@ -15,14 +15,19 @@
 # - DerivedCoreProperties.txt
 # - EastAsianWidth.txt
 # - HangulSyllableType.txt
+# - LineBreak.txt
 # - NormalizationTest.txt (for tests only)
 # - PropList.txt
 # - ReadMe.txt
 # - UnicodeData.txt
 # - auxiliary/GraphemeBreakProperty.txt
 # - emoji/emoji-data.txt
+# - emoji/emoji-test.txt (for tests only)
 # - emoji/emoji-variation-sequences.txt
+# - extracted/DerivedCombiningClass.txt
 # - extracted/DerivedGeneralCategory.txt
+# - extracted/DerivedJoiningGroup.txt
+# - extracted/DerivedJoiningType.txt
 #
 # Since this should not require frequent updates, we just store this
 # out-of-line and check the generated module into git.
@@ -38,7 +43,7 @@ from collections import defaultdict
 from itertools import batched
 from typing import Callable, Iterable
 
-UNICODE_VERSION = "15.1.0"
+UNICODE_VERSION = "16.0.0"
 """The version of the Unicode data files to download."""
 
 NUM_CODEPOINTS = 0x110000
@@ -170,8 +175,11 @@ class WidthState(enum.IntEnum):
     - 4th bit: whether to set top bit on emoji presentation.
       If this is set but 3rd is not, the width mode is related to zwj sequences
     - 5th from top: whether this is unaffected by ligature-transparent
+      (if set, should also set 3rd and 4th)
     - 6th bit: if 4th is set but this one is not, then this is a ZWJ ligature state
-      where no ZWJ has been encountered yet; encountering one flips this on"""
+      where no ZWJ has been encountered yet; encountering one flips this on
+    - Seventh bit: is VS1 (if CJK) or is VS2 (not CJK)
+    """
 
     # BASIC WIDTHS
 
@@ -259,7 +267,16 @@ class WidthState(enum.IntEnum):
     TAG_A6_END_ZWJ_EMOJI_PRESENTATION = 0b0000_0000_0001_1110
     "(\\uE0061..=\\uE007A){6} \\uE007F \\u200D `Emoji_Presentation`"
 
+    # Kirat Rai
+    KIRAT_RAI_VOWEL_SIGN_E = 0b0000_0000_0010_0000
+    "\\u16D67 (\\u16D67 \\u16D67)+ and canonical equivalents"
+    KIRAT_RAI_VOWEL_SIGN_AI = 0b0000_0000_0010_0001
+    "(\\u16D68)+ and canonical equivalents"
+
     # VARIATION SELECTORS
+
+    VARIATION_SELECTOR_1_OR_2 = 0b0000_0010_0000_0000
+    "\\uFE00 if CJK, or \\uFE01 otherwise"
 
     # Text presentation sequences (not CJK)
     VARIATION_SELECTOR_15 = 0b0100_0000_0000_0000
@@ -356,6 +373,7 @@ class WidthState(enum.IntEnum):
                 | WidthState.COMBINING_LONG_SOLIDUS_OVERLAY
                 | WidthState.VARIATION_SELECTOR_15
                 | WidthState.VARIATION_SELECTOR_16
+                | WidthState.VARIATION_SELECTOR_1_OR_2
             ):
                 return 0
             case (
@@ -429,6 +447,13 @@ def load_east_asian_widths() -> list[EastAsianWidth]:
             # Catch any leftover codepoints and assign them implicit Neutral/narrow width.
             width_map.append(EastAsianWidth.NARROW)
 
+    # Characters with ambiguous line breaking are ambiguous
+    load_property(
+        "LineBreak.txt",
+        "AI",
+        lambda cp: (operator.setitem(width_map, cp, EastAsianWidth.AMBIGUOUS)),
+    )
+
     # Ambiguous `Letter`s and `Modifier_Symbol`s are narrow
     load_property(
         "extracted/DerivedGeneralCategory.txt",
@@ -480,12 +505,6 @@ def load_zero_widths() -> list[bool]:
         r"(?:Default_Ignorable_Code_Point|Grapheme_Extend)",
         lambda cp: operator.setitem(zw_map, cp, True),
     )
-
-    # Unicode spec bug: these should be `Grapheme_Cluster_Break=Extend`,
-    # as they canonically decompose to two characters with this property,
-    # but they aren't.
-    for c in [0x0CC0, 0x0CC7, 0x0CC8, 0x0CCA, 0x0CCB, 0x1B3B, 0x1B3D, 0x1B43]:
-        zw_map[c] = True
 
     # Treat `Hangul_Syllable_Type`s of `Vowel_Jamo` and `Trailing_Jamo`
     # as zero-width. This matches the behavior of glibc `wcwidth`.
@@ -627,6 +646,8 @@ def load_width_maps() -> tuple[list[WidthState], list[WidthState]]:
         ([0xA4FD], WidthState.LISU_TONE_LETTER_MYA_NA_JEU),
         ([0xFE0F], WidthState.VARIATION_SELECTOR_16),
         ([0x10C03], WidthState.OLD_TURKIC_LETTER_ORKHON_I),
+        ([0x16D67], WidthState.KIRAT_RAI_VOWEL_SIGN_E),
+        ([0x16D68], WidthState.KIRAT_RAI_VOWEL_SIGN_AI),
         (emoji_presentation, WidthState.EMOJI_PRESENTATION),
         (emoji_modifiers, WidthState.EMOJI_MODIFIER),
         (regional_indicators, WidthState.REGIONAL_INDICATOR),
@@ -636,9 +657,11 @@ def load_width_maps() -> tuple[list[WidthState], list[WidthState]]:
             ea[cp] = width
 
     # East-Asian only
+    ea[0xFE00] = WidthState.VARIATION_SELECTOR_1_OR_2
     ea[0x0338] = WidthState.COMBINING_LONG_SOLIDUS_OVERLAY
 
     # Not East Asian only
+    not_ea[0xFE01] = WidthState.VARIATION_SELECTOR_1_OR_2
     not_ea[0xFE0E] = WidthState.VARIATION_SELECTOR_15
 
     return (not_ea, ea)
@@ -704,7 +727,7 @@ def load_solidus_transparent(
     cjk_width_map: list[WidthState],
 ) -> list[tuple[Codepoint, Codepoint]]:
     """Characters expanding to a canonical combining class above 1, plus `ligature_transparent`s from above.
-    Ranges matching ones in `ligature_transparent` exactly are excluded (for compression), so it needs to bechecked also.
+    Ranges matching ones in `ligature_transparent` exactly are excluded (for compression), so it needs to be checked also.
     """
 
     ccc_above_1 = set()
@@ -736,7 +759,7 @@ def load_solidus_transparent(
             num_chars = len(ccc_above_1)
 
     for cp in ccc_above_1:
-        if cp != 0xFE0F:
+        if cp not in [0xFE00, 0xFE0F]:
             assert (
                 cjk_width_map[cp].table_width() != CharWidthInTable.SPECIAL
             ), f"U+{cp:X}"
@@ -1281,10 +1304,7 @@ fn width_in_str{cjk_lo}(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {{
     s += """
     if c <= '\\u{A0}' {
         match c {
-            // According to the spec, LF should be width 1, which is how it is often rendered when it is forced to have a single-line rendering
-            // However, this makes it harder to use this crate to calculate line breaks, and breaks assumptions of downstream crates.
-            // https://github.com/unicode-rs/unicode-width/issues/60
-            '\\n' => (0, WidthInfo::LINE_FEED),
+            '\\n' => (1, WidthInfo::LINE_FEED),
             '\\r' if next_info == WidthInfo::LINE_FEED => (0, WidthInfo::DEFAULT),
             _ => (1, WidthInfo::DEFAULT),
         }
@@ -1295,8 +1315,17 @@ fn width_in_str{cjk_lo}(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {{
                 return (0, next_info.set_emoji_presentation());
             }"""
 
-    if not is_cjk:
+    if is_cjk:
         s += """
+            if c == '\\u{FE00}' {
+                return (0, next_info.set_vs1_2());
+            }
+            """
+    else:
+        s += """
+            if c == '\\u{FE01}' {
+                return (0, next_info.set_vs1_2());
+            }
             if c == '\\u{FE0E}' {
                 return (0, next_info.set_text_presentation());
             }
@@ -1306,9 +1335,19 @@ fn width_in_str{cjk_lo}(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {{
                 } else {
                     next_info = next_info.unset_text_presentation();
                 }
-            }"""
+            } else """
 
-    s += """
+    s += """if next_info.is_vs1_2() {
+                if matches!(c, '\\u{2018}' | '\\u{2019}' | '\\u{201C}' | '\\u{201D}') {
+                    return ("""
+
+    s += str(2 - is_cjk)
+
+    s += """, WidthInfo::DEFAULT);
+                } else {
+                    next_info = next_info.unset_vs1_2();
+                }
+            }
             if next_info.is_ligature_transparent() {
                 if c == '\\u{200D}' {
                     return (0, next_info.set_zwj_bit());
@@ -1487,6 +1526,22 @@ fn width_in_str{cjk_lo}(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {{
                     return (0, WidthInfo::EMOJI_PRESENTATION)
                 }}
 
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_E, '\\u{{16D63}}') => {{
+                    return (0, WidthInfo::DEFAULT);
+                }}
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_E, '\\u{{16D67}}') => {{
+                    return (0, WidthInfo::KIRAT_RAI_VOWEL_SIGN_AI);
+                }}
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_E, '\\u{{16D68}}') => {{
+                    return (1, WidthInfo::KIRAT_RAI_VOWEL_SIGN_E);
+                }}
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_E, '\\u{{16D69}}') => {{
+                    return (0, WidthInfo::DEFAULT);
+                }}
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_AI, '\\u{{16D63}}') => {{
+                    return (0, WidthInfo::DEFAULT);
+                }}
+
                 // Fallback
                 _ => {{}}
             }}
@@ -1536,7 +1591,7 @@ def emit_module(
         os.remove(out_name)
     with open(out_name, "w", newline="\n", encoding="utf-8") as module:
         module.write(
-            """// Copyright 2012-2022 The Rust Project Developers. See the COPYRIGHT
+            """// Copyright 2012-2025 The Rust Project Developers. See the COPYRIGHT
 // file at the top-level directory of this distribution and at
 // http://rust-lang.org/COPYRIGHT.
 //
@@ -1552,6 +1607,8 @@ use core::cmp::Ordering;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct WidthInfo(u16);
+
+const LIGATURE_TRANSPARENT_MASK: u16 = 0b0010_0000_0000_0000;
 
 impl WidthInfo {
     /// No special handling necessary
@@ -1582,20 +1639,24 @@ impl WidthInfo {
 
     /// Has top bit set
     fn is_emoji_presentation(self) -> bool {{
-        (self.0 & 0b1000_0000_0000_0000) == 0b1000_0000_0000_0000
+        (self.0 & WidthInfo::VARIATION_SELECTOR_16.0) == WidthInfo::VARIATION_SELECTOR_16.0
     }}
 
-    /// Has top bit set
     fn is_zwj_emoji_presentation(self) -> bool {{
         (self.0 & 0b1011_0000_0000_0000) == 0b1001_0000_0000_0000
     }}
 
     /// Set top bit
     fn set_emoji_presentation(self) -> Self {{
-        if (self.0 & 0b0010_0000_0000_0000) == 0b0010_0000_0000_0000
+        if (self.0 & LIGATURE_TRANSPARENT_MASK) == LIGATURE_TRANSPARENT_MASK
             || (self.0 & 0b1001_0000_0000_0000) == 0b0001_0000_0000_0000
         {{
-            Self(self.0 | 0b1000_0000_0000_0000)
+            Self(
+                self.0
+                    | WidthInfo::VARIATION_SELECTOR_16.0
+                        & !WidthInfo::VARIATION_SELECTOR_15.0
+                        & !WidthInfo::VARIATION_SELECTOR_1_OR_2.0,
+            )
         }} else {{
             Self::VARIATION_SELECTOR_16
         }}
@@ -1603,8 +1664,8 @@ impl WidthInfo {
 
     /// Clear top bit
     fn unset_emoji_presentation(self) -> Self {{
-        if (self.0 & 0b0010_0000_0000_0000) == 0b0010_0000_0000_0000 {{
-            Self(self.0 & 0b0111_1111_1111_1111)
+        if (self.0 & LIGATURE_TRANSPARENT_MASK) == LIGATURE_TRANSPARENT_MASK {{
+            Self(self.0 & !WidthInfo::VARIATION_SELECTOR_16.0)
         }} else {{
             Self::DEFAULT
         }}
@@ -1612,21 +1673,50 @@ impl WidthInfo {
 
     /// Has 2nd bit set
     fn is_text_presentation(self) -> bool {{
-        (self.0 & 0b0100_0000_0000_0000) == 0b0100_0000_0000_0000
+        (self.0 & WidthInfo::VARIATION_SELECTOR_15.0) == WidthInfo::VARIATION_SELECTOR_15.0
     }}
 
     /// Set 2nd bit
     fn set_text_presentation(self) -> Self {{
-        if (self.0 & 0b0010_0000_0000_0000) == 0b0010_0000_0000_0000 {{
-            Self(self.0 | 0b0100_0000_0000_0000)
+        if (self.0 & LIGATURE_TRANSPARENT_MASK) == LIGATURE_TRANSPARENT_MASK {{
+            Self(
+                self.0
+                    | WidthInfo::VARIATION_SELECTOR_15.0
+                        & !WidthInfo::VARIATION_SELECTOR_16.0
+                        & !WidthInfo::VARIATION_SELECTOR_1_OR_2.0,
+            )
         }} else {{
-            Self(0b0100_0000_0000_0000)
+            Self(WidthInfo::VARIATION_SELECTOR_15.0)
         }}
     }}
 
     /// Clear 2nd bit
     fn unset_text_presentation(self) -> Self {{
-        Self(self.0 & 0b1011_1111_1111_1111)
+        Self(self.0 & !WidthInfo::VARIATION_SELECTOR_15.0)
+    }}
+
+    /// Has 7th bit set
+    fn is_vs1_2(self) -> bool {{
+        (self.0 & WidthInfo::VARIATION_SELECTOR_1_OR_2.0) == WidthInfo::VARIATION_SELECTOR_1_OR_2.0
+    }}
+
+    /// Set 7th bit
+    fn set_vs1_2(self) -> Self {{
+        if (self.0 & LIGATURE_TRANSPARENT_MASK) == LIGATURE_TRANSPARENT_MASK {{
+            Self(
+                self.0
+                    | WidthInfo::VARIATION_SELECTOR_1_OR_2.0
+                        & !WidthInfo::VARIATION_SELECTOR_15.0
+                        & !WidthInfo::VARIATION_SELECTOR_16.0,
+            )
+        }} else {{
+            Self(WidthInfo::VARIATION_SELECTOR_1_OR_2.0)
+        }}
+    }}
+
+    /// Clear 7th bit
+    fn unset_vs1_2(self) -> Self {{
+        Self(self.0 & !WidthInfo::VARIATION_SELECTOR_1_OR_2.0)
     }}
 }}
 

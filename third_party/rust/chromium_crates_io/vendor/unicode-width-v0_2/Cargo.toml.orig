@@ -1,7 +1,7 @@
 [package]
 
 name = "unicode-width"
-version = "0.1.14"
+version = "0.2.1"
 authors = [
     "kwantam <kwantam@gmail.com>",
     "Manish Goregaokar <manishsmail@gmail.com>",
@@ -23,18 +23,18 @@ Determine displayed width of `char` and `str` types
 according to Unicode Standard Annex #11 rules.
 """
 edition = "2021"
+rust-version = "1.66"
 
 exclude = ["/.github/*"]
 
 [dependencies]
 std = { version = "1.0", package = "rustc-std-workspace-std", optional = true }
 core = { version = "1.0", package = "rustc-std-workspace-core", optional = true }
-compiler_builtins = { version = "0.1", optional = true }
 
 [features]
 cjk = []
 default = ["cjk"]
-rustc-dep-of-std = ['std', 'core', 'compiler_builtins']
+rustc-dep-of-std = ['std', 'core']
 
 # Legacy, now a no-op
 no_std = []

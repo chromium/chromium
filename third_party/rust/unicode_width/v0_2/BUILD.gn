@@ -10,12 +10,12 @@ import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
   crate_name = "unicode_width"
-  epoch = "0.1"
+  epoch = "0.2"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_1/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_1/src/tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/tables.rs",
   ]
   inputs = []
 
@@ -25,7 +25,7 @@ cargo_crate("lib") {
       "kwantam <kwantam@gmail.com>, Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "unicode-width"
   cargo_pkg_description = "Determine displayed width of `char` and `str` types according to Unicode Standard Annex #11 rules."
-  cargo_pkg_version = "0.1.14"
+  cargo_pkg_version = "0.2.1"
 
   allow_unsafe = false
 

@@ -404,7 +404,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."unicode-ident:1.0.18"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."unicode-width:0.1.14"]
+[policy."unicode-width:0.2.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."winapi-util:0.1.9"]

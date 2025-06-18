@@ -1,4 +1,4 @@
-// Copyright 2012-2022 The Rust Project Developers. See the COPYRIGHT
+// Copyright 2012-2025 The Rust Project Developers. See the COPYRIGHT
 // file at the top-level directory of this distribution and at
 // http://rust-lang.org/COPYRIGHT.
 //
@@ -14,6 +14,8 @@ use core::cmp::Ordering;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct WidthInfo(u16);
+
+const LIGATURE_TRANSPARENT_MASK: u16 = 0b0010_0000_0000_0000;
 
 impl WidthInfo {
     /// No special handling necessary
@@ -40,6 +42,9 @@ impl WidthInfo {
     const TAG_A4_END_ZWJ_EMOJI_PRESENTATION: Self = Self(0b0000000000011100);
     const TAG_A5_END_ZWJ_EMOJI_PRESENTATION: Self = Self(0b0000000000011101);
     const TAG_A6_END_ZWJ_EMOJI_PRESENTATION: Self = Self(0b0000000000011110);
+    const KIRAT_RAI_VOWEL_SIGN_E: Self = Self(0b0000000000100000);
+    const KIRAT_RAI_VOWEL_SIGN_AI: Self = Self(0b0000000000100001);
+    const VARIATION_SELECTOR_1_OR_2: Self = Self(0b0000001000000000);
     const VARIATION_SELECTOR_15: Self = Self(0b0100000000000000);
     const VARIATION_SELECTOR_16: Self = Self(0b1000000000000000);
     const JOINING_GROUP_ALEF: Self = Self(0b0011000011111111);
@@ -73,20 +78,24 @@ impl WidthInfo {
 
     /// Has top bit set
     fn is_emoji_presentation(self) -> bool {
-        (self.0 & 0b1000_0000_0000_0000) == 0b1000_0000_0000_0000
+        (self.0 & WidthInfo::VARIATION_SELECTOR_16.0) == WidthInfo::VARIATION_SELECTOR_16.0
     }
 
-    /// Has top bit set
     fn is_zwj_emoji_presentation(self) -> bool {
         (self.0 & 0b1011_0000_0000_0000) == 0b1001_0000_0000_0000
     }
 
     /// Set top bit
     fn set_emoji_presentation(self) -> Self {
-        if (self.0 & 0b0010_0000_0000_0000) == 0b0010_0000_0000_0000
+        if (self.0 & LIGATURE_TRANSPARENT_MASK) == LIGATURE_TRANSPARENT_MASK
             || (self.0 & 0b1001_0000_0000_0000) == 0b0001_0000_0000_0000
         {
-            Self(self.0 | 0b1000_0000_0000_0000)
+            Self(
+                self.0
+                    | WidthInfo::VARIATION_SELECTOR_16.0
+                        & !WidthInfo::VARIATION_SELECTOR_15.0
+                        & !WidthInfo::VARIATION_SELECTOR_1_OR_2.0,
+            )
         } else {
             Self::VARIATION_SELECTOR_16
         }
@@ -94,8 +103,8 @@ impl WidthInfo {
 
     /// Clear top bit
     fn unset_emoji_presentation(self) -> Self {
-        if (self.0 & 0b0010_0000_0000_0000) == 0b0010_0000_0000_0000 {
-            Self(self.0 & 0b0111_1111_1111_1111)
+        if (self.0 & LIGATURE_TRANSPARENT_MASK) == LIGATURE_TRANSPARENT_MASK {
+            Self(self.0 & !WidthInfo::VARIATION_SELECTOR_16.0)
         } else {
             Self::DEFAULT
         }
@@ -103,27 +112,56 @@ impl WidthInfo {
 
     /// Has 2nd bit set
     fn is_text_presentation(self) -> bool {
-        (self.0 & 0b0100_0000_0000_0000) == 0b0100_0000_0000_0000
+        (self.0 & WidthInfo::VARIATION_SELECTOR_15.0) == WidthInfo::VARIATION_SELECTOR_15.0
     }
 
     /// Set 2nd bit
     fn set_text_presentation(self) -> Self {
-        if (self.0 & 0b0010_0000_0000_0000) == 0b0010_0000_0000_0000 {
-            Self(self.0 | 0b0100_0000_0000_0000)
+        if (self.0 & LIGATURE_TRANSPARENT_MASK) == LIGATURE_TRANSPARENT_MASK {
+            Self(
+                self.0
+                    | WidthInfo::VARIATION_SELECTOR_15.0
+                        & !WidthInfo::VARIATION_SELECTOR_16.0
+                        & !WidthInfo::VARIATION_SELECTOR_1_OR_2.0,
+            )
         } else {
-            Self(0b0100_0000_0000_0000)
+            Self(WidthInfo::VARIATION_SELECTOR_15.0)
         }
     }
 
     /// Clear 2nd bit
     fn unset_text_presentation(self) -> Self {
-        Self(self.0 & 0b1011_1111_1111_1111)
+        Self(self.0 & !WidthInfo::VARIATION_SELECTOR_15.0)
+    }
+
+    /// Has 7th bit set
+    fn is_vs1_2(self) -> bool {
+        (self.0 & WidthInfo::VARIATION_SELECTOR_1_OR_2.0) == WidthInfo::VARIATION_SELECTOR_1_OR_2.0
+    }
+
+    /// Set 7th bit
+    fn set_vs1_2(self) -> Self {
+        if (self.0 & LIGATURE_TRANSPARENT_MASK) == LIGATURE_TRANSPARENT_MASK {
+            Self(
+                self.0
+                    | WidthInfo::VARIATION_SELECTOR_1_OR_2.0
+                        & !WidthInfo::VARIATION_SELECTOR_15.0
+                        & !WidthInfo::VARIATION_SELECTOR_16.0,
+            )
+        } else {
+            Self(WidthInfo::VARIATION_SELECTOR_1_OR_2.0)
+        }
+    }
+
+    /// Clear 7th bit
+    fn unset_vs1_2(self) -> Self {
+        Self(self.0 & !WidthInfo::VARIATION_SELECTOR_1_OR_2.0)
     }
 }
 
 /// The version of [Unicode](http://www.unicode.org/)
 /// that this version of unicode-width is based on.
-pub const UNICODE_VERSION: (u8, u8, u8) = (15, 1, 0);
+pub const UNICODE_VERSION: (u8, u8, u8) = (16, 0, 0);
 
 /// Returns the [UAX #11](https://www.unicode.org/reports/tr11/) based width of `c` by
 /// consulting a multi-level lookup table.
@@ -165,9 +203,12 @@ fn lookup_width(c: char) -> (u8, WidthInfo) {
             '\u{1A10}' => (1, WidthInfo::BUGINESE_LETTER_YA),
             '\u{2D31}'..='\u{2D6F}' => (1, WidthInfo::TIFINAGH_CONSONANT),
             '\u{A4FC}'..='\u{A4FD}' => (1, WidthInfo::LISU_TONE_LETTER_MYA_NA_JEU),
+            '\u{FE01}' => (0, WidthInfo::VARIATION_SELECTOR_1_OR_2),
             '\u{FE0E}' => (0, WidthInfo::VARIATION_SELECTOR_15),
             '\u{FE0F}' => (0, WidthInfo::VARIATION_SELECTOR_16),
             '\u{10C03}' => (1, WidthInfo::OLD_TURKIC_LETTER_ORKHON_I),
+            '\u{16D67}' => (1, WidthInfo::KIRAT_RAI_VOWEL_SIGN_E),
+            '\u{16D68}' => (1, WidthInfo::KIRAT_RAI_VOWEL_SIGN_AI),
             '\u{1F1E6}'..='\u{1F1FF}' => (1, WidthInfo::REGIONAL_INDICATOR),
             '\u{1F3FB}'..='\u{1F3FF}' => (2, WidthInfo::EMOJI_MODIFIER),
             _ => (2, WidthInfo::EMOJI_PRESENTATION),
@@ -215,10 +256,7 @@ fn width_in_str(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {
     }
     if c <= '\u{A0}' {
         match c {
-            // According to the spec, LF should be width 1, which is how it is often rendered when it is forced to have a single-line rendering
-            // However, this makes it harder to use this crate to calculate line breaks, and breaks assumptions of downstream crates.
-            // https://github.com/unicode-rs/unicode-width/issues/60
-            '\n' => (0, WidthInfo::LINE_FEED),
+            '\n' => (1, WidthInfo::LINE_FEED),
             '\r' if next_info == WidthInfo::LINE_FEED => (0, WidthInfo::DEFAULT),
             _ => (1, WidthInfo::DEFAULT),
         }
@@ -228,6 +266,9 @@ fn width_in_str(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {
             if c == '\u{FE0F}' {
                 return (0, next_info.set_emoji_presentation());
             }
+            if c == '\u{FE01}' {
+                return (0, next_info.set_vs1_2());
+            }
             if c == '\u{FE0E}' {
                 return (0, next_info.set_text_presentation());
             }
@@ -236,6 +277,12 @@ fn width_in_str(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {
                     return (1, WidthInfo::DEFAULT);
                 } else {
                     next_info = next_info.unset_text_presentation();
+                }
+            } else if next_info.is_vs1_2() {
+                if matches!(c, '\u{2018}' | '\u{2019}' | '\u{201C}' | '\u{201D}') {
+                    return (2, WidthInfo::DEFAULT);
+                } else {
+                    next_info = next_info.unset_vs1_2();
                 }
             }
             if next_info.is_ligature_transparent() {
@@ -387,6 +434,22 @@ fn width_in_str(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {
                     return (0, WidthInfo::EMOJI_PRESENTATION)
                 }
 
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_E, '\u{16D63}') => {
+                    return (0, WidthInfo::DEFAULT);
+                }
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_E, '\u{16D67}') => {
+                    return (0, WidthInfo::KIRAT_RAI_VOWEL_SIGN_AI);
+                }
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_E, '\u{16D68}') => {
+                    return (1, WidthInfo::KIRAT_RAI_VOWEL_SIGN_E);
+                }
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_E, '\u{16D69}') => {
+                    return (0, WidthInfo::DEFAULT);
+                }
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_AI, '\u{16D63}') => {
+                    return (0, WidthInfo::DEFAULT);
+                }
+
                 // Fallback
                 _ => {}
             }
@@ -452,8 +515,11 @@ fn lookup_width_cjk(c: char) -> (u8, WidthInfo) {
             '\u{1A10}' => (1, WidthInfo::BUGINESE_LETTER_YA),
             '\u{2D31}'..='\u{2D6F}' => (1, WidthInfo::TIFINAGH_CONSONANT),
             '\u{A4FC}'..='\u{A4FD}' => (1, WidthInfo::LISU_TONE_LETTER_MYA_NA_JEU),
+            '\u{FE00}' => (0, WidthInfo::VARIATION_SELECTOR_1_OR_2),
             '\u{FE0F}' => (0, WidthInfo::VARIATION_SELECTOR_16),
             '\u{10C03}' => (1, WidthInfo::OLD_TURKIC_LETTER_ORKHON_I),
+            '\u{16D67}' => (1, WidthInfo::KIRAT_RAI_VOWEL_SIGN_E),
+            '\u{16D68}' => (1, WidthInfo::KIRAT_RAI_VOWEL_SIGN_AI),
             '\u{1F1E6}'..='\u{1F1FF}' => (1, WidthInfo::REGIONAL_INDICATOR),
             '\u{1F3FB}'..='\u{1F3FF}' => (2, WidthInfo::EMOJI_MODIFIER),
             _ => (2, WidthInfo::EMOJI_PRESENTATION),
@@ -510,10 +576,7 @@ fn width_in_str_cjk(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {
     }
     if c <= '\u{A0}' {
         match c {
-            // According to the spec, LF should be width 1, which is how it is often rendered when it is forced to have a single-line rendering
-            // However, this makes it harder to use this crate to calculate line breaks, and breaks assumptions of downstream crates.
-            // https://github.com/unicode-rs/unicode-width/issues/60
-            '\n' => (0, WidthInfo::LINE_FEED),
+            '\n' => (1, WidthInfo::LINE_FEED),
             '\r' if next_info == WidthInfo::LINE_FEED => (0, WidthInfo::DEFAULT),
             _ => (1, WidthInfo::DEFAULT),
         }
@@ -522,6 +585,16 @@ fn width_in_str_cjk(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {
         if next_info != WidthInfo::DEFAULT {
             if c == '\u{FE0F}' {
                 return (0, next_info.set_emoji_presentation());
+            }
+            if c == '\u{FE00}' {
+                return (0, next_info.set_vs1_2());
+            }
+            if next_info.is_vs1_2() {
+                if matches!(c, '\u{2018}' | '\u{2019}' | '\u{201C}' | '\u{201D}') {
+                    return (1, WidthInfo::DEFAULT);
+                } else {
+                    next_info = next_info.unset_vs1_2();
+                }
             }
             if next_info.is_ligature_transparent() {
                 if c == '\u{200D}' {
@@ -679,6 +752,22 @@ fn width_in_str_cjk(c: char, mut next_info: WidthInfo) -> (i8, WidthInfo) {
                     if lookup_width_cjk(c).1 == WidthInfo::EMOJI_PRESENTATION =>
                 {
                     return (0, WidthInfo::EMOJI_PRESENTATION)
+                }
+
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_E, '\u{16D63}') => {
+                    return (0, WidthInfo::DEFAULT);
+                }
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_E, '\u{16D67}') => {
+                    return (0, WidthInfo::KIRAT_RAI_VOWEL_SIGN_AI);
+                }
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_E, '\u{16D68}') => {
+                    return (1, WidthInfo::KIRAT_RAI_VOWEL_SIGN_E);
+                }
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_E, '\u{16D69}') => {
+                    return (0, WidthInfo::DEFAULT);
+                }
+                (WidthInfo::KIRAT_RAI_VOWEL_SIGN_AI, '\u{16D63}') => {
+                    return (0, WidthInfo::DEFAULT);
                 }
 
                 // Fallback
@@ -863,15 +952,15 @@ struct Align64<T>(T);
 struct Align128<T>(T);
 /// Autogenerated. 1 sub-table(s). Consult [`lookup_width`] for layout info.)
 static WIDTH_ROOT: Align128<[u8; 256]> = Align128([
-    0x00, 0x01, 0x02, 0x03, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,
-    0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x0F, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x0F,
-    0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09,
-    0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09,
-    0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09,
-    0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09,
-    0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09,
-    0x10, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09,
-    0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x01, 0x02, 0x02, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D,
+    0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x0E, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x0E,
+    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
+    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
+    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
+    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
+    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
+    0x0F, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
+    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -880,18 +969,18 @@ static WIDTH_ROOT: Align128<[u8; 256]> = Align128([
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 ]);
-/// Autogenerated. 17 sub-table(s). Consult [`lookup_width`] for layout info.)
+/// Autogenerated. 16 sub-table(s). Consult [`lookup_width`] for layout info.)
 #[cfg(feature = "cjk")]
 static WIDTH_ROOT_CJK: Align128<[u8; 256]> = Align128([
-    0x11, 0x12, 0x02, 0x03, 0x03, 0x04, 0x05, 0x13, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x14,
-    0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x0F, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x0F,
-    0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09,
-    0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09,
-    0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09,
-    0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09,
-    0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09,
-    0x10, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x09, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x0F,
-    0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x10, 0x11, 0x02, 0x02, 0x02, 0x03, 0x04, 0x12, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x13,
+    0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x0E, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x0E,
+    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
+    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
+    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
+    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
+    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
+    0x0F, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x0E,
+    0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -902,9 +991,9 @@ static WIDTH_ROOT_CJK: Align128<[u8; 256]> = Align128([
 ]);
 
 #[cfg(feature = "cjk")]
-const WIDTH_MIDDLE_LEN: usize = 21;
+const WIDTH_MIDDLE_LEN: usize = 20;
 #[cfg(not(feature = "cjk"))]
-const WIDTH_MIDDLE_LEN: usize = 17;
+const WIDTH_MIDDLE_LEN: usize = 16;
 /// Autogenerated. 4 sub-table(s). Consult [`lookup_width`] for layout info.
 static WIDTH_MIDDLE: Align64<[[u8; 64]; WIDTH_MIDDLE_LEN]> = Align64([
     [
@@ -923,7 +1012,14 @@ static WIDTH_MIDDLE: Align64<[[u8; 64]; WIDTH_MIDDLE_LEN]> = Align64([
     ],
     [
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
-        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x40, 0x39, 0x39,
+        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
+        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
+        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
+        0x39, 0x39, 0x39, 0x39,
+    ],
+    [
+        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x40, 0x02, 0x02, 0x41, 0x42, 0x02,
+        0x02, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x02, 0x49, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
         0x39, 0x39, 0x39, 0x39,
@@ -932,34 +1028,20 @@ static WIDTH_MIDDLE: Align64<[[u8; 64]; WIDTH_MIDDLE_LEN]> = Align64([
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
-        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
-        0x39, 0x39, 0x39, 0x39,
-    ],
-    [
-        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x41, 0x02, 0x02, 0x42, 0x43, 0x02,
-        0x02, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x02, 0x4A, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
-        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
-        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
-        0x39, 0x39, 0x39, 0x39,
-    ],
-    [
-        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
-        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
-        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
-        0x39, 0x39, 0x4B, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+        0x39, 0x39, 0x4A, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
         0x02, 0x02, 0x02, 0x02,
     ],
     [
         0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
         0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
         0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0x02, 0x02, 0x02, 0x02, 0x02, 0x39, 0x39, 0x39, 0x39, 0x4C, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0x4D, 0x4E, 0x4F, 0x50,
+        0x02, 0x02, 0x02, 0x02, 0x02, 0x39, 0x39, 0x39, 0x39, 0x4B, 0x02, 0x02, 0x02, 0x02, 0x02,
+        0x4C, 0x4D, 0x4E, 0x4F,
     ],
     [
-        0x02, 0x02, 0x02, 0x51, 0x02, 0x52, 0x53, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0x02, 0x02, 0x02, 0x02, 0x02, 0x54, 0x55, 0x02, 0x02, 0x56, 0x02, 0x57, 0x02, 0x02, 0x58,
-        0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60, 0x61, 0x02, 0x62, 0x63, 0x02, 0x64, 0x65,
+        0x02, 0x02, 0x02, 0x50, 0x02, 0x51, 0x52, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+        0x02, 0x02, 0x02, 0x02, 0x02, 0x53, 0x54, 0x02, 0x02, 0x55, 0x02, 0x56, 0x02, 0x02, 0x57,
+        0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60, 0x61, 0x62, 0x63, 0x02, 0x64, 0x65,
         0x66, 0x67, 0x02, 0x68, 0x02, 0x69, 0x6A, 0x6B, 0x6C, 0x02, 0x02, 0x6D, 0x6E, 0x6F, 0x70,
         0x02, 0x71, 0x72, 0x02,
     ],
@@ -978,15 +1060,15 @@ static WIDTH_MIDDLE: Align64<[[u8; 64]; WIDTH_MIDDLE_LEN]> = Align64([
         0x02, 0x02, 0x02, 0x02,
     ],
     [
-        0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x74, 0x75, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0x76, 0x77, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
+        0x02, 0x02, 0x74, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+        0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x75, 0x76, 0x02, 0x02, 0x02, 0x77, 0x02, 0x02, 0x02,
+        0x78, 0x79, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
         0x39, 0x39, 0x39, 0x39,
     ],
     [
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
-        0x78, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x79, 0x7A, 0x02, 0x02, 0x02,
+        0x7A, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x7B, 0x7C, 0x02, 0x02, 0x02,
         0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
         0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
         0x02, 0x02, 0x02, 0x02,
@@ -994,22 +1076,22 @@ static WIDTH_MIDDLE: Align64<[[u8; 64]; WIDTH_MIDDLE_LEN]> = Align64([
     [
         0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
         0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0x02, 0x7B, 0x39, 0x39, 0x7C, 0x39, 0x39, 0x7D, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x7E, 0x02, 0x02,
+        0x02, 0x7D, 0x39, 0x39, 0x7E, 0x39, 0x39, 0x7F, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+        0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x80, 0x02, 0x02,
         0x02, 0x02, 0x02, 0x02,
     ],
     [
         0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
         0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0x7F, 0x02, 0x02, 0x02, 0x80, 0x81, 0x82, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x83, 0x84, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+        0x81, 0x02, 0x02, 0x02, 0x82, 0x83, 0x84, 0x02, 0x85, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+        0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x86, 0x87, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
         0x02, 0x02, 0x02, 0x02,
     ],
     [
-        0x85, 0x86, 0x75, 0x02, 0x02, 0x87, 0x02, 0x02, 0x02, 0x88, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0x02, 0x02, 0x89, 0x8A, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0x02, 0x02, 0x8B, 0x8C, 0x02, 0x8D, 0x8E, 0x02, 0x8F, 0x90, 0x91, 0x92, 0x93, 0x94, 0x95,
-        0x96, 0x02, 0x97, 0x02, 0x02, 0x98, 0x99, 0x9A, 0x9B, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+        0x88, 0x89, 0x76, 0x02, 0x02, 0x8A, 0x02, 0x02, 0x02, 0x8B, 0x02, 0x8C, 0x02, 0x02, 0x02,
+        0x02, 0x02, 0x8D, 0x8E, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+        0x02, 0x02, 0x8F, 0x90, 0x02, 0x91, 0x92, 0x02, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99,
+        0x9A, 0x02, 0x9B, 0x02, 0x02, 0x9C, 0x9D, 0x9E, 0x9F, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
         0x02, 0x02, 0x02, 0x02,
     ],
     [
@@ -1017,7 +1099,7 @@ static WIDTH_MIDDLE: Align64<[[u8; 64]; WIDTH_MIDDLE_LEN]> = Align64([
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
-        0x39, 0x39, 0x39, 0x9C,
+        0x39, 0x39, 0x39, 0xA0,
     ],
     [
         0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D,
@@ -1028,7 +1110,7 @@ static WIDTH_MIDDLE: Align64<[[u8; 64]; WIDTH_MIDDLE_LEN]> = Align64([
     ],
     #[cfg(feature = "cjk")]
     [
-        0x00, 0x9D, 0x02, 0x02, 0x02, 0x02, 0x9E, 0x9F, 0x02, 0x04, 0x02, 0x05, 0x06, 0x07, 0x08,
+        0x00, 0xA1, 0x02, 0x02, 0x02, 0x02, 0xA2, 0xA3, 0x02, 0x04, 0x02, 0x05, 0x06, 0x07, 0x08,
         0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
         0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x02, 0x02, 0x1E, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
         0x02, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x02, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x02, 0x2A,
@@ -1036,9 +1118,9 @@ static WIDTH_MIDDLE: Align64<[[u8; 64]; WIDTH_MIDDLE_LEN]> = Align64([
     ],
     #[cfg(feature = "cjk")]
     [
-        0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0x2E, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD,
-        0x33, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0xAE, 0x02, 0x02, 0x35, 0x36, 0x37, 0x02, 0x38,
-        0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0xAF, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
+        0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0x2E, 0xAB, 0x39, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0,
+        0xB1, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0xB2, 0x02, 0x02, 0x35, 0x36, 0x37, 0x02, 0x38,
+        0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0xB3, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
         0x39, 0x39, 0x39, 0x39,
     ],
@@ -1047,24 +1129,24 @@ static WIDTH_MIDDLE: Align64<[[u8; 64]; WIDTH_MIDDLE_LEN]> = Align64([
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
         0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
-        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x4C, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0xB0, 0x4E, 0x4F, 0xB1,
+        0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x4B, 0x02, 0x02, 0x02, 0x02, 0x02,
+        0xB4, 0x4D, 0x4E, 0xB5,
     ],
     #[cfg(feature = "cjk")]
     [
-        0x85, 0x86, 0x75, 0x02, 0x02, 0x87, 0x02, 0x02, 0x02, 0x88, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0x02, 0x02, 0x89, 0x8A, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-        0x02, 0x02, 0x8B, 0x8C, 0xB2, 0xB3, 0x8E, 0x02, 0x8F, 0x90, 0x91, 0x92, 0x93, 0x94, 0x95,
-        0x96, 0x02, 0x97, 0x02, 0x02, 0x98, 0x99, 0x9A, 0x9B, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+        0x88, 0x89, 0x76, 0x02, 0x02, 0x8A, 0x02, 0x02, 0x02, 0x8B, 0x02, 0x8C, 0x02, 0x02, 0x02,
+        0x02, 0x02, 0x8D, 0x8E, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+        0x02, 0x02, 0x8F, 0x90, 0xB6, 0xB7, 0x92, 0x02, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99,
+        0x9A, 0x02, 0x9B, 0x02, 0x02, 0x9C, 0x9D, 0x9E, 0x9F, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
         0x02, 0x02, 0x02, 0x02,
     ],
 ]);
 
 #[cfg(feature = "cjk")]
-const WIDTH_LEAVES_LEN: usize = 180;
+const WIDTH_LEAVES_LEN: usize = 184;
 #[cfg(not(feature = "cjk"))]
-const WIDTH_LEAVES_LEN: usize = 157;
-/// Autogenerated. 180 sub-table(s). Consult [`lookup_width`] for layout info.
+const WIDTH_LEAVES_LEN: usize = 161;
+/// Autogenerated. 184 sub-table(s). Consult [`lookup_width`] for layout info.
 static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     [
         0x55, 0x55, 0x75, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
@@ -1122,7 +1204,7 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
         0xFF, 0xFF,
     ],
     [
-        0x7F, 0x55, 0x55, 0x55, 0x50, 0x55, 0x00, 0x00, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+        0x7F, 0x55, 0x55, 0x55, 0x50, 0x15, 0x00, 0x00, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55, 0x55, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00,
     ],
@@ -1222,7 +1304,7 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
         0x55, 0x55,
     ],
     [
-        0x55, 0x55, 0x55, 0x55, 0x05, 0x54, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05, 0x55, 0x55,
+        0x55, 0x55, 0x55, 0x55, 0x05, 0x50, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05, 0x54, 0x55,
         0x55, 0x55, 0x55, 0x55, 0x55, 0x05, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05, 0x55,
         0x55, 0x55,
     ],
@@ -1258,12 +1340,12 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     ],
     [
         0x00, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x00, 0x00,
-        0x50, 0x05, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x15, 0x00, 0x00, 0x55,
+        0x50, 0x05, 0x54, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x15, 0x00, 0x00, 0x55,
         0x55, 0x55,
     ],
     [
-        0x50, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05, 0x50, 0x10, 0x50, 0x55, 0x55, 0x55,
-        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x45, 0x50, 0x11, 0x50, 0x55,
+        0x50, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05, 0x50, 0x00, 0x50, 0x55, 0x55, 0x55,
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x45, 0x50, 0x11, 0x00, 0x55,
         0x55, 0x55,
     ],
     [
@@ -1307,12 +1389,12 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
         0x55, 0x7D,
     ],
     [
-        0x55, 0x55, 0x55, 0x55, 0x55, 0x5F, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x5F, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xAA, 0xAA, 0x55,
         0x55, 0x55, 0x55, 0xFF, 0xFF, 0xFF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0xD5,
     ],
     [
-        0x55, 0x55, 0x55, 0x55, 0xD5, 0x55, 0x55, 0x55, 0x5D, 0x55, 0xF5, 0x55, 0x55, 0x55, 0x55,
+        0x55, 0x55, 0xA5, 0xAA, 0xD5, 0x55, 0x55, 0x55, 0x5D, 0x55, 0xF5, 0x55, 0x55, 0x55, 0x55,
         0x7D, 0x55, 0x5F, 0x55, 0x75, 0x55, 0x57, 0x55, 0x55, 0x55, 0x55, 0x75, 0x55, 0xF5, 0x5D,
         0x75, 0x5D,
     ],
@@ -1378,18 +1460,13 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     ],
     [
         0xAA, 0xAA, 0xAA, 0x6A, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
-        0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x95, 0xAA, 0xAA,
+        0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x5A, 0x55, 0x95, 0xAA, 0xAA,
         0xAA, 0xAA,
     ],
     [
         0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x6A, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
         0xAA, 0xAA, 0xAA, 0x55, 0x55, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
         0xAA, 0xAA,
-    ],
-    [
-        0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
-        0xAA, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
-        0x55, 0x55,
     ],
     [
         0xAA, 0xAA, 0xAA, 0x56, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
@@ -1418,12 +1495,12 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     ],
     [
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05, 0x00, 0x50, 0x55, 0x55, 0x55,
-        0x55, 0x55, 0x15, 0x00, 0x00, 0x50, 0x55, 0x55, 0x55, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
+        0x55, 0x55, 0x15, 0x00, 0x00, 0x10, 0x55, 0x55, 0x55, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
         0xAA, 0x56,
     ],
     [
         0x40, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x15, 0x05, 0x50,
-        0x50, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x51, 0x55, 0x55, 0x55, 0x55,
+        0x50, 0x54, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x51, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55,
     ],
     [
@@ -1452,7 +1529,7 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
         0x55, 0x55,
     ],
     [
-        0x00, 0x00, 0x00, 0xF0, 0xAA, 0xAA, 0x5A, 0x55, 0x00, 0x00, 0x00, 0x00, 0xAA, 0xAA, 0xAA,
+        0x0C, 0x00, 0x00, 0xF0, 0xAA, 0xAA, 0x5A, 0x55, 0x00, 0x00, 0x00, 0x00, 0xAA, 0xAA, 0xAA,
         0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x6A, 0xAA, 0xAA, 0xAA, 0xAA, 0x6A, 0xAA, 0x55, 0x55, 0x55,
         0x55, 0x55,
     ],
@@ -1503,13 +1580,13 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     ],
     [
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x00, 0x55, 0x55, 0x55, 0x55, 0x55,
-        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x01, 0x50, 0x55, 0x55,
         0x55, 0x55,
     ],
     [
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x15, 0x54, 0x55, 0x55, 0x55,
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
-        0x55, 0x01,
+        0x55, 0x00,
     ],
     [
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
@@ -1538,11 +1615,11 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     ],
     [
         0x50, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05, 0x00,
-        0x40, 0x05, 0x55, 0x01, 0x14, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+        0x40, 0x04, 0x55, 0x01, 0x14, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55,
     ],
     [
-        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x15, 0x50, 0x04, 0x55,
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x15, 0x50, 0x00, 0x55,
         0x45, 0x51, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55,
     ],
@@ -1553,7 +1630,12 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     ],
     [
         0x50, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x15,
-        0x44, 0x54, 0x55, 0x55, 0x55, 0x55, 0x15, 0x55, 0x55, 0x55, 0x05, 0x00, 0x54, 0x00, 0x54,
+        0x44, 0x54, 0x55, 0x55, 0x51, 0x55, 0x15, 0x55, 0x55, 0x55, 0x05, 0x00, 0x54, 0x00, 0x54,
+        0x55, 0x55,
+    ],
+    [
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x14,
+        0x00, 0x44, 0x11, 0x50, 0x05, 0x40, 0x55, 0x55, 0x55, 0x41, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55,
     ],
     [
@@ -1577,12 +1659,12 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
         0x55, 0x55,
     ],
     [
-        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x15, 0x51, 0x00, 0x10, 0x55,
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x15, 0x51, 0x00, 0x00, 0x55,
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55,
     ],
     [
-        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x01, 0x05, 0x10, 0x00, 0x55, 0x55, 0x55, 0x55,
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x11, 0x05, 0x10, 0x00, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55,
     ],
@@ -1593,7 +1675,7 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     ],
     [
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x54, 0x55, 0x15,
-        0x04, 0x11, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+        0x00, 0x11, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55,
     ],
     [
@@ -1638,12 +1720,17 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     ],
     [
         0x40, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05, 0x40,
-        0x55, 0x44, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+        0x55, 0x40, 0x55, 0x55, 0x55, 0x55, 0x55, 0x45, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55,
     ],
     [
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x54, 0x15, 0x00, 0x00, 0x00, 0x50, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+        0x55, 0x55,
+    ],
+    [
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05, 0x00, 0x00, 0x50, 0x01, 0x55, 0x55, 0x55,
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55,
     ],
     [
@@ -1658,12 +1745,17 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     ],
     [
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xD5, 0x57, 0x55, 0x55, 0x55,
+        0x55, 0x55,
+    ],
+    [
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55, 0x55, 0x55, 0x15, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55,
     ],
     [
         0x55, 0x55, 0x55, 0x15, 0x40, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
-        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xAA, 0x54, 0x55, 0x55, 0x5A, 0x55,
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xAA, 0x54, 0x55, 0x55, 0x50, 0x55,
         0x55, 0x55,
     ],
     [
@@ -1674,7 +1766,7 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     [
         0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
         0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x5A, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
-        0x55, 0x55,
+        0x55, 0x95,
     ],
     [
         0xAA, 0xAA, 0x56, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
@@ -1708,7 +1800,7 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     ],
     [
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
-        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x11, 0x50, 0x05, 0x00, 0x00,
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x01, 0x50, 0x01, 0x00, 0x00,
         0x00, 0x00,
     ],
     [
@@ -1719,6 +1811,11 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     [
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x05, 0x54, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+        0x55, 0x55,
+    ],
+    [
+        0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
+        0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x6A, 0x55, 0x55, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x6A,
         0x55, 0x55,
     ],
     [
@@ -1749,6 +1846,11 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     [
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x00, 0x55, 0x55,
+        0x55, 0x55,
+    ],
+    [
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+        0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x05, 0x55, 0x55,
         0x55, 0x55,
     ],
     [
@@ -1842,8 +1944,8 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
         0xFF, 0x57,
     ],
     [
-        0xFF, 0xFF, 0x57, 0x55, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-        0xDF, 0xFF, 0x5F, 0x55, 0xF5, 0xFF, 0xFF, 0xFF, 0x55, 0xFF, 0xFF, 0x57, 0x55, 0xFF, 0xFF,
+        0xFF, 0xFF, 0x5F, 0xD5, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0x7F, 0x55, 0xF5, 0xFF, 0xFF, 0xFF, 0xD7, 0xFF, 0xFF, 0x5F, 0x55, 0xFF, 0xFF,
         0x57, 0x55,
     ],
     [
@@ -1884,7 +1986,7 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     #[cfg(feature = "cjk")]
     [
         0x95, 0x59, 0x59, 0x55, 0x55, 0x65, 0x55, 0x55, 0x69, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
-        0x55, 0x55, 0x55, 0x55, 0x55, 0x95, 0x56, 0x95, 0x6A, 0xAA, 0xAA, 0xAA, 0x55, 0xAA, 0xAA,
+        0x55, 0x55, 0x55, 0x55, 0x55, 0xAA, 0xAA, 0xAA, 0x6A, 0xAA, 0xAA, 0xAA, 0x55, 0xAA, 0xAA,
         0x5A, 0x55,
     ],
     #[cfg(feature = "cjk")]
@@ -1920,13 +2022,7 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     #[cfg(feature = "cjk")]
     [
         0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
-        0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x9A, 0xAA, 0xAA, 0xAA,
-        0xAA, 0xAA,
-    ],
-    #[cfg(feature = "cjk")]
-    [
-        0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
-        0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x55,
+        0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x56,
         0x55, 0x55,
     ],
     #[cfg(feature = "cjk")]
@@ -1937,13 +2033,13 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     ],
     #[cfg(feature = "cjk")]
     [
-        0x55, 0x69, 0x59, 0xA5, 0x55, 0x5F, 0x55, 0x66, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+        0x55, 0x69, 0x59, 0xA5, 0x55, 0xAF, 0x55, 0x66, 0x55, 0x55, 0x55, 0x55, 0xAA, 0xAA, 0x55,
         0x55, 0x66, 0x55, 0xFF, 0xFF, 0xFF, 0x55, 0x55, 0x55, 0x9A, 0x9A, 0x6A, 0x9A, 0x55, 0x55,
         0x55, 0xD5,
     ],
     #[cfg(feature = "cjk")]
     [
-        0x55, 0x55, 0x55, 0x55, 0xD5, 0x55, 0x55, 0xA5, 0x5D, 0x55, 0xF5, 0x55, 0x55, 0x55, 0x55,
+        0x55, 0x55, 0xA5, 0xAA, 0xD5, 0x55, 0x55, 0xA5, 0x5D, 0x55, 0xF5, 0x55, 0x55, 0x55, 0x55,
         0xBD, 0x55, 0xAF, 0xAA, 0xBA, 0xAA, 0xAB, 0xAA, 0xAA, 0x9A, 0x55, 0xBA, 0xAA, 0xFA, 0xAE,
         0xBA, 0xAE,
     ],
@@ -1952,6 +2048,12 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
         0x55, 0x5D, 0xF5, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x57, 0x55, 0x55, 0x55, 0x55,
         0x59, 0x55, 0x55, 0x55, 0x77, 0xD5, 0xDF, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xA5,
         0xAA, 0xAA,
+    ],
+    #[cfg(feature = "cjk")]
+    [
+        0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xFD, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x57, 0x55, 0x55,
+        0xD5, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+        0x55, 0x55,
     ],
     #[cfg(feature = "cjk")]
     [
@@ -1967,7 +2069,7 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     ],
     #[cfg(feature = "cjk")]
     [
-        0x00, 0x00, 0x00, 0xC0, 0xAA, 0xAA, 0x5A, 0x55, 0x00, 0x00, 0x00, 0x00, 0xAA, 0xAA, 0xAA,
+        0x03, 0x00, 0x00, 0xC0, 0xAA, 0xAA, 0x5A, 0x55, 0x00, 0x00, 0x00, 0x00, 0xAA, 0xAA, 0xAA,
         0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x6A, 0xAA, 0xAA, 0xAA, 0xAA, 0x6A, 0xAA, 0x55, 0x55, 0x55,
         0x55, 0x55,
     ],
@@ -1979,7 +2081,7 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
     ],
     #[cfg(feature = "cjk")]
     [
-        0xAA, 0xAA, 0x6A, 0x55, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x5A, 0xAA, 0xAA, 0xAA,
+        0xAA, 0xAA, 0xAA, 0x56, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x5A, 0xAA, 0xAA, 0xAA,
         0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0x5A, 0x55, 0xAA, 0xAA,
         0xAA, 0xAA,
     ],
@@ -1994,7 +2096,7 @@ static WIDTH_LEAVES: Align32<[[u8; 32]; WIDTH_LEAVES_LEN]> = Align32([
 /// Sorted list of codepoint ranges (inclusive)
 /// that are zero-width but not `Joining_Type=Transparent`
 /// FIXME: can we get better compression?
-static NON_TRANSPARENT_ZERO_WIDTHS: [([u8; 3], [u8; 3]); 53] = [
+static NON_TRANSPARENT_ZERO_WIDTHS: [([u8; 3], [u8; 3]); 72] = [
     ([0x05, 0x06, 0x00], [0x05, 0x06, 0x00]),
     ([0x90, 0x08, 0x00], [0x91, 0x08, 0x00]),
     ([0xE2, 0x08, 0x00], [0xE2, 0x08, 0x00]),
@@ -2015,35 +2117,54 @@ static NON_TRANSPARENT_ZERO_WIDTHS: [([u8; 3], [u8; 3]); 53] = [
     ([0xCF, 0x0D, 0x00], [0xCF, 0x0D, 0x00]),
     ([0xDF, 0x0D, 0x00], [0xDF, 0x0D, 0x00]),
     ([0x60, 0x11, 0x00], [0xFF, 0x11, 0x00]),
+    ([0x15, 0x17, 0x00], [0x15, 0x17, 0x00]),
+    ([0x34, 0x17, 0x00], [0x34, 0x17, 0x00]),
     ([0x0E, 0x18, 0x00], [0x0E, 0x18, 0x00]),
     ([0x35, 0x1B, 0x00], [0x35, 0x1B, 0x00]),
     ([0x3B, 0x1B, 0x00], [0x3B, 0x1B, 0x00]),
     ([0x3D, 0x1B, 0x00], [0x3D, 0x1B, 0x00]),
-    ([0x43, 0x1B, 0x00], [0x43, 0x1B, 0x00]),
+    ([0x43, 0x1B, 0x00], [0x44, 0x1B, 0x00]),
+    ([0xAA, 0x1B, 0x00], [0xAA, 0x1B, 0x00]),
+    ([0xF2, 0x1B, 0x00], [0xF3, 0x1B, 0x00]),
     ([0x0C, 0x20, 0x00], [0x0D, 0x20, 0x00]),
     ([0x65, 0x20, 0x00], [0x69, 0x20, 0x00]),
     ([0x2E, 0x30, 0x00], [0x2F, 0x30, 0x00]),
     ([0x64, 0x31, 0x00], [0x64, 0x31, 0x00]),
     ([0xFA, 0xA8, 0x00], [0xFA, 0xA8, 0x00]),
+    ([0x53, 0xA9, 0x00], [0x53, 0xA9, 0x00]),
+    ([0xC0, 0xA9, 0x00], [0xC0, 0xA9, 0x00]),
     ([0xB0, 0xD7, 0x00], [0xC6, 0xD7, 0x00]),
     ([0xCB, 0xD7, 0x00], [0xFB, 0xD7, 0x00]),
     ([0x9E, 0xFF, 0x00], [0xA0, 0xFF, 0x00]),
     ([0xF0, 0xFF, 0x00], [0xF8, 0xFF, 0x00]),
+    ([0xC0, 0x11, 0x01], [0xC0, 0x11, 0x01]),
     ([0xC2, 0x11, 0x01], [0xC3, 0x11, 0x01]),
+    ([0x35, 0x12, 0x01], [0x35, 0x12, 0x01]),
     ([0x3E, 0x13, 0x01], [0x3E, 0x13, 0x01]),
+    ([0x4D, 0x13, 0x01], [0x4D, 0x13, 0x01]),
     ([0x57, 0x13, 0x01], [0x57, 0x13, 0x01]),
+    ([0xB8, 0x13, 0x01], [0xB8, 0x13, 0x01]),
+    ([0xC2, 0x13, 0x01], [0xC2, 0x13, 0x01]),
+    ([0xC5, 0x13, 0x01], [0xC5, 0x13, 0x01]),
+    ([0xC7, 0x13, 0x01], [0xC9, 0x13, 0x01]),
+    ([0xCF, 0x13, 0x01], [0xCF, 0x13, 0x01]),
+    ([0xD1, 0x13, 0x01], [0xD1, 0x13, 0x01]),
     ([0xB0, 0x14, 0x01], [0xB0, 0x14, 0x01]),
     ([0xBD, 0x14, 0x01], [0xBD, 0x14, 0x01]),
     ([0xAF, 0x15, 0x01], [0xAF, 0x15, 0x01]),
+    ([0xB6, 0x16, 0x01], [0xB6, 0x16, 0x01]),
     ([0x30, 0x19, 0x01], [0x30, 0x19, 0x01]),
+    ([0x3D, 0x19, 0x01], [0x3D, 0x19, 0x01]),
     ([0x3F, 0x19, 0x01], [0x3F, 0x19, 0x01]),
     ([0x41, 0x19, 0x01], [0x41, 0x19, 0x01]),
     ([0x3A, 0x1A, 0x01], [0x3A, 0x1A, 0x01]),
     ([0x84, 0x1A, 0x01], [0x89, 0x1A, 0x01]),
     ([0x46, 0x1D, 0x01], [0x46, 0x1D, 0x01]),
     ([0x02, 0x1F, 0x01], [0x02, 0x1F, 0x01]),
-    ([0x65, 0xD1, 0x01], [0x65, 0xD1, 0x01]),
-    ([0x6E, 0xD1, 0x01], [0x72, 0xD1, 0x01]),
+    ([0x41, 0x1F, 0x01], [0x41, 0x1F, 0x01]),
+    ([0xF0, 0x6F, 0x01], [0xF1, 0x6F, 0x01]),
+    ([0x65, 0xD1, 0x01], [0x66, 0xD1, 0x01]),
+    ([0x6D, 0xD1, 0x01], [0x72, 0xD1, 0x01]),
     ([0x00, 0x00, 0x0E], [0x00, 0x00, 0x0E]),
     ([0x02, 0x00, 0x0E], [0x1F, 0x00, 0x0E]),
     ([0x80, 0x00, 0x0E], [0xFF, 0x00, 0x0E]),
@@ -2055,7 +2176,7 @@ static NON_TRANSPARENT_ZERO_WIDTHS: [([u8; 3], [u8; 3]); 53] = [
 /// (mostly ccc > 1).
 /// FIXME: can we get better compression?
 #[cfg(feature = "cjk")]
-static SOLIDUS_TRANSPARENT: [([u8; 3], [u8; 3]); 198] = [
+static SOLIDUS_TRANSPARENT: [([u8; 3], [u8; 3]); 202] = [
     ([0x00, 0x03, 0x00], [0x33, 0x03, 0x00]),
     ([0x39, 0x03, 0x00], [0x6F, 0x03, 0x00]),
     ([0x83, 0x04, 0x00], [0x87, 0x04, 0x00]),
@@ -2080,7 +2201,7 @@ static SOLIDUS_TRANSPARENT: [([u8; 3], [u8; 3]); 198] = [
     ([0x25, 0x08, 0x00], [0x27, 0x08, 0x00]),
     ([0x29, 0x08, 0x00], [0x2D, 0x08, 0x00]),
     ([0x59, 0x08, 0x00], [0x5B, 0x08, 0x00]),
-    ([0x98, 0x08, 0x00], [0x9F, 0x08, 0x00]),
+    ([0x97, 0x08, 0x00], [0x9F, 0x08, 0x00]),
     ([0xCA, 0x08, 0x00], [0xE1, 0x08, 0x00]),
     ([0xE3, 0x08, 0x00], [0xFF, 0x08, 0x00]),
     ([0x3C, 0x09, 0x00], [0x3C, 0x09, 0x00]),
@@ -2192,6 +2313,7 @@ static SOLIDUS_TRANSPARENT: [([u8; 3], [u8; 3]); 198] = [
     ([0x3F, 0x0A, 0x01], [0x3F, 0x0A, 0x01]),
     ([0xE5, 0x0A, 0x01], [0xE6, 0x0A, 0x01]),
     ([0x24, 0x0D, 0x01], [0x27, 0x0D, 0x01]),
+    ([0x69, 0x0D, 0x01], [0x6D, 0x0D, 0x01]),
     ([0x74, 0x0E, 0x01], [0x74, 0x0E, 0x01]),
     ([0xAB, 0x0E, 0x01], [0xAC, 0x0E, 0x01]),
     ([0xFD, 0x0E, 0x01], [0xFF, 0x0E, 0x01]),
@@ -2212,6 +2334,7 @@ static SOLIDUS_TRANSPARENT: [([u8; 3], [u8; 3]); 198] = [
     ([0x4D, 0x13, 0x01], [0x4D, 0x13, 0x01]),
     ([0x66, 0x13, 0x01], [0x6C, 0x13, 0x01]),
     ([0x70, 0x13, 0x01], [0x74, 0x13, 0x01]),
+    ([0xCE, 0x13, 0x01], [0xD0, 0x13, 0x01]),
     ([0x42, 0x14, 0x01], [0x42, 0x14, 0x01]),
     ([0x46, 0x14, 0x01], [0x46, 0x14, 0x01]),
     ([0x5E, 0x14, 0x01], [0x5E, 0x14, 0x01]),
@@ -2232,6 +2355,7 @@ static SOLIDUS_TRANSPARENT: [([u8; 3], [u8; 3]); 198] = [
     ([0x44, 0x1D, 0x01], [0x45, 0x1D, 0x01]),
     ([0x97, 0x1D, 0x01], [0x97, 0x1D, 0x01]),
     ([0x41, 0x1F, 0x01], [0x42, 0x1F, 0x01]),
+    ([0x2F, 0x61, 0x01], [0x2F, 0x61, 0x01]),
     ([0x30, 0x6B, 0x01], [0x36, 0x6B, 0x01]),
     ([0xF0, 0x6F, 0x01], [0xF1, 0x6F, 0x01]),
     ([0x65, 0xD1, 0x01], [0x66, 0xD1, 0x01]),
@@ -2250,6 +2374,7 @@ static SOLIDUS_TRANSPARENT: [([u8; 3], [u8; 3]); 198] = [
     ([0xAE, 0xE2, 0x01], [0xAE, 0xE2, 0x01]),
     ([0xEC, 0xE2, 0x01], [0xEF, 0xE2, 0x01]),
     ([0xEC, 0xE4, 0x01], [0xEF, 0xE4, 0x01]),
+    ([0xEE, 0xE5, 0x01], [0xEF, 0xE5, 0x01]),
     ([0xD0, 0xE8, 0x01], [0xD6, 0xE8, 0x01]),
     ([0x44, 0xE9, 0x01], [0x4A, 0xE9, 0x01]),
     ([0x85, 0xEC, 0x01], [0x85, 0xEC, 0x01]),
@@ -2598,7 +2723,7 @@ mod tests {
         }
     }
 
-    static NORMALIZATION_TEST_WIDTHS: [WidthInfo; 38] = [
+    static NORMALIZATION_TEST_WIDTHS: [WidthInfo; 41] = [
         WidthInfo::DEFAULT,
         WidthInfo::LINE_FEED,
         WidthInfo::EMOJI_MODIFIER,
@@ -2622,6 +2747,9 @@ mod tests {
         WidthInfo::TAG_A4_END_ZWJ_EMOJI_PRESENTATION,
         WidthInfo::TAG_A5_END_ZWJ_EMOJI_PRESENTATION,
         WidthInfo::TAG_A6_END_ZWJ_EMOJI_PRESENTATION,
+        WidthInfo::KIRAT_RAI_VOWEL_SIGN_E,
+        WidthInfo::KIRAT_RAI_VOWEL_SIGN_AI,
+        WidthInfo::VARIATION_SELECTOR_1_OR_2,
         WidthInfo::VARIATION_SELECTOR_15,
         WidthInfo::VARIATION_SELECTOR_16,
         WidthInfo::JOINING_GROUP_ALEF,
@@ -2640,7 +2768,7 @@ mod tests {
     ];
 
     #[cfg(feature = "cjk")]
-    static NORMALIZATION_TEST_WIDTHS_CJK: [WidthInfo; 39] = [
+    static NORMALIZATION_TEST_WIDTHS_CJK: [WidthInfo; 42] = [
         WidthInfo::DEFAULT,
         WidthInfo::LINE_FEED,
         WidthInfo::EMOJI_MODIFIER,
@@ -2664,6 +2792,9 @@ mod tests {
         WidthInfo::TAG_A4_END_ZWJ_EMOJI_PRESENTATION,
         WidthInfo::TAG_A5_END_ZWJ_EMOJI_PRESENTATION,
         WidthInfo::TAG_A6_END_ZWJ_EMOJI_PRESENTATION,
+        WidthInfo::KIRAT_RAI_VOWEL_SIGN_E,
+        WidthInfo::KIRAT_RAI_VOWEL_SIGN_AI,
+        WidthInfo::VARIATION_SELECTOR_1_OR_2,
         WidthInfo::VARIATION_SELECTOR_16,
         WidthInfo::JOINING_GROUP_ALEF,
         WidthInfo::COMBINING_LONG_SOLIDUS_OVERLAY,
@@ -2683,7 +2814,7 @@ mod tests {
     ];
 
     #[rustfmt::skip]
-    static NORMALIZATION_TEST: [(&str, &str, &str, &str, &str); 19074] = [
+    static NORMALIZATION_TEST: [(&str, &str, &str, &str, &str); 19965] = [
         (r#"Ḋ"#, r#"Ḋ"#, r#"Ḋ"#, r#"Ḋ"#, r#"Ḋ"#),
         (r#"Ḍ"#, r#"Ḍ"#, r#"Ḍ"#, r#"Ḍ"#, r#"Ḍ"#),
         (r#"Ḍ̇"#, r#"Ḍ̇"#, r#"Ḍ̇"#, r#"Ḍ̇"#, r#"Ḍ̇"#),
@@ -2709,6 +2840,26 @@ mod tests {
         (r#"ְַּ֥֒׀֭ׄ"#, r#"ְַּ֥֒׀֭ׄ"#, r#"ְַּ֥֒׀֭ׄ"#, r#"ְַּ֥֒׀֭ׄ"#, r#"ְַּ֥֒׀֭ׄ"#),
         (r#"ᄀ각"#, r#"ᄀ각"#, r#"ᄀ각"#, r#"ᄀ각"#, r#"ᄀ각"#),
         (r#"ᄀ각ᆨ"#, r#"ᄀ각ᆨ"#, r#"ᄀ각ᆨ"#, r#"ᄀ각ᆨ"#, r#"ᄀ각ᆨ"#),
+        (r#"Ǆ̣"#, r#"Ǆ̣"#, r#"Ǆ̣"#, r#"DẒ̌"#, r#"DẒ̌"#),
+        (r#"ǅ̣"#, r#"ǅ̣"#, r#"ǅ̣"#, r#"Dẓ̌"#, r#"Dẓ̌"#),
+        (r#"ǆ̣"#, r#"ǆ̣"#, r#"ǆ̣"#, r#"dẓ̌"#, r#"dẓ̌"#),
+        (r#"ෝ̴"#, r#"ෝ̴"#, r#"ෝ̴"#, r#"ෝ̴"#, r#"ෝ̴"#),
+        (r#"㌄̴"#, r#"㌄̴"#, r#"㌄̴"#, r#"イニング̴"#, r#"イニング̴"#),
+        (r#"㌇̴"#, r#"㌇̴"#, r#"㌇̴"#, r#"エスクード̴"#, r#"エスクード̴"#),
+        (r#"㌐̴"#, r#"㌐̴"#, r#"㌐̴"#, r#"ギガ̴"#, r#"ギガ̴"#),
+        (r#"㌞̴"#, r#"㌞̴"#, r#"㌞̴"#, r#"コーポ̴"#, r#"コーポ̴"#),
+        (r#"㌡̴"#, r#"㌡̴"#, r#"㌡̴"#, r#"シリング̴"#, r#"シリング̴"#),
+        (r#"㌲̴"#, r#"㌲̴"#, r#"㌲̴"#, r#"ファラッド̴"#, r#"ファラッド̴"#),
+        (r#"㌻̴"#, r#"㌻̴"#, r#"㌻̴"#, r#"ページ̴"#, r#"ページ̴"#),
+        (r#"㍀̴"#, r#"㍀̴"#, r#"㍀̴"#, r#"ポンド̴"#, r#"ポンド̴"#),
+        (r#"㍋̴"#, r#"㍋̴"#, r#"㍋̴"#, r#"メガ̴"#, r#"メガ̴"#),
+        (r#"㍎̴"#, r#"㍎̴"#, r#"㍎̴"#, r#"ヤード̴"#, r#"ヤード̴"#),
+        (r#"ﻵٖ"#, r#"ﻵٖ"#, r#"ﻵٖ"#, r#"لآٖ"#, r#"لآٖ"#),
+        (r#"ﻶٖ"#, r#"ﻶٖ"#, r#"ﻶٖ"#, r#"لآٖ"#, r#"لآٖ"#),
+        (r#"ﻷٖ"#, r#"ﻷٖ"#, r#"ﻷٖ"#, r#"لأٖ"#, r#"لأٖ"#),
+        (r#"ﻸٖ"#, r#"ﻸٖ"#, r#"ﻸٖ"#, r#"لأٖ"#, r#"لأٖ"#),
+        (r#"ﻹ̴"#, r#"ﻹ̴"#, r#"ﻹ̴"#, r#"لإ̴"#, r#"لإ̴"#),
+        (r#"ﻺ̴"#, r#"ﻺ̴"#, r#"ﻺ̴"#, r#"لإ̴"#, r#"لإ̴"#),
         (r#" "#, r#" "#, r#" "#, r#" "#, r#" "#),
         (r#"¨"#, r#"¨"#, r#"¨"#, r#" ̈"#, r#" ̈"#),
         (r#"ª"#, r#"ª"#, r#"ª"#, r#"a"#, r#"a"#),
@@ -17769,6 +17920,8 @@ mod tests {
         (r#"￬"#, r#"￬"#, r#"￬"#, r#"↓"#, r#"↓"#),
         (r#"￭"#, r#"￭"#, r#"￭"#, r#"■"#, r#"■"#),
         (r#"￮"#, r#"￮"#, r#"￮"#, r#"○"#, r#"○"#),
+        (r#"𐗉"#, r#"𐗉"#, r#"𐗉"#, r#"𐗉"#, r#"𐗉"#),
+        (r#"𐗤"#, r#"𐗤"#, r#"𐗤"#, r#"𐗤"#, r#"𐗤"#),
         (r#"𐞁"#, r#"𐞁"#, r#"𐞁"#, r#"ː"#, r#"ː"#),
         (r#"𐞂"#, r#"𐞂"#, r#"𐞂"#, r#"ˑ"#, r#"ˑ"#),
         (r#"𐞃"#, r#"𐞃"#, r#"𐞃"#, r#"æ"#, r#"æ"#),
@@ -17832,12 +17985,66 @@ mod tests {
         (r#"𑄯"#, r#"𑄯"#, r#"𑄯"#, r#"𑄯"#, r#"𑄯"#),
         (r#"𑍋"#, r#"𑍋"#, r#"𑍋"#, r#"𑍋"#, r#"𑍋"#),
         (r#"𑍌"#, r#"𑍌"#, r#"𑍌"#, r#"𑍌"#, r#"𑍌"#),
+        (r#"𑎃"#, r#"𑎃"#, r#"𑎃"#, r#"𑎃"#, r#"𑎃"#),
+        (r#"𑎅"#, r#"𑎅"#, r#"𑎅"#, r#"𑎅"#, r#"𑎅"#),
+        (r#"𑎎"#, r#"𑎎"#, r#"𑎎"#, r#"𑎎"#, r#"𑎎"#),
+        (r#"𑎑"#, r#"𑎑"#, r#"𑎑"#, r#"𑎑"#, r#"𑎑"#),
+        (r#"𑏅"#, r#"𑏅"#, r#"𑏅"#, r#"𑏅"#, r#"𑏅"#),
+        (r#"𑏇"#, r#"𑏇"#, r#"𑏇"#, r#"𑏇"#, r#"𑏇"#),
+        (r#"𑏈"#, r#"𑏈"#, r#"𑏈"#, r#"𑏈"#, r#"𑏈"#),
         (r#"𑒻"#, r#"𑒻"#, r#"𑒻"#, r#"𑒻"#, r#"𑒻"#),
         (r#"𑒼"#, r#"𑒼"#, r#"𑒼"#, r#"𑒼"#, r#"𑒼"#),
         (r#"𑒾"#, r#"𑒾"#, r#"𑒾"#, r#"𑒾"#, r#"𑒾"#),
         (r#"𑖺"#, r#"𑖺"#, r#"𑖺"#, r#"𑖺"#, r#"𑖺"#),
         (r#"𑖻"#, r#"𑖻"#, r#"𑖻"#, r#"𑖻"#, r#"𑖻"#),
         (r#"𑤸"#, r#"𑤸"#, r#"𑤸"#, r#"𑤸"#, r#"𑤸"#),
+        (r#"𖄡"#, r#"𖄡"#, r#"𖄡"#, r#"𖄡"#, r#"𖄡"#),
+        (r#"𖄢"#, r#"𖄢"#, r#"𖄢"#, r#"𖄢"#, r#"𖄢"#),
+        (r#"𖄣"#, r#"𖄣"#, r#"𖄣"#, r#"𖄣"#, r#"𖄣"#),
+        (r#"𖄤"#, r#"𖄤"#, r#"𖄤"#, r#"𖄤"#, r#"𖄤"#),
+        (r#"𖄥"#, r#"𖄥"#, r#"𖄥"#, r#"𖄥"#, r#"𖄥"#),
+        (r#"𖄦"#, r#"𖄦"#, r#"𖄦"#, r#"𖄦"#, r#"𖄦"#),
+        (r#"𖄧"#, r#"𖄧"#, r#"𖄧"#, r#"𖄧"#, r#"𖄧"#),
+        (r#"𖄨"#, r#"𖄨"#, r#"𖄨"#, r#"𖄨"#, r#"𖄨"#),
+        (r#"𖵨"#, r#"𖵨"#, r#"𖵨"#, r#"𖵨"#, r#"𖵨"#),
+        (r#"𖵩"#, r#"𖵩"#, r#"𖵩"#, r#"𖵩"#, r#"𖵩"#),
+        (r#"𖵪"#, r#"𖵪"#, r#"𖵪"#, r#"𖵪"#, r#"𖵪"#),
+        (r#"𜳖"#, r#"𜳖"#, r#"𜳖"#, r#"A"#, r#"A"#),
+        (r#"𜳗"#, r#"𜳗"#, r#"𜳗"#, r#"B"#, r#"B"#),
+        (r#"𜳘"#, r#"𜳘"#, r#"𜳘"#, r#"C"#, r#"C"#),
+        (r#"𜳙"#, r#"𜳙"#, r#"𜳙"#, r#"D"#, r#"D"#),
+        (r#"𜳚"#, r#"𜳚"#, r#"𜳚"#, r#"E"#, r#"E"#),
+        (r#"𜳛"#, r#"𜳛"#, r#"𜳛"#, r#"F"#, r#"F"#),
+        (r#"𜳜"#, r#"𜳜"#, r#"𜳜"#, r#"G"#, r#"G"#),
+        (r#"𜳝"#, r#"𜳝"#, r#"𜳝"#, r#"H"#, r#"H"#),
+        (r#"𜳞"#, r#"𜳞"#, r#"𜳞"#, r#"I"#, r#"I"#),
+        (r#"𜳟"#, r#"𜳟"#, r#"𜳟"#, r#"J"#, r#"J"#),
+        (r#"𜳠"#, r#"𜳠"#, r#"𜳠"#, r#"K"#, r#"K"#),
+        (r#"𜳡"#, r#"𜳡"#, r#"𜳡"#, r#"L"#, r#"L"#),
+        (r#"𜳢"#, r#"𜳢"#, r#"𜳢"#, r#"M"#, r#"M"#),
+        (r#"𜳣"#, r#"𜳣"#, r#"𜳣"#, r#"N"#, r#"N"#),
+        (r#"𜳤"#, r#"𜳤"#, r#"𜳤"#, r#"O"#, r#"O"#),
+        (r#"𜳥"#, r#"𜳥"#, r#"𜳥"#, r#"P"#, r#"P"#),
+        (r#"𜳦"#, r#"𜳦"#, r#"𜳦"#, r#"Q"#, r#"Q"#),
+        (r#"𜳧"#, r#"𜳧"#, r#"𜳧"#, r#"R"#, r#"R"#),
+        (r#"𜳨"#, r#"𜳨"#, r#"𜳨"#, r#"S"#, r#"S"#),
+        (r#"𜳩"#, r#"𜳩"#, r#"𜳩"#, r#"T"#, r#"T"#),
+        (r#"𜳪"#, r#"𜳪"#, r#"𜳪"#, r#"U"#, r#"U"#),
+        (r#"𜳫"#, r#"𜳫"#, r#"𜳫"#, r#"V"#, r#"V"#),
+        (r#"𜳬"#, r#"𜳬"#, r#"𜳬"#, r#"W"#, r#"W"#),
+        (r#"𜳭"#, r#"𜳭"#, r#"𜳭"#, r#"X"#, r#"X"#),
+        (r#"𜳮"#, r#"𜳮"#, r#"𜳮"#, r#"Y"#, r#"Y"#),
+        (r#"𜳯"#, r#"𜳯"#, r#"𜳯"#, r#"Z"#, r#"Z"#),
+        (r#"𜳰"#, r#"𜳰"#, r#"𜳰"#, r#"0"#, r#"0"#),
+        (r#"𜳱"#, r#"𜳱"#, r#"𜳱"#, r#"1"#, r#"1"#),
+        (r#"𜳲"#, r#"𜳲"#, r#"𜳲"#, r#"2"#, r#"2"#),
+        (r#"𜳳"#, r#"𜳳"#, r#"𜳳"#, r#"3"#, r#"3"#),
+        (r#"𜳴"#, r#"𜳴"#, r#"𜳴"#, r#"4"#, r#"4"#),
+        (r#"𜳵"#, r#"𜳵"#, r#"𜳵"#, r#"5"#, r#"5"#),
+        (r#"𜳶"#, r#"𜳶"#, r#"𜳶"#, r#"6"#, r#"6"#),
+        (r#"𜳷"#, r#"𜳷"#, r#"𜳷"#, r#"7"#, r#"7"#),
+        (r#"𜳸"#, r#"𜳸"#, r#"𜳸"#, r#"8"#, r#"8"#),
+        (r#"𜳹"#, r#"𜳹"#, r#"𜳹"#, r#"9"#, r#"9"#),
         (r#"𝅗𝅥"#, r#"𝅗𝅥"#, r#"𝅗𝅥"#, r#"𝅗𝅥"#, r#"𝅗𝅥"#),
         (r#"𝅘𝅥"#, r#"𝅘𝅥"#, r#"𝅘𝅥"#, r#"𝅘𝅥"#, r#"𝅘𝅥"#),
         (r#"𝅘𝅥𝅮"#, r#"𝅘𝅥𝅮"#, r#"𝅘𝅥𝅮"#, r#"𝅘𝅥𝅮"#, r#"𝅘𝅥𝅮"#),
@@ -20300,6 +20507,8 @@ mod tests {
         (r#"a᷺࡚̖֚b"#, r#"a᷺࡚̖֚b"#, r#"a᷺࡚̖֚b"#, r#"a᷺࡚̖֚b"#, r#"a᷺࡚̖֚b"#),
         (r#"a᷺̖࡛֚b"#, r#"a᷺̖࡛֚b"#, r#"a᷺̖࡛֚b"#, r#"a᷺̖࡛֚b"#, r#"a᷺̖࡛֚b"#),
         (r#"a᷺࡛̖֚b"#, r#"a᷺࡛̖֚b"#, r#"a᷺࡛̖֚b"#, r#"a᷺࡛̖֚b"#, r#"a᷺࡛̖֚b"#),
+        (r#"à֮ࢗ̕b"#, r#"à֮ࢗ̕b"#, r#"à֮ࢗ̕b"#, r#"à֮ࢗ̕b"#, r#"à֮ࢗ̕b"#),
+        (r#"a֮ࢗ̀̕b"#, r#"a֮ࢗ̀̕b"#, r#"a֮ࢗ̀̕b"#, r#"a֮ࢗ̀̕b"#, r#"a֮ࢗ̀̕b"#),
         (r#"à֮࢘̕b"#, r#"à֮࢘̕b"#, r#"à֮࢘̕b"#, r#"à֮࢘̕b"#, r#"à֮࢘̕b"#),
         (r#"a֮࢘̀̕b"#, r#"a֮࢘̀̕b"#, r#"a֮࢘̀̕b"#, r#"a֮࢘̀̕b"#, r#"a֮࢘̀̕b"#),
         (r#"a᷺̖࢙֚b"#, r#"a᷺̖࢙֚b"#, r#"a᷺̖࢙֚b"#, r#"a᷺̖࢙֚b"#, r#"a᷺̖࢙֚b"#),
@@ -21190,6 +21399,16 @@ mod tests {
         (r#"a֮𐴦̀̕b"#, r#"a֮𐴦̀̕b"#, r#"a֮𐴦̀̕b"#, r#"a֮𐴦̀̕b"#, r#"a֮𐴦̀̕b"#),
         (r#"à֮𐴧̕b"#, r#"à֮𐴧̕b"#, r#"à֮𐴧̕b"#, r#"à֮𐴧̕b"#, r#"à֮𐴧̕b"#),
         (r#"a֮𐴧̀̕b"#, r#"a֮𐴧̀̕b"#, r#"a֮𐴧̀̕b"#, r#"a֮𐴧̀̕b"#, r#"a֮𐴧̀̕b"#),
+        (r#"à֮𐵩̕b"#, r#"à֮𐵩̕b"#, r#"à֮𐵩̕b"#, r#"à֮𐵩̕b"#, r#"à֮𐵩̕b"#),
+        (r#"a֮𐵩̀̕b"#, r#"a֮𐵩̀̕b"#, r#"a֮𐵩̀̕b"#, r#"a֮𐵩̀̕b"#, r#"a֮𐵩̀̕b"#),
+        (r#"à֮𐵪̕b"#, r#"à֮𐵪̕b"#, r#"à֮𐵪̕b"#, r#"à֮𐵪̕b"#, r#"à֮𐵪̕b"#),
+        (r#"a֮𐵪̀̕b"#, r#"a֮𐵪̀̕b"#, r#"a֮𐵪̀̕b"#, r#"a֮𐵪̀̕b"#, r#"a֮𐵪̀̕b"#),
+        (r#"à֮𐵫̕b"#, r#"à֮𐵫̕b"#, r#"à֮𐵫̕b"#, r#"à֮𐵫̕b"#, r#"à֮𐵫̕b"#),
+        (r#"a֮𐵫̀̕b"#, r#"a֮𐵫̀̕b"#, r#"a֮𐵫̀̕b"#, r#"a֮𐵫̀̕b"#, r#"a֮𐵫̀̕b"#),
+        (r#"à֮𐵬̕b"#, r#"à֮𐵬̕b"#, r#"à֮𐵬̕b"#, r#"à֮𐵬̕b"#, r#"à֮𐵬̕b"#),
+        (r#"a֮𐵬̀̕b"#, r#"a֮𐵬̀̕b"#, r#"a֮𐵬̀̕b"#, r#"a֮𐵬̀̕b"#, r#"a֮𐵬̀̕b"#),
+        (r#"à֮𐵭̕b"#, r#"à֮𐵭̕b"#, r#"à֮𐵭̕b"#, r#"à֮𐵭̕b"#, r#"à֮𐵭̕b"#),
+        (r#"a֮𐵭̀̕b"#, r#"a֮𐵭̀̕b"#, r#"a֮𐵭̀̕b"#, r#"a֮𐵭̀̕b"#, r#"a֮𐵭̀̕b"#),
         (r#"à֮𐺫̕b"#, r#"à֮𐺫̕b"#, r#"à֮𐺫̕b"#, r#"à֮𐺫̕b"#, r#"à֮𐺫̕b"#),
         (r#"a֮𐺫̀̕b"#, r#"a֮𐺫̀̕b"#, r#"a֮𐺫̀̕b"#, r#"a֮𐺫̀̕b"#, r#"a֮𐺫̀̕b"#),
         (r#"à֮𐺬̕b"#, r#"à֮𐺬̕b"#, r#"à֮𐺬̕b"#, r#"à֮𐺬̕b"#, r#"à֮𐺬̕b"#),
@@ -21294,6 +21513,12 @@ mod tests {
         (r#"a֮𑍳̀̕b"#, r#"a֮𑍳̀̕b"#, r#"a֮𑍳̀̕b"#, r#"a֮𑍳̀̕b"#, r#"a֮𑍳̀̕b"#),
         (r#"à֮𑍴̕b"#, r#"à֮𑍴̕b"#, r#"à֮𑍴̕b"#, r#"à֮𑍴̕b"#, r#"à֮𑍴̕b"#),
         (r#"a֮𑍴̀̕b"#, r#"a֮𑍴̀̕b"#, r#"a֮𑍴̀̕b"#, r#"a֮𑍴̀̕b"#, r#"a֮𑍴̀̕b"#),
+        (r#"a゙्𑏎ְb"#, r#"a゙्𑏎ְb"#, r#"a゙्𑏎ְb"#, r#"a゙्𑏎ְb"#, r#"a゙्𑏎ְb"#),
+        (r#"a゙𑏎्ְb"#, r#"a゙𑏎्ְb"#, r#"a゙𑏎्ְb"#, r#"a゙𑏎्ְb"#, r#"a゙𑏎्ְb"#),
+        (r#"a゙्𑏏ְb"#, r#"a゙्𑏏ְb"#, r#"a゙्𑏏ְb"#, r#"a゙्𑏏ְb"#, r#"a゙्𑏏ְb"#),
+        (r#"a゙𑏏्ְb"#, r#"a゙𑏏्ְb"#, r#"a゙𑏏्ְb"#, r#"a゙𑏏्ְb"#, r#"a゙𑏏्ְb"#),
+        (r#"a゙्𑏐ְb"#, r#"a゙्𑏐ְb"#, r#"a゙्𑏐ְb"#, r#"a゙्𑏐ְb"#, r#"a゙्𑏐ְb"#),
+        (r#"a゙𑏐्ְb"#, r#"a゙𑏐्ְb"#, r#"a゙𑏐्ְb"#, r#"a゙𑏐्ְb"#, r#"a゙𑏐्ְb"#),
         (r#"a゙्𑑂ְb"#, r#"a゙्𑑂ְb"#, r#"a゙्𑑂ְb"#, r#"a゙्𑑂ְb"#, r#"a゙्𑑂ְb"#),
         (r#"a゙𑑂्ְb"#, r#"a゙𑑂्ְb"#, r#"a゙𑑂्ְb"#, r#"a゙𑑂्ְb"#, r#"a゙𑑂्ְb"#),
         (r#"a𖿰़𑑆゙b"#, r#"a𖿰़𑑆゙b"#, r#"a𖿰़𑑆゙b"#, r#"a𖿰़𑑆゙b"#, r#"a𖿰़𑑆゙b"#),
@@ -21348,6 +21573,8 @@ mod tests {
         (r#"a゙𑽁्ְb"#, r#"a゙𑽁्ְb"#, r#"a゙𑽁्ְb"#, r#"a゙𑽁्ְb"#, r#"a゙𑽁्ְb"#),
         (r#"a゙्𑽂ְb"#, r#"a゙्𑽂ְb"#, r#"a゙्𑽂ְb"#, r#"a゙्𑽂ְb"#, r#"a゙्𑽂ְb"#),
         (r#"a゙𑽂्ְb"#, r#"a゙𑽂्ְb"#, r#"a゙𑽂्ְb"#, r#"a゙𑽂्ְb"#, r#"a゙𑽂्ְb"#),
+        (r#"a゙्𖄯ְb"#, r#"a゙्𖄯ְb"#, r#"a゙्𖄯ְb"#, r#"a゙्𖄯ְb"#, r#"a゙्𖄯ְb"#),
+        (r#"a゙𖄯्ְb"#, r#"a゙𖄯्ְb"#, r#"a゙𖄯्ְb"#, r#"a゙𖄯्ְb"#, r#"a゙𖄯्ְb"#),
         (r#"a̴𖫰𖿰b"#, r#"a̴𖫰𖿰b"#, r#"a̴𖫰𖿰b"#, r#"a̴𖫰𖿰b"#, r#"a̴𖫰𖿰b"#),
         (r#"a𖫰̴𖿰b"#, r#"a𖫰̴𖿰b"#, r#"a𖫰̴𖿰b"#, r#"a𖫰̴𖿰b"#, r#"a𖫰̴𖿰b"#),
         (r#"a̴𖫱𖿰b"#, r#"a̴𖫱𖿰b"#, r#"a̴𖫱𖿰b"#, r#"a̴𖫱𖿰b"#, r#"a̴𖫱𖿰b"#),
@@ -21554,6 +21781,10 @@ mod tests {
         (r#"a᷺𞓮̖֚b"#, r#"a᷺𞓮̖֚b"#, r#"a᷺𞓮̖֚b"#, r#"a᷺𞓮̖֚b"#, r#"a᷺𞓮̖֚b"#),
         (r#"à֮𞓯̕b"#, r#"à֮𞓯̕b"#, r#"à֮𞓯̕b"#, r#"à֮𞓯̕b"#, r#"à֮𞓯̕b"#),
         (r#"a֮𞓯̀̕b"#, r#"a֮𞓯̀̕b"#, r#"a֮𞓯̀̕b"#, r#"a֮𞓯̀̕b"#, r#"a֮𞓯̀̕b"#),
+        (r#"à֮𞗮̕b"#, r#"à֮𞗮̕b"#, r#"à֮𞗮̕b"#, r#"à֮𞗮̕b"#, r#"à֮𞗮̕b"#),
+        (r#"a֮𞗮̀̕b"#, r#"a֮𞗮̀̕b"#, r#"a֮𞗮̀̕b"#, r#"a֮𞗮̀̕b"#, r#"a֮𞗮̀̕b"#),
+        (r#"a᷺̖𞗯֚b"#, r#"a᷺̖𞗯֚b"#, r#"a᷺̖𞗯֚b"#, r#"a᷺̖𞗯֚b"#, r#"a᷺̖𞗯֚b"#),
+        (r#"a᷺𞗯̖֚b"#, r#"a᷺𞗯̖֚b"#, r#"a᷺𞗯̖֚b"#, r#"a᷺𞗯̖֚b"#, r#"a᷺𞗯̖֚b"#),
         (r#"a᷺̖𞣐֚b"#, r#"a᷺̖𞣐֚b"#, r#"a᷺̖𞣐֚b"#, r#"a᷺̖𞣐֚b"#, r#"a᷺̖𞣐֚b"#),
         (r#"a᷺𞣐̖֚b"#, r#"a᷺𞣐̖֚b"#, r#"a᷺𞣐̖֚b"#, r#"a᷺𞣐̖֚b"#, r#"a᷺𞣐̖֚b"#),
         (r#"a᷺̖𞣑֚b"#, r#"a᷺̖𞣑֚b"#, r#"a᷺̖𞣑֚b"#, r#"a᷺̖𞣑֚b"#, r#"a᷺̖𞣑֚b"#),
@@ -21752,11 +21983,802 @@ mod tests {
         (r#"𑄲̴𑄧"#, r#"𑄲̴𑄧"#, r#"𑄲̴𑄧"#, r#"𑄲̴𑄧"#, r#"𑄲̴𑄧"#),
         (r#"𑍇̴𑌾"#, r#"𑍇̴𑌾"#, r#"𑍇̴𑌾"#, r#"𑍇̴𑌾"#, r#"𑍇̴𑌾"#),
         (r#"𑍇̴𑍗"#, r#"𑍇̴𑍗"#, r#"𑍇̴𑍗"#, r#"𑍇̴𑍗"#, r#"𑍇̴𑍗"#),
+        (r#"𑎂̴𑏉"#, r#"𑎂̴𑏉"#, r#"𑎂̴𑏉"#, r#"𑎂̴𑏉"#, r#"𑎂̴𑏉"#),
+        (r#"𑎄̴𑎻"#, r#"𑎄̴𑎻"#, r#"𑎄̴𑎻"#, r#"𑎄̴𑎻"#, r#"𑎄̴𑎻"#),
+        (r#"𑎋̴𑏂"#, r#"𑎋̴𑏂"#, r#"𑎋̴𑏂"#, r#"𑎋̴𑏂"#, r#"𑎋̴𑏂"#),
+        (r#"𑎐̴𑏉"#, r#"𑎐̴𑏉"#, r#"𑎐̴𑏉"#, r#"𑎐̴𑏉"#, r#"𑎐̴𑏉"#),
+        (r#"𑏂̴𑎸"#, r#"𑏂̴𑎸"#, r#"𑏂̴𑎸"#, r#"𑏂̴𑎸"#, r#"𑏂̴𑎸"#),
+        (r#"𑏂̴𑏂"#, r#"𑏂̴𑏂"#, r#"𑏂̴𑏂"#, r#"𑏂̴𑏂"#, r#"𑏂̴𑏂"#),
+        (r#"𑏂̴𑏉"#, r#"𑏂̴𑏉"#, r#"𑏂̴𑏉"#, r#"𑏂̴𑏉"#, r#"𑏂̴𑏉"#),
         (r#"𑒹̴𑒰"#, r#"𑒹̴𑒰"#, r#"𑒹̴𑒰"#, r#"𑒹̴𑒰"#, r#"𑒹̴𑒰"#),
         (r#"𑒹̴𑒺"#, r#"𑒹̴𑒺"#, r#"𑒹̴𑒺"#, r#"𑒹̴𑒺"#, r#"𑒹̴𑒺"#),
         (r#"𑒹̴𑒽"#, r#"𑒹̴𑒽"#, r#"𑒹̴𑒽"#, r#"𑒹̴𑒽"#, r#"𑒹̴𑒽"#),
         (r#"𑖸̴𑖯"#, r#"𑖸̴𑖯"#, r#"𑖸̴𑖯"#, r#"𑖸̴𑖯"#, r#"𑖸̴𑖯"#),
         (r#"𑖹̴𑖯"#, r#"𑖹̴𑖯"#, r#"𑖹̴𑖯"#, r#"𑖹̴𑖯"#, r#"𑖹̴𑖯"#),
         (r#"𑤵̴𑤰"#, r#"𑤵̴𑤰"#, r#"𑤵̴𑤰"#, r#"𑤵̴𑤰"#, r#"𑤵̴𑤰"#),
+        (r#"𖄞̴𖄞"#, r#"𖄞̴𖄞"#, r#"𖄞̴𖄞"#, r#"𖄞̴𖄞"#, r#"𖄞̴𖄞"#),
+        (r#"𖄞̴𖄟"#, r#"𖄞̴𖄟"#, r#"𖄞̴𖄟"#, r#"𖄞̴𖄟"#, r#"𖄞̴𖄟"#),
+        (r#"𖄞̴𖄠"#, r#"𖄞̴𖄠"#, r#"𖄞̴𖄠"#, r#"𖄞̴𖄠"#, r#"𖄞̴𖄠"#),
+        (r#"𖄞̴𖄩"#, r#"𖄞̴𖄩"#, r#"𖄞̴𖄩"#, r#"𖄞̴𖄩"#, r#"𖄞̴𖄩"#),
+        (r#"𖄡̴𖄟"#, r#"𖄡̴𖄟"#, r#"𖄡̴𖄟"#, r#"𖄡̴𖄟"#, r#"𖄡̴𖄟"#),
+        (r#"𖄡̴𖄠"#, r#"𖄡̴𖄠"#, r#"𖄡̴𖄠"#, r#"𖄡̴𖄠"#, r#"𖄡̴𖄠"#),
+        (r#"𖄢̴𖄟"#, r#"𖄢̴𖄟"#, r#"𖄢̴𖄟"#, r#"𖄢̴𖄟"#, r#"𖄢̴𖄟"#),
+        (r#"𖄩̴𖄟"#, r#"𖄩̴𖄟"#, r#"𖄩̴𖄟"#, r#"𖄩̴𖄟"#, r#"𖄩̴𖄟"#),
+        (r#"𖵣̴𖵧"#, r#"𖵣̴𖵧"#, r#"𖵣̴𖵧"#, r#"𖵣̴𖵧"#, r#"𖵣̴𖵧"#),
+        (r#"𖵧̴𖵧"#, r#"𖵧̴𖵧"#, r#"𖵧̴𖵧"#, r#"𖵧̴𖵧"#, r#"𖵧̴𖵧"#),
+        (r#"𖵩̴𖵧"#, r#"𖵩̴𖵧"#, r#"𖵩̴𖵧"#, r#"𖵩̴𖵧"#, r#"𖵩̴𖵧"#),
+        (r#"Ǖ"#, r#"Ǖ"#, r#"Ǖ"#, r#"Ǖ"#, r#"Ǖ"#),
+        (r#"ǖ"#, r#"ǖ"#, r#"ǖ"#, r#"ǖ"#, r#"ǖ"#),
+        (r#"Ǘ"#, r#"Ǘ"#, r#"Ǘ"#, r#"Ǘ"#, r#"Ǘ"#),
+        (r#"Ǘ"#, r#"Ǘ"#, r#"Ǘ"#, r#"Ǘ"#, r#"Ǘ"#),
+        (r#"Ǘ"#, r#"Ǘ"#, r#"Ǘ"#, r#"Ǘ"#, r#"Ǘ"#),
+        (r#"ǘ"#, r#"ǘ"#, r#"ǘ"#, r#"ǘ"#, r#"ǘ"#),
+        (r#"ǘ"#, r#"ǘ"#, r#"ǘ"#, r#"ǘ"#, r#"ǘ"#),
+        (r#"ǘ"#, r#"ǘ"#, r#"ǘ"#, r#"ǘ"#, r#"ǘ"#),
+        (r#"Ǚ"#, r#"Ǚ"#, r#"Ǚ"#, r#"Ǚ"#, r#"Ǚ"#),
+        (r#"ǚ"#, r#"ǚ"#, r#"ǚ"#, r#"ǚ"#, r#"ǚ"#),
+        (r#"Ǜ"#, r#"Ǜ"#, r#"Ǜ"#, r#"Ǜ"#, r#"Ǜ"#),
+        (r#"Ǜ"#, r#"Ǜ"#, r#"Ǜ"#, r#"Ǜ"#, r#"Ǜ"#),
+        (r#"ǜ"#, r#"ǜ"#, r#"ǜ"#, r#"ǜ"#, r#"ǜ"#),
+        (r#"ǜ"#, r#"ǜ"#, r#"ǜ"#, r#"ǜ"#, r#"ǜ"#),
+        (r#"Ǟ"#, r#"Ǟ"#, r#"Ǟ"#, r#"Ǟ"#, r#"Ǟ"#),
+        (r#"ǟ"#, r#"ǟ"#, r#"ǟ"#, r#"ǟ"#, r#"ǟ"#),
+        (r#"Ǡ"#, r#"Ǡ"#, r#"Ǡ"#, r#"Ǡ"#, r#"Ǡ"#),
+        (r#"ǡ"#, r#"ǡ"#, r#"ǡ"#, r#"ǡ"#, r#"ǡ"#),
+        (r#"Ǭ"#, r#"Ǭ"#, r#"Ǭ"#, r#"Ǭ"#, r#"Ǭ"#),
+        (r#"Ǭ"#, r#"Ǭ"#, r#"Ǭ"#, r#"Ǭ"#, r#"Ǭ"#),
+        (r#"ǭ"#, r#"ǭ"#, r#"ǭ"#, r#"ǭ"#, r#"ǭ"#),
+        (r#"ǭ"#, r#"ǭ"#, r#"ǭ"#, r#"ǭ"#, r#"ǭ"#),
+        (r#"Ǻ"#, r#"Ǻ"#, r#"Ǻ"#, r#"Ǻ"#, r#"Ǻ"#),
+        (r#"Ǻ"#, r#"Ǻ"#, r#"Ǻ"#, r#"Ǻ"#, r#"Ǻ"#),
+        (r#"Ǻ"#, r#"Ǻ"#, r#"Ǻ"#, r#"Ǻ"#, r#"Ǻ"#),
+        (r#"Ǻ"#, r#"Ǻ"#, r#"Ǻ"#, r#"Ǻ"#, r#"Ǻ"#),
+        (r#"ǻ"#, r#"ǻ"#, r#"ǻ"#, r#"ǻ"#, r#"ǻ"#),
+        (r#"ǻ"#, r#"ǻ"#, r#"ǻ"#, r#"ǻ"#, r#"ǻ"#),
+        (r#"Ȫ"#, r#"Ȫ"#, r#"Ȫ"#, r#"Ȫ"#, r#"Ȫ"#),
+        (r#"ȫ"#, r#"ȫ"#, r#"ȫ"#, r#"ȫ"#, r#"ȫ"#),
+        (r#"Ȭ"#, r#"Ȭ"#, r#"Ȭ"#, r#"Ȭ"#, r#"Ȭ"#),
+        (r#"ȭ"#, r#"ȭ"#, r#"ȭ"#, r#"ȭ"#, r#"ȭ"#),
+        (r#"Ȱ"#, r#"Ȱ"#, r#"Ȱ"#, r#"Ȱ"#, r#"Ȱ"#),
+        (r#"ȱ"#, r#"ȱ"#, r#"ȱ"#, r#"ȱ"#, r#"ȱ"#),
+        (r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#),
+        (r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#),
+        (r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#),
+        (r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#),
+        (r#"ΰ"#, r#"ΰ"#, r#"ΰ"#, r#"ΰ"#, r#"ΰ"#),
+        (r#"ΰ"#, r#"ΰ"#, r#"ΰ"#, r#"ΰ"#, r#"ΰ"#),
+        (r#"ΰ"#, r#"ΰ"#, r#"ΰ"#, r#"ΰ"#, r#"ΰ"#),
+        (r#"ೋ"#, r#"ೋ"#, r#"ೋ"#, r#"ೋ"#, r#"ೋ"#),
+        (r#"ෝ"#, r#"ෝ"#, r#"ෝ"#, r#"ෝ"#, r#"ෝ"#),
+        (r#"Ḉ"#, r#"Ḉ"#, r#"Ḉ"#, r#"Ḉ"#, r#"Ḉ"#),
+        (r#"Ḉ"#, r#"Ḉ"#, r#"Ḉ"#, r#"Ḉ"#, r#"Ḉ"#),
+        (r#"Ḉ"#, r#"Ḉ"#, r#"Ḉ"#, r#"Ḉ"#, r#"Ḉ"#),
+        (r#"ḉ"#, r#"ḉ"#, r#"ḉ"#, r#"ḉ"#, r#"ḉ"#),
+        (r#"ḉ"#, r#"ḉ"#, r#"ḉ"#, r#"ḉ"#, r#"ḉ"#),
+        (r#"ḉ"#, r#"ḉ"#, r#"ḉ"#, r#"ḉ"#, r#"ḉ"#),
+        (r#"Ḕ"#, r#"Ḕ"#, r#"Ḕ"#, r#"Ḕ"#, r#"Ḕ"#),
+        (r#"Ḕ"#, r#"Ḕ"#, r#"Ḕ"#, r#"Ḕ"#, r#"Ḕ"#),
+        (r#"ḕ"#, r#"ḕ"#, r#"ḕ"#, r#"ḕ"#, r#"ḕ"#),
+        (r#"ḕ"#, r#"ḕ"#, r#"ḕ"#, r#"ḕ"#, r#"ḕ"#),
+        (r#"Ḗ"#, r#"Ḗ"#, r#"Ḗ"#, r#"Ḗ"#, r#"Ḗ"#),
+        (r#"Ḗ"#, r#"Ḗ"#, r#"Ḗ"#, r#"Ḗ"#, r#"Ḗ"#),
+        (r#"ḗ"#, r#"ḗ"#, r#"ḗ"#, r#"ḗ"#, r#"ḗ"#),
+        (r#"ḗ"#, r#"ḗ"#, r#"ḗ"#, r#"ḗ"#, r#"ḗ"#),
+        (r#"Ḝ"#, r#"Ḝ"#, r#"Ḝ"#, r#"Ḝ"#, r#"Ḝ"#),
+        (r#"Ḝ"#, r#"Ḝ"#, r#"Ḝ"#, r#"Ḝ"#, r#"Ḝ"#),
+        (r#"ḝ"#, r#"ḝ"#, r#"ḝ"#, r#"ḝ"#, r#"ḝ"#),
+        (r#"ḝ"#, r#"ḝ"#, r#"ḝ"#, r#"ḝ"#, r#"ḝ"#),
+        (r#"Ḯ"#, r#"Ḯ"#, r#"Ḯ"#, r#"Ḯ"#, r#"Ḯ"#),
+        (r#"Ḯ"#, r#"Ḯ"#, r#"Ḯ"#, r#"Ḯ"#, r#"Ḯ"#),
+        (r#"Ḯ"#, r#"Ḯ"#, r#"Ḯ"#, r#"Ḯ"#, r#"Ḯ"#),
+        (r#"ḯ"#, r#"ḯ"#, r#"ḯ"#, r#"ḯ"#, r#"ḯ"#),
+        (r#"ḯ"#, r#"ḯ"#, r#"ḯ"#, r#"ḯ"#, r#"ḯ"#),
+        (r#"ḯ"#, r#"ḯ"#, r#"ḯ"#, r#"ḯ"#, r#"ḯ"#),
+        (r#"Ḹ"#, r#"Ḹ"#, r#"Ḹ"#, r#"Ḹ"#, r#"Ḹ"#),
+        (r#"ḹ"#, r#"ḹ"#, r#"ḹ"#, r#"ḹ"#, r#"ḹ"#),
+        (r#"Ṍ"#, r#"Ṍ"#, r#"Ṍ"#, r#"Ṍ"#, r#"Ṍ"#),
+        (r#"Ṍ"#, r#"Ṍ"#, r#"Ṍ"#, r#"Ṍ"#, r#"Ṍ"#),
+        (r#"ṍ"#, r#"ṍ"#, r#"ṍ"#, r#"ṍ"#, r#"ṍ"#),
+        (r#"ṍ"#, r#"ṍ"#, r#"ṍ"#, r#"ṍ"#, r#"ṍ"#),
+        (r#"Ṏ"#, r#"Ṏ"#, r#"Ṏ"#, r#"Ṏ"#, r#"Ṏ"#),
+        (r#"ṏ"#, r#"ṏ"#, r#"ṏ"#, r#"ṏ"#, r#"ṏ"#),
+        (r#"Ṑ"#, r#"Ṑ"#, r#"Ṑ"#, r#"Ṑ"#, r#"Ṑ"#),
+        (r#"Ṑ"#, r#"Ṑ"#, r#"Ṑ"#, r#"Ṑ"#, r#"Ṑ"#),
+        (r#"ṑ"#, r#"ṑ"#, r#"ṑ"#, r#"ṑ"#, r#"ṑ"#),
+        (r#"ṑ"#, r#"ṑ"#, r#"ṑ"#, r#"ṑ"#, r#"ṑ"#),
+        (r#"Ṓ"#, r#"Ṓ"#, r#"Ṓ"#, r#"Ṓ"#, r#"Ṓ"#),
+        (r#"Ṓ"#, r#"Ṓ"#, r#"Ṓ"#, r#"Ṓ"#, r#"Ṓ"#),
+        (r#"ṓ"#, r#"ṓ"#, r#"ṓ"#, r#"ṓ"#, r#"ṓ"#),
+        (r#"ṓ"#, r#"ṓ"#, r#"ṓ"#, r#"ṓ"#, r#"ṓ"#),
+        (r#"Ṝ"#, r#"Ṝ"#, r#"Ṝ"#, r#"Ṝ"#, r#"Ṝ"#),
+        (r#"ṝ"#, r#"ṝ"#, r#"ṝ"#, r#"ṝ"#, r#"ṝ"#),
+        (r#"Ṥ"#, r#"Ṥ"#, r#"Ṥ"#, r#"Ṥ"#, r#"Ṥ"#),
+        (r#"ṥ"#, r#"ṥ"#, r#"ṥ"#, r#"ṥ"#, r#"ṥ"#),
+        (r#"Ṧ"#, r#"Ṧ"#, r#"Ṧ"#, r#"Ṧ"#, r#"Ṧ"#),
+        (r#"ṧ"#, r#"ṧ"#, r#"ṧ"#, r#"ṧ"#, r#"ṧ"#),
+        (r#"Ṩ"#, r#"Ṩ"#, r#"Ṩ"#, r#"Ṩ"#, r#"Ṩ"#),
+        (r#"Ṩ"#, r#"Ṩ"#, r#"Ṩ"#, r#"Ṩ"#, r#"Ṩ"#),
+        (r#"ṩ"#, r#"ṩ"#, r#"ṩ"#, r#"ṩ"#, r#"ṩ"#),
+        (r#"ṩ"#, r#"ṩ"#, r#"ṩ"#, r#"ṩ"#, r#"ṩ"#),
+        (r#"Ṹ"#, r#"Ṹ"#, r#"Ṹ"#, r#"Ṹ"#, r#"Ṹ"#),
+        (r#"Ṹ"#, r#"Ṹ"#, r#"Ṹ"#, r#"Ṹ"#, r#"Ṹ"#),
+        (r#"ṹ"#, r#"ṹ"#, r#"ṹ"#, r#"ṹ"#, r#"ṹ"#),
+        (r#"ṹ"#, r#"ṹ"#, r#"ṹ"#, r#"ṹ"#, r#"ṹ"#),
+        (r#"Ṻ"#, r#"Ṻ"#, r#"Ṻ"#, r#"Ṻ"#, r#"Ṻ"#),
+        (r#"ṻ"#, r#"ṻ"#, r#"ṻ"#, r#"ṻ"#, r#"ṻ"#),
+        (r#"Ấ"#, r#"Ấ"#, r#"Ấ"#, r#"Ấ"#, r#"Ấ"#),
+        (r#"Ấ"#, r#"Ấ"#, r#"Ấ"#, r#"Ấ"#, r#"Ấ"#),
+        (r#"ấ"#, r#"ấ"#, r#"ấ"#, r#"ấ"#, r#"ấ"#),
+        (r#"ấ"#, r#"ấ"#, r#"ấ"#, r#"ấ"#, r#"ấ"#),
+        (r#"Ầ"#, r#"Ầ"#, r#"Ầ"#, r#"Ầ"#, r#"Ầ"#),
+        (r#"Ầ"#, r#"Ầ"#, r#"Ầ"#, r#"Ầ"#, r#"Ầ"#),
+        (r#"ầ"#, r#"ầ"#, r#"ầ"#, r#"ầ"#, r#"ầ"#),
+        (r#"ầ"#, r#"ầ"#, r#"ầ"#, r#"ầ"#, r#"ầ"#),
+        (r#"Ẩ"#, r#"Ẩ"#, r#"Ẩ"#, r#"Ẩ"#, r#"Ẩ"#),
+        (r#"ẩ"#, r#"ẩ"#, r#"ẩ"#, r#"ẩ"#, r#"ẩ"#),
+        (r#"Ẫ"#, r#"Ẫ"#, r#"Ẫ"#, r#"Ẫ"#, r#"Ẫ"#),
+        (r#"ẫ"#, r#"ẫ"#, r#"ẫ"#, r#"ẫ"#, r#"ẫ"#),
+        (r#"Ậ"#, r#"Ậ"#, r#"Ậ"#, r#"Ậ"#, r#"Ậ"#),
+        (r#"Ậ"#, r#"Ậ"#, r#"Ậ"#, r#"Ậ"#, r#"Ậ"#),
+        (r#"ậ"#, r#"ậ"#, r#"ậ"#, r#"ậ"#, r#"ậ"#),
+        (r#"ậ"#, r#"ậ"#, r#"ậ"#, r#"ậ"#, r#"ậ"#),
+        (r#"Ắ"#, r#"Ắ"#, r#"Ắ"#, r#"Ắ"#, r#"Ắ"#),
+        (r#"Ắ"#, r#"Ắ"#, r#"Ắ"#, r#"Ắ"#, r#"Ắ"#),
+        (r#"ắ"#, r#"ắ"#, r#"ắ"#, r#"ắ"#, r#"ắ"#),
+        (r#"ắ"#, r#"ắ"#, r#"ắ"#, r#"ắ"#, r#"ắ"#),
+        (r#"Ằ"#, r#"Ằ"#, r#"Ằ"#, r#"Ằ"#, r#"Ằ"#),
+        (r#"Ằ"#, r#"Ằ"#, r#"Ằ"#, r#"Ằ"#, r#"Ằ"#),
+        (r#"ằ"#, r#"ằ"#, r#"ằ"#, r#"ằ"#, r#"ằ"#),
+        (r#"ằ"#, r#"ằ"#, r#"ằ"#, r#"ằ"#, r#"ằ"#),
+        (r#"Ẳ"#, r#"Ẳ"#, r#"Ẳ"#, r#"Ẳ"#, r#"Ẳ"#),
+        (r#"ẳ"#, r#"ẳ"#, r#"ẳ"#, r#"ẳ"#, r#"ẳ"#),
+        (r#"Ẵ"#, r#"Ẵ"#, r#"Ẵ"#, r#"Ẵ"#, r#"Ẵ"#),
+        (r#"ẵ"#, r#"ẵ"#, r#"ẵ"#, r#"ẵ"#, r#"ẵ"#),
+        (r#"Ặ"#, r#"Ặ"#, r#"Ặ"#, r#"Ặ"#, r#"Ặ"#),
+        (r#"Ặ"#, r#"Ặ"#, r#"Ặ"#, r#"Ặ"#, r#"Ặ"#),
+        (r#"ặ"#, r#"ặ"#, r#"ặ"#, r#"ặ"#, r#"ặ"#),
+        (r#"ặ"#, r#"ặ"#, r#"ặ"#, r#"ặ"#, r#"ặ"#),
+        (r#"Ế"#, r#"Ế"#, r#"Ế"#, r#"Ế"#, r#"Ế"#),
+        (r#"Ế"#, r#"Ế"#, r#"Ế"#, r#"Ế"#, r#"Ế"#),
+        (r#"ế"#, r#"ế"#, r#"ế"#, r#"ế"#, r#"ế"#),
+        (r#"ế"#, r#"ế"#, r#"ế"#, r#"ế"#, r#"ế"#),
+        (r#"Ề"#, r#"Ề"#, r#"Ề"#, r#"Ề"#, r#"Ề"#),
+        (r#"Ề"#, r#"Ề"#, r#"Ề"#, r#"Ề"#, r#"Ề"#),
+        (r#"ề"#, r#"ề"#, r#"ề"#, r#"ề"#, r#"ề"#),
+        (r#"ề"#, r#"ề"#, r#"ề"#, r#"ề"#, r#"ề"#),
+        (r#"Ể"#, r#"Ể"#, r#"Ể"#, r#"Ể"#, r#"Ể"#),
+        (r#"ể"#, r#"ể"#, r#"ể"#, r#"ể"#, r#"ể"#),
+        (r#"Ễ"#, r#"Ễ"#, r#"Ễ"#, r#"Ễ"#, r#"Ễ"#),
+        (r#"ễ"#, r#"ễ"#, r#"ễ"#, r#"ễ"#, r#"ễ"#),
+        (r#"Ệ"#, r#"Ệ"#, r#"Ệ"#, r#"Ệ"#, r#"Ệ"#),
+        (r#"Ệ"#, r#"Ệ"#, r#"Ệ"#, r#"Ệ"#, r#"Ệ"#),
+        (r#"ệ"#, r#"ệ"#, r#"ệ"#, r#"ệ"#, r#"ệ"#),
+        (r#"ệ"#, r#"ệ"#, r#"ệ"#, r#"ệ"#, r#"ệ"#),
+        (r#"Ố"#, r#"Ố"#, r#"Ố"#, r#"Ố"#, r#"Ố"#),
+        (r#"Ố"#, r#"Ố"#, r#"Ố"#, r#"Ố"#, r#"Ố"#),
+        (r#"ố"#, r#"ố"#, r#"ố"#, r#"ố"#, r#"ố"#),
+        (r#"ố"#, r#"ố"#, r#"ố"#, r#"ố"#, r#"ố"#),
+        (r#"Ồ"#, r#"Ồ"#, r#"Ồ"#, r#"Ồ"#, r#"Ồ"#),
+        (r#"Ồ"#, r#"Ồ"#, r#"Ồ"#, r#"Ồ"#, r#"Ồ"#),
+        (r#"ồ"#, r#"ồ"#, r#"ồ"#, r#"ồ"#, r#"ồ"#),
+        (r#"ồ"#, r#"ồ"#, r#"ồ"#, r#"ồ"#, r#"ồ"#),
+        (r#"Ổ"#, r#"Ổ"#, r#"Ổ"#, r#"Ổ"#, r#"Ổ"#),
+        (r#"ổ"#, r#"ổ"#, r#"ổ"#, r#"ổ"#, r#"ổ"#),
+        (r#"Ỗ"#, r#"Ỗ"#, r#"Ỗ"#, r#"Ỗ"#, r#"Ỗ"#),
+        (r#"ỗ"#, r#"ỗ"#, r#"ỗ"#, r#"ỗ"#, r#"ỗ"#),
+        (r#"Ộ"#, r#"Ộ"#, r#"Ộ"#, r#"Ộ"#, r#"Ộ"#),
+        (r#"Ộ"#, r#"Ộ"#, r#"Ộ"#, r#"Ộ"#, r#"Ộ"#),
+        (r#"ộ"#, r#"ộ"#, r#"ộ"#, r#"ộ"#, r#"ộ"#),
+        (r#"ộ"#, r#"ộ"#, r#"ộ"#, r#"ộ"#, r#"ộ"#),
+        (r#"Ớ"#, r#"Ớ"#, r#"Ớ"#, r#"Ớ"#, r#"Ớ"#),
+        (r#"Ớ"#, r#"Ớ"#, r#"Ớ"#, r#"Ớ"#, r#"Ớ"#),
+        (r#"Ớ"#, r#"Ớ"#, r#"Ớ"#, r#"Ớ"#, r#"Ớ"#),
+        (r#"ớ"#, r#"ớ"#, r#"ớ"#, r#"ớ"#, r#"ớ"#),
+        (r#"ớ"#, r#"ớ"#, r#"ớ"#, r#"ớ"#, r#"ớ"#),
+        (r#"ớ"#, r#"ớ"#, r#"ớ"#, r#"ớ"#, r#"ớ"#),
+        (r#"Ờ"#, r#"Ờ"#, r#"Ờ"#, r#"Ờ"#, r#"Ờ"#),
+        (r#"Ờ"#, r#"Ờ"#, r#"Ờ"#, r#"Ờ"#, r#"Ờ"#),
+        (r#"Ờ"#, r#"Ờ"#, r#"Ờ"#, r#"Ờ"#, r#"Ờ"#),
+        (r#"ờ"#, r#"ờ"#, r#"ờ"#, r#"ờ"#, r#"ờ"#),
+        (r#"ờ"#, r#"ờ"#, r#"ờ"#, r#"ờ"#, r#"ờ"#),
+        (r#"ờ"#, r#"ờ"#, r#"ờ"#, r#"ờ"#, r#"ờ"#),
+        (r#"Ở"#, r#"Ở"#, r#"Ở"#, r#"Ở"#, r#"Ở"#),
+        (r#"Ở"#, r#"Ở"#, r#"Ở"#, r#"Ở"#, r#"Ở"#),
+        (r#"ở"#, r#"ở"#, r#"ở"#, r#"ở"#, r#"ở"#),
+        (r#"ở"#, r#"ở"#, r#"ở"#, r#"ở"#, r#"ở"#),
+        (r#"Ỡ"#, r#"Ỡ"#, r#"Ỡ"#, r#"Ỡ"#, r#"Ỡ"#),
+        (r#"Ỡ"#, r#"Ỡ"#, r#"Ỡ"#, r#"Ỡ"#, r#"Ỡ"#),
+        (r#"ỡ"#, r#"ỡ"#, r#"ỡ"#, r#"ỡ"#, r#"ỡ"#),
+        (r#"ỡ"#, r#"ỡ"#, r#"ỡ"#, r#"ỡ"#, r#"ỡ"#),
+        (r#"Ợ"#, r#"Ợ"#, r#"Ợ"#, r#"Ợ"#, r#"Ợ"#),
+        (r#"Ợ"#, r#"Ợ"#, r#"Ợ"#, r#"Ợ"#, r#"Ợ"#),
+        (r#"ợ"#, r#"ợ"#, r#"ợ"#, r#"ợ"#, r#"ợ"#),
+        (r#"ợ"#, r#"ợ"#, r#"ợ"#, r#"ợ"#, r#"ợ"#),
+        (r#"Ứ"#, r#"Ứ"#, r#"Ứ"#, r#"Ứ"#, r#"Ứ"#),
+        (r#"Ứ"#, r#"Ứ"#, r#"Ứ"#, r#"Ứ"#, r#"Ứ"#),
+        (r#"Ứ"#, r#"Ứ"#, r#"Ứ"#, r#"Ứ"#, r#"Ứ"#),
+        (r#"ứ"#, r#"ứ"#, r#"ứ"#, r#"ứ"#, r#"ứ"#),
+        (r#"ứ"#, r#"ứ"#, r#"ứ"#, r#"ứ"#, r#"ứ"#),
+        (r#"ứ"#, r#"ứ"#, r#"ứ"#, r#"ứ"#, r#"ứ"#),
+        (r#"Ừ"#, r#"Ừ"#, r#"Ừ"#, r#"Ừ"#, r#"Ừ"#),
+        (r#"Ừ"#, r#"Ừ"#, r#"Ừ"#, r#"Ừ"#, r#"Ừ"#),
+        (r#"Ừ"#, r#"Ừ"#, r#"Ừ"#, r#"Ừ"#, r#"Ừ"#),
+        (r#"ừ"#, r#"ừ"#, r#"ừ"#, r#"ừ"#, r#"ừ"#),
+        (r#"ừ"#, r#"ừ"#, r#"ừ"#, r#"ừ"#, r#"ừ"#),
+        (r#"ừ"#, r#"ừ"#, r#"ừ"#, r#"ừ"#, r#"ừ"#),
+        (r#"Ử"#, r#"Ử"#, r#"Ử"#, r#"Ử"#, r#"Ử"#),
+        (r#"Ử"#, r#"Ử"#, r#"Ử"#, r#"Ử"#, r#"Ử"#),
+        (r#"ử"#, r#"ử"#, r#"ử"#, r#"ử"#, r#"ử"#),
+        (r#"ử"#, r#"ử"#, r#"ử"#, r#"ử"#, r#"ử"#),
+        (r#"Ữ"#, r#"Ữ"#, r#"Ữ"#, r#"Ữ"#, r#"Ữ"#),
+        (r#"Ữ"#, r#"Ữ"#, r#"Ữ"#, r#"Ữ"#, r#"Ữ"#),
+        (r#"ữ"#, r#"ữ"#, r#"ữ"#, r#"ữ"#, r#"ữ"#),
+        (r#"ữ"#, r#"ữ"#, r#"ữ"#, r#"ữ"#, r#"ữ"#),
+        (r#"Ự"#, r#"Ự"#, r#"Ự"#, r#"Ự"#, r#"Ự"#),
+        (r#"Ự"#, r#"Ự"#, r#"Ự"#, r#"Ự"#, r#"Ự"#),
+        (r#"ự"#, r#"ự"#, r#"ự"#, r#"ự"#, r#"ự"#),
+        (r#"ự"#, r#"ự"#, r#"ự"#, r#"ự"#, r#"ự"#),
+        (r#"ἂ"#, r#"ἂ"#, r#"ἂ"#, r#"ἂ"#, r#"ἂ"#),
+        (r#"ἂ"#, r#"ἂ"#, r#"ἂ"#, r#"ἂ"#, r#"ἂ"#),
+        (r#"ἃ"#, r#"ἃ"#, r#"ἃ"#, r#"ἃ"#, r#"ἃ"#),
+        (r#"ἃ"#, r#"ἃ"#, r#"ἃ"#, r#"ἃ"#, r#"ἃ"#),
+        (r#"ἄ"#, r#"ἄ"#, r#"ἄ"#, r#"ἄ"#, r#"ἄ"#),
+        (r#"ἄ"#, r#"ἄ"#, r#"ἄ"#, r#"ἄ"#, r#"ἄ"#),
+        (r#"ἅ"#, r#"ἅ"#, r#"ἅ"#, r#"ἅ"#, r#"ἅ"#),
+        (r#"ἅ"#, r#"ἅ"#, r#"ἅ"#, r#"ἅ"#, r#"ἅ"#),
+        (r#"ἆ"#, r#"ἆ"#, r#"ἆ"#, r#"ἆ"#, r#"ἆ"#),
+        (r#"ἇ"#, r#"ἇ"#, r#"ἇ"#, r#"ἇ"#, r#"ἇ"#),
+        (r#"Ἂ"#, r#"Ἂ"#, r#"Ἂ"#, r#"Ἂ"#, r#"Ἂ"#),
+        (r#"Ἂ"#, r#"Ἂ"#, r#"Ἂ"#, r#"Ἂ"#, r#"Ἂ"#),
+        (r#"Ἃ"#, r#"Ἃ"#, r#"Ἃ"#, r#"Ἃ"#, r#"Ἃ"#),
+        (r#"Ἃ"#, r#"Ἃ"#, r#"Ἃ"#, r#"Ἃ"#, r#"Ἃ"#),
+        (r#"Ἄ"#, r#"Ἄ"#, r#"Ἄ"#, r#"Ἄ"#, r#"Ἄ"#),
+        (r#"Ἄ"#, r#"Ἄ"#, r#"Ἄ"#, r#"Ἄ"#, r#"Ἄ"#),
+        (r#"Ἅ"#, r#"Ἅ"#, r#"Ἅ"#, r#"Ἅ"#, r#"Ἅ"#),
+        (r#"Ἅ"#, r#"Ἅ"#, r#"Ἅ"#, r#"Ἅ"#, r#"Ἅ"#),
+        (r#"Ἆ"#, r#"Ἆ"#, r#"Ἆ"#, r#"Ἆ"#, r#"Ἆ"#),
+        (r#"Ἇ"#, r#"Ἇ"#, r#"Ἇ"#, r#"Ἇ"#, r#"Ἇ"#),
+        (r#"ἒ"#, r#"ἒ"#, r#"ἒ"#, r#"ἒ"#, r#"ἒ"#),
+        (r#"ἒ"#, r#"ἒ"#, r#"ἒ"#, r#"ἒ"#, r#"ἒ"#),
+        (r#"ἓ"#, r#"ἓ"#, r#"ἓ"#, r#"ἓ"#, r#"ἓ"#),
+        (r#"ἓ"#, r#"ἓ"#, r#"ἓ"#, r#"ἓ"#, r#"ἓ"#),
+        (r#"ἔ"#, r#"ἔ"#, r#"ἔ"#, r#"ἔ"#, r#"ἔ"#),
+        (r#"ἔ"#, r#"ἔ"#, r#"ἔ"#, r#"ἔ"#, r#"ἔ"#),
+        (r#"ἕ"#, r#"ἕ"#, r#"ἕ"#, r#"ἕ"#, r#"ἕ"#),
+        (r#"ἕ"#, r#"ἕ"#, r#"ἕ"#, r#"ἕ"#, r#"ἕ"#),
+        (r#"Ἒ"#, r#"Ἒ"#, r#"Ἒ"#, r#"Ἒ"#, r#"Ἒ"#),
+        (r#"Ἒ"#, r#"Ἒ"#, r#"Ἒ"#, r#"Ἒ"#, r#"Ἒ"#),
+        (r#"Ἓ"#, r#"Ἓ"#, r#"Ἓ"#, r#"Ἓ"#, r#"Ἓ"#),
+        (r#"Ἓ"#, r#"Ἓ"#, r#"Ἓ"#, r#"Ἓ"#, r#"Ἓ"#),
+        (r#"Ἔ"#, r#"Ἔ"#, r#"Ἔ"#, r#"Ἔ"#, r#"Ἔ"#),
+        (r#"Ἔ"#, r#"Ἔ"#, r#"Ἔ"#, r#"Ἔ"#, r#"Ἔ"#),
+        (r#"Ἕ"#, r#"Ἕ"#, r#"Ἕ"#, r#"Ἕ"#, r#"Ἕ"#),
+        (r#"Ἕ"#, r#"Ἕ"#, r#"Ἕ"#, r#"Ἕ"#, r#"Ἕ"#),
+        (r#"ἢ"#, r#"ἢ"#, r#"ἢ"#, r#"ἢ"#, r#"ἢ"#),
+        (r#"ἢ"#, r#"ἢ"#, r#"ἢ"#, r#"ἢ"#, r#"ἢ"#),
+        (r#"ἣ"#, r#"ἣ"#, r#"ἣ"#, r#"ἣ"#, r#"ἣ"#),
+        (r#"ἣ"#, r#"ἣ"#, r#"ἣ"#, r#"ἣ"#, r#"ἣ"#),
+        (r#"ἤ"#, r#"ἤ"#, r#"ἤ"#, r#"ἤ"#, r#"ἤ"#),
+        (r#"ἤ"#, r#"ἤ"#, r#"ἤ"#, r#"ἤ"#, r#"ἤ"#),
+        (r#"ἥ"#, r#"ἥ"#, r#"ἥ"#, r#"ἥ"#, r#"ἥ"#),
+        (r#"ἥ"#, r#"ἥ"#, r#"ἥ"#, r#"ἥ"#, r#"ἥ"#),
+        (r#"ἦ"#, r#"ἦ"#, r#"ἦ"#, r#"ἦ"#, r#"ἦ"#),
+        (r#"ἧ"#, r#"ἧ"#, r#"ἧ"#, r#"ἧ"#, r#"ἧ"#),
+        (r#"Ἢ"#, r#"Ἢ"#, r#"Ἢ"#, r#"Ἢ"#, r#"Ἢ"#),
+        (r#"Ἢ"#, r#"Ἢ"#, r#"Ἢ"#, r#"Ἢ"#, r#"Ἢ"#),
+        (r#"Ἣ"#, r#"Ἣ"#, r#"Ἣ"#, r#"Ἣ"#, r#"Ἣ"#),
+        (r#"Ἣ"#, r#"Ἣ"#, r#"Ἣ"#, r#"Ἣ"#, r#"Ἣ"#),
+        (r#"Ἤ"#, r#"Ἤ"#, r#"Ἤ"#, r#"Ἤ"#, r#"Ἤ"#),
+        (r#"Ἤ"#, r#"Ἤ"#, r#"Ἤ"#, r#"Ἤ"#, r#"Ἤ"#),
+        (r#"Ἥ"#, r#"Ἥ"#, r#"Ἥ"#, r#"Ἥ"#, r#"Ἥ"#),
+        (r#"Ἥ"#, r#"Ἥ"#, r#"Ἥ"#, r#"Ἥ"#, r#"Ἥ"#),
+        (r#"Ἦ"#, r#"Ἦ"#, r#"Ἦ"#, r#"Ἦ"#, r#"Ἦ"#),
+        (r#"Ἧ"#, r#"Ἧ"#, r#"Ἧ"#, r#"Ἧ"#, r#"Ἧ"#),
+        (r#"ἲ"#, r#"ἲ"#, r#"ἲ"#, r#"ἲ"#, r#"ἲ"#),
+        (r#"ἲ"#, r#"ἲ"#, r#"ἲ"#, r#"ἲ"#, r#"ἲ"#),
+        (r#"ἳ"#, r#"ἳ"#, r#"ἳ"#, r#"ἳ"#, r#"ἳ"#),
+        (r#"ἳ"#, r#"ἳ"#, r#"ἳ"#, r#"ἳ"#, r#"ἳ"#),
+        (r#"ἴ"#, r#"ἴ"#, r#"ἴ"#, r#"ἴ"#, r#"ἴ"#),
+        (r#"ἴ"#, r#"ἴ"#, r#"ἴ"#, r#"ἴ"#, r#"ἴ"#),
+        (r#"ἵ"#, r#"ἵ"#, r#"ἵ"#, r#"ἵ"#, r#"ἵ"#),
+        (r#"ἵ"#, r#"ἵ"#, r#"ἵ"#, r#"ἵ"#, r#"ἵ"#),
+        (r#"ἶ"#, r#"ἶ"#, r#"ἶ"#, r#"ἶ"#, r#"ἶ"#),
+        (r#"ἷ"#, r#"ἷ"#, r#"ἷ"#, r#"ἷ"#, r#"ἷ"#),
+        (r#"Ἲ"#, r#"Ἲ"#, r#"Ἲ"#, r#"Ἲ"#, r#"Ἲ"#),
+        (r#"Ἲ"#, r#"Ἲ"#, r#"Ἲ"#, r#"Ἲ"#, r#"Ἲ"#),
+        (r#"Ἳ"#, r#"Ἳ"#, r#"Ἳ"#, r#"Ἳ"#, r#"Ἳ"#),
+        (r#"Ἳ"#, r#"Ἳ"#, r#"Ἳ"#, r#"Ἳ"#, r#"Ἳ"#),
+        (r#"Ἴ"#, r#"Ἴ"#, r#"Ἴ"#, r#"Ἴ"#, r#"Ἴ"#),
+        (r#"Ἴ"#, r#"Ἴ"#, r#"Ἴ"#, r#"Ἴ"#, r#"Ἴ"#),
+        (r#"Ἵ"#, r#"Ἵ"#, r#"Ἵ"#, r#"Ἵ"#, r#"Ἵ"#),
+        (r#"Ἵ"#, r#"Ἵ"#, r#"Ἵ"#, r#"Ἵ"#, r#"Ἵ"#),
+        (r#"Ἶ"#, r#"Ἶ"#, r#"Ἶ"#, r#"Ἶ"#, r#"Ἶ"#),
+        (r#"Ἷ"#, r#"Ἷ"#, r#"Ἷ"#, r#"Ἷ"#, r#"Ἷ"#),
+        (r#"ὂ"#, r#"ὂ"#, r#"ὂ"#, r#"ὂ"#, r#"ὂ"#),
+        (r#"ὂ"#, r#"ὂ"#, r#"ὂ"#, r#"ὂ"#, r#"ὂ"#),
+        (r#"ὃ"#, r#"ὃ"#, r#"ὃ"#, r#"ὃ"#, r#"ὃ"#),
+        (r#"ὃ"#, r#"ὃ"#, r#"ὃ"#, r#"ὃ"#, r#"ὃ"#),
+        (r#"ὄ"#, r#"ὄ"#, r#"ὄ"#, r#"ὄ"#, r#"ὄ"#),
+        (r#"ὄ"#, r#"ὄ"#, r#"ὄ"#, r#"ὄ"#, r#"ὄ"#),
+        (r#"ὅ"#, r#"ὅ"#, r#"ὅ"#, r#"ὅ"#, r#"ὅ"#),
+        (r#"ὅ"#, r#"ὅ"#, r#"ὅ"#, r#"ὅ"#, r#"ὅ"#),
+        (r#"Ὂ"#, r#"Ὂ"#, r#"Ὂ"#, r#"Ὂ"#, r#"Ὂ"#),
+        (r#"Ὂ"#, r#"Ὂ"#, r#"Ὂ"#, r#"Ὂ"#, r#"Ὂ"#),
+        (r#"Ὃ"#, r#"Ὃ"#, r#"Ὃ"#, r#"Ὃ"#, r#"Ὃ"#),
+        (r#"Ὃ"#, r#"Ὃ"#, r#"Ὃ"#, r#"Ὃ"#, r#"Ὃ"#),
+        (r#"Ὄ"#, r#"Ὄ"#, r#"Ὄ"#, r#"Ὄ"#, r#"Ὄ"#),
+        (r#"Ὄ"#, r#"Ὄ"#, r#"Ὄ"#, r#"Ὄ"#, r#"Ὄ"#),
+        (r#"Ὅ"#, r#"Ὅ"#, r#"Ὅ"#, r#"Ὅ"#, r#"Ὅ"#),
+        (r#"Ὅ"#, r#"Ὅ"#, r#"Ὅ"#, r#"Ὅ"#, r#"Ὅ"#),
+        (r#"ὒ"#, r#"ὒ"#, r#"ὒ"#, r#"ὒ"#, r#"ὒ"#),
+        (r#"ὒ"#, r#"ὒ"#, r#"ὒ"#, r#"ὒ"#, r#"ὒ"#),
+        (r#"ὓ"#, r#"ὓ"#, r#"ὓ"#, r#"ὓ"#, r#"ὓ"#),
+        (r#"ὓ"#, r#"ὓ"#, r#"ὓ"#, r#"ὓ"#, r#"ὓ"#),
+        (r#"ὔ"#, r#"ὔ"#, r#"ὔ"#, r#"ὔ"#, r#"ὔ"#),
+        (r#"ὔ"#, r#"ὔ"#, r#"ὔ"#, r#"ὔ"#, r#"ὔ"#),
+        (r#"ὕ"#, r#"ὕ"#, r#"ὕ"#, r#"ὕ"#, r#"ὕ"#),
+        (r#"ὕ"#, r#"ὕ"#, r#"ὕ"#, r#"ὕ"#, r#"ὕ"#),
+        (r#"ὖ"#, r#"ὖ"#, r#"ὖ"#, r#"ὖ"#, r#"ὖ"#),
+        (r#"ὗ"#, r#"ὗ"#, r#"ὗ"#, r#"ὗ"#, r#"ὗ"#),
+        (r#"Ὓ"#, r#"Ὓ"#, r#"Ὓ"#, r#"Ὓ"#, r#"Ὓ"#),
+        (r#"Ὓ"#, r#"Ὓ"#, r#"Ὓ"#, r#"Ὓ"#, r#"Ὓ"#),
+        (r#"Ὕ"#, r#"Ὕ"#, r#"Ὕ"#, r#"Ὕ"#, r#"Ὕ"#),
+        (r#"Ὕ"#, r#"Ὕ"#, r#"Ὕ"#, r#"Ὕ"#, r#"Ὕ"#),
+        (r#"Ὗ"#, r#"Ὗ"#, r#"Ὗ"#, r#"Ὗ"#, r#"Ὗ"#),
+        (r#"ὢ"#, r#"ὢ"#, r#"ὢ"#, r#"ὢ"#, r#"ὢ"#),
+        (r#"ὢ"#, r#"ὢ"#, r#"ὢ"#, r#"ὢ"#, r#"ὢ"#),
+        (r#"ὣ"#, r#"ὣ"#, r#"ὣ"#, r#"ὣ"#, r#"ὣ"#),
+        (r#"ὣ"#, r#"ὣ"#, r#"ὣ"#, r#"ὣ"#, r#"ὣ"#),
+        (r#"ὤ"#, r#"ὤ"#, r#"ὤ"#, r#"ὤ"#, r#"ὤ"#),
+        (r#"ὤ"#, r#"ὤ"#, r#"ὤ"#, r#"ὤ"#, r#"ὤ"#),
+        (r#"ὥ"#, r#"ὥ"#, r#"ὥ"#, r#"ὥ"#, r#"ὥ"#),
+        (r#"ὥ"#, r#"ὥ"#, r#"ὥ"#, r#"ὥ"#, r#"ὥ"#),
+        (r#"ὦ"#, r#"ὦ"#, r#"ὦ"#, r#"ὦ"#, r#"ὦ"#),
+        (r#"ὧ"#, r#"ὧ"#, r#"ὧ"#, r#"ὧ"#, r#"ὧ"#),
+        (r#"Ὢ"#, r#"Ὢ"#, r#"Ὢ"#, r#"Ὢ"#, r#"Ὢ"#),
+        (r#"Ὢ"#, r#"Ὢ"#, r#"Ὢ"#, r#"Ὢ"#, r#"Ὢ"#),
+        (r#"Ὣ"#, r#"Ὣ"#, r#"Ὣ"#, r#"Ὣ"#, r#"Ὣ"#),
+        (r#"Ὣ"#, r#"Ὣ"#, r#"Ὣ"#, r#"Ὣ"#, r#"Ὣ"#),
+        (r#"Ὤ"#, r#"Ὤ"#, r#"Ὤ"#, r#"Ὤ"#, r#"Ὤ"#),
+        (r#"Ὤ"#, r#"Ὤ"#, r#"Ὤ"#, r#"Ὤ"#, r#"Ὤ"#),
+        (r#"Ὥ"#, r#"Ὥ"#, r#"Ὥ"#, r#"Ὥ"#, r#"Ὥ"#),
+        (r#"Ὥ"#, r#"Ὥ"#, r#"Ὥ"#, r#"Ὥ"#, r#"Ὥ"#),
+        (r#"Ὦ"#, r#"Ὦ"#, r#"Ὦ"#, r#"Ὦ"#, r#"Ὦ"#),
+        (r#"Ὧ"#, r#"Ὧ"#, r#"Ὧ"#, r#"Ὧ"#, r#"Ὧ"#),
+        (r#"ᾀ"#, r#"ᾀ"#, r#"ᾀ"#, r#"ᾀ"#, r#"ᾀ"#),
+        (r#"ᾀ"#, r#"ᾀ"#, r#"ᾀ"#, r#"ᾀ"#, r#"ᾀ"#),
+        (r#"ᾀ"#, r#"ᾀ"#, r#"ᾀ"#, r#"ᾀ"#, r#"ᾀ"#),
+        (r#"ᾁ"#, r#"ᾁ"#, r#"ᾁ"#, r#"ᾁ"#, r#"ᾁ"#),
+        (r#"ᾁ"#, r#"ᾁ"#, r#"ᾁ"#, r#"ᾁ"#, r#"ᾁ"#),
+        (r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#),
+        (r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#),
+        (r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#),
+        (r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#),
+        (r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#),
+        (r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#),
+        (r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#),
+        (r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#),
+        (r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#),
+        (r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#),
+        (r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#, r#"ᾂ"#),
+        (r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#),
+        (r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#),
+        (r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#),
+        (r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#),
+        (r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#),
+        (r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#),
+        (r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#),
+        (r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#),
+        (r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#, r#"ᾃ"#),
+        (r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#),
+        (r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#),
+        (r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#),
+        (r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#),
+        (r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#),
+        (r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#),
+        (r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#),
+        (r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#),
+        (r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#),
+        (r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#),
+        (r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#, r#"ᾄ"#),
+        (r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#),
+        (r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#),
+        (r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#),
+        (r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#),
+        (r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#),
+        (r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#),
+        (r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#),
+        (r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#),
+        (r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#, r#"ᾅ"#),
+        (r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#),
+        (r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#),
+        (r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#),
+        (r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#),
+        (r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#),
+        (r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#, r#"ᾆ"#),
+        (r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#),
+        (r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#),
+        (r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#),
+        (r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#),
+        (r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#, r#"ᾇ"#),
+        (r#"ᾈ"#, r#"ᾈ"#, r#"ᾈ"#, r#"ᾈ"#, r#"ᾈ"#),
+        (r#"ᾈ"#, r#"ᾈ"#, r#"ᾈ"#, r#"ᾈ"#, r#"ᾈ"#),
+        (r#"ᾈ"#, r#"ᾈ"#, r#"ᾈ"#, r#"ᾈ"#, r#"ᾈ"#),
+        (r#"ᾉ"#, r#"ᾉ"#, r#"ᾉ"#, r#"ᾉ"#, r#"ᾉ"#),
+        (r#"ᾉ"#, r#"ᾉ"#, r#"ᾉ"#, r#"ᾉ"#, r#"ᾉ"#),
+        (r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#),
+        (r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#),
+        (r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#),
+        (r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#),
+        (r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#),
+        (r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#),
+        (r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#),
+        (r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#),
+        (r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#),
+        (r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#),
+        (r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#, r#"ᾊ"#),
+        (r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#),
+        (r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#),
+        (r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#),
+        (r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#),
+        (r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#),
+        (r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#),
+        (r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#),
+        (r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#),
+        (r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#, r#"ᾋ"#),
+        (r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#),
+        (r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#),
+        (r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#),
+        (r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#),
+        (r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#),
+        (r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#),
+        (r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#),
+        (r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#),
+        (r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#),
+        (r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#),
+        (r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#, r#"ᾌ"#),
+        (r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#),
+        (r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#),
+        (r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#),
+        (r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#),
+        (r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#),
+        (r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#),
+        (r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#),
+        (r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#),
+        (r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#, r#"ᾍ"#),
+        (r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#),
+        (r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#),
+        (r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#),
+        (r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#),
+        (r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#),
+        (r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#, r#"ᾎ"#),
+        (r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#),
+        (r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#),
+        (r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#),
+        (r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#),
+        (r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#, r#"ᾏ"#),
+        (r#"ᾐ"#, r#"ᾐ"#, r#"ᾐ"#, r#"ᾐ"#, r#"ᾐ"#),
+        (r#"ᾐ"#, r#"ᾐ"#, r#"ᾐ"#, r#"ᾐ"#, r#"ᾐ"#),
+        (r#"ᾐ"#, r#"ᾐ"#, r#"ᾐ"#, r#"ᾐ"#, r#"ᾐ"#),
+        (r#"ᾑ"#, r#"ᾑ"#, r#"ᾑ"#, r#"ᾑ"#, r#"ᾑ"#),
+        (r#"ᾑ"#, r#"ᾑ"#, r#"ᾑ"#, r#"ᾑ"#, r#"ᾑ"#),
+        (r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#),
+        (r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#),
+        (r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#),
+        (r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#),
+        (r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#),
+        (r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#),
+        (r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#),
+        (r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#),
+        (r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#),
+        (r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#),
+        (r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#, r#"ᾒ"#),
+        (r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#),
+        (r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#),
+        (r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#),
+        (r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#),
+        (r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#),
+        (r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#),
+        (r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#),
+        (r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#),
+        (r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#, r#"ᾓ"#),
+        (r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#),
+        (r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#),
+        (r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#),
+        (r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#),
+        (r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#),
+        (r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#),
+        (r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#),
+        (r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#),
+        (r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#),
+        (r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#),
+        (r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#, r#"ᾔ"#),
+        (r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#),
+        (r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#),
+        (r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#),
+        (r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#),
+        (r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#),
+        (r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#),
+        (r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#),
+        (r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#),
+        (r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#, r#"ᾕ"#),
+        (r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#),
+        (r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#),
+        (r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#),
+        (r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#),
+        (r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#),
+        (r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#, r#"ᾖ"#),
+        (r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#),
+        (r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#),
+        (r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#),
+        (r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#),
+        (r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#, r#"ᾗ"#),
+        (r#"ᾘ"#, r#"ᾘ"#, r#"ᾘ"#, r#"ᾘ"#, r#"ᾘ"#),
+        (r#"ᾘ"#, r#"ᾘ"#, r#"ᾘ"#, r#"ᾘ"#, r#"ᾘ"#),
+        (r#"ᾘ"#, r#"ᾘ"#, r#"ᾘ"#, r#"ᾘ"#, r#"ᾘ"#),
+        (r#"ᾙ"#, r#"ᾙ"#, r#"ᾙ"#, r#"ᾙ"#, r#"ᾙ"#),
+        (r#"ᾙ"#, r#"ᾙ"#, r#"ᾙ"#, r#"ᾙ"#, r#"ᾙ"#),
+        (r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#),
+        (r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#),
+        (r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#),
+        (r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#),
+        (r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#),
+        (r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#),
+        (r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#),
+        (r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#),
+        (r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#),
+        (r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#),
+        (r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#, r#"ᾚ"#),
+        (r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#),
+        (r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#),
+        (r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#),
+        (r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#),
+        (r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#),
+        (r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#),
+        (r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#),
+        (r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#),
+        (r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#, r#"ᾛ"#),
+        (r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#),
+        (r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#),
+        (r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#),
+        (r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#),
+        (r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#),
+        (r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#),
+        (r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#),
+        (r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#),
+        (r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#),
+        (r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#),
+        (r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#, r#"ᾜ"#),
+        (r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#),
+        (r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#),
+        (r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#),
+        (r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#),
+        (r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#),
+        (r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#),
+        (r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#),
+        (r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#),
+        (r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#, r#"ᾝ"#),
+        (r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#),
+        (r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#),
+        (r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#),
+        (r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#),
+        (r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#),
+        (r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#, r#"ᾞ"#),
+        (r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#),
+        (r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#),
+        (r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#),
+        (r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#),
+        (r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#, r#"ᾟ"#),
+        (r#"ᾠ"#, r#"ᾠ"#, r#"ᾠ"#, r#"ᾠ"#, r#"ᾠ"#),
+        (r#"ᾠ"#, r#"ᾠ"#, r#"ᾠ"#, r#"ᾠ"#, r#"ᾠ"#),
+        (r#"ᾠ"#, r#"ᾠ"#, r#"ᾠ"#, r#"ᾠ"#, r#"ᾠ"#),
+        (r#"ᾡ"#, r#"ᾡ"#, r#"ᾡ"#, r#"ᾡ"#, r#"ᾡ"#),
+        (r#"ᾡ"#, r#"ᾡ"#, r#"ᾡ"#, r#"ᾡ"#, r#"ᾡ"#),
+        (r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#),
+        (r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#),
+        (r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#),
+        (r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#),
+        (r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#),
+        (r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#),
+        (r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#),
+        (r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#),
+        (r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#),
+        (r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#),
+        (r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#, r#"ᾢ"#),
+        (r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#),
+        (r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#),
+        (r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#),
+        (r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#),
+        (r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#),
+        (r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#),
+        (r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#),
+        (r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#),
+        (r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#, r#"ᾣ"#),
+        (r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#),
+        (r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#),
+        (r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#),
+        (r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#),
+        (r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#),
+        (r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#),
+        (r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#),
+        (r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#),
+        (r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#),
+        (r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#),
+        (r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#, r#"ᾤ"#),
+        (r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#),
+        (r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#),
+        (r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#),
+        (r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#),
+        (r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#),
+        (r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#),
+        (r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#),
+        (r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#),
+        (r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#, r#"ᾥ"#),
+        (r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#),
+        (r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#),
+        (r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#),
+        (r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#),
+        (r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#),
+        (r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#, r#"ᾦ"#),
+        (r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#),
+        (r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#),
+        (r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#),
+        (r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#),
+        (r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#, r#"ᾧ"#),
+        (r#"ᾨ"#, r#"ᾨ"#, r#"ᾨ"#, r#"ᾨ"#, r#"ᾨ"#),
+        (r#"ᾨ"#, r#"ᾨ"#, r#"ᾨ"#, r#"ᾨ"#, r#"ᾨ"#),
+        (r#"ᾨ"#, r#"ᾨ"#, r#"ᾨ"#, r#"ᾨ"#, r#"ᾨ"#),
+        (r#"ᾩ"#, r#"ᾩ"#, r#"ᾩ"#, r#"ᾩ"#, r#"ᾩ"#),
+        (r#"ᾩ"#, r#"ᾩ"#, r#"ᾩ"#, r#"ᾩ"#, r#"ᾩ"#),
+        (r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#),
+        (r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#),
+        (r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#),
+        (r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#),
+        (r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#),
+        (r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#),
+        (r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#),
+        (r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#),
+        (r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#),
+        (r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#),
+        (r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#, r#"ᾪ"#),
+        (r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#),
+        (r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#),
+        (r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#),
+        (r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#),
+        (r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#),
+        (r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#),
+        (r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#),
+        (r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#),
+        (r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#, r#"ᾫ"#),
+        (r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#),
+        (r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#),
+        (r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#),
+        (r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#),
+        (r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#),
+        (r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#),
+        (r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#),
+        (r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#),
+        (r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#),
+        (r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#),
+        (r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#, r#"ᾬ"#),
+        (r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#),
+        (r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#),
+        (r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#),
+        (r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#),
+        (r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#),
+        (r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#),
+        (r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#),
+        (r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#),
+        (r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#, r#"ᾭ"#),
+        (r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#),
+        (r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#),
+        (r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#),
+        (r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#),
+        (r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#),
+        (r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#, r#"ᾮ"#),
+        (r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#),
+        (r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#),
+        (r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#),
+        (r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#),
+        (r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#, r#"ᾯ"#),
+        (r#"ᾲ"#, r#"ᾲ"#, r#"ᾲ"#, r#"ᾲ"#, r#"ᾲ"#),
+        (r#"ᾲ"#, r#"ᾲ"#, r#"ᾲ"#, r#"ᾲ"#, r#"ᾲ"#),
+        (r#"ᾲ"#, r#"ᾲ"#, r#"ᾲ"#, r#"ᾲ"#, r#"ᾲ"#),
+        (r#"ᾴ"#, r#"ᾴ"#, r#"ᾴ"#, r#"ᾴ"#, r#"ᾴ"#),
+        (r#"ᾴ"#, r#"ᾴ"#, r#"ᾴ"#, r#"ᾴ"#, r#"ᾴ"#),
+        (r#"ᾴ"#, r#"ᾴ"#, r#"ᾴ"#, r#"ᾴ"#, r#"ᾴ"#),
+        (r#"ᾴ"#, r#"ᾴ"#, r#"ᾴ"#, r#"ᾴ"#, r#"ᾴ"#),
+        (r#"ᾷ"#, r#"ᾷ"#, r#"ᾷ"#, r#"ᾷ"#, r#"ᾷ"#),
+        (r#"ᾷ"#, r#"ᾷ"#, r#"ᾷ"#, r#"ᾷ"#, r#"ᾷ"#),
+        (r#"ῂ"#, r#"ῂ"#, r#"ῂ"#, r#"ῂ"#, r#"ῂ"#),
+        (r#"ῂ"#, r#"ῂ"#, r#"ῂ"#, r#"ῂ"#, r#"ῂ"#),
+        (r#"ῂ"#, r#"ῂ"#, r#"ῂ"#, r#"ῂ"#, r#"ῂ"#),
+        (r#"ῄ"#, r#"ῄ"#, r#"ῄ"#, r#"ῄ"#, r#"ῄ"#),
+        (r#"ῄ"#, r#"ῄ"#, r#"ῄ"#, r#"ῄ"#, r#"ῄ"#),
+        (r#"ῄ"#, r#"ῄ"#, r#"ῄ"#, r#"ῄ"#, r#"ῄ"#),
+        (r#"ῄ"#, r#"ῄ"#, r#"ῄ"#, r#"ῄ"#, r#"ῄ"#),
+        (r#"ῇ"#, r#"ῇ"#, r#"ῇ"#, r#"ῇ"#, r#"ῇ"#),
+        (r#"ῇ"#, r#"ῇ"#, r#"ῇ"#, r#"ῇ"#, r#"ῇ"#),
+        (r#"ῒ"#, r#"ῒ"#, r#"ῒ"#, r#"ῒ"#, r#"ῒ"#),
+        (r#"ῒ"#, r#"ῒ"#, r#"ῒ"#, r#"ῒ"#, r#"ῒ"#),
+        (r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#),
+        (r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#),
+        (r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#),
+        (r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#, r#"ΐ"#),
+        (r#"ῗ"#, r#"ῗ"#, r#"ῗ"#, r#"ῗ"#, r#"ῗ"#),
+        (r#"ῢ"#, r#"ῢ"#, r#"ῢ"#, r#"ῢ"#, r#"ῢ"#),
+        (r#"ῢ"#, r#"ῢ"#, r#"ῢ"#, r#"ῢ"#, r#"ῢ"#),
+        (r#"ΰ"#, r#"ΰ"#, r#"ΰ"#, r#"ΰ"#, r#"ΰ"#),
+        (r#"ΰ"#, r#"ΰ"#, r#"ΰ"#, r#"ΰ"#, r#"ΰ"#),
+        (r#"ΰ"#, r#"ΰ"#, r#"ΰ"#, r#"ΰ"#, r#"ΰ"#),
+        (r#"ῧ"#, r#"ῧ"#, r#"ῧ"#, r#"ῧ"#, r#"ῧ"#),
+        (r#"ῲ"#, r#"ῲ"#, r#"ῲ"#, r#"ῲ"#, r#"ῲ"#),
+        (r#"ῲ"#, r#"ῲ"#, r#"ῲ"#, r#"ῲ"#, r#"ῲ"#),
+        (r#"ῲ"#, r#"ῲ"#, r#"ῲ"#, r#"ῲ"#, r#"ῲ"#),
+        (r#"ῴ"#, r#"ῴ"#, r#"ῴ"#, r#"ῴ"#, r#"ῴ"#),
+        (r#"ῴ"#, r#"ῴ"#, r#"ῴ"#, r#"ῴ"#, r#"ῴ"#),
+        (r#"ῴ"#, r#"ῴ"#, r#"ῴ"#, r#"ῴ"#, r#"ῴ"#),
+        (r#"ῴ"#, r#"ῴ"#, r#"ῴ"#, r#"ῴ"#, r#"ῴ"#),
+        (r#"ῷ"#, r#"ῷ"#, r#"ῷ"#, r#"ῷ"#, r#"ῷ"#),
+        (r#"ῷ"#, r#"ῷ"#, r#"ῷ"#, r#"ῷ"#, r#"ῷ"#),
+        (r#"שּׁ"#, r#"שּׁ"#, r#"שּׁ"#, r#"שּׁ"#, r#"שּׁ"#),
+        (r#"שּׁ"#, r#"שּׁ"#, r#"שּׁ"#, r#"שּׁ"#, r#"שּׁ"#),
+        (r#"שּׂ"#, r#"שּׂ"#, r#"שּׂ"#, r#"שּׂ"#, r#"שּׂ"#),
+        (r#"שּׂ"#, r#"שּׂ"#, r#"שּׂ"#, r#"שּׂ"#, r#"שּׂ"#),
+        (r#"𖄦"#, r#"𖄦"#, r#"𖄦"#, r#"𖄦"#, r#"𖄦"#),
+        (r#"𖄦"#, r#"𖄦"#, r#"𖄦"#, r#"𖄦"#, r#"𖄦"#),
+        (r#"𖄧"#, r#"𖄧"#, r#"𖄧"#, r#"𖄧"#, r#"𖄧"#),
+        (r#"𖄧"#, r#"𖄧"#, r#"𖄧"#, r#"𖄧"#, r#"𖄧"#),
+        (r#"𖄨"#, r#"𖄨"#, r#"𖄨"#, r#"𖄨"#, r#"𖄨"#),
+        (r#"𖄨"#, r#"𖄨"#, r#"𖄨"#, r#"𖄨"#, r#"𖄨"#),
+        (r#"𖵪"#, r#"𖵪"#, r#"𖵪"#, r#"𖵪"#, r#"𖵪"#),
+        (r#"𖵪"#, r#"𖵪"#, r#"𖵪"#, r#"𖵪"#, r#"𖵪"#),
+        (r#"𝅘𝅥𝅮"#, r#"𝅘𝅥𝅮"#, r#"𝅘𝅥𝅮"#, r#"𝅘𝅥𝅮"#, r#"𝅘𝅥𝅮"#),
+        (r#"𝅘𝅥𝅯"#, r#"𝅘𝅥𝅯"#, r#"𝅘𝅥𝅯"#, r#"𝅘𝅥𝅯"#, r#"𝅘𝅥𝅯"#),
+        (r#"𝅘𝅥𝅰"#, r#"𝅘𝅥𝅰"#, r#"𝅘𝅥𝅰"#, r#"𝅘𝅥𝅰"#, r#"𝅘𝅥𝅰"#),
+        (r#"𝅘𝅥𝅱"#, r#"𝅘𝅥𝅱"#, r#"𝅘𝅥𝅱"#, r#"𝅘𝅥𝅱"#, r#"𝅘𝅥𝅱"#),
+        (r#"𝅘𝅥𝅲"#, r#"𝅘𝅥𝅲"#, r#"𝅘𝅥𝅲"#, r#"𝅘𝅥𝅲"#, r#"𝅘𝅥𝅲"#),
+        (r#"𝆹𝅥𝅮"#, r#"𝆹𝅥𝅮"#, r#"𝆹𝅥𝅮"#, r#"𝆹𝅥𝅮"#, r#"𝆹𝅥𝅮"#),
+        (r#"𝆺𝅥𝅮"#, r#"𝆺𝅥𝅮"#, r#"𝆺𝅥𝅮"#, r#"𝆺𝅥𝅮"#, r#"𝆺𝅥𝅮"#),
+        (r#"𝆹𝅥𝅯"#, r#"𝆹𝅥𝅯"#, r#"𝆹𝅥𝅯"#, r#"𝆹𝅥𝅯"#, r#"𝆹𝅥𝅯"#),
+        (r#"𝆺𝅥𝅯"#, r#"𝆺𝅥𝅯"#, r#"𝆺𝅥𝅯"#, r#"𝆺𝅥𝅯"#, r#"𝆺𝅥𝅯"#),
+        (r#"𑎎𑎸"#, r#"𑎎𑎸"#, r#"𑎎𑎸"#, r#"𑎎𑎸"#, r#"𑎎𑎸"#),
+        (r#"𑏅𑎸"#, r#"𑏅𑎸"#, r#"𑏅𑎸"#, r#"𑏅𑎸"#, r#"𑏅𑎸"#),
+        (r#"𑎎𑏂"#, r#"𑎎𑏂"#, r#"𑎎𑏂"#, r#"𑎎𑏂"#, r#"𑎎𑏂"#),
+        (r#"𑎎𑏅"#, r#"𑎎𑏅"#, r#"𑎎𑏅"#, r#"𑎎𑏅"#, r#"𑎎𑏅"#),
+        (r#"𑎎𑏇"#, r#"𑎎𑏇"#, r#"𑎎𑏇"#, r#"𑎎𑏇"#, r#"𑎎𑏇"#),
+        (r#"𑎎𑏈"#, r#"𑎎𑏈"#, r#"𑎎𑏈"#, r#"𑎎𑏈"#, r#"𑎎𑏈"#),
+        (r#"𑏅𑏂"#, r#"𑏅𑏂"#, r#"𑏅𑏂"#, r#"𑏅𑏂"#, r#"𑏅𑏂"#),
+        (r#"𑏅𑏅"#, r#"𑏅𑏅"#, r#"𑏅𑏅"#, r#"𑏅𑏅"#, r#"𑏅𑏅"#),
+        (r#"𑏅𑏇"#, r#"𑏅𑏇"#, r#"𑏅𑏇"#, r#"𑏅𑏇"#, r#"𑏅𑏇"#),
+        (r#"𑏅𑏈"#, r#"𑏅𑏈"#, r#"𑏅𑏈"#, r#"𑏅𑏈"#, r#"𑏅𑏈"#),
+        (r#"𑎎𑏉"#, r#"𑎎𑏉"#, r#"𑎎𑏉"#, r#"𑎎𑏉"#, r#"𑎎𑏉"#),
+        (r#"𑏅𑏉"#, r#"𑏅𑏉"#, r#"𑏅𑏉"#, r#"𑏅𑏉"#, r#"𑏅𑏉"#),
+        (r#"𖄡𖄣"#, r#"𖄡𖄣"#, r#"𖄡𖄣"#, r#"𖄡𖄣"#, r#"𖄡𖄣"#),
+        (r#"𖄡𖄤"#, r#"𖄡𖄤"#, r#"𖄡𖄤"#, r#"𖄡𖄤"#, r#"𖄡𖄤"#),
+        (r#"𖄡𖄥"#, r#"𖄡𖄥"#, r#"𖄡𖄥"#, r#"𖄡𖄥"#, r#"𖄡𖄥"#),
+        (r#"𖄡𖄞"#, r#"𖄡𖄞"#, r#"𖄡𖄞"#, r#"𖄡𖄞"#, r#"𖄡𖄞"#),
+        (r#"𖄡𖄡"#, r#"𖄡𖄡"#, r#"𖄡𖄡"#, r#"𖄡𖄡"#, r#"𖄡𖄡"#),
+        (r#"𖄡𖄢"#, r#"𖄡𖄢"#, r#"𖄡𖄢"#, r#"𖄡𖄢"#, r#"𖄡𖄢"#),
+        (r#"𖄡𖄣"#, r#"𖄡𖄣"#, r#"𖄡𖄣"#, r#"𖄡𖄣"#, r#"𖄡𖄣"#),
+        (r#"𖄡𖄣"#, r#"𖄡𖄣"#, r#"𖄡𖄣"#, r#"𖄡𖄣"#, r#"𖄡𖄣"#),
+        (r#"𖄡𖄥"#, r#"𖄡𖄥"#, r#"𖄡𖄥"#, r#"𖄡𖄥"#, r#"𖄡𖄥"#),
+        (r#"𖄡𖄥"#, r#"𖄡𖄥"#, r#"𖄡𖄥"#, r#"𖄡𖄥"#, r#"𖄡𖄥"#),
+        (r#"𖄡𖄦"#, r#"𖄡𖄦"#, r#"𖄡𖄦"#, r#"𖄡𖄦"#, r#"𖄡𖄦"#),
+        (r#"𖄡𖄦"#, r#"𖄡𖄦"#, r#"𖄡𖄦"#, r#"𖄡𖄦"#, r#"𖄡𖄦"#),
+        (r#"𖄡𖄧"#, r#"𖄡𖄧"#, r#"𖄡𖄧"#, r#"𖄡𖄧"#, r#"𖄡𖄧"#),
+        (r#"𖄡𖄧"#, r#"𖄡𖄧"#, r#"𖄡𖄧"#, r#"𖄡𖄧"#, r#"𖄡𖄧"#),
+        (r#"𖄡𖄨"#, r#"𖄡𖄨"#, r#"𖄡𖄨"#, r#"𖄡𖄨"#, r#"𖄡𖄨"#),
+        (r#"𖄡𖄨"#, r#"𖄡𖄨"#, r#"𖄡𖄨"#, r#"𖄡𖄨"#, r#"𖄡𖄨"#),
+        (r#"𖄡𖄤"#, r#"𖄡𖄤"#, r#"𖄡𖄤"#, r#"𖄡𖄤"#, r#"𖄡𖄤"#),
+        (r#"𖄡𖄤"#, r#"𖄡𖄤"#, r#"𖄡𖄤"#, r#"𖄡𖄤"#, r#"𖄡𖄤"#),
+        (r#"𖄡𖄩"#, r#"𖄡𖄩"#, r#"𖄡𖄩"#, r#"𖄡𖄩"#, r#"𖄡𖄩"#),
+        (r#"𖵨𖵧"#, r#"𖵨𖵧"#, r#"𖵨𖵧"#, r#"𖵨𖵧"#, r#"𖵨𖵧"#),
+        (r#"𖵨𖵨"#, r#"𖵨𖵨"#, r#"𖵨𖵨"#, r#"𖵨𖵨"#, r#"𖵨𖵨"#),
+        (r#"𖵪𖵧"#, r#"𖵪𖵧"#, r#"𖵪𖵧"#, r#"𖵪𖵧"#, r#"𖵪𖵧"#),
+        (r#"𖵪𖵧"#, r#"𖵪𖵧"#, r#"𖵪𖵧"#, r#"𖵪𖵧"#, r#"𖵪𖵧"#),
+        (r#"𖵪𖵧"#, r#"𖵪𖵧"#, r#"𖵪𖵧"#, r#"𖵪𖵧"#, r#"𖵪𖵧"#),
+        (r#"𖵪𖵨"#, r#"𖵪𖵨"#, r#"𖵪𖵨"#, r#"𖵪𖵨"#, r#"𖵪𖵨"#),
+        (r#"𖵪𖵨"#, r#"𖵪𖵨"#, r#"𖵪𖵨"#, r#"𖵪𖵨"#, r#"𖵪𖵨"#),
     ];
 }

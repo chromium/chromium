@@ -1,4 +1,4 @@
-// Copyright 2012-2015 The Rust Project Developers. See the COPYRIGHT
+// Copyright 2012-2025 The Rust Project Developers. See the COPYRIGHT
 // file at the top-level directory of this distribution and at
 // http://rust-lang.org/COPYRIGHT.
 //
@@ -199,6 +199,8 @@ fn test_text_presentation() {
     assert_width!('\u{FE0E}', Some(0), Some(0));
     assert_width!('\u{2648}', Some(2), Some(2));
     assert_width!("\u{2648}\u{FE0E}", 1, 2);
+    assert_width!("\u{2648}\u{FE0E}\u{FE0F}", 1, 2);
+    assert_width!("\u{2648}\u{FE0F}\u{FE0E}", 2, 2);
     assert_width!("\u{1F21A}\u{FE0E}", 2, 2);
     assert_width!("\u{0301}\u{FE0E}", 0, 0);
     assert_width!("a\u{FE0E}", 1, 1);
@@ -214,23 +216,18 @@ fn test_control_line_break() {
     assert_width!('\r', None, None);
     assert_width!('\n', None, None);
     assert_width!("\r", 1, 1);
-    // This is 0 due to #60
-    assert_width!("\n", 0, 0);
-    assert_width!("\r\n", 0, 0);
+    assert_width!("\n", 1, 1);
+    assert_width!("\r\n", 1, 1);
     assert_width!("\0", 1, 1);
-    assert_width!("1\t2\r\n3\u{85}4", 6, 6);
-    assert_width!("\r\u{FE0F}\n", 1, 1);
-    assert_width!("\r\u{200D}\n", 1, 1);
+    assert_width!("1\t2\r\n3\u{85}4", 7, 7);
+    assert_width!("\r\u{FE0F}\n", 2, 2);
+    assert_width!("\r\u{200D}\n", 2, 2);
 }
 
 #[test]
 fn char_str_consistent() {
     let mut s = String::with_capacity(4);
     for c in '\0'..=char::MAX {
-        // Newlines are special cased (#60)
-        if c == '\n' {
-            continue;
-        }
         s.clear();
         s.push(c);
         assert_eq!(c.width().unwrap_or(1), s.width());
@@ -423,10 +420,6 @@ fn test_khmer_coeng() {
             assert_width!(format!("\u{17D2}{c}"), 0, 0);
             assert_width!(format!("\u{17D2}\u{200D}\u{200D}{c}"), 0, 0);
         } else {
-            // Newlines are special cased (#60)
-            if c == '\n' {
-                continue;
-            }
             assert_width!(
                 format!("\u{17D2}{c}"),
                 c.width().unwrap_or(1),
@@ -598,8 +591,48 @@ fn emoji_test_file() {
 }
 
 #[test]
-fn test_newline_zero_issue_60() {
-    assert_width!("a\na", 2, 2);
+fn ambiguous_line_break() {
+    assert_width!("\u{24EA}", 1, 2);
+    assert_width!("\u{2616}", 1, 2);
+    assert_width!("\u{2780}", 1, 2);
+}
+
+#[test]
+fn test_vs1_vs2() {
+    assert_width!('\u{FE00}', Some(0), Some(0));
+    assert_width!('\u{FE01}', Some(0), Some(0));
+    for c in '\0'..=char::MAX {
+        if matches!(c, '\u{2018}' | '\u{2019}' | '\u{201C}' | '\u{201D}') {
+            assert_width!(c, Some(1), Some(2));
+            assert_width!(format!("{c}\u{FE00}"), 1, 1);
+            assert_width!(format!("{c}\u{FE00}\u{FE01}"), 1, 1);
+            assert_width!(format!("{c}\u{FE01}"), 2, 2);
+            assert_width!(format!("{c}\u{FE01}\u{FE00}"), 2, 2);
+        } else {
+            assert_eq!(
+                format!("{c}\u{FE00}").width(),
+                c.width().unwrap_or(1),
+                "{c:?}"
+            );
+            #[cfg(feature = "cjk")]
+            assert_eq!(
+                format!("{c}\u{FE00}").width_cjk(),
+                c.width_cjk().unwrap_or(1),
+                "{c:?}"
+            );
+            assert_eq!(
+                format!("{c}\u{FE01}").width(),
+                c.width().unwrap_or(1),
+                "{c:?}"
+            );
+            #[cfg(feature = "cjk")]
+            assert_eq!(
+                format!("{c}\u{FE01}").width_cjk(),
+                c.width_cjk().unwrap_or(1),
+                "{c:?}"
+            );
+        }
+    }
 }
 
 // Test traits are unsealed

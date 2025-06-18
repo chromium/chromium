@@ -11,14 +11,16 @@
 
 [package]
 edition = "2021"
+rust-version = "1.66"
 name = "unicode-width"
-version = "0.1.14"
+version = "0.2.1"
 authors = [
     "kwantam <kwantam@gmail.com>",
     "Manish Goregaokar <manishsmail@gmail.com>",
 ]
 build = false
 exclude = ["/.github/*"]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -43,6 +45,15 @@ categories = [
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/unicode-rs/unicode-width"
 
+[features]
+cjk = []
+default = ["cjk"]
+no_std = []
+rustc-dep-of-std = [
+    "std",
+    "core",
+]
+
 [lib]
 name = "unicode_width"
 path = "src/lib.rs"
@@ -55,10 +66,6 @@ path = "tests/tests.rs"
 name = "benches"
 path = "benches/benches.rs"
 
-[dependencies.compiler_builtins]
-version = "0.1"
-optional = true
-
 [dependencies.core]
 version = "1.0"
 optional = true
@@ -68,13 +75,3 @@ package = "rustc-std-workspace-core"
 version = "1.0"
 optional = true
 package = "rustc-std-workspace-std"
-
-[features]
-cjk = []
-default = ["cjk"]
-no_std = []
-rustc-dep-of-std = [
-    "std",
-    "core",
-    "compiler_builtins",
-]

@@ -53,5 +53,18 @@ to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-unicode-width = "0.1.11"
+unicode-width = "0.2"
 ```
+
+
+## Changelog
+
+
+### 0.2.0
+
+ - Treat `\n` as width 1 (#60)
+ - Treat ambiguous `Modifier_Letter`s as narrow (#63)
+ - Support `Grapheme_Cluster_Break=Prepend` (#62)
+ - Support lots of ligatures (#53)
+
+Note: If you are using `unicode-width` for linebreaking, the change treating `\n` as width 1 _may cause behavior changes_. It is recommended that in such cases you feed already-line segmented text to `unicode-width`. In other words, please apply higher level control character based line breaking protocols before feeding text to `unicode-width`. Relying on any character producing a stable width in this crate is likely the sign of a bug.

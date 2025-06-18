@@ -1,11 +1,11 @@
 # emoji-test.txt
-# Date: 2023-06-05, 21:39:54 GMT
-# © 2023 Unicode®, Inc.
+# Date: 2024-08-14, 23:51:54 GMT
+# © 2024 Unicode®, Inc.
 # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
-# For terms of use, see https://www.unicode.org/terms_of_use.html
+# For terms of use and license, see https://www.unicode.org/terms_of_use.html
 #
 # Emoji Keyboard/Display Test Data for UTS #51
-# Version: 15.1
+# Version: 16.0
 #
 # For documentation and usage, see https://www.unicode.org/reports/tr51
 #
@@ -104,6 +104,7 @@
 1F62A                                                  ; fully-qualified     # 😪 E0.6 sleepy face
 1F924                                                  ; fully-qualified     # 🤤 E3.0 drooling face
 1F634                                                  ; fully-qualified     # 😴 E1.0 sleeping face
+1FAE9                                                  ; fully-qualified     # 🫩 E16.0 face with bags under eyes
 
 # subgroup: face-unwell
 1F637                                                  ; fully-qualified     # 😷 E0.6 face with medical mask
@@ -248,8 +249,8 @@
 1F4AD                                                  ; fully-qualified     # 💭 E1.0 thought balloon
 1F4A4                                                  ; fully-qualified     # 💤 E0.6 ZZZ
 
-# Smileys & Emotion subtotal:		184
-# Smileys & Emotion subtotal:		184	w/o modifiers
+# Smileys & Emotion subtotal:		185
+# Smileys & Emotion subtotal:		185	w/o modifiers
 
 # group: People & Body
 
@@ -1750,12 +1751,12 @@
 1F936 1F3FD                                            ; fully-qualified     # 🤶🏽 E3.0 Mrs. Claus: medium skin tone
 1F936 1F3FE                                            ; fully-qualified     # 🤶🏾 E3.0 Mrs. Claus: medium-dark skin tone
 1F936 1F3FF                                            ; fully-qualified     # 🤶🏿 E3.0 Mrs. Claus: dark skin tone
-1F9D1 200D 1F384                                       ; fully-qualified     # 🧑‍🎄 E13.0 mx claus
-1F9D1 1F3FB 200D 1F384                                 ; fully-qualified     # 🧑🏻‍🎄 E13.0 mx claus: light skin tone
-1F9D1 1F3FC 200D 1F384                                 ; fully-qualified     # 🧑🏼‍🎄 E13.0 mx claus: medium-light skin tone
-1F9D1 1F3FD 200D 1F384                                 ; fully-qualified     # 🧑🏽‍🎄 E13.0 mx claus: medium skin tone
-1F9D1 1F3FE 200D 1F384                                 ; fully-qualified     # 🧑🏾‍🎄 E13.0 mx claus: medium-dark skin tone
-1F9D1 1F3FF 200D 1F384                                 ; fully-qualified     # 🧑🏿‍🎄 E13.0 mx claus: dark skin tone
+1F9D1 200D 1F384                                       ; fully-qualified     # 🧑‍🎄 E13.0 Mx Claus
+1F9D1 1F3FB 200D 1F384                                 ; fully-qualified     # 🧑🏻‍🎄 E13.0 Mx Claus: light skin tone
+1F9D1 1F3FC 200D 1F384                                 ; fully-qualified     # 🧑🏼‍🎄 E13.0 Mx Claus: medium-light skin tone
+1F9D1 1F3FD 200D 1F384                                 ; fully-qualified     # 🧑🏽‍🎄 E13.0 Mx Claus: medium skin tone
+1F9D1 1F3FE 200D 1F384                                 ; fully-qualified     # 🧑🏾‍🎄 E13.0 Mx Claus: medium-dark skin tone
+1F9D1 1F3FF 200D 1F384                                 ; fully-qualified     # 🧑🏿‍🎄 E13.0 Mx Claus: dark skin tone
 1F9B8                                                  ; fully-qualified     # 🦸 E11.0 superhero
 1F9B8 1F3FB                                            ; fully-qualified     # 🦸🏻 E11.0 superhero: light skin tone
 1F9B8 1F3FC                                            ; fully-qualified     # 🦸🏼 E11.0 superhero: medium-light skin tone
@@ -3574,9 +3575,10 @@
 1F9D1 200D 1F9D2                                       ; fully-qualified     # 🧑‍🧒 E15.1 family: adult, child
 1F9D1 200D 1F9D2 200D 1F9D2                            ; fully-qualified     # 🧑‍🧒‍🧒 E15.1 family: adult, child, child
 1F463                                                  ; fully-qualified     # 👣 E0.6 footprints
+1FAC6                                                  ; fully-qualified     # 🫆 E16.0 fingerprint
 
-# People & Body subtotal:		3290
-# People & Body subtotal:		560	w/o modifiers
+# People & Body subtotal:		3291
+# People & Body subtotal:		561	w/o modifiers
 
 # group: Component
 
@@ -3719,6 +3721,11 @@
 1F41A                                                  ; fully-qualified     # 🐚 E0.6 spiral shell
 1FAB8                                                  ; fully-qualified     # 🪸 E14.0 coral
 1FABC                                                  ; fully-qualified     # 🪼 E15.0 jellyfish
+1F980                                                  ; fully-qualified     # 🦀 E1.0 crab
+1F99E                                                  ; fully-qualified     # 🦞 E11.0 lobster
+1F990                                                  ; fully-qualified     # 🦐 E3.0 shrimp
+1F991                                                  ; fully-qualified     # 🦑 E3.0 squid
+1F9AA                                                  ; fully-qualified     # 🦪 E12.0 oyster
 
 # subgroup: animal-bug
 1F40C                                                  ; fully-qualified     # 🐌 E0.6 snail
@@ -3773,9 +3780,10 @@
 1FAB9                                                  ; fully-qualified     # 🪹 E14.0 empty nest
 1FABA                                                  ; fully-qualified     # 🪺 E14.0 nest with eggs
 1F344                                                  ; fully-qualified     # 🍄 E0.6 mushroom
+1FABE                                                  ; fully-qualified     # 🪾 E16.0 leafless tree
 
-# Animals & Nature subtotal:		160
-# Animals & Nature subtotal:		160	w/o modifiers
+# Animals & Nature subtotal:		166
+# Animals & Nature subtotal:		166	w/o modifiers
 
 # group: Food & Drink
 
@@ -3821,6 +3829,7 @@
 1FADA                                                  ; fully-qualified     # 🫚 E15.0 ginger root
 1FADB                                                  ; fully-qualified     # 🫛 E15.0 pea pod
 1F344 200D 1F7EB                                       ; fully-qualified     # 🍄‍🟫 E15.1 brown mushroom
+1FADC                                                  ; fully-qualified     # 🫜 E16.0 root vegetable
 
 # subgroup: food-prepared
 1F35E                                                  ; fully-qualified     # 🍞 E0.6 bread
@@ -3877,13 +3886,6 @@
 1F960                                                  ; fully-qualified     # 🥠 E5.0 fortune cookie
 1F961                                                  ; fully-qualified     # 🥡 E5.0 takeout box
 
-# subgroup: food-marine
-1F980                                                  ; fully-qualified     # 🦀 E1.0 crab
-1F99E                                                  ; fully-qualified     # 🦞 E11.0 lobster
-1F990                                                  ; fully-qualified     # 🦐 E3.0 shrimp
-1F991                                                  ; fully-qualified     # 🦑 E3.0 squid
-1F9AA                                                  ; fully-qualified     # 🦪 E12.0 oyster
-
 # subgroup: food-sweet
 1F366                                                  ; fully-qualified     # 🍦 E0.6 soft ice cream
 1F367                                                  ; fully-qualified     # 🍧 E0.6 shaved ice
@@ -3932,8 +3934,8 @@
 1FAD9                                                  ; fully-qualified     # 🫙 E14.0 jar
 1F3FA                                                  ; fully-qualified     # 🏺 E1.0 amphora
 
-# Food & Drink subtotal:		137
-# Food & Drink subtotal:		137	w/o modifiers
+# Food & Drink subtotal:		133
+# Food & Drink subtotal:		133	w/o modifiers
 
 # group: Travel & Places
 
@@ -4431,6 +4433,7 @@
 1FA98                                                  ; fully-qualified     # 🪘 E13.0 long drum
 1FA87                                                  ; fully-qualified     # 🪇 E15.0 maracas
 1FA88                                                  ; fully-qualified     # 🪈 E15.0 flute
+1FA89                                                  ; fully-qualified     # 🪉 E16.0 harp
 
 # subgroup: phone
 1F4F1                                                  ; fully-qualified     # 📱 E0.6 mobile phone
@@ -4628,6 +4631,7 @@
 1F9F0                                                  ; fully-qualified     # 🧰 E11.0 toolbox
 1F9F2                                                  ; fully-qualified     # 🧲 E11.0 magnet
 1FA9C                                                  ; fully-qualified     # 🪜 E13.0 ladder
+1FA8F                                                  ; fully-qualified     # 🪏 E16.0 shovel
 
 # subgroup: science
 2697 FE0F                                              ; fully-qualified     # ⚗️ E1.0 alembic
@@ -4690,8 +4694,8 @@
 1FAA7                                                  ; fully-qualified     # 🪧 E13.0 placard
 1FAAA                                                  ; fully-qualified     # 🪪 E14.0 identification card
 
-# Objects subtotal:		312
-# Objects subtotal:		312	w/o modifiers
+# Objects subtotal:		314
+# Objects subtotal:		314	w/o modifiers
 
 # group: Symbols
 
@@ -4908,6 +4912,7 @@
 00AE                                                   ; unqualified         # ® E0.6 registered
 2122 FE0F                                              ; fully-qualified     # ™️ E0.6 trade mark
 2122                                                   ; unqualified         # ™ E0.6 trade mark
+1FADF                                                  ; fully-qualified     # 🫟 E16.0 splatter
 
 # subgroup: keycap
 0023 FE0F 20E3                                         ; fully-qualified     # #️⃣ E0.6 keycap: #
@@ -5027,8 +5032,8 @@
 1F533                                                  ; fully-qualified     # 🔳 E0.6 white square button
 1F532                                                  ; fully-qualified     # 🔲 E0.6 black square button
 
-# Symbols subtotal:		304
-# Symbols subtotal:		304	w/o modifiers
+# Symbols subtotal:		305
+# Symbols subtotal:		305	w/o modifiers
 
 # group: Flags
 
@@ -5100,6 +5105,7 @@
 1F1E8 1F1F3                                            ; fully-qualified     # 🇨🇳 E0.6 flag: China
 1F1E8 1F1F4                                            ; fully-qualified     # 🇨🇴 E2.0 flag: Colombia
 1F1E8 1F1F5                                            ; fully-qualified     # 🇨🇵 E2.0 flag: Clipperton Island
+1F1E8 1F1F6                                            ; fully-qualified     # 🇨🇶 E16.0 flag: Sark
 1F1E8 1F1F7                                            ; fully-qualified     # 🇨🇷 E2.0 flag: Costa Rica
 1F1E8 1F1FA                                            ; fully-qualified     # 🇨🇺 E2.0 flag: Cuba
 1F1E8 1F1FB                                            ; fully-qualified     # 🇨🇻 E2.0 flag: Cape Verde
@@ -5313,11 +5319,11 @@
 1F3F4 E0067 E0062 E0073 E0063 E0074 E007F              ; fully-qualified     # 🏴󠁧󠁢󠁳󠁣󠁴󠁿 E5.0 flag: Scotland
 1F3F4 E0067 E0062 E0077 E006C E0073 E007F              ; fully-qualified     # 🏴󠁧󠁢󠁷󠁬󠁳󠁿 E5.0 flag: Wales
 
-# Flags subtotal:		275
-# Flags subtotal:		275	w/o modifiers
+# Flags subtotal:		276
+# Flags subtotal:		276	w/o modifiers
 
 # Status Counts
-# fully-qualified : 3773
+# fully-qualified : 3781
 # minimally-qualified : 1009
 # unqualified : 243
 # component : 9

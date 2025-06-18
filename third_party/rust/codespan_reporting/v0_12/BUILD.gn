@@ -36,7 +36,7 @@ cargo_crate("lib") {
 
   deps = [
     "//third_party/rust/termcolor/v1:lib",
-    "//third_party/rust/unicode_width/v0_1:lib",
+    "//third_party/rust/unicode_width/v0_2:lib",
   ]
   features = [
     "default",
