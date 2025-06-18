@@ -136,6 +136,8 @@ static_library("safe_browsing") {
       "chrome_user_population_helper.h",
       "chrome_v4_protocol_config_provider.cc",
       "chrome_v4_protocol_config_provider.h",
+      "client_side_detection_intelligent_scan_delegate_factory.cc",
+      "client_side_detection_intelligent_scan_delegate_factory.h",
       "client_side_detection_service_factory.cc",
       "client_side_detection_service_factory.h",
       "delayed_warning_navigation_throttle.cc",
@@ -211,6 +213,17 @@ static_library("safe_browsing") {
       "user_interaction_observer.cc",
       "user_interaction_observer.h",
     ]
+    if (is_android) {
+      sources += [
+        "android/client_side_detection_intelligent_scan_delegate_android.cc",
+        "android/client_side_detection_intelligent_scan_delegate_android.h",
+      ]
+    } else {
+      sources += [
+        "client_side_detection_intelligent_scan_delegate_desktop.cc",
+        "client_side_detection_intelligent_scan_delegate_desktop.h",
+      ]
+    }
     deps += [
       ":advanced_protection",
       ":metrics_collector",

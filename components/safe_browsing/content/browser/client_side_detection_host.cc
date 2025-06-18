@@ -679,18 +679,20 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
 std::unique_ptr<ClientSideDetectionHost> ClientSideDetectionHost::Create(
     content::WebContents* tab,
     std::unique_ptr<Delegate> delegate,
+    IntelligentScanDelegate* intelligent_scan_delegate,
     PrefService* pref_service,
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     bool is_off_the_record,
     const PrimaryAccountSignedIn& account_signed_in_callback) {
   return base::WrapUnique(new ClientSideDetectionHost(
-      tab, std::move(delegate), pref_service, std::move(token_fetcher),
-      is_off_the_record, account_signed_in_callback));
+      tab, std::move(delegate), intelligent_scan_delegate, pref_service,
+      std::move(token_fetcher), is_off_the_record, account_signed_in_callback));
 }
 
 ClientSideDetectionHost::ClientSideDetectionHost(
     WebContents* tab,
     std::unique_ptr<Delegate> delegate,
+    IntelligentScanDelegate* intelligent_scan_delegate,
     PrefService* pref_service,
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     bool is_off_the_record,
@@ -701,6 +703,7 @@ ClientSideDetectionHost::ClientSideDetectionHost(
       classification_request_(nullptr),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       delegate_(std::move(delegate)),
+      intelligent_scan_delegate_(intelligent_scan_delegate),
       pref_service_(pref_service),
       token_fetcher_(std::move(token_fetcher)),
       is_off_the_record_(is_off_the_record),
@@ -1277,24 +1280,14 @@ void ClientSideDetectionHost::PhishingImageEmbeddingDone(
 void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist) {
-  bool is_keyboard_lock_requested =
-      base::FeatureList::IsEnabled(
-          kClientSideDetectionBrandAndIntentForScamDetection) &&
-      verdict->client_side_detection_type() ==
-          ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED;
-
-  bool is_intelligent_scan_requested =
-      base::FeatureList::IsEnabled(
-          kClientSideDetectionLlamaForcedTriggerInfoForScamDetection) &&
-      verdict->has_llama_forced_trigger_info() &&
-      verdict->llama_forced_trigger_info().intelligent_scan();
-
   if (verdict->has_llama_forced_trigger_info()) {
     LogLlamaForcedTriggerInfoFields(verdict->llama_forced_trigger_info());
   }
 
-  if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
-      (is_keyboard_lock_requested || is_intelligent_scan_requested)) {
+  if (intelligent_scan_delegate_->ShouldRequestIntelligentScan(verdict.get())) {
+    bool is_keyboard_lock_requested =
+        verdict->client_side_detection_type() ==
+        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED;
     if (is_keyboard_lock_requested &&
         did_match_high_confidence_allowlist.has_value() &&
         did_match_high_confidence_allowlist.value()) {

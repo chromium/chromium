@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
+#include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_factory.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -38,6 +39,7 @@ ChromeClientSideDetectionHostDelegate::CreateHost(content::WebContents* tab) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return ClientSideDetectionHost::Create(
       tab, std::make_unique<ChromeClientSideDetectionHostDelegate>(tab),
+      ClientSideDetectionIntelligentScanDelegateFactory::GetForProfile(profile),
       profile->GetPrefs(),
       std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile)),

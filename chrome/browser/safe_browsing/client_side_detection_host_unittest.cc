@@ -143,6 +143,15 @@ MATCHER_P(HasScamThreatSubtype, other, "") {
   return (other.threat_subtype == arg.threat_subtype);
 }
 
+MATCHER(EmptyLlamForcedTriggerInfoVerdict, "") {
+  return !arg->has_llama_forced_trigger_info();
+}
+
+MATCHER(IntelligentScanEnabledVerdict, "") {
+  return arg->has_llama_forced_trigger_info() &&
+         arg->llama_forced_trigger_info().intelligent_scan();
+}
+
 // Test that the callback is nullptr when the verdict is not phishing.
 MATCHER(CallbackIsNull, "") {
   return arg.is_null();
@@ -255,6 +264,15 @@ class MockClientSideDetectionHostDelegate
 
  private:
   std::string inner_text_ = "inner text";
+};
+
+class MockIntelligentScanDelegate
+    : public ClientSideDetectionHost::IntelligentScanDelegate {
+ public:
+  MOCK_METHOD(bool,
+              ShouldRequestIntelligentScan,
+              (ClientPhishingRequest*),
+              (override));
 };
 
 }  // namespace
@@ -385,6 +403,10 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         std::make_unique<MockClientSideDetectionHostDelegate>(web_contents());
     raw_delegate_ = delegate.get();
     csd_host_->set_delegate_for_testing(std::move(delegate));
+    intelligent_scan_delegate_ =
+        std::make_unique<NiceMock<MockIntelligentScanDelegate>>();
+    csd_host_->set_intelligent_scan_delegate_for_testing(
+        intelligent_scan_delegate_.get());
     // Commit to a URL for tests that do not explicitly NavigateAndCommit.
     // Committing to "about:blank" avoids triggering logic irrelevant for tests.
     NavigateAndCommit(GURL("about:blank"));
@@ -398,6 +420,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
     csd_host_.reset();
     csd_service_.reset();
+    intelligent_scan_delegate_.reset();
     database_manager_.reset();
     ui_manager_.reset();
 
@@ -481,9 +504,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   }
 
   void NavigateAndCommit(const GURL& safe_url) {
-    controller().LoadURL(
-        safe_url, content::Referrer(), ui::PAGE_TRANSITION_LINK,
-        std::string());
+    controller().LoadURL(safe_url, content::Referrer(),
+                         ui::PAGE_TRANSITION_LINK, std::string());
 
     content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
   }
@@ -528,6 +550,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   FakePhishingDetector fake_phishing_detector_;
   raw_ptr<NiceMock<MockSafeBrowsingTokenFetcher>> raw_token_fetcher_ = nullptr;
   raw_ptr<MockClientSideDetectionHostDelegate> raw_delegate_ = nullptr;
+  std::unique_ptr<NiceMock<MockIntelligentScanDelegate>>
+      intelligent_scan_delegate_;
   base::SimpleTestTickClock clock_;
   const bool is_incognito_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -554,8 +578,9 @@ class ClientSideDetectionHostIncognitoTest
 };
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneInvalidVerdict) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // Case 0: renderer sends an invalid protobuf that we're unable to
   // parse. This has the same behavior as providing nullopt.
@@ -565,8 +590,9 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneInvalidVerdict) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // Case 1: client thinks the page is phishing.  The server does not agree.
   // No interstitial is shown.
@@ -590,8 +616,9 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   base::HistogramTester histogram_tester;
 
@@ -636,8 +663,9 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // Case 3 & 4: client thinks a page is phishing then navigates to
   // another page which is also considered phishing by the client
@@ -714,8 +742,9 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneVerdictNotPhishing) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // Case 5: renderer sends a verdict string that isn't phishing.
   ClientPhishingRequest verdict;
@@ -784,8 +813,9 @@ TEST_F(
 
 TEST_F(ClientSideDetectionHostTest,
        PhishingDetectionDoneVerdictNotPhishingButSBMatchOnNewRVH) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // When navigating to a different host (thus creating a pending RVH) which
   // matches regular malware list, and after navigation the renderer sends a
@@ -817,8 +847,9 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        PhishingDetectionDoneEnhancedProtectionShouldHaveToken) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
@@ -848,8 +879,9 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        PhishingDetectionDoneCalledTwiceShouldSucceed) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
@@ -897,8 +929,9 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostIncognitoTest,
        PhishingDetectionDoneIncognitoShouldNotHaveToken) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
@@ -921,8 +954,9 @@ TEST_F(ClientSideDetectionHostIncognitoTest,
 
 TEST_F(ClientSideDetectionHostTest,
        PhishingDetectionDoneNoEnhancedProtectionShouldNotHaveToken) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   ClientPhishingRequest verdict;
   verdict.set_url("http://example.com/");
@@ -947,8 +981,9 @@ TEST_F(ClientSideDetectionHostTest,
 // TODO(clamy): Fix the test and re-enable. See crbug.com/753357.
 TEST_F(ClientSideDetectionHostTest,
        DISABLED_NavigationCancelsShouldClassifyUrl) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // Test that canceling pending should classify requests works as expected.
   GURL first_url("http://first.phishy.url.com");
@@ -974,8 +1009,9 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   base::HistogramTester histogram_tester;
 
@@ -1096,8 +1132,9 @@ TEST_F(
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckXHTML) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // Check that XHTML is supported, in addition to the default HTML type.
   GURL url("http://host.com/xhtml");
@@ -1117,8 +1154,9 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckXHTML) {
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckTwoNavigations) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // Navigate to two hosts, which should cause two IPCs.
   GURL url1("http://host1.com/");
@@ -1142,8 +1180,9 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckTwoNavigations) {
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckPrivateIpAddress) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // If IsPrivateIPAddress returns true, no IPC should be triggered.
   GURL url("http://host3.com/");
@@ -1156,8 +1195,9 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckLocalResource) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // If IsLocalResource returns true, no IPC should be triggered.
   GURL url("http://host3.com/");
@@ -1171,8 +1211,9 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckLocalResource) {
 
 TEST_F(ClientSideDetectionHostIncognitoTest,
        TestPreClassificationCheckIncognito) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // If the tab is incognito there should be no IPC.  Also, we shouldn't
   // even check the csd-allowlist.
@@ -1188,8 +1229,9 @@ TEST_F(ClientSideDetectionHostIncognitoTest,
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckOverPhishingReportingLimit) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // If the url isn't in the cache and we are over the reporting limit, we
   // don't do classification.
@@ -1204,8 +1246,9 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckHttpsUrl) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   GURL url("https://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
@@ -1219,8 +1262,9 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckHttpsUrl) {
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckNoneHttpOrHttpsUrl) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   GURL url("file://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
@@ -1232,8 +1276,9 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckValidCached) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // If result is cached, we will try and display the blocking page directly
   // with no start classification message.
@@ -1255,8 +1300,9 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckValidCached) {
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationAllowlistedByPolicy) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   // Configures enterprise allowlist.
   ScopedListPrefUpdate update(profile()->GetPrefs(),
@@ -1274,8 +1320,9 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationAllowlistedByPolicy) {
 }
 
 TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   {
     ClientPhishingRequest verdict;
@@ -1324,8 +1371,9 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
 }
 
 TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
@@ -1367,8 +1415,9 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PopulatesPageLoadToken) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   GURL url("http://phishing.example.com/");
   ClientPhishingRequest verdict;
@@ -2372,8 +2421,9 @@ class ClientSideDetectionHostDebugFeaturesTest
 
 TEST_F(ClientSideDetectionHostDebugFeaturesTest,
        SkipsAllowlistWhenDumpingFeatures) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
@@ -2387,8 +2437,9 @@ TEST_F(ClientSideDetectionHostDebugFeaturesTest,
 
 TEST_F(ClientSideDetectionHostDebugFeaturesTest,
        SkipsCacheWhenDumpingFeatures) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
@@ -2402,8 +2453,9 @@ TEST_F(ClientSideDetectionHostDebugFeaturesTest,
 
 TEST_F(ClientSideDetectionHostDebugFeaturesTest,
        SkipsReportLimitWhenDumpingFeatures) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
+  }
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
@@ -2431,6 +2483,8 @@ class ClientSideDetectionHostScamDetectionTest
             testing::Invoke([&](SafeBrowsingTokenFetcher::Callback callback) {
               std::move(callback).Run("fake_access_token");
             }));
+    ON_CALL(*intelligent_scan_delegate_, ShouldRequestIntelligentScan(_))
+        .WillByDefault(Return(true));
     NavigateAndCommit(example_url_);
   }
 
@@ -2669,14 +2723,45 @@ class ClientSideDetectionHostScamDetectionTest
 };
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
-       KeyboardLockRequestTriggersOnDeviceLLMWithEmptyResponse) {
+       OnDeviceLLMDisabledByDelegate) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
 
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
-  // Because the client side detection type is KEYBOARD_LOCK_REQUESTED, we will
-  // call to inquire the on-device model.
+  EXPECT_CALL(*intelligent_scan_delegate_, ShouldRequestIntelligentScan(_))
+      .WillOnce(Return(false));
+  // Because the delegate has disabled intelligent scan, we will
+  // NOT inquire the on-device model.
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/std::nullopt,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest, OnDeviceLLMWithEmptyResponse) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   SetInquireOnDeviceModelCallback(/*should_return_response=*/false);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -2687,8 +2772,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
 
-  // Although the score is not phishy at all, we will still inquire the
-  // on-device model because the ping is triggered by keyboard lock.
   PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
                         ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
                         /*did_match_high_confidence_allowlist=*/false);
@@ -2703,8 +2786,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
 }
 
-TEST_F(ClientSideDetectionHostScamDetectionTest,
-       KeyboardLockRequestTriggersOnDeviceLLMWithFullResponse) {
+TEST_F(ClientSideDetectionHostScamDetectionTest, OnDeviceLLMWithFullResponse) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
@@ -2833,40 +2915,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
 }
 
-TEST_F(ClientSideDetectionHostScamDetectionTest,
-       NonKeyboardLockRequestDoesNotTriggersOnDeviceLLM) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
-
-  // Because the client side detection type is POINTER_LOCK_REQUESTED, we will
-  // NOT inquire the on-device model.
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
-  SetSendClientReportPhishingRequestCallback(
-      /*has_expected_brand_and_intent=*/false,
-      /*expected_no_info_reason=*/std::nullopt,
-      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
-      /*returned_is_phishing=*/false,
-      /*returned_intelligent_scan_verdict=*/
-      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
-
-  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
-                        ClientSideDetectionType::POINTER_LOCK_REQUESTED,
-                        /*did_match_high_confidence_allowlist=*/false);
-
-  VerifyExpectedCalls();
-  // Because the request is non-keyboard lock request, we don't check for
-  // on-device model availability.
-  VerifyGeneralScamDetectionHistograms(
-      /*expected_request_type=*/ClientSideDetectionType::POINTER_LOCK_REQUESTED,
-      /*is_on_device_model_available=*/std::nullopt,
-      /*model_has_successful_response=*/std::nullopt,
-      /*intelligent_scan_verdict=*/
-      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
-}
-
 TEST_F(
     ClientSideDetectionHostScamDetectionTest,
     ScamExperimentVerdictOnClientPhishingResponseButDoesntShowBlockingPageDueToDisabledFlag) {
@@ -2988,102 +3036,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*redirect_chain_contains_llama_forced_trigger_info=*/std::nullopt);
 }
 
-TEST_F(ClientSideDetectionHostScamDetectionTest,
-       RTLookupResponseHaveFalseIntelligentScanSoItDoesNotTriggersOnDeviceLLM) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
-               kClientSideDetectionSendLlamaForcedTriggerInfo,
-               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
-              {});
-  CacheForcedTriggerInfo(
-      /*has_llama_forced_trigger_info=*/true,
-      /*intelligent_scan=*/false,
-      /*cache_expression=*/example_url_.GetContent());
-  // Because the RTLookupResponse does contain the LlamaForcedTriggerInfo but
-  // intelligent_scan field is set to false, we will not inquire the on device
-  // model.
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
-  SetSendClientReportPhishingRequestCallback(
-      /*has_expected_brand_and_intent=*/false,
-      /*expected_no_info_reason=*/std::nullopt,
-      /*expected_llama_forced_trigger_info_trigger_url=*/
-      example_url_.GetContent(),
-      /*returned_is_phishing=*/false,
-      /*returned_intelligent_scan_verdict=*/
-      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
-
-  // Although the phishing detection done is set to TRIGGER_MODELS, it will
-  // eventually switch to FORCE_REQUEST because the verdict cache manager
-  // contains a suspicious RTLookupResponse.
-  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
-                        ClientSideDetectionType::TRIGGER_MODELS,
-                        /*did_match_high_confidence_allowlist=*/false);
-
-  VerifyExpectedCalls();
-  // We do not check for on-device model availability if LLAMA force request
-  // does not request it initially.
-  VerifyGeneralScamDetectionHistograms(
-      /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
-      /*is_on_device_model_available=*/std::nullopt,
-      /*model_has_successful_response=*/std::nullopt,
-      /*intelligent_scan_verdict=*/
-      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
-  VerifyForcedTriggerScamDetectionHistograms(
-      /*force_request=*/true, /*has_llama_forced_trigger_info=*/true,
-      /*intelligent_scan=*/false,
-      /*redirect_chain_contains_llama_forced_trigger_info=*/std::nullopt);
-}
-
-TEST_F(
-    ClientSideDetectionHostScamDetectionTest,
-    RTLookupResponseDoesNotHaveLlamaForcedTriggerInfoSoItDoesNotTriggersOnDeviceLLM) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
-    GTEST_SKIP();
-  }
-
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
-               kClientSideDetectionSendLlamaForcedTriggerInfo,
-               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
-              {});
-  CacheForcedTriggerInfo(
-      /*has_llama_forced_trigger_info=*/false,
-      /*intelligent_scan=*/false,
-      /*cache_expression=*/example_url_.GetContent());
-  // Because the RTLookupResponse does not contain the LlamaForcedTriggerInfo at
-  // all and it wasn't found in the cache, we will not inquire the on device
-  // model.
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
-  SetSendClientReportPhishingRequestCallback(
-      /*has_expected_brand_and_intent=*/false,
-      /*expected_no_info_reason=*/std::nullopt,
-      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
-      /*returned_is_phishing=*/false,
-      /*returned_intelligent_scan_verdict=*/
-      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
-
-  // Although the phishing detection done is set to TRIGGER_MODELS, it will
-  // eventually switch to FORCE_REQUEST because the verdict cache manager
-  // contains a suspicious RTLookupResponse.
-  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
-                        ClientSideDetectionType::TRIGGER_MODELS,
-                        /*did_match_high_confidence_allowlist=*/false);
-
-  VerifyExpectedCalls();
-  VerifyGeneralScamDetectionHistograms(
-      /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
-      /*is_on_device_model_available=*/std::nullopt,
-      /*model_has_successful_response=*/std::nullopt,
-      /*intelligent_scan_verdict=*/
-      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
-  VerifyForcedTriggerScamDetectionHistograms(
-      /*force_request=*/true, /*has_llama_forced_trigger_info=*/false,
-      /*intelligent_scan=*/false,
-      /*redirect_chain_contains_llama_forced_trigger_info=*/std::nullopt);
-}
-
 TEST_F(
     ClientSideDetectionHostScamDetectionTest,
     RedirectChainContainsRTLookupResponseLlamaForcedTriggerInfoSoItTriggersOnDeviceLLM) {
@@ -3123,6 +3075,9 @@ TEST_F(
                          /*intelligent_scan=*/true,
                          /*cache_expression=*/first_url_redirect.GetContent());
 
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldRequestIntelligentScan(IntelligentScanEnabledVerdict()))
+      .WillOnce(Return(true));
   SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
 
   // Re-set the example URL to the final url in the redirect chain.
@@ -3198,6 +3153,9 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   // Re-set the example URL to the final url in the redirect chain.
   SetExampleUrl(third_url_redirect);
 
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldRequestIntelligentScan(EmptyLlamForcedTriggerInfoVerdict()))
+      .WillOnce(Return(false));
   // Because there is no forced trigger info in the first URL in the referrer
   // chain either, there won't be any on-device model calls.
   SetSendClientReportPhishingRequestCallback(
@@ -3273,8 +3231,11 @@ TEST_F(
   // Re-set the example URL to the final url in the redirect chain.
   SetExampleUrl(third_url_redirect);
 
-  // There is a LlamaForcedTriggerInfo, but due to the killswitch, there won't
-  // be any on-device model calls.
+  // Because of the killswitch, the verdict passed to the delegate will have
+  // an empty llama forced trigger info.
+  EXPECT_CALL(*intelligent_scan_delegate_,
+              ShouldRequestIntelligentScan(EmptyLlamForcedTriggerInfoVerdict()))
+      .WillOnce(Return(false));
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/std::nullopt,
@@ -3424,9 +3385,9 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
                kClientSideDetectionShowLlamaScamVerdictWarning},
               {});
 
-  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
   SetSendClientReportPhishingRequestCallback(
-      /*has_expected_brand_and_intent=*/false,
+      /*has_expected_brand_and_intent=*/true,
       /*expected_no_info_reason=*/std::nullopt,
       /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
       /*returned_is_phishing=*/false,
@@ -3448,8 +3409,8 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   // type is TRIGGER_MODELS, we do not check for on device model availability.
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::TRIGGER_MODELS,
-      /*is_on_device_model_available=*/std::nullopt,
-      /*model_has_successful_response=*/std::nullopt,
+      /*is_on_device_model_available=*/true,
+      /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_TELEMETRY);
 }

@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/scam_detection.pb.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
@@ -99,6 +100,18 @@ class ClientSideDetectionHost
     virtual void GetInnerText(HostInnerTextCallback callback) = 0;
   };
 
+  // Delegate for handling intelligent scanning using on-device models. This
+  // object is responsible for all interactions with the on-device model.
+  class IntelligentScanDelegate : public KeyedService {
+   public:
+    ~IntelligentScanDelegate() override = default;
+
+    // Determines if an intelligent scan should be requested based on the
+    // verdict.
+    virtual bool ShouldRequestIntelligentScan(
+        ClientPhishingRequest* verdict) = 0;
+  };
+
   // The caller keeps ownership of the tab object and is responsible for
   // ensuring that it stays valid until WebContentsDestroyed is called.
   // The caller also keeps ownership of pref_service. The
@@ -108,6 +121,7 @@ class ClientSideDetectionHost
   static std::unique_ptr<ClientSideDetectionHost> Create(
       content::WebContents* tab,
       std::unique_ptr<Delegate> delegate,
+      IntelligentScanDelegate* intelligent_scan_delegate,
       PrefService* pref_service,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       bool is_off_the_record,
@@ -149,6 +163,7 @@ class ClientSideDetectionHost
   explicit ClientSideDetectionHost(
       content::WebContents* tab,
       std::unique_ptr<Delegate> delegate,
+      IntelligentScanDelegate* intelligent_scan_delegate,
       PrefService* pref_service,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       bool is_off_the_record,
@@ -317,6 +332,11 @@ class ClientSideDetectionHost
     delegate_ = std::move(delegate);
   }
 
+  void set_intelligent_scan_delegate_for_testing(
+      IntelligentScanDelegate* intelligent_scan_delegate) {
+    intelligent_scan_delegate_ = intelligent_scan_delegate;
+  }
+
   // Check if CSD can get an access Token. Should be enabled only for ESB
   // users, who are signed in and not in incognito mode.
   bool CanGetAccessToken();
@@ -382,6 +402,9 @@ class ClientSideDetectionHost
   raw_ptr<const base::TickClock> tick_clock_;
 
   std::unique_ptr<Delegate> delegate_;
+
+  // A keyed service with profile lifetime.
+  raw_ptr<IntelligentScanDelegate> intelligent_scan_delegate_;
 
   // Unowned object used for getting preference settings.
   raw_ptr<PrefService> pref_service_;
