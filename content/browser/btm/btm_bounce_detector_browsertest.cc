@@ -4102,7 +4102,14 @@ class BtmBounceDetectorBFCacheTest : public BtmBounceDetectorBrowserTest,
 
 // Confirm that BTM records a bounce that writes a cookie as stateful, even if
 // the user immediately navigates away.
-IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, LateCookieAccessTest) {
+// TODO(https://crbug.com/425717555): Very flaky if BF Cache is disabled.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_LateCookieAccessTest DISABLED_LateCookieAccessTest
+#else
+#define MAYBE_LateCookieAccessTest LateCookieAccessTest
+#endif
+IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
+                       MAYBE_LateCookieAccessTest) {
   const GURL bounce_url =
       embedded_test_server()->GetURL("b.test", "/empty.html");
   const GURL final_url =
@@ -4143,7 +4150,13 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, LateCookieAccessTest) {
 
 // Confirm that BTM records a bounce that writes a cookie as stateful, even if
 // the chain ends immediately afterwards.
-IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, QuickEndChainTest) {
+// TODO(https://crbug.com/425717555): Very flaky if BF Cache is disabled.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_QuickEndChainTest DISABLED_QuickEndChainTest
+#else
+#define MAYBE_QuickEndChainTest QuickEndChainTest
+#endif
+IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, MAYBE_QuickEndChainTest) {
   // Block 3PCs so BTM will record bounces.
   browser_client().SetBlockThirdPartyCookiesByDefault(true);
 
