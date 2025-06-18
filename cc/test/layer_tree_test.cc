@@ -1195,7 +1195,7 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
   base::RunLoop loop;
   quit_closure_ = loop.QuitWhenIdleClosure();
   loop.Run();
-  CleanupBeforeDestroy();
+  AfterTest();
   DestroyLayerTreeHost();
 
   timeout_.Cancel();
@@ -1205,7 +1205,6 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
   if (timed_out_) {
     FAIL() << "Test timed out";
   }
-  AfterTest();
 }
 
 void LayerTreeTest::RequestNewLayerTreeFrameSink() {

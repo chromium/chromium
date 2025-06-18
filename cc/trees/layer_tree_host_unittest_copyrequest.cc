@@ -605,14 +605,14 @@ class LayerTreeHostTestHiddenSurfaceNotAllocatedForSubtreeCopyRequest
     did_swap_ = true;
   }
 
-  void AfterTest() override { EXPECT_TRUE(did_swap_); }
+  void AfterTest() override {
+    EXPECT_TRUE(did_swap_);
 
-  void CleanupBeforeDestroy() override {
     // Clear frame_sink_ to prevent dangling pointer access during destruction.
     // LayerTreeHost owns the TestLayerTreeFrameSink and releases it immediately
     // after this method is called.
     frame_sink_ = nullptr;
-    LayerTreeHostCopyRequestTest::CleanupBeforeDestroy();
+    LayerTreeHostCopyRequestTest::AfterTest();
   }
 
   viz::AggregatedRenderPassId parent_render_pass_id;

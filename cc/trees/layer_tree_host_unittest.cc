@@ -655,9 +655,10 @@ class LayerTreeHostContextCacheTest : public LayerTreeHostTest {
   // This is called before DestroyLayerTreeHost. The MockContextSupport
   // objects are owned by the TestContextProvider and will be destroyed as part
   // of LayerTreeHost d'tor, so clean them up here to avoid dangling pointers.
-  void CleanupBeforeDestroy() override {
+  void AfterTest() override {
     mock_main_context_support_ = nullptr;
     mock_worker_context_support_ = nullptr;
+    LayerTreeHostTest::AfterTest();
   }
 
   raw_ptr<MockContextSupport> mock_main_context_support_;
@@ -1414,10 +1415,11 @@ class LayerTreeHostTestLayerListSurfaceDamage : public LayerTreeHostTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  void CleanupBeforeDestroy() override {
+  void AfterTest() override {
     // Clear the root_ pointer before LayerTreeHost is destroyed to avoid
     // a dangling pointer.
     root_ = nullptr;
+    LayerTreeHostTest::AfterTest();
   }
 
   void DidCommit() override {
@@ -5983,11 +5985,12 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
     }
   }
 
-  void CleanupBeforeDestroy() override {
+  void AfterTest() override {
     // Clean up non-owned pointers before the LayerTreeHost is destroyed and
     // releases the objects they point to.
     root_layer_ = nullptr;
     scroll_elasticity_helper_ = nullptr;
+    LayerTreeHostTest::AfterTest();
   }
 
  private:
@@ -6799,10 +6802,11 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
     EndTest();
   }
 
-  void CleanupBeforeDestroy() override {
+  void AfterTest() override {
     // Clear the non-ref pointer before LayerTreeHost is destroyed to avoid a
     // dangling pointer.
     layer_ = nullptr;
+    LayerTreeTest::AfterTest();
   }
 
   FakeContentLayerClient layer_client_;
@@ -10511,10 +10515,11 @@ class LayerTreeHostTestBeginFramePausedChanged : public LayerTreeHostTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  void CleanupBeforeDestroy() override {
+  void AfterTest() override {
     // Clear the non-ref pointers before LayerTreeHost is destroyed to avoid a
     // dangling pointer.
     layer_tree_frame_sink_ = nullptr;
+    LayerTreeHostTest::AfterTest();
   }
 
   void ReadyToCommitOnThread(LayerTreeHostImpl* host_impl) override {

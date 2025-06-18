@@ -71,11 +71,11 @@ class LayerTreeHostContextTest : public LayerTreeTest {
     media::InitializeMediaLibrary();
   }
 
-  void CleanupBeforeDestroy() override {
+  void AfterTest() override {
     // Clear raw_ptr members before destruction starts to prevent
     // dangling pointer detection when LayerTreeFrameSink is destroyed.
     ClearContextPointers();
-    LayerTreeTest::CleanupBeforeDestroy();
+    LayerTreeTest::AfterTest();
   }
 
   void LoseContext() {
@@ -233,7 +233,10 @@ class LayerTreeHostContextTestLostContextSucceeds
     recovered_context_ = true;
   }
 
-  void AfterTest() override { EXPECT_EQ(11u, test_case_); }
+  void AfterTest() override {
+    EXPECT_EQ(11u, test_case_);
+    LayerTreeHostContextTest::AfterTest();
+  }
 
   void DidCommitAndDrawFrame() override {
     // If the last frame had a context loss, then we'll commit again to
@@ -625,6 +628,7 @@ class LayerTreeHostContextTestCreateLayerTreeFrameSinkFailsOnce
   void AfterTest() override {
     EXPECT_EQ(times_to_fail_, times_create_failed_);
     EXPECT_NE(0, times_initialized_);
+    LayerTreeHostContextTest::AfterTest();
   }
 
  private:
@@ -644,11 +648,11 @@ class LayerTreeHostContextTestLostContextAndEvictTextures
         num_commits_(0),
         lost_context_(false) {}
 
-  void CleanupBeforeDestroy() override {
+  void AfterTest() override {
     // Clear raw_ptr members before destruction starts to prevent
     // dangling pointer detection when LayerTreeHostImpl is destroyed.
     impl_host_ = nullptr;
-    LayerTreeHostContextTest::CleanupBeforeDestroy();
+    LayerTreeHostContextTest::AfterTest();
   }
 
   void SetupTree() override {
@@ -986,7 +990,10 @@ class LayerTreeHostContextTestDontUseLostResources
     }
   }
 
-  void AfterTest() override { EXPECT_TRUE(lost_context_); }
+  void AfterTest() override {
+    EXPECT_TRUE(lost_context_);
+    LayerTreeHostContextTest::AfterTest();
+  }
 
  private:
   FakeContentLayerClient client_;

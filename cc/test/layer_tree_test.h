@@ -157,13 +157,16 @@ class LayerTreeTest : public testing::Test, public TestHooks {
     initial_root_bounds_ = bounds;
   }
 
-  virtual void CleanupBeforeDestroy() {}
-  virtual void AfterTest() {}
   virtual void WillBeginTest();
   virtual void BeginTest() = 0;
   virtual void SetupTree();
 
   virtual void RunTest(CompositorMode mode);
+
+  // Ran after the test ends but before the LayerTreeHost is destroyed.
+  // Override this to do any additional cleanup or verification after the test
+  // has run.
+  virtual void AfterTest() {}
 
   bool HasImplThread() const { return !!impl_thread_; }
   base::SingleThreadTaskRunner* ImplThreadTaskRunner() {

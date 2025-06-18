@@ -1434,11 +1434,11 @@ class SoftwareTextureLayerTest : public LayerTreeTest {
  protected:
   SoftwareTextureLayerTest() : LayerTreeTest(viz::RendererType::kSoftware) {}
 
-  void CleanupBeforeDestroy() override {
+  void AfterTest() override {
     // Clear before the LayerTreeHost (and its TestLayerTreeFrameSink) is
     // destroyed to prevent a dangling pointer during test cleanup.
     frame_sink_ = nullptr;
-    LayerTreeTest::CleanupBeforeDestroy();
+    LayerTreeTest::AfterTest();
   }
 
   void SetupTree() override {
@@ -1538,7 +1538,10 @@ class SoftwareTextureLayerSwitchTreesTest : public SoftwareTextureLayerTest {
     verified_frames_++;
   }
 
-  void AfterTest() override { EXPECT_EQ(6, verified_frames_); }
+  void AfterTest() override {
+    EXPECT_EQ(6, verified_frames_);
+    SoftwareTextureLayerTest::AfterTest();
+  }
 
   int step_ = 0;
   int verified_frames_ = 0;
@@ -1591,7 +1594,10 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
     verified_frames_++;
   }
 
-  void AfterTest() override { EXPECT_EQ(4, verified_frames_); }
+  void AfterTest() override {
+    EXPECT_EQ(4, verified_frames_);
+    SoftwareTextureLayerTest::AfterTest();
+  }
 
   int step_ = 0;
   int verified_frames_ = 0;
@@ -1643,7 +1649,10 @@ class SoftwareTextureLayerMultipleResourceTest
     verified_frames_++;
   }
 
-  void AfterTest() override { EXPECT_EQ(4, verified_frames_); }
+  void AfterTest() override {
+    EXPECT_EQ(4, verified_frames_);
+    SoftwareTextureLayerTest::AfterTest();
+  }
 
   int step_ = 0;
   int verified_frames_ = 0;
@@ -1690,7 +1699,7 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
         // another frame, with the id being registered again.
         layer_tree_host()->SetVisible(false);
         // Clear frame_sink_ before releasing to prevent dangling pointer. The
-        // normal clear in CleanupBeforeDestroy won't handle it as this test is
+        // normal clear in AfterTest won't handle it as this test is
         // intentionally modifying the frame sink's lifetime.
         frame_sink_ = nullptr;
         layer_tree_host()->ReleaseLayerTreeFrameSink();
@@ -1727,7 +1736,10 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
     EndTest();
   }
 
-  void AfterTest() override { EXPECT_EQ(4, verified_frames_); }
+  void AfterTest() override {
+    EXPECT_EQ(4, verified_frames_);
+    SoftwareTextureLayerTest::AfterTest();
+  }
 
   int step_ = 0;
   int verified_frames_ = 0;

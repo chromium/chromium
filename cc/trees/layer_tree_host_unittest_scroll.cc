@@ -619,11 +619,6 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  void CleanupBeforeDestroy() override {
-    expected_scroll_layer_ = nullptr;
-    expected_no_scroll_layer_ = nullptr;
-  }
-
   void WillCommit(const CommitState& commit_state) override {
     // Keep the test committing (otherwise the early out for no update
     // will stall the test).
@@ -754,6 +749,10 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
   void AfterTest() override {
     EXPECT_EQ(scroll_child_layer_ ? 0 : 2, num_outer_viewport_scrolls_);
     EXPECT_POINTF_EQ(javascript_scroll_ + scroll_amount_, final_scroll_offset_);
+
+    expected_scroll_layer_ = nullptr;
+    expected_no_scroll_layer_ = nullptr;
+    LayerTreeHostScrollTest::AfterTest();
   }
 
  protected:
@@ -2447,18 +2446,17 @@ class LayerTreeHostScrollTestElasticOverscroll
     return draw_result;
   }
 
-  void CleanupBeforeDestroy() override {
-    // Reset before LayerTreeHost destruction to avoid dangling pointer, since
-    // InputHandler (which owns the helper) is destroyed first.
-    scroll_elasticity_helper_ = nullptr;
-  }
-
   void AfterTest() override {
     EXPECT_EQ(num_begin_main_frames_impl_thread_, 5);
     EXPECT_EQ(num_begin_main_frames_main_thread_, 5);
     gfx::Vector2dF expected_elastic_overscroll =
         elastic_overscroll_test_cases_[4];
     EXPECT_EQ(expected_elastic_overscroll, current_elastic_overscroll_);
+
+    // Reset before LayerTreeHost destruction to avoid dangling pointer, since
+    // InputHandler (which owns the helper) is destroyed first.
+    scroll_elasticity_helper_ = nullptr;
+    LayerTreeHostScrollTest::AfterTest();
   }
 
  private:

@@ -107,9 +107,10 @@ class LayerTreeHostReadbackPixelTest
     PostSetNeedsCommitToMainThread();
   }
 
-  void CleanupBeforeDestroy() override {
+  void AfterTest() override {
     // Avoid extending the lifetime of the context.
     context_provider_.reset();
+    LayerTreePixelTest::AfterTest();
   }
 
   void DidCommitAndDrawFrame() override {
