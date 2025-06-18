@@ -138,6 +138,7 @@ class PLATFORM_EXPORT ContouredRect {
       return curvature_ == CornerCurvature::kNotch;
     }
     constexpr bool IsConcave() const { return curvature_ < 1; }
+    constexpr bool IsHyperellipse() const { return curvature_ >= 2; }
     constexpr bool IsZero() const { return Start() == End(); }
     constexpr bool IsEmpty() const {
       return v1().Length() == 0 || v2().Length() == 0;
