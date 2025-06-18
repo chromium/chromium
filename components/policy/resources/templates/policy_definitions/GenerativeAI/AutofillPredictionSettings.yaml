@@ -29,7 +29,7 @@ items:
   name: Disabled
   value: 2
 owners:
-- file://components/autofill_ai/OWNERS
+- file://components/autofill/OWNERS
 - jkeitel@google.com
 schema:
   enum:

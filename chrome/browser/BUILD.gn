@@ -4490,7 +4490,6 @@ static_library("browser") {
       "//components/app_constants",
       "//components/autofill/core/browser",
       "//components/autofill/core/common",
-      "//components/autofill_ai/core/browser",
       "//components/cbor",
       "//components/commerce/core:cart_db_content_proto",
       "//components/commerce/core:discounts_db_content_proto",

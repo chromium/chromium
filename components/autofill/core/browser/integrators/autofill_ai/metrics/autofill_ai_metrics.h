@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_METRICS_H_
-#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_METRICS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_METRICS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_METRICS_H_
 
-namespace autofill_ai {
+namespace autofill {
 
 // Logs metrics related to the user seeing an IPH, accepting it and eventually
 // seeing or accepting the FFR dialog.
@@ -19,6 +19,6 @@ enum class AutofillAiOptInFunnelEvents {
 
 void LogOptInFunnelEvent(AutofillAiOptInFunnelEvents event);
 
-}  // namespace autofill_ai
+}  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_METRICS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_METRICS_H_

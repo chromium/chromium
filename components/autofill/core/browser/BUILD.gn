@@ -339,6 +339,8 @@ static_library("browser") {
     "integrators/autofill_ai/autofill_ai_suggestions.h",
     "integrators/autofill_ai/metrics/autofill_ai_logger.cc",
     "integrators/autofill_ai/metrics/autofill_ai_logger.h",
+    "integrators/autofill_ai/metrics/autofill_ai_metrics.cc",
+    "integrators/autofill_ai/metrics/autofill_ai_metrics.h",
     "integrators/autofill_ai/metrics/autofill_ai_ukm_logger.cc",
     "integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h",
     "integrators/compose/autofill_compose_delegate.h",

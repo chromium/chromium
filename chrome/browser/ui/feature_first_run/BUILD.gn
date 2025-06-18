@@ -22,7 +22,7 @@ source_set("impl") {
     "//chrome/app/theme:theme_resources_grit",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/color:color_headers",
-    "//components/autofill_ai/core/browser",
+    "//components/autofill/core/browser",
     "//components/constrained_window",
     "//components/strings:components_strings_grit",
     "//ui/strings:ui_strings_grit",

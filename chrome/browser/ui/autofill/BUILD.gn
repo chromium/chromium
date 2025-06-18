@@ -89,7 +89,7 @@ source_set("autofill") {
       "update_address_bubble_controller.h",
     ]
     public_deps += [
-      "//components/autofill_ai/core/browser",
+      "//components/autofill/core/browser",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:password_form",
       "//components/renderer_context_menu",
@@ -201,7 +201,7 @@ source_set("impl") {
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/webui/signin:login",
-      "//components/autofill_ai/core/browser",
+      "//components/autofill/core/browser",
       "//components/password_manager/core/browser/features:password_features",
       "//components/plus_addresses/resources/strings",
       "//extensions/browser",
@@ -457,9 +457,9 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/autofill/content/browser:test_support",
+      "//components/autofill/core/browser",
       "//components/autofill/core/browser:test_support",
       "//components/autofill/core/common",
-      "//components/autofill_ai/core/browser",
       "//components/keyed_service/content",
       "//components/keyed_service/core",
       "//components/password_manager/content/browser",
