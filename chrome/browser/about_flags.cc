@@ -595,47 +595,43 @@ const FeatureEntry::Choice KWebXrHandAnonymizationChoices[] = {
 #endif  // ENABLE_VR
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableOpenInBrowser[] = {
+const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnable[] = {
+    {"open_in_browser", "true"}};
+const FeatureEntry::FeatureParam kCCTAdaptiveButtonCPAOnly[] = {
+    {"contextual_only", "true"}};
+const FeatureEntry::FeatureParam kCCTAdaptiveButtonOpenInBrowserCPA[] = {
     {"open_in_browser", "true"},
-    {"voice", "false"},
-    {"default_variant", "0"},
-    {"contextual_only", "false"},
-    {"remove_find_in_page_menu_item", "false"},
-    {"remove_desktop_site_menu_item", "false"},
-    {"show_open_in_browser_menu_top", "false"}};
-const FeatureEntry::FeatureParam kCCTAdaptiveButtonOpenInBrowserDefault[] = {
+    {"contextual_only", "true"}};
+const FeatureEntry::FeatureParam kCCTAdaptiveButtonMenuOpenInBrowserTop[] = {
     {"open_in_browser", "true"},
-    {"voice", "false"},
-    {"default_variant", "15"},
-    {"contextual_only", "false"},
-    {"remove_find_in_page_menu_item", "false"},
-    {"remove_desktop_site_menu_item", "false"},
-    {"show_open_in_browser_menu_top", "false"}};
-const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableVoice[] = {
-    {"open_in_browser", "false"},
-    {"voice", "true"},
-    {"default_variant", "0"},
-    {"contextual_only", "false"},
-    {"remove_find_in_page_menu_item", "false"},
-    {"remove_desktop_site_menu_item", "false"},
-    {"show_open_in_browser_menu_top", "false"}};
-const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableBoth[] = {
+    {"show_open_in_browser_menu_top", "true"}};
+const FeatureEntry::FeatureParam kCCTAdaptiveButtonMenuRemoval[] = {
     {"open_in_browser", "true"},
-    {"voice", "true"},
-    {"default_variant", "0"},
-    {"contextual_only", "false"},
-    {"remove_find_in_page_menu_item", "false"},
-    {"remove_desktop_site_menu_item", "false"},
-    {"show_open_in_browser_menu_top", "false"}};
+    {"remove_find_in_page_menu_item", "true"},
+    {"remove_desktop_site_menu_item", "true"}};
+const FeatureEntry::FeatureParam kCCTAdaptiveButtonMenuCombo[] = {
+    {"open_in_browser", "true"},
+    {"show_open_in_browser_menu_top", "true"},
+    {"remove_find_in_page_menu_item", "true"},
+    {"remove_desktop_site_menu_item", "true"}};
+const FeatureEntry::FeatureParam kCCTAdaptiveButtonMLTraining[] = {
+    {"open_in_browser", "true"},
+    {"ml_training", "true"}};
 const FeatureEntry::FeatureVariation kCCTAdaptiveButtonVariations[] = {
-    {"(+ open in browser)", kCCTAdaptiveButtonEnableOpenInBrowser,
-     std::size(kCCTAdaptiveButtonEnableOpenInBrowser), nullptr},
-    {"(+ open in browser as default)", kCCTAdaptiveButtonOpenInBrowserDefault,
-     std::size(kCCTAdaptiveButtonEnableOpenInBrowser), nullptr},
-    {"(+ voice)", kCCTAdaptiveButtonEnableVoice,
-     std::size(kCCTAdaptiveButtonEnableVoice), nullptr},
-    {"(+ open../voice)", kCCTAdaptiveButtonEnableBoth,
-     std::size(kCCTAdaptiveButtonEnableBoth), nullptr},
+    {"+OpenInBrowser", kCCTAdaptiveButtonEnable,
+     std::size(kCCTAdaptiveButtonEnable), nullptr},
+    {"CPA only", kCCTAdaptiveButtonCPAOnly,
+     std::size(kCCTAdaptiveButtonCPAOnly), nullptr},
+    {"CPA+OpenInBrowser", kCCTAdaptiveButtonOpenInBrowserCPA,
+     std::size(kCCTAdaptiveButtonOpenInBrowserCPA), nullptr},
+    {"Menu: OpenInBrowser at Top", kCCTAdaptiveButtonMenuOpenInBrowserTop,
+     std::size(kCCTAdaptiveButtonMenuOpenInBrowserTop), nullptr},
+    {"Menu: Remove FineInPage/DesktopSite", kCCTAdaptiveButtonMenuRemoval,
+     std::size(kCCTAdaptiveButtonMenuRemoval), nullptr},
+    {"Menu: Combine above 2", kCCTAdaptiveButtonMenuCombo,
+     std::size(kCCTAdaptiveButtonMenuCombo), nullptr},
+    {"for ML training", kCCTAdaptiveButtonMLTraining,
+     std::size(kCCTAdaptiveButtonMLTraining), nullptr},
 };
 
 const FeatureEntry::FeatureParam

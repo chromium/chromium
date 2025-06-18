@@ -124,6 +124,7 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
                 || (SHARE == button && hasCustomShare);
     }
 
+    @ExperimentalOpenInBrowser
     @Override
     public int resultFilter(List<Integer> segmentationResults) {
         // If a customized button is specified by dev (or the default 'share' is on), find the first
@@ -140,10 +141,17 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
         return AdaptiveToolbarButtonVariant.UNKNOWN;
     }
 
-    /** Whether static actions should be skipped in contextual page action-only mode. */
-    private static boolean shouldSkipStaticAction(@AdaptiveToolbarButtonVariant int variant) {
-        return ChromeFeatureList.sCctAdaptiveButtonContextualOnly.getValue()
-                && !AdaptiveToolbarFeatures.isDynamicAction(variant);
+    /** Whether some static action should be filtered out. */
+    @ExperimentalOpenInBrowser
+    private boolean shouldSkipStaticAction(@AdaptiveToolbarButtonVariant int variant) {
+        if (!AdaptiveToolbarFeatures.isDynamicAction(variant)) {
+            // |contextual_only| filters out all the static actions, unless 'open in browser'
+            // is explicitly enabled and developers wish to use it.
+            if (ChromeFeatureList.sCctAdaptiveButtonContextualOnly.getValue()) {
+                return !(isOpenInBrowserButtonEnabled() && variant == OPEN_IN_BROWSER);
+            }
+        }
+        return false;
     }
 
     @Override

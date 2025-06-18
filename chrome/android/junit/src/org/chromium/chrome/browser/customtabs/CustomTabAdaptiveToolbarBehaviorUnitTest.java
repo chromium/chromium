@@ -178,6 +178,28 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
     }
 
     @Test
+    @EnableFeatures(
+            ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":open_in_browser/true/contextual_only/true")
+    public void resultFilter_skipStaticActionOpenInBrowserCpaMode() {
+        List<Integer> segmentationResults = List.of(OPEN_IN_BROWSER, TRANSLATE);
+
+        when(mIntentDataProvider.getOpenInBrowserButtonState())
+                .thenReturn(OPEN_IN_BROWSER_STATE_ON);
+        assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
+
+        when(mIntentDataProvider.getOpenInBrowserButtonState())
+                .thenReturn(OPEN_IN_BROWSER_STATE_OFF);
+        assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
+
+        when(mIntentDataProvider.getOpenInBrowserButtonState())
+                .thenReturn(OPEN_IN_BROWSER_STATE_DEFAULT);
+        assertEquals(OPEN_IN_BROWSER, mBehavior.resultFilter(segmentationResults));
+
+        segmentationResults = List.of(SHARE, TRANSLATE);
+        assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":contextual_only/true")
     public void resultFilter_skipStaticActionInContextualOnlyMode() {
         List<Integer> segmentationResults = List.of(READER_MODE, SHARE, TRANSLATE);
