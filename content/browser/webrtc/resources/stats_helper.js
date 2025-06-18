@@ -48,6 +48,8 @@ export function generateStatsLabel(report) {
     labels = ['state'];
   } else if (report.type === 'transport') {
     labels = ['iceState', 'dtlsState'];
+  } else if (report.type === 'data-channel') {
+    labels = ['label', 'state'];
   }
   labels = labels
     .map(stat => generateLabel(stat, report.stats.values))
