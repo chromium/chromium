@@ -531,6 +531,17 @@ crbug.com/420455918 [ mac amd-0x7340 angle-opengl ] conformance/renderbuffers/st
 
 ## Apple M2 ##
 
+## Mac Intel ##
+# Canvas missing colored squares - synchronization issue.
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_bitmap_from_canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+
 
 ####################
 # Linux failures   #
