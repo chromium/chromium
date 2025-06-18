@@ -391,6 +391,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   TaskPriority default_loading_task_priority_ = TaskPriority::kNormalPriority;
 
+  TaskPriority low_priority_async_script_task_priority_;
+
   // These are the states of the Page.
   // They should be accessed via GetPageScheduler()->SetPageState().
   // they are here because we don't support page-level tracing yet.
