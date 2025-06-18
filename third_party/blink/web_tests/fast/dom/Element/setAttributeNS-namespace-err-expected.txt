@@ -4,36 +4,36 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 PASS element.setAttributeNS(undefined, undefined, 'value')
 PASS element.setAttributeNS(null, undefined, 'value')
-FAIL element.setAttributeNS(undefined, null, 'value')
-FAIL element.setAttributeNS(null, null, 'value')
+PASS element.setAttributeNS(undefined, null, 'value')
+PASS element.setAttributeNS(null, null, 'value')
 PASS element.setAttributeNS(null, "", 'value'); threw INVALID_CHARACTER_ERR
-FAIL element.setAttributeNS("", null, 'value')
+PASS element.setAttributeNS("", null, 'value')
 PASS element.setAttributeNS("", "", 'value'); threw INVALID_CHARACTER_ERR
 PASS element.setAttributeNS(null, "<div>", 'value'); threw INVALID_CHARACTER_ERR
-FAIL element.setAttributeNS(null, "0div", 'value')
+PASS element.setAttributeNS(null, "0div", 'value')
 PASS element.setAttributeNS(null, "di v", 'value'); threw INVALID_CHARACTER_ERR
-FAIL element.setAttributeNS(null, "di<v", 'value')
-FAIL element.setAttributeNS(null, "-div", 'value')
-FAIL element.setAttributeNS(null, ".div", 'value')
+PASS element.setAttributeNS(null, "di<v", 'value')
+PASS element.setAttributeNS(null, "-div", 'value')
+PASS element.setAttributeNS(null, ".div", 'value')
 PASS element.setAttributeNS("http://example.com/", "<div>", 'value'); threw INVALID_CHARACTER_ERR
-FAIL element.setAttributeNS("http://example.com/", "0div", 'value')
-FAIL element.setAttributeNS("http://example.com/", "di<v", 'value')
-FAIL element.setAttributeNS("http://example.com/", "-div", 'value')
-FAIL element.setAttributeNS("http://example.com/", ".div", 'value')
-FAIL element.setAttributeNS(null, ":div", 'value')
+PASS element.setAttributeNS("http://example.com/", "0div", 'value')
+PASS element.setAttributeNS("http://example.com/", "di<v", 'value')
+PASS element.setAttributeNS("http://example.com/", "-div", 'value')
+PASS element.setAttributeNS("http://example.com/", ".div", 'value')
+PASS element.setAttributeNS(null, ":div", 'value')
 PASS element.setAttributeNS(null, "div:", 'value'); threw INVALID_CHARACTER_ERR
-FAIL element.setAttributeNS("http://example.com/", ":div", 'value')
+PASS element.setAttributeNS("http://example.com/", ":div", 'value')
 PASS element.setAttributeNS("http://example.com/", "div:", 'value'); threw INVALID_CHARACTER_ERR
 PASS element.setAttributeNS(null, "d:iv", 'value'); threw NAMESPACE_ERR
-FAIL element.setAttributeNS(null, "a:b:c", 'value'); valid XML name, invalid QName; expected INVALID_CHARACTER_ERR, threw NAMESPACE_ERR
-FAIL element.setAttributeNS("http://example.com/", "a:b:c", 'value'); valid XML name, invalid QName
-FAIL element.setAttributeNS(null, "a::c", 'value'); valid XML name, invalid QName; expected INVALID_CHARACTER_ERR, threw NAMESPACE_ERR
-FAIL element.setAttributeNS("http://example.com/", "a::c", 'value'); valid XML name, invalid QName
-FAIL element.setAttributeNS("http://example.com/", "a:0", 'value'); valid XML name, not a valid QName
-FAIL element.setAttributeNS("http://example.com/", "0:a", 'value'); 0 at start makes it not a valid XML name
+PASS element.setAttributeNS(null, "a:b:c", 'value'); threw NAMESPACE_ERR
+PASS element.setAttributeNS("http://example.com/", "a:b:c", 'value')
+PASS element.setAttributeNS(null, "a::c", 'value'); threw NAMESPACE_ERR
+PASS element.setAttributeNS("http://example.com/", "a::c", 'value')
+PASS element.setAttributeNS("http://example.com/", "a:0", 'value')
+PASS element.setAttributeNS("http://example.com/", "0:a", 'value')
 PASS element.setAttributeNS("http://example.com/", "a:_", 'value')
-FAIL element.setAttributeNS("http://example.com/", "a:ெ", 'value'); non-ASCII character after colon is CombiningChar, which is NCNameChar but not (Letter | "_") so invalid at start of NCName (but still a valid XML name, hence not INVALID_CHARACTER_ERR)
-FAIL element.setAttributeNS("http://example.com/", "ெ:a", 'value'); non-ASCII character after colon is CombiningChar, which is NCNameChar but not (Letter | "_") so invalid at start of NCName (Gecko chooses to throw NAMESPACE_ERR here, but either is valid as this is both an invalid XML name and an invalid QName)
+PASS element.setAttributeNS("http://example.com/", "a:ெ", 'value')
+PASS element.setAttributeNS("http://example.com/", "ெ:a", 'value')
 PASS element.setAttributeNS("http://example.com/", "a:aெ", 'value')
 PASS element.setAttributeNS("http://example.com/", "aெ:a", 'value')
 PASS element.setAttributeNS("http://example.com/", "xml:test", 'value'); binding xml prefix wrong; threw NAMESPACE_ERR

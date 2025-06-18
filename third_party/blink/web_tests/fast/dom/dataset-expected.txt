@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = 10 duplicate test names: "This tests Get function", "This tests case sensitive scenario", "Tests Undefined", "Tests matchesNothingInDataset", "Tests Set", "Tests Is Null", "Tests Delete", "Tests Native Delete", "Tests For In", "Set null"
-[FAIL] Tests Set
-  assert_throws_dom: "InvalidCharacterError: Failed to set the 'foo豈' property on 'DOMStringMap': 'data-foo豈' is not a valid attribute name." function "function() { testSet('foo\\uF900', 'dummy'); }" did not throw
-[FAIL] Tests Set
-  assert_throws_dom: "InvalidCharacterError: Failed to set the 'foo豈' property on 'DOMStringMap': 'data-foo豈' is not a valid attribute name." function "function() { testSet('foo\\uF900', 'dummy'); }" did not throw
-Harness: the test ran to completion.
-

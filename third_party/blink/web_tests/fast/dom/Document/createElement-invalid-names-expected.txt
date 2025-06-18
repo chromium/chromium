@@ -7,13 +7,8 @@ PASS document.createElement('.Ascii') threw exception InvalidCharacterError: Fai
 PASS document.createElement('-Ascii') threw exception InvalidCharacterError: Failed to execute 'createElement' on 'Document': The tag name provided ('-Ascii') is not a valid name..
 PASS document.createElement(' ascii') threw exception InvalidCharacterError: Failed to execute 'createElement' on 'Document': The tag name provided (' ascii') is not a valid name..
 PASS document.createElement('	ascii') threw exception InvalidCharacterError: Failed to execute 'createElement' on 'Document': The tag name provided ('	ascii') is not a valid name..
-FAIL document.createElement('֑sc.ii') should throw an exception. Was [object HTMLUnknownElement].
-FAIL document.createElement('⃣scii') should throw an exception. Was [object HTMLUnknownElement].
-FAIL document.createElement('िascii') should throw an exception. Was [object HTMLUnknownElement].
-FAIL document.createElement('ʳascii') should throw an exception. Was [object HTMLUnknownElement].
 PASS document.createElement('asc i') threw exception InvalidCharacterError: Failed to execute 'createElement' on 'Document': The tag name provided ('asc i') is not a valid name..
 PASS document.createElement('asc	i') threw exception InvalidCharacterError: Failed to execute 'createElement' on 'Document': The tag name provided ('asc	i') is not a valid name..
-FAIL document.createElement('asciiⅦ') should throw an exception. Was [object HTMLUnknownElement].
 PASS successfullyParsed is true
 
 TEST COMPLETE

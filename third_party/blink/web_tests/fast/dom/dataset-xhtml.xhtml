@@ -57,7 +57,7 @@ debug("");
 
 shouldThrow("testSet('-foo', 'dummy')", '"SyntaxError: Failed to set a named property \'-foo\' on \'DOMStringMap\': \'-foo\' is not a valid property name."');
 shouldThrow("testSet('foo\x20', 'dummy')", '"InvalidCharacterError: Failed to set a named property \'foo \' on \'DOMStringMap\': \'data-foo \' is not a valid attribute name."');
-shouldThrow("testSet('foo\uF900', 'dummy')", '"InvalidCharacterError: Failed to set a named property \'foo\uF900\' on \'DOMStringMap\': \'data-foo\uF900\' is not a valid attribute name."');
+shouldBeTrue("testSet('foo\uF900', 'data-foo\uF900')");
 debug("");
 
 function testDelete(attr, prop)

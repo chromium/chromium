@@ -1,4 +1,7 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = 10 duplicate test names: "This tests Get function", "This tests case sensitive scenario", "Tests Undefined", "Tests matchesNothingInDataset", "Tests Set", "Tests Is Null", "Tests Delete", "Tests Native Delete", "Tests For In", "Set null"
+[FAIL] div: Tests Set
+  Failed to set a named property 'foo豈' on 'DOMStringMap': 'data-foo豈' is not a valid attribute name.
+[FAIL] svg:circle: Tests Set
+  Failed to set a named property 'foo豈' on 'DOMStringMap': 'data-foo豈' is not a valid attribute name.
 Harness: the test ran to completion.
 
