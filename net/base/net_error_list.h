@@ -21,6 +21,7 @@
 //   600-699 <Obsolete: FTP errors>
 //   700-799 Certificate manager errors
 //   800-899 DNS resolver errors
+//   900-999 Blob errors
 
 // An asynchronous IO operation is not yet complete.  This usually does not
 // indicate a fatal error.  Typically this error will be generated as a
@@ -1035,6 +1036,35 @@ NET_ERROR(DNS_NO_MATCHING_SUPPORTED_ALPN, -811)
 // When checking whether secure DNS can be used, the response returned for the
 // requested probe record either had no answer or was invalid.
 NET_ERROR(DNS_SECURE_PROBE_RECORD_INVALID, -814)
+
+// The following errors are for mapped from a subset of invalid
+// storage::BlobStatus.
+
+// The construction arguments are invalid. This is considered a bad IPC.
+NET_ERROR(BLOB_INVALID_CONSTRUCTION_ARGUMENTS, -900)
+
+// We don't have enough memory for the blob.
+NET_ERROR(BLOB_OUT_OF_MEMORY, -901)
+
+// We couldn't create or write to a file. File system error, like a full disk.
+NET_ERROR(BLOB_FILE_WRITE_FAILED, -902)
+
+// The renderer was destroyed while data was in transit.
+NET_ERROR(BLOB_SOURCE_DIED_IN_TRANSIT, -903)
+
+// The renderer destructed the blob before it was done transferring, and there
+// were no outstanding references (no one is waiting to read) to keep the
+// blob alive.
+NET_ERROR(BLOB_DEREFERENCED_WHILE_BUILDING, -904)
+
+// A blob that we referenced during construction is broken, or a browser-side
+// builder tries to build a blob with a blob reference that isn't finished
+// constructing.
+NET_ERROR(BLOB_REFERENCED_BLOB_BROKEN, -905)
+
+// A file that we referenced during construction is not accessible to the
+// renderer trying to create the blob.
+NET_ERROR(BLOB_REFERENCED_FILE_UNAVAILABLE, -906)
 
 // CAUTION: Before adding errors here, please check the ranges of errors written
 // in the top of this file.

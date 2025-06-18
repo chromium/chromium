@@ -2014,6 +2014,13 @@ In case of new special images, values 3 to 9 can be used. -->
 Called by update_net_error_codes.py.-->
 
   <int value="-1478" label="SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS (old)"/>
+  <int value="-906" label="BLOB_REFERENCED_FILE_UNAVAILABLE"/>
+  <int value="-905" label="BLOB_REFERENCED_BLOB_BROKEN"/>
+  <int value="-904" label="BLOB_DEREFERENCED_WHILE_BUILDING"/>
+  <int value="-903" label="BLOB_SOURCE_DIED_IN_TRANSIT"/>
+  <int value="-902" label="BLOB_FILE_WRITE_FAILED"/>
+  <int value="-901" label="BLOB_OUT_OF_MEMORY"/>
+  <int value="-900" label="BLOB_INVALID_CONSTRUCTION_ARGUMENTS"/>
   <int value="-814" label="DNS_SECURE_PROBE_RECORD_INVALID"/>
   <int value="-813" label="DICTIONARY_ORIGIN_CHECK_FAILED"/>
   <int value="-812" label="DICTIONARY_LOAD_FAILED (old)"/>

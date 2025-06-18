@@ -1179,7 +1179,7 @@ TEST_F(BlobReaderTest, HandleBeforeAsyncCancel) {
   context_.CancelBuildingBlob(kUuid,
                               BlobStatus::ERR_INVALID_CONSTRUCTION_ARGUMENTS);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(net::ERR_FAILED, size_result);
+  EXPECT_EQ(net::ERR_BLOB_INVALID_CONSTRUCTION_ARGUMENTS, size_result);
 }
 
 TEST_F(BlobReaderTest, ReadFromIncompleteBlob) {

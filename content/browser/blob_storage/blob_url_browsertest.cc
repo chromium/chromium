@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/strings/pattern.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/test/with_feature_override.h"
@@ -24,6 +25,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "storage/browser/blob/features.h"
@@ -260,6 +262,29 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
   EXPECT_TRUE(ExecJs(rfh_c, JsReplace("URL.revokeObjectURL($1)", blob_url)));
 
   EXPECT_FALSE(ExecJs(rfh_c_2, fetch_blob_url_js));
+}
+
+IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, TestBlobFetchRequestError) {
+  base::HistogramTester histogram_tester;
+  GURL url = embedded_test_server()->GetURL("chromium.org", "/title1.html");
+  url::Origin origin = url::Origin::Create(url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // The data should not be accessible after being revoked.
+  EXPECT_EQ("TypeError",
+            EvalJs(shell(),
+                   "async function test() {"
+                   "let error;"
+                   "const url = URL.createObjectURL(new Blob(['potato']));"
+                   "URL.revokeObjectURL(url);"
+                   "try { await fetch(url); } catch (e) { error = e };"
+                   "return new Promise(resolve => { resolve(error.name); });"
+                   "}"
+                   "test();"));
+  FetchHistogramsFromChildProcesses();
+  // The blob error should be recorded in UMA.
+  histogram_tester.ExpectUniqueSample("Net.BlobFetch.ResponseNetErrorCode",
+                                      -net::Error::ERR_FILE_NOT_FOUND, 1u);
 }
 
 class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
