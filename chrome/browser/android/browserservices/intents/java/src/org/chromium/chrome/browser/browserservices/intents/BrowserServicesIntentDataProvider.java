@@ -785,10 +785,10 @@ public abstract class BrowserServicesIntentDataProvider {
 
     /**
      * @return the TWA startup timestamp associated with an intent in the uptimeMillis timebase, or
-     *     null.
+     *     zero.
      */
-    public @Nullable Long getTwaStartupUptimeMillis() {
-        return null;
+    public long getTwaStartupUptimeMillis() {
+        return 0;
     }
 
     /**

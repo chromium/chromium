@@ -1084,12 +1084,19 @@ public class CustomTabsConnection {
      * @param session The Binder object identifying a session.
      * @param url The URL the tab is for.
      * @param referrer The referrer to use for |url|.
+     * @param intentDataProvider The {@link BrowserServicesIntentDataProvider} created from the
+     *     Custom Tabs Intent.
      * @return The hidden tab, or null.
      */
     public @Nullable HiddenTabHolder.HiddenTab takeHiddenTab(
-            @Nullable SessionHolder<?> session, String url, Intent intent) {
+            @Nullable SessionHolder<?> session,
+            String url,
+            BrowserServicesIntentDataProvider intentDataProvider) {
         return mHiddenTabHolder.takeHiddenTab(
-                session, mClientManager.getIgnoreFragmentsForSession(session), url, intent);
+                session,
+                mClientManager.getIgnoreFragmentsForSession(session),
+                url,
+                intentDataProvider);
     }
 
     /**

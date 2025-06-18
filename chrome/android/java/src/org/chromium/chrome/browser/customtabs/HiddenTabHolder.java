@@ -23,6 +23,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
@@ -229,9 +230,11 @@ public class HiddenTabHolder {
         RedirectHandlerTabHelper.getOrCreateHandlerFor(tab).setIsPrefetchLoadForIntent(true);
 
         TabObserverRegistrar registrar = new TabObserverRegistrar();
+        // When available, twaStartupUptimeMillis will be set later when the launch intent is
+        // available, from takeHiddenTab().
         CustomTabObserver customTabObserver =
                 new CustomTabObserver(
-                        /* openedByChrome= */ false, session, /* twaStartupUptimeMillis= */ null);
+                        /* openedByChrome= */ false, session, /* twaStartupUptimeMillis= */ 0);
         CustomTabNavigationEventObserver customTabNavigationEventObserver =
                 new CustomTabNavigationEventObserver(session, /* forPrerender= */ true);
         CustomTabActivityTabController.addTabNavigationObservers(
@@ -257,7 +260,8 @@ public class HiddenTabHolder {
      * @param session The Binder object identifying a session the hidden tab was created for.
      * @param ignoreFragments Whether to ignore fragments while matching the url.
      * @param url The URL the tab is for.
-     * @param referrer The referrer to use for |url|.
+     * @param intentDataProvider The {@link BrowserServicesIntentDataProvider} created from the
+     *     Custom Tabs Intent.
      * @return The hidden tab, or null.
      */
     @Nullable
@@ -265,8 +269,9 @@ public class HiddenTabHolder {
             @Nullable SessionHolder<?> session,
             boolean ignoreFragments,
             String url,
-            Intent intent) {
+            BrowserServicesIntentDataProvider intentDataProvider) {
         try (TraceEvent e = TraceEvent.scoped("CustomTabsConnection.takeHiddenTab")) {
+            Intent intent = intentDataProvider.getIntent();
             if (intent.getBooleanExtra(IntentHandler.EXTRA_CCT_EARLY_NAV, false)) {
                 recordEarlyNavDebugMetric(session, ignoreFragments, url, intent);
             }
@@ -278,6 +283,8 @@ public class HiddenTabHolder {
             HiddenTab hiddenTab = mSpeculation.hiddenTab;
             String speculatedUrl = hiddenTab.url;
             String speculationReferrer = mSpeculation.referrer;
+            hiddenTab.customTabObserver.setTwaStartupTimestamp(
+                    intentDataProvider.getTwaStartupUptimeMillis());
 
             mSpeculation = null;
 
@@ -395,9 +402,11 @@ public class HiddenTabHolder {
 
         TabObserverRegistrar registrar = new TabObserverRegistrar();
         SessionHolder<?> token = SessionHolder.getSessionHolderFromIntent(intent);
+        long twaStartupUptimeMillis =
+                IntentUtils.safeGetLongExtra(
+                        intent, CustomTabIntentDataProvider.EXTRA_TWA_STARTUP_UPTIME_MS, 0);
         CustomTabObserver customTabObserver =
-                new CustomTabObserver(
-                        /* openedByChrome= */ false, token, /* twaStartupUptimeMillis= */ null);
+                new CustomTabObserver(/* openedByChrome= */ false, token, twaStartupUptimeMillis);
         CustomTabNavigationEventObserver customTabNavigationEventObserver =
                 new CustomTabNavigationEventObserver(token, /* forPrerender= */ false);
         CustomTabActivityTabController.addTabNavigationObservers(

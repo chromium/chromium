@@ -1751,10 +1751,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    public @Nullable Long getTwaStartupUptimeMillis() {
-        if (!isTrustedWebActivity()) return null;
-        long value = IntentUtils.safeGetLongExtra(getIntent(), EXTRA_TWA_STARTUP_UPTIME_MS, 0);
-        return value != 0 ? Long.valueOf(value) : null;
+    public long getTwaStartupUptimeMillis() {
+        if (!isTrustedWebActivity()) return 0;
+        return IntentUtils.safeGetLongExtra(getIntent(), EXTRA_TWA_STARTUP_UPTIME_MS, 0);
     }
 
     @Override

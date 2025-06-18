@@ -406,8 +406,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         String url = intentDataProvider.getUrlToLoad();
         SessionHolder<?> token = intentDataProvider.getSession();
         HiddenTab hiddenTab =
-                CustomTabsConnection.getInstance()
-                        .takeHiddenTab(token, url, intentDataProvider.getIntent());
+                CustomTabsConnection.getInstance().takeHiddenTab(token, url, intentDataProvider);
         if (hiddenTab == null) return null;
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.WebContentsStateOnLaunch",
