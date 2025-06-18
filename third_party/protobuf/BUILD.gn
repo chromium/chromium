@@ -347,7 +347,7 @@ group("py_proto") {
 
 # Note: This exists for Cronet in AOSP where we can't import prebuilts. We import
 # the raw sources and compile them using a specialized pipeline. See crbug.com/419480317.
-if (is_android && is_cronet_build) {
+if (is_android && is_cronet_for_aosp_build) {
   android_library("proto_runtime_lite_java") {
     sources = javaproto_sources
   }

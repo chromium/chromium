@@ -13,6 +13,12 @@
     ],
   "breakages": [
     {
+      "bad_change_id": "Iaf91186149315066f1bf9928c4bef66015d55a46",
+      "good_change_id": "Ib13d999649a26230a09bd970a16ae04a7a1a4e68",
+      "bugs": ["b/425901872"],
+      "comment": "Custom built protobuf runtime breaks proguard."
+    },
+    {
       "bad_change_id": "I4f1f32c01b708c3802e685412bac27a1d6af5258",
       "good_change_id": "I8b928ed0807bff1b545da2da503388af7a602dd7",
       "bugs": ["b/421181925"],
