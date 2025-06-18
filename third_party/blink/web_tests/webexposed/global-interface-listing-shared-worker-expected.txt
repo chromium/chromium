@@ -1484,6 +1484,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter finalResponseHeadersStart
 [Worker]     getter firstInterimResponseStart
 [Worker]     getter initiatorType
+[Worker]     getter initiatorUrl
 [Worker]     getter nextHopProtocol
 [Worker]     getter redirectEnd
 [Worker]     getter redirectStart

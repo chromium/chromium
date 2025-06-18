@@ -86,5 +86,10 @@ interface PerformanceResourceTiming : PerformanceEntry {
     readonly attribute DOMHighResTimeStamp finalResponseHeadersStart;
     readonly attribute DOMHighResTimeStamp firstInterimResponseStart;
 
+    // PerformanceResourceTiming#initiatorUrl
+    // see: https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ResourceTimingInitiatorInfo/explainer.md
+    [RuntimeEnabled=ResourceTimingInitiator]
+    readonly attribute DOMString initiatorUrl;
+
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

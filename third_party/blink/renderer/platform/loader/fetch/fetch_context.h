@@ -109,6 +109,8 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
                               WebScopedVirtualTimePauser& virtual_time_pauser,
                               ResourceType);
 
+  virtual void FillInitiatorInfo(FetchInitiatorInfo& initiator_info) {}
+
   virtual void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
                                  const AtomicString& initiator_type);
   virtual bool AllowImage() const { return false; }

@@ -4050,6 +4050,10 @@
       status: "stable",
     },
     {
+      name: "ResourceTimingInitiator",
+      status: "experimental",
+    },
+    {
       name: "ResourceTimingUseCORSForBodySizes",
       status: "test",
     },

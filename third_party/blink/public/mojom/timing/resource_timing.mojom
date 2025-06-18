@@ -9,6 +9,7 @@ import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/service_worker_router_info.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
+import "url/mojom/url.mojom";
 
 // This struct holds the information from PerformanceServerTiming that needs
 // to be passed between processes. This is currently used to send timing
@@ -128,6 +129,10 @@ struct ResourceTimingInfo {
   // Holds the string corresponding to |contentEncoding| in
   // PerformanceResourceTiming (https://w3c.github.io/resource-timing/).
   string content_encoding;
+
+  // Holds the url of the resource that initiated current resource.
+  // PerformanceResourceTiming (https://w3c.github.io/resource-timing/).
+  url.mojom.Url initiator_url;
 
   // Holds the source type of ServiceWorker static routing API. It keeps track
   // of |matchedSourceType| and |finalSourceType|. This is a proposed field in

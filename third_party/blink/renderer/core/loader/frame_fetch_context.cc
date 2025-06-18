@@ -111,6 +111,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/loader/fetch/detachable_use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -458,6 +459,29 @@ void FrameFetchContext::PrepareRequest(
   request.SetAllowsDeviceBoundSessionRegistration(
       RuntimeEnabledFeatures::DeviceBoundSessionCredentialsEnabled(
           GetExecutionContext()));
+}
+
+// TODO(crbug.com/422626353): Consider consolidating the initiator info
+// calculation for resource timing and dev tools.
+void FrameFetchContext::FillInitiatorInfo(FetchInitiatorInfo& initiator_info) {
+  if (initiator_info.is_imported_module && !initiator_info.referrer.empty()) {
+    // TODO(crbug.com/40919714): Fill |initiator_url|.
+    // Initiator is a js file.
+    return;
+  }
+  bool was_requested_by_stylesheet =
+      initiator_info.name == fetch_initiator_type_names::kCSS ||
+      initiator_info.name == fetch_initiator_type_names::kUacss;
+  if (was_requested_by_stylesheet && !initiator_info.referrer.empty()) {
+    // TODO(crbug.com/40919714): Fill |initiator_url|.
+    // Initiator is a css file.
+    return;
+  }
+
+  // TODO(crbug.com/40919714): Find out if the initiator is a script
+  // resource. If yes, fill |initiator_url| accordingly and return.
+
+  initiator_info.initiator_url = document_->Url();
 }
 
 void FrameFetchContext::AddResourceTiming(

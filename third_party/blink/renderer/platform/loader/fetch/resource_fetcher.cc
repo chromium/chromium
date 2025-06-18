@@ -2576,6 +2576,10 @@ bool ResourceFetcher::StartLoad(
           render_blocking_behavior, resource);
     }
 
+    if (RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled()) {
+      context_->FillInitiatorInfo(resource->MutableOptions().initiator_info);
+    }
+
     using QuotaType = decltype(inflight_keepalive_bytes_);
     QuotaType size = 0;
     if (request_head.GetKeepalive() && request_body.FormBody()) {
@@ -3046,6 +3050,7 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
   info->render_blocking_status = pending_info.render_blocking_behavior ==
                                  RenderBlockingBehavior::kBlocking;
   info->response_end = response_end;
+  info->initiator_url = resource->Options().initiator_info.initiator_url;
   // Store LCP breakdown timings for images.
   if (resource->GetType() == ResourceType::kImage) {
     // The resource_load_timing may be null in tests.

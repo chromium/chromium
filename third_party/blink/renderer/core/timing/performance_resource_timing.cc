@@ -432,6 +432,11 @@ DOMHighResTimeStamp PerformanceResourceTiming::finalResponseHeadersStart()
       info_->allow_negative_values, CrossOriginIsolatedCapability());
 }
 
+AtomicString PerformanceResourceTiming::initiatorUrl() const {
+  return info_->initiator_url.IsValid() ? info_->initiator_url.GetString()
+                                        : g_empty_atom;
+}
+
 DOMHighResTimeStamp PerformanceResourceTiming::responseStart() const {
   if (!info_->allow_timing_details || !info_->timing ||
       RuntimeEnabledFeatures::
@@ -524,6 +529,9 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
     builder.AddNumber("workerCacheLookupStart", workerCacheLookupStart());
     builder.AddString("matchedSourceType", workerMatchedSourceType());
     builder.AddString("finalSourceType", workerFinalSourceType());
+  }
+  if (RuntimeEnabledFeatures::ResourceTimingInitiatorEnabled()) {
+    builder.AddString("initiatorUrl", initiatorUrl());
   }
   builder.AddNumber("redirectStart", redirectStart());
   builder.AddNumber("redirectEnd", redirectEnd());
