@@ -13,7 +13,8 @@ for (const namespace in gCrWebLegacy) {
       const funcName = '__gCrWeb.' + namespace + '.' + itemName;
       const originalPrototype = gCrWebLegacy[namespace][itemName].prototype;
       gCrWebLegacy[namespace][itemName] = function(...args: unknown[]) {
-        return catchAndReportErrors.apply(null, [funcName, exposedItem, args]);
+        return catchAndReportErrors.apply(
+            null, [/*crweb=*/ false, funcName, exposedItem, args]);
       };
       gCrWebLegacy[namespace][itemName].prototype = originalPrototype;
     }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {catchAndReportErrors} from '//ios/web/public/js_messaging/resources/error_reporting.js';
 import {generateRandomId, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -63,7 +64,10 @@ export class CrWebApi {
   private readonly contents: {[id: string]: unknown} = {};
 
   addFunction(name: string, func: Function): void {
-    this.contents[name] = func;
+    this.contents[name] = function(...args: unknown[]) {
+      return catchAndReportErrors.apply(
+        null, [/*crweb=*/ true, name, func, args]);
+    };
   }
 
   addProperty(name: string, property: unknown): void {

@@ -53,7 +53,10 @@ compile_ts("error_reporting") {
 compile_ts("gcrweb") {
   sources = [ "resources/gcrweb.ts" ]
 
-  deps = [ ":util_scripts" ]
+  deps = [
+    ":error_reporting",
+    ":util_scripts",
+  ]
 }
 
 optimize_js("gcrweb_js") {

@@ -17,6 +17,7 @@ function errorEventHandler(event: ErrorEvent): void {
     'filename': event.filename,
     'line_number': event.lineno,
     'message': event.message.toString(),
+    'is_crweb': false,
   });
 }
 
