@@ -1,0 +1,5 @@
+/chromium_linux64/cipd/
+/chromium_mac_amd64/cipd/
+/chromium_mac_arm64/cipd/
+/chromium_win_x86/cipd/
+/chromium_win_x86_64/cipd/
