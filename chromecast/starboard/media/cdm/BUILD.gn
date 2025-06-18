@@ -45,8 +45,12 @@ cast_source_set("starboard_drm_key_tracker") {
   deps = [ "//base" ]
 }
 
-test("starboard_decryptor_cast_test") {
-  sources = [ "starboard_decryptor_cast_test.cc" ]
+test("starboard_cdm_unittests") {
+  sources = [
+    "starboard_decryptor_cast_test.cc",
+    "starboard_drm_key_tracker_test.cc",
+    "starboard_drm_wrapper_test.cc",
+  ]
   deps = [
     ":starboard_decryptor_cast",
     ":starboard_drm_key_tracker",
@@ -60,29 +64,5 @@ test("starboard_decryptor_cast_test") {
     "//testing/gmock",
     "//testing/gtest",
     "//url:url",
-  ]
-}
-
-test("starboard_drm_key_tracker_test") {
-  sources = [ "starboard_drm_key_tracker_test.cc" ]
-  deps = [
-    ":starboard_drm_key_tracker",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-test("starboard_drm_wrapper_test") {
-  sources = [ "starboard_drm_wrapper_test.cc" ]
-  deps = [
-    ":starboard_drm_wrapper",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//chromecast/starboard/media/media:mock_starboard_api_wrapper",
-    "//chromecast/starboard/media/media:starboard_api_wrapper",
-    "//testing/gmock",
-    "//testing/gtest",
   ]
 }

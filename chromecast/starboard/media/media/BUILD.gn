@@ -147,108 +147,34 @@ source_set("test_matchers") {
   ]
 }
 
-test("media_pipeline_backend_starboard_test") {
-  sources = [ "media_pipeline_backend_starboard_test.cc" ]
-  deps = [
-    ":mock_starboard_api_wrapper",
-    ":starboard",
-    ":starboard_api_wrapper",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//chromecast/public",
-    "//chromecast/public/media",
-    "//chromecast/starboard/media/cdm:starboard_drm_wrapper",
-    "//testing/gmock",
-    "//testing/gtest",
+test("starboard_media_unittests") {
+  sources = [
+    "drm_util_test.cc",
+    "media_pipeline_backend_starboard_test.cc",
+    "mime_utils_test.cc",
+    "starboard_audio_decoder_test.cc",
+    "starboard_resampler_test.cc",
+    "starboard_video_decoder_test.cc",
+    "starboard_video_plane_test.cc",
   ]
-}
-
-test("starboard_audio_decoder_test") {
-  sources = [ "starboard_audio_decoder_test.cc" ]
   deps = [
-    ":mock_starboard_api_wrapper",
-    ":starboard",
-    ":starboard_api_wrapper",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//chromecast/media/base",
-    "//chromecast/media/cma/base",
-    "//chromecast/public",
-    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
-    "//media",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-test("starboard_video_decoder_test") {
-  sources = [ "starboard_video_decoder_test.cc" ]
-  deps = [
-    ":mock_starboard_api_wrapper",
-    ":starboard",
-    ":starboard_api_wrapper",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//chromecast/media/base",
-    "//chromecast/media/cma/base",
-    "//chromecast/public",
-    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
-    "//media",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-test("starboard_resampler_test") {
-  sources = [ "starboard_resampler_test.cc" ]
-  deps = [
+    ":drm_util",
+    ":mime_utils",
     ":mock_starboard_api_wrapper",
     ":starboard",
     ":starboard_api_wrapper",
     ":starboard_resampler",
+    ":test_matchers",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//chromecast/media/base",
+    "//chromecast/media/base:media_codec_support",
     "//chromecast/media/cma/base",
     "//chromecast/public",
-    "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
-    "//media",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-test("starboard_video_plane_test") {
-  sources = [ "starboard_video_plane_test.cc" ]
-  deps = [
-    ":starboard",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-test("mime_utils_test") {
-  sources = [ "mime_utils_test.cc" ]
-  deps = [
-    ":mime_utils",
-    "//base/test:run_all_unittests",
-    "//chromecast/media/base:media_codec_support",
     "//chromecast/public/media",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-test("drm_util_test") {
-  sources = [ "drm_util_test.cc" ]
-  deps = [
-    ":drm_util",
-    ":test_matchers",
-    "//base",
-    "//base/test:run_all_unittests",
-    "//chromecast/media/cma/base",
+    "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
+    "//chromecast/starboard/media/cdm:starboard_drm_wrapper",
     "//media",
     "//testing/gmock",
     "//testing/gtest",
