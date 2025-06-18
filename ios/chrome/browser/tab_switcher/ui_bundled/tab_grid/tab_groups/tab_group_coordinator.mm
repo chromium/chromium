@@ -458,8 +458,6 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
                                              tabGroup:_tabGroup];
   _viewController.gridViewController.delegate = self;
   _viewController.presentationHandler = self;
-  _viewController.applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
 }
 
 // Called when the tab group is presented, to show the user education

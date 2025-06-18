@@ -9,7 +9,6 @@ source_set("features") {
   ]
   deps = [
     "//components/country_codes",
-    "//components/data_sharing/public:features",
     "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/public",
     "//components/sync/base:features",

@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -94,13 +93,11 @@ class TabGroupCoordinatorTest : public PlatformTest {
         std::make_unique<TabGroupCoordinatorFakeWebStateListDelegate>());
     SnapshotBrowserAgent::CreateForBrowser(browser_.get());
 
-    tab_groups_handler_ = OCMProtocolMock(@protocol(TabGroupsCommands));
-    application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    tab_groups_commands_handler_ =
+        OCMProtocolMock(@protocol(TabGroupsCommands));
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:tab_groups_handler_
+    [dispatcher startDispatchingToTarget:tab_groups_commands_handler_
                              forProtocol:@protocol(TabGroupsCommands)];
-    [dispatcher startDispatchingToTarget:application_handler_
-                             forProtocol:@protocol(ApplicationCommands)];
 
     base_view_controller_ = [[UIViewController alloc] init];
 
@@ -154,8 +151,7 @@ class TabGroupCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<tab_groups::FakeTabGroupSyncService> tab_group_sync_service_;
   std::unique_ptr<TestBrowser> browser_;
-  id<TabGroupsCommands> tab_groups_handler_;
-  id<ApplicationCommands> application_handler_;
+  id<TabGroupsCommands> tab_groups_commands_handler_;
   UIViewController* base_view_controller_;
   TabGridModeHolder* mode_holder_;
   TabGroupCoordinator* coordinator_;

@@ -187,7 +187,6 @@ source_set("tab_groups_ui") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:tab_group_grid_ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars:toolbars_ui",
     "//ios/chrome/browser/toolbar/ui_bundled/tab_groups:features_utils",
-    "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/favicon",

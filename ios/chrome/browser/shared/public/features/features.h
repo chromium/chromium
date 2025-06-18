@@ -535,10 +535,6 @@ BASE_DECLARE_FEATURE(kTabGroupIndicator);
 // Whether the Tab Group Indicator feature is enabled.
 bool IsTabGroupIndicatorEnabled();
 
-// Whether the TabGroup send feedback button is enabled.
-// TODO(crbug.com/398183785): Remove once we got feedback.
-bool IsTabGroupSendFeedbackAvailable();
-
 // Feature flag to enable a new illustration in the sync opt-in promotion view.
 BASE_DECLARE_FEATURE(kNewSyncOptInIllustration);
 
