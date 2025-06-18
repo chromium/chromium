@@ -192,30 +192,27 @@ ready.then(async function() {
 
       let expectedPrerenderedOrder = ['onBeforeNavigate-2', 'onCommitted-2'];
 
-      // TODO(andreaorru): remove this if statement.
-      if (!inServiceWorker) {
-        expectedEvents.push(
-          // TODO(crbug.com/40365717): Remove this expectation when the crbug
-          // is fixed.
-          {
-            label: 'onCommitted-2-activation-callback',
-            event: 'onCommitted',
-            details: {
-              documentId: 2,
-              documentLifecycle: 'prerender',
-              frameId: 1,
-              frameType: 'outermost_frame',
-              parentFrameId: -1,
-              processId: 1,
-              tabId: 0,
-              timeStamp: 0,
-              transitionQualifiers:[],
-              transitionType:"link",
-              url: prerenderTargetUrl
-            }
-          });
-          expectedPrerenderedOrder.push('onCommitted-2-activation-callback');
-      }
+      expectedEvents.push(
+        // TODO(crbug.com/40365717): Remove this expectation when the crbug
+        // is fixed.
+        {
+          label: 'onCommitted-2-activation-callback',
+          event: 'onCommitted',
+          details: {
+            documentId: 2,
+            documentLifecycle: 'prerender',
+            frameId: 1,
+            frameType: 'outermost_frame',
+            parentFrameId: -1,
+            processId: 1,
+            tabId: 0,
+            timeStamp: 0,
+            transitionQualifiers:[],
+            transitionType:"link",
+            url: prerenderTargetUrl
+          }
+        });
+      expectedPrerenderedOrder.push('onCommitted-2-activation-callback');
 
       expect(
           expectedEvents,

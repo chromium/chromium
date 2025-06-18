@@ -239,6 +239,6 @@ BASE_FEATURE(kRuntimeOnMessagePromiseReturnSupport,
 
 BASE_FEATURE(kOptimizeServiceWorkerStartRequests,
              "OptimizeServiceWorkerStartRequests",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace extensions_features
