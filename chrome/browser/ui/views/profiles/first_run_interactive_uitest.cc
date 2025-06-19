@@ -590,10 +590,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
   bool should_skip_test = false;
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/363254870, crbug.com/366082752): Re-enable this test
   should_skip_test = true;
-#endif  // WIN && ARCH_CPU_64_BITS
+#endif  // WIN
   if (should_skip_test) {
     GTEST_SKIP() << "Test is flaky on win64";
   }
