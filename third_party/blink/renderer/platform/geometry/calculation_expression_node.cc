@@ -426,7 +426,8 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
         float progress_px = operand_pixels[0];
         float from_px = operand_pixels[1];
         float to_px = operand_pixels[2];
-        float progress = (progress_px - from_px) / (to_px - from_px);
+        float progress_value = (progress_px - from_px) / (to_px - from_px);
+        float progress = std::clamp(progress_value, 0.f, 1.f);
         return MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
             PixelsAndPercent(progress));
       }
@@ -625,7 +626,8 @@ float CalculationExpressionOperationNode::Evaluate(
       float progress = children_[0]->Evaluate(max_value, input);
       float from = children_[1]->Evaluate(max_value, input);
       float to = children_[2]->Evaluate(max_value, input);
-      return (progress - from) / (to - from);
+      float progress_value = (progress - from) / (to - from);
+      return std::clamp(progress_value, 0.f, 1.f);
     }
     case CalculationOperator::kPow: {
       DCHECK_EQ(children_.size(), 2u);

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] 'calc(container-progress(width, 0px, 1px) / 1000)' as a computed value should serialize as '0.228'.
+  assert_equals: 'calc(container-progress(width, 0px, 1px) / 1000)' and '0.228' should serialize the same in computed values. expected "0.228" but got "0.001"
+[FAIL] 'scale(calc(container-progress(width, 0px, 1px) / 1000))' as a computed value should serialize as 'matrix(0.228, 0, 0, 0.228, 0, 0)'.
+  assert_equals: 'scale(calc(container-progress(width, 0px, 1px) / 1000))' and 'matrix(0.228, 0, 0, 0.228, 0, 0)' should serialize the same in computed values. expected "matrix(0.228, 0, 0, 0.228, 0, 0)" but got "matrix(0.001, 0, 0, 0.001, 0, 0)"
+[FAIL] 'calc(0.1 * container-progress(height of my-container, 0px, 10em))' as a computed value should serialize as '0.228'.
+  assert_equals: 'calc(0.1 * container-progress(height of my-container, 0px, 10em))' and '0.228' should serialize the same in computed values. expected "0.228" but got "0.1"
+[FAIL] 'scale(calc(0.1 * container-progress(height of my-container, 0px, 10em)))' as a computed value should serialize as 'matrix(0.228, 0, 0, 0.228, 0, 0)'.
+  assert_equals: 'scale(calc(0.1 * container-progress(height of my-container, 0px, 10em)))' and 'matrix(0.228, 0, 0, 0.228, 0, 0)' should serialize the same in computed values. expected "matrix(0.228, 0, 0, 0.228, 0, 0)" but got "matrix(0.1, 0, 0, 0.1, 0, 0)"
+Harness: the test ran to completion.
+

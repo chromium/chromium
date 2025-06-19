@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] 'calc(0.1 * media-progress(height, 0px, 10em))' as a computed value should serialize as '0.6'.
+  assert_equals: 'calc(0.1 * media-progress(height, 0px, 10em))' and '0.6' should serialize the same in computed values. expected "0.6" but got "0.1"
+[FAIL] 'scale(calc(0.1 * media-progress(height, 0px, 10em)))' as a computed value should serialize as 'matrix(0.6, 0, 0, 0.6, 0, 0)'.
+  assert_equals: 'scale(calc(0.1 * media-progress(height, 0px, 10em)))' and 'matrix(0.6, 0, 0, 0.6, 0, 0)' should serialize the same in computed values. expected "matrix(0.6, 0, 0, 0.6, 0, 0)" but got "matrix(0.1, 0, 0, 0.1, 0, 0)"
+[FAIL] 'calc(media-progress(width, 0px, 100px) / 20)' as a computed value should serialize as '0.4'.
+  assert_equals: 'calc(media-progress(width, 0px, 100px) / 20)' and '0.4' should serialize the same in computed values. expected "0.4" but got "0.05"
+[FAIL] 'scale(calc(media-progress(width, 0px, 100px) / 20))' as a computed value should serialize as 'matrix(0.4, 0, 0, 0.4, 0, 0)'.
+  assert_equals: 'scale(calc(media-progress(width, 0px, 100px) / 20))' and 'matrix(0.4, 0, 0, 0.4, 0, 0)' should serialize the same in computed values. expected "matrix(0.4, 0, 0, 0.4, 0, 0)" but got "matrix(0.05, 0, 0, 0.05, 0, 0)"
+[FAIL] 'calc(1px * media-progress(height, abs(11em - 10rem), 110px / 10))' as a computed value should serialize as '590px'.
+  assert_equals: 'calc(1px * media-progress(height, abs(11em - 10rem), 110px / 10))' and '590px' should serialize the same in computed values. expected "590px" but got "1px"
+Harness: the test ran to completion.
+
