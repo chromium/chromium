@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -24,6 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.function.BooleanSupplier;
 
 /** Responsible for hosting properties of the improved bookmark row. */
+@NullMarked
 public class ImprovedBookmarkRowProperties {
     @IntDef({
         ImageVisibility.DRAWABLE,

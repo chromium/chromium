@@ -190,7 +190,7 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
         if (!PowerBookmarkUtils.isShoppingListItem(mShoppingService, meta)) return false;
         return mShoppingService.isSubscribedFromCache(
                 PowerBookmarkUtils.createCommerceSubscriptionForShoppingSpecifics(
-                        assumeNonNull(meta).getShoppingSpecifics()));
+                        meta.getShoppingSpecifics()));
     }
 
     private List<BookmarkListEntry> collectLeafNodes(BookmarkId parentId) {

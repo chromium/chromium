@@ -18,16 +18,16 @@ public interface BookmarkManagerTestingDelegate {
      * searching for the position, for example if the index 0 then the 1st bookmark in the list will
      * be returned rather than having to offset by non-bookmark list items.
      */
-    BookmarkId getBookmarkIdByPositionForTesting(int position);
+    @Nullable BookmarkId getBookmarkIdByPositionForTesting(int position);
 
     /** Returns the ImprovedBookmarkRow by position, ignores other view types like above. */
-    ImprovedBookmarkRow getBookmarkRowByPosition(int position);
+    @Nullable ImprovedBookmarkRow getBookmarkRowByPosition(int position);
 
     /** Returns the bookmark's ViewHolder by position, ignores other view types like above. */
-    ViewHolder getBookmarkViewHolderByPosition(int position);
+    @Nullable ViewHolder getBookmarkViewHolderByPosition(int position);
 
     /** Returns any view holder by position. */
-    ViewHolder getViewHolderByPosition(int position);
+    @Nullable ViewHolder getViewHolderByPosition(int position);
 
     /** Returns the bookmark count in the current context. */
     int getBookmarkCount();

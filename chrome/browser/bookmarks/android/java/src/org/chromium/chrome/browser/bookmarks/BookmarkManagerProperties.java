@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.sync.ui.batch_upload_card.BatchUploadCardCoordinator;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -13,6 +14,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Responsible for hosting properties of BookmarkManager views. */
+@NullMarked
 public class BookmarkManagerProperties {
     public static final WritableObjectPropertyKey<BookmarkPromoHeader> BOOKMARK_PROMO_HEADER =
             new WritableObjectPropertyKey<>();

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -14,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Binds model properties to view methods for ImprovedBookmarkRow. */
+@NullMarked
 public class ImprovedBookmarkRowViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey key) {
         ImprovedBookmarkRow row = (ImprovedBookmarkRow) view;

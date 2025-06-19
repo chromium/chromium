@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -31,6 +32,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import java.util.List;
 
 /** Coordinates the views/mediators that make up the bookmark folder picker. */
+@NullMarked
 public class BookmarkFolderPickerCoordinator implements BackPressHandler {
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();

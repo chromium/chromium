@@ -29,8 +29,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
 
-import static java.util.Map.entry;
-
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -1719,7 +1717,7 @@ public class BookmarkManagerMediatorTest {
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
                         any(Callback.class));
         mMediator
-                .getBatchUploadCardCoordinator()
+                .getBatchUploadCardCoordinatorForTesting()
                 .immediatelyHideBatchUploadCardAndUpdateItsVisibility();
 
         mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
@@ -1792,7 +1790,7 @@ public class BookmarkManagerMediatorTest {
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
                         any(Callback.class));
         mMediator
-                .getBatchUploadCardCoordinator()
+                .getBatchUploadCardCoordinatorForTesting()
                 .immediatelyHideBatchUploadCardAndUpdateItsVisibility();
 
         mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
@@ -1867,7 +1865,7 @@ public class BookmarkManagerMediatorTest {
                         eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
                         any(Callback.class));
         mMediator
-                .getBatchUploadCardCoordinator()
+                .getBatchUploadCardCoordinatorForTesting()
                 .immediatelyHideBatchUploadCardAndUpdateItsVisibility();
 
         mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);

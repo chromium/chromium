@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Responsible for hosting properties for {@link BookmarkSearchBoxRow}. */
+@NullMarked
 class BookmarkSearchBoxRowProperties {
     public static final ReadableObjectPropertyKey<Callback<String>> SEARCH_TEXT_CHANGE_CALLBACK =
             new ReadableObjectPropertyKey<>();

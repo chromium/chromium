@@ -10,6 +10,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -17,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /** Binds model properties to view methods for {@link BookmarkSearchBoxRow}. */
+@NullMarked
 class BookmarkSearchBoxRowViewBinder {
     public static ViewBinder<PropertyModel, View, PropertyKey> createViewBinder() {
         return new BookmarkSearchBoxRowViewBinder()::bind;

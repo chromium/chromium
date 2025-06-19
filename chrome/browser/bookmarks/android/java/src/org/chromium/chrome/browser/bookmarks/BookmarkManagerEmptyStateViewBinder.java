@@ -12,10 +12,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Responsible for binding views to their properties. */
+@NullMarked
 class BookmarkManagerEmptyStateViewBinder {
     public static void bindEmptyStateView(PropertyModel model, View view, PropertyKey key) {
         if (key == EMPTY_STATE_TITLE_RES) {

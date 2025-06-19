@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -23,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 
 /** Business logic for the improved bookmark row. */
+@NullMarked
 public class ImprovedBookmarkRowCoordinator {
     private final Context mContext;
     private final BookmarkImageFetcher mBookmarkImageFetcher;
@@ -59,7 +63,7 @@ public class ImprovedBookmarkRowCoordinator {
     /** Sets the given bookmark id. */
     public PropertyModel createBasePropertyModel(BookmarkId bookmarkId) {
         PropertyModel propertyModel = new PropertyModel(ImprovedBookmarkRowProperties.ALL_KEYS);
-        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+        BookmarkItem bookmarkItem = assumeNonNull(mBookmarkModel.getBookmarkById(bookmarkId));
         PowerBookmarkMeta meta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
         final @BookmarkRowDisplayPref int displayPref =
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref();

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 
@@ -21,7 +22,7 @@ interface BookmarkUiObserver {
     /**
      * @see BookmarkDelegate#openFolder(BookmarkId)
      */
-    default void onFolderStateSet(BookmarkId folder) {}
+    default void onFolderStateSet(@Nullable BookmarkId folder) {}
 
     /** Called when the bookmark UI mode changes. */
     default void onUiModeChanged(@BookmarkUiMode int mode) {}

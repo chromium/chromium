@@ -11,6 +11,7 @@ import com.google.common.primitives.UnsignedLongs;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
@@ -40,6 +41,7 @@ public class PowerBookmarkUtils {
     private static @Nullable PowerBookmarkMeta sPowerBookmarkMetaForTesting;
 
     /** Returns whether the given meta is a shopping list item. */
+    @Contract("_, null -> false")
     public static boolean isShoppingListItem(
             ShoppingService shoppingService, @Nullable PowerBookmarkMeta meta) {
         return CommerceFeatureUtils.isShoppingListEligible(shoppingService)

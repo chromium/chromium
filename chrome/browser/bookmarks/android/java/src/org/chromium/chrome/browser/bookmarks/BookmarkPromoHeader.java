@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.LegacySyncPromoView;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -33,6 +36,7 @@ import org.chromium.components.sync.SyncService;
  * Class that manages all the logic and UI behind the signin promo header in the bookmark content
  * UI. The header is shown only on certain situations, (e.g., not signed in).
  */
+@NullMarked
 public class BookmarkPromoHeader
         implements SyncService.SyncStateChangedListener,
                 SignInStateObserver,
@@ -60,7 +64,7 @@ public class BookmarkPromoHeader
         mProfile = profile;
         mPromoHeaderChangeAction = promoHeaderChangeAction;
         mSyncService = SyncServiceFactory.getForProfile(profile);
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        mSigninManager = assertNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
         AccountPickerBottomSheetStrings bottomSheetStrings =
@@ -85,7 +89,7 @@ public class BookmarkPromoHeader
         mSigninManager.addSignInStateObserver(this);
         if (mSyncPromoController != null) {
             mAccountManagerFacade.addObserver(this);
-            mProfileDataCache.addObserver(this);
+            assumeNonNull(mProfileDataCache).addObserver(this);
         }
 
         updatePromoState();
@@ -97,7 +101,7 @@ public class BookmarkPromoHeader
 
         if (mSyncPromoController != null) {
             mAccountManagerFacade.removeObserver(this);
-            mProfileDataCache.removeObserver(this);
+            assumeNonNull(mProfileDataCache).removeObserver(this);
         }
 
         mSigninManager.removeSignInStateObserver(this);
@@ -123,6 +127,8 @@ public class BookmarkPromoHeader
 
     /** Sets up the sync promo view. */
     void setUpSyncPromoView(PersonalizedSigninPromoView view) {
+        assumeNonNull(mSyncPromoController);
+        assumeNonNull(mProfileDataCache);
         mSyncPromoController.setUpSyncPromoView(
                 mProfileDataCache, view, this::setPersonalizedSigninPromoDeclined);
     }

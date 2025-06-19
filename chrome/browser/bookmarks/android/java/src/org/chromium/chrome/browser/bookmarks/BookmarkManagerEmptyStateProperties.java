@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 /** Responsible for hosting properties of BookmarkManager empty state. */
+@NullMarked
 class BookmarkManagerEmptyStateProperties {
     static final WritableIntPropertyKey EMPTY_STATE_TITLE_RES = new WritableIntPropertyKey();
     static final WritableIntPropertyKey EMPTY_STATE_DESCRIPTION_RES = new WritableIntPropertyKey();
