@@ -109,6 +109,10 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/range/range.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#endif
+
 using base::UserMetricsAction;
 using content::WebContents;
 
@@ -2269,6 +2273,15 @@ bool TabStripModel::IsContextMenuCommandEnabled(
                  selected_web_contents);
     }
 
+#if BUILDFLAG(ENABLE_GLIC)
+    case CommandGlicShareLimit:
+      return false;
+    case CommandGlicStartShare:
+      return true;
+    case CommandGlicStopShare:
+      return true;
+#endif
+
     case CommandAddToNewComparisonTable:
     case CommandAddToExistingComparisonTable:
       return commerce::IsUrlEligibleForProductSpecs(
@@ -2619,6 +2632,32 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
                                                    indices.back());
       break;
     }
+
+#if BUILDFLAG(ENABLE_GLIC)
+    case CommandGlicShareLimit:
+      break;
+    case CommandGlicStopShare:
+    case CommandGlicStartShare: {
+      auto* service =
+          glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
+      std::vector<int> indices = GetIndicesForCommand(context_index);
+      std::vector<tabs::TabHandle> tab_handles;
+      for (const auto& selection : indices) {
+        tabs::TabInterface* tab = GetTabAtIndex(selection);
+        if (command_id == CommandGlicStartShare &&
+            service->sharing_manager().IsTabPinned(tab->GetHandle())) {
+          continue;
+        }
+        tab_handles.push_back(tab->GetHandle());
+      }
+      if (command_id == CommandGlicStartShare) {
+        CHECK(service->sharing_manager().PinTabs(tab_handles));
+      } else {
+        CHECK(service->sharing_manager().UnpinTabs(tab_handles));
+      }
+      break;
+    }
+#endif
 
     case CommandAddToNewComparisonTable: {
       const auto& tab_url =

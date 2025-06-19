@@ -81,6 +81,10 @@ if (!is_android) {
       "//components/commerce/core:feature_list",
       "//components/feed:feature_list",
     ]
+
+    if (enable_glic) {
+      deps += [ "//chrome/browser/glic" ]
+    }
   }
 
   source_set("tab_group") {
@@ -264,6 +268,10 @@ if (!is_android) {
       "//components/web_modal",
       "//components/webapps/common",
     ]
+
+    if (enable_glic) {
+      deps += [ "//chrome/browser/glic" ]
+    }
   }
 
   source_set("tabs") {
@@ -536,6 +544,13 @@ if (!is_android) {
       "//ui/base:types",
       "//url",
     ]
+
+    if (enable_glic) {
+      deps += [
+        "//chrome/browser/glic",
+        "//chrome/browser/glic/test_support",
+      ]
+    }
   }
 
   source_set("unit_tests") {

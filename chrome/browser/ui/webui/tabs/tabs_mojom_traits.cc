@@ -75,6 +75,8 @@ MojoTabAlertState EnumTraits<MojoTabAlertState, NativeTabAlertState>::ToMojom(
       return MojoTabAlertState::kVideoRecording;
     case NativeTabAlertState::GLIC_ACCESSING:
       return MojoTabAlertState::kGlicAccessing;
+    case NativeTabAlertState::GLIC_SHARING:
+      return MojoTabAlertState::kGlicSharing;
   }
   NOTREACHED();
 }
@@ -127,6 +129,9 @@ bool EnumTraits<MojoTabAlertState, NativeTabAlertState>::FromMojom(
       return true;
     case MojoTabAlertState::kGlicAccessing:
       *out = NativeTabAlertState::GLIC_ACCESSING;
+      return true;
+    case MojoTabAlertState::kGlicSharing:
+      *out = NativeTabAlertState::GLIC_SHARING;
       return true;
   }
   NOTREACHED();

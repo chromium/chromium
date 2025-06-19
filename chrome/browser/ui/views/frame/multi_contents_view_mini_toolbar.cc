@@ -68,6 +68,7 @@ ui::ColorId GetAlertStatusColor(tabs::TabAlert alert,
       case tabs::TabAlert::TAB_CAPTURING:
       case tabs::TabAlert::PIP_PLAYING:
       case tabs::TabAlert::GLIC_ACCESSING:
+      case tabs::TabAlert::GLIC_SHARING:
         return kColorTabAlertPipPlayingActiveFrameActive;
       case tabs::TabAlert::AUDIO_PLAYING:
       case tabs::TabAlert::AUDIO_MUTING:

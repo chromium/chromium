@@ -645,6 +645,7 @@ BASE_FEATURE(kGlicWebClientUnresponsiveMetrics,
 
 BASE_FEATURE(kGlicTabGlow, "GlicTabGlow", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicMultiTab, "GlicMultiTab", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 // Force Privacy Guide to be available even if it would be unavailable

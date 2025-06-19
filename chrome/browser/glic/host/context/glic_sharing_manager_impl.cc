@@ -17,14 +17,49 @@ GlicSharingManagerImpl::GlicSharingManagerImpl(
 
 GlicSharingManagerImpl::~GlicSharingManagerImpl() = default;
 
+base::CallbackListSubscription
+GlicSharingManagerImpl::AddFocusedTabChangedCallback(
+    FocusedTabChangedCallback callback) {
+  return focused_tab_manager_.AddFocusedTabChangedCallback(std::move(callback));
+}
+
 FocusedTabData GlicSharingManagerImpl::GetFocusedTabData() {
   return focused_tab_manager_.GetFocusedTabData();
 }
 
 base::CallbackListSubscription
-GlicSharingManagerImpl::AddFocusedTabChangedCallback(
-    FocusedTabChangedCallback callback) {
-  return focused_tab_manager_.AddFocusedTabChangedCallback(std::move(callback));
+GlicSharingManagerImpl::AddTabPinningStatusChangedCallback(
+    TabPinningStatusChangedCallback callback) {
+  return pinned_tab_manager_.AddTabPinningStatusChangedCallback(
+      std::move(callback));
+}
+
+bool GlicSharingManagerImpl::PinTabs(
+    base::span<const tabs::TabHandle> tab_handles) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicMultiTab));
+  return pinned_tab_manager_.PinTabs(tab_handles);
+}
+
+bool GlicSharingManagerImpl::UnpinTabs(
+    base::span<const tabs::TabHandle> tab_handles) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicMultiTab));
+  return pinned_tab_manager_.UnpinTabs(tab_handles);
+}
+
+void GlicSharingManagerImpl::UnpinAllTabs() {
+  pinned_tab_manager_.UnpinAllTabs();
+}
+
+int32_t GlicSharingManagerImpl::GetMaxPinnedTabs() const {
+  return pinned_tab_manager_.GetMaxPinnedTabs();
+}
+
+int32_t GlicSharingManagerImpl::GetNumPinnedTabs() const {
+  return pinned_tab_manager_.GetNumPinnedTabs();
+}
+
+bool GlicSharingManagerImpl::IsTabPinned(tabs::TabHandle tab_handle) const {
+  return pinned_tab_manager_.IsTabPinned(tab_handle);
 }
 
 base::CallbackListSubscription

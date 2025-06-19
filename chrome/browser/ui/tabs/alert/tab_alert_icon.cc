@@ -45,6 +45,7 @@ const gfx::VectorIcon& GetAlertIcon(TabAlert alert_state) {
     case TabAlert::VR_PRESENTING_IN_HEADSET:
       return vector_icons::kCardboardIcon;
     case TabAlert::GLIC_ACCESSING:
+    case TabAlert::GLIC_SHARING:
 #if BUILDFLAG(ENABLE_GLIC)
       return glic::GlicVectorIconManager::GetVectorIcon(
           IDR_GLIC_ACCESSING_ICON);

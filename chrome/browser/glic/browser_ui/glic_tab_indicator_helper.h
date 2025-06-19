@@ -26,7 +26,7 @@ namespace glic {
 // latter is currently handled by
 // BrowserTabStripController::OnTabStripModelChanged. This class is only
 // responsible for propagating glic focus changes for a fixed TabInterface,
-// without handling moving.
+// without handling moving and for changes to the sharing status of a tab.
 class GlicTabIndicatorHelper {
  public:
   explicit GlicTabIndicatorHelper(tabs::TabInterface* tab);
@@ -42,6 +42,9 @@ class GlicTabIndicatorHelper {
 
   // Called when the client changes the context access indicator status.
   void OnIndicatorStatusChanged(bool enabled);
+
+  // Called when the tab's pinning status is updated.
+  void OnTabPinningStatusChanged(tabs::TabInterface*, bool pinned);
 
   // Called when the tab is detached.
   void OnTabWillDetach(tabs::TabInterface* tab,

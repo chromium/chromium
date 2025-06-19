@@ -32,6 +32,11 @@ GlicTabIndicatorHelper::GlicTabIndicatorHelper(tabs::TabInterface* tab)
       service->AddContextAccessIndicatorStatusChangedCallback(
           base::BindRepeating(&GlicTabIndicatorHelper::OnIndicatorStatusChanged,
                               base::Unretained(this))));
+  subscriptions_.push_back(
+      service->sharing_manager().AddTabPinningStatusChangedCallback(
+          base::BindRepeating(
+              &GlicTabIndicatorHelper::OnTabPinningStatusChanged,
+              base::Unretained(this))));
 
   // TODO(crbug.com/393525654): This code should not be necessary.
   subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
@@ -70,7 +75,17 @@ void GlicTabIndicatorHelper::OnFocusedTabChanged(
 }
 
 void GlicTabIndicatorHelper::OnIndicatorStatusChanged(bool enabled) {
-  if (tab_is_focused_) {
+  auto* const service = GlicKeyedServiceFactory::GetGlicKeyedService(
+      tab_->GetBrowserWindowInterface()->GetProfile());
+  bool is_pinned = service->sharing_manager().IsTabPinned(tab_->GetHandle());
+  if (tab_is_focused_ || is_pinned) {
+    UpdateTab();
+  }
+}
+
+void GlicTabIndicatorHelper::OnTabPinningStatusChanged(tabs::TabInterface* tab,
+                                                       bool pinned) {
+  if (tab == tab_) {
     UpdateTab();
   }
 }

@@ -104,6 +104,8 @@ source_set("impl") {
     "host/auth_controller.cc",
     "host/context/glic_focused_tab_manager.cc",
     "host/context/glic_page_context_fetcher.cc",
+    "host/context/glic_pinned_tab_manager.cc",
+    "host/context/glic_pinned_tab_manager.h",
     "host/context/glic_screenshot_capturer.cc",
     "host/context/glic_screenshot_capturer.h",
     "host/context/glic_sharing_manager_impl.cc",

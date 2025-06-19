@@ -45,6 +45,11 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/menus/simple_menu_model.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#endif
+
 class TabMenuModelBrowserTest : public MenuModelTest,
                                 public InProcessBrowserTest {
  public:
@@ -953,3 +958,100 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(index.has_value());
   EXPECT_TRUE(model.IsEnabledAt(index.value()));
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+class TabMenuModelGlicMultiTabTest : public TabMenuModelBrowserTest {
+ public:
+  TabMenuModelGlicMultiTabTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicMultiTab);
+  }
+
+ protected:
+  TabStripModel* tab_strip() { return browser()->tab_strip_model(); }
+
+  glic::GlicSharingManager& sharing_manager() {
+    return glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile())
+        ->sharing_manager();
+  }
+
+  tabs::TabHandle TabHandleAtIndex(int index) {
+    return tab_strip()->GetTabAtIndex(index)->GetHandle();
+  }
+
+  glic::GlicTestEnvironment glic_test_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, NotShared) {
+  chrome::NewTab(browser());
+  chrome::NewTab(browser());
+  chrome::NewTab(browser());
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabMenuModel model(&delegate_,
+                     browser()->GetFeatures().tab_menu_model_delegate(),
+                     tab_strip_model, 1);
+  EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStartShare)
+                  .has_value());
+  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStopShare)
+                   .has_value());
+  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicShareLimit)
+                   .has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, SomeShared) {
+  chrome::NewTab(browser());
+  chrome::NewTab(browser());
+  chrome::NewTab(browser());
+
+  sharing_manager().PinTabs({TabHandleAtIndex(0)});
+
+  TabMenuModel model(&delegate_,
+                     browser()->GetFeatures().tab_menu_model_delegate(),
+                     tab_strip(), 1);
+  EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStartShare)
+                  .has_value());
+  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStopShare)
+                   .has_value());
+  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicShareLimit)
+                   .has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, AllShared) {
+  for (int i = 0; i < 3; ++i) {
+    chrome::NewTab(browser());
+    sharing_manager().PinTabs({TabHandleAtIndex(i)});
+  }
+
+  TabMenuModel model(&delegate_,
+                     browser()->GetFeatures().tab_menu_model_delegate(),
+                     tab_strip(), 1);
+  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStartShare)
+                   .has_value());
+  EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStopShare)
+                  .has_value());
+  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicShareLimit)
+                   .has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, TooManyShared) {
+  const int limit = sharing_manager().GetMaxPinnedTabs();
+  for (int i = 0; i < limit; ++i) {
+    chrome::NewTab(browser());
+    sharing_manager().PinTabs({TabHandleAtIndex(i)});
+  }
+  chrome::NewTab(browser());
+  tab_strip()->SelectTabAt(limit);
+  EXPECT_FALSE(sharing_manager().IsTabPinned(TabHandleAtIndex(limit)));
+
+  TabMenuModel model(&delegate_,
+                     browser()->GetFeatures().tab_menu_model_delegate(),
+                     tab_strip(), limit);
+  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStartShare)
+                   .has_value());
+  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStopShare)
+                   .has_value());
+  EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandGlicShareLimit)
+                  .has_value());
+}
+#endif  // BUILDFLAG(ENABLE_GLIC)

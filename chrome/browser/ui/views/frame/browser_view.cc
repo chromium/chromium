@@ -4216,6 +4216,14 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
 #else
         NOTREACHED();
 #endif
+      case tabs::TabAlert::GLIC_SHARING:
+#if BUILDFLAG(ENABLE_GLIC)
+        title =
+            l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_GLIC_SHARING, title);
+        break;
+#else
+        NOTREACHED();
+#endif
     }
   }
 

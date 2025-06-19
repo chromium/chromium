@@ -107,10 +107,6 @@ class GlicFocusedTabManager : public BrowserListObserver,
       const mojom::GetTabContextOptions& options,
       base::OnceCallback<void(glic::mojom::GetContextResultPtr)> callback);
 
-  // True if the tab_id corresponds to either the focused tab or a tab whose
-  // contents match the no-focus candidate.
-  bool IsTabFocused(int tab_id) const;
-
  private:
   // Data provided when there is no focused tab.
   // The browser-side type corresponding to mojom::NoFocusedTabData.

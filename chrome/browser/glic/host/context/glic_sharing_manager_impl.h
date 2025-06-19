@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SHARING_MANAGER_IMPL_H_
 
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
+#include "chrome/browser/glic/host/context/glic_pinned_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -16,6 +17,8 @@ namespace glic {
 
 class GlicMetrics;
 
+// Implements GlicSharingManager and provides additional functionality needed
+// by chrome/browser/glic.
 class GlicSharingManagerImpl : public GlicSharingManager {
  public:
   GlicSharingManagerImpl(Profile* profile,
@@ -27,18 +30,33 @@ class GlicSharingManagerImpl : public GlicSharingManager {
   GlicSharingManagerImpl(const GlicSharingManagerImpl&) = delete;
   GlicSharingManagerImpl& operator=(const GlicSharingManagerImpl&) = delete;
 
-  // Returns the currently focused tab data or an error reason stating why one
-  // was not available. This may also contain a tab candidate along with details
-  // as to why it cannot be focused.
-  FocusedTabData GetFocusedTabData() override;
+  // GlicSharingManager implementation.
 
-  // Callback for changes to focused tab. If no tab is in focus an error reason
-  // is returned indicating why and maybe a tab candidate with details as to
-  // why it cannot be focused.
   using FocusedTabChangedCallback =
       base::RepeatingCallback<void(const FocusedTabData&)>;
   base::CallbackListSubscription AddFocusedTabChangedCallback(
       FocusedTabChangedCallback callback) override;
+
+  FocusedTabData GetFocusedTabData() override;
+
+  using TabPinningStatusChangedCallback =
+      base::RepeatingCallback<void(tabs::TabInterface*, bool)>;
+  base::CallbackListSubscription AddTabPinningStatusChangedCallback(
+      TabPinningStatusChangedCallback callback) override;
+
+  bool PinTabs(base::span<const tabs::TabHandle> tab_handles) override;
+
+  bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles) override;
+
+  void UnpinAllTabs() override;
+
+  int32_t GetMaxPinnedTabs() const override;
+
+  int32_t GetNumPinnedTabs() const override;
+
+  bool IsTabPinned(tabs::TabHandle tab_handle) const override;
+
+  // Functionality provided for (and only used within) chrome/browser/glic.
 
   // Callback for changes to the tab data representation of the focused tab.
   // This includes any event that changes tab data -- e.g. favicon/title change
@@ -54,6 +72,7 @@ class GlicSharingManagerImpl : public GlicSharingManager {
       base::OnceCallback<void(glic::mojom::GetContextResultPtr)> callback);
 
  private:
+  GlicPinnedTabManager pinned_tab_manager_;
   GlicFocusedTabManager focused_tab_manager_;
 };
 
