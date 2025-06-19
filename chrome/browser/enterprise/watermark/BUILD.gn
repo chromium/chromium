@@ -6,6 +6,8 @@ source_set("watermark_view_lib") {
   sources = [
     "settings.cc",
     "settings.h",
+    "watermark_features.cc",
+    "watermark_features.h",
     "watermark_style_policy_handler.cc",
     "watermark_style_policy_handler.h",
     "watermark_view.cc",
