@@ -814,6 +814,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.GeminiSearchBoxIcon" enum="SearchBoxIconEvent"
+    expires_after="2026-03-01">
+  <owner>yawano@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Impression or click events for a Gemini search box icon. This metric was
+    previously recorded as Assistant.NewEntryPoint.Eligibility and
+    Assistant.NewEntryPoint.Launcher before M138.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.HelpAppProvider.ListSearchResultState"
     enum="HelpAppProviderListSearchResultState" expires_after="2026-03-01">
   <owner>chenjih@google.com</owner>

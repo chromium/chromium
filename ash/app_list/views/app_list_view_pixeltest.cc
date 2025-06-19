@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
@@ -14,6 +16,7 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -268,7 +271,7 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
   UseFixedPlaceholderTextAndHideCursor(
       GetAppListTestHelper()->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_basics", /*revision_number=*/16,
+      "bubble_launcher_basics", /*revision_number=*/17,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -290,7 +293,22 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
                                 /*position=*/20);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_gradient_zone", /*revision_number=*/16,
+      "bubble_launcher_gradient_zone", /*revision_number=*/17,
+      GetAppListTestHelper()->GetBubbleView(),
+      GetPrimaryShelf()->navigation_widget()));
+}
+
+TEST_P(AppListViewPixelRTLTest, GeminiButton) {
+  AppListItem* app_list_item =
+      GetAppListTestHelper()->model()->CreateAndAddItem(kGeminiAppId);
+  GetAppListTestHelper()->model()->SetItemName(app_list_item, "Gemini");
+
+  ShowAppList();
+  UseFixedPlaceholderTextAndHideCursor(
+      GetAppListTestHelper()->GetSearchBoxView());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "bubble_launcher_gemini_button", /*revision_number=*/0,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -381,7 +399,7 @@ INSTANTIATE_TEST_SUITE_P(RTL,
 // Verifies the default layout for tablet mode launcher.
 TEST_P(AppListViewTabletPixelTest, Basic) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_basics", /*revision_number=*/17,
+      "tablet_launcher_basics", /*revision_number=*/18,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -402,7 +420,7 @@ TEST_P(AppListViewTabletPixelTest, TopGradientZone) {
   generator->MoveTouchBy(0, -40);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_top_gradient_zone", /*revision_number=*/15,
+      "tablet_launcher_top_gradient_zone", /*revision_number=*/16,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -423,7 +441,7 @@ TEST_P(AppListViewTabletPixelTest, BottomGradientZone) {
   generator->MoveTouchBy(0, -90);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_bottom_gradient_zone", /*revision_number=*/17,
+      "tablet_launcher_bottom_gradient_zone", /*revision_number=*/18,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -434,6 +452,16 @@ TEST_P(AppListViewTabletPixelTest, SearchBoxViewActive) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "search_box_view_active", /*revision_number=*/9, search_box_view));
+}
+
+TEST_P(AppListViewTabletPixelTest, GeminiButton) {
+  AppListItem* app_list_item =
+      GetAppListTestHelper()->model()->CreateAndAddItem(kGeminiAppId);
+  GetAppListTestHelper()->model()->SetItemName(app_list_item, "Gemini");
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "tablet_launcher_gemini_button", /*revision_number=*/0,
+      GetAppListTestHelper()->GetAppsContainerView()));
 }
 
 class AppListViewAssistantZeroStateTest

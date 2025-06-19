@@ -4,7 +4,9 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/app_list/app_list_badge_controller.h"
@@ -13,6 +15,7 @@
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/test_app_list_client.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -29,10 +32,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -59,8 +64,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "components/services/app_service/public/cpp/app.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/session_manager_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
@@ -186,6 +196,20 @@ class AppListControllerImplTest : public AshTestBase {
     }
   }
 
+  void AddGeminiApp() {
+    std::unique_ptr<apps::App> app = std::make_unique<apps::App>(
+        apps::AppType::kSystemWeb, std::string(kGeminiAppId));
+    app->name = "Gemini";
+    std::vector<apps::AppPtr> apps;
+    apps.push_back(std::move(app));
+    apps::AppRegistryCache* cache =
+        apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
+            Shell::Get()->session_controller()->GetActiveAccountId());
+    ASSERT_TRUE(cache);
+    cache->OnAppsForTesting(std::move(apps), apps::AppType::kSystemWeb,
+                            /*should_notify_initialized=*/false);
+  }
+
   bool IsAppListBoundsAnimationRunning() {
     AppListView* app_list_view = GetAppListTestHelper()->GetAppListView();
     ui::Layer* widget_layer =
@@ -202,6 +226,61 @@ class AppListControllerImplTest : public AshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+TEST_F(AppListControllerImplTest, GeminiSearchBoxIconVisibility) {
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+  EXPECT_FALSE(
+      GetAppListView()->search_box_view()->gemini_button()->GetVisible());
+
+  AddGeminiApp();
+  EXPECT_TRUE(
+      GetAppListView()->search_box_view()->gemini_button()->GetVisible());
+}
+
+TEST_F(AppListControllerImplTest, GeminiSearchBoxIconActivate) {
+  AddGeminiApp();
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+
+  TestAppListClient* app_list_client = GetTestAppListClient();
+  ASSERT_TRUE(app_list_client);
+  ASSERT_EQ(0, app_list_client->activate_item_count());
+
+  GetEventGenerator()->MoveMouseTo(GetAppListView()
+                                       ->search_box_view()
+                                       ->gemini_button()
+                                       ->GetBoundsInScreen()
+                                       .CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_EQ(1, app_list_client->activate_item_count());
+  EXPECT_EQ(kGeminiAppId, app_list_client->activate_item_last_id());
+}
+
+TEST_F(AppListControllerImplTest, GeminiSearchBoxIconHistogram) {
+  base::HistogramTester histogram_tester;
+
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+  histogram_tester.ExpectBucketCount(
+      SearchBoxView::kGeminiSearchBoxIconHistogramName,
+      SearchBoxView::SearchBoxIconEvent::kImpression, 0);
+
+  AddGeminiApp();
+  views::test::RunScheduledLayout(GetAppListView());
+  histogram_tester.ExpectBucketCount(
+      SearchBoxView::kGeminiSearchBoxIconHistogramName,
+      SearchBoxView::SearchBoxIconEvent::kImpression, 1);
+
+  views::View* gemini_icon_button =
+      GetAppListView()->search_box_view()->gemini_button();
+  ASSERT_TRUE(gemini_icon_button->GetVisible());
+  GetEventGenerator()->MoveMouseTo(
+      gemini_icon_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  histogram_tester.ExpectBucketCount(
+      SearchBoxView::kGeminiSearchBoxIconHistogramName,
+      SearchBoxView::SearchBoxIconEvent::kClick, 1);
+}
 
 // Tests that the AppList hides when shelf alignment changes. This necessary
 // because the AppList is shown with certain assumptions based on shelf
@@ -1252,6 +1331,7 @@ TEST_F(AppListControllerImplKioskTest,
 }
 
 // App list assistant tests.
+// TODO: crbug.com/388361414 - Delete.
 class AppListControllerWithAssistantTest : public AppListControllerImplTest {
  public:
   AppListControllerWithAssistantTest()

@@ -76,6 +76,8 @@ Profile* GetActiveUserProfile() {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If any value is added, please update
 // `AssistantNewEntryPointEligibility` in `enums.xml`
+// TODO: crbug.com/388361414 - Delete all new entry point related code from this
+// class.
 // LINT.IfChange(AssistantNewEntryPointEligibility)
 enum class AssistantNewEntryPointEligibility {
   // A profile is eligible for the new entry point.

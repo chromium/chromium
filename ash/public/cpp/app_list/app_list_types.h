@@ -365,6 +365,7 @@ enum class AppListGridAnimationStatus {
 // This enum is used in a histogram, do not remove/renumber entries. If you're
 // adding to this enum with the intention that it will be logged, update the
 // AppListLaunchedFrom enum listing in tools/metrics/histograms/enums.xml.
+// LINT.IfChange(AppListLaunchedFrom)
 enum class AppListLaunchedFrom {
   kLaunchedFromGrid = 1,
   DEPRECATED_kLaunchedFromSuggestionChip = 2,
@@ -375,8 +376,10 @@ enum class AppListLaunchedFrom {
   kLaunchedFromQuickAppAccess = 7,
   kLaunchedFromAppsCollections = 8,
   kLaunchedFromDiscoveryChip = 9,
-  kMaxValue = kLaunchedFromDiscoveryChip,
+  kLaunchedFromSearchBoxIcon = 10,
+  kMaxValue = kLaunchedFromSearchBoxIcon,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/apps/enums.xml:AppListLaunchedFrom)
 
 // The UI representation of the app that's being launched. Currently all search
 // results that are not apps (OminboxResult, LauncherSearcResult, etc.) are

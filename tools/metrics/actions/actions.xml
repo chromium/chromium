@@ -4349,6 +4349,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Assistant.NewEntryPoint.Launcher">
+  <obsolete>
+    Deprecated in M139. Replaced with Apps.AppList.GeminiSearchBoxIcon.
+  </obsolete>
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <description>

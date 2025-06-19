@@ -26,6 +26,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -83,6 +84,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/menus/simple_menu_model.h"
@@ -585,12 +587,10 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   assistant_button->SetTooltipText(assistant_button_label);
   SetShowAssistantButton(search_box_model->show_assistant_button());
 
-  views::ImageButton* assistant_new_entry_point_button =
-      CreateAssistantNewEntryPointButton(base::BindRepeating(
-          &SearchBoxView::AssistantNewEntryPointButtonPressed,
-          base::Unretained(this)));
-  assistant_new_entry_point_button->SetFlipCanvasOnPaintForRTLUI(false);
-  ShowAssistantNewEntryPointChanged();
+  views::ImageButton* gemini_button = CreateGeminiButton(base::BindRepeating(
+      &SearchBoxView::GeminiButtonPressed, base::Unretained(this)));
+  gemini_button->SetFlipCanvasOnPaintForRTLUI(false);
+  ShowGeminiButtonChanged();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
   UpdateAccessibleValue();
@@ -1259,15 +1259,13 @@ void SearchBoxView::AssistantButtonPressed() {
   SetSearchBoxActive(true, /*event_type=*/ui::EventType::kUnknown);
 }
 
-void SearchBoxView::AssistantNewEntryPointButtonPressed() {
-  assistant::AssistantBrowserDelegate* delegate =
-      assistant::AssistantBrowserDelegate::Get();
-  CHECK(delegate);
+void SearchBoxView::GeminiButtonPressed() {
+  base::UmaHistogramEnumeration(kGeminiSearchBoxIconHistogramName,
+                                SearchBoxIconEvent::kClick);
 
-  base::RecordAction(
-      base::UserMetricsAction("Assistant.NewEntryPoint.Launcher"));
-
-  delegate->OpenNewEntryPoint();
+  view_delegate_->ActivateItem(kGeminiAppId, /*event_flags=*/0,
+                               AppListLaunchedFrom::kLaunchedFromSearchBoxIcon,
+                               /*is_app_above_the_fold=*/false);
 }
 
 void SearchBoxView::SunfishButtonPressed() {
@@ -1758,42 +1756,31 @@ void SearchBoxView::ShowAssistantChanged() {
                              ->show_assistant_button());
 }
 
-void SearchBoxView::ShowAssistantNewEntryPointChanged() {
-  const bool show = AppListModelProvider::Get()
-                        ->search_model()
-                        ->search_box()
-                        ->show_assistant_new_entry_point_button();
+void SearchBoxView::ShowGeminiButtonChanged() {
+  const std::optional<SearchBoxModel::SearchBoxIconButton>
+      gemini_search_box_icon_button = AppListModelProvider::Get()
+                                          ->search_model()
+                                          ->search_box()
+                                          ->gemini_button();
 
-  if (show) {
-    ui::ImageModel gemini_icon = AppListModelProvider::Get()
-                                     ->search_model()
-                                     ->search_box()
-                                     ->gemini_icon();
-    // In prod, gemini icon is provided as an image. We can assume that this is
-    // an image instead of other data types.
-    if (gemini_icon.IsImage()) {
-      // Gemini icon includes margins. Use button size instead of search box
-      // icon size, which contains margins, to avoid having duplicated margins.
-      gemini_icon = ui::ImageModel::FromImage(gfx::ResizedImage(
-          gemini_icon.GetImage(),
-          assistant_new_entry_point_button()->GetPreferredSize()));
-    }
+  if (gemini_search_box_icon_button) {
+    // Gemini icon includes margins. Use button size instead of search box
+    // icon size, which contains margins, to avoid having duplicated margins.
+    gemini_button()->SetImageModel(views::ImageButton::STATE_NORMAL,
+                                   ui::ImageModel::FromImage(gfx::ResizedImage(
+                                       gemini_search_box_icon_button->icon,
+                                       gemini_button()->GetPreferredSize())));
 
-    assistant_new_entry_point_button()->SetImageModel(
-        views::ImageButton::STATE_NORMAL, gemini_icon);
+    const std::string& name = gemini_search_box_icon_button->display_name;
+    CHECK(!name.empty());
+    gemini_button()->SetTooltipText(base::UTF8ToUTF16(name));
+    gemini_button()->GetViewAccessibility().SetName(name);
 
-    std::string name = AppListModelProvider::Get()
-                           ->search_model()
-                           ->search_box()
-                           ->assistant_new_entry_point_name();
-    CHECK(!name.empty())
-        << "New entry point name must be set if a profile is eligible for the "
-           "new entry point";
-    assistant_new_entry_point_button()->SetTooltipText(base::UTF8ToUTF16(name));
-    assistant_new_entry_point_button()->GetViewAccessibility().SetName(name);
+    base::UmaHistogramEnumeration(kGeminiSearchBoxIconHistogramName,
+                                  SearchBoxIconEvent::kImpression);
   }
 
-  SetShowAssistantNewEntryPointButton(show);
+  SetShowGeminiButton(gemini_search_box_icon_button.has_value());
 }
 
 void SearchBoxView::SunfishButtonVisibilityChanged() {

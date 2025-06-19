@@ -19,8 +19,8 @@ class APP_LIST_MODEL_EXPORT SearchBoxModelObserver
   // Invoked when whether to show Assistant is changed.
   virtual void ShowAssistantChanged() = 0;
 
-  // Invoked when whether to show Assistant new entry point button is changed.
-  virtual void ShowAssistantNewEntryPointChanged() = 0;
+  // Invoked when whether to show Gemini button is changed.
+  virtual void ShowGeminiButtonChanged() = 0;
 
   // Invoked when the visibility of the Sunfish-session button is changed.
   virtual void SunfishButtonVisibilityChanged() = 0;

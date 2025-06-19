@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/app_list/app_list_model_provider.h"
@@ -54,6 +55,17 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   METADATA_HEADER(SearchBoxView, SearchBoxViewBase)
 
  public:
+  static constexpr std::string_view kGeminiSearchBoxIconHistogramName =
+      "Apps.AppList.GeminiSearchBoxIcon";
+
+  // LINT.IfChange(SearchBoxIconEvent)
+  enum class SearchBoxIconEvent {
+    kImpression = 0,
+    kClick = 1,
+    kMaxValue = kClick,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/apps/enums.xml:SearchBoxIconEvent)
+
   enum class PlaceholderTextType {
     kShortcuts = 0,
     kTabs = 1,
@@ -210,9 +222,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Called when the assistant button within the search box gets pressed.
   void AssistantButtonPressed();
 
-  // Called when the assistant new entry point button within the search box gets
-  // pressed.
-  void AssistantNewEntryPointButtonPressed();
+  // Called when Gemini button within the search box gets pressed.
+  void GeminiButtonPressed();
 
   // Called when the sunfish launcher button within the search box gets pressed.
   void SunfishButtonPressed();
@@ -260,7 +271,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Overridden from SearchBoxModelObserver:
   void SearchEngineChanged() override;
   void ShowAssistantChanged() override;
-  void ShowAssistantNewEntryPointChanged() override;
+  void ShowGeminiButtonChanged() override;
   // Updates the visibility and the icon of the Sunfish-session button.
   void SunfishButtonVisibilityChanged() override;
 

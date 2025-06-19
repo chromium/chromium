@@ -13,6 +13,7 @@
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/app_waiter.h"
 #include "ash/app_list/home_launcher_animation_info.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/quick_app_access_model.h"
@@ -33,10 +34,12 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_observer.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
@@ -443,9 +446,10 @@ class ASH_EXPORT AppListControllerImpl
   // Gets the container which should contain the fullscreen launcher.
   int GetFullscreenLauncherContainerId() const;
 
-  // Called when eligibility of Assistant new entry point is read. The read is
-  // done as an async operation.
-  void OnAssistantNewEntryPointEligibilityReady(bool eligible);
+  // Show Gemini button in the search box with `app_name` as a display name.
+  void ShowGeminiButton(std::string app_name);
+  // Hide Gemini button in the search box.
+  void HideGeminiButton();
 
   // Whether the home launcher is
   // * being shown (either through an animation or a drag)
@@ -566,6 +570,8 @@ class ASH_EXPORT AppListControllerImpl
   // Responsible for recording smoothness related UMA stats for home screen
   // animations.
   std::optional<ui::ThroughputTracker> smoothness_tracker_;
+
+  std::optional<AppWaiter> gemini_app_waiter_;
 
   // Sub-controller to handle app collections page.
   std::unique_ptr<AppsCollectionsController> apps_collections_controller_;

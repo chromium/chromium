@@ -5,6 +5,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -15,7 +16,12 @@
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/apps_collections_controller.h"
+#include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/app_list_item_observer.h"
+#include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/app_list/model/search/search_box_model.h"
+#include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
@@ -35,6 +41,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
@@ -79,14 +86,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/compositor.h"
@@ -119,9 +130,6 @@ constexpr float kOverviewFadeAnimationScale = 0.92f;
 // fading transitions.
 constexpr base::TimeDelta kOverviewFadeAnimationDuration =
     base::Milliseconds(350);
-
-// The app id for the settings app used for testing quick app access.
-constexpr char kOsSettingsAppId[] = "odknhmnlageboeamepcngndbggdpaobj";
 
 bool g_sunfish_nudge_disabled_for_test = false;
 
@@ -1299,6 +1307,7 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
       case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
       case AppListLaunchedFrom::kLaunchedFromAppsCollections:
       case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
+      case AppListLaunchedFrom::kLaunchedFromSearchBoxIcon:
         break;
       case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
         NOTREACHED();
@@ -1332,6 +1341,7 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
     case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
     case AppListLaunchedFrom::kLaunchedFromAppsCollections:
     case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
+    case AppListLaunchedFrom::kLaunchedFromSearchBoxIcon:
       NOTREACHED();
   }
 
@@ -1401,8 +1411,13 @@ void AppListControllerImpl::ActivateItem(const std::string& id,
     case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
       // Metrics for discovery chip already recorded at RecordApplaunched().
       break;
-    case AppListLaunchedFrom::kLaunchedFromContinueTask:
+    case AppListLaunchedFrom::kLaunchedFromSearchBoxIcon:
+      // Metrics for launching an app from an icon in search box is recorded via
+      // `Apps.AppList.GeminiSearchBoxIcon`. This is currently used only for a
+      // Gemini icon.
+      break;
     case AppListLaunchedFrom::kLaunchedFromSearchBox:
+    case AppListLaunchedFrom::kLaunchedFromContinueTask:
     case AppListLaunchedFrom::kLaunchedFromShelf:
     case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
       NOTREACHED();
@@ -1837,19 +1852,26 @@ SearchModel* AppListControllerImpl::GetSearchModel() {
 }
 
 void AppListControllerImpl::UpdateSearchBoxUiVisibilities() {
-  SearchBoxModel* search_box_model = GetSearchModel()->search_box();
-  search_box_model->SetShowAssistantButton(IsAssistantAllowedAndEnabled());
   OnSunfishScannerFeatureStatesChanged(
       *sunfish_scanner_feature_observation_.GetSource());
+
+  // Hide Gemini button first until we are sure that Gemini app list item
+  // exists.
+  HideGeminiButton();
 
   if (!client_) {
     return;
   }
 
-  client_->GetAssistantNewEntryPointEligibility(base::BindOnce(
-      &AppListControllerImpl::OnAssistantNewEntryPointEligibilityReady,
-      weak_ptr_factory_.GetWeakPtr()));
   client_->RecalculateWouldTriggerLauncherSearchIph();
+
+  // Gemini app icon is loaded via `client_` for a dependency reason. This must
+  // be after `client_` non-nullptr check.
+  gemini_app_waiter_.emplace(
+      Shell::Get()->session_controller()->GetActiveAccountId(),
+      base::BindOnce(&AppListControllerImpl::ShowGeminiButton,
+                     base::Unretained(this)),
+      kGeminiAppId);
 }
 
 int64_t AppListControllerImpl::GetDisplayIdToShowAppListOn() {
@@ -2117,20 +2139,19 @@ int AppListControllerImpl::GetFullscreenLauncherContainerId() const {
                                  : kShellWindowId_AppListContainer;
 }
 
-void AppListControllerImpl::OnAssistantNewEntryPointEligibilityReady(
-    bool eligible) {
-  if (eligible) {
-    std::optional<std::string> name = client_->GetAssistantNewEntryPointName();
-    ui::ImageModel gemini_icon = client_->GetGeminiIcon();
-    CHECK(name.has_value()) << "New entry point name must be available "
-                               "if new entry point is available";
+void AppListControllerImpl::ShowGeminiButton(std::string app_name) {
+  CHECK(client_);
 
-    GetSearchModel()->search_box()->SetShowAssistantNewEntryPointButton(
-        true, name.value(), /*gemini_icon=*/gemini_icon);
-  } else {
-    GetSearchModel()->search_box()->SetShowAssistantNewEntryPointButton(
-        false, /*name=*/std::string(), /*gemini_icon=*/ui::ImageModel());
-  }
+  GetSearchModel()->search_box()->SetGeminiButtonVisibility(
+      SearchBoxModel::SearchBoxIconButton({
+          .display_name = app_name,
+          .icon = client_->GetGeminiIcon(),
+      }));
+}
+
+void AppListControllerImpl::HideGeminiButton() {
+  gemini_app_waiter_.reset();
+  GetSearchModel()->search_box()->SetGeminiButtonVisibility(std::nullopt);
 }
 
 int AppListControllerImpl::GetPreferredBubbleWidth(

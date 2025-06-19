@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image.h"
 
 namespace ash {
 
@@ -20,55 +21,17 @@ SearchBoxModel::SearchBoxModel() = default;
 
 SearchBoxModel::~SearchBoxModel() = default;
 
-void SearchBoxModel::SetShowAssistantButton(bool show) {
-  if (show_assistant_button_ == show) {
-    return;
-  }
+void SearchBoxModel::SetGeminiButtonVisibility(
+    std::optional<SearchBoxIconButton> search_box_icon_button) {
+  gemini_search_box_icon_button_ = search_box_icon_button;
 
-  show_assistant_button_ = show;
-
-  if (show_assistant_button_ && show_assistant_new_entry_point_button_) {
-    CHECK_IS_TEST()
-        << "Only one of AssistantButton or AssistantNewEntryPointButton can be "
-           "shown in prod. Enforce this in test code as well: "
-           "crbug.com/388361414";
-  }
-
-  for (auto& observer : observers_) {
-    observer.ShowAssistantChanged();
-  }
-}
-
-void SearchBoxModel::SetShowAssistantNewEntryPointButton(
-    bool show,
-    const std::string& name,
-    const ui::ImageModel& gemini_icon) {
-  if (show_assistant_new_entry_point_button_ == show) {
-    CHECK_EQ(assistant_new_entry_point_name_, name)
-        << "Currently changing only name is not supported";
-
-    return;
-  }
-
-  show_assistant_new_entry_point_button_ = show;
-  assistant_new_entry_point_name_ = name;
-  gemini_icon_ = gemini_icon;
-
-  CHECK_EQ(!name.empty(), show)
-      << "Name must be set if assistant new entry button is shown.";
-
-  CHECK_EQ(!gemini_icon.IsEmpty(), show)
-      << "Gemini icon must be set if gemini button is shown.";
-
-  if (show_assistant_button_ && show_assistant_new_entry_point_button_) {
-    CHECK_IS_TEST()
-        << "Only one of AssistantButton or AssistantNewEntryPointButton can be "
-           "shown in prod. Enforce this in test code as well: "
-           "crbug.com/388361414";
+  if (gemini_search_box_icon_button_) {
+    CHECK(!gemini_search_box_icon_button_.value().display_name.empty());
+    CHECK(!gemini_search_box_icon_button_.value().icon.IsEmpty());
   }
 
   for (SearchBoxModelObserver& observer : observers_) {
-    observer.ShowAssistantNewEntryPointChanged();
+    observer.ShowGeminiButtonChanged();
   }
 }
 

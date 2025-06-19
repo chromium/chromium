@@ -72,10 +72,7 @@ class TestAppListClient : public AppListClient {
       const std::vector<std::string>& apps_below_the_fold,
       bool is_apps_collections_page) override;
   bool HasReordered() override;
-  void GetAssistantNewEntryPointEligibility(
-      GetAssistantNewEntryPointEligibilityCallback callback) override;
-  std::optional<std::string> GetAssistantNewEntryPointName() override;
-  ui::ImageModel GetGeminiIcon() override;
+  gfx::Image GetGeminiIcon() override;
 
   int start_zero_state_search_count() const {
     return start_zero_state_search_count_;

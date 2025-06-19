@@ -12,10 +12,14 @@
 #include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_presenter_impl.h"
+#include "ash/app_list/app_list_public_test_util.h"
 #include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/test_app_list_client.h"
+#include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/app_list_view.h"
@@ -31,6 +35,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_enterprise_policy.h"
@@ -60,6 +65,10 @@
 #include "chromeos/ash/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -81,7 +90,9 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/wm/core/window_util.h"
 
 namespace {
@@ -123,6 +134,20 @@ namespace {
 
 using test::AppListTestViewDelegate;
 
+void AddGeminiApp() {
+  std::unique_ptr<apps::App> app = std::make_unique<apps::App>(
+      apps::AppType::kSystemWeb, std::string(kGeminiAppId));
+  app->name = "Gemini";
+  std::vector<apps::AppPtr> apps;
+  apps.push_back(std::move(app));
+  apps::AppRegistryCache* cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
+          Shell::Get()->session_controller()->GetActiveAccountId());
+  ASSERT_TRUE(cache);
+  cache->OnAppsForTesting(std::move(apps), apps::AppType::kSystemWeb,
+                          /*should_notify_initialized=*/false);
+}
+
 SearchModel* GetSearchModel() {
   return AppListModelProvider::Get()->search_model();
 }
@@ -155,8 +180,7 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   SearchBoxViewTest()
       : views::test::WidgetTest(std::make_unique<base::test::TaskEnvironment>(
             base::test::TaskEnvironment::MainThreadType::UI,
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
 
   SearchBoxViewTest(const SearchBoxViewTest&) = delete;
   SearchBoxViewTest& operator=(const SearchBoxViewTest&) = delete;
@@ -1181,9 +1205,11 @@ class SearchBoxViewAnimationTest : public AshTestBase {
 // Test that the search box image buttons fade in and out correctly when the
 // search box is activated and deactivated.
 TEST_F(SearchBoxViewAnimationTest, SearchBoxImageButtonAnimations) {
+  AddGeminiApp();
+
   auto* search_box = GetAppListTestHelper()->GetSearchBoxView();
 
-  // Initially the assistant button should be shown, and the close button
+  // Initially the Gemini button should be shown, and the close button
   // hidden.
   EXPECT_FALSE(search_box->filter_and_close_button_container()->GetVisible());
   EXPECT_TRUE(search_box->edge_button_container()->GetVisible());
@@ -1280,15 +1306,9 @@ TEST_F(SearchBoxViewAutocompleteTest, AccessibleValue) {
             data2.GetString16Attribute(ax::mojom::StringAttribute::kValue));
 }
 
-class AssistantNewEntryPointTestBase
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class GeminiButtonTest : public AshTestBase,
+                         public testing::WithParamInterface<bool> {
  public:
-  explicit AssistantNewEntryPointTestBase(bool enable_new_entry_point) {
-    scoped_feature_list_.InitWithFeatureState(
-        ash::assistant::features::kEnableNewEntryPoint, enable_new_entry_point);
-  }
-
   void SetUp() override {
     AshTestBase::SetUp();
 
@@ -1305,7 +1325,7 @@ class AssistantNewEntryPointTestBase
     AshTestBase::TearDown();
   }
 
-  ~AssistantNewEntryPointTestBase() override = default;
+  ~GeminiButtonTest() override = default;
 
   static std::string GenerateParamName(
       const testing::TestParamInfo<bool>& info) {
@@ -1314,34 +1334,21 @@ class AssistantNewEntryPointTestBase
 
  protected:
   bool IsTabletMode() const { return GetParam(); }
-
-  assistant::ScopedAssistantBrowserDelegate scoped_assistant_browser_delegate_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class AssistantNewEntryPointTest : public AssistantNewEntryPointTestBase {
- public:
-  AssistantNewEntryPointTest()
-      : AssistantNewEntryPointTestBase(/*enable_new_entry_point=*/true) {}
-  ~AssistantNewEntryPointTest() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         AssistantNewEntryPointTest,
+                         GeminiButtonTest,
                          testing::Bool(),
-                         &AssistantNewEntryPointTestBase::GenerateParamName);
+                         &GeminiButtonTest::GenerateParamName);
 
-TEST_P(AssistantNewEntryPointTest, NewEntryPointButtonVisibility) {
+TEST_P(GeminiButtonTest, Visibility) {
+  AddGeminiApp();
   GetAppListTestHelper()->ShowAppList();
 
-  views::ImageButton* new_entry_point_button =
-      GetAppListTestHelper()
-          ->GetSearchBoxView()
-          ->assistant_new_entry_point_button();
-  ASSERT_TRUE(new_entry_point_button);
-  EXPECT_TRUE(new_entry_point_button->GetVisible());
+  views::ImageButton* gemini_button =
+      GetAppListTestHelper()->GetSearchBoxView()->gemini_button();
+  ASSERT_TRUE(gemini_button);
+  EXPECT_TRUE(gemini_button->GetVisible());
 
   views::ImageButton* assistant_button =
       GetAppListTestHelper()->GetSearchBoxView()->assistant_button();
@@ -1349,60 +1356,32 @@ TEST_P(AssistantNewEntryPointTest, NewEntryPointButtonVisibility) {
   EXPECT_FALSE(assistant_button->GetVisible());
 }
 
-TEST_P(AssistantNewEntryPointTest, NewEntryPointButtonOpensNewEntryPoint) {
-  base::test::TestFuture<void> open_new_entry_point_future;
-  scoped_assistant_browser_delegate_.SetOpenNewEntryPointClosure(
-      open_new_entry_point_future.GetCallback());
+TEST_P(GeminiButtonTest, Activation) {
+  TestAppListClient* test_app_list_client = GetTestAppListClient();
+  ASSERT_EQ(0, test_app_list_client->activate_item_count());
 
-  base::UserActionTester user_action_tester;
+  AddGeminiApp();
 
   GetAppListTestHelper()->ShowAppList();
-  views::ImageButton* new_entry_point_button =
-      GetAppListTestHelper()
-          ->GetSearchBoxView()
-          ->assistant_new_entry_point_button();
-  ASSERT_TRUE(new_entry_point_button);
-  ASSERT_TRUE(new_entry_point_button->GetVisible());
+  views::test::RunScheduledLayout(
+      IsTabletMode() ? static_cast<views::View*>(GetAppListView())
+                     : static_cast<views::View*>(GetAppListBubbleView()));
+
+  views::ImageButton* gemini_button =
+      GetAppListTestHelper()->GetSearchBoxView()->gemini_button();
+  ASSERT_TRUE(gemini_button);
+  ASSERT_TRUE(gemini_button->GetVisible());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   if (IsTabletMode()) {
-    generator->GestureTapAt(
-        new_entry_point_button->GetBoundsInScreen().CenterPoint());
+    generator->GestureTapAt(gemini_button->GetBoundsInScreen().CenterPoint());
   } else {
-    generator->MoveMouseTo(
-        new_entry_point_button->GetBoundsInScreen().CenterPoint());
+    generator->MoveMouseTo(gemini_button->GetBoundsInScreen().CenterPoint());
     generator->ClickLeftButton();
   }
 
-  EXPECT_TRUE(open_new_entry_point_future.Wait())
-      << "Expect OpenNewEntryPoint to be called";
-  EXPECT_EQ(
-      1, user_action_tester.GetActionCount("Assistant.NewEntryPoint.Launcher"));
-}
-
-class AssistantNewEntryPointDisabledTest
-    : public AssistantNewEntryPointTestBase {
- public:
-  AssistantNewEntryPointDisabledTest()
-      : AssistantNewEntryPointTestBase(/*enable_new_entry_point=*/false) {}
-  ~AssistantNewEntryPointDisabledTest() override = default;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AssistantNewEntryPointDisabledTest,
-                         testing::Bool(),
-                         &AssistantNewEntryPointTestBase::GenerateParamName);
-
-TEST_P(AssistantNewEntryPointDisabledTest, NewEntryPointButtonHidden) {
-  ASSERT_FALSE(ash::assistant::features::IsNewEntryPointEnabled());
-
-  GetAppListTestHelper()->ShowAppList();
-  views::ImageButton* new_entry_point_button =
-      GetAppListTestHelper()
-          ->GetSearchBoxView()
-          ->assistant_new_entry_point_button();
-  ASSERT_TRUE(new_entry_point_button);
-  EXPECT_FALSE(new_entry_point_button->GetVisible());
+  EXPECT_EQ(1, test_app_list_client->activate_item_count());
+  EXPECT_EQ(kGeminiAppId, test_app_list_client->activate_item_last_id());
 }
 
 class SunfishLauncherButtonTest : public AshTestBase,

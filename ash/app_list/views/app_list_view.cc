@@ -41,6 +41,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/ime_util_chromeos.h"
 
 namespace ash {
@@ -254,8 +255,7 @@ void AppListView::InitContents() {
   button_focus_skipper_ = std::make_unique<ButtonFocusSkipper>(this);
   button_focus_skipper_->AddButton(search_box_view->sunfish_button());
   button_focus_skipper_->AddButton(search_box_view->assistant_button());
-  button_focus_skipper_->AddButton(
-      search_box_view->assistant_new_entry_point_button());
+  button_focus_skipper_->AddButton(search_box_view->gemini_button());
 
   // Assign |app_list_main_view_| and |search_box_view_| here since they are
   // accessed during Init().
@@ -380,6 +380,9 @@ void AppListView::Layout(PassKey) {
   main_bounds.Inset(GetMainViewInsetsForShelf());
 
   app_list_main_view_->SetBoundsRect(main_bounds);
+
+  // Call super class `Layout` to run `Layout` on child views.
+  LayoutSuperclass<views::WidgetDelegateView>(this);
 }
 
 bool AppListView::IsShowingEmbeddedAssistantUI() const {

@@ -529,14 +529,14 @@ views::ImageButton* SearchBoxViewBase::CreateAssistantButton(
   return assistant_button_;
 }
 
-views::ImageButton* SearchBoxViewBase::CreateAssistantNewEntryPointButton(
+views::ImageButton* SearchBoxViewBase::CreateGeminiButton(
     const base::RepeatingClosure& button_callback) {
   CHECK(end_button_container_);
-  CHECK(!assistant_new_entry_point_button_);
+  CHECK(!gemini_button_);
 
-  assistant_new_entry_point_button_ = end_button_container_->AddChildView(
+  gemini_button_ = end_button_container_->AddChildView(
       std::make_unique<SearchBoxImageButton>(button_callback));
-  return assistant_new_entry_point_button_;
+  return gemini_button_;
 }
 
 views::ImageButton* SearchBoxViewBase::CreateFilterButton(
@@ -567,8 +567,8 @@ views::ImageButton* SearchBoxViewBase::assistant_button() {
   return assistant_button_;
 }
 
-views::ImageButton* SearchBoxViewBase::assistant_new_entry_point_button() {
-  return assistant_new_entry_point_button_;
+views::ImageButton* SearchBoxViewBase::gemini_button() {
+  return gemini_button_;
 }
 
 views::ImageButton* SearchBoxViewBase::sunfish_button() {
@@ -712,8 +712,8 @@ void SearchBoxViewBase::OnEnabledChanged() {
   if (sunfish_button_) {
     sunfish_button_->SetEnabled(enabled);
   }
-  if (assistant_new_entry_point_button_) {
-    assistant_new_entry_point_button_->SetEnabled(enabled);
+  if (gemini_button_) {
+    gemini_button_->SetEnabled(enabled);
   }
   if (filter_button_) {
     filter_button_->SetEnabled(enabled);
@@ -799,9 +799,8 @@ void SearchBoxViewBase::UpdateButtonsVisibility() {
   }
 
   if (end_button_container_ && !end_button_container_->children().empty()) {
-    const bool any_edge_button_shown = show_assistant_button_ ||
-                                       show_assistant_new_entry_point_button_ ||
-                                       show_sunfish_button_;
+    const bool any_edge_button_shown =
+        show_assistant_button_ || show_gemini_button_ || show_sunfish_button_;
     const bool should_show_edge_buttons =
         any_edge_button_shown && !should_show_close_button;
 
@@ -897,10 +896,10 @@ void SearchBoxViewBase::SetShowAssistantButton(bool show) {
   UpdateButtonsVisibility();
 }
 
-void SearchBoxViewBase::SetShowAssistantNewEntryPointButton(bool show) {
-  CHECK(assistant_new_entry_point_button_);
-  show_assistant_new_entry_point_button_ = show;
-  assistant_new_entry_point_button_->SetVisible(show);
+void SearchBoxViewBase::SetShowGeminiButton(bool show) {
+  CHECK(gemini_button_);
+  show_gemini_button_ = show;
+  gemini_button_->SetVisible(show);
 
   UpdateButtonsVisibility();
 }

@@ -103,6 +103,8 @@ void AssistantUiControllerImpl::SetKeyboardTraversalMode(
 }
 
 void AssistantUiControllerImpl::ShowUi(AssistantEntryPoint entry_point) {
+  // TODO: crbug.com/417538592 - open Gemini PWA via AppList and delete
+  // dependency to AssistantBrowserDelegate.
   if (ash::assistant::features::IsNewEntryPointEnabled()) {
     assistant::AssistantBrowserDelegate::Get()->OpenNewEntryPoint();
     return;
