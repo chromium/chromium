@@ -6217,6 +6217,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "frames": "4"
+                    },
                     "enable_features": [
                         "CompositeBGColorAnimation",
                         "DeferImplInvalidation"
