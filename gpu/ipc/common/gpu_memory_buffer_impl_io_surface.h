@@ -18,6 +18,8 @@
 
 namespace gpu {
 
+class GpuMemoryBufferSupport;
+
 // Implementation of GPU memory buffer based on IO surfaces.
 class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
     : public GpuMemoryBufferImpl {
@@ -30,13 +32,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
 
   static constexpr gfx::GpuMemoryBufferType kBufferType =
       gfx::IO_SURFACE_BUFFER;
-
-  static std::unique_ptr<GpuMemoryBufferImplIOSurface> CreateFromHandle(
-      const gfx::GpuMemoryBufferHandle& handle,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      DestructionCallback callback);
 
   static base::OnceClosure AllocateForTesting(
       const gfx::Size& size,
@@ -54,6 +49,15 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
  private:
+  friend GpuMemoryBufferSupport;
+
+  static std::unique_ptr<GpuMemoryBufferImplIOSurface> CreateFromHandle(
+      const gfx::GpuMemoryBufferHandle& handle,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      DestructionCallback callback);
+
   GpuMemoryBufferImplIOSurface(gfx::GpuMemoryBufferId id,
                                const gfx::Size& size,
                                gfx::BufferFormat format,
