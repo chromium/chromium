@@ -119,29 +119,6 @@ std::optional<uint64_t> Diff(std::optional<uint64_t> before,
   return after_value < before_value ? before_value - after_value : 0;
 }
 
-bool IsMadvisePageoutSupported() {
-  static bool supported = []() -> bool {
-#if defined(MADV_PAGEOUT)
-    // To determine if MADV_PAGEOUT is supported we will try calling it with an
-    // invalid memory area.
-    // madvise(2) first checks the mode first, returning -EINVAL if it's
-    // unknown. Next, it will always return 0 for a zero length VMA before
-    // validating if it's mapped.
-    // So, in this case, we can test for support with any page aligned address
-    // with a zero length.
-    int res =
-        madvise(reinterpret_cast<void*>(base::GetPageSize()), 0, MADV_PAGEOUT);
-    if (res < 0 && errno == -EINVAL)
-      return false;
-    PLOG_IF(ERROR, res < 0) << "Unexpected return from madvise";
-    if (res == 0)
-      return true;
-#endif
-    return false;
-  }();
-  return supported;
-}
-
 }  // namespace
 
 PreFreezeBackgroundMemoryTrimmer::PreFreezeBackgroundMemoryTrimmer()
@@ -445,101 +422,6 @@ void PreFreezeBackgroundMemoryTrimmer::UnregisterMemoryMetricInternal(
   metrics_.erase(metrics_.begin() + index);
 }
 
-void SelfCompactionManager::MaybePostCompactionTask(
-    std::unique_ptr<CompactionState> state,
-    scoped_refptr<CompactionMetric> metric) {
-  TRACE_EVENT0("base", "MaybePostCompactionTask");
-  // Compaction is taking too long, so cancel it. This happens in practice in
-  // the field sometimes, according to UMA data.
-  if (TimeoutExceeded()) {
-    MaybeCancelCompaction(CompactCancellationReason::kTimeout);
-    // We do not return here, despite the fact that we will not be doing any
-    // more compaction, in order to run |FinishCompaction| below.
-  }
-
-  if (ShouldContinueCompaction(*state) && !state->regions_.empty()) {
-    auto task_runner = state->task_runner_;
-    task_runner->PostDelayedTask(
-        FROM_HERE,
-        // |base::Unretained| is safe here because we never destroy |this|.
-        base::BindOnce(&SelfCompactionManager::CompactionTask,
-                       base::Unretained(this), std::move(state),
-                       std::move(metric)),
-        GetDelayBetweenCompaction());
-  } else {
-    FinishCompaction(std::move(state), std::move(metric));
-  }
-}
-
-void SelfCompactionManager::CompactionTask(
-    std::unique_ptr<CompactionState> state,
-    scoped_refptr<CompactionMetric> metric) {
-  if (!ShouldContinueCompaction(*state)) {
-    return;
-  }
-
-  TRACE_EVENT0("base", "CompactionTask");
-
-  CompactMemory(&state->regions_, state->max_bytes_);
-
-  MaybePostCompactionTask(std::move(state), std::move(metric));
-}
-
-void SelfCompactionManager::MaybeRunOnSelfCompactCallback() {
-  if (on_self_compact_callback_) {
-    on_self_compact_callback_.Run();
-  }
-}
-
-void SelfCompactionManager::StartCompaction(
-    std::unique_ptr<CompactionState> state) {
-  scoped_refptr<CompactionMetric> metric;
-  {
-    base::AutoLock locker(lock());
-    compaction_last_started_ = base::TimeTicks::Now();
-    metric = state->MakeCompactionMetric(compaction_last_started_);
-    TRACE_EVENT0("base", "StartCompaction");
-    base::trace_event::EmitNamedTrigger("start-self-compaction");
-    process_compacted_metadata_.emplace(
-        "PreFreezeBackgroundMemoryTrimmer.ProcessCompacted",
-        /*is_compacted=*/1, base::SampleMetadataScope::kProcess);
-    MaybeRunOnSelfCompactCallback();
-  }
-  metric->RecordBeforeMetrics();
-  MaybePostCompactionTask(std::move(state), std::move(metric));
-}
-
-void SelfCompactionManager::FinishCompaction(
-    std::unique_ptr<CompactionState> state,
-    scoped_refptr<CompactionMetric> metric) {
-  TRACE_EVENT0("base", "FinishCompaction");
-  {
-    base::AutoLock locker(lock());
-    compaction_last_finished_ = base::TimeTicks::Now();
-  }
-  if (ShouldContinueCompaction(*state)) {
-    metric->RecordDelayedMetrics();
-    base::AutoLock locker(lock());
-    metric->RecordTimeMetrics(compaction_last_finished_,
-                              compaction_last_cancelled_);
-  }
-}
-
-void SelfCompactionManager::MaybeCancelCompactionInternal(
-    CompactCancellationReason cancellation_reason) {
-  // Check for the last time cancelled here in order to avoid recording this
-  // metric multiple times. Also, only record this metric if a compaction is
-  // currently running.
-  if (compaction_last_cancelled_ < compaction_last_triggered_ &&
-      compaction_last_finished_ < compaction_last_triggered_) {
-    UmaHistogramEnumeration(
-        "Memory.RunningOrSelfCompact.Renderer.Cancellation.Reason",
-        cancellation_reason);
-  }
-  compaction_last_finished_ = compaction_last_cancelled_ =
-      base::TimeTicks::Now();
-}
-
 SelfCompactionManager::CompactionState::CompactionState(
     scoped_refptr<SequencedTaskRunner> task_runner,
     base::TimeTicks triggered_at,
@@ -564,20 +446,6 @@ void SelfCompactionManager::CompactionState::MaybeReadProcMaps() {
   }
 
   UmaHistogramEnumeration(GetMetricName("ReadProcMaps"), did_read_proc_maps);
-}
-
-void SelfCompactionManager::OnTriggerCompact(
-    std::unique_ptr<CompactionState> state) {
-  if (state->IsFeatureEnabled()) {
-    PreFreezeBackgroundMemoryTrimmer::Instance().RunPreFreezeTasks();
-  }
-  const auto delay_after_pre_freeze_tasks =
-      state->GetDelayAfterPreFreezeTasks();
-  const auto task_runner = state->task_runner_;
-  task_runner->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&SelfCompactionManager::CompactSelf, std::move(state)),
-      delay_after_pre_freeze_tasks);
 }
 
 // static
@@ -823,26 +691,6 @@ void SelfCompactionManager::CompactionMetric::RecordTimeMetrics(
                           last_finished - compaction_started_at_);
   UmaHistogramMediumTimes(GetMetricName("TimeSinceLastCancel"),
                           last_finished - last_cancelled);
-}
-
-SelfCompactionManager::SelfCompactionManager() = default;
-
-// static
-SelfCompactionManager& SelfCompactionManager::Instance() {
-  static base::NoDestructor<SelfCompactionManager> instance;
-  return *instance;
-}
-
-// static
-bool SelfCompactionManager::CompactionIsSupported() {
-  return IsMadvisePageoutSupported();
-}
-
-void SelfCompactionManager::MaybeCancelCompaction(
-    base::android::CompactCancellationReason cancellation_reason) {
-  base::AutoLock locker(lock());
-  Instance().process_compacted_metadata_.reset();
-  Instance().MaybeCancelCompactionInternal(cancellation_reason);
 }
 
 }  // namespace base::android

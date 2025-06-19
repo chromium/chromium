@@ -8,11 +8,14 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/trace_event/named_trigger.h"  // no-presubmit-check
 #include "base/trace_event/trace_event.h"
 
 namespace base::android {
@@ -47,6 +50,29 @@ BASE_FEATURE_PARAM(size_t,
                    10);
 
 namespace {
+
+bool IsMadvisePageoutSupported() {
+  static bool supported = []() -> bool {
+#if defined(MADV_PAGEOUT)
+    // To determine if MADV_PAGEOUT is supported we will try calling it with an
+    // invalid memory area.
+    // madvise(2) first checks the mode first, returning -EINVAL if it's
+    // unknown. Next, it will always return 0 for a zero length VMA before
+    // validating if it's mapped.
+    // So, in this case, we can test for support with any page aligned address
+    // with a zero length.
+    int res =
+        madvise(reinterpret_cast<void*>(base::GetPageSize()), 0, MADV_PAGEOUT);
+    if (res < 0 && errno == -EINVAL)
+      return false;
+    PLOG_IF(ERROR, res < 0) << "Unexpected return from madvise";
+    if (res == 0)
+      return true;
+#endif
+    return false;
+  }();
+  return supported;
+}
 
 // Based on UMA data, >99.5% of the compaction should take < 6s, so 10s should
 // be more than enough.
@@ -132,6 +158,14 @@ class RunningCompactionState final
 
 }  // namespace
 
+SelfCompactionManager::SelfCompactionManager() = default;
+
+// static
+SelfCompactionManager& SelfCompactionManager::Instance() {
+  static base::NoDestructor<SelfCompactionManager> instance;
+  return *instance;
+}
+
 // static
 void SelfCompactionManager::SetOnStartSelfCompactionCallback(
     base::RepeatingCallback<void(void)> callback) {
@@ -153,6 +187,11 @@ bool SelfCompactionManager::TimeoutExceeded() {
 }
 
 // static
+bool SelfCompactionManager::CompactionIsSupported() {
+  return IsMadvisePageoutSupported();
+}
+
+// static
 bool SelfCompactionManager::ShouldContinueCompaction(
     base::TimeTicks compaction_triggered_at) {
   base::AutoLock locker(lock());
@@ -164,6 +203,34 @@ base::TimeDelta SelfCompactionManager::GetDelayBetweenCompaction() {
   // We choose a random, small amount of time here, so that we are not trying
   // to compact in every process at the same time.
   return base::Milliseconds(base::RandInt(100, 300));
+}
+
+void SelfCompactionManager::MaybeRunOnSelfCompactCallback() {
+  if (on_self_compact_callback_) {
+    on_self_compact_callback_.Run();
+  }
+}
+
+void SelfCompactionManager::MaybeCancelCompaction(
+    base::android::CompactCancellationReason cancellation_reason) {
+  base::AutoLock locker(lock());
+  Instance().process_compacted_metadata_.reset();
+  Instance().MaybeCancelCompactionInternal(cancellation_reason);
+}
+
+void SelfCompactionManager::MaybeCancelCompactionInternal(
+    CompactCancellationReason cancellation_reason) {
+  // Check for the last time cancelled here in order to avoid recording this
+  // metric multiple times. Also, only record this metric if a compaction is
+  // currently running.
+  if (compaction_last_cancelled_ < compaction_last_triggered_ &&
+      compaction_last_finished_ < compaction_last_triggered_) {
+    UmaHistogramEnumeration(
+        "Memory.RunningOrSelfCompact.Renderer.Cancellation.Reason",
+        cancellation_reason);
+  }
+  compaction_last_finished_ = compaction_last_cancelled_ =
+      base::TimeTicks::Now();
 }
 
 // static
@@ -184,6 +251,20 @@ void SelfCompactionManager::OnSelfFreeze() {
   Instance().OnTriggerCompact<SelfCompactionState>(std::move(task_runner));
 }
 
+void SelfCompactionManager::OnTriggerCompact(
+    std::unique_ptr<CompactionState> state) {
+  if (state->IsFeatureEnabled()) {
+    PreFreezeBackgroundMemoryTrimmer::Instance().RunPreFreezeTasks();
+  }
+  const auto delay_after_pre_freeze_tasks =
+      state->GetDelayAfterPreFreezeTasks();
+  const auto task_runner = state->task_runner_;
+  task_runner->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&SelfCompactionManager::CompactSelf, std::move(state)),
+      delay_after_pre_freeze_tasks);
+}
+
 template <class State>
 void SelfCompactionManager::OnTriggerCompact(
     scoped_refptr<SequencedTaskRunner> task_runner) {
@@ -192,6 +273,80 @@ void SelfCompactionManager::OnTriggerCompact(
   compaction_last_triggered_ = triggered_at;
   auto state = std::make_unique<State>(task_runner, triggered_at);
   OnTriggerCompact(std::move(state));
+}
+
+void SelfCompactionManager::StartCompaction(
+    std::unique_ptr<CompactionState> state) {
+  scoped_refptr<CompactionMetric> metric;
+  {
+    base::AutoLock locker(lock());
+    compaction_last_started_ = base::TimeTicks::Now();
+    metric = state->MakeCompactionMetric(compaction_last_started_);
+    TRACE_EVENT0("base", "StartCompaction");
+    base::trace_event::EmitNamedTrigger("start-self-compaction");
+    process_compacted_metadata_.emplace(
+        "PreFreezeBackgroundMemoryTrimmer.ProcessCompacted",
+        /*is_compacted=*/1, base::SampleMetadataScope::kProcess);
+    MaybeRunOnSelfCompactCallback();
+  }
+  metric->RecordBeforeMetrics();
+  MaybePostCompactionTask(std::move(state), std::move(metric));
+}
+
+void SelfCompactionManager::MaybePostCompactionTask(
+    std::unique_ptr<CompactionState> state,
+    scoped_refptr<CompactionMetric> metric) {
+  TRACE_EVENT0("base", "MaybePostCompactionTask");
+  // Compaction is taking too long, so cancel it. This happens in practice in
+  // the field sometimes, according to UMA data.
+  if (TimeoutExceeded()) {
+    MaybeCancelCompaction(CompactCancellationReason::kTimeout);
+    // We do not return here, despite the fact that we will not be doing any
+    // more compaction, in order to run |FinishCompaction| below.
+  }
+
+  if (ShouldContinueCompaction(*state) && !state->regions_.empty()) {
+    auto task_runner = state->task_runner_;
+    task_runner->PostDelayedTask(
+        FROM_HERE,
+        // |base::Unretained| is safe here because we never destroy |this|.
+        base::BindOnce(&SelfCompactionManager::CompactionTask,
+                       base::Unretained(this), std::move(state),
+                       std::move(metric)),
+        GetDelayBetweenCompaction());
+  } else {
+    FinishCompaction(std::move(state), std::move(metric));
+  }
+}
+
+void SelfCompactionManager::CompactionTask(
+    std::unique_ptr<CompactionState> state,
+    scoped_refptr<CompactionMetric> metric) {
+  if (!ShouldContinueCompaction(*state)) {
+    return;
+  }
+
+  TRACE_EVENT0("base", "CompactionTask");
+
+  CompactMemory(&state->regions_, state->max_bytes_);
+
+  MaybePostCompactionTask(std::move(state), std::move(metric));
+}
+
+void SelfCompactionManager::FinishCompaction(
+    std::unique_ptr<CompactionState> state,
+    scoped_refptr<CompactionMetric> metric) {
+  TRACE_EVENT0("base", "FinishCompaction");
+  {
+    base::AutoLock locker(lock());
+    compaction_last_finished_ = base::TimeTicks::Now();
+  }
+  if (ShouldContinueCompaction(*state)) {
+    metric->RecordDelayedMetrics();
+    base::AutoLock locker(lock());
+    metric->RecordTimeMetrics(compaction_last_finished_,
+                              compaction_last_cancelled_);
+  }
 }
 
 // static
