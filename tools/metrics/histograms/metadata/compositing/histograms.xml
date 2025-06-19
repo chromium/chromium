@@ -101,6 +101,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-11-16">
   <owner>pdr@chromium.org</owner>
   <owner>animations-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent updating layers, in microseconds. Recorded when layers are
     updated (in a browser process).
@@ -683,6 +684,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-11-02">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent updating layers, in microseconds. Recorded when layers are
     updated (in a renderer process).
