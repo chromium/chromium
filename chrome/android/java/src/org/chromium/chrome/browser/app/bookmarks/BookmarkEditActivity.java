@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.app.bookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +16,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
@@ -46,6 +51,7 @@ import org.chromium.url.GURL;
 /** The activity that enables the user to modify the title, url and parent folder of a bookmark. */
 // TODO(crbug.com/40269559): Separate the activity from its view.
 // TODO(crbug.com/40269559): Add a coordinator/mediator for business logic.
+@NullMarked
 public class BookmarkEditActivity extends SnackbarActivity {
     /** The intent extra specifying the ID of the bookmark to be edited. */
     public static final String INTENT_BOOKMARK_ID = "BookmarkEditActivity.BookmarkId";
@@ -67,7 +73,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
     private ImprovedBookmarkRow mFolderSelectRow;
     private BookmarkTextInputLayout mTitleEditText;
     private BookmarkTextInputLayout mUrlEditText;
-    private MenuItem mDeleteButton;
+    private @Nullable MenuItem mDeleteButton;
     private FrameLayout mFolderPickerRowContainer;
 
     private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
@@ -94,6 +100,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
             };
 
     @Override
+    @Initializer
     protected void onProfileAvailable(Profile profile) {
         super.onProfileAvailable(profile);
         mProfile = profile;
@@ -114,7 +121,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         View shadow = findViewById(R.id.shadow);
         View scrollView = findViewById(R.id.scroll_view);
@@ -158,12 +165,13 @@ public class BookmarkEditActivity extends SnackbarActivity {
     /**
      * @param modelChanged Whether this view update is due to a model change in background.
      */
+    @Initializer
     private void updateViewContent(boolean modelChanged) {
-        BookmarkItem bookmarkItem = mModel.getBookmarkById(mBookmarkId);
+        BookmarkItem bookmarkItem = assumeNonNull(mModel.getBookmarkById(mBookmarkId));
         // While the user is editing the bookmark, do not override user's input.
         if (!modelChanged) {
-            mTitleEditText.getEditText().setText(bookmarkItem.getTitle());
-            mUrlEditText.getEditText().setText(bookmarkItem.getUrl().getSpec());
+            assumeNonNull(mTitleEditText.getEditText()).setText(bookmarkItem.getTitle());
+            assumeNonNull(mUrlEditText.getEditText()).setText(bookmarkItem.getUrl().getSpec());
         }
         mTitleEditText.setEnabled(bookmarkItem.isEditable());
         mUrlEditText.setEnabled(bookmarkItem.isUrlEditable());
@@ -201,7 +209,8 @@ public class BookmarkEditActivity extends SnackbarActivity {
     @Override
     protected void onStop() {
         if (mModel.doesBookmarkExist(mBookmarkId)) {
-            final GURL originalUrl = mModel.getBookmarkById(mBookmarkId).getUrl();
+            BookmarkItem bookmarkItem = assumeNonNull(mModel.getBookmarkById(mBookmarkId));
+            final GURL originalUrl = bookmarkItem.getUrl();
             final String title = mTitleEditText.getTrimmedText();
             final String url = mUrlEditText.getTrimmedText();
 
@@ -209,7 +218,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
                 mModel.setBookmarkTitle(mBookmarkId, title);
             }
 
-            if (!mUrlEditText.isEmpty() && mModel.getBookmarkById(mBookmarkId).isUrlEditable()) {
+            if (!mUrlEditText.isEmpty() && bookmarkItem.isUrlEditable()) {
                 GURL fixedUrl = UrlFormatter.fixupUrl(url);
                 if (fixedUrl.isValid() && !fixedUrl.equals(originalUrl)) {
                     mModel.setBookmarkUrl(mBookmarkId, fixedUrl);
@@ -240,12 +249,12 @@ public class BookmarkEditActivity extends SnackbarActivity {
     }
 
     @VisibleForTesting
-    MenuItem getDeleteButton() {
+    @Nullable MenuItem getDeleteButton() {
         return mDeleteButton;
     }
 
     private void updateFolderPickerRow(@BookmarkRowDisplayPref int displayPref) {
-        BookmarkItem bookmarkItem = mModel.getBookmarkById(mBookmarkId);
+        BookmarkItem bookmarkItem = assumeNonNull(mModel.getBookmarkById(mBookmarkId));
         mFolderSelectRowModel =
                 mFolderSelectRowCoordinator.createBasePropertyModel(bookmarkItem.getParentId());
 

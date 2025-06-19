@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.app.bookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentName;
 import android.content.Intent;
 import android.text.TextUtils;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
@@ -35,6 +38,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  * only be shown on phones; on tablet the bookmark UI is shown inside of a tab (see {@link
  * BookmarkPage}).
  */
+@NullMarked
 public class BookmarkActivity extends SnackbarActivity {
     public static final int EDIT_BOOKMARK_REQUEST_CODE = 14;
     public static final String INTENT_VISIT_BOOKMARK_ID = "BookmarkEditActivity.VisitBookmarkId";
@@ -84,13 +88,14 @@ public class BookmarkActivity extends SnackbarActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == EDIT_BOOKMARK_REQUEST_CODE && resultCode == RESULT_OK) {
+            assumeNonNull(data);
             BookmarkId bookmarkId =
                     BookmarkId.getBookmarkIdFromString(
                             data.getStringExtra(INTENT_VISIT_BOOKMARK_ID));
-            mBookmarkManagerCoordinator.openBookmark(bookmarkId);
+            assumeNonNull(mBookmarkManagerCoordinator).openBookmark(bookmarkId);
         }
     }
 
@@ -102,7 +107,7 @@ public class BookmarkActivity extends SnackbarActivity {
     /**
      * @return The {@link BookmarkManagerCoordinator} for testing purposes.
      */
-    public BookmarkManagerCoordinator getManagerForTesting() {
+    public @Nullable BookmarkManagerCoordinator getManagerForTesting() {
         return mBookmarkManagerCoordinator;
     }
 }
