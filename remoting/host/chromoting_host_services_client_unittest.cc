@@ -41,7 +41,6 @@ class ChromotingHostServicesClientTest : public testing::Test,
  protected:
   void SetChromeRemoteDesktopSessionEnvVar(bool is_crd_session);
   void WaitForSessionServicesBound();
-  void SetRemoteDisconnectCallback(base::OnceClosure callback);
 
   base::test::TaskEnvironment task_environment_;
   raw_ptr<base::Environment, DanglingUntriaged> environment_;
@@ -98,11 +97,6 @@ void ChromotingHostServicesClientTest::WaitForSessionServicesBound() {
   session_services_bound_run_loop_ = std::make_unique<base::RunLoop>();
 }
 
-void ChromotingHostServicesClientTest::SetRemoteDisconnectCallback(
-    base::OnceClosure callback) {
-  client_->on_session_disconnected_callback_for_testing_ = std::move(callback);
-}
-
 mojo::PendingRemote<mojom::ChromotingHostServices>
 ChromotingHostServicesClientTest::ConnectToServer() {
   if (!is_server_started_) {
@@ -143,13 +137,25 @@ TEST_F(ChromotingHostServicesClientTest,
 }
 
 TEST_F(ChromotingHostServicesClientTest,
-       ServerClosesReceiverAndClientReconnects) {
+       ServerClosesSessionHostReceiver_DisconnectHandlerCalled) {
   ASSERT_NE(client_->GetSessionServices(), nullptr);
   WaitForSessionServicesBound();
   ASSERT_EQ(session_services_receivers_.size(), 1u);
 
   base::RunLoop remote_disconnect_run_loop;
-  SetRemoteDisconnectCallback(remote_disconnect_run_loop.QuitClosure());
+  client_->set_disconnect_handler(remote_disconnect_run_loop.QuitClosure());
+  host_services_receivers_.Clear();
+  remote_disconnect_run_loop.Run();
+}
+
+TEST_F(ChromotingHostServicesClientTest,
+       ServerClosesSessionServicesReceiverAndClientReconnects) {
+  ASSERT_NE(client_->GetSessionServices(), nullptr);
+  WaitForSessionServicesBound();
+  ASSERT_EQ(session_services_receivers_.size(), 1u);
+
+  base::RunLoop remote_disconnect_run_loop;
+  client_->set_disconnect_handler(remote_disconnect_run_loop.QuitClosure());
   session_services_receivers_.clear();
   remote_disconnect_run_loop.Run();
 

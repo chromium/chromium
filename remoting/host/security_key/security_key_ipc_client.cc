@@ -130,10 +130,19 @@ void SecurityKeyIpcClient::ConnectToIpcChannel() {
     OnChannelError();
     return;
   }
+  auto disconnect_handler = base::BindRepeating(
+      &SecurityKeyIpcClient::OnChannelError, base::Unretained(this));
+  // There is a bug in Mojo, such that if the host rejects binding of session
+  // services, there is a chance that binding of SecurityKeyForwarder appears to
+  // be successful and the disconnect handler of `remote_` is never called, so
+  // `remote_` will remain invalid forever.
+  // The disconnect handler of session services is still called, so we set a
+  // disconnect handler on it.
+  // See https://crbug.com/425759818#comment8 for more context.
+  service_provider_->set_disconnect_handler(disconnect_handler);
   service_provider_->GetSessionServices()->BindSecurityKeyForwarder(
       security_key_forwarder_.BindNewPipeAndPassReceiver());
-  security_key_forwarder_.set_disconnect_handler(base::BindOnce(
-      &SecurityKeyIpcClient::OnChannelError, base::Unretained(this)));
+  security_key_forwarder_.set_disconnect_handler(disconnect_handler);
   // This is to determine if the peer binding is successful. If the connection
   // is disconnected before OnQueryVersionResult() is called, it means the
   // server has rejected the binding request.

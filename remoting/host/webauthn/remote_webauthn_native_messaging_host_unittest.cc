@@ -181,6 +181,7 @@ void RemoteWebAuthnNativeMessagingHostTest::CloseChannel(
 testing::Expectation
 RemoteWebAuthnNativeMessagingHostTest::ExpectGetSessionServices(
     bool should_return_valid_services) {
+  EXPECT_CALL(*api_provider_, set_disconnect_handler(_));
   return EXPECT_CALL(*api_provider_, GetSessionServices())
       .WillOnce(Return(should_return_valid_services ? &api_ : nullptr));
 }

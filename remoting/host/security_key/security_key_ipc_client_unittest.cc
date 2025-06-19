@@ -26,6 +26,7 @@ namespace {
 const int kLargeMessageSizeBytes = 256 * 1024;
 
 using testing::_;
+using testing::AnyNumber;
 using testing::Return;
 }  // namespace
 
@@ -148,6 +149,7 @@ void SecurityKeyIpcClientTest::ClientMessageReceived(
 }
 
 void SecurityKeyIpcClientTest::EstablishConnection(bool expect_error) {
+  EXPECT_CALL(*api_provider_, set_disconnect_handler(_)).Times(AnyNumber());
   EXPECT_CALL(*api_provider_, GetSessionServices())
       .WillRepeatedly(Return(&mock_api_));
 
@@ -283,6 +285,7 @@ TEST_F(SecurityKeyIpcClientTest, SendRequestBeforeEstablishingConnection) {
 }
 
 TEST_F(SecurityKeyIpcClientTest, NonExistentIpcServerChannel) {
+  EXPECT_CALL(*api_provider_, set_disconnect_handler(_)).Times(AnyNumber());
   EXPECT_CALL(*api_provider_, GetSessionServices())
       .WillRepeatedly(Return(nullptr));
 

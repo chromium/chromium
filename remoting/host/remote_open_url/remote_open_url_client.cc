@@ -106,6 +106,16 @@ void RemoteOpenUrlClient::Open(const base::CommandLine::StringType& arg,
     return;
   }
 
+  auto disconnect_handler = base::BindRepeating(
+      &RemoteOpenUrlClient::OnIpcDisconnected, base::Unretained(this));
+  // There is a bug in Mojo, such that if the host rejects binding of session
+  // services, there is a chance that binding of RemoteUrlOpener appears to be
+  // successful and the disconnect handler of `remote_` is never called, so
+  // `remote_` will remain invalid forever.
+  // The disconnect handler of session services is still called, so we set a
+  // disconnect handler on it.
+  // See https://crbug.com/425759818#comment8 for more context.
+  api_provider_->set_disconnect_handler(disconnect_handler);
   auto* api = api_provider_->GetSessionServices();
   if (!api) {
     HOST_LOG << "Can't make IPC connection. The host is probably not running.";
@@ -113,8 +123,7 @@ void RemoteOpenUrlClient::Open(const base::CommandLine::StringType& arg,
     return;
   }
   api->BindRemoteUrlOpener(remote_.BindNewPipeAndPassReceiver());
-  remote_.set_disconnect_handler(base::BindOnce(
-      &RemoteOpenUrlClient::OnIpcDisconnected, base::Unretained(this)));
+  remote_.set_disconnect_handler(disconnect_handler);
   timeout_timer_.Start(FROM_HERE, request_timeout_, this,
                        &RemoteOpenUrlClient::OnRequestTimeout);
   remote_->OpenUrl(url_, base::BindOnce(&RemoteOpenUrlClient::OnOpenUrlResponse,

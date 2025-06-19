@@ -49,6 +49,8 @@ class ChromotingHostServicesClient final
   // receivers/remotes/message pipes sent will be closed.
   mojom::ChromotingSessionServices* GetSessionServices() const override;
 
+  void set_disconnect_handler(base::OnceClosure disconnect_handler) override;
+
  private:
   friend class ChromotingHostServicesClientTest;
 
@@ -77,7 +79,7 @@ class ChromotingHostServicesClient final
   mojo::Remote<mojom::ChromotingSessionServices> session_services_remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::OnceClosure on_session_disconnected_callback_for_testing_;
+  base::OnceClosure disconnect_handler_;
 };
 
 }  // namespace remoting

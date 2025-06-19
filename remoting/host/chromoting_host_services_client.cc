@@ -110,6 +110,11 @@ ChromotingHostServicesClient::GetSessionServices() const {
   return session_services_remote_.get();
 }
 
+void ChromotingHostServicesClient::set_disconnect_handler(
+    base::OnceClosure disconnect_handler) {
+  disconnect_handler_ = std::move(disconnect_handler);
+}
+
 bool ChromotingHostServicesClient::EnsureConnection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -155,6 +160,10 @@ void ChromotingHostServicesClient::OnDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   remote_.reset();
+
+  if (disconnect_handler_) {
+    std::move(disconnect_handler_).Run();
+  }
 }
 
 void ChromotingHostServicesClient::OnSessionDisconnected() {
@@ -162,8 +171,8 @@ void ChromotingHostServicesClient::OnSessionDisconnected() {
 
   session_services_remote_.reset();
 
-  if (on_session_disconnected_callback_for_testing_) {
-    std::move(on_session_disconnected_callback_for_testing_).Run();
+  if (disconnect_handler_) {
+    std::move(disconnect_handler_).Run();
   }
 }
 

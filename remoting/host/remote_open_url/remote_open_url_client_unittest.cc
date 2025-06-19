@@ -31,6 +31,7 @@ namespace remoting {
 namespace {
 
 using testing::_;
+using testing::AnyNumber;
 using testing::Return;
 
 // The IPC channel doesn't work if we use a mock clock, so we just reduce the
@@ -97,6 +98,7 @@ RemoteOpenUrlClientTest::RemoteOpenUrlClientTest() {
 RemoteOpenUrlClientTest::~RemoteOpenUrlClientTest() = default;
 
 void RemoteOpenUrlClientTest::BindMockRemoteUrlOpener() {
+  EXPECT_CALL(*api_provider_, set_disconnect_handler(_)).Times(AnyNumber());
   EXPECT_CALL(*api_provider_, GetSessionServices())
       .WillRepeatedly(Return(&mock_api_));
   EXPECT_CALL(mock_api_, BindRemoteUrlOpener(_))
@@ -132,6 +134,7 @@ TEST_F(RemoteOpenUrlClientTest, OpenUrlWithUnsupportedScheme_FallsBack) {
 
 TEST_F(RemoteOpenUrlClientTest,
        OpenWhenHostServicesApiIsNotProvided_FallsBack) {
+  EXPECT_CALL(*api_provider_, set_disconnect_handler(_));
   EXPECT_CALL(*api_provider_, GetSessionServices()).WillOnce(Return(nullptr));
   EXPECT_CALL(*delegate_, OpenUrlOnFallbackBrowser(GURL("http://google.com/")))
       .Times(1);

@@ -424,14 +424,23 @@ bool RemoteWebAuthnNativeMessagingHost::EnsureIpcConnection() {
     return true;
   }
 
+  auto disconnect_handler =
+      base::BindRepeating(&RemoteWebAuthnNativeMessagingHost::OnIpcDisconnected,
+                          base::Unretained(this));
+  // There is a bug in Mojo, such that if the host rejects binding of session
+  // services, there is a chance that binding of WebAuthnProxy appears to be
+  // successful and the disconnect handler of `remote_` is never called, so
+  // `remote_` will remain invalid forever.
+  // The disconnect handler of session services is still called, so we set a
+  // disconnect handler on it.
+  // See https://crbug.com/425759818#comment8 for more context.
+  host_service_api_client_->set_disconnect_handler(disconnect_handler);
   auto* api = host_service_api_client_->GetSessionServices();
   if (!api) {
     return false;
   }
   api->BindWebAuthnProxy(remote_.BindNewPipeAndPassReceiver());
-  remote_.set_disconnect_handler(
-      base::BindOnce(&RemoteWebAuthnNativeMessagingHost::OnIpcDisconnected,
-                     base::Unretained(this)));
+  remote_.set_disconnect_handler(disconnect_handler);
   return true;
 }
 

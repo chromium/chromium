@@ -381,6 +381,10 @@ class MockChromotingHostServicesProvider
               GetSessionServices,
               (),
               (const, override));
+  MOCK_METHOD(void,
+              set_disconnect_handler,
+              (base::OnceClosure disconnect_handler),
+              (override));
 };
 
 }  // namespace remoting
