@@ -1227,10 +1227,6 @@ const char kProvisionalNotificationAlertDescription[] =
     "Shows an alert to the user when app notification settings are changed but "
     "only provisonal notifications are enabled";
 
-const char kIpadZpsSuggestionMatchesLimitName[] = "Ipad Zps Suggestions limit";
-const char kIpadZpsSuggestionMatchesLimitDescription[] =
-    "Change the zps suggestion limit";
-
 const char kIPHPriceNotificationsWhileBrowsingName[] =
     "Price Tracking IPH Display";
 const char kIPHPriceNotificationsWhileBrowsingDescription[] =

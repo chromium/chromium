@@ -331,11 +331,6 @@ BASE_FEATURE(kUseFusedLocationProvider, "UseFusedLocationProvider", ENABLED);
 // Enables storing successful query/match in the shortcut database On Android.
 BASE_FEATURE(kOmniboxShortcutsAndroid, "OmniboxShortcutsAndroid", ENABLED);
 
-// When enabled, it increases ipad's zps matches limit on web,srp and ntp.
-BASE_FEATURE(kIpadZeroSuggestMatches,
-             "IpadZeroSuggestMatches",
-             enable_if(IS_IOS));
-
 // Updates various NTP/Omnibox assets and descriptions for visual alignment on
 // Android and iOS.
 BASE_FEATURE(kOmniboxMobileParityUpdate, "OmniboxMobileParityUpdate", DISABLED);

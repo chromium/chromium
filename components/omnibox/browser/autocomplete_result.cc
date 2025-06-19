@@ -105,18 +105,6 @@ size_t AutocompleteResult::GetMaxMatches(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   constexpr size_t kMaxFeaturedKeywordAutocompleteMatches = 9;
 #endif
-#if BUILDFLAG(IS_IOS)
-  // By default, iPad has the same max as iPhone.
-  // `kDefaultMaxAutocompleteMatches` defines a hard limit on the number of
-  // autocomplete suggestions on iPad, so if an experiment defines
-  // MaxZeroSuggestMatches to 15, it would be 15 on iPhone and 10 on iPad.
-  constexpr size_t kMaxAutocompleteMatchesOnIPad = 10;
-  // By default, iPad has the same max as iPhone. `kMaxZeroSuggestMatchesOnIPad`
-  // defines a hard limit on the number of ZPS suggestions on iPad, so if an
-  // experiment defines MaxZeroSuggestMatches to 15, it would be 15 on iPhone
-  // and 10 on iPad.
-  size_t kMaxZeroSuggestMatchesOnIPad = OmniboxFieldTrial::kIpadZPSLimit.Get();
-#endif
 
   // Verify possible return values are between (0,
   // `kMaxAutocompletePositionValue`).
@@ -134,15 +122,6 @@ size_t AutocompleteResult::GetMaxMatches(
                         kMaxAutocompletePositionValue,
                 "Bad kMaxFeaturedKeywordAutocompleteMatches.");
 #endif
-#if BUILDFLAG(IS_IOS)
-  static_assert(
-      kMaxAutocompleteMatchesOnIPad > 0 &&
-          kMaxAutocompleteMatchesOnIPad < kMaxAutocompletePositionValue,
-      "Bad kMaxAutocompleteMatchesOnIPad.");
-  CHECK(kMaxZeroSuggestMatchesOnIPad > 0 &&
-        kMaxZeroSuggestMatchesOnIPad < kMaxAutocompletePositionValue)
-      << "Bad kMaxZeroSuggestMatchesOnIPad.";
-#endif
 
 // When the user types '@', show 9, instead of the usual 8, matches on desktop.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -157,12 +136,6 @@ size_t AutocompleteResult::GetMaxMatches(
         omnibox::kMaxZeroSuggestMatches,
         OmniboxFieldTrial::kMaxZeroSuggestMatchesParam,
         kDefaultMaxZeroSuggestMatches);
-#if BUILDFLAG(IS_IOS)
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      field_trial_value =
-          std::min(field_trial_value, kMaxZeroSuggestMatchesOnIPad);
-    }
-#endif
     DCHECK(kMaxAutocompletePositionValue > field_trial_value);
     return field_trial_value;
   }
@@ -174,12 +147,6 @@ size_t AutocompleteResult::GetMaxMatches(
       OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam,
       kDefaultMaxAutocompleteMatches);
   DCHECK(kMaxAutocompletePositionValue > field_trial_value);
-#if BUILDFLAG(IS_IOS)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    field_trial_value =
-        std::min(field_trial_value, kMaxAutocompleteMatchesOnIPad);
-  }
-#endif
   return field_trial_value;
 }
 
@@ -597,43 +564,25 @@ void AutocompleteResult::SortAndCull(
             std::make_unique<ToolbeltSection>(suggestion_groups_map_));
       }
     } else if constexpr (is_ios) {
-      if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-        size_t num_trending_queries =
-            OmniboxFieldTrial::kIpadAdditionalTrendingQueries.Get();
-        size_t total_count = OmniboxFieldTrial::kIpadZPSLimit.Get();
-
-        if (omnibox::IsNTPPage(page_classification)) {
-          sections.push_back(std::make_unique<IOSIpadNTPZpsSection>(
-              num_trending_queries, total_count, suggestion_groups_map_,
-              mia_enabled));
-        } else if (omnibox::IsSearchResultsPage(page_classification)) {
-          sections.push_back(std::make_unique<IOSIpadSRPZpsSection>(
-              total_count, suggestion_groups_map_));
-        } else {
-          sections.push_back(std::make_unique<IOSIpadWebZpsSection>(
-              total_count, suggestion_groups_map_));
+      if (omnibox::IsLensSearchbox(page_classification)) {
+        switch (page_classification) {
+          case OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX:
+            sections.push_back(std::make_unique<IOSLensMultimodalZpsSection>(
+                suggestion_groups_map_));
+            break;
+          default:
+            // kLensOverlayNotFatalUntil update after launch.
+            NOTREACHED(base::NotFatalUntil::M200);
         }
+      } else if (omnibox::IsNTPPage(page_classification)) {
+        sections.push_back(std::make_unique<IOSNTPZpsSection>(
+            suggestion_groups_map_, mia_enabled));
+      } else if (omnibox::IsSearchResultsPage(page_classification)) {
+        sections.push_back(
+            std::make_unique<IOSSRPZpsSection>(suggestion_groups_map_));
       } else {
-        if (omnibox::IsLensSearchbox(page_classification)) {
-          switch (page_classification) {
-            case OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX:
-              sections.push_back(std::make_unique<IOSLensMultimodalZpsSection>(
-                  suggestion_groups_map_));
-              break;
-            default:
-              // kLensOverlayNotFatalUntil update after launch.
-              NOTREACHED(base::NotFatalUntil::M200);
-          }
-        } else if (omnibox::IsNTPPage(page_classification)) {
-          sections.push_back(std::make_unique<IOSNTPZpsSection>(
-              suggestion_groups_map_, mia_enabled));
-        } else if (omnibox::IsSearchResultsPage(page_classification)) {
-          sections.push_back(
-              std::make_unique<IOSSRPZpsSection>(suggestion_groups_map_));
-        } else {
-          sections.push_back(
-              std::make_unique<IOSWebZpsSection>(suggestion_groups_map_));
-        }
+        sections.push_back(
+            std::make_unique<IOSWebZpsSection>(suggestion_groups_map_));
       }
     }
     matches_ = Section::GroupMatches(std::move(sections), matches_);

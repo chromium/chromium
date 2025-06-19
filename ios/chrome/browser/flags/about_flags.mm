@@ -1021,24 +1021,6 @@ const FeatureEntry::FeatureVariation kIOSSoftLockVariations[] = {
     {" - No delay", kIOSSoftLockNoDelay, std::size(kIOSSoftLockNoDelay),
      nullptr}};
 
-// Ipad ZPS limit.
-const FeatureEntry::FeatureParam kIpadZPSOmniboxWith20Total0Trends[] = {
-    {OmniboxFieldTrial::kIpadAdditionalTrendingQueries.name, "0"},
-    {OmniboxFieldTrial::kIpadZPSLimit.name, "20"},
-};
-
-const FeatureEntry::FeatureParam kIpadZPSOmniboxWith20Total5Trends[] = {
-    {OmniboxFieldTrial::kIpadAdditionalTrendingQueries.name, "5"},
-    {OmniboxFieldTrial::kIpadZPSLimit.name, "20"},
-};
-
-constexpr FeatureEntry::FeatureVariation kIpadZpsLimitVariants[] = {
-    {"20 total zps, 0 Trends on NTP", kIpadZPSOmniboxWith20Total0Trends,
-     std::size(kIpadZPSOmniboxWith20Total0Trends), nullptr},
-    {"20 total zps, 5 Trends on NTP", kIpadZPSOmniboxWith20Total5Trends,
-     std::size(kIpadZPSOmniboxWith20Total0Trends), nullptr},
-};
-
 const FeatureEntry::FeatureParam
     kIOSStartTimeStartupRemediationsSaveNTPWebStateArm[] = {
         {kIOSStartTimeStartupRemediationsSaveNTPWebState, "true"},
@@ -1513,13 +1495,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"webpage-text-zoom-ipad", flag_descriptions::kWebPageTextZoomIPadName,
      flag_descriptions::kWebPageTextZoomIPadDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::kWebPageTextZoomIPad)},
-    {"omnibox-ipad-zps-limit",
-     flag_descriptions::kIpadZpsSuggestionMatchesLimitName,
-     flag_descriptions::kIpadZpsSuggestionMatchesLimitDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kIpadZeroSuggestMatches,
-                                    kIpadZpsLimitVariants,
-                                    "OmniboxBundledExperimentV1")},
     {"omnibox-ui-max-autocomplete-matches",
      flag_descriptions::kOmniboxUIMaxAutocompleteMatchesName,
      flag_descriptions::kOmniboxUIMaxAutocompleteMatchesDescription,

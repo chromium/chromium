@@ -717,9 +717,6 @@ extern const char kPrivacyGuideIosDescription[];
 extern const char kProvisionalNotificationAlertName[];
 extern const char kProvisionalNotificationAlertDescription[];
 
-extern const char kIpadZpsSuggestionMatchesLimitName[];
-extern const char kIpadZpsSuggestionMatchesLimitDescription[];
-
 extern const char kIPHPriceNotificationsWhileBrowsingName[];
 extern const char kIPHPriceNotificationsWhileBrowsingDescription[];
 

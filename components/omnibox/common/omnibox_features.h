@@ -148,9 +148,6 @@ BASE_DECLARE_FEATURE(kOmniboxShortcutsAndroid);
 // Enterprise search aggregators features.
 BASE_DECLARE_FEATURE(kEnableSearchAggregatorPolicy);
 
-// Ipad ZPS matches limit increase.
-BASE_DECLARE_FEATURE(kIpadZeroSuggestMatches);
-
 // Site search allow user override feature.
 BASE_DECLARE_FEATURE(kEnableSiteSearchAllowUserOverridePolicy);
 

@@ -684,18 +684,6 @@ std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints(
     PiecewiseMappingVariant mapping_variant =
         PiecewiseMappingVariant::kRegular);
 
-// Ipad suggestions limit ->
-
-constexpr base::FeatureParam<int> kIpadAdditionalTrendingQueries(
-    &omnibox::kIpadZeroSuggestMatches,
-    "IpadAdditionalTrendingQueries",
-    5);
-
-constexpr base::FeatureParam<int> kIpadZPSLimit(
-    &omnibox::kIpadZeroSuggestMatches,
-    "IpadZPSSuggestionsLimit",
-    20);
-
 // <- Ipad suggestions limit
 // ---------------------------------------------------------
 // <- ML Relevance Scoring
