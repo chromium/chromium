@@ -9,6 +9,7 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_textfield.h"
+#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"

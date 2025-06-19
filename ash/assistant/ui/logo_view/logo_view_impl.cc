@@ -9,7 +9,7 @@
 #include "ash/assistant/ui/logo_view/shape/shape.h"
 #include "base/check.h"
 #include "base/containers/adapters.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "chromeos/assistant/internal/logo_view/logo_model/dot.h"
 #include "chromeos/assistant/internal/logo_view/logo_view_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
