@@ -191,7 +191,8 @@ Http2Connection::Http2Connection(
     std::unique_ptr<StreamSocket> socket,
     EmbeddedTestServerConnectionListener* connection_listener,
     EmbeddedTestServer* embedded_test_server)
-    : socket_(std::move(socket)),
+    : HttpConnection(Protocol::kHttp2),
+      socket_(std::move(socket)),
       connection_listener_(connection_listener),
       embedded_test_server_(embedded_test_server),
       read_buf_(base::MakeRefCounted<IOBufferWithSize>(4096)) {

@@ -47,6 +47,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
+#include "net/test/embedded_test_server/http_connect_proxy_handler.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -715,6 +716,7 @@ void EmbeddedTestServer::ShutdownOnIOThread() {
   shutdown_closures_.Notify();
   listen_socket_.reset();
   connections_.clear();
+  http_connect_proxy_handler_.reset();
 }
 
 HttpConnection* EmbeddedTestServer::GetConnectionForSocket(
@@ -743,6 +745,17 @@ void EmbeddedTestServer::HandleRequest(
     auto auth_result = auth_handler_.Run(*request);
     if (auth_result) {
       DispatchResponseToDelegate(std::move(auth_result), delegate);
+      return;
+    }
+  }
+
+  if (http_connect_proxy_handler_) {
+    bool request_handled =
+        http_connect_proxy_handler_->HandleProxyRequest(*connection, *request);
+    // If the proxy handler took over the request, it took ownership of the
+    // underlying socket, so only need to delete the socket.
+    if (request_handled) {
+      connections_.erase(socket);
       return;
     }
   }
@@ -975,6 +988,16 @@ void EmbeddedTestServer::RegisterAuthHandler(
     DVLOG(2) << "Overwriting existing Auth handler.";
   }
   auth_handler_ = callback;
+}
+
+void EmbeddedTestServer::EnableConnectProxy(
+    uint16_t dest_port,
+    std::optional<HostPortPair> expected_dest) {
+  CHECK(!StartedAcceptingConnection());
+  CHECK(!http_connect_proxy_handler_);
+
+  http_connect_proxy_handler_ = std::make_unique<HttpConnectProxyHandler>(
+      dest_port, std::move(expected_dest));
 }
 
 void EmbeddedTestServer::RegisterUpgradeRequestHandler(

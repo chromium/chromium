@@ -28,7 +28,7 @@ class HttpConnection {
  public:
   enum class Protocol { kHttp1, kHttp2 };
 
-  HttpConnection() = default;
+  explicit HttpConnection(Protocol protocol);
   virtual ~HttpConnection() = default;
   HttpConnection(HttpConnection&) = delete;
   virtual HttpConnection& operator=(HttpConnection&) = delete;
@@ -40,6 +40,8 @@ class HttpConnection {
       EmbeddedTestServer* server,
       Protocol protocol);
 
+  Protocol protocol() const { return protocol_; }
+
   // Notify that the socket is ready to receive data (which may not be
   // immediately, due to SSL handshake). May call the delegate's HandleRequest()
   // or CloseConnection() methods, and may call them asynchronously.
@@ -50,6 +52,9 @@ class HttpConnection {
 
   virtual StreamSocket* Socket() = 0;
   virtual base::WeakPtr<HttpConnection> GetWeakPtr() = 0;
+
+ private:
+  Protocol protocol_;
 };
 
 }  // namespace test_server

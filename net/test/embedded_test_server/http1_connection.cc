@@ -25,7 +25,8 @@ Http1Connection::Http1Connection(
     std::unique_ptr<StreamSocket> socket,
     EmbeddedTestServerConnectionListener* connection_listener,
     EmbeddedTestServer* server_delegate)
-    : socket_(std::move(socket)),
+    : HttpConnection(Protocol::kHttp1),
+      socket_(std::move(socket)),
       connection_listener_(connection_listener),
       server_delegate_(server_delegate),
       read_buf_(base::MakeRefCounted<IOBufferWithSize>(4096)) {}
