@@ -239,12 +239,13 @@ void InputController::MaybeSetUpAudioProcessing(
     const media::AudioParameters& device_params,
     std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
     media::AecdumpRecordingManager* aecdump_recording_manager) {
-  if (!reference_signal_provider) {
+  if (!processing_config) {
     return;
   }
-
-  if (!(processing_config &&
-        processing_config->settings.NeedWebrtcAudioProcessing())) {
+  // If audio processing is configured there should always be a
+  // ReferenceSignalProvider in case AEC is requested.
+  CHECK(reference_signal_provider);
+  if (!processing_config->settings.NeedWebrtcAudioProcessing()) {
     return;
   }
 
@@ -277,22 +278,20 @@ void InputController::MaybeSetUpAudioProcessing(
       std::move(processing_config->controls_receiver),
       aecdump_recording_manager);
 
-  // If the required processing is lightweight, there is no need to offload work
-  // to a new thread.
+  // If we are not running echo cancellation the processing is lightweight, so
+  // there is no need to offload work to a new thread.
   if (!audio_processor_handler_->needs_playout_reference()) {
     return;
   }
 
-  if (media::IsChromeWideEchoCancellationEnabled()) {
-    // base::Unretained() is safe since both |audio_processor_handler_| and
-    // |event_handler_| outlive |processing_fifo_|.
-    processing_fifo_ = std::make_unique<ProcessingAudioFifo>(
-        *processing_input_params, kProcessingFifoSize,
-        base::BindRepeating(&AudioProcessorHandler::ProcessCapturedAudio,
-                            base::Unretained(audio_processor_handler_.get())),
-        base::BindRepeating(&EventHandler::OnLog,
-                            base::Unretained(event_handler_.get())));
-  }
+  // base::Unretained() is safe since both |audio_processor_handler_| and
+  // |event_handler_| outlive |processing_fifo_|.
+  processing_fifo_ = std::make_unique<ProcessingAudioFifo>(
+      *processing_input_params, kProcessingFifoSize,
+      base::BindRepeating(&AudioProcessorHandler::ProcessCapturedAudio,
+                          base::Unretained(audio_processor_handler_.get())),
+      base::BindRepeating(&EventHandler::OnLog,
+                          base::Unretained(event_handler_.get())));
 
   // Unretained() is safe, since |event_handler_| outlives |output_tapper_|.
   output_tapper_ = std::make_unique<OutputTapper>(
