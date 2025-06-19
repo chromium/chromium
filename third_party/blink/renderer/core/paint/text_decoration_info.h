@@ -144,6 +144,7 @@ class CORE_EXPORT TextDecorationInfo {
 
   // Compute bounds for the given line and the current decoration.
   gfx::RectF Bounds() const;
+  gfx::RectF BoundsForDottedOrDashed() const;
 
   // Returns tile record and coordinates for wavy decorations.
   cc::PaintRecord WavyTileRecord() const;
@@ -165,8 +166,6 @@ class CORE_EXPORT TextDecorationInfo {
   void ComputeWavyLineData(gfx::RectF& pattern_rect,
                            cc::PaintRecord& tile_record) const;
 
-  gfx::RectF BoundsForDottedOrDashed() const;
-  gfx::RectF BoundsForWavy() const;
   Path PrepareDottedOrDashedStrokePath() const;
   bool IsSpellingOrGrammarError() const {
     return line_data_.line == TextDecorationLine::kSpellingError ||

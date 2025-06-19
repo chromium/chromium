@@ -25,6 +25,8 @@ class DecorationLinePainter final {
                         const TextDecorationInfo& decoration_info)
       : context_(context), decoration_info_(decoration_info) {}
 
+  static gfx::RectF Bounds(const TextDecorationInfo&);
+
   void Paint(const Color& color, const cc::PaintFlags* flags = nullptr);
 
   static void DrawLineForText(GraphicsContext&,

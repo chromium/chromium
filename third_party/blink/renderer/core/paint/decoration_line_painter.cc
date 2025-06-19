@@ -107,6 +107,34 @@ Path DecorationLinePainter::GetPathForTextLine(const gfx::PointF& pt,
   return builder.Finalize();
 }
 
+gfx::RectF DecorationLinePainter::Bounds(
+    const TextDecorationInfo& decoration_info) {
+  const gfx::PointF start_point = decoration_info.StartPoint();
+  switch (decoration_info.StrokeStyle()) {
+    case kDottedStroke:
+    case kDashedStroke:
+      return decoration_info.BoundsForDottedOrDashed();
+    case kWavyStroke:
+      // Returns the wavy bounds, which is the same size as the wavy paint rect
+      // but at the origin needed by the actual decoration, for the global
+      // transform.
+      return decoration_info.WavyPaintRect();
+    case kDoubleStroke: {
+      const float double_offset = decoration_info.DoubleOffset();
+      const float thickness = decoration_info.ResolvedThickness();
+      if (double_offset > 0) {
+        return gfx::RectF(start_point.x(), start_point.y(),
+                          decoration_info.Width(), double_offset + thickness);
+      }
+      return gfx::RectF(start_point.x(), start_point.y() + double_offset,
+                        decoration_info.Width(), -double_offset + thickness);
+    }
+    case kSolidStroke:
+      return DecorationRect(start_point, decoration_info.Width(),
+                            decoration_info.ResolvedThickness());
+  }
+}
+
 void DecorationLinePainter::Paint(const Color& color,
                                   const cc::PaintFlags* flags) {
   StyledStrokeData styled_stroke;

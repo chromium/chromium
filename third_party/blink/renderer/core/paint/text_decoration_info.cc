@@ -666,27 +666,7 @@ void TextDecorationInfo::ComputeWavyLineData(
 }
 
 gfx::RectF TextDecorationInfo::Bounds() const {
-  gfx::PointF start_point = StartPoint();
-  switch (DecorationStyle()) {
-    case ETextDecorationStyle::kDotted:
-    case ETextDecorationStyle::kDashed:
-      return BoundsForDottedOrDashed();
-    case ETextDecorationStyle::kWavy:
-      return BoundsForWavy();
-    case ETextDecorationStyle::kDouble:
-      if (DoubleOffset() > 0) {
-        return gfx::RectF(start_point.x(), start_point.y(), width_,
-                          DoubleOffset() + ResolvedThickness());
-      }
-      return gfx::RectF(start_point.x(), start_point.y() + DoubleOffset(),
-                        width_, -DoubleOffset() + ResolvedThickness());
-    case ETextDecorationStyle::kSolid:
-      return gfx::RectF(start_point.x(), start_point.y(), width_,
-                        ResolvedThickness());
-    default:
-      break;
-  }
-  NOTREACHED();
+  return DecorationLinePainter::Bounds(*this);
 }
 
 gfx::RectF TextDecorationInfo::BoundsForDottedOrDashed() const {
@@ -695,12 +675,6 @@ gfx::RectF TextDecorationInfo::BoundsForDottedOrDashed() const {
   styled_stroke.SetStyle(TextDecorationStyleToStrokeStyle(DecorationStyle()));
   return line_data_.stroke_path.value().StrokeBoundingRect(
       styled_stroke.ConvertToStrokeData({}));
-}
-
-// Returns the wavy bounds, which is the same size as the wavy paint rect but
-// at the origin needed by the actual decoration, for the global transform.
-gfx::RectF TextDecorationInfo::BoundsForWavy() const {
-  return WavyPaintRect();
 }
 
 // Returns the wavy paint rect, which has the height of the wavy tile rect but
