@@ -55,7 +55,7 @@
 <translation id="1196264380943975940">Não é possível resumir. Tente em uma transcrição mais longa.</translation>
 <translation id="1196959502276349371">Versão <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Iniciar/pausar</translation>
-<translation id="1201402288615127009">Próxima</translation>
+<translation id="1201402288615127009">Avançar</translation>
 <translation id="1204296502688602597">Latência de DNS</translation>
 <translation id="1207734034680156868">As sugestões são baseadas na sua descrição</translation>
 <translation id="121090498480012229">reproduzir ou pausar mídia</translation>
@@ -1754,7 +1754,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="89945434909472341">aldeia</translation>
 <translation id="8997710128084572139">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% bateria.</translation>
 <translation id="8998289560386111590">Indisponível no seu dispositivo</translation>
-<translation id="9000871120886759611">Faça a redefinição para garantir que você possa acessar as informações no seu idioma preferido. Confira se apenas os idiomas preferidos estão sendo usados.</translation>
+<translation id="9000871120886759611">Faça a redefinição para garantir que você possa acessar as informações no seu idioma de preferência. Confira se apenas os idiomas de preferência estão sendo usados.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frequência</translation>
 <translation id="901834265349196618">e-mail</translation>

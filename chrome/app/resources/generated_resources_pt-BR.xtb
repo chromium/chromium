@@ -308,7 +308,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="119944043368869598">Remover tudo</translation>
 <translation id="1199814941632954229">Certificados estão sendo provisionados para esses perfis certificados</translation>
 <translation id="120069043972472860">Não é possível assistir</translation>
-<translation id="1201402288615127009">Próxima</translation>
+<translation id="1201402288615127009">Avançar</translation>
 <translation id="1202116106683864634">Você quer mesmo excluir essa chave de acesso?</translation>
 <translation id="1202596434010270079">O aplicativo de quiosque foi atualizado. Remova o pendrive.</translation>
 <translation id="1202892408424955784">Produtos monitorados</translation>
@@ -399,7 +399,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="126156426083987769">Ocorreu um problema com as licenças do dispositivo no modo de demonstração.</translation>
 <translation id="1262564987698748643">Os sites podem pedir para substituir a entrada do teclado</translation>
-<translation id="1263231323834454256">Lista de Leitura</translation>
+<translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1263733306853729545">Usar as teclas <ph name="MINUS" /> e <ph name="EQUAL" /> para numerar uma lista de candidatos</translation>
 <translation id="126387934568812801">Incluir esta captura de tela e os títulos das guias abertas</translation>
 <translation id="1264083566674525434">Editar permissões do site</translation>
@@ -2493,7 +2493,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2701737434167469065">Faça login, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Endereço MAC da rede</translation>
 <translation id="2702720509009999256">Confira sua conexão de Internet e escolha "Tentar de novo" ou "Abrir no editor básico" para usar as opções limitadas de edição e visualização.</translation>
-<translation id="2702801445560668637">Lista de Leitura</translation>
+<translation id="2702801445560668637">Lista de leitura</translation>
 <translation id="270414148003105978">Redes móveis</translation>
 <translation id="2704184184447774363">Assinatura de documentos da Microsoft</translation>
 <translation id="2704606927547763573">Copiado</translation>
