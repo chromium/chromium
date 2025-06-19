@@ -121,13 +121,15 @@ const char kFootnoteLinkURL[] = "https://google.com";
 
   // Configure the callback to be executed once the page context is ready.
   __weak __typeof(self) weakSelf = self;
-  base::OnceCallback<void(
-      std::unique_ptr<optimization_guide::proto::PageContext>)>
-      page_context_completion_callback = base::BindOnce(
-          ^void(std::unique_ptr<optimization_guide::proto::PageContext>
-                    page_context) {
+  base::OnceCallback<void(PageContextWrapperCallbackResponse)>
+      page_context_completion_callback =
+          base::BindOnce(^void(PageContextWrapperCallbackResponse response) {
             BWGMediator* strongSelf = weakSelf;
-            [strongSelf openBWGOverlayForPage:std::move(page_context)];
+            // TODO(crbug.com/422506000): Handle PageContextWrapper error
+            // states, and pipe them down.
+            if (response.has_value()) {
+              [strongSelf openBWGOverlayForPage:std::move(response.value())];
+            }
             strongSelf->_pageContextWrapper = nil;
           });
 

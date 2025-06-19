@@ -23,6 +23,7 @@
 #import "components/optimization_guide/core/page_content_proto_serializer.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -31,27 +32,46 @@
 
 namespace {
 
-// The key for the current node's innerText in the JavaScript object.
-const char kCurrentNodeInnerTextDictKey[] = "currentNodeInnerText";
+// The key for whether the PageContext should be detached. The value is a bool.
+constexpr const char kShouldDetachPageContext[] = "shouldDetachPageContext";
 
-// The key for the children frames in the JavaScript object.
-const char kChildrenFramesDictKey[] = "children";
+// The key for the current node's innerText in the JavaScript object. The value
+// is a string.
+constexpr const char kCurrentNodeInnerTextDictKey[] = "currentNodeInnerText";
 
-// The key for the source URL of the frame in the JavaScript object.
-const char kSourceURLDictKey[] = "sourceURL";
+// The key for the children frames in the JavaScript object. The value is an
+// array of objects.
+constexpr const char kChildrenFramesDictKey[] = "children";
 
-// The key for the title of the frame in the JavaScript object.
-const char kFrameTitleDictKey[] = "title";
+// The key for the source URL of the frame in the JavaScript object. The value
+// is a string.
+constexpr const char kSourceURLDictKey[] = "sourceURL";
+
+// The key for the title of the frame in the JavaScript object. The value is a
+// string.
+constexpr const char kFrameTitleDictKey[] = "title";
 
 // The JavaScript to be executed on each WebState's WebFrames, which retrieves
 // the innerText of the document body, and recursively traverses through
 // same-origin nested iframes to retrieve their innerTexts as well, constructing
 // a tree structure. iframes are marked as processed with a nonce to avoid
-// duplicate text from frames, but only for the current run.
+// duplicate text from frames, but only for the current run. Early returns if
+// the PageContext should be detached, or the frame is not the top-most
+// same-origin frame.
 // TODO(crbug.com/423681226): Write this in TypeScript and create a JS Feature
 // for it.
-const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
+constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
 (() => {
+    // Checks whether the PageContext should be detached.
+    const shouldDetachPageContext = () => {
+        $1
+    };
+
+    // If the PageContext should be detached, early return.
+    if (shouldDetachPageContext()) {
+        return { shouldDetachPageContext: true };
+    }
+
     // The script should only run if it has no same-origin parent. (The script
     // should only start execution on top-most nodes of a given origin).
     if (window.self !== window.top &&
@@ -60,6 +80,8 @@ const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
         return null;
     }
 
+    // Recursively constructs the innerText tree for the passed node and its
+    // children same-origin iframes.
     const constructSameOriginInnerTextTree = (node, frameURL, frameTitle, nonceAttributeValue) => {
         // Early return if the node is null or already processed.
         if (!node || node.getAttribute('data-__gCrWeb-innerText-processed') === nonceAttributeValue) {
@@ -97,7 +119,7 @@ const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
         };
     };
 
-    return constructSameOriginInnerTextTree(document.body, window.location.href, document.title, "$1");
+    return constructSameOriginInnerTextTree(document.body, window.location.href, document.title, "$2");
 })();
   )DELIM";
 }  // namespace
@@ -115,22 +137,22 @@ const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
   // the fly as values are returned from JavaScript.
   std::unique_ptr<optimization_guide::proto::AnnotatedPageContent> _rootAPCNode;
 
+  // Whether the PageContext should be detached. Likely a protected page.
+  BOOL _forceDetachPageContext;
+
   // The callback to execute once all async work is complete, whichs
   // relinquishes ownership of the PageContext proto to the callback's handler.
-  base::OnceCallback<void(
-      std::unique_ptr<optimization_guide::proto::PageContext>)>
+  base::OnceCallback<void(PageContextWrapperCallbackResponse)>
       _completion_callback;
 
   // Unique pointer to the PageContext proto.
   std::unique_ptr<optimization_guide::proto::PageContext> _page_context;
 }
 
-- (instancetype)
-      initWithWebState:(web::WebState*)webState
-    completionCallback:
-        (base::OnceCallback<
-            void(std::unique_ptr<optimization_guide::proto::PageContext>)>)
-            completionCallback {
+- (instancetype)initWithWebState:(web::WebState*)webState
+              completionCallback:
+                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
+                      completionCallback {
   self = [super init];
   if (self) {
     _asyncTasksToComplete = 0;
@@ -329,7 +351,10 @@ const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
   base::Token nonce = base::Token::CreateRandom();
   std::u16string nonceString = base::UTF8ToUTF16(nonce.ToString());
   std::u16string script = base::ReplaceStringPlaceholders(
-      kInnerTextTreeJavaScript, nonceString, nullptr);
+      kInnerTextTreeJavaScript,
+      base::span<const std::u16string>(
+          {ios::provider::GetPageContextShouldDetachScript(), nonceString}),
+      nullptr);
 
   // Execute the JavaScript on the main WebFrame first and pass in the callback
   // (which executes the barrier when run)
@@ -358,7 +383,24 @@ const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
 // Relinquish ownership to the callback handler.
 - (void)asyncWorkCompletedForPageContext {
   [self stopTextHighlighting];
-  std::move(_completion_callback).Run(std::move(_page_context));
+
+  PageContextWrapperCallbackResponse response;
+
+  // Construct the response, either with the expected value or an error.
+  if (_forceDetachPageContext) {
+    response = base::unexpected(PageContextWrapperError::kForceDetachError);
+  } else if (_shouldGetInnerText &&
+             !_page_context->has_annotated_page_content()) {
+    response = base::unexpected(PageContextWrapperError::kAPCError);
+  } else if (_shouldGetSnapshot && !_page_context->has_tab_screenshot()) {
+    response = base::unexpected(PageContextWrapperError::kScreenshotError);
+  } else if (_shouldGetFullPagePDF && !_page_context->has_pdf_data()) {
+    response = base::unexpected(PageContextWrapperError::kPDFDataError);
+  } else {
+    response = base::ok(std::move(_page_context));
+  }
+
+  std::move(_completion_callback).Run(std::move(response));
 }
 
 // Returns YES if the image is nil and forcing the update of missing snapshots
@@ -392,6 +434,10 @@ const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
     return;
   }
 
+  if (_forceDetachPageContext) {
+    return;
+  }
+
   NSData* imageData = UIImagePNGRepresentation(image);
   if (!imageData) {
     DLOG(WARNING) << "Failed to convert the screenshot to PNG.";
@@ -407,6 +453,10 @@ const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
 - (void)encodeAndSetFullPagePDF:(NSData*)PDFData {
   if (!PDFData) {
     DLOG(WARNING) << "Failed to fetch webpage PDF data.";
+    return;
+  }
+
+  if (_forceDetachPageContext) {
     return;
   }
 
@@ -426,6 +476,20 @@ const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
       // TODO(crbug.com/401282824): Log the failure rate of aggregation.
       DLOG(WARNING) << base::SysNSStringToUTF8([error localizedDescription]);
     }
+    return;
+  }
+
+  if (_forceDetachPageContext) {
+    return;
+  }
+
+  // Check if PageContext should be force detached.
+  // TODO(crbug.com/423681226): Force detaching PageContext shouldn't depend on
+  // fetching innerText/APC, it should always be enabled.
+  std::optional<bool> shouldDetachPageContext =
+      value->GetDict().FindBool(kShouldDetachPageContext);
+  if (shouldDetachPageContext.has_value() && shouldDetachPageContext.value()) {
+    _forceDetachPageContext = YES;
     return;
   }
 

@@ -7,12 +7,34 @@
 
 #import <Foundation/Foundation.h>
 
+#import <memory>
+
 #import "base/functional/callback_forward.h"
+#import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 namespace web {
 class WebState;
 }  // namespace web
+
+// PageContextWrapper error states, for when no PageContext is provided to the
+// caller.
+enum class PageContextWrapperError {
+  // Generic error.
+  kGenericError,
+  // APC was expected, but none was extracted.
+  kAPCError,
+  // Screenshot was expected, but none could be taken.
+  kScreenshotError,
+  // PDF data was expected, but none could be extracted.
+  kPDFDataError,
+  // The webpage is protected, PageContext was force-detached.
+  kForceDetachError,
+};
+
+using PageContextWrapperCallbackResponse =
+    base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
+                   PageContextWrapperError>;
 
 // A wrapper/helper around the `optimization_guide::proto::PageContext` proto
 // which handles populating all the necessary PageContext fields asynchronously.
@@ -25,15 +47,12 @@ class WebState;
 // disable-by-default behaviour.
 @interface PageContextWrapper : NSObject
 
-
 // Initializer which takes everything needed to construct the PageContext proto
 // as arguments.
-- (instancetype)
-      initWithWebState:(web::WebState*)webState
-    completionCallback:
-        (base::OnceCallback<
-            void(std::unique_ptr<::optimization_guide::proto::PageContext>)>)
-            completionCallback NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithWebState:(web::WebState*)webState
+              completionCallback:
+                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
+                      completionCallback NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

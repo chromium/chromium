@@ -23,6 +23,8 @@ class EnhancedCalendarRequest;
 }  // namespace proto
 }  // namespace optimization_guide
 
+enum class PageContextWrapperError;
+
 @class PageContextWrapper;
 
 namespace web {
@@ -58,7 +60,8 @@ class EnhancedCalendarServiceImpl : public mojom::EnhancedCalendarService,
   // request.
   void OnPageContextGenerated(
       optimization_guide::proto::EnhancedCalendarRequest request,
-      std::unique_ptr<optimization_guide::proto::PageContext> page_context);
+      base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
+                     PageContextWrapperError> response);
 
   // Handles the Enhanced Calendar response (calls `request_callback` with the
   // response proto or error).

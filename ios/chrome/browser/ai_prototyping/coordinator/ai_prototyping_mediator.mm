@@ -152,13 +152,15 @@
     return;
   }
 
-  base::OnceCallback<void(
-      std::unique_ptr<optimization_guide::proto::PageContext>)>
-      page_context_completion_callback = base::BindOnce(
-          ^void(std::unique_ptr<optimization_guide::proto::PageContext>
-                    page_context) {
-            [weakSelf executeServerQueryWithPageContext:std::move(page_context)
-                                        freeformRequest:request];
+  base::OnceCallback<void(PageContextWrapperCallbackResponse)>
+      page_context_completion_callback =
+          base::BindOnce(^void(PageContextWrapperCallbackResponse response) {
+            // TODO(crbug.com/425736226): Handle PageContextWrapper errors.
+            if (response.has_value()) {
+              [weakSelf
+                  executeServerQueryWithPageContext:std::move(response.value())
+                                    freeformRequest:request];
+            }
           });
 
   // Populate the PageContext proto and then execute the query.
