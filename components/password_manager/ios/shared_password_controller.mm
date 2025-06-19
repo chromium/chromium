@@ -16,7 +16,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/containers/to_vector.h"
-#import "base/debug/crash_logging.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
@@ -739,9 +738,6 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
                                                         forFrameId:frameId],
           [completion](auto e) {
             base::UmaHistogramEnumeration(kFillDataRetrievalStatusHistogram, e);
-            SCOPED_CRASH_KEY_NUMBER("Bug6401794", "fill_data_status",
-                                    static_cast<int>(e));
-            DUMP_WILL_BE_NOTREACHED();
             completion();
             return;
           });
