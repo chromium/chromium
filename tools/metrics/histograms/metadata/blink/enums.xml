@@ -7810,7 +7810,7 @@ Called by update_use_counter_css.py.-->
   <int value="856" label="text-grow"/>
   <int value="857" label="text-shrink"/>
   <int value="858" label="rule"/>
-  <int value="859" label="origin-trial-test-shorthand"/>
+  <int value="859" label="origin-trial-test-shorthand (obsolete)"/>
   <int value="860" label="corner-top-shape"/>
   <int value="861" label="corner-right-shape"/>
   <int value="862" label="corner-bottom-shape"/>

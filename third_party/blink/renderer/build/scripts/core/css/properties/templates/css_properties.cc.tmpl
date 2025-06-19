@@ -52,18 +52,9 @@ CSSExposure {{class_name}}::Exposure(const ExecutionContext* execution_context) 
   {{return_none_if_alternative_exposed(property.alternative)|indent(2)}}
     {% endif %}
     {% if property.runtime_flag %}
-      {% if property.is_shorthand %}
-  // Intentionally passing a null context for shorthand properties.
-  // Shorthands cannot be consistently enabled for origin trials because the
-  // execution context is not always available.
-  if (!RuntimeEnabledFeatures::{{property.runtime_flag}}Enabled(/*context=*/nullptr)) {
-    return CSSExposure::kNone;
-  }
-      {% else %}
   if (!RuntimeEnabledFeatures::{{property.runtime_flag}}Enabled(execution_context)) {
     return CSSExposure::kNone;
   }
-      {% endif %}
     {% endif %}
     {% if property.is_internal %}
   return CSSExposure::kUA;

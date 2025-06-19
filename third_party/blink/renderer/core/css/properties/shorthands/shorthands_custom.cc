@@ -3063,24 +3063,6 @@ const CSSValue* Offset::CSSValueFromComputedStyleInternal(
                                             allow_visited_style, value_phase);
 }
 
-bool OriginTrialTestShorthand::ParseShorthand(
-    bool important,
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  const CSSIdentifierValue* ident =
-      css_parsing_utils::ConsumeIdent<CSSValueID::kNormal, CSSValueID::kNone>(
-          stream);
-  if (!ident) {
-    return false;
-  }
-  AddProperty(CSSPropertyID::kOriginTrialTestShorthand,
-              CSSPropertyID::kOriginTrialTestProperty, *ident, important,
-              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  return true;
-}
-
 bool Outline::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,

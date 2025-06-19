@@ -1280,7 +1280,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kMask:
     case CSSPropertyID::kMasonryFlow:
     case CSSPropertyID::kOffset:
-    case CSSPropertyID::kOriginTrialTestShorthand:
     case CSSPropertyID::kOutline:
     case CSSPropertyID::kOverflow:
     case CSSPropertyID::kOverscrollBehavior:

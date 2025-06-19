@@ -3563,7 +3563,7 @@
     },
     {
       name: "interest-target-delay",
-      runtime_flag: "HTMLInterestTargetAttribute",
+      runtime_flag: "CSSInterestDelayShorthand",
       longhands: [
         "interest-target-show-delay", "interest-target-hide-delay"
       ],
@@ -8650,14 +8650,6 @@
         "offset-anchor"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-    },
-    {
-      // This shorthand is used for testing with origin trial intergration only.
-      // It should never be web-exposed.
-      name: "origin-trial-test-shorthand",
-      longhands: ["origin-trial-test-property"],
-      property_methods: ["ParseShorthand"],
-      runtime_flag: "OriginTrialsSampleAPI",
     },
     {
       name: "outline",

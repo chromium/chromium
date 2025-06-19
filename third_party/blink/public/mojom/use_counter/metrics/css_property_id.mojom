@@ -915,7 +915,7 @@ enum CSSSampleId {
     kTextGrow = 856,
     kTextShrink = 857,
     kRule = 858,
-    kOriginTrialTestShorthand = 859,
+    // kOriginTrialTestShorthand = 859,
     kCornerTopShape = 860,
     kCornerRightShape = 861,
     kCornerBottomShape = 862,

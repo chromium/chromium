@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
-#include "third_party/blink/renderer/core/css/properties/shorthands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -297,31 +296,6 @@ TEST_F(CSSPropertyTest, OriginTrialTestPropertyWithContext) {
   EXPECT_EQ(CSSExposure::kWeb, property.Exposure(GetExecutionContext()));
 
   // Context-agnostic exposure functions should still report kNone:
-  EXPECT_FALSE(property.IsWebExposed());
-  EXPECT_FALSE(property.IsUAExposed());
-  EXPECT_EQ(CSSExposure::kNone, property.Exposure());
-}
-
-TEST_F(CSSPropertyTest, OriginTrialTestShorthand) {
-  const CSSProperty& property = GetCSSPropertyOriginTrialTestShorthand();
-
-  // Origin trial not enabled:
-  EXPECT_FALSE(property.IsWebExposed(GetExecutionContext()));
-  EXPECT_FALSE(property.IsUAExposed(GetExecutionContext()));
-  EXPECT_EQ(CSSExposure::kNone, property.Exposure(GetExecutionContext()));
-
-  // Enable it:
-  LocalDOMWindow* window = GetFrame().DomWindow();
-  OriginTrialContext* context = window->GetOriginTrialContext();
-  context->AddFeature(mojom::blink::OriginTrialFeature::kOriginTrialsSampleAPI);
-
-  // Context-aware exposure functions should not report the property as exposed
-  // because shorthands cannot be consistently handled for origin trials.
-  EXPECT_FALSE(property.IsWebExposed(GetExecutionContext()));
-  EXPECT_FALSE(property.IsUAExposed(GetExecutionContext()));
-  EXPECT_EQ(CSSExposure::kNone, property.Exposure(GetExecutionContext()));
-
-  // Context-agnostic exposure functions should also report kNone:
   EXPECT_FALSE(property.IsWebExposed());
   EXPECT_FALSE(property.IsUAExposed());
   EXPECT_EQ(CSSExposure::kNone, property.Exposure());
