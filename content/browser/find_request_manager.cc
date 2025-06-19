@@ -11,6 +11,7 @@
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/find_in_page_client.h"

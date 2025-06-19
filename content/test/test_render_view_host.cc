@@ -8,6 +8,7 @@
 #include <optional>
 #include <tuple>
 
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/input/render_widget_host_input_event_router.h"

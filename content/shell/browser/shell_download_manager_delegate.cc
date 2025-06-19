@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_target_info.h"
 

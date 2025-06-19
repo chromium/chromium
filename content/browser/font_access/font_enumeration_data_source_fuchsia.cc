@@ -4,7 +4,7 @@
 
 #include "content/browser/font_access/font_enumeration_data_source_fuchsia.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/sequence_checker.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 

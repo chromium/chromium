@@ -4,6 +4,7 @@
 
 #include "content/browser/tracing/test_tracing_session.h"
 
+#include "base/notimplemented.h"
 #include "base/task/thread_pool.h"
 #include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"

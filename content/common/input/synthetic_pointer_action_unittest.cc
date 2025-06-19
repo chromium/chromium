@@ -7,6 +7,7 @@
 #include <array>
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"

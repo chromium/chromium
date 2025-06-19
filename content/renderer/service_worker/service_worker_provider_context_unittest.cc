@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "content/public/common/content_features.h"

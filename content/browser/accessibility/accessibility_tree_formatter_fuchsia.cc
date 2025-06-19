@@ -4,6 +4,7 @@
 
 #include "content/browser/accessibility/accessibility_tree_formatter_fuchsia.h"
 
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

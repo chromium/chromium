@@ -7,6 +7,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/notimplemented.h"
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -9,7 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/services/auction_worklet/auction_v8_devtools_session.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"

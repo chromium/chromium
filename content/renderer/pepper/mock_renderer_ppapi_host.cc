@@ -4,6 +4,7 @@
 
 #include "content/renderer/pepper/mock_renderer_ppapi_host.h"
 
+#include "base/notimplemented.h"
 #include "content/renderer/pepper/fake_pepper_plugin_instance.h"
 #include "ui/gfx/geometry/point.h"
 

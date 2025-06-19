@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_math.h"
 #include "build/build_config.h"
 #include "content/common/pepper_file_util.h"

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"

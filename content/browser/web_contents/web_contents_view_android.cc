@@ -13,7 +13,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "cc/layers/layer.h"
 #include "cc/slim/layer.h"
 #include "components/input/features.h"

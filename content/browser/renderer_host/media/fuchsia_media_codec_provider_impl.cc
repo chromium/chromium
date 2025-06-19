@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/notimplemented.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_codecs.h"
 

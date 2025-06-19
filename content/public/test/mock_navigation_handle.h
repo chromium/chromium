@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/types/optional_util.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/global_request_id.h"
