@@ -689,4 +689,32 @@ bool MaySkipLayoutWithinBlockFormattingContext(
   return true;
 }
 
+LayoutUnit AlignmentOffset(LayoutUnit container_size,
+                           LayoutUnit size,
+                           LayoutUnit margin_start,
+                           LayoutUnit margin_end,
+                           LayoutUnit baseline_offset,
+                           AxisEdge axis_edge,
+                           bool is_overflow_safe) {
+  LayoutUnit free_space = container_size - size - margin_start - margin_end;
+  // If overflow is 'safe', we have to make sure we don't overflow the
+  // 'start' edge (potentially cause some data loss as the overflow is
+  // unreachable).
+  if (is_overflow_safe) {
+    free_space = free_space.ClampNegativeToZero();
+  }
+  switch (axis_edge) {
+    case AxisEdge::kStart:
+      return margin_start;
+    case AxisEdge::kCenter:
+      return margin_start + (free_space / 2);
+    case AxisEdge::kEnd:
+      return margin_start + free_space;
+    case AxisEdge::kFirstBaseline:
+    case AxisEdge::kLastBaseline:
+      return baseline_offset;
+  }
+  NOTREACHED();
+}
+
 }  // namespace blink

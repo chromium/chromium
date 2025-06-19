@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
+#include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
@@ -1937,34 +1938,6 @@ LayoutUnit GridLayoutAlgorithm::ComputeSubgridIntrinsicSize(
 }
 
 namespace {
-
-// Returns the alignment offset for either the inline or block direction.
-LayoutUnit AlignmentOffset(LayoutUnit container_size,
-                           LayoutUnit size,
-                           LayoutUnit margin_start,
-                           LayoutUnit margin_end,
-                           LayoutUnit baseline_offset,
-                           AxisEdge axis_edge,
-                           bool is_overflow_safe) {
-  LayoutUnit free_space = container_size - size - margin_start - margin_end;
-  // If overflow is 'safe', we have to make sure we don't overflow the
-  // 'start' edge (potentially cause some data loss as the overflow is
-  // unreachable).
-  if (is_overflow_safe)
-    free_space = free_space.ClampNegativeToZero();
-  switch (axis_edge) {
-    case AxisEdge::kStart:
-      return margin_start;
-    case AxisEdge::kCenter:
-      return margin_start + (free_space / 2);
-    case AxisEdge::kEnd:
-      return margin_start + free_space;
-    case AxisEdge::kFirstBaseline:
-    case AxisEdge::kLastBaseline:
-      return baseline_offset;
-  }
-  NOTREACHED();
-}
 
 void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,
                                  AxisEdge block_axis_edge,

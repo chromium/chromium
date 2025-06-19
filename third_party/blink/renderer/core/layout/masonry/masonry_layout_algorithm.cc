@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
+#include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/masonry/masonry_running_positions.h"
 
@@ -103,23 +104,6 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
 
 namespace {
 
-LayoutUnit CalculateAlignmentOffset(AxisEdge alignment, LayoutUnit free_space) {
-  if (!free_space) {
-    return LayoutUnit();
-  }
-
-  switch (alignment) {
-    case AxisEdge::kCenter:
-      return free_space / 2;
-    case AxisEdge::kEnd:
-      return free_space;
-    case AxisEdge::kStart:
-      return LayoutUnit();
-    default:
-      NOTREACHED();
-  }
-}
-
 // TODO(almaher): Should we consolidate this with LayoutGridItemForMeasure()?
 const LayoutResult* LayoutMasonryItemForMeasure(
     const GridItemData& masonry_item,
@@ -197,41 +181,50 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
         masonry_item, track_collection, &containing_rect);
 
     const auto& item_node = masonry_item.node;
+    const auto& item_style = item_node.Style();
     const auto* result = item_node.Layout(space);
     const auto& physical_fragment =
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
     const LogicalBoxFragment fragment(container_writing_direction,
                                       physical_fragment);
 
-    // Adjust item's position in the track based on style.
-    auto FreeSpace = [&]() -> LayoutUnit {
-      const auto free_space =
-          is_for_columns
-              ? containing_rect.size.inline_size - fragment.InlineSize()
-              : containing_rect.size.block_size - fragment.BlockSize();
-
-      // If overflow is 'safe', make sure we don't overflow the 'start' edge
-      // (potentially causing some data loss as the overflow is unreachable).
-      return masonry_item.IsOverflowSafe(grid_axis_direction)
-                 ? free_space.ClampNegativeToZero()
-                 : free_space;
-    };
-    const auto offset = CalculateAlignmentOffset(
-        masonry_item.Alignment(grid_axis_direction), FreeSpace());
-    (is_for_columns ? containing_rect.offset.inline_offset
-                    : containing_rect.offset.block_offset) += offset;
+    // TODO(celestepan): Account for extra margins from sub-masonry items.
+    //
+    // Adjust item's position in the track based on style. We only want offset
+    // applied to the grid axis at the moment.
+    //
+    // TODO(celestepan): Update alignment logic if needed once we resolve on
+    // https://github.com/w3c/csswg-drafts/issues/10275.
+    const auto margins = ComputeMarginsFor(space, item_style, container_space);
+    const auto inline_alignment =
+        is_for_columns ? masonry_item.Alignment(kForColumns) : AxisEdge::kStart;
+    const auto block_alignment =
+        is_for_columns ? AxisEdge::kStart : masonry_item.Alignment(kForRows);
+    containing_rect.offset += LogicalOffset(
+        AlignmentOffset(containing_rect.size.inline_size, fragment.InlineSize(),
+                        margins.inline_start, margins.inline_end,
+                        /*baseline_offset=*/LayoutUnit(), inline_alignment,
+                        masonry_item.IsOverflowSafe(kForColumns)),
+        AlignmentOffset(containing_rect.size.block_size, fragment.BlockSize(),
+                        margins.block_start, margins.block_end,
+                        /*baseline_offset=*/LayoutUnit(), block_alignment,
+                        masonry_item.IsOverflowSafe(kForRows)));
 
     // Update `running_positions` of the tracks that the items spans to include
-    // the size of the item + the size of the gap in the stacking axis.
+    // the size of the item, the size of the gap in the stacking axis, and the
+    // margin.
+    //
+    // TODO(celestepan): Once we account for writing direction, we may have to
+    // ensure that we are adding the block/inline size of the item based on
+    // whether or not it is parallel to the direction of the masonry axis.
     auto new_running_position =
         max_position + stacking_axis_gap +
-        (is_for_columns ? fragment.BlockSize() : fragment.InlineSize());
+        (is_for_columns ? fragment.BlockSize() + margins.BlockSum()
+                        : fragment.InlineSize() + margins.InlineSum());
     running_positions.UpdateRunningPositionsForSpan(item_span,
                                                     new_running_position);
 
-    container_builder_.AddResult(
-        *result, containing_rect.offset,
-        ComputeMarginsFor(space, item_node.Style(), container_space));
+    container_builder_.AddResult(*result, containing_rect.offset, margins);
   }
   if (is_for_columns) {
     // Remove last gap that was added, since there is no item after it.
