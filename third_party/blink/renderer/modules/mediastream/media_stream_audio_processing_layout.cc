@@ -159,21 +159,36 @@ MediaStreamAudioProcessingLayout::MakeForDisplayCapture(
     return std::nullopt;
   }
 
+  // Run APM locally to only remove PeerConnection playout.
   return MediaStreamAudioProcessingLayout(
-      properties, /*available_platform_effects=*/0, channels);
+      properties, /*available_platform_effects=*/0, channels,
+      /*run_apm_in_audio_service =*/false);
 }
 
 MediaStreamAudioProcessingLayout::MediaStreamAudioProcessingLayout(
     const AudioProcessingProperties& properties,
     int available_platform_effects,
     int channels)
+    : MediaStreamAudioProcessingLayout(
+          properties,
+          available_platform_effects,
+          channels,
+          /*run_apm_in_audio_service =*/
+          media::IsChromeWideEchoCancellationEnabled()) {}
+
+MediaStreamAudioProcessingLayout::MediaStreamAudioProcessingLayout(
+    const AudioProcessingProperties& properties,
+    int available_platform_effects,
+    int channels,
+    bool run_apm_in_audio_service)
     : properties_(properties),
       platform_effects_(
           ApplyPropertiesToEffects(properties_, available_platform_effects)),
       webrtc_processing_settings_(
           ComputeWebrtcProcessingSettings(properties_,
                                           platform_effects_,
-                                          channels > 1)) {}
+                                          channels > 1)),
+      run_apm_in_audio_service_(run_apm_in_audio_service) {}
 
 bool MediaStreamAudioProcessingLayout::NeedWebrtcAudioProcessing() const {
   if (webrtc_processing_settings_.NeedWebrtcAudioProcessing()) {

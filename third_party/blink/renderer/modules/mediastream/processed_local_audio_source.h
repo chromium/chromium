@@ -126,13 +126,6 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   // make the log unique.
   void SendLogMessageWithSessionId(const std::string& message) const;
 
-  // If true, processing (controlled via |audio_processor_proxy_|) is done in
-  // the audio service (and Chrome-wide echo cancellation is applied if
-  // requested; otherwise, |media_stream_audio_processor_| will be applying
-  // audio processing locally, and if echo cancellation is requested then only
-  // PeerConnection audio from the same context as |this| is cancelled.
-  const bool use_remote_apm_;
-
   // The LocalFrame that will consume the audio data. Used when creating
   // AudioCapturerSources.
   //

@@ -43,6 +43,8 @@ class MODULES_EXPORT MediaStreamAudioProcessingLayout {
 
   int platform_effects() const { return platform_effects_; }
 
+  bool run_apm_in_audio_service() const { return run_apm_in_audio_service_; }
+
   bool NeedWebrtcAudioProcessing() const;
 
   bool NoiseSuppressionInTandem() const;
@@ -50,9 +52,15 @@ class MODULES_EXPORT MediaStreamAudioProcessingLayout {
   bool AutomaticGainControlInTandem() const;
 
  private:
+  MediaStreamAudioProcessingLayout(const AudioProcessingProperties& properties,
+                                   int available_platform_effects,
+                                   int channels,
+                                   bool run_apm_in_audio_service);
+
   const AudioProcessingProperties properties_;
   const int platform_effects_ = 0;
   const media::AudioProcessingSettings webrtc_processing_settings_;
+  const bool run_apm_in_audio_service_ = false;
 };
 
 }  // namespace blink
