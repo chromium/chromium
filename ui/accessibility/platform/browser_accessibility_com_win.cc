@@ -71,13 +71,13 @@ BrowserAccessibilityComWin::BrowserAccessibilityComWin()
 BrowserAccessibilityComWin::~BrowserAccessibilityComWin() = default;
 
 void BrowserAccessibilityComWin::OnReferenced() {
-  TRACE_EVENT("accessibility", "OnReferenced",
-              perfetto::Flow::FromPointer(this));
+  TRACE_EVENT_INSTANT("accessibility", "OnReferenced",
+                      perfetto::Flow::FromPointer(this));
 }
 
 void BrowserAccessibilityComWin::OnDereferenced() {
-  TRACE_EVENT("accessibility", "OnDereferenced",
-              perfetto::Flow::FromPointer(this));
+  TRACE_EVENT_INSTANT("accessibility", "OnDereferenced",
+                      perfetto::Flow::FromPointer(this));
 }
 
 //

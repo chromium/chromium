@@ -398,8 +398,8 @@ AXPlatformNodeWin::AXPlatformNodeWin() {
 }
 
 AXPlatformNodeWin::~AXPlatformNodeWin() {
-  TRACE_EVENT("accessibility", "~AXPlatformNodeWin",
-              perfetto::TerminatingFlow::FromPointer(this));
+  TRACE_EVENT_INSTANT("accessibility", "~AXPlatformNodeWin",
+                      perfetto::TerminatingFlow::FromPointer(this));
 
   // This node is no longer a ghost (it became one in `Dispose()`).
   --g_ghost_node_count_;
@@ -664,7 +664,8 @@ gfx::Vector2d AXPlatformNodeWin::CalculateUIAScrollPoint(
 //
 
 void AXPlatformNodeWin::Dispose() {
-  TRACE_EVENT("accessibility", "Dispose", perfetto::Flow::FromPointer(this));
+  TRACE_EVENT_INSTANT("accessibility", "Dispose",
+                      perfetto::Flow::FromPointer(this));
 
   // A node becomes a ghost upon disposal until its destruction, which happens
   // only when the last reference is released.
@@ -7778,14 +7779,14 @@ ULONG AXPlatformNodeWin::InternalRelease() {
 }
 
 void AXPlatformNodeWin::OnReferenced() {
-  TRACE_EVENT("accessibility", "OnReferenced",
-              perfetto::Flow::FromPointer(this), "UniqueId",
-              base::NumberToString(GetUniqueId()));
+  TRACE_EVENT_INSTANT("accessibility", "OnReferenced",
+                      perfetto::Flow::FromPointer(this), "UniqueId",
+                      base::NumberToString(GetUniqueId()));
 }
 
 void AXPlatformNodeWin::OnDereferenced() {
-  TRACE_EVENT("accessibility", "OnDereferenced",
-              perfetto::Flow::FromPointer(this));
+  TRACE_EVENT_INSTANT("accessibility", "OnDereferenced",
+                      perfetto::Flow::FromPointer(this));
 }
 
 bool AXPlatformNodeWin::IsPlatformCheckable() const {
