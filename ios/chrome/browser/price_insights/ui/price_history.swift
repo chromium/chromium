@@ -8,7 +8,7 @@ import SwiftUI
 
 /// `PreferenceKey` used to retrieve the width of a view during the layout process.
 struct TooltipViewWidthKey: PreferenceKey {
-  static var defaultValue: CGFloat = 0
+  static let defaultValue: CGFloat = 0
   static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
     value = nextValue()
   }
@@ -69,7 +69,9 @@ struct TooltipView: View {
         }
       )
       .onPreferenceChange(TooltipViewWidthKey.self) { newWidth in
-        tooltipWidth = newWidth
+        Task { @MainActor in
+          tooltipWidth = newWidth
+        }
       }
       .position(x: xPosition, y: 0.0)
       .offset(
