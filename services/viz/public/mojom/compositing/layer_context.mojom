@@ -17,6 +17,7 @@ import "services/viz/public/mojom/compositing/view_transition_request.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/display_color_spaces.mojom";
+import "ui/gfx/mojom/overlay_transform.mojom";
 
 // Describes a request to create or delete a UIResource in the service-side
 // display tree.
@@ -117,6 +118,9 @@ struct LayerTreeUpdate {
 
   // The elastic overscroll amount applied to the layer tree.
   gfx.mojom.Vector2dF elastic_overscroll;
+
+  // Display transform hint for the generated compositor frame.
+  gfx.mojom.OverlayTransform display_transform_hint;
 
   // UIResource change requests accumulated since the last LayerTreeUpdate.
   array<TransferableUIResourceRequest> ui_resource_requests;

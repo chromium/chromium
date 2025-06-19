@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/overlay_transform.h"
 
 namespace viz {
 namespace {
@@ -427,6 +428,46 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateElasticOverscroll) {
       layer_context_impl_->DoUpdateDisplayTree(std::move(update5)).has_value());
   EXPECT_EQ(active_tree->current_elastic_overscroll(), kDefaultOverscroll);
   EXPECT_TRUE(active_tree->needs_update_draw_properties());
+}
+
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayTransformHint) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+  const gfx::OverlayTransform kDefaultTransform =
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE;
+
+  // Initial update with default transform.
+  auto update1 = CreateDefaultUpdate();
+  update1->display_transform_hint = kDefaultTransform;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_EQ(active_tree->display_transform_hint(), kDefaultTransform);
+  // The first update will need to update draw properties due to other
+  // unrelated properties being set for the first time.
+  EXPECT_TRUE(active_tree->needs_update_draw_properties());
+  active_tree->clear_needs_update_draw_properties_for_testing();
+
+  // Update to a new transform.
+  const gfx::OverlayTransform kTransform2 =
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90;
+  auto update2 = CreateDefaultUpdate();
+  update2->display_transform_hint = kTransform2;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(active_tree->display_transform_hint(), kTransform2);
+  EXPECT_FALSE(active_tree->needs_update_draw_properties());
+
+  // Update to another transform.
+  const gfx::OverlayTransform kTransform3 =
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_FLIP_VERTICAL;
+  auto update3 = CreateDefaultUpdate();
+  update3->display_transform_hint = kTransform3;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(active_tree->display_transform_hint(), kTransform3);
+  EXPECT_FALSE(active_tree->needs_update_draw_properties());
+
+  // Note: No need to test invalid enum values as mojom handles that.
 }
 
 }  // namespace

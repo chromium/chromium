@@ -1271,6 +1271,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->overscroll_elasticity_transform =
       property_ids.overscroll_elasticity_transform;
   update->page_scale_transform = property_ids.page_scale_transform;
+  update->display_transform_hint = tree.display_transform_hint();
   update->inner_scroll = property_ids.inner_scroll;
   update->outer_clip = property_ids.outer_clip;
   update->outer_scroll = property_ids.outer_scroll;

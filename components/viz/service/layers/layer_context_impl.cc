@@ -1775,6 +1775,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   if (layers.elastic_overscroll()->SetCurrent(update->elastic_overscroll)) {
     layers.set_needs_update_draw_properties();
   }
+  layers.set_display_transform_hint(update->display_transform_hint);
   layers.set_painted_device_scale_factor(update->painted_device_scale_factor);
   layers.SetDisplayColorSpaces(update->display_color_spaces);
   if (update->local_surface_id_from_parent) {
