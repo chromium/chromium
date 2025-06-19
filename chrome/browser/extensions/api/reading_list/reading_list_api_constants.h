@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_READING_LIST_READING_LIST_API_CONSTANTS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_READING_LIST_READING_LIST_API_CONSTANTS_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 // Constants used for the Reading List API.
 namespace extensions::reading_list_api_constants {
 

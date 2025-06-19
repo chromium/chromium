@@ -10,6 +10,9 @@
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

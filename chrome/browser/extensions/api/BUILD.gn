@@ -38,6 +38,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/permissions",
     "//chrome/browser/extensions/api/preference",
     "//chrome/browser/extensions/api/processes",
+    "//chrome/browser/extensions/api/reading_list",
     "//chrome/browser/extensions/api/runtime",
     "//chrome/browser/extensions/api/scripting",
   ]
@@ -60,7 +61,6 @@ group("api_implementations") {
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/extensions/api/page_capture",
       "//chrome/browser/extensions/api/proxy",
-      "//chrome/browser/extensions/api/reading_list",
       "//chrome/browser/extensions/api/resources_private",
       "//chrome/browser/extensions/api/safe_browsing_private",
       "//chrome/browser/extensions/api/search",

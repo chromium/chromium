@@ -15,9 +15,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/reading_list.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
@@ -29,9 +27,12 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/test_event_router_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -74,28 +75,13 @@ class ReadingListApiUnitTest : public ExtensionServiceTestBase {
   ReadingListApiUnitTest& operator=(const ReadingListApiUnitTest&) = delete;
   ~ReadingListApiUnitTest() override = default;
 
- protected:
-  Browser* browser() { return browser_.get(); }
-  TestBrowserWindow* browser_window() { return browser_window_.get(); }
-
  private:
   void SetUp() override;
-  void TearDown() override;
-
-  std::unique_ptr<TestBrowserWindow> browser_window_;
-  std::unique_ptr<Browser> browser_;
 };
 
 void ReadingListApiUnitTest::SetUp() {
   ExtensionServiceTestBase::SetUp();
   InitializeEmptyExtensionService();
-
-  // Create a browser window.
-  browser_window_ = std::make_unique<TestBrowserWindow>();
-  Browser::CreateParams params(profile(), /*user_gesture*/ true);
-  params.type = Browser::TYPE_NORMAL;
-  params.window = browser_window_.get();
-  browser_ = std::unique_ptr<Browser>(Browser::Create(params));
 
   ReadingListEventRouterFactory::GetInstance()->SetTestingFactory(
       browser_context(), base::BindRepeating(&BuildReadingListEventRouter));
@@ -107,13 +93,6 @@ void ReadingListApiUnitTest::SetUp() {
   // order to instantiate the keyed service, since it's not created by default
   // in unit tests.
   ReadingListEventRouterFactory::GetForBrowserContext(browser_context());
-}
-
-void ReadingListApiUnitTest::TearDown() {
-  browser_->tab_strip_model()->CloseAllTabs();
-  browser_.reset();
-  browser_window_.reset();
-  ExtensionServiceTestBase::TearDown();
 }
 
 // Test that it is possible to add a unique URL.

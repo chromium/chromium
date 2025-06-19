@@ -7,6 +7,9 @@
 
 #include "chrome/common/extensions/api/reading_list.h"
 #include "components/reading_list/core/reading_list_entry.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions::reading_list_util {
 
