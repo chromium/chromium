@@ -1978,8 +1978,7 @@ LayerTreeHostImpl::BuildEvictionQueue(TreePriority tree_priority) {
       active_tree_->picture_layers(),
       pending_tree_
           ? pending_tree_->picture_layers()
-          : std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>(),
-      tree_priority);
+          : std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>());
   return queue;
 }
 
