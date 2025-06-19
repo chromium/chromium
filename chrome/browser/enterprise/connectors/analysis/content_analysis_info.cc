@@ -50,20 +50,14 @@ bool IncludeContentAreaAccountEmail(const GURL& url) {
 }
 
 std::optional<size_t> GetUserIndex(const GURL& url) {
-  const re2::RE2 kUserPathRegex{"/u/\\d+/"};
+  const re2::RE2 kUserPathRegex{"/u/(\\d+)/"};
 
   int account_id = 0;
-  std::string account_id_str;
-
-  if (re2::RE2::PartialMatch(url.path_piece(), kUserPathRegex,
-                             &account_id_str)) {
-    // Remove the leading "/u/" and the trailing "/".
-    if (base::StringToInt(account_id_str.substr(3, account_id_str.size() - 4),
-                          &account_id)) {
-      return account_id;
-    }
+  if (re2::RE2::PartialMatch(url.path_piece(), kUserPathRegex, &account_id)) {
+    return account_id;
   }
 
+  std::string account_id_str;
   if (net::GetValueForKeyInQuery(url, "authuser", &account_id_str) &&
       base::StringToInt(account_id_str, &account_id)) {
     return account_id;
