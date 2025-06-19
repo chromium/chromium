@@ -2324,6 +2324,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-12-07">
   <owner>nasko@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time delta between the start of a navigation and the time it is
     committed.
@@ -2683,6 +2684,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-10-26">
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time delta between the start of a navigation and the time it is ready to
     commit.
@@ -2909,6 +2911,7 @@ chromium-metrics-reviews@google.com.
   <owner>cduvall@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the amount of time the {Stage} stage takes in early navigation.
     Logged for any navigation that reaches the stage.
