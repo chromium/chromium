@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
+#include "components/facilitated_payments/android/device_delegate_android.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
@@ -73,6 +74,7 @@ class ChromeFacilitatedPaymentsClient
   bool IsFoldable() final;
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuideDecider()
       final;
+  payments::facilitated::DeviceDelegate* GetDeviceDelegate() final;
   void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(int64_t)> on_payment_account_selected) final;
@@ -86,11 +88,9 @@ class ChromeFacilitatedPaymentsClient
       base::RepeatingCallback<void(payments::facilitated::UiEvent)>
           ui_event_listener) final;
   autofill::StrikeDatabase* GetStrikeDatabase() final;
-  bool IsPixAccountLinkingSupported() const final;
   void ShowPixAccountLinkingPrompt(
       base::OnceCallback<void()> on_accepted,
       base::OnceCallback<void()> on_declined) final;
-  void OnPixAccountLinkingPromptAccepted() final;
 
   // Register any allowlists with the OptimizationGuide framework, so that
   // individual features can later request to check whether the current main
@@ -113,6 +113,8 @@ class ChromeFacilitatedPaymentsClient
   // frame URL is eligible for facilitated payments.
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_ = nullptr;
+
+  payments::facilitated::DeviceDelegateAndroid device_delegate_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

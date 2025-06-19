@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/facilitated_payments/core/browser/mock_device_delegate.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager_test_api.h"
@@ -41,9 +42,12 @@ class PixAccountLinkingManagerTest : public testing::Test {
     payments_data_manager_->SetSyncServiceForTest(&sync_service_);
     ON_CALL(client_, GetPaymentsDataManager)
         .WillByDefault(testing::Return(payments_data_manager_.get()));
+    mock_device_delegate_ = std::make_unique<MockDeviceDelegate>();
+    ON_CALL(client_, GetDeviceDelegate)
+        .WillByDefault(testing::Return(mock_device_delegate_.get()));
 
     // Success path setup. The Pix account linking user pref is default enabled.
-    ON_CALL(client(), IsPixAccountLinkingSupported)
+    ON_CALL(*mock_device_delegate(), IsPixAccountLinkingSupported)
         .WillByDefault(testing::Return(true));
     ON_CALL(client_, GetMultipleRequestFacilitatedPaymentsNetworkInterface)
         .WillByDefault(testing::Return(
@@ -58,6 +62,9 @@ class PixAccountLinkingManagerTest : public testing::Test {
  protected:
   MockFacilitatedPaymentsClient& client() { return client_; }
   PixAccountLinkingManager* manager() { return manager_.get(); }
+  MockDeviceDelegate* mock_device_delegate() {
+    return mock_device_delegate_.get();
+  }
   inline PixAccountLinkingManagerTestApi test_api() {
     return PixAccountLinkingManagerTestApi(manager_.get());
   }
@@ -77,6 +84,7 @@ class PixAccountLinkingManagerTest : public testing::Test {
   std::unique_ptr<MockMultipleRequestFacilitatedPaymentsNetworkInterface>
       multiple_request_payments_network_interface_;
   signin::IdentityTestEnvironment identity_test_env_;
+  std::unique_ptr<MockDeviceDelegate> mock_device_delegate_;
 };
 
 TEST_F(PixAccountLinkingManagerTest, SuccessPathShowsPrompt) {
@@ -87,7 +95,7 @@ TEST_F(PixAccountLinkingManagerTest, SuccessPathShowsPrompt) {
 
 TEST_F(PixAccountLinkingManagerTest,
        PixAccountLinkingNotSupported_PromptNotShown) {
-  ON_CALL(client(), IsPixAccountLinkingSupported)
+  ON_CALL(*mock_device_delegate(), IsPixAccountLinkingSupported)
       .WillByDefault(testing::Return(false));
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
@@ -107,7 +115,7 @@ TEST_F(PixAccountLinkingManagerTest,
 
 TEST_F(PixAccountLinkingManagerTest, OnAccepted) {
   EXPECT_CALL(client(), DismissPrompt);
-  EXPECT_CALL(client(), OnPixAccountLinkingPromptAccepted);
+  EXPECT_CALL(*mock_device_delegate(), LaunchPixAccountLinkingPage);
 
   test_api().OnAccepted();
 }

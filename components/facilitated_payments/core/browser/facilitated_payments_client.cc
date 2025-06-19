@@ -43,15 +43,9 @@ void FacilitatedPaymentsClient::InitPixAccountLinkingFlow() {
   pix_account_linking_manager_->MaybeShowPixAccountLinkingPrompt();
 }
 
-bool FacilitatedPaymentsClient::IsPixAccountLinkingSupported() const {
-  return false;
-}
-
 void FacilitatedPaymentsClient::ShowPixAccountLinkingPrompt(
     base::OnceCallback<void()> on_accepted,
     base::OnceCallback<void()> on_declined) {}
-
-void FacilitatedPaymentsClient::OnPixAccountLinkingPromptAccepted() {}
 
 void FacilitatedPaymentsClient::SetPixAccountLinkingManagerForTesting(
     std::unique_ptr<PixAccountLinkingManager> pix_account_linking_manager) {

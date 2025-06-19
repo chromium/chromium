@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
+#include "components/facilitated_payments/core/browser/device_delegate.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
@@ -78,6 +79,9 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   virtual optimization_guide::OptimizationGuideDecider*
   GetOptimizationGuideDecider() = 0;
 
+  // Returns the `DeviceDelegate` instance owned by the implementation class.
+  virtual DeviceDelegate* GetDeviceDelegate() = 0;
+
   // Shows the user's PIX accounts from their Google Wallet, and prompts to pay.
   // `bank_account_suggestions` is the list of PIX accounts to be shown to the
   // user for payment. `on_payment_account_selected` is the callback called with
@@ -116,18 +120,11 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // Virtual so it can be overridden in tests.
   virtual void InitPixAccountLinkingFlow();
 
-  // Checks if Pix account linking is supported by the platform.
-  virtual bool IsPixAccountLinkingSupported() const;
-
   // Shows the PIX account linking prompt. Virtual so it can be overridden in
   // tests.
   virtual void ShowPixAccountLinkingPrompt(
       base::OnceCallback<void()> on_accepted,
       base::OnceCallback<void()> on_declined);
-
-  // Action to be performed when the user accepts the Pix account linking
-  // prompt.
-  virtual void OnPixAccountLinkingPromptAccepted();
 
   void SetPixAccountLinkingManagerForTesting(
       std::unique_ptr<PixAccountLinkingManager> pix_account_linking_manager);

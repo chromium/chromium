@@ -4,6 +4,7 @@
 
 static_library("browser") {
   sources = [
+    "device_delegate.h",
     "facilitated_payments_api_client.h",
     "facilitated_payments_client.cc",
     "facilitated_payments_client.h",
@@ -83,6 +84,8 @@ source_set("unit_tests") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "mock_device_delegate.cc",
+    "mock_device_delegate.h",
     "mock_facilitated_payments_api_client.cc",
     "mock_facilitated_payments_api_client.h",
     "mock_facilitated_payments_client.cc",

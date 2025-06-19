@@ -13,20 +13,25 @@
 
 namespace payments::facilitated {
 
-bool IsWalletEligibleForPixAccountLinking() {
+DeviceDelegateAndroid::DeviceDelegateAndroid(content::WebContents* web_contents)
+    : web_contents_(web_contents->GetWeakPtr()) {}
+
+DeviceDelegateAndroid::~DeviceDelegateAndroid() = default;
+
+bool DeviceDelegateAndroid::IsPixAccountLinkingSupported() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_DeviceDelegate_isWalletEligibleForPixAccountLinking(env);
 }
 
-void OpenPixAccountLinkingPageInWallet(content::WebContents* web_contents) {
-  if (!web_contents || !web_contents->GetNativeView() ||
-      !web_contents->GetNativeView()->GetWindowAndroid()) {
+void DeviceDelegateAndroid::LaunchPixAccountLinkingPage() {
+  if (!web_contents_ || !web_contents_->GetNativeView() ||
+      !web_contents_->GetNativeView()->GetWindowAndroid()) {
     // TODO(crbug.com/419108993): Log metrics.
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DeviceDelegate_openPixAccountLinkingPageInWallet(
-      env, web_contents->GetTopLevelNativeWindow()->GetJavaObject());
+      env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject());
 }
 
 }  // namespace payments::facilitated

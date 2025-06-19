@@ -38,7 +38,8 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
                       /* client= */ this),
       facilitated_payments_controller_(
           std::make_unique<FacilitatedPaymentsController>(web_contents)),
-      optimization_guide_decider_(optimization_guide_decider) {
+      optimization_guide_decider_(optimization_guide_decider),
+      device_delegate_(web_contents) {
   RegisterAllowlists();
 }
 
@@ -122,6 +123,11 @@ ChromeFacilitatedPaymentsClient::GetOptimizationGuideDecider() {
   return optimization_guide_decider_;
 }
 
+payments::facilitated::DeviceDelegate*
+ChromeFacilitatedPaymentsClient::GetDeviceDelegate() {
+  return &device_delegate_;
+}
+
 void ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::span<const autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(int64_t)> on_payment_account_selected) {
@@ -173,20 +179,11 @@ autofill::StrikeDatabase* ChromeFacilitatedPaymentsClient::GetStrikeDatabase() {
   return autofill::StrikeDatabaseFactory::GetForProfile(profile);
 }
 
-bool ChromeFacilitatedPaymentsClient::IsPixAccountLinkingSupported() const {
-  return payments::facilitated::IsWalletEligibleForPixAccountLinking();
-}
-
 void ChromeFacilitatedPaymentsClient::ShowPixAccountLinkingPrompt(
     base::OnceCallback<void()> on_accepted,
     base::OnceCallback<void()> on_declined) {
   facilitated_payments_controller_->ShowPixAccountLinkingPrompt(
       std::move(on_accepted), std::move(on_declined));
-}
-
-void ChromeFacilitatedPaymentsClient::OnPixAccountLinkingPromptAccepted() {
-  // TODO(crbug.com/419108993): Add metrics.
-  payments::facilitated::OpenPixAccountLinkingPageInWallet(&GetWebContents());
 }
 
 void ChromeFacilitatedPaymentsClient::RegisterAllowlists() {

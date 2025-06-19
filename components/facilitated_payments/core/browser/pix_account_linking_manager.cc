@@ -20,7 +20,7 @@ PixAccountLinkingManager::PixAccountLinkingManager(
 PixAccountLinkingManager::~PixAccountLinkingManager() = default;
 
 void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
-  if (!client_->IsPixAccountLinkingSupported()) {
+  if (!client_->GetDeviceDelegate()->IsPixAccountLinkingSupported()) {
     return;
   }
 
@@ -58,7 +58,7 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPrompt() {
 void PixAccountLinkingManager::OnAccepted() {
   // TODO(crbug.com/419108993): Add metrics.
   client_->DismissPrompt();
-  client_->OnPixAccountLinkingPromptAccepted();
+  client_->GetDeviceDelegate()->LaunchPixAccountLinkingPage();
 }
 
 void PixAccountLinkingManager::OnDeclined() {
