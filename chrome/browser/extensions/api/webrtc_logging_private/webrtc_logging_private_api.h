@@ -11,7 +11,10 @@
 #include "chrome/browser/media/webrtc/webrtc_logging_controller.h"
 #include "chrome/common/extensions/api/webrtc_logging_private.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 
