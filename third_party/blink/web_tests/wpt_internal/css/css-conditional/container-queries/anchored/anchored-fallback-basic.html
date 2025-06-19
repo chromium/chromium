@@ -26,10 +26,10 @@
     /* Too tall to fit over the anchor to trigger fallback */
     height: 200px;
   }
-  @container anchored(fallback: 0) {
+  @container anchored(fallback: none) {
     div { --fallback: no; }
   }
-  @container anchored(fallback: 1) {
+  @container anchored(fallback: flip-block) {
     div { --fallback: yes; }
   }
 </style>

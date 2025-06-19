@@ -40,7 +40,8 @@ class CSSContainerValuesTest : public PageTestBase {
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
         ContainerScrollDirection::kNone, ContainerScrollDirection::kNone,
-        /*anchored_fallback=*/0);
+        WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr),
+        PositionTryFallback());
   }
 
   CSSContainerValues* CreateSnappedValues(ContainerSnappedFlags snapped) {
@@ -50,7 +51,8 @@ class CSSContainerValuesTest : public PageTestBase {
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
         ContainerScrollDirection::kNone, ContainerScrollDirection::kNone,
-        /*anchored_fallback=*/0);
+        WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr),
+        PositionTryFallback());
   }
 
   CSSContainerValues* CreateScrollableValues(
@@ -62,7 +64,8 @@ class CSSContainerValuesTest : public PageTestBase {
         static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone), horizontal,
         vertical, ContainerScrollDirection::kNone,
         ContainerScrollDirection::kNone,
-        /*anchored_fallback=*/0);
+        WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr),
+        PositionTryFallback());
   }
 
   CSSContainerValues* CreateScrollDirectionValues(
@@ -74,7 +77,9 @@ class CSSContainerValuesTest : public PageTestBase {
         static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone),
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
         static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
-        horizontal, vertical, /*anchored_fallback=*/0);
+        horizontal, vertical,
+        WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr),
+        PositionTryFallback());
   }
 
  private:

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
-#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -110,11 +109,14 @@ class OOFCandidateStyleIterator {
   STACK_ALLOCATED();
 
  public:
-  explicit OOFCandidateStyleIterator(const LayoutObject& object,
-                                     AnchorEvaluatorImpl& anchor_evaluator)
+  explicit OOFCandidateStyleIterator(
+      const LayoutObject& object,
+      AnchorEvaluatorImpl& anchor_evaluator,
+      WritingDirectionMode container_writing_direction)
       : element_(DynamicTo<Element>(object.GetNode())),
         style_(object.Style()),
-        anchor_evaluator_(anchor_evaluator) {
+        anchor_evaluator_(anchor_evaluator),
+        container_writing_direction_(container_writing_direction) {
     Initialize();
   }
 
@@ -200,26 +202,6 @@ class OOFCandidateStyleIterator {
     }
   }
 
-  std::optional<const CSSPropertyValueSet*> TrySetFromFallback(
-      const PositionTryFallback& fallback) {
-    if (!fallback.GetPositionArea().IsNone()) {
-      // This fallback is an position-area(). Create a declaration block
-      // with an equivalent position-area declaration.
-      CSSPropertyValue declaration(
-          CSSPropertyName(CSSPropertyID::kPositionArea),
-          *ComputedStyleUtils::ValueForPositionArea(
-              fallback.GetPositionArea()));
-      return ImmutableCSSPropertyValueSet::Create(
-          base::span_from_ref(declaration), kHTMLStandardMode);
-    } else if (const ScopedCSSName* name = fallback.GetPositionTryName()) {
-      if (const StyleRulePositionTry* rule = GetPositionTryRule(*name)) {
-        return &rule->Properties();
-      }
-      return std::nullopt;
-    }
-    return nullptr;
-  }
-
   void MoveToChosenTryFallbackIndex(std::optional<wtf_size_t> index) {
     CHECK(element_);
     bool may_invalidate_last_successful = false;
@@ -231,7 +213,7 @@ class OOFCandidateStyleIterator {
           position_try_fallbacks_->GetFallbacks()[*index];
       TryTacticList try_tactics = fallback.GetTryTactic();
       std::optional<const CSSPropertyValueSet*> opt_try_set =
-          TrySetFromFallback(fallback);
+          element_->GetDocument().GetStyleEngine().TrySetFromFallback(fallback);
       CHECK(opt_try_set.has_value());
       try_set = opt_try_set.value();
       may_invalidate_last_successful =
@@ -295,13 +277,6 @@ class OOFCandidateStyleIterator {
     return false;
   }
 
-  const StyleRulePositionTry* GetPositionTryRule(
-      const ScopedCSSName& scoped_name) {
-    CHECK(element_);
-    return element_->GetDocument().GetStyleEngine().GetPositionTryRule(
-        scoped_name);
-  }
-
   // Update the style using the specified index into `position_try_fallbacks_`
   // (which must exist), and return that updated style. Returns nullptr if
   // the fallback references a @position-try rule which doesn't exist.
@@ -319,36 +294,28 @@ class OOFCandidateStyleIterator {
     // is applied.
     anchor_evaluator_.ClearAccessibilityAnchor();
 
-    const CSSPropertyValueSet* try_set = nullptr;
-    TryTacticList try_tactics = kNoTryTactics;
+    const PositionTryFallback* fallback = nullptr;
+
     if (try_fallback_index) {
       CHECK(position_try_fallbacks_);
       CHECK_LE(*try_fallback_index,
                position_try_fallbacks_->GetFallbacks().size());
-      const PositionTryFallback& fallback =
-          position_try_fallbacks_->GetFallbacks()[*try_fallback_index];
-      try_tactics = fallback.GetTryTactic();
-      std::optional<const CSSPropertyValueSet*> try_set_opt =
-          TrySetFromFallback(fallback);
-      if (!try_set_opt.has_value()) {
-        // @position-try fallback does not exist.
-        return;
-      }
-      try_set = try_set_opt.value();
+      fallback = &position_try_fallbacks_->GetFallbacks()[*try_fallback_index];
     }
 
     CHECK(element_);
 
-    element_->GetDocument()
-        .GetStyleEngine()
-        .UpdateStyleAndLayoutTreeForOutOfFlow(*element_, try_fallback_index,
-                                              try_set, try_tactics,
-                                              &anchor_evaluator_);
-    CHECK(element_->GetLayoutObject());
-    // Returns LayoutObject ComputedStyle instead of element style for layout
-    // purposes. The style may be different, in particular for body -> html
-    // propagation of writing modes.
-    style_ = element_->GetLayoutObject()->Style();
+    if (element_->GetDocument()
+            .GetStyleEngine()
+            .UpdateStyleAndLayoutTreeForOutOfFlow(
+                *element_, fallback, &anchor_evaluator_,
+                container_writing_direction_)) {
+      CHECK(element_->GetLayoutObject());
+      // Returns LayoutObject ComputedStyle instead of element style for layout
+      // purposes. The style may be different, in particular for body -> html
+      // propagation of writing modes.
+      style_ = element_->GetLayoutObject()->Style();
+    }
   }
 
   Element* element_ = nullptr;
@@ -369,6 +336,11 @@ class OOFCandidateStyleIterator {
   // If the current style is created using `position-try-fallbacks`, an index
   // into the list of fallbacks; otherwise nullopt.
   std::optional<wtf_size_t> try_fallback_index_;
+
+  // The abspos container for the anchored element. Needs to be passed in to
+  // UpdateStyleAndLayoutTreeForOutOfFlow() in order to resolve logical values
+  // for anchored(fallback) container queries.
+  WritingDirectionMode container_writing_direction_;
 };
 
 const Element* GetPositionAnchorElement(
@@ -2068,8 +2040,9 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   AnchorEvaluatorImpl anchor_evaluator = CreateAnchorEvaluator(
       node_info.base_container_info, node_info.node, anchor_queries);
 
-  OOFCandidateStyleIterator iter(*node_info.node.GetLayoutBox(),
-                                 anchor_evaluator);
+  OOFCandidateStyleIterator iter(
+      *node_info.node.GetLayoutBox(), anchor_evaluator,
+      node_info.base_container_info.writing_direction);
   const ComputedStyle& current_style = node_info.node.Style();
   bool has_try_fallbacks = !!current_style.GetPositionTryFallbacks();
   EPositionTryOrder position_try_order = current_style.PositionTryOrder();

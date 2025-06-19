@@ -131,7 +131,7 @@ class AnchoredFeatureSet : public MediaQueryParser::FeatureSet {
   bool IsCaseSensitive(const AtomicString& feature) const override {
     return false;
   }
-  bool SupportsRange() const override { return true; }
+  bool SupportsRange() const override { return false; }
   bool SupportsStyleRange() const override { return false; }
   bool SupportsElementDependent() const override {
     return RuntimeEnabledFeatures::
@@ -234,7 +234,7 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
   } else if (RuntimeEnabledFeatures::CSSFallbackContainerQueriesEnabled() &&
              stream.Peek().GetType() == kFunctionToken &&
              stream.Peek().FunctionId() == CSSValueID::kAnchored) {
-    // anchored(fallback: <integer>)
+    // anchored(fallback: [<dashed-ident> || <try-tactic>] | <'position-area'>)
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
 

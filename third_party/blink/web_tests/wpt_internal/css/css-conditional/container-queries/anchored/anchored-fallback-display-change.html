@@ -23,10 +23,10 @@
     container-type: anchored;
   }
   #t1 { height: 100%; }
-  @container anchored(fallback: 0) {
+  @container anchored(fallback: none) {
     #t1 { display: none; }
   }
-  @container anchored(fallback: 1) {
+  @container anchored(fallback: flip-block) {
     #t1 { display: block; }
   }
 </style>

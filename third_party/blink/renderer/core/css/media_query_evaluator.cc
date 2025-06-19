@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -1670,17 +1671,43 @@ static bool ScriptingMediaFeatureEval(const MediaQueryExpValue& value,
   }
 }
 
+namespace {
+
+PositionTryFallback ToPhysicalFallback(const PositionTryFallback& fallback,
+                                       const MediaValues& media_values) {
+  if (fallback.GetPositionArea().IsNone()) {
+    return fallback;
+  }
+  return PositionTryFallback(fallback.GetPositionArea().ToPhysical(
+      media_values.GetWritingDirection(),
+      media_values.AbsContainerWritingDirection()));
+}
+
+}  // namespace
+
 static bool FallbackMediaFeatureEval(const MediaQueryExpValue& value,
                                      MediaQueryOperator op,
                                      const MediaValues& media_values) {
-  const int fallback = media_values.AnchoredFallback();
+  PositionTryFallback fallback = media_values.AnchoredFallback();
   if (!value.IsValid()) {
-    return fallback == 0;
+    return !fallback.IsNone();
   }
-
-  float number;
-  return NumberValue(value, number, media_values) &&
-         CompareValue(fallback, ClampTo<int>(number), op);
+  if (value.IsId()) {
+    CHECK(value.Id() == CSSValueID::kNone);
+    return fallback.IsNone();
+  }
+  if (fallback.IsNone()) {
+    return false;
+  }
+  Element* container = media_values.ContainerElement();
+  CHECK(container);
+  StyleResolverState state(container->GetDocument(), *container);
+  PositionTryFallback query_fallback =
+      StyleBuilderConverter::ConvertSinglePositionTryFallback(
+          state, value.GetCSSValue());
+  query_fallback = ToPhysicalFallback(query_fallback, media_values);
+  fallback = ToPhysicalFallback(fallback, media_values);
+  return fallback == query_fallback;
 }
 
 static MediaQueryOperator ReverseOperator(MediaQueryOperator op) {

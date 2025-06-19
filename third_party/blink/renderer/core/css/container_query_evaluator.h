@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/position_try_fallbacks.h"
 #include "third_party/blink/renderer/platform/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -23,6 +24,7 @@ class ComputedStyle;
 class ContainerQuery;
 class Element;
 class MatchResult;
+class PositionTryFallback;
 class ScrollStateQuerySnapshot;
 class SnappedQueryScrollSnapshot;
 class StyleRecalcContext;
@@ -124,7 +126,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // position-try-fallbacks.
   StyleRecalcChange ApplyAnchoredChanges(
       const StyleRecalcChange& child_change,
-      std::optional<wtf_size_t> try_fallback_index);
+      const PositionTryFallback& try_fallback,
+      WritingDirectionMode abs_container_writing_direction);
 
   // Set the pending snapped state when updating scroll snapshots.
   // ApplyScrollState() will set the snapped state from the pending snapped
@@ -164,7 +167,9 @@ class CORE_EXPORT ContainerQueryEvaluator final
 
   // Re-evaluate the cached results and clear any results which are affected by
   // the anchored fallback changes.
-  Change AnchoredContainerChanged(int fallback);
+  Change AnchoredContainerChanged(
+      const PositionTryFallback& fallback,
+      WritingDirectionMode abs_container_writing_direction);
 
   // Update the CSSContainerValues with the new size and contained axes to be
   // used for queries.
@@ -187,7 +192,9 @@ class CORE_EXPORT ContainerQueryEvaluator final
       ContainerScrollDirection scroll_direction_vertical);
 
   // Update the CSSContainerValues with the new anchored fallback.
-  void UpdateAnchoredFallback(int anchored_fallback);
+  void UpdateAnchoredFallback(
+      const PositionTryFallback& anchored_fallback,
+      WritingDirectionMode abs_container_writing_direction);
 
   // Re-evaluate the cached results and clear any results which are affected by
   // the ContainerStuckPhysical changes.
@@ -278,7 +285,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
       ContainerScrollDirection::kNone;
   ContainerScrollDirection scroll_direction_vertical_ =
       ContainerScrollDirection::kNone;
-  int anchored_fallback_ = 0;
+  PositionTryFallback anchored_fallback_;
 
   HeapHashMap<Member<const ContainerQuery>, Result> results_;
   Member<ScrollStateQuerySnapshot> scroll_state_snapshot_;

@@ -4923,7 +4923,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
           // reset the anchored(fallback) state to no fallback for normal style
           // recalc.
           child_change = evaluator->ApplyAnchoredChanges(
-              child_change, /*try_fallback_index=*/std::nullopt);
+              child_change, PositionTryFallback(),
+              WritingDirectionMode(WritingMode::kHorizontalTb,
+                                   TextDirection::kLtr));
         }
         child_change = evaluator->ApplyScrollStateAndStyleChanges(
             child_change, *old_style, *new_style,

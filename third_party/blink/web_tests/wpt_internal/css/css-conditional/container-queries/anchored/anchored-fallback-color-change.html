@@ -32,13 +32,13 @@
     height: 100px;
     left: 100px;
   }
-  @container anchored(fallback: 0) {
+  @container anchored(fallback: none) {
     #target {
       background-color: green;
       left: auto;
     }
   }
-  @container anchored(fallback: 1) {
+  @container anchored(fallback: flip-block) {
     #target {
       background-color: red;
     }

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/container_state.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/style/position_try_fallbacks.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -185,10 +186,17 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
     return ScrollDirectionHorizontal() != ContainerScrollDirection::kNone ||
            ScrollDirectionVertical() != ContainerScrollDirection::kNone;
   }
+  // The writing-mode/direction of a container. Used for anchored(fallback).
+  virtual WritingDirectionMode GetWritingDirection() const { NOTREACHED(); }
+  // The writing-mode/direction of the abspos containing block for an anchored
+  // container. Used for anchored(fallback).
+  virtual WritingDirectionMode AbsContainerWritingDirection() const {
+    NOTREACHED();
+  }
   // Return the currently applied position-try-fallback for an anchored element.
   // 0 means no position-try-fallback is applied. Otherwise a 1-based index into
   // the list of fallbacks of the computed position-try-fallbacks property.
-  virtual int AnchoredFallback() const { NOTREACHED(); }
+  virtual const PositionTryFallback& AnchoredFallback() const { NOTREACHED(); }
   // Returns the container element used to retrieve base style and parent style
   // when computing the computed value of a style() container query.
   virtual Element* ContainerElement() const { return nullptr; }

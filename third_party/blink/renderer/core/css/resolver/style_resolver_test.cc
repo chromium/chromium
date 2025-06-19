@@ -134,13 +134,10 @@ class StyleResolverTest : public PageTestBase {
                                             AtomicString try_name) {
     ScopedCSSName* scoped_name =
         MakeGarbageCollected<ScopedCSSName>(try_name, &GetDocument());
-    StyleRulePositionTry* rule =
-        GetStyleEngine().GetPositionTryRule(*scoped_name);
-    CHECK(rule);
+    PositionTryFallback fallback(scoped_name, kNoTryTactics);
     GetStyleEngine().UpdateStyleAndLayoutTreeForOutOfFlow(
-        element, /*try_fallback_index*/ 0,
-        /*try_set=*/&rule->Properties(), kNoTryTactics,
-        /*anchor_evaluator=*/nullptr);
+        element, &fallback, /*anchor_evaluator=*/nullptr,
+        WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr));
   }
 
   size_t GetCurrentOldStylesCount() {

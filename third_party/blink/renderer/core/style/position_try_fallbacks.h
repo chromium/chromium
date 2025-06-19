@@ -27,6 +27,7 @@ class CORE_EXPORT PositionTryFallback {
   DISALLOW_NEW();
 
  public:
+  PositionTryFallback() = default;
   PositionTryFallback(const ScopedCSSName* name, TryTacticList tactic_list)
       : position_try_name_(name), tactic_list_(tactic_list) {}
   explicit PositionTryFallback(PositionArea position_area)
@@ -38,11 +39,15 @@ class CORE_EXPORT PositionTryFallback {
 
   bool operator==(const PositionTryFallback& other) const;
 
+  bool IsNone() const {
+    return !position_try_name_ && tactic_list_[0] == TryTactic::kNone &&
+           position_area_.IsNone();
+  }
   void Trace(Visitor* visitor) const;
 
  private:
   Member<const ScopedCSSName> position_try_name_;
-  TryTacticList tactic_list_;
+  TryTacticList tactic_list_ = kNoTryTactics;
   PositionArea position_area_;
 };
 

@@ -253,6 +253,11 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
     }
   }
 
+  if (RuntimeEnabledFeatures::CSSFallbackContainerQueriesEnabled() &&
+      media_feature == media_feature_names::kFallbackMediaFeature) {
+    return ident == CSSValueID::kNone;
+  }
+
   return false;
 }
 
@@ -308,8 +313,7 @@ static inline bool FeatureExpectingInteger(const String& media_feature,
       media_feature == media_feature_names::kMinColorIndexMediaFeature ||
       media_feature == media_feature_names::kMonochromeMediaFeature ||
       media_feature == media_feature_names::kMaxMonochromeMediaFeature ||
-      media_feature == media_feature_names::kMinMonochromeMediaFeature ||
-      media_feature == media_feature_names::kFallbackMediaFeature) {
+      media_feature == media_feature_names::kMinMonochromeMediaFeature) {
     return true;
   }
 
@@ -511,6 +515,14 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
   DCHECK_EQ(media_feature, media_feature.LowerASCII())
       << "Under the assumption that custom properties in style() container "
          "queries are currently the only case sensitive features";
+
+  if (media_feature == media_feature_names::kFallbackMediaFeature) {
+    if (CSSValue* fallback_value =
+            css_parsing_utils::ConsumeSinglePositionTryFallback(stream,
+                                                                context)) {
+      return MediaQueryExpValue(*fallback_value);
+    }
+  }
 
   CSSPrimitiveValue* value = css_parsing_utils::ConsumeInteger(
       stream, context, -std::numeric_limits<double>::max() /* minimum_value */);

@@ -139,7 +139,8 @@ ContainerQueryEvaluator::ContainerQueryEvaluator(Element& container) {
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone),
       ContainerScrollDirection::kNone, ContainerScrollDirection::kNone,
-      /*anchored_fallback=*/0);
+      WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr),
+      PositionTryFallback());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -500,11 +501,13 @@ ContainerQueryEvaluator::ScrollDirectionContainerChanged(
 // Re-evaluate the cached results and clear any results which are affected by
 // the anchored fallback changes.
 ContainerQueryEvaluator::Change
-ContainerQueryEvaluator::AnchoredContainerChanged(int anchored_fallback) {
+ContainerQueryEvaluator::AnchoredContainerChanged(
+    const PositionTryFallback& anchored_fallback,
+    WritingDirectionMode abs_container_writing_direction) {
   if (anchored_fallback_ == anchored_fallback) {
     return Change::kNone;
   }
-  UpdateAnchoredFallback(anchored_fallback);
+  UpdateAnchoredFallback(anchored_fallback, abs_container_writing_direction);
   Change change = ComputeAnchoredChange();
   if (change != Change::kNone) {
     ClearResults(change, kAnchoredContainer);
@@ -579,6 +582,7 @@ void ContainerQueryEvaluator::UpdateContainerValues() {
       existing_values.ScrollableVertical(),
       existing_values.ScrollDirectionHorizontal(),
       existing_values.ScrollDirectionVertical(),
+      existing_values.AbsContainerWritingDirection(),
       existing_values.AnchoredFallback());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
@@ -588,6 +592,7 @@ void ContainerQueryEvaluator::Trace(Visitor* visitor) const {
   visitor->Trace(media_query_evaluator_);
   visitor->Trace(results_);
   visitor->Trace(scroll_state_snapshot_);
+  visitor->Trace(anchored_fallback_);
 }
 
 void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
@@ -625,6 +630,7 @@ void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
       existing_values.ScrollableVertical(),
       existing_values.ScrollDirectionHorizontal(),
       existing_values.ScrollDirectionVertical(),
+      existing_values.AbsContainerWritingDirection(),
       existing_values.AnchoredFallback());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
@@ -646,6 +652,7 @@ void ContainerQueryEvaluator::UpdateContainerStuck(
       existing_values.ScrollableVertical(),
       existing_values.ScrollDirectionHorizontal(),
       existing_values.ScrollDirectionVertical(),
+      existing_values.AbsContainerWritingDirection(),
       existing_values.AnchoredFallback());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
@@ -666,6 +673,7 @@ void ContainerQueryEvaluator::UpdateContainerSnapped(
       existing_values.ScrollableVertical(),
       existing_values.ScrollDirectionHorizontal(),
       existing_values.ScrollDirectionVertical(),
+      existing_values.AbsContainerWritingDirection(),
       existing_values.AnchoredFallback());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
@@ -687,6 +695,7 @@ void ContainerQueryEvaluator::UpdateContainerScrollable(
       scrollable_horizontal, scrollable_vertical,
       existing_values.ScrollDirectionHorizontal(),
       existing_values.ScrollDirectionVertical(),
+      existing_values.AbsContainerWritingDirection(),
       existing_values.AnchoredFallback());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
@@ -707,12 +716,15 @@ void ContainerQueryEvaluator::UpdateContainerScrollDirection(
       existing_values.StuckVertical(), existing_values.Snapped(),
       existing_values.ScrollableHorizontal(),
       existing_values.ScrollableVertical(), scroll_direction_horizontal,
-      scroll_direction_vertical, existing_values.AnchoredFallback());
+      scroll_direction_vertical, existing_values.AbsContainerWritingDirection(),
+      existing_values.AnchoredFallback());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
 
-void ContainerQueryEvaluator::UpdateAnchoredFallback(int anchored_fallback) {
+void ContainerQueryEvaluator::UpdateAnchoredFallback(
+    const PositionTryFallback& anchored_fallback,
+    WritingDirectionMode abs_container_writing_direction) {
   anchored_fallback_ = anchored_fallback;
 
   const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
@@ -725,7 +737,8 @@ void ContainerQueryEvaluator::UpdateAnchoredFallback(int anchored_fallback) {
       existing_values.ScrollableHorizontal(),
       existing_values.ScrollableVertical(),
       existing_values.ScrollDirectionHorizontal(),
-      existing_values.ScrollDirectionVertical(), anchored_fallback);
+      existing_values.ScrollDirectionVertical(),
+      abs_container_writing_direction, anchored_fallback);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -917,12 +930,10 @@ void ContainerQueryEvaluator::UpdateContainerValuesFromUnitChanges(
 
 StyleRecalcChange ContainerQueryEvaluator::ApplyAnchoredChanges(
     const StyleRecalcChange& child_change,
-    std::optional<wtf_size_t> try_fallback_index) {
-  int anchored_fallback = 0;
-  if (try_fallback_index.has_value()) {
-    anchored_fallback = ClampTo<int>(try_fallback_index.value()) + 1;
-  }
-  switch (AnchoredContainerChanged(anchored_fallback)) {
+    const PositionTryFallback& try_fallback,
+    WritingDirectionMode abs_container_writing_direction) {
+  switch (
+      AnchoredContainerChanged(try_fallback, abs_container_writing_direction)) {
     case ContainerQueryEvaluator::Change::kNone:
       return child_change;
     case ContainerQueryEvaluator::Change::kNearestContainer:
