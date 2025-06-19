@@ -2543,10 +2543,14 @@ void Node::MovedFrom(ContainerNode& old_parent) {}
 void Node::RemovedFrom(ContainerNode& insertion_point) {
   DCHECK(IsContainerNode() || IsInTreeScope() || GetDOMParts());
   if (insertion_point.isConnected()) {
-    ClearNeedsStyleRecalc();
-    ClearChildNeedsStyleRecalc();
-    ClearNeedsStyleInvalidation();
-    ClearChildNeedsStyleInvalidation();
+    // Don't clear the layout/style flags on `moveBefore`, so that the layout is
+    // recomputed and reattached on the next style recalc.
+    if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
+      ClearNeedsStyleRecalc();
+      ClearChildNeedsStyleRecalc();
+      ClearNeedsStyleInvalidation();
+      ClearChildNeedsStyleInvalidation();
+    }
     ClearFlag(kIsConnectedFlag);
 #if DCHECK_IS_ON()
     insertion_point.GetDocument().DecrementNodeCount();
