@@ -215,17 +215,17 @@ bool EnumTraits<media::mojom::VideoCapturePixelFormat,
       *output = media::PIXEL_FORMAT_MJPEG;
       return true;
     case media::mojom::VideoCapturePixelFormat::YUV420P9_DEPRECATED:
-      NOTREACHED();
+      return false;
     case media::mojom::VideoCapturePixelFormat::YUV420P10:
       *output = media::PIXEL_FORMAT_YUV420P10;
       return true;
     case media::mojom::VideoCapturePixelFormat::YUV422P9_DEPRECATED:
-      NOTREACHED();
+      return false;
     case media::mojom::VideoCapturePixelFormat::YUV422P10:
       *output = media::PIXEL_FORMAT_YUV422P10;
       return true;
     case media::mojom::VideoCapturePixelFormat::YUV444P9_DEPRECATED:
-      NOTREACHED();
+      return false;
     case media::mojom::VideoCapturePixelFormat::YUV444P10:
       *output = media::PIXEL_FORMAT_YUV444P10;
       return true;
@@ -293,7 +293,7 @@ bool EnumTraits<media::mojom::VideoCapturePixelFormat,
       *output = media::PIXEL_FORMAT_P410LE;
       return true;
   }
-  NOTREACHED();
+  return false;
 }
 
 // static
