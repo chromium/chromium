@@ -5,11 +5,18 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_SCOPED_RULE_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_SCOPED_RULE_H_
 
+#include <string>
+
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
-#include "components/url_pattern_index/flat/url_pattern_index_generated.h"
+
+namespace url_pattern_index::flat {
+struct UrlRule;
+}
 
 namespace subresource_filter {
+
+class MemoryMappedRuleset;
 
 // Encapsulates a filterlist rule and its corresponding ruleset. This ensures
 // that the rule remains valid as long as this `ScopedRule` object exists.

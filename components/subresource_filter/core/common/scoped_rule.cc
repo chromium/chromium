@@ -4,6 +4,8 @@
 
 #include "components/subresource_filter/core/common/scoped_rule.h"
 
+#include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
+#include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "components/url_pattern_index/url_rule_util.h"
 
 namespace subresource_filter {
