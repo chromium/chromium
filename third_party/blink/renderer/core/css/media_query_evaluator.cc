@@ -1679,8 +1679,8 @@ PositionTryFallback ToPhysicalFallback(const PositionTryFallback& fallback,
     return fallback;
   }
   return PositionTryFallback(fallback.GetPositionArea().ToPhysical(
-      media_values.GetWritingDirection(),
-      media_values.AbsContainerWritingDirection()));
+      media_values.AbsContainerWritingDirection(),
+      media_values.GetWritingDirection()));
 }
 
 }  // namespace
