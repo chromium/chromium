@@ -18,7 +18,7 @@
 #include "components/enterprise/client_certificates/core/ec_private_key.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
 #include "net/ssl/ssl_private_key.h"
 
 namespace client_certificates {
@@ -26,22 +26,18 @@ namespace client_certificates {
 namespace {
 
 scoped_refptr<ECPrivateKey> CreateKey() {
-  auto key = crypto::ECPrivateKey::Create();
-  if (!key) {
-    return nullptr;
-  }
-
-  return base::MakeRefCounted<ECPrivateKey>(std::move(key));
+  return base::MakeRefCounted<ECPrivateKey>(
+      crypto::keypair::PrivateKey::GenerateEcP256());
 }
 
 scoped_refptr<ECPrivateKey> LoadKeyFromWrapped(
     const std::vector<uint8_t>& wrapped_key) {
-  auto key = crypto::ECPrivateKey::CreateFromPrivateKeyInfo(wrapped_key);
-  if (!key) {
+  auto key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(wrapped_key);
+  if (!key || !key->IsEc()) {
     return nullptr;
   }
 
-  return base::MakeRefCounted<ECPrivateKey>(std::move(key));
+  return base::MakeRefCounted<ECPrivateKey>(std::move(*key));
 }
 
 }  // namespace

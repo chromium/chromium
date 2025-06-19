@@ -10,16 +10,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
-
-namespace crypto {
-class ECPrivateKey;
-}  // namespace crypto
+#include "crypto/keypair.h"
 
 namespace client_certificates {
 
 class ECPrivateKey : public PrivateKey {
  public:
-  explicit ECPrivateKey(std::unique_ptr<crypto::ECPrivateKey> key);
+  explicit ECPrivateKey(crypto::keypair::PrivateKey key);
 
   // PrivateKey:
   std::optional<std::vector<uint8_t>> SignSlowly(
@@ -34,7 +31,7 @@ class ECPrivateKey : public PrivateKey {
 
   ~ECPrivateKey() override;
 
-  std::unique_ptr<crypto::ECPrivateKey> key_;
+  crypto::keypair::PrivateKey key_;
 };
 
 }  // namespace client_certificates

@@ -13,7 +13,7 @@
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/scoped_ssl_key_converter.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
 #include "net/ssl/ssl_private_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

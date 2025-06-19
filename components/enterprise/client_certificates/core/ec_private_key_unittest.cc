@@ -7,15 +7,15 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
 #include "net/ssl/ssl_private_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace client_certificates {
 
 TEST(ECPrivateKeyTest, KeyWorksAsExpected) {
-  auto ec_private_key =
-      base::MakeRefCounted<ECPrivateKey>(crypto::ECPrivateKey::Create());
+  auto ec_private_key = base::MakeRefCounted<ECPrivateKey>(
+      crypto::keypair::PrivateKey::GenerateEcP256());
 
   EXPECT_EQ(ec_private_key->GetAlgorithm(),
             crypto::SignatureVerifier::ECDSA_SHA256);

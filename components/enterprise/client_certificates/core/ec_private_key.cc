@@ -11,43 +11,29 @@
 #include "base/check.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/ssl_key_converter.h"
-#include "crypto/ec_private_key.h"
-#include "crypto/ec_signature_creator.h"
+#include "crypto/keypair.h"
+#include "crypto/sign.h"
 #include "net/ssl/openssl_private_key.h"
 #include "net/ssl/ssl_private_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace client_certificates {
 
-ECPrivateKey::ECPrivateKey(std::unique_ptr<crypto::ECPrivateKey> key)
+ECPrivateKey::ECPrivateKey(crypto::keypair::PrivateKey key)
     : PrivateKey(PrivateKeySource::kSoftwareKey,
-                 net::WrapOpenSSLPrivateKey(bssl::UpRef(key->key()))),
-      key_(std::move(key)) {
-  CHECK(key_);
-}
+                 net::WrapOpenSSLPrivateKey(bssl::UpRef(key.key()))),
+      key_(std::move(key)) {}
 
 ECPrivateKey::~ECPrivateKey() = default;
 
 std::optional<std::vector<uint8_t>> ECPrivateKey::SignSlowly(
     base::span<const uint8_t> data) const {
-  auto signer = crypto::ECSignatureCreator::Create(key_.get());
-  if (!signer) {
-    return std::nullopt;
-  }
-
-  std::vector<uint8_t> signature;
-  if (!signer->Sign(data, &signature)) {
-    return std::nullopt;
-  }
-  return signature;
+  return crypto::sign::Sign(crypto::sign::SignatureKind::ECDSA_SHA256, key_,
+                            data);
 }
 
 std::vector<uint8_t> ECPrivateKey::GetSubjectPublicKeyInfo() const {
-  std::vector<uint8_t> pubkey;
-  if (!key_->ExportPublicKey(&pubkey)) {
-    return std::vector<uint8_t>();
-  }
-  return pubkey;
+  return key_.ToSubjectPublicKeyInfo();
 }
 
 crypto::SignatureVerifier::SignatureAlgorithm ECPrivateKey::GetAlgorithm()
@@ -59,20 +45,14 @@ client_certificates_pb::PrivateKey ECPrivateKey::ToProto() const {
   client_certificates_pb::PrivateKey private_key;
   private_key.set_source(ToProtoKeySource(source_));
 
-  std::vector<uint8_t> wrapped;
-  key_->ExportPrivateKey(&wrapped);
+  std::vector<uint8_t> wrapped = key_.ToPrivateKeyInfo();
   private_key.set_wrapped_key(std::string(wrapped.begin(), wrapped.end()));
 
   return private_key;
 }
 
 base::Value::Dict ECPrivateKey::ToDict() const {
-  std::vector<uint8_t> wrapped;
-  if (!key_->ExportPrivateKey(&wrapped)) {
-    return base::Value::Dict();
-  }
-
-  return BuildSerializedPrivateKey(wrapped);
+  return BuildSerializedPrivateKey(key_.ToPrivateKeyInfo());
 }
 
 }  // namespace client_certificates
