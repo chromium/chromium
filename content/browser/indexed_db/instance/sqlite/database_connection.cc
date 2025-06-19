@@ -698,7 +698,8 @@ StatusOr<IndexedDBValue> DatabaseConnection::GetValue(
     sql::Statement statement(db_->GetCachedStatement(
         SQL_FROM_HERE,
         "SELECT "
-        "  blobs.row_id, mime_type, size_bytes "
+        "  blobs.row_id, object_type, mime_type, size_bytes, file_name, "
+        "  last_modified "
         "FROM blobs INNER JOIN blob_references"
         "  ON blob_references.blob_row_id = blobs.row_id "
         "WHERE"
@@ -712,10 +713,23 @@ StatusOr<IndexedDBValue> DatabaseConnection::GetValue(
         // object (and later the Blob mojo endpoint) from `blobs_to_write_`.
         value.external_objects.emplace_back(it->second);
       } else {
-        // Otherwise, create a new `IndexedDBExternalObject` from the
-        // database.
-        value.external_objects.emplace_back(
-            statement.ColumnString16(1), statement.ColumnInt64(2), blob_row_id);
+        auto object_type = static_cast<IndexedDBExternalObject::ObjectType>(
+            statement.ColumnInt(1));
+        if (object_type == IndexedDBExternalObject::ObjectType::kBlob) {
+          // Otherwise, create a new `IndexedDBExternalObject` from the
+          // database.
+          value.external_objects.emplace_back(
+              /*type=*/statement.ColumnString16(2),
+              /*size=*/statement.ColumnInt64(3), blob_row_id);
+        } else if (object_type == IndexedDBExternalObject::ObjectType::kFile) {
+          value.external_objects.emplace_back(
+              blob_row_id, /*type=*/statement.ColumnString16(2),
+              /*file_name=*/statement.ColumnString16(4),
+              /*last_modified=*/statement.ColumnTime(5),
+              /*size=*/statement.ColumnInt64(3));
+        } else {
+          NOTREACHED();
+        }
       }
     }
   }
@@ -743,9 +757,10 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
 
   // Insert external objects into relevant tables.
   for (auto& external_object : value.external_objects) {
-    // TODO(crbug.com/419208485): Support other types of external objects.
-    TRANSIENT_CHECK(external_object.object_type() ==
-                    IndexedDBExternalObject::ObjectType::kBlob);
+    // TODO(crbug.com/419208485): Support FSA handles.
+    TRANSIENT_CHECK(
+        external_object.object_type() !=
+        IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle);
     // Reserve space in the blob table. It's not actually written yet though.
     {
       sql::Statement statement(
@@ -758,8 +773,16 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
       statement.BindString16(1, external_object.type());
       statement.BindInt64(2, external_object.size());
       statement.BindBlobForStreaming(3, external_object.size());
-      statement.BindNull(4);
-      statement.BindNull(5);
+      if (external_object.object_type() ==
+          IndexedDBExternalObject::ObjectType::kBlob) {
+        statement.BindNull(4);
+        statement.BindNull(5);
+      } else {
+        CHECK_EQ(external_object.object_type(),
+                 IndexedDBExternalObject::ObjectType::kFile);
+        statement.BindString16(4, external_object.file_name());
+        statement.BindTime(5, external_object.last_modified());
+      }
       TRANSIENT_CHECK(statement.Run());
     }
 
@@ -861,7 +884,8 @@ DatabaseConnection::CreateAllExternalObjects(
   for (size_t i = 0; i < objects.size(); ++i) {
     const IndexedDBExternalObject& object = objects[i];
     blink::mojom::IDBExternalObjectPtr& mojo_object = mojo_objects[i];
-    if (object.object_type() != IndexedDBExternalObject::ObjectType::kBlob) {
+    if (object.object_type() ==
+        IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle) {
       NOTIMPLEMENTED();
       continue;
     }
