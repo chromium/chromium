@@ -146,7 +146,7 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
   // However the shape size of U+FFFC isn't suitable for emphasis mark
   // positioning. We use Hiragana Letter A instead. See crbug.com/40386493
   const TextRun placeholder_text_run(
-      base::span_from_ref(uchar::kHiraganaLetterACharacter));
+      base::span_from_ref(uchar::kHiraganaLetterA));
   const gfx::PointF emphasis_mark_text_origin =
       gfx::PointF(text_origin()) +
       gfx::Vector2dF(0, font_ascent + emphasis_mark_offset());

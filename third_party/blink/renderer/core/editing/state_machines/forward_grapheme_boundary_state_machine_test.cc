@@ -468,10 +468,10 @@ TEST_F(ForwardGraphemeBoundaryStatemachineTest,
 TEST_F(ForwardGraphemeBoundaryStatemachineTest, MuchLongerCase) {
   ForwardGraphemeBoundaryStateMachine machine;
 
-  const UChar32 kMan = uchar::kManCharacter;
+  using uchar::kMan;
   const UChar32 kZwj = uchar::kZeroWidthJoiner;
-  const UChar32 kHeart = uchar::kHeavyBlackHeartCharacter;
-  const UChar32 kKiss = uchar::kKissMarkCharacter;
+  const UChar32 kHeart = uchar::kHeavyBlackHeart;
+  const UChar32 kKiss = uchar::kKissMark;
 
   // U+1F468 U+200D U+2764 U+FE0F U+200D U+1F48B U+200D U+1F468 is a valid ZWJ
   // emoji sequence.
