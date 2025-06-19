@@ -213,6 +213,11 @@ chromium-metrics-reviews@google.com.
     There must be at least one profile with a parent and no supervision across
     the profiles.
   </int>
+  <int value="5" label="Supervision enabled locally">
+    Users with or without accounts that have supervision applied to their
+    devices locally. These users are mutually exclusive with those with Family
+    Link enabled supervisions. Only available for Android users.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/supervised_user/core/browser/family_link_user_log_record.h:FamilyLinkUserLogSegment) -->
@@ -278,12 +283,32 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/supervised_user/supervised_user_verification_page.h:FamilyLinkUserReauthenticationInterstitialState) -->
 
+<!-- LINT.IfChange(FamilyLinkWebFilterType) -->
+
 <enum name="FamilyLinkWebFilterType">
-  <int value="0" label="Allow All Sites"/>
-  <int value="1" label="Try To Block Mature Sites"/>
-  <int value="2" label="Only allow Certain Sites"/>
-  <int value="3" label="Mixed web filters on device"/>
+  <int value="0" label="Allow all sites">
+    This is the default value; manual blocklists take precedence over this
+    setting.
+  </int>
+  <int value="1" label="Try to block mature sites">
+    Uses external service to detect mature sites. This is the only available
+    setting for local supervision (see FamilyLinkUserLogSegment).
+  </int>
+  <int value="2" label="Only allow Certain Sites">
+    In this mode all sites are blocked, unless explicitly allowlisted.
+  </int>
+  <int value="3" label="Mixed web filters on device">
+    Reported when multiple browser profiles have different web filters set.
+  </int>
+  <int value="4" label="Disabled">
+    Web filter is neutralized: it behaves as if there were no filtering. The
+    difference between this and the &quot;allow all sites&quot; setting with
+    empty blocklist is that this filter type will not emit any metrics related
+    to url classification and web filtering.
+  </int>
 </enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:FamilyLinkWebFilterType) -->
 
 <enum name="FamilyUserLogSegment">
   <summary>Filters family user metrics into categories of interest.</summary>

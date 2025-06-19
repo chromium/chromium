@@ -22,6 +22,7 @@
 class GURL;
 
 namespace supervised_user {
+class SupervisedUserURLFilter;
 
 // Reason for applying the website filtering parental control.
 enum class FilteringBehaviorReason {

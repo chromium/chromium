@@ -4,6 +4,10 @@
 
 #include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
 
+#include <memory>
+#include <string_view>
+#include <utility>
+
 #include "base/android/jni_android.h"
 #include "base/logging.h"
 #include "components/supervised_user/core/common/features.h"
@@ -12,7 +16,6 @@
 #include "components/supervised_user/android/jni_headers/ContentFiltersObserverBridge_jni.h"
 
 namespace supervised_user {
-
 ContentFiltersObserverBridge::ContentFiltersObserverBridge(
     std::string_view setting_name,
     base::RepeatingClosure on_enabled,
@@ -20,6 +23,25 @@ ContentFiltersObserverBridge::ContentFiltersObserverBridge(
     : setting_name_(setting_name),
       on_enabled_(on_enabled),
       on_disabled_(on_disabled) {
+  CreateJavaBridge();
+}
+
+ContentFiltersObserverBridge::~ContentFiltersObserverBridge() {
+  DestroyJavaBridge();
+}
+
+void ContentFiltersObserverBridge::OnChange(JNIEnv* env, bool enabled) {
+  LOG(INFO) << "ContentFiltersObserverBridge received onChange for setting "
+            << setting_name_ << " with value "
+            << (enabled ? "enabled" : "disabled");
+  if (enabled) {
+    on_enabled_.Run();
+  } else {
+    on_disabled_.Run();
+  }
+}
+
+void ContentFiltersObserverBridge::CreateJavaBridge() {
   if (!base::FeatureList::IsEnabled(
           kPropagateDeviceContentFiltersToSupervisedUser)) {
     // TODO(crbug.com/422435683): Link the java bridge class to relevant
@@ -31,32 +53,30 @@ ContentFiltersObserverBridge::ContentFiltersObserverBridge(
   JNIEnv* env = base::android::AttachCurrentThread();
   bridge_ = Java_ContentFiltersObserverBridge_Constructor(
       env, reinterpret_cast<jlong>(this),
-      base::android::ConvertUTF8ToJavaString(env, setting_name));
+      base::android::ConvertUTF8ToJavaString(env, setting_name_));
 }
 
-ContentFiltersObserverBridge::~ContentFiltersObserverBridge() {
+void ContentFiltersObserverBridge::DestroyJavaBridge() {
   if (!base::FeatureList::IsEnabled(
           kPropagateDeviceContentFiltersToSupervisedUser)) {
     // TODO(crbug.com/422435683): Link the java bridge class to relevant
     // unit-test binaries.
     return;
   }
-
   Java_ContentFiltersObserverBridge_destroy(
       base::android::AttachCurrentThread(), bridge_);
 }
 
-void ContentFiltersObserverBridge::OnChange(JNIEnv* env, bool enabled) {
-  // Logs in this unit are emitted once per external setting change, most likely
-  // once in the browser's process lifetime.
-  LOG(INFO) << "ContentFiltersObserverBridge received onChange for setting "
-            << setting_name_ << " with value "
-            << (enabled ? "enabled" : "disabled");
-  if (enabled) {
-    on_enabled_.Run();
-  } else {
-    on_disabled_.Run();
+bool ContentFiltersObserverBridge::IsEnabled() const {
+  if (!base::FeatureList::IsEnabled(
+          kPropagateDeviceContentFiltersToSupervisedUser)) {
+    // TODO(crbug.com/422435683): Link the java bridge class to relevant
+    // unit-test binaries.
+    return false;
   }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_ContentFiltersObserverBridge_isEnabled(env, bridge_);
 }
 
 }  // namespace supervised_user

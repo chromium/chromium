@@ -10,6 +10,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -36,9 +37,17 @@ bool IsParentFamilyMemberRole(const PrefService& pref_service) {
 
 std::optional<FamilyLinkUserLogRecord::Segment> GetSupervisionStatus(
     signin::IdentityManager* identity_manager,
-    const PrefService& pref_service) {
+    const PrefService& pref_service,
+    SupervisedUserService* supervised_user_service) {
+  if (supervised_user_service &&
+      supervised_user_service->IsSupervisedLocally()) {
+    // This type of supervision is signin-status independent (but only available
+    // to non-incognito profiles).
+    return FamilyLinkUserLogRecord::Segment::kSupervisionEnabledLocally;
+  }
+
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    // The user is not signed in to this profile, and is therefore
+    // Unsigned users who are not supervised locally are considered
     // unsupervised.
     return FamilyLinkUserLogRecord::Segment::kUnsupervised;
   }
@@ -87,13 +96,20 @@ bool IsUnsupervisedStatus(
              FamilyLinkUserLogRecord::Segment::kParent;
 }
 
+// Returns the web filter type of the primary account user. This function
+// collates both off-the-record profiles and regular profiles without local
+// supervision into the same empty returned value: in the metrics context the
+// difference between these two cases is irrelevant. Locally supervised regular
+// users yield kDisabled filter type when they decide to control other features
+// than browser content.
 std::optional<WebFilterType> GetWebFilterType(
     std::optional<FamilyLinkUserLogRecord::Segment> supervision_status,
-    SupervisedUserURLFilter* supervised_user_filter) {
-  if (!supervised_user_filter || IsUnsupervisedStatus(supervision_status)) {
+    SupervisedUserService* supervised_user_service) {
+  if (!supervised_user_service || IsUnsupervisedStatus(supervision_status)) {
     return std::nullopt;
   }
-  return supervised_user_filter->GetWebFilterType();
+
+  return supervised_user_service->GetURLFilter()->GetWebFilterType();
 }
 
 std::optional<ToggleState> GetPermissionsToggleState(
@@ -161,12 +177,13 @@ FamilyLinkUserLogRecord FamilyLinkUserLogRecord::Create(
     signin::IdentityManager* identity_manager,
     const PrefService& pref_service,
     const HostContentSettingsMap& content_settings_map,
-    SupervisedUserURLFilter* supervised_user_filter) {
+    SupervisedUserService* supervised_user_service) {
   std::optional<FamilyLinkUserLogRecord::Segment> supervision_status =
-      GetSupervisionStatus(identity_manager, pref_service);
+      GetSupervisionStatus(identity_manager, pref_service,
+                           supervised_user_service);
   return FamilyLinkUserLogRecord(
       supervision_status,
-      GetWebFilterType(supervision_status, supervised_user_filter),
+      GetWebFilterType(supervision_status, supervised_user_service),
       GetPermissionsToggleState(supervision_status, pref_service,
                                 content_settings_map),
       GetExtensionToggleState(supervision_status, pref_service));

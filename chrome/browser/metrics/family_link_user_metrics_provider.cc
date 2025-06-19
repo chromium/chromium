@@ -39,14 +39,10 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
       continue;
     }
 #endif
-
-    supervised_user::SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(profile);
-
     records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
         IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
         *HostContentSettingsMapFactory::GetForProfile(profile),
-        service ? service->GetURLFilter() : nullptr));
+        SupervisedUserServiceFactory::GetForProfile(profile)));
   }
   return supervised_user::EmitLogRecordHistograms(records);
 }

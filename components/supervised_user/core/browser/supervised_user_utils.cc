@@ -87,6 +87,7 @@ bool HasSupervisedStatus(
       return false;
     case FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkPolicy:
     case FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkUser:
+    case FamilyLinkUserLogRecord::Segment::kSupervisionEnabledLocally:
       return true;
     case FamilyLinkUserLogRecord::Segment::kMixedProfile:
       NOTREACHED();

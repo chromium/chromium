@@ -56,11 +56,12 @@ enum class LocalWebApprovalErrorType : int {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:LocalWebApprovalErrorType)
 
-// This enum describes the filter types of Chrome, which is
-// set by Family Link App or at families.google.com/families. These values
-// are logged to UMA. Entries should not be renumbered and numeric values
-// should never be reused. Please keep in sync with "FamilyLinkWebFilterType"
-// in src/tools/metrics/histograms/enums.xml.
+// Describes the current web filter type, which is derived either from Family
+// Link or local settings. The URL filter is present whenever the supervised
+// user service is in use, and consequently offers "disabled" state for those
+// who are not subject to parental controls.
+// Entries must not be renumbered and numeric values should never be reused.
+// LINT.IfChange(FamilyLinkWebFilterType)
 enum class WebFilterType {
   // The web filter is set to "Allow all sites".
   kAllowAllSites = 0,
@@ -74,13 +75,15 @@ enum class WebFilterType {
   // Used for UMA only. There are multiple web filters on the device.
   kMixed = 3,
 
-  // Web filter is neutralized: it behaves as if there were no filtering.
+  // Web filter is neutralized: it behaves as if there were no filtering and is
+  // not recording metrics.
   kDisabled = 4,
 
   // Used for UMA. Update kMaxValue to the last value. Add future entries
   // above this comment. Sync with enums.xml.
   kMaxValue = kDisabled,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:FamilyLinkWebFilterType)
 
 // Returns the string equivalent of a Web Filter type. This is a user-visible
 // string included in the user feedback log.

@@ -24,12 +24,10 @@ bool IOSFamilyLinkUserMetricsProvider::ProvideHistograms() {
   std::vector<supervised_user::FamilyLinkUserLogRecord> records;
   for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    supervised_user::SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(profile);
     records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
         IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
         *ios::HostContentSettingsMapFactory::GetForProfile(profile),
-        service ? service->GetURLFilter() : nullptr));
+        SupervisedUserServiceFactory::GetForProfile(profile)));
   }
   return supervised_user::EmitLogRecordHistograms(records);
 }

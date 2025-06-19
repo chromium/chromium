@@ -13,6 +13,7 @@ source_set("content_filters_observer_bridge") {
   ]
   deps = [
     "//base",
+    "//components/prefs",
     "//components/supervised_user/android:jni_headers",
     "//components/supervised_user/core/common",
   ]

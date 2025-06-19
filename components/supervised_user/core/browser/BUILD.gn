@@ -44,6 +44,9 @@ source_set("test_support") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (is_android) {
+    deps += [ "//components/supervised_user/core/browser/android:content_filters_observer_bridge" ]
+  }
 }
 
 static_library("mocked") {

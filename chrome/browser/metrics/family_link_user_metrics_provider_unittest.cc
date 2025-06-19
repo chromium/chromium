@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/family_link_user_metrics_provider.h"
 
 #include <string>
+#include <utility>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -22,6 +23,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -63,9 +65,7 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
                                 bool is_opted_in_to_parental_supervision) {
     Profile* profile = test_profile_manager()->CreateTestingProfile(
         test_profile, /*prefs=*/nullptr, base::UTF8ToUTF16(test_profile),
-        /*avatar_id=*/0,
-        IdentityTestEnvironmentProfileAdaptor::
-            GetIdentityTestEnvironmentFactories(),
+        /*avatar_id=*/0, GetTestingFactories(),
         /*is_supervised_profile=*/is_subject_to_parental_controls,
         /*is_new_profile=*/std::nullopt,
         /*policy_service=*/std::nullopt, /*shared_url_loader_factory=*/nullptr);
@@ -91,8 +91,29 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
           SetSupervisedUserExtensionsMayRequestPermissionsPref(profile, true);
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
     return profile;
+  }
+
+  // Creates the testing factories for the profile. The important part is to
+  // inject identity manager related factories and supervised user service
+  // factory - which would allow overrides in this test fixture subclasses.
+  TestingProfile::TestingFactories GetTestingFactories() {
+    TestingProfile::TestingFactories factories =
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories();
+    factories.emplace_back(
+        SupervisedUserServiceFactory::GetInstance(),
+        base::BindOnce(
+            &FamilyLinkUserMetricsProviderTest::BuildSupervisedUserService,
+            base::Unretained(this)));
+    return factories;
+  }
+
+  // Default supervised user service, as in production.
+  virtual std::unique_ptr<KeyedService> BuildSupervisedUserService(
+      content::BrowserContext* browser_context) {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+    return SupervisedUserServiceFactory::BuildInstanceFor(profile);
   }
 
   void SetFamilyRole(Profile* profile, kidsmanagement::FamilyRole family_role) {
@@ -491,6 +512,216 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
                                      FamilyLinkUserLogRecord::Segment::kParent,
                                      /*expected_count=*/1);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+struct ContentFiltersTestCase {
+  std::size_t profile_count;
+  std::string test_name;
+};
+
+// Test fixture for verifying that the content filters are correctly
+// reflected in the metrics. Content filters are mutually exclusive with
+// Family-Link supervision and cannot be applied to these profiles.
+class FamilyLinkUserMetricsProviderWithContentFiltersTest
+    : public FamilyLinkUserMetricsProviderTest,
+      public testing::WithParamInterface<ContentFiltersTestCase> {
+ protected:
+  void CreateProfiles(std::size_t count) {
+    CHECK_GE(email_addresses_.size(), count) << "Not enough email addresses";
+    CHECK_GE(profile_names_.size(), count) << "Not enough profile names";
+
+    for (std::size_t i = 0; i < count; ++i) {
+      Profile* unsupervised_profile = CreateUnsupervisedTestingProfile(
+          email_addresses_[i], profile_names_[i]);
+
+      // Services are lazily created, so we need to access them to force their
+      // creation. That'll trigger the ::BuildSupervisedUserService factory,
+      // which will bind fake content filters observers to this text fixture
+      // instance.
+      CHECK(SupervisedUserServiceFactory::GetInstance()->GetForProfile(
+          unsupervised_profile));
+    }
+  }
+
+  Profile* CreateUnsupervisedTestingProfile(const std::string& email,
+                                            const std::string& profile_name) {
+    // Content filters are not supported for family link supervised profiles.
+    return CreateTestingProfile(email, profile_name,
+                                /*is_subject_to_parental_controls=*/false,
+                                /*is_opted_in_to_parental_supervision=*/false);
+  }
+
+  // Fake content filters observer for search settings.
+  std::unique_ptr<FakeContentFiltersObserverBridge>
+  MakeSearchContentFiltersObserverBridge(PrefService& pref_service) {
+    return std::make_unique<FakeContentFiltersObserverBridge>(
+        kSearchContentFiltersSettingName,
+        base::BindRepeating(&EnableSearchContentFilters,
+                            std::ref(pref_service)),
+        base::BindRepeating(&DisableSearchContentFilters,
+                            std::ref(pref_service)));
+  }
+
+  // Fake content filters observer for browser content settings.
+  std::unique_ptr<FakeContentFiltersObserverBridge>
+  MakeBrowserContentFiltersObserverBridge(PrefService& pref_service) {
+    return std::make_unique<FakeContentFiltersObserverBridge>(
+        kBrowserContentFiltersSettingName,
+        base::BindRepeating(&EnableBrowserContentFilters,
+                            std::ref(pref_service)),
+        base::BindRepeating(&DisableBrowserContentFilters,
+                            std::ref(pref_service)));
+  }
+
+  // Builds the `SupervisedUserService` and captures the content observers onto
+  // this text fixture instance. Binding memory managed by foreign object (the
+  // service) to raw_ptr is fine, because raw_ptr handles will be destroyed
+  // before profile manager, that transitively owns the content observers.
+  std::unique_ptr<KeyedService> BuildSupervisedUserService(
+      content::BrowserContext* browser_context) override {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+
+    std::unique_ptr<FakeContentFiltersObserverBridge> browser_filter =
+        MakeBrowserContentFiltersObserverBridge(*profile->GetPrefs());
+    browser_content_filters_observers_.push_back(browser_filter.get());
+
+    std::unique_ptr<FakeContentFiltersObserverBridge> search_filter =
+        MakeSearchContentFiltersObserverBridge(*profile->GetPrefs());
+    search_content_filters_observers_.push_back(search_filter.get());
+
+    std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
+        std::make_unique<SupervisedUserServicePlatformDelegate>(*profile);
+
+    return std::make_unique<SupervisedUserService>(
+        IdentityManagerFactory::GetForProfile(profile),
+        profile->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess(),
+        *profile->GetPrefs(),
+        *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
+            profile->GetProfileKey()),
+        SyncServiceFactory::GetInstance()->GetForProfile(profile),
+        std::make_unique<SupervisedUserURLFilter>(
+            *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
+            std::make_unique<KidsChromeManagementURLCheckerClient>(
+                IdentityManagerFactory::GetForProfile(profile),
+                profile->GetDefaultStoragePartition()
+                    ->GetURLLoaderFactoryForBrowserProcess(),
+                *profile->GetPrefs(), platform_delegate->GetCountryCode(),
+                platform_delegate->GetChannel())),
+        std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
+        std::move(browser_filter), std::move(search_filter));
+  }
+
+  // Enables or disables the browser content filters for all profiles.
+  void SetBrowserContentFilters(bool enabled) {
+    for (FakeContentFiltersObserverBridge* observer :
+         browser_content_filters_observers_) {
+      observer->SetEnabled(enabled);
+    }
+  }
+
+  // Enables or disables the search content filters for all profiles.
+  void SetSearchContentFilters(bool enabled) {
+    for (FakeContentFiltersObserverBridge* observer :
+         search_content_filters_observers_) {
+      observer->SetEnabled(enabled);
+    }
+  }
+
+ private:
+  std::vector<std::string> email_addresses_{kTestEmail, kTestEmail1};
+  std::vector<std::string> profile_names_{kTestProfile, kTestProfile1};
+
+  // These are internal components of the `SupervisedUserService` and are used
+  // to simulate changes to the android content filters. Both are owned by the
+  // `SupervisedUserService`. The reason for they're held in vectors is that
+  // content filters are applied at device level, for all profiles at once.
+  std::vector<raw_ptr<FakeContentFiltersObserverBridge>>
+      browser_content_filters_observers_;
+  std::vector<raw_ptr<FakeContentFiltersObserverBridge>>
+      search_content_filters_observers_;
+};
+
+TEST_P(FamilyLinkUserMetricsProviderWithContentFiltersTest,
+       AllFiltersDisabled) {
+  CreateProfiles(GetParam().profile_count);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+
+  histogram_tester.ExpectBucketCount(
+      kFamilyLinkUserLogSegmentHistogramName,
+      FamilyLinkUserLogRecord::Segment::kUnsupervised,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      /*expected_count=*/0);
+}
+
+TEST_P(FamilyLinkUserMetricsProviderWithContentFiltersTest,
+       SearchFilterEnabled) {
+  CreateProfiles(GetParam().profile_count);
+  SetSearchContentFilters(true);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+
+  histogram_tester.ExpectBucketCount(
+      kFamilyLinkUserLogSegmentHistogramName,
+      FamilyLinkUserLogRecord::Segment::kSupervisionEnabledLocally,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kFamilyLinkUserLogSegmentWebFilterHistogramName, WebFilterType::kDisabled,
+      /*expected_count=*/1);
+}
+
+TEST_P(FamilyLinkUserMetricsProviderWithContentFiltersTest,
+       ContentFiltersEnabled) {
+  CreateProfiles(GetParam().profile_count);
+  SetBrowserContentFilters(true);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+
+  histogram_tester.ExpectBucketCount(
+      kFamilyLinkUserLogSegmentHistogramName,
+      FamilyLinkUserLogRecord::Segment::kSupervisionEnabledLocally,
+      /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      WebFilterType::kTryToBlockMatureSites,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(FamilyLinkUserMetricsProviderWithContentFiltersTest, AllFiltersEnabled) {
+  CreateProfiles(GetParam().profile_count);
+  SetBrowserContentFilters(true);
+  SetSearchContentFilters(true);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+
+  histogram_tester.ExpectBucketCount(
+      kFamilyLinkUserLogSegmentHistogramName,
+      FamilyLinkUserLogRecord::Segment::kSupervisionEnabledLocally,
+      /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      WebFilterType::kTryToBlockMatureSites,
+      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FamilyLinkUserMetricsProviderWithContentFiltersTest,
+    testing::ValuesIn<ContentFiltersTestCase>({
+        {1, "SingleProfile"},
+        {2, "MultipleProfiles"},
+    }),
+    [](const testing::TestParamInfo<ContentFiltersTestCase>& info) {
+      return info.param.test_name;
+    });
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace supervised_user

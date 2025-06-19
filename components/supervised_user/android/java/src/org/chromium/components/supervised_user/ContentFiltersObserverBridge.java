@@ -81,6 +81,11 @@ class ContentFiltersObserverBridge {
                 .unregisterContentObserver(mObserver);
     }
 
+    @CalledByNative
+    private boolean isEnabled() {
+        return mIsEnabled;
+    }
+
     private boolean getValue(final String settingsName) {
         try {
             // The setting is considered enabled if the setting's value is positive.
