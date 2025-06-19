@@ -220,9 +220,7 @@ const char kOmniboxFocusResultedInNavigation[] =
   // will trigger unnecessary `AutocompleteClassifier::Classify()` calls to
   // try to update the views which are unnecessary since they'll be thrown
   // away during the model revert anyways.
-  if (_omniboxController) {
-    _omniboxController->StopAutocomplete(/*clear_result=*/true);
-  }
+  [self.omniboxAutocompleteController stopAutocompleteWithClearSuggestions:YES];
 
   if (_omniboxEditModel) {
     _omniboxEditModel->OnChanged();

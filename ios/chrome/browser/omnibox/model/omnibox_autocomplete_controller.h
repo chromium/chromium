@@ -59,6 +59,10 @@ struct OmniboxTextModel;
 /// Updates the popup suggestions.
 - (void)updatePopupSuggestions;
 
+/// Cancels any pending asynchronous query. If `clearSuggestions` is true, will
+/// also erase the suggestions.
+- (void)stopAutocompleteWithClearSuggestions:(BOOL)clearSuggestions;
+
 #pragma mark - OmniboxPopup event
 
 /// Request suggestions for a number of visible suggestions.

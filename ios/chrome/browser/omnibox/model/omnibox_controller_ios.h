@@ -26,13 +26,6 @@ class OmniboxControllerIOS : public AutocompleteController::Observer {
   OmniboxControllerIOS(const OmniboxControllerIOS&) = delete;
   OmniboxControllerIOS& operator=(const OmniboxControllerIOS&) = delete;
 
-  // The current_url field of input is only set for mobile ports.
-  void StartAutocomplete(const AutocompleteInput& input) const;
-
-  // Cancels any pending asynchronous query. If `clear_result` is true, will
-  // also erase the result set.
-  void StopAutocomplete(bool clear_result) const;
-
   OmniboxClient* client() { return client_.get(); }
 
   AutocompleteController* autocomplete_controller() {

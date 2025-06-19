@@ -40,19 +40,3 @@ OmniboxControllerIOS::OmniboxControllerIOS(
 }
 
 OmniboxControllerIOS::~OmniboxControllerIOS() = default;
-
-void OmniboxControllerIOS::StartAutocomplete(
-    const AutocompleteInput& input) const {
-  TRACE_EVENT0("omnibox", "OmniboxControllerIOS::StartAutocomplete");
-
-  // We don't explicitly clear OmniboxPopupModel::manually_selected_match, as
-  // Start ends up invoking OmniboxPopupModel::OnResultChanged which clears it.
-  autocomplete_controller_->Start(input);
-}
-
-void OmniboxControllerIOS::StopAutocomplete(bool clear_result) const {
-  TRACE_EVENT0("omnibox", "OmniboxControllerIOS::StopAutocomplete");
-  autocomplete_controller_->Stop(clear_result
-                                     ? AutocompleteStopReason::kClobbered
-                                     : AutocompleteStopReason::kInteraction);
-}

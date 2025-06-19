@@ -136,6 +136,16 @@ using base::UserMetricsAction;
   }
 }
 
+- (void)stopAutocompleteWithClearSuggestions:(BOOL)clearSuggestions {
+  TRACE_EVENT0("omnibox", "OmniboxAutocompleteController::StopAutocomplete");
+  if (AutocompleteController* autocompleteController =
+          self.autocompleteController) {
+    autocompleteController->Stop(clearSuggestions
+                                     ? AutocompleteStopReason::kClobbered
+                                     : AutocompleteStopReason::kInteraction);
+  }
+}
+
 #pragma mark - AutocompleteControllerObserver
 
 - (void)autocompleteController:(AutocompleteController*)autocompleteController
@@ -399,9 +409,7 @@ using base::UserMetricsAction;
 }
 
 - (void)closeOmniboxPopup {
-  if (_omniboxController) {
-    _omniboxController->StopAutocomplete(/*clear_result=*/true);
-  }
+  [self stopAutocompleteWithClearSuggestions:YES];
 }
 
 - (void)setTextAlignment:(NSTextAlignment)alignment {
