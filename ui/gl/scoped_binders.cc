@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ui/gl/scoped_binders.h"
+
+#include "base/notimplemented.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_state_restorer.h"

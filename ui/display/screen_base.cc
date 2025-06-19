@@ -4,6 +4,7 @@
 
 #include "ui/display/screen_base.h"
 
+#include "base/notimplemented.h"
 #include "ui/display/display_finder.h"
 #include "ui/gfx/native_widget_types.h"
 

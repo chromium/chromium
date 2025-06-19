@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"

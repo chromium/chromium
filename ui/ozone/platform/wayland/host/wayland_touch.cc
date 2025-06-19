@@ -5,7 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
 
 #include "base/logging.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"

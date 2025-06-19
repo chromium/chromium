@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_util_win.h"
 #include "ui/base/cursor/platform_cursor.h"

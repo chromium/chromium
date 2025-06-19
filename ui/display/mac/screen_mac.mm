@@ -27,6 +27,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
+#include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/threading/hang_watcher.h"
 #include "ui/aura/env.h"
 #include "ui/base/dragdrop/drag_drop_types.h"

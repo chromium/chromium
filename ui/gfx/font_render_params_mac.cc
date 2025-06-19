@@ -5,7 +5,7 @@
 #include "ui/gfx/font_render_params.h"
 
 #include "base/feature_list.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "ui/base/ui_base_features.h"
 
 namespace gfx {

@@ -6,7 +6,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/ios_buildflags.h"
 #include "ui/display/display.h"

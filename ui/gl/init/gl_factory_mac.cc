@@ -6,19 +6,19 @@
 
 #include "base/check_op.h"
 #include "base/mac/mac_util.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_context_stub.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/gl_switches.h"
-
-#include "ui/gl/gl_context_egl.h"
-#include "ui/gl/gl_surface_egl.h"
 
 namespace gl {
 namespace init {

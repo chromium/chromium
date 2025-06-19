@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/drm/test/ui_controls_system_input_injector.h"
 
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ui/base/test/ui_controls_aura.h"

@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/notimplemented.h"
 #include "ui/events/devices/stylus_state.h"
 
 namespace ui {

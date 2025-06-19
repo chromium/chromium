@@ -5,10 +5,11 @@
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
 
 #include <chrome-color-management-client-protocol.h>
+
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 

@@ -5,6 +5,7 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_TESTING_FAKE_CURSOR_DELEGATE_EVDEV_H_
 #define UI_EVENTS_OZONE_EVDEV_TESTING_FAKE_CURSOR_DELEGATE_EVDEV_H_
 
+#include "base/notimplemented.h"
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 
 namespace ui {

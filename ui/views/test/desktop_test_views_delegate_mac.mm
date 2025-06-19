@@ -4,6 +4,7 @@
 
 #include "ui/views/test/desktop_test_views_delegate.h"
 
+#include "base/notimplemented.h"
 #include "ui/views/widget/native_widget_mac.h"
 
 namespace views {

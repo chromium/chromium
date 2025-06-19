@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "ui/base/idle/idle_internal.h"
 
 @interface IOSScreenMonitor : NSObject

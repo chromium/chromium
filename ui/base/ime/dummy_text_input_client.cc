@@ -4,7 +4,7 @@
 
 #include "ui/base/ime/dummy_text_input_client.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "ui/events/event.h"

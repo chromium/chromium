@@ -4,6 +4,7 @@
 
 #include "ui/linux/fallback_linux_ui.h"
 
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ui_base_switches.h"

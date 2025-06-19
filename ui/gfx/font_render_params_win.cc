@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/singleton.h"
+#include "base/notimplemented.h"
 #include "base/win/registry.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "ui/base/ui_base_features.h"

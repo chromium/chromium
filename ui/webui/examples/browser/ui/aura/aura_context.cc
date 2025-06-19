@@ -5,6 +5,7 @@
 #include "ui/webui/examples/browser/ui/aura/aura_context.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/test/test_screen.h"

@@ -5,6 +5,7 @@
 #include "ui/gl/gl_fence.h"
 
 #include "base/compiler_specific.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"

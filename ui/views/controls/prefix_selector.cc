@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "base/i18n/case_conversion.h"
+#include "base/notimplemented.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
 #include "ui/base/ime/input_method.h"

@@ -13,6 +13,7 @@
 #include "base/containers/adapters.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_role_properties.h"

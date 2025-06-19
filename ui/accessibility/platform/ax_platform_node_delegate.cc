@@ -5,6 +5,7 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"

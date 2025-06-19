@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "ui/events/velocity_tracker/motion_event_generic.h"
 

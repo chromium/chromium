@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/version.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"

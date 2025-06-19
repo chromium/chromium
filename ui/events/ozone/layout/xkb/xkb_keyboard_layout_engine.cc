@@ -24,6 +24,7 @@
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"

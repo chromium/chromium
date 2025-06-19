@@ -5,6 +5,7 @@
 #include "ui/gl/gl_surface.h"
 
 #include "base/check.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_context.h"

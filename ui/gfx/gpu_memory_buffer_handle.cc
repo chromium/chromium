@@ -5,6 +5,7 @@
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 

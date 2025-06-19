@@ -4,6 +4,7 @@
 
 #include "ui/views/test/widget_show_state_waiter.h"
 
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/widget.h"

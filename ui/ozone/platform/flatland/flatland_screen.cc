@@ -4,7 +4,7 @@
 
 #include "ui/ozone/platform/flatland/flatland_screen.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/point.h"

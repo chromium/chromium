@@ -4,6 +4,7 @@
 
 #include "ui/gl/presenter.h"
 
+#include "base/notimplemented.h"
 #include "ui/gfx/gpu_fence.h"
 
 #if BUILDFLAG(IS_WIN)

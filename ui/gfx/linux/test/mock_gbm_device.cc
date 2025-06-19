@@ -5,6 +5,7 @@
 #include "ui/gfx/linux/test/mock_gbm_device.h"
 
 #include <xf86drm.h>
+
 #include <memory>
 #include <utility>
 
@@ -12,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "testing/gtest/include/gtest/gtest.h"
