@@ -1432,7 +1432,6 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
         ui_resource2_ = nullptr;
         ui_resource3_ = nullptr;
         EndTest();
-        test_ended_ = true;
         break;
       case 4:
         NOTREACHED();
@@ -1440,12 +1439,6 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
   }
 
   void DidSetVisibleOnImplTree(LayerTreeHostImpl* impl, bool visible) override {
-    // LayerTreeTest will change the visibility of the tree to false as part of
-    // tearing down the LayerTreeHost. sii_ and other resources will already be
-    // destroyed.
-    if (test_ended_) {
-      return;
-    }
     if (!visible) {
       // All resources should have been evicted.
       ASSERT_EQ(0u, sii_->shared_image_count());
@@ -1531,7 +1524,6 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
  private:
   std::unique_ptr<FakeScopedUIResource> ui_resource2_;
   std::unique_ptr<FakeScopedUIResource> ui_resource3_;
-  bool test_ended_ = false;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(UIResourceLostEviction);
