@@ -1351,7 +1351,6 @@ class GpuIntegrationTest(
         # device name is clearer.
         'arm-mali-g52-mc2',  # android-sm-a137f
         'arm-mali-t860',  # chromeos-board-kevin
-        'qualcomm-adreno-(tm)-418',  # android-nexus-5x
         'qualcomm-adreno-(tm)-540',  # android-pixel-2
         'qualcomm-adreno-(tm)-610',  # android-sm-a236b
         'qualcomm-adreno-(tm)-640',  # android-pixel-4

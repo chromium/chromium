@@ -349,7 +349,6 @@
     "win32-arm64-rel": "ci/win32-arm64-rel/gn-args.json"
   },
   "chromium.gpu": {
-    "Android Release (Nexus 5X)": "ci/Android Release (Nexus 5X)/gn-args.json",
     "Android Release (Pixel 2)": "ci/Android Release (Pixel 2)/gn-args.json",
     "GPU Linux Builder": "ci/GPU Linux Builder/gn-args.json",
     "GPU Linux Builder (dbg)": "ci/GPU Linux Builder (dbg)/gn-args.json",
@@ -615,14 +614,12 @@
     "gpu-fyi-cq-android-arm64": "try/gpu-fyi-cq-android-arm64/gn-args.json",
     "gpu-fyi-try-android-a13-32": "try/gpu-fyi-try-android-a13-32/gn-args.json",
     "gpu-fyi-try-android-a23-32": "try/gpu-fyi-try-android-a23-32/gn-args.json",
-    "gpu-fyi-try-android-m-nexus-5x-64": "try/gpu-fyi-try-android-m-nexus-5x-64/gn-args.json",
     "gpu-fyi-try-android-nvidia-shield-tv": "try/gpu-fyi-try-android-nvidia-shield-tv/gn-args.json",
     "gpu-fyi-try-android-pixel-6-64": "try/gpu-fyi-try-android-pixel-6-64/gn-args.json",
     "gpu-fyi-try-android-pixel-6-64-exp": "try/gpu-fyi-try-android-pixel-6-64-exp/gn-args.json",
     "gpu-fyi-try-android-q-pixel-2-32": "try/gpu-fyi-try-android-q-pixel-2-32/gn-args.json",
     "gpu-fyi-try-android-r-pixel-4-32": "try/gpu-fyi-try-android-r-pixel-4-32/gn-args.json",
     "gpu-fyi-try-android-s23-64": "try/gpu-fyi-try-android-s23-64/gn-args.json",
-    "gpu-try-android-m-nexus-5x-64": "try/gpu-try-android-m-nexus-5x-64/gn-args.json",
     "gpu-try-android-pixel-2-64": "try/gpu-try-android-pixel-2-64/gn-args.json"
   },
   "tryserver.chromium.angle": {

@@ -8,9 +8,9 @@
 #         mac highsierra mojave catalina bigsur monterey ventura sonoma sequoia
 #         win win8 win10 win11 ]
 # Devices
-# tags: [ android-nexus-5x android-pixel-2 android-pixel-4
-#             android-pixel-6 android-shield-android-tv android-sm-a137f
-#             android-sm-a236b android-sm-s911u1
+# tags: [ android-pixel-2 android-pixel-4 android-pixel-6
+#             android-shield-android-tv android-sm-a137f android-sm-a236b
+#             android-sm-s911u1
 #         android-brya android-corsola
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
@@ -137,9 +137,6 @@ crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_av
 crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_2000000 [ Failure ]
 crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_3000000 [ Failure ]
 crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
-
-crbug.com/1470336 [ android-oreo android-nexus-5x ] WebCodecs_EncodingRateControl_vp8_prefer-hardware_constant_3000000 [ Failure ]
-crbug.com/1474916 [ android-nexus-5x ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 
 # Graphite failures
 crbug.com/419454905 [ android graphite-enabled ] WebCodecs_EncodeDecode_capture_vp8_prefer-hardware [ Failure ]

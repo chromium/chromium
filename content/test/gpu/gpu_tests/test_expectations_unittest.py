@@ -334,10 +334,10 @@ class TestGpuTestExpectationsValidators(unittest.TestCase):
   def testConflictsBetweenAngleAndNonAngleConfigurations(self) -> None:
     test_expectations = """
     # tags: [ android ]
-    # tags: [ android-nexus-5x ]
+    # tags: [ android-pixel-6 ]
     # tags: [ opengles ]
     # results: [ RetryOnFailure Skip ]
-    [ android android-nexus-5x ] a/b/c/d [ RetryOnFailure ]
+    [ android android-pixel-6 ] a/b/c/d [ RetryOnFailure ]
     [ android opengles ] a/b/c/d [ Skip ]
     """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,

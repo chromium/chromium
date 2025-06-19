@@ -284,51 +284,6 @@ ci.gpu.linux_builder(
 )
 
 ci.thin_tester(
-    name = "Dawn Android arm DEPS Release (Nexus 5X)",
-    description_html = "Runs DEPS-ed in Dawn tests on stable Nexus 5X configs",
-    parent = "ci/Dawn Android arm DEPS Builder",
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "main_builder",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "base_config",
-        ),
-        build_gs_bucket = "chromium-dawn-archive",
-        run_tests_serially = True,
-    ),
-    targets = targets.bundle(
-        targets = [
-            "gpu_noop_sleep_telemetry_test",
-        ],
-        mixins = [
-            "chromium_nexus_5x_oreo",
-            "has_native_resultdb_integration",
-        ],
-    ),
-    targets_settings = targets.settings(
-        browser_config = targets.browser_config.ANDROID_CHROMIUM,
-        os_type = targets.os_type.ANDROID,
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "DEPS|Android",
-        short_name = "n5x",
-    ),
-)
-
-ci.thin_tester(
     name = "Dawn Android arm DEPS Release (Pixel 4)",
     description_html = "Runs DEPS-ed in Dawn tests on stable Pixel 4 configs",
     parent = "ci/Dawn Android arm DEPS Builder",
@@ -750,52 +705,6 @@ ci.gpu.linux_builder(
         short_name = "a64",
     ),
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.thin_tester(
-    name = "Dawn Android arm Release (Nexus 5X)",
-    description_html = "Runs ToT Dawn tests on stable Nexus 5X configs",
-    parent = "ci/Dawn Android arm Builder",
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-                "dawn_top_of_tree",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "main_builder",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "base_config",
-        ),
-        build_gs_bucket = "chromium-dawn-archive",
-        run_tests_serially = True,
-    ),
-    targets = targets.bundle(
-        targets = [
-            "gpu_noop_sleep_telemetry_test",
-        ],
-        mixins = [
-            "chromium_nexus_5x_oreo",
-            "has_native_resultdb_integration",
-        ],
-    ),
-    targets_settings = targets.settings(
-        browser_config = targets.browser_config.ANDROID_CHROMIUM,
-        os_type = targets.os_type.ANDROID,
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Android",
-        short_name = "n5x",
-    ),
 )
 
 ci.thin_tester(

@@ -186,8 +186,6 @@ def MapsTestCases() -> list[ExpectedColorTestCase]:
           # such devices calculated using the fact that this test should produce
           # an 800x600 image on a device with a DPR of 1.
           scale_factor_overrides={
-              'Nexus 5': 1.105,
-              'Nexus 5X': 1.105,
               # NVIDIA Shield.
               'sb_na_wf': 1.226,
               'Pixel 2': 1.1067,

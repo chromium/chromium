@@ -1,8 +1,6 @@
 ci/Dawn Android arm Builder
 ci/Dawn Android arm DEPS Builder
-ci/Dawn Android arm DEPS Release (Nexus 5X)
 ci/Dawn Android arm DEPS Release (Pixel 4)
-ci/Dawn Android arm Release (Nexus 5X)
 ci/Dawn Android arm Release (Pixel 4)
 ci/Dawn Android arm64 Builder
 ci/Dawn Android arm64 DEPS Builder

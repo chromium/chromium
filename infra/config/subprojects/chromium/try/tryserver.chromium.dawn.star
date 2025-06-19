@@ -64,7 +64,6 @@ try_.builder(
     name = "dawn-android-arm-deps-rel",
     mirrors = [
         "ci/Dawn Android arm DEPS Builder",
-        "ci/Dawn Android arm DEPS Release (Nexus 5X)",
         "ci/Dawn Android arm DEPS Release (Pixel 4)",
     ],
     gn_args = "ci/Dawn Android arm DEPS Builder",
@@ -335,7 +334,6 @@ try_.builder(
     name = "android-dawn-arm-rel",
     mirrors = [
         "ci/Dawn Android arm Builder",
-        "ci/Dawn Android arm Release (Nexus 5X)",
         "ci/Dawn Android arm Release (Pixel 4)",
     ],
     gn_args = "ci/Dawn Android arm Builder",

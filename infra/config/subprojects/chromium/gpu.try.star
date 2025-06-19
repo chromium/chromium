@@ -52,15 +52,6 @@ def gpu_android_builder(*, name, **kwargs):
     )
 
 gpu_android_builder(
-    name = "gpu-fyi-try-android-m-nexus-5x-64",
-    mirrors = [
-        "ci/GPU FYI Android arm64 Builder",
-        "ci/Android FYI Release (Nexus 5X)",
-    ],
-    gn_args = "ci/GPU FYI Android arm64 Builder",
-)
-
-gpu_android_builder(
     name = "gpu-fyi-try-android-nvidia-shield-tv",
     mirrors = [
         "ci/GPU FYI Android arm Builder",
@@ -134,25 +125,6 @@ gpu_android_builder(
         "ci/Android FYI Release (Samsung S23)",
     ],
     gn_args = "ci/GPU FYI Android arm64 Builder",
-)
-
-gpu_android_builder(
-    name = "gpu-try-android-m-nexus-5x-64",
-    mirrors = [
-        "ci/Android Release (Nexus 5X)",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_fyi_tests",
-            "android_builder",
-            "android_fastbuild",
-            "release_builder",
-            "try_builder",
-            "remoteexec",
-            "arm64",
-            "static_angle",
-        ],
-    ),
 )
 
 gpu_android_builder(
