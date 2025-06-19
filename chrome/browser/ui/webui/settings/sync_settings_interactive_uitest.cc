@@ -17,7 +17,6 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -31,12 +30,7 @@ class SyncSettingsInteractiveTest
     : public SigninBrowserTestBaseT<
           WebUiInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
-  SyncSettingsInteractiveTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kEnableHistorySyncOptin,
-                              syncer::kReplaceSyncPromosWithSignInPromos},
-        /*disabled_features=*/{});
-  }
+  SyncSettingsInteractiveTest() = default;
 
   // Checks if a page title matches the given regexp in ecma script dialect.
   StateChange PageWithMatchingTitle(std::string_view title_regexp) {
@@ -68,7 +62,8 @@ class SyncSettingsInteractiveTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kEnableHistorySyncOptin};
 };
 
 // TODO(crbug.com/407795729): Fix and re-enable.
