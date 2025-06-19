@@ -737,6 +737,7 @@ source_set("quiche_tests") {
     "//net:spdy_test_tools",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/fuzztest:fuzztest",
   ]
   if (is_ios) {
     deps += [ ":test_data" ]

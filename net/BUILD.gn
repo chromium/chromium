@@ -3106,7 +3106,10 @@ target(_test_target_type, "net_unittests") {
     defines += [ "NET_DISABLE_ZSTD" ]
   }
 
-  fuzztests = [ "PickleTest.FuzzRoundTrip" ]
+  fuzztests = [
+    "PickleTest.FuzzRoundTrip",
+    "QuicVersionsFuzzTest.ParseSerializeParseIdentityProperty",
+  ]
 
   deps = [
     ":cronet_buildflags",
