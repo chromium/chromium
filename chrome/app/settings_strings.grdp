@@ -4143,27 +4143,6 @@
   <message name="IDS_SETTINGS_SECURITY_KEYS_FORCE_PIN_CHANGE" desc="An error message shown when a user attempts to use a security key (an authentication hardware device) that has a default PIN (short, often numeric codes that are often used with, for example, ATM cards) set. Before using the key, the user needs to change the PIN to a new code.">
     To use your new security key, set a new PIN
   </message>
-  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONE_EDIT_DIALOG_TITLE" desc="The title of a dialog that is shown when a user chooses to edit details of a phone that can be used to sign-in with.">
-    Edit phone
-  </message>
-  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_YOUR_DEVICES" desc="The title of a section on a settings page that lists phoens that are signed into (and syncing with) the user's Google account.">
-    Your devices
-  </message>
-  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_SYNCED_DESC" desc="The description of a section on a settings page that lists phoens that are signed into (and syncing with) the user's Google account.">
-    You're signed in to Chrome on these devices, so you can use them as security keys.
-  </message>
-  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_LINKED_DEVICES" desc="The title of a section on a settings page that lists phoens that can be used for signing into websites. The word 'linked' was picked to be distinct from 'paired', as in 'Bluetooth pairing'. The technology does use Bluetooth, but is distinct from Bluetooth pairing.">
-    Linked devices
-  </message>
-  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_LINKED_DESC" desc="The description of a section on a settings page that lists phoens that can be used for signing into websites. The word 'linked' was picked to be distinct from 'paired', as in 'Bluetooth pairing'. The technology does use Bluetooth, but is distinct from Bluetooth pairing.">
-    You linked these devices by scanning a QR code.
-  </message>
-  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_MANAGE" desc="The title of an option in Chrome's privacy settings for managing phones that can be used to sign into websites.">
-    Manage phones
-  </message>
-  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_MANAGE_DESC" desc="The description of an option in Chrome's privacy settings for managing phones that can be used for signing into websites. A 'security key' is typically a USB peripherial used to secure sign-ins. In this case a phone can be used as a security key.">
-    Control which phones you use as security keys
-  </message>
   <message name="IDS_SETTINGS_EXTENSION_OR_APP_DISPLAY_NAME" desc="The title of a page containing site settings for an extension or Isolated Web App (IWA). The display name contains a human-readable extension/IWA name followed by the extension/IWA ID.">
     <ph name="EXTENSION_OR_APP_NAME">$1<ex>Google Docs Offline</ex></ph> (ID: <ph name="EXTENSION_OR_APP_ID">$2<ex>ghbmnnjooekpmoecnnnilnnbdlolhkhi</ex></ph>)
   </message>

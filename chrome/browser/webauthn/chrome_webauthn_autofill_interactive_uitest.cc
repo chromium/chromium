@@ -18,7 +18,6 @@
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
-#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
@@ -83,7 +82,6 @@ static constexpr char kRpId[] = "example.com";
 static constexpr uint8_t kCredentialID1[] = {1, 2,  3,  4,  5,  6,  7,  8,
                                              9, 10, 11, 12, 13, 14, 15, 16};
 static constexpr uint8_t kCredentialID2[] = {2, 3, 4, 5};
-static constexpr char16_t kPhoneName[] = u"Flandre's Pixel 7";
 
 static constexpr char kConditionalUIRequest[] = R"((() => {
 window.requestAbortController = new AbortController();
@@ -112,50 +110,6 @@ static constexpr char kConditionalUIRequestFiltered[] = R"((() => {
   }}).then(c => window.domAutomationController.send('webauthn: OK'),
            e => window.domAutomationController.send('error ' + e));
 })())";
-
-sync_pb::WebauthnCredentialSpecifics CreatePasskey() {
-  sync_pb::WebauthnCredentialSpecifics passkey;
-  passkey.set_sync_id(base::RandBytesAsString(16));
-  passkey.set_credential_id(kCredentialID1, 16);
-  passkey.set_rp_id(kRpId);
-  passkey.set_user_id({1, 2, 3, 4});
-  passkey.set_user_name("flandre");
-  passkey.set_user_display_name("Flandre Scarlet");
-  return passkey;
-}
-
-syncer::DeviceInfo CreateDeviceInfo() {
-  syncer::DeviceInfo::PhoneAsASecurityKeyInfo paask_info;
-  paask_info.contact_id = std::vector<uint8_t>({1, 2, 3});
-  std::ranges::fill(paask_info.peer_public_key_x962, 0);
-  paask_info.peer_public_key_x962[0] = 1;
-  std::ranges::fill(paask_info.secret, 0);
-  paask_info.secret[0] = 2;
-  paask_info.id = device::cablev2::sync::IDNow();
-  paask_info.tunnel_server_domain = 0;
-  return syncer::DeviceInfo(
-      /*guid=*/"guid",
-      /*client_name=*/base::UTF16ToUTF8(kPhoneName),
-      /*chrome_version=*/"chrome_version",
-      /*sync_user_agent=*/"sync_user_agent",
-      sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
-      syncer::DeviceInfo::OsType::kLinux,
-      syncer::DeviceInfo::FormFactor::kDesktop,
-      /*signin_scoped_device_id=*/"signin_scoped_device_id",
-      /*manufacturer_name=*/"manufacturer_name",
-      /*model_name=*/"",
-      /*full_hardware_class=*/"full_hardware_class",
-      /*last_updated_timestamp=*/base::Time::Now(),
-      /*pulse_interval=*/base::TimeDelta(),
-      /*send_tab_to_self_receiving_enabled=*/
-      false,
-      /*send_tab_to_self_receiving_type=*/
-      sync_pb::
-          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
-      /*sharing_info=*/std::nullopt, std::move(paask_info),
-      /*fcm_registration_token=*/"fcm_token", syncer::DataTypeSet(),
-      /*floating_workspace_last_signin_timestamp=*/base::Time::Now());
-}
 
 // Autofill integration tests. This file contains end-to-end tests for
 // integration between WebAuthn and Autofill. These tests are sensitive to focus
@@ -210,16 +164,6 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
       run_loop_->QuitWhenIdle();
     }
 
-    std::vector<std::unique_ptr<device::cablev2::Pairing>>
-    GetCablePairingsFromSyncedDevices() override {
-      std::vector<std::unique_ptr<device::cablev2::Pairing>> ret;
-      ret.emplace_back(TestPhone(base::UTF16ToUTF8(kPhoneName).c_str(),
-                                 /*public_key=*/0,
-                                 /*last_updated=*/base::Time::FromTimeT(1),
-                                 /*channel_priority=*/1));
-      return ret;
-    }
-
    private:
     const raw_ptr<WebAuthnAutofillIntegrationTest> test_instance_;
     std::unique_ptr<base::RunLoop> run_loop_;
@@ -238,8 +182,6 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({device::kWebAuthnHybridLinking},
-                                          /*disabled_features=*/{});
     ASSERT_TRUE(https_server_.InitializeAndListen());
 
     create_services_subscription_ =
@@ -336,11 +278,6 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
             [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
               return std::make_unique<webauthn::TestPasskeyModel>();
             }));
-    DeviceInfoSyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-          return std::make_unique<syncer::FakeDeviceInfoSyncService>();
-        }));
     // Disable the sync service by injecting a test fake. The sync service fails
     // to start when overriding the DeviceInfoSyncService with a test fake.
     SyncServiceFactory::GetInstance()->SetTestingFactory(
@@ -560,84 +497,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
       kCredentialID2, kRpId, std::vector<uint8_t>{6, 7, 8, 9}, "sakuya",
       "Sakuya Izayoi");
   RunSelectAccountTest(kConditionalUIRequestFiltered);
-}
-
-// TODO(crbug.com/372493822): remove when hybrid linking flag is removed.
-IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, GPMPasskeys) {
-  // Have the virtual device masquerade as a phone.
-  virtual_device_factory_->SetTransport(device::FidoTransportProtocol::kHybrid);
-
-  // Inject a fake phone from sync.
-  syncer::DeviceInfo device_info = CreateDeviceInfo();
-  auto* tracker = static_cast<syncer::FakeDeviceInfoTracker*>(
-      DeviceInfoSyncServiceFactory::GetForProfile(browser()->profile())
-          ->GetDeviceInfoTracker());
-  tracker->Add(&device_info);
-
-  // Inject a GPM passkey.
-  PasskeyModelFactory::GetForProfile(browser()->profile())
-      ->AddNewPasskeyForTesting(CreatePasskey());
-
-  // Make sure input events cannot close the autofill popup.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  autofill::ChromeAutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents);
-  autofill_client->SetKeepPopupOpenForTesting(true);
-
-  // Execute the Conditional UI request.
-  content::DOMMessageQueue message_queue(web_contents);
-  content::ExecuteScriptAsync(web_contents, kConditionalUIRequest);
-
-  delegate_observer_->WaitForUI();
-
-  // Interact with the username field until the popup shows up. This has the
-  // effect of waiting for the browser to send the renderer the password
-  // information, and waiting for the UI to render.
-  base::WeakPtr<autofill::AutofillSuggestionController> suggestion_controller;
-  while (!suggestion_controller) {
-    content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
-    suggestion_controller =
-        autofill_client->suggestion_controller_for_testing();
-  }
-
-  // Find the webauthn credential on the suggestions list.
-  auto suggestions = suggestion_controller->GetSuggestions();
-  size_t suggestion_index = 0;
-  size_t webauthn_entry_count = 0;
-  autofill::Suggestion webauthn_entry;
-  for (size_t i = 0; i < suggestions.size(); ++i) {
-    if (suggestions[i].type == autofill::SuggestionType::kWebauthnCredential) {
-      webauthn_entry = suggestions[i];
-      suggestion_index = i;
-      webauthn_entry_count++;
-    }
-  }
-  ASSERT_EQ(webauthn_entry_count, 1u);
-  ASSERT_LT(suggestion_index, suggestions.size()) << "WebAuthn entry not found";
-  EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
-  EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value,
-            l10n_util::GetStringUTF16(
-                IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER));
-  EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
-
-  // Click the credential.
-  test_api(static_cast<autofill::AutofillPopupControllerImpl&>(
-               *suggestion_controller))
-      .DisableThreshold(true);
-  suggestion_controller->AcceptSuggestion(suggestion_index);
-  std::string result;
-  ASSERT_TRUE(message_queue.WaitForMessage(&result));
-  EXPECT_EQ(result, "\"webauthn: OK\"");
-
-  // Tapping a GPM passkey will not automatically hide the popup
-  // because the enclave might still be loading. Manually hide the
-  // popup so that the autofill client can be destroyed, avoiding
-  // a DCHECK on test tear down.
-  autofill_client->HideAutofillSuggestions(
-      autofill::SuggestionHidingReason::kTabGone);
-  // The tracker outlives the test. Clean up the device_info to avoid flakiness.
-  tracker->Remove(&device_info);
 }
 
 #if BUILDFLAG(IS_WIN)

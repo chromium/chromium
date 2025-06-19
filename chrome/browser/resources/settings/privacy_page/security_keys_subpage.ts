@@ -18,8 +18,6 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {routes} from '../route.js';
-import {Router} from '../router.js';
 
 import {getTemplate} from './security_keys_subpage.html.js';
 
@@ -49,14 +47,6 @@ export class SecurityKeysSubpageElement extends PolymerElement {
         },
       },
 
-      enableManagePhones_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.getBoolean('enableSecurityKeysManagePhones');
-        },
-      },
-
       showSetPINDialog_: {
         type: Boolean,
         value: false,
@@ -80,15 +70,10 @@ export class SecurityKeysSubpageElement extends PolymerElement {
   }
 
   declare private enableBioEnrollment_: boolean;
-  declare private enableManagePhones_: boolean;
   declare private showSetPINDialog_: boolean;
   declare private showCredentialManagementDialog_: boolean;
   declare private showResetDialog_: boolean;
   declare private showBioEnrollDialog_: boolean;
-
-  private onManagePhonesClick_() {
-    Router.getInstance().navigateTo(routes.SECURITY_KEYS_PHONES);
-  }
 
   private onSetPin_() {
     this.showSetPINDialog_ = true;

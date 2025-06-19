@@ -64,11 +64,6 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAmbientSignin);
 
-// Enables linking of hybrid devices to Chrome, both pre-linking (i.e. through
-// Sync) and through hybrid.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnHybridLinking);
-
 // Enables publishing prelinking information on Android.
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(DEVICE_FIDO)

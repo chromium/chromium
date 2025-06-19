@@ -90,35 +90,30 @@ TEST(CableV2Encoding, EIDEncrypt) {
 }
 
 TEST(CableV2Encoding, QRs) {
-  for (bool supports_linking : {false, true}) {
-    SCOPED_TRACE(supports_linking);
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatureState(device::kWebAuthnHybridLinking,
-                                             supports_linking);
-    std::array<uint8_t, kQRKeySize> qr_key;
-    crypto::RandBytes(qr_key);
-    std::string url = qr::Encode(qr_key, FidoRequestType::kMakeCredential);
-    const std::optional<qr::Components> decoded = qr::Parse(url);
-    ASSERT_TRUE(decoded.has_value()) << url;
-    static_assert(kQRKeySize >= std::tuple_size_v<decltype(decoded->secret)>);
-    EXPECT_EQ(memcmp(decoded->secret.data(),
-                     &qr_key[qr_key.size() - decoded->secret.size()],
-                     decoded->secret.size()),
-              0);
-    // There are two registered domains at the time of writing the test. That
-    // number should only grow over time.
-    EXPECT_GE(decoded->num_known_domains, 2u);
+  base::test::ScopedFeatureList scoped_feature_list;
+  std::array<uint8_t, kQRKeySize> qr_key;
+  crypto::RandBytes(qr_key);
+  std::string url = qr::Encode(qr_key, FidoRequestType::kMakeCredential);
+  const std::optional<qr::Components> decoded = qr::Parse(url);
+  ASSERT_TRUE(decoded.has_value()) << url;
+  static_assert(kQRKeySize >= std::tuple_size_v<decltype(decoded->secret)>);
+  EXPECT_EQ(memcmp(decoded->secret.data(),
+                   &qr_key[qr_key.size() - decoded->secret.size()],
+                   decoded->secret.size()),
+            0);
+  // There are two registered domains at the time of writing the test. That
+  // number should only grow over time.
+  EXPECT_GE(decoded->num_known_domains, 2u);
 
-    // Chromium always sets this flag.
-    EXPECT_EQ(decoded->supports_linking.value_or(false), supports_linking);
+  // Chromium never offers linking for WebAuthn.
+  EXPECT_FALSE(*decoded->supports_linking);
 
-    EXPECT_EQ(decoded->request_type,
-              RequestType(FidoRequestType::kMakeCredential));
+  EXPECT_EQ(decoded->request_type,
+            RequestType(FidoRequestType::kMakeCredential));
 
-    url[0] ^= 4;
-    EXPECT_FALSE(qr::Parse(url));
-    EXPECT_FALSE(qr::Parse("nonsense"));
-  }
+  url[0] ^= 4;
+  EXPECT_FALSE(qr::Parse(url));
+  EXPECT_FALSE(qr::Parse("nonsense"));
 }
 
 TEST(CableV2Encoding, KnownQRs) {
@@ -319,21 +314,18 @@ TEST(CableV2Encoding, RequestTypeToString) {
 }
 
 TEST(CableV2Encoding, ShouldOfferLinking) {
-  const struct TestCase {
-    device::cablev2::RequestType request_type;
-    base::test::FeatureRef feature;
-  } kTestCases[] = {
-      {FidoRequestType::kMakeCredential, device::kWebAuthnHybridLinking},
-      {FidoRequestType::kGetAssertion, device::kWebAuthnHybridLinking},
-      {CredentialRequestType::kPresentation,
-       device::kDigitalCredentialsHybridLinking}};
-  for (const TestCase& test_case : kTestCases) {
-    for (bool enabled : {false, true}) {
-      base::test::ScopedFeatureList scoped_feature_list;
-      scoped_feature_list.InitWithFeatureState(*test_case.feature, enabled);
-      EXPECT_EQ(ShouldOfferLinking(test_case.request_type), enabled);
-    }
+  {
+    base::test::ScopedFeatureList scoped_feature_list{
+        kDigitalCredentialsHybridLinking};
+    EXPECT_TRUE(ShouldOfferLinking(CredentialRequestType::kPresentation));
   }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kDigitalCredentialsHybridLinking);
+    EXPECT_FALSE(ShouldOfferLinking(CredentialRequestType::kPresentation));
+  }
+  EXPECT_FALSE(ShouldOfferLinking(FidoRequestType::kGetAssertion));
+  EXPECT_FALSE(ShouldOfferLinking(FidoRequestType::kMakeCredential));
 }
 
 TEST(CableV2Encoding, PaddedCBOR) {

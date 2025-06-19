@@ -93,12 +93,7 @@ AUTHENTICATOR_EVENTS
 // static
 std::u16string AuthenticatorRequestDialogModel::GetMechanismDescription(
     const device::DiscoverableCredentialMetadata& cred,
-    const std::optional<std::string>& phone_name,
     UIPresentation ui_presentation) {
-  if (cred.source == device::AuthenticatorType::kPhone) {
-    return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
-                                      base::UTF8ToUTF16(*phone_name));
-  }
   bool immediate_mode = UIPresentation::kModalImmediate == ui_presentation;
   if (cred.provider_name) {
     return immediate_mode ? l10n_util::GetStringFUTF16(
@@ -281,7 +276,6 @@ std::ostream& operator<<(std::ostream& os,
       {Step::kBlePowerOnManual, "kBlePowerOnManual"},
       {Step::kBlePermissionMac, "kBlePermissionMac"},
       {Step::kOffTheRecordInterstitial, "kOffTheRecordInterstitial"},
-      {Step::kPhoneConfirmationSheet, "kPhoneConfirmationSheet"},
       {Step::kCableActivate, "kCableActivate"},
       {Step::kCableV2QRCode, "kCableV2QRCode"},
       {Step::kCableV2Connecting, "kCableV2Connecting"},

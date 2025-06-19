@@ -105,7 +105,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "crypto/crypto_buildflags.h"
-#include "device/fido/features.h"
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
 #include "net/net_buildflags.h"
@@ -143,6 +142,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "device/fido/features.h"
 #include "device/fido/win/webauthn_api.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -3743,19 +3743,6 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
       {"securityKeysSetPinButton", IDS_SETTINGS_SECURITY_KEYS_SET_PIN_BUTTON},
       {"securityKeysSamePINAsCurrent",
        IDS_SETTINGS_SECURITY_KEYS_SAME_PIN_AS_CURRENT},
-      {"securityKeysPhoneEditDialogTitle",
-       IDS_SETTINGS_SECURITY_KEYS_PHONE_EDIT_DIALOG_TITLE},
-      {"securityKeysPhonesYourDevices",
-       IDS_SETTINGS_SECURITY_KEYS_PHONES_YOUR_DEVICES},
-      {"securityKeysPhonesSyncedDesc",
-       IDS_SETTINGS_SECURITY_KEYS_PHONES_SYNCED_DESC},
-      {"securityKeysPhonesLinkedDevices",
-       IDS_SETTINGS_SECURITY_KEYS_PHONES_LINKED_DEVICES},
-      {"securityKeysPhonesLinkedDesc",
-       IDS_SETTINGS_SECURITY_KEYS_PHONES_LINKED_DESC},
-      {"securityKeysPhonesManage", IDS_SETTINGS_SECURITY_KEYS_PHONES_MANAGE},
-      {"securityKeysPhonesManageDesc",
-       IDS_SETTINGS_SECURITY_KEYS_PHONES_MANAGE_DESC},
   };
   html_source->AddLocalizedStrings(kSecurityKeysStrings);
   bool win_native_api_available = false;
@@ -3768,9 +3755,6 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
                           !win_native_api_available);
   html_source->AddBoolean("enableSecurityKeysBioEnrollment",
                           !win_native_api_available);
-  html_source->AddBoolean(
-      "enableSecurityKeysManagePhones",
-      base::FeatureList::IsEnabled(device::kWebAuthnHybridLinking));
 }
 
 void AddShortcutInputStrings(content::WebUIDataSource* html_source) {

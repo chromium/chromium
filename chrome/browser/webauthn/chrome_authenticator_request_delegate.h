@@ -73,9 +73,6 @@ class ChromeAuthenticatorRequestDelegate
 
     virtual void OnDestroy(ChromeAuthenticatorRequestDelegate* delegate) {}
 
-    virtual std::vector<std::unique_ptr<device::cablev2::Pairing>>
-    GetCablePairingsFromSyncedDevices();
-
     virtual void OnTransportAvailabilityEnumerated(
         ChromeAuthenticatorRequestDelegate* delegate,
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai) {}
@@ -203,8 +200,6 @@ class ChromeAuthenticatorRequestDelegate
   void OnStartOver() override;
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
   void OnCancelRequest() override;
-  void OnManageDevicesClicked() override;
-
 
   void SetPasswordControllerForTesting(
       std::unique_ptr<PasswordCredentialController> controller);
@@ -257,8 +252,6 @@ class ChromeAuthenticatorRequestDelegate
   // information that will be broadcast by the device.
   bool ShouldPermitCableExtension(const url::Origin& origin);
 
-  void OnInvalidatedCablePairing(
-      std::unique_ptr<device::cablev2::Pairing> failed_pairing);
   void OnCableEvent(device::cablev2::Event event);
 
   // Adds GPM passkeys matching |rp_id| to |tai|.

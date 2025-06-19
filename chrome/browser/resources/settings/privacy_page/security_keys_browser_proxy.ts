@@ -294,45 +294,6 @@ export interface SecurityKeysBioEnrollProxy {
   close(): void;
 }
 
-/**
- * An object that represents a known phone. The name will not contain any
- * new-line characters and is suitable for showing in UI. The publicKey is a
- * base64-encoded X9.62 P-256 point, but should be treated as an opaque string.
- * It can be passed to functions in |SecurityKeysPhonesBrowserProxy| to identify
- * a specific phone.
- */
-export interface SecurityKeysPhone {
-  name: string;
-  publicKey: string;
-}
-
-/**
- * A pair of lists of |SecurityKeysPhone|s. The first is a list of phones known
- * because they are syncing to the same account. The second are phones that have
- * been linked by scanning a QR code. Only elements from the latter can be
- * passed to |delete| or |rename| in |SecurityKeysPhonesBrowserProxy|.
- */
-export type SecurityKeysPhonesList = [SecurityKeysPhone[], SecurityKeysPhone[]];
-
-export interface SecurityKeysPhonesBrowserProxy {
-  /**
-   * Enumerates known phones.
-   */
-  enumerate(): Promise<SecurityKeysPhonesList>;
-
-  /**
-   * Deletes a linked phone by public key.
-   */
-  delete(publicKey: string): Promise<SecurityKeysPhonesList>;
-
-  /**
-   * Rename a linked phone.
-   *
-   * Rename the phone the given public key so that it is now known as |newName|.
-   */
-  rename(publicKey: string, newName: string): Promise<void>;
-}
-
 export class SecurityKeysPinBrowserProxyImpl implements
     SecurityKeysPinBrowserProxy {
   startSetPin() {
@@ -478,29 +439,3 @@ export class SecurityKeysBioEnrollProxyImpl implements
 }
 
 let bioEnrollProxyInstance: SecurityKeysBioEnrollProxy|null = null;
-
-export class SecurityKeysPhonesBrowserProxyImpl implements
-    SecurityKeysPhonesBrowserProxy {
-  enumerate() {
-    return sendWithPromise('securityKeyPhonesEnumerate');
-  }
-
-  delete(name: string) {
-    return sendWithPromise('securityKeyPhonesDelete', name);
-  }
-
-  rename(publicKey: string, newName: string) {
-    return sendWithPromise('securityKeyPhonesRename', publicKey, newName);
-  }
-
-  static getInstance(): SecurityKeysPhonesBrowserProxy {
-    return phonesProxyInstance ||
-        (phonesProxyInstance = new SecurityKeysPhonesBrowserProxyImpl());
-  }
-
-  static setInstance(obj: SecurityKeysPhonesBrowserProxy) {
-    phonesProxyInstance = obj;
-  }
-}
-
-let phonesProxyInstance: SecurityKeysPhonesBrowserProxy|null = null;

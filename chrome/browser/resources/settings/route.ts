@@ -56,14 +56,6 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 
   if (loadTimeData.getBoolean('enableSecurityKeysSubpage')) {
     r.SECURITY_KEYS = r.SECURITY.createChild('/securityKeys');
-    if (loadTimeData.getBoolean('enableSecurityKeysManagePhones')) {
-      r.SECURITY_KEYS_PHONES =
-          r.SECURITY_KEYS.createChild('/securityKeys/phones');
-    }
-    // <if expr="is_win">
-  } else if (loadTimeData.getBoolean('enableSecurityKeysManagePhones')) {
-    r.SECURITY_KEYS_PHONES = r.SECURITY.createChild('/securityKeys/phones');
-    // </if>
   }
 
   r.SITE_SETTINGS_ALL = r.SITE_SETTINGS.createChild('all');

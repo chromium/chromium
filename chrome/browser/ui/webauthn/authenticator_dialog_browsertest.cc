@@ -64,7 +64,6 @@
 
 namespace {
 
-constexpr char kPhoneName[] = "Elisa's Pixel 6 Pro";
 using BleStatus = device::FidoRequestHandlerBase::BleStatus;
 
 void UpdateModelBeforeStartFlow(
@@ -140,11 +139,6 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
         AuthenticatorTransport::kHybrid,
     };
 
-    std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
-    auto phone = std::make_unique<device::cablev2::Pairing>();
-    phone->from_sync_deviceinfo = false;
-    phone->name = kPhoneName;
-    phones.emplace_back(std::move(phone));
     transport_availability.has_platform_authenticator_credential = device::
         FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
     transport_availability.request_type =
@@ -152,10 +146,6 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
 
     // The dialog should immediately close as soon as it is displayed.
     if (name == "mechanisms" || name == "mechanisms_disabled") {
-      // A phone is configured so that the "Manage devices" button is shown.
-      controller_->set_cable_transport_info(
-          /*extension_is_v2=*/std::nullopt, std::move(phones),
-          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kMechanismSelection);
     } else if (name == "mechanisms_create" ||
@@ -195,21 +185,9 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     } else if (name == "touchid_incognito") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kOffTheRecordInterstitial);
-    } else if (name == "cable_activate") {
-      controller_->set_cable_transport_info(
-          /*extension_is_v2=*/false, std::move(phones),
-          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
-      controller_->ContactPhoneForTesting(kPhoneName);
-    } else if (name == "cable_v2_activate") {
-      controller_->set_cable_transport_info(
-          /*extension_is_v2=*/std::nullopt, std::move(phones),
-          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
-      controller_->ContactPhoneForTesting(kPhoneName);
     } else if (name == "cable_v2_pair") {
       controller_->set_cable_transport_info(
-          /*extension_is_v2=*/std::nullopt,
-          /*paired_phones=*/{},
-          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+          /*extension_is_v2=*/std::nullopt, "fido://qrcode");
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableV2QRCode);
     } else if (name == "cable_v2_connecting") {
@@ -386,21 +364,12 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           base::BindOnce([](device::AuthenticatorGetAssertionResponse) {}));
     } else if (name == "server_link_title_UNLOCK_YOUR_PHONE") {
       controller_->set_cable_transport_info(
-          /*extension_is_v2=*/true, /*paired_phones=*/{},
-          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+          /*extension_is_v2=*/true, "fido://qrcode");
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableActivate);
     } else if (name == "create_passkey") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCreatePasskey);
-    } else if (name == "phone_confirmation") {
-      // The phone must be from Sync.
-      phones[0]->from_sync_deviceinfo = true;
-      controller_->set_cable_transport_info(
-          /*extension_is_v2=*/true, std::move(phones),
-          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
-      controller_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kPhoneConfirmationSheet);
     }
 #if BUILDFLAG(IS_MAC)
     else if (name == "ble_permission_mac") {  // NOLINT
@@ -499,14 +468,6 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_touchid_incognito) {
   ShowAndVerifyUi();
 }
 #endif  // BUILDFLAG(IS_MAC)
-
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_activate) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_activate) {
-  ShowAndVerifyUi();
-}
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_pair) {
   ShowAndVerifyUi();
@@ -624,10 +585,6 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_create_passkey) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_phone_confirmation) {
-  ShowAndVerifyUi();
-}
-
 // Run with:
 //
 //   --gtest_filter=BrowserUiTest.Invoke --test-launcher-interactive \
@@ -693,16 +650,6 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
         device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
                                               "Elisa Beckett"),
         std::nullopt);
-    device::DiscoverableCredentialMetadata phone_cred1(
-        device::AuthenticatorType::kPhone, "example.com", {3},
-        device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
-                                              "Elisa Beckett"),
-        std::nullopt);
-    device::DiscoverableCredentialMetadata phone_cred2(
-        device::AuthenticatorType::kPhone, "example.com", {4},
-        device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
-                                              "Elisa Beckett"),
-        std::nullopt);
     device::DiscoverableCredentialMetadata ick_cred1(
         device::AuthenticatorType::kICloudKeychain, "example.com", {5},
         device::PublicKeyCredentialUserEntity({1}, "elisa.beckett@gmail.com",
@@ -714,26 +661,11 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
                                               "Elisa Beckett"),
         "Another Example Passkey Provider");
     model_->user_entity = local_cred1.user;
-
-    // Configure a phone from sync.
-    std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
-    auto phone = std::make_unique<device::cablev2::Pairing>();
-    phone->from_sync_deviceinfo = true;
-    phone->name = kPhoneName;
-    phones.emplace_back(std::move(phone));
     controller_->set_cable_transport_info(
-        /*extension_is_v2=*/std::nullopt, std::move(phones),
-        /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+        /*extension_is_v2=*/std::nullopt, "fido://qrcode");
 
     if (name == "no_passkeys_discovered") {
       transport_availability.recognized_credentials = {};
-    } else if (name == "local_and_phone") {
-      transport_availability.recognized_credentials = {
-          std::move(local_cred1),
-          std::move(local_cred2),
-          std::move(phone_cred1),
-          std::move(phone_cred2),
-      };
     } else if (name == "local_only" || name == "local_only_disabled") {
       transport_availability.recognized_credentials = {
           std::move(local_cred1),
@@ -746,44 +678,23 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
       };
       transport_availability.available_transports = {
           device::FidoTransportProtocol::kInternal};
-    } else if (name == "phone_only") {
-      transport_availability.recognized_credentials = {
-          std::move(phone_cred1),
-          std::move(phone_cred2),
-      };
     } else if (name == "priority_mech" || name == "priority_mech_disabled") {
       transport_availability.has_empty_allow_list = true;
       transport_availability.recognized_credentials = {
           std::move(gpm_cred),
       };
-    } else if (name == "one_phone_cred") {
-      transport_availability.recognized_credentials = {
-          std::move(phone_cred1),
-      };
     } else if (name == "get_assertion_qr_with_usb") {
-      controller_->set_cable_transport_info(
-          /*extension_is_v2=*/std::nullopt,
-          /*paired_phones=*/{},
-          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       transport_availability.ble_status = BleStatus::kOn;
       transport_availability.available_transports = {
           AuthenticatorTransport::kHybrid,
           AuthenticatorTransport::kUsbHumanInterfaceDevice,
       };
     } else if (name == "get_assertion_qr_without_usb") {
-      controller_->set_cable_transport_info(
-          /*extension_is_v2=*/std::nullopt,
-          /*paired_phones=*/{},
-          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       transport_availability.ble_status = BleStatus::kOn;
       transport_availability.available_transports = {
           AuthenticatorTransport::kHybrid,
       };
     } else if (name == "make_credential_qr_with_usb") {
-      controller_->set_cable_transport_info(
-          /*extension_is_v2=*/std::nullopt,
-          /*paired_phones=*/{},
-          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       transport_availability.request_type =
           device::FidoRequestType::kMakeCredential;
       transport_availability.attestation_conveyance_preference =
@@ -794,10 +705,6 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
           AuthenticatorTransport::kUsbHumanInterfaceDevice,
       };
     } else if (name == "make_credential_qr_without_usb") {
-      controller_->set_cable_transport_info(
-          /*extension_is_v2=*/std::nullopt,
-          /*paired_phones=*/{},
-          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       transport_availability.request_type =
           device::FidoRequestType::kMakeCredential;
       transport_availability.attestation_conveyance_preference =
@@ -883,11 +790,6 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
-                       InvokeUi_local_and_phone) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_local_only) {
   ShowAndVerifyUi();
 }
@@ -903,22 +805,12 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
-                       InvokeUi_phone_only) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_priority_mech) {
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_priority_mech_disabled) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
-                       InvokeUi_one_phone_cred) {
   ShowAndVerifyUi();
 }
 

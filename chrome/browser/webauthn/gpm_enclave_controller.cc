@@ -1119,23 +1119,15 @@ void GPMEnclaveController::OnGPMPasskeySelected(
       break;
 
     case AccountState::kNone:
-      if (model_->priority_phone_name.has_value()) {
-        model_->ContactPriorityPhone();
-      } else {
-        // This can happen if a passkey is selected after the enclave times out.
-        model_->SetStep(Step::kGPMError);
-      }
+      // This can happen if a passkey is selected after the enclave times out.
+      model_->SetStep(Step::kGPMError);
       break;
 
     case AccountState::kEmpty:
-      if (model_->priority_phone_name.has_value()) {
-        model_->ContactPriorityPhone();
-      } else {
-        // The security domain is empty but there were
-        // sync entities. Most like the security domain was reset without
-        // clearing the entities, thus they are unusable.
-        model_->SetStep(Step::kGPMError);
-      }
+      // The security domain is empty but there were
+      // sync entities. Most like the security domain was reset without
+      // clearing the entities, thus they are unusable.
+      model_->SetStep(Step::kGPMError);
       break;
   }
 }

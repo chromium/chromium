@@ -22,14 +22,12 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "chrome/browser/webauthn/cablev2_devices.h"
 #include "chrome/browser/webauthn/local_credential_management.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/credential_management.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
@@ -67,17 +65,6 @@ base::Value::Dict EncodeEnrollment(const std::vector<uint8_t>& id,
   value.Set("name", name);
   value.Set("id", base::HexEncode(id));
   return value;
-}
-
-bool DecodePublicKey(const std::string& value,
-                     std::array<uint8_t, device::kP256X962Length>* out) {
-  std::string bytes;
-  if (!base::Base64Decode(value, &bytes) || bytes.size() != out->size()) {
-    return false;
-  }
-
-  std::ranges::copy(bytes, out->begin());
-  return true;
 }
 
 }  // namespace
@@ -980,125 +967,6 @@ void SecurityKeysBioEnrollmentHandler::HandleCancel(
   DCHECK(!callback_id_.empty());
   // OnEnrollmentFinished() will be invoked once the cancellation is complete.
   bio_->CancelEnrollment();
-}
-
-SecurityKeysPhonesHandler::SecurityKeysPhonesHandler() = default;
-SecurityKeysPhonesHandler::~SecurityKeysPhonesHandler() = default;
-
-void SecurityKeysPhonesHandler::OnJavascriptAllowed() {}
-void SecurityKeysPhonesHandler::OnJavascriptDisallowed() {}
-
-void SecurityKeysPhonesHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
-      "securityKeyPhonesEnumerate",
-      base::BindRepeating(&SecurityKeysPhonesHandler::HandleEnumerate,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "securityKeyPhonesDelete",
-      base::BindRepeating(&SecurityKeysPhonesHandler::HandleDelete,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "securityKeyPhonesRename",
-      base::BindRepeating(&SecurityKeysPhonesHandler::HandleRename,
-                          base::Unretained(this)));
-}
-
-void SecurityKeysPhonesHandler::HandleEnumerate(const base::Value::List& args) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args.size());
-
-  AllowJavascript();
-  DoEnumerate(args[0]);
-}
-
-void SecurityKeysPhonesHandler::HandleDelete(const base::Value::List& args) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(2u, args.size());
-
-  AllowJavascript();
-  const std::string& public_key_base64 = args[1].GetString();
-  std::array<uint8_t, device::kP256X962Length> public_key;
-  const bool ok = DecodePublicKey(public_key_base64, &public_key);
-  DCHECK(ok);
-
-  PrefService* const prefs =
-      Profile::FromBrowserContext(
-          web_ui()->GetWebContents()->GetBrowserContext())
-          ->GetPrefs();
-  cablev2::DeletePairingByPublicKey(prefs, public_key);
-
-  DoEnumerate(args[0]);
-}
-
-void SecurityKeysPhonesHandler::HandleRename(const base::Value::List& args) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(3u, args.size());
-
-  AllowJavascript();
-  const std::string& public_key_base64 = args[1].GetString();
-  const std::string& new_name = args[2].GetString();
-  content::BrowserContext* const browser_ctx =
-      web_ui()->GetWebContents()->GetBrowserContext();
-
-  std::array<uint8_t, device::kP256X962Length> public_key;
-  const bool ok = DecodePublicKey(public_key_base64, &public_key);
-  DCHECK(ok);
-
-  // `existing_names` is built without calling `cablev2::MergeDevices` because
-  // that function will discard linked entries with duplicate public keys, which
-  // can hide some names that we would still like to avoid colliding with.
-  std::unique_ptr<cablev2::KnownDevices> known_devices =
-      cablev2::KnownDevices::FromProfile(
-          Profile::FromBrowserContext(browser_ctx));
-
-  // Remove the device that is getting renamed from the set of linked devices.
-  std::erase_if(
-      known_devices->linked_devices,
-      [&public_key](const std::unique_ptr<device::cablev2::Pairing>& device) {
-        return device->peer_public_key_x962 == public_key;
-      });
-
-  PrefService* const prefs =
-      Profile::FromBrowserContext(browser_ctx)->GetPrefs();
-  cablev2::RenamePairing(prefs, public_key, new_name, known_devices->Names());
-
-  ResolveJavascriptCallback(args[0], base::Value());
-}
-
-void SecurityKeysPhonesHandler::DoEnumerate(const base::Value& callback_id) {
-  const std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings =
-      cablev2::MergeDevices(
-          cablev2::KnownDevices::FromProfile(Profile::FromBrowserContext(
-              web_ui()->GetWebContents()->GetBrowserContext())),
-          &icu::Locale::getDefault());
-
-  base::Value::List synced;
-  base::Value::List linked;
-  std::optional<std::string> last_synced_device_name;
-  for (const auto& pairing : pairings) {
-    base::Value::Dict dict;
-    dict.Set("name", pairing->name);
-    dict.Set("publicKey", base::Base64Encode(pairing->peer_public_key_x962));
-
-    if (pairing->from_sync_deviceinfo) {
-      // Synced devices can have duplicate names. (E.g. if two or more
-      // channels are syncing from the same phone.) These are deduplicated
-      // here.
-      if (!last_synced_device_name ||
-          *last_synced_device_name != pairing->name) {
-        synced.Append(std::move(dict));
-      }
-      last_synced_device_name = pairing->name;
-    } else {
-      linked.Append(std::move(dict));
-    }
-  }
-
-  base::Value::List result;
-  result.Append(std::move(synced));
-  result.Append(std::move(linked));
-
-  ResolveJavascriptCallback(callback_id, result);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

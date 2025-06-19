@@ -8183,7 +8183,6 @@ test("unit_tests") {
       "../browser/visited_url_ranking/desktop_tab_model_url_visit_data_fetcher_unittest.cc",
       "../browser/webauthn/authenticator_request_dialog_model_unittest.cc",
       "../browser/webauthn/authenticator_request_scheduler_unittest.cc",
-      "../browser/webauthn/cablev2_devices_unittest.cc",
       "../browser/webauthn/challenge_url_fetcher_unittest.cc",
       "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
       "../browser/webauthn/chrome_web_authentication_delegate_unittest.cc",

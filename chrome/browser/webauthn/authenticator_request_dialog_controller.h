@@ -80,7 +80,6 @@ class AuthenticatorRequestDialogController
   void EnclaveEnabledStatusChanged(EnclaveEnabledStatus status) override;
   void OnAccountSelected(size_t index) override;
   void OnAccountPreselectedIndex(size_t index) override;
-  void ContactPriorityPhone() override;
   void OnBioEnrollmentDone() override;
   void OnUserConfirmedPriorityMechanism() override;
 
@@ -131,9 +130,6 @@ class AuthenticatorRequestDialogController
   // actives the platform authenticator of the given type.
   void HideDialogAndDispatchToPlatformAuthenticator(
       std::optional<device::AuthenticatorType> type = std::nullopt);
-
-  // Called when an attempt to contact a phone failed.
-  void OnPhoneContactFailed(const std::string& name);
 
   // Called when some caBLE event (e.g. receiving a BLE message, connecting to
   // the tunnel server, etc) happens.
@@ -283,15 +279,6 @@ class AuthenticatorRequestDialogController
 
   void SetSelectedAuthenticatorForTesting(AuthenticatorReference authenticator);
 
-  // ContactPhoneForTesting triggers a contact for a phone with the given name.
-  // Only for unittests. UI should use |mechanisms()| to enumerate the
-  // user-visible mechanisms and use the callbacks therein.
-  void ContactPhoneForTesting(const std::string& name);
-
-  // Sets `priority_phone_index_` and updates the name of the priority phone in
-  // `model_` accordingly.
-  void SetPriorityPhoneIndex(std::optional<size_t> index);
-
   // StartTransportFlowForTesting moves the UI to focus on the given transport.
   // UI should use |mechanisms()| to enumerate the user-visible mechanisms and
   // use the callbacks therein.
@@ -337,9 +324,6 @@ class AuthenticatorRequestDialogController
 
   void set_cable_transport_info(
       std::optional<bool> extension_is_v2,
-      std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones,
-      base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
-          contact_phone_callback,
       const std::optional<std::string>& cable_qr_string);
 
   bool win_native_api_enabled() const {
@@ -433,21 +417,10 @@ class AuthenticatorRequestDialogController
   // Triggers gaia account reauth to restore sync to working order.
   void ReauthForSyncRestore();
 
-  // Contacts a paired phone. The phone is specified by name.
-  void ContactPhone(const std::string& name);
-  void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
-  void ContactPhoneAfterBleIsPowered(std::string name);
-
   void StartAutofillRequest();
   void StartPasskeyUpgradeRequest();
 
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
-
-  void ContactNextPhoneByName(const std::string& name);
-
-  // Returns the index (into `paired_phones_`) of a phone that has been paired
-  // through Chrome Sync, or std::nullopt if there isn't one.
-  std::optional<size_t> GetIndexOfMostRecentlyUsedPhoneFromSync() const;
 
   // SortRecognizedCredentials sorts
   // `transport_availability_.recognized_credentials` into username order.
@@ -539,22 +512,6 @@ class AuthenticatorRequestDialogController
   // cable_extension_provided_ indicates whether the request included a caBLE
   // extension.
   bool cable_extension_provided_ = false;
-
-  // paired_phones_ contains details of caBLEv2-paired phones from both Sync and
-  // QR-based pairing. The entries are sorted by name.
-  std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones_;
-
-  // The index, into `paired_phones_`, for the top-priority phone.
-  std::optional<size_t> priority_phone_index_;
-
-  // paired_phones_contacted_ is the same length as |paired_phones_| and
-  // contains true whenever the corresponding phone as already been contacted.
-  std::vector<bool> paired_phones_contacted_;
-
-  // contact_phone_callback can be run with a pairing in order to contact the
-  // indicated phone.
-  base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
-      contact_phone_callback_;
 
   // cable_device_ready_ is true if a CTAP-level request has been sent to a
   // caBLE device. At this point we assume that any transport errors are

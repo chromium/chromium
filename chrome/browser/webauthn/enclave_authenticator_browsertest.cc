@@ -602,17 +602,6 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
       destruction_run_loop_->QuitWhenIdle();
     }
 
-    std::vector<std::unique_ptr<device::cablev2::Pairing>>
-    GetCablePairingsFromSyncedDevices() override {
-      std::vector<std::unique_ptr<device::cablev2::Pairing>> ret;
-      if (use_synced_device_cable_pairing_) {
-        ret.emplace_back(TestPhone("phone", /*public_key=*/0,
-                                   /*last_updated=*/base::Time::FromTimeT(1),
-                                   /*channel_priority=*/1));
-      }
-      return ret;
-    }
-
     void OnTransportAvailabilityEnumerated(
         ChromeAuthenticatorRequestDelegate* delegate,
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)

@@ -361,40 +361,6 @@ suite('FlagsDisabled', function() {
     assertFalse(isChildVisible(page, '#securityKeysSubpageTrigger'));
   });
 
-  // On modern versions of Windows the security keys subpage will be disabled
-  // because Windows manages that itself, but a link to the subpage for
-  // managing phones as security keys will be included when hybrid linking is
-  // enabled.
-  // TODO(crbug.com/372493822): remove these tests when hybrid linking flag is
-  // removed.
-  // <if expr="is_win">
-  test(
-      'ManageSecurityKeysPhonesSubpage_HybridLinkingEnabled', async function() {
-        loadTimeData.overrideValues({enableSecurityKeysManagePhones: true});
-        await createPage();
-        resetRouterForTesting();
-
-        const triggerId = '#securityKeysPhonesSubpageTrigger';
-        assertTrue(isChildVisible(page, triggerId));
-        page.shadowRoot!.querySelector<HTMLElement>(triggerId)!.click();
-        flush();
-        assertEquals(
-            routes.SECURITY_KEYS_PHONES,
-            Router.getInstance().getCurrentRoute());
-      });
-
-  test(
-      'ManageSecurityKeysPhonesSubpage_HybridLinkingDisabled',
-      async function() {
-        loadTimeData.overrideValues({enableSecurityKeysManagePhones: false});
-        await createPage();
-        resetRouterForTesting();
-
-        const triggerId = '#securityKeysPhonesSubpageTrigger';
-        assertFalse(isChildVisible(page, triggerId));
-      });
-  // </if>
-
   // Tests the old HTTPS-Only Mode toggle UI.
   // TODO(crbug.com/349860796): Remove this test once HttpsFirstBalancedMode is
   // enabled by default.

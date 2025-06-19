@@ -103,11 +103,6 @@ BASE_FEATURE(kWebAuthnAmbientSignin,
              "WebAuthenticationAmbientSignin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This is a deprecation flag. Disabled in M136. Remove in or after M139.
-BASE_FEATURE(kWebAuthnHybridLinking,
-             "WebAuthenticationHybridLinking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This is a deprecation flag. It is now enabled by default, but we want to
 // disable it eventually.
 // Must not be disabled until kWebAuthnHybridLinking is disabled by default.

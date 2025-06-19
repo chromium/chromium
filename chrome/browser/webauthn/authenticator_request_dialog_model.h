@@ -84,11 +84,6 @@ using UIPresentation =
   /* Cancels the flow as a result of the user clicking `Cancel` on the */     \
   /* UI. Valid action at all steps. */                                        \
   AUTHENTICATOR_REQUEST_EVENT_0(CancelAuthenticatorRequest)                   \
-  /* Contacts the "priority" paired phone. This is the phone from sync if */  \
-  /* there are a priori discovered GPM passkeys, or the first phone on the */ \
-  /* list otherwise. Only valid to call if |model_->priority_phone_name| */   \
-  /* contains a value. */                                                     \
-  AUTHENTICATOR_REQUEST_EVENT_0(ContactPriorityPhone)                         \
   /* Continues with the BLE/caBLE flow now that the Bluetooth adapter is */   \
   /* powered. Valid action when at step: kBlePowerOnManual, */                \
   /* kBlePowerOnAutomatic. */                                                 \
@@ -119,8 +114,6 @@ using UIPresentation =
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMConfirmOffTheRecordCreate)               \
   /* Called when the user clicks "Forgot PIN" during UV. */                   \
   AUTHENTICATOR_REQUEST_EVENT_0(OnForgotGPMPinPressed)                        \
-  /* Called when the user clicks Manage Devices to manage their phones. */    \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnManageDevicesClicked)                       \
   /* OnOffTheRecordInterstitialAccepted is called when the user accepts */    \
   /* the interstitial that warns that platform/caBLE authenticators may */    \
   /* record information even in incognito mode. */                            \
@@ -239,7 +232,6 @@ struct AuthenticatorRequestDialogModel
     // will be recorded.
     kOffTheRecordInterstitial,
     // Phone as a security key.
-    kPhoneConfirmationSheet,
     kCableActivate,
     kCableV2QRCode,
     kCableV2Connecting,
@@ -314,16 +306,16 @@ struct AuthenticatorRequestDialogModel
   };
 
   // A Mechanism is a user-visible method of authenticating. It might be a
-  // transport (such as USB), a platform authenticator, a phone, or even a
-  // delegation to a platform API. Selecting a mechanism starts the flow for the
-  // user to authenticate with it (e.g. by showing a QR code or dispatching to a
+  // transport (such as USB), a platform authenticator, or even a delegation to
+  // a platform API. Selecting a mechanism starts the flow for the user to
+  // authenticate with it (e.g. by showing a QR code or dispatching to a
   // platform authenticator).
   //
   // On get assertion requests, mechanisms can also represent credentials for
   // authenticators that support silent discovery. In this case, the |type| is
-  // |Credential| and it is annotated with the source of the credential (phone,
-  // icloud, etc). Selecting such a mechanism dispatches a request narrowed down
-  // to the specific credential to an authenticator that can fulfill it.
+  // |Credential| and it is annotated with the source of the credential (icloud,
+  // etc). Selecting such a mechanism dispatches a request narrowed down to the
+  // specific credential to an authenticator that can fulfill it.
   struct Mechanism {
     // These types describe the type of Mechanism.
     struct CredentialInfo {
@@ -355,7 +347,6 @@ struct AuthenticatorRequestDialogModel
     using WindowsAPI = base::StrongAlias<class WindowsAPITag, std::monostate>;
     using ICloudKeychain =
         base::StrongAlias<class iCloudKeychainTag, std::monostate>;
-    using Phone = base::StrongAlias<class PhoneTag, std::string>;
     using AddPhone = base::StrongAlias<class AddPhoneTag, std::monostate>;
     using Enclave = base::StrongAlias<class EnclaveTag, std::monostate>;
     using SignInAgain = base::StrongAlias<class SignInAgainTag, std::monostate>;
@@ -363,7 +354,6 @@ struct AuthenticatorRequestDialogModel
                               Password,
                               Transport,
                               WindowsAPI,
-                              Phone,
                               AddPhone,
                               ICloudKeychain,
                               Enclave,
@@ -398,11 +388,9 @@ struct AuthenticatorRequestDialogModel
     CABLE_V2_2ND_FACTOR,
   };
 
-  // Returns a user-friendly description for a |type|. If |type| is kPhone, a
-  // |phone_name| must be passed.
+  // Returns a user-friendly description for a |type|.
   static std::u16string GetMechanismDescription(
       const device::DiscoverableCredentialMetadata& cred,
-      const std::optional<std::string>& phone_name,
       UIPresentation ui_presentation = UIPresentation::kModal);
 
   explicit AuthenticatorRequestDialogModel(
@@ -503,19 +491,11 @@ struct AuthenticatorRequestDialogModel
   std::optional<int> pin_attempts;
   std::optional<int> uv_attempts;
   device::pin::PINEntryError pin_error = device::pin::PINEntryError::kNoError;
-  // A sorted, unique list of the names of paired phones.
-  std::vector<std::string> paired_phone_names;
-  // The name of the priority phone, if any.
-  std::optional<std::string> priority_phone_name;
 
   // cable_ui_type contains the type of UI to display for a caBLE transaction.
   std::optional<CableUIType> cable_ui_type;
 
   std::optional<std::string> cable_qr_string;
-  // The name of the paired phone that was passed to `ContactPhone()`. It is
-  // shown on the UI sheet that prompts the user to check their phone for
-  // a notification.
-  std::optional<std::string> selected_phone_name;
 
   // Number of remaining GPM pin entry attempts before getting locked out or
   // `std::nullopt` if there was no failed attempts during that request.

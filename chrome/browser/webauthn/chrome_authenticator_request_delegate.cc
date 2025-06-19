@@ -184,26 +184,7 @@ class CableLinkingEventHandler : public ProfileObserver {
     }
   }
 
-  void OnNewCablePairing(std::unique_ptr<device::cablev2::Pairing> pairing) {
-    if (!profile_) {
-      FIDO_LOG(DEBUG) << "Linking event was discarded because it was received "
-                         "after the profile was destroyed.";
-      return;
-    }
-
-    // Drop linking in Incognito sessions. While an argument could be made that
-    // it's OK to persist them, this seems like the safe option.
-    if (profile_->IsOffTheRecord()) {
-      FIDO_LOG(DEBUG) << "Linking event was discarded because the profile is "
-                         "Off The Record.";
-      return;
-    }
-
-    cablev2::AddPairing(profile_, std::move(pairing));
-  }
-
   // ProfileObserver:
-
   void OnProfileWillBeDestroyed(Profile* profile) override {
     DCHECK_EQ(profile, profile_);
     profile_->RemoveObserver(this);
@@ -254,12 +235,6 @@ bool PasswordsUsable(int credential_types, UIPresentation ui_presentation) {
 
 }  // namespace
 
-std::vector<std::unique_ptr<device::cablev2::Pairing>>
-ChromeAuthenticatorRequestDelegate::TestObserver::
-    GetCablePairingsFromSyncedDevices() {
-  return {};
-}
-
 // static
 void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -296,6 +271,7 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
           IsICloudDriveEnabled(),
           /*request_is_for_google_com=*/false, /*preference=*/std::nullopt));
 #endif
+  // TODO(crbug.com/372493822): remove and clean up prefs.
   cablev2::RegisterProfilePrefs(registry);
 }
 
@@ -594,35 +570,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
       base::Contains(pairings, device::CableDiscoveryData::Version::V2,
                      &device::CableDiscoveryData::version);
 
-  std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones;
-  base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
-      contact_phone_callback;
-  if (base::FeatureList::IsEnabled(device::kWebAuthnHybridLinking) &&
-      (!cable_extension_provided ||
-       base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere))) {
-    std::unique_ptr<cablev2::KnownDevices> known_devices =
-        cablev2::KnownDevices::FromProfile(profile());
-    if (g_observer) {
-      known_devices->synced_devices =
-          g_observer->GetCablePairingsFromSyncedDevices();
-    }
-    can_use_synced_phone_passkeys_ = !known_devices->synced_devices.empty();
-    paired_phones = cablev2::MergeDevices(std::move(known_devices),
-                                          &icu::Locale::getDefault());
-
-    // The debug log displays in reverse order, so the headline is emitted after
-    // the names.
-    for (const auto& pairing : paired_phones) {
-      FIDO_LOG(DEBUG) << "• " << pairing->name << " " << pairing->last_updated
-                      << " priority:" << pairing->channel_priority;
-    }
-    FIDO_LOG(DEBUG) << "Found " << paired_phones.size() << " caBLEv2 devices";
-
-    if (!paired_phones.empty()) {
-      contact_phone_callback = discovery_factory->get_cable_contact_callback();
-    }
-  }
-
   const bool non_extension_cablev2_enabled =
       (!cable_extension_permitted ||
        (!cable_extension_provided &&
@@ -645,13 +592,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 
     auto linking_handler =
         std::make_unique<CableLinkingEventHandler>(profile());
-    discovery_factory->set_cable_pairing_callback(
-        base::BindRepeating(&CableLinkingEventHandler::OnNewCablePairing,
-                            std::move(linking_handler)));
-    discovery_factory->set_cable_invalidated_pairing_callback(
-        base::BindRepeating(
-            &ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing,
-            weak_ptr_factory_.GetWeakPtr()));
     discovery_factory->set_cable_event_callback(
         base::BindRepeating(&ChromeAuthenticatorRequestDelegate::OnCableEvent,
                             weak_ptr_factory_.GetWeakPtr()));
@@ -671,9 +611,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     if (cable_extension_provided) {
       extension_is_v2 = cablev2_extension_provided;
     }
-    dialog_controller_->set_cable_transport_info(
-        extension_is_v2, std::move(paired_phones),
-        std::move(contact_phone_callback), qr_string);
+    dialog_controller_->set_cable_transport_info(extension_is_v2, qr_string);
     discovery_factory->set_cable_data(request_type, std::move(pairings),
                                       qr_generator_key);
   }
@@ -889,20 +827,6 @@ void ChromeAuthenticatorRequestDelegate::OnCancelRequest() {
   std::move(cancel_callback_).Run();
 }
 
-void ChromeAuthenticatorRequestDelegate::OnManageDevicesClicked() {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (browser) {
-    NavigateParams params(browser,
-                          GURL("chrome://settings/securityKeys/phones"),
-                          ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    Navigate(&params);
-  }
-}
-
-
 void ChromeAuthenticatorRequestDelegate::SetPasswordControllerForTesting(
     std::unique_ptr<PasswordCredentialController> controller) {
   password_controller_ = std::move(controller);
@@ -1064,18 +988,6 @@ bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
   return origin.IsSameOriginWith(test_site);
 }
 
-void ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing(
-    std::unique_ptr<device::cablev2::Pairing> failed_pairing) {
-  // A pairing was reported to be invalid. Delete it unless it came from Sync,
-  // in which case there's nothing to be done.
-  cablev2::DeletePairingByPublicKey(profile()->GetPrefs(),
-                                    failed_pairing->peer_public_key_x962);
-
-  // Contact the next phone with the same name, if any, given that no
-  // notification has been sent.
-  dialog_controller_->OnPhoneContactFailed(failed_pairing->name);
-}
-
 void ChromeAuthenticatorRequestDelegate::OnCableEvent(
     device::cablev2::Event event) {
   if (event == device::cablev2::Event::kReady) {
@@ -1120,24 +1032,13 @@ void ChromeAuthenticatorRequestDelegate::
     DoGetPhoneContactableGpmPasskeysForRpId(
         TransportAvailabilityInfo tai,
         base::OnceCallback<void(TransportAvailabilityInfo)> callback) {
-  device::AuthenticatorType type;
-  std::vector<sync_pb::WebauthnCredentialSpecifics> credentials;
-
-  if (enclave_controller_ && enclave_controller_->is_active()) {
-    credentials = enclave_controller_->creds();
-    type = device::AuthenticatorType::kEnclave;
-  } else {
-    webauthn::PasskeyModel* passkey_model =
-        PasskeyModelFactory::GetInstance()->GetForProfile(profile());
-    CHECK(passkey_model);
-    credentials = passkey_model->GetPasskeysForRelyingPartyId(
-        dialog_model_->relying_party_id);
-    type = device::AuthenticatorType::kPhone;
+  if (!enclave_controller_ || !enclave_controller_->is_active() ||
+      enclave_controller_->creds().empty()) {
+    std::move(callback).Run(std::move(tai));
+    return;
   }
-
   if (dialog_controller_->ui_presentation() ==
-          UIPresentation::kModalImmediate &&
-      !credentials.empty() && enclave_controller_) {
+      UIPresentation::kModalImmediate) {
     bool enclave_ready = enclave_controller_->account_ready_state() ==
                          GPMEnclaveController::AccountReadyState::kReady;
     base::UmaHistogramBoolean(
@@ -1147,14 +1048,14 @@ void ChromeAuthenticatorRequestDelegate::
       return;
     }
   }
-
-  for (const sync_pb::WebauthnCredentialSpecifics& passkey : credentials) {
+  for (const sync_pb::WebauthnCredentialSpecifics& passkey :
+       enclave_controller_->creds()) {
     const base::Time last_used_time = base::Time::FromDeltaSinceWindowsEpoch(
         base::Microseconds(passkey.last_used_time_windows_epoch_micros()));
     const base::Time creation_time =
         base::Time::FromMillisecondsSinceUnixEpoch(passkey.creation_time());
     tai.recognized_credentials.emplace_back(
-        type, passkey.rp_id(),
+        device::AuthenticatorType::kEnclave, passkey.rp_id(),
         std::vector<uint8_t>(passkey.credential_id().begin(),
                              passkey.credential_id().end()),
         device::PublicKeyCredentialUserEntity(

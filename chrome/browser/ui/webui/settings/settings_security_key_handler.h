@@ -251,24 +251,6 @@ class SecurityKeysBioEnrollmentHandler : public SecurityKeysHandlerBase {
   base::WeakPtrFactory<SecurityKeysBioEnrollmentHandler> weak_factory_{this};
 };
 
-class SecurityKeysPhonesHandler : public SettingsPageUIHandler {
- public:
-  SecurityKeysPhonesHandler();
-  ~SecurityKeysPhonesHandler() override;
-
- protected:
-  void RegisterMessages() override;
-  void OnJavascriptAllowed() override;
-  void OnJavascriptDisallowed() override;
-
- private:
-  void HandleEnumerate(const base::Value::List& args);
-  void HandleDelete(const base::Value::List& args);
-  void HandleRename(const base::Value::List& args);
-
-  void DoEnumerate(const base::Value& callback_id);
-};
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 class PasskeysHandler : public SettingsPageUIHandler {
  public:

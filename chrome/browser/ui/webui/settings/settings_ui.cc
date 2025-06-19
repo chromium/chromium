@@ -259,7 +259,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(std::make_unique<SecurityKeysCredentialHandler>());
   AddSettingsPageUIHandler(
       std::make_unique<SecurityKeysBioEnrollmentHandler>());
-  AddSettingsPageUIHandler(std::make_unique<SecurityKeysPhonesHandler>());
   AddSettingsPageUIHandler(std::make_unique<PasswordManagerHandler>());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   AddSettingsPageUIHandler(std::make_unique<PasskeysHandler>());

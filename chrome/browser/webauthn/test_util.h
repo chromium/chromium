@@ -14,10 +14,6 @@
 #include "device/fido/enclave/constants.h"
 #include "google_apis/gaia/gaia_id.h"
 
-namespace device::cablev2 {
-struct Pairing;
-}
-
 static constexpr int32_t kSecretVersion = 417;
 static constexpr uint8_t kSecurityDomainSecret[32] = {};
 static constexpr char kSyncEmail[] = "user1@gmail.com";
@@ -64,10 +60,5 @@ std::pair<base::Process, uint16_t> StartWebAuthnEnclave(base::FilePath cwd);
 
 device::enclave::ScopedEnclaveOverride TestWebAuthnEnclaveIdentity(
     uint16_t port);
-
-std::unique_ptr<device::cablev2::Pairing> TestPhone(const char* name,
-                                                    uint8_t public_key,
-                                                    base::Time last_updated,
-                                                    int channel_priority);
 
 #endif  // CHROME_BROWSER_WEBAUTHN_TEST_UTIL_H_

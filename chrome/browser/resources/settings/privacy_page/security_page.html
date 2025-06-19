@@ -283,16 +283,6 @@
         </cr-link-row>
     </template>
 
-<if expr="is_win">
-    <template is="dom-if" if="[[enableSecurityKeysPhonesSubpage_]]">
-        <cr-link-row id="securityKeysPhonesSubpageTrigger"
-            label="$i18n{securityKeysPhonesManage}"
-            sub-label="$i18n{securityKeysPhonesManageDesc}"
-            on-click="onManagePhonesClick_">
-        </cr-link-row>
-    </template>
-</if>
-
     <cr-link-row id="manageCertificatesLinkRow" class="hr"
         role-description="$i18n{subpageArrowRoleDescription}"
         label="$i18n{manageCertificates}"

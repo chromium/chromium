@@ -684,8 +684,8 @@ std::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
 bool ShouldOfferLinking(RequestType request_type) {
   return std::visit(
       absl::Overload{[](const FidoRequestType&) {
-                       return base::FeatureList::IsEnabled(
-                           device::kWebAuthnHybridLinking);
+                       // Hybrid linking is not supported for WebAuthn.
+                       return false;
                      },
                      [](const CredentialRequestType&) {
                        return base::FeatureList::IsEnabled(

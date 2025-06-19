@@ -137,21 +137,6 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
           view_controller_.get(),
           std::make_unique<TestSheetView>(std::make_unique<TestSheetModel>()));
       EXPECT_EQ(step_transition_observer.step_transition_count(), 0);
-    } else if (name == "manage_devices") {
-      // Add a paired phone. That should be sufficient for the "Manage
-      // devices" button to be shown.
-      dialog_model_->mechanisms.emplace_back(
-          AuthenticatorRequestDialogModel::Mechanism::Phone("Phone"), u"Phone",
-          u"Phone", kSmartphoneIcon, base::DoNothing());
-      dialog_model_->SetStep(
-          AuthenticatorRequestDialogModel::Step::kMechanismSelection);
-
-      // The "manage devices" button should have been shown on this sheet.
-      EXPECT_TRUE(test::AuthenticatorRequestDialogViewTestApi::GetSheet(
-                      view_controller_.get())
-                      ->model()
-                      ->IsManageDevicesButtonVisible());
-      EXPECT_EQ(step_transition_observer.step_transition_count(), 1);
     }
 
     dialog_model_->RemoveObserver(&step_transition_observer);
@@ -166,11 +151,5 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
 
 // Test the dialog with a custom delegate.
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, InvokeUi_default) {
-  ShowAndVerifyUi();
-}
-
-// Test that the models decide to show the "Manage devices" button when a phone
-// is listed.
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, InvokeUi_manage_devices) {
   ShowAndVerifyUi();
 }

@@ -33,7 +33,6 @@
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "extensions/browser/extension_registry.h"
@@ -73,10 +72,6 @@ class Observer : public testing::NiceMock<
   MOCK_METHOD(void,
               Created,
               (ChromeAuthenticatorRequestDelegate * delegate),
-              (override));
-  MOCK_METHOD(std::vector<std::unique_ptr<device::cablev2::Pairing>>,
-              GetCablePairingsFromSyncedDevices,
-              (),
               (override));
   MOCK_METHOD(void,
               OnTransportAvailabilityEnumerated,

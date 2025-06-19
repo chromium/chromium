@@ -17269,12 +17269,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_PASSKEY_PHONE_TABLET_OR_SECURITY_KEY_LABEL" desc="The label on a button-like element in a list of options. Clicking this causes Chrome to show a QR code that the user can scan with their phone to use that phone for signing into a website. Here 'phone' is used as a short hand for smartphone. Users can also insert and tap their security key on the QR code screen.">
         Use a phone, tablet, or security key
       </message>
-      <message name="IDS_WEBAUTHN_PASSKEY_DIFFERENT_PHONE_OR_TABLET_LABEL" desc="The label on a button-like element in a list of options. Clicking this causes Chrome to show a QR code that the user can scan with their phone to use that phone for signing into a website. Here 'phone' is used as a short hand for smartphone. This string is used when a specific phone is also an option in the list, so the word 'different' is intended to communicate that this is the correct option when none of the previously list phones are correct.">
-        Use a different phone or tablet
-      </message>
-      <message name="IDS_WEBAUTHN_PASSKEY_DIFFERENT_PHONE_TABLET_OR_SECURITY_KEY_LABEL" desc="The label on a button-like element in a list of options. Clicking this causes Chrome to show a QR code that the user can scan with their phone to use that phone for signing into a website. Here 'phone' is used as a short hand for smartphone. This string is used when a specific phone is also an option in the list, so the word 'different' is intended to communicate that this is the correct option when none of the previously list phones are correct. Users can also insert and tap their security key on the QR code screen.">
-        Use a different phone, tablet, or security key
-      </message>
       <message name="IDS_WEBAUTHN_PHONE_CONFIRMATION_TITLE" desc="The title of a dialog shown when a user can use a passkey from a phone or tablet they have already paired with Chrome to sign in to a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
         Use a passkey from <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 6 Pro</ex></ph> to sign in to <ph name="WEBSITE">$2<ex>accounts.google.com</ex></ph>
       </message>
@@ -17480,9 +17474,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_WEBAUTHN_SOURCE_USB_SECURITY_KEY" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in a USB security key.">
         USB security key
-      </message>
-      <message name="IDS_WEBAUTHN_SOURCE_PHONE" desc="The subtitle shown in a button that lets the user select a passkey to sign in, indicating that the passkey resides in their phone.">
-        From "<ph name="PHONE_NAME">$1<ex>Pixel 7</ex></ph>"
       </message>
       <message name="IDS_WEBAUTHN_PASSKEYS_AND_SECURITY_KEYS" desc="The title of a dialog prompting the user to create or use a passkey on their phones by scanning a QR code or on a security key. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
         Passkeys &amp; Security Keys

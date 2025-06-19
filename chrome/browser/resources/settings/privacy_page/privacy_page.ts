@@ -109,13 +109,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
-      enableManagePhones_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableSecurityKeysManagePhones');
-        },
-      },
-
       blockAutoplayStatus_: {
         type: Object,
         value() {
@@ -350,7 +343,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private showPrivacyGuideDialog_: boolean;
   declare private enableSafeBrowsingSubresourceFilter_: boolean;
   declare private enableBlockAutoplayContentSetting_: boolean;
-  declare private enableManagePhones_: boolean;
   declare private blockAutoplayStatus_: BlockAutoplayStatus;
   declare private enableDeleteBrowsingDataRevamp_: boolean;
   declare private enableFederatedIdentityApiContentSetting_: boolean;

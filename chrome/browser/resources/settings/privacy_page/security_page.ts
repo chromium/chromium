@@ -164,20 +164,6 @@ export class SettingsSecurityPageElement extends
         },
       },
 
-      // <if expr="is_win">
-      enableSecurityKeysPhonesSubpage_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          // The phones subpage is linked from the security keys subpage, if
-          // it exists. Thus the phones subpage is only linked from this page
-          // if the security keys subpage is disabled.
-          return !loadTimeData.getBoolean('enableSecurityKeysSubpage') &&
-              loadTimeData.getBoolean('enableSecurityKeysManagePhones');
-        },
-      },
-      // </if>
-
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
@@ -236,9 +222,6 @@ export class SettingsSecurityPageElement extends
   // </if>
 
   declare private enableSecurityKeysSubpage_: boolean;
-  // <if expr="is_win">
-  declare private enableSecurityKeysPhonesSubpage_: boolean;
-  // </if>
   declare focusConfig: FocusConfig;
   declare private showDisableSafebrowsingDialog_: boolean;
   declare private enableHashPrefixRealTimeLookups_: boolean;
@@ -533,12 +516,6 @@ export class SettingsSecurityPageElement extends
   private onSecurityKeysClick_() {
     Router.getInstance().navigateTo(routes.SECURITY_KEYS);
   }
-
-  // <if expr="is_win">
-  private onManagePhonesClick_() {
-    Router.getInstance().navigateTo(routes.SECURITY_KEYS_PHONES);
-  }
-  // </if>
 
   private onEnhancedProtectionLearnMoreClick_(e: Event) {
     OpenWindowProxyImpl.getInstance().openUrl(

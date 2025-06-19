@@ -564,23 +564,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDns) {
   RunTest("settings/secure_dns_test.js", "runMochaSuite('SettingsSecureDns')");
 }
 
-// TODO(crbug.com/372493822): remove when hybrid linking is disabled by default.
-class HybridDisabledSettingsTest : public SettingsTest {
- public:
-  HybridDisabledSettingsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{device::kWebAuthnHybridLinking});
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(HybridDisabledSettingsTest, SecurityKeysSubpage) {
-  RunTest("settings/security_keys_subpage_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysBioEnrollment) {
   RunTest("settings/security_keys_bio_enrollment_test.js", "mocha.run()");
 }
@@ -588,10 +571,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysBioEnrollment) {
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysCredentialManagement) {
   RunTest("settings/security_keys_credential_management_test.js",
           "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysPhonesSubpage) {
-  RunTest("settings/security_keys_phones_subpage_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysResetDialog) {

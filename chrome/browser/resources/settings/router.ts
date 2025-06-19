@@ -57,7 +57,6 @@ export interface SettingsRoutes {
   SEARCH_ENGINES: Route;
   SECURITY: Route;
   SECURITY_KEYS: Route;
-  SECURITY_KEYS_PHONES: Route;
   SITE_SETTINGS: Route;
   SITE_SETTINGS_ADS: Route;
   SITE_SETTINGS_ALL: Route;
