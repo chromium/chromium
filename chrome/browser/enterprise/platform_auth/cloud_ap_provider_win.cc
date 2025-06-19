@@ -51,6 +51,7 @@
 #include "base/win/scoped_hstring.h"
 #include "chrome/browser/enterprise/platform_auth/cloud_ap_utils_win.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
@@ -198,6 +199,11 @@ void ParseCookieInfo(const ProofOfPossessionCookieInfo* cookie_info,
   for (DWORD i = 0; i < cookie_info_count; ++i) {
     const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
     auto ascii_cookie_name = base::WideToASCII(cookie.name);
+    // TODO(b/425887809): Remove after debugging.
+    VLOG_POLICY(1, EXTENSIBLE_SSO)
+        << "[CloudAPAuthEnabled] Fetched cookie with name " << ascii_cookie_name
+        << " and size " << wcslen(cookie.data);
+
     if (base::StartsWith(ascii_cookie_name, kHeaderPrefix,
                          base::CompareCase::INSENSITIVE_ASCII)) {
       // Removing cookie attributes from the value before setting it as a
@@ -256,11 +262,18 @@ net::HttpRequestHeaders GetAuthData(const GURL& url) {
     base::UmaHistogramExactLinear("Enterprise.PlatformAuth.GetAuthData.Count",
                                   cookie_info_count,
                                   10);  // Expect < 10 cookies.
+    // TODO(b/425887809): Remove after debugging.
+    VLOG_POLICY(1, EXTENSIBLE_SSO)
+        << "[CloudAPAuthEnabled] Successfully fetched " << cookie_info_count
+        << " cookies.";
   } else {
     base::UmaHistogramTimes("Enterprise.PlatformAuth.GetAuthData.FailureTime",
                             delta);
     base::UmaHistogramSparse(
         "Enterprise.PlatformAuth.GetAuthData.FailureHresult", int{hresult});
+    // TODO(b/425887809): Remove after debugging.
+    VLOG_POLICY(1, EXTENSIBLE_SSO)
+        << "[CloudAPAuthEnabled] Failed to fetch cookies.";
   }
 
   return auth_headers;
