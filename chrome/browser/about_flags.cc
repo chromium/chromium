@@ -1266,6 +1266,7 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"intent_picker", "true"},
     {"file_system_access", "true"},
     {"zoom", "true"},
+    {"pwa_install", "true"},
 };
 const FeatureEntry::FeatureVariation kPageActionsMigrationVariations[] = {
     {"with all migrated page actions enabled", kPageActionsMigrationParams,
