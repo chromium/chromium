@@ -38,15 +38,35 @@ std::pair<gfx::Point, gfx::Point> GetSnappedPointsForTextLine(
           gfx::Point(decoration_rect.right(), mid_y)};
 }
 
-bool ShouldUseStrokeForTextLine(StrokeStyle stroke_style) {
-  switch (stroke_style) {
-    case kSolidStroke:
-    case kDoubleStroke:
-      return false;
-    case kDottedStroke:
-    case kDashedStroke:
-    case kWavyStroke:
-      return true;
+void DrawLineAsStroke(GraphicsContext& context,
+                      const gfx::RectF& line_rect,
+                      const StyledStrokeData& styled_stroke,
+                      const AutoDarkMode& auto_dark_mode,
+                      const cc::PaintFlags* paint_flags) {
+  auto [start, end] = GetSnappedPointsForTextLine(line_rect);
+  context.DrawLine(start, end, styled_stroke, auto_dark_mode, true,
+                   paint_flags);
+}
+
+void DrawLineAsRect(GraphicsContext& context,
+                    const gfx::RectF& line_rect,
+                    const AutoDarkMode& auto_dark_mode,
+                    const cc::PaintFlags* paint_flags) {
+  if (paint_flags) {
+    // In SVG (inferred by a non-null `paint_flags`), we don't snap the line
+    // to get better scaling behavior. See crbug.com/1270336.
+    context.DrawRect(gfx::RectFToSkRect(line_rect), *paint_flags,
+                     auto_dark_mode);
+  } else {
+    // Avoid anti-aliasing lines. Currently, these are always horizontal.
+    // Round to nearest pixel to match text and other content.
+    const gfx::RectF snapped_line_rect = SnapYAxis(line_rect);
+
+    cc::PaintFlags flags = context.FillFlags();
+    // Text lines are drawn using the stroke color.
+    flags.setColor(context.StrokeFlags().getColor4f());
+    context.DrawRect(gfx::RectFToSkRect(snapped_line_rect), flags,
+                     auto_dark_mode);
   }
 }
 
@@ -62,31 +82,29 @@ void DecorationLinePainter::DrawLineForText(
   if (width <= 0) {
     return;
   }
+  DrawLineForText(context, DecorationRect(pt, width, styled_stroke.Thickness()),
+                  styled_stroke, auto_dark_mode, paint_flags);
+}
 
-  gfx::RectF line_rect = DecorationRect(pt, width, styled_stroke.Thickness());
-
-  auto stroke_style = styled_stroke.Style();
-  DCHECK_NE(stroke_style, kWavyStroke);
-  if (ShouldUseStrokeForTextLine(stroke_style)) {
-    auto [start, end] = GetSnappedPointsForTextLine(line_rect);
-    context.DrawLine(start, end, styled_stroke, auto_dark_mode, true,
-                     paint_flags);
-  } else {
-    if (paint_flags) {
-      // In SVG (inferred by a non-null `paint_flags`), we don't snap the line
-      // to get better scaling behavior. See crbug.com/1270336.
-      context.DrawRect(gfx::RectFToSkRect(line_rect), *paint_flags,
-                       auto_dark_mode);
-    } else {
-      // Avoid anti-aliasing lines. Currently, these are always horizontal.
-      // Round to nearest pixel to match text and other content.
-      line_rect = SnapYAxis(line_rect);
-
-      cc::PaintFlags flags = context.FillFlags();
-      // Text lines are drawn using the stroke color.
-      flags.setColor(context.StrokeFlags().getColor4f());
-      context.DrawRect(gfx::RectFToSkRect(line_rect), flags, auto_dark_mode);
-    }
+void DecorationLinePainter::DrawLineForText(
+    GraphicsContext& context,
+    const gfx::RectF& line_rect,
+    const StyledStrokeData& styled_stroke,
+    const AutoDarkMode& auto_dark_mode,
+    const cc::PaintFlags* paint_flags) {
+  CHECK_GT(line_rect.width(), 0);
+  switch (styled_stroke.Style()) {
+    case kSolidStroke:
+    case kDoubleStroke:
+      DrawLineAsRect(context, line_rect, auto_dark_mode, paint_flags);
+      break;
+    case kDottedStroke:
+    case kDashedStroke:
+      DrawLineAsStroke(context, line_rect, styled_stroke, auto_dark_mode,
+                       paint_flags);
+      break;
+    case kWavyStroke:
+      NOTREACHED();
   }
 }
 
