@@ -2842,7 +2842,6 @@ crbug.com/418804914 [ Mac15 ] virtual/close-watcher/external/wpt/close-watcher/i
 crbug.com/418370871 [ Win11 ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
 crbug.com/418277794 [ Mac14 ] virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynyn.html [ Skip Timeout ]
 crbug.com/418175808 [ Mac12 ] external/wpt/html/cross-origin-embedder-policy/credentialless/reporting-subresource-corp.https.window.html [ Skip Timeout ]
-crbug.com/418024434 [ Mac13 ] external/wpt/html/document-isolation-policy/service-worker-coep-credentialless-proxy.https.tentative.window.html [ Timeout ]
 crbug.com/418031072 [ Linux ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Pass Timeout ]
 crbug.com/417940356 [ Win11 ] external/wpt/page-lifecycle/child-display-none.tentative.html [ Timeout ]
 crbug.com/417940356 [ Win11-arm64 ] external/wpt/page-lifecycle/child-display-none.tentative.html [ Pass Timeout ]
@@ -9172,3 +9171,6 @@ crbug.com/420596996 [ Win ] virtual/webnn-service-with-gpu/external/wpt/webnn/co
 
 # Gardener 2025-06-18
 crbug.com/425936609 external/wpt/resource-timing/tentative/document-initiated.html [ Pass Timeout ]
+
+# Gardener 2025-06-19
+crbug.com/426081198 [ Mac ] external/wpt/html/document-isolation-policy/service-worker-coep-credentialless-proxy.https.tentative.window.html [ Pass Timeout ]
