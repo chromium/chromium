@@ -105,11 +105,12 @@ void ActorKeyedService::StartTask(
   tabs::TabHandle handle(task.tab_id());
   if (!task.tab_id()) {
     // Get the most recently active browser for this profile.
-    Browser* browser = chrome::FindBrowserWithProfile(profile_.get());
+    Browser* browser =
+        chrome::FindTabbedBrowser(profile_, /*match_original_profiles=*/false);
     // If no browser exists create one.
     if (!browser) {
       browser = Browser::Create(
-          Browser::CreateParams(profile_.get(), /*user_gesture=*/false));
+          Browser::CreateParams(profile_, /*user_gesture=*/false));
     }
     // Create a new tab.
     browser->OpenGURL(GURL(url::kAboutBlankURL),

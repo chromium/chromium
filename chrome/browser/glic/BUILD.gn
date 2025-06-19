@@ -312,6 +312,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/background/glic",
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/contextual_cueing:test_support",
+    "//chrome/browser/devtools:test_support",
     "//chrome/browser/glic/browser_ui:interactive_ui_tests",
     "//chrome/browser/glic/fre",
     "//chrome/browser/glic/fre:interactive_ui_tests",

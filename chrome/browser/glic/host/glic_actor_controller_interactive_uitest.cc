@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -371,6 +372,16 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
     }));
   }
 
+  auto OpenDevToolsWindow(ui::ElementIdentifier contents_to_inspect) {
+    return Steps(InAnyContext(
+        WithElement(contents_to_inspect, [](ui::TrackedElement* el) {
+          content::WebContents* contents =
+              AsInstrumentedWebContents(el)->web_contents();
+          DevToolsWindowTesting::OpenDevToolsWindowSync(contents,
+                                                        /*is_docked=*/false);
+        })));
+  }
+
  private:
   int32_t SearchAnnotatedPageContent(std::string_view label) {
     CHECK(annotated_page_content_)
@@ -687,6 +698,20 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, GetPageContextWithoutFocus) {
       // to make ExecuteAction fail if we try to fetch the page context of the
       // wrong tab.
       ExecuteAction(actor::MakeWait(), AnnotationsOnlyContextOptions()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, StartTaskWithDevtoolsOpen) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  // Ensure a new tab can be created without crashing when the most recently
+  // focused browser window is not a normal tabbed browser (e.g. a DevTools
+  // window).
+  RunTestSequence(InitializeWithOpenGlicWindow(),
+                  OpenDevToolsWindow(kGlicContentsElementId),
+                  StartActorTaskInNewTab(task_url, kNewActorTabId));
 }
 
 class GlicActorControllerWithActorDisabledUiTest
