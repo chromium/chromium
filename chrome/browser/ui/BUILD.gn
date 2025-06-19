@@ -1266,7 +1266,6 @@ static_library("ui") {
       "toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.cc",
       "toolbar/pinned_toolbar/pinned_translate_action_listener.cc",
       "toolbar/pinned_toolbar/tab_search_toolbar_button_controller.cc",
-      "toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h",
       "toolbar/reading_list_sub_menu_model.cc",
       "toolbar/toolbar_pref_names.cc",
       "translate/translate_bubble_factory.cc",

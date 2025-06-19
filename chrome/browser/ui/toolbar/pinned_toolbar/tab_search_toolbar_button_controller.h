@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host_observer.h"
 
 namespace actions {
@@ -16,6 +15,7 @@ class ActionItem;
 }  // namespace actions
 
 class BrowserView;
+class TabSearchBubbleHost;
 
 class TabSearchToolbarButtonController : public TabSearchBubbleHostObserver {
  public:
