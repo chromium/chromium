@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "components/sync/base/data_type.h"
@@ -331,6 +332,7 @@ DataTypeControllerDelegate* DataTypeController::GetDelegateForTesting(
 
 void DataTypeController::ReportModelError(const ModelError& error) {
   DCHECK(CalledOnValidThread());
+  LogModelErrorToHistogram(error);
 
   switch (state_) {
     case MODEL_LOADED:
@@ -383,6 +385,13 @@ void DataTypeController::RecordRunFailure() const {
   DCHECK(CalledOnValidThread());
   UMA_HISTOGRAM_ENUMERATION("Sync.DataTypeRunFailures2",
                             DataTypeHistogramValue(type()));
+}
+
+void DataTypeController::LogModelErrorToHistogram(
+    const ModelError& error) const {
+  DCHECK(CalledOnValidThread());
+  // TODO(crbug.com/40886237): add a histogram per sync data type in subsequent
+  // CL.
 }
 
 void DataTypeController::OnDelegateStarted(

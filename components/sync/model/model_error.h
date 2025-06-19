@@ -15,8 +15,23 @@ namespace syncer {
 // A minimal error object that individual datatypes can report.
 class ModelError {
  public:
+  // This enum should be in sync with ModelErrorType in enums.xml. These
+  // values are persisted to logs. Entries should not be renumbered and numeric
+  // values should never be reused.
+  enum class Type {
+    kUnspecified =
+        0,  // Default value if the error type is not set.
+            // TODO(crbug.com/425629291): Remove this value once we have
+            // implemented proper error handling for all datatypes.
+    kMaxValue = kUnspecified,
+  };
   // Creates a set error object with the given location and message.
+  // DEPRECATED. Use the other constructor instead. See crbug.com/40886237.
   ModelError(const base::Location& location, const std::string& message);
+
+  // Creates a set error object with the given location and error
+  // type. Do not use this with the default ModelErrorType::kUnspecified value.
+  ModelError(const base::Location& location, Type model_error_type);
 
   ~ModelError();
 
@@ -28,12 +43,19 @@ class ModelError {
   // if the error is set.
   const std::string& message() const;
 
+  // The type of the error this object represents. Only set if the error type is
+  // known. Otherwise, returns ModelErrorType::kUnspecified.
+  ModelError::Type type() const;
+
   // Returns string representation of this object, appropriate for logging.
   std::string ToString() const;
 
  private:
   base::Location location_;
   std::string message_;
+  // The type of the error. This is optional to ensure backwards compatibility.
+  // It is used for metrics collection.
+  Type type_ = Type::kUnspecified;
 };
 
 // Typedef for a simple error handler callback.

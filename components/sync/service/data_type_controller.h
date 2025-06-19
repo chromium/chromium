@@ -184,6 +184,7 @@ class DataTypeController {
   void ClearDelegateMap();
 
  private:
+  void LogModelErrorToHistogram(const ModelError& error) const;
   void RecordStartFailure() const;
   void RecordRunFailure() const;
   void OnDelegateStarted(
