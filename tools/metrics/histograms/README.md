@@ -99,12 +99,26 @@ name and you update one location and forget another.
 
 ### Efficiency
 
-Generally, don't be concerned about the processing cost of emitting to a
-histogram (unless you're using [sparse
+In most cases, you don't need to be concerned about the processing cost of
+emitting to a histogram (unless you're using [sparse
 histograms](#When-To-Use-Sparse-Histograms)). The normal histogram code is
-highly optimized. If you are recording to a histogram in particularly
-performance-sensitive or "hot" code, make sure you're using the histogram
-macros; see [reasons above](#Coding-Emitting-to-Histograms).
+highly optimized.
+
+If you are recording to a histogram in particularly
+performance-sensitive or "hot" code, follow one of these guidelines:
+- Use the histogram macros; see [reasons above](#Coding-Emitting-to-Histograms).
+- When total counts aren't important (for example, when measuring latency or
+  ratios) consider subsampling. For example:
+
+  ```c++
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    base::UmaHistogramMicrosecondsTimes(
+      "Component.Feature.Duration.Subsampled", timer->Elapsed());
+  }
+  ```
+
+Examples where these optimizations are necessary include histograms that apply
+to every frame or every cookie.
 
 ## Picking Your Histogram Type
 
@@ -187,8 +201,8 @@ enum class NewTabPageAction {
 // LINT.ThenChange(//path/to/enums.xml:NewTabPageActionEnum)
 ```
 
-The `LINT.IfChange` / `LINT.ThenChange` comments point between the code and XML
-definitions of the enum, to encourage them to be kept in sync. See
+The `LINT.*` comments point between the code and XML definitions of the enum, to
+encourage them to be kept in sync. See
 [guide](https://www.chromium.org/chromium-os/developer-library/guides/development/keep-files-in-sync/)
 and [more details](http://go/gerrit-ifthisthenthat).
 
