@@ -638,4 +638,9 @@ bool CompleteProfileCustomizationDialog(Browser* browser,
       timeout);
 }
 
+void WaitForSigninPageToLoad(content::WebContents* web_contents) {
+  ASSERT_TRUE(WaitUntilAnyElementExistsInSigninFrame(
+      web_contents, {"identifierNext", "next"}));
+}
+
 }  // namespace login_ui_test_utils

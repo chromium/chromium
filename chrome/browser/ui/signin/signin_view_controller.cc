@@ -247,19 +247,30 @@ GURL GetSigninUrlForDiceSigninTab(
         {.email = email_hint, .continue_url = continue_url});
   }
 
-  // Note: It is expected with the below sign in reason and access point
-  // that there is no primary account. Maybe move to a `CHECK` later.
-  if (signin_reason == signin_metrics::Reason::kAddSecondaryAccount &&
-      access_point == signin_metrics::AccessPoint::kExtensions &&
-      !identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    // Extensions wants the user to sign in to Chrome.
-    // Ensure the Gaia page informs the user that they will also be signed in to
-    // Chrome.
+  bool use_chrome_sync_url =
+      base::FeatureList::IsEnabled(
+          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration) ||
+      access_point == signin_metrics::AccessPoint::kExtensions;
+
+  // A reauth is requested, or the account is already signed in (which is
+  // effectively a reauth).
+  if (signin_reason == signin_metrics::Reason::kReauthentication ||
+      identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    use_chrome_sync_url = false;
+  }
+
+  // TODO(crbug.com/425645725): Investigates simplifying the params such as the
+  // signin_reason and its available values.
+  if (use_chrome_sync_url) {
     // Note: The sync confirmation screen will NOT be displayed after signin,
-    // because the reason is `kAddSecondaryAccount`.
-    return signin::GetChromeSyncURLForDice({.email = email_hint,
-                                            .continue_url = continue_url,
-                                            .flow = signin::Flow::PROMO});
+    // if the reason is `kAddSecondaryAccount`.
+    signin::ChromeSyncUrlArgs sync_url_args{.email = email_hint,
+                                            .continue_url = continue_url};
+    if (access_point == signin_metrics::AccessPoint::kExtensions &&
+        signin_reason == signin_metrics::Reason::kAddSecondaryAccount) {
+      sync_url_args.flow = signin::Flow::PROMO;
+    }
+    return signin::GetChromeSyncURLForDice(sync_url_args);
   }
 
   return signin::GetAddAccountURLForDice(email_hint, continue_url);

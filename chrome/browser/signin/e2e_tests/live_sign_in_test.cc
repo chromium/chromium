@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -29,6 +30,7 @@
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -42,6 +44,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -657,6 +660,50 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
   EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
             signin::ConsentLevel::kSync);
 }
+
+class LiveSignInGaiaIntegrationTest : public base::test::WithFeatureOverride,
+                                      public LiveSignInTest {
+ public:
+  LiveSignInGaiaIntegrationTest()
+      : base::test::WithFeatureOverride(
+            switches::kBrowserSigninInSyncHeaderOnGaiaIntegration) {}
+
+  bool IsFixGaiaIntegrationEnabled() const { return IsParamFeatureEnabled(); }
+};
+
+// Regression test for crbug.com/420635510.
+// Tests that a doing a web signin from a tab that was previously opened for
+// a browser signin, does not sign in the user in the browser.
+IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
+                       MANUAL_WebSignInFromExistingChromeSignInTab) {
+  sign_in_functions.StartSignInFromSettings();
+  int current_tab_count = browser()->tab_strip_model()->GetTabCount();
+
+  std::optional<TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
+  CHECK(test_account.has_value());
+  // Use the same tab for a web sign-in.
+  content::OpenURLParams params(
+      GaiaUrls::GetInstance()->add_account_url(), content::Referrer(),
+      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false);
+  browser()->tab_strip_model()->GetActiveWebContents()->OpenURL(
+      params, /*navigation_handle_callback=*/{});
+  ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->GetTabCount());
+
+  sign_in_functions.SignInFromCurrentPage(
+      browser()->tab_strip_model()->GetActiveWebContents(), *test_account, 0);
+  ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->GetTabCount());
+
+  // When the updated Gaia integration is used, the user should not be signed-in
+  // in the browser.
+  EXPECT_EQ(IsFixGaiaIntegrationEnabled(),
+            !identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  // TODO(crbug.com/420635510): Expect that the Uno bubble is shown on the
+  // updated Gaia flow.
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LiveSignInGaiaIntegrationTest);
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace

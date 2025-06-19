@@ -114,6 +114,9 @@ GURL GetChromeReauthURL(ChromeSyncUrlArgs args);
 // If email is not empty, then it will pass email as hint to the page so that it
 // will be autofilled by Gaia.
 // If |continue_url| is empty, this may redirect to myaccount.
+// Deprecated for secondary DICE account addition (crbug.com/420635510):
+// For this case, use `GetChromeSyncURLForDice` instead.
+// The method remains valid for cases relating to users' re-authentication.
 GURL GetAddAccountURLForDice(const std::string& email,
                              const GURL& continue_url);
 

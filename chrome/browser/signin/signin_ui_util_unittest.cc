@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
@@ -100,11 +101,15 @@ class MockSigninUiDelegate : public SigninUiDelegateImplDice {
 
 }  // namespace
 
-class SigninUiUtilTest : public BrowserWithTestWindowTest {
+class SigninUiUtilTest : public base::test::WithFeatureOverride,
+                         public BrowserWithTestWindowTest {
  public:
   SigninUiUtilTest()
-      : delegate_auto_reset_(SetSigninUiDelegateForTesting(&mock_delegate_)) {}
-  ~SigninUiUtilTest() override = default;
+      : base::test::WithFeatureOverride(
+            switches::kBrowserSigninInSyncHeaderOnGaiaIntegration),
+        delegate_auto_reset_(SetSigninUiDelegateForTesting(&mock_delegate_)) {}
+
+  bool IsFixGaiaIntegrationEnabled() const { return IsParamFeatureEnabled(); }
 
  protected:
   // BrowserWithTestWindowTest:
@@ -240,6 +245,8 @@ class SigninUiUtilTest : public BrowserWithTestWindowTest {
         GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   }
 
+  bool WithUpdatedGaiaIntegrationEnabled() { return GetParam(); }
+
   signin_metrics::AccessPoint access_point_ =
       signin_metrics::AccessPoint::kBookmarkBubble;
 
@@ -247,7 +254,9 @@ class SigninUiUtilTest : public BrowserWithTestWindowTest {
   base::AutoReset<SigninUiDelegate*> delegate_auto_reset_;
 };
 
-TEST_F(SigninUiUtilTest, EnableSyncWithExistingAccount) {
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SigninUiUtilTest);
+
+TEST_P(SigninUiUtilTest, EnableSyncWithExistingAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -283,7 +292,7 @@ TEST_F(SigninUiUtilTest, EnableSyncWithExistingAccount) {
   }
 }
 
-TEST_F(SigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
+TEST_P(SigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
   AddTab(browser(), GURL("http://example.com"));
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
@@ -330,7 +339,7 @@ TEST_F(SigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
   }
 }
 
-TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithNoTab) {
+TEST_P(SigninUiUtilTest, EnableSyncForNewAccountWithNoTab) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
@@ -355,7 +364,7 @@ TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithNoTab) {
             active_contents->GetVisibleURL());
 }
 
-TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithNoTabWithExisting) {
+TEST_P(SigninUiUtilTest, EnableSyncForNewAccountWithNoTabWithExisting) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
@@ -377,7 +386,7 @@ TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithNoTabWithExisting) {
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 }
 
-TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
+TEST_P(SigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   AddTab(browser(), GURL("http://foo/1"));
@@ -403,7 +412,7 @@ TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
             active_contents->GetVisibleURL());
 }
 
-TEST_F(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
+TEST_P(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
   AddTab(browser(), GURL("http://example.com"));
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
@@ -430,7 +439,7 @@ TEST_F(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
       TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
-TEST_F(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
+TEST_P(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
   AddTab(browser(), GURL("http://example.com"));
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
@@ -458,19 +467,23 @@ TEST_F(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
       TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
-TEST_F(SigninUiUtilTest, SignInForNewAccountWithNoTab) {
+TEST_P(SigninUiUtilTest, SignInForNewAccountWithNoTab) {
   SignIn(CoreAccountInfo());
 
   // Verify that the active tab has the correct DICE sign-in URL.
   content::WebContents* active_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
-  EXPECT_EQ(signin::GetAddAccountURLForDice(
-                std::string(), GURL(google_util::kGoogleHomepageURL)),
+  EXPECT_EQ(WithUpdatedGaiaIntegrationEnabled()
+                ? signin::GetChromeSyncURLForDice(
+                      {.email = std::string(),
+                       .continue_url = GURL(google_util::kGoogleHomepageURL)})
+                : signin::GetAddAccountURLForDice(
+                      std::string(), GURL(google_util::kGoogleHomepageURL)),
             active_contents->GetVisibleURL());
 }
 
-TEST_F(SigninUiUtilTest, SignInForNewAccountWithOneTab) {
+TEST_P(SigninUiUtilTest, SignInForNewAccountWithOneTab) {
   AddTab(browser(), GURL("http://foo/1"));
 
   SignIn(CoreAccountInfo());
@@ -479,12 +492,16 @@ TEST_F(SigninUiUtilTest, SignInForNewAccountWithOneTab) {
   content::WebContents* active_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
-  EXPECT_EQ(signin::GetAddAccountURLForDice(
-                std::string(), GURL(google_util::kGoogleHomepageURL)),
+  EXPECT_EQ(WithUpdatedGaiaIntegrationEnabled()
+                ? signin::GetChromeSyncURLForDice(
+                      {.email = std::string(),
+                       .continue_url = GURL(google_util::kGoogleHomepageURL)})
+                : signin::GetAddAccountURLForDice(
+                      std::string(), GURL(google_util::kGoogleHomepageURL)),
             active_contents->GetVisibleURL());
 }
 
-TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
+TEST_P(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
   signin::IdentityManager* identity_manager_empty =
       IdentityManagerFactory::GetForProfile(profile());
   std::vector<AccountInfo> accounts_empty = GetOrderedAccountsForDisplay(
@@ -557,7 +574,7 @@ TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2), accounts[2].gaia);
 }
 
-TEST_F(SigninUiUtilTest, MergeDiceSigninTab) {
+TEST_P(SigninUiUtilTest, MergeDiceSigninTab) {
   base::UserActionTester user_action_tester;
   EnableSync(CoreAccountInfo(), false);
   EXPECT_EQ(
@@ -594,7 +611,7 @@ TEST_F(SigninUiUtilTest, MergeDiceSigninTab) {
   EXPECT_EQ(1, tab_strip->active_index());
 }
 
-TEST_F(SigninUiUtilTest, ShowReauthTab) {
+TEST_P(SigninUiUtilTest, ShowReauthTab) {
   AddTab(browser(), GURL("http://example.com"));
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       GetIdentityManager(), "foo@example.com", signin::ConsentLevel::kSync);
@@ -617,8 +634,7 @@ TEST_F(SigninUiUtilTest, ShowReauthTab) {
       testing::StartsWith(GaiaUrls::GetInstance()->add_account_url().spec()));
 }
 
-TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt) {
-  const GURL add_account_url = GaiaUrls::GetInstance()->add_account_url();
+TEST_P(SigninUiUtilTest, ShowExtensionSigninPrompt) {
   const GURL sync_url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
 
   Profile* profile = browser()->profile();
@@ -654,7 +670,7 @@ TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt) {
   EXPECT_NE(tab->GetVisibleURL().query().find("flow=promo"), std::string::npos);
 }
 
-TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
+TEST_P(SigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   Profile* profile = browser()->profile();
   ProfileAttributesEntry* entry =
@@ -672,7 +688,7 @@ TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
   EXPECT_EQ(0, tab_strip->count());
 }
 
-TEST_F(SigninUiUtilTest, ShowSigninPromptFromPromo) {
+TEST_P(SigninUiUtilTest, ShowSigninPromptFromPromo) {
   Profile* profile = browser()->profile();
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ShowSigninPromptFromPromo(profile, access_point_);
@@ -680,13 +696,15 @@ TEST_F(SigninUiUtilTest, ShowSigninPromptFromPromo) {
 
   content::WebContents* tab = tab_strip->GetWebContentsAt(0);
   ASSERT_TRUE(tab);
-  EXPECT_TRUE(
-      base::StartsWith(tab->GetVisibleURL().spec(),
-                       GaiaUrls::GetInstance()->add_account_url().spec(),
-                       base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_TRUE(base::StartsWith(
+      tab->GetVisibleURL().spec(),
+      WithUpdatedGaiaIntegrationEnabled()
+          ? GaiaUrls::GetInstance()->signin_chrome_sync_dice().spec()
+          : GaiaUrls::GetInstance()->add_account_url().spec(),
+      base::CompareCase::INSENSITIVE_ASCII));
 }
 
-TEST_F(SigninUiUtilTest, ShowSigninPromptFromPromoWithExistingAccount) {
+TEST_P(SigninUiUtilTest, ShowSigninPromptFromPromoWithExistingAccount) {
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), "foo@example.com",
                                       signin::ConsentLevel::kSignin);
 
@@ -697,7 +715,7 @@ TEST_F(SigninUiUtilTest, ShowSigninPromptFromPromoWithExistingAccount) {
   EXPECT_EQ(0, tab_strip->count());
 }
 
-TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
+TEST_P(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), "foo@example.com",
                                       signin::ConsentLevel::kSignin);
 
@@ -739,7 +757,7 @@ TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
             sign_in_tab->GetVisibleURL());
 }
 
-TEST_F(SigninUiUtilTest, EnableSyncWithExistingWebOnlyAccount) {
+TEST_P(SigninUiUtilTest, EnableSyncWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -773,7 +791,7 @@ TEST_F(SigninUiUtilTest, EnableSyncWithExistingWebOnlyAccount) {
   }
 }
 
-TEST_F(SigninUiUtilTest,
+TEST_P(SigninUiUtilTest,
        EnableSyncPromoWithExistingWebOnlyAccountAvatarBubble) {
   access_point_ = signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
 
@@ -781,13 +799,13 @@ TEST_F(SigninUiUtilTest,
 }
 
 // Checks that sync is treated as a promo for kSettings.
-TEST_F(SigninUiUtilTest, EnableSyncPromoWithExistingWebOnlyAccountSettings) {
+TEST_P(SigninUiUtilTest, EnableSyncPromoWithExistingWebOnlyAccountSettings) {
   access_point_ = signin_metrics::AccessPoint::kSettings;
 
   TestEnableSyncPromoWithExistingWebOnlyAccount();
 }
 
-TEST_F(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
+TEST_P(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -805,7 +823,7 @@ TEST_F(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
-TEST_F(SigninUiUtilTest, ShowExtensionSigninPromptReauth) {
+TEST_P(SigninUiUtilTest, ShowExtensionSigninPromptReauth) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -833,7 +851,7 @@ TEST_F(SigninUiUtilTest, ShowExtensionSigninPromptReauth) {
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-TEST_F(SigninUiUtilTest,
+TEST_P(SigninUiUtilTest,
        ShouldShowAnimatedIdentityOnOpeningWindowIfMultipleWindowsAtStartup) {
   EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(*profile()));
   // Record that the identity was shown.

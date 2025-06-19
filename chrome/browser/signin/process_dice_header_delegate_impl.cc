@@ -44,9 +44,24 @@ DiceTabHelper* GetDiceTabHelperFromWebContents(content::WebContents* contents) {
   return DiceTabHelper::FromWebContents(contents);
 }
 
+// Records an entry marks the place where the user would be signed-in
+// in the legacy Gaia integration flow when the auto-sign-in case does not
+// apply.
+void RecordLegacyGaiaIntegrationStageMetrics(bool should_auto_sign_in,
+                                             bool has_primary_account) {
+  if (should_auto_sign_in || has_primary_account) {
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      "Signin.SigninManager.SetPrimaryAccountSigninInStage",
+      PrimaryAccountSettingGaiaIntegrationState::kOnTokenExchangeSuccess);
+}
+
 // Should Sign in to Chrome for all access points when Uno is enabled. Except
 // for Web Signin where we first check the user choice first on whether to
 // automatically sign in or not.
+// TODO(crbug.com/425645725): Rename using a more appropriate name once the
+// signin to browser is cleaned-up.
 void AttemptChromeSignin(CoreAccountId account_id,
                          Profile& profile,
                          signin_metrics::AccessPoint access_point) {
@@ -59,6 +74,7 @@ void AttemptChromeSignin(CoreAccountId account_id,
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile);
+  bool should_auto_sign_in = false;
   if (access_point == signin_metrics::AccessPoint::kWebSignin) {
     AccountInfo account_info =
         identity_manager->FindExtendedAccountInfoByAccountId(account_id);
@@ -71,10 +87,12 @@ void AttemptChromeSignin(CoreAccountId account_id,
 
     // If the user did not choose the signin choice, do not proceed with a
     // sign in from a Web Signin.
-    if (!auto_accept_signin &&
+    should_auto_sign_in =
+        auto_accept_signin ||
         SigninPrefs(*profile.GetPrefs())
-                .GetChromeSigninInterceptionUserChoice(account_info.gaia) !=
-            ChromeSigninUserChoice::kSignin) {
+                .GetChromeSigninInterceptionUserChoice(account_info.gaia) ==
+            ChromeSigninUserChoice::kSignin;
+    if (!should_auto_sign_in) {
       return;
     }
 
@@ -85,11 +103,28 @@ void AttemptChromeSignin(CoreAccountId account_id,
   // This access point should only be used as a result of a non Uno flow.
   CHECK_NE(signin_metrics::AccessPoint::kDesktopSigninManager, access_point);
 
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  bool has_primary_account =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  if (base::FeatureList::IsEnabled(
+          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration)) {
+    if (should_auto_sign_in && !has_primary_account) {
+      // Sign-in the user in the browser.
+      identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          account_id, signin::ConsentLevel::kSignin, access_point);
+    }
+    RecordLegacyGaiaIntegrationStageMetrics(should_auto_sign_in,
+                                            has_primary_account);
+    return;
+  }
+  // Legacy Gaia flow integration.
+  if (!has_primary_account) {
     base::UmaHistogramEnumeration("Signin.SigninManager.SigninAccessPoint",
                                   access_point);
     identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
         account_id, signin::ConsentLevel::kSignin, access_point);
+
+    RecordLegacyGaiaIntegrationStageMetrics(should_auto_sign_in,
+                                            has_primary_account);
   }
 }
 
@@ -234,6 +269,26 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
 
 void ProcessDiceHeaderDelegateImpl::EnableSync(
     const CoreAccountInfo& account_info) {
+  if (base::FeatureList::IsEnabled(
+          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration)) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(&profile_.get());
+    CHECK(identity_manager);
+    if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      base::UmaHistogramEnumeration("Signin.SigninManager.SigninAccessPoint",
+                                    access_point_);
+      identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          account_info.account_id, signin::ConsentLevel::kSignin,
+          access_point_);
+
+      // Record an entry marks the place where the user is signed-in in the new
+      // Gaia integration flow.
+      base::UmaHistogramEnumeration(
+          "Signin.SigninManager.SetPrimaryAccountSigninInStage",
+          PrimaryAccountSettingGaiaIntegrationState::kOnSyncHeaderReceived);
+    }
+  }
+
   content::WebContents* web_contents = web_contents_.get();
   DiceTabHelper* tab_helper = GetDiceTabHelperFromWebContents(web_contents);
   if (tab_helper) {

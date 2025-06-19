@@ -517,14 +517,11 @@ class ProfilePickerCreationFlowBrowserTest
 
     if (web_contents()) {
       SimulateEnableSyncDiceHeader(web_contents(), core_account_info);
+      // If the sync header is received then the user is always signed in to the
+      // browser.
+      EXPECT_TRUE(
+          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
     }
-
-    // The flow should work even if the primary account is not set at this
-    // point,for example because the /ListAccounts call did not complete yet.
-    // Regression test for https://crbug.com/1469586
-    EXPECT_FALSE(
-        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
     return account_info;
   }
 

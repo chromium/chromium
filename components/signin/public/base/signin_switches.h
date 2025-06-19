@@ -115,6 +115,9 @@ BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kBrowserSigninInSyncHeaderOnGaiaIntegration);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableHistorySyncOptinExpansionPill);
 
 enum class HistorySyncOptinExpansionPillOption {

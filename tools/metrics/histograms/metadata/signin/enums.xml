@@ -405,6 +405,23 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Gaia cookie is restored, Infobar shown"/>
 </enum>
 
+<!-- LINT.IfChange(GaiaIntegrationState) -->
+
+<enum name="GaiaIntegrationState">
+  <int value="0" label="OnTokenExchangeSuccess">
+    The user is signed-in the browser upon successful LST Token exchange (legacy
+    Gaia integration). If the new Gaia integration applies, then this value is
+    still recorded to mark the point where the user would be signed in to the
+    browser on the legacy flow.
+  </int>
+  <int value="1" label="OnSyncHeaderReceived">
+    The user is signed-in the browser upon receiving the Sync header (new Gaia
+    integration). This recorded only then the new Gaia integration applies.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/dice_response_handler.h:PrimaryAccountSettingGaiaIntegrationState) -->
+
 <!-- LINT.IfChange(GaiaPage) -->
 
 <enum name="GaiaPage">

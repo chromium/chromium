@@ -2757,6 +2757,20 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SigninManager.SetPrimaryAccountSigninInStage"
+    enum="GaiaIntegrationState" expires_after="2025-11-30">
+  <owner>droger@chromium.org</owner>
+  <owner>anthie@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded when setting set the browser's primary account for non-automatic
+    sign-ins. When the feature `BrowserSigninInSyncHeaderOnGaiaIntegration` is
+    enabled, this also records the place where the browser sign-in would take
+    place, if the feature was disabled. See also the enum `GaiaIntegrationState`
+    description.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SigninManager.SigninAccessPoint"
     enum="SigninAccessPoint" expires_after="2025-11-30">
   <owner>droger@chromium.org</owner>
