@@ -200,8 +200,10 @@ BASE_FEATURE(kRemoveCoreSiteInstance,
 
 BASE_FEATURE(kDisableDisableExtensionsExceptCommandLineSwitch,
              "DisableDisableExtensionsExceptCommandLineSwitch",
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
+// TODO(crbug.com/419530940): Enable feature for Google Chrome Branding once
+// ready.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+             base::FEATURE_DISABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -221,8 +223,10 @@ BASE_FEATURE(kDisableLoadExtensionCommandLineSwitch,
 
 BASE_FEATURE(kDisableExtensionsOnChromeUrlsSwitch,
              "DisableExtensionsOnChromeUrlsSwitch",
+// TODO(crbug.com/419530940): Enable feature for Google Chrome Branding only
+// once ready.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
