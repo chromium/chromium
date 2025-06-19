@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "base/notimplemented.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/numerics/math_constants.h"
 #include "base/time/time.h"

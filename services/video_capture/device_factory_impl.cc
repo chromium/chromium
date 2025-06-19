@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/metrics/histogram_functions.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)

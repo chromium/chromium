@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "services/device/usb/usb_device.h"
 
 namespace device {

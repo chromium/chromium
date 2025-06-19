@@ -4,7 +4,7 @@
 
 #include "services/device/hid/hid_service_fuchsia.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "services/device/hid/hid_connection.h"
 
 namespace device {

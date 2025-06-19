@@ -4,7 +4,7 @@
 
 #include "services/network/test/test_restricted_udp_socket.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

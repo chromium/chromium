@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/sequence_checker.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/notimplemented.h"
 #include "services/accessibility/features/devtools/debug_command_queue.h"
 #include "services/accessibility/features/devtools/os_devtools_session.h"
 #include "services/accessibility/features/v8_manager.h"

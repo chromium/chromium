@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/numerics/math_constants.h"
 #include "base/task/single_thread_task_runner.h"

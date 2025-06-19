@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
