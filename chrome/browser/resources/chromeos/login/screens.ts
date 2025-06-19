@@ -78,6 +78,7 @@ import './screens/oobe/demo_preferences.js';
 import './screens/oobe/demo_setup.js';
 import './screens/oobe/enable_debugging.js';
 import './screens/oobe/enterprise_enrollment.js';
+import './screens/oobe/fjord_touch_controller.js';
 import './screens/oobe/hid_detection.js';
 import './screens/oobe/oobe_network.js';
 import './screens/oobe/packaged_license.js';
@@ -257,6 +258,11 @@ export const oobeScreensList: OobeTypes.ScreensList = [
   {tag: 'demo-setup-element', id: 'demo-setup'},
   {tag: 'enable-debugging-element', id: 'debugging'},
   {tag: 'enterprise-enrollment-element', id: 'enterprise-enrollment'},
+  {
+    tag: 'fjord-touch-controller-element',
+    id: 'fjord-touch-controller',
+    condition: 'isFjordOobeEnabled',
+  },
   {tag: 'hid-detection-element', id: 'hid-detection'},
   {tag: 'oobe-network-element', id: 'network-selection'},
   {tag: 'packaged-license-element', id: 'packaged-license'},

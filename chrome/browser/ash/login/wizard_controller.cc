@@ -81,6 +81,7 @@
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 #include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
+#include "chrome/browser/ash/login/screens/fjord_touch_controller_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/gemini_intro_screen.h"
@@ -185,6 +186,8 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_oobe_util.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_touch_controller_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gemini_intro_screen_handler.h"
@@ -1025,6 +1028,11 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnAppLaunchSplashScreenExit,
                           weak_factory_.GetWeakPtr())));
 
+  if (fjord_util::ShouldShowFjordOobe()) {
+    append(std::make_unique<FjordTouchControllerScreen>(
+        oobe_ui->GetView<FjordTouchControllerScreenHandler>()->AsWeakPtr()));
+  }
+
   return result;
 }
 
@@ -1381,6 +1389,10 @@ void WizardController::ShowAccountSelectionScreen() {
 
 void WizardController::ShowAppLaunchSplashScreen() {
   SetCurrentScreen(GetScreen(AppLaunchSplashScreenView::kScreenId));
+}
+
+void WizardController::ShowFjordTouchControllerScreen() {
+  SetCurrentScreen(GetScreen(FjordTouchControllerScreenView::kScreenId));
 }
 
 void WizardController::OnUserCreationScreenExit(
@@ -2281,7 +2293,10 @@ void WizardController::OnEnrollmentDone() {
   // We need a log to understand when the device finished enrollment.
   VLOG(1) << "Enrollment done";
 
-  if (auto app = KioskController::Get().GetAutoLaunchApp(); app.has_value()) {
+  if (fjord_util::ShouldShowFjordOobe()) {
+    ShowFjordTouchControllerScreen();
+  } else if (auto app = KioskController::Get().GetAutoLaunchApp();
+             app.has_value()) {
     AutoLaunchKioskApp(app.value());
   } else if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     // Could be not managed in tests.

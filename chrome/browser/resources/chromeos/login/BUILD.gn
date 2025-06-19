@@ -74,6 +74,7 @@ build_webui("build") {
     "screens/oobe/demo_setup.ts",
     "screens/oobe/enable_debugging.ts",
     "screens/oobe/enterprise_enrollment.ts",
+    "screens/oobe/fjord_touch_controller.ts",
     "screens/oobe/hid_detection.ts",
     "screens/oobe/oobe_network.ts",
     "screens/oobe/packaged_license.ts",
