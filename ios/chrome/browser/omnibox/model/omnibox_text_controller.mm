@@ -225,6 +225,19 @@ const char kOmniboxFocusResultedInNavigation[] =
   return base::SysNSStringToUTF16([self.textField displayedText]);
 }
 
+- (void)setInputInProgress:(BOOL)inProgress {
+  if (!_omniboxTextModel) {
+    return;
+  }
+
+  if (_omniboxTextModel->SetInputInProgressNoNotify(inProgress)) {
+    if (_omniboxTextModel->user_input_in_progress) {
+      _omniboxController->autocomplete_controller()->ResetSession();
+    }
+    [self notifyClientOnUserInputInProgressChange:inProgress];
+  }
+}
+
 #pragma mark - Autocomplete events
 
 - (void)setAdditionalText:(const std::u16string&)text {
@@ -576,9 +589,7 @@ const char kOmniboxFocusResultedInNavigation[] =
       // set to the empty string by `shouldChangeCharactersInRange` so when
       // OnAfterPossibleChange checks if the text has changed it does not see
       // any difference so it never sets the input-in-progress flag.
-      if (_omniboxEditModel) {
-        _omniboxEditModel->SetInputInProgress(YES);
-      }
+      [self setInputInProgress:YES];
     }
   }
 }
@@ -676,9 +687,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 /// Updates the autocomplete popup and other state after the text has been
 /// changed by the user.
 - (void)startAutocompleteAfterEdit {
-  if (_omniboxEditModel) {
-    _omniboxEditModel->SetInputInProgress(true);
-  }
+  [self setInputInProgress:YES];
 
   if (!_omniboxEditModel || !_omniboxEditModel->has_focus()) {
     return;

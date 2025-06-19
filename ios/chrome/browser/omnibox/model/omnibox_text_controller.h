@@ -78,6 +78,9 @@ class OmniboxEditModelIOS;
 /// Returns the current text field displayed text.
 - (std::u16string)displayedText;
 
+/// Updates the text model input_in_progress state.
+- (void)setInputInProgress:(BOOL)inProgress;
+
 #pragma mark - Autocomplete event
 
 /// Sets the additional text.

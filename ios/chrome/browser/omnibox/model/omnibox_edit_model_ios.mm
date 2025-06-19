@@ -138,7 +138,7 @@ std::u16string OmniboxEditModelIOS::GetPermanentDisplayText() const {
 }
 
 void OmniboxEditModelIOS::SetUserText(const std::u16string& text) {
-  SetInputInProgress(true);
+  [text_controller_ setInputInProgress:YES];
   text_model_->UpdateUserText(text);
   GetInfoForCurrentText(&current_match_, nullptr);
   text_model_->paste_state = OmniboxPasteState::kNone;
@@ -178,17 +178,8 @@ void OmniboxEditModelIOS::AdjustTextForCopy(int sel_min,
       controller_->client(), url_from_text, write_url);
 }
 
-void OmniboxEditModelIOS::SetInputInProgress(bool in_progress) {
-  if (text_model_->SetInputInProgressNoNotify(in_progress)) {
-    if (text_model_->user_input_in_progress) {
-      autocomplete_controller()->ResetSession();
-    }
-    [text_controller_ notifyClientOnUserInputInProgressChange:in_progress];
-  }
-}
-
 void OmniboxEditModelIOS::Revert() {
-  SetInputInProgress(false);
+  [text_controller_ setInputInProgress:NO];
   text_model_->input.Clear();
   text_model_->paste_state = OmniboxPasteState::kNone;
   text_model_->UpdateUserText(std::u16string());

@@ -92,10 +92,6 @@ class OmniboxEditModelIOS {
     return text_model_->user_input_in_progress;
   }
 
-  // Sets the state of user_input_in_progress_, and notifies the observer if
-  // that state has changed.
-  void SetInputInProgress(bool in_progress);
-
   // Resets the permanent display texts `url_for_editing_` to those provided by
   // the controller. Returns true if the display text shave changed and the
   // change should be immediately user-visible, because either the user is not
