@@ -11,7 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/values.h"
 #include "remoting/base/file_path_util_linux.h"
 #include "remoting/base/is_google_email.h"

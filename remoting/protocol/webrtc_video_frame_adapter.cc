@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 namespace remoting::protocol {

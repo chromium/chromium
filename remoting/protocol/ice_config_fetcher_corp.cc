@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace remoting::protocol {

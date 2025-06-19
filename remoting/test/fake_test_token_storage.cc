@@ -4,7 +4,7 @@
 
 #include "remoting/test/fake_test_token_storage.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace {
 const char kRefreshTokenValue[] = "1/lkjalseLKJlsiJgr45jbv";

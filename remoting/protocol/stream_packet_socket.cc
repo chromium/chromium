@@ -5,6 +5,7 @@
 #include "remoting/protocol/stream_packet_socket.h"
 
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "components/webrtc/net_address_utils.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"

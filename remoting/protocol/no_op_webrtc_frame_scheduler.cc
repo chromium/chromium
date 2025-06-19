@@ -4,7 +4,7 @@
 
 #include "remoting/protocol/no_op_webrtc_frame_scheduler.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace remoting::protocol {
 

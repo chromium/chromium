@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/rand_util.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"

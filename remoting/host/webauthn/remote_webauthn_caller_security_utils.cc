@@ -8,7 +8,7 @@
 
 #include "base/environment.h"
 #include "base/logging.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/process/process_handle.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/utf_string_conversions.h"

@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_client.h"
