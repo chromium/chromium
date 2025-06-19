@@ -30,7 +30,6 @@
 
 namespace media {
 namespace {
-
 const char kCatapAudioInputStreamUmaBaseName[] =
     "Media.Audio.Mac.CatapAudioInputStream";
 const char kHistogramPartsSeparator[] = ".";
@@ -44,6 +43,7 @@ const char kHistogramGetProcessAudioDeviceIdsSuffix[] =
     "GetProcessAudioDeviceIds";
 const char kHistogramSuccessSuffix[] = "Success";
 const char kHistogramFailureSuffix[] = "Failure";
+const char kHostTimeStatusName[] = "HostTimeStatus";
 
 // If this feature is enabled, the CoreAudio tap is probed after creation to
 // verify that we have the proper permissions. If this fails the creation is
@@ -158,6 +158,40 @@ void ReportGetProcessAudioDeviceIdsDuration(bool success,
           kHistogramGetProcessAudioDeviceIdsSuffix,
           success ? kHistogramSuccessSuffix : kHistogramFailureSuffix),
       duration);
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class HostTimeStatus {
+  kNoMissingHostTime = 0,
+  kSometimesMissingHostTimeNoRecover = 1,
+  kSometimesMissingHostTimeRecovered = 2,
+  kAlwaysMissingHostTime = 3,
+  kMaxValue = kAlwaysMissingHostTime
+};
+
+HostTimeStatus GetHostTimeStatus(int total_callbacks,
+                                 int callbacks_with_missing_host_time,
+                                 bool has_recovered) {
+  if (callbacks_with_missing_host_time == 0) {
+    return HostTimeStatus::kNoMissingHostTime;
+  }
+  if (callbacks_with_missing_host_time == total_callbacks) {
+    return HostTimeStatus::kAlwaysMissingHostTime;
+  }
+
+  return has_recovered ? HostTimeStatus::kSometimesMissingHostTimeRecovered
+                       : HostTimeStatus::kSometimesMissingHostTimeNoRecover;
+}
+
+void ReportHostTimeStatus(int total_callbacks,
+                          int callbacks_with_missing_host_time,
+                          bool has_recovered) {
+  base::UmaHistogramEnumeration(
+      base::JoinString({kCatapAudioInputStreamUmaBaseName, kHostTimeStatusName},
+                       kHistogramPartsSeparator),
+      GetHostTimeStatus(total_callbacks, callbacks_with_missing_host_time,
+                        has_recovered));
 }
 
 }  // namespace
@@ -433,6 +467,9 @@ void CatapAudioInputStream::Stop() {
     SendLogMessage("%s => Error stopping the device.", __func__);
   }
 
+  ReportHostTimeStatus(total_callbacks_, callbacks_with_missing_host_time_,
+                       recovered_from_missing_host_time_);
+
   sink_ = nullptr;
   ReportStopStatus(true, timer.Elapsed());
 }
@@ -514,14 +551,18 @@ void CatapAudioInputStream::SetOutputDeviceForAec(
 void CatapAudioInputStream::OnCatapSample(
     const base::span<const AudioBuffer> input_buffers,
     const AudioTimeStamp* input_time) {
+  base::TimeTicks capture_time;
   if (!(input_time->mFlags & kAudioTimeStampHostTimeValid)) {
-    // TODO(crbug.com/417910390): Add workaround and log this event to see if it
-    // happens.
-    return;
+    // Fallback if there's no host time stamp. There's no evidence that this
+    // ever happens, so this is just in case.
+    capture_time = next_expected_capture_time_ ? *next_expected_capture_time_
+                                               : base::TimeTicks::Now();
+    ++callbacks_with_missing_host_time_;
+  } else {
+    capture_time = base::TimeTicks::FromMachAbsoluteTime(input_time->mHostTime);
+    recovered_from_missing_host_time_ = callbacks_with_missing_host_time_ > 0;
   }
-
-  base::TimeTicks capture_time =
-      base::TimeTicks::FromMachAbsoluteTime(input_time->mHostTime);
+  ++total_callbacks_;
   TRACE_EVENT1("audio", "CatapAudioInputStream::OnCatapSample", "capture_time",
                capture_time);
 
@@ -538,6 +579,10 @@ void CatapAudioInputStream::OnCatapSample(
 
     capture_time += buffer_frames_duration_;
   }
+
+  // Store the current capture time and use as a fallback in case there's no
+  // host time provided with the next callback.
+  next_expected_capture_time_ = capture_time;
 }
 
 NSArray<NSNumber*>* CatapAudioInputStream::GetProcessAudioDeviceIds(

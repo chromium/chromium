@@ -328,6 +328,13 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Hardware AV1 encoder"/>
 </enum>
 
+<enum name="CatapAudioInputStreamHostTimeStatus">
+  <int value="0" label="kNoMissingHostTime"/>
+  <int value="1" label="kSometimesMissingHostTimeNoRecover"/>
+  <int value="2" label="kSometimesMissingHostTimeRecovered"/>
+  <int value="3" label="kAlwaysMissingHostTime"/>
+</enum>
+
 <enum name="CatapAudioInputStreamStatusClose">
   <int value="0" label="kOk"/>
   <int value="1" label="kErrorDestroyingIOProcID"/>

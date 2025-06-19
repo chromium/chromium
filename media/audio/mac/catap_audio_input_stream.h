@@ -141,6 +141,28 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
   // thread that is associated with the capturer.
   raw_ptr<AudioInputCallback> sink_;
 
+  // The next expected capture time is used as a fallback if the metadata in the
+  // callback is missing a host time stamp. Only accessed from the capture
+  // thread.
+  std::optional<base::TimeTicks> next_expected_capture_time_;
+
+  // Counter to track the number of callbacks with a missing host time stamp.
+  // Incremented from the capture thread. Used to calculate statistics of
+  // callbacks with missing host time when the capture has stopped.
+  int callbacks_with_missing_host_time_ = 0;
+
+  // Total number of callbacks, used to calculate the ratio of callbacks with
+  // missing host time stamp. Incremented from the capture thread. Used to
+  // calculate statistics of callbacks with missing host time when the capture
+  // has stopped.
+  int total_callbacks_ = 0;
+
+  // True if we have received a callback with host time after there's been at
+  // least one callback without host time. Changed from the capture thread while
+  // the capture is running, and then accessed from the main sequence once the
+  // capture has stopped.
+  bool recovered_from_missing_host_time_ = false;
+
   // Callback to send log messages to the client.
   AudioManager::LogCallback log_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 

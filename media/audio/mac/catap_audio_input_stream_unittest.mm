@@ -357,6 +357,77 @@ TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioData) {
   }
 }
 
+TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioDataMissingHostTime) {
+  if (@available(macOS 14.2, *)) {
+    EXPECT_EQ(CreateAndOpenStream(/*with_permissions=*/true),
+              AudioInputStream::OpenOutcome::kSuccess);
+    EXPECT_CALL(mock_callback_,
+                OnData(testing::_, testing::_, testing::_, testing::_))
+        .Times(testing::AtLeast(1));
+    EXPECT_CALL(mock_catap_api(), AudioDeviceStart)
+        .WillOnce([](AudioDeviceID in_device, AudioDeviceIOProcID in_proc_id) {
+          EXPECT_EQ(in_device, kAggregateDeviceId);
+          EXPECT_EQ(in_proc_id, kTapIoProcId);
+          return noErr;
+        });
+    stream_->Start(&mock_callback_);
+    ASSERT_NE(audio_proc_, nullptr);
+    // Simulate a call to `audio_proc_` with some data.
+    const AudioTimeStamp* in_now = nullptr;
+    const uint32_t data_byte_size =
+        kCatapLoopbackDefaultFramesPerBuffer * sizeof(Float32) * 2;
+    std::vector<uint8_t> data_buffer(data_byte_size);
+
+    AudioBufferList input_data;
+    input_data.mNumberBuffers = 1;
+    AudioBuffer& input_buffer = input_data.mBuffers[0];
+    input_buffer.mNumberChannels = 2;
+    input_buffer.mDataByteSize = data_byte_size;
+    input_buffer.mData = data_buffer.data();
+
+    AudioTimeStamp input_time;
+    input_time.mFlags = kAudioTimeStampHostTimeValid;
+    input_time.mHostTime = mach_absolute_time();
+    AudioBufferList* output_data = nullptr;
+    const AudioTimeStamp* output_time = nullptr;
+
+    audio_proc_(0, in_now, &input_data, &input_time, output_data, output_time,
+                stream_);
+
+    // Simulate one more captured frame without a host timestamp. Expect the
+    // timestamp of the next OnData() call to be incremented by one buffer
+    // duration.
+    base::TimeTicks previous_capture_timestamp =
+        base::TimeTicks::FromMachAbsoluteTime(input_time.mHostTime);
+    input_time.mFlags = 0;
+    input_time.mHostTime = 0;
+
+    EXPECT_CALL(mock_callback_, OnData)
+        .WillOnce([&previous_capture_timestamp](
+                      const AudioBus* source, base::TimeTicks capture_time,
+                      double volume, const AudioGlitchInfo& audio_glitch_info) {
+          base::TimeDelta kExpectedBufferDuration =
+              base::Milliseconds(1000 * kCatapLoopbackDefaultFramesPerBuffer /
+                                 kLoopbackSampleRate);
+          base::TimeDelta kCaptureTimeTolerance = base::Milliseconds(1);
+          EXPECT_LE((capture_time - previous_capture_timestamp -
+                     kExpectedBufferDuration)
+                        .magnitude(),
+                    kCaptureTimeTolerance);
+        });
+    audio_proc_(0, in_now, &input_data, &input_time, output_data, output_time,
+                stream_);
+
+    EXPECT_CALL(mock_catap_api(), AudioDeviceStop)
+        .WillOnce([](AudioDeviceID in_device, AudioDeviceIOProcID in_proc_id) {
+          EXPECT_EQ(in_device, kAggregateDeviceId);
+          EXPECT_EQ(in_proc_id, kTapIoProcId);
+          return noErr;
+        });
+    stream_->Stop();
+  }
+}
+
 TEST_F(CatapAudioInputStreamTest, LoopbackWithoutChromeId) {
   if (@available(macOS 14.2, *)) {
     auto mock_catap_api_object = std::make_unique<MockCatapApi>();
