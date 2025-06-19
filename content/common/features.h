@@ -100,11 +100,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kInterestGroupUpdateIfOlderThan);
 #if BUILDFLAG(IS_MAC)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIOSurfaceCapturer);
 #endif
-#if BUILDFLAG(IS_ANDROID)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kRendererProcessLimitOnAndroid);
-CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
-                                          kRendererProcessLimitOnAndroidCount);
-#endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMediaDevicesSystemMonitorCache);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMediaStreamTrackTransfer);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMojoDedicatedThread);
