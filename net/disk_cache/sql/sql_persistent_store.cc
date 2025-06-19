@@ -46,11 +46,9 @@ struct StoreStatus {
 
 // The result of a successful initialization.
 struct InitResult {
-  InitResult(const StoreStatus& store_status, int64_t max_bytes)
-      : store_status(store_status), max_bytes(max_bytes) {}
+  explicit InitResult(int64_t max_bytes) : max_bytes(max_bytes) {}
   ~InitResult() = default;
 
-  StoreStatus store_status;
   int64_t max_bytes = 0;
 };
 
@@ -300,7 +298,7 @@ InitResultOrError Backend::Initialize() {
                                           dict);
                    });
   return *db_init_status_ == Error::kOk
-             ? InitResultOrError(InitResult(store_status_, max_bytes_))
+             ? InitResultOrError(InitResult(max_bytes_))
              : base::unexpected(*db_init_status_);
 }
 
