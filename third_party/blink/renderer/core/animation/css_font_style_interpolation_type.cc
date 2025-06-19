@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/length_units_checker.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/css/css_font_style_range_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
@@ -73,6 +74,10 @@ InterpolationValue CSSFontStyleInterpolationType::MaybeConvertValue(
     const CSSValueList* values = style_range_value->GetObliqueValues();
     if (values->length()) {
       const auto& primitive_value = To<CSSPrimitiveValue>(values->Item(0));
+      if (primitive_value.IsElementDependent()) {
+        conversion_checkers.push_back(
+            TreeCountingChecker::Create(state.CssToLengthConversionData()));
+      }
       CSSPrimitiveValue::LengthTypeFlags types;
       primitive_value.AccumulateLengthUnitTypes(types);
       if (CSSInterpolationType::ConversionChecker* length_units_checker =
