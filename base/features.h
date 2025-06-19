@@ -50,6 +50,12 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                        kBackgroundThreadPoolFieldTrialConfig);
 #endif
 
+// Whether the ReducePPMs feature is enabled. Unlike
+// `FeatureList::IsEnabled(base::features::kReducePPMs)`, this can be called
+// racily with initializing the FeatureList (although the return value might not
+// reflect the state of the feature in the FeatureList in that case).
+BASE_EXPORT bool IsReducePPMsEnabled();
+
 // Policy for emitting profiler metadata from `ThreadController`.
 enum class EmitThreadControllerProfilerMetadata {
   // Always emit metadata.

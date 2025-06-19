@@ -4,6 +4,8 @@
 
 #include "base/features.h"
 
+#include <atomic>
+
 #include "base/files/file_path.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/threading/platform_thread.h"
@@ -34,6 +36,16 @@
 #endif
 
 namespace base::features {
+
+namespace {
+
+// An atomic is used because this can be queried racily by a thread checking if
+// an optimization is enabled and a thread initializing this from the
+// FeatureList. All operations use std::memory_order_relaxed because there are
+// no dependent memory operations.
+std::atomic_bool g_is_reduce_ppms_enabled{false};
+
+}  // namespace
 
 // Alphabetical:
 
@@ -128,8 +140,15 @@ BASE_FEATURE(kUseSharedRebindServiceConnection,
              FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+bool IsReducePPMsEnabled() {
+  return g_is_reduce_ppms_enabled.load(std::memory_order_relaxed);
+}
+
 void Init(EmitThreadControllerProfilerMetadata
               emit_thread_controller_profiler_metadata) {
+  g_is_reduce_ppms_enabled.store(FeatureList::IsEnabled(kReducePPMs),
+                                 std::memory_order_relaxed);
+
   sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
   sequence_manager::internal::ThreadController::InitializeFeatures(
       emit_thread_controller_profiler_metadata);
