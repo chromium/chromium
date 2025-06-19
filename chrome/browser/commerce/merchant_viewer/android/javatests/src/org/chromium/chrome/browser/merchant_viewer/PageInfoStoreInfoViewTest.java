@@ -24,7 +24,6 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,9 +48,10 @@ import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
@@ -69,15 +69,11 @@ import java.io.IOException;
 @Restriction({DeviceFormFactor.PHONE})
 @Batch(Batch.PER_CLASS)
 public class PageInfoStoreInfoViewTest {
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -90,17 +86,20 @@ public class PageInfoStoreInfoViewTest {
 
     private final MerchantInfo mFakeMerchantTrustSignals =
             new MerchantInfo(4.5f, 100, new GURL("http://fake/url"), false, 0f, false, false);
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
         doReturn(true).when(mMockShoppingService).isMerchantViewerEnabled();
+
+        mPage = mActivityTestRule.startOnBlankPage();
     }
 
     // dialogCheck ensures that a dialog is in focus when checking the view. If not
     // used it can cause flakiness issues for apis >= 30.
     private void openPageInfoFromStoreIcon(boolean fromStoreIcon, boolean dialogCheck) {
-        ChromeActivity activity = sActivityTestRule.getActivity();
+        ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

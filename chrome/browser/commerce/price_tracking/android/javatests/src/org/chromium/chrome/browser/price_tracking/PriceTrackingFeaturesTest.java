@@ -13,7 +13,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,8 +29,9 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
@@ -42,15 +42,11 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PriceTrackingFeaturesTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
+            ChromeTransitTestRules.blankPageStartReusedActivityRule();
 
     @Mock private IdentityManager mIdentityManagerMock;
 
@@ -60,6 +56,8 @@ public class PriceTrackingFeaturesTest {
 
     @Before
     public void setUp() throws Exception {
+        mActivityTestRule.start();
+
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         when(mIdentityServicesProviderMock.getIdentityManager(any(Profile.class)))
                 .thenReturn(mIdentityManagerMock);
