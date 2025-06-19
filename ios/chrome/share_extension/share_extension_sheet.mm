@@ -218,11 +218,11 @@ CGFloat const kAvatarImageDimension = 30.0;
 - (void)confirmationAlertPrimaryAction {
   switch (_sharedItemType) {
     case kURL:
-      [self.delegate didTapOpenInChromeShareExtensionSheet:self];
+      [self.delegate didTapOpenInChromeShareExtensionSheet:self gaiaID:nil];
       return;
     case kImage:
     case kText:
-      [self.delegate didTapSearchInChromeShareExtensionSheet:self];
+      [self.delegate didTapSearchInChromeShareExtensionSheet:self gaiaID:nil];
       return;
   }
 }
@@ -230,11 +230,12 @@ CGFloat const kAvatarImageDimension = 30.0;
 - (void)confirmationAlertSecondaryAction {
   switch (_sharedItemType) {
     case kURL:
-      [self.delegate didTapMoreOptionsShareExtensionSheet:self];
+      [self.delegate didTapMoreOptionsShareExtensionSheet:self gaiaID:nil];
       return;
     case kImage:
     case kText:
-      [self.delegate didTapSearchInIncognitoShareExtensionSheet:self];
+      [self.delegate didTapSearchInIncognitoShareExtensionSheet:self
+                                                         gaiaID:nil];
       return;
   }
 }

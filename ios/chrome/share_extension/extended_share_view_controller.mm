@@ -135,7 +135,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 - (void)didTapOpenInChromeShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheet {
+            (ShareExtensionSheet*)shareExtensionSheet
+                                       gaiaID:(NSString*)gaiaID {
   self.shareSheet.dismissedFromSheetAction = YES;
   __weak ExtendedShareViewController* weakSelf = self;
   AppGroupCommand* command = [[AppGroupCommand alloc]
@@ -156,7 +157,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 - (void)didTapMoreOptionsShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheet {
+            (ShareExtensionSheet*)shareExtensionSheet
+                                      gaiaID:(NSString*)gaiaID {
   UIAlertController* moreActionsAlertController = [UIAlertController
       alertControllerWithTitle:nil
                        message:nil
@@ -185,7 +187,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 - (void)didTapSearchInChromeShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheet {
+            (ShareExtensionSheet*)shareExtensionSheet
+                                         gaiaID:(NSString*)gaiaID {
   self.shareSheet.dismissedFromSheetAction = YES;
   CHECK(!self.shareURL);
   __weak ExtendedShareViewController* weakSelf = self;
@@ -220,7 +223,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 - (void)didTapSearchInIncognitoShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheet {
+            (ShareExtensionSheet*)shareExtensionSheet
+                                            gaiaID:(NSString*)gaiaID {
   self.shareSheet.dismissedFromSheetAction = YES;
   CHECK(!self.shareURL);
   __weak ExtendedShareViewController* weakSelf = self;

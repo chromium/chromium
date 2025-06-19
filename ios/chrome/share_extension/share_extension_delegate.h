@@ -15,13 +15,17 @@
 - (void)didTapCloseShareExtensionSheet:
     (ShareExtensionSheet*)shareExtensionSheet;
 - (void)didTapOpenInChromeShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheet;
+            (ShareExtensionSheet*)shareExtensionSheet
+                                       gaiaID:(NSString*)gaiaID;
 - (void)didTapMoreOptionsShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheet;
+            (ShareExtensionSheet*)shareExtensionSheet
+                                      gaiaID:(NSString*)gaiaID;
 - (void)didTapSearchInChromeShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheet;
+            (ShareExtensionSheet*)shareExtensionSheet
+                                         gaiaID:(NSString*)gaiaID;
 - (void)didTapSearchInIncognitoShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheet;
+            (ShareExtensionSheet*)shareExtensionSheet
+                                            gaiaID:(NSString*)gaiaID;
 - (void)shareExtensionSheetDidDisappear:
     (ShareExtensionSheet*)shareExtensionSheet;
 
