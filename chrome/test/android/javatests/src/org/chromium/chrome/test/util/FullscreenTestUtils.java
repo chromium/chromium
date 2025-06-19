@@ -5,9 +5,7 @@
 package org.chromium.chrome.test.util;
 
 import android.app.Activity;
-import android.os.Build;
 import android.view.View;
-import android.view.WindowManager;
 
 import androidx.core.view.WindowInsetsCompat;
 
@@ -217,19 +215,14 @@ public class FullscreenTestUtils {
         if (BuildInfo.getInstance().isAutomotive) {
             return true;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            View view = tab.getContentView();
-            int visibility = view.getSystemUiVisibility();
+        View view = tab.getContentView();
+        int visibility = view.getSystemUiVisibility();
 
-            // SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN should only be used during the transition between
-            // fullscreen states, so it should always be cleared when fullscreen transitions are
-            // completed.
-            return !isFlagSet(visibility, View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
-                    && (isFlagSet(visibility, View.SYSTEM_UI_FLAG_FULLSCREEN) == state);
-        } else {
-            WindowManager.LayoutParams attributes = activity.getWindow().getAttributes();
-            return isFlagSet(attributes.flags, WindowManager.LayoutParams.FLAG_FULLSCREEN) == state;
-        }
+        // SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN should only be used during the transition between
+        // fullscreen states, so it should always be cleared when fullscreen transitions are
+        // completed.
+        return !isFlagSet(visibility, View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+                && (isFlagSet(visibility, View.SYSTEM_UI_FLAG_FULLSCREEN) == state);
     }
 
     private static boolean isHideNavigationFlagSet(

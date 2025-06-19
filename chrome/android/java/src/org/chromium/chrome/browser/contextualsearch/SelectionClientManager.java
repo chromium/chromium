@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import android.os.Build;
 import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.VisibleForTesting;
@@ -47,16 +46,14 @@ public class SelectionClientManager {
     /**
      * Constructs an instance that can return a {@link SelectionClient} that's a mix of an optional
      * Smart Selection client and a transient Contextual Search client.
+     *
      * @param webContents The {@link WebContents} that will show popups for this client.
      */
     SelectionClientManager(WebContents webContents) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
-            assert webContents != null;
-            mOptionalSelectionClient = SelectionClient.createSmartSelectionClient(webContents);
-            SelectionPopupController controller =
-                    SelectionPopupController.fromWebContents(webContents);
-            controller.setSelectionClient(mOptionalSelectionClient);
-        }
+        assert webContents != null;
+        mOptionalSelectionClient = SelectionClient.createSmartSelectionClient(webContents);
+        SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
+        controller.setSelectionClient(mOptionalSelectionClient);
         mIsSmartSelectionEnabledInChrome = mOptionalSelectionClient != null;
     }
 

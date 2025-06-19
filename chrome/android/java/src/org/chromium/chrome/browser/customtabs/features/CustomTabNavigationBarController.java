@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.customtabs.features;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.view.Window;
 
 import androidx.annotation.Nullable;
@@ -61,17 +60,13 @@ public class CustomTabNavigationBarController {
         }
         // PCCT is deemed incapable of system dark button support due to the way it implements
         // partial height (window coordinate translation). We do the darkening ourselves.
-        boolean supportsDarkButtons =
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                        && !intentDataProvider.isPartialCustomTab();
+        boolean supportsDarkButtons = !intentDataProvider.isPartialCustomTab();
         boolean needsDarkButtons =
                 navigationBarColor != null
                         && !ColorUtils.shouldUseLightForegroundOnBackground(navigationBarColor);
 
         updateBarColor(window, navigationBarColor, supportsDarkButtons, needsDarkButtons);
 
-        // navigationBarDividerColor can only be set in Android P+
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
         Integer dividerColor =
                 getDividerColor(
                         context, navigationBarColor, navigationBarDividerColor, needsDarkButtons);

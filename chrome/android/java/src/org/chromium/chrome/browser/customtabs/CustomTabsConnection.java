@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
 import android.os.SystemClock;
@@ -1924,7 +1923,7 @@ public class CustomTabsConnection {
         // cgroups a process is part of can be queried by reading /proc/<pid>/cgroup, which is
         // world-readable.
         String cgroupFilename = "/proc/" + pid + "/cgroup";
-        String controllerName = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? "cpuset" : "cpu";
+        String controllerName = "cpuset";
         try (BufferedReader reader = new BufferedReader(new FileReader(cgroupFilename))) {
             String line = null;
             while ((line = reader.readLine()) != null) {

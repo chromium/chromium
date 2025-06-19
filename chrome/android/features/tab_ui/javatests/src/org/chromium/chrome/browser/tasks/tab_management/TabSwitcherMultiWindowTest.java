@@ -20,7 +20,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.s
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabModelTabCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.LargeTest;
@@ -80,8 +79,7 @@ public class TabSwitcherMultiWindowTest {
 
     @After
     public void tearDown() throws Exception {
-        // On Android N this throws an exception because of legacy multi window.
-        if (mCta2 != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (mCta2 != null) {
             ApplicationTestUtils.finishActivity(mCta2);
         }
         if (mCta1 != null) {

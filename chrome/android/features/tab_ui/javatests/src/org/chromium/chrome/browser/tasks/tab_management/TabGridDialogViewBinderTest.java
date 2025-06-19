@@ -287,18 +287,14 @@ public class TabGridDialogViewBinderTest {
     @UiThreadTest
     public void testSetTint() {
         ColorStateList tint = ThemeUtils.getThemedToolbarIconTint(sActivity, true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            assertNotEquals(tint, mBackButton.getImageTintList());
-            assertNotEquals(tint, mNewTabButton.getImageTintList());
-        }
+        assertNotEquals(tint, mBackButton.getImageTintList());
+        assertNotEquals(tint, mNewTabButton.getImageTintList());
         assertNotEquals(tint, mTitleTextView.getTextColors());
 
         mModel.set(TabGridDialogProperties.TINT, tint);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            assertEquals(tint, mBackButton.getImageTintList());
-            assertEquals(tint, mNewTabButton.getImageTintList());
-        }
+        assertEquals(tint, mBackButton.getImageTintList());
+        assertEquals(tint, mNewTabButton.getImageTintList());
         assertEquals(tint, mTitleTextView.getTextColors());
     }
 

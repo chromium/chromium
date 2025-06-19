@@ -1681,7 +1681,10 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Frequent"/>
   <int value="3" label="Rare"/>
   <int value="4" label="Restricted"/>
-  <int value="5" label="Exempted"/>
+  <int value="5" label="(obsolete) Unsupported"/>
+  <int value="6" label="Exempted"/>
+  <int value="7" label="Never"/>
+  <int value="8" label="Other"/>
 </enum>
 
 <enum name="SupportedConfigurationStrangeInsetsState">

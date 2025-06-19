@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
@@ -72,9 +71,6 @@ public class SplitChromeApplication extends SplitCompatApplication {
     @Override
     protected void attachBaseContext(Context context) {
         if (isBrowserProcess()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                DexFixer.setHasIsolatedSplits(true);
-            }
             setImplSupplier(
                     () -> {
                         return (Impl)

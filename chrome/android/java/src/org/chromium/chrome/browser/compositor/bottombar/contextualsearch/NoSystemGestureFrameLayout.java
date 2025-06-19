@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
@@ -25,10 +24,8 @@ public class NoSystemGestureFrameLayout extends FrameLayout {
     @SuppressWarnings("DrawAllocation")
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            setSystemGestureExclusionRects(
-                    Collections.singletonList(
-                            new Rect(0, 0, Math.abs(right - left), Math.abs(top - bottom))));
-        }
+        setSystemGestureExclusionRects(
+                Collections.singletonList(
+                        new Rect(0, 0, Math.abs(right - left), Math.abs(top - bottom))));
     }
 }

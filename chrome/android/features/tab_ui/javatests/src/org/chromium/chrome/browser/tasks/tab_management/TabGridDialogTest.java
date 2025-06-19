@@ -2079,8 +2079,7 @@ public class TabGridDialogTest {
         // make sure that the color of navigation bar is changed by dialog scrim.
         // Skip if Chrome is drawing edge to edge as navigation bar will stay transparent.
         Resources resources = cta.getResources();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1
-                || !resources.getBoolean(R.bool.window_light_navigation_bar)
+        if (!resources.getBoolean(R.bool.window_light_navigation_bar)
                 || isTablet(cta)
                 || cta.getTabModelSelectorSupplier().get().isIncognitoBrandedModelSelected()) {
             return;

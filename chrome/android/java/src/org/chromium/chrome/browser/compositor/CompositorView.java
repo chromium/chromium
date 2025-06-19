@@ -12,7 +12,6 @@ import android.content.IntentFilter;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.AttachedSurfaceControl;
 import android.view.Surface;
 import android.view.View;
@@ -155,19 +154,12 @@ public class CompositorView extends FrameLayout
      * The {@link CompositorSurfaceManagerImpl} constructor creates a handler (inside the
      * SurfaceView constructor on android N and before) and thus can only be called on the UI
      * thread. If the layout is inflated on a background thread this fails, thus we only initialize
-     * the {@link CompositorSurfaceManager} in the constructor if on the UI thread (or we are
-     * running on android O+), otherwise it is initialized inside the first call to
-     * {@link #setRootView}.
+     * the {@link CompositorSurfaceManager} in the constructor if on the UI thread, otherwise it is
+     * initialized inside the first call to {@link #setRootView}.
      */
     private void initializeIfOnUiThread() {
-        if (!ThreadUtils.runningOnUiThread() && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return;
-        }
-
         mCompositorSurfaceManager = new CompositorSurfaceManagerImpl(this, this);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            mScreenStateReceiver = new ScreenStateReceiverWorkaround();
-        }
+        mScreenStateReceiver = new ScreenStateReceiverWorkaround();
 
         // Cover the black surface before it has valid content.  Set this placeholder view to
         // visible, but don't yet make SurfaceView visible, in order to delay

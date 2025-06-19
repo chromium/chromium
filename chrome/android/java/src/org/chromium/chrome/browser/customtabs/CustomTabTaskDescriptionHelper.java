@@ -10,7 +10,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.text.TextUtils;
 
 import org.chromium.build.annotations.NullMarked;
@@ -91,10 +90,8 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
 
             // This is a workaround for crbug/1098580. ActivityManager.TaskDescription
             // does not handle adaptive icon when passing a bitmap. So set the task icon to be null
-            // to preserve the client app's icon. Only set this flag on O+ because this does not
-            // work with old_style_webapk.
-            if (mIntentDataProvider.isWebApkActivity()
-                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // to preserve the client app's icon.
+            if (mIntentDataProvider.isWebApkActivity()) {
                 mUseClientIcon = true;
             }
         }

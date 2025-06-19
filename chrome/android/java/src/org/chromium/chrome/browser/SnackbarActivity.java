@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import androidx.annotation.CallSuper;
 
@@ -31,9 +29,6 @@ public abstract class SnackbarActivity extends SynchronousInitializationActivity
     @Override
     protected void onCreateInternal(Bundle savedInstanceState) {
         super.onCreateInternal(savedInstanceState);
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        }
         // TODO(crbug.com/399495650): Add render tests for snackbar padding in edge-to-edge mode.
         mSnackbarManager = new SnackbarManager(this, getContentView(), null);
     }

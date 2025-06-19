@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-
-import android.os.Build;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.text.TextUtils;
@@ -99,14 +97,8 @@ public class ChromeStrictMode {
                 .detectLeakedRegistrationObjects()
                 .detectLeakedSqlLiteObjects();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Introduced in O.
-            vmPolicy.detectContentUriWithoutPermission();
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // Introduced in Q.
-            vmPolicy.detectCredentialProtectedWhileLocked().detectImplicitDirectBoot();
-        }
+        vmPolicy.detectContentUriWithoutPermission();
+        vmPolicy.detectCredentialProtectedWhileLocked().detectImplicitDirectBoot();
 
         // File URI leak detection, has false positives when file URI intents are passed between
         // Chrome activities in separate processes. See http://crbug.com/508282#c11.

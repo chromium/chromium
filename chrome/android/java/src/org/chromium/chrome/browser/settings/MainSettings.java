@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -258,30 +257,22 @@ public class MainSettings extends ChromeBaseSettingsFragment
         setManagedPreferenceDelegateForPreference(PREF_PASSWORDS);
         setManagedPreferenceDelegateForPreference(PREF_SEARCH_ENGINE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // If we are on Android O+ the Notifications preference should lead to the Android
-            // Settings notifications page.
-            Intent intent = new Intent();
-            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-            intent.putExtra(
-                    Settings.EXTRA_APP_PACKAGE,
-                    ContextUtils.getApplicationContext().getPackageName());
-            PackageManager pm = getActivity().getPackageManager();
-            if (intent.resolveActivity(pm) != null) {
-                Preference notifications = findPreference(PREF_NOTIFICATIONS);
-                notifications.setOnPreferenceClickListener(
-                        preference -> {
-                            startActivity(intent);
-                            // We handle the click so the default action isn't triggered.
-                            return true;
-                        });
-            } else {
-                removePreferenceIfPresent(PREF_NOTIFICATIONS);
-            }
+        // The Notifications preference should lead to the Android Settings notifications page.
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+        intent.putExtra(
+                Settings.EXTRA_APP_PACKAGE, ContextUtils.getApplicationContext().getPackageName());
+        PackageManager pm = getActivity().getPackageManager();
+        if (intent.resolveActivity(pm) != null) {
+            Preference notifications = findPreference(PREF_NOTIFICATIONS);
+            notifications.setOnPreferenceClickListener(
+                    preference -> {
+                        startActivity(intent);
+                        // We handle the click so the default action isn't triggered.
+                        return true;
+                    });
         } else {
-            // The per-website notification settings page can be accessed from Site
-            // Settings, so we don't need to show this here.
-            getPreferenceScreen().removePreference(findPreference(PREF_NOTIFICATIONS));
+            removePreferenceIfPresent(PREF_NOTIFICATIONS);
         }
 
         TemplateUrlService templateUrlService =
@@ -458,9 +449,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private void updateAutofillPreferences() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && ChromeFeatureList.isEnabled(
-                        AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
+        if (ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
             addPreferenceIfAbsent(PREF_AUTOFILL_SECTION);
             addPreferenceIfAbsent(PREF_AUTOFILL_OPTIONS);
             Preference preference = findPreference(PREF_AUTOFILL_OPTIONS);

@@ -28,7 +28,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
@@ -153,9 +152,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         }
         // If ClassLoader was corrected by SplitCompatAppComponentFactory, also need to correct
         // the reference in the associated Context.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            BundleUtils.checkContextClassLoader(newBase, this);
-        }
+        BundleUtils.checkContextClassLoader(newBase, this);
 
         mServiceTracingProxyProvider = ServiceTracingProxyProvider.create(newBase);
 
@@ -314,7 +311,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     }
 
     @Override
-    @RequiresApi(Build.VERSION_CODES.O)
     public void onMultiWindowModeChanged(boolean inMultiWindowMode, Configuration configuration) {
         super.onMultiWindowModeChanged(inMultiWindowMode, configuration);
         onMultiWindowModeChanged(inMultiWindowMode);

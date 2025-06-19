@@ -10,7 +10,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -955,12 +954,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         if (activity == null) return;
         Vibrator v = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
         final long duration = 50;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE));
-        } else {
-            // Deprecated in API 26.
-            v.vibrate(duration);
-        }
+        v.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE));
     }
 
     private boolean isInMultiWindowMode() {

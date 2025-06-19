@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.browserservices.trustedwebactivityui;
 
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -52,7 +51,7 @@ public class TwaFinishHandler {
 
     private boolean finishAndRemoveTask() {
         WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
-        if (webApkExtras != null && Build.VERSION.SDK_INT >= 23) {
+        if (webApkExtras != null) {
             WebApkServiceClient.getInstance().finishAndRemoveTaskSdk23(mActivity, webApkExtras);
             return true;
         }

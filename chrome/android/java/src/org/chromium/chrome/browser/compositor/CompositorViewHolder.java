@@ -19,7 +19,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -410,9 +409,7 @@ public class CompositorViewHolder extends FrameLayout
         }
         handleSystemUiVisibilityChange();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            setDefaultFocusHighlightEnabled(false);
-        }
+        setDefaultFocusHighlightEnabled(false);
     }
 
     private Point getViewportSize() {

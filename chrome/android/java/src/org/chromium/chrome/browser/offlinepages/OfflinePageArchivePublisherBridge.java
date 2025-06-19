@@ -9,7 +9,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore.MediaColumns;
 import android.text.format.DateUtils;
@@ -144,8 +143,6 @@ public class OfflinePageArchivePublisherBridge {
     @VisibleForTesting
     public static @JniType("std::string") String publishArchiveToDownloadsCollection(
             OfflinePageItem page) {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-
         final String isPending = "is_pending"; // MediaStore.IS_PENDING
 
         // Collect all fields for creating intermediate URI.

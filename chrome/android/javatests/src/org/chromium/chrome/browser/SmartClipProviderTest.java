@@ -7,7 +7,6 @@ package org.chromium.chrome.browser;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -148,11 +147,7 @@ public class SmartClipProviderTest implements Handler.Callback {
 
     @After
     public void tearDown() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            mHandlerThread.quitSafely();
-        } else {
-            mHandlerThread.quit();
-        }
+        mHandlerThread.quitSafely();
     }
 
     // Implements Handler.Callback

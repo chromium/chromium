@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.Browser;
@@ -312,8 +311,6 @@ public class OMADownloadHandler extends BroadcastReceiver {
         @Override
         public OMAInfo doInBackground() {
             OMAInfo omaInfo = null;
-            final DownloadManager manager =
-                    (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
             boolean isContentUri =
                     (mDownloadId == DownloadConstants.INVALID_DOWNLOAD_ID)
                             && ContentUriUtils.isContentUri(mDownloadInfo.getFilePath());
@@ -321,8 +318,6 @@ public class OMADownloadHandler extends BroadcastReceiver {
                 ParcelFileDescriptor fd = null;
                 if (isContentUri) {
                     fd = ContentUriUtils.openContentUri(mDownloadInfo.getFilePath(), "r");
-                } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                    fd = manager.openDownloadedFile(mDownloadId);
                 } else {
                     fd =
                             ParcelFileDescriptor.open(
@@ -1052,66 +1047,32 @@ public class OMADownloadHandler extends BroadcastReceiver {
                 String path = mDownloadInfo.getFilePath();
                 if (!TextUtils.isEmpty(path)) {
                     File fromFile = new File(path);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        // Copy the downloaded content to the intermediate URI and publish it.
-                        String pendingUri =
-                                DownloadCollectionBridge.createIntermediateUriForPublish(
-                                        mDownloadInfo.getFileName(),
-                                        mDownloadInfo.getMimeType(),
-                                        mDownloadInfo.getOriginalUrl().getSpec(),
-                                        mDownloadInfo.getReferrer().getSpec());
-                        success =
-                                DownloadCollectionBridge.copyFileToIntermediateUri(
-                                        path, pendingUri);
-                        if (success) {
-                            String uri = DownloadCollectionBridge.publishDownload(pendingUri);
-                            fromFile.delete();
-                            // Post a nofification to open the Android download page.
-                            mNewDownloadInfo =
-                                    DownloadInfo.Builder.fromDownloadInfo(mDownloadInfo)
-                                            .setFilePath(uri)
-                                            .setContentId(
-                                                    new ContentId("", String.valueOf(mDownloadId)))
-                                            .build();
-                        } else {
-                            DownloadCollectionBridge.deleteIntermediateUri(pendingUri);
-                        }
-                    } else {
-                        // Move the downloaded content from the app directory to public directory.
-                        String fileName = fromFile.getName();
-                        DownloadManager manager =
-                                (DownloadManager)
-                                        mContext.getSystemService(Context.DOWNLOAD_SERVICE);
-                        File toFile =
-                                new File(
-                                        Environment.getExternalStoragePublicDirectory(
-                                                Environment.DIRECTORY_DOWNLOADS),
-                                        fileName);
-                        success = fromFile.renameTo(toFile);
-                        if (success) {
-                            manager.addCompletedDownload(
-                                    fileName,
-                                    mDownloadInfo.getDescription(),
-                                    false,
+                    // Copy the downloaded content to the intermediate URI and publish it.
+                    String pendingUri =
+                            DownloadCollectionBridge.createIntermediateUriForPublish(
+                                    mDownloadInfo.getFileName(),
                                     mDownloadInfo.getMimeType(),
-                                    toFile.getPath(),
-                                    mDownloadInfo.getBytesReceived(),
-                                    true);
-                        }
+                                    mDownloadInfo.getOriginalUrl().getSpec(),
+                                    mDownloadInfo.getReferrer().getSpec());
+                    success = DownloadCollectionBridge.copyFileToIntermediateUri(path, pendingUri);
+                    if (success) {
+                        String uri = DownloadCollectionBridge.publishDownload(pendingUri);
+                        fromFile.delete();
+                        // Post a nofification to open the Android download page.
+                        mNewDownloadInfo =
+                                DownloadInfo.Builder.fromDownloadInfo(mDownloadInfo)
+                                        .setFilePath(uri)
+                                        .setContentId(
+                                                new ContentId("", String.valueOf(mDownloadId)))
+                                        .build();
+                    } else {
+                        DownloadCollectionBridge.deleteIntermediateUri(pendingUri);
                     }
                     if (!success) {
                         if (fromFile.delete()) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                Log.w(TAG, "Failed to publish the downloaded file.");
-                            } else {
-                                Log.w(TAG, "Failed to rename the file.");
-                            }
+                            Log.w(TAG, "Failed to publish the downloaded file.");
                         } else {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                Log.w(TAG, "Failed to publish and delete the file.");
-                            } else {
-                                Log.w(TAG, "Failed to rename and delete the file.");
-                            }
+                            Log.w(TAG, "Failed to publish and delete the file.");
                         }
                     }
                 }

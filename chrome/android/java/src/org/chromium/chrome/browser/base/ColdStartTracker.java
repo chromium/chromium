@@ -7,13 +7,6 @@ package org.chromium.chrome.browser.base;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.os.Build;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
-import android.os.Process;
-import android.os.SystemClock;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -102,17 +95,10 @@ public class ColdStartTracker implements ActivityStateListener {
     @EnsuresNonNull("mStartedAsCold")
     private void detectStartedAsCold() {
         if (mStartedAsCold != null) return;
-        if (VERSION.SDK_INT >= VERSION_CODES.P) {
-            mStartedAsCold = isColdStartupOnP();
-            return;
-        }
-
-        // Fallback: treat recently started process as cold.
-        mStartedAsCold = (SystemClock.elapsedRealtime() - Process.getStartElapsedRealtime() < 500);
+        mStartedAsCold = isColdStartup();
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
-    private boolean isColdStartupOnP() {
+    private boolean isColdStartup() {
         @ProcessCreationReason
         int creationReason = SplitCompatAppComponentFactory.getProcessCreationReason();
         if (creationReason <= ProcessCreationReason.PENDING) {

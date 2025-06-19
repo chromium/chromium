@@ -7,10 +7,8 @@ package org.chromium.chrome.browser;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.test.filters.MediumTest;
 
@@ -136,7 +134,6 @@ public class SelectFileDialogTest {
 
     /** Tests that clicks on <input type="file" /> trigger intent calls to ActivityWindowAndroid. */
     @Test
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @MediumTest
     @Feature({"TextInput", "Main"})
     @DisabledTest(message = "https://crbug.com/724163")
@@ -197,9 +194,7 @@ public class SelectFileDialogTest {
                                     Intent.EXTRA_INTENT);
             Assert.assertNotNull(contentIntent);
             Assert.assertFalse(contentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                Assert.assertTrue(contentIntent.hasExtra(Intent.EXTRA_ALLOW_MULTIPLE));
-            }
+            Assert.assertTrue(contentIntent.hasExtra(Intent.EXTRA_ALLOW_MULTIPLE));
             resetActivityWindowAndroidForTest();
         }
 
@@ -221,7 +216,6 @@ public class SelectFileDialogTest {
     /** Tests that content URI resolving to local app dir is checked correctly. */
     @Test
     @MediumTest
-    @RequiresApi(Build.VERSION_CODES.O)
     public void testIsContentUriUnderAppDir() throws Throwable {
         File dataDir = ContextCompat.getDataDir(ContextUtils.getApplicationContext());
         File childDir = new File(dataDir, "android");
@@ -231,8 +225,7 @@ public class SelectFileDialogTest {
         TestContentProvider.resetResourceRequestCounts(ContextUtils.getApplicationContext());
         TestContentProvider.setDataFilePath(
                 ContextUtils.getApplicationContext(), dataDir.getPath());
-        Assert.assertEquals(
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O,
+        Assert.assertTrue(
                 SelectFileDialog.isContentUriUnderAppDir(
                         Uri.parse(TestContentProvider.createContentUrl(temp.getName())),
                         ContextUtils.getApplicationContext()));

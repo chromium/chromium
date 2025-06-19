@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.customtabs;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.view.MotionEvent;
-
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
@@ -16,7 +14,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -44,8 +41,6 @@ public class CustomTabsFilterTouchUnitTest {
     public ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(CustomTabActivity.class);
 
-    @Mock private MotionEvent mMotionEvent;
-
     private CustomTabActivity mActivity;
 
     @Before
@@ -57,8 +52,8 @@ public class CustomTabsFilterTouchUnitTest {
     @SmallTest
     public void testShouldPreventTouch() {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
-        assertFalse("Events should be accepted.", mActivity.shouldPreventTouch(mMotionEvent));
+        assertFalse("Events should be accepted.", mActivity.shouldPreventTouch());
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
-        assertTrue("Events should be discarded.", mActivity.shouldPreventTouch(mMotionEvent));
+        assertTrue("Events should be discarded.", mActivity.shouldPreventTouch());
     }
 }

@@ -9,35 +9,26 @@ import android.system.ErrnoException;
 import android.system.Os;
 import android.system.StructStat;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-
-import dalvik.system.DexFile;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.DeferredStartupHandler;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.io.File;
 import java.io.IOException;
 
 /** Performs work-arounds for Android bugs which result in invalid or unreadable dex. */
-@RequiresApi(Build.VERSION_CODES.O)
 @NullMarked
 public class DexFixer {
     private static final String TAG = "DexFixer";
-    private static boolean sHasIsolatedSplits;
 
     @WorkerThread
     public static void fixDexInBackground() {
@@ -46,10 +37,6 @@ public class DexFixer {
         }
 
         fixDexIfNecessary(Runtime.getRuntime());
-    }
-
-    static void setHasIsolatedSplits(boolean value) {
-        sHasIsolatedSplits = value;
     }
 
     static void scheduleDexFix() {
@@ -127,48 +114,6 @@ public class DexFixer {
     }
 
     private static @DexFixerReason int needsDexCompile(ApplicationInfo appInfo) {
-        // Android O MR1 has a bug where bg-dexopt-job will break optimized dex files for isolated
-        // splits. This leads to *very* slow startup on those devices. To mitigate this, we attempt
-        // to force a dex compile if necessary.
-        if (sHasIsolatedSplits && Build.VERSION.SDK_INT == Build.VERSION_CODES.O_MR1) {
-            // If the app has just been updated, it will be compiled with quicken. The next time
-            // bg-dexopt-job runs it will break the optimized dex for splits. If we force compile
-            // now, then bg-dexopt-job won't mess up the splits, and we save the user a slow
-            // startup.
-            SharedPreferencesManager prefManager = ChromeSharedPreferences.getInstance();
-            long versionCode = BuildConfig.VERSION_CODE;
-            // The default value is always lesser than any non-negative versionCode. This prevents
-            // some tests from failing when application's versionCode is stuck at 0.
-            if (prefManager.readLong(
-                            ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION,
-                            versionCode - 1)
-                    != versionCode) {
-                // Compiling the dex is an asynchronous operation anyways, so update the pref here
-                // rather than attempting to wait.
-                prefManager.writeLong(
-                        ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION, versionCode);
-                return DexFixerReason.O_MR1_AFTER_UPDATE;
-            }
-
-            // Check for corrupt dex.
-            String[] splitNames = appInfo.splitNames;
-            if (splitNames != null) {
-                for (int i = 0; i < splitNames.length; i++) {
-                    // Ignore config splits like "config.en".
-                    if (splitNames[i].contains(".")) {
-                        continue;
-                    }
-                    try {
-                        if (DexFile.isDexOptNeeded(appInfo.splitSourceDirs[i])) {
-                            return DexFixerReason.O_MR1_CORRUPTED;
-                        }
-                    } catch (IOException e) {
-                        return DexFixerReason.O_MR1_IO_EXCEPTION;
-                    }
-                }
-            }
-        }
-
         String oatPath = odexPathFromApkPath(appInfo.sourceDir);
         try {
             StructStat st = Os.stat(oatPath);

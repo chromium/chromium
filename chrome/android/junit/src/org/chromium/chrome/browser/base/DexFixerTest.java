@@ -13,7 +13,6 @@ import android.content.pm.ApplicationInfo;
 import android.system.Os;
 import android.system.StructStat;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,9 +30,6 @@ import org.robolectric.util.ReflectionHelpers.ClassParameter;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.io.IOException;
 
@@ -65,11 +61,6 @@ public class DexFixerTest {
         ShadowOs.sWorldReadable = true;
     }
 
-    @After
-    public void tearDown() {
-        DexFixer.setHasIsolatedSplits(false);
-    }
-
     private void verifyDexOpt() {
         try {
             verify(mMockRuntime)
@@ -98,12 +89,7 @@ public class DexFixerTest {
     public void testFixDexIfNecessary_notReadableWithSplits() {
         ApplicationInfo appInfo = ContextUtils.getApplicationContext().getApplicationInfo();
         appInfo.splitNames = new String[] {"ignored.en"};
-        DexFixer.setHasIsolatedSplits(true);
         ShadowOs.sWorldReadable = false;
-        ChromeSharedPreferences.getInstance()
-                .writeLong(
-                        ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION,
-                        BuildConfig.VERSION_CODE);
 
         @DexFixerReason int reason = DexFixer.fixDexIfNecessary(mMockRuntime);
         assertThat(reason).isEqualTo(DexFixerReason.NOT_READABLE);

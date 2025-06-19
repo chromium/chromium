@@ -115,9 +115,6 @@ public class SplashController extends CustomTabTabObserver
         mIsWindowInitiallyTranslucent =
                 BaseCustomTabActivity.isWindowInitiallyTranslucent(activity);
 
-        customTabOrientationController.delayOrientationRequestsIfNeeded(
-                this, mIsWindowInitiallyTranslucent);
-
         mLifecycleDispatcher.register(this);
         mTabObserverRegistrar.registerActivityTabObserver(this);
     }
