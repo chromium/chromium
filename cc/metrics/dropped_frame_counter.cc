@@ -250,18 +250,6 @@ void DroppedFrameCounter::ReportFrames() {
 
 void DroppedFrameCounter::ReportFramesOnEveryFrameForUI() {
   DCHECK(report_for_ui_);
-
-  if (!sliding_window_current_percent_dropped_) {
-    return;
-  }
-
-  auto* recorder = CustomMetricRecorder::Get();
-  if (!recorder) {
-    return;
-  }
-
-  recorder->ReportPercentDroppedFramesInOneSecondWindow2(
-      *sliding_window_current_percent_dropped_);
 }
 
 void DroppedFrameCounter::SetUkmSmoothnessDestination(

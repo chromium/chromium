@@ -628,40 +628,6 @@ TEST_F(DroppedFrameCounterTest, ForkedCompositorFrameReporter) {
   EXPECT_EQ(dropped_frame_counter_->total_smoothness_dropped(), 3u);
 }
 
-TEST_F(DroppedFrameCounterTest, ReportOnEveryFrameForUI) {
-  constexpr auto kInterval = base::Milliseconds(10);
-  constexpr int kFps = base::Seconds(1).IntDiv(kInterval);
-  static_assert(
-      kFps % 5 == 0,
-      "kFps must be a multiple of 5 because this test depends on it.");
-  SetInterval(kInterval);
-
-  dropped_frame_counter_->EnableReportForUI();
-  TestCustomMetricsRecorder recorder;
-
-  // 4 seconds with 20% dropped frames.
-  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 4);
-
-  // Recorded (kFps * 3) samples of 20% dropped frame percentage. Only 3 seconds
-  // of frames reported because there is no reports for the very 1st second.
-  // Off-by-one introduced by FrameSorter refactor.
-  // We have inverted the order in which we call DFC::AddSortedFrame and
-  // DFC::OnEndFrame, meaning that DFC's sliding_window_current_percent_dropped_
-  // is set after OnEndFrame has been called at the 1s second threshold.
-  // Therefore, we expect one less call to the frame recorder.
-  EXPECT_EQ(recorder.report_count(), (kFps * 3) - 1);
-  EXPECT_FLOAT_EQ(recorder.last_percent_dropped_frames(), 20.0f);
-
-  recorder.Reset();
-
-  // 4 seconds with 0 dropped frames.
-  SimulateFrameSequence({false, false, false, false, false}, (kFps / 5) * 4);
-
-  // Recorded (kFps * 4) samples of 0% dropped frame percentage.
-  EXPECT_EQ(recorder.report_count(), kFps * 4);
-  EXPECT_FLOAT_EQ(recorder.last_percent_dropped_frames(), 0.0f);
-}
-
 class DroppedFrameCounterLegacyMetricsTest : public DroppedFrameCounterTest {
  public:
   DroppedFrameCounterLegacyMetricsTest();
@@ -678,36 +644,6 @@ DroppedFrameCounterLegacyMetricsTest::DroppedFrameCounterLegacyMetricsTest() {
   dropped_frame_counter_->OnFirstContentfulPaintReceived();
   frame_sorter_.OnFirstContentfulPaintReceived();
   frame_sorter_.AddObserver(dropped_frame_counter_.get());
-}
-
-TEST_F(DroppedFrameCounterLegacyMetricsTest, DoesNotReportLegacyMetrics) {
-  constexpr auto kInterval = base::Milliseconds(10);
-  constexpr int kFps = base::Seconds(1).IntDiv(kInterval);
-  static_assert(
-      kFps % 5 == 0,
-      "kFps must be a multiple of 5 because this test depends on it.");
-  SetInterval(kInterval);
-
-  dropped_frame_counter_->EnableReportForUI();
-  TestCustomMetricsRecorder recorder;
-
-  // 5 seconds with 20% dropped frames.
-  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 6);
-  // We have inverted the order in which we call DFC::AddSortedFrame and
-  // DFC::OnEndFrame, meaning that DFC's sliding_window_current_percent_dropped_
-  // is set after OnEndFrame has been called at the 1s second threshold.
-  // Therefore, we expect one less call to the frame recorder.
-  EXPECT_EQ(recorder.report_count(), (5 * kFps) - 1);
-
-  // The following metrics should report data.
-  // Average calculation
-  EXPECT_GT(dropped_frame_counter_->total_smoothness_dropped(), 0.0);
-  // Median calculation
-  EXPECT_GT(PercentDroppedFrameMedian(), 0.0);
-  // Compositor-focused median calculation
-  EXPECT_GT(dropped_frame_counter_->SlidingWindowMedianPercentDropped(
-                SmoothnessStrategy::kCompositorFocusedStrategy),
-            0.0);
 }
 
 }  // namespace

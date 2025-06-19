@@ -9,6 +9,8 @@
 
 #include <map>
 #include <optional>
+#include <queue>
+#include <utility>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -96,8 +98,14 @@ class CC_EXPORT FrameSorter {
     return first_contentful_paint_received_;
   }
 
+  // Enable dropped frame report for ui::Compositor..
+  void EnableReportForUI();
+
  private:
   void FlushFrames();
+  base::TimeDelta ComputeCurrentWindowSize() const;
+  void PopSlidingWindow(const viz::BeginFrameArgs& args);
+  std::queue<std::pair<const viz::BeginFrameArgs, FrameInfo>> sliding_window_;
 
   const uint64_t kPendingFramesMaxSize = 300u;
 
@@ -120,6 +128,9 @@ class CC_EXPORT FrameSorter {
 
   std::optional<uint64_t> current_source_id_;
   bool first_contentful_paint_received_ = false;
+  bool report_for_ui_ = false;
+  std::optional<double> sliding_window_current_percent_dropped_;
+  uint32_t dropped_frame_count_in_window_ = 0;
 };
 
 }  // namespace cc

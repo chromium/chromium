@@ -9,12 +9,44 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
+#include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/frame_info.h"
 #include "cc/test/fake_frame_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
+
+class TestCustomMetricsRecorder : public CustomMetricRecorder {
+ public:
+  TestCustomMetricsRecorder() = default;
+  ~TestCustomMetricsRecorder() override = default;
+
+  // CustomMetricRecorder:
+  void ReportPercentDroppedFramesInOneSecondWindow2(double percent) override {
+    ++report_count_;
+    last_percent_dropped_frames_ = percent;
+  }
+  void ReportEventLatency(
+      std::vector<EventLatencyTracker::LatencyData> latencies) override {}
+
+  void Reset() {
+    report_count_ = 0u;
+    last_percent_dropped_frames_ = 0;
+  }
+
+  int report_count() const { return report_count_; }
+
+  double last_percent_dropped_frames() const {
+    return last_percent_dropped_frames_;
+  }
+
+ private:
+  int report_count_ = 0u;
+  double last_percent_dropped_frames_ = 0;
+};
 
 // Test class for FrameSorter
 class FrameSorterTest : public testing::Test, FrameSorterObserver {
@@ -27,11 +59,12 @@ class FrameSorterTest : public testing::Test, FrameSorterObserver {
 
   viz::BeginFrameArgs GetNextFrameArgs() {
     uint64_t sequence_number = next_frame_sequence_number_++;
+    last_begin_frame_time_ += base::Milliseconds(250);
     return viz::BeginFrameArgs::Create(
         BEGINFRAME_FROM_HERE, next_frame_source_id_, sequence_number,
         last_begin_frame_time_,
-        last_begin_frame_time_ + viz::BeginFrameArgs::DefaultInterval(),
-        viz::BeginFrameArgs::DefaultInterval(), viz::BeginFrameArgs::NORMAL);
+        last_begin_frame_time_ + base::Milliseconds(250),
+        base::Milliseconds(250), viz::BeginFrameArgs::NORMAL);
   }
 
   void IncreaseSourceId() {
@@ -118,6 +151,7 @@ class FrameSorterTest : public testing::Test, FrameSorterObserver {
       result_index++;
     }
   }
+  FrameSorter frame_sorter_;
 
  private:
   void AddSortedFrame(const viz::BeginFrameArgs& args,
@@ -125,7 +159,6 @@ class FrameSorterTest : public testing::Test, FrameSorterObserver {
     sorted_frames_.emplace_back(args, frame.IsDroppedAffectingSmoothness());
   }
 
-  FrameSorter frame_sorter_;
   std::vector<std::pair<const viz::BeginFrameArgs, bool>> sorted_frames_;
   base::TimeTicks last_begin_frame_time_ = base::TimeTicks::Now();
   uint64_t next_frame_source_id_ = 0;
@@ -209,6 +242,26 @@ TEST_F(FrameSorterTest, ExpectingMultipleAcksWithSourceIdIncrease) {
 
   SimulateQueries(queries);
   ValidateResults(expected_results);
+}
+
+TEST_F(FrameSorterTest, ReportOnEveryFrameForUI) {
+  // 1 dropped frame in the first window of 4 frames, which will be accounted
+  // for over the first second of monitoring.
+  // We need to present two additional frames in order to (1) assign the
+  // sliding_window_current_percent_dropped_ value and (2) print it in the
+  // recorder.
+  std::vector<std::string> queries = {"S0", "S1", "P0", "S2", "P2", "S3",
+                                      "P1", "D3", "S4", "P4", "S5", "D5"};
+
+  frame_sorter_.EnableReportForUI();
+  TestCustomMetricsRecorder recorder;
+
+  SimulateQueries(queries);
+  // Should report 1 report count because we only had one window > the default
+  // interval of 1s.
+  EXPECT_EQ(recorder.report_count(), 1);
+  EXPECT_EQ(recorder.last_percent_dropped_frames(),
+            25.0f);  // 1 of 4 frames dropped in the first window.
 }
 
 }  // namespace cc

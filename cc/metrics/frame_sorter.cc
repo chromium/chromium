@@ -4,12 +4,19 @@
 
 #include "cc/metrics/frame_sorter.h"
 
+#include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <utility>
 
+#include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/frame_info.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace cc {
+namespace {
+const base::TimeDelta kDefaultSlidingWindowInterval = base::Seconds(1);
+}  // namespace
 
 using FrameState = FrameSorter::FrameState;
 
@@ -104,6 +111,13 @@ void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
   if (!frame_states_.count(args.frame_id))
     return;
 
+  if (report_for_ui_) {
+    sliding_window_.emplace(args, frame_info);
+    if (frame_info.IsDroppedAffectingSmoothness()) {
+      DCHECK_GE(dropped_frame_count_in_window_ + 1, 0u);
+      dropped_frame_count_in_window_ += 1;
+    }
+  }
   const auto f = frame_infos_.find(args.frame_id);
   if (f != frame_infos_.end()) {
     f->second.MergeWith(frame_info);
@@ -139,6 +153,28 @@ void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
         << args.frame_id.ToString()
         << pending_frames_.front().frame_id.ToString();
   }
+
+  // Report frames on every frame for UI. This needs to happen after
+  // `FrameSorter::AddFrameResult` so that the current ending frame is included
+  // in the sliding window.
+  if (report_for_ui_) {
+    auto* recorder = CustomMetricRecorder::Get();
+    if (sliding_window_current_percent_dropped_ && recorder) {
+      recorder->ReportPercentDroppedFramesInOneSecondWindow2(
+          *sliding_window_current_percent_dropped_);
+    }
+
+    if (ComputeCurrentWindowSize() < kDefaultSlidingWindowInterval) {
+      return;
+    }
+    DCHECK_GE(dropped_frame_count_in_window_, 0u);
+    DCHECK_GE(sliding_window_.size(), dropped_frame_count_in_window_);
+
+    while (ComputeCurrentWindowSize() > kDefaultSlidingWindowInterval) {
+      PopSlidingWindow(args);
+    }
+    DCHECK(!sliding_window_.empty());
+  }
 }
 
 bool FrameSorter::IsAlreadyReportedDropped(const viz::BeginFrameId& id) const {
@@ -170,6 +206,9 @@ void FrameSorter::Reset(bool reset_fcp) {
   if (reset_fcp) {
     first_contentful_paint_received_ = false;
   }
+  sliding_window_ = {};
+  sliding_window_current_percent_dropped_.reset();
+  dropped_frame_count_in_window_ = 0;
 }
 
 void FrameSorter::FlushFrames() {
@@ -208,6 +247,47 @@ uint32_t FrameSorter::GetAverageThroughput() const {
 void FrameSorter::OnFirstContentfulPaintReceived() {
   DCHECK(!first_contentful_paint_received_);
   first_contentful_paint_received_ = true;
+}
+
+base::TimeDelta FrameSorter::ComputeCurrentWindowSize() const {
+  if (sliding_window_.empty()) {
+    return {};
+  }
+  return sliding_window_.back().first.frame_time +
+         sliding_window_.back().first.interval -
+         sliding_window_.front().first.frame_time;
+}
+
+void FrameSorter::PopSlidingWindow(const viz::BeginFrameArgs& args) {
+  const auto removed_args = sliding_window_.front().first;
+  const auto removed_frame_info = sliding_window_.front().second;
+  if (removed_frame_info.IsDroppedAffectingSmoothness()) {
+    DCHECK_GE(dropped_frame_count_in_window_ - 1, 0u);
+    dropped_frame_count_in_window_ -= 1;
+  }
+  sliding_window_.pop();
+  if (sliding_window_.empty()) {
+    return;
+  }
+
+  // Don't count the newest element if it is outside the current window.
+  const auto newest_was_dropped =
+      sliding_window_.back().second.IsDroppedAffectingSmoothness();
+
+  uint32_t invalidated_frames = 0;
+  if (ComputeCurrentWindowSize() > kDefaultSlidingWindowInterval &&
+      newest_was_dropped) {
+    invalidated_frames++;
+  }
+
+  uint32_t dropped = dropped_frame_count_in_window_ - invalidated_frames;
+  auto total_frames_in_window = kDefaultSlidingWindowInterval / args.interval;
+  const double percent_dropped_frame =
+      std::min((dropped * 100.0) / total_frames_in_window, 100.0);
+  sliding_window_current_percent_dropped_ = percent_dropped_frame;
+}
+void FrameSorter::EnableReportForUI() {
+  report_for_ui_ = true;
 }
 
 }  // namespace cc
