@@ -122,6 +122,9 @@ struct LayerTreeUpdate {
   // Display transform hint for the generated compositor frame.
   gfx.mojom.OverlayTransform display_transform_hint;
 
+  // The maximum safe area inset from the bottom of the screen.
+  float max_safe_area_inset_bottom;
+
   // UIResource change requests accumulated since the last LayerTreeUpdate.
   array<TransferableUIResourceRequest> ui_resource_requests;
 

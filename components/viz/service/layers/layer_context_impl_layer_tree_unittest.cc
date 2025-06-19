@@ -470,5 +470,56 @@ TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateDisplayTransformHint) {
   // Note: No need to test invalid enum values as mojom handles that.
 }
 
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateMaxSafeAreaInsetBottom) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+  const float kDefaultInset = 0.f;
+
+  // Initial update with default inset.
+  auto update1 = CreateDefaultUpdate();
+  update1->max_safe_area_inset_bottom = kDefaultInset;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_EQ(active_tree->max_safe_area_inset_bottom(), kDefaultInset);
+  // The first update will need to update draw properties due to other
+  // unrelated properties being set for the first time.
+  EXPECT_TRUE(active_tree->needs_update_draw_properties());
+  active_tree->clear_needs_update_draw_properties_for_testing();
+
+  // Update to a new non-zero inset.
+  const float kInset1 = 50.f;
+  auto update2 = CreateDefaultUpdate();
+  update2->max_safe_area_inset_bottom = kInset1;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(active_tree->max_safe_area_inset_bottom(), kInset1);
+  EXPECT_FALSE(active_tree->needs_update_draw_properties());
+
+  // Update to a different non-zero inset (e.g. smaller).
+  const float kInset2 = 20.f;
+  auto update3 = CreateDefaultUpdate();
+  update3->max_safe_area_inset_bottom = kInset2;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(active_tree->max_safe_area_inset_bottom(), kInset2);
+  EXPECT_FALSE(active_tree->needs_update_draw_properties());
+}
+TEST_F(LayerContextImplLayerTreePropertiesTest,
+       InvalidMaxSafeAreaInsetBottomFails) {
+  // Create base update to test error handling
+  auto update = CreateDefaultUpdate();
+
+  // Negative value
+  update->max_safe_area_inset_bottom = -10.f;
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid max safe area inset bottom");
+
+  update = CreateDefaultUpdate();
+  update->max_safe_area_inset_bottom = std::numeric_limits<float>::infinity();
+  result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  EXPECT_EQ(result.error(), "Invalid max safe area inset bottom");
+}
+
 }  // namespace
 }  // namespace viz
