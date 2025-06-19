@@ -31,10 +31,10 @@ enum UserStatusCode {
 };
 
 struct CachedUserStatus {
-  UserStatusCode user_status_code;
+  UserStatusCode user_status_code = UserStatusCode::ENABLED;
   // If true, this is an enterprise account for whom different disclosures
   // should be shown. See b/413482904 for details.
-  bool is_enterprise_account_data_protected;
+  bool is_enterprise_account_data_protected = false;
   base::Time last_updated;
 };
 
