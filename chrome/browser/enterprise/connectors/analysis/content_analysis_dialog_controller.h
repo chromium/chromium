@@ -106,9 +106,6 @@ class ContentAnalysisDialogController
           FinalContentAnalysisResult::SUCCESS,
       download::DownloadItem* download_item = nullptr);
 
-  // views::DialogDelegate:
-  views::View* GetContentsView() override;
-
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
@@ -152,9 +149,6 @@ class ContentAnalysisDialogController
 
   // Helper function to determine whether dialog should be shown immediately.
   bool ShouldShowDialogNow();
-
-  // Returns a newly created side icon.
-  std::unique_ptr<views::View> CreateSideIcon();
 
   void AcceptButtonCallback();
   void CancelButtonCallback();
