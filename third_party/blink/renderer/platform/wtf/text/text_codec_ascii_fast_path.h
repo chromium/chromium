@@ -24,14 +24,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_ASCII_FAST_PATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_ASCII_FAST_PATH_H_
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
 
 namespace blink {
@@ -42,32 +38,48 @@ struct UCharByteFiller;
 template <>
 struct UCharByteFiller<4> {
   static void Copy(LChar* destination, const uint8_t* source) {
-    memcpy(destination, source, 4);
+    // SAFETY: This is only used in a few places, and only copies
+    // a MachineWord buffer, the caller guarantees that destination
+    // and source holds at least 4 elements.
+    UNSAFE_BUFFERS(memcpy(destination, source, 4));
   }
 
   static void Copy(UChar* destination, const uint8_t* source) {
-    destination[0] = source[0];
-    destination[1] = source[1];
-    destination[2] = source[2];
-    destination[3] = source[3];
+    // SAFETY: This is only used in a few places, and only copies
+    // a MachineWord buffer, the caller guarantees that destination
+    // and source holds at least 4 elements.
+    UNSAFE_BUFFERS({
+      destination[0] = source[0];
+      destination[1] = source[1];
+      destination[2] = source[2];
+      destination[3] = source[3];
+    })
   }
 };
 
 template <>
 struct UCharByteFiller<8> {
   static void Copy(LChar* destination, const uint8_t* source) {
-    memcpy(destination, source, 8);
+    // SAFETY: This is only used in a few places, and only copies
+    // a MachineWord buffer, the caller guarantees that destination
+    // and source holds at least 8 elements.
+    UNSAFE_BUFFERS(memcpy(destination, source, 8));
   }
 
   static void Copy(UChar* destination, const uint8_t* source) {
-    destination[0] = source[0];
-    destination[1] = source[1];
-    destination[2] = source[2];
-    destination[3] = source[3];
-    destination[4] = source[4];
-    destination[5] = source[5];
-    destination[6] = source[6];
-    destination[7] = source[7];
+    // SAFETY: This is only used in a few places, and only copies
+    // a MachineWord buffer, the caller guarantees that destination
+    // and source holds at least 8 elements.
+    UNSAFE_BUFFERS({
+      destination[0] = source[0];
+      destination[1] = source[1];
+      destination[2] = source[2];
+      destination[3] = source[3];
+      destination[4] = source[4];
+      destination[5] = source[5];
+      destination[6] = source[6];
+      destination[7] = source[7];
+    });
   }
 };
 
