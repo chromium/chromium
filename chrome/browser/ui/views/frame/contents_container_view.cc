@@ -35,7 +35,7 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
 
   contents_view_ = AddChildView(
       std::make_unique<ContentsWebView>(browser_view->GetProfile()));
-  scrim_view_ = AddChildView(std::make_unique<ScrimView>());
+  scrim_view_ = AddChildView(std::make_unique<ScrimView>(kColorSplitViewScrim));
   mini_toolbar_ = AddChildView(std::make_unique<MultiContentsViewMiniToolbar>(
       browser_view, contents_view_));
 }
