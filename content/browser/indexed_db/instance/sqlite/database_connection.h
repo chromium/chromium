@@ -131,6 +131,8 @@ class DatabaseConnection {
       blink::mojom::IDBCursorDirection direction,
       bool key_only);
 
+  // Connects mojo pipes for `objects`. These pipes are backed by
+  // `ActiveBlobStreamer`.
   std::vector<blink::mojom::IDBExternalObjectPtr> CreateAllExternalObjects(
       base::PassKey<BackingStoreTransactionImpl>,
       const std::vector<IndexedDBExternalObject>& objects);
@@ -150,6 +152,12 @@ class DatabaseConnection {
   void ReleaseLongLivedStatement(uint64_t id);
   // May return `nullptr` if the statement has been destroyed.
   sql::Statement* GetLongLivedStatement(uint64_t id);
+
+  // Also for internal use only; exposed for RecordIterator implementations.
+  // This adds external objects to `value` which should later be further hooked
+  // up via `CreateAllExternalObjects()`.
+  IndexedDBValue AddExternalObjectMetadataToValue(IndexedDBValue value,
+                                                  int64_t record_row_id);
 
  private:
   DatabaseConnection(std::unique_ptr<sql::Database> db,

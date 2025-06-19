@@ -243,7 +243,7 @@ class ObjectStoreRecordIterator : public RecordIterator {
       const blink::IndexedDBKeyRange& key_range,
       bool ascending_order) {
     std::vector<std::string_view> query_pieces{
-        "SELECT ", key_only_ ? "key" : "key, value",
+        "SELECT ", key_only_ ? "key" : "key, value, row_id",
         " FROM records WHERE object_store_id = @object_store_id"};
     if (key_range.lower().IsValid()) {
       query_pieces.push_back(key_range.lower_open() ? " AND key > @lower"
@@ -330,9 +330,13 @@ class ObjectStoreRecordIterator : public RecordIterator {
     }
     IndexedDBValue value;
     TRANSIENT_CHECK(statement.ColumnBlobAsVector(1, &value.bits));
+    int64_t record_row_id = statement.ColumnInt64(2);
+
     return std::make_pair(
         std::move(position),
-        std::make_unique<ObjectStoreRecord>(std::move(key), std::move(value)));
+        std::make_unique<ObjectStoreRecord>(
+            std::move(key), db_->AddExternalObjectMetadataToValue(
+                                std::move(value), record_row_id)));
   }
 
   sql::Statement* GetStatement() override {
@@ -694,47 +698,50 @@ StatusOr<IndexedDBValue> DatabaseConnection::GetValue(
     TRANSIENT_CHECK(statement.ColumnBlobAsVector(1, &value.bits));
   }
 
-  {
-    sql::Statement statement(db_->GetCachedStatement(
-        SQL_FROM_HERE,
-        "SELECT "
-        "  blobs.row_id, object_type, mime_type, size_bytes, file_name, "
-        "  last_modified "
-        "FROM blobs INNER JOIN blob_references"
-        "  ON blob_references.blob_row_id = blobs.row_id "
-        "WHERE"
-        "  blob_references.record_row_id = ?"));
-    statement.BindInt64(0, record_row_id);
-    while (statement.Step()) {
-      const int64_t blob_row_id = statement.ColumnInt64(0);
-      if (auto it = blobs_to_write_.find(blob_row_id);
-          it != blobs_to_write_.end()) {
-        // If the blob is being written in this transaction, copy the external
-        // object (and later the Blob mojo endpoint) from `blobs_to_write_`.
-        value.external_objects.emplace_back(it->second);
+  return AddExternalObjectMetadataToValue(std::move(value), record_row_id);
+}
+
+IndexedDBValue DatabaseConnection::AddExternalObjectMetadataToValue(
+    IndexedDBValue value,
+    int64_t record_row_id) {
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT "
+      "  blobs.row_id, object_type, mime_type, size_bytes, file_name, "
+      "  last_modified "
+      "FROM blobs INNER JOIN blob_references"
+      "  ON blob_references.blob_row_id = blobs.row_id "
+      "WHERE"
+      "  blob_references.record_row_id = ?"));
+  statement.BindInt64(0, record_row_id);
+  while (statement.Step()) {
+    const int64_t blob_row_id = statement.ColumnInt64(0);
+    if (auto it = blobs_to_write_.find(blob_row_id);
+        it != blobs_to_write_.end()) {
+      // If the blob is being written in this transaction, copy the external
+      // object (and later the Blob mojo endpoint) from `blobs_to_write_`.
+      value.external_objects.emplace_back(it->second);
+    } else {
+      auto object_type = static_cast<IndexedDBExternalObject::ObjectType>(
+          statement.ColumnInt(1));
+      if (object_type == IndexedDBExternalObject::ObjectType::kBlob) {
+        // Otherwise, create a new `IndexedDBExternalObject` from the
+        // database.
+        value.external_objects.emplace_back(
+            /*type=*/statement.ColumnString16(2),
+            /*size=*/statement.ColumnInt64(3), blob_row_id);
+      } else if (object_type == IndexedDBExternalObject::ObjectType::kFile) {
+        value.external_objects.emplace_back(
+            blob_row_id, /*type=*/statement.ColumnString16(2),
+            /*file_name=*/statement.ColumnString16(4),
+            /*last_modified=*/statement.ColumnTime(5),
+            /*size=*/statement.ColumnInt64(3));
       } else {
-        auto object_type = static_cast<IndexedDBExternalObject::ObjectType>(
-            statement.ColumnInt(1));
-        if (object_type == IndexedDBExternalObject::ObjectType::kBlob) {
-          // Otherwise, create a new `IndexedDBExternalObject` from the
-          // database.
-          value.external_objects.emplace_back(
-              /*type=*/statement.ColumnString16(2),
-              /*size=*/statement.ColumnInt64(3), blob_row_id);
-        } else if (object_type == IndexedDBExternalObject::ObjectType::kFile) {
-          value.external_objects.emplace_back(
-              blob_row_id, /*type=*/statement.ColumnString16(2),
-              /*file_name=*/statement.ColumnString16(4),
-              /*last_modified=*/statement.ColumnTime(5),
-              /*size=*/statement.ColumnInt64(3));
-        } else {
-          NOTREACHED();
-        }
+        NOTREACHED();
       }
     }
   }
-
-  return std::move(value);
+  return value;
 }
 
 StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(

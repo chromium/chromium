@@ -6512,6 +6512,7 @@ crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/blob-contentt
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/blob-delete-objectstore-db.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/blob-valid-after-deletion.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/blob-valid-before-commit.any.html [ Pass ]
+crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/blob-basics-metadata.html [ Pass ]
 
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor-direction-objectstore-keyrange.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor-direction-objectstore.any.html [ Pass ]
