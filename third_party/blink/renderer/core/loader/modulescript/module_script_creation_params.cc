@@ -20,4 +20,12 @@ String ModuleScriptCreationParams::ModuleTypeToString(
   }
 }
 
+std::variant<ParkableString, base::HeapArray<uint8_t>>
+ModuleScriptCreationParams::CopySource() const {
+  if (module_type_ == ResolvedModuleType::kWasm) {
+    return base::HeapArray<uint8_t>::CopiedFrom(GetWasmSource());
+  }
+  return GetSourceText();
+}
+
 }  // namespace blink

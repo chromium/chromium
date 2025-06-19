@@ -35,7 +35,7 @@ enum class ModuleType { kInvalid, kJavaScriptOrWasm, kJSON, kCSS };
 // ModuleScriptCreationParams constructor.
 enum class ResolvedModuleType { kJSON, kCSS, kJavaScript, kWasm };
 
-class ModuleScriptCreationParams {
+class CORE_EXPORT ModuleScriptCreationParams {
   DISALLOW_NEW();
 
  public:
@@ -44,7 +44,7 @@ class ModuleScriptCreationParams {
       const KURL& base_url,
       ScriptSourceLocationType source_location_type,
       const ResolvedModuleType module_type,
-      const ParkableString& source_text,
+      std::variant<ParkableString, base::HeapArray<uint8_t>>&& source,
       CachedMetadataHandler* cache_handler,
       network::mojom::ReferrerPolicy response_referrer_policy,
       const String& source_map_url,
@@ -56,7 +56,7 @@ class ModuleScriptCreationParams {
         base_url_(base_url),
         source_location_type_(source_location_type),
         module_type_(module_type),
-        source_text_(source_text),
+        source_(std::move(source)),
         cache_handler_(cache_handler),
         response_referrer_policy_(response_referrer_policy),
         source_map_url_(source_map_url),
@@ -91,7 +91,7 @@ class ModuleScriptCreationParams {
     // ModuleScriptCreationParams is passed across threads.
     return ModuleScriptCreationParams(
         SourceURL(), BaseURL(), source_location_type_, module_type_,
-        source_text_, /*cache_handler=*/nullptr, response_referrer_policy_,
+        CopySource(), /*cache_handler=*/nullptr, response_referrer_policy_,
         source_map_url_, /*script_streamer=*/nullptr,
         ScriptStreamer::NotStreamingReason::kStreamingDisabled, import_phase_);
   }
@@ -104,7 +104,13 @@ class ModuleScriptCreationParams {
   const String& SourceMapURL() const { return source_map_url_; }
 
   const ParkableString& GetSourceText() const {
-    return source_text_;
+    CHECK_NE(module_type_, ResolvedModuleType::kWasm);
+    return std::get<ParkableString>(source_);
+  }
+
+  const base::HeapArray<uint8_t>& GetWasmSource() const {
+    CHECK_EQ(module_type_, ResolvedModuleType::kWasm);
+    return std::get<base::HeapArray<uint8_t>>(source_);
   }
 
   ScriptSourceLocationType SourceLocationType() const {
@@ -137,13 +143,19 @@ class ModuleScriptCreationParams {
   }
 
  private:
+  std::variant<ParkableString, base::HeapArray<uint8_t>> CopySource() const;
 
   const KURL source_url_;
   const KURL base_url_;
   const ScriptSourceLocationType source_location_type_;
   const ResolvedModuleType module_type_;
 
-  const ParkableString source_text_;
+  // For Wasm modules the wire bytes are passed directly to the compiler.
+  // Otherwise, decoded text is stored as ParkableString.
+  // Cannot be const to support the move constructor.
+  // TODO(https://crbug.com/42204365): Wrap this and the module type in a
+  // new class.
+  std::variant<ParkableString, base::HeapArray<uint8_t>> source_;
 
   // |cache_handler_| is cleared when crossing thread boundaries.
   Persistent<CachedMetadataHandler> cache_handler_;

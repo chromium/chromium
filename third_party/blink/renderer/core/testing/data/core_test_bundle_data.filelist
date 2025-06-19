@@ -311,6 +311,7 @@ testing/data/navigation-api/onnavigate-window-stop.html
 testing/data/no_scale_for_you.html
 testing/data/no_viewport_tag.html
 testing/data/nodeimage.html
+testing/data/non_UTF8.wasm
 testing/data/non-scrollable.html
 testing/data/non_user_input_text_update.html
 testing/data/not_an_image.ico

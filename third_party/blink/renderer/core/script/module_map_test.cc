@@ -163,10 +163,9 @@ class ModuleMapTestModulator final : public DummyModulator {
         : url_(url), client_(client), import_phase_(import_phase) {}
     void NotifyFetchFinished() {
       ResolvedModuleType resolved_module_type = ResolvedModuleTypeFromUrl();
-      String script_string = EmptyModuleString(resolved_module_type);
       client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
           url_, url_, ScriptSourceLocationType::kExternalFile,
-          resolved_module_type, ParkableString(script_string.ReleaseImpl()),
+          resolved_module_type, EmptyModuleSource(resolved_module_type),
           nullptr, network::mojom::ReferrerPolicy::kDefault,
           /*source_map_url=*/String(), nullptr,
           ScriptStreamer::NotStreamingReason::kStreamingDisabled,
@@ -184,13 +183,14 @@ class ModuleMapTestModulator final : public DummyModulator {
       return ResolvedModuleType::kWasm;
     }
 
-    String EmptyModuleString(ResolvedModuleType module_type) {
+    std::variant<ParkableString, base::HeapArray<uint8_t>> EmptyModuleSource(
+        ResolvedModuleType module_type) {
       if (module_type == ResolvedModuleType::kJavaScript) {
-        return String("");
+        return ParkableString(g_empty_string.Impl());
       }
       CHECK_EQ(module_type, ResolvedModuleType::kWasm);
-      return String(base::span<const uint8_t, 8>(
-          WasmModuleScript::kEmptyWasmByteSequence));
+      return base::HeapArray<uint8_t>::CopiedFrom(
+          WasmModuleScript::kEmptyWasmByteSequence);
     }
 
     const KURL url_;

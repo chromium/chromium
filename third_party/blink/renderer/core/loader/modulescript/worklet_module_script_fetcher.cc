@@ -84,8 +84,9 @@ void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
     params.emplace(
         /*source_url=*/url, /*base_url=*/url,
         ScriptSourceLocationType::kExternalFile, resolved_module_type.value(),
-        script_resource->SourceText(), script_resource->CacheHandler(),
-        response_referrer_policy,
+        script_resource->GetSourceTextOrWasmSource(
+            resolved_module_type.value()),
+        script_resource->CacheHandler(), response_referrer_policy,
         script_resource->GetResponse().HttpHeaderField(http_names::kSourceMap));
   }
 

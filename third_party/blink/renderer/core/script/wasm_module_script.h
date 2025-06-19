@@ -56,8 +56,10 @@ class CORE_EXPORT WasmModuleScript final : public ModuleScript,
 
   // This byte sequence corresponds to an empty WebAssembly module with only
   // the magic bytes and version number provided.
-  static constexpr const uint8_t kEmptyWasmByteSequence[8] = {
+  static constexpr uint8_t kEmptyWasmByteSequenceRaw[] = {
       0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00};
+  static constexpr base::span<const uint8_t, 8> kEmptyWasmByteSequence =
+      base::span<const uint8_t, 8>(kEmptyWasmByteSequenceRaw);
 };
 
 }  // namespace blink

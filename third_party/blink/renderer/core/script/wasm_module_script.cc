@@ -30,13 +30,9 @@ WasmModuleScript* WasmModuleScript::Create(
   // <spec step="1"> If scripting is disabled for settings's then set
   // bodyBytes to the byte sequence 0x00 0x61 0x73 0x6d 0x01 0x00 0x00 0x00.
   // </spec>
-  const uint8_t* source =
-      modulator->IsScriptingDisabled()
-          ? kEmptyWasmByteSequence
-          : base::as_bytes(params.GetSourceText().SpanChar()).data();
-
-  size_t source_length =
-      modulator->IsScriptingDisabled() ? 8 : params.GetSourceText().length();
+  base::span<const uint8_t> source = modulator->IsScriptingDisabled()
+                                         ? kEmptyWasmByteSequence
+                                         : params.GetWasmSource().as_span();
 
   // <spec step="2">Let script be a new module script that this algorithm will
   // subsequently initialize.</spec>
@@ -57,7 +53,7 @@ WasmModuleScript* WasmModuleScript::Create(
   v8::Local<v8::WasmModuleObject> result;
   bool success =
       v8::WasmModuleObject::Compile(
-          isolate, v8::MemorySpan<const uint8_t>(source, source_length))
+          isolate, v8::MemorySpan<const uint8_t>(source.data(), source.size()))
           .ToLocal(&result);
   // <spec step="8">If the previous step threw an error, then:</spec>
   WasmModuleScript* script = MakeGarbageCollected<WasmModuleScript>(
@@ -95,7 +91,8 @@ v8::Local<v8::WasmModuleObject> WasmModuleScript::EmptyModuleForTesting(
   v8::Local<v8::WasmModuleObject> result;
   bool success =
       v8::WasmModuleObject::Compile(
-          isolate, v8::MemorySpan<const uint8_t>(kEmptyWasmByteSequence, 8))
+          isolate, v8::MemorySpan<const uint8_t>(kEmptyWasmByteSequence.data(),
+                                                 kEmptyWasmByteSequence.size()))
           .ToLocal(&result);
   CHECK(success);
   return result;

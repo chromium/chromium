@@ -587,6 +587,29 @@ TEST_F(ModuleScriptLoaderTest, FetchWasmURL) {
   EXPECT_TRUE(module_script->IsWasmModuleRecord());
 }
 
+TEST_F(ModuleScriptLoaderTest, TestNonUTF8EncodeableModule) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kJavaScriptSourcePhaseImports},
+      /*disabled_features =*/{});
+  InitializeForDocument();
+  TestModuleScriptLoaderClient* client =
+      MakeGarbageCollected<TestModuleScriptLoaderClient>();
+  TestFetchURL(ModuleScriptCustomFetchType::kNone, client,
+               "https://example.test/non_UTF8.wasm", "non_UTF8.wasm",
+               "application/wasm");
+
+  EXPECT_FALSE(client->WasNotifyFinished())
+      << "ModuleScriptLoader unexpectedly finished synchronously.";
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return client->WasNotifyFinished(); }));
+  ModuleScript* module_script = client->GetModuleScript();
+  EXPECT_TRUE(module_script);
+  EXPECT_TRUE(module_script->IsWasmModuleRecord());
+}
+
 TEST_F(ModuleScriptLoaderTest, FetchWasmURLWrongMimeType) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(

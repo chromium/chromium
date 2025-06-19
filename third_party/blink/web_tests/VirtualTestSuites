@@ -1772,6 +1772,7 @@
       "external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-export.tentative.html",
       "external/wpt/wasm/webapi/esm-integration/worker-import-source-phase.tentative.html",
       "external/wpt/wasm/webapi/esm-integration/worklet-import-source-phase.tentative.https.html",
+      "wpt_internal/js/source-phase-imports/import-same-wasm-resource-twice.html",
       "wpt_internal/js/source-phase-imports/invalid-module-types-throw.html"
     ],
     "args": [
