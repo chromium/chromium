@@ -12,10 +12,6 @@ if (use_bundled_fontconfig) {
       "src",
       "include/fc-lang/",
     ]
-
-    # TODO(drott): Remove after the fix MR lands:
-    # https://gitlab.freedesktop.org/fontconfig/fontconfig/-/merge_requests/433
-    cflags = [ "-Wno-unused-label" ]
   }
 
   component("fontconfig") {
