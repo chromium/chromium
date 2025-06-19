@@ -518,8 +518,6 @@ std::string GetMobilePromoTargetURL() {
 }
 
 bool IsNtpComposeboxEnabled() {
-  return (base::FeatureList::IsEnabled(ntp_features::kNtpSearchboxComposebox) &&
-          base::FeatureList::IsEnabled(
-              ntp_features::kNtpSearchboxComposeEntrypoint));
+  return base::FeatureList::IsEnabled(ntp_features::kNtpSearchboxComposebox);
 }
 }  // namespace ntp_features
