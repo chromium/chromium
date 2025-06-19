@@ -2,6 +2,7 @@ Name: Custom View
 Short Name: customview
 URL: https://developer.android.com/jetpack/androidx/releases/customview#1.2.0
 Version: 1.2.0
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

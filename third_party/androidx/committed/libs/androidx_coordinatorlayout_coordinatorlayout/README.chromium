@@ -2,6 +2,7 @@ Name: Coordinator Layout
 Short Name: coordinatorlayout
 URL: https://developer.android.com/jetpack/androidx/releases/coordinatorlayout#1.3.0
 Version: 1.3.0
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

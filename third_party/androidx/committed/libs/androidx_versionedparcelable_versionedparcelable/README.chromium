@@ -2,6 +2,7 @@ Name: VersionedParcelable
 Short Name: versionedparcelable
 URL: https://developer.android.com/jetpack/androidx/releases/versionedparcelable#1.2.1
 Version: 1.2.1
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

@@ -2,6 +2,7 @@ Name: Cursor Adapter
 Short Name: cursoradapter
 URL: https://developer.android.com/jetpack/androidx/releases/cursoradapter#1.1.0-SNAPSHOT
 Version: 1.1.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

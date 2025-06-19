@@ -12,6 +12,7 @@ manifest_package = "androidx.autofill"
 resources = [
   "res/drawable-v29/autofill_inline_suggestion_chip_background.xml",
   "res/layout/autofill_inline_suggestion.xml",
+  "res/layout/autofill_inline_suggestion_balancing.xml",
   "res/values/values.xml"
 ]
 subjar_tuples = []

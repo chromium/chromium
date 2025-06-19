@@ -2,6 +2,7 @@ Name: WindowManager Sidecar
 Short Name: sidecar
 URL: https://developer.android.com/jetpack/androidx/releases/window-sidecar#1.0.0-SNAPSHOT
 Version: 1.0.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

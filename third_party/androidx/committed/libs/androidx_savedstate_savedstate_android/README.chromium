@@ -2,6 +2,7 @@ Name: Saved State
 Short Name: savedstate-android
 URL: https://developer.android.com/jetpack/androidx/releases/savedstate#1.4.0-SNAPSHOT
 Version: 1.4.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

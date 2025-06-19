@@ -2,6 +2,7 @@ Name: Paging-Runtime
 Short Name: paging-runtime
 URL: https://developer.android.com/jetpack/androidx/releases/paging#3.4.0-SNAPSHOT
 Version: 3.4.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

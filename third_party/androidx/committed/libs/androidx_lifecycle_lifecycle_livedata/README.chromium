@@ -2,6 +2,7 @@ Name: Lifecycle LiveData
 Short Name: lifecycle-livedata
 URL: https://developer.android.com/jetpack/androidx/releases/lifecycle#2.10.0-SNAPSHOT
 Version: 2.10.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

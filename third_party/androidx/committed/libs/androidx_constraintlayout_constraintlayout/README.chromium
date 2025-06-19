@@ -2,6 +2,7 @@ Name: ConstraintLayout
 Short Name: constraintlayout
 URL: https://developer.android.com/jetpack/androidx/releases/constraintlayout#2.3.0-SNAPSHOT
 Version: 2.3.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

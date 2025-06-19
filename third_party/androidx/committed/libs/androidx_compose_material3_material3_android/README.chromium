@@ -2,6 +2,7 @@ Name: Compose Material3 Components
 Short Name: material3-android
 URL: https://developer.android.com/jetpack/androidx/releases/compose-material3#1.4.0-SNAPSHOT
 Version: 1.4.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

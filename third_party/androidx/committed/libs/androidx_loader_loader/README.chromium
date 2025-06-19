@@ -2,6 +2,7 @@ Name: loader
 Short Name: loader
 URL: https://developer.android.com/jetpack/androidx/releases/loader#1.2.0-SNAPSHOT
 Version: 1.2.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

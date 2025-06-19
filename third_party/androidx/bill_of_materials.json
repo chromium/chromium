@@ -1177,7 +1177,7 @@
     {
         "name": "play-services-identity-credentials",
         "group": "com.google.android.gms",
-        "version": "16.0.0-alpha07"
+        "version": "16.0.0-alpha08"
     },
     {
         "name": "play-services-tasks",

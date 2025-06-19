@@ -2,6 +2,7 @@ Name: AndroidX Test Library
 Short Name: espresso-contrib
 URL: https://developer.android.com/testing
 Version: 3.5.1
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

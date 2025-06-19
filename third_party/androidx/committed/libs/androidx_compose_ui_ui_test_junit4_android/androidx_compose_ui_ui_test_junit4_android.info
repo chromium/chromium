@@ -9,8 +9,6 @@ has_proguard_flags = true
 has_r_text_file = false
 is_manifest_empty = true
 manifest_package = "androidx.compose.ui.test.junit4"
-resources = [
-  "res/values/values.xml"
-]
+resources = []
 subjar_tuples = []
 subjars = []

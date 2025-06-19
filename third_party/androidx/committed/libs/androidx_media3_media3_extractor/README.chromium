@@ -2,6 +2,7 @@ Name: Media3 Extractor module
 Short Name: media3-extractor
 URL: https://developer.android.com/jetpack/androidx
 Version: 1.2.0
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

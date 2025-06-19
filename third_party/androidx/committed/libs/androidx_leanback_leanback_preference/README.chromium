@@ -2,6 +2,7 @@ Name: Leanback Preference
 Short Name: leanback-preference
 URL: https://developer.android.com/jetpack/androidx/releases/leanback#1.2.0
 Version: 1.2.0
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

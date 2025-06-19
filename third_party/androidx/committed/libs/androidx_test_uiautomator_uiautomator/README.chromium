@@ -2,6 +2,7 @@ Name: UIAutomator
 Short Name: uiautomator
 URL: https://developer.android.com/jetpack/androidx/releases/test-uiautomator#2.4.0-SNAPSHOT
 Version: 2.4.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

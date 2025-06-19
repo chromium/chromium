@@ -2,6 +2,7 @@ Name: DynamicAnimation
 Short Name: dynamicanimation
 URL: https://developer.android.com/jetpack/androidx/releases/dynamicanimation#1.1.0
 Version: 1.1.0
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

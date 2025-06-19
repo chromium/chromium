@@ -2,6 +2,7 @@ Name: Android Support Library core utils
 Short Name: legacy-support-core-utils
 URL: http://developer.android.com/tools/extras/support-library.html
 Version: 1.0.0
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

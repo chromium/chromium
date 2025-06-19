@@ -2,6 +2,7 @@ Name: Navigation Runtime
 Short Name: navigation-runtime-android
 URL: https://developer.android.com/jetpack/androidx/releases/navigation#2.10.0-SNAPSHOT
 Version: 2.10.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

@@ -2,6 +2,7 @@ Name: Emoji2 Views Helper
 Short Name: emoji2-views-helper
 URL: https://developer.android.com/jetpack/androidx/releases/emoji2#1.6.0-SNAPSHOT
 Version: 1.6.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

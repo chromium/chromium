@@ -2,6 +2,7 @@ Name: Emoji
 Short Name: emoji
 URL: https://developer.android.com/jetpack/androidx/releases/emoji#1.2.0-SNAPSHOT
 Version: 1.2.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0, SIL Open Font License, Version 1.1, Unicode, Inc. License
 License File: LICENSE
 CPEPrefix: unknown

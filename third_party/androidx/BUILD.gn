@@ -211,6 +211,7 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -537,6 +538,7 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_java",
       ":androidx_biometric_biometric_java",
       ":androidx_core_core_java",
+      "$google_play_services_package:google_play_services_identity_credentials_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",

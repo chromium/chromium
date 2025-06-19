@@ -2,6 +2,7 @@ Name: Arch-Common
 Short Name: core-common
 URL: https://developer.android.com/jetpack/androidx/releases/arch-core#2.3.0-SNAPSHOT
 Version: 2.3.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

@@ -2,6 +2,7 @@ Name: Palette
 Short Name: palette
 URL: https://developer.android.com/jetpack/androidx/releases/palette#1.1.0-SNAPSHOT
 Version: 1.1.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

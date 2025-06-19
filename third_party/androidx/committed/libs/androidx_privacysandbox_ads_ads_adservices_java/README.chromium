@@ -2,6 +2,7 @@ Name: androidx.privacysandbox.ads:ads-adservices-java
 Short Name: ads-adservices-java
 URL: https://developer.android.com/jetpack/androidx/releases/privacysandbox-ads#1.1.0-beta11
 Version: 1.1.0-beta11
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

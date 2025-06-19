@@ -2,6 +2,7 @@ Name: Startup Runtime
 Short Name: startup-runtime
 URL: https://developer.android.com/jetpack/androidx/releases/startup#1.2.0
 Version: 1.2.0
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

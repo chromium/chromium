@@ -2,6 +2,7 @@ Name: Android Support Library v4
 Short Name: legacy-support-v4
 URL: http://developer.android.com/tools/extras/support-library.html
 Version: 1.0.0
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

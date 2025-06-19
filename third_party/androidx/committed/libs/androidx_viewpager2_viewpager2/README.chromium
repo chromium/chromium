@@ -2,6 +2,7 @@ Name: ViewPager2
 Short Name: viewpager2
 URL: https://developer.android.com/jetpack/androidx/releases/viewpager2#1.2.0-SNAPSHOT
 Version: 1.2.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

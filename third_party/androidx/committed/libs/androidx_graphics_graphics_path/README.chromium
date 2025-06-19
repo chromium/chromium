@@ -2,6 +2,7 @@ Name: Android Graphics Path
 Short Name: graphics-path
 URL: https://developer.android.com/jetpack/androidx/releases/graphics#1.0.1
 Version: 1.0.1
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

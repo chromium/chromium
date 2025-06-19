@@ -2,6 +2,7 @@ Name: Interpolators
 Short Name: interpolator
 URL: https://developer.android.com/jetpack/androidx/releases/interpolator#1.1.0-SNAPSHOT
 Version: 1.1.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

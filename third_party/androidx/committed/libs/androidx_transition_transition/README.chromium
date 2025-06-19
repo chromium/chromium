@@ -2,6 +2,7 @@ Name: Transition
 Short Name: transition
 URL: https://developer.android.com/jetpack/androidx/releases/transition#1.7.0-SNAPSHOT
 Version: 1.7.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown

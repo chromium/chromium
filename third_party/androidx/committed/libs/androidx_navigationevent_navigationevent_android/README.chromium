@@ -2,6 +2,7 @@ Name: Navigation Event
 Short Name: navigationevent-android
 URL: https://developer.android.com/jetpack/androidx/releases/navigationevent#1.0.0-SNAPSHOT
 Version: 1.0.0-SNAPSHOT
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown
