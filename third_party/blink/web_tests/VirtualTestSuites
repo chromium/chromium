@@ -2632,7 +2632,6 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchCookieIndices,CookieIndicesHeader",
       "--disable-features=PrefetchServiceWorker",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
@@ -2654,7 +2653,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchCookieIndices,CookieIndicesHeader,Prerender2FallbackPrefetchSpecRules,PrefetchServiceWorker",
+      "--enable-features=Prerender2FallbackPrefetchSpecRules,PrefetchServiceWorker",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
     "expires": "Oct 1, 2025"
@@ -2732,7 +2731,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchCookieIndices,CookieIndicesHeader,Prerender2FallbackPrefetchSpecRules",
+      "--enable-features=Prerender2FallbackPrefetchSpecRules",
       "--disable-features=PrefetchServiceWorker",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test",
       "--disable-threaded-compositing",

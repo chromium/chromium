@@ -50,10 +50,6 @@ const base::FeatureParam<bool>
     kPrefetchStateContaminationSwapsBrowsingContextGroup{
         &kPrefetchStateContaminationMitigation, "swaps_bcg", true};
 
-BASE_FEATURE(kPrefetchCookieIndices,
-             "PrefetchCookieIndices",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrefetchServiceWorkerNoFetchHandlerFix,
              "PrefetchServiceWorkerNoFetchHandlerFix",
              base::FEATURE_DISABLED_BY_DEFAULT);

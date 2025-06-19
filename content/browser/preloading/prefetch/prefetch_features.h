@@ -66,10 +66,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchStateContaminationMitigation);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kPrefetchStateContaminationSwapsBrowsingContextGroup;
 
-// If enabled, responses with an operative Cookie-Indices will not be used
-// if the relevant cookie values have changed.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCookieIndices);
-
 // Fix for prefetching a URL controlled by a ServiceWorker without fetch
 // handler. Currently this stops prefetching for such cases
 // (https://crbug.com/379076354).
