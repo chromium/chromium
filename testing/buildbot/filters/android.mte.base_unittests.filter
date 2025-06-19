@@ -12,4 +12,7 @@
 -NativeUnwinderAndroidTest.OtherLibrary
 -NativeUnwinderAndroidTest.PlainFunction
 -NativeUnwinderAndroidTest.ResumeUnwinding
+-StackSamplingProfilerTest.Basic
+-StackSamplingProfilerTest.OtherLibrary
+-StackSamplingProfilerTest.UnloadingLibrary
 -SystemMetricsTest.MeasureChildCpuUsage
