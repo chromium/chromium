@@ -397,9 +397,6 @@ std::optional<CorsErrorStatus> CheckPreflightResult(
 
 }  // namespace
 
-const char kPreflightErrorHistogramName[] = "Net.Cors.PreflightCheckError2";
-const char kPreflightWarningHistogramName[] = "Net.Cors.PreflightCheckWarning";
-
 class PreflightController::PreflightLoader final {
  public:
   PreflightLoader(

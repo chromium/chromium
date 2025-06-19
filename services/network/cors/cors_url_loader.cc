@@ -1079,12 +1079,8 @@ std::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
     });
   }
 
-  // `kInvalidResponse` is never returned by the preflight controller, so we use
-  // it to record the case where there was a net error and no CORS error.
-  auto histogram_error = mojom::CorsError::kInvalidResponse;
   if (status) {
     DCHECK(status->cors_error != mojom::CorsError::kInvalidResponse);
-    histogram_error = status->cors_error;
 
     // Report the target IP address space unconditionally as part of the error
     // if there was one. This allows higher layers to understand that a PNA
@@ -1102,10 +1098,6 @@ std::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
     // `forwarding_client_` in the next `URLResponseHead` we construct.
     pna_preflight_result_ =
         mojom::PrivateNetworkAccessPreflightResult::kWarning;
-
-    // Even if we ignore the error, record the warning in metrics and DevTools.
-    base::UmaHistogramEnumeration(kPreflightWarningHistogramName,
-                                  histogram_error);
 
     if (devtools_observer_) {
       if (!status) {
@@ -1131,7 +1123,6 @@ std::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
   // Failure.
   CHECK(net_error != net::OK);
 
-  base::UmaHistogramEnumeration(kPreflightErrorHistogramName, histogram_error);
   auto result = status ? URLLoaderCompletionStatus(*std::move(status))
                        : URLLoaderCompletionStatus(net_error);
 

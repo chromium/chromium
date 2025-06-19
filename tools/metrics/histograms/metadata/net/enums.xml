@@ -209,45 +209,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Zstd"/>
 </enum>
 
-<enum name="CorsAccessCheckError">
-  <summary>
-    The detailed error type for CORS check failures. See
-    services/network/public/mojom/cors.mojom for detailed information.
-  </summary>
-  <int value="0" label="kDisallowedByMode"/>
-  <int value="1" label="kInvalidResponse"/>
-  <int value="2" label="kWildcardOriginNotAllowed"/>
-  <int value="3" label="kMissingAllowOriginHeader"/>
-  <int value="4" label="kMultipleAllowOriginValues"/>
-  <int value="5" label="kInvalidAllowOriginValue"/>
-  <int value="6" label="kAllowOriginMismatch"/>
-  <int value="7" label="kInvalidAllowCredentials"/>
-  <int value="8" label="kCorsDisabledScheme"/>
-  <int value="9" label="kPreflightInvalidStatus"/>
-  <int value="10" label="kPreflightDisallowedRedirect"/>
-  <int value="11" label="kPreflightWildcardOriginNotAllowed"/>
-  <int value="12" label="kPreflightMissingAllowOriginHeader"/>
-  <int value="13" label="kPreflightMultipleAllowOriginValues"/>
-  <int value="14" label="kPreflightInvalidAllowOriginValue"/>
-  <int value="15" label="kPreflightAllowOriginMismatch"/>
-  <int value="16" label="kPreflightInvalidAllowCredentials"/>
-  <int value="17" label="kPreflightMissingAllowPrivateNetwork"/>
-  <int value="18" label="kPreflightInvalidAllowPrivateNetwork"/>
-  <int value="19" label="kInvalidAllowMethodsPreflightResponse"/>
-  <int value="20" label="kInvalidAllowHeadersPreflightResponse"/>
-  <int value="21" label="kMethodDisallowedByPreflightResponse"/>
-  <int value="22" label="kHeaderDisallowedByPreflightResponse"/>
-  <int value="23" label="kRedirectContainsCredentials"/>
-  <int value="24" label="kInsecurePrivateNetwork"/>
-  <int value="25" label="kInvalidPrivateNetworkAccess"/>
-  <int value="26" label="kUnexpectedPrivateNetworkAccess"/>
-  <int value="27" label="kPreflightMissingPrivateNetworkAccessId"/>
-  <int value="28" label="kPreflightMissingPrivateNetworkAccessName"/>
-  <int value="29" label="kPrivateNetworkAccessPermissionUnavailable"/>
-  <int value="30" label="kPrivateNetworkAccessPermissionDenied"/>
-  <int value="31" label="kLocalNetworkAccessPermissionDenied"/>
-</enum>
-
 <!-- LINT.IfChange(DeviceBoundSessionError) -->
 
 <enum name="DeviceBoundSessionError">

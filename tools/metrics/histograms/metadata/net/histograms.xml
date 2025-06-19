@@ -1506,31 +1506,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Cors.PreflightCheckError2" enum="CorsAccessCheckError"
-    expires_after="2025-07-06">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>src/services/network/OWNERS</owner>
-  <summary>
-    The distribution of CORS error types on preflight requests. This reports
-    whenever CORS checks detect an error on a preflight request. The
-    InvalidResponse case corresponds to net errors for which there was no CORS
-    error, e.g. CONNECTION_REFUSED, NX_DOMAIN, etc.
-  </summary>
-</histogram>
-
-<histogram name="Net.Cors.PreflightCheckWarning" enum="CorsAccessCheckError"
-    expires_after="2024-06-30">
-  <owner>titouan@chromium.org</owner>
-  <owner>clamy@chromium.org</owner>
-  <owner>src/services/network/OWNERS</owner>
-  <summary>
-    The distribution of CORS error types on preflight requests which are treated
-    as warnings. This reports whenever CORS checks detect an error on a
-    preflight request without failing the whole original network request, due to
-    being configured to ignore these failures.
-  </summary>
-</histogram>
-
 <histogram name="Net.CountOfBrokenAlternativeServices" units="services"
     expires_after="2025-09-19">
   <owner>bashi@chromium.org</owner>
