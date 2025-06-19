@@ -1503,12 +1503,6 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
     return std::nullopt;
   }
 
-  // TODO(crbug.com/401281047): Support quantization fusion for transposed
-  // conv2d.
-  if (conv2d.kind != mojom::Conv2d::Kind::kDirect) {
-    return std::nullopt;
-  }
-
   // Filter and input have to be dequantized from (u)int8 or (u)int16, WebNN
   // doesn't support (u)int16.
   const mojom::DequantizeLinear& input_dequantize =
@@ -1523,7 +1517,7 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
     return std::nullopt;
   }
 
-  // Bias must be int32 and have all-zero zero-points.
+  // Bias must be int32 for conv2d and convTranspose2d.
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/conv.cc;l=384;drc=e433dac46a0bb8ffa4b6e600d4d94751768392c0
   const mojom::DequantizeLinear& bias_dequantize =
       GetDequantizeOp(*conv2d.bias_operand_id);
@@ -1531,13 +1525,20 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
       OperandDataType::kInt32) {
     return std::nullopt;
   }
-  auto bias_zero_point_constant_it =
-      constant_operands_->find(bias_dequantize.zero_point_operand_id);
-  CHECK(bias_zero_point_constant_it != constant_operands_->end());
+  // The bias must have all-zero zero-points for conv2d and int8 input
+  // convTranspose2d.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/transpose_conv.cc;drc=dde56340610b37d2f2696b654be50a74dd25ff84;l=319
+  if (conv2d.kind == mojom::Conv2d::Kind::kDirect ||
+      (conv2d.kind == mojom::Conv2d::Kind::kTransposed &&
+       quantized_type == OperandDataType::kInt8)) {
+    auto bias_zero_point_constant_it =
+        constant_operands_->find(bias_dequantize.zero_point_operand_id);
+    CHECK(bias_zero_point_constant_it != constant_operands_->end());
 
-  for (uint8_t byte : bias_zero_point_constant_it->second->ByteSpan()) {
-    if (byte != 0) {
-      return std::nullopt;
+    for (uint8_t byte : bias_zero_point_constant_it->second->ByteSpan()) {
+      if (byte != 0) {
+        return std::nullopt;
+      }
     }
   }
 
