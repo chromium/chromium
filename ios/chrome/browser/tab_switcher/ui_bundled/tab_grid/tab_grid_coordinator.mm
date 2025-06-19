@@ -1931,10 +1931,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
       if (navigationController.toolbar &&
           !navigationController.isToolbarHidden) {
-        CGFloat toolbarHeight =
-            CGRectGetHeight(presentedViewController.view.frame) -
-            CGRectGetMinY(navigationController.toolbar.frame);
-        return toolbarHeight;
+        if (@available(iOS 26, *)) {
+          return navigationController.topViewController.view.safeAreaInsets
+              .bottom;
+        } else {
+          return CGRectGetHeight(presentedViewController.view.frame) -
+                 CGRectGetMinY(navigationController.toolbar.frame);
+        }
       } else {
         return 0.0;
       }
