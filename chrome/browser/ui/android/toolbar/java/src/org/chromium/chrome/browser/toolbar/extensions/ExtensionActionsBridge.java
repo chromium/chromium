@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -21,6 +22,7 @@ import org.chromium.extensions.ShowAction;
 
 /** A JNI bridge providing access to information of extension actions in the toolbar. */
 @NullMarked
+@JNINamespace("extensions")
 public class ExtensionActionsBridge {
     private long mNativeExtensionActionsBridge;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
@@ -199,10 +201,11 @@ public class ExtensionActionsBridge {
                 @JniType("std::string") String actionId,
                 int tabId);
 
+        @JniType("ExtensionAction::ShowAction")
         int runAction(
                 long nativeExtensionActionsBridge,
                 @JniType("std::string") String actionId,
-                WebContents webContents);
+                @JniType("content::WebContents*") WebContents webContents);
 
         boolean extensionsEnabled(long nativeExtensionActionsBridge);
     }

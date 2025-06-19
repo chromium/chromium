@@ -15,8 +15,8 @@ class RenderFrameHost;
 }
 
 namespace extensions {
+
 class ExtensionViewHost;
-}
 
 // ExtensionActionPopupContents is the native C++ class responsible for managing
 // the content of an extension's popup displayed on Android. An extension popup
@@ -31,10 +31,10 @@ class ExtensionViewHost;
 // instance. When the Java object is no longer needed (e.g. the popup is
 // closed), its `destroy()` method is called. This, in turn, calls the native
 // `Destroy()` method on this C++ object, which then calls `delete this`.
-class ExtensionActionPopupContents : public extensions::ExtensionView {
+class ExtensionActionPopupContents : public ExtensionView {
  public:
   explicit ExtensionActionPopupContents(
-      std::unique_ptr<extensions::ExtensionViewHost> popup_host);
+      std::unique_ptr<ExtensionViewHost> popup_host);
   ExtensionActionPopupContents(const ExtensionActionPopupContents&) = delete;
   ExtensionActionPopupContents& operator=(const ExtensionActionPopupContents&) =
       delete;
@@ -59,8 +59,10 @@ class ExtensionActionPopupContents : public extensions::ExtensionView {
   void LoadInitialPage(JNIEnv* env);
 
  private:
-  std::unique_ptr<extensions::ExtensionViewHost> host_;
+  std::unique_ptr<ExtensionViewHost> host_;
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
+
+}  // namespace extensions
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_EXTENSION_ACTION_POPUP_CONTENTS_H_

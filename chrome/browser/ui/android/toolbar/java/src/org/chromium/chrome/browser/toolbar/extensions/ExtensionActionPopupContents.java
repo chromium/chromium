@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -26,6 +27,7 @@ import org.chromium.content_public.browser.WebContents;
  * is called, the native object is also destroyed.
  */
 @NullMarked
+@JNINamespace("extensions")
 public class ExtensionActionPopupContents implements Destroyable {
     /**
      * Pointer to the native C++ ExtensionActionPopupContents object. This is 0 if the native object
@@ -41,7 +43,8 @@ public class ExtensionActionPopupContents implements Destroyable {
 
     @CalledByNative
     private ExtensionActionPopupContents(
-            long nativeExtensionActionPopupContents, WebContents webContents) {
+            long nativeExtensionActionPopupContents,
+            @JniType("content::WebContents*") WebContents webContents) {
         mNativeExtensionActionPopupContents = nativeExtensionActionPopupContents;
         mWebContents = webContents;
     }

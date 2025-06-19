@@ -12,8 +12,7 @@
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry_factory.h"
 
-using extensions::ExtensionActionManager;
-using extensions::ExtensionRegistryFactory;
+namespace extensions {
 
 // static
 ExtensionActionsBridge* ExtensionActionsBridgeFactory::GetForProfile(
@@ -56,3 +55,5 @@ bool ExtensionActionsBridgeFactory::ServiceIsCreatedWithBrowserContext() const {
 bool ExtensionActionsBridgeFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
+
+}  // namespace extensions

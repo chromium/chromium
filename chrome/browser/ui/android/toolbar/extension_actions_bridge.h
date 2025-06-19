@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ANDROID_TOOLBAR_EXTENSION_ACTIONS_BRIDGE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/android/jni_android.h"
@@ -16,6 +15,8 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_action_icon_factory.h"
+
+namespace extensions {
 
 class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
                                public KeyedService {
@@ -31,16 +32,21 @@ class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   // JNI implementations.
-  jboolean AreActionsInitialized(JNIEnv* env);
-  std::vector<std::string> GetActionIds(JNIEnv* env);
-  base::android::ScopedJavaLocalRef<jobject>
-  GetAction(JNIEnv* env, const std::string& action_id, jint tab_id);
-  base::android::ScopedJavaLocalRef<jobject>
-  GetActionIcon(JNIEnv* env, const std::string& action_id, jint tab_id);
-  jint RunAction(JNIEnv* env,
-                 const std::string& action_id,
-                 const base::android::JavaParamRef<jobject>& web_contents_java);
-  jboolean ExtensionsEnabled(JNIEnv* env);
+  bool AreActionsInitialized(JNIEnv* env);
+  std::vector<ToolbarActionsModel::ActionId> GetActionIds(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jobject> GetAction(
+      JNIEnv* env,
+      const ToolbarActionsModel::ActionId& action_id,
+      int tab_id);
+  base::android::ScopedJavaLocalRef<jobject> GetActionIcon(
+      JNIEnv* env,
+      const ToolbarActionsModel::ActionId& action_id,
+      int tab_id);
+  ExtensionAction::ShowAction RunAction(
+      JNIEnv* env,
+      const ToolbarActionsModel::ActionId& action_id,
+      content::WebContents* web_contents);
+  bool ExtensionsEnabled(JNIEnv* env);
 
   // ToolbarActionsModel::Observer:
   void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& id) override;
@@ -93,5 +99,7 @@ class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       model_observation_{this};
 };
+
+}  // namespace extensions
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_EXTENSION_ACTIONS_BRIDGE_H_

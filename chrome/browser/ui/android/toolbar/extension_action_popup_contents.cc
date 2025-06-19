@@ -23,19 +23,15 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using content::RenderFrameHost;
 using content::WebContents;
-using extensions::Extension;
-using extensions::ExtensionAction;
-using extensions::ExtensionActionManager;
-using extensions::ExtensionRegistry;
-using extensions::ExtensionViewHost;
-using extensions::ExtensionViewHostFactory;
+
+namespace extensions {
 
 ExtensionActionPopupContents::ExtensionActionPopupContents(
     std::unique_ptr<ExtensionViewHost> host)
     : host_(std::move(host)) {
   java_object_ = Java_ExtensionActionPopupContents_Constructor(
       AttachCurrentThread(), reinterpret_cast<jlong>(this),
-      host_->host_contents()->GetJavaWebContents());
+      host_->host_contents());
   host_->set_view(this);
 }
 
@@ -84,7 +80,7 @@ static ScopedJavaLocalRef<jobject> JNI_ExtensionActionPopupContents_Create(
     JNIEnv* env,
     Profile* profile,
     std::string& action_id,
-    jint tab_id) {
+    int tab_id) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   DCHECK(registry);
 
@@ -115,3 +111,5 @@ static ScopedJavaLocalRef<jobject> JNI_ExtensionActionPopupContents_Create(
       new ExtensionActionPopupContents(std::move(host));
   return popup->GetJavaObject();
 }
+
+}  // namespace extensions

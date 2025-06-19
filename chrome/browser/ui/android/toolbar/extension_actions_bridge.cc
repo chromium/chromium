@@ -22,16 +22,13 @@ using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using content::WebContents;
-using extensions::Extension;
-using extensions::ExtensionAction;
-using extensions::ExtensionActionManager;
-using extensions::ExtensionActionRunner;
-using extensions::ExtensionRegistry;
+
+namespace extensions {
 
 ExtensionActionsBridge::IconObserver::IconObserver(
     ExtensionActionsBridge* bridge,
-    const extensions::Extension& extension,
-    extensions::ExtensionAction& action)
+    const Extension& extension,
+    ExtensionAction& action)
     : bridge_(bridge),
       action_id_(extension.id()),
       icon_factory_(&extension, &action, this) {}
@@ -66,19 +63,20 @@ ScopedJavaLocalRef<jobject> ExtensionActionsBridge::GetJavaObject() {
   return java_object_.AsLocalRef(AttachCurrentThread());
 }
 
-jboolean ExtensionActionsBridge::AreActionsInitialized(JNIEnv* env) {
-  return static_cast<jboolean>(model_->actions_initialized());
+bool ExtensionActionsBridge::AreActionsInitialized(JNIEnv* env) {
+  return model_->actions_initialized();
 }
 
-std::vector<std::string> ExtensionActionsBridge::GetActionIds(JNIEnv* env) {
+std::vector<ToolbarActionsModel::ActionId> ExtensionActionsBridge::GetActionIds(
+    JNIEnv* env) {
   const auto& ids = model_->action_ids();
   return std::vector(ids.begin(), ids.end());
 }
 
 ScopedJavaLocalRef<jobject> ExtensionActionsBridge::GetAction(
     JNIEnv* env,
-    const std::string& action_id,
-    jint tab_id) {
+    const ToolbarActionsModel::ActionId& action_id,
+    int tab_id) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   DCHECK(registry);
   ExtensionActionManager* manager = ExtensionActionManager::Get(profile_);
@@ -95,27 +93,27 @@ ScopedJavaLocalRef<jobject> ExtensionActionsBridge::GetAction(
     return nullptr;
   }
 
-  return Java_ExtensionAction_Constructor(
-      env, action_id, action->GetTitle(static_cast<int>(tab_id)));
+  return Java_ExtensionAction_Constructor(env, action_id,
+                                          action->GetTitle(tab_id));
 }
 
 ScopedJavaLocalRef<jobject> ExtensionActionsBridge::GetActionIcon(
     JNIEnv* env,
-    const std::string& action_id,
-    jint tab_id) {
+    const ToolbarActionsModel::ActionId& action_id,
+    int tab_id) {
   IconObserver* icon_observer = EnsureIconObserver(action_id);
   if (!icon_observer) {
     return nullptr;
   }
 
-  gfx::Image image = icon_observer->GetIcon(static_cast<int>(tab_id));
+  gfx::Image image = icon_observer->GetIcon(tab_id);
   return gfx::ConvertToJavaBitmap(*image.ToSkBitmap());
 }
 
-jint ExtensionActionsBridge::RunAction(
+ExtensionAction::ShowAction ExtensionActionsBridge::RunAction(
     JNIEnv* env,
-    const std::string& action_id,
-    const JavaParamRef<jobject>& web_contents_java) {
+    const ToolbarActionsModel::ActionId& action_id,
+    content::WebContents* web_contents) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   DCHECK(registry);
   ExtensionActionManager* manager = ExtensionActionManager::Get(profile_);
@@ -124,30 +122,22 @@ jint ExtensionActionsBridge::RunAction(
   const Extension* extension =
       registry->enabled_extensions().GetByID(action_id);
   if (extension == nullptr) {
-    return static_cast<jint>(ExtensionAction::ShowAction::kNone);
-  }
-
-  WebContents* web_contents =
-      WebContents::FromJavaWebContents(web_contents_java);
-  if (web_contents == nullptr) {
-    return static_cast<jint>(ExtensionAction::ShowAction::kNone);
+    return ExtensionAction::ShowAction::kNone;
   }
 
   ExtensionActionRunner* runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
   if (runner == nullptr) {
-    return static_cast<jint>(ExtensionAction::ShowAction::kNone);
+    return ExtensionAction::ShowAction::kNone;
   }
 
-  return static_cast<jint>(
-      runner->RunAction(extension, /*grant_tab_permissions=*/true));
+  return runner->RunAction(extension, /*grant_tab_permissions=*/true);
 }
 
-jboolean ExtensionActionsBridge::ExtensionsEnabled(JNIEnv* env) {
-  extensions::ExtensionManagement* extension_management =
-      extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
-  return static_cast<jboolean>(
-      extension_management->ExtensionsEnabledForDesktopAndroid());
+bool ExtensionActionsBridge::ExtensionsEnabled(JNIEnv* env) {
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile_);
+  return extension_management->ExtensionsEnabledForDesktopAndroid();
 }
 
 void ExtensionActionsBridge::OnToolbarActionAdded(
@@ -228,3 +218,5 @@ static ScopedJavaLocalRef<jobject> JNI_ExtensionActionsBridge_Get(
   DCHECK(bridge);
   return bridge->GetJavaObject();
 }
+
+}  // namespace extensions

@@ -9,6 +9,9 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
+
+namespace extensions {
+
 class ExtensionActionsBridge;
 
 class ExtensionActionsBridgeFactory : public ProfileKeyedServiceFactory {
@@ -28,5 +31,7 @@ class ExtensionActionsBridgeFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
 };
+
+}  // namespace extensions
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_EXTENSION_ACTIONS_BRIDGE_FACTORY_H_
