@@ -183,12 +183,6 @@ interface NFCClient {
   // available.
   OnWatch(array<uint32> watch_ids, string? serial_number, NDEFMessage message);
 
-  // Same as above but takes a raw message which is unparsed. Since we do
-  // not want to parse untrusted data in the browser we leave it for the
-  // renderer to parse.
-  [EnableIf=is_ios_iphoneos]
-  OnWatch(array<uint32> watch_ids, NDEFRawMessage message);
-
   // Sends |error| to all readers that are trying to read some data from the nfc
   // tag coming nearby.
   OnError(NDEFError error);
@@ -202,7 +196,6 @@ interface NFCClient {
 interface RawNFCClient {
   // Sends |message| to those readers that have registered |watch_ids| via
   // NFC.Watch(), i.e. |message| matches their filtering criteria.
-  [EnableIf=is_ios_iphoneos]
   OnWatch(array<uint32> watch_ids, NDEFRawMessage message);
 
   // Sends |error| to all readers that are trying to read some data from the nfc

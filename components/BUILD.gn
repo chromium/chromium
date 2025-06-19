@@ -1115,6 +1115,7 @@ if (use_blink) {
       "//content/public/browser",
       "//content/shell:content_shell_lib",
       "//content/test:browsertest_support",
+      "//content/test:content_test_entry",
       "//content/test:default_content_test_launcher",
       "//content/test:test_support",
       "//device/bluetooth",
@@ -1150,15 +1151,17 @@ if (use_blink) {
 
     if (is_ios) {
       entitlements_path = "//content/app/ios/appex/app.entitlements"
+      deps += [
+        "//content/test/ios/appex:test_content_process_bundle",
+        "//content/test/ios/appex:test_gpu_process_bundle",
+        "//content/test/ios/appex:test_network_process_bundle",
+      ]
       bundle_deps = [
         ":components_tests_distiller_bundle_data",
         ":components_tests_pak_bundle_data",
         "test:dom_distiller_test_bundle_data",
         "test:url_rewrite_test_bundle_data",
-        "//content/test:content_process_bundle",
         "//content/test:content_test_bundle_data",
-        "//content/test:gpu_process_bundle",
-        "//content/test:network_process_bundle",
         "//testing/buildbot/filters:components_browsertests_use_blink_filters_bundle_data",
       ]
     }

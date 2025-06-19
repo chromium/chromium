@@ -1390,6 +1390,12 @@ if (is_android) {
   }
 }
 
+static_library("content_test_entry") {
+  testonly = true
+
+  sources = [ "content_test_launcher_exe.cc" ]
+}
+
 test("content_browsertests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -1837,6 +1843,7 @@ test("content_browsertests") {
 
   deps = [
     ":browsertest_support",
+    ":content_test_entry",
     ":content_test_mojo_bindings",
     ":default_content_test_launcher",
     ":test_support",
@@ -2012,10 +2019,10 @@ test("content_browsertests") {
     ]
 
     if (target_platform == "iphoneos") {
-      bundle_deps += [
-        ":content_process_bundle",
-        ":gpu_process_bundle",
-        ":network_process_bundle",
+      deps += [
+        "//content/test/ios/appex:test_content_process_bundle",
+        "//content/test/ios/appex:test_gpu_process_bundle",
+        "//content/test/ios/appex:test_network_process_bundle",
       ]
     }
   } else {
@@ -3642,29 +3649,6 @@ if (is_ios) {
   bundle_data_from_filelist("content_test_bundle_data") {
     testonly = true
     filelist_name = "content_test_bundle_data.filelist"
-  }
-
-  if (current_toolchain == default_toolchain) {
-    _extension_toolchain = "${current_toolchain}_blink_app_ext"
-    extension_bundle_data("content_process_bundle") {
-      testonly = true
-      extension_dir = "Extensions"
-      extension_name = "test_content_process.appex"
-      extension_target = "//content/test/ios/appex:test_content_process(${_extension_toolchain})"
-    }
-    extension_bundle_data("network_process_bundle") {
-      testonly = true
-      extension_dir = "Extensions"
-      extension_name = "test_network_process.appex"
-      extension_target = "//content/test/ios/appex:test_network_process(${_extension_toolchain})"
-    }
-    extension_bundle_data("gpu_process_bundle") {
-      testonly = true
-      extension_dir = "Extensions"
-      extension_name = "test_gpu_process.appex"
-      extension_target =
-          "//content/test/ios/appex:test_gpu_process(${_extension_toolchain})"
-    }
   }
 }
 if (is_apple) {
