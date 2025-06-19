@@ -458,10 +458,9 @@ const NSUInteger kSearchCharacterLimit = 1000;
                                                     idImage)]];
   }
 
-  [self resizeAndScaleShareImage];
-
   self.shareItem = item;
   if (self.shareImage) {
+    [self resizeAndScaleShareImage];
     [self displayShareSheet];
   } else {
     [self displayErrorView];
