@@ -340,6 +340,18 @@ VisiblePosition StartOfParagraph(
   return StartOfParagraphAlgorithm<EditingStrategy>(c, boundary_crossing_rule);
 }
 
+VisiblePosition StartOfParagraphInFlatTree(
+    const VisiblePosition& pos,
+    EditingBoundaryCrossingRule boundary_crossing_rule) {
+  VisiblePositionInFlatTree pos_in_flat_tree =
+      CreateVisiblePosition(ToPositionInFlatTree(pos.DeepEquivalent()));
+  VisiblePositionInFlatTree start_of_paragraph_in_flat_tree =
+      StartOfParagraphAlgorithm<EditingInFlatTreeStrategy>(
+          pos_in_flat_tree, boundary_crossing_rule);
+  return CreateVisiblePosition(
+      ToPositionInDOMTree(start_of_paragraph_in_flat_tree.DeepEquivalent()));
+}
+
 VisiblePositionInFlatTree StartOfParagraph(
     const VisiblePositionInFlatTree& c,
     EditingBoundaryCrossingRule boundary_crossing_rule) {
@@ -351,6 +363,18 @@ VisiblePosition EndOfParagraph(
     const VisiblePosition& c,
     EditingBoundaryCrossingRule boundary_crossing_rule) {
   return EndOfParagraphAlgorithm<EditingStrategy>(c, boundary_crossing_rule);
+}
+
+VisiblePosition EndOfParagraphInFlatTree(
+    const VisiblePosition& pos,
+    EditingBoundaryCrossingRule boundary_crossing_rule) {
+  VisiblePositionInFlatTree pos_in_flat_tree =
+      CreateVisiblePosition(ToPositionInFlatTree(pos.DeepEquivalent()));
+  VisiblePositionInFlatTree end_of_paragraph_in_flat_tree =
+      EndOfParagraphAlgorithm<EditingInFlatTreeStrategy>(
+          pos_in_flat_tree, boundary_crossing_rule);
+  return CreateVisiblePosition(
+      ToPositionInDOMTree(end_of_paragraph_in_flat_tree.DeepEquivalent()));
 }
 
 Position EndOfParagraph(const Position& c,

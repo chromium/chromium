@@ -5058,6 +5058,13 @@
       public: true,
     },
     {
+      // Traverse flat tree to find start and end of paragraph in delete
+      // selection to handle slot distribution in details.
+      // See https://crbug.com/413595949
+      name: "TraverseFlatTreeToHandleSlots",
+      status: "stable",
+    },
+    {
       // Ensures symbols are treated as word boundaries during traversal.
       // See https://crbug.com/40252642
       name: "TreatSymbolsAsWordBoundary",

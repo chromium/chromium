@@ -226,12 +226,18 @@ CORE_EXPORT bool IsLogicalEndOfLine(const VisiblePositionInFlatTree&);
 CORE_EXPORT VisiblePosition
 StartOfParagraph(const VisiblePosition&,
                  EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+CORE_EXPORT VisiblePosition StartOfParagraphInFlatTree(
+    const VisiblePosition&,
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
 CORE_EXPORT VisiblePositionInFlatTree
 StartOfParagraph(const VisiblePositionInFlatTree&,
                  EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
 CORE_EXPORT VisiblePosition
 EndOfParagraph(const VisiblePosition&,
                EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
+CORE_EXPORT VisiblePosition EndOfParagraphInFlatTree(
+    const VisiblePosition&,
+    EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
 CORE_EXPORT VisiblePositionInFlatTree
 EndOfParagraph(const VisiblePositionInFlatTree&,
                EditingBoundaryCrossingRule = kCannotCrossEditingBoundary);
