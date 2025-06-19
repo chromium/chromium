@@ -5,11 +5,17 @@
 #ifndef NET_DISK_CACHE_SQL_SQL_PERSISTENT_STORE_H_
 #define NET_DISK_CACHE_SQL_SQL_PERSISTENT_STORE_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/unguessable_token.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/buildflags.h"
+#include "net/disk_cache/sql/cache_entry_key.h"
 
 // This backend is experimental and only available when the build flag is set.
 static_assert(BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND));
@@ -18,6 +24,10 @@ namespace base {
 class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
+
+namespace net {
+class GrowableIOBuffer;
+}  // namespace net
 
 namespace disk_cache {
 
@@ -43,13 +53,41 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     kFailedToInitializeSchema = 7,
     kFailedToSetEntryCountMetadata = 8,
     kFailedToSetTotalSizeMetadata = 9,
-    kMaxValue = kFailedToSetTotalSizeMetadata
+    kFailedToExecute = 10,
+    kInvalidData = 11,
+    kAlreadyExists = 12,
+    kMaxValue = kAlreadyExists
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheStoreError)
+
+  // Holds information about a specific cache entry.
+  struct NET_EXPORT_PRIVATE EntryInfo {
+    EntryInfo();
+    ~EntryInfo();
+    EntryInfo(EntryInfo&&);
+    EntryInfo& operator=(EntryInfo&&);
+
+    // A unique identifier for this entry instance, used for safe data access.
+    base::UnguessableToken token;
+    // The last time this entry was used.
+    base::Time last_used;
+    // The total size of the entry's body (all data streams).
+    int64_t body_end = 0;
+    // The entry's header data (stream 0).
+    scoped_refptr<net::GrowableIOBuffer> head;
+    // True if the entry was opened, false if it was newly created.
+    bool opened = false;
+  };
 
   using ErrorCallback = base::OnceCallback<void(Error)>;
   using Int32Callback = base::OnceCallback<void(int32_t)>;
   using Int64Callback = base::OnceCallback<void(int64_t)>;
+  using EntryInfoOrError = base::expected<EntryInfo, Error>;
+  using EntryInfoOrErrorCallback = base::OnceCallback<void(EntryInfoOrError)>;
+  using OptionalEntryInfoOrError =
+      base::expected<std::optional<EntryInfo>, Error>;
+  using OptionalEntryInfoOrErrorCallback =
+      base::OnceCallback<void(OptionalEntryInfoOrError)>;
 
   // Creates a new instance of the persistent store. The returned object must be
   // initialized by calling `Initialize()`. This function never returns a null
@@ -67,6 +105,28 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // Initializes the store. `callback` will be invoked upon completion.
   virtual void Initialize(ErrorCallback callback) = 0;
+
+  // Opens an entry with the given `key`. If the entry does not exist, it is
+  // created. `callback` is invoked with the entry information on success or
+  // an error code on failure.
+  virtual void OpenOrCreateEntry(const CacheEntryKey& key,
+                                 EntryInfoOrErrorCallback callback) = 0;
+
+  // Opens an existing entry with the given `key`.
+  // The `callback` is invoked with the entry's information on success. If the
+  // entry does not exist, the `callback` is invoked with a `kNotFound` error.
+  virtual void OpenEntry(const CacheEntryKey& key,
+                         OptionalEntryInfoOrErrorCallback callback) = 0;
+
+  // Creates a new entry with the given `key`.
+  // The `callback` is invoked with the new entry's information on success. If
+  // an entry with this key already exists, the callback is invoked with a
+  // `kAlreadyExists` error.
+  virtual void CreateEntry(const CacheEntryKey& key,
+                           EntryInfoOrErrorCallback callback) = 0;
+
+  // Deletes all entries from the cache. `callback` is invoked on completion.
+  virtual void DeleteAllEntries(ErrorCallback callback) = 0;
 
   // The maximum size of an individual cache entry's data stream.
   virtual int64_t MaxFileSize() const = 0;

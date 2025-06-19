@@ -45,6 +45,18 @@ inline constexpr int kSqlBackendCurrentDatabaseVersion = 1;
 // the same value as `kSqlBackendCurrentDatabaseVersion`.
 inline constexpr int kSqlBackendCompatibleDatabaseVersion = 1;
 
+// Estimated static size overhead for a resource entry in the database,
+// excluding the key and any blob data. This is a conservative estimate based on
+// empirical testing and is intended to account for the overhead of the row in
+// the `resources` table, SQLite's B-tree overhead per entry, and other
+// miscellaneous metadata. The
+// `SqlPersistentStoreTest.StaticResourceSizeEstimation` test provides a basic
+// validation of this constant against the actual file size.
+// TODO(crbug.com/422065015): Re-evaluate this constant when head and body
+// writing is implemented and new indexes are added, as the storage pattern may
+// affect overhead.
+inline constexpr int kSqlBackendStaticResourceSize = 100;
+
 }  // namespace disk_cache
 
 #endif  // NET_DISK_CACHE_SQL_SQL_BACKEND_CONSTANTS_H_

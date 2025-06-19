@@ -2856,6 +2856,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="FailedToInitializeSchema"/>
   <int value="8" label="FailedToSetEntryCountMetadata"/>
   <int value="9" label="FailedToSetTotalSizeMetadata"/>
+  <int value="10" label="FailedToExecute"/>
+  <int value="11" label="InvalidData"/>
+  <int value="12" label="AlreadyExists"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store.h:SqlDiskCacheStoreError) -->

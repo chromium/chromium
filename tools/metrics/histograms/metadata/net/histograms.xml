@@ -131,6 +131,14 @@ chromium-metrics-reviews@google.com.
                and otherwise the initial referrer URL)."/>
 </variants>
 
+<variants name="SqlPersistentStoreMethodName">
+  <variant name="CreateEntry"/>
+  <variant name="DeleteAllEntries"/>
+  <variant name="Initialize"/>
+  <variant name="OpenEntry"/>
+  <variant name="OpenOrCreateEntry"/>
+</variants>
+
 <variants name="SuccessOrFailure">
   <variant name="Failure" summary="Operation failed"/>
   <variant name="Success" summary="Operation succeeded"/>
@@ -7262,46 +7270,6 @@ chromium-metrics-reviews@google.com.
   <summary>The number of streams issued over a single session.</summary>
 </histogram>
 
-<histogram name="Net.SqlDiskCache.Backend.Initialize.FailureTime"
-    units="microseconds" expires_after="2025-09-09">
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Measures the time taken to initialize the SQL-based disk cache backend. This
-    operation includes opening the database file, checking its schema version,
-    and preparing it for use. This metric is recorded immediately after
-    initialization failed. It helps diagnose performance regressions during
-    startup. The histogram is not reported on Windows machines without high
-    resolution clocks.
-  </summary>
-</histogram>
-
-<histogram name="Net.SqlDiskCache.Backend.Initialize.Result"
-    enum="SqlDiskCacheStoreError" expires_after="2025-09-09">
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Records the result of initializing the SQL-based disk cache backend. This is
-    emitted when the backend is initialized during the network context
-    initialization. This helps track the frequency of different initialization
-    failures.
-  </summary>
-</histogram>
-
-<histogram name="Net.SqlDiskCache.Backend.Initialize.SuccessTime"
-    units="microseconds" expires_after="2025-09-09">
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Measures the time taken to initialize the SQL-based disk cache backend. This
-    operation includes opening the database file, checking its schema version,
-    and preparing it for use. This metric is recorded immediately after
-    initialization succeeded. It helps diagnose performance regressions during
-    startup. The histogram is not reported on Windows machines without high
-    resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="Net.SqlDiskCache.Backend.SqliteError"
     enum="SqliteLoggedResultCode" expires_after="2025-09-09">
   <owner>horo@chromium.org</owner>
@@ -7310,6 +7278,35 @@ chromium-metrics-reviews@google.com.
     Errors reported by SQLite while initializing or using the SQL-based disk
     cache backend database.
   </summary>
+</histogram>
+
+<histogram name="Net.SqlDiskCache.Backend.{MethodName}.Result"
+    enum="SqlDiskCacheStoreError" expires_after="2025-09-09">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the result of the method of the SQL-based disk cache backend. This
+    helps track the frequency of different failures.
+  </summary>
+  <token key="MethodName" variants="SqlPersistentStoreMethodName"/>
+</histogram>
+
+<histogram name="Net.SqlDiskCache.Backend.{MethodName}.{TimeType}"
+    units="microseconds" expires_after="2025-09-09">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Measures the time taken to run the method of the SQL-based disk cache
+    backend. This metric is recorded immediately after the logic for the method
+    succeeded or failed. It helps diagnose performance regressions. The
+    histogram is not reported on Windows machines without high resolution
+    clocks.
+  </summary>
+  <token key="MethodName" variants="SqlPersistentStoreMethodName"/>
+  <token key="TimeType">
+    <variant name="FailureTime"/>
+    <variant name="SuccessTime"/>
+  </token>
 </histogram>
 
 <histogram name="Net.SSL.ECHResult" enum="SSLECHResult"
