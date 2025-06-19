@@ -65,9 +65,14 @@ FormInfo::FormInfo(const FormInfo&) = default;
 
 Credential::Credential(const std::u16string& username,
                        const std::u16string& password,
+                       const std::optional<std::u16string>& backup_password,
                        const std::string& realm)
-    : username(username), password(password), realm(realm) {}
+    : username(username),
+      password(password),
+      backup_password(backup_password),
+      realm(realm) {}
 Credential::~Credential() = default;
+Credential::Credential(const Credential&) = default;
 
 AccountSelectFillData::AccountSelectFillData() = default;
 AccountSelectFillData::~AccountSelectFillData() = default;
@@ -90,18 +95,22 @@ void AccountSelectFillData::Add(const autofill::PasswordFormFillData& form_data,
   credentials_.push_back(
       {form_data.preferred_login.username_value,
        form_data.preferred_login.password_value,
+       form_data.preferred_login.backup_password_value,
        always_populate_realm && form_data.preferred_login.realm.empty()
            ? form_data.url.spec()
            : form_data.preferred_login.realm});
 
-  for (const auto& username_password_and_realm : form_data.additional_logins) {
-    const std::u16string& username = username_password_and_realm.username_value;
-    const std::u16string& password = username_password_and_realm.password_value;
-    const std::string& realm = username_password_and_realm.realm;
+  for (const auto& login : form_data.additional_logins) {
+    const std::u16string& username = login.username_value;
+    const std::u16string& password = login.password_value;
+    const std::optional<std::u16string>& backup_password =
+        login.backup_password_value;
+    const std::string& realm = login.realm;
     if (always_populate_realm && realm.empty()) {
-      credentials_.push_back({username, password, form_data.url.spec()});
+      credentials_.push_back(
+          {username, password, backup_password, form_data.url.spec()});
     } else {
-      credentials_.push_back({username, password, realm});
+      credentials_.push_back({username, password, backup_password, realm});
     }
   }
 }

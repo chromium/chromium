@@ -40,10 +40,13 @@ struct FormInfo {
 struct Credential {
   Credential(const std::u16string& username,
              const std::u16string& password,
+             const std::optional<std::u16string>& backup_password,
              const std::string& realm);
   ~Credential();
+  Credential(const Credential&);
   std::u16string username;
   std::u16string password;
+  std::optional<std::u16string> backup_password;
   std::string realm;
 };
 
