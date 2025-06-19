@@ -354,7 +354,7 @@ void GlicUserStatusFetcher::UpdateUserStatusWithThrottling() {
         [](GlicUserStatusFetcher* self) {
           if (self->update_was_throttled_) {
             self->update_was_throttled_ = false;
-            self->UpdateUserStatus();
+            self->UpdateUserStatusWithThrottling();
           }
         },
         base::Unretained(this));
