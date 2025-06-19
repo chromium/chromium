@@ -4,9 +4,9 @@
 
 #include "media/capture/video/linux/video_capture_device_webrtc.h"
 
+#include "base/notimplemented.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/linux/video_capture_device_factory_webrtc.h"
-
 #include "third_party/webrtc/modules/video_capture/video_capture_factory.h"
 #include "third_party/webrtc/modules/video_capture/video_capture_impl.h"
 

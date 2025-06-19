@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"

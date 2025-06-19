@@ -5,7 +5,7 @@
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_context.h"
 
 #include "base/environment.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/av1_decoder_delegate.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_buffer.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_config.h"

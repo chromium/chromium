@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"

@@ -4,6 +4,7 @@
 
 #include "media/base/stream_parser.h"
 
+#include "base/notimplemented.h"
 #include "media/base/stream_parser_buffer.h"
 
 namespace media {

@@ -18,6 +18,7 @@
 #include "base/bits.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"

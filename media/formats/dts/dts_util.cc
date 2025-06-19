@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/bit_reader.h"
 #include "media/formats/dts/dts_stream_parser.h"

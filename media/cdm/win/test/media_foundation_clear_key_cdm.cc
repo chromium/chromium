@@ -11,7 +11,7 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "media/base/win/mf_feature_checks.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/cdm/clear_key_cdm_common.h"
