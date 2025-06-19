@@ -29,6 +29,7 @@
 #import "third_party/blink/renderer/core/style/computed_style.h"
 #import "third_party/blink/renderer/platform/web_test_support.h"
 #import "ui/base/ui_base_features.h"
+#import "ui/color/color_provider.h"
 #import "ui/native_theme/native_theme.h"
 
 namespace blink {
