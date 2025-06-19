@@ -1676,7 +1676,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8402673309244746971">Accéder aux sites suivis</translation>
 <translation id="8413126021676339697">Afficher l'historique complet</translation>
 <translation id="8413795581997394485">Protection contre les extensions, sites et téléchargements connus pour être dangereux. Lorsque vous consultez un site, Chrome envoie une partie obscurcie de l'URL à Google via un serveur de confidentialité qui masque votre adresse IP. Si un site a un comportement suspect, les URL complètes et des extraits du contenu des pages sont également envoyés.</translation>
-<translation id="8414396119627470038">Connectez-vous à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8414396119627470038">Se connecter à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8419144699778179708">Supprime l'historique, y compris dans le champ de recherche</translation>
 <translation id="8419244640277402268">Inclure</translation>
 <translation id="8422250855136581222">Aucun onglet sur cet appareil</translation>
@@ -1842,7 +1842,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9102803872260866941">L'onglet "Aperçu" est ouvert</translation>
 <translation id="9102864637938129124">Les sites et les annonceurs peuvent analyser les performances des annonces. Ce paramètre est activé.</translation>
 <translation id="9104217018994036254">Liste des appareils avec lesquels vous pouvez partager un onglet.</translation>
-<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{Inutilisés depuis au moins 1 jour}one{Inutilisés depuis au moins # jour}other{Inutilisés depuis au moins # jours}}</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{Inutilisé(s) depuis au moins 1 jour}one{Inutilisé(s) depuis au moins # jour}other{Inutilisé(s) depuis au moins # jours}}</translation>
 <translation id="9106148373857059373">Flux d'enregistrement en tant que favori fermé</translation>
 <translation id="9108808586816295166">Il est possible que le DNS sécurisé ne soit pas disponible à tout moment</translation>
 <translation id="910908805481542201">M'aider à régler le problème</translation>

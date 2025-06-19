@@ -150,7 +150,7 @@
 <translation id="1641113438599504367">Безопасный просмотр</translation>
 <translation id="164269334534774161">Эта офлайн-копия страницы была создана <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">История</translation>
-<translation id="1645262572857218659">Войдите с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1645262572857218659">Вход с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1671236975893690980">Ожидание скачивания…</translation>
 <translation id="1672586136351118594">Больше не показывать</translation>
 <translation id="1680919990519905526">Найти в Покупках через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
@@ -941,7 +941,7 @@
 <translation id="5316947901395241499">Администратор запретил сохранять пароли.</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5319359161174645648">Google рекомендует браузер Chrome</translation>
-<translation id="5326246328175179736">Невозможно войти в этот аккаунт.</translation>
+<translation id="5326246328175179736">Невозможно войти с этим аккаунтом</translation>
 <translation id="5327248766486351172">Имя</translation>
 <translation id="5328542107300944283">Войдите на сайт с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Запросы разрешений</translation>
@@ -1785,7 +1785,7 @@
 <translation id="8856931513242997049">Закрытое окно с разрешениями на уведомления</translation>
 <translation id="8863714995118816041">Разрешения снова предоставлены для сайта <ph name="SITE_NAME" />.</translation>
 <translation id="8865415417596392024">Данные Chrome в вашем аккаунте</translation>
-<translation id="8888527824584402177">Вкладки, которые вы не использовали в течение <ph name="DAYS_INACTIVE" /> дн., переносятся сюда<ph name="AUTODELETE_SECTION" />. Чтобы изменить этот параметр, перейдите в <ph name="SETTINGS_TITLE" />.</translation>
+<translation id="8888527824584402177">Вкладки, которые вы не использовали в течение <ph name="DAYS_INACTIVE" /> дн., переносятся сюда<ph name="AUTODELETE_SECTION" />. <ph name="SETTINGS_TITLE" /> можно изменить.</translation>
 <translation id="8890668505403261809">Поиск по вкладкам инкогнито</translation>
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей интернета)</translation>
 <translation id="8909135823018751308">Поделиться...</translation>

@@ -115,7 +115,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1195558154361252544">As notificações são bloqueadas automaticamente para todos os sites, exceto para aqueles que têm permissão</translation>
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> removeu a guia "<ph name="WEBSITE_TITLE" />"</translation>
-<translation id="1201402288615127009">Próxima</translation>
+<translation id="1201402288615127009">Avançar</translation>
 <translation id="1201895884277373915">Mais deste site</translation>
 <translation id="1202892408424955784">Produtos monitorados</translation>
 <translation id="1204184165594298176">{0,plural, =1{A cópia do arquivo está bloqueada}one{A cópia de <ph name="FILE_COUNT" /> arquivo está bloqueada}other{A cópia de <ph name="FILE_COUNT" /> arquivos está bloqueada}}</translation>
@@ -532,7 +532,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1876116428946561107">Você não tem nenhum endereço salvo. Adicione um endereço para usá-lo no Chrome.</translation>
 <translation id="1876399092304384674">Por data</translation>
 <translation id="187918866476621466">Abrir páginas de inicialização</translation>
-<translation id="1880901968112404879">Para agilizar o pagamento na próxima vez, salve o cartão, o código de segurança criptografado e o endereço de faturamento na sua Conta do Google</translation>
+<translation id="1880901968112404879">Para agilizar os próximos pagamentos, salve o cartão, o código de segurança criptografado e o endereço de faturamento na sua Conta do Google</translation>
 <translation id="1883255238294161206">Recolher lista</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Jogo do dinossauro. Um dinossauro pixelado corre por uma paisagem desolada desviando de cactos e pterodátilos. Quando você ouvir o sinal, toque para pular os obstáculos.</translation>
@@ -1008,7 +1008,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2699273987028089219">Submenu disponível. Use <ph name="SHORTCUT" /> para navegar até outras opções.</translation>
 <translation id="2701514975700770343">Virada para baixo</translation>
 <translation id="2702592986366989640">Opção com preço baixo</translation>
-<translation id="2702801445560668637">Lista de Leitura</translation>
+<translation id="2702801445560668637">Lista de leitura</translation>
 <translation id="270415722347413271">Disco óptico (fosco)</translation>
 <translation id="2704192696317130398">Bloquear o mouse?</translation>
 <translation id="2704283930420550640">O valor não corresponde ao formato.</translation>
@@ -1321,7 +1321,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3254301855501243548">18 x 22 pol.</translation>
 <translation id="3255926992597692024">O Chromium está tentando modificar as configurações para preenchimento de formas de pagamento.</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo evento no Google Agenda</translation>
-<translation id="3261488570342242926">Saiba mais sobre cartões virtuais</translation>
+<translation id="3261488570342242926">Saiba mais sobre cartões virtuais.</translation>
 <translation id="3262698603497362968">Opções de compra</translation>
 <translation id="3266367459139339908">Estamos lançando novas formas de limitar o que os sites podem saber sobre você ao mostrar anúncios personalizados, por exemplo:</translation>
 <translation id="3266793032086590337">Valor (conflitante)</translation>
@@ -3737,7 +3737,7 @@ Mais detalhes:
 <translation id="7388594495505979117">{0,plural, =1{Seu dispositivo será reiniciado em 1 minuto}one{Seu dispositivo será reiniciado em # minuto}other{Seu dispositivo será reiniciado em # minutos}}</translation>
 <translation id="7393161616326137353">Jogos de aventura</translation>
 <translation id="7393475648162498734">Mostrar recompensas e benefícios disponíveis para seus cartões na finalização da compra</translation>
-<translation id="7393971683644170444">Conectando-se ao emissor do seu cartão…</translation>
+<translation id="7393971683644170444">Conectando ao emissor do seu cartão…</translation>
 <translation id="739728382607845710">Ícone do gerenciador de pagamentos</translation>
 <translation id="7399616692258236448">As solicitações de localização são bloqueadas automaticamente para todos os sites, exceto os que você permitir</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -4062,7 +4062,7 @@ Mais detalhes:
 <translation id="79338296614623784">Informe um número de telefone válido</translation>
 <translation id="7934414805353235750"><ph name="URL" /> quer reproduzir conteúdo protegido. A identidade do seu dispositivo será verificada pelo Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
-<translation id="7937163678541954811">O CVC desse cartão será criptografado e salvo no seu dispositivo para agilizar pagamentos</translation>
+<translation id="7937163678541954811">O CVC deste cartão será criptografado e salvo no seu dispositivo para agilizar pagamentos</translation>
 <translation id="7937554595067888181">Expira em <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">O certificado do servidor ainda não é válido.</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
@@ -4853,7 +4853,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="989988560359834682">Editar endereço</translation>
 <translation id="991413375315957741">sensores de luz ou movimento</translation>
 <translation id="991936891556421157">Calçados</translation>
-<translation id="992110854164447044">O cartão virtual oculta o físico para proteger você contra possíveis tentativas de fraude. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="992110854164447044">O cartão virtual oculta o físico para proteger você contra fraudes. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992432478773561401">O software "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede:

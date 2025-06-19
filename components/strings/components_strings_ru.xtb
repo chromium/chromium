@@ -712,7 +712,7 @@
 <translation id="218940509700321686">Файл в формате CSV</translation>
 <translation id="2194856509914051091">Важная информация</translation>
 <translation id="2200678913752027654">Кнопка "Не нравится". Нажмите Ввод, чтобы открыть форму и подробно описать, почему вам не нравится эта подсказка.</translation>
-<translation id="2202627062836089804">на задней стороне карты</translation>
+<translation id="2202627062836089804">с обратной стороны карты</translation>
 <translation id="2204482073374652408">Обновлено</translation>
 <translation id="2207770355672215546">Разрешать всегда с любой картой</translation>
 <translation id="2208053750671792556">Не получили код? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1559,7 +1559,7 @@
 <translation id="3647286794400715637">Каждая запись должна содержать 1–2 URL.</translation>
 <translation id="3647400963805615193">Кнопка "Закрыть совет по работе с Chrome". Для выполнения действия нажмите Ввод. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="3650584904733503804">Проверка выполнена успешно</translation>
-<translation id="3650594806107685466">Чтобы получить доступ к данным банковской карты, введите CVC-код (<ph name="SIDE_OF_CARD" />).</translation>
+<translation id="3650594806107685466">Введите CVC-код <ph name="SIDE_OF_CARD" />. Это нужно для ее безопасности.</translation>
 <translation id="3650917416636556301">Пеший туризм и кемпинг</translation>
 <translation id="3655241534245626312">Перейти в настройки разрешений</translation>
 <translation id="3655670868607891010">Если эта проблема возникает часто, изучите <ph name="HELP_LINK" />.</translation>
@@ -2238,7 +2238,7 @@
 <translation id="4811450222531576619">Сведения об источнике и теме</translation>
 <translation id="4813512666221746211">Ошибка сети</translation>
 <translation id="4814114628197290459">Удаление кода IBAN</translation>
-<translation id="4816492930507672669">По размеру страницы</translation>
+<translation id="4816492930507672669">Выровнять по размеру страницы</translation>
 <translation id="4819347708020428563">Изменить заметки в режиме по умолчанию?</translation>
 <translation id="4822493756793346865">Информация о средних ценах основана на данных из магазинов в интернете за последние 90 дней.</translation>
 <translation id="4822922322149719535">Открыть журнал ошибок</translation>
@@ -2999,7 +2999,7 @@
 <translation id="6118782133429281336">Список источников пуст.</translation>
 <translation id="6120950591512958208">Укажите этот код при оформлении покупки.</translation>
 <translation id="612178891608320683">Веганская кухня</translation>
-<translation id="6122181661879998141">на передней стороне карты</translation>
+<translation id="6122181661879998141">с лицевой стороны карты</translation>
 <translation id="6124058285696691147">Скачать прикрепленный файл</translation>
 <translation id="6124432979022149706">Коннекторы Chrome Enterprise</translation>
 <translation id="6126565365696310362">Конверт Chinese 2</translation>
@@ -3331,7 +3331,7 @@
 <translation id="6687230248707087982">Конверт (обычный)</translation>
 <translation id="6687335167692595844">Размер шрифта запрошен</translation>
 <translation id="6688743156324860098">Изменить</translation>
-<translation id="6688775486821967877">Виртуальная карта недоступна. Повторите попытку позже.</translation>
+<translation id="6688775486821967877">Виртуальная карта сейчас недоступна. Повторите попытку позже.</translation>
 <translation id="6688851075017682769">Тестовые адреса по странам</translation>
 <translation id="6689249931105087298">Относительный со сжатием точки черного цвета</translation>
 <translation id="6689271823431384964">Chrome предлагает вам сохранить карты в аккаунте Google, поскольку вы вошли в систему. Этот параметр можно изменить в разделе настроек. Имя владельца карты взято из вашего аккаунта.</translation>
@@ -4001,7 +4001,7 @@
 <translation id="7800304661137206267">Соединение зашифровано с помощью <ph name="CIPHER" />, для аутентификации сообщений используется <ph name="MAC" />, для обмена ключами используется <ph name="KX" />.</translation>
 <translation id="7800977246388195491">Chrome определяет интересующие вас темы на основе недавней истории браузера. Сайты, которые вы посещаете, также могут определять, что вам нравится. Сайты, на которые вы зайдете в дальнейшем, смогут запрашивать эти сведения, чтобы показывать персонализированную рекламу. Вы можете выбирать, какие темы и данные каких сайтов будут использоваться для показа рекламы.</translation>
 <translation id="7802523362929240268">Сайт безопасен</translation>
-<translation id="7802989406998618639">Введите <ph name="NUMBER_OF_DIGITS" />-значный защитный код (его можно найти <ph name="SIDE_OF_CARD" />), чтобы банк подтвердил вашу личность.</translation>
+<translation id="7802989406998618639">Введите <ph name="NUMBER_OF_DIGITS" />-значный защитный код <ph name="SIDE_OF_CARD" />, чтобы банк подтвердил вашу личность.</translation>
 <translation id="780301667611848630">Нет, спасибо</translation>
 <translation id="7805268272389338048">Шифрование защищает вашу личную информацию</translation>
 <translation id="7805768142964895445">Состояние</translation>
@@ -4434,7 +4434,7 @@
 <translation id="8558347880669160417">Дано разовое разрешение на доступ к микрофону и камере</translation>
 <translation id="8559762987265718583">Не удалось установить защищенное соединение с доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> из-за неверных настроек системных часов и календаря (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Несколько документов/без разбора по копиям</translation>
-<translation id="8564466070529550495">Виртуальная карта недоступна. Повторите попытку позже.</translation>
+<translation id="8564466070529550495">Виртуальная карта сейчас недоступна. Повторите попытку позже.</translation>
 <translation id="8564985650692024650">Chromium рекомендует сбросить пароль, используемый в подразделении <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, если вы указывали его на других сайтах.</translation>
 <translation id="8570895683659698018">Хобби и отдых</translation>
 <translation id="8574841453995331336">Холодильники и морозильные камеры</translation>

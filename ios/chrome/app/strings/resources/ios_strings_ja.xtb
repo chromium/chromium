@@ -133,7 +133,7 @@
 <translation id="1509960214886564027">多くサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="1513858653616922153">パスワードを削除</translation>
 <translation id="1517166097004694782">[このタブを続行] を非表示にする</translation>
-<translation id="1520027731907768768">追跡している商品の値下げアラートを受け取る。</translation>
+<translation id="1520027731907768768">追跡している商品の値下げアラートを受け取ります。</translation>
 <translation id="1521366073263497277">タブグリッドに移動します</translation>
 <translation id="1521774566618522728">最終同期: 今日</translation>
 <translation id="1524563461097350801">スキップ</translation>
@@ -236,7 +236,7 @@
 <translation id="1956138802718275401">ホーム画面からパスワードにアクセス</translation>
 <translation id="1959441496380398824">日付を長押しします。</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> さんが <ph name="WEBSITE" /> のパスワードをあなたと共有しました</translation>
-<translation id="1962969542251276847">画面をロック</translation>
+<translation id="1962969542251276847">ロック画面</translation>
 <translation id="1963976881984600709">標準保護機能</translation>
 <translation id="1966313166384086081">サイトデータ</translation>
 <translation id="1967461193809857427">{count,plural, =1{Android で開いたタブを表示しますか？}other{Android で開いたタブを表示しますか？}}</translation>
@@ -334,7 +334,7 @@
 <translation id="2316129865977710310">今はしない</translation>
 <translation id="2320166752086256636">キーボードを非表示</translation>
 <translation id="2321086116217818302">パスワードを準備しています…</translation>
-<translation id="2323697864063408084">通知はロック画面とバナーで表示されるので、重要な情報を見逃すことはありません</translation>
+<translation id="2323697864063408084">ロック画面とバナーで通知を受け取り、重要な情報を見逃さないようにしましょう</translation>
 <translation id="2326302612031521902">単位セレクタ</translation>
 <translation id="2330607597130465898">保護なし</translation>
 <translation id="233375395665273385">削除してログアウト</translation>
