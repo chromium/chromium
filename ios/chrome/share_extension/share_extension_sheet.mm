@@ -216,26 +216,29 @@ CGFloat const kAvatarImageDimension = 30.0;
 }
 
 - (void)confirmationAlertPrimaryAction {
+  NSString* gaiaID = self.selectedAccountInfo.gaiaID;
   switch (_sharedItemType) {
     case kURL:
-      [self.delegate didTapOpenInChromeShareExtensionSheet:self gaiaID:nil];
+      [self.delegate didTapOpenInChromeShareExtensionSheet:self gaiaID:gaiaID];
       return;
     case kImage:
     case kText:
-      [self.delegate didTapSearchInChromeShareExtensionSheet:self gaiaID:nil];
+      [self.delegate didTapSearchInChromeShareExtensionSheet:self
+                                                      gaiaID:gaiaID];
       return;
   }
 }
 
 - (void)confirmationAlertSecondaryAction {
+  NSString* gaiaID = self.selectedAccountInfo.gaiaID;
   switch (_sharedItemType) {
     case kURL:
-      [self.delegate didTapMoreOptionsShareExtensionSheet:self gaiaID:nil];
+      [self.delegate didTapMoreOptionsShareExtensionSheet:self gaiaID:gaiaID];
       return;
     case kImage:
     case kText:
       [self.delegate didTapSearchInIncognitoShareExtensionSheet:self
-                                                         gaiaID:nil];
+                                                         gaiaID:gaiaID];
       return;
   }
 }

@@ -145,7 +145,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
            ExtensionOpenURL(openURL, weakSelf, nil);
          }];
   [command prepareToOpenURL:_shareURL];
-  [command executeInApp];
+
+  [self executeInAppWithCommand:command gaiaID:gaiaID];
 
   [self queueActionItemURL:_shareURL
                      title:_shareTitle
@@ -173,7 +174,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
 
   [moreActionsAlertController addAction:[self addToBookmarksAlertAction]];
   [moreActionsAlertController addAction:[self addToReadingListAlertAction]];
-  [moreActionsAlertController addAction:[self openInIncognitoAlertAction]];
+  [moreActionsAlertController
+      addAction:[self openInIncognitoAlertActionWithGaiaID:gaiaID]];
   [moreActionsAlertController addAction:cancelAlertAction];
 
   moreActionsAlertController.popoverPresentationController.sourceView =
@@ -199,7 +201,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
          }];
   if (self.shareText) {
     [command prepareToSearchText:self.shareText];
-    [command executeInApp];
+    [self executeInAppWithCommand:command gaiaID:gaiaID];
     [self queueActionItemURL:_shareURL
                        title:_shareText
                       action:app_group::TEXT_SEARCH_ITEM
@@ -215,7 +217,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
     [command prepareToSearchImageData:self.shareImageData
                            completion:^{
                              [weakSelf handleImageSharingForCommand:command
-                                                          incognito:NO];
+                                                          incognito:NO
+                                                             gaiaID:gaiaID];
                            }];
 
     return;
@@ -235,7 +238,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
          }];
   if (self.shareText) {
     [command prepareToIncognitoSearchText:self.shareText];
-    [command executeInApp];
+    [self executeInAppWithCommand:command gaiaID:gaiaID];
     [self queueActionItemURL:_shareURL
                        title:_shareText
                       action:app_group::INCOGNITO_TEXT_SEARCH_ITEM
@@ -252,7 +255,8 @@ const NSUInteger kSearchCharacterLimit = 1000;
                                     completion:^{
                                       [weakSelf
                                           handleImageSharingForCommand:command
-                                                             incognito:YES];
+                                                             incognito:YES
+                                                                gaiaID:gaiaID];
                                     }];
     return;
   }
@@ -268,6 +272,15 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 #pragma mark - Private methods
+
+- (void)executeInAppWithCommand:(AppGroupCommand*)command
+                         gaiaID:(NSString*)gaiaID {
+  if (app_group::MultiProfileShareExtensionEnabled()) {
+    [command executeInAppWithGaiaID:gaiaID];
+  } else {
+    [command executeInApp];
+  }
+}
 
 - (AccountInfo*)accountInfoWithGaiaID:(NSString*)gaiaID {
   CHECK(app_group::MultiProfileShareExtensionEnabled());
@@ -318,12 +331,13 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 - (void)handleImageSharingForCommand:(AppGroupCommand*)command
-                           incognito:(BOOL)incognito {
+                           incognito:(BOOL)incognito
+                              gaiaID:(NSString*)gaiaID {
   __weak ExtendedShareViewController* weakSelf = self;
   app_group::ShareExtensionItemType action =
       (incognito) ? app_group::INCOGNITO_IMAGE_SEARCH_ITEM
                   : app_group::IMAGE_SEARCH_ITEM;
-  [command executeInApp];
+  [self executeInAppWithCommand:command gaiaID:gaiaID];
   [self queueActionItemURL:_shareURL
                      title:_shareTitle
                     action:action
@@ -699,16 +713,17 @@ const NSUInteger kSearchCharacterLimit = 1000;
                                 }];
 }
 
-- (UIAlertAction*)openInIncognitoAlertAction {
+- (UIAlertAction*)openInIncognitoAlertActionWithGaiaID:(NSString*)gaiaID {
   __weak ExtendedShareViewController* weakSelf = self;
   NSString* openInIncognitoTitle = NSLocalizedString(
       @"IDS_IOS_OPEN_IN_INCOGNITO_BUTTON_SHARE_EXTENSION",
       @"The add to reading list button text in share extension.");
-  return [UIAlertAction actionWithTitle:openInIncognitoTitle
-                                  style:UIAlertActionStyleDefault
-                                handler:^(UIAlertAction* action) {
-                                  [weakSelf handleOpeningInIncognito];
-                                }];
+  return [UIAlertAction
+      actionWithTitle:openInIncognitoTitle
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction* action) {
+                [weakSelf handleOpeningInIncognitoWithGaiaID:gaiaID];
+              }];
 }
 
 - (void)handleAddingToBookmark {
@@ -735,7 +750,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
                 }];
 }
 
-- (void)handleOpeningInIncognito {
+- (void)handleOpeningInIncognitoWithGaiaID:(NSString*)gaiaID {
   self.shareSheet.dismissedFromSheetAction = YES;
   __weak ExtendedShareViewController* weakSelf = self;
   AppGroupCommand* command = [[AppGroupCommand alloc]
@@ -744,7 +759,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
            ExtensionOpenURL(openURL, weakSelf, nil);
          }];
   [command prepareToOpenURLInIncognito:_shareURL];
-  [command executeInApp];
+  [self executeInAppWithCommand:command gaiaID:gaiaID];
 
   [self queueActionItemURL:_shareURL
                      title:_shareTitle
