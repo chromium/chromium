@@ -99,10 +99,10 @@ class CORE_EXPORT MediaQueryEvaluator final
   KleeneValue Eval(const MediaQueryExpNode&) const;
   KleeneValue Eval(const MediaQueryExpNode&, MediaQueryResultFlags*) const;
 
-  static KleeneValue EvalIfRange(const CSSValue& reference_value,
-                                 const CSSValue& query_value,
-                                 MediaQueryOperator op,
-                                 bool reverse_op);
+  static KleeneValue EvalStyleRange(const CSSValue& reference_value,
+                                    const CSSValue& query_value,
+                                    MediaQueryOperator op,
+                                    bool reverse_op);
 
   // Returns true if any of the media queries in the results lists changed its
   // evaluation.

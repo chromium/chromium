@@ -176,6 +176,14 @@ class CORE_EXPORT StyleCascade {
                                  const CSSValue&,
                                  const TreeScope*);
 
+  // Interpret CSSUnparsedDeclarationValue value against a numeric literal
+  // syntax. Used to resolve values in the range syntax of style queries.
+  static const CSSValue* CoerceIntoNumericValue(
+      StyleResolverState&,
+      const CSSUnparsedDeclarationValue&,
+      const TreeScope*,
+      const CSSParserContext&);
+
  private:
   friend class TestCascade;
 
@@ -523,11 +531,6 @@ class CORE_EXPORT StyleCascade {
                                   const CSSParserContext&,
                                   FunctionContext*);
 
-  const CSSValue* CoerceIntoNumericValue(const CSSUnparsedDeclarationValue&,
-                                         const TreeScope*,
-                                         CascadeResolver&,
-                                         const CSSParserContext&,
-                                         FunctionContext*);
   KleeneValue EvalIfTest(const IfCondition& node,
                          const TreeScope* tree_scope,
                          CascadeResolver& resolver,
@@ -551,6 +554,12 @@ class CORE_EXPORT StyleCascade {
                      const CustomProperty& property);
   bool EvalIfInitial(CSSVariableData* value, const CustomProperty& property);
   bool EvalIfInherit(CSSVariableData* value, const CustomProperty& property);
+  const CSSValue* CoerceIntoNumericValueInternal(
+      const CSSUnparsedDeclarationValue&,
+      const TreeScope*,
+      CascadeResolver&,
+      const CSSParserContext&,
+      FunctionContext*);
 
   // NOTE: The FunctionContext object must be the _caller's_ function context,
   // not the one the function itself sets up. This is because it is used to
@@ -671,8 +680,7 @@ class CORE_EXPORT StyleCascade {
   bool ValidateFallback(const CustomProperty&, StringView) const;
   // Marks the CustomProperty as referenced by something. Needed to avoid
   // animating these custom properties on the compositor.
-  void MarkIsReferenced(const CSSProperty& referencer,
-                        const CustomProperty& referenced);
+  void MarkIsReferenced(const CustomProperty& referenced);
   // Marks a CSSProperty as having a reference to a custom property. Needed to
   // disable the matched property cache in some cases.
   void MarkHasVariableReference(const CSSProperty&);

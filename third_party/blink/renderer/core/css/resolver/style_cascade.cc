@@ -1573,8 +1573,7 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
   // Any custom property referenced (by anything, even just once) in the
   // document can currently not be animated on the compositor. Hence we mark
   // properties that have been referenced.
-  DCHECK(resolver.CurrentProperty());
-  MarkIsReferenced(*resolver.CurrentProperty(), property);
+  MarkIsReferenced(property);
 
   if (!resolver.DetectCycle(property)) {
     // We are about to substitute var(property). In order to do that, we must
@@ -2331,6 +2330,17 @@ bool StyleCascade::EvalIfKeyword(const CSSValue& keyword_value,
 }
 
 const CSSValue* StyleCascade::CoerceIntoNumericValue(
+    StyleResolverState& state,
+    const CSSUnparsedDeclarationValue& unparsed_value,
+    const TreeScope* tree_scope,
+    const CSSParserContext& context) {
+  STACK_UNINITIALIZED StyleCascade cascade(state);
+  CascadeResolver resolver(CascadeFilter(), /* generation */ 0);
+  return cascade.CoerceIntoNumericValueInternal(unparsed_value, tree_scope,
+                                                resolver, context, nullptr);
+}
+
+const CSSValue* StyleCascade::CoerceIntoNumericValueInternal(
     const CSSUnparsedDeclarationValue& unparsed_value,
     const TreeScope* tree_scope,
     CascadeResolver& resolver,
@@ -2426,34 +2436,34 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
     DCHECK(feature.HasStyleRange());
     KleeneValue result = KleeneValue::kTrue;
     const CSSValue* reference =
-        CoerceIntoNumericValue(feature.ReferenceValue(), tree_scope, resolver,
-                               context, function_context);
+        CoerceIntoNumericValueInternal(feature.ReferenceValue(), tree_scope,
+                                       resolver, context, function_context);
     if (!reference) {
       return KleeneValue::kFalse;
     }
     if (bounds.left.IsValid()) {
       const auto& left =
           To<CSSUnparsedDeclarationValue>(bounds.left.value.GetCSSValue());
-      const CSSValue* left_resolved = CoerceIntoNumericValue(
+      const CSSValue* left_resolved = CoerceIntoNumericValueInternal(
           left, tree_scope, resolver, context, function_context);
       if (!left_resolved) {
         return KleeneValue::kFalse;
       }
-      result = KleeneAnd(
-          result, MediaQueryEvaluator::EvalIfRange(*reference, *left_resolved,
-                                                   bounds.left.op, true));
+      result = KleeneAnd(result,
+                         MediaQueryEvaluator::EvalStyleRange(
+                             *reference, *left_resolved, bounds.left.op, true));
     }
     if (bounds.right.IsValid()) {
       const auto& right =
           To<CSSUnparsedDeclarationValue>(bounds.right.value.GetCSSValue());
-      const CSSValue* right_resolved = CoerceIntoNumericValue(
+      const CSSValue* right_resolved = CoerceIntoNumericValueInternal(
           right, tree_scope, resolver, context, function_context);
       if (!right_resolved) {
         return KleeneValue::kFalse;
       }
       result = KleeneAnd(
-          result, MediaQueryEvaluator::EvalIfRange(*reference, *right_resolved,
-                                                   bounds.right.op, false));
+          result, MediaQueryEvaluator::EvalStyleRange(
+                      *reference, *right_resolved, bounds.right.op, false));
     }
     return result;
   }
@@ -2713,8 +2723,7 @@ bool StyleCascade::ValidateFallback(const CustomProperty& property,
   return property.Parse(value, *context, local_context);
 }
 
-void StyleCascade::MarkIsReferenced(const CSSProperty& referencer,
-                                    const CustomProperty& referenced) {
+void StyleCascade::MarkIsReferenced(const CustomProperty& referenced) {
   if (!referenced.IsRegistered()) {
     return;
   }

@@ -38,11 +38,13 @@
 #include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
+#include "third_party/blink/renderer/core/css/auto_registration.h"
 #include "third_party/blink/renderer/core/css/css_container_values.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
+#include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/media_eval_utils.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/media_features.h"
@@ -50,11 +52,14 @@
 #include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
+#include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -1852,10 +1857,54 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
 
   if (bounds.IsRange()) {
     DCHECK(feature.HasStyleRange());
-    DCHECK(RuntimeEnabledFeatures::CSSContainerStyleQueriesRangeEnabled());
-    // TODO(crbug.com/408011559): Add support for container style queries
-    // ranges.
-    return KleeneValue::kFalse;
+    if (!RuntimeEnabledFeatures::CSSContainerStyleQueriesRangeEnabled()) {
+      return KleeneValue::kFalse;
+    }
+    KleeneValue result = KleeneValue::kTrue;
+    Element* container = media_values_->ContainerElement();
+    Document* document = media_values_->GetDocument();
+
+    StyleResolverState state(*document, *container);
+    state.SetStyle(container->ComputedStyleRef());
+    const auto* context = MakeGarbageCollected<CSSParserContext>(*document);
+
+    const CSSValue* reference = StyleCascade::CoerceIntoNumericValue(
+        state, feature.ReferenceValue(), document, *context);
+    if (!reference) {
+      return KleeneValue::kFalse;
+    }
+
+    if (bounds.left.IsValid()) {
+      const CSSUnparsedDeclarationValue* left =
+          DynamicTo<CSSUnparsedDeclarationValue>(
+              bounds.left.value.GetCSSValue());
+      DCHECK(left);
+      const CSSValue* left_resolved = StyleCascade::CoerceIntoNumericValue(
+          state, *left, document, *context);
+      if (!left_resolved) {
+        return KleeneValue::kFalse;
+      }
+      result = KleeneAnd(result,
+                         MediaQueryEvaluator::EvalStyleRange(
+                             *reference, *left_resolved, bounds.left.op, true));
+    }
+
+    if (bounds.right.IsValid()) {
+      const CSSUnparsedDeclarationValue* right =
+          DynamicTo<CSSUnparsedDeclarationValue>(
+              bounds.right.value.GetCSSValue());
+      DCHECK(right);
+      const CSSValue* right_resolved = StyleCascade::CoerceIntoNumericValue(
+          state, *right, document, *context);
+      if (!right_resolved) {
+        return KleeneValue::kFalse;
+      }
+      result = KleeneAnd(
+          result, MediaQueryEvaluator::EvalStyleRange(
+                      *reference, *right_resolved, bounds.right.op, false));
+    }
+
+    return result;
   }
 
   DCHECK(bounds.right.op == MediaQueryOperator::kNone);
@@ -1908,10 +1957,10 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
   return KleeneValue::kFalse;
 }
 
-KleeneValue MediaQueryEvaluator::EvalIfRange(const CSSValue& reference_value,
-                                             const CSSValue& query_value,
-                                             MediaQueryOperator op,
-                                             bool reverse_op) {
+KleeneValue MediaQueryEvaluator::EvalStyleRange(const CSSValue& reference_value,
+                                                const CSSValue& query_value,
+                                                MediaQueryOperator op,
+                                                bool reverse_op) {
   const CSSNumericLiteralValue* reference_numeric =
       DynamicTo<CSSNumericLiteralValue>(reference_value);
   const CSSNumericLiteralValue* query_numeric =

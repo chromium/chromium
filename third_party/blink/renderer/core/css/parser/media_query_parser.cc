@@ -234,7 +234,7 @@ std::optional<MediaQueryExpValue> ConsumeUnparsed(
   CSSVariableData* data =
       CSSVariableData::Create(value_string, /* is_animation_tainted= */ false,
                               /* is_attr_tainted= */ false,
-                              /*needs_variable_resolution=*/false);
+                              /*needs_variable_resolution=*/true);
   const CSSValue* value =
       MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, &context);
   return MediaQueryExpValue(*value);
