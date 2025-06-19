@@ -7096,10 +7096,14 @@ void GraphImplDml::OnDispatchComplete(
     return;
   }
 
+  // TODO(crbug.com/40288082): repeated dispatch does not reliably execute
+  // using pre-recorded graph dispatches so disable graph recycling to force
+  // re-recording.
+
   // If there is an existing available graph resources, release the graph
   // resources. Otherwise, recycle the graph resources for the next call.
-  if (!graph_resources_) {
-    graph_resources_ = std::move(graph_resources);
-  }
+  // if (!graph_resources_) {
+  //   graph_resources_ = std::move(graph_resources);
+  // }
 }
 }  // namespace webnn::dml
