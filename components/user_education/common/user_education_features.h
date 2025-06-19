@@ -89,6 +89,11 @@ extern base::TimeDelta GetIdleTimeBeforeHeavyweightPromo();
 // Returns the polling interval for the promo controller for User Education 2.5.
 extern base::TimeDelta GetPromoControllerPollingInterval();
 
+// Advertises browser features in New Tab Page promos.
+BASE_DECLARE_FEATURE(kEnableNtpBrowserPromos);
+
+extern bool NtpBrowserPromosEnabled();
+
 }  // namespace user_education::features
 
 #endif  // COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_FEATURES_H_

@@ -165,4 +165,12 @@ base::TimeDelta GetPromoControllerPollingInterval() {
       kDefaultPollingInterval);
 }
 
+BASE_FEATURE(kEnableNtpBrowserPromos,
+             "EnableNtpBrowserPromos",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool NtpBrowserPromosEnabled() {
+  return base::FeatureList::IsEnabled(kEnableNtpBrowserPromos);
+}
+
 }  // namespace user_education::features

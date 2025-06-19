@@ -9022,6 +9022,7 @@ from previous Chrome versions.
   <int value="-1846471618"
       label="enable-experimental-accessibility-switch-access-text"/>
   <int value="-1846070594" label="AllowWindowDragUsingSystemDragDrop:disabled"/>
+  <int value="-1845410561" label="EnableNtpBrowserPromos:disabled"/>
   <int value="-1844754731" label="Mash:disabled"/>
   <int value="-1844445413"
       label="NotificationsIgnoreRequireInteraction:disabled"/>
@@ -12177,6 +12178,7 @@ from previous Chrome versions.
   <int value="-669761849" label="SplitSettings:disabled"/>
   <int value="-669400536" label="FastPairSoftwareScanning:disabled"/>
   <int value="-669383690" label="BluetoothRfcommAndroid:enabled"/>
+  <int value="-668254324" label="EnableNtpBrowserPromos:enabled"/>
   <int value="-668250016" label="HttpsFirstDialogUi:enabled"/>
   <int value="-668114930" label="WindowsFollowCursor:disabled"/>
   <int value="-667952041" label="CCTRealTimeEngagementSignals:enabled"/>

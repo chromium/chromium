@@ -13007,12 +13007,18 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"supervised-user-interstitial-without-approvals",
      flag_descriptions::kSupervisedUserInterstitialWithoutApprovalsName,
-     flag_descriptions::
-         kSupervisedUserInterstitialWithoutApprovalsDescription,
+     flag_descriptions::kSupervisedUserInterstitialWithoutApprovalsDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          supervised_user::kSupervisedUserInterstitialWithoutApprovals)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-ntp-browser-promos",
+     flag_descriptions::kEnableNtpBrowserPromosName,
+     flag_descriptions::kEnableNtpBrowserPromosDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(user_education::features::kEnableNtpBrowserPromos)},
+#endif
 
     // Add new entries above this line.
 

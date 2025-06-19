@@ -3962,6 +3962,14 @@
     "expiry_milestone": 98
   },
   {
+    "name": "enable-ntp-browser-promos",
+    "owners": [
+      "cjgrant@chromium.org",
+      "dfried@chromium.org"
+    ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "enable-oauth-ipp",
     "owners": [ "pawliczek@chromium.org", "project-bolton@google.com" ],
     "expiry_milestone": 145

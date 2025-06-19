@@ -333,7 +333,7 @@ extern const char kDisplayEdgeToEdgeFullscreenDescription[];
 
 extern const char kClearInstanceInfoWhenClosedIntentionallyName[];
 extern const char kClearInstanceInfoWhenClosedIntentionallyDescription[];
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kEnableBenchmarkingName[];
 extern const char kEnableBenchmarkingDescription[];
@@ -346,6 +346,11 @@ extern const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[];
 
 extern const char kEnableLazyLoadImageForInvisiblePageName[];
 extern const char kEnableLazyLoadImageForInvisiblePageDescription[];
+
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kEnableNtpBrowserPromosName[];
+extern const char kEnableNtpBrowserPromosDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 extern const char kSoftNavigationHeuristicsName[];
 extern const char kSoftNavigationHeuristicsDescription[];

@@ -1897,6 +1897,14 @@ const char kEnableLazyLoadImageForInvisiblePageName[] =
 const char kEnableLazyLoadImageForInvisiblePageDescription[] =
     "Respect the loading = lazy attribute for images even on invisible pages.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kEnableNtpBrowserPromosName[] =
+    "Enable new tab page browser feature suggestions";
+const char kEnableNtpBrowserPromosDescription[] =
+    "Shows suggestions to explore browser capabilities (eg. signing in) on the "
+    "new tab page.";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 const char kSoftNavigationHeuristicsName[] = "Soft Navigation Heuristics";
 const char kSoftNavigationHeuristicsDescription[] =
     "Enables the soft navigation heuristics, including support for "
