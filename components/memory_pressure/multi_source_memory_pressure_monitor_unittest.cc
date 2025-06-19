@@ -20,8 +20,15 @@ TEST(MultiSourceMemoryPressureMonitorTest, NoEvaluatorUponConstruction) {
 }
 
 TEST(MultiSourceMemoryPressureMonitorTest, RunDispatchCallback) {
+#if BUILDFLAG(IS_FUCHSIA)
+  // On Fuchsia, the previous SingleThreadTaskEnvironment was sufficient.
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
+#else
+  // On other platforms (like Mac), the full TaskEnvironment is needed for the
+  // ThreadPool.
+  base::test::TaskEnvironment task_environment;
+#endif
 
   MultiSourceMemoryPressureMonitor monitor;
   bool callback_called = false;
