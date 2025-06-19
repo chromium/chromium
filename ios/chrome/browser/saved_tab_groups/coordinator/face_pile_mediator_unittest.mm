@@ -80,7 +80,6 @@ class FacePileMediatorTest : public PlatformTest {
     face_pile_config_.groupID = data_sharing::GroupId("test_group_id");
     face_pile_config_.avatarSize = 40.0;
     face_pile_config_.showsEmptyState = false;
-    face_pile_config_.showsEmptyState = false;
 
     fake_face_pile_consumer_ = [[FakeFacePileConsumer alloc] init];
 
@@ -148,6 +147,7 @@ TEST_F(FacePileMediatorTest, UpdateConsumerEmptyGroupWithOwner) {
   _mediator.consumer = fake_face_pile_consumer_;
 
   // Expect consumer to be updated for empty state and with one face.
+  ASSERT_EQ(fake_face_pile_consumer_.lastAvatarSize, 40u);
   ASSERT_EQ(fake_face_pile_consumer_.updateWithViewsCallCount, 1u);
   ASSERT_EQ(fake_face_pile_consumer_.lastFaces.count, 1u);
   ASSERT_EQ(fake_face_pile_consumer_.lastTotalNumber, 1u);
@@ -167,6 +167,7 @@ TEST_F(FacePileMediatorTest, UpdateConsumerMediumGroup) {
   _mediator.consumer = fake_face_pile_consumer_;
 
   // Expect consumer to be updated for with 3 faces.
+  ASSERT_EQ(fake_face_pile_consumer_.lastAvatarSize, 40u);
   ASSERT_EQ(fake_face_pile_consumer_.updateWithViewsCallCount, 1u);
   ASSERT_EQ(fake_face_pile_consumer_.lastFaces.count, 3u);
   ASSERT_EQ(fake_face_pile_consumer_.lastTotalNumber, 3u);
@@ -186,6 +187,7 @@ TEST_F(FacePileMediatorTest, UpdateConsumerBigGroup) {
   _mediator.consumer = fake_face_pile_consumer_;
 
   // Expect consumer to be updated for with 2 faces.
+  ASSERT_EQ(fake_face_pile_consumer_.lastAvatarSize, 40u);
   ASSERT_EQ(fake_face_pile_consumer_.updateWithViewsCallCount, 1u);
   ASSERT_EQ(fake_face_pile_consumer_.lastFaces.count, 2u);
   ASSERT_EQ(fake_face_pile_consumer_.lastTotalNumber, 8u);

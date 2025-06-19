@@ -12,10 +12,11 @@
 // Configuration object to create a FacePileView.
 @interface FacePileConfiguration : NSObject
 
-// The group with which this FacePile is associated.
+// The group with which this face pile is associated.
 @property(nonatomic, assign) data_sharing::GroupId groupID;
 
-// The background color for the face pile when it is not empty.
+// The background color for the face pile, visible in gaps and as an outer
+// stroke.
 @property(nonatomic, strong) UIColor* backgroundColor;
 
 // Whether the face pile should be visible when the group is empty.

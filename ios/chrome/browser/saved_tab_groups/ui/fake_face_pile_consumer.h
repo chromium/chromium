@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_UI_FAKE_FACE_PILE_CONSUMER_H_
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_UI_FAKE_FACE_PILE_CONSUMER_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/saved_tab_groups/ui/face_pile_consumer.h"
 
@@ -13,6 +13,8 @@
 @interface FakeFacePileConsumer : NSObject <FacePileConsumer>
 
 @property(nonatomic, assign) BOOL lastShowsTextWhenEmpty;
+@property(nonatomic, strong) UIColor* lastFacePileBackgroundColor;
+@property(nonatomic, assign) CGFloat lastAvatarSize;
 @property(nonatomic, strong) NSArray<id<ShareKitAvatarPrimitive>>* lastFaces;
 @property(nonatomic, assign) NSInteger lastTotalNumber;
 @property(nonatomic, assign) NSUInteger setShowsTextWhenEmptyCallCount;

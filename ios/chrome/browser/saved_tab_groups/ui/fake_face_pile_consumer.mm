@@ -11,6 +11,14 @@
   _setShowsTextWhenEmptyCallCount++;
 }
 
+- (void)setFacePileBackgroundColor:(UIColor*)backgroundColor {
+  _lastFacePileBackgroundColor = backgroundColor;
+}
+
+- (void)setAvatarSize:(CGFloat)avatarSize {
+  _lastAvatarSize = avatarSize;
+}
+
 - (void)updateWithFaces:(NSArray<id<ShareKitAvatarPrimitive>>*)faces
             totalNumber:(NSInteger)totalNumber {
   _lastFaces = faces;

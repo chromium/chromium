@@ -15,6 +15,13 @@
 // Sets whether the FacePileView should display text when there are no faces.
 - (void)setShowsTextWhenEmpty:(BOOL)showsTextWhenEmpty;
 
+// Sets the background color for the face pile, visible in gaps and as an outer
+// stroke.
+- (void)setFacePileBackgroundColor:(UIColor*)backgroundColor;
+
+// Sets the size of avatar faces, in points.
+- (void)setAvatarSize:(CGFloat)avatarSize;
+
 // Updates the FacePileView with a new set of faces and the total
 // member count.
 - (void)updateWithFaces:(NSArray<id<ShareKitAvatarPrimitive>>*)faces

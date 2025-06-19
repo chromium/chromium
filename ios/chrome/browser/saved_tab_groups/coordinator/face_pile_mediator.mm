@@ -112,8 +112,10 @@ using ScopedDataSharingSyncObservation =
     return;
   }
 
-  // Configure consumer for empty state.
+  // Configure the consumer.
+  [self.consumer setAvatarSize:_configuration.avatarSize];
   [self.consumer setShowsTextWhenEmpty:_configuration.showsEmptyState];
+  [self.consumer setFacePileBackgroundColor:_configuration.backgroundColor];
 
   ShareKitAvatarConfiguration* ownerConfig;
   ShareKitAvatarConfiguration* secondConfig;
