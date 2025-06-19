@@ -154,16 +154,16 @@ enum class GlicRequestEvent {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequestEvent)
 
-// The possible states of tab focus.
-// LINT.IfChange(ActiveTabFocusState)
-enum class ActiveTabFocusState {
-  kActiveTabIsFocused = 0,
-  kCannotFocusActiveTab = 1,
-  kNoActiveTabCanBeFocused = 2,
+// The different states of active tab sharing.
+// LINT.IfChange(ActiveTabSharingState)
+enum class ActiveTabSharingState {
+  kActiveTabIsShared = 0,
+  kCannotShareActiveTab = 1,
+  kNoTabCanBeShared = 2,
   kTabContextPermissionNotGranted = 3,
   kMaxValue = kTabContextPermissionNotGranted
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ActiveTabFocusState)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ActiveTabSharingState)
 
 class GlicEnabling;
 class GlicSharingManager;
@@ -185,7 +185,7 @@ class GlicMetrics {
     virtual bool IsWindowShowing() const = 0;
     virtual bool IsWindowAttached() const = 0;
     virtual content::WebContents* GetContents() = 0;
-    virtual ActiveTabFocusState GetActiveTabFocusState() = 0;
+    virtual ActiveTabSharingState GetActiveTabSharingState() = 0;
   };
 
   GlicMetrics(Profile* profile, GlicEnabling* enabling);

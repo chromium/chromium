@@ -59,17 +59,17 @@ class DelegateImpl : public GlicMetrics::Delegate {
     FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
     return ftd.is_focus() ? ftd.focus()->GetContents() : nullptr;
   }
-  ActiveTabFocusState GetActiveTabFocusState() override {
+  ActiveTabSharingState GetActiveTabSharingState() override {
     if (!pref_service_->GetBoolean(prefs::kGlicTabContextEnabled)) {
-      return ActiveTabFocusState::kTabContextPermissionNotGranted;
+      return ActiveTabSharingState::kTabContextPermissionNotGranted;
     }
     FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
     if (ftd.is_focus()) {
-      return ActiveTabFocusState::kActiveTabIsFocused;
+      return ActiveTabSharingState::kActiveTabIsShared;
     } else if (ftd.unfocused_tab()) {
-      return ActiveTabFocusState::kCannotFocusActiveTab;
+      return ActiveTabSharingState::kCannotShareActiveTab;
     }
-    return ActiveTabFocusState::kNoActiveTabCanBeFocused;
+    return ActiveTabSharingState::kNoTabCanBeShared;
   }
 
  private:
@@ -247,8 +247,8 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
       browser_activity_observer_->GetBrowserActiveState());
   base::RecordAction(base::UserMetricsAction("GlicResponseInputSubmit"));
   base::UmaHistogramEnumeration(
-      "Glic.FocusedTab.SharingState.OnUserInputSubmitted",
-      delegate_->GetActiveTabFocusState());
+      "Glic.Sharing.ActiveTabSharingState.OnUserInputSubmitted",
+      delegate_->GetActiveTabSharingState());
   input_submitted_time_ = base::TimeTicks::Now();
   input_mode_ = mode;
   inputs_modes_used_.insert(mode);
@@ -391,8 +391,8 @@ void GlicMetrics::OnGlicWindowOpenAndReady() {
   }
 
   base::UmaHistogramEnumeration(
-      "Glic.FocusedTab.SharingState.OnPanelOpenAndReady",
-      delegate_->GetActiveTabFocusState());
+      "Glic.Sharing.ActiveTabSharingState.OnPanelOpenAndReady",
+      delegate_->GetActiveTabSharingState());
 
   // Record the presentation time of showing the glic panel in an UMA histogram.
   std::string input_mode;
@@ -650,8 +650,9 @@ void GlicMetrics::OnTabContextEnabledPrefChanged() {
       profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled);
   if (is_panel_open && is_enabled) {
     base::UmaHistogramEnumeration(
-        "Glic.FocusedTab.SharingState.OnTabContextPermissionGranted",
-        delegate_->GetActiveTabFocusState());
+        "Glic.Sharing.ActiveTabSharingState."
+        "OnTabContextPermissionGranted",
+        delegate_->GetActiveTabSharingState());
   }
 }
 

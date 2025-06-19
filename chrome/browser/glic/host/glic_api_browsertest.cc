@@ -1059,8 +1059,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPermissionAccess) {
   ExecuteJsTest();
   histogram_tester->ExpectUniqueSample(
-      "Glic.FocusedTab.SharingState.OnTabContextPermissionGranted",
-      ActiveTabFocusState::kActiveTabIsFocused, 1);
+      "Glic.Sharing.ActiveTabSharingState.OnTabContextPermissionGranted",
+      ActiveTabSharingState::kActiveTabIsShared, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testClosedCaptioning) {
@@ -1117,8 +1117,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testMetrics) {
   // handled by the browser before the check below.
   sleepWithRunLoop(base::Milliseconds(100));
   histogram_tester->ExpectUniqueSample(
-      "Glic.FocusedTab.SharingState.OnUserInputSubmitted",
-      ActiveTabFocusState::kTabContextPermissionNotGranted, 1);
+      "Glic.Sharing.ActiveTabSharingState.OnUserInputSubmitted",
+      ActiveTabSharingState::kTabContextPermissionNotGranted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testScrollToFindsText) {
@@ -1182,8 +1182,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testNotifyPanelWillOpenIsCalledOnce) {
   ExecuteJsTest();
   histogram_tester->ExpectUniqueSample(
-      "Glic.FocusedTab.SharingState.OnPanelOpenAndReady",
-      ActiveTabFocusState::kTabContextPermissionNotGranted, 1);
+      "Glic.Sharing.ActiveTabSharingState.OnPanelOpenAndReady",
+      ActiveTabSharingState::kTabContextPermissionNotGranted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetOsHotkeyState) {
