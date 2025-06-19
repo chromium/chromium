@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
@@ -78,6 +79,7 @@ class DesktopCapturerAndroid final : public webrtc::DesktopCapturer {
   // thread to do so.
   void OnRgbaFrameAvailable(JNIEnv* env,
                             const base::android::JavaRef<jobject>& release_cb,
+                            jlong timestamp_ns,
                             const base::android::JavaRef<jobject>& buf,
                             jint unchecked_pixel_stride,
                             jint unchecked_row_stride,
@@ -102,6 +104,8 @@ class DesktopCapturerAndroid final : public webrtc::DesktopCapturer {
 
     // Java callback to run when this plane's buffer is no longer in use.
     base::android::ScopedJavaGlobalRef<jobject> release_cb;
+    // Timestamp of the frame in nanoseconds.
+    int64_t timestamp_ns;
     // Java ByteBuffer containing the plane data.
     base::android::ScopedJavaGlobalRef<jobject> buf;
     // The number of bytes between the start of adjacent pixels in a row.
@@ -120,12 +124,13 @@ class DesktopCapturerAndroid final : public webrtc::DesktopCapturer {
 
   void Shutdown();
 
-  void ProcessRgbaFrame(PlaneInfo plane);
+  void ProcessRgbaFrame(int64_t timestamp_ns, PlaneInfo plane);
 
   raw_ptr<Callback> callback_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> screen_capture_;
 
   std::unique_ptr<webrtc::DesktopFrame> next_frame_;
+  int64_t last_frame_time_ns_ = 0;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   bool finishing_ = false;
 

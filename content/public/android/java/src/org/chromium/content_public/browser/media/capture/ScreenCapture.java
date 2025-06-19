@@ -221,6 +221,7 @@ public class ScreenCapture {
                                             mBackgroundHandler.post(
                                                     () -> releaseImage(reader, image));
                                         },
+                                        image.getTimestamp(),
                                         plane.getBuffer(),
                                         plane.getPixelStride(),
                                         plane.getRowStride(),
@@ -296,6 +297,7 @@ public class ScreenCapture {
         void onRgbaFrameAvailable(
                 long nativeDesktopCapturerAndroid,
                 Runnable releaseCb,
+                long timestampNs,
                 ByteBuffer buf,
                 int pixelStride,
                 int rowStride,
