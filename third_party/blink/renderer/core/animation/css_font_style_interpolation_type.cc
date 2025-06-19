@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/length_units_checker.h"
+#include "third_party/blink/renderer/core/css/css_font_style_range_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -66,7 +68,19 @@ InterpolationValue CSSFontStyleInterpolationType::MaybeConvertValue(
       identifier_value->GetValueID() == CSSValueID::kItalic) {
     return nullptr;
   }
-  // TODO(40946458): Don't resolve angle here, use unresolved version instead.
+  if (const auto* style_range_value =
+          DynamicTo<cssvalue::CSSFontStyleRangeValue>(value)) {
+    const CSSValueList* values = style_range_value->GetObliqueValues();
+    if (values->length()) {
+      const auto& primitive_value = To<CSSPrimitiveValue>(values->Item(0));
+      CSSPrimitiveValue::LengthTypeFlags types;
+      primitive_value.AccumulateLengthUnitTypes(types);
+      if (CSSInterpolationType::ConversionChecker* length_units_checker =
+              LengthUnitsChecker::MaybeCreate(types, state)) {
+        conversion_checkers.push_back(length_units_checker);
+      }
+    }
+  }
   return CreateFontStyleValue(StyleBuilderConverterBase::ConvertFontStyle(
       state.CssToLengthConversionData(), value));
 }
