@@ -14,6 +14,8 @@
 
 namespace gpu {
 
+class GpuMemoryBufferSupport;
+
 // Implementation of GPU memory buffer based on shared memory.
 class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
     : public GpuMemoryBufferImpl {
@@ -28,7 +30,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
   static constexpr gfx::GpuMemoryBufferType kBufferType =
       gfx::SHARED_MEMORY_BUFFER;
 
-  static std::unique_ptr<GpuMemoryBufferImplSharedMemory> Create(
+  static std::unique_ptr<GpuMemoryBufferImplSharedMemory> CreateForTesting(
       gfx::GpuMemoryBufferId id,
       const gfx::Size& size,
       gfx::BufferFormat format,
@@ -40,13 +42,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage);
-
-  static std::unique_ptr<GpuMemoryBufferImplSharedMemory> CreateFromHandle(
-      gfx::GpuMemoryBufferHandle handle,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      DestructionCallback callback);
 
   static bool IsUsageSupported(gfx::BufferUsage usage);
   static bool IsConfigurationSupported(gfx::BufferFormat format,
@@ -77,6 +72,15 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
   base::UnguessableToken GetSharedMemoryGUID() const;
 
  private:
+  friend class GpuMemoryBufferSupport;
+
+  static std::unique_ptr<GpuMemoryBufferImplSharedMemory> CreateFromHandle(
+      gfx::GpuMemoryBufferHandle handle,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      DestructionCallback callback);
+
   GpuMemoryBufferImplSharedMemory(
       gfx::GpuMemoryBufferId id,
       const gfx::Size& size,

@@ -49,11 +49,12 @@ GpuMemoryBufferImplSharedMemory::~GpuMemoryBufferImplSharedMemory() = default;
 
 // static
 std::unique_ptr<GpuMemoryBufferImplSharedMemory>
-GpuMemoryBufferImplSharedMemory::Create(gfx::GpuMemoryBufferId id,
-                                        const gfx::Size& size,
-                                        gfx::BufferFormat format,
-                                        gfx::BufferUsage usage,
-                                        DestructionCallback callback) {
+GpuMemoryBufferImplSharedMemory::CreateForTesting(
+    gfx::GpuMemoryBufferId id,
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    gfx::BufferUsage usage,
+    DestructionCallback callback) {
   if (!IsUsageSupported(usage))
     return nullptr;
   size_t buffer_size = 0u;

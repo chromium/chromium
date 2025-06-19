@@ -480,7 +480,7 @@ TYPED_TEST_P(GpuMemoryBufferImplCreateTest, Create) {
       continue;
     }
     bool destroyed = false;
-    std::unique_ptr<TypeParam> buffer(TypeParam::Create(
+    std::unique_ptr<TypeParam> buffer(TypeParam::CreateForTesting(
         kBufferId, kBufferSize, format, usage,
         base::BindOnce([](bool* destroyed) { *destroyed = true; },
                        base::Unretained(&destroyed))));
