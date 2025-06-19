@@ -340,14 +340,17 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialogCancel) {
 // Tests `ShowManageDialog` and accept.
 TEST_F(IOSCollaborationControllerDelegateTest, ShowManageDialogAccept) {
   InitDelegate(FlowType::kShareOrManage);
+  // Share the group.
+  tab_group_sync_service_->MakeTabGroupShared(
+      tab_group_->tab_group_id(), syncer::CollaborationId("collaboration"),
+      tab_groups::TabGroupSyncService::TabGroupSharingCallback());
+  // Prepare the callback.
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
   EXPECT_CALL(mock_callback,
               Run(CollaborationControllerDelegate::Outcome::kSuccess));
 
-  data_sharing::SharedDataPreview preview_data;
-  delegate_->ShowJoinDialog(data_sharing::GroupToken(), preview_data,
-                            mock_callback.Get());
+  delegate_->ShowManageDialog(tab_group_->tab_group_id(), mock_callback.Get());
 
   FakeShareKitFlowViewController* share_kit_flow_view_controller =
       ShareKitFlowFromBaseViewController(base_view_controller_);
@@ -361,12 +364,15 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowManageDialogCancel) {
   InitDelegate(FlowType::kShareOrManage);
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       mock_callback;
+  // Share the group.
+  tab_group_sync_service_->MakeTabGroupShared(
+      tab_group_->tab_group_id(), syncer::CollaborationId("collaboration"),
+      tab_groups::TabGroupSyncService::TabGroupSharingCallback());
+  // Prepare the callback.
   EXPECT_CALL(mock_callback,
               Run(CollaborationControllerDelegate::Outcome::kCancel));
 
-  data_sharing::SharedDataPreview preview_data;
-  delegate_->ShowJoinDialog(data_sharing::GroupToken(), preview_data,
-                            mock_callback.Get());
+  delegate_->ShowManageDialog(tab_group_->tab_group_id(), mock_callback.Get());
 
   FakeShareKitFlowViewController* share_kit_flow_view_controller =
       ShareKitFlowFromBaseViewController(base_view_controller_);
