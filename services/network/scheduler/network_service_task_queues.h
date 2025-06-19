@@ -20,6 +20,8 @@ class SequenceManager;
 
 namespace network {
 
+class NetworkServiceTaskObserver;
+
 // Task queues for the network service thread.
 //
 // Instances must be created and destroyed on the same thread as the
@@ -90,6 +92,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskQueues {
   // The index corresponds to the integer value of `QueueType`.
   std::array<base::sequence_manager::TaskQueue::Handle, kNumQueueTypes>
       task_queues_;
+
+  // Array of task observers, one for each `TaskQueue` in `task_queues_`. There
+  // is a 1:1 correspondence: `task_observers_[i]` is the task observer for
+  // `task_queues_[i]`.
+  std::array<std::unique_ptr<NetworkServiceTaskObserver>, kNumQueueTypes>
+      task_observers_;
 
   // Array of task runners, one for each `TaskQueue` in `task_queues_`. There is
   // a 1:1 correspondence: `task_runners_[i]` is the runner for

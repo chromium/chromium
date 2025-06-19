@@ -29,6 +29,7 @@ NetworkServiceScheduler::NetworkServiceScheduler()
     : sequence_manager_(
           base::sequence_manager::CreateSequenceManagerOnCurrentThread(
               base::sequence_manager::SequenceManager::Settings::Builder()
+                  .SetAddQueueTimeToTasks(true)
                   .SetCanRunTasksByBatches(true)
                   .SetPrioritySettings(
                       internal::CreateNetworkServiceTaskPrioritySettings())

@@ -5785,6 +5785,22 @@ chromium-metrics-reviews@google.com.
   <token key="Result" variants="HTTPRequestResult"/>
 </histogram>
 
+<histogram
+    name="NetworkService.Scheduler.IOThread.QueuingTime.{QueueName}Queue"
+    units="ms" expires_after="2025-12-25">
+  <owner>hayato@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Records the queuing time (from post to start processing) of a task posted to
+    {QueueName}Queue of NetworkServiceScheduler. Recorded with 0.001 probability
+    when a task scheduled on the IO thread starts.
+  </summary>
+  <token key="QueueName">
+    <variant name="Default"/>
+    <variant name="HighPriority"/>
+  </token>
+</histogram>
+
 <histogram name="NetworkService.Scheduler.IOThread.TaskOffCpuDuration"
     units="ms" expires_after="2025-12-25">
   <owner>hayato@chromium.org</owner>
