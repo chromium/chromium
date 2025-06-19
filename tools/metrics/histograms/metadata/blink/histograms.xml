@@ -2746,6 +2746,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLParsing.IsParserResumingCalledBeforePausing"
+    enum="Boolean" expires_after="2025-08-07">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether the parser is resumed before it's actually paused. This can
+    happen when the site sends a signal to resume the parser without sending
+    another signal to pause the parser.
+
+    This is measured for the experiment in crbug.com/416543903.
+  </summary>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.ParsingTimeMax4" units="microseconds"
     expires_after="2025-11-16">
   <owner>masonf@chromium.org</owner>

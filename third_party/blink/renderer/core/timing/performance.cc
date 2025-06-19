@@ -116,6 +116,9 @@ const char kSwapsPerInsertionHistogram[] =
 const char kParserResumeByUserTiming[] =
     "Blink.HTMLParsing.ResumedByUserTiming";
 
+const char kParserResumingCalledBeforePausing[] =
+    "Blink.HTMLParsing.IsParserResumingCalledBeforePausing";
+
 bool IsMeasureOptionsEmpty(const PerformanceMeasureOptions& options) {
   return !options.hasDetail() && !options.hasEnd() && !options.hasStart() &&
          !options.hasDuration();
@@ -914,6 +917,7 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
         Document* document = window->GetFrame()->GetDocument();
         if (mark_name == mark_parser_blocking) {
           document->NotifyParserPauseByUserTiming();
+          is_parser_yielded_ = true;
           // Schedule a timeout based resume event here since pausing the parser
           // can be a potential footgun. It's not guaranteed that the parser
           // resume mark is called after the parser pause mark.
@@ -931,6 +935,8 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
                   WrapPersistent(document)),
               base::Milliseconds(timeout));
         } else if (mark_name == mark_parser_restart) {
+          base::UmaHistogramBoolean(kParserResumingCalledBeforePausing,
+                                    !is_parser_yielded_);
           // If the parser is pausing, resume it. This has to be called as a new
           // task to ensure that the script is not running to resume the parser.
           document->GetTaskRunner(TaskType::kInternalLoading)

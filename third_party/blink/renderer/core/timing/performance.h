@@ -438,7 +438,12 @@ class CORE_EXPORT Performance : public EventTarget {
   // Running counter for LongTask observations.
   size_t long_task_counter_ = 0;
 
+  // Telling a document to pause/resume the parser for more optimized task
+  // scheduling to priroitize key loading milestones. To explore this idea, the
+  // user timing API is used as a signal to the document. crbug.com/425962649
+  // for more details.
   TaskHandle parser_yield_task_handle_;
+  bool is_parser_yielded_ = false;
 };
 
 }  // namespace blink
