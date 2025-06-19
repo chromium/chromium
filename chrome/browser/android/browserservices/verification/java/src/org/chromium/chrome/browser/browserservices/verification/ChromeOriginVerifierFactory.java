@@ -22,7 +22,7 @@ public class ChromeOriginVerifierFactory {
     }
 
     public static ChromeOriginVerifier create(
-            String packageName,
+            @Nullable String packageName,
             @CustomTabsService.Relation int relation,
             @Nullable WebContents webContents) {
         if (sInstanceForTests != null) return sInstanceForTests;

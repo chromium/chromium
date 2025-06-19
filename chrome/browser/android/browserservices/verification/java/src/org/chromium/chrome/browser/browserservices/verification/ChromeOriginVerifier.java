@@ -83,7 +83,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
      *     results.
      */
     public ChromeOriginVerifier(
-            String packageName,
+            @Nullable String packageName,
             @Relation int relation,
             @Nullable WebContents webContents,
             ChromeVerificationResultStore verificationResultStore) {
@@ -141,6 +141,9 @@ public class ChromeOriginVerifier extends OriginVerifier {
 
     @Override
     public boolean wasPreviouslyVerified(Origin origin) {
+        if (mPackageName == null) {
+            return false;
+        }
         return wasPreviouslyVerified(mPackageName, mSignatureFingerprints, origin, mRelation);
     }
 
@@ -157,7 +160,10 @@ public class ChromeOriginVerifier extends OriginVerifier {
      * @param relation The Digital Asset Links relation to verify for.
      */
     public static boolean wasPreviouslyVerified(
-            String packageName, Origin origin, @Relation int relation) {
+            @Nullable String packageName, Origin origin, @Relation int relation) {
+        if (packageName == null) {
+            return false;
+        }
         List<String> fingerprints =
                 PackageUtils.getCertificateSHA256FingerprintForPackage(packageName);
 
