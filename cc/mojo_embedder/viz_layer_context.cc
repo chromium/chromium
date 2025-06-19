@@ -1267,6 +1267,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->background_color = tree.background_color();
 
   const ViewportPropertyIds& property_ids = tree.viewport_property_ids();
+  update->elastic_overscroll = tree.elastic_overscroll()->Current(true);
   update->overscroll_elasticity_transform =
       property_ids.overscroll_elasticity_transform;
   update->page_scale_transform = property_ids.page_scale_transform;

@@ -115,6 +115,9 @@ struct LayerTreeUpdate {
   // The tree's viewport damage rect.
   gfx.mojom.Rect viewport_damage_rect;
 
+  // The elastic overscroll amount applied to the layer tree.
+  gfx.mojom.Vector2dF elastic_overscroll;
+
   // UIResource change requests accumulated since the last LayerTreeUpdate.
   array<TransferableUIResourceRequest> ui_resource_requests;
 
@@ -201,4 +204,3 @@ struct PendingLayerContext {
   pending_associated_receiver<LayerContext> receiver;
   pending_associated_remote<LayerContextClient> client;
 };
-

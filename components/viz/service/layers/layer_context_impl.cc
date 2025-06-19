@@ -1772,6 +1772,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       !std::isfinite(update->painted_device_scale_factor)) {
     return base::unexpected("Invalid painted device scale factor");
   }
+  if (layers.elastic_overscroll()->SetCurrent(update->elastic_overscroll)) {
+    layers.set_needs_update_draw_properties();
+  }
   layers.set_painted_device_scale_factor(update->painted_device_scale_factor);
   layers.SetDisplayColorSpaces(update->display_color_spaces);
   if (update->local_surface_id_from_parent) {

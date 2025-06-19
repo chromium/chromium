@@ -511,6 +511,9 @@ class CC_EXPORT LayerTreeImpl {
   void set_needs_update_draw_properties() {
     needs_update_draw_properties_ = true;
   }
+  void clear_needs_update_draw_properties_for_testing() {
+    needs_update_draw_properties_ = false;
+  }
   bool needs_update_draw_properties() const {
     return needs_update_draw_properties_;
   }
