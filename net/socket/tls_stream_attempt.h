@@ -133,6 +133,9 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
   // certificate error when sending TLS Trust Anchor IDs. Used to ensure that we
   // only retry once per connection attempt.
   bool retried_for_trust_anchor_ids_ = false;
+  // Used for metrics. Set to true when the initial connection attempt used a
+  // DNS endpoint that advertised TLS Trust Anchor IDs.
+  bool trust_anchor_ids_from_dns_ = false;
 
   base::WeakPtrFactory<TlsStreamAttempt> weak_ptr_factory_{this};
 };

@@ -4952,6 +4952,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.HandshakeConfirmedTime.TrustAnchorIDs"
+    units="Milliseconds" expires_after="2025-10-26">
+  <owner>estark@chromium.org</owner>
+  <owner>davidben@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The elapsed time between starting the crypto handshake, and receiving
+    confirmation from the server, measured only for servers that advertise TLS
+    Trust Anchor IDs in DNS.
+  </summary>
+</histogram>
+
 <histogram
     name="Net.QuicSession.HandshakeStatusOnConnectionMigration{ConnectionMigrationCause}"
     enum="BooleanConfirmed" expires_after="2023-09-17">
@@ -7311,6 +7323,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SSL.TrustAnchorIDsResult" enum="SSLTrustAnchorIDsResult"
+    expires_after="2025-10-26">
+  <owner>davidben@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    For each TLS connection that offered Trust Anchor IDs over DNS, what was the
+    result of that connection. In particular, this measures if the retry flow
+    was needed and, if so, whether it fixed the connection.
+  </summary>
+</histogram>
+
 <histogram name="Net.SSL_CipherSuite" enum="SSLCipherSuite"
     expires_after="never">
 <!-- expires-never: Used to keep track of the TLS ecosystem. -->
@@ -7348,6 +7372,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SSL_Connection_Error_TrustAnchorIDs" enum="NetErrorCodes"
+    expires_after="2025-10-26">
+  <owner>davidben@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Counts of specific error codes returned when opening an SSL connection.
+    Recorded for connections to servers that advertise support for Trust Anchor
+    IDs in DNS.
+  </summary>
+</histogram>
+
 <histogram name="Net.SSL_Connection_Latency_2" units="ms" expires_after="never">
 <!-- expires-never: Used to keep track of the TLS ecosystem. -->
 
@@ -7364,6 +7400,18 @@ chromium-metrics-reviews@google.com.
     successful connections to servers that advertise support for Encrypted
     ClientHello (ECH) in DNS. (Specifically, connects where the HTTPS record
     used included an ECHConfigList.)
+  </summary>
+</histogram>
+
+<histogram name="Net.SSL_Connection_Latency_TrustAnchorIDs" units="ms"
+    expires_after="2025-10-26">
+  <owner>davidben@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Time from when the Connect() starts until it completes. Recorded for
+    successful connections to servers that advertise support for Trust Anchor
+    IDs in DNS.
   </summary>
 </histogram>
 

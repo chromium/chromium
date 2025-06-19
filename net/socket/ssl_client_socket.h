@@ -47,7 +47,23 @@ class NET_EXPORT SSLClientSocket : public SSLSocket {
       bool is_ech_capable,
       bool ech_enabled,
       const std::optional<std::vector<uint8_t>>& ech_retry_configs,
+      bool trust_anchor_ids_from_dns,
+      bool retried_with_trust_anchor_ids,
       const LoadTimingInfo::ConnectTiming& connect_timing);
+
+  // These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
+  enum class TrustAnchorIDsResult {
+    // The connection succeeded on the initial connection.
+    kSuccessInitial = 0,
+    // The connection failed on the initial connection, without retrying.
+    kErrorInitial = 1,
+    // The connection succeeded after retrying with fresh Trust Anchor IDs.
+    kSuccessRetry = 2,
+    // The connection failed after retrying with fresh Trust Anchor IDs.
+    kErrorRetry = 3,
+    kMaxValue = kErrorRetry,
+  };
 
   SSLClientSocket();
 

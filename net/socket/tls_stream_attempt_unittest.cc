@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
@@ -639,8 +640,16 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsRetry) {
   int rv = helper.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
+  base::HistogramTester histogram_tester;
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsOk());
+  histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                      OK, 1);
+  histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_TrustAnchorIDs",
+                                    1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSL.TrustAnchorIDsResult",
+      SSLClientSocket::TrustAnchorIDsResult::kSuccessRetry, 1);
 }
 
 // Tests that TlsStreamAttempt does not restart when it sends TLS Trust Anchor
@@ -666,6 +675,7 @@ TEST_F(TlsStreamAttemptTest, NoRetryIfNoServerTrustAnchorIDs) {
   // should be no retry.
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
 
+  base::HistogramTester histogram_tester;
   SSLConfig ssl_config;
   ssl_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04};
   TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
@@ -674,6 +684,11 @@ TEST_F(TlsStreamAttemptTest, NoRetryIfNoServerTrustAnchorIDs) {
 
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsError(ERR_CERT_AUTHORITY_INVALID));
+  histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                      std::abs(ERR_CERT_AUTHORITY_INVALID), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSL.TrustAnchorIDsResult",
+      SSLClientSocket::TrustAnchorIDsResult::kErrorInitial, 1);
 }
 
 // Tests that TlsStreamAttempt does not restart when it sends TLS Trust Anchor
@@ -701,6 +716,7 @@ TEST_F(TlsStreamAttemptTest, NoRetryIfNoIntersectionWithServerTrustAnchorIDs) {
       std::vector<std::vector<uint8_t>>({{0x06, 0x06}, {0x07, 0x7}});
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
 
+  base::HistogramTester histogram_tester;
   SSLConfig ssl_config;
   ssl_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04};
   TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
@@ -709,6 +725,11 @@ TEST_F(TlsStreamAttemptTest, NoRetryIfNoIntersectionWithServerTrustAnchorIDs) {
 
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsError(ERR_CERT_AUTHORITY_INVALID));
+  histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                      std::abs(ERR_CERT_AUTHORITY_INVALID), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSL.TrustAnchorIDsResult",
+      SSLClientSocket::TrustAnchorIDsResult::kErrorInitial, 1);
 }
 
 // Tests that TlsStreamAttempt does not restart when it sends TLS Trust Anchor
@@ -730,6 +751,7 @@ TEST_F(TlsStreamAttemptTest, NoTrustAnchorIDsRetryIfNotCertificateError) {
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
   // There should be no retry because the error was not certificate-related.
 
+  base::HistogramTester histogram_tester;
   SSLConfig ssl_config;
   ssl_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04};
   TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
@@ -738,6 +760,12 @@ TEST_F(TlsStreamAttemptTest, NoTrustAnchorIDsRetryIfNotCertificateError) {
 
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsError(ERR_SSL_KEY_USAGE_INCOMPATIBLE));
+  histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                      std::abs(ERR_SSL_KEY_USAGE_INCOMPATIBLE),
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSL.TrustAnchorIDsResult",
+      SSLClientSocket::TrustAnchorIDsResult::kErrorInitial, 1);
 }
 
 // Tests that TlsStreamAttempt restarts only once when it sends TLS Trust Anchor
@@ -777,6 +805,7 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsRetryOnlyOnce) {
   socket_factory().AddSSLSocketDataProvider(&retry_ssl);
   // There should be no third attempt.
 
+  base::HistogramTester histogram_tester;
   SSLConfig ssl_config;
   ssl_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04};
   TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
@@ -785,6 +814,11 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsRetryOnlyOnce) {
 
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsError(ERR_CERT_AUTHORITY_INVALID));
+  histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                      std::abs(ERR_CERT_AUTHORITY_INVALID), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSL.TrustAnchorIDsResult",
+      SSLClientSocket::TrustAnchorIDsResult::kErrorRetry, 1);
 }
 
 }  // namespace net

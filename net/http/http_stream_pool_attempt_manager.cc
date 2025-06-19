@@ -436,8 +436,7 @@ HttpStreamPool::AttemptManager::GetSSLConfig(const IPEndPoint& ip_endpoint) {
       if (IsEchEnabled()) {
         ssl_config.ech_config_list = endpoint.metadata.ech_config_list;
       }
-      if (base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs) &&
-          !endpoint.metadata.trust_anchor_ids.empty()) {
+      if (!endpoint.metadata.trust_anchor_ids.empty()) {
         ssl_config.trust_anchor_ids =
             SSLConfig::SelectTrustAnchorIDs(endpoint.metadata.trust_anchor_ids,
                                             pool()

@@ -1185,11 +1185,19 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDs) {
             : std::vector<uint8_t>{};
     socket_factory_.AddSSLSocketDataProvider(&ssl);
 
+    base::HistogramTester histogram_tester;
     TestConnectJobDelegate test_delegate;
     std::unique_ptr<ConnectJob> ssl_connect_job =
         CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
     EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
     EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+    histogram_tester.ExpectUniqueSample(
+        "Net.SSL_Connection_Error_TrustAnchorIDs", OK, 1);
+    histogram_tester.ExpectTotalCount(
+        "Net.SSL_Connection_Latency_TrustAnchorIDs", 1);
+    histogram_tester.ExpectUniqueSample(
+        "Net.SSL.TrustAnchorIDsResult",
+        SSLClientSocket::TrustAnchorIDsResult::kSuccessInitial, 1);
   }
 }
 
@@ -1241,11 +1249,19 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsRetry) {
       std::vector<uint8_t>({0x02, 0x02, 0x02});
   socket_factory_.AddSSLSocketDataProvider(&ssl_success);
 
+  base::HistogramTester histogram_tester;
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<ConnectJob> ssl_connect_job =
       CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+  histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                      OK, 1);
+  histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_TrustAnchorIDs",
+                                    1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSL.TrustAnchorIDsResult",
+      SSLClientSocket::TrustAnchorIDsResult::kSuccessRetry, 1);
 }
 
 // Test that when `SSLConnectJob` sends Trust Anchor IDs and the connection
@@ -1283,6 +1299,7 @@ TEST_F(SSLConnectJobTest, NoRetryIfNoServerTrustAnchorIDs) {
   // should be no retry.
   socket_factory_.AddSSLSocketDataProvider(&ssl_fail);
 
+  base::HistogramTester histogram_tester;
   TestConnectJobDelegate test_delegate(
       TestConnectJobDelegate::SocketExpected::ALWAYS);
   std::unique_ptr<ConnectJob> ssl_connect_job =
@@ -1290,6 +1307,11 @@ TEST_F(SSLConnectJobTest, NoRetryIfNoServerTrustAnchorIDs) {
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(test_delegate.WaitForResult(),
               test::IsError(ERR_CERT_AUTHORITY_INVALID));
+  histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                      std::abs(ERR_CERT_AUTHORITY_INVALID), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSL.TrustAnchorIDsResult",
+      SSLClientSocket::TrustAnchorIDsResult::kErrorInitial, 1);
 }
 
 // Test that when `SSLConnectJob` sends Trust Anchor IDs and the connection
@@ -1329,6 +1351,7 @@ TEST_F(SSLConnectJobTest, NoRetryIfNoIntersectionWithServerTrustAnchorIDs) {
       std::vector<std::vector<uint8_t>>({{0x06, 0x06}, {0x07, 0x7}});
   socket_factory_.AddSSLSocketDataProvider(&ssl_fail);
 
+  base::HistogramTester histogram_tester;
   TestConnectJobDelegate test_delegate(
       TestConnectJobDelegate::SocketExpected::ALWAYS);
   std::unique_ptr<ConnectJob> ssl_connect_job =
@@ -1336,6 +1359,11 @@ TEST_F(SSLConnectJobTest, NoRetryIfNoIntersectionWithServerTrustAnchorIDs) {
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(test_delegate.WaitForResult(),
               test::IsError(ERR_CERT_AUTHORITY_INVALID));
+  histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                      std::abs(ERR_CERT_AUTHORITY_INVALID), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSL.TrustAnchorIDsResult",
+      SSLClientSocket::TrustAnchorIDsResult::kErrorInitial, 1);
 }
 
 // Test that when `SSLConnectJob` sends Trust Anchor IDs and the connection
@@ -1369,12 +1397,19 @@ TEST_F(SSLConnectJobTest, NoRetryIfNotCertificateError) {
   socket_factory_.AddSSLSocketDataProvider(&ssl_fail);
   // There should be no retry because the error was not certificate-related.
 
+  base::HistogramTester histogram_tester;
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<ConnectJob> ssl_connect_job =
       CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(test_delegate.WaitForResult(),
               test::IsError(ERR_SSL_KEY_USAGE_INCOMPATIBLE));
+  histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                      std::abs(ERR_SSL_KEY_USAGE_INCOMPATIBLE),
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSL.TrustAnchorIDsResult",
+      SSLClientSocket::TrustAnchorIDsResult::kErrorInitial, 1);
 }
 
 // Test that `SSLConnectJob` does not retry more than once even if the server
@@ -1428,6 +1463,7 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsRetryOnlyOnce) {
   socket_factory_.AddSSLSocketDataProvider(&ssl_fail2);
   // There should be no third attempt.
 
+  base::HistogramTester histogram_tester;
   TestConnectJobDelegate test_delegate(
       TestConnectJobDelegate::SocketExpected::ALWAYS);
   std::unique_ptr<ConnectJob> ssl_connect_job =
@@ -1435,6 +1471,11 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsRetryOnlyOnce) {
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(test_delegate.WaitForResult(),
               test::IsError(ERR_CERT_AUTHORITY_INVALID));
+  histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                      std::abs(ERR_CERT_AUTHORITY_INVALID), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSL.TrustAnchorIDsResult",
+      SSLClientSocket::TrustAnchorIDsResult::kErrorRetry, 1);
 }
 
 // Tests that when `SSLConnectJob` retries due to an error after sending Trust

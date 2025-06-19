@@ -2945,6 +2945,21 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="QUIC"/>
 </enum>
 
+<enum name="SSLTrustAnchorIDsResult">
+  <summary>
+    The result of a TLS connection that advertised Trust Anchor IDs in DNS
+  </summary>
+  <int value="0" label="The connection succeeded on the initial connection"/>
+  <int value="1"
+      label="The connection failed on the initial connection, and the client
+             didn't retry"/>
+  <int value="2"
+      label="The connection succeeded after retrying with fresh Trust Anchor
+             IDs"/>
+  <int value="3"
+      label="The connection failed after retrying with fresh Trust Anchor IDs"/>
+</enum>
+
 <enum name="StorageAccessNetRequestKind">
   <int value="0" label="Same-origin request with storage access override"/>
   <int value="1"

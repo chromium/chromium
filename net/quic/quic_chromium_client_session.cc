@@ -3836,6 +3836,15 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
                         handshake_confirmed_time);
   }
 
+  // Also record the handshake time when Trust Anchor IDs was advertised in DNS.
+  // The Trust Anchor IDs experiment does not change DNS behavior, so this
+  // measures the same servers in both experiment and control groups.
+  if (!trust_anchor_ids_.empty()) {
+    base::UmaHistogramTimes(
+        "Net.QuicSession.HandshakeConfirmedTime.TrustAnchorIDs",
+        handshake_confirmed_time);
+  }
+
   // Track how long it has taken to finish handshake after we have finished
   // DNS host resolution.
   if (!connect_timing_.domain_lookup_end.is_null()) {

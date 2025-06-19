@@ -183,6 +183,15 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
 
     if (get_config_result.has_value()) {
       ssl_config_ = *get_config_result;
+      // For metrics, we want to know whether the server advertised Trust Anchor
+      // IDs in DNS (i.e., whether the client could use Trust Anchor IDs with
+      // this server, regardless of whether the feature was enabled). But we
+      // don't want to actually configure the Trust Anchor IDs on the connection
+      // if the feature flag isn't enabled.
+      trust_anchor_ids_from_dns_ = !ssl_config_->trust_anchor_ids.empty();
+      if (!base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
+        ssl_config_->trust_anchor_ids.clear();
+      }
     } else {
       CHECK_EQ(get_config_result.error(), GetSSLConfigError::kAbort);
       return ERR_ABORTED;
@@ -274,11 +283,10 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
 
   const bool is_ech_capable =
       ssl_config_ && !ssl_config_->ech_config_list.empty();
-  // TODO(crbug.com/422931824): pass in Trust Anchor IDs info and record
-  // TAI-specific metrics.
-  SSLClientSocket::RecordSSLConnectResult(ssl_socket_.get(), rv, is_ech_capable,
-                                          ech_enabled, ech_retry_configs_,
-                                          connect_timing());
+  SSLClientSocket::RecordSSLConnectResult(
+      ssl_socket_.get(), rv, is_ech_capable, ech_enabled, ech_retry_configs_,
+      trust_anchor_ids_from_dns_, retried_for_trust_anchor_ids_,
+      connect_timing());
 
   if (rv == OK || IsCertificateError(rv)) {
     CHECK(ssl_socket_);

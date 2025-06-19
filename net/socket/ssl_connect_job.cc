@@ -495,11 +495,11 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     }
   }
 
-  // TODO(crbug.com/422931824): pass in Trust Anchor IDs info and record
-  // TAI-specific metrics.
-  SSLClientSocket::RecordSSLConnectResult(ssl_socket_.get(), result,
-                                          is_ech_capable, ech_enabled,
-                                          ech_retry_configs_, connect_timing_);
+  SSLClientSocket::RecordSSLConnectResult(
+      ssl_socket_.get(), result, is_ech_capable, ech_enabled,
+      ech_retry_configs_,
+      endpoint_result_ && !endpoint_result_->metadata.trust_anchor_ids.empty(),
+      !trust_anchor_ids_for_retry_.empty(), connect_timing_);
 
   if (result == OK || IsCertificateError(result)) {
     SetSocket(std::move(ssl_socket_), std::move(dns_aliases_));

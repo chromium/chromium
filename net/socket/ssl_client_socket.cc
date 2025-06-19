@@ -76,6 +76,8 @@ void SSLClientSocket::RecordSSLConnectResult(
     bool is_ech_capable,
     bool ech_enabled,
     const std::optional<std::vector<uint8_t>>& ech_retry_configs,
+    bool trust_anchor_ids_from_dns,
+    bool retried_with_trust_anchor_ids,
     const LoadTimingInfo::ConnectTiming& connect_timing) {
   if (is_ech_capable && ech_enabled) {
     // These values are persisted to logs. Entries should not be renumbered
@@ -110,6 +112,19 @@ void SSLClientSocket::RecordSSLConnectResult(
     base::UmaHistogramEnumeration("Net.SSL.ECHResult", ech_result);
   }
 
+  if (trust_anchor_ids_from_dns) {
+    const bool is_ok = result == OK;
+    TrustAnchorIDsResult tai_result;
+    if (retried_with_trust_anchor_ids) {
+      tai_result = is_ok ? TrustAnchorIDsResult::kSuccessRetry
+                         : TrustAnchorIDsResult::kErrorRetry;
+    } else {
+      tai_result = is_ok ? TrustAnchorIDsResult::kSuccessInitial
+                         : TrustAnchorIDsResult::kErrorInitial;
+    }
+    base::UmaHistogramEnumeration("Net.SSL.TrustAnchorIDsResult", tai_result);
+  }
+
   if (result == OK) {
     DCHECK(!connect_timing.ssl_start.is_null());
     CHECK(ssl_socket);
@@ -121,6 +136,11 @@ void SSLClientSocket::RecordSSLConnectResult(
       UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_ECH",
                                  connect_duration, base::Milliseconds(1),
                                  base::Minutes(1), 100);
+    }
+    if (trust_anchor_ids_from_dns) {
+      base::UmaHistogramCustomTimes("Net.SSL_Connection_Latency_TrustAnchorIDs",
+                                    connect_duration, base::Milliseconds(1),
+                                    base::Minutes(1), 100);
     }
 
     SSLInfo ssl_info;
@@ -145,6 +165,10 @@ void SSLClientSocket::RecordSSLConnectResult(
   base::UmaHistogramSparse("Net.SSL_Connection_Error", std::abs(result));
   if (is_ech_capable) {
     base::UmaHistogramSparse("Net.SSL_Connection_Error_ECH", std::abs(result));
+  }
+  if (trust_anchor_ids_from_dns) {
+    base::UmaHistogramSparse("Net.SSL_Connection_Error_TrustAnchorIDs",
+                             std::abs(result));
   }
 }
 
