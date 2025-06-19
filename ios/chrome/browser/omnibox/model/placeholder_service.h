@@ -29,7 +29,8 @@ class PlaceholderServiceObserver : public base::CheckedObserver {
   // Relevant for both normal and search-only text.
   virtual void OnPlaceholderTextChanged() = 0;
 
-  // Notification that the search engine icon might have changed.
+  // Notification that the search engine icon might have changed. This is called
+  // when an icon is fetched even if it's not the right size icon.
   virtual void OnPlaceholderImageChanged() {}
 
   // Notification that the placeholder service is shutting down. Observers that
@@ -71,6 +72,12 @@ class PlaceholderService : public KeyedService,
   // default search engine changes during the fetch.
   void FetchDefaultSearchEngineIcon(CGFloat icon_point_size,
                                     PlaceholderImageCallback callback);
+
+  // Returns the icon for the current default search engine at the given
+  // `icon_point_size`. If the icon is unavailable, it will be fetched and
+  // `OnPlaceholderImageChanged` will be called once it becomes available.
+  UIImage* GetDefaultSearchEngineIcon(CGFloat icon_point_size);
+
   NSString* GetCurrentPlaceholderText();
   NSString* GetCurrentSearchOnlyPlaceholderText();
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/omnibox/model/placeholder_service.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url.h"
@@ -78,6 +79,31 @@ void PlaceholderService::FetchDefaultSearchEngineIcon(
   // completes.
   icon_callbacks_[icon_point_size].push_back(std::move(callback));
   PerformIconFetch(default_provider, icon_point_size);
+}
+
+UIImage* PlaceholderService::GetDefaultSearchEngineIcon(
+    CGFloat icon_point_size) {
+  // Return the cached image if there is one.
+  UIImage* cached_icon = [icon_cache_ objectForKey:@(icon_point_size)];
+  if (cached_icon) {
+    return cached_icon;
+  }
+
+  // Return the placeholder icon if there is no default search provider.
+  UIImage* placeholder_icon =
+      DefaultSymbolWithPointSize(kSearchSymbol, icon_point_size);
+  const TemplateURL* default_provider =
+      template_url_service_ ? template_url_service_->GetDefaultSearchProvider()
+                            : nullptr;
+  if (!default_provider) {
+    return placeholder_icon;
+  }
+  // Fetch the icon after return.
+  base::ScopedClosureRunner run_after_return =
+      base::ScopedClosureRunner(base::BindOnce(
+          &PlaceholderService::FetchDefaultSearchEngineIcon,
+          base::Unretained(this), icon_point_size, base::DoNothing()));
+  return placeholder_icon;
 }
 
 NSString* PlaceholderService::GetCurrentPlaceholderText() {
@@ -166,6 +192,10 @@ void PlaceholderService::OnIconReceivedForTemplateURL(
           template_url_id &&
       ![icon_cache_ objectForKey:@(icon_point_size)]) {
     [icon_cache_ setObject:icon forKey:@(icon_point_size)];
+
+    for (auto& observer : model_observers_) {
+      observer.OnPlaceholderImageChanged();
+    }
 
     if (icon_callbacks_.contains(icon_point_size)) {
       std::vector<PlaceholderImageCallback> callbacks =
