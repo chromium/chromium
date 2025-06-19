@@ -4532,7 +4532,6 @@ static_library("ui") {
       "views/tab_modal_confirm_dialog_views.h",
       "views/tab_search_bubble_host.cc",
       "views/tab_search_bubble_host.h",
-      "views/tab_search_bubble_host_observer.h",
       "views/tab_sharing/tab_capture_contents_border_helper.cc",
       "views/tab_sharing/tab_capture_contents_border_helper.h",
       "views/tab_sharing/tab_sharing_infobar.cc",

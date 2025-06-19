@@ -15,6 +15,7 @@ component("views") {
     "event_utils.cc",
     "event_utils.h",
     "tab_icon_view_model.h",
+    "tab_search_bubble_host_observer.h",
     "tabs/tab_strip_observer.cc",
     "tabs/tab_strip_observer.h",
     "tabs/tab_strip_types.h",

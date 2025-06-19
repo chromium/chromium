@@ -21,6 +21,7 @@ source_set("pinned_toolbar") {
     public_deps += [
       "//base",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/views",
       "//components/keyed_service/core",
       "//components/prefs",
       "//components/tabs:public",
