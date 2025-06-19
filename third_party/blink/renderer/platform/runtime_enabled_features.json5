@@ -2389,6 +2389,11 @@
       name: "FontFamilyStyleMatchingCTMigration",
     },
     {
+      // crbug.com/40398871
+      name: "FontFeatureSettingsDescriptor",
+      status: "experimental",
+    },
+    {
       name: "FontPresentWin",
       status: "stable",
     },

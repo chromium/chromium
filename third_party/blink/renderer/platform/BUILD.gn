@@ -731,6 +731,7 @@ component("platform") {
     "fonts/plain_text_node.h",
     "fonts/plain_text_painter.cc",
     "fonts/plain_text_painter.h",
+    "fonts/resolved_font_features.cc",
     "fonts/resolved_font_features.h",
     "fonts/script_run_iterator.cc",
     "fonts/script_run_iterator.h",

@@ -57,6 +57,7 @@ struct SameSizeAsFontDescription {
   AtomicString locale;
   float sizes[5];
   FontSizeAdjust size_adjust_;
+  ResolvedFontFeatures resolved_font_features_;
   FontSelectionRequest selection_request_;
   FieldsAsUnsignedType bitfields;
 };
@@ -521,10 +522,21 @@ int FontDescription::MinimumPrefixWidthToHyphenate() const {
 }
 
 ResolvedFontFeatures FontDescription::ResolveFontFeatures() const {
-  if (const FontVariantAlternates* alternates = GetFontVariantAlternates()) {
-    return alternates->GetResolvedFontFeatures();
+  if (const auto* alternates = GetFontVariantAlternates()) {
+    ResolvedFontFeatures features_with_description =
+        alternates->GetResolvedFontFeatures();
+    features_with_description.AppendVector(resolved_font_features_);
+    return features_with_description;
   }
-  return ResolvedFontFeatures();
+  return resolved_font_features_;
+}
+
+void FontDescription::MergeFontFeatureSettingsWithDescriptor(
+    const FontFeatureSettings* feature_settings_descriptor) {
+  ResolvedFontFeatures resolved_font_features =
+      ResolveFontFeatureSettingsDescriptor(FeatureSettings(),
+                                           feature_settings_descriptor);
+  SetResolvedFontFeatures(std::move(resolved_font_features));
 }
 
 String FontDescription::ToString(GenericFamilyType familyType) {

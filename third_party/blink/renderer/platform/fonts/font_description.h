@@ -359,6 +359,11 @@ class PLATFORM_EXPORT FontDescription {
     size_adjust_ = size_adjust;
   }
 
+  void SetResolvedFontFeatures(
+      const ResolvedFontFeatures&& resolved_font_features) {
+    resolved_font_features_ = std::move(resolved_font_features);
+  }
+
   void SetStyle(FontSelectionValue i);
   void SetWeight(FontSelectionValue w) { font_selection_request_.weight = w; }
   void SetStretch(FontSelectionValue s) { font_selection_request_.width = s; }
@@ -485,6 +490,7 @@ class PLATFORM_EXPORT FontDescription {
   int MinimumPrefixWidthToHyphenate() const;
 
   ResolvedFontFeatures ResolveFontFeatures() const;
+  void MergeFontFeatureSettingsWithDescriptor(const FontFeatureSettings*);
 
   String ToString() const;
 
@@ -515,6 +521,7 @@ class PLATFORM_EXPORT FontDescription {
   float word_spacing_;
 
   FontSizeAdjust size_adjust_;
+  ResolvedFontFeatures resolved_font_features_;
 
   // Covers stretch, style, weight.
   FontSelectionRequest font_selection_request_;

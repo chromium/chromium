@@ -10,7 +10,12 @@
 
 namespace blink {
 
+class FontFeatureSettings;
 using ResolvedFontFeatures = Vector<FontFeatureValue>;
+
+PLATFORM_EXPORT ResolvedFontFeatures ResolveFontFeatureSettingsDescriptor(
+    const FontFeatureSettings* existing_features_settings,
+    const FontFeatureSettings* new_settings);
 
 }  // namespace blink
 

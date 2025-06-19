@@ -55,6 +55,7 @@ class CSSLengthResolver;
 class ExceptionState;
 class MediaValues;
 class FontFaceDescriptors;
+class FontFeatureSettings;
 class StyleRuleFontFace;
 class V8FontFaceLoadStatus;
 class V8UnionArrayBufferOrArrayBufferViewOrString;
@@ -157,6 +158,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
 
   bool HasSizeAdjust() const { return size_adjust_ != nullptr; }
   float GetSizeAdjust() const;
+  scoped_refptr<FontFeatureSettings> GetFontFeatureSettings() const;
 
   Document* GetDocument() const;
 
