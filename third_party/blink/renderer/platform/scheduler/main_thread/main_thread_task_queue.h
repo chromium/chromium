@@ -155,14 +155,13 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       kLoadingControl = 4,
       kFindInPage = 5,
       kExperimentalDatabase = 6,
-      kJavaScriptTimer = 7,
-      kHighPriorityLocalFrame = 8,
-      kCompositor = 9,  // Main-thread only.
-      kInput = 10,
-      kPostMessageForwarding = 11,
-      kInternalNavigationCancellation = 12,
-      kRenderBlocking = 13,
-      kLow = 14,
+      kHighPriorityLocalFrame = 7,
+      kCompositor = 8,  // Main-thread only.
+      kInput = 9,
+      kPostMessageForwarding = 10,
+      kInternalNavigationCancellation = 11,
+      kRenderBlocking = 12,
+      kLow = 13,
 
       kMaxValue = kLow
     };

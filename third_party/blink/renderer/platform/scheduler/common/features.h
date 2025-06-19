@@ -71,9 +71,6 @@ BASE_FEATURE(kMbiOverrideTaskRunnerHandle,
 PLATFORM_EXPORT base::TimeDelta
 GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint();
 
-// Kill switch for throttling timed-out requestIdleCallback tasks.
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kThrottleTimedOutIdleTasks);
-
 // crbug.com/40785325 and crbug.com/378738907: If enabled, the signals used for
 // idle periods are requested via WidgetScheduler::Delegate instead of via
 // PageScheduler. This fixes a few issues where we might not get the requisite

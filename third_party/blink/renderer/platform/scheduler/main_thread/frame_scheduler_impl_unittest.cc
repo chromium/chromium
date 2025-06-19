@@ -519,7 +519,6 @@ class FrameSchedulerImplTest : public testing::Test {
   JavaScriptTimerNormalThrottleableTaskQueue() {
     return GetTaskQueue(
         FrameSchedulerImpl::ThrottleableTaskQueueTraits()
-            .SetPrioritisationType(PrioritisationType::kJavaScriptTimer)
             .SetCanBeDeferredForRendering(true));
   }
 
@@ -527,7 +526,6 @@ class FrameSchedulerImplTest : public testing::Test {
   JavaScriptTimerIntensivelyThrottleableTaskQueue() {
     return GetTaskQueue(
         FrameSchedulerImpl::ThrottleableTaskQueueTraits()
-            .SetPrioritisationType(PrioritisationType::kJavaScriptTimer)
             .SetCanBeIntensivelyThrottled(true)
             .SetCanBeDeferredForRendering(true));
   }
@@ -535,7 +533,6 @@ class FrameSchedulerImplTest : public testing::Test {
   scoped_refptr<MainThreadTaskQueue> JavaScriptTimerNonThrottleableTaskQueue() {
     return GetTaskQueue(
         FrameSchedulerImpl::DeferrableTaskQueueTraits()
-            .SetPrioritisationType(PrioritisationType::kJavaScriptTimer)
             .SetCanBeDeferredForRendering(true));
   }
 

@@ -98,9 +98,5 @@ base::TimeDelta GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint() {
       GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis());
 }
 
-BASE_FEATURE(kThrottleTimedOutIdleTasks,
-             "ThrottleTimedOutIdleTasks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace scheduler
 }  // namespace blink

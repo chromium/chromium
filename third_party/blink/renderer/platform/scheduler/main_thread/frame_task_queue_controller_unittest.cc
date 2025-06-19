@@ -308,7 +308,6 @@ INSTANTIATE_TEST_SUITE_P(
         QueueTraits::PrioritisationType::kLoadingControl,
         QueueTraits::PrioritisationType::kFindInPage,
         QueueTraits::PrioritisationType::kExperimentalDatabase,
-        QueueTraits::PrioritisationType::kJavaScriptTimer,
         QueueTraits::PrioritisationType::kHighPriorityLocalFrame,
         QueueTraits::PrioritisationType::kInput));
 
