@@ -452,7 +452,7 @@ void HTMLCanvasElement::Dispose() {
 
   // We need to drop frame dispatcher, to prevent mojo calls from completing.
   frame_dispatcher_ = nullptr;
-  DiscardResourceProvider();
+  DiscardResources();
 
   if (context_) {
     if (context_->Host())
@@ -1312,7 +1312,7 @@ UkmParameters HTMLCanvasElement::GetUkmParameters() {
 void HTMLCanvasElement::SetSurfaceSize(gfx::Size size) {
   CanvasResourceHost::SetSize(size);
   did_fail_to_create_resource_provider_ = false;
-  DiscardResourceProvider();
+  DiscardResources();
   if (IsRenderingContext2D() && context_->isContextLost()) {
     context_->RestoreFromInvalidSizeIfNeeded();
   }
@@ -1790,7 +1790,7 @@ void HTMLCanvasElement::SetCanvas2DResourceProviderForTesting(
     std::unique_ptr<CanvasResourceProvider> provider,
     const gfx::Size& size) {
   CHECK(IsRenderingContext2D());
-  DiscardResourceProvider();
+  DiscardResources();
   SetIntegralAttribute(html_names::kWidthAttr, size.width());
   SetIntegralAttribute(html_names::kHeightAttr, size.height());
   CanvasResourceHost::SetSize(size);
@@ -1798,7 +1798,7 @@ void HTMLCanvasElement::SetCanvas2DResourceProviderForTesting(
   ReplaceResourceProviderForCanvas2D(std::move(provider));
 }
 
-void HTMLCanvasElement::DiscardResourceProvider() {
+void HTMLCanvasElement::DiscardResources() {
   if (IsHibernating()) {
     // Ensure consistency of metrics reporting across the change from the
     // previous code flow.
@@ -1808,7 +1808,7 @@ void HTMLCanvasElement::DiscardResourceProvider() {
     GetHibernationHandler()->Clear();
   }
   ResetLayer();
-  CanvasRenderingContextHost::DiscardResourceProvider();
+  CanvasRenderingContextHost::DiscardResources();
   dirty_rect_ = gfx::Rect();
 }
 

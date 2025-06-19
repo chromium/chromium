@@ -42,7 +42,7 @@ ImageBitmapRenderingContextBase::getHTMLOrOffscreenCanvas() const {
 void ImageBitmapRenderingContextBase::Reset() {
   CHECK(Host());
   CHECK(Host()->IsOffscreenCanvas());
-  Host()->DiscardResourceProvider();
+  Host()->DiscardResources();
 }
 
 void ImageBitmapRenderingContextBase::Stop() {

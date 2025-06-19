@@ -513,7 +513,7 @@ void CanvasRenderingContextHost::PageVisibilityChanged() {
     }
   }
   if (!page_visible && (IsWebGL() || IsWebGPU())) {
-    DiscardResourceProvider();
+    DiscardResources();
   }
 }
 
@@ -542,7 +542,7 @@ CanvasRenderingContextHost::ReplaceResourceProviderForCanvas2D(
   return old_resource_provider;
 }
 
-void CanvasRenderingContextHost::DiscardResourceProvider() {
+void CanvasRenderingContextHost::DiscardResources() {
   resource_provider_for_canvas2d_ = nullptr;
   resource_provider_for_image_bitmap_ = nullptr;
   resource_provider_for_webgl_ = nullptr;

@@ -228,7 +228,7 @@ void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   ResetInternal();
   HTMLCanvasElement* const element = canvas();
   if (element != nullptr) [[likely]] {
-    element->DiscardResourceProvider();
+    element->DiscardResources();
     element->DiscardResourceDispatcher();
 
     if (element->IsPageVisible()) {

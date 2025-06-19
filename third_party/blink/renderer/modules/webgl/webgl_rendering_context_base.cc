@@ -1926,7 +1926,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   if (Host()->GetResourceProviderForWebGL() &&
       Host()->GetResourceProviderForWebGL()->Size() !=
           GetDrawingBuffer()->Size()) {
-    Host()->DiscardResourceProvider();
+    Host()->DiscardResources();
   }
 
   // The host's ResourceProvider is purged to save memory when the tab

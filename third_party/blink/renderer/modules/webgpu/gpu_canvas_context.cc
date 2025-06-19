@@ -202,7 +202,7 @@ CanvasResourceProvider* GPUCanvasContext::PaintRenderingResultsToCanvas(
 
   if (Host()->GetResourceProviderForWebGPU() &&
       Host()->GetResourceProviderForWebGPU()->Size() != swap_buffers_->Size()) {
-    Host()->DiscardResourceProvider();
+    Host()->DiscardResources();
   }
 
   CanvasResourceProvider* resource_provider =

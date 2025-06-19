@@ -196,7 +196,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void SetNeedsPushProperties();
 
-  void DiscardResourceProvider() override;
+  void DiscardResources() override;
 
   TextDirection GetTextDirection(const ComputedStyle*) override;
   const LayoutLocale* GetLocale() const override;
