@@ -3,5 +3,6 @@ include_rules = [
   "+crypto/hmac.h",
   '+components/os_crypt/async/browser',
   '+components/os_crypt/async/common',
+  '+components/safe_browsing/core/common',
   '+crypto',
 ]

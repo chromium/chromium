@@ -35,7 +35,8 @@ class ChromePrefServiceFactoryTestBase : public testing::Test {
         /*supervised_user_settings=*/nullptr, /*extension_prefs=*/nullptr,
         pref_registry_,
         /*connector=*/g_browser_process->browser_policy_connector(),
-        /*async=*/true, task_environment_.GetMainThreadTaskRunner().get());
+        /*async=*/true, task_environment_.GetMainThreadTaskRunner().get(),
+        /*os_crypt_async=*/nullptr);
   }
 
   base::FilePath AccountPreferencesFilePath() const {

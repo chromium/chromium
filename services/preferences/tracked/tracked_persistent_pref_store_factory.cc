@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_filter.h"
 #include "components/prefs/pref_name_set.h"
@@ -67,7 +68,8 @@ GetExternalVerificationPrefHashStorePair(
 
 PersistentPrefStore* CreateTrackedPersistentPrefStore(
     prefs::mojom::TrackedPersistentPrefStoreConfigurationPtr config,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+    os_crypt_async::OSCryptAsync* os_crypt) {
   std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>
       unprotected_configuration;
   std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>
@@ -118,13 +120,14 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
                          GetExternalVerificationPrefHashStorePair(
                              *config, temp_scoped_dir_cleaner),
                          unprotected_configuration, mojo::NullRemote(),
-                         validation_delegate_ref, config->reporting_ids_count));
+                         validation_delegate_ref, config->reporting_ids_count,
+                         os_crypt));
   std::unique_ptr<PrefHashFilter> protected_pref_hash_filter(new PrefHashFilter(
       CreatePrefHashStore(*config, true),
       GetExternalVerificationPrefHashStorePair(*config,
                                                temp_scoped_dir_cleaner),
       protected_configuration, std::move(config->reset_on_load_observer),
-      validation_delegate_ref, config->reporting_ids_count));
+      validation_delegate_ref, config->reporting_ids_count, os_crypt));
 
   PrefHashFilter* raw_unprotected_pref_hash_filter =
       unprotected_pref_hash_filter.get();
@@ -158,11 +161,12 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
 
 void InitializeMasterPrefsTracking(
     prefs::mojom::TrackedPersistentPrefStoreConfigurationPtr configuration,
-    base::Value::Dict& master_prefs) {
+    base::Value::Dict& master_prefs,
+    os_crypt_async::OSCryptAsync* os_crypt) {
   PrefHashFilter(
       CreatePrefHashStore(*configuration, false),
       GetExternalVerificationPrefHashStorePair(*configuration, nullptr),
       configuration->tracking_configuration, mojo::NullRemote(), nullptr,
-      configuration->reporting_ids_count)
+      configuration->reporting_ids_count, os_crypt)
       .Initialize(master_prefs);
 }

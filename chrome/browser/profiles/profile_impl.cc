@@ -663,7 +663,7 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
       profile_policy_connector_->policy_service(),
       g_browser_process->browser_policy_connector(),
       std::move(pref_validation_delegate), GetIOTaskRunner(), key_.get(), path_,
-      async_prefs);
+      async_prefs, g_browser_process->os_crypt_async());
   key_->SetPrefs(prefs_.get());
 }
 

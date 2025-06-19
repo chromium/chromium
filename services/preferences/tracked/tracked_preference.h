@@ -8,6 +8,9 @@
 #include "base/values.h"
 
 class PrefHashStoreTransaction;
+namespace os_crypt_async {
+class Encryptor;
+}  // namespace os_crypt_async
 
 enum class TrackedPreferenceType { ATOMIC, SPLIT };
 
@@ -22,7 +25,8 @@ class TrackedPreference {
   // Notifies the underlying TrackedPreference about its new |value| which
   // can update hashes in the corresponding hash store via |transaction|.
   virtual void OnNewValue(const base::Value* value,
-                          PrefHashStoreTransaction* transaction) const = 0;
+                          PrefHashStoreTransaction* transaction,
+                          const os_crypt_async::Encryptor* encryptor) const = 0;
 
   // Verifies that the value of this TrackedPreference in |pref_store_contents|
   // is valid. Responds to verification failures according to
@@ -32,10 +36,32 @@ class TrackedPreference {
   // |external_validation_transaction|. This call assumes exclusive access to
   // |external_validation_transaction| and its associated state and as such
   // should only be called before any other subsystem is made aware of it.
+  // |encryptor| is an optional OS-level encryptor used for an additional
+  // encrypted hash if the kEncryptedPrefHashing feature is enabled.
   virtual bool EnforceAndReport(
       base::Value::Dict& pref_store_contents,
       PrefHashStoreTransaction* transaction,
-      PrefHashStoreTransaction* external_validation_transaction) const = 0;
+      PrefHashStoreTransaction* external_validation_transaction,
+      const os_crypt_async::Encryptor* encryptor) const = 0;
+
+  // Compatibility Overload
+  // This calls the primary virtual method OnNewValue above, passing nullptr for
+  // encryptor.
+  void OnNewValue(const base::Value* value,
+                  PrefHashStoreTransaction* transaction) const {
+    OnNewValue(value, transaction, nullptr /*encryptor*/);
+  }
+  // Compatibility Overload.
+  // This calls the primary virtual method EnforceAndReport above, passing
+  // nullptr for encryptor.
+  bool EnforceAndReport(
+      base::Value::Dict& pref_store_contents,
+      PrefHashStoreTransaction* transaction,
+      PrefHashStoreTransaction* external_validation_transaction) const {
+    return EnforceAndReport(pref_store_contents, transaction,
+                            external_validation_transaction,
+                            nullptr /*encryptor*/);
+  }
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_TRACKED_PREFERENCE_H_

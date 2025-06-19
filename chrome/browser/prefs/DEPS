@@ -6,4 +6,7 @@ specific_include_rules = {
   "chrome_pref_service_factory\.cc": [
     "+services/preferences/tracked",
   ],
+  "pref_hash_browsertest\.cc":[
+    "+services/preferences/tracked",
+  ],
 }

@@ -390,10 +390,25 @@ TEST_F(PrefHashStoreImplTest, SplitHashStoreAndCheck) {
     // Verify NULL or empty dicts are declared as having been cleared.
     EXPECT_EQ(ValueState::CLEARED,
               transaction->CheckSplitValue("path1", NULL, &invalid_keys));
-    EXPECT_TRUE(invalid_keys.empty());
+
+    // invalid_keys should contain the keys that were removed.
+    std::vector<std::string> expected_cleared_keys;
+    expected_cleared_keys.push_back("a");
+    expected_cleared_keys.push_back("unchanged.path.with.dots");
+    expected_cleared_keys.push_back("o");
+
+    // Sort both vectors for a stable comparison.
+    std::sort(expected_cleared_keys.begin(), expected_cleared_keys.end());
+    std::sort(invalid_keys.begin(), invalid_keys.end());
+    EXPECT_EQ(expected_cleared_keys, invalid_keys);
+    invalid_keys.clear();
+
     EXPECT_EQ(ValueState::CLEARED, transaction->CheckSplitValue(
                                        "path1", &empty_dict, &invalid_keys));
-    EXPECT_TRUE(invalid_keys.empty());
+    // The same keys should be reported as invalid/cleared for an empty dict.
+    std::sort(invalid_keys.begin(), invalid_keys.end());
+    EXPECT_EQ(expected_cleared_keys, invalid_keys);
+    invalid_keys.clear();
 
     // Verify changes are properly detected.
     EXPECT_EQ(ValueState::CHANGED, transaction->CheckSplitValue(
@@ -793,39 +808,47 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckValueValidation) {
     // Scenario 1: Store both, check valid, check wrong, check null
     tx->StoreHash(path, &value);
     tx->StoreEncryptedHash(path, &value);
-    EXPECT_EQ(ValueState::UNCHANGED, tx->CheckValue(path, &value));
-    EXPECT_EQ(ValueState::CHANGED, tx->CheckValue(path, &wrong_value));
-    EXPECT_EQ(ValueState::CLEARED, tx->CheckValue(path, null_value_ptr));
+    EXPECT_EQ(ValueState::UNCHANGED_ENCRYPTED, tx->CheckValue(path, &value));
+    EXPECT_EQ(ValueState::CHANGED_ENCRYPTED,
+              tx->CheckValue(path, &wrong_value));
+    EXPECT_EQ(ValueState::CLEARED_ENCRYPTED,
+              tx->CheckValue(path, null_value_ptr));
 
     // Scenario 2: Store only MAC, check valid, check wrong, check null
     tx->ClearHash(path);
     tx->StoreHash(path, &value);
-    // Encrypted missing, fallback to MAC -> UNCHANGED
-    EXPECT_EQ(ValueState::UNCHANGED, tx->CheckValue(path, &value));
-    EXPECT_EQ(ValueState::CHANGED, tx->CheckValue(path, &wrong_value));
-    EXPECT_EQ(ValueState::CLEARED, tx->CheckValue(path, null_value_ptr));
+    // Encrypted missing, fallback to MAC
+    EXPECT_EQ(ValueState::UNCHANGED_VIA_HMAC_FALLBACK,
+              tx->CheckValue(path, &value));
+    EXPECT_EQ(ValueState::CHANGED_VIA_HMAC_FALLBACK,
+              tx->CheckValue(path, &wrong_value));
+    EXPECT_EQ(ValueState::CLEARED_VIA_HMAC_FALLBACK,
+              tx->CheckValue(path, null_value_ptr));
 
     // Scenario 3: Store only Encrypted, check valid, check wrong, check null
     tx->ClearHash(path);
     tx->StoreEncryptedHash(path, &value);
-    // MAC missing, Encrypted OK -> UNCHANGED
-    EXPECT_EQ(ValueState::UNCHANGED, tx->CheckValue(path, &value));
-    EXPECT_EQ(ValueState::CHANGED, tx->CheckValue(path, &wrong_value));
-    EXPECT_EQ(ValueState::CLEARED, tx->CheckValue(path, null_value_ptr));
+    // MAC missing, Encrypted OK
+    EXPECT_EQ(ValueState::UNCHANGED_ENCRYPTED, tx->CheckValue(path, &value));
+    EXPECT_EQ(ValueState::CHANGED_ENCRYPTED,
+              tx->CheckValue(path, &wrong_value));
+    EXPECT_EQ(ValueState::CLEARED_ENCRYPTED,
+              tx->CheckValue(path, null_value_ptr));
 
     // Scenario 4: Store invalid Encrypted, valid MAC -> CHANGED (Enc preferred)
     tx->ClearHash(path);
     tx->StoreHash(path, &value);
     // Manually seed bad data.
     dictionary_contents_.SetMac(GetEncKey(path), "Invalid Base64");
-    EXPECT_EQ(ValueState::CHANGED, tx->CheckValue(path, &value));
+    EXPECT_EQ(ValueState::CHANGED_ENCRYPTED, tx->CheckValue(path, &value));
 
     // Scenario 5: Store MAC for null, check null, check value.
     tx->ClearHash(path);
     tx->StoreHash(path, null_value_ptr);
     tx->StoreEncryptedHash(path, null_value_ptr);
-    EXPECT_EQ(ValueState::UNCHANGED, tx->CheckValue(path, null_value_ptr));
-    EXPECT_EQ(ValueState::CHANGED, tx->CheckValue(path, &value));
+    EXPECT_EQ(ValueState::UNCHANGED_ENCRYPTED,
+              tx->CheckValue(path, null_value_ptr));
+    EXPECT_EQ(ValueState::CHANGED_ENCRYPTED, tx->CheckValue(path, &value));
 
     // Scenario 6: No Hashes stored, SuperMAC invalid
     tx->ClearHash(path);
@@ -959,7 +982,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckSplitValueEncryptedPathValidation) {
   s1_prefs_and_hashes.Set("key1", "value1");
   s1_prefs_and_hashes.Set("key2", "value2");
   run_scenario("E1_AllValid", &s1_prefs_and_hashes, s1_prefs_and_hashes,
-               ValueState::UNCHANGED, {});
+               ValueState::UNCHANGED_ENCRYPTED, {});
 
   // Scenario E2: Value Changed for One Key (Hash Invalid)
   base::Value::Dict s2_current_prefs;
@@ -969,7 +992,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckSplitValueEncryptedPathValidation) {
   s2_original_hashes.Set("key1", "value1");
   s2_original_hashes.Set("key2", "value2");
   run_scenario("E2_OneValueChanged", &s2_current_prefs, s2_original_hashes,
-               ValueState::CHANGED, {"key1"});
+               ValueState::CHANGED_ENCRYPTED, {"key1"});
 
   // Scenario E3: Key Added in Value (Not in Stored Hashes)
   base::Value::Dict s3_current_prefs;
@@ -978,7 +1001,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckSplitValueEncryptedPathValidation) {
   base::Value::Dict s3_original_hashes;
   s3_original_hashes.Set("key1", "value1");
   run_scenario("E3_KeyAddedInValue", &s3_current_prefs, s3_original_hashes,
-               ValueState::CHANGED, {"key2"});
+               ValueState::CHANGED_ENCRYPTED, {"key2"});
 
   // Scenario E4: Key Removed from Value (Present in Stored Hashes)
   base::Value::Dict s4_current_prefs;
@@ -987,7 +1010,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckSplitValueEncryptedPathValidation) {
   s4_original_hashes.Set("key1", "value1");
   s4_original_hashes.Set("key2", "value2");
   run_scenario("E4_KeyRemovedFromValue", &s4_current_prefs, s4_original_hashes,
-               ValueState::CHANGED, {"key2"});
+               ValueState::CHANGED_ENCRYPTED, {"key2"});
 
   // Scenario E5: Multiple Invalidities (Value Change, Key Added, Key Removed)
   base::Value::Dict s5_current_prefs;
@@ -997,18 +1020,18 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckSplitValueEncryptedPathValidation) {
   s5_original_hashes.Set("keyA", "valueA");
   s5_original_hashes.Set("keyB", "valueB");
   run_scenario("E5_MultipleInvalidities", &s5_current_prefs, s5_original_hashes,
-               ValueState::CHANGED, {"keyA", "keyB", "keyC"});
+               ValueState::CHANGED_ENCRYPTED, {"keyA", "keyB", "keyC"});
 
   // Scenario E6: Initial Value is Empty, Stored Encrypted Hashes Exist
   base::Value::Dict s6_original_hashes;
   s6_original_hashes.Set("key1", "value1");
   base::Value::Dict s6_empty_current_prefs;
   run_scenario("E6_EmptyValue_HashesExist", &s6_empty_current_prefs,
-               s6_original_hashes, ValueState::CLEARED, {});
+               s6_original_hashes, ValueState::CLEARED_ENCRYPTED, {"key1"});
 
   // Scenario E6b: Initial Value is Null, Stored Encrypted Hashes Exist
   run_scenario("E6b_NullValue_HashesExist", nullptr, s6_original_hashes,
-               ValueState::CLEARED, {});
+               ValueState::CLEARED_ENCRYPTED, {"key1"});
 
   // --- Scenario E7: Initial Value Exists, No Stored Encrypted Hashes (empty
   // map of seed hashes) ---
@@ -1049,7 +1072,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, CheckSplitValueEncryptedPathValidation) {
     // 4. Verify results
     // Expected: CHANGED, because current pref has keys, but stored hash dict is
     // empty.
-    EXPECT_EQ(ValueState::CHANGED, result_state);
+    EXPECT_EQ(ValueState::CHANGED_ENCRYPTED, result_state);
     std::vector<std::string> expected_bad_keys_s8 = {"keyA", "keyB"};
     std::sort(actual_invalid_keys.begin(), actual_invalid_keys.end());
     std::sort(expected_bad_keys_s8.begin(), expected_bad_keys_s8.end());
@@ -1105,7 +1128,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, ComputeSplitEncryptedHashes) {
   {
     auto tx = BeginTransaction(true);
     std::vector<std::string> invalid_keys;
-    EXPECT_EQ(ValueState::UNCHANGED,
+    EXPECT_EQ(ValueState::UNCHANGED_ENCRYPTED,
               tx->CheckSplitValue(kBasePath, &input_dict4, &invalid_keys));
     EXPECT_TRUE(invalid_keys.empty());
   }
@@ -1150,7 +1173,7 @@ TEST_F(PrefHashStoreImplEncryptedTest, ComputeSplitEncryptedHashes) {
   {
     auto tx = BeginTransaction(true);
     std::vector<std::string> invalid_keys;
-    EXPECT_EQ(ValueState::UNCHANGED,
+    EXPECT_EQ(ValueState::UNCHANGED_ENCRYPTED,
               tx->CheckSplitValue(kBasePath, &input_dict5, &invalid_keys));
     EXPECT_TRUE(invalid_keys.empty());
   }
@@ -1209,7 +1232,7 @@ TEST_F(PrefHashStoreImplEncryptedTest,
   ValueState state =
       tx->CheckSplitValue(kPath, &current_pref_dict, &invalid_keys);
 
-  EXPECT_EQ(ValueState::CHANGED, state);
+  EXPECT_EQ(ValueState::CHANGED_ENCRYPTED, state);
   ASSERT_EQ(1u, invalid_keys.size());
   EXPECT_EQ("keyB_in_store_only", invalid_keys[0]);
 }

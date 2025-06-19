@@ -88,12 +88,13 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefService(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     SimpleFactoryKey* key,
     const base::FilePath& profile_path,
-    bool async_prefs) {
+    bool async_prefs,
+    os_crypt_async::OSCryptAsync* os_crypt_async) {
   supervised_user::SupervisedUserSettingsService* supervised_user_settings =
       SupervisedUserSettingsServiceFactory::GetForKey(key);
   supervised_user_settings->Init(profile_path, io_task_runner, !async_prefs);
   return chrome_prefs::CreateProfilePrefs(
       profile_path, std::move(pref_validation_delegate), policy_service,
       supervised_user_settings, extension_pref_store, pref_registry,
-      browser_policy_connector, async_prefs, io_task_runner);
+      browser_policy_connector, async_prefs, io_task_runner, os_crypt_async);
 }

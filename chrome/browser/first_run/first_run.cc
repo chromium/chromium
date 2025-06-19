@@ -414,7 +414,8 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
 
     if (!chrome_prefs::InitializePrefsFromMasterPrefs(
             profiles::GetDefaultProfileDir(user_data_dir),
-            std::move(initial_dictionary))) {
+            std::move(initial_dictionary),
+            g_browser_process->os_crypt_async())) {
       DLOG(ERROR) << "Failed to initialize from initial preferences.";
     }
 

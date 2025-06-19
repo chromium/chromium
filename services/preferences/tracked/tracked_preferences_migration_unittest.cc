@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/prefs/pref_name_set.h"
 #include "components/prefs/testing_pref_service.h"
@@ -67,6 +68,8 @@ class SimpleInterceptablePrefFilter final : public InterceptablePrefFilter {
         .Run(std::move(pref_store_contents), prefs_altered);
   }
 
+  void OnEncryptorReceived(os_crypt_async::Encryptor encryptor) override {}
+
   base::WeakPtr<InterceptablePrefFilter> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -87,6 +90,9 @@ class TrackedPreferencesMigrationTest : public testing::Test {
     MOCK_UNPROTECTED_PREF_STORE,
     MOCK_PROTECTED_PREF_STORE,
   };
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
 
   TrackedPreferencesMigrationTest()
       : unprotected_prefs_(new base::Value::Dict),

@@ -2736,6 +2736,7 @@ if (!is_android) {
       "//services/network/public/proto:sct_audit_report_proto",
       "//services/preferences/public/cpp",
       "//services/preferences/public/cpp/tracked",
+      "//services/preferences/tracked:features",
       "//services/screen_ai/public/cpp:utilities",
       "//services/screen_ai/public/mojom",
       "//services/service_manager/public/cpp",

@@ -636,6 +636,7 @@ chromium-metrics-reviews@google.com.
   <int value="33" label="kGoogleServicesLastSignedInUsername"/>
   <int value="34" label="kPolicyRecoveryToken"/>
   <int value="35" label="kExtensionsUIDeveloperMode"/>
+  <int value="36" label="kScheduleToFlushToDisk"/>
 </enum>
 
 </enums>

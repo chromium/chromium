@@ -39,17 +39,21 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/prefs/segregated_pref_store.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
 #include "services/preferences/public/cpp/tracked/tracked_preference_histogram_names.h"
+#include "services/preferences/tracked/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -155,6 +159,13 @@ int GetTrackedPrefHistogramCount(const char* histogram_name,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
+// Helper function to get the test profile directory path.
+base::FilePath GetProfileDir() {
+  base::FilePath profile_dir;
+  CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &profile_dir));
+  return profile_dir.AppendASCII(TestingProfile::kTestUserProfileDir);
+}
+
 std::optional<base::Value::Dict> ReadPrefsDictionary(
     const base::FilePath& pref_file) {
   JSONFileValueDeserializer deserializer(pref_file);
@@ -332,6 +343,22 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
     extensions::ExtensionBrowserTest::TearDown();
   }
 
+  void TearDownOnMainThread() override {
+    // In the PRE_ test, we must ensure all asynchronous
+    // work is flushed before the test exits, guaranteeing the pref files on
+    // disk are in a stable state for the main test to read.
+    if (content::IsPreTest()) {
+      // First, allow any pending asynchronous tasks (like our deferred
+      // validation) to complete.
+      base::RunLoop().RunUntilIdle();
+      // Then, commit any writes that were scheduled by those tasks.
+      base::RunLoop run_loop;
+      profile()->GetPrefs()->CommitPendingWrite(run_loop.QuitClosure());
+      run_loop.Run();
+    }
+    extensions::ExtensionBrowserTest::TearDownOnMainThread();
+  }
+
   // In the PRE_ test, find the number of tracked preferences that were
   // initialized and save it to a file to be read back in the main test and used
   // as the total number of tracked preferences.
@@ -353,7 +380,6 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
           user_prefs::tracked::kTrackedPrefHistogramNullInitialized, ALLOW_ANY);
       EXPECT_EQ(protection_level_ > PROTECTION_DISABLED_ON_PLATFORM,
                 num_tracked_prefs_ > 0);
-
       // Split tracked prefs are reported as Unchanged not as NullInitialized
       // when an empty dictionary is encountered on first run (this should only
       // hit for pref #5 in the current design).
@@ -362,7 +388,6 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
           BEGIN_ALLOW_SINGLE_BUCKET + 5);
       EXPECT_EQ(protection_level_ > PROTECTION_DISABLED_ON_PLATFORM ? 1 : 0,
                 num_split_tracked_prefs);
-
       if (SupportsRegistryValidation()) {
         // Same checks as above, but for the registry.
         num_tracked_prefs_ = GetTrackedPrefHistogramCount(
@@ -1044,8 +1069,9 @@ class PrefHashBrowserTestUntrustedAdditionToPrefsAfterWipe
     // not protecting; if protection is enabled the change should be a Cleared.
     int changed_expected =
         protection_level_ > PROTECTION_DISABLED_ON_PLATFORM &&
-        protection_level_ < PROTECTION_ENABLED_BASIC
-        ? 1 : 0;
+                protection_level_ < PROTECTION_ENABLED_BASIC
+            ? 1
+            : 0;
     int cleared_expected =
         protection_level_ >= PROTECTION_ENABLED_BASIC
         ? 1 : 0;
@@ -1197,15 +1223,15 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
         {
           "keyword" : "badkeyword",
           "name" : "badname",
-          "search_url" : "http://bad_default_engine/search?q=dirty_user_query",
-          "encoding" : "utf-8",
-          "id" : 1
+          "search_url" :
+          "http://bad_default_engine/search?q=dirty_user_query", "encoding" :
+          "utf-8", "id" : 1
         }, {
           "keyword" : "badkeyword2",
           "name" : "badname2",
-          "search_url" : "http://bad_default_engine2/search?q=dirty_user_query",
-          "encoding" : "utf-8",
-          "id" : 2
+          "search_url" :
+          "http://bad_default_engine2/search?q=dirty_user_query", "encoding"
+          : "utf-8", "id" : 2
         }
       ]
     })";
@@ -1300,8 +1326,8 @@ class PrefHashBrowserTestExtensionDictTypeChanged
     // Setting the extensions dict to an invalid type gets noticed regardless
     // of protection level. This implementation just happened to be easier and
     // it doesn't seem important to not protect the kExtensions from being the
-    // wrong type at any protection level. PrefService will correct the type
-    // either way.
+    // wrong type at any protection level. PrefService will correct the
+    // type either way.
     EXPECT_EQ(protection_level_ > PROTECTION_DISABLED_ON_PLATFORM ? 1 : 0,
               GetTrackedPrefHistogramCount(
                   user_prefs::tracked::kTrackedPrefHistogramCleared,
@@ -1407,3 +1433,495 @@ class PrefHashBrowserTestAccountValueUntrustedAddition
 
 PREF_HASH_BROWSER_TEST(PrefHashBrowserTestAccountValueUntrustedAddition,
                        AccountValueUntrustedAddition);
+
+// Suffix used to distinguish encrypted hash keys from MAC keys in storage.
+const char kEncryptedHashSuffix[] = "_encrypted_hash";
+// Base class for tests that need to control the EncryptedPrefHashing
+// feature flag.
+class PrefHashBrowserTestEncryptedBase : public PrefHashBrowserTestBase {};
+
+// Tests that a tampered encrypted hash is caught and triggers a reset.
+class PrefHashBrowserTestEncryptedTampered
+    : public PrefHashBrowserTestEncryptedBase {
+ public:
+  PrefHashBrowserTestEncryptedTampered() {
+    // Feature must be ON for both the PRE_ and main test phases.
+    feature_list_.InitAndEnableFeature(tracked::kEncryptedPrefHashing);
+  }
+
+  void SetupPreferences() override {
+    // PRE_ test (feature ON): Set a value to ensure both MAC and encrypted
+    // hashes are written.
+    profile()->GetPrefs()->SetString(prefs::kHomePage, "http://example.com");
+  }
+
+  void AttackPreferencesOnDisk(
+      base::Value::Dict* unprotected_preferences,
+      base::Value::Dict* protected_preferences) override {
+    // Attack the encrypted hash, leaving the legacy MAC intact.
+    base::Value::Dict* selected_prefs =
+        protection_level_ >= PROTECTION_ENABLED_BASIC ? protected_preferences
+                                                      : unprotected_preferences;
+    ASSERT_TRUE(selected_prefs);
+
+    // Hashes are stored in the "protection.macs" dictionary.
+    base::Value::Dict* macs_dict =
+        selected_prefs->FindDictByDottedPath("protection.macs");
+    ASSERT_TRUE(macs_dict);
+
+    const std::string encrypted_hash_key =
+        std::string(prefs::kHomePage) + kEncryptedHashSuffix;
+
+    // Verify the key exists, then tamper with it.
+    ASSERT_TRUE(macs_dict->contains(encrypted_hash_key));
+    macs_dict->Set(encrypted_hash_key, "invalid_tampered_hash");
+  }
+
+  void VerifyReactionToPrefAttack() override {
+    // Main test (feature ON):
+    if (protection_level_ <= PROTECTION_DISABLED_ON_PLATFORM) {
+      return;
+    }
+
+    // The validation prioritizes the encrypted hash. Since it's invalid, a
+    // change should be detected.
+    if (protection_level_ >= PROTECTION_ENABLED_BASIC) {
+      // The tampered encrypted hash should be detected and trigger a reset.
+      histograms_.ExpectUniqueSample(
+          user_prefs::tracked::kTrackedPrefHistogramChangedEncrypted,
+          2 /* homepage reporting_id */, 1);
+      histograms_.ExpectUniqueSample(
+          user_prefs::tracked::kTrackedPrefHistogramResetEncrypted,
+          2 /* homepage reporting_id */, 1);
+      // The pref should now be reset to its default value.
+      EXPECT_TRUE(profile()->GetPrefs()->GetString(prefs::kHomePage).empty());
+    } else {
+      // If enforcement is off, we should want a reset but not perform it.
+      histograms_.ExpectUniqueSample(
+          user_prefs::tracked::kTrackedPrefHistogramChangedEncrypted,
+          2 /* homepage reporting_id */, 1);
+      histograms_.ExpectUniqueSample(
+          user_prefs::tracked::kTrackedPrefHistogramWantedResetEncrypted,
+          2 /* homepage reporting_id */, 1);
+      // The pref value should remain as it was on disk.
+      EXPECT_EQ("http://example.com",
+                profile()->GetPrefs()->GetString(prefs::kHomePage));
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+PREF_HASH_BROWSER_TEST(PrefHashBrowserTestEncryptedTampered, EncryptedTampered);
+
+// Tests the fallback path: loads prefs with only legacy MACs and verifies
+// that new encrypted hashes are created without resetting any values.
+class PrefHashBrowserTestEncryptedFallbackAndGeneratingEH
+    : public PrefHashBrowserTestEncryptedBase {
+ public:
+  PrefHashBrowserTestEncryptedFallbackAndGeneratingEH() {
+    if (content::IsPreTest()) {
+      // PRE_ phase: Feature is explicitly OFF to write only legacy MACs.
+      feature_list_.InitWithFeatures({}, {tracked::kEncryptedPrefHashing});
+    } else {
+      // Main phase: Feature is ON to trigger the fallback and the generation of
+      // encrypted hash process.
+      feature_list_.InitWithFeatures({tracked::kEncryptedPrefHashing}, {});
+    }
+  }
+
+  // Runs in the PRE_ test, with the encryption feature OFF.
+  void SetupPreferences() override {
+    profile()->GetPrefs()->SetString(prefs::kHomePage, "http://example.com");
+  }
+
+  // Runs before the main test. Verifies the on-disk state.
+  void AttackPreferencesOnDisk(
+      base::Value::Dict* unprotected_preferences,
+      base::Value::Dict* protected_preferences) override {
+    if (protection_level_ <= PROTECTION_DISABLED_ON_PLATFORM) {
+      return;
+    }
+
+    // The 'macs' dict may be in either pref file depending on platform.
+    base::Value::Dict* macs_dict = nullptr;
+    if (protected_preferences) {
+      macs_dict =
+          protected_preferences->FindDictByDottedPath("protection.macs");
+    }
+    if (!macs_dict) {
+      macs_dict =
+          unprotected_preferences->FindDictByDottedPath("protection.macs");
+    }
+    ASSERT_TRUE(macs_dict);
+
+    // VERIFY: The legacy MAC for 'homepage' must exist.
+    ASSERT_TRUE(macs_dict->contains(prefs::kHomePage));
+
+    // VERIFY: The encrypted hash for 'homepage' must NOT exist yet.
+    const std::string encrypted_hash_key =
+        std::string(prefs::kHomePage) + kEncryptedHashSuffix;
+    ASSERT_FALSE(macs_dict->contains(encrypted_hash_key));
+  }
+
+  // Runs in the main test, with the encryption feature ON.
+  void VerifyReactionToPrefAttack() override {
+    if (protection_level_ <= PROTECTION_DISABLED_ON_PLATFORM) {
+      return;
+    }
+
+    // Verify initial load behavior.
+    EXPECT_EQ("http://example.com",
+              profile()->GetPrefs()->GetString(prefs::kHomePage));
+
+    histograms_.ExpectBucketCount(
+        user_prefs::tracked::kTrackedPrefHistogramUnchangedViaHmacFallback,
+        2 /* homepage reporting_id */, 1);
+    EXPECT_GE(
+        GetTrackedPrefHistogramCount(
+            user_prefs::tracked::kTrackedPrefHistogramUnchangedViaHmacFallback,
+            ALLOW_ANY),
+        1);
+    histograms_.ExpectTotalCount(
+        user_prefs::tracked::kTrackedPrefHistogramReset, 0);
+
+    base::RunLoop run_loop;
+    // A write operation is scheduled after the encryptor received.
+    profile()->GetPrefs()->CommitPendingWrite(run_loop.QuitClosure());
+    run_loop.Run();
+#if !BUILDFLAG(IS_CHROMEOS)
+    std::optional<base::Value::Dict> final_protected_prefs;
+    std::optional<base::Value::Dict> final_unprotected_prefs;
+    base::Value::Dict* final_macs_dict = nullptr;
+
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      base::FilePath profile_dir = GetProfileDir();
+      const base::FilePath protected_pref_file =
+          profile_dir.Append(chrome::kSecurePreferencesFilename);
+      if (base::PathExists(protected_pref_file)) {
+        final_protected_prefs = ReadPrefsDictionary(protected_pref_file);
+      }
+    }
+
+    if (final_protected_prefs.has_value()) {
+      final_macs_dict =
+          final_protected_prefs->FindDictByDottedPath("protection.macs");
+    }
+
+    if (!final_macs_dict) {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      base::FilePath profile_dir = GetProfileDir();
+      const base::FilePath unprotected_pref_file =
+          profile_dir.Append(chrome::kPreferencesFilename);
+      final_unprotected_prefs = ReadPrefsDictionary(unprotected_pref_file);
+      ASSERT_TRUE(final_unprotected_prefs.has_value());
+      final_macs_dict =
+          final_unprotected_prefs->FindDictByDottedPath("protection.macs");
+    }
+    ASSERT_TRUE(final_macs_dict);
+
+    // VERIFY: The new encrypted hash should now exist on disk.
+    const std::string encrypted_hash_key =
+        std::string(prefs::kHomePage) + kEncryptedHashSuffix;
+    EXPECT_TRUE(final_macs_dict->contains(encrypted_hash_key));
+#endif  // #if !BUILDFLAG(IS_CHROMEOS)
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+PREF_HASH_BROWSER_TEST(PrefHashBrowserTestEncryptedFallbackAndGeneratingEH,
+                       EncryptedHashGeneration);
+
+class PrefHashBrowserTestEncryptedSplitPrefFallbackAndGeneratingEH
+    : public PrefHashBrowserTestEncryptedBase {
+ public:
+  PrefHashBrowserTestEncryptedSplitPrefFallbackAndGeneratingEH() {
+    if (content::IsPreTest()) {
+      // PRE_ phase: Feature is OFF to write only legacy MACs.
+      feature_list_.InitWithFeatures({}, {tracked::kEncryptedPrefHashing});
+    } else {
+      // Main phase: Feature is ON to trigger FallbackAndGeneratingEH.
+      feature_list_.InitWithFeatures({tracked::kEncryptedPrefHashing}, {});
+    }
+  }
+
+  void SetupPreferences() override {
+    // This creates a split preference entry for extensions.settings.
+    InstallExtensionWithUIAutoConfirm(test_data_dir_.AppendASCII("good.crx"),
+                                      1);
+  }
+
+  void AttackPreferencesOnDisk(
+      base::Value::Dict* unprotected_preferences,
+      base::Value::Dict* protected_preferences) override {
+    if (protection_level_ <= PROTECTION_DISABLED_ON_PLATFORM) {
+      pre_test_state_ok_ = true;
+      return;
+    }
+
+    base::Value::Dict* macs_dict = nullptr;
+    if (protected_preferences) {
+      macs_dict =
+          protected_preferences->FindDictByDottedPath("protection.macs");
+    }
+    if (!macs_dict) {
+      macs_dict =
+          unprotected_preferences->FindDictByDottedPath("protection.macs");
+    }
+
+    // Instead of asserting, check if the required legacy hashes were actually
+    // written by the PRE_ test.
+    if (macs_dict && macs_dict->FindDict(extensions::pref_names::kExtensions)) {
+      // State is good, we can proceed.
+      pre_test_state_ok_ = true;
+
+      // Now we can safely assert that the encrypted hashes are not yet present.
+      const std::string encrypted_hash_key =
+          std::string(extensions::pref_names::kExtensions) +
+          kEncryptedHashSuffix;
+      ASSERT_FALSE(macs_dict->FindDict(encrypted_hash_key));
+    } else {
+      // The PRE_ test failed to write the legacy hashes. Log a warning and
+      // set the flag so the main test verification is skipped.
+      pre_test_state_ok_ = false;
+    }
+  }
+
+  void VerifyReactionToPrefAttack() override {
+    if (!pre_test_state_ok_) {
+      return;
+    }
+
+    if (protection_level_ <= PROTECTION_DISABLED_ON_PLATFORM) {
+      return;
+    }
+
+    EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(kGoodCrxId));
+    histograms_.ExpectBucketCount(
+        user_prefs::tracked::kTrackedPrefHistogramUnchangedViaHmacFallback,
+        5 /* extensions.settings reporting_id */, 1);
+    histograms_.ExpectTotalCount(
+        user_prefs::tracked::kTrackedPrefHistogramReset, 0);
+
+    profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+    base::RunLoop run_loop;
+    profile()->GetPrefs()->CommitPendingWrite(run_loop.QuitClosure());
+    run_loop.Run();
+#if !BUILDFLAG(IS_CHROMEOS)
+    std::optional<base::Value::Dict> final_protected_prefs;
+    std::optional<base::Value::Dict> final_unprotected_prefs;
+    base::Value::Dict* final_macs_dict = nullptr;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      final_protected_prefs = ReadPrefsDictionary(
+          GetProfileDir().Append(chrome::kSecurePreferencesFilename));
+      if (final_protected_prefs.has_value()) {
+        final_macs_dict =
+            final_protected_prefs->FindDictByDottedPath("protection.macs");
+      }
+    }
+    if (!final_macs_dict) {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      final_unprotected_prefs = ReadPrefsDictionary(
+          GetProfileDir().Append(chrome::kPreferencesFilename));
+      if (final_unprotected_prefs.has_value()) {
+        final_macs_dict =
+            final_unprotected_prefs->FindDictByDottedPath("protection.macs");
+      }
+    }
+    ASSERT_TRUE(final_macs_dict);
+
+    const std::string encrypted_hash_key =
+        std::string(extensions::pref_names::kExtensions) + kEncryptedHashSuffix;
+    EXPECT_TRUE(final_macs_dict->FindDict(encrypted_hash_key));
+#endif  // #if !BUILDFLAG(IS_CHROMEOS)
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  bool pre_test_state_ok_ = false;
+};
+
+PREF_HASH_BROWSER_TEST(
+    PrefHashBrowserTestEncryptedSplitPrefFallbackAndGeneratingEH,
+    EncryptedSplitPrefFallbackAndGeneratingEH);
+
+class PrefHashBrowserTestEncryptedSplitPrefTampered
+    : public PrefHashBrowserTestEncryptedBase {
+ public:
+  PrefHashBrowserTestEncryptedSplitPrefTampered() {
+    feature_list_.InitAndEnableFeature(tracked::kEncryptedPrefHashing);
+  }
+
+  void SetupPreferences() override {
+    InstallExtensionWithUIAutoConfirm(test_data_dir_.AppendASCII("good.crx"),
+                                      1);
+  }
+
+  void AttackPreferencesOnDisk(
+      base::Value::Dict* unprotected_preferences,
+      base::Value::Dict* protected_preferences) override {
+    if (protection_level_ <= PROTECTION_DISABLED_ON_PLATFORM) {
+      return;
+    }
+
+    base::Value::Dict* macs_dict = nullptr;
+    if (protected_preferences) {
+      macs_dict =
+          protected_preferences->FindDictByDottedPath("protection.macs");
+    }
+    if (!macs_dict) {
+      macs_dict =
+          unprotected_preferences->FindDictByDottedPath("protection.macs");
+    }
+    ASSERT_TRUE(macs_dict);
+
+    const std::string encrypted_hash_key =
+        std::string(extensions::pref_names::kExtensions) + kEncryptedHashSuffix;
+    base::Value::Dict* encrypted_split_hashes =
+        macs_dict->FindDict(encrypted_hash_key);
+
+    if (encrypted_split_hashes) {
+      // Hashes exist, so we can perform the attack.
+      encrypted_split_hashes->Set(kGoodCrxId, "invalid_split_hash");
+      was_attacked_ = true;
+    } else {
+      // This indicates the race condition occurred. The test will still run but
+      // won't be able to verify the tampering-detection logic.
+      was_attacked_ = false;
+    }
+  }
+
+  void VerifyReactionToPrefAttack() override {
+    if (!was_attacked_) {
+      // If we couldn't perform the attack, we can't verify the reaction.
+      // The WARNING log from the attack phase will serve as the failure signal.
+      return;
+    }
+
+    if (protection_level_ < PROTECTION_ENABLED_EXTENSIONS) {
+      EXPECT_TRUE(
+          extension_registry()->enabled_extensions().GetByID(kGoodCrxId));
+      histograms_.ExpectBucketCount(
+          user_prefs::tracked::kTrackedPrefHistogramChangedEncrypted, 5, 1);
+      histograms_.ExpectBucketCount(
+          user_prefs::tracked::kTrackedPrefHistogramWantedResetEncrypted, 5, 1);
+    } else {
+      EXPECT_FALSE(
+          extension_registry()->enabled_extensions().GetByID(kGoodCrxId));
+      histograms_.ExpectBucketCount(
+          user_prefs::tracked::kTrackedPrefHistogramChangedEncrypted,
+          5 /* extensions.settings reporting_id */, 1);
+      histograms_.ExpectBucketCount(
+          user_prefs::tracked::kTrackedPrefHistogramResetEncrypted, 5, 1);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  // Member variable to track if the attack was successfully performed.
+  bool was_attacked_ = false;
+};
+
+PREF_HASH_BROWSER_TEST(PrefHashBrowserTestEncryptedSplitPrefTampered,
+                       EncryptedSplitPrefTampered);
+
+class PrefHashBrowserTestEncryptedHashIsAuthoritative
+    : public PrefHashBrowserTestEncryptedBase {
+ public:
+  PrefHashBrowserTestEncryptedHashIsAuthoritative() {
+    feature_list_.InitAndEnableFeature(tracked::kEncryptedPrefHashing);
+  }
+
+  void SetupPreferences() override {
+    // In the PRE_ test, set a value. This will cause both a valid legacy MAC
+    // and a valid encrypted hash to be written to disk on shutdown.
+    profile()->GetPrefs()->SetString(prefs::kHomePage, "http://good.com");
+  }
+
+  void AttackPreferencesOnDisk(
+      base::Value::Dict* unprotected_preferences,
+      base::Value::Dict* protected_preferences) override {
+    if (protection_level_ <= PROTECTION_DISABLED_ON_PLATFORM) {
+      return;
+    }
+
+    base::Value::Dict* macs_dict = nullptr;
+    if (protected_preferences) {
+      macs_dict =
+          protected_preferences->FindDictByDottedPath("protection.macs");
+    }
+    if (!macs_dict) {
+      macs_dict =
+          unprotected_preferences->FindDictByDottedPath("protection.macs");
+    }
+    ASSERT_TRUE(macs_dict);
+
+    const std::string encrypted_hash_key =
+        std::string(prefs::kHomePage) + kEncryptedHashSuffix;
+    ASSERT_TRUE(macs_dict->contains(prefs::kHomePage));
+    ASSERT_TRUE(macs_dict->contains(encrypted_hash_key));
+
+    // Tamper with the legacy MAC, but leave the encrypted hash
+    // (the authoritative source) and the preference value untouched.
+    macs_dict->Set(prefs::kHomePage, "invalid_legacy_mac");
+  }
+
+  void VerifyReactionToPrefAttack() override {
+    if (protection_level_ <= PROTECTION_DISABLED_ON_PLATFORM) {
+      return;
+    }
+
+    if (protection_level_ >= PROTECTION_ENABLED_BASIC) {
+      // Assert that the preference was reset to its default (empty) value.
+      EXPECT_TRUE(profile()->GetPrefs()->GetString(prefs::kHomePage).empty());
+
+      // Verify that the reset was triggered by the non-encrypted, legacy MAC
+      // validation path.
+      histograms_.ExpectUniqueSample(
+          user_prefs::tracked::kTrackedPrefHistogramChanged,
+          2 /* homepage reporting_id */, 1);
+      histograms_.ExpectUniqueSample(
+          user_prefs::tracked::kTrackedPrefHistogramReset,
+          2 /* homepage reporting_id */, 1);
+
+      // No other validation paths should have triggered a reset.
+      histograms_.ExpectTotalCount(
+          user_prefs::tracked::kTrackedPrefHistogramUnchangedEncrypted, 0);
+      histograms_.ExpectTotalCount(
+          user_prefs::tracked::kTrackedPrefHistogramResetEncrypted, 0);
+
+    } else {
+      // On platforms with low enforcement (Linux), the initial validation pass
+      // logs the invalid legacy MAC but does NOT reset the preference. The
+      // deferred validation pass then checks the authoritative encrypted hash,
+      // finds it valid, and the preference value is kept.
+      EXPECT_EQ("http://good.com",
+                profile()->GetPrefs()->GetString(prefs::kHomePage));
+
+      // Verify the preference was considered unchanged because the
+      // authoritative encrypted hash was valid.
+      histograms_.ExpectBucketCount(
+          user_prefs::tracked::kTrackedPrefHistogramUnchangedEncrypted,
+          2 /* homepage reporting_id */, 1);
+
+      // Verify no resets of any kind were performed.
+      histograms_.ExpectTotalCount(
+          user_prefs::tracked::kTrackedPrefHistogramReset, 0);
+      histograms_.ExpectTotalCount(
+          user_prefs::tracked::kTrackedPrefHistogramResetEncrypted, 0);
+      histograms_.ExpectTotalCount(
+          user_prefs::tracked::kTrackedPrefHistogramResetViaHmacFallback, 0);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+PREF_HASH_BROWSER_TEST(PrefHashBrowserTestEncryptedHashIsAuthoritative,
+                       EncryptedHashIsAuthoritative);

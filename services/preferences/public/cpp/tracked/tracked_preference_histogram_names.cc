@@ -21,7 +21,29 @@ const char kTrackedPrefHistogramNullInitialized[] =
 const char kTrackedPrefHistogramWantedReset[] =
     "Settings.TrackedPreferenceWantedReset";
 const char kTrackedPrefHistogramReset[] = "Settings.TrackedPreferenceReset";
+const char kTrackedPrefHistogramResetViaHmacFallback[] =
+    "Settings.TrackedPreferenceResetViaHmacFallback";
+const char kTrackedPrefHistogramResetEncrypted[] =
+    "Settings.TrackedPreferenceResetEncrypted";
 const char kTrackedPrefRegistryValidationSuffix[] = "FromRegistry";
 
+const char kTrackedPrefHistogramWantedResetViaHmacFallback[] =
+    "Settings.TrackedPreferenceWantedResetViaHmacFallback";
+const char kTrackedPrefHistogramWantedResetEncrypted[] =
+    "Settings.TrackedPreferenceWantedResetEncrypted";
+
+const char kTrackedPrefHistogramUnchangedEncrypted[] =
+    "Settings.TrackedPreferenceUnchangedEncrypted";
+const char kTrackedPrefHistogramClearedEncrypted[] =
+    "Settings.TrackedPreferenceClearedEncrypted";
+const char kTrackedPrefHistogramChangedEncrypted[] =
+    "Settings.TrackedPreferenceChangedEncrypted";
+
+const char kTrackedPrefHistogramUnchangedViaHmacFallback[] =
+    "Settings.TrackedPreferenceUnchangedViaHmacFallback";
+const char kTrackedPrefHistogramClearedViaHmacFallback[] =
+    "Settings.TrackedPreferenceClearedViaHmacFallback";
+const char kTrackedPrefHistogramChangedViaHmacFallback[] =
+    "Settings.TrackedPreferenceChangedViaHmacFallback";
 }  // namespace tracked
 }  // namespace user_prefs

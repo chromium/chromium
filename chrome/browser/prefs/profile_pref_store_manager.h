@@ -31,6 +31,10 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}  // namespace os_crypt_async
+
 // Provides a facade through which the user preference store may be accessed and
 // managed.
 class ProfilePrefStoreManager {
@@ -86,7 +90,8 @@ class ProfilePrefStoreManager {
       mojo::PendingRemote<prefs::mojom::ResetOnLoadObserver>
           reset_on_load_observer,
       mojo::PendingRemote<prefs::mojom::TrackedPreferenceValidationDelegate>
-          validation_delegate);
+          validation_delegate,
+      os_crypt_async::OSCryptAsync* os_crypt);
 
   // Initializes the preferences for the managed profile with the preference
   // values in |master_prefs|. Acts synchronously, including blocking IO.
@@ -95,7 +100,8 @@ class ProfilePrefStoreManager {
       std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>
           tracking_configuration,
       size_t reporting_ids_count,
-      base::Value::Dict master_prefs);
+      base::Value::Dict master_prefs,
+      os_crypt_async::OSCryptAsync* os_crypt);
 
  private:
   // Connects to the pref service over mojo and configures it.

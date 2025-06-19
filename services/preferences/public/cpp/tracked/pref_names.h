@@ -9,6 +9,7 @@ namespace user_prefs {
 
 extern const char kPreferenceResetTime[];
 
+extern const char kScheduleToFlushToDisk[];
 }  // namespace user_prefs
 
 #endif  // SERVICES_PREFERENCES_PUBLIC_CPP_TRACKED_PREF_NAMES_H_

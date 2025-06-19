@@ -16,7 +16,19 @@ extern const char kTrackedPrefHistogramTrustedInitialized[];
 extern const char kTrackedPrefHistogramNullInitialized[];
 extern const char kTrackedPrefHistogramWantedReset[];
 extern const char kTrackedPrefHistogramReset[];
+extern const char kTrackedPrefHistogramResetViaHmacFallback[];
+extern const char kTrackedPrefHistogramResetEncrypted[];
 extern const char kTrackedPrefRegistryValidationSuffix[];
+extern const char kTrackedPrefHistogramWantedResetViaHmacFallback[];
+extern const char kTrackedPrefHistogramWantedResetEncrypted[];
+// Histograms for encrypted hash validation.
+extern const char kTrackedPrefHistogramUnchangedEncrypted[];
+extern const char kTrackedPrefHistogramClearedEncrypted[];
+extern const char kTrackedPrefHistogramChangedEncrypted[];
+// Histograms for HMAC validation fallback.
+extern const char kTrackedPrefHistogramUnchangedViaHmacFallback[];
+extern const char kTrackedPrefHistogramClearedViaHmacFallback[];
+extern const char kTrackedPrefHistogramChangedViaHmacFallback[];
 
 }  // namespace tracked
 }  // namespace user_prefs

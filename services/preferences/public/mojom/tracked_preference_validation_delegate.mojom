@@ -27,6 +27,27 @@ interface TrackedPreferenceValidationDelegate {
     TRUSTED_NULL_VALUE,
     // This transaction's store type is not supported.
     UNSUPPORTED,
+    // ---- Encrypted Hash Path States ----
+    // These are used when the encryptor is available and an encrypted hash is
+    // present.
+    // The preference value corresponds to its stored and valid ENCRYPTED HASH.
+    UNCHANGED_ENCRYPTED,
+    // The preference value has been changed, and its stored ENCRYPTED HASH is
+    // invalid or fails to decrypt.
+    CHANGED_ENCRYPTED,
+    // The preference has been cleared, but a stored ENCRYPTED HASH was found.
+    CLEARED_ENCRYPTED,
+
+    // ---- Encrypted Fallback PathStates ----
+    // These are used when the encryptor is available, but NO encrypted hash is
+    // present, so validation falls back to the legacy MAC.
+    // The preference value corresponds to its stored legacy MAC, signaling
+    // that an encrypted hash should be generated.
+    UNCHANGED_VIA_HMAC_FALLBACK,
+    // The preference value has been changed, and its legacy MAC is invalid.
+    CHANGED_VIA_HMAC_FALLBACK,
+    // The preference has been cleared since the last legacy MAC was stored.
+    CLEARED_VIA_HMAC_FALLBACK
   };
 
   // Notifies observes of the result (|value_state|) of checking the atomic
