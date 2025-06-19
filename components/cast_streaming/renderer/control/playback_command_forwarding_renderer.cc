@@ -5,6 +5,7 @@
 #include "components/cast_streaming/renderer/control/playback_command_forwarding_renderer.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"

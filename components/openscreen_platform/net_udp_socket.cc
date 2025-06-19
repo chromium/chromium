@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "components/openscreen_platform/network_util.h"
 #include "net/base/net_errors.h"
 

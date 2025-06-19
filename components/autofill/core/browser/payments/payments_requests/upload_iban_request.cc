@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/upload_iban_request.h"
 
 #include "base/json/json_writer.h"
+#include "base/notimplemented.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 

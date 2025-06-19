@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "base/strings/to_string.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/filling/filling_product.h"

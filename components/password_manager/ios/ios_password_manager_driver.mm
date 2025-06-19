@@ -7,6 +7,7 @@
 #import <string>
 
 #import "base/hash/hash.h"
+#include "base/notimplemented.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"

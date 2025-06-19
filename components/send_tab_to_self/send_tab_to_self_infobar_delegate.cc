@@ -5,6 +5,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_infobar_delegate.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "content/public/browser/web_contents.h"

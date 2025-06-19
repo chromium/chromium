@@ -12,6 +12,7 @@
 
 #include "base/debug/alias.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/switches.h"

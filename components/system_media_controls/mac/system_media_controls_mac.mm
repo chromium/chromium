@@ -5,6 +5,7 @@
 #include "components/system_media_controls/mac/system_media_controls_mac.h"
 
 #include "base/check_is_test.h"
+#include "base/notimplemented.h"
 #include "components/remote_cocoa/browser/application_host.h"
 #include "components/system_media_controls/mac/remote_cocoa/system_media_controls_bridge.h"
 #include "components/system_media_controls/system_media_controls_observer.h"

@@ -14,7 +14,7 @@
 #include "ash/shell.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_observer.h"

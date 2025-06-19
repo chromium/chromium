@@ -11,6 +11,7 @@
 #include "base/base64url.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "components/error_page/common/alt_game_image_data.h"

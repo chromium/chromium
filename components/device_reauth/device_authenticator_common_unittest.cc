@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/device_reauth/device_authenticator.h"

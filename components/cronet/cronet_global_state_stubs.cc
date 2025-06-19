@@ -8,6 +8,7 @@
 
 #include "base/at_exit.h"
 #include "base/feature_list.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"

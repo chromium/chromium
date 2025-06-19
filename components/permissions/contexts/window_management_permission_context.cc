@@ -5,6 +5,7 @@
 #include "components/permissions/contexts/window_management_permission_context.h"
 
 #include "base/feature_list.h"
+#include "base/notimplemented.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"

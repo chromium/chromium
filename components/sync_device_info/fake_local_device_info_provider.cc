@@ -4,6 +4,7 @@
 
 #include "components/sync_device_info/fake_local_device_info_provider.h"
 
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_enums.pb.h"

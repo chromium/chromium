@@ -8,7 +8,7 @@
 #include <iterator>
 #include <optional>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"

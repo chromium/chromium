@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "components/live_caption/caption_bubble_session_observer.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "ui/gfx/geometry/rect.h"

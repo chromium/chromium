@@ -7,6 +7,7 @@
 #include <alpha-compositing-unstable-v1-server-protocol.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/wayland/server_util.h"

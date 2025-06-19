@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"

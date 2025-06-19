@@ -10,9 +10,10 @@
 #include "components/openscreen_platform/tls_connection_factory.h"
 
 #include <openssl/pool.h>
+
 #include <utility>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "components/openscreen_platform/network_context.h"
 #include "components/openscreen_platform/network_util.h"
 #include "components/openscreen_platform/tls_client_connection.h"

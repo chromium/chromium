@@ -9,6 +9,7 @@
 #include <wayland-server-protocol-core.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "components/exo/pointer.h"
 #include "components/exo/pointer_gesture_pinch_delegate.h"
 #include "components/exo/surface.h"

@@ -6,7 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 
 class PlatformSpellChecker;

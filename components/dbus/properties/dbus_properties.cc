@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "components/dbus/properties/success_barrier_callback.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"

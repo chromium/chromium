@@ -4,6 +4,7 @@
 
 #include "components/exo/wayland/wl_seat.h"
 
+#include "base/notimplemented.h"
 #include "components/exo/keyboard.h"
 #include "components/exo/pointer.h"
 #include "components/exo/touch.h"
