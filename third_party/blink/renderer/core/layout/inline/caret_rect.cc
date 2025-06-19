@@ -147,7 +147,11 @@ LogicalRect ComputeNextCharacterLogicalRect(const InlineCursor& cursor,
     // If the next fragment is text, we need to get the width and height of
     // the first visible character in this fragment.
     auto next = cursor;
-    next.MoveToNext();
+    if (!IsLtr(ResolvedDirection(cursor))) {
+      next.MoveToPrevious();
+    } else {
+      next.MoveToNext();
+    }
     if (next && next.Current().IsText() && !cursor.Current().IsLineBreak()) {
       const ComputedStyle& style_next = next.Current().Style();
       WritingModeConverter converter_next(
