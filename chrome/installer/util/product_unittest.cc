@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"

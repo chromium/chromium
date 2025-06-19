@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/drive/fileapi/drivefs_file_system_backend_delegate.h"
 
+#include "base/notimplemented.h"
 #include "chrome/browser/ash/drive/fileapi/drivefs_async_file_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/async_file_util.h"

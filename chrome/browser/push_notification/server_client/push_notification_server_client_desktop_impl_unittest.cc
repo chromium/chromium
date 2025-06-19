@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"

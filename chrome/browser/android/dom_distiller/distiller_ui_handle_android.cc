@@ -4,7 +4,7 @@
 
 #include "chrome/browser/android/dom_distiller/distiller_ui_handle_android.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace dom_distiller {
 

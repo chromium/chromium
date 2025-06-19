@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_stub.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "components/account_id/account_id.h"
 
 MultiUserWindowManagerStub::MultiUserWindowManagerStub() = default;

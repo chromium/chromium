@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"

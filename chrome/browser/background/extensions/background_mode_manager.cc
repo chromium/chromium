@@ -21,6 +21,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notimplemented.h"
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"

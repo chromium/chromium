@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/string_escape.h"
 #include "base/memory/ref_counted.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"

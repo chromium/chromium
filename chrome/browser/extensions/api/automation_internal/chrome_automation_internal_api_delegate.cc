@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/notimplemented.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"

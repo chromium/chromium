@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"

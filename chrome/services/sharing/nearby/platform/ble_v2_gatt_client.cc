@@ -5,7 +5,7 @@
 #include "chrome/services/sharing/nearby/platform/ble_v2_gatt_client.h"
 
 #include "base/logging.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"

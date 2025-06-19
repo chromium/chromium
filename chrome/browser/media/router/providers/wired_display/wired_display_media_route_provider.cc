@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/media_router_feature.h"

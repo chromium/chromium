@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client_impl.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"

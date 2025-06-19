@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
 #include "chrome/browser/android/background_tab_manager.h"

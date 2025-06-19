@@ -5,6 +5,7 @@
 #include "chrome/browser/android/metrics/android_session_durations_service.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/metrics/android_session_durations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

@@ -4,6 +4,8 @@
 
 #include "chrome/utility/image_writer/image_writer.h"
 
+#include "base/notimplemented.h"
+
 // This file contains the default version of the platform-specific methods of
 // the ImageWriter.  Add new platforms by creating a new version of these
 // methods and updating the compliation rules appropriately.

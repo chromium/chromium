@@ -14,6 +14,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"

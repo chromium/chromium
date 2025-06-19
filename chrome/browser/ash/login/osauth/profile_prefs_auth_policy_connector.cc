@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"

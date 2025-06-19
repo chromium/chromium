@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_utils.h"
 

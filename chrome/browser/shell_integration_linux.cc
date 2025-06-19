@@ -34,6 +34,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/nix/xdg_util.h"
+#include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"

@@ -22,7 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"

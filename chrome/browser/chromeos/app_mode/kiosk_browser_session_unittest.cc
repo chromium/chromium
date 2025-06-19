@@ -26,6 +26,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/json/values_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"

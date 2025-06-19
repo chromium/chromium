@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/biometric_authentication_confirmation_bubble_controller.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"

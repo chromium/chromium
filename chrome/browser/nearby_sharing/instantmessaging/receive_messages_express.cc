@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/constants.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"

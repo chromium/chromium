@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/values.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_message_type.h"

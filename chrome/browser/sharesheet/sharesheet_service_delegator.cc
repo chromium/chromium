@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view_delegate.h"

@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/syslog_logging.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 
+#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"

@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/printers_map.h"

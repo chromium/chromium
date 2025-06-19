@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace chrome {
 

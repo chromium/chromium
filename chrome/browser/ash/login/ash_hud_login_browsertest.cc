@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/notimplemented.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"

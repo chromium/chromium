@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/win/scoped_hstring.h"
 #include "chrome/browser/media/router/discovery/test_support/win/fake_connection_profile.h"
 #include "chrome/browser/media/router/discovery/test_support/win/fake_network_information_statics.h"

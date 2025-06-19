@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "content/public/browser/render_frame_host.h"

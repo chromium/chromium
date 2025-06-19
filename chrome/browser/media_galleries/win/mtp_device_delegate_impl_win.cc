@@ -18,6 +18,7 @@
 #include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

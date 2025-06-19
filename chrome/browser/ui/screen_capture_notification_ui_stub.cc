@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 // Stub implementation of the ScreenCaptureNotificationUI interface.
 class ScreenCaptureNotificationUIStub : public ScreenCaptureNotificationUI {

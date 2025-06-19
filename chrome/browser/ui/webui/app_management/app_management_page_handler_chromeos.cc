@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"

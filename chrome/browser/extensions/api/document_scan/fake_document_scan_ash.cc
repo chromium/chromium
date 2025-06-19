@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 

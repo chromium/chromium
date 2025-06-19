@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/notimplemented.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"

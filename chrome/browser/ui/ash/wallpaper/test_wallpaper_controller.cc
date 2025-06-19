@@ -15,6 +15,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/containers/adapters.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/account_id/account_id.h"

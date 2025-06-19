@@ -23,6 +23,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/ostream_operators.h"
 #include "base/numerics/safe_math.h"

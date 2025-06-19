@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"

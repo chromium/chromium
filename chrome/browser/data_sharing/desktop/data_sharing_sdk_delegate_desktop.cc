@@ -4,6 +4,7 @@
 
 #include "chrome/browser/data_sharing/desktop/data_sharing_sdk_delegate_desktop.h"
 
+#include "base/notimplemented.h"
 #include "chrome/browser/data_sharing/desktop/data_sharing_conversion_utils.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_page_handler.h"
 #include "chrome/common/webui_url_constants.h"

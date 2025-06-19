@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"

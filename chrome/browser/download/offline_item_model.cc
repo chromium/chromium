@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

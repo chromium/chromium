@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/one_shot_event.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"

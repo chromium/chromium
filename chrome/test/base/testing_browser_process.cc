@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"

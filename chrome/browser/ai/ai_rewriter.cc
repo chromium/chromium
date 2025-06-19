@@ -5,6 +5,7 @@
 #include "chrome/browser/ai/ai_rewriter.h"
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_utils.h"

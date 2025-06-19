@@ -35,7 +35,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/ambient_video_albums.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/notimplemented.h"
 #include "base/uuid.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"

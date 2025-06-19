@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notimplemented.h"
 #include "base/process/process_info.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

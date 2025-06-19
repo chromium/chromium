@@ -20,6 +20,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"  // For CHECK macros.
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

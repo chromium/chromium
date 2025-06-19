@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"

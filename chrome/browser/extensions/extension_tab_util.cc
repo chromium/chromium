@@ -12,6 +12,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"

@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"

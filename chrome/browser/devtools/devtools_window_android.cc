@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/devtools_window.h"
 
+#include "base/notimplemented.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 
 using content::WebContents;

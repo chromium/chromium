@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "build/branding_buildflags.h"

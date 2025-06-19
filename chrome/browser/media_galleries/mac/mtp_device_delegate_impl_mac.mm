@@ -12,6 +12,7 @@
 #include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "components/storage_monitor/image_capture_device.h"
 #include "components/storage_monitor/image_capture_device_manager.h"

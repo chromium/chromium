@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"

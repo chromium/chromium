@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"

@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"

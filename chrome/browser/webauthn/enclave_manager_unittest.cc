@@ -26,6 +26,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"

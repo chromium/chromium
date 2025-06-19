@@ -8,6 +8,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"

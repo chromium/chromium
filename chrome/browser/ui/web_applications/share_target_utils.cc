@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"

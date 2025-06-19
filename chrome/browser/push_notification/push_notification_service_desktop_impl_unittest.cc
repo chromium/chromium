@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/notimplemented.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/push_notification/prefs/push_notification_prefs.h"

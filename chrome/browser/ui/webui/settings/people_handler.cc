@@ -17,6 +17,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"

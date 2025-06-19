@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/android/resource_mapper.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_delegate.h"
 
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"

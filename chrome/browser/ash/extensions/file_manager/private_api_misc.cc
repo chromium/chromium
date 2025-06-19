@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

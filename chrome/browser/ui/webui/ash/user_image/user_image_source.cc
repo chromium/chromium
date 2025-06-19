@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/notimplemented.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"

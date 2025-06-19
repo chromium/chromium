@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider_factory.h"
 #include "chrome/browser/ash/nearby/presence/credential_storage/credential_storage_initializer.h"

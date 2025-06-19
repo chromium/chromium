@@ -4,6 +4,7 @@
 
 #include "third_party/nearby/src/internal/platform/implementation/platform.h"
 
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/sharing/nearby/nearby_connections.h"

@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/syslog_logging.h"

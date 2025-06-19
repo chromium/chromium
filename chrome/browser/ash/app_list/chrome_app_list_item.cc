@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"

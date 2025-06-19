@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/browser_ui/scoped_glic_button_indicator.h"

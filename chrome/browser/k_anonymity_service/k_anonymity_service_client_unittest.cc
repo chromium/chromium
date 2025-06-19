@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

@@ -10,7 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"

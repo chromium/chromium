@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/sharing_hub/screenshot/screenshot_captured_bubble_controller.h"
 
 #include "base/feature_list.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

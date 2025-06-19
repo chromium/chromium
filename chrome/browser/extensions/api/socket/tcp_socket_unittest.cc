@@ -7,16 +7,18 @@
 #pragma allow_unsafe_libc_calls
 #endif
 
+#include "extensions/browser/api/socket/tcp_socket.h"
+
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/test_storage_partition.h"
-#include "extensions/browser/api/socket/tcp_socket.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"

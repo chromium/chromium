@@ -4,7 +4,7 @@
 
 #include "chrome/browser/notifications/scheduler/public/display_agent.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace notifications {
 

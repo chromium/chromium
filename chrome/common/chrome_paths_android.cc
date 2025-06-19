@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/chrome_paths_internal.h"
-
 #include "base/files/file_path.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/path_service.h"
+#include "chrome/common/chrome_paths_internal.h"
 
 namespace chrome {
 

@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_file_system_url_util.h"

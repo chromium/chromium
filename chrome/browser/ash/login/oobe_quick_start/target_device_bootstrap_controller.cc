@@ -13,7 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/account_transfer_client_data.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"

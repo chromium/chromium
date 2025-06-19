@@ -8,6 +8,7 @@
 
 #include "base/files/scoped_file.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/sharing/nearby/platform/wifi_direct_server_socket.h"

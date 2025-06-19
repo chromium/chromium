@@ -36,6 +36,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"

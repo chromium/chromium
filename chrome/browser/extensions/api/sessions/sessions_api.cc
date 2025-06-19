@@ -15,6 +15,7 @@
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"

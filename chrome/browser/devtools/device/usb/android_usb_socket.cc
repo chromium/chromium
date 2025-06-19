@@ -13,7 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"

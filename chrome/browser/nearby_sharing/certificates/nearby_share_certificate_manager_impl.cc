@@ -14,7 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"

@@ -16,6 +16,7 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"

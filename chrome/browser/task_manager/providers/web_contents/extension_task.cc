@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"

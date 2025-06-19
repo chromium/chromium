@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"

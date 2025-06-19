@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"

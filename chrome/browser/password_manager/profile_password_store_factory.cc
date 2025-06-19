@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"

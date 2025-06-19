@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 
 #if defined(TOOLKIT_VIEWS)
 #include "components/constrained_window/constrained_window_views.h"

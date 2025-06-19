@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "net/net_buildflags.h"
 

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/feedback/show_feedback_page.h"

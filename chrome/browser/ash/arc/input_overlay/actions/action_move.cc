@@ -15,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
