@@ -34,7 +34,6 @@ webrtc::TargetTransferRate CreateTargetTransferRate(
       .at_time = at_time,
       .network_estimate = network_estimate,
       .target_rate = data_rate,
-      .stable_target_rate = data_rate,
   };
 }
 
