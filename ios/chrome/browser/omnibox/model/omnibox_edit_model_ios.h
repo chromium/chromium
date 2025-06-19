@@ -24,7 +24,6 @@
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "third_party/metrics_proto/omnibox_event.pb.h"
 #import "ui/base/window_open_disposition.h"
 #import "url/gurl.h"
@@ -37,7 +36,6 @@ class OmniboxPopupViewIOS;
 class OmniboxEditModelIOS {
  public:
   OmniboxEditModelIOS(OmniboxControllerIOS* controller,
-                      OmniboxViewIOS* view,
                       OmniboxTextModel* text_model);
   virtual ~OmniboxEditModelIOS();
   OmniboxEditModelIOS(const OmniboxEditModelIOS&) = delete;
@@ -277,9 +275,6 @@ class OmniboxEditModelIOS {
 
   // Owns this.
   raw_ptr<OmniboxControllerIOS> controller_;
-
-  // Owns `OmniboxControllerIOS` which owns this.
-  raw_ptr<OmniboxViewIOS> view_;
 
   // The omnibox text model containing the text state.
   raw_ptr<OmniboxTextModel> text_model_;

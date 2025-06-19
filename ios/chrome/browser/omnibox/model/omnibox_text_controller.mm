@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
@@ -45,8 +44,6 @@ const char kOmniboxFocusResultedInNavigation[] =
 @implementation OmniboxTextController {
   /// Controller of the omnibox.
   raw_ptr<OmniboxControllerIOS> _omniboxController;
-  /// Controller of the omnibox view.
-  raw_ptr<OmniboxViewIOS> _omniboxViewIOS;
   /// Omnibox edit model. Should only be used for text interactions.
   raw_ptr<OmniboxEditModelIOS> _omniboxEditModel;
   /// Whether the popup was scrolled during this omnibox interaction.
@@ -67,7 +64,6 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 - (instancetype)initWithOmniboxController:
                     (OmniboxControllerIOS*)omniboxController
-                           omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS
                          omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
                          omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
                             inLensOverlay:(BOOL)inLensOverlay {
@@ -75,7 +71,6 @@ const char kOmniboxFocusResultedInNavigation[] =
   if (self) {
     _omniboxController = omniboxController;
     _omniboxEditModel = omniboxEditModel;
-    _omniboxViewIOS = omniboxViewIOS;
     _omniboxTextModel = omniboxTextModel;
     _inLensOverlay = inLensOverlay;
     _currentSelection = NSMakeRange(0, 0);
@@ -87,7 +82,6 @@ const char kOmniboxFocusResultedInNavigation[] =
 - (void)disconnect {
   _omniboxController = nullptr;
   _omniboxEditModel = nullptr;
-  _omniboxViewIOS = nullptr;
 }
 
 - (void)updateAppearance {
@@ -227,6 +221,10 @@ const char kOmniboxFocusResultedInNavigation[] =
   }
 }
 
+- (std::u16string)displayedText {
+  return base::SysNSStringToUTF16([self.textField displayedText]);
+}
+
 #pragma mark - Autocomplete events
 
 - (void)setAdditionalText:(const std::u16string&)text {
@@ -284,9 +282,7 @@ const char kOmniboxFocusResultedInNavigation[] =
     [textField clearAutocompleteText];
     [textField exitPreEditState];
     [textField setText:@""];
-    if (_omniboxViewIOS) {
-      [self textDidChangeWithUserEvent:YES];
-    }
+    [self textDidChangeWithUserEvent:YES];
   }
   // Calling textDidChangeWithUserEvent can trigger a scroll event, which
   // removes focus from the omnibox.
@@ -613,12 +609,17 @@ const char kOmniboxFocusResultedInNavigation[] =
 
 - (void)refineWithText:(const std::u16string&)text {
   OmniboxTextFieldIOS* textField = self.textField;
-  if (!_omniboxViewIOS) {
-    return;
-  }
   // Exit preedit state and append the match. Refocus if necessary.
   [textField exitPreEditState];
-  _omniboxViewIOS->SetUserText(text);
+  if (_omniboxEditModel) {
+    _omniboxEditModel->SetUserText(text);
+  }
+
+  [self setWindowText:text
+               caretPos:text.length()
+      startAutocomplete:true
+      notifyTextChanged:true];
+
   [self onBeforePossibleChange];
   // Calling setText: does not trigger UIControlEventEditingChanged, so
   // trigger that manually.
@@ -679,8 +680,7 @@ const char kOmniboxFocusResultedInNavigation[] =
     _omniboxEditModel->SetInputInProgress(true);
   }
 
-  if (!_omniboxEditModel || !_omniboxEditModel->has_focus() ||
-      !_omniboxViewIOS) {
+  if (!_omniboxEditModel || !_omniboxEditModel->has_focus()) {
     return;
   }
 

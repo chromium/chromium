@@ -18,7 +18,6 @@ class OmniboxEditModelIOS;
 @protocol OmniboxFocusDelegate;
 @protocol OmniboxTextControllerDelegate;
 @class OmniboxTextFieldIOS;
-class OmniboxViewIOS;
 
 /// Controller of the omnibox text.
 @interface OmniboxTextController : NSObject
@@ -42,7 +41,6 @@ class OmniboxViewIOS;
 /// Temporary initializer, used during the refactoring. crbug.com/390409559
 - (instancetype)initWithOmniboxController:
                     (OmniboxControllerIOS*)omniboxController
-                           omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS
                          omniboxEditModel:(OmniboxEditModelIOS*)omniboxEditModel
                          omniboxTextModel:(OmniboxTextModel*)omniboxTextModel
                             inLensOverlay:(BOOL)inLensOverlay
@@ -76,6 +74,9 @@ class OmniboxViewIOS;
 /// Reverts the edit and popup back to their unedited state (permanent text
 /// showing, popup closed, no user input in progress).
 - (void)revertAll;
+
+/// Returns the current text field displayed text.
+- (std::u16string)displayedText;
 
 #pragma mark - Autocomplete event
 

@@ -70,7 +70,6 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "net/cookies/cookie_util.h"
 #import "third_party/icu/source/common/unicode/ubidi.h"
 #import "third_party/metrics_proto/omnibox_event.pb.h"
@@ -82,9 +81,8 @@ using bookmarks::BookmarkModel;
 using metrics::OmniboxEventProto;
 
 OmniboxEditModelIOS::OmniboxEditModelIOS(OmniboxControllerIOS* controller,
-                                         OmniboxViewIOS* view,
                                          OmniboxTextModel* text_model)
-    : controller_(controller), view_(view), text_model_(text_model) {}
+    : controller_(controller), text_model_(text_model) {}
 
 OmniboxEditModelIOS::~OmniboxEditModelIOS() = default;
 
@@ -203,10 +201,14 @@ void OmniboxEditModelIOS::Revert() {
   // it. `SetCaretPos()` doesn't scroll the text, so doing that first wouldn't
   // accomplish anything.
   std::u16string current_permanent_url = GetPermanentDisplayText();
-  if (view_) {
-    view_->SetWindowTextAndCaretPos(current_permanent_url, 0, false, true);
-    view_->SetCaretPos(std::min(current_permanent_url.length(), start));
-  }
+
+  [text_controller_ setWindowText:current_permanent_url
+                         caretPos:0
+                startAutocomplete:false
+                notifyTextChanged:true];
+  [text_controller_
+      setCaretPos:std::min(current_permanent_url.length(), start)];
+
   controller_->client()->OnRevert();
 }
 
@@ -240,9 +242,7 @@ void OmniboxEditModelIOS::OpenSelection(base::TimeTicks timestamp,
 
 void OmniboxEditModelIOS::ClearAdditionalText() {
   TRACE_EVENT0("omnibox", "OmniboxEditModelIOS::ClearAdditionalText");
-  if (view_) {
-    view_->SetAdditionalText(std::u16string());
-  }
+  [text_controller_ setAdditionalText:std::u16string()];
 }
 
 void OmniboxEditModelIOS::OnSetFocus() {
@@ -277,11 +277,11 @@ void OmniboxEditModelIOS::OnPopupDataChanged(
                                         ? text_model_->user_text
                                         : text_model_->input.text();
 
-  if (view_) {
-    view_->OnInlineAutocompleteTextMaybeChanged(
-        user_text, text_model_->inline_autocompletion);
-    view_->SetAdditionalText(additional_text);
-  }
+  [text_controller_
+      updateAutocompleteIfTextChanged:user_text
+                       autocompletion:text_model_->inline_autocompletion];
+  [text_controller_ setAdditionalText:additional_text];
+
   // We need to invoke OnChanged in case the destination url changed (as could
   // happen when control is toggled).
   OnChanged();
@@ -296,9 +296,7 @@ bool OmniboxEditModelIOS::OnAfterPossibleChange(
     return false;
   }
 
-  if (view_) {
-    view_->UpdatePopup();
-  }
+  [text_controller_ startAutocompleteAfterEdit];
 
   return true;
 }
@@ -607,7 +605,7 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
     action->Execute(context);
   }
 
-  if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
+  if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
     base::AutoReset<bool> tmp(&text_model_->in_revert, true);
     [text_controller_ revertAll];  // Revert the box to its unedited state.
   }
@@ -654,10 +652,5 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
 }
 
 std::u16string OmniboxEditModelIOS::GetText() const {
-  // Once the model owns primary text, the check for `view_` won't be needed.
-  if (view_) {
-    return view_->GetText();
-  } else {
-    NOTREACHED();
-  }
+  return [text_controller_ displayedText];
 }

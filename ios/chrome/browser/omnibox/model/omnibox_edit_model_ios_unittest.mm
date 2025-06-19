@@ -33,10 +33,9 @@
 #import "components/url_formatter/url_fixer.h"
 #import "extensions/buildflags/buildflags.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/model/test_omnibox_edit_model_ios.h"
 #import "ios/chrome/browser/omnibox/model/test_omnibox_popup_view_ios.h"
-#import "ios/chrome/browser/omnibox/model/test_omnibox_view_ios.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -83,6 +82,39 @@ void OpenUrlFromEditBox(OmniboxControllerIOS* controller,
 
 }  // namespace
 
+// Mocking the text controller to not rely on the textfield view.
+@interface TestOmniboxTextController : OmniboxTextController
+@end
+
+@implementation TestOmniboxTextController {
+  std::u16string text_;
+}
+
+- (std::u16string)displayedText {
+  return text_;
+}
+
+- (void)setWindowText:(const std::u16string&)text
+             caretPos:(size_t)caretPos
+    startAutocomplete:(BOOL)startAutocomplete
+    notifyTextChanged:(BOOL)notifyTextChanged {
+  [super setWindowText:text
+               caretPos:caretPos
+      startAutocomplete:startAutocomplete
+      notifyTextChanged:notifyTextChanged];
+  text_ = text;
+}
+
+- (void)updateAutocompleteIfTextChanged:(const std::u16string&)userText
+                         autocompletion:
+                             (const std::u16string&)inlineAutocomplete {
+  [super updateAutocompleteIfTextChanged:userText
+                          autocompletion:inlineAutocomplete];
+  text_ = userText + inlineAutocomplete;
+}
+
+@end
+
 class OmniboxEditModelIOSTest : public PlatformTest {
  public:
   OmniboxEditModelIOSTest() {
@@ -90,18 +122,19 @@ class OmniboxEditModelIOSTest : public PlatformTest {
 
     omnibox_controller_ =
         std::make_unique<OmniboxControllerIOS>(omnibox_client_.get());
-    view_ = std::make_unique<TestOmniboxViewIOS>();
     omnibox_text_model_ =
         std::make_unique<OmniboxTextModel>(omnibox_client_.get());
     omnibox_edit_model_ = std::make_unique<TestOmniboxEditModelIOS>(
-        omnibox_controller_.get(), view_.get(), /*pref_service=*/nullptr,
+        omnibox_controller_.get(), /*pref_service=*/nullptr,
         omnibox_text_model_.get());
-
-    view_->SetOmniboxEditModel(omnibox_edit_model_.get());
-    view_->SetOmniboxController(omnibox_controller_.get());
+    omnibox_text_controller_ = [[TestOmniboxTextController alloc]
+        initWithOmniboxController:omnibox_controller_.get()
+                 omniboxEditModel:omnibox_edit_model_.get()
+                 omniboxTextModel:omnibox_text_model_.get()
+                    inLensOverlay:NO];
+    omnibox_edit_model_->set_text_controller(omnibox_text_controller_);
   }
 
-  TestOmniboxViewIOS* view() { return view_.get(); }
   TestLocationBarModel* location_bar_model() {
     return omnibox_client_->location_bar_model();
   }
@@ -110,8 +143,8 @@ class OmniboxEditModelIOSTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  TestOmniboxTextController* omnibox_text_controller_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
-  std::unique_ptr<TestOmniboxViewIOS> view_;
   std::unique_ptr<OmniboxControllerIOS> omnibox_controller_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
   std::unique_ptr<TestOmniboxEditModelIOS> omnibox_edit_model_;
@@ -119,30 +152,30 @@ class OmniboxEditModelIOSTest : public PlatformTest {
 
 TEST_F(OmniboxEditModelIOSTest, DISABLED_InlineAutocompleteText) {
   // Test if the model updates the inline autocomplete text in the view.
-  EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
+  EXPECT_EQ(std::u16string(), omnibox_text_model_->inline_autocompletion);
   model()->SetUserText(u"he");
   model()->OnPopupDataChanged(u"llo", std::u16string(), {});
-  EXPECT_EQ(u"hello", view()->GetText());
-  EXPECT_EQ(u"llo", view()->inline_autocompletion());
+  EXPECT_EQ(u"hello", [omnibox_text_controller_ displayedText]);
+  EXPECT_EQ(u"llo", omnibox_text_model_->inline_autocompletion);
 
   std::u16string text_before = u"he";
   std::u16string text_after = u"hel";
   OmniboxStateChanges state_changes{&text_before, &text_after, 3,    3,
                                     false,        true,        false};
   model()->OnAfterPossibleChange(state_changes);
-  EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
+  EXPECT_EQ(std::u16string(), omnibox_text_model_->inline_autocompletion);
   model()->OnPopupDataChanged(u"lo", std::u16string(), {});
-  EXPECT_EQ(u"hello", view()->GetText());
-  EXPECT_EQ(u"lo", view()->inline_autocompletion());
+  EXPECT_EQ(u"hello", [omnibox_text_controller_ displayedText]);
+  EXPECT_EQ(u"lo", omnibox_text_model_->inline_autocompletion);
 
   model()->Revert();
-  EXPECT_EQ(std::u16string(), view()->GetText());
-  EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
+  EXPECT_EQ(std::u16string(), [omnibox_text_controller_ displayedText]);
+  EXPECT_EQ(std::u16string(), omnibox_text_model_->inline_autocompletion);
 
   model()->SetUserText(u"he");
   model()->OnPopupDataChanged(u"llo", std::u16string(), {});
-  EXPECT_EQ(u"hello", view()->GetText());
-  EXPECT_EQ(u"llo", view()->inline_autocompletion());
+  EXPECT_EQ(u"hello", [omnibox_text_controller_ displayedText]);
+  EXPECT_EQ(u"llo", omnibox_text_model_->inline_autocompletion);
 }
 
 // This verifies the fix for a bug where calling OpenMatch() with a valid
@@ -190,7 +223,8 @@ TEST_F(OmniboxEditModelIOSTest, CurrentMatch) {
     model()->ResetDisplayTexts();
     model()->Revert();
 
-    EXPECT_EQ(u"http://www.example.com/", view()->GetText());
+    EXPECT_EQ(u"http://www.example.com/",
+              [omnibox_text_controller_ displayedText]);
 
     AutocompleteMatch match = model()->CurrentMatch(nullptr);
     EXPECT_EQ(AutocompleteMatchType::URL_WHAT_YOU_TYPED, match.type);
@@ -206,7 +240,8 @@ TEST_F(OmniboxEditModelIOSTest, CurrentMatch) {
     model()->ResetDisplayTexts();
     model()->Revert();
 
-    EXPECT_EQ(u"https://www.google.com/", view()->GetText());
+    EXPECT_EQ(u"https://www.google.com/",
+              [omnibox_text_controller_ displayedText]);
 
     AutocompleteMatch match = model()->CurrentMatch(nullptr);
     EXPECT_EQ(AutocompleteMatchType::URL_WHAT_YOU_TYPED, match.type);
@@ -229,10 +264,12 @@ TEST_F(OmniboxEditModelIOSTest, DisplayText) {
   // iOS OmniboxEditModel always provides the full URL as the OmniboxView
   // permanent display text.
   EXPECT_EQ(u"https://www.example.com/", model()->GetPermanentDisplayText());
-  EXPECT_EQ(u"https://www.example.com/", view()->GetText());
+  EXPECT_EQ(u"https://www.example.com/",
+            [omnibox_text_controller_ displayedText]);
   EXPECT_FALSE(model()->user_input_in_progress());
 
-  EXPECT_EQ(u"https://www.example.com/", view()->GetText());
+  EXPECT_EQ(u"https://www.example.com/",
+            [omnibox_text_controller_ displayedText]);
   EXPECT_TRUE(model()->CurrentTextIsURL());
 }
 
