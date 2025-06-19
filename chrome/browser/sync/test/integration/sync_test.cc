@@ -1105,23 +1105,8 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   allowed_types.PutAll({syncer::APP_LIST, syncer::ARC_PACKAGE,
                         syncer::OS_PREFERENCES,
                         syncer::OS_PRIORITY_PREFERENCES});
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // Some of the feature-guarded logic in the #else branch below could make
-  // sense for ChromeOS too. However, since there are no immediate plans to
-  // roll them out on ChromeOS, they are excluded in this test to avoid
-  // accidental rollouts on ChromeOS transport mode (which is somewhat special,
-  // and reachable only in advanced scenarios such as the user having cleared
-  // data via sync dashboard).
-  // TODO(crbug.com/424124636): The types below should probably be excluded.
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    allowed_types.Put(syncer::AUTOFILL_WALLET_METADATA);
-    allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
-    if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-      allowed_types.Put(syncer::PRODUCT_COMPARISON);
-    }
-  }
-#else  // BUILDFLAG(IS_CHROMEOS)
   allowed_types.Put(syncer::CONTACT_INFO);
 
   if (base::FeatureList::IsEnabled(
@@ -1192,7 +1177,6 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   allowed_types.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
   allowed_types.Put(syncer::WEBAUTHN_CREDENTIAL);
 #endif  // BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressesEnabled) &&

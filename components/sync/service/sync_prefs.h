@@ -71,9 +71,9 @@ class SyncPrefs {
   // enable sync-the-feature.
   bool IsInitialSyncFeatureSetupComplete() const;
 
-  // Returns true if the user is considered explicitly signed in to the browser.
-  // Returns false if the user is signed out or implicilty signed in (through
-  // Dice).
+  // Returns true if the user is considered explicitly signed in to the browser,
+  // which includes all sign-ins on mobile. Returns false if the user is signed
+  // out or (on desktop) implicilty signed in (through Dice).
   bool IsExplicitBrowserSignin() const;
 
   // ChromeOS Ash, IsInitialSyncFeatureSetupComplete() always returns true.

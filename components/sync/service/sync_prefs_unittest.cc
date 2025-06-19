@@ -461,7 +461,7 @@ TEST_F(SyncPrefsTest,
                                        UserSelectableType::kAutofill,
                                        UserSelectableType::kPayments};
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
   // On Desktop, kPasswords and kAutofill are disabled by default.
   expected_types.Remove(UserSelectableType::kPasswords);
   expected_types.Remove(UserSelectableType::kAutofill);
@@ -499,9 +499,11 @@ TEST_F(SyncPrefsTest,
       UserSelectableType::kPreferences};
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // On Desktop, kPasswords and kAutofill are disabled by default.
   expected_types.Remove(UserSelectableType::kPasswords);
   expected_types.Remove(UserSelectableType::kAutofill);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   // Because `prefs::kPrefsThemesSearchEnginesAccountStorageEnabled` is not set,
   // kPreferences are disabled.
   expected_types.Remove(UserSelectableType::kPreferences);
@@ -514,7 +516,7 @@ TEST_F(SyncPrefsTest,
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_), expected_types);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
 
 class SyncPrefsExplicitBrowserSigninTest : public SyncPrefsTest {
  public:
@@ -1351,6 +1353,7 @@ TEST_F(SyncPrefsMigrationTest, MigratesBookmarksNotOptedIn) {
     base::test::ScopedFeatureList enable_sync_to_signin(
         kReplaceSyncPromosWithSignInPromos);
 
+    // TODO(crbug.com/424124636): The below shouldn't be needed.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     // `kBookmarksExplicitBrowserSigninEnabled` needs to be set to enable
     // Bookmarks and ReadingList on Desktop.

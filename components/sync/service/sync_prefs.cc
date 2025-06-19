@@ -228,7 +228,14 @@ bool SyncPrefs::IsInitialSyncFeatureSetupComplete() const {
 }
 
 bool SyncPrefs::IsExplicitBrowserSignin() const {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_CHROMEOS)
+  // On mobile and ChromeOS all sign-ins are considered explicit.
+  return true;
+#else
+  // On desktop `prefs::kExplicitBrowserSignin` determines whether the sign-in
+  // is explicit or implicit.
   return pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
+#endif
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -296,9 +303,6 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         type_enabled = false;
       } else if (type == UserSelectableType::kPasswords ||
                  type == UserSelectableType::kAutofill) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-        type_enabled = true;
-#else
         // kPasswords and kAutofill are only on by default if there was an
         // explicit sign in recorded.
         // Otherwise:
@@ -306,9 +310,7 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         // - kAutofill cannot be enabled.
         // Note: If this changes, also update the migration logic in
         // MigrateGlobalDataTypePrefsToAccount().
-        type_enabled =
-            pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
-#endif
+        type_enabled = IsExplicitBrowserSignin();
       } else if (type == UserSelectableType::kBookmarks ||
                  type == UserSelectableType::kReadingList) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -803,6 +805,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       // These types are not supported in transport mode yet.
       return false;
   }
+  NOTREACHED();
 }
 
 void SyncPrefs::OnSyncManagedPrefChanged() {
