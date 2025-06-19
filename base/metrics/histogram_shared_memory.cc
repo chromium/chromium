@@ -69,7 +69,12 @@ namespace base {
 
 BASE_FEATURE(kPassHistogramSharedMemoryOnLaunch,
              "PassHistogramSharedMemoryOnLaunch",
-             FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             FEATURE_DISABLED_BY_DEFAULT
+#else
+             FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 #if BUILDFLAG(IS_APPLE)
 const shared_memory::SharedMemoryMachPortRendezvousKey
