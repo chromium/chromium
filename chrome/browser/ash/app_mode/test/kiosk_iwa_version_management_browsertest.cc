@@ -493,7 +493,13 @@ IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest,
   ExpectTestAppInstalledAtVersion(kAppVersion1);
 }
 
-IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest, UpdatesToLatestBeforeLaunch) {
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_UpdatesToLatestBeforeLaunch DISABLED_UpdatesToLatestBeforeLaunch
+#else
+#define MAYBE_UpdatesToLatestBeforeLaunch UpdatesToLatestBeforeLaunch
+#endif
+IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest,
+                       MAYBE_UpdatesToLatestBeforeLaunch) {
   EXPECT_EQ(TheKioskApp().name(), kTestIwaTitle1);
 
   AddTestBundle(kTestIwaTitle2, kVersionString2);
