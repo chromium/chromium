@@ -178,12 +178,16 @@ export class AppElement extends AppElementBase {
         offset = 30;
       }
 
-      this.$.choiceList.classList.toggle(
-          'overlap-mitigation',
-          buttonAndListOverlap(buttonRect, listRect, offset));
-      this.$.buttonContainer.classList.toggle(
-          'overlap-mitigation',
-          buttonAndListOverlap(buttonRect, listRect, offset));
+      // Defer style changes to after the browser repaints to avoid triggering a
+      // resize loop. See crbug.com/409406185.
+      requestAnimationFrame(() => {
+        this.$.choiceList.classList.toggle(
+            'overlap-mitigation',
+            buttonAndListOverlap(buttonRect, listRect, offset));
+        this.$.buttonContainer.classList.toggle(
+            'overlap-mitigation',
+            buttonAndListOverlap(buttonRect, listRect, offset));
+      });
     });
     this.resizeObserver_.observe(document.body);
   }
