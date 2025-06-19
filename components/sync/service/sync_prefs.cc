@@ -778,12 +778,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       // transport mode everywhere.
       return true;
     case UserSelectableType::kHistory:
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) ||
-             base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin);
-#else
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
-#endif
     case UserSelectableType::kTabs:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
     case UserSelectableType::kProductComparison:
