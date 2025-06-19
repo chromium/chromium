@@ -945,8 +945,8 @@ class PrerenderPrewarmDefaultSearchEngineTest
  public:
   PrerenderPrewarmDefaultSearchEngineTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPrewarm,
-        {{"url", "https://search.example.com/prewarm.html"}});
+        features::kPrewarm, {{"url", "https://search.example.com/prewarm.html"},
+                             {"zero_suggest_trigger", "false"}});
   }
 
   void SetUpOnMainThread() override {
@@ -981,8 +981,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   // Prerender the prewarm page.
   auto* prerender_manager =
       PrerenderManager::FromWebContents(GetActiveWebContents());
-  // Reset the prewarmed page triggered before the test.
-  prerender_manager->StopPrewarmSearchResultForTesting();
   EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
   auto host_id = GetPrewarmSearchResultHost();
   ASSERT_TRUE(host_id);
