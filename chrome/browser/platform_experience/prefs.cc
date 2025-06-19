@@ -4,7 +4,6 @@
 
 #include "chrome/browser/platform_experience/prefs.h"
 
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "chrome/browser/platform_experience/features.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -14,14 +13,25 @@ namespace platform_experience::prefs {
 
 void RegisterPrefs(PrefRegistrySimple& registry) {
   registry.RegisterBooleanPref(kDisablePEHNotificationsPrefName, false);
+  registry.RegisterBooleanPref(kShouldUsePEHNotificationTextIndexPrefName,
+                               false);
+  registry.RegisterIntegerPref(kPEHNotificationTextIndexPrefName, 0);
 }
 
-// TODO(crbug.com/423037244): Add overrides for notification text index, gated
-// on engagement levels.
 void SetPrefOverrides(PrefService& local_state) {
   local_state.SetBoolean(
       kDisablePEHNotificationsPrefName,
       base::FeatureList::IsEnabled(features::kDisablePEHNotifications));
+
+  if (base::FeatureList::IsEnabled(
+          features::kLoadLowEngagementPEHFeaturesToPrefs)) {
+    if (base::FeatureList::IsEnabled(
+            features::kShouldUseSpecificPEHNotificationText)) {
+      local_state.SetBoolean(kShouldUsePEHNotificationTextIndexPrefName, true);
+      local_state.SetInteger(kPEHNotificationTextIndexPrefName,
+                             features::kUseNotificationTextIndex.Get());
+    }
+  }
 }
 
 }  // namespace platform_experience::prefs

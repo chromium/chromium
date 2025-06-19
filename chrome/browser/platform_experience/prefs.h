@@ -16,6 +16,14 @@ namespace platform_experience::prefs {
 inline constexpr char kDisablePEHNotificationsPrefName[] =
     "platform_experience_helper.disable_notifications";
 
+// Boolean pref for whether the PEH notification text should be used.
+inline constexpr char kShouldUsePEHNotificationTextIndexPrefName[] =
+    "platform_experience_helper.should_use_notification_text";
+
+// Integer pref for setting the PEH notification text.
+inline constexpr char kPEHNotificationTextIndexPrefName[] =
+    "platform_experience_helper.notification_text";
+
 void RegisterPrefs(PrefRegistrySimple& registry);
 
 // Overrides prefs to reflect values from feature flags.

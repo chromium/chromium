@@ -40,6 +40,9 @@ TEST_F(PlatformExperiencePrefsTest, RegisterPrefs) {
   EXPECT_NE(nullptr,
             local_state().FindPreference(kDisablePEHNotificationsPrefName));
   EXPECT_FALSE(local_state().GetBoolean(kDisablePEHNotificationsPrefName));
+  EXPECT_FALSE(
+      local_state().GetBoolean(kShouldUsePEHNotificationTextIndexPrefName));
+  EXPECT_EQ(0, local_state().GetInteger(kPEHNotificationTextIndexPrefName));
 }
 
 // Test when the kDisableNotifications feature is disabled.
@@ -62,6 +65,37 @@ TEST_F(PlatformExperiencePrefsTest, SetPrefOverrides_FeatureEnabled) {
 
   SetPrefOverrides(local_state());
   EXPECT_TRUE(local_state().GetBoolean(kDisablePEHNotificationsPrefName));
+}
+
+// Tests that low-engagement feature prefs are not set when the
+// "ShouldUseSpecificPEHNotificationText" flag is disabled.
+TEST_F(PlatformExperiencePrefsTest,
+       SetPrefOverrides_LowEngagementFeaturesDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kShouldUseSpecificPEHNotificationText,
+        {{features::kUseNotificationTextIndex.name, "42"}}}},
+      {});
+
+  SetPrefOverrides(local_state());
+  EXPECT_FALSE(
+      local_state().GetBoolean(kShouldUsePEHNotificationTextIndexPrefName));
+}
+
+// Tests that PEH notification text is set when low-engagement PEH features
+// are enabled.
+TEST_F(PlatformExperiencePrefsTest, SetPrefOverrides_PEHNotificationText) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kLoadLowEngagementPEHFeaturesToPrefs, {}},
+       {features::kShouldUseSpecificPEHNotificationText,
+        {{features::kUseNotificationTextIndex.name, "42"}}}},
+      {});
+
+  SetPrefOverrides(local_state());
+  EXPECT_TRUE(
+      local_state().GetBoolean(kShouldUsePEHNotificationTextIndexPrefName));
+  EXPECT_EQ(42, local_state().GetInteger(kPEHNotificationTextIndexPrefName));
 }
 
 }  // namespace

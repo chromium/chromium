@@ -10,6 +10,10 @@
 
 namespace platform_experience::features {
 
+// Allows Chrome to load PEH features gated on "low engagement" into
+// preferences, for later use by PEH.
+BASE_DECLARE_FEATURE(kLoadLowEngagementPEHFeaturesToPrefs);
+
 // Forces the PEH to never show notifications.
 BASE_DECLARE_FEATURE(kDisablePEHNotifications);
 
