@@ -1256,7 +1256,13 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
 
   AXTreeUpdateState update_state(*this, update);
   const AXNodeID old_root_id = root_ ? root_->id() : kInvalidAXNodeID;
-  if (old_root_id == kInvalidAXNodeID && update.root_id == kInvalidAXNodeID) {
+  if (old_root_id == kInvalidAXNodeID && update.root_id == kInvalidAXNodeID &&
+      (!update.has_tree_data || !update.nodes.empty())) {
+    // This tree has not yet been initialized (no root). If the update does not
+    // have a root id, it must be trying to apply a tree data update. For
+    // example, RenderFrameHostImpl::UpdateAXTreeData. With invalid root ids on
+    // the update and in this tree, we never would expect the update to contain
+    // node data.
 #if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
     return false;
 #elif DCHECK_IS_ON()
