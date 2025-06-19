@@ -40,6 +40,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -1717,7 +1718,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
       /*expected_count=*/1);
-  auto* coordinator = ProfileMenuCoordinator::FromBrowser(browser());
+  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
   ASSERT_NE(coordinator, nullptr);
   EXPECT_TRUE(coordinator->IsShowing());
   EXPECT_TRUE(avatar->GetText().empty());
@@ -1803,7 +1804,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
       /*expected_count=*/1);
-  auto* coordinator = ProfileMenuCoordinator::FromBrowser(browser());
+  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
   ASSERT_NE(coordinator, nullptr);
   EXPECT_TRUE(coordinator->IsShowing());
   // The button comes back to the normal state.

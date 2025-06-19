@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -28,10 +29,11 @@ ProfileMenuCoordinator::~ProfileMenuCoordinator() = default;
 void ProfileMenuCoordinator::Show(
     bool is_source_accelerator,
     std::optional<signin_metrics::AccessPoint> explicit_signin_access_point) {
-  auto* avatar_toolbar_button =
-      BrowserView::GetBrowserViewForBrowser(&GetBrowser())
-          ->toolbar_button_provider()
-          ->GetAvatarToolbarButton();
+  // TODO(crbug.com/425953501): Update this code.
+  Browser* const browser = browser_->GetBrowserForMigrationOnly();
+  auto* avatar_toolbar_button = BrowserView::GetBrowserViewForBrowser(browser)
+                                    ->toolbar_button_provider()
+                                    ->GetAvatarToolbarButton();
 
   // Do not show avatar bubble if there is no avatar menu button, the button
   // action is disabled or the bubble is already showing.
@@ -40,29 +42,28 @@ void ProfileMenuCoordinator::Show(
     return;
   }
 
-  auto& browser = GetBrowser();
-  signin_ui_util::RecordProfileMenuViewShown(browser.profile());
+  signin_ui_util::RecordProfileMenuViewShown(profile_);
   // Close any existing IPH bubble for the profile menu.
-  browser.window()->NotifyFeaturePromoFeatureUsed(
+  user_education_->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHProfileSwitchFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  browser.window()->NotifyFeaturePromoFeatureUsed(
+  user_education_->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHSupervisedUserProfileSigninFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 #endif
 
   std::unique_ptr<ProfileMenuViewBase> bubble;
-  bool is_incognito = browser.profile()->IsIncognitoProfile();
+  const bool is_incognito = profile_->IsIncognitoProfile();
   if (is_incognito) {
     bubble =
-        std::make_unique<IncognitoMenuView>(avatar_toolbar_button, &browser);
+        std::make_unique<IncognitoMenuView>(avatar_toolbar_button, browser);
   } else {
 #if BUILDFLAG(IS_CHROMEOS)
     // Note: on Ash, only incognito windows have a profile menu.
     NOTREACHED() << "The profile menu is not implemented on Ash.";
 #else
-    bubble = std::make_unique<ProfileMenuView>(avatar_toolbar_button, &browser,
+    bubble = std::make_unique<ProfileMenuView>(avatar_toolbar_button, browser,
                                                explicit_signin_access_point);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
@@ -93,7 +94,7 @@ ProfileMenuCoordinator::GetProfileMenuViewBaseForTesting() {
              : nullptr;
 }
 
-ProfileMenuCoordinator::ProfileMenuCoordinator(Browser* browser)
-    : BrowserUserData<ProfileMenuCoordinator>(*browser) {}
-
-BROWSER_USER_DATA_KEY_IMPL(ProfileMenuCoordinator);
+ProfileMenuCoordinator::ProfileMenuCoordinator(BrowserWindowInterface* browser)
+    : browser_(browser),
+      profile_(browser->GetProfile()),
+      user_education_(browser->GetUserEducationInterface()) {}

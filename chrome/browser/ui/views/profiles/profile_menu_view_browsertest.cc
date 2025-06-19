@@ -259,7 +259,8 @@ class ProfileMenuViewTestBase {
   }
 
   ProfileMenuViewBase* profile_menu_view() {
-    auto* coordinator = ProfileMenuCoordinator::FromBrowser(target_browser_);
+    auto* coordinator =
+        target_browser_->GetFeatures().profile_menu_coordinator();
     return coordinator ? coordinator->GetProfileMenuViewBaseForTesting()
                        : nullptr;
   }
@@ -295,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, RootViewAccessibleName) {
   InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
   waiter.WaitForThemeChanged();
 
-  auto* coordinator = ProfileMenuCoordinator::FromBrowser(browser());
+  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
   EXPECT_TRUE(coordinator->IsShowing());
 
   ui::AXNodeData root_view_data;
@@ -321,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, ThemeChanged) {
   InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
   waiter.WaitForThemeChanged();
 
-  auto* coordinator = ProfileMenuCoordinator::FromBrowser(browser());
+  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
   EXPECT_TRUE(coordinator->IsShowing());
   profile_menu_view()->GetWidget()->Close();
   base::RunLoop().RunUntilIdle();
@@ -340,7 +341,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseBubbleOnTadAdded) {
                              ui::PageTransition::PAGE_TRANSITION_LINK));
   EXPECT_EQ(1, tab_strip->active_index());
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(ProfileMenuCoordinator::FromBrowser(browser())->IsShowing());
+  EXPECT_FALSE(
+      browser()->GetFeatures().profile_menu_coordinator()->IsShowing());
 }
 
 // Profile chooser view should close when active tab is changed.
@@ -356,7 +358,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
   tab_strip->ActivateTabAt(0);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(ProfileMenuCoordinator::FromBrowser(browser())->IsShowing());
+  EXPECT_FALSE(
+      browser()->GetFeatures().profile_menu_coordinator()->IsShowing());
 }
 
 // Profile chooser view should close when active tab is closed.
@@ -372,7 +375,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
   tab_strip->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(ProfileMenuCoordinator::FromBrowser(browser())->IsShowing());
+  EXPECT_FALSE(
+      browser()->GetFeatures().profile_menu_coordinator()->IsShowing());
 }
 
 // Profile chooser view should close when the last tab is closed.
@@ -1728,8 +1732,7 @@ class ProfileMenuSigninAccessPointTest
   void OpenProfileMenuFromCoordinator(
       std::optional<signin_metrics::AccessPoint> explicit_access_point =
           std::nullopt) {
-    auto* coordinator =
-        ProfileMenuCoordinator::GetOrCreateForBrowser(browser());
+    auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
     ASSERT_TRUE(coordinator);
     coordinator->Show(/*is_source_accelerator=*/false, explicit_access_point);
     ASSERT_NO_FATAL_FAILURE(
@@ -1737,7 +1740,7 @@ class ProfileMenuSigninAccessPointTest
   }
 
   void ClickSyncButton() {
-    auto* coordinator = ProfileMenuCoordinator::FromBrowser(browser());
+    auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
     ASSERT_TRUE(coordinator);
     ProfileMenuViewBase* profile_menu_view =
         coordinator->GetProfileMenuViewBaseForTesting();

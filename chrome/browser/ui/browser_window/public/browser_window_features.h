@@ -33,6 +33,7 @@ class FindBarController;
 class HistorySidePanelCoordinator;
 class LocationBarModel;
 class MemorySaverOptInIPHController;
+class ProfileMenuCoordinator;
 class ReadingListSidePanelCoordinator;
 class SidePanelCoordinator;
 class SidePanelUI;
@@ -292,6 +293,10 @@ class BrowserWindowFeatures {
     return split_tab_scrim_controller_.get();
   }
 
+  ProfileMenuCoordinator* profile_menu_coordinator() {
+    return profile_menu_coordinator_.get();
+  }
+
   // Get the FindBarController for this browser window, creating it if it does
   // not yet exist.
   FindBarController* GetFindBarController();
@@ -411,6 +416,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<extensions::BrowserExtensionWindowController>
       extension_window_controller_;
+
+  std::unique_ptr<ProfileMenuCoordinator> profile_menu_coordinator_;
 
   // This is an experimental API that interacts with the TabStripModel.
   std::unique_ptr<TabStripServiceRegister> tab_strip_service_;

@@ -43,6 +43,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -996,8 +997,8 @@ class HistorySyncOptinStateProvider : public StateProvider {
 
  private:
   void OnButtonClick(bool is_source_accelerator) {
-    ProfileMenuCoordinator::GetOrCreateForBrowser(&browser_.get())
-        ->Show(is_source_accelerator, coordinator_->access_point());
+    browser_->GetFeatures().profile_menu_coordinator()->Show(
+        is_source_accelerator, coordinator_->access_point());
     coordinator_->PromoUsed();
   }
 
@@ -1881,7 +1882,7 @@ void AvatarToolbarButtonDelegate::OnButtonPressed(bool is_source_accelerator) {
   }
 
   // By default, show the profile menu.
-  ProfileMenuCoordinator::GetOrCreateForBrowser(browser_)->Show(
+  browser_->GetFeatures().profile_menu_coordinator()->Show(
       is_source_accelerator);
 }
 

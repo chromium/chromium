@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
@@ -318,6 +319,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   extension_window_controller_ =
       std::make_unique<extensions::BrowserExtensionWindowController>(browser);
+
+  profile_menu_coordinator_ = std::make_unique<ProfileMenuCoordinator>(browser);
 
   if (browser->is_type_normal() || browser->is_type_app()) {
     toast_service_ = std::make_unique<ToastService>(browser);

@@ -5,9 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MENU_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MENU_COORDINATOR_H_
 
-#include "chrome/browser/ui/browser_user_data.h"
+#include <optional>
+
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view_tracker.h"
 
+class BrowserUserEducationInterface;
+class BrowserWindowInterface;
+class Profile;
 class ProfileMenuViewBase;
 
 namespace signin_metrics {
@@ -16,9 +21,12 @@ enum class AccessPoint;
 
 // Handles the lifetime and showing/hidden state of the profile menu bubble.
 // Owned by the associated browser.
-class ProfileMenuCoordinator : public BrowserUserData<ProfileMenuCoordinator> {
+class ProfileMenuCoordinator {
  public:
-  ~ProfileMenuCoordinator() override;
+  explicit ProfileMenuCoordinator(BrowserWindowInterface* browser);
+  ProfileMenuCoordinator(const ProfileMenuCoordinator&) = delete;
+  ProfileMenuCoordinator& operator=(const ProfileMenuCoordinator&) = delete;
+  ~ProfileMenuCoordinator();
 
   // Shows the the profile bubble for this browser.
   //
@@ -35,13 +43,13 @@ class ProfileMenuCoordinator : public BrowserUserData<ProfileMenuCoordinator> {
   ProfileMenuViewBase* GetProfileMenuViewBaseForTesting();
 
  private:
-  friend class BrowserUserData<ProfileMenuCoordinator>;
+  // TODO(crbug.com/425953501): Replace with `ToolbarButtonProvider` once this
+  // bug is fixed.
+  const raw_ptr<BrowserWindowInterface> browser_;
 
-  explicit ProfileMenuCoordinator(Browser* browser);
-
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<BrowserUserEducationInterface> user_education_;
   views::ViewTracker bubble_tracker_;
-
-  BROWSER_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MENU_COORDINATOR_H_
