@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
 #include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_repeat_value.h"
+#include "third_party/blink/renderer/core/css/css_superellipse_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
@@ -698,6 +699,8 @@ String StylePropertySerializer::SerializeShorthand(
     }
     case CSSPropertyID::kBorderRadius:
       return BorderRadiusValue();
+    case CSSPropertyID::kCorners:
+      return CornersValue();
     case CSSPropertyID::kCornerShape:
       return CornerShapeValue();
     case CSSPropertyID::kCornerTopShape:
@@ -2643,6 +2646,74 @@ String StylePropertySerializer::CornerShapeValue() const {
     builder.Append(" ");
     builder.Append(bottom_left.CssText());
   }
+
+  return builder.ReleaseString();
+}
+
+String StylePropertySerializer::CornersValue() const {
+  const CSSValuePair& top_left = *MakeGarbageCollected<CSSValuePair>(
+      property_set_.GetPropertyCSSValue(GetCSSPropertyBorderTopLeftRadius()),
+      property_set_.GetPropertyCSSValue(GetCSSPropertyCornerTopLeftShape()),
+      CSSValuePair::kKeepIdenticalValues);
+  const CSSValuePair& top_right = *MakeGarbageCollected<CSSValuePair>(
+      property_set_.GetPropertyCSSValue(GetCSSPropertyBorderTopRightRadius()),
+      property_set_.GetPropertyCSSValue(GetCSSPropertyCornerTopRightShape()),
+      CSSValuePair::kKeepIdenticalValues);
+  const CSSValuePair& bottom_right = *MakeGarbageCollected<CSSValuePair>(
+      property_set_.GetPropertyCSSValue(
+          GetCSSPropertyBorderBottomRightRadius()),
+      property_set_.GetPropertyCSSValue(GetCSSPropertyCornerBottomRightShape()),
+      CSSValuePair::kKeepIdenticalValues);
+  const CSSValuePair& bottom_left = *MakeGarbageCollected<CSSValuePair>(
+      property_set_.GetPropertyCSSValue(GetCSSPropertyBorderBottomLeftRadius()),
+      property_set_.GetPropertyCSSValue(GetCSSPropertyCornerBottomLeftShape()),
+      CSSValuePair::kKeepIdenticalValues);
+  StringBuilder builder;
+  const bool show_bottom_left = top_right != bottom_left;
+  const bool show_bottom_right = show_bottom_left || (top_left != bottom_right);
+  const bool show_top_right = show_bottom_right || (top_left != top_right);
+
+  auto ShouldSerializeAsNormal = [](const CSSValuePair& value) {
+    const CSSValuePair& radius = To<CSSValuePair>(value.First());
+    const CSSValue& shape = value.Second();
+    if (!radius.First().IsNumericLiteralValue() ||
+        !radius.Second().IsNumericLiteralValue() ||
+        To<CSSNumericLiteralValue>(radius.First()).DoubleValue() != 0 ||
+        To<CSSNumericLiteralValue>(radius.Second()).DoubleValue() != 0) {
+      return false;
+    }
+    if (const CSSIdentifierValue* id_value =
+            DynamicTo<CSSIdentifierValue>(shape)) {
+      if (id_value->GetValueID() == CSSValueID::kRound) {
+        return true;
+      }
+    }
+    const CSSPrimitiveValue& param =
+        To<cssvalue::CSSSuperellipseValue>(shape).Param();
+    return param.IsNumericLiteralValue() &&
+           To<CSSNumericLiteralValue>(param).DoubleValue() ==
+               Superellipse::Round().Parameter();
+  };
+  auto SerializeCornerValue = [&](const CSSValuePair& value) {
+    return ShouldSerializeAsNormal(value) ? "normal" : value.CssText();
+  };
+
+  builder.Append(SerializeCornerValue(top_left));
+  if (!show_top_right) {
+    return builder.ReleaseString();
+  }
+  builder.Append(" / ");
+  builder.Append(SerializeCornerValue(top_right));
+  if (!show_bottom_right) {
+    return builder.ReleaseString();
+  }
+  builder.Append(" / ");
+  builder.Append(SerializeCornerValue(bottom_right));
+  if (!show_bottom_left) {
+    return builder.ReleaseString();
+  }
+  builder.Append(" / ");
+  builder.Append(SerializeCornerValue(bottom_left));
 
   return builder.ReleaseString();
 }

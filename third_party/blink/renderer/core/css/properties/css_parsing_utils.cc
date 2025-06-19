@@ -5335,6 +5335,33 @@ CSSValue* ConsumeCornerShape(CSSParserTokenStream& stream,
   return MakeGarbageCollected<cssvalue::CSSSuperellipseValue>(*param);
 }
 
+bool ConsumeCorner(CSSParserTokenStream& stream,
+                   const CSSParserContext& context,
+                   CSSValue*& radius,
+                   CSSValue*& shape) {
+  if (stream.Peek().GetType() == kIdentToken &&
+      stream.Peek().Id() == CSSValueID::kNormal) {
+    ConsumeIdent(stream);
+    radius = MakeGarbageCollected<CSSValuePair>(
+        CSSNumericLiteralValue::Create(0, CSSPrimitiveValue::UnitType::kPixels),
+        CSSNumericLiteralValue::Create(0, CSSPrimitiveValue::UnitType::kPixels),
+        CSSValuePair::kDropIdenticalValues);
+    shape = CSSIdentifierValue::Create(CSSValueID::kRound);
+    return true;
+  }
+
+  shape = ConsumeCornerShape(stream, context);
+  radius = ParseBorderRadiusCorner(stream, context);
+  if (!radius) {
+    return false;
+  }
+
+  if (!shape) {
+    shape = ConsumeCornerShape(stream, context);
+  }
+  return shape != nullptr;
+}
+
 CSSValue* ParseBorderWidthSide(CSSParserTokenStream& stream,
                                const CSSParserContext& context,
                                const CSSParserLocalContext& local_context) {

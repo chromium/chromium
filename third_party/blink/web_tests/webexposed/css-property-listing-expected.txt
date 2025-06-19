@@ -686,6 +686,15 @@ All changes to this list should go through Blink's feature review process: http:
     corner-top-shape
         corner-top-left-shape
         corner-top-right-shape
+    corners
+        border-bottom-left-radius
+        border-bottom-right-radius
+        border-top-left-radius
+        border-top-right-radius
+        corner-bottom-left-shape
+        corner-bottom-right-shape
+        corner-top-left-shape
+        corner-top-right-shape
     flex
         flex-basis
         flex-grow

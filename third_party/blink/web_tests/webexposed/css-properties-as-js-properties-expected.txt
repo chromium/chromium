@@ -179,6 +179,7 @@ cornerStartStartShape
 cornerTopLeftShape
 cornerTopRightShape
 cornerTopShape
+corners
 counterIncrement
 counterReset
 counterSet

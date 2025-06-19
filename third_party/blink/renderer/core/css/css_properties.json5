@@ -8485,6 +8485,20 @@
       valid_for_page_context: true,
     },
     {
+      name: "corners",
+      longhands: [
+        "border-top-left-radius", "corner-top-left-shape",
+        "border-top-right-radius", "corner-top-right-shape",
+        "border-bottom-right-radius", "corner-bottom-right-shape",
+        "border-bottom-left-radius", "corner-bottom-left-shape"
+      ],
+      keywords: ["normal"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSCornersShorthand",
+      valid_for_permission_element: true,
+      valid_for_page_context: true,
+    },
+    {
       name: "flex",
       longhands: ["flex-grow", "flex-shrink", "flex-basis"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
