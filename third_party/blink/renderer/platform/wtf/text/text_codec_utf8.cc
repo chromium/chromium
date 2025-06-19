@@ -390,10 +390,7 @@ String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
                 *reinterpret_cast_ptr<const MachineWord*>(source);
             if (!IsAllASCII<LChar>(chunk))
               break;
-            CopyAsciiMachineWord(base::span<LChar, sizeof(MachineWord)>(
-                                     destination, sizeof(MachineWord)),
-                                 base::span<const uint8_t, sizeof(MachineWord)>(
-                                     source, sizeof(MachineWord)));
+            CopyAsciiMachineWord(destination, source);
             source += sizeof(MachineWord);
             destination += sizeof(MachineWord);
           }
@@ -474,10 +471,7 @@ upConvertTo16Bit:
                 *reinterpret_cast_ptr<const MachineWord*>(source);
             if (!IsAllASCII<LChar>(chunk))
               break;
-            CopyAsciiMachineWord(base::span<UChar, sizeof(MachineWord)>(
-                                     destination16, sizeof(MachineWord)),
-                                 base::span<const uint8_t, sizeof(MachineWord)>(
-                                     source, sizeof(MachineWord)));
+            CopyAsciiMachineWord(destination16, source);
             source += sizeof(MachineWord);
             destination16 += sizeof(MachineWord);
           }

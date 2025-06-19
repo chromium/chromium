@@ -136,10 +136,7 @@ String TextCodecLatin1::Decode(base::span<const uint8_t> bytes,
           if (!IsAllASCII<LChar>(chunk))
             goto useLookupTable;
 
-          CopyAsciiMachineWord(base::span<LChar, sizeof(MachineWord)>(
-                                   destination, sizeof(MachineWord)),
-                               base::span<const uint8_t, sizeof(MachineWord)>(
-                                   source, sizeof(MachineWord)));
+          CopyAsciiMachineWord(destination, source);
           source += sizeof(MachineWord);
           destination += sizeof(MachineWord);
         }
@@ -191,10 +188,7 @@ upConvertTo16Bit:
           if (!IsAllASCII<LChar>(chunk))
             goto useLookupTable16;
 
-          CopyAsciiMachineWord(base::span<UChar, sizeof(MachineWord)>(
-                                   destination16, sizeof(MachineWord)),
-                               base::span<const uint8_t, sizeof(MachineWord)>(
-                                   source, sizeof(MachineWord)));
+          CopyAsciiMachineWord(destination16, source);
           source += sizeof(MachineWord);
           destination16 += sizeof(MachineWord);
         }
