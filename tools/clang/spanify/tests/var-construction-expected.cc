@@ -63,7 +63,10 @@ void fct() {
   // base::span<int> g = (condition) ? ctn1 : ctn2;
   base::span<int> g = (condition) ? ctn1 : ctn2;
 
-  g = g.subspan(1);  // buffer usage: leads g to be rewritten.
+  // Buffer usage: leads `g` to be rewritten.
+  // Expected rewrite:
+  // g = g.subspan(1u);
+  g = g.subspan(1u);
 
   // Expected rewrite:
   // base::span<char> h = base::as_writable_byte_span(g);
@@ -110,12 +113,16 @@ void raw_ptr_variables() {
   // Expected rewrite:
   // base::span<char> buf2 = new char[5];
   base::span<char> buf2 = new char[5];
-  buf2 = buf2.subspan(1);
+  // Expected rewrite:
+  // buf2 = buf2.subspan(1u);
+  buf2 = buf2.subspan(1u);
 
   // Expected rewrite:
   // base::raw_span<char> buf3 = buf2;
   base::raw_span<char> buf3 = buf2;
-  buf3 = buf3.subspan(1);
+  // Expected rewrite:
+  // buf3 = buf3.subspan(1u);
+  buf3 = buf3.subspan(1u);
 
   // Expected rewrite:
   // base::raw_span<char> buf4 = buf3;
@@ -125,6 +132,8 @@ void raw_ptr_variables() {
   // Expected rewrite:
   // base::raw_span<char> buf5 = buf4;
   base::raw_span<char> buf5 = buf4;
+  // Expected rewrite:
+  // buf5 = buf5.subspan(1u);
   buf5 = buf5.subspan(1u);
 
   // Expected rewrite:

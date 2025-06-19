@@ -936,16 +936,14 @@ static void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
 // Returns a `.subspan(` opener.
 // Opens a `base::checked_cast(` if necessary.
 static std::string CreateSubspanOpener(
-    const clang::ArrayTypeLoc* rhs_array_type,
+    std::string_view prefix,
     const SubspanExprReplacement* subspan_expr_replacement) {
-  std::string_view maybe_base_span_closer = rhs_array_type ? ")" : "";
   std::string_view maybe_checked_cast_opener = "";
   if (const auto* replacement =
           std::get_if<CheckedCastReplacement>(subspan_expr_replacement)) {
     maybe_checked_cast_opener = replacement->opener.text;
   }
-  return llvm::formatv("{0}.subspan({1}", maybe_base_span_closer,
-                       maybe_checked_cast_opener);
+  return llvm::formatv("{0}.subspan({1}", prefix, maybe_checked_cast_opener);
 }
 
 // Returns a `.subspan(` closer.
@@ -1021,8 +1019,10 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
   const auto subspan_expr_replacement =
       GetSubspanExprReplacement(binary_op_RHS, result, key);
 
+  // Close the open `base::span(` expression if present.
+  std::string_view prefix = rhs_array_type ? ")" : "";
   std::string subspan_opener =
-      CreateSubspanOpener(rhs_array_type, &subspan_expr_replacement);
+      CreateSubspanOpener(prefix, &subspan_expr_replacement);
 
   const clang::SourceLocation binary_operator_begin =
       GetBinaryOperationOperatorLoc(binary_operation, result);
@@ -1068,28 +1068,31 @@ static void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
       getExprRange(binary_op_RHS, source_manager, lang_opts);
   auto source_range = clang::SourceRange(lhs_expr_range.getEnd(),
                                          binary_op_rhs_range.getBegin());
+
+  const std::string& key = GetRHS(result);
+
+  auto subspan_arg_fixup =
+      GetSubspanExprReplacement(binary_op_RHS, result, key);
   std::string lhs_expr_text =
       clang::Lexer::getSourceText(
           clang::CharSourceRange::getCharRange(lhs_expr_range), source_manager,
           lang_opts)
           .str();
-  std::string binary_op_rhs_text =
-      clang::Lexer::getSourceText(
-          clang::CharSourceRange::getCharRange(binary_op_rhs_range),
-          source_manager, lang_opts)
-          .str();
-
-  const std::string& key = GetRHS(result);
-
-  EmitReplacement(
-      key, GetReplacementDirective(
-               source_range, "=" + lhs_expr_text + ".subspan(", source_manager,
-               kAdaptBinaryPlusEqOperationPrecedence));
 
   EmitReplacement(key,
                   GetReplacementDirective(
-                      clang::SourceRange(binary_op_rhs_range.getEnd()), ")",
-                      source_manager, -kAdaptBinaryPlusEqOperationPrecedence));
+                      source_range,
+                      CreateSubspanOpener(
+                          std::string(llvm::formatv("= {0}", lhs_expr_text)),
+                          &subspan_arg_fixup),
+                      source_manager, kAdaptBinaryPlusEqOperationPrecedence));
+
+  std::string subspan_closer = CreateSubspanCloser(&subspan_arg_fixup);
+
+  EmitReplacement(
+      key, GetReplacementDirective(
+               clang::SourceRange(binary_op_rhs_range.getEnd()), subspan_closer,
+               source_manager, -kAdaptBinaryPlusEqOperationPrecedence));
 }
 
 // Handles boolean operations that need to be adapted after a span rewrite.

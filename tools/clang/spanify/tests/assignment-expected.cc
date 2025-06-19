@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <array>
+#include <cstdint>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
+#include "base/numerics/safe_conversions.h"
 
 // Expected rewrite:
 // base::span<T> get()
@@ -79,7 +81,13 @@ void fct() {
   // gg = (condition) ? ctn1 : ctn2;
   gg = (condition) ? ctn1 : ctn2;
 
-  gg = gg.subspan(1);  // Buffer usage, leads gg to be rewritten.
+  // Buffer usage, leads gg to be rewritten.
+  // Expected rewrite:
+  // gg = gg.subspan(1u);
+  gg = gg.subspan(1u);
 
-  gg = gg.subspan(index * 2);  // Buffer usage
+  // Buffer usage
+  // Expected rewrite:
+  // gg = gg.subspan(base::checked_cast<size_t>(index * 2));
+  gg = gg.subspan(base::checked_cast<size_t>(index * 2));
 }

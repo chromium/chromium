@@ -77,7 +77,13 @@ void fct() {
   // gg = (condition) ? ctn1 : ctn2;
   gg = (condition) ? ctn1.data() : ctn2.data();
 
-  gg += 1;  // Buffer usage, leads gg to be rewritten.
+  // Buffer usage, leads gg to be rewritten.
+  // Expected rewrite:
+  // gg = gg.subspan(1u);
+  gg += 1;
 
-  gg += index * 2;  // Buffer usage
+  // Buffer usage
+  // Expected rewrite:
+  // gg = gg.subspan(base::checked_cast<size_t>(index * 2));
+  gg += index * 2;
 }
