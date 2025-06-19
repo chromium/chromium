@@ -3522,6 +3522,11 @@ bool WebGLRenderingContextWebGPUBase::IsComposited() const {
   return true;
 }
 
+bool WebGLRenderingContextWebGPUBase::IsAccelerated() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 bool WebGLRenderingContextWebGPUBase::IsPaintable() const {
   return true;
 }

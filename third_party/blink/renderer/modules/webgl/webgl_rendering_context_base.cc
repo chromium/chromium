@@ -1865,6 +1865,12 @@ void WebGLRenderingContextBase::MarkLayerComposited() {
     GetDrawingBuffer()->SetBufferClearNeeded(true);
 }
 
+bool WebGLRenderingContextBase::IsAccelerated() const {
+  auto* resource_provider = Host()->GetResourceProviderForWebGL();
+  return resource_provider ? resource_provider->IsAccelerated()
+                           : Host()->ShouldTryToUseGpuRaster();
+}
+
 bool WebGLRenderingContextBase::UsingSwapChain() const {
   return GetDrawingBuffer() && GetDrawingBuffer()->UsingSwapChain();
 }

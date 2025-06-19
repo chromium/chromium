@@ -784,6 +784,12 @@ void BaseRenderingContext2D::Trace(Visitor* visitor) const {
   Canvas2DRecorderContext::Trace(visitor);
 }
 
+bool BaseRenderingContext2D::IsAccelerated() const {
+  auto* resource_provider = Host()->GetResourceProviderForCanvas2D();
+  return resource_provider ? resource_provider->IsAccelerated()
+                           : Host()->ShouldTryToUseGpuRaster();
+}
+
 void BaseRenderingContext2D::RestoreCanvasMatrixClipStack(
     cc::PaintCanvas* c) const {
   RestoreMatrixClipStack(c);

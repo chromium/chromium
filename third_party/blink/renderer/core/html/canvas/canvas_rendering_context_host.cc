@@ -458,19 +458,9 @@ bool CanvasRenderingContextHost::IsAccelerated() const {
   if (IsHibernating()) {
     return false;
   }
-  CanvasResourceProvider* resource_provider = nullptr;
-  if (IsRenderingContext2D()) {
-    resource_provider = GetResourceProviderForCanvas2D();
-  } else if (IsImageBitmapRenderingContext()) {
-    resource_provider = GetResourceProviderForImageBitmap();
-  } else if (IsWebGL()) {
-    resource_provider = GetResourceProviderForWebGL();
-  } else if (IsWebGPU()) {
-    resource_provider = GetResourceProviderForWebGPU();
-  }
 
-  if (resource_provider) {
-    return resource_provider->IsAccelerated();
+  if (RenderingContext()) {
+    return RenderingContext()->IsAccelerated();
   }
 
   // Whether or not to accelerate is not yet resolved, the canvas cannot be

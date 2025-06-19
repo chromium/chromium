@@ -1276,6 +1276,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) override;
 
   bool IsComposited() const override;
+  bool IsAccelerated() const override;
   bool IsPaintable() const override;
   void PageVisibilityChanged() override;
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(

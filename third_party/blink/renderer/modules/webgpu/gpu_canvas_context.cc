@@ -127,6 +127,12 @@ gfx::ColorSpace GPUCanvasContext::GetColorSpace() const {
   return PredefinedColorSpaceToGfxColorSpace(color_space_);
 }
 
+bool GPUCanvasContext::IsAccelerated() const {
+  auto* resource_provider = Host()->GetResourceProviderForWebGPU();
+  return resource_provider ? resource_provider->IsAccelerated()
+                           : Host()->ShouldTryToUseGpuRaster();
+}
+
 void GPUCanvasContext::Stop() {
   ReplaceDrawingBuffer(/*destroy_swap_buffers*/ true);
   stopped_ = true;

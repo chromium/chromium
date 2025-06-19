@@ -135,6 +135,12 @@ bool ImageBitmapRenderingContextBase::CanCreateCanvas2dResourceProvider()
                ->GetOrCreateResourceProviderForImageBitmap();
 }
 
+bool ImageBitmapRenderingContextBase::IsAccelerated() const {
+  auto* resource_provider = Host()->GetResourceProviderForImageBitmap();
+  return resource_provider ? resource_provider->IsAccelerated()
+                           : Host()->ShouldTryToUseGpuRaster();
+}
+
 bool ImageBitmapRenderingContextBase::PushFrame() {
   DCHECK(Host());
   DCHECK(Host()->IsOffscreenCanvas());
