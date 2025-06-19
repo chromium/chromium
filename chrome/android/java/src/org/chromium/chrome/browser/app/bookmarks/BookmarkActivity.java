@@ -79,7 +79,6 @@ public class BookmarkActivity extends SnackbarActivity {
         }
 
         if (mBookmarkOpener != null) {
-            mBookmarkOpener.destroy();
             mBookmarkOpener = null;
         }
     }

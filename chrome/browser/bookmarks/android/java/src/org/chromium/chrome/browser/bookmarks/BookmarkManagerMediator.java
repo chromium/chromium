@@ -638,7 +638,7 @@ class BookmarkManagerMediator
         List<Long> newOrder = new ArrayList<>(endIndex - startIndex + 1);
         for (int i = startIndex; i <= endIndex; i++) {
             BookmarkItem bookmarkItem = getItemByPosition(i).getBookmarkItem();
-            // The parter bookmark folder is under "Mobile boomkmarks", but can't be reordered.
+            // The partner bookmark folder is under "Mobile bookmarks", but can't be reordered.
             if (!bookmarkItem.isReorderable()) {
                 assert i == endIndex
                         : "Partner bookmarks should always be at the end of the list when mobile"

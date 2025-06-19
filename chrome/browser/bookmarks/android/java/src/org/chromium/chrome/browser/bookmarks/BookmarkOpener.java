@@ -14,24 +14,6 @@ import java.util.Optional;
 /** Consolidates logic about opening bookmarks. */
 @NullMarked
 public interface BookmarkOpener {
-    /** Observer interface for when bookmarks are opened. */
-    interface Observer {
-        /**
-         * Called when a bookmark opened event happens. This is invoked once when multiple bookmarks
-         * are opened in new tabs.
-         */
-        void onAnyBookmarkOpenedEvent();
-    }
-
-    /** Destroys the opener. */
-    void destroy();
-
-    /** Add an observer to the class. */
-    void addObserver(Observer obs);
-
-    /** Remove an observer from the class. */
-    void removeObserver(Observer obs);
-
     /**
      * Open the given id in the current tab.
      *

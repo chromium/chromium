@@ -77,8 +77,6 @@ public class BookmarkPage extends BasicNativePage {
     @Override
     public void destroy() {
         super.destroy();
-
-        mBookmarkOpener.destroy();
         mBookmarkManagerCoordinator.onDestroyed();
     }
 

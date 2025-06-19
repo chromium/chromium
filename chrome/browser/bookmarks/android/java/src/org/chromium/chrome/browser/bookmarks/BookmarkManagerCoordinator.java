@@ -415,11 +415,6 @@ public class BookmarkManagerCoordinator
     }
 
     @VisibleForTesting
-    View buildLegacyPromoView(ViewGroup parent) {
-        return mPromoHeaderManager.createSyncPromoHolder(parent);
-    }
-
-    @VisibleForTesting
     View buildBatchUploadCardView(ViewGroup parent) {
         // The signin_settings_card_view is used for Batch Upload Cards.
         return inflate(parent, R.layout.signin_settings_card_view);

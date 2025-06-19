@@ -25197,7 +25197,7 @@ should be able to be added at any place in this file.
   </obsolete>
   <owner>ianwen@chromium.org</owner>
   <description>
-    Action indicating the user has clicked the boomkark button on NTP to swith
+    Action indicating the user has clicked the bookmark button on NTP to switch
     to the bookmark manager.
   </description>
 </action>

@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -66,15 +65,12 @@ public class BookmarkPane implements Pane {
 
     private BookmarkManagerCoordinator mBookmarkManager;
     private BookmarkOpener mBookmarkOpener;
-    private BookmarkOpener.Observer mBookmarkOpenerObserver;
-    private PaneHubController mPaneHubController;
 
     /**
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param activity Used as a dependency to BookmarkManager.
      * @param snackbarManager Used as a dependency to BookmarkManager.
      * @param profileProviderSupplier Used as a dependency to BookmarkManager.
-     * @param bottomSheetController Used as a dependency to BookmarkManager.
      */
     public BookmarkPane(
             @NonNull DoubleConsumer onToolbarAlphaChange,
@@ -127,9 +123,7 @@ public class BookmarkPane implements Pane {
     }
 
     @Override
-    public void setPaneHubController(@Nullable PaneHubController paneHubController) {
-        mPaneHubController = paneHubController;
-    }
+    public void setPaneHubController(@Nullable PaneHubController paneHubController) {}
 
     @Override
     public void notifyLoadHint(@LoadHint int loadHint) {
@@ -141,8 +135,6 @@ public class BookmarkPane implements Pane {
                             () -> BookmarkModel.getForProfile(originalProfile),
                             mActivity,
                             componentName);
-            mBookmarkOpenerObserver = this::onBookmarkOpened;
-            mBookmarkOpener.addObserver(mBookmarkOpenerObserver);
             mBookmarkManager =
                     new BookmarkManagerCoordinator(
                             mActivity,
@@ -211,16 +203,9 @@ public class BookmarkPane implements Pane {
         return mHubSearchEnabledStateSupplier;
     }
 
-    private void onBookmarkOpened() {
-        mPaneHubController.selectTabAndHideHub(Tab.INVALID_TAB_ID);
-    }
-
     private void destroyManagerAndRemoveView() {
         if (mBookmarkManager != null) {
-            mBookmarkOpener.removeObserver(mBookmarkOpenerObserver);
-            mBookmarkOpener.destroy();
             mBookmarkOpener = null;
-
             mBookmarkManager.onDestroyed();
             mBookmarkManager = null;
         }

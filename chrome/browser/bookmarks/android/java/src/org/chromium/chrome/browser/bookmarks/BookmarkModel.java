@@ -38,7 +38,7 @@ public class BookmarkModel extends BookmarkBridge {
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
-    /** Sets a pre-configured runnable which loads the parter bookmarks shim. */
+    /** Sets a pre-configured runnable which loads the partner bookmarks shim. */
     public static void setPartnerBookmarkIteratorProvider(
             PartnerBookmarkIteratorProvider provider) {
         BookmarkBridge.setPartnerBookmarkIteratorProvider(provider);
@@ -46,7 +46,7 @@ public class BookmarkModel extends BookmarkBridge {
 
     /** Provider for the PartnerBookmark iterator. */
     public interface PartnerBookmarkIteratorProvider {
-        /** Fetches the iterator of PartnerBookmarks and notifieds the callback when ready. */
+        /** Fetches the iterator of PartnerBookmarks and notifies the callback when ready. */
         void getIterator(Callback<PartnerBookmark.BookmarkIterator> iterator);
     }
 

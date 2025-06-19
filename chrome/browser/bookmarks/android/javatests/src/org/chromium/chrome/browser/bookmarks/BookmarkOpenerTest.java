@@ -28,7 +28,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -62,14 +61,12 @@ public class BookmarkOpenerTest {
     private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     private RecyclerView mItemsContainer;
 
-    private TabModelSelector mTabModelSelector;
     private UserActionTester mActionTester;
 
     @Before
     public void setUp() {
         mActivityTestRule.startOnBlankPage();
         mActionTester = new UserActionTester();
-        mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

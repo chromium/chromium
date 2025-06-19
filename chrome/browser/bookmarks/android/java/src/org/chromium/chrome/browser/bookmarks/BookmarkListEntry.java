@@ -117,15 +117,6 @@ public final class BookmarkListEntry {
                 /* meta= */ null);
     }
 
-    /** Creates a divider to separate sections in the bookmark list. */
-    static BookmarkListEntry createDivider() {
-        return new BookmarkListEntry(
-                ViewType.DIVIDER,
-                /* bookmarkItem= */ null,
-                /* sectionHeaderData= */ null,
-                /* meta= */ null);
-    }
-
     /**
      * Create an entry representing the reading list read/unread section header.
      *

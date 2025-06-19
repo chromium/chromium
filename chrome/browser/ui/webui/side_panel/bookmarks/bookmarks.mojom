@@ -166,7 +166,7 @@ interface BookmarksPageHandler {
   // regular non permanent node.
   MoveBookmark(int64 node_id, string folder_id);
 
-  // Removes the boomkarks with id in `node_ids`. All bookmarks are expected to
+  // Removes the bookmarks with id in `node_ids`. All bookmarks are expected to
   // map to a regular non permanent node. If some of the nodes are folders, it
   // will remove all children as well.
   // Result callback is called when all nodes are removed, it contains no data.

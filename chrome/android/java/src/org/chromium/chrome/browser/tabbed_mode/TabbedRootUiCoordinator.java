@@ -1787,7 +1787,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (mBookmarkOpener != null) {
-            mBookmarkOpener.destroy();
             mBookmarkOpener = null;
         }
 
