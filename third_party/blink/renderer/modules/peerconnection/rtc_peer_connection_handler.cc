@@ -885,6 +885,11 @@ bool RTCPeerConnectionHandler::Initialize(
   configuration_.crypto_options->srtp.enable_encrypted_rtp_header_extensions =
       base::FeatureList::IsEnabled(kWebRtcEncryptedRtpHeaderExtensions);
   configuration_.enable_implicit_rollback = true;
+  if (base::FeatureList::IsEnabled(kWebRtcPQCForDTLS)) {
+    configuration_.crypto_options->ephemeral_key_exchange_cipher_groups
+        .AddFirst(webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::
+                      kX25519_MLKEM768);
+  }
 
   // Apply 40 ms worth of bursting. See webrtc::TaskQueuePacedSender.
   configuration_.pacer_burst_interval = webrtc::TimeDelta::Millis(40);

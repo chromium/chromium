@@ -23,6 +23,12 @@ BASE_FEATURE(kWebRtcEncryptedRtpHeaderExtensions,
              "WebRtcEncryptedRtpHeaderExtensions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This feature enables using Post-Quantum Crypto(PQC) for DTLS to improve
+// WebRTC's security.
+BASE_FEATURE(kWebRtcPQCForDTLS,
+             "WebRtcPQCForDTLS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This features enables the restriction that frames sent to an
 // RTCRtpScriptTransformer's writable must come from the transformer's readable
 // and must be written in the same order in which they are read. This feature
