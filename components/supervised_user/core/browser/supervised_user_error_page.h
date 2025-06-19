@@ -16,14 +16,20 @@ int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent);
 
 int GetInterstitialMessageID(FilteringBehaviorReason reason);
 
-std::string BuildErrorPageHtml(bool allow_access_requests,
-                               std::optional<Custodian> custodian,
-                               std::optional<Custodian> second_custodian,
-                               FilteringBehaviorReason reason,
-                               const std::string& app_locale,
-                               bool already_sent_remote_request,
-                               bool is_main_frame,
-                               std::optional<float> ios_font_size_multiplier);
+#if BUILDFLAG(IS_ANDROID)
+std::string BuildErrorPageHtmlWithoutApprovals(const GURL& url,
+                                               const std::string& app_locale);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+std::string BuildErrorPageHtmlWithApprovals(
+    bool allow_access_requests,
+    std::optional<Custodian> custodian,
+    std::optional<Custodian> second_custodian,
+    FilteringBehaviorReason reason,
+    const std::string& app_locale,
+    bool already_sent_remote_request,
+    bool is_main_frame,
+    std::optional<float> ios_font_size_multiplier);
 
 }  //  namespace supervised_user
 

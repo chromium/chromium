@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "gin/wrappable.h"
 
 namespace content {
@@ -46,6 +47,10 @@ class SupervisedUserErrorPageController
   void GoBack();
   void RequestUrlAccessRemote();
   void RequestUrlAccessLocal();
+
+#if BUILDFLAG(IS_ANDROID)
+  void LearnMore();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   void OnRequestUrlAccessRemote(bool success);
 

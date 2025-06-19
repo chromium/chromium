@@ -80,6 +80,14 @@ void SupervisedUserErrorPageController::RequestUrlAccessLocal() {
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void SupervisedUserErrorPageController::LearnMore() {
+  if (delegate_) {
+    delegate_->LearnMore();
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void SupervisedUserErrorPageController::OnRequestUrlAccessRemote(bool success) {
   std::string result = base::ToString(success);
   std::string is_outermost_main_frame =

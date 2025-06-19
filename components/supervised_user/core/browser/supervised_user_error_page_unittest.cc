@@ -193,7 +193,7 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
   // replacements) plus scripts that plug values into it. The test can't
   // easily check that the scripts are correct, but can check that the output
   // contains the expected values.
-  html_error_page_ = BuildErrorPageHtml(
+  html_error_page_ = BuildErrorPageHtmlWithApprovals(
       param.allow_access_requests, param.custodian, param.second_custodian,
       param.reason,
       /*app_locale=*/"",

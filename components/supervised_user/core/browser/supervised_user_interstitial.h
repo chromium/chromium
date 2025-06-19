@@ -75,8 +75,15 @@ class SupervisedUserInterstitial {
       const std::u16string& supervised_user_name,
       FilteringBehaviorReason reason);
 
-  // Returns the HTML contents of the error page.
-  static std::string GetHTMLContents(
+  #if BUILDFLAG(IS_ANDROID)
+  // Returns the HTML contents of the error page without the approvals section.
+  static std::string GetHTMLContentsWithoutApprovals(
+      const GURL& url,
+      const std::string& application_locale);
+  #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Returns the HTML contents of the error page with the approvals section.
+  static std::string GetHTMLContentsWithApprovals(
       SupervisedUserService* supervised_user_service,
       PrefService* pref_service,
       FilteringBehaviorReason reason,

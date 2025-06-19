@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
@@ -30,6 +31,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -244,18 +246,33 @@ void ClassifyUrlNavigationThrottle::OnInterstitialResult(
         return;
       }
 #endif
-      Profile* profile = Profile::FromBrowserContext(
-          navigation_handle()->GetWebContents()->GetBrowserContext());
-      std::string interstitial_html =
-          SupervisedUserInterstitial::GetHTMLContents(
-              SupervisedUserServiceFactory::GetForProfile(profile),
-              profile->GetPrefs(), result.reason, already_sent_request,
-              is_main_frame, g_browser_process->GetApplicationLocale());
       CancelDeferredNavigation(content::NavigationThrottle::ThrottleCheckResult(
-          CANCEL, net::ERR_BLOCKED_BY_CLIENT, std::move(interstitial_html)));
+          CANCEL, net::ERR_BLOCKED_BY_CLIENT,
+          GetInterstitialHTML(result, already_sent_request, is_main_frame)));
+
       break;
     }
   }
+}
+
+std::string ClassifyUrlNavigationThrottle::GetInterstitialHTML(
+    SupervisedUserURLFilter::Result result,
+    bool already_sent_request,
+    bool is_main_frame) const {
+#if BUILDFLAG(IS_ANDROID)
+  if (supervised_user_service()->IsLocalContentFilteringEnabled() &&
+      base::FeatureList::IsEnabled(
+          kSupervisedUserInterstitialWithoutApprovals)) {
+    return SupervisedUserInterstitial::GetHTMLContentsWithoutApprovals(result.url,
+        g_browser_process->GetApplicationLocale());
+  }
+#endif
+  Profile* profile = Profile::FromBrowserContext(
+      navigation_handle()->GetWebContents()->GetBrowserContext());
+  return SupervisedUserInterstitial::GetHTMLContentsWithApprovals(
+      supervised_user_service(), profile->GetPrefs(), result.reason,
+      already_sent_request, is_main_frame,
+      g_browser_process->GetApplicationLocale());
 }
 
 const GURL& ClassifyUrlNavigationThrottle::currently_navigated_url() const {
@@ -263,10 +280,14 @@ const GURL& ClassifyUrlNavigationThrottle::currently_navigated_url() const {
 }
 
 SupervisedUserURLFilter* ClassifyUrlNavigationThrottle::url_filter() const {
+  return supervised_user_service()->GetURLFilter();
+}
+
+SupervisedUserService* ClassifyUrlNavigationThrottle::supervised_user_service()
+    const {
   return SupervisedUserServiceFactory::GetForProfile(
-             Profile::FromBrowserContext(
-                 navigation_handle()->GetWebContents()->GetBrowserContext()))
-      ->GetURLFilter();
+      Profile::FromBrowserContext(
+          navigation_handle()->GetWebContents()->GetBrowserContext()));
 }
 
 void ClassifyUrlNavigationThrottle::MaybeCreateAndAdd(

@@ -26,6 +26,7 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "supervised_user_block_interstitial_v2.js",
     "supervised_user_block_interstitial_v3.js",
+    "supervised_user_block_interstitial_no_approvals.js"
   ]
 }
 
@@ -37,6 +38,7 @@ if (optimize_webui) {
     in_files = [
       "supervised_user_block_interstitial_v2.js",
       "supervised_user_block_interstitial_v3.js",
+      "supervised_user_block_interstitial_no_approvals.js"
     ]
     deps = [ ":preprocess" ]
   }

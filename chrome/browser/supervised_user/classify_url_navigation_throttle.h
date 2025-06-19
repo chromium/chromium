@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/navigation_handle.h"
@@ -148,8 +149,17 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
                             bool already_sent_request,
                             bool is_main_frame);
 
+  // Returns the HTML to be used for the interstitial, specific for the profile
+  // doing the navigation.
+  std::string GetInterstitialHTML(SupervisedUserURLFilter::Result result,
+                                  bool already_sent_request,
+                                  bool is_main_frame) const;
+
   // Returns the URL filter associated with the navigated under throttling.
   SupervisedUserURLFilter* url_filter() const;
+  // Returns the supervised user service associated with the navigated under
+  // throttling.
+  SupervisedUserService* supervised_user_service() const;
 
   // All pending and completed checks.
   ClassifyUrlCheckList list_;

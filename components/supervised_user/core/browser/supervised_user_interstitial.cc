@@ -69,8 +69,17 @@ SupervisedUserInterstitial::~SupervisedUserInterstitial() {
   web_content_handler_->MaybeCloseLocalApproval();
 }
 
+#if BUILDFLAG(IS_ANDROID)
 // static
-std::string SupervisedUserInterstitial::GetHTMLContents(
+std::string SupervisedUserInterstitial::GetHTMLContentsWithoutApprovals(
+    const GURL& url,
+    const std::string& application_locale) {
+  return BuildErrorPageHtmlWithoutApprovals(url, application_locale);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// static
+std::string SupervisedUserInterstitial::GetHTMLContentsWithApprovals(
     SupervisedUserService* supervised_user_service,
     PrefService* pref_service,
     FilteringBehaviorReason reason,
@@ -81,7 +90,7 @@ std::string SupervisedUserInterstitial::GetHTMLContents(
   bool allow_access_requests =
       supervised_user_service->remote_web_approvals_manager()
           .AreApprovalRequestsEnabled();
-  return BuildErrorPageHtml(
+  return BuildErrorPageHtmlWithApprovals(
       allow_access_requests, supervised_user_service->GetCustodian(),
       supervised_user_service->GetSecondCustodian(), reason, application_locale,
       already_sent_request, is_main_frame, ios_font_size_multiplier);

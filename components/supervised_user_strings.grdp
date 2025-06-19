@@ -125,4 +125,17 @@
       <message name="IDS_PARENTAL_LOCAL_APPROVAL_SNACKBAR_GENERIC_ERROR_BACK_BUTTON" desc="Button of the error snackbar that is shown when a supervised user asks for parental approval, but the request couldn’t be sent. In this scenario, we don’t know why the request didn’t work, so they need to go back to the previous screen and try again.">
         Close
       </message>
+
+      <if expr="is_android">
+        <message name="IDS_NO_APPROVALS_BACK_BUTTON" desc="Button of the error snackbar that is shown when a supervised user can't request approvals. That's the only way out from the error page.">
+          Back
+        </message>
+        <message name="IDS_NO_APPROVALS_LEARN_MORE_BUTTON" desc="Button of the error snackbar that is shown when a supervised user can't request approvals, that leads to a resource that'll explain what has happened. Displayed below the back button.">
+          Learn more about content filters
+        </message>
+        <message name="IDS_NO_APPROVALS_MESSAGE" desc="A message shown when a supervised user is blocked from accessing a site because of the content filters configured on their device. Followed by the site URL.">
+          Your device's content filters blocked <ph name="BLOCKED_URL">$1</ph>
+        </message>
+      </if>
+
 </grit-part>

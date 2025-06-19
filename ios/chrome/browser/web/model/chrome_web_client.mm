@@ -261,7 +261,7 @@ NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   std::string error_page_content =
-      supervised_user::SupervisedUserInterstitial::GetHTMLContents(
+      supervised_user::SupervisedUserInterstitial::GetHTMLContentsWithApprovals(
           SupervisedUserServiceFactory::GetForProfile(profile),
           profile->GetPrefs(), error_info->filtering_behavior_reason(),
           container->IsRemoteApprovalPendingForUrl(url),
