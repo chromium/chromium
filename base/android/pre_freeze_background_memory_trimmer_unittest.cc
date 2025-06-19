@@ -137,8 +137,8 @@ class PreFreezeSelfCompactionTest : public testing::Test {
   void SetUp() override { SelfCompactionManager::ResetCompactionForTesting(); }
 
   bool ShouldContinueCompaction(base::TimeTicks compaction_started_at) {
-    return PreFreezeBackgroundMemoryTrimmer::Instance()
-        .ShouldContinueCompaction(compaction_started_at);
+    return SelfCompactionManager::Instance().ShouldContinueCompaction(
+        compaction_started_at);
   }
 
   bool CompactionIsSupported() {

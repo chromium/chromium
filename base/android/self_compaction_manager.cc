@@ -4,8 +4,12 @@
 
 #include "base/android/self_compaction_manager.h"
 
+#include <sys/mman.h>
+
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -43,6 +47,10 @@ BASE_FEATURE_PARAM(size_t,
                    10);
 
 namespace {
+
+// Based on UMA data, >99.5% of the compaction should take < 6s, so 10s should
+// be more than enough.
+constexpr base::TimeDelta kCompactionTimeout = base::Seconds(10);
 
 uint64_t MiBToBytes(uint64_t v) {
   return v * 1024 * 1024;
@@ -125,6 +133,40 @@ class RunningCompactionState final
 }  // namespace
 
 // static
+void SelfCompactionManager::SetOnStartSelfCompactionCallback(
+    base::RepeatingCallback<void(void)> callback) {
+  base::AutoLock locker(PreFreezeBackgroundMemoryTrimmer::lock());
+  Instance().on_self_compact_callback_ = callback;
+}
+
+// static
+bool SelfCompactionManager::ShouldContinueCompaction(
+    const SelfCompactionManager::CompactionState& state) {
+  return ShouldContinueCompaction(state.triggered_at_);
+}
+
+// static
+bool SelfCompactionManager::TimeoutExceeded() {
+  base::AutoLock locker(lock());
+  return Instance().compaction_last_started_ + kCompactionTimeout <=
+         base::TimeTicks::Now();
+}
+
+// static
+bool SelfCompactionManager::ShouldContinueCompaction(
+    base::TimeTicks compaction_triggered_at) {
+  base::AutoLock locker(lock());
+  return Instance().compaction_last_cancelled_ < compaction_triggered_at;
+}
+
+// static
+base::TimeDelta SelfCompactionManager::GetDelayBetweenCompaction() {
+  // We choose a random, small amount of time here, so that we are not trying
+  // to compact in every process at the same time.
+  return base::Milliseconds(base::RandInt(100, 300));
+}
+
+// static
 void SelfCompactionManager::OnRunningCompact() {
   TRACE_EVENT0("base", "OnRunningCompact");
 
@@ -150,6 +192,106 @@ void SelfCompactionManager::OnTriggerCompact(
   compaction_last_triggered_ = triggered_at;
   auto state = std::make_unique<State>(task_runner, triggered_at);
   OnTriggerCompact(std::move(state));
+}
+
+// static
+void SelfCompactionManager::CompactSelf(
+    std::unique_ptr<CompactionState> state) {
+  // MADV_PAGEOUT was only added in Linux 5.4, so do nothing in earlier
+  // versions.
+  if (!CompactionIsSupported()) {
+    return;
+  }
+
+  if (!ShouldContinueCompaction(*state)) {
+    return;
+  }
+
+  TRACE_EVENT0("base", "CompactSelf");
+  state->MaybeReadProcMaps();
+
+  // We still start the task in the control group, in order to record metrics.
+  Instance().StartCompaction(std::move(state));
+}
+
+// static
+std::optional<uint64_t> SelfCompactionManager::CompactRegion(
+    debug::MappedMemoryRegion region) {
+#if defined(MADV_PAGEOUT)
+  using Permission = debug::MappedMemoryRegion::Permission;
+  // Skip file-backed regions
+  if (region.inode != 0 || region.dev_major != 0) {
+    return 0;
+  }
+  // Skip shared regions
+  if ((region.permissions & Permission::PRIVATE) == 0) {
+    return 0;
+  }
+
+  const bool is_inaccessible =
+      (region.permissions &
+       (Permission::READ | Permission::WRITE | Permission::EXECUTE)) == 0;
+
+  TRACE_EVENT1("base", __PRETTY_FUNCTION__, "size", region.end - region.start);
+
+  int error = madvise(reinterpret_cast<void*>(region.start),
+                      region.end - region.start, MADV_PAGEOUT);
+
+  if (error < 0) {
+    // We may fail on some regions, such as [vvar], or a locked region. It's
+    // not worth it to try to filter these all out, so we just skip them, and
+    // rely on metrics to verify that this is working correctly for most
+    // regions.
+    //
+    // EINVAL could be [vvar] or a locked region. ENOMEM would be a moved or
+    // unmapped region.
+    if (errno != EINVAL && errno != ENOMEM) {
+      PLOG(ERROR) << "Unexpected error from madvise.";
+      return std::nullopt;
+    }
+    return 0;
+  }
+
+  return is_inaccessible ? 0 : region.end - region.start;
+#else
+  return std::nullopt;
+#endif
+}
+
+// static
+std::optional<uint64_t> SelfCompactionManager::CompactMemory(
+    std::vector<debug::MappedMemoryRegion>* regions,
+    const uint64_t max_bytes) {
+  TRACE_EVENT1("base", __PRETTY_FUNCTION__, "count", regions->size());
+  DCHECK(!regions->empty());
+
+  uint64_t total_bytes_processed = 0;
+  do {
+    const auto region = regions->back();
+    regions->pop_back();
+    const auto bytes_processed = CompactRegion(region);
+    if (!bytes_processed) {
+      return std::nullopt;
+    }
+    total_bytes_processed += bytes_processed.value();
+  } while (!regions->empty() && total_bytes_processed < max_bytes);
+
+  return total_bytes_processed;
+}
+
+void PreFreezeBackgroundMemoryTrimmer::PostMetricsTasksIfModern() {
+  if (!SupportsModernTrim()) {
+    return;
+  }
+  PostMetricsTask();
+}
+
+// static
+void SelfCompactionManager::ResetCompactionForTesting() {
+  base::AutoLock locker(lock());
+  Instance().compaction_last_cancelled_ = base::TimeTicks::Min();
+  Instance().compaction_last_finished_ = base::TimeTicks::Min();
+  Instance().compaction_last_triggered_ = base::TimeTicks::Min();
 }
 
 std::unique_ptr<SelfCompactionManager::CompactionState>

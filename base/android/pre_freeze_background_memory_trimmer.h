@@ -187,8 +187,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
   static base::Lock& lock() { return Instance().lock_; }
 
-  static bool ShouldContinueCompaction(base::TimeTicks compaction_triggered_at)
-      LOCKS_EXCLUDED(lock());
 
   void RegisterMemoryMetricInternal(const PreFreezeMetric* metric)
       EXCLUSIVE_LOCKS_REQUIRED(lock());
