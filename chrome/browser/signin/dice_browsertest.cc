@@ -1355,7 +1355,8 @@ class DiceBrowserTestWithSyncOptinScreen : public DiceBrowserTest {
   DiceBrowserTestWithSyncOptinScreen() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{switches::kEnableHistorySyncOptin,
-                              switches::kEnableHistorySyncOptinFromTabHelper},
+                              switches::kEnableHistorySyncOptinFromTabHelper,
+                              syncer::kReplaceSyncPromosWithSignInPromos},
         /*disabled_features=*/{});
   }
 

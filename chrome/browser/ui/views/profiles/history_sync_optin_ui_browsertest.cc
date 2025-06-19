@@ -13,6 +13,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -39,7 +40,12 @@ class HistorySyncOptinUIDialogPixelTest
       public testing::WithParamInterface<PixelTestParam> {
  public:
   HistorySyncOptinUIDialogPixelTest()
-      : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam()) {}
+      : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam()) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{switches::kEnableHistorySyncOptin,
+                              syncer::kReplaceSyncPromosWithSignInPromos},
+        /*disabled_features=*/{});
+  }
 
   ~HistorySyncOptinUIDialogPixelTest() override = default;
 
@@ -66,8 +72,7 @@ class HistorySyncOptinUIDialogPixelTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kEnableHistorySyncOptin};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(HistorySyncOptinUIDialogPixelTest, InvokeUi_default) {
