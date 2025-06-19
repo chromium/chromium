@@ -290,6 +290,11 @@ class SyncPrefs {
   static void MaybeMigrateAutofillToPerAccountPref(PrefService* pref_service);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+  // Returns whether a UserSelectableType is enabled by default in transport
+  // mode, that is, without an explicit value stored in prefs.
+  bool IsTypeSelectedByDefaultInTransportMode(UserSelectableType type,
+                                              const GaiaId& gaia_id) const;
+
  private:
   static void RegisterTypeSelectedPref(PrefRegistrySimple* prefs,
                                        UserSelectableType type);

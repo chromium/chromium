@@ -295,49 +295,8 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
           gaia_id_hash, pref_name);
       if (pref_value && pref_value->is_bool()) {
         type_enabled = pref_value->GetBool();
-      } else if (type == UserSelectableType::kHistory ||
-                 type == UserSelectableType::kTabs ||
-                 type == UserSelectableType::kSavedTabGroups) {
-        // History, Tabs, Saved Tab Groups and and Shared Tab Group Data are
-        // disabled by default.
-        type_enabled = false;
-      } else if (type == UserSelectableType::kPasswords ||
-                 type == UserSelectableType::kAutofill) {
-        // kPasswords and kAutofill are only on by default if there was an
-        // explicit sign in recorded.
-        // Otherwise:
-        // - kPasswords requires a dedicated opt-in.
-        // - kAutofill cannot be enabled.
-        // Note: If this changes, also update the migration logic in
-        // MigrateGlobalDataTypePrefsToAccount().
-        type_enabled = IsExplicitBrowserSignin();
-      } else if (type == UserSelectableType::kBookmarks ||
-                 type == UserSelectableType::kReadingList) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-        type_enabled =
-            base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
-#else
-        // Bookmarks and Reading List require a specific explicit sign in.
-        type_enabled = SigninPrefs(*pref_service_)
-                           .GetBookmarksExplicitBrowserSignin(gaia_id) ||
-                       base::FeatureList::IsEnabled(
-                           kEnableBookmarksSelectedTypeOnSigninForTesting);
-#endif
-      } else if (type == UserSelectableType::kExtensions) {
-        // Extensions require a specific explicit sign in.
-        type_enabled = SigninPrefs(*pref_service_)
-                           .GetExtensionsExplicitBrowserSignin(gaia_id);
-      } else if (type == UserSelectableType::kPreferences ||
-                 type == UserSelectableType::kThemes) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-        type_enabled = true;
-#else
-        type_enabled = pref_service_->GetBoolean(
-            ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
-#endif
       } else {
-        // All other types are always enabled by default.
-        type_enabled = true;
+        type_enabled = IsTypeSelectedByDefaultInTransportMode(type, gaia_id);
       }
     }
     if (type_enabled) {
@@ -1149,6 +1108,53 @@ void SyncPrefs::SetPasswordSyncAllowed(bool allowed) {
   for (SyncPrefObserver& observer : sync_pref_observers_) {
     observer.OnSelectedTypesPrefChange();
   }
+}
+
+bool SyncPrefs::IsTypeSelectedByDefaultInTransportMode(
+    UserSelectableType type,
+    const GaiaId& gaia_id) const {
+  switch (type) {
+    case UserSelectableType::kPayments:
+      // Payments are enabled in all cases by default.
+      return true;
+    case UserSelectableType::kHistory:
+    case UserSelectableType::kTabs:
+    case UserSelectableType::kSavedTabGroups:
+      // History and tabs require a separate opt in.
+      return false;
+    case UserSelectableType::kPasswords:
+    case UserSelectableType::kAutofill:
+      return IsExplicitBrowserSignin();
+    case UserSelectableType::kBookmarks:
+    case UserSelectableType::kReadingList:
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
+#else
+      // Bookmarks and Reading List require a specific explicit sign in.
+      return SigninPrefs(*pref_service_)
+                 .GetBookmarksExplicitBrowserSignin(gaia_id) ||
+             base::FeatureList::IsEnabled(
+                 kEnableBookmarksSelectedTypeOnSigninForTesting);
+#endif
+    case UserSelectableType::kPreferences:
+    case UserSelectableType::kThemes:
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      return true;
+#else
+      return pref_service_->GetBoolean(
+          ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
+#endif
+    case UserSelectableType::kExtensions:
+      // Extensions require a specific explicit sign in.
+      return SigninPrefs(*pref_service_)
+          .GetExtensionsExplicitBrowserSignin(gaia_id);
+    case UserSelectableType::kApps:
+    case UserSelectableType::kProductComparison:
+    case UserSelectableType::kCookies:
+      // All other types are always enabled by default.
+      return true;
+  }
+  NOTREACHED();
 }
 
 }  // namespace syncer
