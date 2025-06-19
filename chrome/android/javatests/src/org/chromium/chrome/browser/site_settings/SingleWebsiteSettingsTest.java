@@ -18,8 +18,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-import android.os.Build;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -39,7 +37,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -107,21 +104,15 @@ public class SingleWebsiteSettingsTest {
     public void testExceptionToggleShowing(
             @ContentSettingsType.EnumType int contentSettingsType,
             @ContentSettingValues int contentSettingValue) {
-        // Preference for Notification on O+ is added as a ChromeImageViewPreference. See
+        // Preference should be added as a ChromeImageViewPreference. See
         // SingleWebsiteSettings#setUpNotificationsPreference
-        Assume.assumeFalse(
-                "Preference for Notification is not a toggle on Android N-.",
-                contentSettingsType == ContentSettingsType.NOTIFICATIONS
-                        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
+        Assume.assumeFalse(contentSettingsType == ContentSettingsType.NOTIFICATIONS);
 
         new SingleExceptionTestCase(contentSettingsType, contentSettingValue).run();
     }
 
     @Test
     @SmallTest
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "Notification does not have a toggle when disabled.")
     public void testNotificationException() {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSingleWebsitePreferences(

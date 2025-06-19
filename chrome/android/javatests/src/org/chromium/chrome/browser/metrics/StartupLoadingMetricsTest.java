@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.metrics;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
@@ -32,7 +31,6 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.LauncherShortcutActivity;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
@@ -270,14 +268,9 @@ public class StartupLoadingMetricsTest {
         waitForHistogram(ntpColdStartWatcher);
     }
 
-    /**
-     * Tests warm start metric for main icon launches recorded correctly. Minimum SDK Level is P+
-     * due to how ColdStartTracker determines a cold start. The mechanism is time-based prior to P
-     * and is therefore less robust.
-     */
+    /** Tests warm start metric for main icon launches recorded correctly. */
     @Test
     @LargeTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testWarmStartMainIntentTimeToFirstDrawRecordedCorrectly() throws Exception {
         // No records made for main intent cold starts.
         HistogramWatcher mainIntentTimeToFirstDrawWatcher =
@@ -410,12 +403,6 @@ public class StartupLoadingMetricsTest {
                             BinderCallsListener listener = BinderCallsListener.getInstance();
                             return listener.installListener();
                         });
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            // THe API was added in Android 10, but don't skip tests in earlier
-            // releases to check we don't cause crashes there.
-            Assert.assertFalse(success);
-            return;
-        }
         Assert.assertTrue(success);
 
         HistogramWatcher ntpBinderWatcher =

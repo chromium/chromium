@@ -17,8 +17,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Spannable;
@@ -927,7 +925,6 @@ public class NotificationPlatformBridge {
                         && ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
-                && VERSION.SDK_INT >= VERSION_CODES.P
                 && identifyingAttributes.notificationType == NotificationType.WEB_PERSISTENT
                 && !skipUAButtons
                 && !shouldTreatNotificationAsSuspicious) {
@@ -1037,10 +1034,6 @@ public class NotificationPlatformBridge {
 
         if (sOriginsWithProvisionallyRevokedPermissions.containsKey(identifyingAttributes.origin)) {
             return Promise.fulfilled(true);
-        }
-
-        if (!UsageStatsService.isEnabled()) {
-            return Promise.fulfilled(false);
         }
 
         // Only native calls into this here code, so the native process must be running, which is

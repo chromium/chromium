@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -257,8 +256,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                     PriceTrackingUtilities.isTrackPricesOnTabsEnabled(getProfile()));
         }
         if (mUsageStatsReporting != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                    && mPrefService.getBoolean(Pref.USAGE_STATS_ENABLED)) {
+            if (mPrefService.getBoolean(Pref.USAGE_STATS_ENABLED)) {
                 mUsageStatsReporting.setOnPreferenceClickListener(
                         preference -> {
                             UsageStatsConsentDialog.create(

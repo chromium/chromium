@@ -5,9 +5,6 @@
 package org.chromium.chrome.browser.vr;
 
 import static org.chromium.chrome.browser.vr.WebXrArTestFramework.PAGE_LOAD_TIMEOUT_S;
-import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_MS;
-
-import android.os.Build;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -42,9 +39,6 @@ import java.util.concurrent.Callable;
     "enable-features=WebXRIncubations,LogJsConsoleMessages"
 })
 public class WebXrArSanityTest {
-    public static final boolean ENABLE_CAMERA_ACCESS =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-
     @ClassParameter
     private static final List<ParameterSet> sClassParams =
             ArTestRuleUtils.generateDefaultTestRuleParameters();
@@ -76,13 +70,7 @@ public class WebXrArSanityTest {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_basic_all_ar_features", PAGE_LOAD_TIMEOUT_S);
 
-        if (!ENABLE_CAMERA_ACCESS) {
-            mWebXrArTestFramework.runJavaScriptOrFail(
-                    "disableCameraAccess()", POLL_TIMEOUT_SHORT_MS);
-        }
-
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(
-                /* needsCameraPermission= */ ENABLE_CAMERA_ACCESS);
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/* needsCameraPermission= */ true);
 
         // The recording is 12 seconds long, let's tell the test to run for 10 seconds and wait for
         // a bit more than that before timing out.
@@ -101,13 +89,7 @@ public class WebXrArSanityTest {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_basic_all_ar_features", PAGE_LOAD_TIMEOUT_S);
 
-        if (!ENABLE_CAMERA_ACCESS) {
-            mWebXrArTestFramework.runJavaScriptOrFail(
-                    "disableCameraAccess()", POLL_TIMEOUT_SHORT_MS);
-        }
-
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(
-                /* needsCameraPermission= */ ENABLE_CAMERA_ACCESS);
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/* needsCameraPermission= */ true);
 
         // The recording is 37 seconds long, let's tell the test to run for 30 seconds and wait for
         // a bit more than that before timing out.

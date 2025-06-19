@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.usage_stats;
 
 import android.app.Activity;
-import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -51,19 +50,13 @@ public class UsageStatsService implements Destroyable {
     private DigitalWellbeingClient mClient;
     private boolean mOptInState;
 
-    /** Returns if the UsageStatsService is enabled on this device */
-    public static boolean isEnabled() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-    }
-
     /** Return the {@link UsageStatsService} for the given {@link Profile}. */
     public static UsageStatsService getForProfile(Profile profile) {
-        assert isEnabled();
         return sProfileMap.getForProfile(profile, UsageStatsService::new);
     }
 
     /**
-     * Creates a UsageStatsService for the given Activity if the feature is enabled.
+     * Creates a UsageStatsService for the given Activity.
      *
      * @param activity The activity in which page view events are occurring.
      * @param profile The {@link Profile} associated with the activity.
@@ -75,8 +68,6 @@ public class UsageStatsService implements Destroyable {
             Profile profile,
             ActivityTabProvider activityTabProvider,
             Supplier<TabContentManager> tabContentManagerSupplier) {
-        if (!isEnabled()) return;
-
         getForProfile(profile)
                 .createPageViewObserver(activity, activityTabProvider, tabContentManagerSupplier);
     }
@@ -90,9 +81,7 @@ public class UsageStatsService implements Destroyable {
         mTokenTracker = new TokenTracker(mBridge);
         mPageViewObservers = new ArrayList<>();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            mClient = ServiceLoaderUtil.maybeCreate(DigitalWellbeingClient.class);
-        }
+        mClient = ServiceLoaderUtil.maybeCreate(DigitalWellbeingClient.class);
         if (mClient == null) {
             mClient = new DigitalWellbeingClient();
         }

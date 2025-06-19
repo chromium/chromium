@@ -2278,15 +2278,13 @@ class TabImpl implements Tab {
             return;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ComponentName componentName =
-                    AutofillManagerWrapper.getAutofillServiceComponentName(manager);
-            if (componentName != null) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        UMA_AUTOFILL_THIRD_PARTY_MODE_DISABLED_PROVIDER,
-                        AutofillProviderUMA.getCurrentProvider(componentName.getPackageName()),
-                        AutofillProviderUMA.Provider.MAX_VALUE);
-            }
+        ComponentName componentName =
+                AutofillManagerWrapper.getAutofillServiceComponentName(manager);
+        if (componentName != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    UMA_AUTOFILL_THIRD_PARTY_MODE_DISABLED_PROVIDER,
+                    AutofillProviderUMA.getCurrentProvider(componentName.getPackageName()),
+                    AutofillProviderUMA.Provider.MAX_VALUE);
         }
     }
 

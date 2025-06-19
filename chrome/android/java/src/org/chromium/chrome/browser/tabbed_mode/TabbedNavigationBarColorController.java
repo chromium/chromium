@@ -11,13 +11,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.view.Window;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -60,7 +58,6 @@ import org.chromium.ui.util.ColorUtils;
 import java.util.Optional;
 
 /** Controls the bottom system navigation bar color for the provided {@link Window}. */
-@RequiresApi(Build.VERSION_CODES.O_MR1)
 class TabbedNavigationBarColorController
         implements BottomAttachedUiObserver.Observer, NavigationBarColorProvider {
     /** The amount of time transitioning from one color to another should take in ms. */
@@ -191,8 +188,6 @@ class TabbedNavigationBarColorController
             @NonNull ObservableSupplier<Integer> overviewColorSupplier,
             @NonNull EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
             @Nullable BottomAttachedUiObserver bottomAttachedUiObserver) {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
-
         mContext = context;
         mFullScreenManager = fullscreenManager;
         mEdgeToEdgeSystemBarColorHelper = edgeToEdgeSystemBarColorHelper;

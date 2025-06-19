@@ -34,7 +34,6 @@ import static org.chromium.chrome.browser.settings.MainSettings.PREF_UI_THEME;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Looper;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -301,17 +300,8 @@ public class MainSettingsFragmentTest {
 
         // Assert for "Basics" section
         assertSettingsExists(MainSettings.PREF_SEARCH_ENGINE, SearchEngineSettings.class);
-        if (supportThirdPartyFillingSetting()) {
-            assertSettingsExists(MainSettings.PREF_AUTOFILL_OPTIONS, null);
-            assertSettingsExists(MainSettings.PREF_AUTOFILL_SECTION, null);
-        } else {
-            Assert.assertNull(
-                    "Third party filling setting should be hidden",
-                    mMainSettings.findPreference(MainSettings.PREF_AUTOFILL_OPTIONS));
-            Assert.assertNull(
-                    "Autofill section header should be hidden",
-                    mMainSettings.findPreference(MainSettings.PREF_AUTOFILL_SECTION));
-        }
+        assertSettingsExists(MainSettings.PREF_AUTOFILL_OPTIONS, null);
+        assertSettingsExists(MainSettings.PREF_AUTOFILL_SECTION, null);
         assertSettingsExists(MainSettings.PREF_PASSWORDS, PasswordSettings.class);
         assertSettingsExists("autofill_payment_methods", AutofillPaymentMethodsFragment.class);
         assertSettingsExists("autofill_addresses", AutofillProfilesFragment.class);
@@ -1069,13 +1059,8 @@ public class MainSettingsFragmentTest {
     }
 
     private boolean supportNotificationSettings() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
         return PackageManagerUtils.canResolveActivity(
                 new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS));
-    }
-
-    private boolean supportThirdPartyFillingSetting() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     }
 
     private void testNewPreferenceLabel(

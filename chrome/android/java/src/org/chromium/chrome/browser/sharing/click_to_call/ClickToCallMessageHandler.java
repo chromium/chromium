@@ -23,7 +23,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.sharing.SharingNotificationUtil;
@@ -84,26 +83,11 @@ public class ClickToCallMessageHandler {
         }
     }
 
-    /** Handles the device unlock event to remove notification and just show dialer. */
-    public static final class PhoneUnlockedReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // We only try to remove the notifications if we have opened the dialer.
-            if (intent != null
-                    && Intent.ACTION_USER_PRESENT.equals(intent.getAction())
-                    && shouldOpenDialer()) {
-                SharingNotificationUtil.dismissNotification(
-                        NotificationConstants.GROUP_CLICK_TO_CALL,
-                        NotificationConstants.NOTIFICATION_ID_CLICK_TO_CALL);
-            }
-        }
-    }
-
     /**
      * Displays a notification that opens the dialer when clicked.
      *
      * @param phoneNumber The phone number to show in the dialer when the user taps the
-     *                    notification.
+     *     notification.
      */
     private static void displayNotification(String phoneNumber) {
         Context context = ContextUtils.getApplicationContext();
@@ -153,35 +137,6 @@ public class ClickToCallMessageHandler {
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    /** Returns true if we should open the dialer straight away. */
-    private static boolean shouldOpenDialer() {
-        // On Android Q and above, we never open the dialer directly.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return false;
-        }
-
-        // On Android N and below, we always open the dialer. If device is locked, we also show a
-        // notification. We can listen to ACTION_USER_PRESENT and remove this notification when
-        // device is unlocked.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return true;
-        }
-
-        // On Android O and P, we open dialer only when device is unlocked since we cannot listen to
-        // ACTION_USER_PRESENT.
-        return DeviceConditions.isCurrentlyScreenOnAndUnlocked(
-                ContextUtils.getApplicationContext());
-    }
-
-    /** Returns true if we should show notification to the user. */
-    private static boolean shouldShowNotification() {
-        // Always show the notification for Android Q and above. For pre-Q, only show notification
-        // if device is locked.
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                || !DeviceConditions.isCurrentlyScreenOnAndUnlocked(
-                        ContextUtils.getApplicationContext());
-    }
-
     /**
      * Handles a phone number sent from another device.
      *
@@ -190,12 +145,6 @@ public class ClickToCallMessageHandler {
     @CalledByNative
     @VisibleForTesting
     static void handleMessage(@JniType("std::string") String phoneNumber) {
-        if (shouldOpenDialer()) {
-            openDialer(phoneNumber);
-        }
-
-        if (shouldShowNotification()) {
-            displayNotification(phoneNumber);
-        }
+        displayNotification(phoneNumber);
     }
 }

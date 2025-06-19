@@ -11,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.Formatter;
@@ -255,9 +254,7 @@ public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
                             SearchActivityPreferencesManager.resetCachedValues();
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                SiteChannelsManager.getInstance().deleteAllSiteChannels();
-                            }
+                            SiteChannelsManager.getInstance().deleteAllSiteChannels();
                             activityManager.clearApplicationUserData();
                         }
                     });

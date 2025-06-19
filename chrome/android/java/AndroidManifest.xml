@@ -468,12 +468,6 @@ by a child template that "extends" this file.
             android:excludeFromRecents="true"
             android:exported="false" />
 
-        <receiver android:name="org.chromium.chrome.browser.sharing.click_to_call.ClickToCallMessageHandler$PhoneUnlockedReceiver" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.USER_PRESENT" />
-            </intent-filter>
-        </receiver>
-
         <!-- Phishing Protection related -->
         <receiver android:name="org.chromium.chrome.browser.safe_browsing.PasswordProtectionBroadcastReceiver"
         android:exported="true"

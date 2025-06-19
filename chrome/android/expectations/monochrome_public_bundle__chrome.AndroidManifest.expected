@@ -786,13 +786,6 @@
       </intent-filter>  # DIFF-ANCHOR: 4ed161a4
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/search_widget_info"/>
     </receiver>  # DIFF-ANCHOR: a0d83ae5
-    <receiver  # DIFF-ANCHOR: 2f1fe689
-        android:name="org.chromium.chrome.browser.sharing.click_to_call.ClickToCallMessageHandler$PhoneUnlockedReceiver"
-        android:exported="true">
-      <intent-filter>  # DIFF-ANCHOR: 4b5ec7a9
-        <action android:name="android.intent.action.USER_PRESENT"/>
-      </intent-filter>  # DIFF-ANCHOR: 4b5ec7a9
-    </receiver>  # DIFF-ANCHOR: 2f1fe689
     <receiver  # DIFF-ANCHOR: 124ac9a1
         android:name="org.chromium.chrome.browser.sharing.click_to_call.ClickToCallMessageHandler$TapReceiver"
         android:exported="false">

@@ -997,12 +997,6 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testInternalAuthenticatorMakeCredential_attestationIncluded() {
-        // This test can't work on Android N because it lacks the java.nio.file
-        // APIs used to load the test data.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return;
-        }
-
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntentWithAttestation());
 
@@ -1025,12 +1019,6 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testInternalAuthenticatorMakeCredential_rkRequired_attestationKept()
             throws Exception {
-        // This test can't work on Android N because it lacks the java.nio.file
-        // APIs used to load the test data.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return;
-        }
-
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntentWithAttestation());
 
@@ -1058,12 +1046,6 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testInternalAuthenticatorMakeCredential_rkPreferred_attestationKept()
             throws Exception {
-        // This test can't work on Android N because it lacks the java.nio.file
-        // APIs used to load the test data.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return;
-        }
-
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntentWithAttestation());
 
@@ -1090,12 +1072,6 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testInternalAuthenticatorMakeCredential_credprops() throws Exception {
-        // This test can't work on Android N because it lacks the java.nio.file
-        // APIs used to load the test data.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return;
-        }
-
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntentWithCredProps());
 

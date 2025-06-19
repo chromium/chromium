@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
@@ -367,13 +366,11 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         if (DialogWhenLargeContentLayout.shouldShowAsDialog(this)) {
             // Set status bar and navigation bar to dark if the promo is shown as a dialog.
             setStatusBarColor(Color.BLACK);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                // Use dark navigation bar.
-                Window window = getWindow();
-                window.setNavigationBarColor(Color.BLACK);
-                window.setNavigationBarDividerColor(Color.BLACK);
-                UiUtils.setNavigationBarIconColor(window.getDecorView().getRootView(), false);
-            }
+            // Use dark navigation bar.
+            Window window = getWindow();
+            window.setNavigationBarColor(Color.BLACK);
+            window.setNavigationBarDividerColor(Color.BLACK);
+            UiUtils.setNavigationBarIconColor(window.getDecorView().getRootView(), false);
         } else {
             // Set the status bar color to the fullsceen sign-in background color.
             setStatusBarColor(SemanticColorUtils.getDefaultBgColor(this));
