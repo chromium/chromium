@@ -18,6 +18,13 @@ void RegisterBasicAuthHandler(EmbeddedTestServer& server,
                               std::string_view username,
                               std::string_view password);
 
+// Registers a BasicAuth handler with a username and password that mimics proxy
+// auth. Will overwrite any other auth handler (including non-proxy auth
+// handlers).
+void RegisterProxyBasicAuthHandler(EmbeddedTestServer& server,
+                                   std::string_view username,
+                                   std::string_view password);
+
 // Helper to generate a URL with username for Basic Authentication.
 GURL GetURLWithUser(const EmbeddedTestServer& server,
                     std::string_view path,

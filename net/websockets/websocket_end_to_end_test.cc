@@ -69,6 +69,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
+#include "net/test/embedded_test_server/register_basic_auth_handler.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/ssl_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -508,27 +509,20 @@ TEST_F(WebSocketEndToEndTest, WebSocketEchoHandlerTest) {
   CloseWebSocketSuccessfully();
 }
 
-// These test are not compatible with RemoteTestServer because RemoteTestServer
-// doesn't support TYPE_BASIC_AUTH_PROXY.
-// TODO(ricea): Make these tests work. See crbug.com/441711.
-constexpr bool kHasBasicAuthProxy =
-    !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA));
-
 // Test for issue crbug.com/433695 "Unencrypted WebSocket connection via
 // authenticated proxy times out".
 TEST_F(WebSocketEndToEndTest, HttpsProxyUnauthedFails) {
-  if (!kHasBasicAuthProxy) {
-    GTEST_SKIP() << "Test not supported on this platform";
-  }
-
-  SpawnedTestServer proxy_server(SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
-                                 base::FilePath());
+  EmbeddedTestServer proxy_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
   SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
                               GetWebSocketTestDataDirectory());
-  ASSERT_TRUE(proxy_server.StartInBackground());
   ASSERT_TRUE(ws_server.StartInBackground());
-  ASSERT_TRUE(proxy_server.BlockUntilStarted());
   ASSERT_TRUE(ws_server.BlockUntilStarted());
+
+  proxy_server.EnableConnectProxy(ws_server.host_port_pair().port(),
+                                  /*expected_dest=*/ws_server.host_port_pair());
+  RegisterProxyBasicAuthHandler(proxy_server, "user", "pass");
+  ASSERT_TRUE(proxy_server.Start());
+
   ProxyConfig proxy_config;
   proxy_config.proxy_rules().ParseFromString(
       "https=" + proxy_server.host_port_pair().ToString());
@@ -548,18 +542,18 @@ TEST_F(WebSocketEndToEndTest, HttpsProxyUnauthedFails) {
 }
 
 TEST_F(WebSocketEndToEndTest, HttpsWssProxyUnauthedFails) {
-  if (!kHasBasicAuthProxy) {
-    GTEST_SKIP() << "Test not supported on this platform";
-  }
-
-  SpawnedTestServer proxy_server(SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
-                                 base::FilePath());
+  EmbeddedTestServer proxy_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
   SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS,
                                GetWebSocketTestDataDirectory());
-  ASSERT_TRUE(proxy_server.StartInBackground());
   ASSERT_TRUE(wss_server.StartInBackground());
-  ASSERT_TRUE(proxy_server.BlockUntilStarted());
   ASSERT_TRUE(wss_server.BlockUntilStarted());
+
+  proxy_server.EnableConnectProxy(
+      wss_server.host_port_pair().port(),
+      /*expected_dest=*/wss_server.host_port_pair());
+  RegisterProxyBasicAuthHandler(proxy_server, "user", "pass");
+  ASSERT_TRUE(proxy_server.Start());
+
   ProxyConfig proxy_config;
   proxy_config.proxy_rules().ParseFromString(
       "https=" + proxy_server.host_port_pair().ToString());
@@ -580,22 +574,20 @@ TEST_F(WebSocketEndToEndTest, HttpsWssProxyUnauthedFails) {
 // Regression test for crbug.com/426736 "WebSocket connections not using
 // configured system HTTPS Proxy".
 TEST_F(WebSocketEndToEndTest, HttpsProxyUsed) {
-  if (!kHasBasicAuthProxy) {
-    GTEST_SKIP() << "Test not supported on this platform";
-  }
-
-  SpawnedTestServer proxy_server(SpawnedTestServer::TYPE_PROXY,
-                                 base::FilePath());
+  EmbeddedTestServer proxy_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
   SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
                               GetWebSocketTestDataDirectory());
-  ASSERT_TRUE(proxy_server.StartInBackground());
   ASSERT_TRUE(ws_server.StartInBackground());
-  ASSERT_TRUE(proxy_server.BlockUntilStarted());
   ASSERT_TRUE(ws_server.BlockUntilStarted());
+
+  proxy_server.EnableConnectProxy(ws_server.host_port_pair().port(),
+                                  /*expected_dest=*/ws_server.host_port_pair());
+
+  ASSERT_TRUE(proxy_server.Start());
+
   ProxyConfig proxy_config;
   proxy_config.proxy_rules().ParseFromString(
-      "https=" + proxy_server.host_port_pair().ToString() + ";" +
-      "http=" + proxy_server.host_port_pair().ToString());
+      "https=" + proxy_server.host_port_pair().ToString());
   // TODO(crbug.com/40600992): Don't rely on proxying localhost.
   proxy_config.proxy_rules().bypass_rules.AddRulesToSubtractImplicit();
 
@@ -646,18 +638,23 @@ TEST_F(WebSocketEndToEndTest, ProxyPacUsed) {
   }
 
   EmbeddedTestServer proxy_pac_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
-  SpawnedTestServer proxy_server(SpawnedTestServer::TYPE_PROXY,
-                                 base::FilePath());
+  EmbeddedTestServer proxy_server(net::EmbeddedTestServer::Type::TYPE_HTTP);
   SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
                               GetWebSocketTestDataDirectory());
   proxy_pac_server.RegisterRequestHandler(base::BindRepeating(ProxyPacHandler));
-  proxy_server.set_redirect_connect_to_localhost(true);
 
   ASSERT_TRUE(proxy_pac_server.Start());
-  ASSERT_TRUE(proxy_server.StartInBackground());
   ASSERT_TRUE(ws_server.StartInBackground());
-  ASSERT_TRUE(proxy_server.BlockUntilStarted());
   ASSERT_TRUE(ws_server.BlockUntilStarted());
+
+  // Use a name other than localhost, since localhost implicitly bypasses the
+  // use of proxy.pac.
+  HostPortPair fake_ws_host_port_pair("stealth-localhost",
+                                      ws_server.host_port_pair().port());
+
+  proxy_server.EnableConnectProxy(ws_server.host_port_pair().port(),
+                                  /*expected_dest=*/fake_ws_host_port_pair);
+  ASSERT_TRUE(proxy_server.Start());
 
   ProxyConfig proxy_config =
       ProxyConfig::CreateFromCustomPacURL(proxy_pac_server.GetURL(base::StrCat(
@@ -673,11 +670,6 @@ TEST_F(WebSocketEndToEndTest, ProxyPacUsed) {
   context_builder_->set_proxy_resolution_service(
       std::move(proxy_resolution_service));
   InitialiseContext();
-
-  // Use a name other than localhost, since localhost implicitly bypasses the
-  // use of proxy.pac.
-  HostPortPair fake_ws_host_port_pair("stealth-localhost",
-                                      ws_server.host_port_pair().port());
 
   GURL ws_url(base::StrCat(
       {"ws://", fake_ws_host_port_pair.ToString(), "/", kEchoServer}));

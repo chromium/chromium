@@ -4,6 +4,8 @@
 
 #include "net/test/embedded_test_server/register_basic_auth_handler.h"
 
+#include <ios>
+
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -17,12 +19,26 @@ namespace net::test_server {
 
 namespace {
 
+// Constructs an expected authorization header value (e.g., "Basic
+// dXNlcm5hbWU6cGFzc3dvcmQ="). Works with both "WWW-Authenticate" and
+// "Proxy-Authenticate" request lines.
+std::string CreateExpectedBasicAuthHeader(std::string_view username,
+                                          std::string_view password) {
+  const std::string credentials = base::StrCat({username, ":", password});
+  const std::string encoded_credentials = base::Base64Encode(credentials);
+  return base::StrCat({"Basic ", encoded_credentials});
+}
+
 // Creates a 401 Unauthorized error response with the required WWW-Authenticate
 // header.
-std::unique_ptr<HttpResponse> CreateUnauthorizedResponse() {
+std::unique_ptr<HttpResponse> CreateUnauthorizedResponse(bool is_proxy_auth) {
   auto response = std::make_unique<BasicHttpResponse>();
-  response->set_code(HttpStatusCode::HTTP_UNAUTHORIZED);
-  response->AddCustomHeader("WWW-Authenticate", "Basic realm=\"TestServer\"");
+  response->set_code(is_proxy_auth
+                         ? HttpStatusCode::HTTP_PROXY_AUTHENTICATION_REQUIRED
+                         : HttpStatusCode::HTTP_UNAUTHORIZED);
+  response->AddCustomHeader(
+      is_proxy_auth ? "Proxy-Authenticate" : "WWW-Authenticate",
+      "Basic realm=\"TestServer\"");
   response->set_content("Unauthorized");
   response->set_content_type("text/plain");
   return response;
@@ -31,16 +47,19 @@ std::unique_ptr<HttpResponse> CreateUnauthorizedResponse() {
 // Callback to handle BasicAuth validation.
 std::unique_ptr<HttpResponse> HandleBasicAuth(
     const std::string& expected_auth_header,
+    bool is_proxy_auth,
     const HttpRequest& request) {
-  auto auth_header = request.headers.find("Authorization");
+  auto auth_header = request.headers.find(is_proxy_auth ? "Proxy-Authorization"
+                                                        : "Authorization");
 
   if (auth_header == request.headers.end() ||
       auth_header->second != expected_auth_header) {
-    DVLOG(1) << "Authorization failed or header missing.";
-    return CreateUnauthorizedResponse();
+    DVLOG(1) << "Authorization failed or header missing. For Proxy: "
+             << std::boolalpha << is_proxy_auth;
+    return CreateUnauthorizedResponse(is_proxy_auth);
   }
 
-  DVLOG(3) << "Authorization successful.";
+  DVLOG(3) << "Authorization successful. For Proxy: " << is_proxy_auth;
   return nullptr;
 }
 
@@ -49,16 +68,19 @@ std::unique_ptr<HttpResponse> HandleBasicAuth(
 void RegisterBasicAuthHandler(EmbeddedTestServer& server,
                               std::string_view username,
                               std::string_view password) {
-  // Construct the expected authorization header value (e.g., "Basic
-  // dXNlcm5hbWU6cGFzc3dvcmQ=")
-  const std::string credentials = base::StrCat({username, ":", password});
-  const std::string encoded_credentials = base::Base64Encode(credentials);
-  const std::string expected_auth_header =
-      base::StrCat({"Basic ", encoded_credentials});
-
   // Register the BasicAuth handler with the server.
-  server.RegisterAuthHandler(
-      base::BindRepeating(&HandleBasicAuth, expected_auth_header));
+  server.RegisterAuthHandler(base::BindRepeating(
+      &HandleBasicAuth, CreateExpectedBasicAuthHeader(username, password),
+      /*is_proxy_auth=*/false));
+}
+
+void RegisterProxyBasicAuthHandler(EmbeddedTestServer& server,
+                                   std::string_view username,
+                                   std::string_view password) {
+  // Register the BasicAuth handler with the server.
+  server.RegisterAuthHandler(base::BindRepeating(
+      &HandleBasicAuth, CreateExpectedBasicAuthHeader(username, password),
+      /*is_proxy_auth=*/true));
 }
 
 GURL GetURLWithUser(const EmbeddedTestServer& server,
