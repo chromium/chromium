@@ -327,8 +327,7 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
   }
   // Don't try to match explicit non-pseudo element selectors for pseudo
   // elements.
-  if (context.pseudo_element && !context.selector->MatchesPseudoElement() &&
-      !context.selector->IsImplicit()) {
+  if (context.pseudo_element && !context.selector->MatchesPseudoElement()) {
     return false;
   }
   return MatchSelector(context, result) == kSelectorMatches;
