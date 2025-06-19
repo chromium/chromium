@@ -30,6 +30,13 @@ inline constexpr char kKeyUnscannedFileEvent[] = "unscannedFileEvent";
 inline constexpr char kKeyLoginEvent[] = "loginEvent";
 inline constexpr char kKeyPasswordBreachEvent[] = "passwordBreachEvent";
 
+inline constexpr char kEnterpriseWarnedSeenThreatType[] =
+    "ENTERPRISE_WARNED_SEEN";
+inline constexpr char kEnterpriseWarnedBypassTheatType[] =
+    "ENTERPRISE_WARNED_BYPASS";
+inline constexpr char kEnterpriseBlockedSeenThreatType[] =
+    "ENTERPRISE_BLOCKED_SEEN";
+
 // All the reporting events that can be set in the `enabled_events_names` field
 // of `ReportingSettings`
 inline constexpr std::array<const char*, 9> kAllReportingEnabledEvents = {

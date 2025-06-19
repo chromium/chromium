@@ -138,6 +138,57 @@ TEST(ReportingUtilsTest, GetInterstitialEvent) {
   }
 }
 
+TEST(ReportingUtilsTest, GetUrlFilteringInterstitialEvent) {
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+
+  safe_browsing::RTLookupResponse response;
+  auto* threat_info = response.add_threat_info();
+  threat_info->set_verdict_type(
+      safe_browsing::RTLookupResponse::ThreatInfo::DANGEROUS);
+  auto* matched_url_navigation_rule =
+      threat_info->mutable_matched_url_navigation_rule();
+  matched_url_navigation_rule->set_rule_id("123");
+  matched_url_navigation_rule->set_rule_name("test rule name");
+  matched_url_navigation_rule->set_matched_url_category("test rule category");
+
+  auto event = GetUrlFilteringInterstitialEvent(
+      /*url=*/GURL("https://filteredurl.com"),
+      /*threat_type=*/"ENTERPRISE_BLOCKED_SEEN", /*response=*/response,
+      /*profile_identifier=*/"identifier",
+      /*profile_username=*/"profile_username",
+      /*referrer_chain=*/referrer_chain);
+
+  ASSERT_EQ(event.url(), "https://filteredurl.com/");
+  ASSERT_FALSE(event.clicked_through());
+  ASSERT_EQ(event.threat_type(),
+            chrome::cros::reporting::proto::UrlFilteringInterstitialEvent::
+                ENTERPRISE_BLOCKED_SEEN);
+  ASSERT_EQ(event.event_result(),
+            chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+  ASSERT_EQ(event.triggered_rule_info_size(), 1);
+
+  chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule_info =
+      event.mutable_triggered_rule_info()->at(0);
+  ASSERT_EQ(triggered_rule_info.rule_name(), "test rule name");
+  ASSERT_EQ(triggered_rule_info.rule_id(), 123);
+  ASSERT_EQ(triggered_rule_info.url_category(), "test rule category");
+  ASSERT_EQ(triggered_rule_info.action(),
+            chrome::cros::reporting::proto::TriggeredRuleInfo::BLOCK);
+  ASSERT_FALSE(triggered_rule_info.has_watermarking());
+  ASSERT_EQ(event.profile_identifier(), "identifier");
+  ASSERT_EQ(event.profile_user_name(), "profile_username");
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    ASSERT_EQ(event.referrers_size(), 1);
+    auto referrer = event.referrers()[0];
+    ASSERT_EQ(referrer.url(), "https://referrer.com");
+    ASSERT_EQ(referrer.ip(), "1.2.3.4");
+  } else {
+    ASSERT_EQ(event.referrers_size(), 0);
+  }
+}
+
 TEST(ReportingUtilsTest, GetBrowserCrashEvent) {
   auto event =
       GetBrowserCrashEvent(/*channel=*/"canary", /*version=*/"100.0.0000.000",

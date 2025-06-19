@@ -89,6 +89,15 @@ GetInterstitialEvent(const GURL& url,
                      const std::string& profile_username,
                      const ReferrerChain& referrer_chain);
 
+chrome::cros::reporting::proto::UrlFilteringInterstitialEvent
+GetUrlFilteringInterstitialEvent(
+    const GURL& url,
+    const std::string& threat_type,
+    const safe_browsing::RTLookupResponse& response,
+    const std::string& profile_identifier,
+    const std::string& profile_username,
+    const ReferrerChain& referrer_chain);
+
 chrome::cros::reporting::proto::BrowserCrashEvent GetBrowserCrashEvent(
     const std::string& channel,
     const std::string& version,
