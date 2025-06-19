@@ -104,7 +104,10 @@ std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     gpu::Scheduler* scheduler,
     int32_t client_id) {
-  CHECK_NE(shared_context_state, nullptr);
+  // `shared_context_state` is only used by DirectML backend for GPU context. It
+  // may be nullptr when GPU acceleration is not available. For such case, WebNN
+  // GPU feature (`gpu::GPU_FEATURE_TYPE_WEBNN`) is not enabled and creating a
+  // GPU context will result in a not-supported error.
   return base::WrapUnique(new WebNNContextProviderImpl(
       std::move(shared_context_state), std::move(gpu_feature_info),
       std::move(gpu_info), std::move(lose_all_contexts_callback),
