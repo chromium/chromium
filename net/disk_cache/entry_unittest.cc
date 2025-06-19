@@ -1640,11 +1640,15 @@ void DiskCacheEntryTest::LargeOffsetSparseIO() {
   entry->Close();
 }
 
-// The test only works on SimpleCache now since other backend does not support
-// 2GB+ offset for 32 bits architecture.
-// TODO(crbug.com/391398191): Expand the test target to all cache backend.
-TEST_F(DiskCacheEntryTest, SimpleCacheLargeOffsetSparseIO) {
-  SetBackendToTest(BackendToTest::kSimple);
+TEST_P(DiskCacheGenericEntryTest, LargeOffsetSparseIO) {
+  // The test only works on SimpleCache and Memory Cache now since other backend
+  // does not support 2GB+ offset for 32 bits architecture.
+  // TODO(crbug.com/391398191): Expand the test target to all cache backend.
+  if (backend_to_test() == BackendToTest::kBlockfile) {
+    LOG(WARNING) << "2GB+ large offset is not supported on Blockfile.";
+    return;
+  }
+
   InitCache();
   LargeOffsetSparseIO();
 }
@@ -1731,11 +1735,15 @@ TEST_P(DiskCacheGenericEntryTest, GetAvailableRange) {
   GetAvailableRangeTest();
 }
 
-// The test only works on SimpleCache now since other backend does not support
-// 2GB+ offset for 32 bits architecture.
-// TODO(crbug.com/391398191): Expand the test target to all cache backend.
-TEST_F(DiskCacheEntryTest, SimpleCacheGetAvailableRangeForLargeOffset) {
-  SetBackendToTest(BackendToTest::kSimple);
+TEST_P(DiskCacheGenericEntryTest, GetAvailableRangeForLargeOffset) {
+  // The test only works on SimpleCache and Memory Cache now since other backend
+  // does not support 2GB+ offset for 32 bits architecture.
+  // TODO(crbug.com/391398191): Expand the test target to all cache backend.
+  if (backend_to_test() == BackendToTest::kBlockfile) {
+    LOG(WARNING) << "2GB+ large offset is not supported on Blockfile.";
+    return;
+  }
+
   InitCache();
 
   std::string key("the first key");
