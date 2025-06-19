@@ -58,6 +58,17 @@ BrowserAction MakeClick(RenderFrameHost& rfh, const gfx::Point& click_point) {
   return action;
 }
 
+BrowserAction MakeClick(const gfx::Point& click_point) {
+  BrowserAction action;
+  ClickAction* click = action.add_actions()->mutable_click();
+  Coordinate* coordinate = click->mutable_target()->mutable_coordinate();
+  coordinate->set_x(click_point.x());
+  coordinate->set_y(click_point.y());
+  click->set_click_type(ClickAction::LEFT);
+  click->set_click_count(ClickAction::SINGLE);
+  return action;
+}
+
 BrowserAction MakeHistoryBack() {
   BrowserAction action;
   action.add_actions()->mutable_back();

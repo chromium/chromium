@@ -22,6 +22,8 @@ optimization_guide::proto::BrowserAction MakeClick(
     content::RenderFrameHost& rfh,
     int content_node_id);
 optimization_guide::proto::BrowserAction MakeClick(
+    const gfx::Point& click_point);
+optimization_guide::proto::BrowserAction MakeClick(
     content::RenderFrameHost& rfh,
     const gfx::Point& click_point);
 optimization_guide::proto::BrowserAction MakeHistoryBack();

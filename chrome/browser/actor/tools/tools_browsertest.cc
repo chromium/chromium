@@ -2325,9 +2325,12 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, InvokeToolInInactiveFrame) {
   WeakDocumentPtr first_rfh = main_frame()->GetWeakDocumentPtr();
   ASSERT_TRUE(first_rfh.AsRenderFrameHostIfValid()->IsActive());
 
+  std::optional<int> body_id = GetDOMNodeId(*main_frame(), "body");
+  ASSERT_TRUE(body_id);
+
   // Create an action that targets the first document.
   BrowserAction action =
-      MakeClick(*first_rfh.AsRenderFrameHostIfValid(), gfx::Point(10, 10));
+      MakeClick(*first_rfh.AsRenderFrameHostIfValid(), body_id.value());
 
   // Navigate to the second document - we expect this should put the first
   // document into the BFCache rather than destroying the RenderFrameHost.

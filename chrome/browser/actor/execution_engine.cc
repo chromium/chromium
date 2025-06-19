@@ -27,7 +27,9 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -179,6 +181,51 @@ void PostTaskForActCallback(ExecutionEngine::ActionResultCallback callback,
                             result->code);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+}
+
+// Perform validation based on APC and document identifier for coordinate based
+// target to compare the candidate frame with the target frame identified in
+// last observation.
+bool ValidateTargetFrameCandidate(
+    const ActionTarget* target,
+    RenderFrameHost* candidate_frame,
+    WebContents& web_contents,
+    AnnotatedPageContent* last_observed_page_content) {
+  std::string target_document_token;
+  // The document identifier in the action itself takes highest precedence.
+  if (target->has_document_identifier()) {
+    target_document_token = target->document_identifier().serialized_token();
+  } else if (last_observed_page_content) {
+    // Otherwise, fall back to APC hit testing.
+    // TODO(crbug.com/426021822): FindNodeAtPoint does not handle corner cases
+    // like clip paths. Need more checks to ensure we don't drop actions
+    // unnecessarily.
+    std::optional<optimization_guide::TargetNodeInfo> target_node_info =
+        optimization_guide::FindNodeAtPoint(*last_observed_page_content,
+                                            target->coordinate());
+    if (target_node_info) {
+      target_document_token =
+          target_node_info->document_identifier.serialized_token();
+    } else {
+      return false;
+    }
+  } else {
+    // An error if document identifier isn't set on target and no cached APC
+    // available
+    return false;
+  }
+
+  RenderFrameHost* apc_target_frame =
+      GetRenderFrameForDocumentIdentifier(web_contents, target_document_token);
+
+  // Only return the candidate if its RenderWidgetHost matches the target
+  // and it's also a local root frame(i.e. has no parent or parent has
+  // a different RenderWidgetHost)
+  if (apc_target_frame && apc_target_frame->GetRenderWidgetHost() ==
+                              candidate_frame->GetRenderWidgetHost()) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -399,12 +446,12 @@ void ExecutionEngine::ExecuteNextAction() {
                                "The tab is no longer present."));
     return;
   }
-
-  RenderFrameHost* target_frame = nullptr;
+  RenderFrameHost* target_frame_candidate = nullptr;
   if (ActionRequiresFrame(action)) {
-    target_frame = FindTargetFrame(*tab->GetContents(), action);
+    target_frame_candidate =
+        FindTargetLocalRootFrame(*tab->GetContents(), action);
 
-    if (!target_frame) {
+    if (!target_frame_candidate) {
       journal_->Log(LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
                     "The target frame is no longer present in the tab.");
       CompleteActions(
@@ -412,10 +459,24 @@ void ExecutionEngine::ExecuteNextAction() {
                      "The target frame is no longer present in the tab."));
       return;
     }
-  }
 
+    const ActionTarget* target = ExtractTarget(action);
+
+    // Perform validation for coordinate based target only.
+    if (target && target->has_coordinate() &&
+        !ValidateTargetFrameCandidate(target, target_frame_candidate,
+                                      *tab->GetContents(),
+                                      last_observed_page_content_.get())) {
+      journal_->Log(LastCommittedURLOfCurrentTask(), task_->id(), "Act Failed",
+                    "The target frame has changed.");
+      CompleteActions(MakeResult(
+          mojom::ActionResultCode::kFrameLocationChangedSinceObservation,
+          "The target frame has changed."));
+      return;
+    }
+  }
   tool_controller_.Invoke(
-      action, *journal_, task_->id(), tab, target_frame,
+      action, *journal_, task_->id(), tab, target_frame_candidate,
       base::BindOnce(&ExecutionEngine::FinishOneAction, GetWeakPtr()));
 }
 

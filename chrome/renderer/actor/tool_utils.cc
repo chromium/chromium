@@ -56,9 +56,10 @@ blink::WebNode GetNodeFromId(const content::RenderFrame& frame,
   }
 
   blink::WebNode node = blink::WebNode::FromDomNodeId(node_id);
-  // Make sure the node we're getting belongs to the document inside this
+  // Make sure the node we're getting belongs to a frame under the local root
   // frame.
-  if (node.IsNull() || node.GetDocument() != web_frame->GetDocument()) {
+  if (node.IsNull() || !node.GetDocument() || !node.GetDocument().GetFrame() ||
+      node.GetDocument().GetFrame()->LocalRoot() != web_frame->LocalRoot()) {
     return blink::WebNode();
   }
   return node;
@@ -74,7 +75,8 @@ bool IsNodeFocused(const content::RenderFrame& frame,
 
 bool IsPointWithinViewport(const gfx::PointF& point,
                            const content::RenderFrame& frame) {
-  gfx::Rect viewport(frame.GetWebFrame()->FrameWidget()->VisibleViewportSize());
+  gfx::Rect viewport(
+      frame.GetWebFrame()->LocalRoot()->FrameWidget()->VisibleViewportSize());
   return viewport.Contains(gfx::ToFlooredPoint(point));
 }
 

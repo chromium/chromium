@@ -2091,6 +2091,25 @@ RenderWidgetHostView* WebContentsImpl::GetTopLevelRenderWidgetHostView() {
   return GetRenderManager()->GetRenderWidgetHostView();
 }
 
+RenderWidgetHost* WebContentsImpl::FindWidgetAtPoint(const gfx::PointF& point) {
+  if (GetOuterWebContents()) {
+    return GetOuterWebContents()->FindWidgetAtPoint(point);
+  }
+  gfx::PointF transformed_point;
+  input::RenderWidgetHostViewInput* rwhvi =
+      GetInputEventRouter()->GetRenderWidgetHostViewInputAtPoint(
+          static_cast<RenderWidgetHostViewBase*>(
+              GetTopLevelRenderWidgetHostView()),
+          point, &transformed_point);
+
+  RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
+      static_cast<RenderWidgetHostViewBase*>(rwhvi)->GetRenderWidgetHost());
+  if (!widget_host) {
+    return nullptr;
+  }
+  return widget_host;
+}
+
 WebContentsView* WebContentsImpl::GetView() const {
   return view_.get();
 }

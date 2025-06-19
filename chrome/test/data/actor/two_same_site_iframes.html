@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <title>Two same-site iframe Test Case</title>
+    <style>
+      iframe {
+        position: absolute;
+        width: 50vw;
+        height: 50vh;
+        top: 0;
+        left: 0;
+      }
+      #topframe {
+        z-index: 5;
+        background-color: darkred;
+      }
+      #bottomframe {
+        z-index: 1;
+        background-color:lightblue;
+      }
+    </style>
+  </head>
+  <iframe id="topframe" src="page_with_clickable_element.html?1"></iframe>
+  <iframe id="bottomframe" src="page_with_clickable_element.html?2"></iframe>
+</html>

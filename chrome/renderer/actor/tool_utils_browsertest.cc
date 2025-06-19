@@ -95,6 +95,15 @@ TEST_F(ToolUtilsTest, GetNodeFromId_NestedFrame) {
   blink::WebNode div3_in_main = GetNodeByHtmlId("div3");
   ASSERT_TRUE(div3_in_main.IsNull());
 
+  // Get node within the main frame
+  blink::WebNode div1_node = GetIframeNodeByHtmlId("iframe1", "div3");
+  ASSERT_FALSE(div1_node.IsNull());
+  ASSERT_TRUE(div1_node.IsElementNode());
+  ASSERT_EQ("div3",
+            div1_node.To<blink::WebElement>().GetAttribute("id").Utf8());
+  int32_t div1_node_id = div1_node.GetDomNodeId();
+  ASSERT_NE(0, div1_node_id);
+
   // Get node within the iframe
   blink::WebNode div3_node = GetIframeNodeByHtmlId("iframe1", "div3");
   ASSERT_FALSE(div3_node.IsNull());
@@ -121,19 +130,19 @@ TEST_F(ToolUtilsTest, GetNodeFromId_NestedFrame) {
   EXPECT_EQ(div3_node_id, node_found_in_child.GetDomNodeId());
   EXPECT_EQ(div3_node, node_found_in_child);  // Verify it's the exact same node
 
-  // Try to find iframe node (div3) using the main frame context -> fails
-  blink::WebNode node_not_found_in_main =
+  // Find iframe node (div3) using the main frame context.
+  blink::WebNode node_found_in_main =
       GetNodeFromId(*GetMainRenderFrame(), div3_node_id);
-  EXPECT_TRUE(node_not_found_in_main.IsNull());
+  EXPECT_EQ(div3_node_id, node_found_in_main.GetDomNodeId());
+  EXPECT_EQ(node_found_in_main, div3_node);
 
-  // Try to find main frame node (div1) using the child frame context -> fails
+  // Find main frame node (div1) using the child frame context
   blink::WebNode div1 = GetNodeByHtmlId("div1");  // Searches main frame only
   ASSERT_FALSE(div1.IsNull());
-  int32_t div1_node_id = div1.GetDomNodeId();
-  ASSERT_NE(0, div1_node_id);
-  blink::WebNode node_not_found_in_child =
+  blink::WebNode node_found_in_child2 =
       GetNodeFromId(*child_frame, div1_node_id);
-  EXPECT_TRUE(node_not_found_in_child.IsNull());
+  EXPECT_EQ(div1_node_id, node_found_in_child2.GetDomNodeId());
+  EXPECT_EQ(node_found_in_child2, div1_node);
 }
 
 }  // namespace actor

@@ -78,6 +78,7 @@ std::unique_ptr<Tool> ToolController::CreateTool(AggregatedJournal& journal,
     case Action::kMoveMouse:
     case Action::kDragAndRelease:
     case Action::kSelect: {
+      CHECK(frame);
       // PageTools are all implemented in the renderer so share the PageTool
       // implementation to shuttle them there.
       return std::make_unique<PageTool>(journal, *frame, action);

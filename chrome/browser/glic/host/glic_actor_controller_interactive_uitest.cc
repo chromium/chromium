@@ -28,6 +28,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace glic::test {
@@ -64,6 +65,12 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
         /*disabled_features=*/{});
   }
   ~GlicActorControllerUiTest() override = default;
+
+  void SetUpOnMainThread() override {
+    // Add rule for resolving cross origin host names.
+    InteractiveGlicTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
 
   // Executes a BrowserAction and verifies it succeeds. Optionally takes an
   // error reason which, when provided, causes failure if the action is
@@ -263,6 +270,14 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
     });
   }
 
+  // Returns a callback that builds an encoded proto for a click action on a
+  // specific coordinate
+  ActionProtoProvider ClickActionProvider(const gfx::Point& coordinate) {
+    return base::BindLambdaForTesting([coordinate]() {
+      return EncodeActionProto(actor::MakeClick(coordinate));
+    });
+  }
+
   // Returns a callback that simply encodes the given action.
   ActionProtoProvider PassthroughProvider(const BrowserAction& action) {
     return base::BindLambdaForTesting(
@@ -439,6 +454,44 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
                   GetPageContextFromFocusedTab(),
                   CheckExecutionEngineHasAnnotatedPageContentCache());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       ToctouCheckFailWhenCrossOriginTargetFrameChange) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/two_cross_origin_iframes.html");
+  BrowserAction navigate = actor::MakeNavigate(task_url.spec());
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      ExecuteAction(ClickActionProvider({10, 10}), UpdatedContextOptions()),
+      GetPageContextFromFocusedTab(),
+      CheckExecutionEngineHasAnnotatedPageContentCache(),
+      ExecuteJs(kNewActorTabId,
+                "()=>{document.getElementById('topframe').remove();}"),
+      ExecuteAction(ClickActionProvider({10, 10}), UpdatedContextOptions(),
+                    glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       ToctouCheckFailWhenSameSiteTargetFrameChange) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/two_same_site_iframes.html");
+  BrowserAction navigate = actor::MakeNavigate(task_url.spec());
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      ExecuteAction(ClickActionProvider({10, 10}), UpdatedContextOptions()),
+      GetPageContextFromFocusedTab(),
+      CheckExecutionEngineHasAnnotatedPageContentCache(),
+      ExecuteJs(kNewActorTabId,
+                "()=>{document.getElementById('topframe').remove();}"),
+      ExecuteAction(ClickActionProvider({10, 10}), UpdatedContextOptions(),
+                    glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,

@@ -406,6 +406,7 @@ class CONTENT_EXPORT WebContentsImpl
   RenderViewHostImpl* GetRenderViewHost() override;
   RenderWidgetHostView* GetRenderWidgetHostView() override;
   RenderWidgetHostView* GetTopLevelRenderWidgetHostView() override;
+  RenderWidgetHost* FindWidgetAtPoint(const gfx::PointF& point) override;
   void ClosePage() override;
   std::optional<SkColor> GetThemeColor() override;
   std::optional<SkColor> GetBackgroundColor() override;

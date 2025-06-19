@@ -7,16 +7,21 @@
 #include "chrome/common/actor/actor_logging.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace actor {
 
 using ::content::RenderFrameHost;
+using ::content::RenderWidgetHost;
 using ::content::WebContents;
 using ::optimization_guide::DocumentIdentifierUserData;
 using ::optimization_guide::proto::Action;
 using ::optimization_guide::proto::ActionTarget;
+using ::optimization_guide::proto::DocumentIdentifier;
 
 namespace {
 
@@ -45,6 +50,20 @@ bool IsTargetingTab(const Action& action) {
     case Action::ActionCase::ACTION_NOT_SET:
       NOTREACHED();
   }
+}
+
+// Finds the local root of a given RenderFrameHost. The local root is the
+// highest ancestor in the frame tree that shares the same RenderWidgetHost.
+RenderFrameHost* GetLocalRoot(RenderFrameHost* rfh) {
+  RenderFrameHost* local_root = rfh;
+  while (local_root && local_root->GetParent()) {
+    if (local_root->GetRenderWidgetHost() !=
+        local_root->GetParent()->GetRenderWidgetHost()) {
+      break;
+    }
+    local_root = local_root->GetParent();
+  }
+  return local_root;
 }
 
 }  // namespace
@@ -97,41 +116,89 @@ const ActionTarget* ExtractTarget(const Action& action) {
   }
 }
 
-RenderFrameHost* FindTargetFrame(WebContents& web_contents,
-                                 const Action& action) {
+RenderFrameHost* GetRenderFrameForDocumentIdentifier(
+    content::WebContents& web_contents,
+    std::string_view target_document_token) {
+  RenderFrameHost* render_frame = nullptr;
+  web_contents.ForEachRenderFrameHostWithAction([&target_document_token,
+                                                 &render_frame](
+                                                    RenderFrameHost* rfh) {
+    // Skip inactive frame and its children.
+    if (!rfh->IsActive()) {
+      return RenderFrameHost::FrameIterationAction::kSkipChildren;
+    }
+    auto* user_data = DocumentIdentifierUserData::GetForCurrentDocument(rfh);
+    if (user_data && user_data->serialized_token() == target_document_token) {
+      render_frame = rfh;
+      return RenderFrameHost::FrameIterationAction::kStop;
+    }
+    return RenderFrameHost::FrameIterationAction::kContinue;
+  });
+  return render_frame;
+}
+
+RenderFrameHost* GetRootFrameForWidget(content::WebContents& web_contents,
+                                       RenderWidgetHost* rwh) {
+  RenderFrameHost* root_frame = nullptr;
+  web_contents.ForEachRenderFrameHostWithAction([rwh, &root_frame](
+                                                    RenderFrameHost* rfh) {
+    if (!rfh->IsActive()) {
+      return RenderFrameHost::FrameIterationAction::kSkipChildren;
+    }
+    // A frame is a local root if it has no parent or if its parent belongs
+    // to a different widget. We are looking for the local root frame
+    // associated with the target widget.
+    if (rfh->GetRenderWidgetHost() == rwh &&
+        (!rfh->GetParent() || rfh->GetParent()->GetRenderWidgetHost() != rwh)) {
+      root_frame = rfh;
+      return RenderFrameHost::FrameIterationAction::kStop;
+    }
+    return RenderFrameHost::FrameIterationAction::kContinue;
+  });
+  return root_frame;
+}
+
+RenderFrameHost* FindTargetLocalRootFrame(WebContents& web_contents,
+                                          const Action& action) {
+  // If the action targets the tab as a whole, the target is the primary main
+  // frame.
   if (IsTargetingTab(action)) {
     return web_contents.GetPrimaryMainFrame();
   }
 
   const ActionTarget* target = ExtractTarget(action);
-
-  if (target) {
-    const std::string& serialized_token =
-        target->document_identifier().serialized_token();
-
-    RenderFrameHost* target_frame = nullptr;
-    web_contents.ForEachRenderFrameHostWithAction(
-        [&serialized_token, &target_frame](RenderFrameHost* rfh) {
-          auto* user_data =
-              DocumentIdentifierUserData::GetForCurrentDocument(rfh);
-          if (user_data && user_data->serialized_token() == serialized_token) {
-            // If the frame is inactive it shouldn't be targeted for tool use.
-            if (rfh->IsActive()) {
-              target_frame = rfh;
-            }
-            return RenderFrameHost::FrameIterationAction::kStop;
-          }
-          return RenderFrameHost::FrameIterationAction::kContinue;
-        });
-    return target_frame;
-  } else if (action.action_case() == Action::kScroll) {
-    // A scroll action may not have a target, which indicates scrolling the
-    // main frame.
-    return web_contents.GetPrimaryMainFrame();
-  } else {
+  if (!target) {
+    // A scroll action may not have a target, which indicates scrolling the main
+    // frame.
+    if (action.action_case() == Action::kScroll) {
+      return web_contents.GetPrimaryMainFrame();
+    }
     ACTOR_LOG() << "Page-level BrowserAction did not specify an ActionTarget.";
     return nullptr;
   }
+
+  if (target->has_content_node_id()) {
+    const std::string& serialized_token =
+        target->document_identifier().serialized_token();
+
+    RenderFrameHost* target_frame =
+        GetRenderFrameForDocumentIdentifier(web_contents, serialized_token);
+    // After finding the target frame, walk up to its local root.
+    return GetLocalRoot(target_frame);
+  }
+
+  if (target->has_coordinate()) {
+    const gfx::PointF target_point =
+        gfx::PointF(target->coordinate().x(), target->coordinate().y());
+    RenderWidgetHost* target_rwh = web_contents.FindWidgetAtPoint(target_point);
+    if (!target_rwh) {
+      return nullptr;
+    }
+    return GetRootFrameForWidget(web_contents, target_rwh);
+  }
+
+  ACTOR_LOG() << "Page-level BrowserAction ActionTarget is invalid.";
+  return nullptr;
 }
 
 }  // namespace actor

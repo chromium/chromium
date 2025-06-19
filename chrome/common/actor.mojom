@@ -186,6 +186,10 @@ enum ActionResultCode {
   // The target window no longer exists.
   kWindowWentAway = 25,
 
+  // The current frame target under supplied coordinate does not match the
+  // frame under that coordinate during time of observation.
+  kFrameLocationChangedSinceObservation = 26,
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 100-199: Errors for navigation. (Not part of the ToolAction union
   // as it's a browser-side tool.)
