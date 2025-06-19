@@ -250,6 +250,7 @@ message SystemProfileProto {
       UNITY = 7;
       XFCE = 8;
       LXQT = 9;
+      COSMIC = 10;
     }
 
     optional XdgCurrentDesktop xdg_current_desktop = 10;

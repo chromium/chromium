@@ -15,7 +15,7 @@ import "system_profile.proto";
 
 // A report containing deidentified web analytics data. One report is sent per
 // 5-30 minutes depending on the client.
-// Next tag: 6
+// Next tag: 7
 message DeidentifiedWebAnalyticsReport {
   optional CoarseSystemInfo coarse_system_info = 1;
 
@@ -27,11 +27,13 @@ message DeidentifiedWebAnalyticsReport {
   // encrypted and placed in encrypted_page_load_events.
   repeated PageLoadEvents page_load_events = 3;
 
-  // A list of encrypted page load events, one entry per page load.
-  repeated EncryptedPageLoadEvents encrypted_page_load_events = 4;
+  reserved 4;
 
   // Unix timestamp of when the report was generated and sent.
   optional int64 timestamp = 5;
+
+  // A collection of deidentified web analytics events.
+  repeated DeidentifiedWebAnalyticsEvent dwa_events = 6;
 }
 
 // All fields in this message should be populated by the client before sending
@@ -108,28 +110,6 @@ message CoarseSystemInfo {
 // Events that occurred in a single page load.
 message PageLoadEvents {
   repeated DeidentifiedWebAnalyticsEvent events = 1;
-}
-
-// A container for a list of encrypted page load events.
-message EncryptedPageLoadEvents {
-  // A container for an encrypted page load event.
-  message EncryptedPageLoadEvent {
-    // A container for an encrypted deidentified web analytics event, each
-    // container corresponds to a single deidentified web analytics event and a
-    // hash of the field trials associated with that event.
-    message EncryptedDeidentifiedWebAnalyticsEvent {
-      optional bytes encrypted_event = 1;
-      optional fixed64 field_trials_hash = 2;
-
-      // Same as DeidentifiedWebAnalyticsEvent.event_hash.
-      optional fixed64 event_hash = 3;
-    }
-
-    repeated EncryptedDeidentifiedWebAnalyticsEvent
-        encrypted_deidentified_web_analytics_events = 1;
-  }
-
-  repeated EncryptedPageLoadEvent encrypted_page_load_events = 1;
 }
 
 // Next tag: 7
