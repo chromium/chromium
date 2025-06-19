@@ -59,6 +59,11 @@ class SyncPrefsTest : public testing::Test {
 
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
     gaia_id_ = GaiaId("account_gaia");
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
+    pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_CHROMEOS)
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -447,27 +452,13 @@ TEST_F(SyncPrefsTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-                            switches::kEnablePreferencesAccountStorage,
-                            switches::kEnableExtensionsExplicitBrowserSignin},
+                            switches::kEnablePreferencesAccountStorage},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
-  // Based on the feature flags set above, Passwords, Autofill and Payments are
-  // supported and enabled by default. Bookmarks, ReadingList, and Extensions
-  // are supported, but not enabled by default. Preferences, History, and Tabs
-  // are not supported without kReplaceSyncPromosWithSignInPromos. Transport
-  // mode is required for new sync types moving forward. Compare is one of those
-  // and is enabled when kReplaceSyncPromosWithSignInPromos is enabled.
-  UserSelectableTypeSet expected_types{UserSelectableType::kPasswords,
-                                       UserSelectableType::kAutofill,
-                                       UserSelectableType::kPayments};
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
-  // On Desktop, kPasswords and kAutofill are disabled by default.
-  expected_types.Remove(UserSelectableType::kPasswords);
-  expected_types.Remove(UserSelectableType::kAutofill);
-#endif
-
-  EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_), expected_types);
+  EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
+            UserSelectableTypeSet({UserSelectableType::kPasswords,
+                                   UserSelectableType::kAutofill,
+                                   UserSelectableType::kPayments}));
 }
 
 TEST_F(SyncPrefsTest,
@@ -481,8 +472,7 @@ TEST_F(SyncPrefsTest,
                             kSeparateLocalAndAccountSearchEngines,
                             syncer::kSeparateLocalAndAccountThemes,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-                            switches::kEnablePreferencesAccountStorage,
-                            switches::kEnableExtensionsExplicitBrowserSignin},
+                            switches::kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
 
   // Based on the feature flags set above, ReadingList, Passwords,
@@ -498,12 +488,8 @@ TEST_F(SyncPrefsTest,
       UserSelectableType::kAutofill,    UserSelectableType::kPayments,
       UserSelectableType::kPreferences};
 
+  // TODO(crbug.com/424124636): The below special-casing shouldn't be needed.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#if !BUILDFLAG(IS_CHROMEOS)
-  // On Desktop, kPasswords and kAutofill are disabled by default.
-  expected_types.Remove(UserSelectableType::kPasswords);
-  expected_types.Remove(UserSelectableType::kAutofill);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
   // Because `prefs::kPrefsThemesSearchEnginesAccountStorageEnabled` is not set,
   // kPreferences are disabled.
   expected_types.Remove(UserSelectableType::kPreferences);
@@ -517,69 +503,44 @@ TEST_F(SyncPrefsTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
+TEST_F(SyncPrefsTest, DefaultWithImplicitBrowserSignin_SyncToSigninDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode,
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+                            kReadingListEnableSyncTransportModeUponSignIn,
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+                            switches::kEnablePreferencesAccountStorage},
+      /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
-class SyncPrefsExplicitBrowserSigninTest : public SyncPrefsTest {
- public:
-  SyncPrefsExplicitBrowserSigninTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kEnableExtensionsExplicitBrowserSignin,
-                              switches::kSyncEnableBookmarksInTransportMode,
-                              kSeparateLocalAndAccountSearchEngines,
-                              switches::kEnablePreferencesAccountStorage,
-                              syncer::kSeparateLocalAndAccountThemes},
-        /*disabled_features=*/{});
-  }
+  pref_service_.ClearPref(::prefs::kExplicitBrowserSignin);
+  ASSERT_FALSE(sync_prefs_->IsExplicitBrowserSignin());
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(SyncPrefsExplicitBrowserSigninTest, DefaultWithExplicitBrowserSignin) {
-  // If no explicit browser sign in occurred, then the type is still disabled
-  // by default.
-  ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
-  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
-      UserSelectableType::kAutofill));
-  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
-      UserSelectableType::kPasswords));
-  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
-      UserSelectableType::kExtensions));
-  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
-      UserSelectableType::kBookmarks));
-
-  // Set an explicit browser signin.
-  pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
-
+  UserSelectableTypeSet expected_types{UserSelectableType::kPayments};
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
-            UserSelectableTypeSet({UserSelectableType::kPasswords,
-                                   UserSelectableType::kAutofill,
-                                   UserSelectableType::kPayments}));
-
-  // Set an explicit browser signin from extensions and bookmarks for this
-  // account.
-  SigninPrefs(pref_service_).SetExtensionsExplicitBrowserSignin(gaia_id_, true);
-  SigninPrefs(pref_service_).SetBookmarksExplicitBrowserSignin(gaia_id_, true);
-
-  EXPECT_EQ(
-      sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
-      UserSelectableTypeSet(
-          {UserSelectableType::kExtensions, UserSelectableType::kPasswords,
-           UserSelectableType::kAutofill, UserSelectableType::kPayments,
-           UserSelectableType::kBookmarks}));
+            UserSelectableTypeSet{UserSelectableType::kPayments});
 }
 
-TEST_F(SyncPrefsExplicitBrowserSigninTest, DefaultWithNewSigninPref) {
-  // Simulate a new signin enabling more datatypes.
-  pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
-  pref_service_.SetBoolean(
-      ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, true);
+TEST_F(SyncPrefsTest, DefaultWithImplicitBrowserSignin_SyncToSigninEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode,
+                            kReplaceSyncPromosWithSignInPromos,
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+                            kReadingListEnableSyncTransportModeUponSignIn,
+                            kSeparateLocalAndAccountSearchEngines,
+                            syncer::kSeparateLocalAndAccountThemes,
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+                            switches::kEnablePreferencesAccountStorage},
+      /*disabled_features=*/{});
 
-  EXPECT_EQ(
-      sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
-      UserSelectableTypeSet(
-          {UserSelectableType::kPasswords, UserSelectableType::kPreferences,
-           UserSelectableType::kAutofill, UserSelectableType::kPayments,
-           UserSelectableType::kThemes}));
+  pref_service_.ClearPref(::prefs::kExplicitBrowserSignin);
+  ASSERT_FALSE(sync_prefs_->IsExplicitBrowserSignin());
+
+  // TODO(crbug.com/424124636): kProductComparison shouldn't be listed below.
+  EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
+            UserSelectableTypeSet({UserSelectableType::kPayments,
+                                   UserSelectableType::kProductComparison}));
 }
 
 #endif
