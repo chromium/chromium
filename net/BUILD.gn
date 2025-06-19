@@ -2481,6 +2481,7 @@ if (is_linux || is_chromeos || is_mac) {
       ":net",
       ":test_support",
       "//base",
+      "//crypto",
     ]
   }
 

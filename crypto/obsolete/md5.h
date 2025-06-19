@@ -43,6 +43,10 @@ namespace web_app::internals {
 crypto::obsolete::Md5 MakeMd5HasherForWebAppShortcutIcon();
 }
 
+namespace cachetool {
+crypto::obsolete::Md5 MakeMd5HasherForCachetools();
+}
+
 namespace crypto::obsolete {
 
 // This class is used for computing MD5 hashes, either one-shot via Md5::Hash(),
@@ -78,6 +82,7 @@ class CRYPTO_EXPORT Md5 {
   friend Md5 policy::MakeMd5HasherForPolicyEventId();
   friend Md5 drive::util::MakeMd5HasherForDriveApi();
   friend Md5 extensions::image_writer::MakeMd5HasherForImageWriter();
+  friend Md5 cachetool::MakeMd5HasherForCachetools();
 
   // TODO(b/298652869): get rid of these.
   friend Md5 ash::printing::MakeMd5HasherForPrinterConfigurer();
