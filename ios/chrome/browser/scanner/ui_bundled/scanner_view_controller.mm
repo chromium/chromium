@@ -9,6 +9,7 @@
 #import "base/logging.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notimplemented.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_alerts.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_presenting.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_transitioning_delegate.h"

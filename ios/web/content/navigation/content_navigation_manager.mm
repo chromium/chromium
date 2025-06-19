@@ -9,6 +9,7 @@
 #import <sstream>
 
 #import "base/apple/foundation_util.h"
+#import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
 #import "content/public/browser/navigation_controller.h"
 #import "content/public/browser/navigation_entry.h"

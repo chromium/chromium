@@ -18,7 +18,7 @@
 #import "base/functional/bind.h"
 #import "base/location.h"
 #import "base/memory/weak_ptr.h"
-#import "base/notreached.h"
+#import "base/notimplemented.h"
 #import "base/observer_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"

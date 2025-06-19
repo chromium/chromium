@@ -8,6 +8,7 @@
 #import <utility>
 
 #import "base/functional/callback.h"
+#import "base/notimplemented.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/keyed_service/core/service_access_type.h"

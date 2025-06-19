@@ -11,7 +11,7 @@
 #import <vector>
 
 #import "base/check.h"
-#import "base/notreached.h"
+#import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/infobar.h"

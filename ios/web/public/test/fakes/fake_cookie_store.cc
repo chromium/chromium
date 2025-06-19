@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/notimplemented.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 
