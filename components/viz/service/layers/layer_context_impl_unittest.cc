@@ -1368,6 +1368,37 @@ class LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest
     : public LayerContextImplLayerLifecycleTest {};
 
 TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
+       UpdateLayerWithMismatchedTypeFails) {
+  constexpr int kLayerId = 2;
+  constexpr cc::mojom::LayerType kInitialType =
+      cc::mojom::LayerType::kSolidColor;
+  constexpr cc::mojom::LayerType kUpdatedType = cc::mojom::LayerType::kTexture;
+
+  // Initial update: Create a layer of kInitialType.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), kInitialType, kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  cc::LayerImpl* layer_impl = GetLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->GetLayerType(), kInitialType);
+
+  // Second update: Attempt to update the layer with kUpdatedType.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 = CreateManualLayer(kLayerId, kUpdatedType);
+  layer_props2->layer_extra = CreateDefaultLayerExtra(kUpdatedType);
+  update2->layers.push_back(std::move(layer_props2));
+
+  auto result2 = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_FALSE(result2.has_value());
+  EXPECT_EQ(result2.error(), "Incorrect layer type used in Layer update.");
+
+  // Verify the layer type in the tree remains kInitialType.
+  EXPECT_EQ(layer_impl->GetLayerType(), kInitialType);
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeBaseLayerPropertiesTest,
        UpdateSafeOpaqueBackgroundColor) {
   constexpr int kLayerId = 2;
   const SkColor4f kDefaultColor = SkColors::kTransparent;  // Default from mojom

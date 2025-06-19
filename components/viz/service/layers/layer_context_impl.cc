@@ -683,6 +683,9 @@ void UpdateTileDisplayLayerExtra(const mojom::TileDisplayLayerExtraPtr& extra,
 
 base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
                                               cc::LayerImpl& layer) {
+  if (wire.type != layer.GetLayerType()) {
+    return base::unexpected("Incorrect layer type used in Layer update.");
+  }
   if (wire.contents_opaque && !wire.contents_opaque_for_text) {
     return base::unexpected(
         "Invalid contents_opaque_for_text: cannot be false if contents_opaque "
@@ -869,8 +872,6 @@ base::expected<void, std::string> CreateOrUpdateLayers(
     if (!layer) {
       RETURN_IF_ERROR(CreateLayer(host_impl, layers, *wire, layer));
     }
-    // TODO(crbug.com/418022040): Make sure we support re-creating Layers with
-    // a previously used Id.
     RETURN_IF_ERROR(UpdateLayer(*wire, *layer));
   }
   for (auto id : *layer_order) {
