@@ -6,6 +6,9 @@
 
 namespace ios::provider {
 
+// Script to check whether PageContext should be detached from the request.
+constexpr const char16_t* kShouldDetachPageContextScript = u"return false;";
+
 std::string CreateRequestBody(
     std::string prompt,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context) {
@@ -20,5 +23,9 @@ void StartBwgOverlay(
     UIViewController* base_view_controller,
     raw_ptr<AuthenticationService> auth_service,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context) {}
+
+const std::u16string GetPageContextShouldDetachScript() {
+  return kShouldDetachPageContextScript;
+}
 
 }  // namespace ios::provider
