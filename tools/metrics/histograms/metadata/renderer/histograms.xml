@@ -129,8 +129,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.BlockingResourcesLoadTime" units="ms"
-    expires_after="2025-07-06">
+    expires_after="2026-07-06">
   <owner>iclelland@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Time (in milliseconds) from timeOrigin until all the render blocking
@@ -141,8 +142,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.CriticalFontDelay" units="ms"
-    expires_after="2025-11-09">
+    expires_after="2026-07-06">
   <owner>iclelland@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Time difference (in milliseconds) between `PreloadedFontLoadTime` and
@@ -154,8 +156,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.PreloadedFontsLoadTime" units="ms"
-    expires_after="2025-11-09">
+    expires_after="2026-07-06">
   <owner>iclelland@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Time (in milliseconds) from timeOrigin until all the preloaded fonts were
