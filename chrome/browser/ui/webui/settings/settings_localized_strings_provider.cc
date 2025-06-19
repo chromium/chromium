@@ -2093,6 +2093,9 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddString("cookiesSettingsHelpCenterURL",
                          chrome::kCookiesSettingsHelpCenterURL);
 
+  html_source->AddString("incognitoTrackingProtectionsLearnMoreUrl",
+                         chrome::kIncognitoTrackingProtectionsLearnMoreUrl);
+
   html_source->AddString("relatedWebsiteSetsLearnMoreURL",
                          chrome::kRelatedWebsiteSetsLearnMoreURL);
 

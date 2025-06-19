@@ -381,12 +381,11 @@
           </settings-cookies-page>
         </settings-subpage>
       </template>
-      <!-- TODO(crbug.com/408036586): Update learn more URL when finalized -->
       <template is="dom-if" if="[[enableIncognitoTrackingProtections_]]">
         <template is="dom-if" route-path="/incognito" no-search>
           <settings-subpage id="incognito-tracking-protections"
                 page-title="$i18n{incognitoTrackingProtectionsPageTitle}"
-                learn-more-url=""
+                learn-more-url="$i18n{incognitoTrackingProtectionsLearnMoreUrl}"
                 associated-control="[[$$('#incognitoTrackingProtectionsLinkRow')]]">
             <incognito-tracking-protections-page prefs="{{prefs}}">
             </incognito-tracking-protections-page>
