@@ -68,20 +68,19 @@ class TextCodecUtf8 : public TextCodec {
                                     base::span<uint8_t> destination);
 
   template <typename CharType>
-  bool HandlePartialSequence(CharType*& destination,
-                             const uint8_t*& source,
-                             const uint8_t* end,
+  bool HandlePartialSequence(base::span<CharType>& destination,
+                             base::span<const uint8_t>& source,
                              bool flush,
                              bool stop_on_error,
                              bool& saw_error);
   void HandleError(int character,
-                   UChar*& destination,
+                   base::span<UChar>& destination,
                    bool stop_on_error,
                    bool& saw_error);
-  void ConsumePartialSequenceBytes(int num_bytes);
+  void ConsumePartialSequenceBytes(size_t num_bytes);
 
-  int partial_sequence_size_;
-  uint8_t partial_sequence_[U8_MAX_LENGTH];
+  std::array<uint8_t, U8_MAX_LENGTH> partial_sequence_;
+  size_t partial_sequence_size_ = 0;
 };
 
 }  // namespace blink
