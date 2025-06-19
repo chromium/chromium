@@ -5461,6 +5461,15 @@ const char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
+const char kSupervisedUserInterstitialWithoutApprovalsName[] =
+    "Supervisded user interstitial without approvals for content filters";
+const char kSupervisedUserInterstitialWithoutApprovalsDescription[] =
+    "Enables the supervised user interstitial without approvals nor custodian "
+    "information for content filters. Strictly requires "
+    "#propagate-device-content-filters-to-supervised-user to be enabled. "
+    "Enabling #allow-non-family-link-url-filter-mode is also required for "
+    "users who do not sign-in.";
+
 const char kSupportMultipleServerRequestsForPixPaymentsName[] =
     "Support multiple server requests for Pix payments";
 const char kSupportMultipleServerRequestsForPixPaymentsDescription[] =

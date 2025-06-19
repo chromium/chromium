@@ -3189,6 +3189,9 @@ extern const char kSearchResumptionModuleAndroidDescription[];
 extern const char kStrictSiteIsolationName[];
 extern const char kStrictSiteIsolationDescription[];
 
+extern const char kSupervisedUserInterstitialWithoutApprovalsName[];
+extern const char kSupervisedUserInterstitialWithoutApprovalsDescription[];
+
 extern const char kSupportMultipleServerRequestsForPixPaymentsName[];
 extern const char kSupportMultipleServerRequestsForPixPaymentsDescription[];
 

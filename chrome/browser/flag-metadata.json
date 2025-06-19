@@ -9335,6 +9335,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "supervised-user-interstitial-without-approvals",
+    "owners": [ "tju@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "supervised-user-local-web-approvals",
     "owners": [
       "fernandex@google.com",

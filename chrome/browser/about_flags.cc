@@ -12999,6 +12999,16 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"supervised-user-interstitial-without-approvals",
+     flag_descriptions::kSupervisedUserInterstitialWithoutApprovalsName,
+     flag_descriptions::
+         kSupervisedUserInterstitialWithoutApprovalsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         supervised_user::kSupervisedUserInterstitialWithoutApprovals)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

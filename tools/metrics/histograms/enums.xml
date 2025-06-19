@@ -8651,6 +8651,8 @@ from previous Chrome versions.
   <int value="-1983891525" label="DecodeJpeg420ImagesToYUV:disabled"/>
   <int value="-1983569861" label="WebXROrientationSensorDevice:disabled"/>
   <int value="-1982700103" label="EnableAppsGridGapFeature:enabled"/>
+  <int value="-1982633436"
+      label="SupervisedUserInterstitialWithoutApprovals:enabled"/>
   <int value="-1982080540" label="DurableClientHintsCache:disabled"/>
   <int value="-1981692093"
       label="SafeBrowsingPasswordProtectionForSignedInUsers:enabled"/>
@@ -11248,6 +11250,8 @@ from previous Chrome versions.
   <int value="-1019492310"
       label="OmniboxUIExperimentJogTextfieldOnPopup:enabled"/>
   <int value="-1018983714" label="FedCm:enabled"/>
+  <int value="-1018713194"
+      label="SupervisedUserInterstitialWithoutApprovals:disabled"/>
   <int value="-1018454657" label="SharingPeerConnectionReceiver:enabled"/>
   <int value="-1017686690" label="CrosMall:enabled"/>
   <int value="-1017396114" label="FastEnumeratePrinters:enabled"/>

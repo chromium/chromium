@@ -76,6 +76,9 @@ BASE_DECLARE_FEATURE(kAllowNonFamilyLinkUrlFilterMode);
 // Propagates the device settings about content filters to the supervised user
 // content filters.
 BASE_DECLARE_FEATURE(kPropagateDeviceContentFiltersToSupervisedUser);
+
+// Enabled the supervised user interstitial without approvals section.
+BASE_DECLARE_FEATURE(kSupervisedUserInterstitialWithoutApprovals);
 #endif
 
 // Returns whether the V3 version of the URL filter interstitial is
