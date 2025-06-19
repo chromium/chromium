@@ -65,6 +65,8 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
   password_specifics.set_action(GURL(origin).spec());
   password_specifics.set_password_value("D3f4ultP4$$w0rd");
   password_specifics.set_date_last_used(kIssuesCreationTime);
+  password_specifics.set_date_last_filled_windows_epoch_micros(
+      kIssuesCreationTime);
   password_specifics.set_date_created(kIssuesCreationTime);
   password_specifics.set_date_password_modified_windows_epoch_micros(
       kIssuesCreationTime);

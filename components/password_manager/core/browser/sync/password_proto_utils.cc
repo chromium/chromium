@@ -199,6 +199,7 @@ sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
   trimmed_password_data.clear_avatar_url();
   trimmed_password_data.clear_federation_url();
   trimmed_password_data.clear_date_last_used();
+  trimmed_password_data.clear_date_last_filled_windows_epoch_micros();
   trimmed_password_data.clear_password_issues();
   trimmed_password_data.clear_date_password_modified_windows_epoch_micros();
   trimmed_password_data.clear_sender_email();
@@ -254,6 +255,9 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
       base::UTF16ToUTF8(password_form.password_value));
   password_data.set_date_last_used(
       password_form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  password_data.set_date_last_filled_windows_epoch_micros(
+      password_form.date_last_filled.ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
   password_data.set_date_password_modified_windows_epoch_micros(
       password_form.date_password_modified.ToDeltaSinceWindowsEpoch()
           .InMicroseconds());
@@ -321,6 +325,8 @@ PasswordForm PasswordFromSpecifics(
         base::Time::FromDeltaSinceWindowsEpoch(base::Days(1));
   }
 
+  password.date_last_filled =
+      ConvertToBaseTime(password_data.date_last_filled_windows_epoch_micros());
   password.date_password_modified = ConvertToBaseTime(
       password_data.has_date_password_modified_windows_epoch_micros()
           ? password_data.date_password_modified_windows_epoch_micros()

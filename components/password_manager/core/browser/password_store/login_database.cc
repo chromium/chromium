@@ -68,7 +68,7 @@ using signin::GaiaIdHash;
 namespace password_manager {
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 41;
+constexpr int kCurrentVersionNumber = 42;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
 constexpr int kCompatibleVersionNumber = 40;
@@ -180,6 +180,7 @@ enum LoginDatabaseTableColumns {
   COLUMN_SHARING_NOTIFICATION_DISPLAYED,
   COLUMN_KEYCHAIN_IDENTIFIER,
   COLUMN_SENDER_PROFILE_IMAGE_URL,
+  COLUMN_DATE_LAST_FILLED,
   COLUMN_NUM  // Keep this last.
 };
 
@@ -288,6 +289,7 @@ void BindAddStatement(const PasswordForm& form,
   s->BindTime(COLUMN_DATE_RECEIVED, form.date_received);
   s->BindBool(COLUMN_SHARING_NOTIFICATION_DISPLAYED,
               form.sharing_notification_displayed);
+  s->BindTime(COLUMN_DATE_LAST_FILLED, form.date_last_filled);
 }
 
 // Output parameter is the first one because of binding order.
@@ -595,7 +597,11 @@ void InitializeBuilders(SQLTableBuilders builders) {
   builders.logins->AddColumn("sender_profile_image_url", "VARCHAR");
   SealVersion(builders, /*expected_version=*/41u);
 
-  static_assert(kCurrentVersionNumber == 41, "Seal the recent version");
+  // Version 42. Introduce date_last_filled column.
+  builders.logins->AddColumn("date_last_filled", "INTEGER NOT NULL DEFAULT 0");
+  SealVersion(builders, /*expected_version=*/42u);
+
+  static_assert(kCurrentVersionNumber == 42, "Seal the recent version");
   CHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
          "here.";
@@ -1516,6 +1522,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
   s.BindString(next_param++, form.sender_profile_image_url.is_valid()
                                  ? form.sender_profile_image_url.spec()
                                  : "");
+  s.BindTime(next_param++, form.date_last_filled);
   // NOTE: Add new fields here unless the field is a part of the unique key.
   // If so, add new field below.
 
@@ -1763,6 +1770,7 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
       static_cast<PasswordForm::GenerationUploadStatus>(
           s.ColumnInt(COLUMN_GENERATION_UPLOAD_STATUS));
   form.date_last_used = s.ColumnTime(COLUMN_DATE_LAST_USED);
+  form.date_last_filled = s.ColumnTime(COLUMN_DATE_LAST_FILLED);
   base::span<const uint8_t> moving_blocked_for_blob =
       s.ColumnBlob(COLUMN_MOVING_BLOCKED_FOR);
   if (!moving_blocked_for_blob.empty()) {
