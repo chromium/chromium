@@ -4,7 +4,7 @@
 
 #include "device/gamepad/test_support/fake_iraw_game_controller.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/win/scoped_hstring.h"
 #include "device/gamepad/test_support/fake_winrt_wgi_environment.h"
 

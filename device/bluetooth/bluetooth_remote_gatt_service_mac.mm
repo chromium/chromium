@@ -11,6 +11,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
 #include "device/bluetooth/bluetooth_low_energy_device_mac.h"

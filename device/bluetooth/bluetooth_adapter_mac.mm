@@ -23,6 +23,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"

@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"

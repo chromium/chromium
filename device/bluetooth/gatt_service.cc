@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
 #include "device/bluetooth/device.h"

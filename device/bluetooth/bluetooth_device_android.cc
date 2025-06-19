@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/stl_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/base/features.h"
@@ -23,7 +24,6 @@
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
 #include "device/bluetooth/bluetooth_socket_android.h"
-
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothDevice_jni.h"
 

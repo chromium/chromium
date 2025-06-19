@@ -4,7 +4,7 @@
 
 #include "device/bluetooth/bluetooth_local_gatt_descriptor.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     !defined(LINUX_WITHOUT_DBUS)

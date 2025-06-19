@@ -11,10 +11,9 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
-
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothRemoteGattDescriptor_jni.h"
 

@@ -4,7 +4,7 @@
 
 #include "device/gamepad/test_support/fake_igamepad_statics.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"

@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/base/features.h"
 #include "device/bluetooth/android/wrappers.h"
@@ -24,7 +25,6 @@
 #include "device/bluetooth/bluetooth_device_android.h"
 #include "device/bluetooth/bluetooth_discovery_session_outcome.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
-
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothAdapter_jni.h"
 #include "device/bluetooth/jni_headers/ChromeBluetoothScanFilterBuilder_jni.h"

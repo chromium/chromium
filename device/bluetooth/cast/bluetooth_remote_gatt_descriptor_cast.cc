@@ -11,6 +11,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "chromecast/device/bluetooth/le/remote_descriptor.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/cast/bluetooth_remote_gatt_characteristic_cast.h"

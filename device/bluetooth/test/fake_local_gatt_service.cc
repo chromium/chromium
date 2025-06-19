@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "device/bluetooth/test/fake_local_gatt_service.h"
+
 #include "base/containers/contains.h"
+#include "base/notimplemented.h"
 
 namespace bluetooth {
 

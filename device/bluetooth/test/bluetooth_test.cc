@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
