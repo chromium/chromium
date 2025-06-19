@@ -2144,15 +2144,6 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
     return;
 
   int buffer_count = context_->AllocatedBufferCountPerPixel();
-  auto* provider = IsWebGL() ? GetResourceProviderForWebGL()
-                             : GetResourceProviderForCanvas2D();
-  if (provider && provider->IsAccelerated()) {
-    // The number of internal GPU buffers vary between one (stable
-    // non-displayed state) and three (triple-buffered animations).
-    // Adding 2 is a pessimistic but relevant estimate.
-    // Note: These buffers might be allocated in GPU memory.
-    buffer_count += 2;
-  }
 
   // NOTE: All formats used by canvas are either 8-bit or 16-bit.
   const int bytes_per_pixel = GetRenderingContextFormat().BitsPerPixel() / 8;

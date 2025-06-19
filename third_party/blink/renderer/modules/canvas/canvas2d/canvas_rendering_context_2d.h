@@ -158,7 +158,23 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   // CanvasRenderingContext implementation
   int AllocatedBufferCountPerPixel() override {
-    return (Host() && Host()->GetResourceProviderForCanvas2D()) ? 1 : 0;
+    if (!Host()) {
+      return 0;
+    }
+
+    int buffer_count = 0;
+    auto* provider = Host()->GetResourceProviderForCanvas2D();
+    if (provider) {
+      buffer_count = 1;
+      if (provider->IsAccelerated()) {
+        // The number of internal GPU buffers vary between one (stable
+        // non-displayed state) and three (triple-buffered animations).
+        // Adding 2 is a pessimistic but relevant estimate.
+        // Note: These buffers might be allocated in GPU memory.
+        buffer_count += 2;
+      }
+    }
+    return buffer_count;
   }
 
   int Width() const final;
