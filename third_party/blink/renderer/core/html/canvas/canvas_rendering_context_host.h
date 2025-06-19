@@ -120,6 +120,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   // Actual RasterMode used for rendering 2d primitives.
   RasterMode GetRasterMode() const;
+  RasterMode GetRasterModeForCanvas2D() const;
 
   // blink::CanvasImageSource
   bool IsOffscreenCanvas() const override;

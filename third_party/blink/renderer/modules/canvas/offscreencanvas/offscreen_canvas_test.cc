@@ -283,7 +283,7 @@ TEST_P(OffscreenCanvasTest, GetRasterModeAutoRecovery) {
   GetGLInterface()->SetIsContextLost(true);
   EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
   offscreen_canvas().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  EXPECT_EQ(offscreen_canvas().GetRasterMode(), RasterMode::kGPU);
+  EXPECT_EQ(offscreen_canvas().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoring());
 }
 

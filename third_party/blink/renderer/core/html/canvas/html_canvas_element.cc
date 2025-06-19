@@ -1922,7 +1922,7 @@ void HTMLCanvasElement::WillDrawImageInCanvas2D(CanvasImageSource* source) {
 
   // If the source is GPU-accelerated, and the canvas is not, but could be...
   if (source->IsAccelerated() && ShouldAccelerate() &&
-      GetRasterMode() == RasterMode::kCPU) {
+      GetRasterModeForCanvas2D() == RasterMode::kCPU) {
     // Recreate the canvas in GPU raster mode, and update its contents.
     if (RecreateCanvasInGPURasterModeForCanvas2D()) {
       SetNeedsCompositingUpdate();
@@ -1932,7 +1932,7 @@ void HTMLCanvasElement::WillDrawImageInCanvas2D(CanvasImageSource* source) {
 
 bool HTMLCanvasElement::EnableAccelerationForCanvas2D() {
   CHECK(IsRenderingContext2D());
-  return GetRasterMode() != RasterMode::kCPU ||
+  return GetRasterModeForCanvas2D() != RasterMode::kCPU ||
          RecreateCanvasInGPURasterModeForCanvas2D();
 }
 

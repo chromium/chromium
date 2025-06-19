@@ -85,8 +85,8 @@ RenderingContextDescriptionCodec::RenderingContextDescriptionCodec(
   key_.set<IsOffscreenField>(context->Host()->IsOffscreenCanvas());
   if (context->GetRenderingAPI() ==
       CanvasRenderingContext::CanvasRenderingAPI::k2D) {
-    key_.set<IsAcceleratedCanvas2DField>(context->Host()->GetRasterMode() ==
-                                         blink::RasterMode::kGPU);
+    key_.set<IsAcceleratedCanvas2DField>(
+        context->Host()->GetRasterModeForCanvas2D() == blink::RasterMode::kGPU);
   }
   key_.set<RenderingAPIField>(
       static_cast<uint32_t>(context->GetRenderingAPI()));

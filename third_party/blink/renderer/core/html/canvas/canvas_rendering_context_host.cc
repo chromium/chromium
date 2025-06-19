@@ -433,6 +433,11 @@ PlainTextPainter& CanvasRenderingContextHost::GetPlainTextPainter() {
   return *plain_text_painter_;
 }
 
+RasterMode CanvasRenderingContextHost::GetRasterModeForCanvas2D() const {
+  CHECK(IsRenderingContext2D());
+  return GetRasterMode();
+}
+
 RasterMode CanvasRenderingContextHost::GetRasterMode() const {
   if (IsHibernating()) {
     return RasterMode::kCPU;

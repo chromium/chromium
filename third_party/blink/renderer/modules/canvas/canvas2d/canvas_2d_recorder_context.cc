@@ -2984,7 +2984,7 @@ void Canvas2DRecorderContext::SnapshotStateForFilter() {
 bool Canvas2DRecorderContext::IsAccelerated() const {
   CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
   if (host) {
-    return host->GetRasterMode() == RasterMode::kGPU;
+    return host->GetRasterModeForCanvas2D() == RasterMode::kGPU;
   }
   return false;
 }
