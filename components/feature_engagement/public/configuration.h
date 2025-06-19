@@ -36,6 +36,15 @@ enum ComparatorType {
   NOT_EQUAL = 6,
 };
 
+// A StorageType describes which type of storage the feature engagement events
+// should be stored in.
+enum StorageType {
+  // Profile storage is used to store feature engagement events per profile.
+  PROFILE = 0,
+  // Device storage is used to store feature engagement events on the device.
+  DEVICE = 1,
+};
+
 // A Comparator provides a way of comparing a uint32_t another uint32_t and
 // verifying their relationship.
 struct Comparator {
@@ -235,6 +244,9 @@ struct FeatureConfig {
 
   // Groups this feature is part of.
   std::vector<std::string> groups;
+
+  // Whether to use on-device storage or profile storage.
+  StorageType storage_type = StorageType::PROFILE;
 };
 
 bool operator==(const FeatureConfig& lhs, const FeatureConfig& rhs);
