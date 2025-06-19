@@ -20,7 +20,7 @@ namespace feature_engagement {
 struct FeatureConfig;
 class AvailabilityModel;
 class DisplayLockController;
-class EventModel;
+class EventModelReader;
 class TimeProvider;
 
 // A ConditionValidator checks the requred conditions for a given feature,
@@ -98,7 +98,7 @@ class ConditionValidator {
       const base::Feature& feature,
       const FeatureConfig& config,
       const std::vector<GroupConfig>& group_configs,
-      const EventModel& event_model,
+      const EventModelReader& event_model_reader,
       const AvailabilityModel& availability_model,
       const DisplayLockController& display_lock_controller,
       const Configuration* configuration,

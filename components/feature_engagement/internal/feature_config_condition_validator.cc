@@ -15,7 +15,7 @@
 #include "base/notreached.h"
 #include "components/feature_engagement/internal/availability_model.h"
 #include "components/feature_engagement/internal/display_lock_controller.h"
-#include "components/feature_engagement/internal/event_model.h"
+#include "components/feature_engagement/internal/event_model_reader.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/internal/time_provider.h"
 #include "components/feature_engagement/public/configuration.h"
@@ -31,25 +31,25 @@ ConditionValidator::Result FeatureConfigConditionValidator::MeetsConditions(
     const base::Feature& feature,
     const FeatureConfig& config,
     const std::vector<GroupConfig>& group_configs,
-    const EventModel& event_model,
+    const EventModelReader& event_model_reader,
     const AvailabilityModel& availability_model,
     const DisplayLockController& display_lock_controller,
     const Configuration* configuration,
     const TimeProvider& time_provider) const {
   uint32_t current_day = time_provider.GetCurrentDay();
   ConditionValidator::Result result(true);
-  result.event_model_ready_ok = event_model.IsReady();
+  result.event_model_ready_ok = event_model_reader.IsReady();
   result.currently_showing_ok = !IsBlocked(feature, config, configuration);
   result.feature_enabled_ok = base::FeatureList::IsEnabled(feature);
   result.config_ok = config.valid;
   result.used_ok =
-      EventConfigMeetsConditions(config.used, event_model, current_day);
-  result.trigger_ok =
-      EventConfigMeetsConditions(config.trigger, event_model, current_day);
+      EventConfigMeetsConditions(config.used, event_model_reader, current_day);
+  result.trigger_ok = EventConfigMeetsConditions(
+      config.trigger, event_model_reader, current_day);
 
   for (const auto& event_config : config.event_configs) {
-    result.preconditions_ok &=
-        EventConfigMeetsConditions(event_config, event_model, current_day);
+    result.preconditions_ok &= EventConfigMeetsConditions(
+        event_config, event_model_reader, current_day);
   }
 
   result.session_rate_ok =
@@ -63,18 +63,18 @@ ConditionValidator::Result FeatureConfigConditionValidator::MeetsConditions(
   result.display_lock_ok = !display_lock_controller.IsDisplayLocked();
 
   result.snooze_expiration_ok =
-      !event_model.IsSnoozeDismissed(config.trigger.name) &&
-      (event_model.GetLastSnoozeTimestamp(config.trigger.name) <
+      !event_model_reader.IsSnoozeDismissed(config.trigger.name) &&
+      (event_model_reader.GetLastSnoozeTimestamp(config.trigger.name) <
        time_provider.Now() - base::Days(config.snooze_params.snooze_interval));
 
   result.priority_notification_ok =
       !pending_priority_notification_.has_value() ||
       pending_priority_notification_.value() == feature.name;
 
-  result.should_show_snooze =
-      result.snooze_expiration_ok &&
-      event_model.GetSnoozeCount(config.trigger.name, config.trigger.window,
-                                 current_day) < config.snooze_params.max_limit;
+  result.should_show_snooze = result.snooze_expiration_ok &&
+                              event_model_reader.GetSnoozeCount(
+                                  config.trigger.name, config.trigger.window,
+                                  current_day) < config.snooze_params.max_limit;
 
   // Add on group additions
   for (const auto& group_config : group_configs) {
@@ -82,14 +82,14 @@ ConditionValidator::Result FeatureConfigConditionValidator::MeetsConditions(
     result.config_ok &= valid;
     result.groups_ok &= valid;
 
-    bool trigger_ok = EventConfigMeetsConditions(group_config.trigger,
-                                                 event_model, current_day);
+    bool trigger_ok = EventConfigMeetsConditions(
+        group_config.trigger, event_model_reader, current_day);
     result.trigger_ok &= trigger_ok;
     result.groups_ok &= trigger_ok;
 
     for (const auto& event_config : group_config.event_configs) {
-      bool precondition_ok =
-          EventConfigMeetsConditions(event_config, event_model, current_day);
+      bool precondition_ok = EventConfigMeetsConditions(
+          event_config, event_model_reader, current_day);
       result.preconditions_ok &= precondition_ok;
       result.groups_ok &= precondition_ok;
     }
@@ -140,9 +140,9 @@ void FeatureConfigConditionValidator::NotifyDismissed(
 
 bool FeatureConfigConditionValidator::EventConfigMeetsConditions(
     const EventConfig& event_config,
-    const EventModel& event_model,
+    const EventModelReader& event_model_reader,
     uint32_t current_day) const {
-  uint32_t event_count = event_model.GetEventCount(
+  uint32_t event_count = event_model_reader.GetEventCount(
       event_config.name, current_day, event_config.window);
   return event_config.comparator.MeetsCriteria(event_count);
 }

@@ -28,13 +28,15 @@ class ConditionValidator;
 class Configuration;
 class DisplayLockController;
 class DisplayLockHandle;
-class EventModel;
+class EventModelProvider;
 class TimeProvider;
+class EventModelReader;
+class EventModelWriter;
 
 // The internal implementation of the Tracker.
 class TrackerImpl : public Tracker {
  public:
-  TrackerImpl(std::unique_ptr<EventModel> event_model,
+  TrackerImpl(std::unique_ptr<EventModelProvider> event_model_provider,
               std::unique_ptr<AvailabilityModel> availability_model,
               std::unique_ptr<Configuration> configuration,
               std::unique_ptr<DisplayLockController> display_lock_controller,
@@ -114,11 +116,18 @@ class TrackerImpl : public Tracker {
   // test::ScopedIphFeatureList.
   static bool IsFeatureBlockedByTest(const base::Feature& feature);
 
+  // Returns the EventModelReader for the given feature config.
+  const EventModelReader* GetEventModelReaderForFeature(
+      const FeatureConfig& feature_config) const;
+
+  // Returns the EventModelWriter.
+  EventModelWriter* GetEventModelWriter();
+
   // The currently recorded start times (one per feature currently presented).
   std::map<std::string, base::Time> start_times_;
 
   // The current model for all events.
-  std::unique_ptr<EventModel> event_model_;
+  std::unique_ptr<EventModelProvider> event_model_provider_;
 
   // The current model for when particular features were enabled.
   std::unique_ptr<AvailabilityModel> availability_model_;
@@ -144,12 +153,13 @@ class TrackerImpl : public Tracker {
   // The session controller that manages the life time of a session.
   std::unique_ptr<SessionController> session_controller_;
 
-  // Whether the initialization of the underlying EventModel has finished.
-  bool event_model_initialization_finished_;
+  // Whether the initialization of the underlying EventModelProvider has
+  // finished.
+  bool event_model_provider_initialization_finished_ = false;
 
   // Whether the initialization of the underlying AvailabilityModel has
   // finished.
-  bool availability_model_initialization_finished_;
+  bool availability_model_initialization_finished_ = false;
 
   // Whether event migration has been finished.
   bool event_migration_finished_ = false;

@@ -31,6 +31,7 @@
 #include "components/feature_engagement/internal/never_availability_model.h"
 #include "components/feature_engagement/internal/never_event_storage_validator.h"
 #include "components/feature_engagement/internal/once_condition_validator.h"
+#include "components/feature_engagement/internal/single_event_model_provider.h"
 #include "components/feature_engagement/internal/stats.h"
 #include "components/feature_engagement/internal/test/test_time_provider.h"
 #include "components/feature_engagement/internal/time_provider.h"
@@ -352,6 +353,9 @@ class TrackerImplTest : public ::testing::Test {
         std::move(event_store),
         std::make_unique<StoreEverythingEventStorageValidator>());
 
+    auto event_model_provider =
+        std::make_unique<SingleEventModelProvider>(std::move(event_model));
+
     auto availability_model = std::make_unique<TestTrackerAvailabilityModel>();
     availability_model_ = availability_model.get();
     availability_model_->SetIsReady(ShouldAvailabilityStoreBeReady());
@@ -374,7 +378,7 @@ class TrackerImplTest : public ::testing::Test {
     session_controller_ = session_controller.get();
 
     tracker_ = std::make_unique<TrackerImpl>(
-        std::move(event_model), std::move(availability_model),
+        std::move(event_model_provider), std::move(availability_model),
         std::move(configuration), std::move(display_lock_controller),
         std::move(condition_validator), std::move(time_provider),
         std::move(event_exporter), std::move(session_controller));

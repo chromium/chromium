@@ -20,13 +20,13 @@ ConditionValidator::Result OnceConditionValidator::MeetsConditions(
     const base::Feature& feature,
     const FeatureConfig& config,
     const std::vector<GroupConfig>& group_configs,
-    const EventModel& event_model,
+    const EventModelReader& event_model_reader,
     const AvailabilityModel& availability_model,
     const DisplayLockController& display_lock_controller,
     const Configuration* configuration,
     const TimeProvider& time_provider) const {
   ConditionValidator::Result result(true);
-  result.event_model_ready_ok = event_model.IsReady();
+  result.event_model_ready_ok = event_model_reader.IsReady();
 
   result.currently_showing_ok =
       allows_multiple_features_ || currently_showing_features_.empty();
@@ -39,8 +39,8 @@ ConditionValidator::Result OnceConditionValidator::MeetsConditions(
       shown_features_.find(feature.name) == shown_features_.end();
 
   result.snooze_expiration_ok =
-      !event_model.IsSnoozeDismissed(config.trigger.name) &&
-      (event_model.GetLastSnoozeTimestamp(config.trigger.name) <
+      !event_model_reader.IsSnoozeDismissed(config.trigger.name) &&
+      (event_model_reader.GetLastSnoozeTimestamp(config.trigger.name) <
        time_provider.Now() - base::Days(config.snooze_params.snooze_interval));
 
   result.priority_notification_ok =
@@ -49,9 +49,9 @@ ConditionValidator::Result OnceConditionValidator::MeetsConditions(
 
   result.should_show_snooze =
       result.snooze_expiration_ok &&
-      event_model.GetSnoozeCount(config.trigger.name, config.trigger.window,
-                                 time_provider.GetCurrentDay()) <
-          config.snooze_params.max_limit;
+      event_model_reader.GetSnoozeCount(
+          config.trigger.name, config.trigger.window,
+          time_provider.GetCurrentDay()) < config.snooze_params.max_limit;
 
   return result;
 }

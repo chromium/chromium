@@ -14,6 +14,7 @@
 #include "components/feature_engagement/internal/init_aware_event_model.h"
 #include "components/feature_engagement/internal/never_availability_model.h"
 #include "components/feature_engagement/internal/noop_display_lock_controller.h"
+#include "components/feature_engagement/internal/single_event_model_provider.h"
 #include "components/feature_engagement/internal/system_time_provider.h"
 #include "components/feature_engagement/internal/tracker_impl.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -44,9 +45,13 @@ std::unique_ptr<Tracker> CreateTestTracker(
   auto event_model =
       std::make_unique<InitAwareEventModel>(std::move(raw_event_model));
 
+  auto event_model_provider =
+      std::make_unique<SingleEventModelProvider>(std::move(event_model));
+
   return std::make_unique<TrackerImpl>(
-      std::move(event_model), std::make_unique<NeverAvailabilityModel>(),
-      std::move(configuration), std::make_unique<NoopDisplayLockController>(),
+      std::move(event_model_provider),
+      std::make_unique<NeverAvailabilityModel>(), std::move(configuration),
+      std::make_unique<NoopDisplayLockController>(),
       std::make_unique<FeatureConfigConditionValidator>(),
       std::make_unique<SystemTimeProvider>(), std::move(event_exporter),
       nullptr);
