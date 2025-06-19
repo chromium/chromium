@@ -440,19 +440,13 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
   line_data_.wavy_offset_factor = wavy_offset_factor;
 
   switch (DecorationStyle()) {
-    case ETextDecorationStyle::kDotted:
-    case ETextDecorationStyle::kDashed:
-      line_data_.stroke_path = PrepareDottedOrDashedStrokePath();
-      line_data_.wavy_tile_record = cc::PaintRecord();
-      break;
     case ETextDecorationStyle::kWavy:
-      line_data_.stroke_path.reset();
       ComputeWavyLineData(line_data_.wavy_pattern_rect,
                           line_data_.wavy_tile_record);
       break;
     default:
-      line_data_.stroke_path.reset();
       line_data_.wavy_tile_record = cc::PaintRecord();
+      break;
   }
 }
 
@@ -669,14 +663,6 @@ gfx::RectF TextDecorationInfo::Bounds() const {
   return DecorationLinePainter::Bounds(*this);
 }
 
-gfx::RectF TextDecorationInfo::BoundsForDottedOrDashed() const {
-  StyledStrokeData styled_stroke;
-  styled_stroke.SetThickness(roundf(ResolvedThickness()));
-  styled_stroke.SetStyle(TextDecorationStyleToStrokeStyle(DecorationStyle()));
-  return line_data_.stroke_path.value().StrokeBoundingRect(
-      styled_stroke.ConvertToStrokeData({}));
-}
-
 // Returns the wavy paint rect, which has the height of the wavy tile rect but
 // the width needed by the actual decoration, for the DrawRect operation.
 gfx::RectF TextDecorationInfo::WavyPaintRect() const {
@@ -704,15 +690,6 @@ cc::PaintRecord TextDecorationInfo::WavyTileRecord() const {
 void TextDecorationInfo::SetHighlightOverrideColor(
     const std::optional<Color>& color) {
   highlight_override_ = color;
-}
-
-Path TextDecorationInfo::PrepareDottedOrDashedStrokePath() const {
-  // These coordinate transforms need to match what's happening in
-  // GraphicsContext's drawLineForText and drawLine.
-  gfx::PointF start_point = StartPoint();
-  return DecorationLinePainter::GetPathForTextLine(
-      start_point, width_, ResolvedThickness(),
-      TextDecorationStyleToStrokeStyle(DecorationStyle()));
 }
 
 }  // namespace blink

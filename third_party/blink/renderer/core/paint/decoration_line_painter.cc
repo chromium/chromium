@@ -90,30 +90,20 @@ void DecorationLinePainter::DrawLineForText(
   }
 }
 
-Path DecorationLinePainter::GetPathForTextLine(const gfx::PointF& pt,
-                                               float width,
-                                               float stroke_thickness,
-                                               StrokeStyle stroke_style) {
-  DCHECK_NE(stroke_style, kWavyStroke);
-  const gfx::RectF line_rect = DecorationRect(pt, width, stroke_thickness);
-  PathBuilder builder;
-  if (ShouldUseStrokeForTextLine(stroke_style)) {
-    auto [start, end] = GetSnappedPointsForTextLine(line_rect);
-    builder.MoveTo(gfx::PointF(start));
-    builder.LineTo(gfx::PointF(end));
-  } else {
-    builder.AddRect(SnapYAxis(line_rect));
-  }
-  return builder.Finalize();
-}
-
 gfx::RectF DecorationLinePainter::Bounds(
     const TextDecorationInfo& decoration_info) {
   const gfx::PointF start_point = decoration_info.StartPoint();
   switch (decoration_info.StrokeStyle()) {
     case kDottedStroke:
-    case kDashedStroke:
-      return decoration_info.BoundsForDottedOrDashed();
+    case kDashedStroke: {
+      const gfx::RectF line_rect =
+          DecorationRect(start_point, decoration_info.Width(),
+                         decoration_info.ResolvedThickness());
+      const float thickness = roundf(line_rect.height());
+      auto [start, end] = GetSnappedPointsForTextLine(line_rect);
+      return gfx::RectF(start.x(), start.y() - thickness / 2,
+                        end.x() - start.x(), thickness);
+    }
     case kWavyStroke:
       // Returns the wavy bounds, which is the same size as the wavy paint rect
       // but at the origin needed by the actual decoration, for the global

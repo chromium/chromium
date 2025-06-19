@@ -35,10 +35,6 @@ class DecorationLinePainter final {
                               const StyledStrokeData& styled_stroke,
                               const AutoDarkMode& auto_dark_mode,
                               const cc::PaintFlags* paint_flags = nullptr);
-  static Path GetPathForTextLine(const gfx::PointF& pt,
-                                 float width,
-                                 float stroke_thickness,
-                                 StrokeStyle stroke_style);
 
  private:
   void PaintWavyTextDecoration(const AutoDarkMode&);
