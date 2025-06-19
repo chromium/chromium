@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.composeplate;
 
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.INCOGNITO_CLICK_LISTENER;
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_INCOGNITO_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.LENS_CLICK_LISTENER;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.VOICE_SEARCH_CLICK_LISTENER;
@@ -22,6 +23,10 @@ public class ComposeplateViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (IS_VISIBLE == propertyKey) {
             view.setVisibility(model.get(IS_VISIBLE) ? View.VISIBLE : View.GONE);
+        } else if (IS_INCOGNITO_BUTTON_VISIBLE == propertyKey) {
+            ImageView incognitoButton = view.findViewById(R.id.incognito_button);
+            incognitoButton.setVisibility(
+                    model.get(IS_INCOGNITO_BUTTON_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (VOICE_SEARCH_CLICK_LISTENER == propertyKey) {
             ImageView voiceSearchButton = view.findViewById(R.id.voice_search_button);
             voiceSearchButton.setOnClickListener(model.get(VOICE_SEARCH_CLICK_LISTENER));

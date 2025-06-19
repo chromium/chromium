@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.composeplate;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,6 +25,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 
 /** Unit tests for {@link ComposeplateCoordinator}. */
@@ -67,6 +69,32 @@ public class ComposeplateCoordinatorUnitTest {
         mCoordinator.setVisibility(/* visible= */ false, /* isCurrentPage= */ true);
         verify(mComposeplateView).setVisibility(View.GONE);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testSetIncognitoButtonVisibility() {
+        assertFalse(ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.getValue());
+        mCoordinator.setVisibility(/* visible= */ true, /* isCurrentPage= */ true);
+        verify(mComposeplateView).setVisibility(View.VISIBLE);
+        verify(mIncognitoButton).setVisibility(View.VISIBLE);
+
+        mCoordinator.setVisibility(/* visible= */ false, /* isCurrentPage= */ true);
+        verify(mComposeplateView).setVisibility(View.GONE);
+        verify(mIncognitoButton).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void testSetIncognitoButtonVisibility_HideIncognitoButton() {
+        ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.setForTesting(true);
+        mCoordinator = new ComposeplateCoordinator(mParentView);
+
+        mCoordinator.setVisibility(/* visible= */ true, /* isCurrentPage= */ true);
+        verify(mComposeplateView).setVisibility(View.VISIBLE);
+        verify(mIncognitoButton).setVisibility(View.GONE);
+
+        mCoordinator.setVisibility(/* visible= */ false, /* isCurrentPage= */ true);
+        verify(mComposeplateView).setVisibility(View.GONE);
+        verify(mIncognitoButton).setVisibility(View.GONE);
     }
 
     @Test

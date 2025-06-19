@@ -1308,6 +1308,9 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sAndroidComposeplateSkipLocaleCheck =
             newBooleanCachedFeatureParam(ANDROID_COMPOSEPLATE, "skip_locale_check", false);
 
+    public static final BooleanCachedFeatureParam sAndroidComposeplateHideIncognitoButton =
+            newBooleanCachedFeatureParam(ANDROID_COMPOSEPLATE, "hide_incognito_button", false);
+
     public static final BooleanCachedFeatureParam sAndroidBottomToolbarDefaultToTop =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_TOOLBAR, "default_to_top", true);
 
@@ -1637,6 +1640,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
                     sAndroidBottomToolbarDefaultToTop,
                     sAndroidComposeplateSkipLocaleCheck,
+                    sAndroidComposeplateHideIncognitoButton,
                     sAndroidThemeModuleForceDependencies,
                     sBackgroundThreadPoolFieldTrialConfig,
                     sBatchTabRestoreBatchSize,

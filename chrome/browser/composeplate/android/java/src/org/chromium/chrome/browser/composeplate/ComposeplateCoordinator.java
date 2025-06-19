@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -16,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @NullMarked
 public class ComposeplateCoordinator {
     private final PropertyModel mModel;
+    private final boolean mHideIncognitoButton;
 
     /**
      * Constructs a new ComposeplateCoordinator.
@@ -26,6 +28,7 @@ public class ComposeplateCoordinator {
         mModel = new PropertyModel(ComposeplateProperties.ALL_KEYS);
         View view = parentView.findViewById(R.id.composeplate_view);
         PropertyModelChangeProcessor.create(mModel, view, ComposeplateViewBinder::bind);
+        mHideIncognitoButton = ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.getValue();
     }
 
     /**
@@ -40,6 +43,9 @@ public class ComposeplateCoordinator {
         }
 
         mModel.set(ComposeplateProperties.IS_VISIBLE, visible);
+        mModel.set(
+                ComposeplateProperties.IS_INCOGNITO_BUTTON_VISIBLE,
+                visible && !mHideIncognitoButton);
     }
 
     /**

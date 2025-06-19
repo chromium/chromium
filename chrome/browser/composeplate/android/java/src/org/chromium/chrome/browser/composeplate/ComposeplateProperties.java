@@ -15,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /* Properties for the composeplate on the NTP. */
 interface ComposeplateProperties {
     WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey IS_INCOGNITO_BUTTON_VISIBLE = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<View.OnClickListener> VOICE_SEARCH_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
@@ -27,6 +28,7 @@ interface ComposeplateProperties {
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_VISIBLE,
+                IS_INCOGNITO_BUTTON_VISIBLE,
                 VOICE_SEARCH_CLICK_LISTENER,
                 LENS_CLICK_LISTENER,
                 INCOGNITO_CLICK_LISTENER
