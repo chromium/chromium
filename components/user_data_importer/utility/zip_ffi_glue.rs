@@ -220,14 +220,6 @@ fn array_token_for_data_type(file_type: ffi::FileType) -> Result<&'static str> {
     }
 }
 
-// Consume the rest of the map to avoid getting errors from deserialize_map.
-fn consume_map<'de, M: de::MapAccess<'de>>(mut map: M) -> Result<(), M::Error> {
-    while map.next_key::<de::IgnoredAny>()?.is_some() {
-        let de::IgnoredAny = map.next_value()?;
-    }
-    Ok(())
-}
-
 /// A custom reader that wraps a `zip::read::ZipFile` to implement
 /// `io::BufRead`. This allows `serde_json_lenient` to efficiently read from the
 /// zip entry without loading the entire entry into memory.
@@ -295,6 +287,8 @@ where
     T: Deserialize<'de> + 'de,
     R: std::io::Read,
 {
+    const VALID_PARTIAL_DESERIALIZATION: &'static str = "Valid partial deserialization";
+
     struct MapVisitor<'de, T>
     where
         T: Deserialize<'de>,
@@ -337,16 +331,24 @@ where
                     if !has_expected_data_type {
                         return Err(DeserializerError::custom("Unexpected data type"));
                     } else if self.metadata_only {
-                        consume_map(map)?;
-                        return Ok(());
+                        // If only the data type check is required, it has been performed
+                        // successfully, so no further deserialization is required. To prevent
+                        // deserialize_map from generating an error caused by the deserialization
+                        // being incomplete, a valid partial deserialization error is returned here
+                        // and will be interpreted as a valid result below.
+                        return Err(DeserializerError::custom(VALID_PARTIAL_DESERIALIZATION));
                     }
                 } else if actual_key == expected_key {
                     if !has_expected_data_type {
                         return Err(DeserializerError::custom("Found array before metadata"));
                     }
                     map.next_value_seed(ArrayDeserializerSeed(Box::new(self.callback)))?;
-                    consume_map(map)?;
-                    return Ok(());
+                    // At this point, the user data array has been parsed successfully, so no
+                    // further deserialization is required. To prevent deserialize_map from
+                    // generating an error caused by the deserialization being incomplete, a valid
+                    // partial deserialization error is returned here and will be interpreted as a
+                    // valid result below.
+                    return Err(DeserializerError::custom(VALID_PARTIAL_DESERIALIZATION));
                 } else {
                     let de::IgnoredAny = map.next_value()?;
                 }
@@ -360,7 +362,16 @@ where
     let mut d = serde_json_lenient::Deserializer::from_reader(&mut stream_reader);
     match d.deserialize_map(MapVisitor { file_type, callback, metadata_only }) {
         Ok(_) => Ok(()),
-        Err(e) => Err(anyhow!("JSON parsing error: {}", e)),
+        Err(e) => {
+            // If the error is a valid partial deserialization error, then all the required
+            // tasks have been completed successfully and deserialization was stopped early
+            // to prevent any further unnecessary work, so Ok(()) can be returned in this
+            // case.
+            if e.to_string().starts_with(VALID_PARTIAL_DESERIALIZATION) {
+                return Ok(());
+            }
+            return Err(anyhow!("JSON parsing error: {}", e));
+        }
     }
 }
 
