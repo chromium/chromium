@@ -21,10 +21,21 @@
 // UINavigationController that owns BWGPromo and BWGConsent view controllers.
 @interface BWGNavigationController : UINavigationController
 
-// Initializes the navigation controller. If `showPromo` is YES, the navigation
-// controller will display the promo. If NO, the navigation controller will
-// display the consent view.
-- (instancetype)initWithPromo:(BOOL)showPromo;
+// Initializes the navigation controller.
+// If `showPromo` is YES, the navigation controller will display the promo.
+// If NO, the navigation controller will display the consent view.
+// `isAccountManaged` indicates whether the account is managed.
+- (instancetype)initWithPromo:(BOOL)showPromo
+             isAccountManaged:(BOOL)isAccountManaged;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithRootViewController:(UIViewController*)rootViewController
+    NS_UNAVAILABLE;
+- (instancetype)initWithNavigationBarClass:(Class)navigationBarClass
+                              toolbarClass:(Class)toolbarClass NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<BWGConsentMutator> mutator;

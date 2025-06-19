@@ -47,12 +47,16 @@ const CGFloat kLogoStackViewHeight = 62.0;
   // If YES, `_showPromo` will show the promo view. Otherwise, it will skip the
   // promo view.
   BOOL _showPromo;
+  // Whether the account is managed.
+  BOOL _isAccountManaged;
 }
 
-- (instancetype)initWithPromo:(BOOL)showPromo {
+- (instancetype)initWithPromo:(BOOL)showPromo
+             isAccountManaged:(BOOL)isAccountManaged {
   self = [super init];
   if (self) {
     _showPromo = showPromo;
+    _isAccountManaged = isAccountManaged;
   }
   return self;
 }
@@ -142,7 +146,8 @@ const CGFloat kLogoStackViewHeight = 62.0;
 
 // Creates the BWG Consent VC.
 - (void)createConsentView {
-  _consentViewController = [[BWGConsentViewController alloc] init];
+  _consentViewController = [[BWGConsentViewController alloc]
+      initWithIsAccountManaged:_isAccountManaged];
   _consentViewController.mutator = self.mutator;
   _consentViewController.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeAlways;

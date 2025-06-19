@@ -299,7 +299,7 @@ NSString* const kShieldedEnvelope = @"envelope.badge.shield.half.filled";
 NSString* const kReaderModeSymbolPreIOS18 = @"doc.plaintext";
 NSString* const kReaderModeSymbolPostIOS18 = @"text.page";
 NSString* const kCircleBadgeFill = @"circlebadge.fill";
-NSString* const kCounterCloseWiseSymbol =
+NSString* const kCounterClockWiseSymbol =
     @"clock.arrow.trianglehead.counterclockwise.rotate.90";
 
 // Names of the default symbol being non-monochrome by default. When using them,

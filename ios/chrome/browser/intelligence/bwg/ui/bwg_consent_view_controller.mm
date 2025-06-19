@@ -62,6 +62,16 @@ NSString* const kFootnoteLinkAction = @"footnoteLinkAction";
 @implementation BWGConsentViewController {
   // Main stack view containing all the others views.
   UIStackView* _mainStackView;
+  // Whether the account is managed.
+  BOOL _isAccountManaged;
+}
+
+- (instancetype)initWithIsAccountManaged:(BOOL)isAccountManaged {
+  self = [super init];
+  if (self) {
+    _isAccountManaged = isAccountManaged;
+  }
+  return self;
 }
 
 #pragma mark - UIViewController
@@ -155,7 +165,7 @@ NSString* const kFootnoteLinkAction = @"footnoteLinkAction";
   NSString* secondTitle = kBWGConsentSecondBoxTitleText;
   NSString* secondBody = kBWGConsentSecondBoxBodyText;
   UIView* secondBox =
-      [self createHorizontalBoxWithIcon:kCounterCloseWiseSymbol
+      [self createHorizontalBoxWithIcon:kCounterClockWiseSymbol
                                 boxView:[self createBoxWithTitle:secondTitle
                                                         bodyText:secondBody]];
   [boxesStackView addArrangedSubview:secondBox];

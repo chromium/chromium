@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 @interface BWGCoordinator () <UISheetPresentationControllerDelegate,
                               BWGMediatorDelegate,
@@ -111,7 +113,8 @@
   }
 
   _navigationController =
-      [[BWGNavigationController alloc] initWithPromo:showPromo];
+      [[BWGNavigationController alloc] initWithPromo:showPromo
+                                    isAccountManaged:[self isManagedAccount]];
   _navigationController.sheetPresentationController.delegate = self;
   _navigationController.BWGNavigationDelegate = self;
   _navigationController.mutator = _mediator;
@@ -187,6 +190,13 @@
     [_helpCommandsHandler
         presentInProductHelpWithType:InProductHelpType::kPageActionMenu];
   }
+}
+
+// Returns YES if the account is managed.
+- (BOOL)isManagedAccount {
+  raw_ptr<AuthenticationService> authService =
+      AuthenticationServiceFactory::GetForProfile(self.profile);
+  return authService->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
 }
 
 @end

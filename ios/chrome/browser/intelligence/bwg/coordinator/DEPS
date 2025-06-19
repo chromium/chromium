@@ -3,4 +3,6 @@ include_rules = [
   "+ios/chrome/browser/promos_manager/model",
   "+ios/chrome/browser/promos_manager/ui_bundled",
   "+ios/chrome/browser/signin/model/identity_manager_factory.h",
+  "+ios/chrome/browser/signin/model/authentication_service.h",
+  "+ios/chrome/browser/signin/model/authentication_service_factory.h",
 ]
