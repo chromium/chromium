@@ -14762,6 +14762,45 @@
             ]
         }
     ],
+    "MemorySaverModeRenderTuning": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "available_memory_threshold_mb": "740"
+                    },
+                    "enable_features": [
+                        "MemorySaverModeRenderTuning",
+                        "OomIntervention"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "available_memory_threshold_mb": "740"
+                    },
+                    "enable_features": [
+                        "MemorySaverModeRenderTuning"
+                    ]
+                }
+            ]
+        }
+    ],
     "MerchantTrust": [
         {
             "platforms": [
@@ -16148,21 +16187,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OngoingProcesses"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OomIntervention": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "OomIntervention"
                     ]
                 }
             ]
@@ -25330,22 +25354,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UserEducationExperienceVersion2Point5"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UserLevelMemoryPressureSignal": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "UserLevelMemoryPressureSignalOn4GbDevices",
-                        "UserLevelMemoryPressureSignalOn6GbDevices"
                     ]
                 }
             ]
