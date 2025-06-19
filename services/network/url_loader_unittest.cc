@@ -3483,7 +3483,8 @@ TEST_F(URLLoaderTest, UploadChunkedDataPipeNotAllowHTTP1) {
       ResourceRequestBody::ReadOnlyOnce(false));
   set_request_body(std::move(resource_request_body));
 
-  EXPECT_EQ(net::ERR_H2_OR_QUIC_REQUIRED, Load(test_server()->GetURL("/echo")));
+  EXPECT_EQ(net::ERR_ALPN_NEGOTIATION_FAILED,
+            Load(test_server()->GetURL("/echo")));
 }
 
 // Tests a request body with ReadOnceStream.

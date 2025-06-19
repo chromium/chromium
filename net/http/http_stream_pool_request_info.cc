@@ -10,6 +10,7 @@
 #include "net/http/alternative_service.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/socket_tag.h"
 #include "url/scheme_host_port.h"
 
@@ -23,7 +24,7 @@ HttpStreamPoolRequestInfo::HttpStreamPoolRequestInfo(
     SecureDnsPolicy secure_dns_policy,
     bool disable_cert_network_fetches,
     AlternativeServiceInfo alternative_service_info,
-    bool is_http1_allowed,
+    NextProtoSet allowed_alpns,
     int load_flags,
     ProxyInfo proxy_info,
     NetLogWithSource factory_job_controller_net_log)
@@ -36,7 +37,7 @@ HttpStreamPoolRequestInfo::HttpStreamPoolRequestInfo(
       secure_dns_policy(secure_dns_policy),
       disable_cert_network_fetches(disable_cert_network_fetches),
       alternative_service_info(std::move(alternative_service_info)),
-      is_http1_allowed(is_http1_allowed),
+      allowed_alpns(allowed_alpns),
       load_flags(load_flags),
       proxy_info(std::move(proxy_info)),
       factory_job_controller_net_log(

@@ -154,8 +154,7 @@ class Preconnector {
             stream_key.socket_tag(), stream_key.network_anonymization_key(),
             stream_key.secure_dns_policy(),
             stream_key.disable_cert_network_fetches(),
-            alternative_service_info_, is_http1_allowed_, load_flags_,
-            proxy_info_,
+            alternative_service_info_, allowed_alpns_, load_flags_, proxy_info_,
             NetLogWithSource::Make(
                 pool.http_network_session()->net_log(),
                 NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)),
@@ -193,7 +192,7 @@ class Preconnector {
   size_t num_streams_ = 1;
 
   AlternativeServiceInfo alternative_service_info_;
-  bool is_http1_allowed_ = true;
+  NextProtoSet allowed_alpns_ = NextProtoSet::All();
   ProxyInfo proxy_info_ = ProxyInfo::Direct();
   int load_flags_ = 0;
 
@@ -242,8 +241,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     return *this;
   }
 
-  StreamRequester& set_is_http1_allowed(bool is_http1_allowed) {
-    is_http1_allowed_ = is_http1_allowed;
+  StreamRequester& set_allowed_alpns(NextProtoSet allowed_alpns) {
+    allowed_alpns_ = allowed_alpns;
     return *this;
   }
 
@@ -295,8 +294,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
             stream_key.socket_tag(), stream_key.network_anonymization_key(),
             stream_key.secure_dns_policy(),
             stream_key.disable_cert_network_fetches(),
-            alternative_service_info_, is_http1_allowed_, load_flags_,
-            proxy_info_,
+            alternative_service_info_, allowed_alpns_, load_flags_, proxy_info_,
             NetLogWithSource::Make(
                 pool.http_network_session()->net_log(),
                 NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)),
@@ -424,7 +422,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   bool enable_ip_based_pooling_ = true;
   bool enable_alternative_services_ = true;
-  bool is_http1_allowed_ = true;
+  NextProtoSet allowed_alpns_ = NextProtoSet::All();
   int load_flags_ = 0;
   ProxyInfo proxy_info_ = ProxyInfo::Direct();
   AlternativeServiceInfo alternative_service_info_;
@@ -6334,11 +6332,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DisallowH1) {
   socket_factory()->AddSocketDataProvider(&data);
 
   StreamRequester requester;
-  requester.set_is_http1_allowed(false);
+  requester.set_allowed_alpns(
+      NextProtoSet({NextProto::kProtoHTTP2, NextProto::kProtoQUIC}));
 
   requester.RequestStream(pool());
   requester.WaitForResult();
-  EXPECT_THAT(requester.result(), Optional(IsError(ERR_H2_OR_QUIC_REQUIRED)));
+  EXPECT_THAT(requester.result(),
+              Optional(IsError(ERR_ALPN_NEGOTIATION_FAILED)));
 }
 
 // Tests that a bad proxy is reported to a ProxyResolutionService when falling

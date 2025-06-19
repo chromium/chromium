@@ -329,7 +329,7 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
       const override;
   bool enable_ip_based_pooling() const override;
   bool enable_alternative_services() const override;
-  bool is_http1_allowed() const override;
+  NextProtoSet allowed_alpns() const override;
   const ProxyInfo& proxy_info() const override;
   const NetLogWithSource& net_log() const override;
   void OnStreamFailed(HttpStreamPool::Job* job,

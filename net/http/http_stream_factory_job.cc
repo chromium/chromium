@@ -1111,7 +1111,7 @@ int HttpStreamFactory::Job::DoCreateStream() {
                                   session_->websocket_endpoint_lock_manager());
     } else {
       if (!request_info_.is_http1_allowed) {
-        return ERR_H2_OR_QUIC_REQUIRED;
+        return ERR_ALPN_NEGOTIATION_FAILED;
       }
       stream_ = std::make_unique<HttpBasicStream>(std::move(connection_),
                                                   is_for_get_to_http_proxy);

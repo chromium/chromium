@@ -105,7 +105,7 @@ HttpStreamPool::JobController::JobController(
       respect_limits_(request_info.load_flags & LOAD_IGNORE_LIMITS
                           ? RespectLimits::kIgnore
                           : RespectLimits::kRespect),
-      is_http1_allowed_(request_info.is_http1_allowed),
+      allowed_alpns_(request_info.allowed_alpns),
       proxy_info_(request_info.proxy_info),
       alternative_service_info_(request_info.alternative_service_info),
       origin_stream_key_(request_info.destination,
@@ -322,8 +322,8 @@ bool HttpStreamPool::JobController::enable_alternative_services() const {
   return enable_alternative_services_;
 }
 
-bool HttpStreamPool::JobController::is_http1_allowed() const {
-  return is_http1_allowed_;
+NextProtoSet HttpStreamPool::JobController::allowed_alpns() const {
+  return allowed_alpns_;
 }
 
 const ProxyInfo& HttpStreamPool::JobController::proxy_info() const {

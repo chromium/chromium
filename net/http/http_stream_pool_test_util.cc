@@ -449,8 +449,8 @@ bool TestJobDelegate::enable_alternative_services() const {
   return true;
 }
 
-bool TestJobDelegate::is_http1_allowed() const {
-  return true;
+NextProtoSet TestJobDelegate::allowed_alpns() const {
+  return NextProtoSet::All();
 }
 
 const ProxyInfo& TestJobDelegate::proxy_info() const {

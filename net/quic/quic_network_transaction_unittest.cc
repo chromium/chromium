@@ -30,6 +30,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -8548,7 +8549,7 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1FalseProhibitsH1) {
   TestCompletionCallback callback;
   int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_H2_OR_QUIC_REQUIRED));
+  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_ALPN_NEGOTIATION_FAILED));
 }
 
 // Confirm mock class UploadDataStreamNotAllowHTTP1 can upload content over
@@ -8751,7 +8752,7 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadFailH1AndResumeQuic) {
     // the HappyEyeballsV3 is enabled, and when the HappyEyeballsV3 is enabled
     // we create an HttpStream on HTTP/1.1 for the request. Just check we get
     // an appropriate error.
-    EXPECT_THAT(rv, IsError(ERR_H2_OR_QUIC_REQUIRED));
+    EXPECT_THAT(rv, IsError(ERR_ALPN_NEGOTIATION_FAILED));
   } else {
     EXPECT_THAT(rv, IsOk());
     CheckResponseData(&trans, kQuicRespData);

@@ -55,8 +55,8 @@ class HttpStreamPool::Job {
     // True when alternative services is enabled.
     virtual bool enable_alternative_services() const = 0;
 
-    // True when HTTP/1.1 is allowed.
-    virtual bool is_http1_allowed() const = 0;
+    // Returns the set of ALPNs that are allowed for this job.
+    virtual NextProtoSet allowed_alpns() const = 0;
 
     // Returns the proxy info.
     virtual const ProxyInfo& proxy_info() const = 0;

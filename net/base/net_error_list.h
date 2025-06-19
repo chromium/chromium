@@ -122,8 +122,8 @@ NET_ERROR(CLEARTEXT_NOT_PERMITTED, -29)
 // The request was blocked by a Content Security Policy
 NET_ERROR(BLOCKED_BY_CSP, -30)
 
+// NET_ERROR(H2_OR_QUIC_REQUIRED, -31) was removed. It was:
 // The request was blocked because of no H/2 or QUIC session.
-NET_ERROR(H2_OR_QUIC_REQUIRED, -31)
 
 // The request was blocked by CORB or ORB.
 NET_ERROR(BLOCKED_BY_ORB, -32)
