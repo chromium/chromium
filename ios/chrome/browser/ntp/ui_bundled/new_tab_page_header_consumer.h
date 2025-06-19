@@ -29,6 +29,9 @@
 // Sets the default search engine name for display.
 - (void)setDefaultSearchEngineName:(NSString*)dseName;
 
+// Sets the default search engine icon for display.
+- (void)setDefaultSearchEngineImage:(UIImage*)image;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_HEADER_CONSUMER_H_

@@ -883,6 +883,11 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   self.headerView.placeholderText = self.placeholderText;
 }
 
+- (void)setDefaultSearchEngineImage:(UIImage*)image {
+  CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate));
+  [self.headerView setDefaultSearchEngineLogo:image];
+}
+
 - (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
                                 name:(NSString*)name
                                email:(NSString*)email {

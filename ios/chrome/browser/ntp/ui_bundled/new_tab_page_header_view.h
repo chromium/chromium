@@ -96,6 +96,9 @@
 // Adds views necessary to customize the NTP search box.
 - (void)addViewsToSearchField:(UIView*)searchField;
 
+// Configures the current default search engine logo.
+- (void)setDefaultSearchEngineLogo:(UIImage*)logo;
+
 // Highlights the fake omnibox.
 - (void)setFakeboxHighlighted:(BOOL)highlighted;
 

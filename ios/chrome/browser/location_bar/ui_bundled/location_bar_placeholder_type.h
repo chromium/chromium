@@ -13,6 +13,8 @@ enum class LocationBarPlaceholderType {
   kLensOverlay,
   // Page action menu entry point.
   kPageActionMenu,
+  // Default search engine icon (on NTP).
+  kDefaultSearchEngineIcon,
 };
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_PLACEHOLDER_TYPE_H_

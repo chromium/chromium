@@ -13,6 +13,7 @@
 #import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/browser/omnibox_text_util.h"
 #import "components/omnibox/browser/omnibox_view.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
@@ -53,6 +54,8 @@
 #import "ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_state_provider.h"
+#import "ios/chrome/browser/omnibox/model/placeholder_service.h"
+#import "ios/chrome/browser/omnibox/model/placeholder_service_factory.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
@@ -277,6 +280,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       ios::TemplateURLServiceFactory::GetForProfile(self.profile);
   self.mediator.consumer = self.viewController;
   self.mediator.webStateList = self.webStateList;
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+    PlaceholderService* placeholderService =
+        ios::PlaceholderServiceFactory::GetForProfile(self.profile);
+    self.mediator.placeholderService = placeholderService;
+  }
 
   self.steadyViewMediator = [[LocationBarSteadyViewMediator alloc]
       initWithLocationBarModel:[self locationBarModel]];

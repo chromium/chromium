@@ -68,6 +68,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/omnibox/coordinator",
     "//ios/chrome/browser/omnibox/coordinator/popup",
     "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/model:placeholder_service",
     "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/browser/omnibox/model/omnibox_position",
     "//ios/chrome/browser/omnibox/public",

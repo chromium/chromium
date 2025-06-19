@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol LocationBarConsumer;
+class PlaceholderService;
 class TemplateURLService;
 class WebStateList;
 
@@ -23,6 +24,9 @@ class WebStateList;
 // The templateURLService used by this mediator to extract whether the default
 // search engine supports search-by-image.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
+
+/// The placeholder used by this mediator to extract placeholder text and image.
+@property(nonatomic, assign) PlaceholderService* placeholderService;
 
 // The consumer for this object. This can change during the lifetime of this
 // object and may be nil.

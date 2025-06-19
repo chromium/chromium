@@ -16,6 +16,7 @@ include_rules = [
   "+ios/chrome/browser/omnibox/ui",
   "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/omnibox/public",
+  "+ios/chrome/browser/omnibox/model",
   "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/toolbar/ui_bundled/public",
   "+ios/chrome/browser/sharing/ui_bundled",

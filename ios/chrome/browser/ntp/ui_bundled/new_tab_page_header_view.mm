@@ -68,8 +68,14 @@ const CGFloat kEndButtonMIAEnlargedFakebox = 20.0;
 const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 
 // The constants for the constraints the leading-edge aligned UI elements.
-const CGFloat kHintLabelFakeboxLeadingSpace = 26.0;
+const CGFloat kHintLabelFakeboxLeadingSpace = 28.0;
+const CGFloat kHintLabelFakeboxLeadingSpaceWithIcon = 49.0;
+
 const CGFloat kHintLabelOmniboxLeadingSpace = 20.0;
+const CGFloat kHintLabelOmniboxLeadingSpaceWithIcon = 39.0;
+
+const CGFloat kFakeboxImageLeadingSpace = 22.0;
+const CGFloat kFakeboxImageSize = 16.0;
 
 // The amount to inset the Fakebox from the rest of the modules on Home, when
 // Large Fakebox is enabled.
@@ -253,6 +259,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   UIView* _customizationNewFeatureBadge;
   // A view to contain all the buttons on the trailing side of the fakebox.
   UIStackView* _buttonStack;
+  // Default search engine logo view.
+  UIImageView* _logoView;
 
   // Constraints to update the `toolbarView`'s postion according to the
   // `tabGroupIndicatorView`'s visibility.
@@ -377,7 +385,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
   self.hintLabelLeadingConstraint = [self.searchHintLabel.leadingAnchor
       constraintEqualToAnchor:self.fakeLocationBar.leadingAnchor
-                     constant:kHintLabelFakeboxLeadingSpace];
+                     constant:self.hintLabelFakeboxLeadingSpace];
   [NSLayoutConstraint activateConstraints:@[
     self.hintLabelLeadingConstraint,
     [self.searchHintLabel.heightAnchor
@@ -483,6 +491,34 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
         constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
     self.hintLabelTrailingConstraint,
   ]];
+
+  [self addSearchEngineLogoIfNeededToSearchField:searchField];
+}
+
+- (void)addSearchEngineLogoIfNeededToSearchField:(UIView*)searchField {
+  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+    return;
+  }
+
+  UIImageView* logoView = [[UIImageView alloc] init];
+  [searchField addSubview:logoView];
+
+  logoView.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSquareConstraints(logoView, kFakeboxImageSize);
+
+  [NSLayoutConstraint activateConstraints:@[
+    [logoView.leadingAnchor constraintEqualToAnchor:searchField.leadingAnchor
+                                           constant:kFakeboxImageLeadingSpace],
+    [logoView.centerYAnchor constraintEqualToAnchor:searchField.centerYAnchor
+                                           constant:-2.0],
+
+  ]];
+
+  _logoView = logoView;
+}
+
+- (void)setDefaultSearchEngineLogo:(UIImage*)logo {
+  _logoView.image = logo;
 }
 
 - (void)updateButtonsForUserInterfaceStyle:(UIUserInterfaceStyle)style {
@@ -607,7 +643,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
     // Reset the view horizontal constraints.
     self.hintLabelLeadingConstraint.constant =
-        kHintLabelFakeboxLeadingSpace + hintLabelScalingExtraOffset;
+        self.hintLabelFakeboxLeadingSpace + hintLabelScalingExtraOffset;
 
     self.separator.alpha = 0;
 
@@ -657,9 +693,9 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   _buttonStack.directionalLayoutMargins =
       NSDirectionalEdgeInsetsMake(0, 0, 0, endButtonInset);
   self.hintLabelLeadingConstraint.constant =
-      hintLabelScalingExtraOffset + Interpolate(kHintLabelFakeboxLeadingSpace,
-                                                kHintLabelOmniboxLeadingSpace,
-                                                percent);
+      hintLabelScalingExtraOffset +
+      Interpolate(self.hintLabelFakeboxLeadingSpace,
+                  self.hintLabelOmniboxLeadingSpace, percent);
 
   // Fade N badge treatment when scrolled.
   if (_useNewBadgeForLensButton && !_lensButtonWithNewBadgeTapped &&
@@ -1083,6 +1119,24 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   return self.isGoogleDefaultSearchEngine &&
          (GetNTPMIAEntrypointVariation() ==
           NTPMIAEntrypointVariation::kOmniboxContainedEnlargedFakebox);
+}
+
+#pragma mark - helpers
+
+- (CGFloat)hintLabelFakeboxLeadingSpace {
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+    return kHintLabelFakeboxLeadingSpaceWithIcon;
+  } else {
+    return kHintLabelFakeboxLeadingSpace;
+  }
+}
+
+- (CGFloat)hintLabelOmniboxLeadingSpace {
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+    return kHintLabelOmniboxLeadingSpaceWithIcon;
+  } else {
+    return kHintLabelOmniboxLeadingSpace;
+  }
 }
 
 @end

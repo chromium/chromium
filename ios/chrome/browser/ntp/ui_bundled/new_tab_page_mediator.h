@@ -38,6 +38,7 @@ class HomeBackgroundCustomizationService;
 @protocol NewTabPageContentDelegate;
 @protocol NewTabPageHeaderConsumer;
 @class NewTabPageState;
+class PlaceholderService;
 class PrefService;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
@@ -84,6 +85,8 @@ class UrlLoadingBrowserAgent;
 // Observer for feed visibility changes.
 @property(nonatomic, weak) id<DiscoverFeedVisibilityObserver>
     feedVisibilityObserver;
+// Placeholder service, for placeholder text and image.
+@property(nonatomic, assign) PlaceholderService* placeholderService;
 // Delegate for controlling the current feed.
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
 // Delegate for actions relating to the NTP content.

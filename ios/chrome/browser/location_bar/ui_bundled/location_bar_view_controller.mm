@@ -144,6 +144,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
   // The location bar button to access the page action menu.
   PageActionMenuEntrypointView* _pageActionMenuEntrypointView;
+
+  // The placeholder view that holds the DSE icon.
+  UIImageView* _defaultSearchEngineIconView;
 }
 
 #pragma mark - public
@@ -305,6 +308,15 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
                        withAction:@selector(sizeClassDidChange)];
   }
+
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+    _defaultSearchEngineIconView = [[UIImageView alloc] init];
+    _defaultSearchEngineIconView.translatesAutoresizingMaskIntoConstraints = NO;
+    _defaultSearchEngineIconView.contentMode = UIViewContentModeCenter;
+    AddSizeConstraints(
+        _defaultSearchEngineIconView,
+        CGSizeMake(kOmniboxLeadingImageSize + 12.0f, kOmniboxLeadingImageSize));
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -373,6 +385,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   if (_isNTP) {
     [self updatePlaceholder];
   }
+}
+
+- (void)setPlaceholderDefaultSearchEngineIcon:(UIImage*)icon {
+  _defaultSearchEngineIconView.image = icon;
 }
 
 #pragma mark - LocationBarSteadyViewConsumer
@@ -1034,6 +1050,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
       CHECK(IsPageActionMenuEnabled());
       self.locationBarSteadyView.placeholderView =
           _pageActionMenuEntrypointView;
+      break;
+    case LocationBarPlaceholderType::kDefaultSearchEngineIcon:
+      self.locationBarSteadyView.placeholderView = _defaultSearchEngineIconView;
       break;
   }
 }

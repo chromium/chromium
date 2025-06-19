@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
@@ -41,6 +42,8 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
+#import "ios/chrome/browser/omnibox/model/placeholder_service.h"
+#import "ios/chrome/browser/omnibox/model/placeholder_service_observer_bridge.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -63,9 +66,17 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
+namespace {
+
+// The point size of the entry point's symbol.
+const CGFloat kIconPointSize = 18.0;
+
+}  // namespace
+
 @interface NewTabPageMediator () <BrowserViewVisibilityObserving,
                                   HomeBackgroundCustomizationServiceObserving,
                                   IdentityManagerObserverBridgeDelegate,
+                                  PlaceholderServiceObserving,
                                   PrefObserverDelegate,
                                   SearchEngineObserving,
                                   SyncObserverModelBridge>
@@ -121,6 +132,7 @@
   std::unique_ptr<SyncObserverBridge> _syncObserver;
   raw_ptr<signin::IdentityManager> _identityManager;
   id<SystemIdentity> _signedInIdentity;
+  std::unique_ptr<PlaceholderServiceObserverBridge> _placeholderServiceObserver;
 }
 
 // Synthesized from NewTabPageMutator.
@@ -241,6 +253,9 @@
   _backgroundCustomizationServiceObserverBridge = nullptr;
   _backgroundCustomizationService = nullptr;
   _imageFetcherService = nullptr;
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+    self.placeholderService = nullptr;
+  }
 }
 
 - (void)saveNTPStateForWebState:(web::WebState*)webState {
@@ -268,6 +283,21 @@
   } else {
     [self.consumer restoreScrollPosition:NTPState.scrollPosition];
   }
+}
+
+- (void)setPlaceholderService:(PlaceholderService*)placeholderService {
+  CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate));
+
+  _placeholderService = placeholderService;
+
+  if (!placeholderService) {
+    _placeholderServiceObserver.reset();
+    return;
+  }
+
+  _placeholderServiceObserver =
+      std::make_unique<PlaceholderServiceObserverBridge>(self,
+                                                         placeholderService);
 }
 
 #pragma mark - BrowserViewVisibilityObserving
@@ -320,6 +350,27 @@
   }
   [self updateAccountImage];
   [self updateAccountErrorBadge];
+}
+
+#pragma mark - PlaceholderServiceObserving
+
+- (void)placeholderImageUpdated {
+  // Show Default Search Engine favicon.
+  // Remember what is the Default Search Engine provider that the icon is
+  // for, in case the user changes Default Search Engine while this is being
+  // loaded.
+  __weak __typeof(self) weakSelf = self;
+  if (self.placeholderService) {
+    self.placeholderService->FetchDefaultSearchEngineIcon(
+        kIconPointSize, base::BindRepeating(^(UIImage* image) {
+          [weakSelf.headerConsumer setDefaultSearchEngineImage:image];
+        }));
+  }
+}
+
+- (void)placeholderServiceShuttingDown:(PlaceholderService*)service {
+  // Removes observation.
+  self.placeholderService = nil;
 }
 
 #pragma mark - PrefObserverDelegate
