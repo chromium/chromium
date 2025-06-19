@@ -99,8 +99,8 @@ static const struct UnaryTestData cases[] = {
 };
 
 static const struct UnaryTestData elided_cases[] = {
-    {FILE_PATH_LITERAL("spaces are elided.txt                        .exe"),
-     u"spaces are elided.txt\u2026.exe"},
+    {FILE_PATH_LITERAL("test elided.txt                                .exe"),
+     u"test elided.txt\u2026.exe"},
 };
 
 }  // namespace

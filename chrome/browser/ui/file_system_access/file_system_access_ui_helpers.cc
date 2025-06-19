@@ -22,6 +22,15 @@
 
 namespace {
 
+// The denominator for calculating the available pixel width for different file
+// name. For example, if the file name contains space, the file name should be
+// elided to 2/6 of the modal width.
+// Previously this was introduced as 4 in http://crrev.com/c/3955966, but it
+// needs to be larger to make the string takes less space, so the extension is
+// displayed without clipping.
+// See http://crbug.com/421950224.
+constexpr int kAvailablePixelWidthDenominator = 6;
+
 base::FilePath GetPathForDisplayAsPath(const content::PathInfo& path_info) {
   // Use display_name for android content-URIs.
 #if BUILDFLAG(IS_ANDROID)
@@ -64,7 +73,7 @@ std::u16string GetElidedPathForDisplayAsTitle(
   // containing a space will bump to the next line if the file name + preceding
   // text in the title is too long, which is still easy to read because the file
   // name is contiguous.
-  int scalar_quarters =
+  int scalar_numerators =
       base::Contains(GetPathForDisplayAsPath(path_info).value(),
                      FILE_PATH_LITERAL(" "))
           ? 2
@@ -77,8 +86,9 @@ std::u16string GetElidedPathForDisplayAsTitle(
         views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   }
 #endif
-  const int available_pixel_width =
-      preferred_width.value_or(400) * scalar_quarters / 4;
+  const int available_pixel_width = preferred_width.value_or(400) *
+                                    scalar_numerators /
+                                    kAvailablePixelWidthDenominator;
   return gfx::ElideFilename(GetPathForDisplayAsPath(path_info), gfx::FontList(),
                             available_pixel_width);
 }
