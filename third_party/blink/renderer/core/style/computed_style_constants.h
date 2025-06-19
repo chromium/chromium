@@ -95,11 +95,15 @@ enum PseudoId : uint8_t {
   kPseudoIdViewTransitionNew,
   // Internal IDs follow:
   kPseudoIdFirstLineInherited,
+
+  // These five must be together, due to code in
+  // CollectMatchingRulesInternal().
   kPseudoIdScrollbarThumb,
   kPseudoIdScrollbarButton,
   kPseudoIdScrollbarTrack,
   kPseudoIdScrollbarTrackPiece,
   kPseudoIdScrollbarCorner,
+
   kPseudoIdScrollMarkerGroupAfter,
   kPseudoIdScrollMarkerGroupBefore,
   kPseudoIdResizer,
