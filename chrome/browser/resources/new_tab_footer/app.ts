@@ -198,6 +198,10 @@ export class NewTabFooterAppElement extends CrLitElement {
     return !!this.extensionName_ && this.ntpType_ === NewTabPageType.kExtension;
   }
 
+  protected onContextMenu_(e: MouseEvent) {
+    this.handler_.showContextMenu({x: e.clientX, y: e.clientY});
+  }
+
   protected onExtensionNameClick_(e: Event) {
     e.preventDefault();
     recordClick(FooterElement.EXTENSION_NAME);

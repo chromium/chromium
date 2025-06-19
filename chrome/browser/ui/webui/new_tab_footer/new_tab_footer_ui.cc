@@ -110,9 +110,9 @@ void NewTabFooterUI::CreateNewTabFooterHandler(
         pending_document,
     mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>
         pending_handler) {
-  handler_ = std::make_unique<NewTabFooterHandler>(std::move(pending_handler),
-                                                   std::move(pending_document),
-                                                   web_ui()->GetWebContents());
+  handler_ = std::make_unique<NewTabFooterHandler>(
+      std::move(pending_handler), std::move(pending_document), this->embedder(),
+      web_ui()->GetWebContents());
   if (!source_tab_url_.is_empty()) {
     handler_->AttachedTabStateUpdated(source_tab_url_);
   }

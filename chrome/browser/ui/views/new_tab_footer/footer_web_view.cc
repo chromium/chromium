@@ -63,6 +63,33 @@ void NewTabFooterWebView::CloseUI() {
   }
 }
 
+void NewTabFooterWebView::ShowCustomContextMenu(
+    gfx::Point point,
+    std::unique_ptr<ui::MenuModel> menu_model) {
+  ConvertPointToScreen(this, &point);
+  context_menu_model_ = std::move(menu_model);
+  context_menu_runner_ = std::make_unique<views::MenuRunner>(
+      context_menu_model_.get(),
+      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);
+  context_menu_runner_->RunMenuAt(
+      GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
+      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse,
+      contents_wrapper_->web_contents()->GetContentNativeView());
+}
+
+void NewTabFooterWebView::HideCustomContextMenu() {
+  if (context_menu_runner_) {
+    context_menu_runner_->Cancel();
+  }
+}
+
+bool NewTabFooterWebView::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, GetFocusManager());
+}
+
 BEGIN_METADATA(NewTabFooterWebView)
 END_METADATA
 

@@ -402,4 +402,19 @@ suite('NewTabFooterAppTest', () => {
               });
         });
   });
+
+  suite('Misc', () => {
+    setup(async () => {
+      await setupFooter();
+    });
+
+    test(`right click opens context menu`, async () => {
+      const container = $$(element, '#container');
+      assertTrue(!!container);
+
+      container.dispatchEvent(new MouseEvent('contextmenu'));
+
+      await handler.whenCalled('showContextMenu');
+    });
+  });
 });
