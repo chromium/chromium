@@ -151,11 +151,9 @@ ci.thin_tester(
         ),
     ),
     targets = targets.bundle(
-        # We currently only want to run the WebGL 2.0 conformance tests on
-        # this until additional Pixel 2 capacity is added.
         targets = [
             "gpu_fyi_android_gtests",
-            "gpu_fyi_android_webgl2_and_gold_telemetry_tests",
+            "gpu_pixel_2_telemetry_tests",
         ],
         mixins = [
             "chromium_pixel_2_q",

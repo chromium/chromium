@@ -4204,15 +4204,6 @@ targets.bundle(
     ],
 )
 
-targets.bundle(
-    name = "gpu_fyi_android_webgl2_and_gold_telemetry_tests",
-    targets = [
-        "gpu_validating_telemetry_tests",
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl2_conformance_validating_telemetry_tests",
-    ],
-)
-
 # TODO(crbug.com/40130073): Merge with an existing set of tests such as
 # gpu_fyi_linux_release_gtests once all CrOS tests have been enabled.
 targets.bundle(
@@ -4605,6 +4596,16 @@ targets.bundle(
             "gpu_integration_test_common_args",
         ],
     },
+)
+
+targets.bundle(
+    name = "gpu_pixel_2_telemetry_tests",
+    targets = [
+        "gpu_validating_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl2_conformance_validating_telemetry_tests",
+    ],
 )
 
 targets.bundle(

@@ -696,7 +696,7 @@
         'os_type': 'android',
         'skip_merge_script': True,
         'mixins': [
-          'chromium_pixel_2_pie',
+          'chromium_pixel_2_q',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_telemetry_tests_v8',

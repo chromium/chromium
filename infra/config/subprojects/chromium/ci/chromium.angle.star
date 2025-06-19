@@ -136,7 +136,7 @@ ci.thin_tester(
             "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
         ],
         mixins = [
-            "chromium_pixel_2_pie",
+            "chromium_pixel_2_q",
             "has_native_resultdb_integration",
         ],
     ),
