@@ -497,7 +497,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                      anchorView:_viewController.view
+                      anchorView:nil
                      accessPoint:AccountMenuAccessPoint::kNewTabPage
                              URL:GURL()];
   _accountMenuCoordinator.delegate = self;
