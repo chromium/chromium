@@ -108,10 +108,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     ManageSyncSettingsTableViewController* viewController;
 // Mediator.
 @property(nonatomic, strong) ManageSyncSettingsMediator* mediator;
-// The navigation controller used to present child controllers of
-// ManageSyncSettings.
-@property(nonatomic, readonly)
-    UINavigationController* _navigationControllerForChildPages;
 // Sync service.
 @property(nonatomic, assign, readonly) syncer::SyncService* syncService;
 // Authentication service.
@@ -128,9 +124,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   DismissViewCallback _dismissWebAndAppSettingDetailsController;
   // Dismiss callback for account details view.
   DismissViewCallback _accountDetailsControllerDismissCallback;
-  // The navigation controller to use only when presenting the
-  // ManageSyncSettings modally.
-  SettingsNavigationController* _navigationControllerInModalView;
   // The coordinator for the Personalize Google Services view.
   PersonalizeGoogleServicesCoordinator* _personalizeGoogleServicesCoordinator;
   SigninCoordinator* _addAccountCoordinator;
@@ -143,6 +136,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                                          browser:(Browser*)browser {
   if ((self = [super initWithBaseViewController:navigationController
                                         browser:browser])) {
+    CHECK(navigationController, base::NotFatalUntil::M142);
     _baseNavigationController = navigationController;
   }
   return self;
@@ -221,14 +215,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 #pragma mark - Properties
 
-- (UINavigationController*)navigationControllerForChildPages {
-  if (_baseNavigationController) {
-    return _baseNavigationController;
-  }
-  CHECK(_navigationControllerInModalView);
-  return _navigationControllerInModalView;
-}
-
 - (syncer::SyncService*)syncService {
   return SyncServiceFactory::GetForProfile(self.profile);
 }
@@ -293,8 +279,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     }
 
     NSEnumerator<UIViewController*>* inversedViewControllers =
-        [self.navigationControllerForChildPages
-                .viewControllers reverseObjectEnumerator];
+        [_baseNavigationController.viewControllers reverseObjectEnumerator];
     for (UIViewController* controller in inversedViewControllers) {
       if (controller == self.viewController) {
         break;
@@ -331,7 +316,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
         [self.delegate manageSyncSettingsCoordinatorWasRemoved:self];
       }
     } else {
-      [self.navigationControllerForChildPages.presentingViewController
+      [_baseNavigationController.presentingViewController
           dismissViewControllerAnimated:YES
                              completion:nil];
       [self.delegate manageSyncSettingsCoordinatorWasRemoved:self];
@@ -395,10 +380,10 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   base::RecordAction(base::UserMetricsAction(
       "Signin_AccountSettings_PersonalizeGoogleServicesClicked"));
 
-  _personalizeGoogleServicesCoordinator = [[PersonalizeGoogleServicesCoordinator
-      alloc]
-      initWithBaseNavigationController:self.navigationControllerForChildPages
-                               browser:self.browser];
+  _personalizeGoogleServicesCoordinator =
+      [[PersonalizeGoogleServicesCoordinator alloc]
+          initWithBaseNavigationController:_baseNavigationController
+                                   browser:self.browser];
   _personalizeGoogleServicesCoordinator.delegate = self;
   [_personalizeGoogleServicesCoordinator start];
 }
@@ -573,8 +558,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   }
 
   [self.viewController configureHandlersForRootViewController:controllerToPush];
-  [self.navigationControllerForChildPages pushViewController:controllerToPush
-                                                    animated:YES];
+  [_baseNavigationController pushViewController:controllerToPush animated:YES];
 }
 
 - (void)openTrustedVaultReauthForFetchKeys {
@@ -669,7 +653,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 #pragma mark - SettingsNavigationControllerDelegate
 
 - (void)closeSettings {
-  [self.navigationControllerForChildPages.presentingViewController
+  [_baseNavigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
   [self.delegate manageSyncSettingsCoordinatorWasRemoved:self];

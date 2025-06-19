@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -33,6 +34,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -147,6 +149,8 @@ class SettingsTableViewControllerTest
                              forProtocol:@protocol(ApplicationCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_handler
                              forProtocol:@protocol(SettingsCommands)];
+    [dispatcher startDispatchingToTarget:mock_settings_handler
+                             forProtocol:@protocol(BrowserCommands)];
     [dispatcher startDispatchingToTarget:mock_snackbar_handler
                              forProtocol:@protocol(SnackbarCommands)];
     [dispatcher startDispatchingToTarget:mock_popup_menu_handler_
@@ -156,6 +160,11 @@ class SettingsTableViewControllerTest
         [[SettingsTableViewController alloc]
                      initWithBrowser:browser_.get()
             hasDefaultBrowserBlueDot:has_default_browser_blue_dot_];
+
+    navigation_controller_ = [[SettingsNavigationController alloc]
+        initWithRootViewController:controller
+                           browser:browser_.get()
+                          delegate:nil];
     controller.applicationHandler =
         HandlerForProtocol(dispatcher, ApplicationCommands);
     controller.settingsHandler =
@@ -203,6 +212,7 @@ class SettingsTableViewControllerTest
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   IOSChromeScopedTestingVariationsService scoped_testing_variations_service_;
   TestProfileManagerIOS profile_manager_;
+  SettingsNavigationController* navigation_controller_;
 
   FakeSystemIdentity* fake_identity_ = nullptr;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
@@ -387,10 +397,6 @@ TEST_F(SettingsTableViewControllerTest,
   CreateController();
   CheckController();
 
-  // Create a navigation controller to avoid hitting the CHECK.
-  [[maybe_unused]] UINavigationController* nav_controller =
-      [[UINavigationController alloc] initWithRootViewController:controller()];
-
   OCMExpect([mock_popup_menu_handler_ updateToolsMenuBlueDotVisibility]);
 
   // Tap on the default browser settings.
@@ -409,10 +415,6 @@ TEST_F(SettingsTableViewControllerTest,
   CheckController();
 
   OCMReject([mock_popup_menu_handler_ updateToolsMenuBlueDotVisibility]);
-
-  // Create a navigation controller to avoid hitting the CHECK.
-  [[maybe_unused]] UINavigationController* nav_controller =
-      [[UINavigationController alloc] initWithRootViewController:controller()];
 
   // Tap on the default browser settings.
   [controller() tableView:controller().tableView
