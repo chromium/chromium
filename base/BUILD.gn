@@ -5548,7 +5548,6 @@ if (is_android) {
       sources += [ "//components/cronet/android/platform-only/org/chromium/base/test/util/PackageManagerWrapper.java" ]
     } else {
       sources += [
-        "test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
         "test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
         "test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java",
       ]

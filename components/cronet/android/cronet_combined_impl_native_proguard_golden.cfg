@@ -146,7 +146,6 @@
 -dontwarn org.chromium.base.WindowCallbackWrapper
 
 # Generated for chrome apk and not included into cronet.
--dontwarn org.chromium.base.multidex.ChromiumMultiDexInstaller
 -dontwarn org.chromium.base.library_loader.LibraryLoader
 -dontwarn org.chromium.base.SysUtils
 -dontwarn org.chromium.build.NativeLibraries
