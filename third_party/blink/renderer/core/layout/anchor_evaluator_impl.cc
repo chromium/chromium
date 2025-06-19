@@ -12,8 +12,10 @@
 #include "third_party/blink/renderer/core/layout/anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/transform_utils.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -86,10 +88,10 @@ CSSAnchorValue PhysicalAnchorValueFromInsideOutside(CSSAnchorValue anchor_value,
   }
 }
 
-// Resolve `anchor_value` (part of an anchor() function) for the given
-// reference. Returns `nullopt` if the query is invalid (due to wrong axis).
+// Resolve `anchor_value` (part of an anchor() function) for the given anchor
+// rectangle. Returns `nullopt` if the query is invalid (due to wrong axis).
 std::optional<LayoutUnit> ResolveAnchorValue(
-    const PhysicalAnchorReference& reference,
+    PhysicalRect anchor_rect,
     CSSAnchorValue anchor_value,
     float percentage,
     LayoutUnit available_size,
@@ -98,7 +100,6 @@ std::optional<LayoutUnit> ResolveAnchorValue(
     const PhysicalOffset& offset_to_padding_box,
     bool is_y_axis,
     bool is_right_or_bottom) {
-  PhysicalRect anchor_rect = reference.rect;
   // Make the offset relative to the padding box, because the containing block
   // is formed by the padding edge.
   // https://www.w3.org/TR/CSS21/visudet.html#containing-block-details
@@ -186,14 +187,12 @@ std::optional<LayoutUnit> ResolveAnchorValue(
 }
 
 // Resolve `anchor_size_value` (part of an anchor-size() function) for the given
-// reference.
-LayoutUnit ResolveAnchorSizeValue(const PhysicalAnchorReference& reference,
+// anchor size.
+LayoutUnit ResolveAnchorSizeValue(const PhysicalSize& anchor_size,
                                   CSSAnchorSizeValue anchor_size_value,
                                   WritingMode container_writing_mode,
                                   WritingMode self_writing_mode) {
-  const PhysicalSize& physical_size = reference.rect.size;
-  LogicalSize logical_size =
-      ToLogicalSize(physical_size, container_writing_mode);
+  LogicalSize logical_size = ToLogicalSize(anchor_size, container_writing_mode);
 
   switch (anchor_size_value) {
     case CSSAnchorSizeValue::kInline:
@@ -201,9 +200,9 @@ LayoutUnit ResolveAnchorSizeValue(const PhysicalAnchorReference& reference,
     case CSSAnchorSizeValue::kBlock:
       return logical_size.block_size;
     case CSSAnchorSizeValue::kWidth:
-      return physical_size.width;
+      return anchor_size.width;
     case CSSAnchorSizeValue::kHeight:
-      return physical_size.height;
+      return anchor_size.height;
     case CSSAnchorSizeValue::kSelfInline:
       return IsHorizontalWritingMode(container_writing_mode) ==
                      IsHorizontalWritingMode(self_writing_mode)
@@ -271,7 +270,8 @@ const LayoutObject* PhysicalAnchorQuery::AnchorLayoutObject(
 
 void PhysicalAnchorQuery::Set(const AnchorKey& key,
                               const LayoutObject& layout_object,
-                              const PhysicalRect& rect,
+                              const TransformState& transform_state,
+                              const PhysicalRect& rect_without_transforms,
                               SetOptions options,
                               Element* element_for_display_lock) {
   GCedHeapHashSet<Member<Element>>* display_locks = nullptr;
@@ -280,8 +280,9 @@ void PhysicalAnchorQuery::Set(const AnchorKey& key,
     display_locks->insert(element_for_display_lock);
   }
   Set(key, MakeGarbageCollected<PhysicalAnchorReference>(
-               *To<Element>(layout_object.GetNode()), rect,
-               options == SetOptions::kOutOfFlow, display_locks));
+               *To<Element>(layout_object.GetNode()), transform_state,
+               rect_without_transforms, options == SetOptions::kOutOfFlow,
+               display_locks));
 }
 
 void PhysicalAnchorQuery::Set(const AnchorKey& key,
@@ -301,7 +302,14 @@ void PhysicalAnchorQuery::Set(const AnchorKey& key,
        existing = existing->next) {
     DCHECK(existing->GetLayoutObject());
     if (existing->GetLayoutObject() == reference->GetLayoutObject()) {
-      existing->rect.Unite(reference->rect);
+      existing->rect_without_transforms.Unite(
+          reference->rect_without_transforms);
+
+      gfx::RectF rect = existing->transform_state.MappedQuad().BoundingBox();
+      rect.Union(reference->transform_state.MappedQuad().BoundingBox());
+      existing->transform_state =
+          TransformState(TransformState::kApplyTransformDirection,
+                         gfx::QuadF(gfx::RectF(rect)));
       return;
     }
   }
@@ -313,7 +321,10 @@ void PhysicalAnchorQuery::Set(const AnchorKey& key,
 
 void PhysicalAnchorQuery::SetFromChild(
     const PhysicalAnchorQuery& physical_query,
+    const PhysicalFragment& child_fragment,
     PhysicalOffset additional_offset,
+    const LayoutObject& container_object,
+    PhysicalSize container_size,
     SetOptions options,
     Element* element_for_display_lock) {
   for (auto entry : physical_query) {
@@ -325,8 +336,12 @@ void PhysicalAnchorQuery::SetFromChild(
     // See also InSameAnchorScope.
     for (PhysicalAnchorReference* reference = entry.value; reference;
          reference = reference->next) {
-      PhysicalRect rect = reference->rect;
-      rect.offset += additional_offset;
+      PhysicalRect rect_without_transforms = reference->rect_without_transforms;
+      rect_without_transforms.offset += additional_offset;
+
+      TransformState transform_state(reference->transform_state);
+      UpdateTransformState(child_fragment, additional_offset, container_object,
+                           container_size, &transform_state);
 
       GCedHeapHashSet<Member<Element>>* display_locks = nullptr;
       if (reference->display_locks || element_for_display_lock) {
@@ -340,9 +355,10 @@ void PhysicalAnchorQuery::SetFromChild(
         display_locks->insert(element_for_display_lock);
       }
       DCHECK(reference->GetLayoutObject());
-      Set(entry.key, MakeGarbageCollected<PhysicalAnchorReference>(
-                         *reference->element, rect,
-                         options == SetOptions::kOutOfFlow, display_locks));
+      Set(entry.key,
+          MakeGarbageCollected<PhysicalAnchorReference>(
+              *reference->element, transform_state, rect_without_transforms,
+              options == SetOptions::kOutOfFlow, display_locks));
     }
   }
 }
@@ -502,8 +518,9 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
 
   const bool is_y_axis = IsYAxis();
 
+  PhysicalRect anchor_rect = GetAnchorRect(*anchor_reference, position_anchor);
   if (std::optional<LayoutUnit> result = ResolveAnchorValue(
-          *anchor_reference, anchor_value, percentage,
+          anchor_rect, anchor_value, percentage,
           AvailableSizeAlongAxis(position_area_modified_containing_block_rect),
           container_writing_direction_,
           query_box_->StyleRef().GetWritingDirection(),
@@ -550,9 +567,24 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
     }
   }
 
-  return ResolveAnchorSizeValue(*anchor_reference, anchor_size_value,
+  PhysicalSize anchor_size =
+      GetAnchorRect(*anchor_reference, position_anchor).size;
+  return ResolveAnchorSizeValue(anchor_size, anchor_size_value,
                                 container_writing_direction_.GetWritingMode(),
                                 query_box_->StyleRef().GetWritingMode());
+}
+
+PhysicalRect AnchorEvaluatorImpl::GetAnchorRect(
+    const PhysicalAnchorReference& anchor_reference,
+    const ScopedCSSName* position_anchor) const {
+  if (anchor_reference.GetLayoutObject() == DefaultAnchor(position_anchor) &&
+      RuntimeEnabledFeatures::CSSAnchorWithTransformsEnabled()) {
+    return anchor_reference.TransformedBoundingRect();
+  }
+  // TODO(crbug.com/382294252): Do we even need this (with
+  // CSSAnchorWithTransforms)? If the above is safe to do for the default
+  // anchor, it should really be safe for any anchor.
+  return anchor_reference.RectWithoutTransforms();
 }
 
 void AnchorEvaluatorImpl::UpdateAccessibilityAnchor(

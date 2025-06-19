@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/anchor_scope.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -27,6 +28,7 @@ class LayoutBox;
 class LayoutObject;
 class StitchedAnchorQueries;
 class PaintLayer;
+class PhysicalFragment;
 
 using AnchorKey = std::variant<const AnchorScopedName*, const Element*>;
 
@@ -148,22 +150,38 @@ class AnchorQueryBase : public GarbageCollectedMixin {
 struct CORE_EXPORT PhysicalAnchorReference
     : public GarbageCollected<PhysicalAnchorReference> {
   PhysicalAnchorReference(const Element& element,
-                          const PhysicalRect& rect,
+                          const TransformState& transform_state,
+                          const PhysicalRect& rect_without_transforms,
                           bool is_out_of_flow,
                           GCedHeapHashSet<Member<Element>>* display_locks)
-      : rect(rect),
+      : transform_state(transform_state),
+        rect_without_transforms(rect_without_transforms),
         element(&element),
         display_locks(display_locks),
         is_out_of_flow(is_out_of_flow) {}
 
   LayoutObject* GetLayoutObject() const { return element->GetLayoutObject(); }
 
+  PhysicalRect TransformedBoundingRect() const {
+    gfx::RectF rect_f = transform_state.MappedQuad().BoundingBox();
+    return PhysicalRect::EnclosingRect(rect_f);
+  }
+
+  PhysicalRect RectWithoutTransforms() const { return rect_without_transforms; }
+
   // Insert |this| into the given singly linked list in the reverse tree order.
   void InsertInReverseTreeOrderInto(Member<PhysicalAnchorReference>* head_ptr);
 
   void Trace(Visitor* visitor) const;
 
-  PhysicalRect rect;
+  // For now, store both the transform state (to provide the bounding box after
+  // applying transforms), and also the raw border box rectangle of the anchor
+  // (without transforms). It may be possible that we can drop the latter, once
+  // the CSSAnchorWithTransforms runtime feature sticks, but there are spec
+  // discussions to be had first, if nothing else.
+  TransformState transform_state;
+  PhysicalRect rect_without_transforms;
+
   Member<const Element> element;
   // A singly linked list in the reverse tree order. There can be at most one
   // in-flow reference, which if exists must be at the end of the list.
@@ -197,14 +215,18 @@ class CORE_EXPORT PhysicalAnchorQuery
   // passed as |element_for_display_lock|.
   void Set(const AnchorKey&,
            const LayoutObject& layout_object,
-           const PhysicalRect& rect,
+           const TransformState& transform_state,
+           const PhysicalRect& rect_without_transforms,
            SetOptions,
            Element* element_for_display_lock);
   void Set(const AnchorKey&, PhysicalAnchorReference* reference);
   // If the element owning this object has a display lock, the element should be
   // passed as |element_for_display_lock|.
   void SetFromChild(const PhysicalAnchorQuery& physical_query,
+                    const PhysicalFragment& child_fragment,
                     PhysicalOffset additional_offset,
+                    const LayoutObject& container_object,
+                    PhysicalSize container_size,
                     SetOptions,
                     Element* element_for_display_lock);
 };
@@ -310,6 +332,9 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorSizeValue anchor_size_value,
       const ScopedCSSName* position_anchor) const;
+  PhysicalRect GetAnchorRect(const PhysicalAnchorReference&,
+                             const ScopedCSSName* position_anchor) const;
+
   void UpdateAccessibilityAnchor(const LayoutObject* anchor) const;
 
   const LayoutObject* DefaultAnchor(const ScopedCSSName* position_anchor) const;

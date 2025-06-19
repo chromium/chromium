@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/transform_utils.h"
 
+#include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -79,6 +80,30 @@ std::optional<gfx::Transform> GetTransformForChildFragment(
       base::OptionalToPtr(fragment_transform));
 
   return transform;
+}
+
+void UpdateTransformState(const PhysicalFragment& child_fragment,
+                          PhysicalOffset child_offset,
+                          const LayoutObject& container_object,
+                          PhysicalSize container_size,
+                          TransformState* transform_state) {
+  TransformState::TransformAccumulation accumulation =
+      container_object.StyleRef().Preserves3D()
+          ? TransformState::kAccumulateTransform
+          : TransformState::kFlattenTransform;
+
+  if (child_fragment.IsCSSBox()) {
+    if (std::optional<gfx::Transform> transform = GetTransformForChildFragment(
+            To<PhysicalBoxFragment>(child_fragment), container_object,
+            container_size)) {
+      if (const LayoutObject* child_object = child_fragment.GetLayoutObject()) {
+        if (child_object->ShouldUseTransformFromContainer(&container_object)) {
+          transform_state->ApplyTransform(*transform, accumulation);
+        }
+      }
+    }
+  }
+  transform_state->Move(child_offset, accumulation);
 }
 
 }  // namespace blink

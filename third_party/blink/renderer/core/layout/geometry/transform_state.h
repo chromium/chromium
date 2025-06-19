@@ -46,8 +46,6 @@ namespace blink {
 // TODO(crbug.com/1222769): This class should go away and its users should use
 // GeometryMapper instead.
 class CORE_EXPORT TransformState {
-  STACK_ALLOCATED();
-
  public:
   enum TransformDirection {
     kApplyTransformDirection,

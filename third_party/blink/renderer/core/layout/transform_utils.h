@@ -15,6 +15,8 @@ namespace blink {
 class LayoutBox;
 class LayoutObject;
 class PhysicalBoxFragment;
+class PhysicalFragment;
+class TransformState;
 
 // Compute the transform reference box, based on the computed 'transform-box'
 // property, for the specified entity.
@@ -26,6 +28,14 @@ std::optional<gfx::Transform> GetTransformForChildFragment(
     const PhysicalBoxFragment& child_fragment,
     const LayoutObject& container_object,
     PhysicalSize container_size);
+
+// Include the offset (and any transform) for `child_fragment` in the transform
+// state. Can be used when walking up the fragment tree.
+void UpdateTransformState(const PhysicalFragment& child_fragment,
+                          PhysicalOffset child_offset,
+                          const LayoutObject& container_object,
+                          PhysicalSize container_size,
+                          TransformState*);
 
 }  // namespace blink
 
