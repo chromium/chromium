@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">Usar senha ou chave de acesso salva?</translation>
 <translation id="5624120631404540903">Gerenciar senhas</translation>
 <translation id="592182999816790476">A senha da conta <ph name="USERNAME" /> foi salva para o site <ph name="WEBSITE" /></translation>
+<translation id="593924516471361340">A senha de recuperação temporária em caso de problemas com <ph name="USERNAME" /> foi salva para <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Chave de acesso de <ph name="USERNAME" />. Usar o bloqueio de tela.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nova senha para este site}one{Nova senha para este site}other{Novas senhas para este site}}</translation>
 <translation id="7286867818472074330">Selecionar chave de acesso</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> de <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Você recebeu senhas de <ph name="SITE_NAME" /></translation>
+<translation id="8202660122967066153">Senha de recuperação temporária em caso de problemas com <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Recuperação temporária em caso de problemas</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> compartilhou uma senha para <ph name="SITE_NAME" /> com você</translation>
 <translation id="8891372124884726271">A lista de credenciais está fechada.</translation>

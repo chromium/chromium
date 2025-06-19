@@ -183,6 +183,7 @@
 <translation id="3167868116600277716">Discover ફીડ</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> સંગ્રહિત ડેટા</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> તમને નોટિફિકેશન મોકલી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ નોટિફિકેશન ચાલુ કરો.</translation>
+<translation id="3223425961342298674">લોકેશનની મંજૂરી નથી</translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
 <translation id="3232293466644486101">બ્રાઉઝિંગ ડેટા ડિલીટ કરો…</translation>
 <translation id="3242646949159196181">ચાલુ હોય ત્યારે, સાઇટ સાઉન્ડ વગાડી શકે છે. બંધ હોય ત્યારે, સાઇટ સાઉન્ડ વગાડી શકતી નથી.</translation>
@@ -258,6 +259,7 @@
 <translation id="3992308058851451478">જેમ જેમ તમે બ્રાઉઝ કરશો, તેમ તેમ <ph name="SITE" /> તમારી માહિતીનો ઉપયોગ કરી શકે છે</translation>
 <translation id="3992684624889376114">આ પેજ વિશે</translation>
 <translation id="4002066346123236978">શીર્ષક</translation>
+<translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
 <translation id="4046123991198612571">આગલો ટ્રૅક</translation>
 <translation id="4077310749977440510">તમે કૉપિ કરેલી ટેક્સ્ટનું ફૉર્મેટિંગ જાળવી રાખવા જેવી સુવિધાઓ માટે, સાઇટ સામાન્ય રીતે તમારું ક્લિપબોર્ડ વાંચે છે</translation>
 <translation id="4149890623864272035">શું તમે ખરેખર કુકી સહિતનો તમામ સ્થાનિક ડેટા ડિલીટ કરવા તેમજ આ વેબસાઇટ માટેની તમામ પરવાનગીઓ રીસેટ કરવા માગો છો?</translation>
@@ -267,8 +269,10 @@
 <translation id="4169549551965910670">કોઈ USB ડિવાઇસથી કનેક્ટેડ</translation>
 <translation id="4194328954146351878">NFC ડિવાઇસ પર સાઇટને માહિતી જોવાની અને બદલવાની મંજૂરી આપતા પહેલાં પૂછો (ભલામણ કરવામાં આવે છે)</translation>
 <translation id="4200726100658658164">સ્થાન સેટિંગ ખોલો</translation>
+<translation id="4203769790323223880">કૅમેરાની મંજૂરી નથી</translation>
 <translation id="421742575134139848">મ્યુઝિક, વીડિયો અને અન્ય મીડિયા માટે ઑડિયો આપવા માટે, સાઇટ સાઉન્ડ વગાડી શકે છે</translation>
 <translation id="4217710972110098902">સિરીઅલ પોર્ટ સાથે કનેક્ટ થયેલું છે</translation>
+<translation id="4223404254440398437">માઇક્રોફોનની મંજૂરી નથી</translation>
 <translation id="4226663524361240545">સૂચનાઓ ઉપકરણને વાઇબ્રેટ કરી શકે છે</translation>
 <translation id="4259722352634471385">નૅવિગેશન બ્લૉક કરેલું છે: <ph name="URL" /></translation>
 <translation id="4274673989874969668">તમે કોઈ સાઇટમાંથી બહાર નીકળી જાઓ, પછી તે ફોટા અપલોડ કરવા કે ચૅટ મેસેજ મોકલવા જેવા કાર્યો પૂર્ણ કરવા માટે સિંક કરવાનું ચાલુ રાખી શકે છે</translation>
@@ -300,6 +304,7 @@
 <translation id="4635969503923889910">સાઇટને NFC ડિવાઇસના ઉપયોગની મંજૂરી આપશો નહીં</translation>
 <translation id="4644713492825682049">ડિલીટ કરીને રીસેટ કરો</translation>
 <translation id="4645575059429386691">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
+<translation id="4663373278480897665">કૅમેરાને મંજૂરી</translation>
 <translation id="4670064810192446073">વર્ચ્યુઅલ રિયાલિટી</translation>
 <translation id="4672315773691449562">પહેલા Browser ઍપ અને પછી Chrome પર ટૅપ કરો</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" />ને હાથ ટ્રૅક કરવાની સુવિધાનો ઉપયોગ કરવા દેવા માટે, <ph name="BEGIN_LINK" />સિસ્ટમના સેટિંગ<ph name="END_LINK" />માં પણ હાથ ટ્રૅક કરવાની સુવિધા ચાલુ કરો.</translation>
@@ -345,6 +350,7 @@
 <translation id="5216942107514965959">છેલ્લે આજે મુલાકાત લીધી</translation>
 <translation id="5225463052809312700">કૅમેરા ચાલુ કરો</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
+<translation id="5239623327352565343">લોકેશનની મંજૂરી છે</translation>
 <translation id="5246825184569358663">આ ક્રિયા કુકી સહિતનો તમામ સ્થાનિક ડેટા સાફ કરશે અને <ph name="DOMAIN" /> તથા તેની હેઠળની બધી સાઇટ માટેની તમામ પરવાનગીઓ રીસેટ કરશે</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />'ને કાઢી નાખો</translation>
 <translation id="528192093759286357">પૂર્ણસ્ક્રીનથી બહાર નીકળવા માટે ઉપરથી ખેંચો અને પાછળ બટનને ટચ કરો.</translation>
@@ -389,6 +395,7 @@
 <translation id="5743425052258407233">તમારા બધા ડિવાઇસ પર તમારો ઇતિહાસ મેળવો, જેથી તમે જ્યાંથી છોડ્યું હોય ત્યાંથી સરળતાથી શરૂ કરી શકો</translation>
 <translation id="5749158352074143502">આ ટૅબ સાથે આગળ ચાલુ રાખો</translation>
 <translation id="5750869797196646528">હાથ ટ્રૅક કરવાની સુવિધા</translation>
+<translation id="5753570386948603678">ઇતિહાસમાંથી ડિલીટ કરો</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> બ્લૉક કરી</translation>
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
 <translation id="5822675474983796325">'તમારું નવું ટૅબ પેજ કસ્ટમાઇઝ કરો'ની બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવી</translation>
@@ -488,6 +495,7 @@
 <translation id="6992289844737586249">સાઇટને તમારા માઇક્રોફોનનો ઉપયોગ કરવાની મંજૂરી આપતાં પહેલા પૂછો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="7000754031042624318">Android સેટિંગમાં પરવાનગી બંધ કરી છે</translation>
 <translation id="702275896380648118">તમને ગમતી બાબતો વિશે આ સાઇટ અનુમાન લગાવે છે અને પછી અન્ય સાઇટને જાહેરાતો સૂચવે છે. તમને વધુ સંબંધિત જાહેરાતો બતાવવા માટે, આ સાઇટ Chromeમાંથી જાહેરાતના તમારા વિષયોની માહિતી પણ મેળવે છે.</translation>
+<translation id="7044081119134178347">આ વખતે કૅમેરાને મંજૂરી આપી છે</translation>
 <translation id="7053983685419859001">અવરોધિત કરો</translation>
 <translation id="7055552182600664515">કૉપિરાઇટ દ્વારા સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે, સાઇટને કન્ટેન્ટ સુરક્ષા સેવાનો ઉપયોગ કરવાની જરૂર પડી શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 પસંદ કરી}one{# પસંદ કરી}other{# પસંદ કરી}}</translation>
@@ -525,6 +533,7 @@
 <translation id="7573594921350120855">વીડિયો ચૅટ જેવી સંદેશાવ્યવહારની સુવિધાઓ માટે, સાઇટ સામાન્ય રીતે તમારા વીડિયો કૅમેરાનો ઉપયોગ કરે છે</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> મહિના પહેલાં}one{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં}other{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં}}</translation>
 <translation id="757524316907819857">સાઇટને સંરક્ષિત કન્ટેન્ટ ચલાવવાથી બ્લૉક કરો</translation>
+<translation id="7586676035079382730">નોટિફિકેશનની મંજૂરી નથી</translation>
 <translation id="7594634374516752650">બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટ કરી</translation>
 <translation id="7617547684249261169">તમે તમારો અમુક અથવા તમામ ઇતિહાસ, કુકી, સાઇટનો ડેટા અને બીજું ઘણું ડિલીટ કરી શકો છો</translation>
 <translation id="7649070708921625228">સહાય</translation>
@@ -540,6 +549,7 @@
 <translation id="780301667611848630">ના, આભાર</translation>
 <translation id="7804248752222191302">કોઈ સાઇટ તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7807060072011926525">Google દ્વારા પ્રદાન કરાયેલું</translation>
+<translation id="7815680994978050279">જોખમી ડાઉનલોડને અવરોધ્યું</translation>
 <translation id="7835852323729233924">મીડિયા ચલાવી રહ્યાં છીએ</translation>
 <translation id="783819812427904514">વીડિયોને અનમ્યૂટ કરો</translation>
 <translation id="7846076177841592234">પસંદગી રદ કરો</translation>
@@ -588,6 +598,7 @@
 <translation id="8380167699614421159">આ સાઇટ ઘૃણાસ્પદ અથવા ભ્રામક જાહેરાતો બતાવે છે</translation>
 <translation id="8394832520002899662">સાઇટ પર પાછા ફરવા માટે, ટૅપ કરો</translation>
 <translation id="8409345997656833551">જ્યારે લેખને સરળ બનાવેલા વ્યૂમાં બતાવી શકાતો હોય ત્યારે નોટિફિકેશન મેળવો</translation>
+<translation id="8416874502399604126">આ વખતે માઇક્રોફોનને મંજૂરી આપી છે</translation>
 <translation id="8423565414844018592">ટેક્સ્ટ સ્કેલિંગ <ph name="TEXT_SCALING" /> પર સેટ કર્યું</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8441146129660941386">પાછળ કરો</translation>
@@ -655,12 +666,14 @@
 <translation id="9106233582039520022">કુકી ડિલીટ કરીએ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં <ph name="APP_NAME" /> માટે પરવાનગીઓ ચાલુ કરો.</translation>
+<translation id="9138037198177304356">નોટિફિકેશનની મંજૂરી છે</translation>
 <translation id="9138217887606523162">નાનું-મોટું કરવાની વર્તમાન ટકાવારી <ph name="ZOOM_LEVEL" /> %% છે</translation>
 <translation id="9156722768168878035">Chromeને તમારા ડિવાઇસની ઍપની સૂચિ અને શોધ પરિણામોમાં તમારા તાજેતરના ટૅબ બતાવવા દો. Chrome સેટિંગમાં તમે આને કોઈપણ સમયે બંધ કરી શકો છો.</translation>
 <translation id="9162462602695099906">આ પેજ જોખમી છે</translation>
 <translation id="9182556968660520230">સાઇટને સુરક્ષિત કન્ટેન્ટ ચલાવવાની મંજૂરી આપશો નહીં</translation>
 <translation id="947156494302904893">તમે મુલાકાત લો છો એ વિવિધ સાઇટ એ વાતની ચકાસણી કરી શકે છે કે તમે જ અસલી વપરાશકર્તા છો અને બૉટ નથી</translation>
 <translation id="959682366969460160">સંગઠિત રહો</translation>
+<translation id="961930410699694996">આ વખતે લોકેશનને મંજૂરી આપી છે</translation>
 <translation id="967624055006145463">સ્ટોર કરેલ ડેટા</translation>
 <translation id="969975166333045662">સાઇટને V8 ઑપ્ટિમાઇઝરનો ઉપયોગ કરવાથી બ્લૉક કરો.</translation>
 </translationbundle>

@@ -232,7 +232,6 @@
 <translation id="1380591466760231819">Сгъване тип „писмо“</translation>
 <translation id="138218114945450791">светлосиньо</translation>
 <translation id="1382194467192730611">USB устройството е разрешено от администратора</translation>
-<translation id="1382378825779654399">Ще получавате сигнали по имейл, когато има понижение на цената в който и да е сайт. Тази страница ще бъде запазена в папката „<ph name="LAST_BOOKMARKS_FOLDER" />“.</translation>
 <translation id="1384725838384960382">Лист за удостоверяване на идентификационни данни за сигурни плащания</translation>
 <translation id="1386623374109090026">Пояснения</translation>
 <translation id="138810468159004008">Разрешаване при посещение на сайта</translation>
@@ -359,6 +358,7 @@
 <translation id="1593359183944365958">270 градуса</translation>
 <translation id="1594030484168838125">Избор</translation>
 <translation id="1597307423671074806">Видеоклип във формат WebM</translation>
+<translation id="159800670740560023">Връзка към съвет за Chrome. Натиснете Enter, за да отворите <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">Нова карта? <ph name="BEGIN_LINK" />Въведете данните ѝ<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Архивиране</translation>
 <translation id="1604192142734009334">Козметика и фитнес</translation>
@@ -532,6 +532,7 @@
 <translation id="1875512691959384712">Google Формуляри</translation>
 <translation id="1876116428946561107">Нямате запазени адреси. Добавете адрес, за да го използвате в Chrome.</translation>
 <translation id="1876399092304384674">По дата</translation>
+<translation id="1877026089748256423">Chrome не е актуален</translation>
 <translation id="187918866476621466">Отваряне на страниците при стартиране</translation>
 <translation id="1880901968112404879">За да платите по-бързо следващия път, запазете картата, шифрования код за сигурност и адреса си за фактуриране в профила си в Google</translation>
 <translation id="1883255238294161206">Свиване на списъка</translation>
@@ -835,6 +836,7 @@
 <translation id="2383455408879745299">Персонализиране на инструментите за достъпност в настройките на Chrome</translation>
 <translation id="2384307209577226199">Зададено по подразбиране в корпоративна среда</translation>
 <translation id="238459632961158867">Уебсайт</translation>
+<translation id="2384823392576123225">Търсене в отметките</translation>
 <translation id="2385809941344967209">Актуализирайте Chrome от настройките на браузъра</translation>
 <translation id="2386255080630008482">Сертификатът на сървъра е анулиран.</translation>
 <translation id="2388828676877700238">Данъчна подготовка и планиране</translation>
@@ -867,6 +869,8 @@
 <ph name="LIST_ITEM" />информацията, въведена във формуляри.
 <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Периферните устройства, свързани с това устройство, докато сте в профила си</translation>
+<translation id="2450019289047528273">Начини на плащане и друга информация от Google Wallet</translation>
+<translation id="2451201933352935301"><ph name="URL" /> иска разрешение за управление на прозорците на всичките ви екрани</translation>
 <translation id="2451607499823206582">Проследяване</translation>
 <translation id="2452098632681057184">Екология и околна среда</translation>
 <translation id="2452837234288608067">Не успях да помогна с това. Опитайте отново.</translation>
@@ -936,6 +940,7 @@
 <translation id="2546283357679194313">„Бисквитки“ и данни за сайтове</translation>
 <translation id="254947805923345898">Стойността на правилото не е валидна.</translation>
 <translation id="2549836668759467704">Строителни дейности и консултации</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> и др.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> изпрати невалиден отговор.</translation>
 <translation id="2551608178605132291">Адрес: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1046,6 +1051,7 @@
 <translation id="2743934314332613923">Да се актуализира ли шофьорската книжка?</translation>
 <translation id="2759299890026163685">Преди да опитате отново, уверете се, че имате стабилна връзка с интернет</translation>
 <translation id="2759825833388495838">попълни паролата ви в(ъв) <ph name="APP_NAME" /></translation>
+<translation id="2760805590727089264">ММ/ГГ</translation>
 <translation id="2764001903315068341">Комикси</translation>
 <translation id="2765217105034171413">Малък</translation>
 <translation id="2768397283109119044">Опитахте да отворите <ph name="DOMAIN" />, но сървърът предостави невалиден сертификат, издаден за това име. То е резервиран IP адрес или вътрешно име на хост.</translation>
@@ -1445,6 +1451,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> иска да преглежда текста и изображенията, копирани в буферната памет</translation>
 <translation id="3461824795358126837">Маркер за открояване</translation>
 <translation id="3462200631372590220">Скриване на подробностите</translation>
+<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Enter, за да попитате Google за тази страница</translation>
 <translation id="3465972433695735758">Този PDF файл не е достъпен. Текстът бе извлечен с помощта на AI на Google</translation>
 <translation id="346601286295919445">Химия</translation>
 <translation id="3467081767799433066">При измерване на рекламите между сайтовете се споделят ограничени типове данни, за да се измери ефективността на показваните от тях реклами – например дали сте направили покупка, след като сте посетили даден сайт.</translation>
@@ -2053,6 +2060,7 @@
 <translation id="444116852243722675">Отваряне на всички (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Пренебрегнато, защото правилото може да бъде зададено само като правило за потребители в облака.</translation>
 <translation id="4445133368066241428">Популярни теми</translation>
+<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Enter, за да търсите раздели</translation>
 <translation id="4445964943162061557">Това е експериментална функция и понякога греши.</translation>
 <translation id="4449116177348980384">Бутон „Управление на настройките за сайтовете“. Активирайте, за да управлявате разрешенията и съхраняваните данни от сайтовете в настройките на Chrome</translation>
 <translation id="4451135742916150903">Може да поиска разрешение да се свързва с HID устройства</translation>
@@ -2248,6 +2256,7 @@
 <translation id="4811450222531576619">Научете за съответния източник и тема</translation>
 <translation id="4813512666221746211">Грешка в мрежата</translation>
 <translation id="4814114628197290459">Изтриване на IBAN</translation>
+<translation id="4816341377198595747">Бутон за търсене в отметките. Активирайте, за да търсите в отметките</translation>
 <translation id="4816492930507672669">Да се побере в страницата</translation>
 <translation id="4819347708020428563">Искате ли да редактирате поясненията в стандартния изглед?</translation>
 <translation id="4822493756793346865">Обичайните цени са въз основа на магазините в мрежата през последните 90 дни.</translation>
@@ -2377,6 +2386,7 @@
 <translation id="5021557570875267742">Проследяване на цените с Chrome</translation>
 <translation id="5023310440958281426">Проверете правилата на администратора</translation>
 <translation id="5024171724744627792">Плащайте по-бързо, когато картата ви е запазена. Данните за нея се шифроват в профила ви в Google.</translation>
+<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Enter, за да търсите в историята</translation>
 <translation id="5030338702439866405">Издаден от</translation>
 <translation id="503069730517007720">За <ph name="SOFTWARE_NAME" /> се изисква основен сертификат, но такъв не е инсталиран. Системният ви администратор трябва да прегледа инструкциите за конфигуриране на <ph name="SOFTWARE_NAME" />, за да отстрани проблема. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">Да се добави ли към сравнението?</translation>
@@ -2733,6 +2743,7 @@
 <translation id="5619721953841297650">Предварително зададено</translation>
 <translation id="5624120631404540903">Управление на паролите</translation>
 <translation id="5629630648637658800">Зареждането на настройките за правилото не бе успешно</translation>
+<translation id="5630981295558454585">Бутон „Попитайте Google за тази страница“. Активирайте, за да попитате Google за тази страница</translation>
 <translation id="5631439013527180824">Невалидно означение за управление на устройството</translation>
 <translation id="5632485077360054581">Покажете ми как</translation>
 <translation id="563324245173044180">Блокирахме измамно съдържание.</translation>
@@ -3047,6 +3058,7 @@
 <translation id="6177531123306197852">Плик C2</translation>
 <translation id="6180316780098470077">Интервал за повторен опит</translation>
 <translation id="6182972682129119950">A4 x 5</translation>
+<translation id="6184099524311454384">Търсене на раздели</translation>
 <translation id="6184868291074982484">Chrome автоматично ограничава „бисквитките“ на трети страни</translation>
 <translation id="6190518157737269631">Замяна на някои клавиши на клавиатурата ви, като например Esc</translation>
 <translation id="6194209731893739467">Тук ще се показват всички проследявани от вас продукти</translation>
@@ -3605,12 +3617,14 @@
 <translation id="7130775116821607281">Качването е блокирано</translation>
 <translation id="7132939140423847331">Администраторът ви е забранил копирането на тези данни.</translation>
 <translation id="7135130955892390533">Показване на състоянието</translation>
+<translation id="7135814714616751706">Търсете комбинации</translation>
 <translation id="7136009930065337683">Научете повече за режима „инкогнито“</translation>
 <translation id="7138472120740807366">Начин на бърза доставка</translation>
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7139892792842608322">Основна тава</translation>
 <translation id="7140087718106278457">Списъкът с начини на плащане е затворен.</translation>
 <translation id="714064300541049402">Изместване на изображението от страна 2 по оста X</translation>
+<translation id="7140922144008419614">Бутон за търсене на раздели. Активирайте, за да търсите раздели</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
@@ -3846,6 +3860,7 @@
 <translation id="7526934274050461096">Връзката ви с този сайт не е частна</translation>
 <translation id="7529884293139707752">Домашно образование</translation>
 <translation id="7531464389616946220">Сканиране на картата</translation>
+<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Enter, за да търсите в отметките</translation>
 <translation id="7534987659046836932">Плик C7</translation>
 <translation id="7535087603100972091">Стойност</translation>
 <translation id="753556296624075801">Предоставено от Google</translation>
@@ -4178,6 +4193,7 @@
 <translation id="8092254339843485299">6 x 8 инча</translation>
 <translation id="8092774999298748321">наситено лилаво</translation>
 <translation id="8094917007353911263">Използваната от вас мрежа може да изисква да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="809543534949702122">История на търсенията</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">Начин на плащане</translation>
@@ -4223,6 +4239,7 @@
 <translation id="8194412401381329820">Не можете да използвате тази страница от управляван профил на това неуправлявано устройство. Ако използвате съответната страница, всички управлявани профили ще бъдат заключени освен тези, които се контролират от същото юридическо лице, което управлява това устройство (свързани профили).</translation>
 <translation id="8194797478851900357">&amp;Отмяна на преместването</translation>
 <translation id="8194956568907463262">Игри със стрелба</translation>
+<translation id="8198379961710069585">Бутон за търсене в историята. Активирайте, за да търсите в историята</translation>
 <translation id="8199437620497683918">Оптичен диск (гланциран)</translation>
 <translation id="8199730148066603000">Визуализирането на URL адреси без HTTPS не е разрешено.</translation>
 <translation id="8200772114523450471">Възобновяване</translation>
@@ -4809,7 +4826,6 @@
 <translation id="9207861905230894330">Добавянето на статията не бе успешно.</translation>
 <translation id="9209339767782560829">Възникна проблем при използването на сертификата ви за вход.</translation>
 <translation id="9210825002219699214">Въздушен транспорт</translation>
-<translation id="9211461151375991073">Въведете @ за търсене във: <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Персонализиране на облика</translation>
 <translation id="9215416866750762878">Приложение пречи на Chrome да се свърже безопасно с този сайт</translation>
 <translation id="92178312226016010">Проследявате този продукт.</translation>
@@ -4817,6 +4833,7 @@
 <translation id="9219103736887031265">Изображения</translation>
 <translation id="922152298093051471">Персонализиране на Chrome</translation>
 <translation id="9222403027701923763">Основно и средно образование</translation>
+<translation id="9222463428840654067">Номерът на картата е невалиден</translation>
 <translation id="922849469395748170">Карти за лоялност</translation>
 <translation id="93020190163435405">Стажове</translation>
 <translation id="931598121743515856">Покупката трябва да е над <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

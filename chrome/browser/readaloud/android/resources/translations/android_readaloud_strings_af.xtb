@@ -21,7 +21,6 @@
 <translation id="3493899379487634969">Wat het verkeerd geloop?</translation>
 <translation id="3730775656877876887">Genereer tans KI-terugspeel</translation>
 <translation id="3778044272390020426">Kieslys met opsies vir negatiewe terugvoer</translation>
-<translation id="3807208219231826020">Soekbalkterugspeel</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3936324432406465283">Terugspeelspoed</translation>
 <translation id="4020327272915390518">Opsies-kieslys</translation>
@@ -31,6 +30,7 @@
 <translation id="4525525184005340968">Dale</translation>
 <translation id="4710974520964166851">Ontspanne</translation>
 <translation id="4773921449011281499">Vreedsaam</translation>
+<translation id="4867493576811701175">Opduimknoppie, kies dit om terugvoer in te dien dat jy van hierdie kenmerk hou</translation>
 <translation id="4872475766448853257">Gaan <ph name="NUMBER_OF_SECONDS" /> sekondes terug</translation>
 <translation id="4967513477347430212">Coast</translation>
 <translation id="5026371835667036198">Helder</translation>
@@ -61,6 +61,7 @@
 <translation id="8136852699834914183">Terugspeel is nie vir hierdie bladsy beskikbaar nie.</translation>
 <translation id="8198036737896977997">Air</translation>
 <translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />x verhoog/verminder spoed.</translation>
+<translation id="837054959055425654">Afduimknoppie, kies dit om ’n vorm oop te maak waar jy gedetaileerde terugvoer oor ’n kwessie met hierdie kenmerk kan gee</translation>
 <translation id="8407011429883244666">Maak speler toe.</translation>
 <translation id="8462210863277153423">Jou URL sal saam met die terugvoer opgelaai word om gehalte en navorsing te verbeter.</translation>
 <translation id="8481839122437406573">Kalm</translation>

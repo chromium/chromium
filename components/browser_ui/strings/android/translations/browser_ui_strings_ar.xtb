@@ -184,6 +184,7 @@
 <translation id="3167868116600277716">خلاصة ميزة "اقتراحات"</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> من البيانات المخزّنة</translation>
 <translation id="321187648315454507">‏للسماح لتطبيق <ph name="APP_NAME" /> بإرسال الإشعارات إليك، يُرجى أيضًا تفعيل الإشعارات في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
+<translation id="3223425961342298674">تم رفض طلب الوصول إلى الموقع الجغرافي.</translation>
 <translation id="3227137524299004712">الميكروفون</translation>
 <translation id="3232293466644486101">حذف بيانات التصفّح…</translation>
 <translation id="3242646949159196181">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية تشغيل الصوت. وعند إيقافه، لا يمكن للمواقع الإلكترونية تشغيل الصوت.</translation>
@@ -259,6 +260,7 @@
 <translation id="3992308058851451478">بإمكان <ph name="SITE" /> استخدام معلوماتك أثناء التصفُّح</translation>
 <translation id="3992684624889376114">لمحة حول هذه الصفحة</translation>
 <translation id="4002066346123236978">العنوان</translation>
+<translation id="4031179711345676612">تم السماح باستخدام الميكروفون</translation>
 <translation id="4046123991198612571">المقطع الصوتي التالي</translation>
 <translation id="4077310749977440510">تقرأ المواقع الإلكترونية عادةً البيانات المخزَّنة في الحافظة لتتيح ميزات مثل الحفاظ على تنسيق النصوص المنسوخة</translation>
 <translation id="4149890623864272035">هل تريد فعلاً حذف جميع البيانات المخزّنة على الجهاز، بما في ذلك ملفات تعريف الارتباط، وإعادة ضبط جميع الأذونات الخاصة بهذا الموقع الإلكتروني؟</translation>
@@ -268,8 +270,10 @@
 <translation id="4169549551965910670">‏تم ربط الموقع الإلكتروني بجهاز USB.</translation>
 <translation id="4194328954146351878">‏يتم طلب الإذن قبل السماح للمواقع الإلكترونية بالاطّلاع على المعلومات وتعديلها على الأجهزة المزوَّدة بتقنية NFC (إعداد مُقترَح).</translation>
 <translation id="4200726100658658164">فتح إعدادات الموقع الجغرافي</translation>
+<translation id="4203769790323223880">تم رفض طلب الوصول إلى الكاميرا.</translation>
 <translation id="421742575134139848">قد تُشغِّل المواقع الإلكترونية الصوت عند تشغيل الموسيقى والفيديوهات والوسائط الأخرى</translation>
 <translation id="4217710972110098902">الموقع الإلكتروني أصبح متصلاً بمنفذ تسلسلي</translation>
+<translation id="4223404254440398437">تم رفض طلب الوصول إلى الميكروفون.</translation>
 <translation id="4226663524361240545">يمكن أن تؤدي الإشعارات إلى اهتزاز الجهاز</translation>
 <translation id="4259722352634471385">التنقل محظور: <ph name="URL" /></translation>
 <translation id="4274673989874969668">عندما تغادر موقعًا إلكترونيًا، يواصل هذا الموقع الإلكتروني عادةً عملية المزامنة لإكمال المهام، مثل تحميل الصور أو إرسال رسالة محادثة.</translation>
@@ -301,6 +305,7 @@
 <translation id="4635969503923889910">‏عدم السماح للمواقع الإلكترونية باستخدام أجهزة NFC</translation>
 <translation id="4644713492825682049">الحذف وإعادة الضبط</translation>
 <translation id="4645575059429386691">يديره والداك</translation>
+<translation id="4663373278480897665">تم السماح باستخدام الكاميرا</translation>
 <translation id="4670064810192446073">الواقع الافتراضي</translation>
 <translation id="4672315773691449562">‏انقر على "تطبيق المتصفّح"، ثم انقر على Chrome</translation>
 <translation id="4676059169848868271">للسماح لـ "<ph name="APP_NAME" />" باستخدام ميزة "تتبُّع اليد"، يجب تفعيل الميزة في <ph name="BEGIN_LINK" />إعدادات النظام<ph name="END_LINK" /> أيضًا.</translation>
@@ -346,6 +351,7 @@
 <translation id="5216942107514965959">تمّت زيارة الموقع الإلكتروني آخر مرّة اليوم</translation>
 <translation id="5225463052809312700">تفعيل الكاميرا</translation>
 <translation id="5234764350956374838">تجاهل</translation>
+<translation id="5239623327352565343">تمت الموافقة على طلب الوصول إلى الموقع الجغرافي.</translation>
 <translation id="5246825184569358663">سيؤدي هذا الإجراء إلى حذف جميع البيانات المخزّنة على الجهاز، بما في ذلك ملفات تعريف الارتباط، وإعادة ضبط جميع الأذونات الممنوحة للنطاق <ph name="DOMAIN" /> وجميع المواقع الإلكترونية ضِمنه.</translation>
 <translation id="5264323282659631142">إزالة شريحة "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">اسحب من الجزء العلوي والمس زر الرجوع للخروج من وضع ملء الشاشة.</translation>
@@ -390,6 +396,7 @@
 <translation id="5743425052258407233">يمكنك الوصول إلى سجلّ التصفّح على جميع أجهزتك لمواصلة التصفّح من حيث توقفت</translation>
 <translation id="5749158352074143502">المتابعة باستخدام علامة التبويب هذه</translation>
 <translation id="5750869797196646528">تتبُّع اليد</translation>
+<translation id="5753570386948603678">الحذف من السجلّ</translation>
 <translation id="5771720122942595109">تم حظر <ph name="PERMISSION_1" />.</translation>
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5822675474983796325">تم فتح البطاقة السفلية لتخصيص صفحة علامة التبويب الجديدة بطول الشاشة</translation>
@@ -489,6 +496,7 @@
 <translation id="6992289844737586249">السؤال أولاً قبل السماح للمواقع الإلكترونية باستخدام الميكروفون (موصى به)</translation>
 <translation id="7000754031042624318">‏تم إيقافه في إعدادات Android.</translation>
 <translation id="702275896380648118">‏يحدّد هذا الموقع الإلكتروني اهتماماتك، ثم يقدّم إلى المواقع الإلكترونية الأخرى اقتراحات عن الإعلانات ذات الصلة باهتماماتك. ويتعرّف أيضًا هذا الموقع الإلكتروني من خلال Chrome على مواضيع الإعلانات التي تهمّك، وذلك بهدف عرض إعلانات وثيقة الصلة باهتماماتك.</translation>
+<translation id="7044081119134178347">تم السماح باستخدام الكاميرا هذه المرّة.</translation>
 <translation id="7053983685419859001">حظر</translation>
 <translation id="7055552182600664515">لتشغيل المحتوى المحمي بموجب حقوق الطبع والنشر، قد تتطلّب المواقع الإلكترونية استخدام إحدى خدمات حماية المحتوى. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{تم اختيار عنصر واحد}zero{تم اختيار # عنصر}two{تم اختيار عنصرين (#)}few{تم اختيار # عناصر}many{تم اختيار # عنصرًا}other{تم اختيار # عنصر}}</translation>
@@ -526,6 +534,7 @@
 <translation id="7573594921350120855">تستخدم المواقع الإلكترونية عادةً كاميرا الفيديو لتتيح ميزات التواصل، مثل محادثة الفيديو.</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{قبل شهر واحد (<ph name="NUM_MONTHS_ONE" />)}zero{قبل <ph name="NUM_MONTHS_MANY" /> شهر}two{قبل شهرَين (<ph name="NUM_MONTHS_MANY" />)}few{قبل <ph name="NUM_MONTHS_MANY" /> أشهر}many{قبل <ph name="NUM_MONTHS_MANY" /> شهرًا}other{قبل <ph name="NUM_MONTHS_MANY" /> شهر}}</translation>
 <translation id="757524316907819857">منع المواقع الإلكترونية من تشغيل المحتوى المحمي</translation>
+<translation id="7586676035079382730">تم رفض طلب إرسال الإشعارات.</translation>
 <translation id="7594634374516752650">تم الاتصال بجهاز يتضمّن بلوتوث.</translation>
 <translation id="7617547684249261169">يمكنك حذف كل أو بعض بيانات السجلّ وملفات تعريف الارتباط وبيانات المواقع الإلكترونية وغير ذلك</translation>
 <translation id="7649070708921625228">مساعدة</translation>
@@ -541,6 +550,7 @@
 <translation id="780301667611848630">لا، شكرًا</translation>
 <translation id="7804248752222191302">هناك موقع إلكتروني يستخدم الكاميرا.</translation>
 <translation id="7807060072011926525">‏خلاصة مقدَّمة من Google</translation>
+<translation id="7815680994978050279">تم حظر عملية تنزيل خطيرة</translation>
 <translation id="7835852323729233924">تشغيل الوسائط</translation>
 <translation id="783819812427904514">إعادة صوت الفيديو</translation>
 <translation id="7846076177841592234">إلغاء الاختيار</translation>
@@ -590,6 +600,7 @@
 <translation id="8380167699614421159">يعرض هذا الموقع الإلكتروني إعلانات مضلِّلة أو غير مرغوب فيها</translation>
 <translation id="8394832520002899662">يُرجى النقر للرجوع إلى الموقع الإلكتروني.</translation>
 <translation id="8409345997656833551">تلقّي إشعارات في حال كان خيار العرض المبسَّط متاحًا لمقالة</translation>
+<translation id="8416874502399604126">تم السماح باستخدام الميكروفون هذه المرّة.</translation>
 <translation id="8423565414844018592">تم ضبط حجم النص على <ph name="TEXT_SCALING" />.</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8441146129660941386">الرجوع للوراء</translation>
@@ -657,12 +668,14 @@
 <translation id="9106233582039520022">هل تريد حذف ملفات تعريف الارتباط؟</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر}zero{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}two{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنان (<ph name="NUM_MORE" />) آخران}few{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى}many{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر}other{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}}</translation>
 <translation id="913657688200966289">‏فعِّل الأذونات لتطبيق <ph name="APP_NAME" /> في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
+<translation id="9138037198177304356">تمت الموافقة على طلب إرسال الإشعارات.</translation>
 <translation id="9138217887606523162">المستوى الحالي لميزة التكبير/التصغير هو %% <ph name="ZOOM_LEVEL" /></translation>
 <translation id="9156722768168878035">‏يمكنك السماح لمتصفِّح Chrome بعرض علامات التبويب الأخيرة في قائمة التطبيقات ونتائج البحث على جهازك. ويمكنك إيقاف هذه الميزة في أي وقت من خلال إعدادات Chrome.</translation>
 <translation id="9162462602695099906">هذه الصفحة غير آمنة.</translation>
 <translation id="9182556968660520230">عدم السماح للمواقع الإلكترونية بتشغيل المحتوى المحمي</translation>
 <translation id="947156494302904893">يمكن للمواقع الإلكترونية التي تزورها التأكّد من أنّك مستخدِم حقيقي ولست برنامج تتبُّع.</translation>
 <translation id="959682366969460160">بدء التنظيم</translation>
+<translation id="961930410699694996">تم السماح بتحديد الموقع الجغرافي هذه المرّة.</translation>
 <translation id="967624055006145463">البيانات المُخزَّنة</translation>
 <translation id="969975166333045662">‏منع الموقع الإلكتروني من استخدام مُحسِّن V8</translation>
 </translationbundle>

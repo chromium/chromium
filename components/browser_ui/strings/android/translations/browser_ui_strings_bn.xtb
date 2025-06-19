@@ -183,6 +183,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="3167868116600277716">ডিসকভার ফিড</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> সংরক্ষিত ডেটা</translation>
 <translation id="321187648315454507">তাছাড়া, যাতে <ph name="APP_NAME" /> আপনাকে বিজ্ঞপ্তি পাঠাতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও বিজ্ঞপ্তি চালু করে দিন।</translation>
+<translation id="3223425961342298674">লোকেশন ব্যবহারের অনুমতি নেই</translation>
 <translation id="3227137524299004712">মাইক্রোফোন</translation>
 <translation id="3232293466644486101">ব্রাউজ করা ডেটা মুছে দিন…</translation>
 <translation id="3242646949159196181">চালু থাকলে, সাইট সাউন্ড প্লে করতে পারে। বন্ধ থাকলে, সাইট সাউন্ড প্লে করতে পারে না।</translation>
@@ -258,6 +259,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="3992308058851451478">ব্রাউজ করার সময় <ph name="SITE" /> আপনার তথ্য ব্যবহার করতে পারে</translation>
 <translation id="3992684624889376114">এই পৃষ্ঠা সম্পর্কে</translation>
 <translation id="4002066346123236978">শিরোনাম</translation>
+<translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4046123991198612571">পরবর্তী ট্র্যাক</translation>
 <translation id="4077310749977440510">আপনার কপি করা টেক্সটের ফর্ম্যাটিং বজায় রাখার মতো ফিচারের জন্য সাইট সাধারণত ক্লিপবোর্ড পড়ে</translation>
 <translation id="4149890623864272035">কুকি সহ সব স্থানীয় ডেটা মুছে ফেলা এবং এই ওয়েবসাইটের জন্য সব অনুমতি রিসেট করার ব্যাপারে আপনি কি নিশ্চিত?</translation>
@@ -267,8 +269,10 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="4169549551965910670">একটি ইউএসবি ডিভাইসে কানেক্ট করা হয়েছে</translation>
 <translation id="4194328954146351878">সাইটগুলিকে NFC ডিভাইসে তথ্য দেখতে এবং পরিবর্তন করার অনুমতি দেওয়ার আগে জিজ্ঞাসা করে নিন (প্রস্তাবিত)</translation>
 <translation id="4200726100658658164">লোকেশন সেটিংস খুলুন</translation>
+<translation id="4203769790323223880">ক্যামেরা ব্যবহারের অনুমতি নেই</translation>
 <translation id="421742575134139848">মিউজিক, ভিডিও ও অন্যান্য মিডিয়া কন্টেন্টের জন্য অডিও প্রদান করতে সাইট সাউন্ড চালাতে পারে</translation>
 <translation id="4217710972110098902">কোনও সিরিয়াল পোর্টের সাথে কানেক্ট করা আছে</translation>
+<translation id="4223404254440398437">মাইক্রোফোন ব্যবহারের অনুমতি নেই</translation>
 <translation id="4226663524361240545">বিজ্ঞপ্তি আসলে ডিভাইস ভাইব্রেট হতে পারে</translation>
 <translation id="4259722352634471385">নেভিগেশন অবরুদ্ধ করা হয়েছে: <ph name="URL" /></translation>
 <translation id="4274673989874969668">সাইট থেকে আপনি বেরিয়ে আসার পরে, টাস্ক শেষ করতে ফটো আপলোড করা অথবা চ্যাট মেসেজ পাঠানোর মতো সিঙ্ক করা চলতে থাকতে পারে</translation>
@@ -300,6 +304,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="4635969503923889910">NFC ডিভাইস ব্যবহারের জন্য সাইটগুলিকে অনুমতি দেবেন না</translation>
 <translation id="4644713492825682049">মুছুন ও রিসেট করুন</translation>
 <translation id="4645575059429386691">আপনার পিতামাতার দ্বারা পরিচালিত</translation>
+<translation id="4663373278480897665">ক্যামেরা ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4670064810192446073">ভার্চুয়াল রিয়ালিটি</translation>
 <translation id="4672315773691449562">ব্রাউজার অ্যাপে ট্যাপ করে তারপর Chrome-এ ট্যাপ করুন</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" /> অ্যাপকে হাত ট্র্যাক করার সুবিধা ব্যবহার করার অনুমতি দিতে, <ph name="BEGIN_LINK" />সিস্টেম সেটিংস<ph name="END_LINK" /> থেকেও হাত ট্র্যাক করার সুবিধা চালু করুন।</translation>
@@ -345,6 +350,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="5216942107514965959">আজ শেষবার দেখা হয়েছে</translation>
 <translation id="5225463052809312700">ক্যামেরা চালু করুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
+<translation id="5239623327352565343">লোকেশনের অনুমতি আছে</translation>
 <translation id="5246825184569358663">এই অ্যাকশনের ফলে কুকি সহ সব স্থানীয় ডেটা মুছে যাবে এবং <ph name="DOMAIN" />-এর জন্য ও এর আওতায় থাকা সব সাইটের অনুমতি রিসেট হয়ে যাবে</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' সরান</translation>
 <translation id="528192093759286357">উপর থেকে টেনে আনুন এবং পূর্ণ স্ক্রিন থেকে বেরিয়ে যেতে পিছনে ফেরার বোতাম স্পর্শ করুন।</translation>
@@ -389,6 +395,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="5743425052258407233">আপনার সবকটি ডিভাইস থেকে ইতিহাস দেখুন, যাতে আপনি সহজেই যেখানে শেষ করেছেন সেখান থেকেই শুরু করতে পারেন</translation>
 <translation id="5749158352074143502">এই ট্যাবের মাধ্যমে চালিয়ে যান</translation>
 <translation id="5750869797196646528">হ্যান্ড ট্র্যাকিং</translation>
+<translation id="5753570386948603678">সার্চ ইতিহাস থেকে মুছে ফেলুন</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ব্লক করা হয়েছে</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
 <translation id="5822675474983796325">আপনার 'নতুন ট্যাব' পৃষ্ঠা কাস্টমাইজ করার জন্য স্ক্রিনের নিচে অ্যাটাচ করা শিট ফুল স্ক্রিনে খোলা আছে</translation>
@@ -488,6 +495,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="6992289844737586249">সাইটগুলিকে আপনার মাইক্রোফোন ব্যবহার করতে দিতে মঞ্জুরি দেওয়ার আগে প্রথমে জিজ্ঞাসা করুন (প্রস্তাবিত)</translation>
 <translation id="7000754031042624318">Android সেটিংসে বন্ধ করা আছে</translation>
 <translation id="702275896380648118">এই সাইটটি আপনার পছন্দের জিনিসগুলি নির্ধারণ করে এবং তারপরে অন্যান্য সাইটে বিজ্ঞাপন সাজেস্ট করে। এই সাইটটি আপনাকে আরও প্রাসঙ্গিক বিজ্ঞাপন দেখানোর জন্য Chrome থেকে আপনার বিজ্ঞাপনের বিষয় নেয়।</translation>
+<translation id="7044081119134178347">এই সময় ক্যামেরার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="7053983685419859001">ব্লক করুন</translation>
 <translation id="7055552182600664515">কপিরাইট দ্বারা সুরক্ষিত কন্টেন্ট চালাতে, সাইটকে কন্টেন্ট সুরক্ষা পরিষেবা ব্যবহার করতে হতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{১টি বেছে নেওয়া হয়েছে}one{#টি বেছে নেওয়া হয়েছে}other{#টি বেছে নেওয়া হয়েছে}}</translation>
@@ -525,6 +533,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="7573594921350120855">ভিডিও চ্যাটের মতো যোগাযোগ ফিচারের জন্য সাইট সাধারণত আপনার ভিডিও ক্যামেরা ব্যবহার করে</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> মাস আগে}one{<ph name="NUM_MONTHS_MANY" /> মাস আগে}other{<ph name="NUM_MONTHS_MANY" /> মাস আগে}}</translation>
 <translation id="757524316907819857">সুরক্ষিত কন্টেন্ট চালানো থেকে সাইটকে ব্লক করুন</translation>
+<translation id="7586676035079382730">বিজ্ঞপ্তি ব্যবহারের অনুমতি নেই</translation>
 <translation id="7594634374516752650">ব্লুটুথ ডিভাইসের সাথে কানেক্ট করা হয়েছে</translation>
 <translation id="7617547684249261169">আপনি কিছু বা সব ইতিহাস, কুকি ও সাইট ডেটা এবং আরও অনেক কিছু মুছে ফেলতে পারবেন</translation>
 <translation id="7649070708921625228">সহায়তা</translation>
@@ -540,6 +549,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="780301667611848630">না থাক</translation>
 <translation id="7804248752222191302">একটি সাইট আপনার ক্যামেরা ব্যবহার করছে</translation>
 <translation id="7807060072011926525">Google-এর প্রদান করা ফিড</translation>
+<translation id="7815680994978050279">ক্ষতিকারক ডাউনলোড ব্লক করা হয়েছে</translation>
 <translation id="7835852323729233924">মিডিয়া চালানো হচ্ছে</translation>
 <translation id="783819812427904514">ভিডিওটি আনমিউট করুন</translation>
 <translation id="7846076177841592234">নির্বাচন বাতিল করুন</translation>
@@ -588,6 +598,7 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="8380167699614421159">এই সাইট ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন দেখায়</translation>
 <translation id="8394832520002899662">সাইটে ফিরে যেতে ট্যাপ করুন</translation>
 <translation id="8409345997656833551">কোনও নিবন্ধে সিমপ্লিফায়েড ভিউ কাজ করলে সেই বিষয়ে বিজ্ঞপ্তি পান</translation>
+<translation id="8416874502399604126">এই সময় মাইক্রোফোনের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8423565414844018592"><ph name="TEXT_SCALING" />-এ টেক্সট স্কেলিং সেট করা আছে</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8441146129660941386">পেছনে যান</translation>
@@ -655,12 +666,14 @@ Chrome-এর এইসব সেটিংস উন্নত সুরক্ষ
 <translation id="9106233582039520022">কুকি মুছবেন?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> <ph name="APP_NAME" />-এর জন্য অনুমতিগুলি চালু করুন।</translation>
+<translation id="9138037198177304356">বিজ্ঞপ্তি ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="9138217887606523162">বর্তমান জুম হল <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Chrome-কে সাম্প্রতিক ট্যাব আপনার ডিভাইসের অ্যাপ তালিকা ও সার্চ ফলাফলে দেখানোর অনুমতি দিন। আপনি Chrome সেটিংস থেকে যেকোনও সময়ে এটি বন্ধ করতে পারবেন।</translation>
 <translation id="9162462602695099906">এই পৃষ্ঠাটি বিপজ্জনক</translation>
 <translation id="9182556968660520230">সাইটগুলিকে Play নিরাপত্তা কানেক্ট করতে দেয় না</translation>
 <translation id="947156494302904893">আপনি যে সাইটগুলি দেখেন সেগুলি যাচাই করতে পারে যে আপনি একজন প্রকৃত ব্যক্তি এবং বট নন</translation>
 <translation id="959682366969460160">সবকিছু গুছিয়ে রাখুন</translation>
+<translation id="961930410699694996">এই সময় লোকেশনের অনুমতি দেওয়া আছে</translation>
 <translation id="967624055006145463">ডেটা স্টোর করা হয়েছে</translation>
 <translation id="969975166333045662">সাইট যাতে ভি৮ অপ্টিমাইজার ব্যবহার করতে না পারে তা আটকান</translation>
 </translationbundle>

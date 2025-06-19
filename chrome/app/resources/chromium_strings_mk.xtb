@@ -222,6 +222,7 @@
 <translation id="3954172517175569325">Вашите лозинки, начини на плаќање и адреси што сте ги зачувале во вашата сметка на Google ќе се отстранат од уредов. За да ги користите повторно во Chromium, најавете се пак.</translation>
 <translation id="395904275706073188">Заштитените страници не може да се читаат. Обидете се со друга страница.</translation>
 <translation id="3962647064319009959">Дознајте како Chromium ве штити</translation>
+<translation id="3971865010372729242">Кога ќе напишете нешто во лентата за адреса или полето за пребарување, Chromium го испраќа напишаното до алатките за пребарување, AI и агенти на вашата организација за да добивате предлози.</translation>
 <translation id="3975724895399328945">За Google Chrome for Testing</translation>
 <translation id="3997429360543082038">За Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />средината за развој на Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -344,6 +345,7 @@
 <translation id="5775198138441669627">Ако сте ја заборавиле лозинката или сакате да ја промените поставкава, <ph name="SETTINGS_LINK" /> податоците од Chromium во вашата сметка</translation>
 <translation id="5800158606660203929">Приспособете го и контролирајте го Chromium. Поставете го Chromium како стандарден прелистувач.</translation>
 <translation id="5809516625706423866">Не може да се поврзе на интернет. HTTP-грешка 401: неовластен пристап. Проверете ја вашата конфигурација на прокси.</translation>
+<translation id="5817952762723416573">Ги забрзува сајтовите со пребарувачот V8 на Chromium, но го прави Chromium малку понеотпорен на напади. Поставкава е исклучена.</translation>
 <translation id="5821520528363214608">За да користите и да зачувувате податоци од Chromium во вашата сметка на Google, ажурирајте го Chromium</translation>
 <translation id="5824893331272123205">Таблава не можеше да се вчита, обидете се повторно</translation>
 <translation id="5862307444128926510">Добре дојдовте во Chromium</translation>
@@ -433,6 +435,7 @@
 <translation id="6729124504294600478">За да добиете персонализација и други функции, опфатете го Chromium во „Активноста на интернет и апликации“ и поврзаните услуги на Google</translation>
 <translation id="6734291798041940871">Chromium веќе е инсталиран за сите корисници на вашиот компјутер.</translation>
 <translation id="674245979920622322">Не сте отвориле одамна. Chromium ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="COUNT" /></translation>
+<translation id="6751374565094704799">Ги забрзува сајтовите со пребарувачот V8 на Chromium, но го прави Chromium малку понеотпорен на напади. Поставкава е вклучена.</translation>
 <translation id="67706546131546258">Chromium препорачува скенирање на датотекава бидејќи можеби е опасна.</translation>
 <translation id="6779406956731413166">Chromium OS е овозможен со дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Преведи</translation>
@@ -529,7 +532,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8118331347066725040">Испратете повратни информации за пребарувањето со Lens</translation>
 <translation id="8133124826068723441">Chromium OS не може да ги синхронизира податоците бидејќи синхронизацијата не е достапна за вашиот домен.</translation>
 <translation id="813913629614996137">Се иницијализира…</translation>
-<translation id="8166782796394721554">Вклучување дополнителна заштита во пребарувачот на JavaScript и WebAssembly во Chromium</translation>
 <translation id="81770708095080097">Датотекава е опасна, па затоа Chromium ја блокираше.</translation>
 <translation id="8177472873527554730">Не може да се најдат содржини на страницата</translation>
 <translation id="8200109504272824693">Внесете ја вашата лозинка за да користите и зачувувате податоци од Chromium во вашата сметка <ph name="USER_EMAIL" /></translation>

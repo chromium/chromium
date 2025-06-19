@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">सेभ गरिएको पासवर्ड वा पासकी प्रयोग गर्ने हो?</translation>
 <translation id="5624120631404540903">पासवर्डहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="592182999816790476"><ph name="USERNAME" /> को <ph name="WEBSITE" /> को सेभ गरिएको पासवर्ड</translation>
+<translation id="593924516471361340"><ph name="WEBSITE" /> का हकमा <ph name="USERNAME" /> लाई कुनै समस्या परेका खण्डमा प्रयोग गर्न सकिने अस्थायी रिकभरी पासवर्ड सेभ गरिएको छ</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> को पासकी, आफ्नो स्क्रिन लक प्रयोग गर्नुहोस्</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{यो साइटको नयाँ पासवर्ड}other{यो साइटका नयाँ पासवर्डहरू}}</translation>
 <translation id="7286867818472074330">पासकी चयन गर्नुहोस्</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> मध्ये <ph name="ITEM_POSITION" />।</translation>
 <translation id="7738288782501322815">तपाईंले <ph name="SITE_NAME" /> का पासवर्डहरू प्राप्त गर्नुभएको छ</translation>
+<translation id="8202660122967066153"><ph name="USERNAME" /> लाई कुनै समस्या परेका खण्डमा प्रयोग गर्न सकिने अस्थायी रिकभरी पासवर्ड</translation>
 <translation id="8363484128299778310">साइन इन गर्दा समस्या आएका खण्डमा प्रयोग गर्न सकिने अस्थायी रिकभरी पासवर्ड</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> ले तपाईंसँग <ph name="SITE_NAME" /> को पासवर्ड सेयर गर्नुभएको छ</translation>
 <translation id="8891372124884726271">क्रिडेन्सियलहरूको सूची बन्द गरिएको छ।</translation>

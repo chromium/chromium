@@ -183,6 +183,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3167868116600277716">Discover-fiidi</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> tallennettua tietoa</translation>
 <translation id="321187648315454507">Ota ilmoitukset käyttöön myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> voi lähettää sinulle ilmoituksia.</translation>
+<translation id="3223425961342298674">Pääsyä sijaintiin ei sallittu</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="3232293466644486101">Poista selausdata…</translation>
 <translation id="3242646949159196181">Kun tämä on päällä, sivustot voivat toistaa ääntä. Kun tämä on pois päältä, sivustot eivät voi toistaa ääntä.</translation>
@@ -258,6 +259,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3992308058851451478"><ph name="SITE" /> voi käyttää tietojasi selaamisen aikana</translation>
 <translation id="3992684624889376114">Tietoja sivusta</translation>
 <translation id="4002066346123236978">Nimi</translation>
+<translation id="4031179711345676612">Mikrofoni sallittu</translation>
 <translation id="4046123991198612571">Seuraava kappale</translation>
 <translation id="4077310749977440510">Sivustot lukevat yleensä leikepöydän sisältöä säilyttääkseen kopioimasi tekstin muotoilun ja muita vastaavia ominaisuuksia varten</translation>
 <translation id="4149890623864272035">Haluatko varmasti poistaa kaiken paikallisen datan, myös evästeet, ja nollata kaikki tämän verkkosivuston luvat?</translation>
@@ -267,8 +269,10 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4169549551965910670">Yhdistetty USB-laitteeseen</translation>
 <translation id="4194328954146351878">Kysy, saavatko sivustot nähdä ja muuttaa NFC-laitteiden tietoja (suositeltu)</translation>
 <translation id="4200726100658658164">Avaa sijaintiasetukset</translation>
+<translation id="4203769790323223880">Pääsyä kameraan ei sallittu</translation>
 <translation id="421742575134139848">Sivustoilla voidaan toistaa ääntä musiikin, videoiden tai muun median yhteydessä</translation>
 <translation id="4217710972110098902">Yhdistetty sarjaporttiin</translation>
+<translation id="4223404254440398437">Pääsyä mikrofoniin ei sallittu</translation>
 <translation id="4226663524361240545">Laite voi väristä ilmoitusten yhteydessä.</translation>
 <translation id="4259722352634471385">Kohde on estetty: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Kun lähdet sivustolta, se voi jatkaa synkronointia viimeistelläkseen asioita, kuten kuvien latauksen tai chat-viestin lähettämisen</translation>
@@ -300,6 +304,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4635969503923889910">Älä salli sivustojen käyttää NFC-laitteita</translation>
 <translation id="4644713492825682049">Poista ja nollaa luvat</translation>
 <translation id="4645575059429386691">Vanhempasi hallinnoima</translation>
+<translation id="4663373278480897665">Kamera sallittu</translation>
 <translation id="4670064810192446073">Virtuaalitodellisuus</translation>
 <translation id="4672315773691449562">Valitse Selainsovellus ja sitten Chrome</translation>
 <translation id="4676059169848868271">Salli, että <ph name="APP_NAME" /> voi seurata käsien liikettä, laittamalla käsien liikkeen seuranta päälle myös <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" />.</translation>
@@ -345,6 +350,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5216942107514965959">Viimeksi avattu tänään</translation>
 <translation id="5225463052809312700">Käynnistä kamera</translation>
 <translation id="5234764350956374838">Hylkää</translation>
+<translation id="5239623327352565343">Sijainti sallittu</translation>
 <translation id="5246825184569358663">Tämä toiminto poistaa kaiken paikallisen datan, myös evästeet, ja nollaa kaikki luvat verkkotunnukselta <ph name="DOMAIN" /> ja kaikilta sen alaisilta sivustoilta</translation>
 <translation id="5264323282659631142">Poista <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Poistu koko näytön tilasta vetämällä näytön yläreunasta ja koskettamalla Takaisin-painiketta.</translation>
@@ -389,6 +395,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5743425052258407233">Historia löytyy kaikilta laitteilta, joten voit helposti jatkaa siitä, mihin jäit</translation>
 <translation id="5749158352074143502">Jatka tällä välilehdellä</translation>
 <translation id="5750869797196646528">Käsien seuranta</translation>
+<translation id="5753570386948603678">Poista historiasta</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> estetty</translation>
 <translation id="5804241973901381774">Luvat</translation>
 <translation id="5822675474983796325">"Muuta Uusi välilehti ‑sivua" -alapaneeli avattu koko näytölle</translation>
@@ -488,6 +495,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="6992289844737586249">Pyydä lupaa, kun sivustot yrittävät käyttää mikrofonia (suositus).</translation>
 <translation id="7000754031042624318">Poistettu käytöstä Android-asetuksissa</translation>
 <translation id="702275896380648118">Tämä sivusto päättelee, mistä pidät, ja ehdottaa sitten mainoksia muille sivustoille. Se myös saa mainosaiheesi Chromesta, jotta voit nähdä osuvampia mainoksia.</translation>
+<translation id="7044081119134178347">Kamera sallittu tällä kertaa</translation>
 <translation id="7053983685419859001">Estä</translation>
 <translation id="7055552182600664515">Sivustojen on ehkä käytettävä sisällönsuojauspalvelua, jotta ne voivat toistaa tekijänoikeudella suojattua sisältöä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 valittu}other{# valittu}}</translation>
@@ -525,6 +533,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="7573594921350120855">Sivustot käyttävät videokameraa yleensä kommunikaatio-ominaisuuksiin, kuten videopuheluihin</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> kuukausi sitten}other{<ph name="NUM_MONTHS_MANY" /> kuukautta sitten}}</translation>
 <translation id="757524316907819857">Estä sivustoja toistamasta suojattua sisältöä</translation>
+<translation id="7586676035079382730">Ilmoituksia ei sallittu</translation>
 <translation id="7594634374516752650">Yhdistetty Bluetooth-laitteeseen</translation>
 <translation id="7617547684249261169">Voit poistaa osan tai kaiken historian, evästeet, sivustodatan ja muuta</translation>
 <translation id="7649070708921625228">Ohje</translation>
@@ -540,6 +549,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7804248752222191302">Sivusto käyttää kameraasi</translation>
 <translation id="7807060072011926525">Googlen tarjoama</translation>
+<translation id="7815680994978050279">Vaarallinen lataus estettiin</translation>
 <translation id="7835852323729233924">Toistetaan mediaa</translation>
 <translation id="783819812427904514">Poista videon mykistys</translation>
 <translation id="7846076177841592234">Peru valinta</translation>
@@ -588,6 +598,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="8380167699614421159">Tällä sivustolla on häiritseviä tai harhaanjohtavia mainoksia</translation>
 <translation id="8394832520002899662">Palaa sivustolle napauttamalla</translation>
 <translation id="8409345997656833551">Saat ilmoituksen, kun artikkelissa voidaan käyttää yksinkertaistettua näkymää</translation>
+<translation id="8416874502399604126">Mikrofoni sallittu tällä kertaa</translation>
 <translation id="8423565414844018592">Tekstin skaalaukseksi valittu <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Asetukset</translation>
 <translation id="8441146129660941386">Kelaa taaksepäin</translation>
@@ -655,12 +666,14 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="9106233582039520022">Poistetaanko evästeet?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta}}</translation>
 <translation id="913657688200966289">Laita luvat (<ph name="APP_NAME" />) päälle <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />.</translation>
+<translation id="9138037198177304356">Ilmoitukset sallittu</translation>
 <translation id="9138217887606523162">Zoomaus on <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Salli Chromen näyttää viimeaikaiset välilehdet laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="9162462602695099906">Tämä sivu on vaarallinen</translation>
 <translation id="9182556968660520230">Älä salli sivustojen toistaa suojattua sisältöä</translation>
 <translation id="947156494302904893">Avaamasi sivustot voivat vahvistaa, että olet oikea ihminen etkä botti</translation>
 <translation id="959682366969460160">Järjestä</translation>
+<translation id="961930410699694996">Sijainti sallittu tällä kertaa</translation>
 <translation id="967624055006145463">Tallennettu data</translation>
 <translation id="969975166333045662">Estä sivustoa käyttämästä V8-optimoijaa.</translation>
 </translationbundle>

@@ -218,6 +218,7 @@
 <translation id="3954172517175569325">Паролите, начините на плащане и адресите, които сте запазили в профила си в Google, ще бъдат премахнати от това устройство. За да ги използвате отново в Chromium, влезте пак в профила си.</translation>
 <translation id="395904275706073188">Защитените страници не могат да бъдат прочетени. Опитайте с друга страница.</translation>
 <translation id="3962647064319009959">Научете как Chromium ви защитава</translation>
+<translation id="3971865010372729242">Когато пишете в адресната лента или полето за търсене, Chromium изпраща въведеното от вас до инструментите на организацията ви за търсене, AI и агенти, за да получи предложения.</translation>
 <translation id="3975724895399328945">Всичко за &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Всичко за Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />. Това се отнася и за <ph name="BEGIN_LINK_LINUX_OSS" />базираната на Linux среда на програмиране<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -340,6 +341,7 @@
 <translation id="5775198138441669627">Ако сте забравили пропуска си или искате да промените тази настройка, <ph name="SETTINGS_LINK" /> данните от Chromium в профила си</translation>
 <translation id="5800158606660203929">Персонализиране и контролиране на Chromium. Задаване на Chromium като браузъра ви по подразбиране.</translation>
 <translation id="5809516625706423866">Не може да се установи връзка с интернет. HTTP код 401 – Достъпът е отказан. Проверете конфигурацията на прокси сървъра си.</translation>
+<translation id="5817952762723416573">Ускорява сайтовете с машината V8 на Chromium, но същевременно устойчивостта на браузъра срещу атаки леко намалява. Тази настройка е изключена.</translation>
 <translation id="5821520528363214608">Актуализирайте Chromium, за да използвате и запазвате данните от проекта в профила си в Google</translation>
 <translation id="5824893331272123205">Този панел не бе зареден. Опитайте отново</translation>
 <translation id="5862307444128926510">Добре дошли в Chromium</translation>
@@ -427,6 +429,7 @@
 <translation id="6729124504294600478">За да се възползвате от персонализиране и други функции, включете Chromium в „Активност в мрежата и приложенията“ и свързаните услуги на Google</translation>
 <translation id="6734291798041940871">Chromium вече е инсталиран за всички потребители на компютъра ви.</translation>
 <translation id="674245979920622322">Не сте посещавали този сайт наскоро. Chromium премахна разрешенията „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и още <ph name="COUNT" /></translation>
+<translation id="6751374565094704799">Ускорява сайтовете с машината V8 на Chromium, но същевременно устойчивостта на браузъра срещу атаки леко намалява. Тази настройка е включена.</translation>
 <translation id="67706546131546258">Chromium препоръчва този файл да бъде сканиран, защото може да е опасен.</translation>
 <translation id="6779406956731413166">Chromium OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Превод</translation>
@@ -521,7 +524,6 @@
 <translation id="8118331347066725040">Изпратете отзиви за търсенето с Обектив</translation>
 <translation id="8133124826068723441">Chromium OS не можа да синхронизира данните ви, защото тази функция не е налице за домейна ви.</translation>
 <translation id="813913629614996137">Подготвя се за работа...</translation>
-<translation id="8166782796394721554">Включване на допълнителната защита в машината на Chromium за JavaScript и WebAssembly</translation>
 <translation id="81770708095080097">Chromium блокира този файл, тъй като е опасен.</translation>
 <translation id="8177472873527554730">Съдържанието на страницата не може да бъде намерено</translation>
 <translation id="8200109504272824693">Въведете пропуска си, за да използвате и запазвате данните от Chromium в профила си (<ph name="USER_EMAIL" />)</translation>

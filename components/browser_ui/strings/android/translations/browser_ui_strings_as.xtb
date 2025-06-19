@@ -183,6 +183,7 @@
 <translation id="3167868116600277716">ডিস্ক’ভাৰৰ ফীড</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ডেটা ষ্ট’ৰ কৰা আছে</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" />ক আপোনালৈ জাননী পঠিয়াবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো জাননী অন কৰক।</translation>
+<translation id="3223425961342298674">অৱস্থানৰ অনুমতি নাই</translation>
 <translation id="3227137524299004712">মাইক্ৰ’ফ’ন</translation>
 <translation id="3232293466644486101">ব্ৰাউজিঙৰ ডেটা মচক…</translation>
 <translation id="3242646949159196181">অন কৰা থাকিলে, ছাইটে ধ্বনি প্লে' কৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে ধ্বনি প্লে' কৰিব নোৱাৰে।</translation>
@@ -258,6 +259,7 @@
 <translation id="3992308058851451478">আপুনি ব্ৰাউজ কৰি থাকোঁতে <ph name="SITE" />এ আপোনাৰ তথ্য ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="3992684624889376114">এই পৃষ্ঠাখনৰ বিষয়ে</translation>
 <translation id="4002066346123236978">শিৰোনাম</translation>
+<translation id="4031179711345676612">মাইক্ৰ’ফ’নৰ অনুমতি আছে</translation>
 <translation id="4046123991198612571">পৰৱৰ্তী ট্ৰেক</translation>
 <translation id="4077310749977440510">আপুনি প্ৰতিলিপি কৰা পাঠৰ ফৰ্মেটিং ৰখাৰ দৰে সুবিধাসমূহৰ বাবে ছাইটসমূহে সচৰাচৰ আপোনাৰ ক্লিপব’ৰ্ড পঢ়ে</translation>
 <translation id="4149890623864272035">আপুনি এই ৱেবছাইটটোৰ কুকিকে ধৰি সকলো স্থানীয় ডেটা মচিব আৰু সকলো অনুমতি ৰিছেট কৰিব বিচাৰে বুলি নিশ্চিতনে?</translation>
@@ -267,8 +269,10 @@
 <translation id="4169549551965910670">এটা ইউএছবি ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে</translation>
 <translation id="4194328954146351878">ছাইটসমূহক NFC ডিভাইচত তথ্য চোৱা আৰু সলনি কৰাৰ অনুমতি দিয়াৰ পূৰ্বে সোধক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="4200726100658658164">অৱস্থানৰ ছেটিংসমূহ খোলক</translation>
+<translation id="4203769790323223880">কেমেৰাৰ অনুমতি নাই</translation>
 <translation id="421742575134139848">ছাইটসমূহে সংগীত, ভিডিঅ’ আৰু অন্য মিডিয়াত অডিঅ’ প্ৰদান কৰিবলৈ ধ্বনি প্লে’ কৰিব পাৰে</translation>
 <translation id="4217710972110098902">এটা ছিৰিয়েল প’ৰ্টৰ সৈতে সংযুক্ত হৈ আছে</translation>
+<translation id="4223404254440398437">মাইক্ৰ’ফ’নৰ অনুমতি নাই</translation>
 <translation id="4226663524361240545">জাননীয়ে ডিভাইচটো কম্পন কৰিব পাৰে</translation>
 <translation id="4259722352634471385">নেভিগে’শ্বন অৱৰোধ কৰা আছে: <ph name="URL" /></translation>
 <translation id="4274673989874969668">আপুনি এটা ছাইটৰ পৰা বাহিৰ ওলোৱাৰ পাছত, সেইটোৱে ফট’ আপল’ড কৰা অথবা কোনো চাট বাৰ্তা পঠিওৱাৰ দৰে কাম সম্পূৰ্ণ কৰিবলৈ ছিংক কৰি থাকে</translation>
@@ -300,6 +304,7 @@
 <translation id="4635969503923889910">ছাইটসমূহক NFC ডিভাইচ ব্যৱহাৰ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="4644713492825682049">মচক আৰু ৰিছেট কৰক</translation>
 <translation id="4645575059429386691">আপোনাৰ অভিভাৱকৰ দ্বাৰা পৰিচালিত</translation>
+<translation id="4663373278480897665">কেমেৰা ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="4670064810192446073">ভাৰ্চুৱেল ৰিয়েলিটি</translation>
 <translation id="4672315773691449562">ব্ৰাউজাৰ এপত টিপি তাৰ পাছত Chromeত টিপক</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" />ক হাতৰ ট্ৰেকিং ব্যৱহাৰ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />ছিষ্টেমৰ ছেটিঙ<ph name="END_LINK" />ৰ পৰাও হাতৰ ট্ৰেকিং অন কৰক।</translation>
@@ -345,6 +350,7 @@
 <translation id="5216942107514965959">শেষবাৰ আজি চাইছে</translation>
 <translation id="5225463052809312700">কেমেৰা অন কৰক</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
+<translation id="5239623327352565343">অৱস্থানৰ অনুমতি আছে</translation>
 <translation id="5246825184569358663">এই কাৰ্যটোৱে কুকিসমূহকে ধৰি আপোনাৰ আটাইবোৰ স্থানীয় ডেটা মচিব আৰু <ph name="DOMAIN" /> আৰু ইয়াৰ অন্তৰ্গত আটাইবোৰ ছাইটৰ বাবে আটাইবোৰ অনুমতি ৰিছেট কৰিব</translation>
 <translation id="5264323282659631142">‘<ph name="CHIP_LABEL" />’ আঁতৰাওক</translation>
 <translation id="528192093759286357">সম্পূৰ্ণ স্ক্ৰীনৰ পৰা প্ৰস্থান কৰিবলৈ ওপৰৰ পৰা টানি আনক আৰু বেক বুটামটো টিপক।</translation>
@@ -389,6 +395,7 @@
 <translation id="5743425052258407233">আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ ইতিহাস লাভ কৰক, যাতে আপুনি য’ত এৰিছিল তাৰ পৰাই সহজে আৰম্ভ কৰিব পাৰে</translation>
 <translation id="5749158352074143502">এই টেবটোৰ জৰিয়তে অব্যাহত ৰাখক</translation>
 <translation id="5750869797196646528">হাতৰ ট্ৰেকিং</translation>
+<translation id="5753570386948603678">ইতিহাসৰ পৰা মচক</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />ক অৱৰোধ কৰা আছে</translation>
 <translation id="5804241973901381774">অনুমতি</translation>
 <translation id="5822675474983796325">আপোনাৰ নতুন টেবৰ পৃষ্ঠাৰ তলৰ শ্বীটখন কাষ্টমাইজ কৰাটো পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
@@ -488,6 +495,7 @@
 <translation id="6992289844737586249">ছাইটসমূহে আপোনাৰ ডিভাইচৰ মাইক্ৰফ'ন ব্যৱহাৰ কৰাৰ পূর্বে অনুমতি ল'বলৈ দিয়ক (এয়া চুপাৰিছ কৰা হয়)</translation>
 <translation id="7000754031042624318">Androidৰ ছেটিংসমূহত অফ কৰা আছে</translation>
 <translation id="702275896380648118">এই ছাইটে আপুনি ভাল পোৱা বস্তুবোৰ নিৰ্ধাৰণ কৰে আৰু তাৰ পাছত অন্য ছাইটসমূহক বিজ্ঞাপনৰ বাবে পৰামৰ্শ দিয়ে। আপোনাক অধিক প্ৰাসংগিক বিজ্ঞাপন দেখুৱাবলৈ এই ছাইটটোৱে Chromeৰ পৰাও আপোনাৰ বিজ্ঞাপনৰ বিষয়সমূহ লাভ কৰে।</translation>
+<translation id="7044081119134178347">এইবাৰ কেমেৰা ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="7053983685419859001">অৱৰোধ কৰক</translation>
 <translation id="7055552182600664515">স্বত্বাধিকাৰৰ জৰিয়তে সুৰক্ষিত সমল প্লে’ কৰিবলৈ, ছাইটে কোনো সমল সুৰক্ষা সেৱা ব্যৱহাৰ কৰিবলগীয়া হ’ব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{১টা বস্তু বাছনি কৰা হ’ল}one{#টা বস্তু বাছনি কৰা হ’ল}other{#টা বস্তু বাছনি কৰা হ’ল}}</translation>
@@ -525,6 +533,7 @@
 <translation id="7573594921350120855">ছাইটসমূহে সচৰাচৰ ভিডিঅ' চাটৰ দৰে সুবিধাসমূহৰ বাবে আপোনাৰ ভিডিঅ' কেমেৰা ব্যৱহাৰ কৰে</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> মাহ পূৰ্বে}one{<ph name="NUM_MONTHS_MANY" /> মাহ পূৰ্বে}other{<ph name="NUM_MONTHS_MANY" /> মাহ পূৰ্বে}}</translation>
 <translation id="757524316907819857">সুৰক্ষিত সমল প্লে’ কৰাৰ পৰা ছাইটসমূহক অৱৰোধ কৰক</translation>
+<translation id="7586676035079382730">জাননীৰ অনুমতি নাই</translation>
 <translation id="7594634374516752650">এটা ব্লুটুথ ডিভাইচৰ সৈতে সংযুক্ত হৈছে</translation>
 <translation id="7617547684249261169">আপুনি আপোনাৰ কিছুমান বা আটাইবোৰ ইতিহাস, কুকি ছাইটৰ ডেটা আৰু অধিক বস্তু মচিব পাৰে</translation>
 <translation id="7649070708921625228">সহায়</translation>
@@ -540,6 +549,7 @@
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
 <translation id="7804248752222191302">এটা ছাইটে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি আছে</translation>
 <translation id="7807060072011926525">Googleএ প্ৰদান কৰিছে</translation>
+<translation id="7815680994978050279">ক্ষতিকাৰক সমলৰ ডাউনল’ড অৱৰোধ কৰা হৈছে</translation>
 <translation id="7835852323729233924">মিডিয়া প্লে’ হৈ আছে</translation>
 <translation id="783819812427904514">ভিডিঅ' আনমিউট কৰক</translation>
 <translation id="7846076177841592234">বাছনি বাতিল কৰক</translation>
@@ -588,6 +598,7 @@
 <translation id="8380167699614421159">এই ছাইটটোৱে বিনা অনুমতিত বা কোনো বিভ্ৰান্তিকৰ বিজ্ঞাপন দেখুৱায়</translation>
 <translation id="8394832520002899662">এই ছাইটটোলৈ উভতি যাবলৈ টিপক</translation>
 <translation id="8409345997656833551">এটা প্ৰৱন্ধ সৰলীকৃত ভিউত দেখুৱাব পৰা হ’লে জাননী পাওক</translation>
+<translation id="8416874502399604126">এইবাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="8423565414844018592">পাঠৰ স্কেলিং <ph name="TEXT_SCALING" /> হিচাপে ছেট কৰা হৈছে</translation>
 <translation id="8428213095426709021">ছেটিংসমূহ</translation>
 <translation id="8441146129660941386">পিছলৈ ছীক কৰক</translation>
@@ -655,12 +666,14 @@
 <translation id="9106233582039520022">কুকিসমূহ মচিবনে?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />ত <ph name="APP_NAME" />ৰ বাবে অনুমতিসমূহ অন কৰক।</translation>
+<translation id="9138037198177304356">জাননীৰ অনুমতি আছে</translation>
 <translation id="9138217887606523162">বৰ্তমানৰ জুম <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Chromeক আপোনাৰ ডিভাইচৰ এপৰ সূচী আৰু সন্ধানৰ ফলাফলত আপোনাৰ শেহতীয়া টেবসমূহ দেখুৱাবলৈ দিয়ক। আপুনি Chromeৰ ছেটিঙত যিকোনো সময়তে এইটো অফ কৰিব পাৰে।</translation>
 <translation id="9162462602695099906">এই পৃষ্ঠাখন বিপজ্জনক</translation>
 <translation id="9182556968660520230">ছাইটক সুৰক্ষিত সমল প্লে’ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="947156494302904893">আপুনি চোৱা ছাইটসমূহে আপুনি এগৰাকী প্ৰকৃত ব্যক্তি আৰু ব’ট নহয় বুলি সত্যাপন কৰিব পাৰে</translation>
 <translation id="959682366969460160">সংগঠিত হৈ থাকক</translation>
+<translation id="961930410699694996">এইবাৰ অৱস্থান ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="967624055006145463">ডেটা ষ্ট’ৰ কৰা হ’ল</translation>
 <translation id="969975166333045662">ছাইটক V8 অপ্টিমাইজাৰ ব্যৱহাৰ কৰাৰ পৰা অৱৰোধ কৰক।</translation>
 </translationbundle>

@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">क्या आपको सेव किए गए पासवर्ड या पासकी का इस्तेमाल करना है?</translation>
 <translation id="5624120631404540903">पासवर्ड मैनेज करें</translation>
 <translation id="592182999816790476"><ph name="WEBSITE" /> के लिए, <ph name="USERNAME" /> का पासवर्ड सेव किया गया</translation>
+<translation id="593924516471361340"><ph name="USERNAME" /> के लिए, समस्या आने पर इस्तेमाल किया जा सकने वाला अस्थायी रिकवरी पासवर्ड <ph name="WEBSITE" /> के लिए सेव किया गया</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> की पासकी, अपने स्क्रीन लॉक का इस्तेमाल करें</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{इस साइट के लिए नया पासवर्ड}one{इस साइट के लिए नया पासवर्ड}other{इस साइट के लिए नए पासवर्ड}}</translation>
 <translation id="7286867818472074330">पासकी चुनें</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> में से <ph name="ITEM_POSITION" />.</translation>
 <translation id="7738288782501322815">आपको <ph name="SITE_NAME" /> के लिए पासवर्ड मिल गए हैं</translation>
+<translation id="8202660122967066153"><ph name="USERNAME" /> के लिए, समस्या आने पर इस्तेमाल किया जा सकने वाला अस्थायी रिकवरी पासवर्ड</translation>
 <translation id="8363484128299778310">साइन इन करने में समस्या आने पर, रिकवरी पासवर्ड का इस्तेमाल करें</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> ने <ph name="SITE_NAME" /> के लिए आपके साथ एक पासवर्ड शेयर किया है</translation>
 <translation id="8891372124884726271">क्रेडेंशियल की सूची बंद है.</translation>

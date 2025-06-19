@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">Želite li koristiti spremljenu zaporku ili pristupni ključ?</translation>
 <translation id="5624120631404540903">Upravljanje zaporkama</translation>
 <translation id="592182999816790476">Zaporka za <ph name="USERNAME" /> spremljena je za web-lokaciju <ph name="WEBSITE" /></translation>
+<translation id="593924516471361340">Privremena zaporka za oporavak u slučaju poteškoća za korisnika <ph name="USERNAME" /> spremljena je za <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Pristupni ključ za <ph name="USERNAME" />, upotrijebite zaključavanje zaslona</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nova zaporka za ovu web-lokaciju}one{Nove zaporke za ovu web-lokaciju}few{Nove zaporke za ovu web-lokaciju}other{Nove zaporke za ovu web-lokaciju}}</translation>
 <translation id="7286867818472074330">Odaberite pristupni ključ</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> od <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Dobili ste zaporke za web-lokaciju <ph name="SITE_NAME" /></translation>
+<translation id="8202660122967066153">Privremena zaporka za oporavak u slučaju poteškoća za korisnika <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Privremeni oporavak u slučaju poteškoća</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> s vama dijeli zaporku za web-lokaciju <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">Popis vjerodajnica je zatvoren.</translation>

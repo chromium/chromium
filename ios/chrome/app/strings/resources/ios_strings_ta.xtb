@@ -18,6 +18,7 @@
 <translation id="1054745118061919935">தொடர்வதன் மூலம் <ph name="BEGIN_LINK" />சேவை விதிமுறைகளை<ph name="END_LINK" /> ஏற்கிறீர்கள்.</translation>
 <translation id="10614374240317010">எப்போதும் சேமிக்காதவை</translation>
 <translation id="1062138828266376352">உங்கள் பின் (PIN) மாற்றப்படவில்லை. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்</translation>
+<translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) ஃபைலை எங்கே சேமிக்க வேண்டும் என்பதைத் தேர்வுசெய்யவும்</translation>
 <translation id="1072476005125066234">உங்கள் ஆர்வங்களின் அடிப்படையிலான கருத்துகள்</translation>
 <translation id="1074827084851510304">{password_count} கடவுச்சொற்கள், உள்நுழைவுத் தகவலை ஒருபோதும் சேமிக்க வேண்டாம் என்று நீங்கள் தேர்வுசெய்த தளங்கள் மற்றும் ஆப்ஸின் பட்டியல் ஆகியவற்றை நீக்கவுள்ளீர்கள். தளங்கள் மற்றும் ஆப்ஸிற்காக நீங்கள் உருவாக்கிய கணக்கு எதுவும் நீக்கப்படாது.</translation>
 <translation id="1076421457278169141">குறியீடு ஸ்கேன் செய்யப்பட்டது</translation>
@@ -545,6 +546,7 @@
 <translation id="3227137524299004712">மைக்ரோஃபோன்</translation>
 <translation id="3235063766008841141">ஏமாற்றக்கூடிய தளத்தில் உள்ளிடப்பட்டதால் தரவு மீறலுக்கு உள்ளானது</translation>
 <translation id="3235242129752692527">நிகழ்வு குறித்த விவரங்களை மாற்றிய பின்னர், “சேமி“ என்பதைத் தட்டவும்.</translation>
+<translation id="323863549127671026">தற்போது திறந்துள்ள பக்கங்களும் பக்கக் குழுக்களும்</translation>
 <translation id="3240426699337459095">இணைப்பு நகலெடுக்கப்பட்டது</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Chrome உபயோக அறிக்கைகளைப் பகிர்ந்தாலும் நீங்கள் பார்வையிட்ட URLகள் அவற்றில் இருக்கும்</translation>
@@ -592,6 +594,7 @@
 <translation id="3476450923187944815">பிற ஆப்ஸ் அனைத்திலும் உங்கள் கடவுச்சொற்களை அணுகலாம்.</translation>
 <translation id="3488501490964659223">பக்கங்கள் மூடப்பட்டு உலாவிய தரவு அழிக்கப்பட்டது. நீங்கள் வெளியேற்றப்பட்டீர்கள்</translation>
 <translation id="3493531032208478708">பரிந்துரைக்கப்படும் உள்ளடக்கம் பற்றி <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
+<translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" ஃபைலை எங்கே சேமிக்க வேண்டும் என்பதைத் தேர்வுசெய்யவும்</translation>
 <translation id="3504377992102007712">அமைப்புகள்</translation>
 <translation id="35083190962747987">${url} ஐத் திற</translation>
 <translation id="3511519535430890904">பிரவுசிங் பாதுகாப்பைச் சேருங்கள்</translation>
@@ -611,7 +614,6 @@
 <translation id="3557336313807607643">தொடர்புகளில் சேர்</translation>
 <translation id="355765753469272474">செயல்தவிர்</translation>
 <translation id="3565930036634619844">பக்கம். <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
-<translation id="3570693105179140209">மேலும் கடவுச்சொற்களுக்கு இருமுறை தட்டவும்.</translation>
 <translation id="3572607909481582402">உங்கள் Google கணக்கில்</translation>
 <translation id="3575234738189584619">Lens மூலம் தேடலாம்</translation>
 <translation id="3575426792457739946">ஏற்றப்பட்ட அனைத்து சுயவிவரங்களும் இந்தப் பட்டியலில் உள்ளன.</translation>
@@ -655,7 +657,6 @@
 <translation id="3779810277399252432">இணைய இணைப்பு இல்லை.</translation>
 <translation id="3782614601387961027">எச்சரிக்கையை நிராகரி</translation>
 <translation id="3789841737615482174">நிறுவுக</translation>
-<translation id="3795478177331815672">பக்கங்களையும் பக்கக் குழுக்களையும் திறக்கும்</translation>
 <translation id="380329542618494757">பெயர்</translation>
 <translation id="3803696231112616155">இந்தத் தளத்தை மொழிபெயர்</translation>
 <translation id="3808311849069021992">தேடல் இன்ஜின் விவரங்களைக் காட்டும்</translation>
@@ -693,6 +694,7 @@
 <translation id="3922395466317605522">மெனுவைப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="3929457972718048006">முகவரிகள்</translation>
 <translation id="3931215329146376310">{count,plural, =1{இந்தத் தளத்திற்கான புதிய கடவுச்சொல்}other{இந்தத் தளத்திற்கான புதிய கடவுச்சொற்கள்}}</translation>
+<translation id="3934905113567851655">அளவை மாற்றுவதற்குப் பின்ச் செய்யவும்</translation>
 <translation id="3940195383040445971">பக்கங்களில் விலையைக் கண்காணித்தல்</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} பக்கத்தை மூடு}other{{COUNT} பக்கங்களை மூடு}}</translation>
 <translation id="3948600256434252210">மறைநிலையில் உலாவ வலதுபுறம் ஸ்வைப் செய்யலாம்.</translation>
@@ -701,7 +703,6 @@
 <translation id="3955740319737378355">முடிந்தது</translation>
 <translation id="3955822496205734389">வலுவற்ற கடவுச்சொற்கள் உள்ளன.</translation>
 <translation id="3958312024468322930">முகப்புத் திரையின் கீழ்ப்பகுதியில் உள்ள டாக்கிற்கு அதை இழுங்கள்</translation>
-<translation id="3960218941754097036">திரையில் உள்ள எதையும் Google Lens மூலம் தேடுங்கள்</translation>
 <translation id="3962326069546168954">சேமி</translation>
 <translation id="3967327056943561740">புக்மார்க்குகள்</translation>
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
@@ -968,7 +969,6 @@
 <translation id="4979397965658815378">உங்கள் எல்லா சாதனங்களிலும் புக்மார்க்குகள், கடவுச்சொற்கள், வரலாறு மற்றும் பிற அமைப்புகளைப் பெற, உங்கள் Google கணக்கு மூலம் உள்நுழையவும்</translation>
 <translation id="4985921635659180565">ஃபைலை நீக்குவதற்கு ஒருமுறை திட்டமிட்டுவிட்டால் அதை ரத்துசெய்ய முடியாது.</translation>
 <translation id="498624032394115435">இணைப்பு உள்ள அனைவரும் எல்லாப் பக்கங்களையும் திருத்தலாம்.</translation>
-<translation id="4989065233040279145"><ph name="FILENAME" /> ஃபைலை எங்கே சேமிக்க வேண்டும் என்பதைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> கணக்கு உங்கள் நிறுவனத்தால் நிர்வகிக்கப்படுகிறது.</translation>
 <translation id="4992255726304765516">பக்கக் குழுவின் வண்ணம்: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">கடவுச்சொல்லை நகலெடு</translation>
@@ -1655,7 +1655,6 @@
 <translation id="7724085059277147439">{count,plural, =1{உங்கள் Google கணக்கில் ({email}) சேமிக்கப்பட்டது}other{உங்கள் Google கணக்கில் ({email}) சேமிக்கப்பட்டன}}</translation>
 <translation id="7729458878441927652">பிற சாதனங்களில் உள்ள உலாவிப் பக்கங்களைப் பார்க்க, உலாவிப் பக்கங்களையும் பதிவையும் ஒத்திசைக்கவும்.</translation>
 <translation id="7730020510075123961">வேண்டாம், தரவை ஒன்றிணை</translation>
-<translation id="7730973429297233609"><ph name="FILENAME" /> (<ph name="FILESIZE" />) ஃபைலைச் சேமிக்க, நீங்கள் பயன்படுத்த விரும்பும் கணக்கைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. இந்தச் சாதனத்தில் மட்டும்.</translation>
 <translation id="7744192722284567281">தரவு மீறலில் உள்ளது</translation>
 <translation id="7749790401023484470">நீங்கள் எந்த வார்த்தையையும் தேர்ந்தெடுக்கவில்லை.</translation>
@@ -1703,6 +1702,7 @@
 <translation id="7925108652071887026">தன்னிரப்பி தரவு</translation>
 <translation id="7926975587469166629">கார்டின் புனைப்பெயர்</translation>
 <translation id="7927711904086083099">தேர்ந்தெடுக்கப்படவில்லை</translation>
+<translation id="7927902634113905831">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" - <ph name="FILESIZE" /> ஃபைலைச் சேமிக்கப் பயன்படுத்த விரும்பும் கணக்கைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="7930998711684428189">தரவு மீறலினால் கடவுச்சொற்கள் வெளியாகியிருந்தால் அதுகுறித்து எச்சரிக்கும்.</translation>
 <translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> இல் தேடுங்கள்</translation>
 <translation id="7938254975914653459">ஃபேஸ்டைம்</translation>
@@ -1816,6 +1816,7 @@
 <translation id="8343993175958086504">உங்கள் தரவைக் காப்புப் பிரதி எடுத்து எந்தச் சாதனத்தில் வேண்டுமானாலும் பயன்படுத்தலாம்.</translation>
 <translation id="8348530355586151720">கூடுதல் விருப்பங்கள் மெனுவைத் தட்டவும்</translation>
 <translation id="8349305172487531364">புக்மார்க் பட்டி</translation>
+<translation id="8363484128299778310">சிக்கல் ஏற்படும் சமயங்களில் தற்காலிக மீட்டெடுப்பு</translation>
 <translation id="8364563001733875155">உங்கள் பின்னை மாற்ற, உங்கள் சாதனத்தில் கடவுக்குறியீட்டை முதலில் அமைக்கவும்.</translation>
 <translation id="8366466717204352506">இதுவரை சரிபார்ப்பு இயக்கப்படவில்லை</translation>
 <translation id="8368001212524806591">விலையைக் கண்காணி</translation>
@@ -1838,7 +1839,6 @@
 <translation id="8428045167754449968">மாநகரம் / நகரம்</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
 <translation id="8428634594422941299">நிராகரி</translation>
-<translation id="8430694217306051839"><ph name="FILENAME" /> (<ph name="FILE_SIZE" />) ஃபைலை எங்கே சேமிக்க வேண்டும் என்பதைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="8434837876193928924">பக்கக் குழு விவரங்கள்</translation>
 <translation id="8438566539970814960">தேடல்களையும் உலாவலையும் மேலும் சிறப்பாக்குக</translation>
 <translation id="8439758443371991593">‘வாசிப்புப் பட்டியலில் சேர்’ என்பதை மறை</translation>

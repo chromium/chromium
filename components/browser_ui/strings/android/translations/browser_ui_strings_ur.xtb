@@ -183,6 +183,7 @@
 <translation id="3167868116600277716">‏Discover فیڈ</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> اسٹور کردہ ڈیٹا</translation>
 <translation id="321187648315454507">‏<ph name="APP_NAME" /> کو آپ کو اطلاعات بھیجنے کی سہولت دینے کے لیے، <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں بھی اطلاعات آن کریں۔</translation>
+<translation id="3223425961342298674">مقام کی اجازت نہیں ہے</translation>
 <translation id="3227137524299004712">مائیکروفون</translation>
 <translation id="3232293466644486101">براؤزنگ ڈیٹا حذف کریں…</translation>
 <translation id="3242646949159196181">آن ہونے پر، سائٹس آواز چلا سکتی ہیں۔ آف ہونے پر، سائٹس آواز نہیں چلا سکتی ہیں۔</translation>
@@ -258,6 +259,7 @@
 <translation id="3992308058851451478">‫<ph name="SITE" /> براؤز کرتے وقت آپ کی معلومات استعمال کر سکتی ہے</translation>
 <translation id="3992684624889376114">اس صفحہ کے بارے میں</translation>
 <translation id="4002066346123236978">عنوان</translation>
+<translation id="4031179711345676612">مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="4046123991198612571">اگلا ٹریک</translation>
 <translation id="4077310749977440510">آپ کے کاپی کردہ ٹیکسٹ کی فارمیٹنگ کو برقرار رکھنے جیسی خصوصیات کیلئے سائٹس عام طور پر آپ کے کلپ بورڈ کو پڑھتی ہیں</translation>
 <translation id="4149890623864272035">کیا آپ واقعی کوکیز سمیت تمام مقامی ڈیٹا حذف اور اس ویب سائٹ کیلئے تمام اجازتیں ری سیٹ کرنا چاہتے ہیں؟</translation>
@@ -267,8 +269,10 @@
 <translation id="4169549551965910670">‏USB آلہ سے منسلک ہے</translation>
 <translation id="4194328954146351878">‏سائٹس کو NFC آلات پر معلومات دیکھنے اور تبدیل کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="4200726100658658164">مقام کی ترتیبات کھولیں</translation>
+<translation id="4203769790323223880">کیمرے کی اجازت نہیں ہے</translation>
 <translation id="421742575134139848">سائٹس موسیقی، ویڈیوز اور دیگر میڈیا کی خاطر آڈیو فراہم کرنے کیلئے آواز چلا سکتی ہیں</translation>
 <translation id="4217710972110098902">سیریل پورٹ سے منسلک ہے</translation>
+<translation id="4223404254440398437">مائیکروفون کی اجازت نہیں ہے</translation>
 <translation id="4226663524361240545">اطلاعات آلہ کو وائبریٹ کر سکتی ہیں</translation>
 <translation id="4259722352634471385">نیویگیشن مسدود ہے: <ph name="URL" /></translation>
 <translation id="4274673989874969668">آپ کے کسی سائٹ سے باہر جانے بعد تصاویر اپ لوڈ کرنے یا چیٹ پیغام بھیجنے جیسے ٹاسکس مکمل کرنے کے لیے یہ مطابقت پذیری کا عمل جاری رکھتی ہے</translation>
@@ -300,6 +304,7 @@
 <translation id="4635969503923889910">‏سائٹس کو NFC آلات استعمال کرنے کی اجازت نہ دیں</translation>
 <translation id="4644713492825682049">حذف اور ری سیٹ کریں</translation>
 <translation id="4645575059429386691">آپ کے والدین کے زیر انتظام</translation>
+<translation id="4663373278480897665">کیمرا اجازت یافتہ ہے</translation>
 <translation id="4670064810192446073">ورچوئل رئیلٹی</translation>
 <translation id="4672315773691449562">‏براؤزر ایپ پر تھپتھپائیں پھر Chrome پر تھپتھپائیں</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" /> کو ہینڈ ٹریکنگ استعمال کرنے کی اجازت دینے کے لیے، <ph name="BEGIN_LINK" />سسٹم کی ترتیبات<ph name="END_LINK" /> میں ہینڈ ٹریکنگ کو بھی آن کریں۔</translation>
@@ -345,6 +350,7 @@
 <translation id="5216942107514965959">آخری بار آج ملاحظہ کیا گیا</translation>
 <translation id="5225463052809312700">کیمرا آن کریں</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
+<translation id="5239623327352565343">مقام کی اجازت ہے</translation>
 <translation id="5246825184569358663">اس کارروائی سے کوکیز سمیت تمام مقامی ڈیٹا حذف ہو جائے گا اور <ph name="DOMAIN" /> اور اس کے تحت موجود تمام سائٹس کیلئے تمام اجازتیں ری سیٹ ہو جائیں گی</translation>
 <translation id="5264323282659631142">’<ph name="CHIP_LABEL" />‘ ہٹائیں</translation>
 <translation id="528192093759286357">پوری اسکرین سے باہر نکلنے کیلئے اوپر سے گھسیٹیں اور پیچھے جائیں بٹن کو ٹچ کریں۔</translation>
@@ -389,6 +395,7 @@
 <translation id="5743425052258407233">اپنے تمام آلات پر اپنی سرگزشت حاصل کریں تاکہ آپ آسانی سے وہیں سے شروع کر سکیں جہاں آپ نے چھوڑا تھا</translation>
 <translation id="5749158352074143502">اس ٹیب کے ساتھ جاری رکھیں</translation>
 <translation id="5750869797196646528">ہاتھ کی ٹریکنگ</translation>
+<translation id="5753570386948603678">سرگزشت سے حذف کریں</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود ہو گیا</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
 <translation id="5822675474983796325">اپنے نئے ٹیب کے صفحہ کے نیچے کی شیٹ کو حسب ضرورت بنائیں پورا کھلا ہے</translation>
@@ -488,6 +495,7 @@
 <translation id="6992289844737586249">سائٹس کو آپ کا مائیکروفون استعمال کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="7000754031042624318">‏Android ترتیبات میں آف کر دیا گیا</translation>
 <translation id="702275896380648118">‏یہ سائٹ آپ کی پسندیدہ چیزوں کا تعین کرتی ہے اور پھر دیگر سائٹس کو اشتہارات تجویز کرتی ہے۔ آپ کو مزید متعلقہ اشتہارات دکھانے کیلئے، یہ سائٹ Chrome سے آپ کے اشتہار کے موضوعات بھی وصول کرتی ہے۔</translation>
+<translation id="7044081119134178347">اس بار کیمرا کی اجازت ہے</translation>
 <translation id="7053983685419859001">مسدود کریں</translation>
 <translation id="7055552182600664515">کاپی رائٹ کے ذریعے تحفظ یافتہ مواد کو چلانے کیلئے، سائٹس کو مواد کے تحفظ کی سروس کا استعمال کرنے کی ضرورت پڑ سکتی ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 منتخب ہے}other{# منتخب کردہ}}</translation>
@@ -525,6 +533,7 @@
 <translation id="7573594921350120855">سائٹس عام طور پر ویڈیو چیٹ جیسی کمیونیکشن کی خصوصیات کے لیے آپ کا ویڈیو کیمرا استعمال کرتی ہیں</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{‫<ph name="NUM_MONTHS_ONE" /> ماہ قبل}other{‫<ph name="NUM_MONTHS_MANY" /> ماہ قبل}}</translation>
 <translation id="757524316907819857">محفوظ مواد چلانے سے سائٹس کو مسدود کریں</translation>
+<translation id="7586676035079382730">اطلاعات کی اجازت نہیں ہے</translation>
 <translation id="7594634374516752650">بلوٹوتھ آلے سے منسلک ہے</translation>
 <translation id="7617547684249261169">آپ اپنی بعض یا سبھی سرگزشت، کوکیز، سائٹ ڈیٹا اور مزید کو حذف کر سکتے ہیں</translation>
 <translation id="7649070708921625228">مدد</translation>
@@ -540,6 +549,7 @@
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7804248752222191302">ایک سائٹ آپ کا کیمرا استعمال کر رہی ہے</translation>
 <translation id="7807060072011926525">‏Google کے ذریعے فراہم کردہ</translation>
+<translation id="7815680994978050279">خطرناک ڈاؤن لوڈ مسدود کیا گیا</translation>
 <translation id="7835852323729233924">میڈیا کو چلایا جا رہا ہے</translation>
 <translation id="783819812427904514">ویڈیو کی آواز چلائیں</translation>
 <translation id="7846076177841592234">انتخاب منسوخ کریں</translation>
@@ -588,6 +598,7 @@
 <translation id="8380167699614421159">یہ سائٹ دخل انداز یا گمراہ کن اشتہارات دکھاتی ہے</translation>
 <translation id="8394832520002899662">سائٹ پر واپس جانے کے لیے تھپتھپائیں</translation>
 <translation id="8409345997656833551">جب کوئی مضمون آسان منظر میں دکھایا جا سکتا ہے تو مطلع کریں</translation>
+<translation id="8416874502399604126">اس بار مائیکروفون کی اجازت ہے</translation>
 <translation id="8423565414844018592">ٹیکسٹ اسکیلنگ کو <ph name="TEXT_SCALING" /> پر سیٹ کیا گیا</translation>
 <translation id="8428213095426709021">ترتیبات</translation>
 <translation id="8441146129660941386">پیچھے لے جائیں</translation>
@@ -655,12 +666,14 @@
 <translation id="9106233582039520022">کوکیز حذف کریں؟</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}}</translation>
 <translation id="913657688200966289">‏<ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں <ph name="APP_NAME" /> کے لیے اجازتیں آن کریں۔</translation>
+<translation id="9138037198177304356">اطلاعات کی اجازت ہے</translation>
 <translation id="9138217887606523162">موجودہ زوم %% <ph name="ZOOM_LEVEL" /> ہے</translation>
 <translation id="9156722768168878035">‏‫Chrome کو اپنے حالیہ ٹیبز کو اپنے آلے کی ایپس کی فہرست اور تلاش کے نتائج میں دکھانے کی اجازت دیں۔ آپ اسے Chrome کی ترتیبات میں کسی بھی وقت آف کر سکتے ہیں۔</translation>
 <translation id="9162462602695099906">یہ صفحہ خطرناک ہے</translation>
 <translation id="9182556968660520230">سائٹس کو تحفظ یافتہ مواد چلانے کی اجازت نہ دیں</translation>
 <translation id="947156494302904893">آپ کی ملاحظہ کردہ سائٹس اس بات کی تصدیق کر سکتی ہیں کہ آپ ایک حقیقی شخص ہیں نہ کہ ایک بوٹ</translation>
 <translation id="959682366969460160">منظم رہیں</translation>
+<translation id="961930410699694996">اس بار مقام کی اجازت ہے</translation>
 <translation id="967624055006145463">اسٹور کردہ ڈیٹا</translation>
 <translation id="969975166333045662">‏سائٹ کو V8 کو بہتر بنانے والا استعمال کرنے سے روکیں۔</translation>
 </translationbundle>

@@ -183,6 +183,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3167868116600277716">Temukan suapan</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> data disimpan</translation>
 <translation id="321187648315454507">Untuk membolehkan <ph name="APP_NAME" /> menghantar pemberitahuan kepada anda, hidupkan juga pemberitahuan dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
+<translation id="3223425961342298674">Lokasi tidak dibenarkan</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Padamkan data semakan imbas…</translation>
 <translation id="3242646949159196181">Apabila dihidupkan, laman dapat memainkan bunyi. Apabila dimatikan, laman tidak dapat memainkan bunyi.</translation>
@@ -258,6 +259,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3992308058851451478"><ph name="SITE" /> boleh menggunakan maklumat anda ketika anda menyemak imbas</translation>
 <translation id="3992684624889376114">Perihal halaman ini</translation>
 <translation id="4002066346123236978">Tajuk</translation>
+<translation id="4031179711345676612">Mikrofon dibenarkan</translation>
 <translation id="4046123991198612571">Lagu seterusnya</translation>
 <translation id="4077310749977440510">Laman biasanya membaca papan keratan anda untuk ciri seperti mengekalkan format teks yang anda salin</translation>
 <translation id="4149890623864272035">Adakah anda pasti mahu memadamkan semua data setempat, termasuk kuki dan menetapkan semula semua kebenaran untuk laman web ini?</translation>
@@ -267,8 +269,10 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="4169549551965910670">Disambungkan kepada peranti USB</translation>
 <translation id="4194328954146351878">Tanya sebelum membenarkan laman melihat dan menukar maklumat pada peranti NFC (disyorkan)</translation>
 <translation id="4200726100658658164">Buka Tetapan Lokasi</translation>
+<translation id="4203769790323223880">Kamera tidak dibenarkan</translation>
 <translation id="421742575134139848">Laman mungkin memainkan bunyi untuk memberikan audio bagi muzik, video dan media lain</translation>
 <translation id="4217710972110098902">Disambungkan pada port siri</translation>
+<translation id="4223404254440398437">Mikrofon tidak dibenarkan</translation>
 <translation id="4226663524361240545">Pemberitahuan boleh menggetarkan peranti</translation>
 <translation id="4259722352634471385">Navigasi disekat: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Laman boleh terus menjalankan penyegerakan untuk menyelesaikan tugas, seperti memuat naik foto atau menghantar mesej sembang selepas anda meninggalkan laman itu.</translation>
@@ -300,6 +304,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="4635969503923889910">Jangan benarkan laman menggunakan peranti NFC</translation>
 <translation id="4644713492825682049">Padam &amp; tetapkan semula</translation>
 <translation id="4645575059429386691">Diurus oleh ibu bapa anda</translation>
+<translation id="4663373278480897665">Kamera dibenarkan</translation>
 <translation id="4670064810192446073">Realiti maya</translation>
 <translation id="4672315773691449562">Ketik apl Penyemak imbas kemudian ketik Chrome</translation>
 <translation id="4676059169848868271">Untuk membenarkan <ph name="APP_NAME" /> menggunakan penjejakan tangan, hidupkan penjejakan tangan dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" />.</translation>
@@ -345,6 +350,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="5216942107514965959">Terakhir dilawati hari ini</translation>
 <translation id="5225463052809312700">Hidupkan kamera</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
+<translation id="5239623327352565343">Lokasi dibenarkan</translation>
 <translation id="5246825184569358663">Tindakan ini akan memadamkan semua data setempat, termasuk kuki, dan menetapkan semula semua kebenaran untuk <ph name="DOMAIN" /> serta semua laman dalam bahagian domain ini</translation>
 <translation id="5264323282659631142">Alih keluar '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Seret dari atas dan sentuh butang kembali untuk keluar daripada skrin penuh.</translation>
@@ -389,6 +395,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="5743425052258407233">Dapatkan sejarah anda pada semua peranti anda agar anda boleh menyambung semula pada tempat anda berhenti dengan mudah</translation>
 <translation id="5749158352074143502">Teruskan dengan tab ini</translation>
 <translation id="5750869797196646528">Penjejakan tangan</translation>
+<translation id="5753570386948603678">Padam daripada sejarah</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> disekat</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
 <translation id="5822675474983796325">Sesuaikan helaian bawah halaman tab baharu anda dibuka pada ketinggian penuh</translation>
@@ -488,6 +495,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="6992289844737586249">Tanya dahulu sebelum membenarkan tapak menggunakan mikrofon anda (disyorkan)</translation>
 <translation id="7000754031042624318">Dimatikan dalam tetapan Android</translation>
 <translation id="702275896380648118">Laman ini menentukan perkara yang anda sukai dan kemudian mencadangkan iklan kepada laman lain. Laman ini juga mendapat topik iklan anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda.</translation>
+<translation id="7044081119134178347">Kamera dibenarkan pada masa ini</translation>
 <translation id="7053983685419859001">Sekat</translation>
 <translation id="7055552182600664515">Untuk memainkan kandungan yang dilindungi oleh hak cipta, laman mungkin perlu menggunakan perkhidmatan perlindungan kandungan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 dipilih}other{# dipilih}}</translation>
@@ -525,6 +533,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7573594921350120855">Tapak biasanya menggunakan kamera video anda untuk ciri komunikasi seperti sembang video</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> bulan yang lalu}other{<ph name="NUM_MONTHS_MANY" /> bulan yang lalu}}</translation>
 <translation id="757524316907819857">Sekat tapak daripada memainkan kandungan yang dilindungi</translation>
+<translation id="7586676035079382730">Pemberitahuan tidak dibenarkan</translation>
 <translation id="7594634374516752650">Disambungkan ke peranti Bluetooth</translation>
 <translation id="7617547684249261169">Anda boleh padamkan beberapa atau semua sejarah, kuki dan data laman anda serta pelbagai lagi</translation>
 <translation id="7649070708921625228">Bantuan</translation>
@@ -540,6 +549,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="780301667611848630">Tidak, terima kasih</translation>
 <translation id="7804248752222191302">Suatu tapak sedang menggunakan kamera anda</translation>
 <translation id="7807060072011926525">Disediakan oleh Google</translation>
+<translation id="7815680994978050279">Muat turun berbahaya disekat</translation>
 <translation id="7835852323729233924">Memainkan media</translation>
 <translation id="783819812427904514">Nyahredam video</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
@@ -588,6 +598,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="8380167699614421159">Tapak ini menyiarkan iklan yang mengganggu atau mengelirukan</translation>
 <translation id="8394832520002899662">Ketik untuk kembali ke tapak</translation>
 <translation id="8409345997656833551">Dapatkan pemberitahuan apabila artikel boleh ditunjukkan dalam paparan ringkas</translation>
+<translation id="8416874502399604126">Mikrofon dibenarkan pada masa ini</translation>
 <translation id="8423565414844018592">Penskalaan teks ditetapkan kepada <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Tetapan</translation>
 <translation id="8441146129660941386">Cari ke belakang</translation>
@@ -655,12 +666,14 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="9106233582039520022">Padamkan kuki?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi}}</translation>
 <translation id="913657688200966289">Hidupkan kebenaran untuk <ph name="APP_NAME" /> dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
+<translation id="9138037198177304356">Pemberitahuan dibenarkan</translation>
 <translation id="9138217887606523162">Zum semasa ialah <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Benarkan Chrome memaparkan tab terbaharu anda dalam senarai apl dan hasil carian peranti anda. Anda boleh mematikan ciri ini dalam tetapan Chrome pada bila-bila masa.</translation>
 <translation id="9162462602695099906">Halaman ini berbahaya</translation>
 <translation id="9182556968660520230">Jangan benarkan laman memainkan kandungan yang dilindungi</translation>
 <translation id="947156494302904893">Laman yang anda lawati boleh mengesahkan bahawa anda orang sebenar dan bukan bot</translation>
 <translation id="959682366969460160">Jadi teratur</translation>
+<translation id="961930410699694996">Lokasi dibenarkan pada masa ini</translation>
 <translation id="967624055006145463">Data disimpan</translation>
 <translation id="969975166333045662">Sekat laman daripada menggunakan pengoptimum V8.</translation>
 </translationbundle>

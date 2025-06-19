@@ -342,6 +342,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="5775198138441669627">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="SETTINGS_LINK" /> дані Chromium у своєму обліковому записі</translation>
 <translation id="5800158606660203929">Керуйте налаштуваннями Chromium. Зробіть Chromium вебпереглядачем за умовчанням.</translation>
 <translation id="5809516625706423866">Не вдалося підключитися до Інтернету. Помилка "HTTP 401 не авторизовано". Перевірте конфігурацію свого проксі-сервера.</translation>
+<translation id="5817952762723416573">Прискорює роботу сайтів за допомогою системи V8 для Chromium, проте робить вебпереглядач трохи менш стійким до атак. Це налаштування вимкнено.</translation>
 <translation id="5821520528363214608">Щоб зберігати й використовувати дані Chromium в обліковому записі Google, оновіть Chromium</translation>
 <translation id="5824893331272123205">Не вдалося завантажити цю панель. Повторіть спробу.</translation>
 <translation id="5862307444128926510">Вітаємо в Chromium</translation>
@@ -431,6 +432,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="6729124504294600478">Щоб користуватися персоналізацією і іншими можливостями, включіть Chromium в історію додатків і вебпошуку й зв’язані сервіси Google</translation>
 <translation id="6734291798041940871">Chromium уже встановлено для всіх користувачів на вашому комп’ютері.</translation>
 <translation id="674245979920622322">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chromium скасував такі дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і ще <ph name="COUNT" />.</translation>
+<translation id="6751374565094704799">Прискорює роботу сайтів за допомогою системи V8 для Chromium, проте робить вебпереглядач трохи менш стійким до атак. Це налаштування ввімкнено.</translation>
 <translation id="67706546131546258">Chromium радить просканувати цей файл, оскільки він може бути небезпечним.</translation>
 <translation id="6779406956731413166">Chromium OS працює завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Перекласти</translation>
@@ -527,7 +529,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8118331347066725040">Залиште відгук про пошук через Об’єктив</translation>
 <translation id="8133124826068723441">Chromium OS не вдалося синхронізувати ваші дані, оскільки синхронізація для вашого домену недоступна.</translation>
 <translation id="813913629614996137">Ініціалізація...</translation>
-<translation id="8166782796394721554">Увімкніть додатковий захист у системі JavaScript і WebAssembly для Chromium</translation>
 <translation id="81770708095080097">Цей файл небезпечний, тому Chromium заблокував його.</translation>
 <translation id="8177472873527554730">Не вдалося знайти контент на сторінці</translation>
 <translation id="8200109504272824693">Щоб використовувати й зберігати дані Chromium в обліковому записі <ph name="USER_EMAIL" />, введіть парольну фразу</translation>

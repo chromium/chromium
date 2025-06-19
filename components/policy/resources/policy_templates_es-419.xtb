@@ -518,11 +518,6 @@ Cuando la estableces como PromptInTab, cuando vence la autenticación del usuari
       Esto se aplica al descarte de la presión de memoria y del modo de alta eficiencia.
       Si se descarta una página, se descargará y se recuperarán todos sus recursos. La pestaña a la que está asociada permanece en la barra de pestañas, pero se activa una recarga completa si la haces visible.
       </translation>
-<translation id="1385786866699557535">Una URL a una imagen que se usará como insignia de la empresa para un navegador administrado. La URL debe dirigir a una imagen.
-
-Se recomienda usar el ícono de página (por ejemplo, https://www.google.com/favicon.ico) o un ícono de al menos 48 × 48 px.
-
-Ten en cuenta que esta política solo se aplica a los navegadores administrados, por lo que no tendrá efecto en los usuarios administrados en navegadores no administrados.</translation>
 <translation id="1386369130542976774">Especifica los intervalos semanales en los que no se pueden usar los dispositivos ChromeOS</translation>
 <translation id="138847842893090358">Informa el estado de la actualización del SO</translation>
 <translation id="1389138080311956934">Ahorro de memoria máximo.</translation>
@@ -531,11 +526,6 @@ Ten en cuenta que esta política solo se aplica a los navegadores administrados,
       Si inhabilitas la política, los usuarios no podrán realizar impresiones en <ph name="CLOUD_PRINT_NAME" /> desde el diálogo de impresión de <ph name="PRODUCT_NAME" />.
 
       Para que se puedan detectar los destinos de <ph name="CLOUD_PRINT_NAME" />, debes habilitar esta política y no debe incluirse <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> en la política <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME" />.</translation>
-<translation id="1390901586107713894">Permite especificar las extensiones que los usuarios NO pueden instalar. Si se incluyen en la lista de elementos bloqueados extensiones que ya están instaladas, no funcionarán y el usuario no podrá habilitarlas. Si las quitas de esa lista, se volverán a habilitar automáticamente.
-
-          Un valor de asterisco (*) en una lista de elementos bloqueados significa que todas las extensiones están incluidas en la lista de elementos bloqueados, a menos que se indique explícitamente que están en la lista de elementos permitidos.
-
-          Si no estableces esta política, el usuario podrá instalar cualquier extensión de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1392703142209771447">La expresión regular que coincide con el ID de la impresora.</translation>
 <translation id="1393485621820363363">Impresoras empresariales habilitadas asociadas a dispositivos</translation>
 <translation id="1395505489889158859">Permitir el envío de nombres de usuario y nombres de archivo a impresoras nativas</translation>
@@ -993,7 +983,6 @@ Se bloquearán los orígenes que coincidan con los patrones de políticas bloque
 Los orígenes no especificados en la política ni la configuración del usuario requerirán un gesto previo del usuario
 para llamar a esta API.</translation>
 <translation id="1645793986494086629">Esquema:</translation>
-<translation id="1647420986475965896">Configuración de las recomendaciones de búsqueda del Modo IA en la barra de direcciones y el cuadro de búsqueda de la página de pestaña nueva</translation>
 <translation id="1647558381546345298">Si estableces la política, se configurará el tamaño del almacenamiento en caché que use <ph name="PRODUCT_NAME" /> para guardar en el disco los archivos multimedia almacenados en caché, independientemente de que los usuarios hayan especificado o no la marca --media-cache-size. El valor especificado en esta política no establece un límite estricto, sino una sugerencia para el sistema de almacenamiento en caché. Se podrían redondear hacia arriba los valores por debajo de un gigabyte según las necesidades del navegador.
 
       Si estableces la política en 0, se utilizará el tamaño predeterminado de almacenamiento en caché. Los usuarios no podrán cambiarlo.
@@ -1175,6 +1164,15 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
       La lista aparecerá en el mismo orden que se especifica en la sección "Ordena los idiomas según tus preferencias" de chrome://settings/languages. Los usuarios no podrán cambiar el orden de los idiomas establecidos por la política ni quitarlos, pero podrán agregar idiomas debajo de los que estableció la política. Los usuarios también podrán controlar el idioma de la IU del navegador y las opciones de configuración del corrector ortográfico y de traducción, a menos que se apliquen otras políticas para estas configuraciones.
 
       Si no estableces la política, los usuarios podrán modificar toda la lista de idiomas preferidos.</translation>
+<translation id="180243155313050440">Esta política controla una etiqueta personalizada que se usa para indicar un navegador administrado. En el caso de los navegadores administrados, esta etiqueta se mostrará en una cláusula de exención de responsabilidad de administración en el pie de página de la página Nueva pestaña. No se traducirá la etiqueta personalizada.
+
+Cuando se aplica esta política, las cadenas que superen los 16 caracteres se truncarán con un “…”. No uses nombres extendidos.
+
+Ten en cuenta que esta política solo se aplica a los navegadores administrados, por lo que no tendrá efecto en los usuarios administrados en navegadores no administrados.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="1803646570632580723">Lista de aplicaciones fijas para mostrar en el menú de aplicaciones</translation>
 <translation id="1808715480127969042">Bloquear cookies en estos sitios</translation>
 <translation id="1810261428246410396">Permitir usar la conexión instantánea mediante dispositivo móvil</translation>
@@ -1707,25 +1705,6 @@ Si no estableces la política para los usuarios generales, equivale a habilitarl
 <translation id="2180795125410219364">Inhabilitar la configuración de Inicio/Fin</translation>
 <translation id="2180958780733364832">Controlar el uso del modo sin interfaz gráfica</translation>
 <translation id="2182291258410176649">El usuario decide si habilita la copia de seguridad y el restablecimiento</translation>
-<translation id="2182945089357619926">Esta política permite a los administradores establecer un agregador de búsquedas de la empresa designado que proporcionará recomendaciones de búsqueda y resultados en la barra de direcciones cuando se active una palabra clave específica. Para iniciar una búsqueda, los usuarios pueden escribir en la barra de direcciones la palabra clave especificada en el campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o sin el prefijo @ (p. ej., <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) y, luego, presionar la barra espaciadora o Tab.
-
-Los siguientes campos son obligatorios: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-El campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde al nombre del motor de búsqueda que se muestra al usuario en la barra de direcciones.
-
-El campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde a la palabra clave que el usuario ingresa para activar la búsqueda. El atajo puede incluir palabras y caracteres simples, pero no puede incluir espacios ni comenzar con el símbolo @. Los atajos deben ser únicos.
-
-El campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL en la que se realizará la búsqueda. Ingresa la dirección web para la página de resultados del motor de búsqueda y usa <ph name="SEARCH_TERM_MARKER" /> en lugar de la búsqueda.
-
-El campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL que proporciona sugerencias de búsqueda. Se realizará una solicitud POST y la consulta del usuario se pasará en los parámetros de POST con la clave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-El campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL de una imagen que se usará en las sugerencias de búsqueda. Si no se establece este campo, se usará un ícono predeterminado. Se recomienda usar un ícono de página (por ejemplo, <ph name="ICON_URL_EXAMPLE" />). Formatos de archivos de imagen admitidos: JPEG, ICO y PNG.
-
-El campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica si se requiere la barra de direcciones <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> para ver las recomendaciones de búsqueda. Si no estableces este campo, no se requerirá la barra de direcciones <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2183338188392346527">No informar los contadores de tiempo de ejecución del dispositivo</translation>
 <translation id="2187372280917024033">La plantilla de URI del agente de resolución de DNS-over-HTTPS deseado. Si quieres especificar varios agentes de resolución de DNS-over-HTTPS, separa las plantillas de URI correspondientes con espacios. Esta política es muy similar a <ph name="DOH_TEMPLATES_POLICY_NAME" /> y, si la especificas, se anulará.
 A diferencia de la política <ph name="DOH_TEMPLATES_POLICY_NAME" />, esta política permite especificar la información de identidad.
@@ -2037,9 +2016,6 @@ la política BruschettaVMConfiguration o, si esto falla, un nombre genérico.</t
 <translation id="2377059627106831967">Permitir la agrupación de la ventana de la Visión general creada por IA generativa sin mejorar los modelos de IA.</translation>
 <translation id="2377109572344699022">Controlar el uso de la API de Direct Sockets</translation>
 <translation id="2382672620906337383">No se restringirá JavaScript setTimeout() hasta que el umbral de anidación sea más alto</translation>
-<translation id="2384233438419344179">Si habilitas la política, los elementos de la página web que no sean del dominio especificado en la barra de direcciones del navegador no podrán establecer cookies. Si inhabilitas la política, esos elementos podrán establecer cookies y los usuarios no podrán cambiar esta configuración.
-
-      Si no la estableces, se activarán las cookies de terceros, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="2386362615870139244">Permitir bloqueos de activación de pantalla</translation>
 <translation id="2387469539700985783">Esta política no afecta el informe que crea Android.</translation>
 <translation id="2388701318721126001">Si inhabilitas esta política, no se podrá seleccionar la imagen de fondo de pantalla de <ph name="PRODUCT_OS_NAME" /> del usuario de un álbum de Google Fotos.
@@ -2503,16 +2479,6 @@ El sistema solo consulta registros AAAA cuando el dispositivo es accesible para 
 <translation id="2702682139813393777">Forzar los hosts de mensajería nativa de Windows para que se inicien mediante cmd.exe</translation>
 <translation id="270582584528242502">No mostrar un diálogo de advertencia cuando el usuario intenta salir</translation>
 <translation id="2706708761587205154">Permite la impresión solo con PIN</translation>
-<translation id="2706972066112233185">Esta política controla la sección de recomendaciones del Modo IA en la barra de direcciones y el cuadro de búsqueda de la página de nueva pestaña.
-
-Esta función está disponible para todos los usuarios que tienen Google como motor de búsqueda predeterminado, a menos que esta política la inhabilite.
-
-Si no estableces la política, su comportamiento se determina según la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Si estableces la política con el valor "0" (habilitada) o no la estableces, los usuarios podrán acceder a la función. Si la estableces con el valor "1" (inhabilitada), la función no estará disponible.
-
-0 = Permite que se use la función
-1 = No permite la función.</translation>
 <translation id="2707733461906745082">Separación de perfiles</translation>
 <translation id="2707873794476722903">Se activó la Navegación segura en el modo estándar.</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
@@ -4166,7 +4132,6 @@ Ten en cuenta que esta política no tiene efecto si la política <ph name="ENTER
 
  Si no estableces la política o la estableces como un valor vacío o no válido, no se agregará un valor <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> adicional a las solicitudes de trabajos de impresión.
 </translation>
-<translation id="3895626555961466729">Permitir las recomendaciones del Modo IA.</translation>
 <translation id="3896591584655529057">Habilitar el guardado de llaves de acceso en el administrador de contraseñas</translation>
 <translation id="3896751141670591496">Si inhabilitas la política o no la estableces, aparecerán las advertencias de seguridad cuando se usen funciones experimentales de línea de comandos potencialmente peligrosas para iniciar Chrome.
 
@@ -4273,11 +4238,6 @@ se pueden enviar informes de la empresa.
 [1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
 <translation id="398294729592983401">Permitir que los usuarios activen o desactiven el parámetro de configuración Fingerprinting Protection de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.</translation>
 <translation id="3983162212222338509">Ejecutar la resolución de DNS del sistema dentro o fuera del proceso de red, o bien parcialmente dentro y parcialmente fuera, según la configuración del sistema y las marcas de función</translation>
-<translation id="3986500787181481802">Esta política controla una etiqueta personalizada que se usa para indicar un navegador administrado. En el caso de los navegadores administrados, esta etiqueta se mostrará en una cláusula de exención de responsabilidad de administración en el pie de página de la página Nueva pestaña. No se traducirá la etiqueta personalizada.
-
-Cuando se aplica esta política, las cadenas que superen los 16 caracteres se truncarán con un “…”. No uses nombres extendidos.
-
-Ten en cuenta que esta política solo se aplica a los navegadores administrados, por lo que no tendrá efecto en los usuarios administrados en navegadores no administrados.</translation>
 <translation id="3986700049001404598">Permitir que los usuarios finalicen los procesos con el Administrador de tareas de Chrome</translation>
 <translation id="398884292557092447">Si estableces la política como verdadera o no la estableces, los usuarios podrán controlar las sugerencias de Autocompletar para las tarjetas de crédito en la IU.
 
@@ -4728,6 +4688,15 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 <translation id="4297483555396496700">Los usuarios solo podrán cambiar el canal de versiones del dispositivo si estableces esta política como verdadera. Si la estableces como falsa o no la estableces, los usuarios no podrán cambiar el canal.
 
 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tiene efecto si estableces <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> como falsa.</translation>
+<translation id="4297774573405304484">Una URL a una imagen que se usará como insignia de la empresa para un navegador administrado. La URL debe dirigir a una imagen.
+
+Se recomienda usar el ícono de página (por ejemplo, https://www.google.com/favicon.ico) o un ícono de al menos 48 × 48 px.
+
+Ten en cuenta que esta política solo se aplica a los navegadores administrados, por lo que no tendrá efecto en los usuarios administrados en navegadores no administrados.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4301478455179579340">Firma de aplicaciones nativas durante la instalación de aplicaciones web progresivas</translation>
 <translation id="4303167373847512281">Permitir el modo de desarrollador</translation>
 <translation id="4307116964468610577">La política prolonga la vida útil de las baterías del sistema, ya que las carga a la capacidad máxima solo una vez por día. Durante el resto del día, las baterías se mantienen en un estado de carga más bajo, que es mejor para el almacenamiento, incluso cuando el sistema está conectado a una fuente de alimentación.
@@ -5214,6 +5183,27 @@ Comportamiento anterior y heredado: en “beforeunload”, la llamada a “event
 
       Si la lista no incluye una política y hay conflicto entre fuentes, alcances o niveles, se aplicará la política con la prioridad más alta.</translation>
 <translation id="4646739075621507361">Informa trabajos de impresión</translation>
+<translation id="4649231830965908577">Esta política permite a los administradores establecer un agregador de búsquedas empresarial designado que proporcionará recomendaciones de búsqueda y resultados en el cuadro multifunción (barra de direcciones) y el cuadro de búsqueda de la página Nueva pestaña.
+
+De forma predeterminada, las sugerencias de búsqueda empresariales se combinarán y se mostrarán junto con las recomendaciones de <ph name="PRODUCT_NAME" /> normales. Los usuarios pueden limitar explícitamente su búsqueda al agregador de búsquedas empresarial si escriben la palabra clave especificada en el campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o sin el prefijo @ (p.ej., <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), seguido de la barra espaciadora o Tab en el cuadro multifunción. Actualmente, las búsquedas empresariales con alcance (activadas por una palabra clave) solo se admiten en el cuadro multifunción y no en el cuadro de búsqueda de la página Nueva pestaña.
+
+Los siguientes campos son obligatorios: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+El campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde al nombre del motor de búsqueda que se muestra al usuario en la barra de direcciones.
+
+El campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde a la palabra clave que el usuario ingresa para activar la búsqueda. El atajo puede incluir palabras y caracteres simples, pero no puede incluir espacios ni comenzar con el símbolo @. Los atajos deben ser únicos.
+
+El campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL en la que se realizará la búsqueda. Ingresa la dirección web para la página de resultados del motor de búsqueda y usa <ph name="SEARCH_TERM_MARKER" /> en lugar de la búsqueda.
+
+El campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL que proporciona sugerencias de búsqueda. Se realizará una solicitud POST y la consulta del usuario se pasará en los parámetros de POST con la clave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
+
+El campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica la URL de una imagen que se usará en las sugerencias de búsqueda. Si no se establece este campo, se usará un ícono predeterminado. Se recomienda usar un ícono de página (por ejemplo, <ph name="ICON_URL_EXAMPLE" />). Formatos de archivos de imagen admitidos: JPEG, ICO y PNG.
+
+El campo <ph name="REQUIRE_SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica si se requiere la barra de direcciones <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> para ver las recomendaciones de búsqueda. Si es necesario, las sugerencias no se mostrarán en el cuadro de búsqueda de la página Nueva pestaña, pero se seguirán mostrando en el cuadro multifunción (barra de direcciones) en el modo de búsqueda con alcance. Si no estableces este campo, no se requerirá la barra de direcciones <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4649395978608361979">Destinos de las impresoras locales</translation>
 <translation id="4650044303940238102">Configuración de fuentes locales</translation>
 <translation id="4650759511838826572">Inhabilitar los esquemas de protocolo de la dirección URL</translation>
@@ -8688,6 +8678,11 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 <translation id="6802412020718145539">Usar la arquitectura OOPIF para el lector de PDF.</translation>
 <translation id="68031099365512050">Informar el estado del audio</translation>
 <translation id="680356860463873420">No permitir que los usuarios utilicen PluginVm</translation>
+<translation id="6807707420322335446">Si habilitas la política, los elementos de la página web que no sean del dominio especificado en la barra de direcciones del navegador no podrán establecer cookies. Si inhabilitas la política, esos elementos podrán establecer cookies y los usuarios no podrán cambiar esta configuración.
+
+      Si no la estableces, se podrán mostrar cookies de terceros, pero los usuarios podrán cambiar esta configuración.
+
+      Nota: Esta política no se aplica en el modo Incógnito, donde se bloquean las cookies de terceros y solo se pueden permitir a nivel del sitio. Para permitir las cookies a nivel del sitio, usa la política <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6810445994095397827">Bloquear JavaScript en estos sitios</translation>
 <translation id="6813263547126514821">Encendido y apagado</translation>
 <translation id="681446116407619279">Esquemas de autenticación compatibles</translation>
@@ -10787,7 +10782,6 @@ Para obtener más información sobre las tecnologías heredadas, visita https://
       <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />,
       <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
       </translation>
-<translation id="8309511882585098865">No permitir las recomendaciones del Modo IA.</translation>
 <translation id="8310392396850884147">Admitir encabezados de solicitudes sin comodín CORS</translation>
 <translation id="8312129124898414409">Te permite establecer si los sitios web están autorizados a utilizar la generación de claves. La generación de claves puede permitirse o rechazarse para todos los sitios web. 
 

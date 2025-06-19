@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">هل تريد استخدام كلمة المرور أو مفتاح المرور المحفوظَين؟</translation>
 <translation id="5624120631404540903">إدارة كلمات المرور</translation>
 <translation id="592182999816790476">تم حفظ كلمة المرور لحساب <ph name="USERNAME" /> على <ph name="WEBSITE" /></translation>
+<translation id="593924516471361340">تم حفظ كلمة المرور المؤقتة لاسترداد الحساب في حال حدوث مشكلة لحساب <ph name="USERNAME" /> على <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">مفتاح مرور "<ph name="USERNAME" />": عليك استخدام قفل الشاشة.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{هناك كلمة مرور جديدة لهذا الموقع الإلكتروني}zero{ما مِن كلمات مرور جديدة لهذا الموقع الإلكتروني}two{هناك كلمتا مرور جديدتان لهذا الموقع الإلكتروني}few{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}many{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}other{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}}</translation>
 <translation id="7286867818472074330">اختيار مفتاح المرور</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />، <ph name="ITEM_POSITION" /> من إجمالي <ph name="ITEMS_TOTAL" /></translation>
 <translation id="7738288782501322815">لقد تلقّيت كلمات مرور للموقع الإلكتروني <ph name="SITE_NAME" /></translation>
+<translation id="8202660122967066153">كلمة المرور المؤقتة لاسترداد الحساب في حال حدوث مشكلة لحساب <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">استرداد مؤقت في حال حدوث مشكلة</translation>
 <translation id="8614995815226664591">لقد تلقّيت من "<ph name="SENDER_NAME" />" كلمة مرور للموقع الإلكتروني <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">تم إغلاق قائمة بيانات الاعتماد.</translation>

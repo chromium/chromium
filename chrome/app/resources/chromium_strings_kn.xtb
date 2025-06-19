@@ -218,6 +218,7 @@
 <translation id="3954172517175569325">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನೀವು ಸೇವ್ ಮಾಡದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಈ ಸಾಧನದಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ. Chromium ನಲ್ಲಿ ಅವುಗಳನ್ನು ಮತ್ತೆ ಬಳಸಲು, ಮರಳಿ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="395904275706073188">ಸಂರಕ್ಷಿತ ಪುಟಗಳನ್ನು ಓದಲಾಗುವುದಿಲ್ಲ. ಬೇರೆ ಪುಟವನ್ನು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3962647064319009959">Chromium ನಿಮ್ಮನ್ನು ಹೇಗೆ ಸುರಕ್ಷಿತವಾಗಿರಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ತಿಳಿಯಿರಿ</translation>
+<translation id="3971865010372729242">ನೀವು ವಿಳಾಸ ಪಟ್ಟಿ ಅಥವಾ ಸರ್ಚ್ ಬಾಕ್ಸ್‌ನಲ್ಲಿ ಟೈಪ್ ಮಾಡಿದಾಗ, ಸಲಹೆಗಳನ್ನು ಪಡೆಯಲು Chromium ನೀವು ಟೈಪ್ ಮಾಡುವುದನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಹುಡುಕಾಟ, AI ಮತ್ತು ಏಜೆಂಟ್ ಟೂಲ್‌ಗಳಿಗೆ ಕಳುಹಿಸುತ್ತದೆ.</translation>
 <translation id="3975724895399328945">Google Chrome for Testing ಕುರಿತು</translation>
 <translation id="3997429360543082038">ChromiumOS ಕುರಿತು</translation>
 <translation id="4019629340646866719">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌<ph name="END_LINK_CROS_OSS" /> ನಿಂದ ChromiumOS ನ ರಚನೆ, ಹಾಗೆಯೇ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್<ph name="END_LINK_LINUX_OSS" /> ರಚನೆ ಸಹ ಸಾಧ್ಯವಾಯಿತು.</translation>
@@ -340,6 +341,7 @@
 <translation id="5775198138441669627">ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನೀವು ಮರೆತಿದ್ದರೆ ಅಥವಾ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ಬಯಸಿದರೆ, ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿರುವ Chromium ಡೇಟಾವನ್ನು <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">Chromium ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಮತ್ತು ನಿಯಂತ್ರಿಸಿ. Chromium ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ.</translation>
 <translation id="5809516625706423866">ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. HTTP 401 ಅನಧಿಕೃತವಾಗಿದೆ. ನಿಮ್ಮ ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
+<translation id="5817952762723416573">Chromium ನ V8 ಇಂಜಿನ್‌ ಮೂಲಕ ಸೈಟ್‌ಗಳನ್ನು ವೇಗಗೊಳಿಸುತ್ತದೆ, ಆದರೆ Chromium ದಾಳಿಗಳ ವಿರುದ್ದ ಸ್ವಲ್ಪ ಕಡಿಮೆ ಪ್ರತಿರಕ್ಷಣೆ ಮಾಡುತ್ತದೆ. ಈ ಸೆಟ್ಟಿಂಗ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="5821520528363214608">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ Chromium ಡೇಟಾವನ್ನು ಬಳಸಲು ಮತ್ತು ಸೇವ್‌ ಮಾಡಲು, Chromium ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
 <translation id="5824893331272123205">ಈ ಪ್ಯಾನೆಲ್ ಅನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ, ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="5862307444128926510">Chromium ಗೆ ಸುಸ್ವಾಗತ</translation>
@@ -427,6 +429,7 @@
 <translation id="6729124504294600478">ವೈಯಕ್ತೀಕರಣ ಮತ್ತು ಇತರ ಫೀಚರ್‌ಗಳನ್ನು ಪಡೆಯಲು, ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್ ಚಟುವಟಿಕೆ ಹಾಗೂ ಲಿಂಕ್ ಮಾಡಲಾದ Google ಸೇವೆಗಳಲ್ಲಿ Chromium ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6734291798041940871">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿನ ಎಲ್ಲ ಬಳಕೆದಾರರಿಗೆ ಈಗಾಗಲೇ Chromium ಸ್ಥಾಪಿತವಾಗಿದೆ.</translation>
 <translation id="674245979920622322">ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿಲ್ಲ. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="COUNT" /> ಅನ್ನು Chromium ತೆಗೆದುಹಾಕಿದೆ</translation>
+<translation id="6751374565094704799">Chromium ನ V8 ಇಂಜಿನ್‌ ಮೂಲಕ ಸೈಟ್‌ಗಳನ್ನು ವೇಗಗೊಳಿಸುತ್ತದೆ, ಆದರೆ Chromium ದಾಳಿಗಳ ವಿರುದ್ದ ಸ್ವಲ್ಪ ಕಡಿಮೆ ಪ್ರತಿರಕ್ಷಣೆ ಮಾಡುತ್ತದೆ. ಈ ಸೆಟ್ಟಿಂಗ್ ಆನ್ ಆಗಿದೆ.</translation>
 <translation id="67706546131546258">ಈ ಫೈಲ್ ಅಪಾಯಕಾರಿಯಾಗಿರಬಹುದು, ಆದ್ದರಿಂದ ಇದನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಬೇಕೆಂದು Chromium ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="6779406956731413166">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್<ph name="END_LINK_CROS_OSS" /> ನಿಂದ ChromiumOS ಮಾಡಲು ಸಾಧ್ಯ.</translation>
 <translation id="6831043979455480757">Translate</translation>
@@ -521,7 +524,6 @@
 <translation id="8118331347066725040">Lens ಬಳಸಿಕೊಂಡು ಹುಡುಕಲು ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="8133124826068723441">ನಿಮ್ಮ ಡೊಮೇನ್‌ನಲ್ಲಿ ಸಿಂಕ್ ಮಾಡುವ ಸೌಲಭ್ಯವಿಲ್ಲದ ಕಾರಣ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಲು ChromiumOS ಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="813913629614996137">ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="8166782796394721554">Chromium ನ JavaScript ಮತ್ತು WebAssembly ಎಂಜಿನ್‌ನಲ್ಲಿ ಹೆಚ್ಚುವರಿ ರಕ್ಷಣೆಯನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="81770708095080097">ಈ ಫೈಲ್ ಅಪಾಯಕಾರಿಯಾಗಿದೆ, ಹೀಗಾಗಿ Chromium ಇದನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ.</translation>
 <translation id="8177472873527554730">ಪುಟದಲ್ಲಿ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಹುಡುಕಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="8200109504272824693">ನಿಮ್ಮ ಖಾತೆ <ph name="USER_EMAIL" /> ನಲ್ಲಿ Chromium ಡೇಟಾವನ್ನು ಸೇವ್ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>

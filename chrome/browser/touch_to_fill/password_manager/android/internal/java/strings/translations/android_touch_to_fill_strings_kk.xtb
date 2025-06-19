@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">Сақталған құпия сөз бен кіру кілтінің қайсысын пайдалану керек?</translation>
 <translation id="5624120631404540903">Құпия сөздерді басқару</translation>
 <translation id="592182999816790476"><ph name="WEBSITE" /> веб-сайты үшін сақталған <ph name="USERNAME" /> құпия сөзі</translation>
+<translation id="593924516471361340"><ph name="WEBSITE" /> веб-сайтында сақталған <ph name="USERNAME" /> поштасында қате туындаған жағдайда қалпына келтіруге арналған уақытша құпия сөз</translation>
 <translation id="6560306912274274630">Пайдаланушының (<ph name="USERNAME" />) кіру кілті. Экран құлпын қолданыңыз.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Бұл сайтқа арналған жаңа құпия сөз}other{Бұл сайтқа арналған жаңа құпия сөздер}}</translation>
 <translation id="7286867818472074330">Кіру кілтін таңдау</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Сізге <ph name="SITE_NAME" /> веб-сайтына арналған құпия сөздер келді.</translation>
+<translation id="8202660122967066153"><ph name="USERNAME" /> поштасында қате туындаған жағдайда қалпына келтіруге арналған уақытша құпия сөз</translation>
 <translation id="8363484128299778310">Қате туындаған жағдайға қалпына келтірудің уақытша құпия сөзі</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> сізбен <ph name="SITE_NAME" /> веб-сайтына арналған құпия сөзді бөлісті.</translation>
 <translation id="8891372124884726271">Тіркелу деректерінің тізімі жабық.</translation>

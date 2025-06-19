@@ -222,6 +222,7 @@
 <translation id="3954172517175569325">আপুনি নিজৰ Google একাউণ্টত ছেভ কৰি থোৱা আপোনাৰ পাছৱৰ্ড, পৰিশোধ পদ্ধতি আৰু ঠিকনাসমূহ এই ডিভাইচটোৰ পৰা আঁতৰোৱা হ’ব। সেইসমূহ পুনৰ Chromiumত ব্যৱহাৰ কৰিবলৈ, পুনৰ ছাইন ইন কৰক।</translation>
 <translation id="395904275706073188">সুৰক্ষিত পৃষ্ঠা পঢ়িব নোৱাৰি। এটা বেলেগ পৃষ্ঠা ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="3962647064319009959">Chromiumএ আপোনাক কিদৰে সুৰক্ষিত কৰি ৰাখে জানক</translation>
+<translation id="3971865010372729242">আপুনি ঠিকনাৰ বাৰ বা সন্ধান বাকচত টাইপ কৰিলে, Chromiumএ পৰামৰ্শ পাবৰ বাবে আপুনি যি টাইপ কৰে সেয়া আপোনাৰ প্ৰতিষ্ঠানৰ সন্ধান, AI আৰু এজেন্টৰ সঁজুলিসমূহলৈ পঠিয়ায়।</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testingৰ বিষয়ে</translation>
 <translation id="3997429360543082038">ChromiumOSৰ বিষয়ে</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux বিকাশৰ পৰিৱেশ<ph name="END_LINK_LINUX_OSS" />ৰ দৰে অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ জৰিয়তে ChromiumOSক ব্যৱহাৰযোগ্য কৰা হৈছে।</translation>
@@ -344,6 +345,7 @@
 <translation id="5775198138441669627">আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰিছে বা এই ছেটিংটো সলাব বিচাৰে, তেন্তে আপোনাৰ একাউণ্টৰ Chromiumৰ ডেটা <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">Chromium কাষ্টমাইজ আৰু নিয়ন্ত্ৰণ কৰক। Chromiumক আপোনাৰ ডিফ’ল্ট হিচাপে ছেট কৰক।</translation>
 <translation id="5809516625706423866">ইণ্টাৰনেটৰ লগত সংযোগ কৰিব পৰা নাই। HTTP 401 অকৰ্তৃত্বশীল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰ’ক্সি কনফিগাৰেশ্বন পৰীক্ষা কৰক।</translation>
+<translation id="5817952762723416573">Chromiumৰ V8 ইঞ্জিনৰ সৈতে ছাইটবোৰ খৰতকীয়া কৰি তোলে কিন্তু Chromiumক আক্ৰমণৰ পৰা সামান্য কম প্ৰতিৰোধী কৰে। এই ছেটিংটো অফ হৈ আছে।</translation>
 <translation id="5821520528363214608">আপোনাৰ Google একাউণ্টত Chromiumৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ, Chromium আপডে’ট কৰক</translation>
 <translation id="5824893331272123205">এই পেনেলটো ল’ড কৰিব পৰা নগ’ল, পুনৰ চেষ্টা কৰক</translation>
 <translation id="5862307444128926510">Chromium লৈ স্বাগতম</translation>
@@ -433,6 +435,7 @@
 <translation id="6729124504294600478">ব্যক্তিগতকৰণ আৰু অন্য সুবিধাসমূহ পাবলৈ, ৱেব আৰু এপৰ কাৰ্যকলাপত Chromium আৰু লিংক কৰি থোৱা Google সেৱাসমূহক অন্তৰ্ভুক্ত কৰক</translation>
 <translation id="6734291798041940871">Chromium আপোনাৰ কম্পিউটাৰত থকা সকলো ব্যৱহাৰকাৰীৰ বাবে ইতিমধ্যেই ইনষ্টল কৰা হৈছে।</translation>
 <translation id="674245979920622322">আপুনি শেহতীয়াকৈ চোৱা নাই। Chromiumএ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="COUNT" /> টা অনুমতি আঁতৰাইছে</translation>
+<translation id="6751374565094704799">Chromiumৰ V8 ইঞ্জিনৰ সৈতে ছাইটবোৰ খৰতকীয়া কৰি তোলে কিন্তু Chromiumক আক্ৰমণৰ পৰা সামান্য কম প্ৰতিৰোধী কৰে। এই ছেটিংটো অন হৈ আছে।</translation>
 <translation id="67706546131546258">Chromiumএ এই ফাইলটো স্কেন কৰাটো চুপাৰিছ কৰে কাৰণ ই বিপজ্জনক হ’ব পাৰে।</translation>
 <translation id="6779406956731413166">অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ জৰিয়তে ChromiumOSক ব্যৱহাৰযোগ্য কৰা হৈছে।</translation>
 <translation id="6831043979455480757">Translate</translation>
@@ -529,7 +532,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8118331347066725040">Lensৰ জৰিয়তে সন্ধান কৰাৰ বাবে মতামত পঠিয়াওক</translation>
 <translation id="8133124826068723441">আপোনাৰ ড‘মেইনত ছিংক কৰাৰ সুবিধা নথকাৰ বাবে ChromiumOSএ আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
 <translation id="813913629614996137">আৰম্ভ কৰা হৈছে…</translation>
-<translation id="8166782796394721554">Chromiumৰ JavaScript আৰু WebAssembly ইঞ্জিনত অতিৰিক্ত সুৰক্ষা অন কৰক</translation>
 <translation id="81770708095080097">এই ফাইলটো বিপজ্জনক, সেয়েহে Chromiumএ সেইটো অৱৰোধ কৰিছে।</translation>
 <translation id="8177472873527554730">পৃষ্ঠাত সমল বিচাৰি পোৱা নাই</translation>
 <translation id="8200109504272824693">আপোনাৰ একাউণ্টত Chromiumৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ নিজৰ পাছফ্ৰে’জ দিয়ক, <ph name="USER_EMAIL" /></translation>

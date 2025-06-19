@@ -183,6 +183,7 @@
 <translation id="3167868116600277716">디스커버 피드</translation>
 <translation id="3198916472715691905">저장 데이터 <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507"><ph name="APP_NAME" />에서 알림을 전송하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 알림을 사용 설정하세요.</translation>
+<translation id="3223425961342298674">위치가 허용되지 않음</translation>
 <translation id="3227137524299004712">마이크</translation>
 <translation id="3232293466644486101">인터넷 사용 기록 삭제…</translation>
 <translation id="3242646949159196181">사용 설정하면 사이트에서 소리를 재생할 수 있습니다. 사용 중지하면 사이트에서 소리를 재생할 수 없습니다.</translation>
@@ -258,6 +259,7 @@
 <translation id="3992308058851451478"><ph name="SITE" />에서 인터넷을 사용하는 동안 내 정보를 사용할 수 있음</translation>
 <translation id="3992684624889376114">이 페이지에 관한 정보</translation>
 <translation id="4002066346123236978">제목</translation>
+<translation id="4031179711345676612">마이크 허용됨</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
 <translation id="4077310749977440510">사이트에서는 일반적으로 복사한 텍스트 서식 유지와 같은 기능을 사용하기 위해 클립보드를 읽습니다.</translation>
 <translation id="4149890623864272035">쿠키를 포함한 모든 로컬 데이터를 삭제하고 이 웹사이트에 대한 권한을 모두 재설정하시겠습니까?</translation>
@@ -267,8 +269,10 @@
 <translation id="4169549551965910670">USB 기기에 연결되었습니다.</translation>
 <translation id="4194328954146351878">사이트에서 NFC 기기의 정보를 보고 변경하도록 허용하기 전에 확인(권장)</translation>
 <translation id="4200726100658658164">위치 설정 열기</translation>
+<translation id="4203769790323223880">카메라가 허용되지 않음</translation>
 <translation id="421742575134139848">사이트에서는 음악, 동영상, 기타 미디어의 오디오를 제공하기 위해 소리를 재생할 수 있습니다.</translation>
 <translation id="4217710972110098902">직렬 포트에 연결됨</translation>
+<translation id="4223404254440398437">마이크가 허용되지 않음</translation>
 <translation id="4226663524361240545">알림이 있으면 진동이 울릴 수도 있습니다.</translation>
 <translation id="4259722352634471385">탐색이 차단됨: <ph name="URL" /></translation>
 <translation id="4274673989874969668">사이트에서 나간 후에도 사이트가 동기화를 계속하여 사진 업로드나 채팅 메시지 전송과 같은 작업을 마무리합니다.</translation>
@@ -300,6 +304,7 @@
 <translation id="4635969503923889910">사이트에서 NFC 기기를 사용할 수 없음</translation>
 <translation id="4644713492825682049">삭제 및 재설정</translation>
 <translation id="4645575059429386691">부모님이 관리합니다.</translation>
+<translation id="4663373278480897665">카메라 허용됨</translation>
 <translation id="4670064810192446073">가상 현실</translation>
 <translation id="4672315773691449562">브라우저 앱을 탭한 다음 Chrome을 탭합니다</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" />에서 손 추적을 사용하려면 <ph name="BEGIN_LINK" />시스템 설정<ph name="END_LINK" />에서도 손 추적을 사용 설정하세요.</translation>
@@ -345,6 +350,7 @@
 <translation id="5216942107514965959">최근 방문: 오늘</translation>
 <translation id="5225463052809312700">카메라 켜기</translation>
 <translation id="5234764350956374838">닫기</translation>
+<translation id="5239623327352565343">위치 허용됨</translation>
 <translation id="5246825184569358663">이 작업을 실행하면 쿠키를 포함한 모든 로컬 데이터가 삭제되고, <ph name="DOMAIN" /> 및 모든 하위 사이트에 대한 권한이 모두 재설정됩니다.</translation>
 <translation id="5264323282659631142">‘<ph name="CHIP_LABEL" />’ 삭제</translation>
 <translation id="528192093759286357">전체화면을 종료하려면 상단에서 드래그하여 뒤로 버튼을 터치하세요.</translation>
@@ -389,6 +395,7 @@
 <translation id="5743425052258407233">모든 기기에서 방문 기록을 확인하면 중단한 부분부터 쉽게 다시 시작할 수 있습니다.</translation>
 <translation id="5749158352074143502">이 탭으로 계속</translation>
 <translation id="5750869797196646528">손 추적</translation>
+<translation id="5753570386948603678">기록에서 삭제</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> 차단됨</translation>
 <translation id="5804241973901381774">권한</translation>
 <translation id="5822675474983796325">새 탭 페이지 맞춤설정 하단 시트가 전체 높이로 열림</translation>
@@ -488,6 +495,7 @@
 <translation id="6992289844737586249">사이트에서 마이크를 사용하기 전에 확인(권장)</translation>
 <translation id="7000754031042624318">Android 설정에서 사용 중지됨</translation>
 <translation id="702275896380648118">이 사이트는 내 관심분야를 파악한 후 다른 사이트에 광고를 추천합니다. Chrome에 저장된 내 광고 주제를 기반으로 더 관련성 있는 광고를 표시합니다.</translation>
+<translation id="7044081119134178347">현재 카메라 허용됨</translation>
 <translation id="7053983685419859001">차단</translation>
 <translation id="7055552182600664515">저작권으로 보호되는 콘텐츠를 재생하려면 사이트에서 콘텐츠 보호 서비스를 사용해야 할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1개 선택됨}other{#개 선택됨}}</translation>
@@ -525,6 +533,7 @@
 <translation id="7573594921350120855">사이트에서는 일반적으로 영상 채팅과 같은 커뮤니케이션 기능에 동영상 카메라를 사용합니다.</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" />개월 전}other{<ph name="NUM_MONTHS_MANY" />개월 전}}</translation>
 <translation id="757524316907819857">사이트에서 보호된 콘텐츠를 재생하지 못하도록 차단</translation>
+<translation id="7586676035079382730">알림이 허용되지 않음</translation>
 <translation id="7594634374516752650">블루투스 기기에 연결됨</translation>
 <translation id="7617547684249261169">방문 기록, 쿠키, 사이트 데이터 등을 일부 또는 모두 삭제할 수 있습니다.</translation>
 <translation id="7649070708921625228">도움말</translation>
@@ -540,6 +549,7 @@
 <translation id="780301667611848630">나중에</translation>
 <translation id="7804248752222191302">사이트에서 카메라 사용 중</translation>
 <translation id="7807060072011926525">Google 제공</translation>
+<translation id="7815680994978050279">위험한 다운로드가 차단됨</translation>
 <translation id="7835852323729233924">재생 중인 미디어</translation>
 <translation id="783819812427904514">동영상 음소거 해제</translation>
 <translation id="7846076177841592234">선택 취소</translation>
@@ -588,6 +598,7 @@
 <translation id="8380167699614421159">이 사이트에서는 방해가 되거나 사용자를 현혹하는 광고를 표시합니다.</translation>
 <translation id="8394832520002899662">탭하여 사이트로 돌아가기</translation>
 <translation id="8409345997656833551">기사를 간단히 보기로 표시할 수 있을 때 알림 받기</translation>
+<translation id="8416874502399604126">현재 마이크 허용됨</translation>
 <translation id="8423565414844018592">텍스트 크기 조정이 <ph name="TEXT_SCALING" />로 설정됩니다</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8441146129660941386">뒤로 탐색</translation>
@@ -655,12 +666,14 @@
 <translation id="9106233582039520022">쿠키를 삭제하시겠습니까?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 <ph name="APP_NAME" /> 관련 권한을 허용하세요.</translation>
+<translation id="9138037198177304356">알림 허용됨</translation>
 <translation id="9138217887606523162">현재 확대/축소 레벨은 <ph name="ZOOM_LEVEL" />%%입니다</translation>
 <translation id="9156722768168878035">Chrome에서 기기의 앱 목록과 검색 결과에 최근 탭을 표시하도록 허용합니다. 이 기능은 Chrome 설정에서 언제든지 사용 중지할 수 있습니다.</translation>
 <translation id="9162462602695099906">위험한 페이지입니다.</translation>
 <translation id="9182556968660520230">사이트에서 보호된 콘텐츠를 재생하도록 허용하지 않음</translation>
 <translation id="947156494302904893">방문하는 사이트에서 내가 봇이 아니라 실제 사람인지 확인할 수 있습니다</translation>
 <translation id="959682366969460160">깔끔하게 정리하기</translation>
+<translation id="961930410699694996">현재 위치 허용됨</translation>
 <translation id="967624055006145463">저장된 데이터</translation>
 <translation id="969975166333045662">사이트에서 V8 옵티마이저를 사용하지 못하도록 차단합니다.</translation>
 </translationbundle>

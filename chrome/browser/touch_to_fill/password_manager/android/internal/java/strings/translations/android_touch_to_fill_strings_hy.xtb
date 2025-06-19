@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">Օգտագործե՞լ պահված գաղտնաբառ կամ մուտքի բանալի</translation>
 <translation id="5624120631404540903">Կառավարել գաղտնաբառերը</translation>
 <translation id="592182999816790476"><ph name="USERNAME" /> օգտանվան գաղտնաբառը՝ պահված <ph name="WEBSITE" /> կայքի համար</translation>
+<translation id="593924516471361340">Վերականգնման ժամանակավոր գաղտնաբառ <ph name="USERNAME" /> օգտատիրոջ համար՝ պահված <ph name="WEBSITE" /> կայքի համար, եթե հաշիվ մտնելու հետ կապված խնդիրներ առաջանան</translation>
 <translation id="6560306912274274630">Մուտքի բանալի <ph name="USERNAME" /> օգտատիրոջ համար, օգտագործեք ձեր էկրանի կողպումը</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Նոր գաղտնաբառ այս կայքի համար}one{Նոր գաղտնաբառ այս կայքի համար}other{Նոր գաղտնաբառեր այս կայքի համար}}</translation>
 <translation id="7286867818472074330">Ընտրել մուտքի բանալի</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />՝ <ph name="ITEMS_TOTAL" />-ից։</translation>
 <translation id="7738288782501322815">Դուք <ph name="SITE_NAME" /> կայքի համար գաղտնաբառեր եք ստացել</translation>
+<translation id="8202660122967066153">Վերականգնման ժամանակավոր գաղտնաբառ <ph name="USERNAME" /> օգտատիրոջ համար, եթե հաշիվ մտնելու հետ կապված խնդիրներ առաջանան</translation>
 <translation id="8363484128299778310">Ժամանակավոր վերականգնում խնդիրների դեպքում</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> օգտատերը ձեզ <ph name="SITE_NAME" /> կայքի համար գաղտնաբառ է ուղարկել</translation>
 <translation id="8891372124884726271">Մուտքի տվյալների ցուցակը փակ է։</translation>

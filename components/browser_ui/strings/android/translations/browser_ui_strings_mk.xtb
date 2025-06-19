@@ -183,6 +183,7 @@
 <translation id="3167868116600277716">Активност на Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> складирани податоци</translation>
 <translation id="321187648315454507">За да овозможите <ph name="APP_NAME" /> да ви испраќа известувања, вклучете ја дозволата за известувања и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
+<translation id="3223425961342298674">Локацијата не е дозволена</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3232293466644486101">Избришете ги податоците од прелистување…</translation>
 <translation id="3242646949159196181">Кога е вклучено, сајтовите може да репродуцираат звук. Кога е исклучено, сајтовите не може да репродуцираат звук.</translation>
@@ -258,6 +259,7 @@
 <translation id="3992308058851451478"><ph name="SITE" /> може да ги користи вашите податоци додека прелистувате</translation>
 <translation id="3992684624889376114">За оваа страница</translation>
 <translation id="4002066346123236978">Наслов</translation>
+<translation id="4031179711345676612">Микрофон е дозволен</translation>
 <translation id="4046123991198612571">Следна песна</translation>
 <translation id="4077310749977440510">Сајтовите обично ја читаат вашата привремена меморија за функциите како што е задржувањето на форматот на текстот што сте го копирале</translation>
 <translation id="4149890623864272035">Дали сигурно сакате да ги избришете сите локални податоци, што опфаќа и колачиња, како и да ги ресетирате сите дозволи за веб-сајтов?</translation>
@@ -267,8 +269,10 @@
 <translation id="4169549551965910670">Поврзано со USB-уред</translation>
 <translation id="4194328954146351878">Прашај пред да дозволиш сајтовите да гледаат и менуваат податоци на NFC-уреди (се препорачува)</translation>
 <translation id="4200726100658658164">Отворете ги поставките за локација</translation>
+<translation id="4203769790323223880">Камерата не е дозволена</translation>
 <translation id="421742575134139848">Сајтовите може да пуштаат звук за да овозможат аудио за музика, видеа и други аудиовизуелни содржини</translation>
 <translation id="4217710972110098902">Поврзан со сериска порта</translation>
+<translation id="4223404254440398437">Микрофонот не е дозволен</translation>
 <translation id="4226663524361240545">Известувањата може да предизвикаат вибрации на уредот</translation>
 <translation id="4259722352634471385">Навигацијата е блокирана: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Откако ќе излезете од сајт, тој може да продолжи со синхронизација за да ги доврши задачите како што е прикачувањето фотографии или испраќањето порака во разговор</translation>
@@ -300,6 +304,7 @@
 <translation id="4635969503923889910">Не дозволувај им на сајтовите да користат NFC-уреди</translation>
 <translation id="4644713492825682049">Избриши и ресетирај</translation>
 <translation id="4645575059429386691">Управувано од вашиот родител</translation>
+<translation id="4663373278480897665">Камерата е дозволена</translation>
 <translation id="4670064810192446073">Виртуелна реалност</translation>
 <translation id="4672315773691449562">Допрете „Апликација за прелистување“, па Chrome</translation>
 <translation id="4676059169848868271">За да дозволите <ph name="APP_NAME" /> да користи „Следење раце“, вклучете „Следење раце“ и во <ph name="BEGIN_LINK" />системските поставки<ph name="END_LINK" />.</translation>
@@ -345,6 +350,7 @@
 <translation id="5216942107514965959">Последно посетено денес</translation>
 <translation id="5225463052809312700">Вклучи ја камерата</translation>
 <translation id="5234764350956374838">Отфрли</translation>
+<translation id="5239623327352565343">Локацијата е дозволена</translation>
 <translation id="5246825184569358663">Со дејствово ќе се избришат сите локални податоци, што опфаќа и колачиња, а ќе се ресетираат и сите дозволи за <ph name="DOMAIN" />, како и сите сајтови под него</translation>
 <translation id="5264323282659631142">Отстранете го „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Повлечете од врвот и допрете го копчето Назад за да излезете од цел екран.</translation>
@@ -389,6 +395,7 @@
 <translation id="5743425052258407233">Добијте ја историјата на сите ваши уреди за да може лесно да продолжувате каде што сте застанале</translation>
 <translation id="5749158352074143502">Продолжете со картичкава</translation>
 <translation id="5750869797196646528">Следење раце</translation>
+<translation id="5753570386948603678">Избриши од историјата</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> е блокирана</translation>
 <translation id="5804241973901381774">Дозволи</translation>
 <translation id="5822675474983796325">Долниот лист за приспособување на страницата во нова картичка е отворен на целосна висина</translation>
@@ -488,6 +495,7 @@
 <translation id="6992289844737586249">Прво прашај пред да дозволиш сајтовите да го користат микрофонот (се препорачува)</translation>
 <translation id="7000754031042624318">Исклучена во поставките за Android</translation>
 <translation id="702275896380648118">Овој сајт одредува работи што ви се допаѓаат, а потоа предлага реклами на други сајтови. Сајтов ги добива вашите теми за реклами и од Chrome за да ви прикажува порелевантни реклами.</translation>
+<translation id="7044081119134178347">Камерата е дозволена овој пат</translation>
 <translation id="7053983685419859001">Блокирај</translation>
 <translation id="7055552182600664515">За да пуштаат содржини заштитени со авторски права, сајтовите може да треба да користат услуга за заштита на содржините. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Избрана е 1}one{Избрана е #}other{Избрани се #}}</translation>
@@ -525,6 +533,7 @@
 <translation id="7573594921350120855">Сајтовите обично ја користат вашата видеокамера за функциите за комуникација како што е видеоразговорот</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Пред <ph name="NUM_MONTHS_ONE" /> месец}one{Пред <ph name="NUM_MONTHS_MANY" /> месец}other{Пред <ph name="NUM_MONTHS_MANY" /> месеци}}</translation>
 <translation id="757524316907819857">Блокирај го пуштањето заштитени содржини од страна на сајтовите</translation>
+<translation id="7586676035079382730">Известувањата не се дозволени</translation>
 <translation id="7594634374516752650">Поврзан со уред со Bluetooth</translation>
 <translation id="7617547684249261169">Може да избришете дел или сета ваша историја, колачиња, податоци од сајтовите и друго</translation>
 <translation id="7649070708921625228">Помош</translation>
@@ -540,6 +549,7 @@
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7804248752222191302">Сајтот ја користи камерата</translation>
 <translation id="7807060072011926525">Обезбедено од Google</translation>
+<translation id="7815680994978050279">Блокирано е опасно преземање</translation>
 <translation id="7835852323729233924">Пуштање аудиовизуелни содржини</translation>
 <translation id="783819812427904514">Вклучете звук на видео</translation>
 <translation id="7846076177841592234">Откажи избор</translation>
@@ -588,6 +598,7 @@
 <translation id="8380167699614421159">Сајтов прикажува нападни или лажни реклами</translation>
 <translation id="8394832520002899662">Допрете за да се вратите на сајтот</translation>
 <translation id="8409345997656833551">Добивајте известувања кога статија може да се прикажува во поедноставен преглед</translation>
+<translation id="8416874502399604126">Микрофонот е дозволен овој пат</translation>
 <translation id="8423565414844018592">Скалирањето на текстот е поставено на <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8441146129660941386">Барај поназад</translation>
@@ -655,12 +666,14 @@
 <translation id="9106233582039520022">Да се избришат колачињата?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Вклучете ги дозволите за <ph name="APP_NAME" /> во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
+<translation id="9138037198177304356">Известувањата се дозволени</translation>
 <translation id="9138217887606523162">Тековното зумирање е <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Дозволете Chrome да ги прикажува вашите неодамнешни картички во списокот со апликации и резултатите од пребарување на уредот. Ова може да го исклучите во поставките за Chrome кога сакате.</translation>
 <translation id="9162462602695099906">Страницава е опасна</translation>
 <translation id="9182556968660520230">Не им дозволувај на сајтовите да пуштаат заштитени содржини</translation>
 <translation id="947156494302904893">Сајтовите што ги отворате може да потврдат дека сте вистинска личност, а не бот</translation>
 <translation id="959682366969460160">Организирајте се</translation>
+<translation id="961930410699694996">Локацијата е дозволена овој пат</translation>
 <translation id="967624055006145463">Складирани податоци</translation>
 <translation id="969975166333045662">Спречете сајтот да користи оптимизатор на V8</translation>
 </translationbundle>

@@ -18,6 +18,7 @@
 <translation id="1054745118061919935">继续操作即表示您同意遵守<ph name="BEGIN_LINK" />《服务条款》<ph name="END_LINK" />。</translation>
 <translation id="10614374240317010">一律不保存</translation>
 <translation id="1062138828266376352">PIN 码未更改。请检查网络连接，然后重试</translation>
+<translation id="1063070031224282617">选择保存“<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”(<ph name="FILE_SIZE" />) 的位置</translation>
 <translation id="1072476005125066234">根据您的兴趣推荐的评价</translation>
 <translation id="1074827084851510304">您即将删除 {password_count} 个密码以及您选择一律不保存登录信息的网站和应用列表。您为网站和应用创建的任何账号都不会被删除。</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
@@ -545,6 +546,7 @@
 <translation id="3227137524299004712">麦克风</translation>
 <translation id="3235063766008841141">曾在诈骗网站上输入过，并且遭遇了数据泄露</translation>
 <translation id="3235242129752692527">修改活动详细信息，然后点按“保存”。</translation>
+<translation id="323863549127671026">当前打开的标签页和标签页分组</translation>
 <translation id="3240426699337459095">已复制链接</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">如果您还共享了 Chrome 使用情况报告，这些报告会包含您访问过的网址</translation>
@@ -592,6 +594,7 @@
 <translation id="3476450923187944815">在不同应用中使用保存的密码。</translation>
 <translation id="3488501490964659223">标签页已关闭，而且浏览数据已被删除。您已退出账号</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />推荐内容</translation>
+<translation id="349446645805573740">选择保存“<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”的位置</translation>
 <translation id="3504377992102007712">设置</translation>
 <translation id="35083190962747987">打开 ${url}</translation>
 <translation id="3511519535430890904">添加浏览保护功能</translation>
@@ -611,7 +614,6 @@
 <translation id="3557336313807607643">添加到通讯录</translation>
 <translation id="355765753469272474">撤消</translation>
 <translation id="3565930036634619844">标签页。第 <ph name="NUMBER_OF_TABS" /> 个，共 <ph name="TAB_INDEX" /> 个。</translation>
-<translation id="3570693105179140209">点按两次即可查看更多密码。</translation>
 <translation id="3572607909481582402">在您的 Google 账号中</translation>
 <translation id="3575234738189584619">使用智能镜头搜索</translation>
 <translation id="3575426792457739946">此列表包含所有已加载的个人资料。</translation>
@@ -655,7 +657,6 @@
 <translation id="3779810277399252432">无互联网连接。</translation>
 <translation id="3782614601387961027">忽略警告</translation>
 <translation id="3789841737615482174">安装</translation>
-<translation id="3795478177331815672">打开标签页和标签页分组</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803696231112616155">主动询问是否翻译此网站</translation>
 <translation id="3808311849069021992">显示搜索引擎详细信息</translation>
@@ -693,6 +694,7 @@
 <translation id="3922395466317605522">自定义菜单</translation>
 <translation id="3929457972718048006">地址</translation>
 <translation id="3931215329146376310">{count,plural, =1{用于登录此网站的新密码}other{用于登录此网站的新密码}}</translation>
+<translation id="3934905113567851655">双指张合即可调整大小</translation>
 <translation id="3940195383040445971">跟踪标签页上的价格</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{关闭 {COUNT} 个标签页}other{关闭 {COUNT} 个标签页}}</translation>
 <translation id="3948600256434252210">向右滑动即可在无痕模式下浏览内容。</translation>
@@ -701,7 +703,6 @@
 <translation id="3955740319737378355">完成</translation>
 <translation id="3955822496205734389">您有些密码的安全系数较低。</translation>
 <translation id="3958312024468322930">将图标拖动到主屏幕底部的程序坞中</translation>
-<translation id="3960218941754097036">使用 Google 智能镜头搜索屏幕上的任何内容</translation>
 <translation id="3962326069546168954">保存</translation>
 <translation id="3967327056943561740">书签</translation>
 <translation id="3967822245660637423">下载完毕</translation>
@@ -968,7 +969,6 @@
 <translation id="4979397965658815378">登录 Google 账号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
 <translation id="4985921635659180565">一旦安排删除文件，便无法取消。</translation>
 <translation id="498624032394115435">知道链接的任何人都能修改所有标签页。</translation>
-<translation id="4989065233040279145">选择保存 <ph name="FILENAME" /> 的位置</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，由组织管理。</translation>
 <translation id="4992255726304765516">标签页分组颜色为<ph name="COLOR" /></translation>
 <translation id="5005498671520578047">复制密码</translation>
@@ -1655,7 +1655,6 @@
 <translation id="7724085059277147439">{count,plural, =1{这项内容已保存到您的 Google 账号 {email}}other{这些内容已保存到您的 Google 账号 {email}}}</translation>
 <translation id="7729458878441927652">如需查看您在其他设备中打开的标签页，请同步您的标签页和历史记录。</translation>
 <translation id="7730020510075123961">不，合并数据</translation>
-<translation id="7730973429297233609">选择您要使用哪个账号来保存“<ph name="FILENAME" />”- <ph name="FILESIZE" /></translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。仅在该设备上。</translation>
 <translation id="7744192722284567281">遭遇了数据泄露</translation>
 <translation id="7749790401023484470">您未选择任何文字。</translation>
@@ -1703,6 +1702,7 @@
 <translation id="7925108652071887026">自动填充数据</translation>
 <translation id="7926975587469166629">卡的别名</translation>
 <translation id="7927711904086083099">未选择</translation>
+<translation id="7927902634113905831">选择您要使用哪个账号来保存“<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”(<ph name="FILESIZE" />)</translation>
 <translation id="7930998711684428189">密码遭遇数据泄露时向您发出警告。</translation>
 <translation id="7933880123415105005">在 <ph name="SEARCH_PROVIDER" /> 中搜索</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -1816,6 +1816,7 @@
 <translation id="8343993175958086504">备份您的资料，在任何设备上使用</translation>
 <translation id="8348530355586151720">点按三点状菜单</translation>
 <translation id="8349305172487531364">书签栏</translation>
+<translation id="8363484128299778310">出现问题时的临时恢复方法</translation>
 <translation id="8364563001733875155">如要更改 PIN 码，请先在设备上设置密码。</translation>
 <translation id="8366466717204352506">从未检查过</translation>
 <translation id="8368001212524806591">跟踪价格</translation>
@@ -1838,7 +1839,6 @@
 <translation id="8428045167754449968">市/镇</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8428634594422941299">知道了</translation>
-<translation id="8430694217306051839">选择保存 <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) 的位置</translation>
 <translation id="8434837876193928924">标签页分组详情</translation>
 <translation id="8438566539970814960">改善搜索和浏览体验</translation>
 <translation id="8439758443371991593">隐藏“添加到阅读清单”</translation>

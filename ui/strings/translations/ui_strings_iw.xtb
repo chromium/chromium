@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{לפני יום אחד}one{לפני # ימים}two{לפני יומיים}other{לפני # ימים}}</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1243314992276662751">העלאה</translation>
+<translation id="1253734725326687145">משטח המגע הועבר לפינה הימנית העליונה. יש ללחוץ כאן.</translation>
 <translation id="1266864766717917324">לא ניתן היה לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">אפשר לנסות לשתף את הטקסט במקטעים קטנים יותר.</translation>
@@ -56,6 +57,7 @@
 <translation id="2435457462613246316">הצגת סיסמה</translation>
 <translation id="24452542372838207">הרחבת ההודעה</translation>
 <translation id="2445449901874883781">שימוש בדחיסות גבוהה</translation>
+<translation id="2448407890032181691">משטח המגע הועבר לפינה הימנית התחתונה. יש ללחוץ כאן.</translation>
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2497284189126895209">כל הקבצים</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -141,6 +143,7 @@
 <translation id="5606865426897221650">‏מקש Tab</translation>
 <translation id="5613020302032141669">חץ לשמאל</translation>
 <translation id="5633029987065897167">ריק</translation>
+<translation id="5651438382973553530">משטח המגע הועבר לפינה השמאלית התחתונה. יש ללחוץ כאן.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{דק‘ אחת}one{# דק‘}two{# דק‘}other{# דק‘}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{פעילות אחרונה: היום}=1{פעילות אחרונה: אתמול}one{פעילות אחרונה: אתמול}two{פעילות אחרונה: לפני יומיים}other{פעילות אחרונה: לפני # ימים}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{יום אחד ו }one{# ימים ו }two{יומיים ו }other{# ימים ו }}</translation>

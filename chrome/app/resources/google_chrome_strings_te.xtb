@@ -61,6 +61,7 @@
 <translation id="178701303897325119">ఈ ఎక్స్‌టెన్షన్ ఇకపై సపోర్ట్ చేయదు. బదులుగా దాన్ని తీసివేయమని Chrome సిఫార్సు చేస్తోంది.</translation>
 <translation id="1812689907177901597">దీనిని ఆఫ్ చేయడం ద్వారా, మీరు Chromeకి సైన్ ఇన్ చేయకుండానే Gmail లాంటి Google సైట్‌లలో సైన్ ఇన్ చేయగలరు</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{మీ బ్రౌజర్ వేగాన్ని తగ్గించే ట్యాబ్‌ను పాజ్ చేయమని Chrome సిఫార్సు చేస్తుంది}other{మీ బ్రౌజర్ వేగాన్ని తగ్గించే ట్యాబ్‌లను పాజ్ చేయమని Chrome సిఫార్సు చేస్తుంది}}</translation>
+<translation id="1832046143430087831">Chrome V8 ఇంజిన్‌తో సైట్‌లను వేగవంతం చేస్తుంది కానీ అటాక్‌లకు Chromeను కొద్దిగా తక్కువ నిరోధకతను కలిగిస్తుంది. ఈ సెట్టింగ్ ఆఫ్ చేయబడింది.</translation>
 <translation id="1838374766361614909">శోధనను తీసివేయండి</translation>
 <translation id="1860536484129686729">ఈ సైట్ కోసం మీ కెమెరాను ఉపయోగించడానికి Chromeకు అనుమతి అవసరం</translation>
 <translation id="1873233029667955273">Google Chrome మీ ఆటోమేటిక్ బ్రౌజర్ కాదు</translation>
@@ -443,12 +444,12 @@
 <translation id="6718739135284199302">Chromeను వేగవంతం చేయండి</translation>
 <translation id="6735387454586646204">ChromeOS Flex సిస్టమ్</translation>
 <translation id="6750954913813541382">స్పెల్లింగ్ తప్పులను సరిదిద్దడానికి, మీరు బ్రౌజర్‌లో టైప్ చేసే పదాలను Googleకు Chrome పంపుతుంది</translation>
+<translation id="6760235774835597023">Chrome V8 ఇంజిన్‌తో సైట్‌లను వేగవంతం చేస్తుంది కానీ అటాక్‌లకు Chromeను కొద్దిగా తక్కువ నిరోధకతను కలిగిస్తుంది. ఈ సెట్టింగ్ ఆన్ చేయబడింది.</translation>
 <translation id="677276454032249905">ఏదేమైనా Chrome నుండి నిష్క్రమించాలా?</translation>
 <translation id="6794858689789885890">మీరు Chromeను మూసివేసినప్పుడల్లా మీ పరికరంలోని సైట్ డేటాను తొలగించండి</translation>
 <translation id="6831043979455480757">అనువదించు</translation>
 <translation id="683440813066116847">mDNS ట్రాఫిక్‌ను అనుమతించడానికి Google Chrome కెనరీ కోసం ఇన్‌బౌండ్ నియమం.</translation>
 <translation id="684888714667046800">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు. మీరు ఫైర్‌వాల్‌ను ఉపయోగిస్తుంటే, దయచేసి <ph name="PRODUCT_EXE_NAME" /> వైట్‌లిస్ట్‌లో ఉందని నిర్ధారించుకోండి.</translation>
-<translation id="6851981911629679515">Chrome JavaScript, WebAssembly ఇంజిన్‌లో అదనపు రక్షణను ఆన్ చేయండి</translation>
 <translation id="6877155553248388166">సెర్చ్ ఏరియాకు దిగువ కుడి మూలన: కుడి వైపు <ph name="RIGHT" />%, దిగువ <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chromeను అప్‌డేట్ చేస్తోంది</translation>
 <translation id="6885412569789873916">Chrome బీటా యాప్‌లు</translation>

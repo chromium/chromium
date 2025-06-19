@@ -232,7 +232,6 @@
 <translation id="1380591466760231819">Катты бүктөө</translation>
 <translation id="138218114945450791">Мала көк</translation>
 <translation id="1382194467192730611">Администраторуңуз уруксат берген USB түзмөгү</translation>
-<translation id="1382378825779654399">Кандайдыр бир сайтта баасы төмөндөсө, электрондук почта билдирүүсүн аласыз. Бул барак <ph name="LAST_BOOKMARKS_FOLDER" /> папкасына сакталат.</translation>
 <translation id="1384725838384960382">Коопсуз төлөм үчүн эсептик дайындардын аныктыгын текшерүү барагы</translation>
 <translation id="1386623374109090026">Аннотациялар</translation>
 <translation id="138810468159004008">Сайтка киргенде уруксат берүү</translation>
@@ -532,6 +531,7 @@
 <translation id="1875512691959384712">Google Формалар</translation>
 <translation id="1876116428946561107">Сакталган даректериңиз жок. Даректи Chrome'до колдонуу үчүн кошуңуз.</translation>
 <translation id="1876399092304384674">Күнү боюнча</translation>
+<translation id="1877026089748256423">Chrome эскирип калган.</translation>
 <translation id="187918866476621466">Баштоо бетин ачуу</translation>
 <translation id="1880901968112404879">Кийинки жолу тезирээк төлөө үчүн картаңызды, шифрленген коопсуздук кодун жана эсептешүү дарегин Google аккаунтуңузга сактап коюңуз</translation>
 <translation id="1883255238294161206">Тизмени жыйнап коюу</translation>
@@ -867,6 +867,8 @@
             <ph name="LIST_ITEM" />Формаларга киргизилген маалымат
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Көмөкчү жабдыктар түзмөккө кирип турганыңызда тиркелди</translation>
+<translation id="2450019289047528273">Төлөм ыкмалары жана Google Капчыктагы башка маалымат</translation>
+<translation id="2451201933352935301"><ph name="URL" /> бардык экрандардагы терезелерди тескегиси келет</translation>
 <translation id="2451607499823206582">Көз салуу</translation>
 <translation id="2452098632681057184">Экология жана айлана-чөйрөнү коргоо</translation>
 <translation id="2452837234288608067">Ишке ашкан жок. Кайра аракет кылыңыз.</translation>
@@ -936,6 +938,7 @@
 <translation id="2546283357679194313">Кукилер жана сайттын дайындары</translation>
 <translation id="254947805923345898">Саясаттын мааниси туура эмес көрсөтүлдү.</translation>
 <translation id="2549836668759467704">Курулуш боюнча кеңеш берүү жана курулушта келишимдин негизинде иштөө</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> жана башкалар</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> сайты жараксыз жооп жөнөттү.</translation>
 <translation id="2551608178605132291">Дарек: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1046,6 +1049,7 @@
 <translation id="2743934314332613923">Айдоочунун күбөлүгү жаңыртылсынбы?</translation>
 <translation id="2759299890026163685">Интернет байланышы туруктуу экенин текшерип, кайталап көрүңүз</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> сырсөзүн толтурганы жатат</translation>
+<translation id="2760805590727089264">АА / ЖЖ</translation>
 <translation id="2764001903315068341">Комикстер</translation>
 <translation id="2765217105034171413">Кичине</translation>
 <translation id="2768397283109119044">Сиз <ph name="DOMAIN" /> доменин ачканга аракет кылдыңыз, бирок сервер ал аталышка жараксыз тастыктама берилгенин аныктады. Аталышы — сакталган IP дарек же ички түйүндүн аталышы.</translation>
@@ -3046,6 +3050,7 @@
 <translation id="6177531123306197852">Конверт C2</translation>
 <translation id="6180316780098470077">Кайталоолордун интервалы</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184099524311454384">Издөө өтмөктөрү</translation>
 <translation id="6184868291074982484">Chrome үчүнчү тараптын cookie файлдарын автоматтык түрдө чектейт</translation>
 <translation id="6190518157737269631">Баскычтоптогу Esc сыяктуу айрым баскычтарды өзгөртүү</translation>
 <translation id="6194209731893739467">Көз салган товарларды бул жерде көрөсүз</translation>
@@ -3604,6 +3609,7 @@
 <translation id="7130775116821607281">Жүктөп берүү бөгөттөлгөн</translation>
 <translation id="7132939140423847331">Администратор бул маалыматты көчүрүүгө тыюу салды.</translation>
 <translation id="7135130955892390533">Абалын көрсөтүү</translation>
+<translation id="7135814714616751706">Ыкчам баскычтарды издөө</translation>
 <translation id="7136009930065337683">Жашыруун режим жөнүндө кеңири маалымат</translation>
 <translation id="7138472120740807366">Жеткирүү ыкмасы</translation>
 <translation id="7138678301420049075">Башка</translation>
@@ -4176,6 +4182,7 @@
 <translation id="8092254339843485299">6 x 8 дюйм</translation>
 <translation id="8092774999298748321">Кочкул кызгылт көгүш</translation>
 <translation id="8094917007353911263">Сиз колдонуп жаткан тармак <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> дарегине өтүшүңүздү талап кылышы мүмкүн.</translation>
+<translation id="809543534949702122">Издөө таржымалы</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">Төлөм ыкмасы</translation>
@@ -4807,7 +4814,6 @@
 <translation id="9207861905230894330">Макала кошулбай койду.</translation>
 <translation id="9209339767782560829">Кирүү тастыктамасын колдонууда маселе келип чыкты.</translation>
 <translation id="9210825002219699214">Аба каттамдары</translation>
-<translation id="9211461151375991073"><ph name="FEATURED_SEARCH_LIST" /> издөө үчүн @ белгисин териңиз</translation>
 <translation id="9213433120051936369">Көрүнүшүн ыңгайлаштыруу</translation>
 <translation id="9215416866750762878">Иштеп жаткан колдонмо Chrome’дун Интернетке коопсуз туташуусуна тоскоол болуп жатат</translation>
 <translation id="92178312226016010">Бул товарга көз салып жатасыз.</translation>
@@ -4815,6 +4821,7 @@
 <translation id="9219103736887031265">Сүрөттөр</translation>
 <translation id="922152298093051471">Chrome'ду ыңгайлаштыруу</translation>
 <translation id="9222403027701923763">Башталгыч жана орто мектеп (K-12)</translation>
+<translation id="9222463428840654067">Картанын номери жараксыз</translation>
 <translation id="922849469395748170">Туруктуу кардарлардын карталары</translation>
 <translation id="93020190163435405">Практикалар</translation>
 <translation id="931598121743515856">Сатып алуунун суммасы <ph name="CHECKOUT_AMOUNT_MINIMUM" /> жогору болушу керек</translation>

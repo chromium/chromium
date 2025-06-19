@@ -21,7 +21,6 @@
 <translation id="3493899379487634969">Šta nije uredu?</translation>
 <translation id="3730775656877876887">Generiranje AI reprodukcije</translation>
 <translation id="3778044272390020426">Meni s opcijama za negativne povratne informacije</translation>
-<translation id="3807208219231826020">Reprodukcija pomicanjem</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3936324432406465283">Brzina reprodukcije</translation>
 <translation id="4020327272915390518">Meni za opcije</translation>
@@ -31,7 +30,7 @@
 <translation id="4525525184005340968">Dolina</translation>
 <translation id="4710974520964166851">Opušteno</translation>
 <translation id="4773921449011281499">Mirno</translation>
-<translation id="4867493576811701175">Slanje pozitivnih povratnih informacija o ovoj funkciji odabirom dugmeta za oznaku "Sviđa mi se"</translation>
+<translation id="4867493576811701175">Dugme Sviđa mi se: odaberite da pošaljete pozitivne povratne informacije o ovoj funkciji</translation>
 <translation id="4872475766448853257">Vraćanje <ph name="NUMBER_OF_SECONDS" /> s</translation>
 <translation id="4967513477347430212">Obala</translation>
 <translation id="5026371835667036198">Veselo</translation>
@@ -62,7 +61,7 @@
 <translation id="8136852699834914183">Reprodukcija nije dostupna za ovu stranicu.</translation>
 <translation id="8198036737896977997">Zrak</translation>
 <translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />x povećanje/smanjenje brzine.</translation>
-<translation id="837054959055425654">Otvaranje obrasca za detaljne povratne informacije o problemu s ovom funkcijom odabirom dugmeta za oznaku "Ne sviđa mi se"</translation>
+<translation id="837054959055425654">Dugme Ne sviđa mi se: odaberite da otvorite obrazac za detaljne povratne informacije o problemu s ovom funkcijom</translation>
 <translation id="8407011429883244666">Zatvaranje plejera.</translation>
 <translation id="8462210863277153423">URL će se otpremiti s povratnim informacijama da poboljšamo kvalitet i istraživanje.</translation>
 <translation id="8481839122437406573">Mirno</translation>

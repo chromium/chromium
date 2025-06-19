@@ -43,6 +43,7 @@
 <translation id="2536366509642644298">Групи вкладок "<ph name="TAB_GROUP_NAME_1" />" і "<ph name="TAB_GROUP_NAME_2" />" більше не доступні</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згорнути <ph name="TABS_COUNT_ONE" /> вкладку}one{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладкою}few{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}many{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}other{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2569352796411618312">Пропозиція: ви давно не переходили на кілька вкладок (<ph name="NUMBER_OF_TABS" />). Закрити їх?</translation>
+<translation id="257674075312929031">Група</translation>
 <translation id="2662028055331606429">Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Відвідати сайт</translation>
 <translation id="2671423594960767771">Поділитися групою</translation>
@@ -73,7 +74,6 @@
 <translation id="3940195383040445971">Відстежувати ціни на вкладках</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> нова вкладка, <ph name="ANY_CLOSED" /> закрито}one{<ph name="MANY_ADDED" /> нова вкладка, <ph name="ANY_CLOSED" /> закрито}few{<ph name="MANY_ADDED" /> нові вкладки, <ph name="ANY_CLOSED" /> закрито}many{<ph name="MANY_ADDED" /> нових вкладок, <ph name="ANY_CLOSED" /> закрито}other{<ph name="MANY_ADDED" /> нової вкладки, <ph name="ANY_CLOSED" /> закрито}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Додати вкладку в групу}one{Згрупувати вкладки}few{Згрупувати вкладки}many{Згрупувати вкладки}other{Згрупувати вкладки}}</translation>
-<translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивна вкладка}one{<ph name="TABS_COUNT_MANY" /> неактивна вкладка}few{<ph name="TABS_COUNT_MANY" /> неактивні вкладки}many{<ph name="TABS_COUNT_MANY" /> неактивних вкладок}other{<ph name="TABS_COUNT_MANY" /> неактивної вкладки}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Створено <ph name="NUM_DAYS_ONE" /> день тому}one{Створено <ph name="NUM_DAYS_MANY" /> день тому}few{Створено <ph name="NUM_DAYS_MANY" /> дні тому}many{Створено <ph name="NUM_DAYS_MANY" /> днів тому}other{Створено <ph name="NUM_DAYS_MANY" /> дня тому}}</translation>
 <translation id="4076226664360336092">Список груп вкладок відкрито на всю висоту</translation>
 <translation id="4133493477912226187">Схоже, ви відкрили кілька пов'язаних вкладок (<ph name="NUMBER_OF_TABS" />). Додати їх у групу?</translation>
@@ -81,7 +81,6 @@
 <translation id="427987768447457592">Нова група вкладок</translation>
 <translation id="4371591986692297148">неактивна</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Оновлено <ph name="NUM_DAYS_ONE" /> день тому}one{Оновлено <ph name="NUM_DAYS_MANY" /> день тому}few{Оновлено <ph name="NUM_DAYS_MANY" /> дні тому}many{Оновлено <ph name="NUM_DAYS_MANY" /> днів тому}other{Оновлено <ph name="NUM_DAYS_MANY" /> дня тому}}</translation>
-<translation id="4632233446660511480">{TAB_COUNT,plural, =1{Закрити 1 неактивну вкладку?}one{Закрити <ph name="TAB_COUNT_MANY" /> неактивну вкладку?}few{Закрити <ph name="TAB_COUNT_MANY" /> неактивні вкладки?}many{Закрити <ph name="TAB_COUNT_MANY" /> неактивних вкладок?}other{Закрити <ph name="TAB_COUNT_MANY" /> неактивної вкладки?}}</translation>
 <translation id="4686942373615810936">Щойно створено</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Закрити через 1 день}one{Закрити через <ph name="DAY_COUNT_MANY" /> день}few{Закрити через <ph name="DAY_COUNT_MANY" /> дні}many{Закрити через <ph name="DAY_COUNT_MANY" /> днів}other{Закрити через <ph name="DAY_COUNT_MANY" /> дня}}</translation>
 <translation id="4783638485675352219">Надавати операційній системі доступ до назв і URL-адрес вкладок, відкритих на цьому пристрої</translation>
@@ -109,7 +108,6 @@
 <translation id="5494920125229734069">Вибрати все</translation>
 <translation id="5556417849629758491">Переглянути інформацію про магазин. Опція доступна вгорі екрана.</translation>
 <translation id="5627941783489838464">Немає оновлень щодо вкладок</translation>
-<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Відновити вкладку}one{Відновити вкладки}few{Відновити вкладки}many{Відновити вкладки}other{Відновити вкладки}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> посилання з Chrome}one{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}few{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}many{<ph name="TABS_COUNT_MANY" /> посилань із Chrome}other{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}}</translation>
 <translation id="58326064309361797">Перетягуйте вкладки, щоб групувати їх</translation>
 <translation id="5901630391730855834">Жовтий</translation>
@@ -123,7 +121,6 @@
 <translation id="6193448654517602979">Виберіть вкладки</translation>
 <translation id="6220820548421939212">Так, видаляти</translation>
 <translation id="6228793724645064692">(оцінка магазину)</translation>
-<translation id="6271513594716432922">Закрити всі неактивні вкладки</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Додати вкладку в нову групу}one{Додати вкладки в нову групу}few{Додати вкладки в нову групу}many{Додати вкладки в нову групу}other{Додати вкладки в нову групу}}</translation>
 <translation id="6333260925957816943">Інформація про цей магазин</translation>
 <translation id="6381032505162537930">Тут зберігатимуться групи вкладок</translation>
@@ -142,6 +139,7 @@
 <translation id="6709297274997495821">Вибрати вкладку</translation>
 <translation id="6744956528665271406">Змінити колір групи</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Додати в групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TAB_COUNT1" /> вкладкою}one{Додати в групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TAB_COUNT1" /> вкладкою}few{Додати в групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TAB_COUNT1" /> вкладками}many{Додати в групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TAB_COUNT1" /> вкладками}other{Додати в групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TAB_COUNT1" /> вкладки}}</translation>
+<translation id="6818926723028410516">Виберіть елементи</translation>
 <translation id="6856809498882026482">Вийти з режиму вибору кількох вкладок</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> вкладкою; колір: <ph name="COLOR_NAME" />.}one{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладкою; колір: <ph name="COLOR_NAME" />.}few{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}many{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}other{Розгорнути спільну групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладки; колір: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">Виберіть групу вкладок</translation>

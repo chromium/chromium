@@ -183,6 +183,7 @@
 <translation id="3167868116600277716">Discover फीड</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> संचयित केलेला डेटा</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ने तुम्हाला सूचना पाठवण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील सूचना सुरू करा.</translation>
+<translation id="3223425961342298674">स्थानाला अनुमती नाही</translation>
 <translation id="3227137524299004712">मायक्रोफोन</translation>
 <translation id="3232293466644486101">ब्राउझिंग डेटा हटवा…</translation>
 <translation id="3242646949159196181">सुरू असताना, साइट आवाज प्ले करू शकतात. बंद असताना, साइट आवाज प्ले करू शकत नाहीत.</translation>
@@ -258,6 +259,7 @@
 <translation id="3992308058851451478"><ph name="SITE" /> तुम्ही ब्राउझ करत असताना तुमची माहिती वापरू शकते</translation>
 <translation id="3992684624889376114">या पेजबद्दल</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
+<translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
 <translation id="4046123991198612571">पुढील ट्रॅक</translation>
 <translation id="4077310749977440510">तुम्ही कॉपी केलेल्या मजकुराचे फॉरमॅटिंग कायम ठेवणे यासारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे तुमचा क्लिपबोर्ड वाचतात</translation>
 <translation id="4149890623864272035">तुम्हाला नक्की कुकीसह सर्व स्थानिक डेटा हटवायचा आणि या वेबसाइटसाठी सर्व परवानग्या रीसेट करायच्या आहेत का?</translation>
@@ -267,8 +269,10 @@
 <translation id="4169549551965910670">USB डिव्हाइसशी कनेक्ट केले आहे</translation>
 <translation id="4194328954146351878">साइटना NFC डिव्हाइसवरील माहिती पाहू देण्याची किंवा बदलण्याची अनुमती देण्यापूर्वी विचारा (शिफारस केलेले)</translation>
 <translation id="4200726100658658164">स्थान सेटिंग्ज उघडा</translation>
+<translation id="4203769790323223880">कॅमेराला अनुमती नाही</translation>
 <translation id="421742575134139848">संगीत, व्हिडिओ आणि इतर मीडियासाठी ऑडिओ पुरवण्याकरिता साइट आवाज प्ले करू शकतात</translation>
 <translation id="4217710972110098902">सिरीअल पोर्टशी कनेक्ट करा</translation>
+<translation id="4223404254440398437">मायक्रोफोनला अनुमती नाही</translation>
 <translation id="4226663524361240545">सूचनांमुळे डिव्हाइसचे कंपन होऊ शकते</translation>
 <translation id="4259722352634471385">नेव्हिगेशन ब्लॉक केले आहे: <ph name="URL" /></translation>
 <translation id="4274673989874969668">तुम्ही साइट बंद केल्यानंतर ती फोटो अपलोड करणे किंवा चॅट मेसेज पाठवणे यांसारख्या टास्क पूर्ण करण्यासाठी सिंक करणे सुरू ठेवू शकते</translation>
@@ -300,6 +304,7 @@
 <translation id="4635969503923889910">साइटना NFC डिव्हाइस वापरण्याची अनुमती देऊ नका</translation>
 <translation id="4644713492825682049">हटवा आणि रीसेट करा</translation>
 <translation id="4645575059429386691">आपल्या पालकांद्वारे व्यवस्थापित करण्यात आले</translation>
+<translation id="4663373278480897665">कॅमेऱ्याला अनुमती आहे</translation>
 <translation id="4670064810192446073">आभासी वास्तविकता</translation>
 <translation id="4672315773691449562">ब्राउझर ॲप, त्यानंतर Chrome वर टॅप करा</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" /> ला हँड ट्रॅकिंग वापरता यावे, यासाठी <ph name="BEGIN_LINK" />सिस्टीम सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील हँड ट्रॅकिंग सुरू करा.</translation>
@@ -345,6 +350,7 @@
 <translation id="5216942107514965959">आज शेवटची भेट दिली</translation>
 <translation id="5225463052809312700">कॅमेरा सुरू करा</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
+<translation id="5239623327352565343">स्थानाला अनुमती आहे</translation>
 <translation id="5246825184569358663">ही कृती कुकीसह सर्व स्थानिक डेटा हटवेल आणि <ph name="DOMAIN" /> त्याच्या अंतर्गत असलेल्या सर्व साइटसाठी सर्व परवानग्या रीसेट करेल</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' काढून टाका</translation>
 <translation id="528192093759286357">शीर्ष पासून ड्रॅग करा आणि फुलस्क्रीन मधून बाहेर पडण्यासाठी परत बटणास स्पर्श करा.</translation>
@@ -389,6 +395,7 @@
 <translation id="5743425052258407233">तुमच्या सर्व डिव्हाइसवर तुमचा इतिहास मिळवा, जेणेकरून तुम्ही सोडले होते तिथून सहजपणे सुरू करू शकाल.</translation>
 <translation id="5749158352074143502">या टॅबसह पुढे सुरू ठेवा</translation>
 <translation id="5750869797196646528">हँड ट्रॅकिंग</translation>
+<translation id="5753570386948603678">इतिहासामधून हटवा</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ला ब्लॉक केले</translation>
 <translation id="5804241973901381774">परवानग्या</translation>
 <translation id="5822675474983796325">तुमच्या नवीन टॅब पेजच्या तळाशी असलेली शीट कस्टमाइझ करा हे पूर्ण उंचीवर उघडले आहे</translation>
@@ -488,6 +495,7 @@
 <translation id="6992289844737586249">साइटना तुमचा मायक्रोफोन वापरण्याची अनुमती देण्यापूर्वी प्रथम विचारा (शिफारस केलेले)</translation>
 <translation id="7000754031042624318">Android सेटिंग्जमध्‍ये बंद केले</translation>
 <translation id="702275896380648118">ही साइट तुमच्या पसंतीच्या गोष्टी निर्धारित करते आणि इतर साइटना जाहिराती सुचवते. तुम्हाला आणखी उपयुक्त जाहिराती दाखवण्यासाठी, ही साइट Chrome मधून तुमचे जाहिरातीचे विषयदेखील मिळवते.</translation>
+<translation id="7044081119134178347">यावेळी कॅमेराला अनुमती दिली आहे</translation>
 <translation id="7053983685419859001">ब्लॉक करा</translation>
 <translation id="7055552182600664515">कॉपीराइटने संरक्षित केलेला आशय प्ले करण्यासाठी, साइटनी आशय संरक्षण सेवा वापरणे आवश्यक असू शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 निवडला}other{# निवडले}}</translation>
@@ -525,6 +533,7 @@
 <translation id="7573594921350120855">व्हिडिओ चॅटिंगसारख्या संवाद वैशिष्ट्यांसाठी साइट सामान्यपणे तुमचा व्हिडिओ कॅमेरा वापरतात</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> महिन्यापूर्वी}other{<ph name="NUM_MONTHS_MANY" /> महिन्यांपूर्वी}}</translation>
 <translation id="757524316907819857">संरक्षित आशय प्ले करण्यापासून साइटवर ब्लॉक करा</translation>
+<translation id="7586676035079382730">सूचनांना अनुमती नाही</translation>
 <translation id="7594634374516752650">ब्लूटूथ डिव्‍हाइसशी कनेक्ट केली आहे</translation>
 <translation id="7617547684249261169">तुम्ही तुमचा काही किंवा सर्व इतिहास, कुकी, साइट डेटा आणि आणखी बरेच काही हटवू शकता</translation>
 <translation id="7649070708921625228">मदत</translation>
@@ -540,6 +549,7 @@
 <translation id="780301667611848630">नाही, नको</translation>
 <translation id="7804248752222191302">साइट तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="7807060072011926525">Google द्वारे पुरवलेली</translation>
+<translation id="7815680994978050279">धोकादायक डाउनलोड ब्लॉक केले</translation>
 <translation id="7835852323729233924">मीडिया प्ले करत आहे</translation>
 <translation id="783819812427904514">व्हिडिओ अनम्यूट करा</translation>
 <translation id="7846076177841592234">निवड रद्द करा</translation>
@@ -588,6 +598,7 @@
 <translation id="8380167699614421159">ही साइट अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवते</translation>
 <translation id="8394832520002899662">साइटवर परत जाण्यासाठी टॅप करा</translation>
 <translation id="8409345997656833551">एखादा लेख हा सुलभ दृश्यात दाखवला जाऊ शकत असल्यास, सूचना मिळवा</translation>
+<translation id="8416874502399604126">यावेळी मायक्रोफोनला अनुमती दिली आहे</translation>
 <translation id="8423565414844018592">मजकूर स्केलिंग <ph name="TEXT_SCALING" /> वर सेट केले आहे</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8441146129660941386">मागे शोधा</translation>
@@ -655,12 +666,14 @@
 <translation id="9106233582039520022">कुकी हटवायच्या आहेत का?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्‍ये <ph name="APP_NAME" /> साठी परवानग्या सुरू करा.</translation>
+<translation id="9138037198177304356">सूचनांना अनुमती आहे</translation>
 <translation id="9138217887606523162">सध्याचे झूम <ph name="ZOOM_LEVEL" /> %% आहे</translation>
 <translation id="9156722768168878035">Chrome ला तुमच्या डिव्हाइसच्या अ‍ॅप सूचीमध्ये आणि शोध परिणामांमध्ये तुमचे अलीकडील टॅब दाखवू द्या. तुम्ही हे Chrome सेटिंग्जमध्ये कधीही बंद करू शकता.</translation>
 <translation id="9162462602695099906">हे पेज धोकादायक आहे</translation>
 <translation id="9182556968660520230">साइटना संरक्षित आशय प्ले करण्याची अनुमती देऊ नका</translation>
 <translation id="947156494302904893">तुम्ही खरी व्यक्ती आहात आणि बॉट नाही याची तुम्ही भेट देता त्या साइट पडताळणी करू शकतात</translation>
 <translation id="959682366969460160">व्यवस्‍थापित करा</translation>
+<translation id="961930410699694996">यावेळी स्थानाला अनुमती दिली आहे</translation>
 <translation id="967624055006145463">डेटा स्टोअर केला</translation>
 <translation id="969975166333045662">V8 ऑप्टिमायझर वापरण्यापासून साइट ब्लॉक करा.</translation>
 </translationbundle>

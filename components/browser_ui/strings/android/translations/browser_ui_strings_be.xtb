@@ -183,6 +183,7 @@
 <translation id="3167868116600277716">Стужка рэкамендацый</translation>
 <translation id="3198916472715691905">Аб’ём захаваных даных: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Каб праграма "<ph name="APP_NAME" />" магла адпраўляць вам апавяшчэнні, таксама ўключыце іх у <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
+<translation id="3223425961342298674">Выкарыстанне геаданых забаронена</translation>
 <translation id="3227137524299004712">Мікрафон</translation>
 <translation id="3232293466644486101">Выдаліць даныя пра работу ў браўзеры…</translation>
 <translation id="3242646949159196181">Калі гэты параметр уключаны, сайты могуць прайграваць гук. Калі параметр выключаны, сайты не могуць гэтага рабіць.</translation>
@@ -258,6 +259,7 @@
 <translation id="3992308058851451478">Сайту <ph name="SITE" /> дазволена выкарыстоўваць інфармацыю пра вас, калі вы праглядаеце вэб-старонкі тут:</translation>
 <translation id="3992684624889376114">Пра гэту старонку</translation>
 <translation id="4002066346123236978">Назва</translation>
+<translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4046123991198612571">Наступны трэк</translation>
 <translation id="4077310749977440510">Сайты звычайна счытваюць ваш буфер абмену для работы такіх функцый, як захаванне фармату скапіраванага тэксту</translation>
 <translation id="4149890623864272035">Вы сапраўды хочаце выдаліць усе лакальныя даныя (у тым ліку файлы cookie) і скінуць усе дазволы для гэтага вэб-сайта?</translation>
@@ -267,8 +269,10 @@
 <translation id="4169549551965910670">Выканана падключэнне да прылады USB</translation>
 <translation id="4194328954146351878">Пытацца, перш чым дазваляць сайтам праглядаць і змяняць інфармацыю на прыладах NFC (рэкамендуецца)</translation>
 <translation id="4200726100658658164">Адкрыць налады месцазнаходжання</translation>
+<translation id="4203769790323223880">Выкарыстанне камеры забаронена</translation>
 <translation id="421742575134139848">Сайты могуць прайграваць гук музычных файлаў, відэа і іншых медыяфайлаў</translation>
 <translation id="4217710972110098902">Падключаны да паслядоўнага порта</translation>
+<translation id="4223404254440398437">Выкарыстанне мікрафона забаронена</translation>
 <translation id="4226663524361240545">Апавяшчэнні могуць уключаць вібрацыю прылады</translation>
 <translation id="4259722352634471385">Пераход па наступным адрасе заблакіраваны: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Пасля таго як вы пакідаеце сайт, звычайна ён працягвае сінхранізацыю для завяршэння пэўных задач (такіх як запампоўванне фота або адпраўка паведамлення ў чаце)</translation>
@@ -300,6 +304,7 @@
 <translation id="4635969503923889910">Забараніць сайтам выкарыстоўваць прылады NFC</translation>
 <translation id="4644713492825682049">Выдаліць і скінуць</translation>
 <translation id="4645575059429386691">Пад кіраваннем бацькоў</translation>
+<translation id="4663373278480897665">Камера дазволена</translation>
 <translation id="4670064810192446073">Віртуальная рэальнасць</translation>
 <translation id="4672315773691449562">Націсніце "Браўзер", потым – Chrome</translation>
 <translation id="4676059169848868271">Каб праграма <ph name="APP_NAME" /> магла адсочваць рухі рук, уключыце гэту функцыю таксама ў <ph name="BEGIN_LINK" />сістэмных наладах<ph name="END_LINK" />.</translation>
@@ -345,6 +350,7 @@
 <translation id="5216942107514965959">Апошняе наведванне: сёння</translation>
 <translation id="5225463052809312700">Уключыць камеру</translation>
 <translation id="5234764350956374838">Адхіліць</translation>
+<translation id="5239623327352565343">Выкарыстанне геаданых дазволена</translation>
 <translation id="5246825184569358663">Будуць выдалены ўсе лакальныя даныя (у тым ліку файлы cookie) і скінуты ўсе дазволы для дамена <ph name="DOMAIN" /> і сайтаў, якія да яго належаць</translation>
 <translation id="5264323282659631142">Выдаліць чып "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Каб выйсці з поўнаэкраннага рэжыму, правядзіце зверху ўніз і націсніце кнопку "Назад".</translation>
@@ -389,6 +395,7 @@
 <translation id="5743425052258407233">Сінхранізуйце гісторыю на ўсіх прыладах, каб вы маглі заўсёды працягнуць з месца, на якім спыніліся</translation>
 <translation id="5749158352074143502">Працягвайце працу з гэтай укладкай</translation>
 <translation id="5750869797196646528">Адсочванне рухаў рук</translation>
+<translation id="5753570386948603678">Выдаліць з гісторыі</translation>
 <translation id="5771720122942595109">Заблакіравана: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Дазволы</translation>
 <translation id="5822675474983796325">Ніжні аркуш "Наладзіць старонку новай укладкі" адкрыты на ўвесь экран</translation>
@@ -488,6 +495,7 @@
 <translation id="6992289844737586249">Пытацца, перш чым дазволіць сайтам выкарыстоўваць мікрафон (рэкамендуецца)</translation>
 <translation id="7000754031042624318">Выключана ў наладах Android</translation>
 <translation id="702275896380648118">Гэты сайт вызначае, што вам падабаецца, а затым на падставе гэтых звестак прапануе рэкламу іншым сайтам. Акрамя таго, ён выкарыстоўвае тэмы рэкламы з Chrome, каб паказваць вам больш рэлевантныя аб’явы.</translation>
+<translation id="7044081119134178347">Гэтым разам доступ да камеры дазволены</translation>
 <translation id="7053983685419859001">Заблакіраваць</translation>
 <translation id="7055552182600664515">Каб прайграваць змесціва, абароненае аўтарскім правам, сайтам можа спатрэбіцца выкарыстаць сэрвіс для абароны змесціва. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Выбраны 1 элемент}one{Выбраны # элемент}few{Выбрана # элементы}many{Выбрана # элементаў}other{Выбрана # элемента}}</translation>
@@ -525,6 +533,7 @@
 <translation id="7573594921350120855">Сайты звычайна выкарыстоўваюць відэакамеру для работы функцый сувязі (напрыклад, для відэачата)</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> месяц таму}one{<ph name="NUM_MONTHS_MANY" /> месяц таму}few{<ph name="NUM_MONTHS_MANY" /> месяцы таму}many{<ph name="NUM_MONTHS_MANY" /> месяцаў таму}other{<ph name="NUM_MONTHS_MANY" /> месяца таму}}</translation>
 <translation id="757524316907819857">Блакіраваць прайграванне абароненага змесціва на сайтах</translation>
+<translation id="7586676035079382730">Апавяшчэнні забаронены</translation>
 <translation id="7594634374516752650">Вэб-сайт падключаны да прылады з Bluetooth</translation>
 <translation id="7617547684249261169">Гісторыю, файлы cookie, даныя сайтаў і іншыя даныя можна часткова або поўнасцю выдаліць</translation>
 <translation id="7649070708921625228">Даведка</translation>
@@ -540,6 +549,7 @@
 <translation id="780301667611848630">Не, дзякуй</translation>
 <translation id="7804248752222191302">Сайт выкарыстоўвае камеру</translation>
 <translation id="7807060072011926525">Ад кампаніі Google</translation>
+<translation id="7815680994978050279">Небяспечная спампоўка заблакіравана</translation>
 <translation id="7835852323729233924">Прайграванне мультымедыя</translation>
 <translation id="783819812427904514">Уключыць гук відэа</translation>
 <translation id="7846076177841592234">Скасаваць выбар</translation>
@@ -588,6 +598,7 @@
 <translation id="8380167699614421159">Гэты сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман</translation>
 <translation id="8394832520002899662">Каб вярнуцца на сайт, націсніце тут</translation>
 <translation id="8409345997656833551">Апавяшчаць, калі артыкул можна адкрыць у спрошчаным выглядзе</translation>
+<translation id="8416874502399604126">Гэтым разам доступ да мікрафона дазволены</translation>
 <translation id="8423565414844018592">Зададзены маштаб тэксту: <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8441146129660941386">Перайсці назад</translation>
@@ -655,12 +666,14 @@
 <translation id="9106233582039520022">Выдаліць файлы cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Уключыце для праграмы "<ph name="APP_NAME" />" дазволы ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
+<translation id="9138037198177304356">Апавяшчэнні дазволены</translation>
 <translation id="9138217887606523162">Бягучы маштаб: <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9156722768168878035">Дазвольце Chrome паказваць апошнія ўкладкі ў спісе праграм прылады і ў выніках пошуку. Гэту функцыю можна ў любы момант выключыць у наладах Chrome.</translation>
 <translation id="9162462602695099906">Гэта старонка небяспечная</translation>
 <translation id="9182556968660520230">Не дазваляць сайтам прайграваць абароненае змесціва</translation>
 <translation id="947156494302904893">Наведаныя вамі сайты могуць правяраць, ці вы не бот</translation>
 <translation id="959682366969460160">Навядзіце парадак</translation>
+<translation id="961930410699694996">Гэтым разам доступ да месцазнаходжання дазволены</translation>
 <translation id="967624055006145463">Захаваныя даныя</translation>
 <translation id="969975166333045662">Блакіраваць сайту доступ да выкарыстання аптымізатара V8.</translation>
 </translationbundle>

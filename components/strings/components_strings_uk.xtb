@@ -232,7 +232,6 @@
 <translation id="1380591466760231819">Зігнути у вигляді конверта</translation>
 <translation id="138218114945450791">Світло-синій</translation>
 <translation id="1382194467192730611">Пристрій USB дозволив адміністратор</translation>
-<translation id="1382378825779654399">Якщо на якомусь сайті знизиться ціна, ви отримаєте сповіщення електронною поштою. Цю сторінку буде збережено в папці "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="1384725838384960382">Екран автентифікації облікових даних для безпечних платежів</translation>
 <translation id="1386623374109090026">Примітки</translation>
 <translation id="138810468159004008">Дозволити під час відвідування сайту</translation>
@@ -532,6 +531,7 @@
 <translation id="1875512691959384712">Google Форми</translation>
 <translation id="1876116428946561107">У вас немає збережених адрес. Додайте адресу, щоб використовувати її в Chrome.</translation>
 <translation id="1876399092304384674">За датами</translation>
+<translation id="1877026089748256423">Версія Chrome застаріла</translation>
 <translation id="187918866476621466">Відкрити стартові сторінки</translation>
 <translation id="1880901968112404879">Щоб наступного разу платити швидше, збережіть дані картки, зашифрований код безпеки й платіжну адресу в обліковому записі Google</translation>
 <translation id="1883255238294161206">Згорнути список</translation>
@@ -867,6 +867,8 @@
             <ph name="LIST_ITEM" />інформацію, введену у формах.
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Периферійні пристрої, які підключені до цього пристрою, коли ви ввійшли в обліковий запис</translation>
+<translation id="2450019289047528273">Способи оплати й інша інформація з Google Гаманця</translation>
+<translation id="2451201933352935301">Сайт <ph name="URL" /> запитує дозвіл керувати вікнами на всіх ваших екранах</translation>
 <translation id="2451607499823206582">Відстеження</translation>
 <translation id="2452098632681057184">Екологія і довкілля</translation>
 <translation id="2452837234288608067">Не вдалося допомогти із цим запитом. Повторіть спробу.</translation>
@@ -936,6 +938,7 @@
 <translation id="2546283357679194313">Файли cookie й дані сайтів</translation>
 <translation id="254947805923345898">Недійсне значення правила.</translation>
 <translation id="2549836668759467704">Консультації з будівництва й підряди</translation>
+<translation id="2549919488151689436">"<ph name="TOPIC_1" />", "<ph name="TOPIC_2" />" і інші теми</translation>
 <translation id="255002559098805027">Хост <ph name="HOST_NAME" /> надіслав недійсну відповідь.</translation>
 <translation id="2551608178605132291">Адреса: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1046,6 +1049,7 @@
 <translation id="2743934314332613923">Оновити дані посвідчення водія?</translation>
 <translation id="2759299890026163685">Перш ніж повторити спробу, переконайтеся, що інтернет-з’єднання стабільне</translation>
 <translation id="2759825833388495838">автоматично заповнити ваш пароль у додатку <ph name="APP_NAME" /></translation>
+<translation id="2760805590727089264">ММ / РР</translation>
 <translation id="2764001903315068341">Комікси</translation>
 <translation id="2765217105034171413">Малий</translation>
 <translation id="2768397283109119044">Ви намагалися зв’язатися з доменом <ph name="DOMAIN" />, але сервер надав недійсний сертифікат, виданий для цього імені. Ім’я – це зарезервована IP-адреса або внутрішнє ім’я хоста.</translation>
@@ -3047,6 +3051,7 @@
 <translation id="6177531123306197852">Конверт C2</translation>
 <translation id="6180316780098470077">Інтервал між повторними спробами</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184099524311454384">Шукати вкладки</translation>
 <translation id="6184868291074982484">Chrome автоматично обмежує сторонні файли cookie</translation>
 <translation id="6190518157737269631">перевизначити деякі клавіші на клавіатурі, наприклад Esc</translation>
 <translation id="6194209731893739467">Тут можна переглянути всі відстежувані товари</translation>
@@ -3605,6 +3610,7 @@
 <translation id="7130775116821607281">Завантаження заборонено</translation>
 <translation id="7132939140423847331">Ваш адміністратор заборонив копіювати ці дані.</translation>
 <translation id="7135130955892390533">Показати статус</translation>
+<translation id="7135814714616751706">Пошук комбінацій клавіш</translation>
 <translation id="7136009930065337683">Докладніше про анонімний режим</translation>
 <translation id="7138472120740807366">Спосіб доставки</translation>
 <translation id="7138678301420049075">Інше</translation>
@@ -4178,6 +4184,7 @@
 <translation id="8092254339843485299">6 x 8 дюйм.</translation>
 <translation id="8092774999298748321">Насичений пурпуровий</translation>
 <translation id="8094917007353911263">Можливо, щоб під’єднатися до цієї мережі, потрібно відвідати сторінку <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="809543534949702122">Історія пошуку</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">Спосіб оплати</translation>
@@ -4810,7 +4817,6 @@
 <translation id="9207861905230894330">Не вдалося додати статтю.</translation>
 <translation id="9209339767782560829">Виникла проблема із сертифікатом входу.</translation>
 <translation id="9210825002219699214">Авіаподорожі</translation>
-<translation id="9211461151375991073">Введіть @, щоб шукати на вебсайтах <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Налаштувати оформлення</translation>
 <translation id="9215416866750762878">Додаток перешкоджає Chrome безпечно під’єднуватися до цього сайту</translation>
 <translation id="92178312226016010">Ви відстежуєте цей товар.</translation>
@@ -4818,6 +4824,7 @@
 <translation id="9219103736887031265">Зображення</translation>
 <translation id="922152298093051471">Налаштувати Chrome</translation>
 <translation id="9222403027701923763">Початкова й середня освіта (K-12)</translation>
+<translation id="9222463428840654067">Недійсний номер картки</translation>
 <translation id="922849469395748170">Картки постійного покупця</translation>
 <translation id="93020190163435405">Стажування</translation>
 <translation id="931598121743515856">Сума покупки має бути більшою ніж <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

@@ -183,6 +183,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3167868116600277716">Feedul Discover</translation>
 <translation id="3198916472715691905">Date stocate: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Pentru a permite aplicației <ph name="APP_NAME" /> să îți trimită notificări, activează notificările și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
+<translation id="3223425961342298674">Folosirea locației nu este permisă</translation>
 <translation id="3227137524299004712">Microfon</translation>
 <translation id="3232293466644486101">Șterge datele de navigare…</translation>
 <translation id="3242646949159196181">Când opțiunea este activată, site-urile pot reda sunet. Când opțiunea este dezactivată, site-urile nu pot reda sunet.</translation>
@@ -258,6 +259,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3992308058851451478"><ph name="SITE" /> poate să folosească informațiile tale în timp ce navighezi</translation>
 <translation id="3992684624889376114">Despre această pagină</translation>
 <translation id="4002066346123236978">Titlu</translation>
+<translation id="4031179711345676612">Microfonul este permis</translation>
 <translation id="4046123991198612571">Melodia următoare</translation>
 <translation id="4077310749977440510">Site-urile citesc de obicei clipboardul pentru a face acțiuni precum păstrarea formatării textului pe care l-ai copiat</translation>
 <translation id="4149890623864272035">Sigur ștergi toate datele locale, inclusiv cookie-urile, și resetezi toate permisiunile pentru acest site?</translation>
@@ -267,8 +269,10 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="4169549551965910670">Conectat la un dispozitiv USB</translation>
 <translation id="4194328954146351878">Întreabă înainte de a permite site-urilor să vadă și să modifice informații de pe dispozitive NFC (recomandat)</translation>
 <translation id="4200726100658658164">Deschide setările privind locația</translation>
+<translation id="4203769790323223880">Folosirea camerei foto nu este permisă</translation>
 <translation id="421742575134139848">Site-urile pot reda sunet pentru muzică, videoclipuri și alte tipuri de conținut media</translation>
 <translation id="4217710972110098902">Conectat la un port serial</translation>
+<translation id="4223404254440398437">Folosirea microfonului nu este permisă</translation>
 <translation id="4226663524361240545">Notificările pot face dispozitivul să vibreze</translation>
 <translation id="4259722352634471385">Navigarea este blocată: <ph name="URL" /></translation>
 <translation id="4274673989874969668">După ce ieși de pe un site, acesta poate continua sincronizarea pentru a finaliza activități, cum ar fi încărcarea fotografiilor sau trimiterea unui mesaj de chat</translation>
@@ -300,6 +304,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="4635969503923889910">Nu permite site-urilor să folosească dispozitive NFC</translation>
 <translation id="4644713492825682049">Șterge și resetează</translation>
 <translation id="4645575059429386691">Gestionat de părintele tău</translation>
+<translation id="4663373278480897665">Camera foto este permisă</translation>
 <translation id="4670064810192446073">Realitate virtuală</translation>
 <translation id="4672315773691449562">Atinge aplicația Browser, apoi atinge Chrome</translation>
 <translation id="4676059169848868271">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească urmărirea mâinilor, activează urmărirea mâinilor și în <ph name="BEGIN_LINK" />setările de sistem<ph name="END_LINK" />.</translation>
@@ -345,6 +350,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="5216942107514965959">Accesat ultima dată azi</translation>
 <translation id="5225463052809312700">Activează camera foto</translation>
 <translation id="5234764350956374838">Închide</translation>
+<translation id="5239623327352565343">Folosirea locației este permisă</translation>
 <translation id="5246825184569358663">Astfel, se vor șterge toate datele locale, inclusiv cookie-urile, și se vor reseta toate permisiunile pentru <ph name="DOMAIN" /> și pentru toate site-urile asociate</translation>
 <translation id="5264323282659631142">Elimină „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Trage din partea de sus și atinge butonul Înapoi pentru a ieși din ecranul complet.</translation>
@@ -389,6 +395,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="5743425052258407233">Istoricul apare pe toate dispozitivele tale. Astfel, poți continua ceea ce făceai.</translation>
 <translation id="5749158352074143502">Continuă cu această filă</translation>
 <translation id="5750869797196646528">Urmărirea mâinilor</translation>
+<translation id="5753570386948603678">Șterge din istoric</translation>
 <translation id="5771720122942595109">S-a blocat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisiuni</translation>
 <translation id="5822675474983796325">Foaia de jos a paginii Personalizează Fila nouă este deschisă la înălțime completă</translation>
@@ -488,6 +495,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="6992289844737586249">Întreabă înainte de a permite site-urilor să folosească microfonul (recomandat)</translation>
 <translation id="7000754031042624318">Dezactivată din setările Android</translation>
 <translation id="702275896380648118">Acest site stabilește lucrurile care te interesează, apoi sugerează anunțuri altor site-uri. În plus, site-ul preia subiectele anunțurilor din Chrome pentru a-ți afișa anunțuri mai relevante.</translation>
+<translation id="7044081119134178347">Camera foto este permisă de data aceasta</translation>
 <translation id="7053983685419859001">Blochează</translation>
 <translation id="7055552182600664515">Pentru a reda conținut protejat prin drepturi de autor, poate fi necesar ca site-urile să folosească un serviciu pentru protejarea conținutului. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selectat}few{# selectate}other{# selectate}}</translation>
@@ -525,6 +533,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="7573594921350120855">Site-urile folosesc de obicei camera video pentru opțiuni de comunicare, cum ar fi chatul video</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Acum <ph name="NUM_MONTHS_ONE" /> lună}few{Acum <ph name="NUM_MONTHS_MANY" /> luni}other{Acum <ph name="NUM_MONTHS_MANY" /> de luni}}</translation>
 <translation id="757524316907819857">Împiedică site-urile să redea conținutul protejat</translation>
+<translation id="7586676035079382730">Notificările nu sunt permise</translation>
 <translation id="7594634374516752650">Conectat la un dispozitiv Bluetooth</translation>
 <translation id="7617547684249261169">Poți să ștergi parțial sau integral istoricul, cookie-urile, datele privind site-urile și multe altele</translation>
 <translation id="7649070708921625228">Ajutor</translation>
@@ -540,6 +549,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7804248752222191302">Un site folosește camera foto</translation>
 <translation id="7807060072011926525">Oferit de Google</translation>
+<translation id="7815680994978050279">A fost blocată o descărcare periculoasă</translation>
 <translation id="7835852323729233924">Se redă conținutul media</translation>
 <translation id="783819812427904514">Activează sunetul videoclipului</translation>
 <translation id="7846076177841592234">Anulează selecția</translation>
@@ -588,6 +598,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="8380167699614421159">Acest site afișează anunțuri deranjante sau înșelătoare</translation>
 <translation id="8394832520002899662">Atinge pentru a reveni la site</translation>
 <translation id="8409345997656833551">Primește notificări când un articol poate fi afișat într-o vizualizare simplificată</translation>
+<translation id="8416874502399604126">Microfonul este permis de această dată</translation>
 <translation id="8423565414844018592">Scalarea textului a fost setată la <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8441146129660941386">Derulează înapoi</translation>
@@ -655,12 +666,14 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="9106233582039520022">Ștergi cookie-urile?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Activează permisiunile pentru <ph name="APP_NAME" /> din <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
+<translation id="9138037198177304356">Notificările sunt permise</translation>
 <translation id="9138217887606523162">Nivelul de zoom actual este <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Permite ca Chrome să-ți afișeze filele recente în lista de aplicații și în rezultatele căutării de pe dispozitiv. Poți dezactiva oricând această opțiune din setările Chrome.</translation>
 <translation id="9162462602695099906">Pagina este periculoasă</translation>
 <translation id="9182556968660520230">Nu permite site-urilor să redea conținut protejat</translation>
 <translation id="947156494302904893">Site-urile pe care le accesezi pot confirma că ești o persoană reală, nu o aplicație bot</translation>
 <translation id="959682366969460160">Organizează-te</translation>
+<translation id="961930410699694996">Locația este permisă de data aceasta</translation>
 <translation id="967624055006145463">Date stocate</translation>
 <translation id="969975166333045662">Împiedică site-ul să folosească instrumentul de optimizare V8.</translation>
 </translationbundle>

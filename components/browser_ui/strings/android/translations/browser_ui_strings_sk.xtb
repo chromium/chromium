@@ -183,6 +183,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="3167868116600277716">Kanál Objaviť</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> uložených dát</translation>
 <translation id="321187648315454507">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> odosielať vám upozornenia, zapnite ich aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
+<translation id="3223425961342298674">Poloha nie je povolená</translation>
 <translation id="3227137524299004712">Mikrofón</translation>
 <translation id="3232293466644486101">Odstrániť dáta prehliadania…</translation>
 <translation id="3242646949159196181">Keď je táto možnosť zapnutá, weby môžu prehrávať zvuk. Keď je táto možnosť vypnutá, weby nemôžu prehrávať zvuk.</translation>
@@ -258,6 +259,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="3992308058851451478"><ph name="SITE" /> môže pri prehliadaní používať vaše informácie</translation>
 <translation id="3992684624889376114">Táto stránka</translation>
 <translation id="4002066346123236978">Názov</translation>
+<translation id="4031179711345676612">Mikrofón je povolený</translation>
 <translation id="4046123991198612571">Ďalšia skladba</translation>
 <translation id="4077310749977440510">Weby zvyčajne čítajú vašu schránku na poskytovanie funkcií, napríklad aby mohli zachovať formátovanie textu, ktorý ste skopírovali</translation>
 <translation id="4149890623864272035">Naozaj chcete odstrániť všetky miestne údaje vrátane súborov cookie a resetovať všetky povolenia pre tento web?</translation>
@@ -267,8 +269,10 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="4169549551965910670">Pripojené k zariadeniu USB</translation>
 <translation id="4194328954146351878">Pýtať sa, či chcete povoliť webom zobrazovať a meniť informácie v zariadeniach s rozhraním NFC (odprúčané)</translation>
 <translation id="4200726100658658164">Otvoriť nastavenia polohy</translation>
+<translation id="4203769790323223880">Kamera nie je povolená</translation>
 <translation id="421742575134139848">Weby môžu prehrávať zvuk, aby mohli poskytovať stopu hudby, videí a ďalších médií</translation>
 <translation id="4217710972110098902">Pripojené k sériovému portu</translation>
+<translation id="4223404254440398437">Mikrofón nie je povolený</translation>
 <translation id="4226663524361240545">Upozornenia môžu pri prijatí na zariadení spustiť vibrovanie</translation>
 <translation id="4259722352634471385">Navigácia je zablokovaná: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Keď web opustíte, môže naďalej synchronizovať dokončenie úloh, napríklad nahrávanie fotiek alebo odoslanie četovej správy</translation>
@@ -300,6 +304,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="4635969503923889910">Nepovoliť webom používať zariadenia s technológiou NFC</translation>
 <translation id="4644713492825682049">Odstrániť a resetovať</translation>
 <translation id="4645575059429386691">Spravované vaším rodičom</translation>
+<translation id="4663373278480897665">Kamera je povolená</translation>
 <translation id="4670064810192446073">Virtuálna realita</translation>
 <translation id="4672315773691449562">Klepnite na Prehliadač a potom na Chrome</translation>
 <translation id="4676059169848868271">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> sledovať ruky, zapnite sledovanie rúk aj v <ph name="BEGIN_LINK" />nastaveniach systému<ph name="END_LINK" />.</translation>
@@ -345,6 +350,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5216942107514965959">Naposledy navštívený dnes</translation>
 <translation id="5225463052809312700">Zapnúť kameru</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
+<translation id="5239623327352565343">Poloha je povolená</translation>
 <translation id="5246825184569358663">Touto akciou odstránite všetky miestne údaje vrátane súborov cookie a resetujete všetky povolenia pre doménu <ph name="DOMAIN" /> aj všetky jej podradené weby</translation>
 <translation id="5264323282659631142">Odstrániť <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Režim celej obrazovky ukončíte potiahnutím z hornej časti a klepnutím na tlačidlo Späť.</translation>
@@ -389,6 +395,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="5743425052258407233">Získajte históriu vo všetkých zariadeniach, aby ste mohli ľahko pokračovať tam, kde ste skončili</translation>
 <translation id="5749158352074143502">Pokračovať s touto kartou</translation>
 <translation id="5750869797196646528">Sledovanie rúk</translation>
+<translation id="5753570386948603678">Odstrániť z histórie</translation>
 <translation id="5771720122942595109">Blokované: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Povolenia</translation>
 <translation id="5822675474983796325">Dolný hárok úprav stránky na novej karte je otvorený na celú výšku</translation>
@@ -488,6 +495,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="6992289844737586249">Pýtať sa, či chcete povoliť webu používať mikrofón (odporúčané)</translation>
 <translation id="7000754031042624318">Vypnuté v nastaveniach Androidu</translation>
 <translation id="702275896380648118">Tento web určuje, čo sa vám páči, a potom navrhuje reklamy iným webom. Dostáva aj témy reklám od Chromu, aby vám zobrazoval relevantnejšie reklamy.</translation>
+<translation id="7044081119134178347">Kamera je momentálne povolená</translation>
 <translation id="7053983685419859001">Blokovať</translation>
 <translation id="7055552182600664515">Ak chcete prehrávať obsah chránený autorskými právami, weby budú zrejme musieť používať službu na ochranu obsahu. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 vybratá položka}few{# vybraté položky}many{Niekoľko (#) vybratých položiek}other{# vybratých položiek}}</translation>
@@ -525,6 +533,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="7573594921350120855">Weby zvyčajne používajú vašu videokameru, aby mohli poskytovať komunikačné funkcie, ako sú videohovory</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Pred <ph name="NUM_MONTHS_ONE" /> mesiacom}few{Pred <ph name="NUM_MONTHS_MANY" /> mesiacmi}many{Pred <ph name="NUM_MONTHS_MANY" /> mesiaca}other{Pred <ph name="NUM_MONTHS_MANY" /> mesiacmi}}</translation>
 <translation id="757524316907819857">Brániť webom prehrávať chránený obsah</translation>
+<translation id="7586676035079382730">Upozornenia nie sú povolené</translation>
 <translation id="7594634374516752650">Pripojené k zariadeniu Bluetooth</translation>
 <translation id="7617547684249261169">Môžete odstrániť celú históriu alebo jej časť, súbory cookie, údaje webov a ďalšie položky</translation>
 <translation id="7649070708921625228">Pomocník</translation>
@@ -540,6 +549,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="780301667611848630">Nie, ďakujem</translation>
 <translation id="7804248752222191302">Váš fotoaparát používa nejaký web</translation>
 <translation id="7807060072011926525">Poskytuje Google</translation>
+<translation id="7815680994978050279">Bolo zablokované sťahovanie nebezpečného súboru</translation>
 <translation id="7835852323729233924">Prehrávanie médií</translation>
 <translation id="783819812427904514">Zapnúť zvuk videa</translation>
 <translation id="7846076177841592234">Zrušiť výber</translation>
@@ -588,6 +598,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="8380167699614421159">Tento web zobrazuje obťažujúce alebo zavádzajúce reklamy</translation>
 <translation id="8394832520002899662">Klepnutím sa vrátite na web</translation>
 <translation id="8409345997656833551">Dostávajte upozornenia, keď bude článok dostupný v zjednodušenom zobrazení</translation>
+<translation id="8416874502399604126">Mikrofón je momentálne povolený</translation>
 <translation id="8423565414844018592">Škálovanie textu je nastavené na <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Nastavenia</translation>
 <translation id="8441146129660941386">Pretočiť dozadu</translation>
@@ -655,12 +666,14 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:
 <translation id="9106233582039520022">Chcete odstrániť súbory cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie povolenie}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie povolenia}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalších povolení}}</translation>
 <translation id="913657688200966289">Zapnite v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" /> povolenia pre aplikáciu <ph name="APP_NAME" />.</translation>
+<translation id="9138037198177304356">Upozornenia sú povolené</translation>
 <translation id="9138217887606523162">Aktuálna úroveň lupy je <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Povoľte Chromu zobrazovať vaše nedávne karty v zozname aplikácií a výsledkoch vyhľadávania v zariadení. Túto možnosť môžete kedykoľvek vypnúť v nastaveniach Chromu.</translation>
 <translation id="9162462602695099906">Táto stránka je nebezpečná</translation>
 <translation id="9182556968660520230">Nepovoliť webom prehrávať chránený obsah</translation>
 <translation id="947156494302904893">Weby, ktoré navštevujete môžu skontrolovať, či ste skutočná osoba a nie robot</translation>
 <translation id="959682366969460160">Usporiadanie položiek</translation>
+<translation id="961930410699694996">Poloha je momentálne povolená</translation>
 <translation id="967624055006145463">Uložené dáta</translation>
 <translation id="969975166333045662">Zablokujte webu používanie optimalizátora V8.</translation>
 </translationbundle>

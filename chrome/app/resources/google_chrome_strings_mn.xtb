@@ -65,6 +65,7 @@
 <translation id="178701303897325119">Энэ өргөтгөлийг дэмжихээ больсон. Chrome танд оронд нь үүнийг хасахыг зөвлөж байна.</translation>
 <translation id="1812689907177901597">Үүнийг унтрааснаар та Gmail зэрэг Google-н сайтуудад Chrome-д нэвтрэлгүйгээр нэвтэрч болно</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome таны хөтчийг удаашруулж буй табыг түр зогсоохыг зөвлөж байна}other{Chrome таны хөтчийг удаашруулж буй табуудыг түр зогсоохыг зөвлөж байна}}</translation>
+<translation id="1832046143430087831">Chrome-н V8 системээр сайтыг хурдасгах ч Chrome-г халдлагад арай тэсвэр багатай болгоно. Энэ тохиргоо унтраалттай байна.</translation>
 <translation id="1838374766361614909">Хайлтыг арилгах</translation>
 <translation id="1860536484129686729">Энэ сайтыг ашиглахын тулд Chrome-д зөвшөөрөл шаардлагатай</translation>
 <translation id="1873233029667955273">Google Chrome таны өгөгдмөл хөтөч биш юм</translation>
@@ -451,12 +452,12 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6718739135284199302">Chrome-г илүү хурдан болгоорой</translation>
 <translation id="6735387454586646204">ChromeOS Flex-н систем</translation>
 <translation id="6750954913813541382">Зөв бичгийн алдааг засахын тулд Chrome таны хөтөч дээр бичсэн текстийг Google-д илгээдэг</translation>
+<translation id="6760235774835597023">Chrome-н V8 системээр сайтыг хурдасгах ч Chrome-г халдлагад арай тэсвэр багатай болгоно. Энэ тохиргоо асаалттай байна.</translation>
 <translation id="677276454032249905">Chrome-с ямар ч үед гарах уу?</translation>
 <translation id="6794858689789885890">Таныг Chrome-г хаах үед төхөөрөмжөөс тань сайтын өгөгдлийг үргэлж устгана</translation>
 <translation id="6831043979455480757">Хөрвүүлэх</translation>
 <translation id="683440813066116847">mDNS-ийг зөвшөөрөх Google Chrome Canary-ийн гадаад дүрэм.</translation>
 <translation id="684888714667046800">Интернэтэд холбогдох боломжгүй байна. Хэрэв та галт хана ашиглавал <ph name="PRODUCT_EXE_NAME" />-г зөвшөөрсөн жагсаалтад байгаа болохыг баталгаажуулна уу.</translation>
-<translation id="6851981911629679515">Chrome-н JavaScript болон WebAssembly-н системийн нэмэлт хамгаалалтыг асаана уу</translation>
 <translation id="6877155553248388166">хайлтын хэсгийн баруун доод булан: баруун <ph name="RIGHT" />%, доод <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome-г шинэчилж байна</translation>
 <translation id="6885412569789873916">Chrome Бета Апп</translation>

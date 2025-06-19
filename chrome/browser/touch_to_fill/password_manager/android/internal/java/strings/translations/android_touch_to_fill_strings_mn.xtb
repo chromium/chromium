@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">Хадгалсан нууц үг эсвэл passkey-г ашиглах уу?</translation>
 <translation id="5624120631404540903">Нууц үгийг удирдах</translation>
 <translation id="592182999816790476"><ph name="WEBSITE" />-д хадгалсан <ph name="USERNAME" />-н нууц үг</translation>
+<translation id="593924516471361340"><ph name="USERNAME" />-д асуудал гарсан тохиолдолд ашиглах <ph name="WEBSITE" />-д хадгалсан түр зуурын сэргээх нууц үг</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" />-н нэвтрэх түлхүүр, дэлгэцийн түгжээгээ ашиглана уу</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Энэ сайтын шинэ нууц үг}other{Энэ сайтын шинэ нууц үгнүүд}}</translation>
 <translation id="7286867818472074330">Нэвтрэх түлхүүр сонгох</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" />-с <ph name="ITEM_POSITION" />.</translation>
 <translation id="7738288782501322815">Та <ph name="SITE_NAME" />-н нууц үгнүүдийг хүлээн авсан</translation>
+<translation id="8202660122967066153"><ph name="USERNAME" />-д асуудал гарсан тохиолдолд ашиглах түр зуурын сэргээх нууц үг</translation>
 <translation id="8363484128299778310">Асуудал гарсан тохиолдолд түр сэргээх</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> тантай <ph name="SITE_NAME" />-н нууц үгийг хуваалцсан</translation>
 <translation id="8891372124884726271">Мандат үнэмлэхийн жагсаалтыг хаасан.</translation>

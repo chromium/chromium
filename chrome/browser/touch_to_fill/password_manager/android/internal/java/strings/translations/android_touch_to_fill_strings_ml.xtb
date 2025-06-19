@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">സംരക്ഷിച്ച പാസ്‌വേഡോ പാസ്‌കീയോ ഉപയോഗിക്കണോ?</translation>
 <translation id="5624120631404540903">പാസ്‌വേഡുകൾ നിയന്ത്രിക്കുക</translation>
 <translation id="592182999816790476"><ph name="WEBSITE" /> എന്നതിനായി സംരക്ഷിച്ച,<ph name="USERNAME" /> എന്നതിനുള്ള പാസ്‍വേഡ്</translation>
+<translation id="593924516471361340"><ph name="WEBSITE" /> എന്നതിനായി സംരക്ഷിച്ചിട്ടുള്ള <ph name="USERNAME" /> എന്നതിന് പ്രശ്‌നമുണ്ടാകുമ്പോൾ താൽക്കാലികമായി വീണ്ടെടുക്കാനുള്ള പാസ്‌വേഡ്</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> എന്നതിനുള്ള പാസ്‌കീ, നിങ്ങളുടെ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കുക</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ഈ സൈറ്റിനായി പുതിയ പാസ്‌വേഡ്}other{ഈ സൈറ്റുകൾക്കായി പുതിയ പാസ്‌വേഡുകൾ}}</translation>
 <translation id="7286867818472074330">പാസ്‌കീ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" />-ൽ <ph name="ITEM_POSITION" />.</translation>
 <translation id="7738288782501322815"><ph name="SITE_NAME" /> എന്നതിന്റെ പാസ്‍വേഡുകൾ നിങ്ങൾക്ക് ലഭിച്ചു</translation>
+<translation id="8202660122967066153"><ph name="USERNAME" /> എന്നതിന് പ്രശ്‌നമുണ്ടാകുമ്പോൾ താൽക്കാലികമായി വീണ്ടെടുക്കാനുള്ള പാസ്‌വേഡ്</translation>
 <translation id="8363484128299778310">പ്രശ്‌നമുണ്ടാകുമ്പോൾ താൽക്കാലികമായി വീണ്ടെടുക്കുക</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> എന്നയാൾ <ph name="SITE_NAME" /> എന്നതിന്റെ പാസ്‌വേഡ് നിങ്ങളുമായി പങ്കിട്ടു</translation>
 <translation id="8891372124884726271">ക്രെഡൻഷ്യലുകളുടെ ലിസ്റ്റ് അടച്ചിരിക്കുന്നു.</translation>

@@ -232,7 +232,6 @@
 <translation id="1380591466760231819">Згіб пісьмом</translation>
 <translation id="138218114945450791">Светла-сіні</translation>
 <translation id="1382194467192730611">Прылада USB дазволена адміністратарам</translation>
-<translation id="1382378825779654399">Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі па электроннай пошце. Гэта старонка будзе захоўвацца ў папцы "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="1384725838384960382">Аркуш аўтэнтыфікацыі ўліковых даных для бяспечных плацяжоў</translation>
 <translation id="1386623374109090026">Анатацыі</translation>
 <translation id="138810468159004008">Дазволіць падчас наведвання сайта</translation>
@@ -532,6 +531,7 @@
 <translation id="1875512691959384712">Формы Google</translation>
 <translation id="1876116428946561107">У вас няма захаваных адрасоў. Дадайце адрас, каб выкарыстоўваць яго ў Chrome.</translation>
 <translation id="1876399092304384674">Па даце</translation>
+<translation id="1877026089748256423">Chrome састарэў</translation>
 <translation id="187918866476621466">Адкрыць пачатковыя старонкі</translation>
 <translation id="1880901968112404879">Каб наступны раз плаціць хутчэй, захавайце картку, зашыфраваны код бяспекі і адрас для выстаўлення рахункаў ва Уліковым запісе Google</translation>
 <translation id="1883255238294161206">Згарнуць спіс</translation>
@@ -868,6 +868,8 @@
 <ph name="END_LIST" />
 </translation>
 <translation id="2448295565072560657">Перыферыйныя прылады, падключаныя да прылады пры выкананым уваходзе ва ўліковы запіс</translation>
+<translation id="2450019289047528273">Спосабы аплаты і іншая інфармацыя з Google Кашалька</translation>
+<translation id="2451201933352935301">Сайт <ph name="URL" /> запытвае дазвол кіраваць вокнамі на ўсіх дысплэях</translation>
 <translation id="2451607499823206582">Адсочванне</translation>
 <translation id="2452098632681057184">Экалогія і навакольнае асяроддзе</translation>
 <translation id="2452837234288608067">Не ўдалося дапамагчы з гэтым запытам. Паўтарыце спробу.</translation>
@@ -937,6 +939,7 @@
 <translation id="2546283357679194313">Файлы сookie і даныя сайтаў</translation>
 <translation id="254947805923345898">Значэнне палітыкі несапраўднае.</translation>
 <translation id="2549836668759467704">Будаўнічыя падрады і кансультацыі</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> і яшчэ</translation>
 <translation id="255002559098805027">Хост <ph name="HOST_NAME" /> адправіў няправільны адказ.</translation>
 <translation id="2551608178605132291">Адрас: <ph name="ADDRESS" /></translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1047,6 +1050,7 @@
 <translation id="2743934314332613923">Змяніць даныя вадзіцельскага пасведчання?</translation>
 <translation id="2759299890026163685">Забяспечце стабільнае падключэнне да інтэрнэту і паўтарыце спробу</translation>
 <translation id="2759825833388495838">ўвесці пароль на сайце <ph name="APP_NAME" /></translation>
+<translation id="2760805590727089264">ММ / ГГ</translation>
 <translation id="2764001903315068341">Коміксы</translation>
 <translation id="2765217105034171413">Малы</translation>
 <translation id="2768397283109119044">Вы спрабавалі звярнуцца да сервера ў дамене <ph name="DOMAIN" />, але сервер выдаў несапраўдны сертыфікат. Ён быў выданы на імя зарэзерваванага IP-адраса або ўнутранае імя хоста.</translation>
@@ -3046,6 +3050,7 @@
 <translation id="6177531123306197852">Канверт C2</translation>
 <translation id="6180316780098470077">Інтэрвал паміж спробамі</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184099524311454384">Пошук укладак</translation>
 <translation id="6184868291074982484">Chrome аўтаматычна абмяжоўвае выкарыстанне старонніх файлаў cookie</translation>
 <translation id="6190518157737269631">Перавызначаць некаторыя клавішы на клавіятуры, напрыклад Esc</translation>
 <translation id="6194209731893739467">Тут можна паглядзець усе прадукты, за якімі вы сочыце</translation>
@@ -3604,6 +3609,7 @@
 <translation id="7130775116821607281">Запампоўванне забаронена</translation>
 <translation id="7132939140423847331">Ваш адміністратар забараніў капіраванне гэтых даных.</translation>
 <translation id="7135130955892390533">Паказаць стан</translation>
+<translation id="7135814714616751706">Пошук ярлыкоў</translation>
 <translation id="7136009930065337683">Даведацца больш пра рэжым інкогніта</translation>
 <translation id="7138472120740807366">Спосаб дастаўкі</translation>
 <translation id="7138678301420049075">Іншыя</translation>
@@ -4177,6 +4183,7 @@
 <translation id="8092254339843485299">6 x 8 цаляў</translation>
 <translation id="8092774999298748321">Насычаны ліловы</translation>
 <translation id="8094917007353911263">Сетка, якую вы выкарыстоўваеце, можа запатрабаваць ад вас наведаць <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="809543534949702122">Гісторыя пошуку</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">Спосаб аплаты</translation>
@@ -4808,7 +4815,6 @@
 <translation id="9207861905230894330">Не ўдалося дадаць артыкул.</translation>
 <translation id="9209339767782560829">Узнікла праблема з выкарыстаннем вашага сертыфіката ўваходу.</translation>
 <translation id="9210825002219699214">Авіяпералёты</translation>
-<translation id="9211461151375991073">Увядзіце @ для пошуку на <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Наладжванне выгляду</translation>
 <translation id="9215416866750762878">Нейкая праграма не дае браўзеру Chrome устанавіць бяспечнае падключэнне да гэтага сайта</translation>
 <translation id="92178312226016010">Вы адсочваеце гэты прадукт.</translation>
@@ -4816,6 +4822,7 @@
 <translation id="9219103736887031265">Відарысы</translation>
 <translation id="922152298093051471">Наладзіць Chrome</translation>
 <translation id="9222403027701923763">Пачатковая і сярэдняя адукацыя</translation>
+<translation id="9222463428840654067">Нумар карткі несапраўдны</translation>
 <translation id="922849469395748170">Карткі лаяльнасці</translation>
 <translation id="93020190163435405">Стажыроўка</translation>
 <translation id="931598121743515856">Сума куплі павінна быць вышэй за <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>

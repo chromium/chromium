@@ -183,6 +183,7 @@
 <translation id="3167868116600277716">探索動態消息</translation>
 <translation id="3198916472715691905">已使用 <ph name="STORAGE_AMOUNT" /> 儲存空間</translation>
 <translation id="321187648315454507">如要讓 <ph name="APP_NAME" /> 傳送通知，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟通知功能。</translation>
+<translation id="3223425961342298674">唔批准存取位置資料</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3232293466644486101">刪除瀏覽資料…</translation>
 <translation id="3242646949159196181">開咗之後，網站可以播放音效。閂咗之後，網站唔可以播放音效。</translation>
@@ -258,6 +259,7 @@
 <translation id="3992308058851451478"><ph name="SITE" /> 可在你瀏覽時使用你的資料</translation>
 <translation id="3992684624889376114">關於本頁</translation>
 <translation id="4002066346123236978">標題</translation>
+<translation id="4031179711345676612">已允許使用麥克風</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="4077310749977440510">網站通常會讀取你的剪貼簿，以提供保留複製文字格式等功能</translation>
 <translation id="4149890623864272035">確定要刪除 Cookie 等所有本機資料，並重設此網站的所有權限嗎？</translation>
@@ -267,8 +269,10 @@
 <translation id="4169549551965910670">已連線至 USB 裝置</translation>
 <translation id="4194328954146351878">在允許網站查看和變更 NFC 裝置上的資料前先詢問您 (建議)</translation>
 <translation id="4200726100658658164">開啟位置設定</translation>
+<translation id="4203769790323223880">唔批准用攝錄機</translation>
 <translation id="421742575134139848">網站可能會需要音效權限，才能播放音樂、影片和其他媒體的音效</translation>
 <translation id="4217710972110098902">已連線至序列連接埠</translation>
+<translation id="4223404254440398437">唔批准用咪</translation>
 <translation id="4226663524361240545">裝置會在收到通知時震動</translation>
 <translation id="4259722352634471385">瀏覽網址被封鎖：<ph name="URL" /></translation>
 <translation id="4274673989874969668">在您離開網站後，網站通常會保持同步以完成工作，例如上載相片或傳送即時通訊訊息</translation>
@@ -300,6 +304,7 @@
 <translation id="4635969503923889910">不允許網站使用 NFC 裝置</translation>
 <translation id="4644713492825682049">刪除並重設</translation>
 <translation id="4645575059429386691">由您的家長管理</translation>
+<translation id="4663373278480897665">已允許使用相機</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
 <translation id="4672315773691449562">㩒一下 [瀏覽器應用程式] 同 [Chrome]</translation>
 <translation id="4676059169848868271">如要允許「<ph name="APP_NAME" />」追蹤手勢，請同時在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中開啟手勢追蹤功能。</translation>
@@ -345,6 +350,7 @@
 <translation id="5216942107514965959">上次瀏覽時間：今天</translation>
 <translation id="5225463052809312700">開啟攝錄機</translation>
 <translation id="5234764350956374838">關閉</translation>
+<translation id="5239623327352565343">批准存取位置資料</translation>
 <translation id="5246825184569358663">此操作會刪除 Cookie 等所有本機資料，並重設 <ph name="DOMAIN" /> 和該網域中每個網站的所有權限</translation>
 <translation id="5264323282659631142">移除「<ph name="CHIP_LABEL" />」</translation>
 <translation id="528192093759286357">由上而下拖曳，然後輕觸返回按鈕即可退出全螢幕。</translation>
@@ -389,6 +395,7 @@
 <translation id="5743425052258407233">讓記錄同步到你的所有裝置，方便你繼續執行先前的工作</translation>
 <translation id="5749158352074143502">繼續使用此分頁</translation>
 <translation id="5750869797196646528">手部追蹤</translation>
+<translation id="5753570386948603678">從記錄中刪除</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5822675474983796325">自訂新分頁頁底面板宜家顯示喺成個畫面</translation>
@@ -488,6 +495,7 @@
 <translation id="6992289844737586249">允許網站使用麥克風前先詢問您 (建議)</translation>
 <translation id="7000754031042624318">已在「Android 設定」中關閉</translation>
 <translation id="702275896380648118">此網站會判斷您喜歡的內容，以便向其他網站建議廣告。此網站亦會從 Chrome 取得您的廣告主題，以便為您顯示更相關的廣告。</translation>
+<translation id="7044081119134178347">呢次批准用相機</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7055552182600664515">如要播放受版權保護的內容，網站可能需要使用內容保護服務。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已選取 1 個項目}other{已選取 # 個項目}}</translation>
@@ -525,6 +533,7 @@
 <translation id="7573594921350120855">網站通常會使用攝錄機提供通訊功能，例如視像通訊</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> 個月前}other{<ph name="NUM_MONTHS_MANY" /> 個月前}}</translation>
 <translation id="757524316907819857">禁止網站播放受保護內容</translation>
+<translation id="7586676035079382730">唔批准通知</translation>
 <translation id="7594634374516752650">已連線至藍牙裝置</translation>
 <translation id="7617547684249261169">你可以刪除部分或全部記錄、Cookie、網站資料等</translation>
 <translation id="7649070708921625228">說明</translation>
@@ -540,6 +549,7 @@
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7804248752222191302">有網站正在使用您的相機</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
+<translation id="7815680994978050279">已封鎖危險的下載項目</translation>
 <translation id="7835852323729233924">正在播放媒體</translation>
 <translation id="783819812427904514">將影片取消靜音</translation>
 <translation id="7846076177841592234">取消選取</translation>
@@ -588,6 +598,7 @@
 <translation id="8380167699614421159">此網站顯示滋擾性或誤導廣告</translation>
 <translation id="8394832520002899662">輕按即可返回網站</translation>
 <translation id="8409345997656833551">在文章能以簡化檢視模式顯示時接收通知</translation>
+<translation id="8416874502399604126">呢次批准用咪</translation>
 <translation id="8423565414844018592">文字縮放比例已經設定咗做 <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8441146129660941386">向後回轉</translation>
@@ -655,12 +666,14 @@
 <translation id="9106233582039520022">要刪除 Cookie 嗎？</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中為 <ph name="APP_NAME" /> 啟用這些權限。</translation>
+<translation id="9138037198177304356">批准咗通知</translation>
 <translation id="9138217887606523162">宜家嘅縮放率係 <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">讓 Chrome 在裝置應用程式清單和搜尋結果中顯示你最近使用的分頁。你可隨時在 Chrome 設定中關閉此功能。</translation>
 <translation id="9162462602695099906">此頁面不安全</translation>
 <translation id="9182556968660520230">不允許網站播放受保護的內容</translation>
 <translation id="947156494302904893">您瀏覽的網站可驗證您是真人，而不是機器人</translation>
 <translation id="959682366969460160">讓所有內容變得井井有條</translation>
+<translation id="961930410699694996">呢次批准存取位置</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 <translation id="969975166333045662">禁止網站使用 V8 優化工具。</translation>
 </translationbundle>

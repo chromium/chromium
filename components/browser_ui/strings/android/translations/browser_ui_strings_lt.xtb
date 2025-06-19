@@ -183,6 +183,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3167868116600277716">„Discover“ sklaidos kanalas</translation>
 <translation id="3198916472715691905">Išsaugota duomenų: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Norėdami leisti „<ph name="APP_NAME" />“ siųsti pranešimus, taip pat įjunkite juos <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
+<translation id="3223425961342298674">Vietovė neleidžiama</translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
 <translation id="3232293466644486101">Ištrinti naršymo duomenis…</translation>
 <translation id="3242646949159196181">Įjungus svetainėse galima leisti garsą. Išjungus svetainėse negalima leisti garso.</translation>
@@ -258,6 +259,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3992308058851451478"><ph name="SITE" /> gali naudoti jūsų informaciją, kai naršote</translation>
 <translation id="3992684624889376114">Apie šį puslapį</translation>
 <translation id="4002066346123236978">Pavadinimas</translation>
+<translation id="4031179711345676612">Mikrofonas leidžiamas</translation>
 <translation id="4046123991198612571">Kitas takelis</translation>
 <translation id="4077310749977440510">Paprastai svetainėse nuskaitoma jūsų iškarpinė ieškant tam tikrų funkcijų, pvz., norint išlaikyti nukopijuoto teksto formatavimą</translation>
 <translation id="4149890623864272035">Ar tikrai norite ištrinti visus vietinius duomenis, įskaitant slapukus, ir iš naujo nustatyti visus šios svetainės leidimus?</translation>
@@ -267,8 +269,10 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="4169549551965910670">Prisijungta prie USB įrenginio</translation>
 <translation id="4194328954146351878">Klausti prieš leidžiant svetainėms peržiūrėti ir keisti informaciją NFC įrenginiuose (rekomenduojama)</translation>
 <translation id="4200726100658658164">Atidaryti vietovės nustatymus</translation>
+<translation id="4203769790323223880">Fotoaparatas neleidžiamas</translation>
 <translation id="421742575134139848">Svetainėse galima leisti garsą norint teikti muzikos, vaizdo įrašų ir kitos medijos garso įrašus</translation>
 <translation id="4217710972110098902">Prijungta prie nuosekliojo prievado</translation>
+<translation id="4223404254440398437">Mikrofonas neleidžiamas</translation>
 <translation id="4226663524361240545">Gavus pranešimą įrenginys gali vibruoti</translation>
 <translation id="4259722352634471385">Naršymas užblokuotas: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Išėjus iš svetainės, joje gali būti toliau sinchronizuojama, kad būtų užbaigtos užduotys, pvz., įkeltos nuotraukos arba išsiųstas pokalbio pranešimas</translation>
@@ -300,6 +304,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="4635969503923889910">Neleisti svetainėms naudoti NFC įrenginių</translation>
 <translation id="4644713492825682049">Ištrinti ir nustatyti iš naujo</translation>
 <translation id="4645575059429386691">Tvarko vienas iš jūsų tėvų</translation>
+<translation id="4663373278480897665">Fotoaparatas leidžiamas</translation>
 <translation id="4670064810192446073">Virtualioji realybė</translation>
 <translation id="4672315773691449562">Palieskite „Naršyklės programą“, tada palieskite „Chrome“</translation>
 <translation id="4676059169848868271">Jei leidžiate „<ph name="APP_NAME" />“ naudoti rankų stebėjimą, <ph name="BEGIN_LINK" />sistemos nustatymuose<ph name="END_LINK" /> taip pat įjunkite rankų stebėjimą.</translation>
@@ -345,6 +350,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="5216942107514965959">Paskutinį kartą lankytasi šiandien</translation>
 <translation id="5225463052809312700">Įjungti fotoaparatą</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
+<translation id="5239623327352565343">Vietovė leidžiama</translation>
 <translation id="5246825184569358663">Atlikus šį veiksmą bus ištrinti visi vietiniai duomenys, įskaitant slapukus, taip pat bus iš naujo nustatyti visi <ph name="DOMAIN" /> ir jame esančių svetainių leidimai</translation>
 <translation id="5264323282659631142">Pašalinti „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Vilkite žymeklį nuo viršaus ir palieskite mygtuką „Atgal“, kad išeitumėte iš viso ekrano režimo.</translation>
@@ -389,6 +395,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="5743425052258407233">Gaukite istoriją visuose įrenginiuose, kad galėtumėte lengvai tęsti darbą nuo ten, kur baigėte</translation>
 <translation id="5749158352074143502">Tęsti naudojant šį skirtuką</translation>
 <translation id="5750869797196646528">Rankų stebėjimas</translation>
+<translation id="5753570386948603678">Ištrinti iš istorijos</translation>
 <translation id="5771720122942595109">Užblokuota: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Leidimai</translation>
 <translation id="5822675474983796325">Naujo skirtuko puslapio tinkinimo apatinis lapas atidarytas per visą ekrano aukštį</translation>
@@ -488,6 +495,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="6992289844737586249">Pirmiausia klausti prieš leidžiant svetainėms naudoti mikrofoną (rekomenduojama)</translation>
 <translation id="7000754031042624318">Išjungta „Android“ nustatymuose</translation>
 <translation id="702275896380648118">Ši svetainė nustato, kas jums patinka, ir siūlo skelbimus, nukreipiančius į kitas svetaines. Ši svetainė taip pat gauna informaciją apie skelbimų temas iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus.</translation>
+<translation id="7044081119134178347">Vaizdo kamera leidžiama šį kartą</translation>
 <translation id="7053983685419859001">Blokuoti</translation>
 <translation id="7055552182600664515">Norint leisti autorių teisių apsaugotą turinį, svetainėse gali būti reikalinga turinio apsaugos paslauga. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Pasirinktas 1 elementas}one{Pasirinktas # elementas}few{Pasirinkti # elementai}many{Pasirinkta # elemento}other{Pasirinkta # elementų}}</translation>
@@ -525,6 +533,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7573594921350120855">Paprastai svetainėse naudojama vaizdo kamera bendravimo funkcijoms, pvz., vaizdo pokalbiams, vykdyti</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{Prieš <ph name="NUM_MONTHS_ONE" /> mėnesį}one{Prieš <ph name="NUM_MONTHS_MANY" /> mėnesį}few{Prieš <ph name="NUM_MONTHS_MANY" /> mėnesius}many{Prieš <ph name="NUM_MONTHS_MANY" /> mėnesio}other{Prieš <ph name="NUM_MONTHS_MANY" /> mėnesių}}</translation>
 <translation id="757524316907819857">Užblokuoti svetaines, kad neleistų apsaugoto turinio</translation>
+<translation id="7586676035079382730">Pranešimai neleidžiami</translation>
 <translation id="7594634374516752650">Prijungta prie „Bluetooth“ įrenginio</translation>
 <translation id="7617547684249261169">Galite ištrinti visą istoriją ar jos dalį, slapukus, svetainės duomenis ir kt.</translation>
 <translation id="7649070708921625228">Pagalba</translation>
@@ -540,6 +549,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="780301667611848630">Ačiū, ne</translation>
 <translation id="7804248752222191302">Svetainėje naudojamas jūsų fotoaparatas</translation>
 <translation id="7807060072011926525">Pateikė „Google“</translation>
+<translation id="7815680994978050279">Užblokuotas pavojingas atsisiuntimas</translation>
 <translation id="7835852323729233924">Leidžiama medija</translation>
 <translation id="783819812427904514">Įjungti vaizdo įrašo garsą</translation>
 <translation id="7846076177841592234">Atšaukti pasirinkimą</translation>
@@ -588,6 +598,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="8380167699614421159">Šioje svetainėje rodomi nepageidaujami arba klaidinantys skelbimai</translation>
 <translation id="8394832520002899662">Norėdami grįžti į svetainę, palieskite</translation>
 <translation id="8409345997656833551">Gaukite pranešimą, kai galima rodyti supaprastinto rodinio straipsnį</translation>
+<translation id="8416874502399604126">Mikrofonas leidžiamas šį kartą</translation>
 <translation id="8423565414844018592">Teksto mastelio keitimas nustatytas į <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8441146129660941386">Ieškoti einant atgal</translation>
@@ -655,12 +666,14 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="9106233582039520022">Ištrinti slapukus?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Įjunkite „<ph name="APP_NAME" />“ leidimus <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
+<translation id="9138037198177304356">Pranešimai leidžiami</translation>
 <translation id="9138217887606523162">Dabartinis mastelis yra <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Leiskite „Chrome“ rodyti naujausius skirtukus įrenginio programų sąraše ir paieškos rezultatuose. Galite bet kada išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="9162462602695099906">Šis puslapis pavojingas</translation>
 <translation id="9182556968660520230">Neleisti svetainėms leisti apsaugoto turinio</translation>
 <translation id="947156494302904893">Svetainės, kuriose lankotės, gali patvirtinti, kad esate realus asmuo, o ne robotas</translation>
 <translation id="959682366969460160">Sutvarkykite</translation>
+<translation id="961930410699694996">Vietovės informacija leidžiama šį kartą</translation>
 <translation id="967624055006145463">Saugomi duomenys</translation>
 <translation id="969975166333045662">Užblokuoti svetainę, kad nenaudotų V8 optimizavimo priemonės.</translation>
 </translationbundle>

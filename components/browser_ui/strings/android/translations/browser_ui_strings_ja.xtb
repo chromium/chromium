@@ -183,6 +183,7 @@
 <translation id="3167868116600277716">Discover フィード</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> の保存データ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> に通知の送信を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも通知をオンにしてください。</translation>
+<translation id="3223425961342298674">位置情報は許可されていません</translation>
 <translation id="3227137524299004712">マイク</translation>
 <translation id="3232293466644486101">閲覧履歴データを削除...</translation>
 <translation id="3242646949159196181">オンにすると、サイトは音声を再生できます。オフにすると、サイトは音声を再生できません。</translation>
@@ -258,6 +259,7 @@
 <translation id="3992308058851451478"><ph name="SITE" /> は次のサイトの閲覧時にあなたの情報を使用できます</translation>
 <translation id="3992684624889376114">このページについて</translation>
 <translation id="4002066346123236978">タイトル</translation>
+<translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4046123991198612571">次のトラック</translation>
 <translation id="4077310749977440510">コピーしたテキストの書式を保持したりするため、サイトでクリップボードを読み取る場合があります</translation>
 <translation id="4149890623864272035">Cookie を含むすべてのローカルデータを削除し、このウェブサイトに対するすべての権限をリセットしてもよろしいですか？</translation>
@@ -267,8 +269,10 @@
 <translation id="4169549551965910670">USB デバイスに接続されています</translation>
 <translation id="4194328954146351878">サイトが NFC デバイスの情報を参照および変更することを許可する前に確認する（推奨）</translation>
 <translation id="4200726100658658164">位置情報の設定を開く</translation>
+<translation id="4203769790323223880">カメラは許可されていません</translation>
 <translation id="421742575134139848">サイトで音楽や動画などのメディアの音声が再生される場合があります</translation>
 <translation id="4217710972110098902">シリアルポートに接続しました</translation>
+<translation id="4223404254440398437">マイクは許可されていません</translation>
 <translation id="4226663524361240545">通知を受け取るとデバイスが振動します</translation>
 <translation id="4259722352634471385"><ph name="URL" /> へのアクセスがブロックされました</translation>
 <translation id="4274673989874969668">ユーザーがサイトから離れた後も、サイトは同期を継続して、写真のアップロードやチャット メッセージの送信などのタスクを完了することがあります</translation>
@@ -300,6 +304,7 @@
 <translation id="4635969503923889910">サイトに NFC デバイスの使用を許可しない</translation>
 <translation id="4644713492825682049">削除してリセット</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>
+<translation id="4663373278480897665">カメラを使用できます</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
 <translation id="4672315773691449562">[ブラウザアプリ]、[Chrome] をタップします</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" /> にハンド トラッキングの使用を許可するには、<ph name="BEGIN_LINK" />システム設定<ph name="END_LINK" />でもハンド トラッキングをオンにしてください。</translation>
@@ -345,6 +350,7 @@
 <translation id="5216942107514965959">最終アクセス日: 今日</translation>
 <translation id="5225463052809312700">カメラをオンにする</translation>
 <translation id="5234764350956374838">閉じる</translation>
+<translation id="5239623327352565343">位置情報が許可されています</translation>
 <translation id="5246825184569358663">この操作を行うと、Cookie を含むすべてのローカルデータが削除され、<ph name="DOMAIN" /> とその下にある全サイトの全権限がリセットされます</translation>
 <translation id="5264323282659631142"><ph name="CHIP_LABEL" /> を削除</translation>
 <translation id="528192093759286357">全画面表示を終了するには、上からドラッグして、戻るボタンをタップします。</translation>
@@ -389,6 +395,7 @@
 <translation id="5743425052258407233">すべてのデバイスで履歴にアクセスできるため、作業を中断したところから簡単に再開できます</translation>
 <translation id="5749158352074143502">このタブを続行</translation>
 <translation id="5750869797196646528">ハンド トラッキング</translation>
+<translation id="5753570386948603678">履歴から削除</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />をブロック</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="5822675474983796325">[新しいタブページをカスタマイズ] のボトムシートが画面全体に表示されています</translation>
@@ -488,6 +495,7 @@
 <translation id="6992289844737586249">サイトにマイクの使用を許可する前に確認する（推奨）</translation>
 <translation id="7000754031042624318">Android の設定で無効</translation>
 <translation id="702275896380648118">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します。また、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します。</translation>
+<translation id="7044081119134178347">一時的にカメラを許可しました</translation>
 <translation id="7053983685419859001">ブロック</translation>
 <translation id="7055552182600664515">著作権で保護されたコンテンツを再生するため、サイトでコンテンツ保護サービスの使用を求める場合があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 件を選択済み}other{# 件を選択済み}}</translation>
@@ -525,6 +533,7 @@
 <translation id="7573594921350120855">多くのサイトは、ビデオチャットなどの通信機能にビデオカメラを使用します。</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> か月前}other{<ph name="NUM_MONTHS_MANY" /> か月前}}</translation>
 <translation id="757524316907819857">サイトでの保護されたコンテンツの再生をブロックする</translation>
+<translation id="7586676035079382730">通知は許可されていません</translation>
 <translation id="7594634374516752650">Bluetooth デバイスに接続されています</translation>
 <translation id="7617547684249261169">履歴、Cookie、サイトデータなどの一部またはすべてを削除できます</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
@@ -540,6 +549,7 @@
 <translation id="780301667611848630">キャンセル</translation>
 <translation id="7804248752222191302">サイトでカメラが使用されています</translation>
 <translation id="7807060072011926525">Google から提供</translation>
+<translation id="7815680994978050279">危険なダウンロードがブロックされました</translation>
 <translation id="7835852323729233924">再生中のメディア</translation>
 <translation id="783819812427904514">動画のミュートを解除</translation>
 <translation id="7846076177841592234">選択解除</translation>
@@ -588,6 +598,7 @@
 <translation id="8380167699614421159">このサイトでは煩わしい広告や誤解を招く広告が表示されます</translation>
 <translation id="8394832520002899662">タップしてサイトに戻る</translation>
 <translation id="8409345997656833551">記事を簡易表示できる場合に通知する</translation>
+<translation id="8416874502399604126">一時的にマイクを許可しました</translation>
 <translation id="8423565414844018592">テキストの表示倍率を <ph name="TEXT_SCALING" /> に設定しました</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8441146129660941386">後方にシーク再生</translation>
@@ -655,12 +666,14 @@
 <translation id="9106233582039520022">Cookie を削除しますか？</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で <ph name="APP_NAME" /> の権限を有効にしてください。</translation>
+<translation id="9138037198177304356">通知が許可されています</translation>
 <translation id="9138217887606523162">現在のズームレベルは <ph name="ZOOM_LEVEL" />%% です</translation>
 <translation id="9156722768168878035">Chrome で最近使ったタブをデバイスのアプリリストと検索結果に表示できます。この機能は Chrome の設定でいつでもオフにできます。</translation>
 <translation id="9162462602695099906">このページは危険です</translation>
 <translation id="9182556968660520230">サイトに保護されたコンテンツの再生を許可しない</translation>
 <translation id="947156494302904893">アクセスしたサイトは、あなたが bot ではなく実在のユーザーであることを確認できます</translation>
 <translation id="959682366969460160">タブを整理</translation>
+<translation id="961930410699694996">一時的に位置情報を許可しました</translation>
 <translation id="967624055006145463">保存データ</translation>
 <translation id="969975166333045662">V8 オプティマイザーの使用をブロックするサイトを指定します。</translation>
 </translationbundle>

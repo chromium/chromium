@@ -43,6 +43,7 @@
 <translation id="2536366509642644298">Les groupes d'onglets « <ph name="TAB_GROUP_NAME_1" /> » et « <ph name="TAB_GROUP_NAME_2" /> » ne sont plus accessibles</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Réduire <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduire le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Réduire le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="2569352796411618312">Suggestion : <ph name="NUMBER_OF_TABS" /> de vos onglets n'ont pas été utilisés récemment. Les fermer?</translation>
+<translation id="257674075312929031">Groupe</translation>
 <translation id="2662028055331606429">Note : <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visiter le site</translation>
 <translation id="2671423594960767771">Partager le groupe</translation>
@@ -73,7 +74,6 @@
 <translation id="3940195383040445971">Suivi des prix dans des onglets</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nouvel onglet, <ph name="ANY_CLOSED" /> fermé(s)}one{<ph name="MANY_ADDED" /> nouvel onglet, <ph name="ANY_CLOSED" /> fermé(s)}other{<ph name="MANY_ADDED" /> nouveaux onglets, <ph name="ANY_CLOSED" /> fermé(s)}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ajouter l'onglet à un groupe}one{Ajouter l'onglet à un groupe}other{Grouper les onglets}}</translation>
-<translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet inactif}one{<ph name="TABS_COUNT_MANY" /> onglet inactif}other{<ph name="TABS_COUNT_MANY" /> onglets inactifs}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Créé il y a <ph name="NUM_DAYS_ONE" /> jour}one{Créé il y a <ph name="NUM_DAYS_MANY" /> jour}other{Créé il y a <ph name="NUM_DAYS_MANY" /> jours}}</translation>
 <translation id="4076226664360336092">Liste des groupes d'onglets, ouverte à pleine hauteur</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper?</translation>
@@ -81,7 +81,6 @@
 <translation id="427987768447457592">Nouveau groupe d'onglets</translation>
 <translation id="4371591986692297148">Inactif</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Mis à jour il y a <ph name="NUM_DAYS_ONE" /> jour}one{Mis à jour il y a <ph name="NUM_DAYS_MANY" /> jour}other{Mis à jour il y a <ph name="NUM_DAYS_MANY" /> jours}}</translation>
-<translation id="4632233446660511480">{TAB_COUNT,plural, =1{Fermer 1 onglet inactif?}one{Fermer <ph name="TAB_COUNT_MANY" /> onglet inactif?}other{Fermer <ph name="TAB_COUNT_MANY" /> onglets inactifs?}}</translation>
 <translation id="4686942373615810936">Créé à l'instant</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Fermer après 1 jour}one{Fermer après <ph name="DAY_COUNT_MANY" /> jour}other{Fermer après <ph name="DAY_COUNT_MANY" /> jours}}</translation>
 <translation id="4783638485675352219">Partagez les titres et les URL des onglets ouverts sur cet appareil avec le système d'exploitation</translation>
@@ -109,7 +108,6 @@
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="5556417849629758491">Afficher les renseignements sur le magasin, option accessible dans le haut de l'écran</translation>
 <translation id="5627941783489838464">Aucune mise à jour des onglets</translation>
-<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restaurer l'onglet}one{Restaurer l'onglet}other{Restaurer les onglets}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lien de Chrome}one{<ph name="TABS_COUNT_MANY" /> lien de Chrome}other{<ph name="TABS_COUNT_MANY" /> liens de Chrome}}</translation>
 <translation id="58326064309361797">Faites glisser les onglets pour les regrouper</translation>
 <translation id="5901630391730855834">Jaune</translation>
@@ -123,7 +121,6 @@
 <translation id="6193448654517602979">Sélectionnez des onglets</translation>
 <translation id="6220820548421939212">Oui. Accepter</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
-<translation id="6271513594716432922">Fermer tous les onglets inactifs</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Ajouter un onglet au nouveau groupe}one{Ajouter un onglet au nouveau groupe}other{Ajouter des onglets au nouveau groupe}}</translation>
 <translation id="6333260925957816943">Renseignements à propos de ce magasin</translation>
 <translation id="6381032505162537930">Vous trouverez vos groupes d'onglets ici</translation>
@@ -142,6 +139,7 @@
 <translation id="6709297274997495821">Sélectionner un onglet</translation>
 <translation id="6744956528665271406">Modifier la couleur du groupe</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Ajouter au groupe nommé <ph name="TITLE_OF_GROUP" /> avec <ph name="TAB_COUNT1" /> onglet}one{Ajouter au groupe nommé <ph name="TITLE_OF_GROUP" /> avec <ph name="TAB_COUNT1" /> onglet}other{Ajouter au groupe nommé <ph name="TITLE_OF_GROUP" /> avec <ph name="TAB_COUNT1" /> onglets}}</translation>
+<translation id="6818926723028410516">Sélectionner des éléments</translation>
 <translation id="6856809498882026482">Quitter le mode de sélection multiple</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets partagé <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets partagé <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets partagé <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="709473454666962555">Sélectionner un groupe d'onglets</translation>

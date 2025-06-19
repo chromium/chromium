@@ -222,6 +222,7 @@
 <translation id="3954172517175569325">Лозинке, начини плаћања и адресе које сте сачували на Google налогу биће уклоњени са овог уређаја. Да бисте их поново користили у Chromium-у, поново се пријавите.</translation>
 <translation id="395904275706073188">Заштићене странице не могу да се читају. Пробајте са другом страницом.</translation>
 <translation id="3962647064319009959">Сазнајте како вас Chromium штити</translation>
+<translation id="3971865010372729242">Када уносите текст у траку за адресу или у оквир за претрагу, Chromium шаље оно што уносите у алатке за претрагу, вештачку интелигенцију и агента организације да бисте добијали предлоге.</translation>
 <translation id="3975724895399328945">О верзији Google Chrome for Testing</translation>
 <translation id="3997429360543082038">О Chromium ОС-у</translation>
 <translation id="4019629340646866719">Chromium ОС је омогућен захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />, као што је <ph name="BEGIN_LINK_LINUX_OSS" />Linux окружење за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -344,6 +345,7 @@
 <translation id="5775198138441669627">Ако сте заборавили приступну фразу или желите да промените ово подешавање, <ph name="SETTINGS_LINK" /> Chromium податке на налогу</translation>
 <translation id="5800158606660203929">Прилагодите и контролишите Chromium. Подесите Chromium као подразумевани прегледач.</translation>
 <translation id="5809516625706423866">Повезивање са интернетом није успело. Није овлашћен приступ (HTTP 401). Проверите конфигурацију проксија.</translation>
+<translation id="5817952762723416573">Убрзава сајтове уз Chromium механизам V8, али чини Chromium мало мање отпорним на нападе. Ово подешавање је искључено.</translation>
 <translation id="5821520528363214608">Да бисте користили и чували Chromium податке на Google налогу, ажурирајте Chromium</translation>
 <translation id="5824893331272123205">Учитавање овог окна није успело. Пробајте поново</translation>
 <translation id="5862307444128926510">Добро дошли у Chromium</translation>
@@ -433,6 +435,7 @@
 <translation id="6729124504294600478">Да бисте добили персонализацију и друге функције, уврстите Chromium у активности на вебу и у апликацијама и повезане Google услуге</translation>
 <translation id="6734291798041940871">Chromium је већ инсталиран за све кориснике на рачунару.</translation>
 <translation id="674245979920622322">Нисте скоро посећивали сајт. Chromium је уклонио дозволе <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> и још <ph name="COUNT" /></translation>
+<translation id="6751374565094704799">Убрзава сајтове уз Chromium механизам V8, али чини Chromium мало мање отпорним на нападе. Ово подешавање је укључено.</translation>
 <translation id="67706546131546258">Chromium препоручује скенирање овог фајла јер може да буде опасан.</translation>
 <translation id="6779406956731413166">Chromium ОС омогућава додатни <ph name="BEGIN_LINK_CROS_OSS" />софтвер отвореног кода<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Преведи</translation>
@@ -529,7 +532,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8118331347066725040">Пошаљите повратне информације за претрагу помоћу Објектива</translation>
 <translation id="8133124826068723441">Chromium ОС не може да синхронизује податке јер Синхронизација није доступна за домен.</translation>
 <translation id="813913629614996137">Покреће се…</translation>
-<translation id="8166782796394721554">Укључите додатну заштиту у Chromium алатки за JavaScript и WebAssembly</translation>
 <translation id="81770708095080097">Ова датотека је опасна, па ју је Chromium блокирао.</translation>
 <translation id="8177472873527554730">Не можемо да пронађемо садржај на страници</translation>
 <translation id="8200109504272824693">Унесите приступну фразу да бисте користили и сачували Chromium податке на налогу, <ph name="USER_EMAIL" /></translation>

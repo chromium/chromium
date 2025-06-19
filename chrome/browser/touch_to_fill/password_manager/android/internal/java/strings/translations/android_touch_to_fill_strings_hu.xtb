@@ -18,11 +18,13 @@
 <translation id="5591247451101092906">Mentett jelszót vagy azonosítókulcsot szeretne használni?</translation>
 <translation id="5624120631404540903">Jelszavak kezelése</translation>
 <translation id="592182999816790476"><ph name="USERNAME" /> jelszava, amely a(z) <ph name="WEBSITE" /> webhelyhez van mentve</translation>
+<translation id="593924516471361340">A(z) <ph name="USERNAME" /> felhasználóhoz mentett ideiglenes helyreállítási jelszó probléma esetére a következő webhelyhez: <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> azonosítókulcsa, használja a képernyőzárat</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Új jelszó ehhez a webhelyhez}other{Új jelszavak ehhez a webhelyhez}}</translation>
 <translation id="7286867818472074330">Azonosítókulcs kiválasztása</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />. pozíció, összesen: <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7738288782501322815">Ön jelszavakat kapott a következőhöz: <ph name="SITE_NAME" /></translation>
+<translation id="8202660122967066153">Ideiglenes helyreállítási jelszó probléma esetére a következőhöz: <ph name="USERNAME" /></translation>
 <translation id="8363484128299778310">Probléma esetén ideiglenes helyreállítás</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" /> jelszót osztott meg Önnel a következőhöz: <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">A hitelesítési adatok listája be van zárva.</translation>

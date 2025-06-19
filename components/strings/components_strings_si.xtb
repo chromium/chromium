@@ -232,7 +232,6 @@
 <translation id="1380591466760231819">ලිපි නැමීම</translation>
 <translation id="138218114945450791">ලා නිල්</translation>
 <translation id="1382194467192730611">ඔබේ පරිපාලකයා USB උපාංග අනුමත කර ඇත</translation>
-<translation id="1382378825779654399">ඕනෑම අඩවියක මිල අඩු වුවහොත් ඔබට ඉ-තැපැල් ඇඟවීම් ලැබෙනු ඇත. මෙම පිටුව <ph name="LAST_BOOKMARKS_FOLDER" /> වෙත සුරැකෙනු ඇත.</translation>
 <translation id="1384725838384960382">ආරක්ෂිත ගෙවීම් අක්තපත්‍ර සත්‍යාපනය කිරීමේ පත්‍රය</translation>
 <translation id="1386623374109090026">අනුසටහන්</translation>
 <translation id="138810468159004008">අඩවියට පිවිසීමේ දී ඉඩ දෙන්න</translation>
@@ -532,6 +531,7 @@
 <translation id="1875512691959384712">Google පෝරම</translation>
 <translation id="1876116428946561107">ඔබට සුරකින ලද ලිපින කිසිවක් නැත. එය Chrome හි භාවිත කිරීමට ලිපිනයක් එක් කරන්න.</translation>
 <translation id="1876399092304384674">දිනය අනුව</translation>
+<translation id="1877026089748256423">Chrome යල් පැන ගොස් ඇත</translation>
 <translation id="187918866476621466">ආරම්භක පිටු විවෘත කරන්න</translation>
 <translation id="1880901968112404879">මීළඟ වතාවේ දී වේගවත්ව ගෙවීමට, ඔබේ Google ගිණුම තුළ ඔබේ කාඩ්පත, සංකේතිත ආරක්ෂක කේතය, සහ බිල්පත් ලිපිනය සුරකින්න</translation>
 <translation id="1883255238294161206">ලැයිස්තුව හකුළන්න</translation>
@@ -867,6 +867,8 @@
             <ph name="LIST_ITEM" />පෝරම තුළ ඇතුළු කළ තොරතුරු
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">ඔබ පුරා සිටින අතරතුර මෙම උපාංගයට පර්යන්ත උපාංග අමුණා ඇත</translation>
+<translation id="2450019289047528273">Google Wallet වෙතින් ගෙවීම් ක්‍රම සහ අනෙකුත් තතු</translation>
+<translation id="2451201933352935301"><ph name="URL" /> හට ඔබේ සියලු සංදර්ශකවල කවුළු කළමනාකරණය කිරීමට අවශ්‍යයි</translation>
 <translation id="2451607499823206582">හඹා යමින්</translation>
 <translation id="2452098632681057184">පරිසර විද්‍යාව සහ පරිසරය</translation>
 <translation id="2452837234288608067">එයට උදවු කිරීමට නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
@@ -936,6 +938,7 @@
 <translation id="2546283357679194313">කුකීස් සහ අඩවි දත්ත</translation>
 <translation id="254947805923345898">ප්‍රතිපත්ති අගය වලංගු නොවේ.</translation>
 <translation id="2549836668759467704">ගොඩනැංවීමේ උපදෙස් දීම සහ ගිවිසුමට වැඩ කිරීම</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> සහ තවත්</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> වලංගු නොවන ප්‍රතිචාරයක් එවීය.</translation>
 <translation id="2551608178605132291">ලිපිනය: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Hagaki</translation>
@@ -1046,6 +1049,7 @@
 <translation id="2743934314332613923">රියදුරු බලපත්‍රය යාවත්කාලීන කරන්නද?</translation>
 <translation id="2759299890026163685">නැවත උත්සාහ කිරීමට පෙර ඔබට ස්ථාවර අන්තර්ජාල සම්බන්ධතාවයක් ඇති බවට වග බලා ගන්න</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> මත ඔබේ මුරපදය පුරවන්න</translation>
+<translation id="2760805590727089264">මා.මා. / ව.ව.</translation>
 <translation id="2764001903315068341">විකට</translation>
 <translation id="2765217105034171413">කුඩා</translation>
 <translation id="2768397283109119044">ඔබ <ph name="DOMAIN" /> වෙත ළඟා වීමට උත්සාහ කළ නමුත් සේවාදායකය එම නමට නිකුත් කරන ලද අවලංගු සහතිකයක් ඉදිරිපත් කළා. නම වෙන් කරන ලද IP ලිපිනයක් හෝ අභ්‍යන්තර ධාරක නාමයක් වෙයි.</translation>
@@ -3044,6 +3048,7 @@
 <translation id="6177531123306197852">ලියුම් කවරය C2</translation>
 <translation id="6180316780098470077">යළි උත්සාහ කිරීමේ විරාමය</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184099524311454384">ටැබ සොයන්න</translation>
 <translation id="6184868291074982484">Chrome ස්වයංක්‍රීයව තෙවන පාර්ශ්වීය කුකීස් සීමා කරයි</translation>
 <translation id="6190518157737269631">ඔබේ යතුරු පුවරුවෙහි Esc වැනි යතුරු කිහිපයක් අභිබවා යන්න</translation>
 <translation id="6194209731893739467">ඔබ නිරීක්ෂණය කළ නිෂ්පාදන සියල්ල මෙතැනින් බලන්න</translation>
@@ -3602,6 +3607,7 @@
 <translation id="7130775116821607281">උඩුගත කිරීම අවහිරයි</translation>
 <translation id="7132939140423847331">ඔබගේ පරිපාලක මෙම දත්ත පිටපත් කිරීම තහනම් කර ඇත.</translation>
 <translation id="7135130955892390533">තත්ත්‍වය පෙන්වන්න</translation>
+<translation id="7135814714616751706">කෙටිමං සොයන්න</translation>
 <translation id="7136009930065337683">අප්‍රසිද්ධ පිළිබඳව තව දැන ගන්න</translation>
 <translation id="7138472120740807366">බෙදා හැරීමේ ක්‍රමය</translation>
 <translation id="7138678301420049075">වෙනත්</translation>
@@ -4173,6 +4179,7 @@
 <translation id="8092254339843485299">අඟ 6 x 8</translation>
 <translation id="8092774999298748321">තද දම්</translation>
 <translation id="8094917007353911263">ඔබ භාවිතා කරන ජාලය මගින් ඔබ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> වෙත පිවිසීමට අවශ්‍ය විය හැක.</translation>
+<translation id="809543534949702122">සෙවීම් ඉතිහාසය</translation>
 <translation id="8098855213644561659">A3 අමතර</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">ගෙවීමේ ක්‍රමය</translation>
@@ -4802,7 +4809,6 @@
 <translation id="9207861905230894330">භාණ්ඩය එකතු කළ නොහැකි විය.</translation>
 <translation id="9209339767782560829">ඔබේ පුරනය වීමේ සහතිකය භාවිතා කිරීමේ ගැටලුවක් ඇති විය.</translation>
 <translation id="9210825002219699214">ගුවන් ගමන්</translation>
-<translation id="9211461151375991073"><ph name="FEATURED_SEARCH_LIST" /> සෙවීමට @ ටයිප් කරන්න</translation>
 <translation id="9213433120051936369">පෙනුම අභිරුචිකරණය කරන්න</translation>
 <translation id="9215416866750762878">යෙදුමක් මෙම අඩවියට සුරක්ෂිතව සබැඳීමෙන් Chrome නවතයි</translation>
 <translation id="92178312226016010">ඔබ මෙම නිෂ්පාදනය නිරීක්ෂණය කරයි.</translation>
@@ -4810,6 +4816,7 @@
 <translation id="9219103736887031265">රූප</translation>
 <translation id="922152298093051471">Chrome අභිරුචිකරණය කරන්න</translation>
 <translation id="9222403027701923763">ප්‍රාථමික සහ ද්විතීයික පාසල් අධ්‍යාපනය (K-12)</translation>
+<translation id="9222463428840654067">කාඩ්පත් අංකය වලංගු නොවේ</translation>
 <translation id="922849469395748170">විශ්වාස කාඩ්පත්</translation>
 <translation id="93020190163435405">සීමාවාසික පුහුණු</translation>
 <translation id="931598121743515856">මිල දී ගැනීම <ph name="CHECKOUT_AMOUNT_MINIMUM" />ට වඩා වැඩි විය යුතු යි</translation>

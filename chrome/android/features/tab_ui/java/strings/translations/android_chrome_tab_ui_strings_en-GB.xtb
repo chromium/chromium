@@ -43,6 +43,7 @@
 <translation id="2536366509642644298">'<ph name="TAB_GROUP_NAME_1" />' and '<ph name="TAB_GROUP_NAME_2" />' tab groups no longer available</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Collapse <ph name="TABS_COUNT_ONE" /> tab.}other{Collapse tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="2569352796411618312">Suggestion: <ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
+<translation id="257674075312929031">Group</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating</translation>
 <translation id="266935134738038806">Visit site</translation>
 <translation id="2671423594960767771">Share group</translation>
@@ -73,7 +74,6 @@
 <translation id="3940195383040445971">Track prices on tabs</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> new tab, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> new tabs, <ph name="ANY_CLOSED" /> closed}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Group tab}other{Group tabs}}</translation>
-<translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> inactive tab}other{<ph name="TABS_COUNT_MANY" /> inactive tabs}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Created <ph name="NUM_DAYS_ONE" /> day ago}other{Created <ph name="NUM_DAYS_MANY" /> days ago}}</translation>
 <translation id="4076226664360336092">Tab group list, opened at full height</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tabs seem related. Group them?</translation>
@@ -81,7 +81,6 @@
 <translation id="427987768447457592">New tab group</translation>
 <translation id="4371591986692297148">Inactive</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Updated <ph name="NUM_DAYS_ONE" /> day ago}other{Updated <ph name="NUM_DAYS_MANY" /> days ago}}</translation>
-<translation id="4632233446660511480">{TAB_COUNT,plural, =1{Close 1 inactive tab?}other{Close <ph name="TAB_COUNT_MANY" /> inactive tabs?}}</translation>
 <translation id="4686942373615810936">Created just now</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Close after 1 day}other{Close after <ph name="DAY_COUNT_MANY" /> days}}</translation>
 <translation id="4783638485675352219">Share titles and the URLs of open tabs from this device with the operating system</translation>
@@ -109,7 +108,6 @@
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5556417849629758491">View shop info, option available near top of the screen</translation>
 <translation id="5627941783489838464">No tab updates</translation>
-<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restore tab}other{Restore tabs}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link from Chrome}other{<ph name="TABS_COUNT_MANY" /> links from Chrome}}</translation>
 <translation id="58326064309361797">Drag tabs to group them</translation>
 <translation id="5901630391730855834">Yellow</translation>
@@ -123,7 +121,6 @@
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6220820548421939212">Yes. I'm in</translation>
 <translation id="6228793724645064692">(store rating)</translation>
-<translation id="6271513594716432922">Close all inactive tabs</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>
 <translation id="6333260925957816943">Information about this shop</translation>
 <translation id="6381032505162537930">You'll find your tab groups here</translation>
@@ -142,6 +139,7 @@
 <translation id="6709297274997495821">Select tab</translation>
 <translation id="6744956528665271406">Edit group colour</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Add to group named <ph name="TITLE_OF_GROUP" /> with <ph name="TAB_COUNT1" /> tab}other{Add to group named <ph name="TITLE_OF_GROUP" /> with <ph name="TAB_COUNT1" /> tabs}}</translation>
+<translation id="6818926723028410516">Select items</translation>
 <translation id="6856809498882026482">Hide multi-select mode</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Expand shared <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Expand shared <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">Select tab group</translation>

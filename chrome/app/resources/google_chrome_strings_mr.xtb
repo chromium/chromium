@@ -56,6 +56,7 @@
 <translation id="1682634494516646069">Google Chrome त्याची डेटा डिरेक्टरी वाचू किंवा लिहू शकत नाही:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
+<translation id="1688214853608504530">तुम्ही अ‍ॅड्रेस बार किंवा सर्च बॉक्समध्ये टाइप करता, तेव्हा सूचना मिळवण्यासाठी Chrome तुम्ही जे टाइप करता ते तुमच्या संस्थेचा शोध, AI आणि एजंट टूल यांना पाठवते.</translation>
 <translation id="1698376642261615901">Google Chrome एक वेब ब्राउझर आहे जे वेब पेज आणि अ‍ॅप्स विजेच्या गतीने चालविते. ते जलद, स्थिर आणि वापरण्यास सोपे आहे. Google Chrome मध्ये तयार केलेल्या मालवेअर आणि फिशिंग संरक्षणासह वेब अधिक सुरक्षितपणे ब्राउझ करा.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome एका तासामध्ये पुन्हा लाँच होईल}other{Chrome # तासांमध्ये पुन्हा लाँच होईल}}</translation>
 <translation id="1722488837206509557">यामुळे तुम्हाला उपलब्ध डिव्हाइसमधून निवडता येईल आणि आशय दाखवता येईल.</translation>
@@ -64,6 +65,7 @@
 <translation id="178701303897325119">या एक्स्टेंशनला यापुढे सपोर्ट नाही. त्याऐवजी तुम्ही ते काढून टाकावे अशी Chrome शिफारस करते.</translation>
 <translation id="1812689907177901597">हे बंद करून, तुम्ही Chrome वर साइन इन न करता Gmail सारख्या Google साइटवर साइन इन करू शकता</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome तुमच्या ब्राउझरचा वेग कमी करणारा टॅब थांबवण्याची शिफारस करते}other{Chrome तुमच्या ब्राउझरचा वेग कमी करणारे टॅब थांबवण्याची शिफारशी करते}}</translation>
+<translation id="1832046143430087831">Chrome चे V8 इंजीन साइटचा वेग वाढवते, पण त्यामुळे Chrome ची हल्ले रोखण्याची क्षमता किंचित कमी होते. हे सेटिंग बंद आहे.</translation>
 <translation id="1838374766361614909">शोध साफ करा</translation>
 <translation id="1860536484129686729">या साइटसाठी Chrome ला तुमचा कॅमेरा ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="1873233029667955273">Google Chrome तुमचा डीफॉल्ट ब्राउझर नाही</translation>
@@ -449,12 +451,12 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6718739135284199302">Chrome ला आणखी जलद बनवा</translation>
 <translation id="6735387454586646204">ChromeOS Flex सिस्टीम</translation>
 <translation id="6750954913813541382">शब्दलेखनाच्या चुकांमध्ये सुधारणा करण्यासाठी, तुम्ही ब्राउझरमध्ये टाइप करता तो मजकूर Chrome Google ला पाठवते</translation>
+<translation id="6760235774835597023">Chrome चे V8 इंजीन साइटचा वेग वाढवते, पण त्यामुळे Chrome ची हल्ले रोखण्याची क्षमता किंचित कमी होते. हे सेटिंग सुरू आहे.</translation>
 <translation id="677276454032249905">तरीही Chrome बंद करायचे?</translation>
 <translation id="6794858689789885890">तुम्ही Chrome बंद करता, तेव्हा नेहमी तुमच्या डिव्हाइसवरून साइट डेटा हटवा</translation>
 <translation id="6831043979455480757">भाषांतर करा</translation>
 <translation id="683440813066116847">mDNS रहदारीस अनुमती देण्यासाठी Google Chrome कॅनरी साठी अंतर्गामी नियम.</translation>
 <translation id="684888714667046800">इंटरनेटशी कनेक्ट करता आले नाही. तुम्ही फायरवॉल वापरल्यास, कृपया <ph name="PRODUCT_EXE_NAME" /> अनुमती सूचीमध्ये असल्याची खात्री करा.</translation>
-<translation id="6851981911629679515">Chrome च्या JavaScript आणि WebAssembly इंजिनमध्ये अतिरिक्त संरक्षण सुरू करा</translation>
 <translation id="6877155553248388166">शोध क्षेत्राच्या तळाशी उजवा कोपरा: उजवीकडे <ph name="RIGHT" />%, तळाशी <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome अपडेट करत आहे</translation>
 <translation id="6885412569789873916">Chrome बीटा ॲप</translation>

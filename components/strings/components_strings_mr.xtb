@@ -232,7 +232,6 @@
 <translation id="1380591466760231819">लेटर फोल्ड</translation>
 <translation id="138218114945450791">फिकट न‍िळा</translation>
 <translation id="1382194467192730611">तुमच्या अ‍ॅडमिनिस्ट्रेटरने अनुमती दिलेले USB डिव्हाइस</translation>
-<translation id="1382378825779654399">कोणत्याही साइटवर किंमत कमी झाल्यास तुम्हाला ईमेल सूचना मिळतील. हे पेज <ph name="LAST_BOOKMARKS_FOLDER" /> मध्ये सेव्ह केले जाईल.</translation>
 <translation id="1384725838384960382">सुरक्षित पेमेंट क्रेडेंशियल ची ऑथेंटिकेशन शीट</translation>
 <translation id="1386623374109090026">भाष्ये</translation>
 <translation id="138810468159004008">साइटला भेट देताना अनुमती द्या</translation>
@@ -532,6 +531,7 @@
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876116428946561107">तुमच्याकडे कोणतेही पत्ते सेव्ह केलेले नाहीत. Chrome मध्ये पत्ता वापरण्यासाठी तो जोडा.</translation>
 <translation id="1876399092304384674">तारखेनुसार</translation>
+<translation id="1877026089748256423">Chrome कालबाह्य आहे</translation>
 <translation id="187918866476621466">स्टार्टअप पेज उघडा</translation>
 <translation id="1880901968112404879">पुढील वेळी आणखी जलद पेमेंट करण्यासाठी, तुमचे कार्ड, एन्क्रिप्ट केलेला सुरक्षा कोड आणि बिलिंग पत्ता तुमच्या Google खाते मध्ये सेव्ह करा</translation>
 <translation id="1883255238294161206">सूची कोलॅप्स</translation>
@@ -867,6 +867,8 @@
             <ph name="LIST_ITEM" />फॉर्ममध्ये एंटर केलेली माहिती
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">तुम्ही लॉग इन केलेले असताना या डिव्हाइसला अटॅच केलेली उपकरणे</translation>
+<translation id="2450019289047528273">पेमेंट पद्धत आणि Google Wallet मधील इतर माहिती</translation>
+<translation id="2451201933352935301"><ph name="URL" /> ला तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करायच्या आहेत</translation>
 <translation id="2451607499823206582">ट्रॅक करणे</translation>
 <translation id="2452098632681057184">जैवपरिस्थितिशास्त्र आणि पर्यावरण</translation>
 <translation id="2452837234288608067">त्याबाबतीत मदत करू शकत नाही. पुन्हा प्रयत्न करा.</translation>
@@ -936,6 +938,7 @@
 <translation id="2546283357679194313">कुकीज आणि साइट डेटा</translation>
 <translation id="254947805923345898">धोरण मूल्य वैध नाही.</translation>
 <translation id="2549836668759467704">बांधकामासंबंधित सल्ला देणे आणि करार करणे</translation>
+<translation id="2549919488151689436"><ph name="TOPIC_1" />, <ph name="TOPIC_2" /> आणि आणखी</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> नी एक चुकीचे प्रतिसाद पाठविला.</translation>
 <translation id="2551608178605132291">पत्ता: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">हगाकी</translation>
@@ -1046,6 +1049,7 @@
 <translation id="2743934314332613923">ड्रायव्हरच्या परवान्यासंबंधित माहिती अपडेट करायची आहे का?</translation>
 <translation id="2759299890026163685">पुन्हा प्रयत्न करण्यापूर्वी तुमच्याकडे स्थिर इंटरनेट कनेक्शन असल्याची खात्री करा</translation>
 <translation id="2759825833388495838"><ph name="APP_NAME" /> मध्ये तुमचा पासवर्ड भरा</translation>
+<translation id="2760805590727089264">MM / YY</translation>
 <translation id="2764001903315068341">कॉमिक</translation>
 <translation id="2765217105034171413">लहान</translation>
 <translation id="2768397283109119044">तुम्ही <ph name="DOMAIN" /> पर्यंत पोहोचण्याचा प्रयत्न केला, पण सर्व्हरने त्या नावासाठी जारी केलेले अवैध सर्टिफिकेट सादर केले आहे. नाव हा एक राखीव आयपी अ‍ॅड्रेस किंवा अंतर्गत होस्ट नाव आहे.</translation>
@@ -3047,6 +3051,7 @@
 <translation id="6177531123306197852">एन्व्हलप सी२</translation>
 <translation id="6180316780098470077">दोन प्रयत्नांमधील मध्यांतर</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184099524311454384">टॅब शोधा</translation>
 <translation id="6184868291074982484">Chrome हे तृतीय पक्ष कुकीना आपोआप मर्यादित करते</translation>
 <translation id="6190518157737269631">तुमच्या कीबोर्डवरील Esc सारख्या काही की ओव्हरराइड करा</translation>
 <translation id="6194209731893739467">तुमची सर्व माग ठेवलेली उत्पादने येथे पहा</translation>
@@ -3605,6 +3610,7 @@
 <translation id="7130775116821607281">अपलोड करणे ब्लॉक केले आहे</translation>
 <translation id="7132939140423847331">तुमच्या ॲडमिनने हा डेटा कॉपी करण्यापासून प्रतिबंधित केले आहे.</translation>
 <translation id="7135130955892390533">स्थिती दाखवा</translation>
+<translation id="7135814714616751706">शॉर्टकट शोधा</translation>
 <translation id="7136009930065337683">गुप्त मोडबद्दल अधिक जाणून घ्या</translation>
 <translation id="7138472120740807366">वितरण पद्धत</translation>
 <translation id="7138678301420049075">इतर</translation>
@@ -4178,6 +4184,7 @@
 <translation id="8092254339843485299">६ x ८ इं</translation>
 <translation id="8092774999298748321">गडद जांभळा</translation>
 <translation id="8094917007353911263">तुम्ही वापरत असलेल्या नेटवर्कला तुम्ही <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ला भेट देण्याची आवश्यकता आहे.</translation>
+<translation id="809543534949702122">शोध इतिहास</translation>
 <translation id="8098855213644561659">A3 अतिरिक्त</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8103161714697287722">पेमेंट पद्धत</translation>
@@ -4809,7 +4816,6 @@
 <translation id="9207861905230894330">लेख जोडण्यात अयशस्वी.</translation>
 <translation id="9209339767782560829">तुमचे लॉगिन सर्टिफिकेट वापरताना समस्या आली.</translation>
 <translation id="9210825002219699214">विमान प्रवास</translation>
-<translation id="9211461151375991073"><ph name="FEATURED_SEARCH_LIST" /> शोधण्यासाठी @ टाइप करा</translation>
 <translation id="9213433120051936369">स्वरूप कस्टमाइझ करा</translation>
 <translation id="9215416866750762878">एक ॲप्लिकेशन Chrome ला या साइटशी सुरक्षितपणे कनेक्ट करण्यापासून थांबवत आहे</translation>
 <translation id="92178312226016010">तुम्ही हे उत्पादन ट्रॅक करत आहात.</translation>
@@ -4817,6 +4823,7 @@
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="922152298093051471">Chrome कस्टमाइझ करा</translation>
 <translation id="9222403027701923763">प्राथमिक आणि माध्‍यमिक शिक्षण (K-12)</translation>
+<translation id="9222463428840654067">कार्डचा नंबर चुकीचा आहे</translation>
 <translation id="922849469395748170">लॉयल्‍टी कार्ड</translation>
 <translation id="93020190163435405">इंटर्नशिप</translation>
 <translation id="931598121743515856"><ph name="CHECKOUT_AMOUNT_MINIMUM" /> हून अधिक किमतीची खरेदी करणे आवश्यक आहे</translation>

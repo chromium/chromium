@@ -183,6 +183,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3167868116600277716">Discover feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> stored data</translation>
 <translation id="321187648315454507">To let <ph name="APP_NAME" /> send you notifications, also turn on notifications in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="3223425961342298674">Location not allowed</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3232293466644486101">Delete browsing data…</translation>
 <translation id="3242646949159196181">When on, sites can play sound. When off, sites can't play sound.</translation>
@@ -258,6 +259,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3992308058851451478"><ph name="SITE" /> can use your information as you browse</translation>
 <translation id="3992684624889376114">About this page</translation>
 <translation id="4002066346123236978">Title</translation>
+<translation id="4031179711345676612">Microphone allowed</translation>
 <translation id="4046123991198612571">Next track</translation>
 <translation id="4077310749977440510">Sites usually read your clipboard for features like keeping the formatting of text that you copied</translation>
 <translation id="4149890623864272035">Are you sure that you want to delete all local data, including cookies, and reset all permissions for this website?</translation>
@@ -267,8 +269,10 @@ Advanced Protection controls these Chrome settings:
 <translation id="4169549551965910670">Connected to a USB device</translation>
 <translation id="4194328954146351878">Ask before allowing sites to see and change information on NFC devices (recommended)</translation>
 <translation id="4200726100658658164">Open location settings</translation>
+<translation id="4203769790323223880">Camera not allowed</translation>
 <translation id="421742575134139848">Sites might play sound to provide audio for music, videos and other media</translation>
 <translation id="4217710972110098902">Connected to a serial port</translation>
+<translation id="4223404254440398437">Microphone not allowed</translation>
 <translation id="4226663524361240545">Notifications may vibrate the device</translation>
 <translation id="4259722352634471385">Navigation is blocked: <ph name="URL" /></translation>
 <translation id="4274673989874969668">After you leave a site, it can keep syncing to finish tasks, like uploading photos or sending a chat message</translation>
@@ -300,6 +304,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="4635969503923889910">Don't allow sites to use NFC devices</translation>
 <translation id="4644713492825682049">Delete and reset</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
+<translation id="4663373278480897665">Camera allowed</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4672315773691449562">Tap Browser app, then tap Chrome</translation>
 <translation id="4676059169848868271">To let <ph name="APP_NAME" /> use hand tracking, also turn on hand tracking in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" />.</translation>
@@ -345,6 +350,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="5216942107514965959">Last visited today</translation>
 <translation id="5225463052809312700">Turn on camera</translation>
 <translation id="5234764350956374838">Dismiss</translation>
+<translation id="5239623327352565343">Location allowed</translation>
 <translation id="5246825184569358663">This action will delete all local data, including cookies, and reset all permissions for <ph name="DOMAIN" /> and all sites under it</translation>
 <translation id="5264323282659631142">Remove '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Drag from top and touch the back button to exit full screen.</translation>
@@ -389,6 +395,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="5743425052258407233">Get your history on all your devices, so that you can easily pick up where you left off</translation>
 <translation id="5749158352074143502">Continue with this tab</translation>
 <translation id="5750869797196646528">Hand tracking</translation>
+<translation id="5753570386948603678">Delete from history</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blocked</translation>
 <translation id="5804241973901381774">Permissions</translation>
 <translation id="5822675474983796325">Customise your new tab page bottom sheet opened at full height</translation>
@@ -488,6 +495,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="6992289844737586249">Ask first before allowing sites to use your microphone (recommended)</translation>
 <translation id="7000754031042624318">Turned off in Android settings</translation>
 <translation id="702275896380648118">This site determines things that you like and then suggests ads to other sites. This site also gets your ad topics from Chrome to show you more relevant ads.</translation>
+<translation id="7044081119134178347">Camera allowed this time</translation>
 <translation id="7053983685419859001">Block</translation>
 <translation id="7055552182600664515">To play content protected by copyright, sites may need to use a content protection service. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selected}other{# selected}}</translation>
@@ -525,6 +533,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7573594921350120855">Sites usually use your video camera for communication features like video chatting</translation>
 <translation id="7574529565935733861">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> month ago}other{<ph name="NUM_MONTHS_MANY" /> months ago}}</translation>
 <translation id="757524316907819857">Block sites from playing protected content</translation>
+<translation id="7586676035079382730">Notifications not allowed</translation>
 <translation id="7594634374516752650">Connected to a Bluetooth device</translation>
 <translation id="7617547684249261169">You can delete some or all of your history, cookies, site data and more</translation>
 <translation id="7649070708921625228">Help</translation>
@@ -540,6 +549,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7804248752222191302">A site is using your camera</translation>
 <translation id="7807060072011926525">Provided by Google</translation>
+<translation id="7815680994978050279">Dangerous download blocked</translation>
 <translation id="7835852323729233924">Playing media</translation>
 <translation id="783819812427904514">Unmute video</translation>
 <translation id="7846076177841592234">Cancel selection</translation>
@@ -588,6 +598,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="8380167699614421159">This site shows intrusive or misleading ads</translation>
 <translation id="8394832520002899662">Tap to return to the site</translation>
 <translation id="8409345997656833551">Get notified when an article can be shown in simplified view</translation>
+<translation id="8416874502399604126">Microphone allowed this time</translation>
 <translation id="8423565414844018592">Text scaling set to <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8441146129660941386">Seek backward</translation>
@@ -655,12 +666,14 @@ Advanced Protection controls these Chrome settings:
 <translation id="9106233582039520022">Delete cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}}</translation>
 <translation id="913657688200966289">Turn on permissions for <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="9138037198177304356">Notifications allowed</translation>
 <translation id="9138217887606523162">Current zoom is <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Let Chrome show your recent tabs in your device's app list and search results. You can turn this off at any time in Chrome settings.</translation>
 <translation id="9162462602695099906">This page is dangerous</translation>
 <translation id="9182556968660520230">Don't allow sites to play protected content</translation>
 <translation id="947156494302904893">Sites that you visit can verify that you're a real person and not a bot</translation>
 <translation id="959682366969460160">Get organised</translation>
+<translation id="961930410699694996">Location allowed this time</translation>
 <translation id="967624055006145463">Data stored</translation>
 <translation id="969975166333045662">Block site from using V8 optimiser.</translation>
 </translationbundle>

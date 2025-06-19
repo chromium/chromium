@@ -343,6 +343,7 @@
 <translation id="5775198138441669627">Калі вы забылі фразу-пароль або хочаце змяніць гэту наладу, <ph name="SETTINGS_LINK" /> даныя Chromium ва ўліковым запісе</translation>
 <translation id="5800158606660203929">Наладжвайце Chromium і кіруйце ім. Зрабіце Chromium стандартным браўзерам.</translation>
 <translation id="5809516625706423866">Не ўдалося падключыцца да інтэрнэту. Памылка HTTP 401: патрабуецца аўтарызацыя. Праверце налады проксі-сервера.</translation>
+<translation id="5817952762723416573">Функцыя паскарае працу сайтаў на рухавіку Chromium V8, але робіць Chromium крыху менш устойлівым да атак. Гэта налада выключана.</translation>
 <translation id="5821520528363214608">Абнавіце Chromium, каб захоўваць і выкарыстоўваць даныя Chromium ва Уліковым запісе Google</translation>
 <translation id="5824893331272123205">Не ўдалося загрузіць гэту панэль. Паўтарыце спробу.</translation>
 <translation id="5862307444128926510">Вас вітае Chromium</translation>
@@ -432,6 +433,7 @@
 <translation id="6729124504294600478">Каб наладзіць персаналізацыю і іншыя функцыі, уключыце Chromium у гісторыю дзеянняў у інтэрнэце і праграмах і звязаныя сэрвісы Google</translation>
 <translation id="6734291798041940871">Chromium ужо ўсталяваны для ўсіх карыстальнікаў на камп’ютары.</translation>
 <translation id="674245979920622322">Вы даўно не наведвалі сайт. Chromium адклікаў наступныя дазволы: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="COUNT" />.</translation>
+<translation id="6751374565094704799">Функцыя паскарае працу сайтаў на рухавіку Chromium V8, але робіць Chromium крыху менш устойлівым да атак. Гэта налада ўключана.</translation>
 <translation id="67706546131546258">Chromium рэкамендуе праверыць гэты файл, бо ён можа быць небяспечным.</translation>
 <translation id="6779406956731413166">Chromium OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Перакласці</translation>
@@ -528,7 +530,6 @@
 <translation id="8118331347066725040">Адправіць водгук на пошук з дапамогай Аб’ектыва</translation>
 <translation id="8133124826068723441">Сістэме Chromium OS не ўдалося сінхранізаваць вашы даныя: для вашага дамена сінхранізацыя недаступная.</translation>
 <translation id="813913629614996137">Ідзе ініцыялізацыя...</translation>
-<translation id="8166782796394721554">Уключыць дадатковую абарону рухавіка JavaScript і WebAssembly у Chromium</translation>
 <translation id="81770708095080097">Файл небяспечны, таму Chromium заблакіраваў яго.</translation>
 <translation id="8177472873527554730">Не ўдаецца знайсці змесціва на старонцы</translation>
 <translation id="8200109504272824693">Каб выкарыстоўваць і захоўваць даныя Chromium ва ўліковым запісе <ph name="USER_EMAIL" />, увядзіце фразу-пароль</translation>
