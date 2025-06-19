@@ -613,6 +613,15 @@
                     "enable_features": [
                         "AndroidComposeplate"
                     ]
+                },
+                {
+                    "name": "Enabled_HideIncognitoButton",
+                    "params": {
+                        "hide_incognito_button": "true"
+                    },
+                    "enable_features": [
+                        "AndroidComposeplate"
+                    ]
                 }
             ]
         }
