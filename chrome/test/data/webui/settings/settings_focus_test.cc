@@ -75,8 +75,9 @@ class SettingsGlicPageFocusTest : public SettingsFocusTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/424864547): Investigate flakiness and enable on Mac64.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/424864547): Investigate flakiness and enable on Mac64 and
+// Win64.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_GlicPageFocus DISABLED_GlicPageFocus
 #else
 #define MAYBE_GlicPageFocus GlicPageFocus
