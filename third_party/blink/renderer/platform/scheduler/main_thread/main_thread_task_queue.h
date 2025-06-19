@@ -163,9 +163,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       kInternalNavigationCancellation = 12,
       kRenderBlocking = 13,
       kLow = 14,
-      kAsyncScript = 15,
 
-      kMaxValue = kAsyncScript
+      kMaxValue = kLow
     };
 
     // Bit width required for the PrioritisationType enumeration

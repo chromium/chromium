@@ -1617,41 +1617,10 @@ TEST_F(FrameSchedulerImplTest, ComputePriorityForDetachedFrame) {
   frame_scheduler_->ComputePriority(task_queue.get());
 }
 
-class FrameSchedulerImplLowPriorityAsyncScriptExecutionTest
-    : public FrameSchedulerImplTest,
-      public testing::WithParamInterface<std::string> {
- public:
-  FrameSchedulerImplLowPriorityAsyncScriptExecutionTest()
-      : FrameSchedulerImplTest(
-            features::kLowPriorityAsyncScriptExecution,
-            {{features::kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam
-                  .name,
-              specified_priority()}},
-            {}) {}
-
-  std::string specified_priority() { return GetParam(); }
-  TaskPriority GetExpectedPriority() {
-    if (specified_priority() == "high") {
-      return TaskPriority::kHighPriority;
-    } else if (specified_priority() == "low") {
-      return TaskPriority::kLowPriority;
-    } else if (specified_priority() == "best_effort") {
-      return TaskPriority::kBestEffortPriority;
-    }
-    NOTREACHED();
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         FrameSchedulerImplLowPriorityAsyncScriptExecutionTest,
-                         testing::Values("high", "low", "best_effort"));
-
-TEST_P(FrameSchedulerImplLowPriorityAsyncScriptExecutionTest,
-       LowPriorityScriptExecutionHasBestEffortPriority) {
+TEST_F(FrameSchedulerImplTest, LowPriorityScriptExecutionHasLowPriority) {
   EXPECT_EQ(
-      GetExpectedPriority(),
-      GetTaskQueue(TaskType::kLowPriorityScriptExecution)->GetQueuePriority())
-      << specified_priority();
+      TaskPriority::kLowPriority,
+      GetTaskQueue(TaskType::kLowPriorityScriptExecution)->GetQueuePriority());
 }
 
 TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut) {

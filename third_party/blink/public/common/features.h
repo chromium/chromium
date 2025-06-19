@@ -1242,14 +1242,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam);
-enum class AsyncScriptPrioritisationType {
-  kHigh,
-  kLow,
-  kBestEffort,
-};
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    AsyncScriptPrioritisationType,
-    kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     AsyncScriptExperimentalSchedulingTarget,
     kLowPriorityAsyncScriptExecutionTargetParam);

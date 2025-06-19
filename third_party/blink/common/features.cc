@@ -1842,20 +1842,6 @@ BASE_FEATURE_PARAM(bool,
                    "low_pri_async_exec_disable_when_lcp_not_in_html",
                    false);
 
-// kLowPriorityAsyncScriptExecution will use the specified priority as a lower
-// task priority.
-const base::FeatureParam<AsyncScriptPrioritisationType>::Option
-    async_script_prioritisation_types[] = {
-        {AsyncScriptPrioritisationType::kHigh, "high"},
-        {AsyncScriptPrioritisationType::kLow, "low"},
-        {AsyncScriptPrioritisationType::kBestEffort, "best_effort"},
-};
-BASE_FEATURE_ENUM_PARAM(AsyncScriptPrioritisationType,
-                        kLowPriorityAsyncScriptExecutionLowerTaskPriorityParam,
-                        &kLowPriorityAsyncScriptExecution,
-                        "low_pri_async_exec_lower_task_priority",
-                        AsyncScriptPrioritisationType::kLow,
-                        &async_script_prioritisation_types);
 // kLowPriorityAsyncScriptExecution will change evaluation schedule for the
 // specified target.
 BASE_FEATURE_ENUM_PARAM(AsyncScriptExperimentalSchedulingTarget,
