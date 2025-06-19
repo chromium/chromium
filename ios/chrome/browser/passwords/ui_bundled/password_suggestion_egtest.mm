@@ -173,7 +173,8 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 
 // Tests that the bottom sheet populates the new password and confirm password
 // fields.
-- (void)testFillNewPasswordWithProactiveBottomSheet {
+// TODO(crbug.com/425885707): ensures this test works on CQ.
+- (void)FLAKY_testFillNewPasswordWithProactiveBottomSheet {
   [self loadSignupPage];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
