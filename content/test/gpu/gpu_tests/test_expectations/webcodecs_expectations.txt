@@ -192,6 +192,19 @@ crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_FrameSizeChange_hvc1.1.6.
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_offscreen [ Failure ]
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_sw_decoder [ Failure ]
 
+# Mac Intel SharedImage Synchronization Flakes
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_DrawImage_camera [ Failure ]
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodeDecode_arraybuffer_hvc1.1.6.L123.00_prefer-software [ Failure ]
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-* [ Failure ]
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-software [ Failure ]
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodeDecode_offscreen_vp09.00.10.08_prefer-software [ Failure ]
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_* [ Failure ]
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodingRateControl_vp8_prefer-software_constant_2000000 [ Failure ]
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_* [ Failure ]
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_SVC_avc1.42001E_prefer-* [ Failure ]
+crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_* [ Failure ]
+
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
