@@ -591,6 +591,14 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     @Override
     public void onResourceRequestWithGesture() {
+        // Browser-initiated navigations race against renderer-initiated resource requests.
+        // It should be fine to just drop the resource request as it is from the previous page.
+        // In rare cases this could theoretically arrive after a browser-initiated navigation
+        // completes and allow an external navigation that shouldn't have been allowed but this
+        // isn't exploitable so should be fine and not worth all of the complexity required to
+        // properly fix it.
+        if (mPendingShouldIgnore != null) return;
+
         // LINK is the default transition type, and is generally used for everything coming from a
         // renderer that isn't a form submission (or subframe).
         @PageTransition int transition = PageTransition.LINK;
