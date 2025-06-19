@@ -7,6 +7,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/animation/interpolable_font_palette.h"
 #include "third_party/blink/renderer/core/animation/length_units_checker.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
+#include "third_party/blink/renderer/core/css/css_palette_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -66,19 +68,50 @@ InterpolationValue CSSFontPaletteInterpolationType::MaybeConvertInherit(
   return ConvertFontPalette(inherited_font_palette);
 }
 
+namespace {
+
+void CollectConversionCheckersInfo(const CSSValue& value,
+                                   CSSPrimitiveValue::LengthTypeFlags& types,
+                                   bool& has_element_dependency) {
+  if (auto* palette_mix_value =
+          DynamicTo<cssvalue::CSSPaletteMixValue>(value)) {
+    if (const CSSPrimitiveValue* percentage =
+            palette_mix_value->Percentage1()) {
+      CollectConversionCheckersInfo(*percentage, types, has_element_dependency);
+    }
+    if (const CSSPrimitiveValue* percentage =
+            palette_mix_value->Percentage2()) {
+      CollectConversionCheckersInfo(*percentage, types, has_element_dependency);
+    }
+    CollectConversionCheckersInfo(palette_mix_value->Palette1(), types,
+                                  has_element_dependency);
+    CollectConversionCheckersInfo(palette_mix_value->Palette2(), types,
+                                  has_element_dependency);
+  }
+  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
+    primitive_value->AccumulateLengthUnitTypes(types);
+    if (primitive_value->IsElementDependent()) {
+      has_element_dependency = true;
+    }
+  }
+}
+
+}  // namespace
+
 InterpolationValue CSSFontPaletteInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
-  // and sibling-count() if necessary.
-  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
-    CSSPrimitiveValue::LengthTypeFlags types;
-    primitive_value->AccumulateLengthUnitTypes(types);
-    if (InterpolationType::ConversionChecker* length_units_checker =
-            LengthUnitsChecker::MaybeCreate(types, state)) {
-      conversion_checkers.push_back(length_units_checker);
-    }
+  bool has_element_dependency = false;
+  CSSPrimitiveValue::LengthTypeFlags types;
+  CollectConversionCheckersInfo(value, types, has_element_dependency);
+  if (InterpolationType::ConversionChecker* length_units_checker =
+          LengthUnitsChecker::MaybeCreate(types, state)) {
+    conversion_checkers.push_back(length_units_checker);
+  }
+  if (has_element_dependency) {
+    conversion_checkers.push_back(
+        TreeCountingChecker::Create(state.CssToLengthConversionData()));
   }
   return ConvertFontPalette(StyleBuilderConverterBase::ConvertFontPalette(
       state.CssToLengthConversionData(), value));
