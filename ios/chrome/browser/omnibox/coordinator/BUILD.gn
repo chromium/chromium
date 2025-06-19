@@ -81,5 +81,6 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

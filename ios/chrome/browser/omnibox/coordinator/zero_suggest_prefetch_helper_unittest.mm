@@ -12,8 +12,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -25,41 +24,16 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/OCMock/OCMockObject.h"
+#import "third_party/ocmock/gtest_support.h"
 
-using testing::Return;
 using web::FakeWebState;
 
 namespace {
 
 const char kTestURL[] = "http://chromium.org";
 const char kTestSRPURL[] = "https://www.google.com/search?q=omnibox";
-
-// A mock class for the AutocompleteController.
-class MockAutocompleteController : public AutocompleteController {
- public:
-  MockAutocompleteController()
-      : AutocompleteController(
-            std::make_unique<FakeAutocompleteProviderClient>(),
-            0) {}
-  MockAutocompleteController(const MockAutocompleteController&) = delete;
-  MockAutocompleteController& operator=(const MockAutocompleteController&) =
-      delete;
-  ~MockAutocompleteController() override = default;
-};
-
-class TestOmniboxController : public OmniboxControllerIOS {
- public:
-  TestOmniboxController(OmniboxClient* client) : OmniboxControllerIOS(client) {}
-
-  ~TestOmniboxController() override = default;
-  TestOmniboxController(const TestOmniboxController&) = delete;
-  TestOmniboxController& operator=(const TestOmniboxController&) = delete;
-
-  // OmniboxController:
-  void StartZeroSuggestPrefetch() override { start_prefetch_call_count_++; }
-
-  int start_prefetch_call_count_ = 0;
-};
 
 }  // namespace
 
@@ -74,17 +48,14 @@ class ZeroSuggestPrefetchHelperTest : public PlatformTest {
     PlatformTest::SetUp();
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
 
-    client_ = std::make_unique<TestOmniboxClient>();
-
-    controller_ = std::make_unique<TestOmniboxController>(client_.get());
-    controller_->SetAutocompleteControllerForTesting(
-        std::make_unique<MockAutocompleteController>());
+    mock_controller_ =
+        [OCMockObject mockForClass:OmniboxAutocompleteController.class];
   }
 
   void CreateHelper() {
     helper_ = [[ZeroSuggestPrefetchHelper alloc]
-        initWithWebStateList:web_state_list_.get()
-                  controller:controller_.get()];
+        initWithWebStateList:web_state_list_.get()];
+    helper_.omniboxAutocompleteController = mock_controller_;
   }
   // Message loop for the main test thread.
   base::test::TaskEnvironment environment_;
@@ -92,8 +63,8 @@ class ZeroSuggestPrefetchHelperTest : public PlatformTest {
   FakeWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
 
-  std::unique_ptr<TestOmniboxController> controller_;
-  std::unique_ptr<TestOmniboxClient> client_;
+  // Mock OmniboxAutocompleteController.
+  id mock_controller_;
 
   ZeroSuggestPrefetchHelper* helper_;
 };
@@ -103,36 +74,30 @@ TEST_F(ZeroSuggestPrefetchHelperTest, TestReactToNavigation) {
   CreateHelper();
   web::FakeNavigationContext context;
 
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 0);
   GURL not_ntp_url(kTestURL);
   auto web_state = std::make_unique<web::FakeWebState>();
+  [[mock_controller_ expect] startZeroSuggestPrefetch];
   FakeWebState* web_state_ptr = web_state.get();
   web_state_ptr->SetCurrentURL(not_ntp_url);
   web_state_list_->InsertWebState(std::move(web_state));
   web_state_list_->ActivateWebStateAt(0);
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
+  EXPECT_OCMOCK_VERIFY(mock_controller_);
+
+  [[mock_controller_ expect] startZeroSuggestPrefetch];
   web_state_ptr->OnNavigationFinished(&context);
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 2);
-  controller_.get()->start_prefetch_call_count_ = 0;
+  EXPECT_OCMOCK_VERIFY(mock_controller_);
 
   // Now navigate to NTP.
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 0);
-
+  [[mock_controller_ expect] startZeroSuggestPrefetch];
   GURL url(kChromeUINewTabURL);
   web_state_ptr->SetCurrentURL(url);
   web_state_ptr->OnNavigationFinished(&context);
+  EXPECT_OCMOCK_VERIFY(mock_controller_);
 
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
-  controller_.get()->start_prefetch_call_count_ = 0;
-
-  // Now navigate to SRP.
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 0);
-
+  [[mock_controller_ expect] startZeroSuggestPrefetch];
   web_state_ptr->SetCurrentURL(GURL(kTestSRPURL));
   web_state_ptr->OnNavigationFinished(&context);
-
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
-  controller_.get()->start_prefetch_call_count_ = 0;
+  EXPECT_OCMOCK_VERIFY(mock_controller_);
 }
 
 // Test that switching between tabs starts prefetch.
@@ -140,31 +105,34 @@ TEST_F(ZeroSuggestPrefetchHelperTest, TestPrefetchOnTabSwitch) {
   CreateHelper();
   web::FakeNavigationContext context;
 
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 0);
   GURL not_ntp_url(kTestURL);
   auto web_state = std::make_unique<web::FakeWebState>();
   FakeWebState* web_state_ptr = web_state.get();
+
+  [[mock_controller_ expect] startZeroSuggestPrefetch];
   web_state_ptr->SetCurrentURL(not_ntp_url);
   web_state_list_->InsertWebState(std::move(web_state));
   web_state_list_->ActivateWebStateAt(0);
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
+  EXPECT_OCMOCK_VERIFY(mock_controller_);
+
+  [[mock_controller_ expect] startZeroSuggestPrefetch];
   web_state_ptr->OnNavigationFinished(&context);
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 2);
-  controller_.get()->start_prefetch_call_count_ = 0;
+  EXPECT_OCMOCK_VERIFY(mock_controller_);
 
   // Second tab
   web_state = std::make_unique<web::FakeWebState>();
   web_state_ptr = web_state.get();
+
+  [[mock_controller_ expect] startZeroSuggestPrefetch];
   web_state_ptr->SetCurrentURL(not_ntp_url);
   web_state_list_->InsertWebState(std::move(web_state));
   web_state_list_->ActivateWebStateAt(1);
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
-  controller_.get()->start_prefetch_call_count_ = 0;
+  EXPECT_OCMOCK_VERIFY(mock_controller_);
 
   // Just switch
+  [[mock_controller_ expect] startZeroSuggestPrefetch];
   web_state_list_->ActivateWebStateAt(0);
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
-  controller_.get()->start_prefetch_call_count_ = 0;
+  EXPECT_OCMOCK_VERIFY(mock_controller_);
 }
 
 // Test that the appropriate behavior (set `is_background_state` variable, start
@@ -178,39 +146,31 @@ TEST_F(ZeroSuggestPrefetchHelperTest,
   // request counts.
   auto web_state = std::make_unique<web::FakeWebState>();
   FakeWebState* web_state_ptr = web_state.get();
+  [[mock_controller_ expect] startZeroSuggestPrefetch];
   web_state_ptr->SetCurrentURL(GURL(kTestURL));
   web_state_list_->InsertWebState(std::move(web_state));
   web_state_list_->ActivateWebStateAt(0);
-
-  controller_.get()->start_prefetch_call_count_ = 0;
+  EXPECT_OCMOCK_VERIFY(mock_controller_);
 
   // Initially the app starts off in the foreground state.
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 0);
-  EXPECT_FALSE(controller_->autocomplete_controller()
-                   ->autocomplete_provider_client()
-                   ->in_background_state());
+  [[mock_controller_ expect] setBackgroundStateForProviders:YES];
 
   // Receiving a "backgrounded" notification will cause the app to move to the
   // background state.
   [[NSNotificationCenter defaultCenter]
       postNotificationName:UIApplicationDidEnterBackgroundNotification
                     object:nil];
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 0);
-  EXPECT_TRUE(controller_.get()
-                  ->autocomplete_controller()
-                  ->autocomplete_provider_client()
-                  ->in_background_state());
+  EXPECT_OCMOCK_VERIFY(mock_controller_);
+
+  [[mock_controller_ expect] startZeroSuggestPrefetch];
+  [[mock_controller_ expect] setBackgroundStateForProviders:NO];
 
   // Receiving a "foregrounded" notification will cause the app to move to the
   // foreground state (triggering a ZPS prefetch request as a side-effect).
   [[NSNotificationCenter defaultCenter]
       postNotificationName:UIApplicationWillEnterForegroundNotification
                     object:nil];
-  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
-  EXPECT_FALSE(controller_.get()
-                   ->autocomplete_controller()
-                   ->autocomplete_provider_client()
-                   ->in_background_state());
+  EXPECT_OCMOCK_VERIFY(mock_controller_);
 }
 
 }  // namespace

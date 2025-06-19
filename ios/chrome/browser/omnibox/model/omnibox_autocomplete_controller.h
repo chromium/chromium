@@ -113,6 +113,17 @@ struct OmniboxTextModel;
 /// Notifies thumbnail update.
 - (void)setHasThumbnail:(BOOL)hasThumbnail;
 
+#pragma mark - Prefetch events
+
+/// Starts an autocomplete prefetch request so that zero-prefix providers can
+/// optionally start a prefetch request to warm up the their underlying
+/// service(s) and/or optionally cache their otherwise async response.
+- (void)startZeroSuggestPrefetch;
+
+/// Informs autocomplete provider clients whether the app is currently in the
+/// background.
+- (void)setBackgroundStateForProviders:(BOOL)inBackground;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_AUTOCOMPLETE_CONTROLLER_H_

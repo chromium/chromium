@@ -209,10 +209,6 @@
   _keyboardMediator.omniboxTextField = textField;
   _keyboardMediator.delegate = self;
 
-  self.zeroSuggestPrefetchHelper = [[ZeroSuggestPrefetchHelper alloc]
-      initWithWebStateList:browser->GetWebStateList()
-                controller:_omniboxController.get()];
-
   _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
       initWithOmniboxController:_omniboxController.get()
                omniboxEditModel:_omniboxEditModel.get()
@@ -237,6 +233,11 @@
 
   mediator.omniboxTextController = _omniboxTextController;
   _omniboxView->SetOmniboxTextController(_omniboxTextController);
+
+  self.zeroSuggestPrefetchHelper = [[ZeroSuggestPrefetchHelper alloc]
+      initWithWebStateList:browser->GetWebStateList()];
+  self.zeroSuggestPrefetchHelper.omniboxAutocompleteController =
+      _omniboxAutocompleteController;
 
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];

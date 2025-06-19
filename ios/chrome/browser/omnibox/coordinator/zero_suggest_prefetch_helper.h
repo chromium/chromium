@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 class WebStateList;
-class OmniboxControllerIOS;
+@class OmniboxAutocompleteController;
 
 /// This object starts ZPS prefetch in the `autocompleteController` whenever an
 /// NTP is displayed in `webStateList`, specifically: upon creation of this
@@ -19,12 +19,12 @@ class OmniboxControllerIOS;
 
 // Observed web state list.
 @property(nonatomic, readonly, assign) WebStateList* webStateList;
-// The omnibox controller for prefetching.
-@property(nonatomic, readonly, assign) OmniboxControllerIOS* controller;
+// The omnibox autocomplete controller for prefetching.
+@property(nonatomic, weak)
+    OmniboxAutocompleteController* omniboxAutocompleteController;
 
 // Designated initializer.
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                          controller:(OmniboxControllerIOS*)controller;
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList;
 - (instancetype)init NS_UNAVAILABLE;
 
 /// Disconnects all observations.

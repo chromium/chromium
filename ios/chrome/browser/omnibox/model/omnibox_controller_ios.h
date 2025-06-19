@@ -33,12 +33,6 @@ class OmniboxControllerIOS : public AutocompleteController::Observer {
   // also erase the result set.
   void StopAutocomplete(bool clear_result) const;
 
-  // Starts an autocomplete prefetch request so that zero-prefix providers can
-  // optionally start a prefetch request to warm up the their underlying
-  // service(s) and/or optionally cache their otherwise async response.
-  // Virtual for testing.
-  virtual void StartZeroSuggestPrefetch();
-
   OmniboxClient* client() { return client_.get(); }
 
   AutocompleteController* autocomplete_controller() {

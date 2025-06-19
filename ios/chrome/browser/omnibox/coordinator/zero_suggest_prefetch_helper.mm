@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/omnibox/coordinator/zero_suggest_prefetch_helper.h"
 
 #import "base/feature_list.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -30,15 +30,12 @@ using web::WebStateObserverBridge;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                          controller:(OmniboxControllerIOS*)controller {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
     DCHECK(webStateList);
-    DCHECK(controller);
 
     _webStateList = webStateList;
-    _controller = controller;
     _webStateObserverBridge = std::make_unique<WebStateObserverBridge>(self);
     _activeWebStateObservationForwarder =
         std::make_unique<ActiveWebStateObservationForwarder>(
@@ -107,23 +104,19 @@ using web::WebStateObserverBridge;
     return;
   }
 
-  self.controller->StartZeroSuggestPrefetch();
+  [self.omniboxAutocompleteController startZeroSuggestPrefetch];
 }
 
 /// Indicates to this tab helper that the app has entered a foreground state.
 - (void)updateForAppWillForeground {
-  self.controller->autocomplete_controller()
-      ->autocomplete_provider_client()
-      ->set_in_background_state(false);
+  [self.omniboxAutocompleteController setBackgroundStateForProviders:NO];
 
   [self startPrefetchIfNecessary];
 }
 
 /// Indicates to this tab helper that the app has entered a background state.
 - (void)updateForAppDidBackground {
-  self.controller->autocomplete_controller()
-      ->autocomplete_provider_client()
-      ->set_in_background_state(true);
+  [self.omniboxAutocompleteController setBackgroundStateForProviders:YES];
 }
 
 @end

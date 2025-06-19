@@ -18,6 +18,7 @@
 #import "components/omnibox/browser/clipboard_provider.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
+#import "components/omnibox/browser/page_classification_functions.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
@@ -422,6 +423,42 @@ using base::UserMetricsAction;
             isFirstUpdate:(BOOL)isFirstUpdate {
   [self.omniboxTextController previewSuggestion:suggestion
                                   isFirstUpdate:isFirstUpdate];
+}
+
+#pragma mark - Prefetch events
+
+- (void)startZeroSuggestPrefetch {
+  TRACE_EVENT0("omnibox",
+               "OmniboxAutocompleteController::StartZeroSuggestPrefetch");
+
+  AutocompleteController* autocompleteController = self.autocompleteController;
+  OmniboxClient* client = self.client;
+  if (!autocompleteController || !client) {
+    return;
+  }
+
+  auto page_classification =
+      client->GetPageClassification(/*is_prefetch=*/true);
+  GURL currentURL = client->GetURL();
+  std::u16string text = base::UTF8ToUTF16(currentURL.spec());
+
+  if (omnibox::IsNTPPage(page_classification)) {
+    text.clear();
+  }
+
+  AutocompleteInput input(text, page_classification,
+                          client->GetSchemeClassifier());
+  input.set_current_url(currentURL);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  autocompleteController->StartPrefetch(input);
+}
+
+- (void)setBackgroundStateForProviders:(BOOL)inBackground {
+  if (AutocompleteController* autocompleteController =
+          self.autocompleteController) {
+    autocompleteController->autocomplete_provider_client()
+        ->set_in_background_state(inBackground);
+  }
 }
 
 #pragma mark - Private
