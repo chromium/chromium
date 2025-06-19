@@ -32,6 +32,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.AccountManagedStatusFinder;
 import org.chromium.components.signin.identitymanager.AccountManagedStatusFinderOutcome;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -122,6 +123,10 @@ public class AccountManagedStatusFinderIntegrationTest {
         AccountInfo accountWithNoHostedDomainFound =
                 new AccountInfo.Builder(accountHostedDomainUnknown)
                         .hostedDomain(SigninConstants.NO_HOSTED_DOMAIN_FOUND)
+                        .accountCapabilities(
+                                new AccountCapabilitiesBuilder()
+                                        .setIsSubjectToEnterprisePolicies(false)
+                                        .build())
                         .build();
         mSigninTestRule.updateAccount(accountWithNoHostedDomainFound);
 
@@ -163,6 +168,10 @@ public class AccountManagedStatusFinderIntegrationTest {
         AccountInfo accountWithHostedDomain =
                 new AccountInfo.Builder(accountHostedDomainUnknown)
                         .hostedDomain("example.com")
+                        .accountCapabilities(
+                                new AccountCapabilitiesBuilder()
+                                        .setIsSubjectToEnterprisePolicies(true)
+                                        .build())
                         .build();
         mSigninTestRule.updateAccount(accountWithHostedDomain);
 

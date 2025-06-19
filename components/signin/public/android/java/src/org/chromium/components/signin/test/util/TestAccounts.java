@@ -151,6 +151,10 @@ public class TestAccounts {
                     .givenName("Managed Given")
                     .hostedDomain("example.com")
                     .accountImage(createAvatar())
+                    .accountCapabilities(
+                            new AccountCapabilitiesBuilder()
+                                    .setIsSubjectToEnterprisePolicies(true)
+                                    .build())
                     .build();
 
     /**

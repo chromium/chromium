@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
@@ -50,6 +51,13 @@ AccountInfo GetFakeAccountInfo(
       signin::WithGeneratedUserInfo(account_info, /*given_name=*/"Fake");
   account_info.hosted_domain =
       hosted_domain.value_or(signin::constants::kNoHostedDomainFound);
+  bool managed = false;
+  if (hosted_domain.has_value() && !hosted_domain.value().empty()) {
+    managed = hosted_domain.value() !=
+                  signin::constants::kNoHostedDomainFound;
+  }
+  AccountCapabilitiesTestMutator(&account_info.capabilities)
+      .set_is_subject_to_enterprise_policies(managed);
   return account_info;
 }
 

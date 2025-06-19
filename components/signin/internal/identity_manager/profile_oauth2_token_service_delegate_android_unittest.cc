@@ -12,6 +12,7 @@
 #include "components/signin/internal/identity_manager/mock_profile_oauth2_token_service_observer.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -86,6 +87,8 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
     account_info.full_name = "fullname";
     account_info.given_name = "givenname";
     account_info.hosted_domain = "example.com";
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_is_subject_to_enterprise_policies(true);
     account_info.locale = "en";
     account_info.picture_url = "https://example.com";
     account_info.account_id = account_tracker_service_.PickAccountIdForAccount(
