@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 
+#include "base/notimplemented.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"

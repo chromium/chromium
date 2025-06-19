@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

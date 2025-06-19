@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"

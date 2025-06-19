@@ -34,6 +34,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_ref.h"
 #include "components/subresource_filter/core/common/scoped_rule.h"

@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"

@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"

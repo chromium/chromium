@@ -38,6 +38,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"

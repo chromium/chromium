@@ -34,6 +34,7 @@
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"

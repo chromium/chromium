@@ -11,6 +11,7 @@ include_rules = [
     "+base/memory/raw_span.h",
     "+base/memory/raw_ptr_exclusion.h",
     "+base/memory/stack_allocated.h",
+    "+base/notimplemented.h",
     "+base/notreached.h",
     "+base/observer_list.h",
     "+base/trace_event",

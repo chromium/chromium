@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"

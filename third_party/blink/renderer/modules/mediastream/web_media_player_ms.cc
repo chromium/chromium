@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/sequence_checker.h"
 #include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"

@@ -6,7 +6,7 @@
 
 #include <variant>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace blink {
 

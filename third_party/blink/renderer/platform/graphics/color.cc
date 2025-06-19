@@ -32,6 +32,7 @@
 #include <tuple>
 
 #include "base/check_op.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_view_util.h"
 #include "build/build_config.h"

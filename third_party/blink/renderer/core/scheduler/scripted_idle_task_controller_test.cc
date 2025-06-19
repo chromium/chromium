@@ -6,6 +6,7 @@
 
 #include <deque>
 
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"

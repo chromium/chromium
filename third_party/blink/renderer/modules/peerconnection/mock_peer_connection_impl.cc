@@ -13,7 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_data_channel_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"

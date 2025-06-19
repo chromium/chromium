@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
 
+#include "base/notimplemented.h"
+
 namespace blink {
 
 MediaSourceAttachmentSupplement::MediaSourceAttachmentSupplement() = default;

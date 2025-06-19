@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/notimplemented.h"
 #include "services/webnn/public/mojom/webnn_device.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #ifdef UNSAFE_BUFFERS_BUILD

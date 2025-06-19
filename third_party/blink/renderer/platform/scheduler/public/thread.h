@@ -26,9 +26,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_THREAD_H_
 
 #include <stdint.h>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/task/task_observer.h"
 #include "base/threading/thread.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

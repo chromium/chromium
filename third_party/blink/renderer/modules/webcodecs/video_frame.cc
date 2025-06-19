@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_aura.h"
 
+#include "base/notimplemented.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_test_suite.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"

@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/features.h"
