@@ -9,14 +9,18 @@
  * 'en-US'. For more information on locales:
  * https://en.wikipedia.org/wiki/Locale_(computer_software)
  */
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {OffscreenCommandType} from '../common/offscreen_command_type.js';
+import {BridgeConstants} from '../common/bridge_constants.js';
 
 import {Msgs} from './msgs.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 type TtsVoice = chrome.tts.TtsVoice;
+
+const TARGET = BridgeConstants.LocaleOutputHelper.TARGET;
+const Action = BridgeConstants.LocaleOutputHelper.Action;
 
 interface TextWithLocale {
   text: string;
@@ -37,19 +41,8 @@ export class LocaleOutputHelper {
 
     this.setAvailableVoices_();
 
-    chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: chrome.runtime.MessageSender,
-         _sendResponse: (value: any) => void) =>
-            this.handleMessageFromOffscreen_(message));
-  }
-
-  private handleMessageFromOffscreen_(message: any|undefined) {
-    switch (message['command']) {
-      case OffscreenCommandType.ON_VOICES_CHANGED:
-        this.setAvailableVoices_();
-        break;
-    }
-    return false;
+    BridgeHelper.registerHandler(
+        TARGET, Action.ON_VOICES_CHANGED, () => this.setAvailableVoices_());
   }
 
   private setAvailableVoices_(): void {

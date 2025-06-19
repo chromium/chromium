@@ -136,6 +136,11 @@ export const BridgeConstants = {
     },
   },
 
+  LocaleOutputHelper: {
+    TARGET: 'LocaleOutputHelper',
+    Action: {ON_VOICES_CHANGED: 'onVoicesChanged'},
+  },
+
   LogStore: {
     TARGET: 'LogStore',
     Action: {
@@ -186,6 +191,11 @@ export const BridgeConstants = {
       SET_RANGE_TO_I_SEARCH_NODE: 'setRangeToISearchNode',
       WAIT_FOR_PANEL_COLLAPSE: 'waitForPanelCollapse',
     },
+  },
+
+  PrimaryTts: {
+    TARGET: 'PrimaryTts',
+    Action: {ON_VOICES_CHANGED: 'onVoicesChanged'},
   },
 
   TtsBackground: {

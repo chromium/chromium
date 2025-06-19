@@ -225,8 +225,8 @@ class OffscreenSpeechSynthesis {
   constructor() {
     if (window.speechSynthesis) {
       window.speechSynthesis.onvoiceschanged = () => {
-        chrome.runtime.sendMessage(
-            undefined, {command: OffscreenCommandType.ON_VOICES_CHANGED});
+        BackgroundBridge.LocaleOutputHelper.onVoicesChanged();
+        BackgroundBridge.PrimaryTts.onVoicesChanged();
       };
     }
 

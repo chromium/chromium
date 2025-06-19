@@ -237,6 +237,14 @@ export const BackgroundBridge = {
     },
   },
 
+  LocaleOutputHelper: {
+    onVoicesChanged(): Promise<void> {
+      return BridgeHelper.sendMessage(
+          BridgeConstants.LocaleOutputHelper.TARGET,
+          BridgeConstants.LocaleOutputHelper.Action.ON_VOICES_CHANGED);
+    },
+  },
+
   LogStore: {
     /** Clear the log buffer. */
     clearLog(): Promise<void> {
@@ -350,6 +358,14 @@ export const BackgroundBridge = {
       return BridgeHelper.sendMessage(
           BridgeConstants.PanelBackground.TARGET,
           BridgeConstants.PanelBackground.Action.WAIT_FOR_PANEL_COLLAPSE);
+    },
+  },
+
+  PrimaryTts: {
+    onVoicesChanged(): Promise<void> {
+      return BridgeHelper.sendMessage(
+          BridgeConstants.PrimaryTts.TARGET,
+          BridgeConstants.PrimaryTts.Action.ON_VOICES_CHANGED);
     },
   },
 
