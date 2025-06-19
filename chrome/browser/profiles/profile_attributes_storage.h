@@ -193,6 +193,7 @@ class ProfileAttributesStorage {
       const base::FilePath& profile_path) const;
   void NotifyProfileHostedDomainChanged(
       const base::FilePath& profile_path) const;
+  void NotifyProfileIsManagedChanged(const base::FilePath& profile_path) const;
   void NotifyProfileUserManagementAcceptanceChanged(
       const base::FilePath& profile_path) const;
   void NotifyProfileManagementEnrollmentTokenChanged(

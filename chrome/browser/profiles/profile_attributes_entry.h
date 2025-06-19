@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
@@ -210,6 +211,9 @@ class ProfileAttributesEntry {
   // for other string getters, the returned value is UTF8 encoded.
   std::string GetHostedDomain() const;
 
+  // Returns management status of the current signed-in account.
+  signin::Tribool GetIsManaged() const;
+
   // Returns the enrollment token to get policies for a profile.
   std::string GetProfileManagementEnrollmentToken() const;
 
@@ -266,6 +270,7 @@ class ProfileAttributesEntry {
   // Unlike for other string setters, the argument is expected to be UTF8
   // encoded.
   void SetHostedDomain(std::string hosted_domain);
+  void SetIsManaged(signin::Tribool value);
 
   void SetProfileManagementEnrollmentToken(const std::string& enrollment_token);
   void SetProfileManagementOidcTokens(

@@ -192,6 +192,11 @@ void ManagedUserProfileNoticeHandler::OnProfileHostedDomainChanged(
   UpdateProfileInfo(profile_path);
 }
 
+void ManagedUserProfileNoticeHandler::OnProfileIsManagedChanged(
+    const base::FilePath& profile_path) {
+  UpdateProfileInfo(profile_path);
+}
+
 void ManagedUserProfileNoticeHandler::OnBrowserRemoved(Browser* browser) {
   if (browser_ == browser) {
     browser_ = nullptr;

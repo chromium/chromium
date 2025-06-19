@@ -144,8 +144,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
       const base::FilePath& profile_path) override;
   void OnProfileNameChanged(const base::FilePath& profile_path,
                             const std::u16string& old_profile_name) override;
-  void OnProfileHostedDomainChanged(
-      const base::FilePath& profile_path) override;
+  void OnProfileIsManagedChanged(const base::FilePath& profile_path) override;
   void OnProfileSupervisedUserIdChanged(
       const base::FilePath& profile_path) override;
 

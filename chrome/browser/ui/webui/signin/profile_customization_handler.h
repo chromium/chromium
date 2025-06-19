@@ -45,8 +45,7 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler,
   void OnProfileHighResAvatarLoaded(
       const base::FilePath& profile_path) override;
   void OnProfileThemeColorsChanged(const base::FilePath& profile_path) override;
-  void OnProfileHostedDomainChanged(
-      const base::FilePath& profile_path) override;
+  void OnProfileIsManagedChanged(const base::FilePath& profile_path) override;
   void OnProfileNameChanged(const base::FilePath& profile_path,
                             const std::u16string& old_profile_name) override;
 

@@ -71,6 +71,7 @@ class ManagedUserProfileNoticeHandler
       const base::FilePath& profile_path) override;
   void OnProfileHostedDomainChanged(
       const base::FilePath& profile_path) override;
+  void OnProfileIsManagedChanged(const base::FilePath& profile_path) override;
 
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override;

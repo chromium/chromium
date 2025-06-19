@@ -27,7 +27,9 @@
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -319,17 +321,16 @@ bool IsChromeAppKioskSession() {
 #if !BUILDFLAG(IS_CHROMEOS)
 std::u16string GetDefaultNameForNewEnterpriseProfile(
     const std::string& hosted_domain) {
-  // TODO(crbug.com/425456152): Handle the flex org case when there is no
-  // hosted domain for managed accounts.
-  if (AccountInfo::IsManaged(hosted_domain) == signin::Tribool::kTrue) {
-    std::u16string hosted_domain_name = base::UTF8ToUTF16(hosted_domain);
-    CHECK(!hosted_domain_name.empty());
-    return hosted_domain_name;
+  std::u16string name;
+  if (!hosted_domain.empty() &&
+      hosted_domain != signin::constants::kNoHostedDomainFound) {
+    name = base::UTF8ToUTF16(hosted_domain);
+  } else {
+    name = l10n_util::GetStringUTF16(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
   }
-  std::u16string default_name = l10n_util::GetStringUTF16(
-      IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
-  CHECK(!default_name.empty());
-  return default_name;
+  CHECK(!name.empty());
+  return name;
 }
 
 std::u16string GetDefaultNameForNewSignedInProfile(
@@ -340,8 +341,6 @@ std::u16string GetDefaultNameForNewSignedInProfile(
     CHECK(!given_name.empty());
     return given_name;
   }
-  // TODO(crbug.com/425456152): Handle the flex org case when there is no
-  // hosted domain for managed accounts.
   std::u16string default_name =
       GetDefaultNameForNewEnterpriseProfile(account_info.hosted_domain);
   CHECK(!default_name.empty());

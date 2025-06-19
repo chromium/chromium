@@ -95,6 +95,7 @@ IN_PROC_BROWSER_TEST_F(ConsentDialogUiTest, MAYBE_GetConsentDialogBodyTest) {
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_with_hosted_domain->GetPath());
   ASSERT_TRUE(entry);
+  entry->SetIsManaged(signin::Tribool::kTrue);
   entry->SetHostedDomain("hosteddomain.com");
 
   // Simulate a supervised profile.

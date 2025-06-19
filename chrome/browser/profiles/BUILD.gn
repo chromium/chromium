@@ -124,6 +124,7 @@ source_set("profile_util") {
     "//components/enterprise/common/proto:upload_request_response",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser/password_store:password_store_interface",
+    "//components/signin/public/identity_manager:tribool",
     "//device/fido:fido",
     "//mojo/public/cpp/bindings",
     "//services/preferences/public/mojom",

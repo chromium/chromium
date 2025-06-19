@@ -216,6 +216,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
   EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
+  EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
 
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
   signin::SimulateAccountImageFetch(identity_manager(), info.account_id,
@@ -229,6 +230,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   EXPECT_TRUE(entry->GetGAIAName().empty());
   EXPECT_EQ(nullptr, entry->GetGAIAPicture());
   EXPECT_TRUE(entry->GetHostedDomain().empty());
+  EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -257,6 +259,7 @@ TEST_F(GAIAInfoUpdateServiceTest, RevokeSyncConsent) {
   EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
   EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
+  EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_picture, entry->GetAvatarIcon()));
 }
 
@@ -370,6 +373,7 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
   entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE", gaia_picture);
   entry->SetHostedDomain(kNoHostedDomainFound);
+  entry->SetIsManaged(signin::Tribool::kFalse);
 
   // Verify that creating the GAIAInfoUpdateService resets the GAIA related
   // profile attributes if the profile no longer has a primary account and that
@@ -381,6 +385,7 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   EXPECT_TRUE(entry->GetGAIAGivenName().empty());
   EXPECT_FALSE(entry->GetGAIAPicture());
   EXPECT_TRUE(entry->GetHostedDomain().empty());
+  EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
 }
 
 TEST_F(GAIAInfoUpdateServiceTest,
@@ -576,6 +581,7 @@ TEST_F(GAIAInfoUpdateServiceWithGlicEnablingTest, LogInLogOut) {
   EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
   EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
+  EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
   EXPECT_TRUE(entry->IsGlicEligible());
 
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
@@ -592,6 +598,7 @@ TEST_F(GAIAInfoUpdateServiceWithGlicEnablingTest, LogInLogOut) {
   EXPECT_TRUE(entry->GetGAIAName().empty());
   EXPECT_EQ(nullptr, entry->GetGAIAPicture());
   EXPECT_TRUE(entry->GetHostedDomain().empty());
+  EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
   EXPECT_FALSE(entry->IsGlicEligible());
 }
 #endif

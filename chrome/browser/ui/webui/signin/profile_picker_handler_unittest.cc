@@ -54,8 +54,7 @@ void VerifyProfileEntry(const base::Value::Dict& dict,
   EXPECT_EQ(*dict.FindString("userName"),
             base::UTF16ToUTF8(entry->GetUserName()));
   EXPECT_EQ(dict.FindString("avatarBadge")->empty(),
-            AccountInfo::IsManaged(entry->GetHostedDomain()) !=
-                    signin::Tribool::kTrue &&
+            entry->GetIsManaged() != signin::Tribool::kTrue &&
                 !entry->IsSupervised());
   EXPECT_EQ(*dict.FindString("profileCardButtonLabel"),
             base::UTF16ToUTF8(l10n_util::GetStringFUTF16(

@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -30,6 +31,8 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
@@ -51,6 +54,7 @@ const char kActiveTimeKey[] = "active_time";
 const char kMetricsBucketIndex[] = "metrics_bucket_index";
 const char kForceSigninProfileLockedKey[] = "force_signin_profile_locked";
 const char kHostedDomain[] = "hosted_domain";
+const char kIsManaged[] = "is_managed";
 const char kOIDCIdentityNameKey[] = "oidc_identity_name";
 const char kProfileManagementEnrollmentToken[] =
     "profile_management_enrollment_token";
@@ -587,6 +591,32 @@ std::string ProfileAttributesEntry::GetHostedDomain() const {
   return GetString(kHostedDomain);
 }
 
+signin::Tribool ProfileAttributesEntry::GetIsManaged() const {
+  static_assert(kIntegerNotSet ==
+                base::to_underlying(signin::Tribool::kUnknown));
+  static_assert(base::to_underlying(signin::Tribool::kFalse) == 0);
+  static_assert(base::to_underlying(signin::Tribool::kTrue) == 1);
+
+  int value = GetInteger(kIsManaged);
+
+  // If the value is not set, return fallback to the hosted domain check.
+  // This can eventually be removed once all profiles have an explicit value.
+  if (value == kIntegerNotSet) {
+    if (GetHostedDomain().empty()) {
+      return signin::Tribool::kUnknown;
+    }
+    return signin::TriboolFromBool(GetHostedDomain() !=
+                                   signin::constants::kNoHostedDomainFound);
+  }
+
+  // If the value is invalid, or is not a valid Tribool value, return unknown.
+  if (value < kIntegerNotSet ||
+      value > base::to_underlying(signin::Tribool::kTrue)) {
+    return signin::Tribool::kUnknown;
+  }
+  return static_cast<signin::Tribool>(value);
+}
+
 std::string ProfileAttributesEntry::GetProfileManagementEnrollmentToken()
     const {
   return GetString(kProfileManagementEnrollmentToken);
@@ -822,6 +852,12 @@ void ProfileAttributesEntry::SetProfileThemeColors(
 void ProfileAttributesEntry::SetHostedDomain(std::string hosted_domain) {
   if (SetString(kHostedDomain, hosted_domain))
     profile_attributes_storage_->NotifyProfileHostedDomainChanged(GetPath());
+}
+
+void ProfileAttributesEntry::SetIsManaged(signin::Tribool value) {
+  if (SetInteger(kIsManaged, base::to_underlying(value))) {
+    profile_attributes_storage_->NotifyProfileIsManagedChanged(GetPath());
+  }
 }
 
 void ProfileAttributesEntry::SetProfileManagementEnrollmentToken(

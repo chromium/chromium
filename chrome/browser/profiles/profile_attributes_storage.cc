@@ -899,6 +899,13 @@ void ProfileAttributesStorage::NotifyProfileHostedDomainChanged(
     observer.OnProfileHostedDomainChanged(profile_path);
 }
 
+void ProfileAttributesStorage::NotifyProfileIsManagedChanged(
+    const base::FilePath& profile_path) const {
+  for (auto& observer : observer_list_) {
+    observer.OnProfileIsManagedChanged(profile_path);
+  }
+}
+
 void ProfileAttributesStorage::NotifyOnProfileHighResAvatarLoaded(
     const base::FilePath& profile_path) const {
   for (auto& observer : observer_list_)

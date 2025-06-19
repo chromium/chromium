@@ -123,6 +123,7 @@ void VerifyInitialValues(ProfileAttributesEntry* entry,
   EXPECT_EQ(is_signed_in_with_credential_provider,
             entry->IsSignedInWithCredentialProvider());
   EXPECT_EQ(std::string(), entry->GetHostedDomain());
+  EXPECT_EQ(signin::Tribool::kUnknown, entry->GetIsManaged());
 }
 
 class ProfileAttributesTestObserver
@@ -152,6 +153,8 @@ class ProfileAttributesTestObserver
   MOCK_METHOD1(OnProfileThemeColorsChanged,
                void(const base::FilePath& profile_path));
   MOCK_METHOD1(OnProfileHostedDomainChanged,
+               void(const base::FilePath& profile_path));
+  MOCK_METHOD1(OnProfileIsManagedChanged,
                void(const base::FilePath& profile_path));
   MOCK_METHOD1(OnProfileUserManagementAcceptanceChanged,
                void(const base::FilePath& profile_path));
@@ -215,6 +218,7 @@ class ProfileAttributesStorageTest : public testing::Test {
     EXPECT_CALL(observer_, OnProfileIsOmittedChanged(_)).Times(0);
     EXPECT_CALL(observer_, OnProfileThemeColorsChanged(_)).Times(0);
     EXPECT_CALL(observer_, OnProfileHostedDomainChanged(_)).Times(0);
+    EXPECT_CALL(observer_, OnProfileIsManagedChanged(_)).Times(0);
     EXPECT_CALL(observer_, OnProfileManagementEnrollmentTokenChanged(_))
         .Times(0);
     EXPECT_CALL(observer_, OnProfileManagementIdChanged(_)).Times(0);
@@ -797,6 +801,11 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
 
   EXPECT_CALL(observer(), OnProfileHostedDomainChanged(path)).Times(2);
   TEST_STRING_ACCESSORS(ProfileAttributesEntry, entry, HostedDomain);
+  VerifyAndResetCallExpectations();
+
+  EXPECT_CALL(observer(), OnProfileIsManagedChanged(path)).Times(2);
+  TEST_ACCESSORS(ProfileAttributesEntry, entry, IsManaged,
+                 signin::Tribool::kTrue, signin::Tribool::kFalse);
   VerifyAndResetCallExpectations();
 
   TEST_BOOL_ACCESSORS(ProfileAttributesEntry, entry, IsEphemeral);

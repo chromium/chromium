@@ -147,6 +147,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest,
           .GetProfileAttributesWithPath(profile_with_hosted_domain->GetPath());
   ASSERT_TRUE(entry);
   entry->SetHostedDomain("hosteddomain.com");
+  entry->SetIsManaged(signin::Tribool::kTrue);
 
   // Simulate a supervised profile.
   TestingProfile::Builder builder_supervised;
@@ -369,6 +370,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest,
           .GetProfileAttributesWithPath(profile_with_hosted_domain->GetPath());
   ASSERT_TRUE(entry);
   entry->SetHostedDomain("hosteddomain.com");
+  entry->SetIsManaged(signin::Tribool::kTrue);
 
   // Simulate a supervised profile.
   TestingProfile::Builder builder_supervised;
@@ -528,6 +530,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest,
           .GetProfileAttributesWithPath(profile_with_hosted_domain->GetPath());
   ASSERT_TRUE(entry);
   entry->SetHostedDomain("hosteddomain.com");
+  entry->SetIsManaged(signin::Tribool::kTrue);
 
   // Simulate a supervised profile.
   TestingProfile::Builder builder_supervised;
@@ -753,6 +756,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, MAYBE_GetManagedUiWebUILabelEnterprise) {
           .GetProfileAttributesWithPath(profile_with_hosted_domain->GetPath());
   ASSERT_TRUE(entry);
   entry->SetHostedDomain("hosteddomain.com");
+  entry->SetIsManaged(signin::Tribool::kTrue);
 
   // Simulate a supervised profile.
   TestingProfile::Builder builder_supervised;
@@ -945,6 +949,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, MAYBE_GetManagementPageSubtitle) {
           .GetProfileAttributesWithPath(profile_with_hosted_domain->GetPath());
   ASSERT_TRUE(entry);
   entry->SetHostedDomain("hosteddomain.com");
+  entry->SetIsManaged(signin::Tribool::kTrue);
 
   // Simulate a supervised profile.
   TestingProfile::Builder builder_supervised;
@@ -1110,6 +1115,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, MAYBE_GetManagementBubbleTitle) {
           .GetProfileAttributesWithPath(profile_with_hosted_domain->GetPath());
   ASSERT_TRUE(entry);
   entry->SetHostedDomain("hosteddomain.com");
+  entry->SetIsManaged(signin::Tribool::kTrue);
 
   // Simulate a supervised profile.
   TestingProfile::Builder builder_supervised;

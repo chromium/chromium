@@ -380,6 +380,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   auto& managed_profile = profiles::testing::CreateProfileSync(
       profile_manager(), profile_manager()->GenerateNextProfileDirectoryPath());
   GetProfileEntry(&managed_profile)->SetHostedDomain("example.com");
+  GetProfileEntry(&managed_profile)->SetIsManaged(signin::Tribool::kTrue);
 
   policy::ScopedManagementServiceOverrideForTesting browser_management(
       policy::ManagementServiceFactory::GetForProfile(&managed_profile),
@@ -460,6 +461,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   auto& managed_profile = profiles::testing::CreateProfileSync(
       profile_manager(), profile_manager()->GenerateNextProfileDirectoryPath());
   GetProfileEntry(&managed_profile)->SetHostedDomain("example.com");
+  GetProfileEntry(&managed_profile)->SetIsManaged(signin::Tribool::kTrue);
 
   policy::ScopedManagementServiceOverrideForTesting browser_management(
       policy::ManagementServiceFactory::GetForProfile(&managed_profile),
@@ -561,6 +563,7 @@ TEST_F(
         policy::EnterpriseManagementAuthority::CLOUD);
     // Set account manager
     GetProfileEntry(&profile)->SetHostedDomain("example.com");
+    GetProfileEntry(&profile)->SetIsManaged(signin::Tribool::kTrue);
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
             &profile, GetProfileEntry(&profile), "intercepted.com",

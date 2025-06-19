@@ -80,6 +80,8 @@ base::Value::Dict ProfileInternalsHandler::CreateProfileEntry(
   profile_entry.Set("gaiaId", entry->GetGAIAId().ToString());
   profile_entry.Set("userName", entry->GetUserName());
   profile_entry.Set("hostedDomain", entry->GetHostedDomain());
+  profile_entry.Set("isManaged",
+                    signin::TriboolToString(entry->GetIsManaged()));
   profile_entry.Set("isSupervised", entry->IsSupervised());
   profile_entry.Set("isOmitted", entry->IsOmitted());
   profile_entry.Set("isEphemeral", entry->IsEphemeral());

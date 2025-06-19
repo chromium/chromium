@@ -101,7 +101,7 @@ void ProfileCustomizationHandler::OnProfileThemeColorsChanged(
       profiles::GetIconsAndLabelsForProfileAvatarSelector(profile_->GetPath()));
 }
 
-void ProfileCustomizationHandler::OnProfileHostedDomainChanged(
+void ProfileCustomizationHandler::OnProfileIsManagedChanged(
     const base::FilePath& profile_path) {
   UpdateProfileInfo(profile_path);
 }
@@ -206,8 +206,7 @@ base::Value::Dict ProfileCustomizationHandler::GetProfileInfoValue() {
       profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size),
                                    avatar_icon_size, avatar_icon_size);
   dict.Set("pictureUrl", webui::GetBitmapDataUrl(icon.AsBitmap()));
-  dict.Set("isManaged", AccountInfo::IsManaged(entry->GetHostedDomain()) ==
-                            signin::Tribool::kTrue);
+  dict.Set("isManaged", entry->GetIsManaged() == signin::Tribool::kTrue);
   dict.Set("hasEnterpriseLabel", !entry->GetEnterpriseProfileLabel().empty());
   std::u16string gaia_name = entry->GetGAIANameToDisplay();
   if (gaia_name.empty()) {

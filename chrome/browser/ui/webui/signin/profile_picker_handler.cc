@@ -166,8 +166,7 @@ base::Value::Dict CreateProfileEntry(const ProfileAttributesEntry* entry,
   const auto local_profile_name = entry->GetLocalProfileName();
   std::u16string profileCardButtonLabel = l10n_util::GetStringFUTF16(
       IDS_PROFILE_PICKER_PROFILE_CARD_LABEL, local_profile_name);
-  if (AccountInfo::IsManaged(entry->GetHostedDomain()) ==
-      signin::Tribool::kTrue) {
+  if (entry->GetIsManaged() == signin::Tribool::kTrue) {
     profile_entry.Set("avatarBadge", "cr:domain");
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   } else if (base::FeatureList::IsEnabled(
@@ -914,7 +913,7 @@ void ProfilePickerHandler::OnProfileNameChanged(
   PushProfilesList();
 }
 
-void ProfilePickerHandler::OnProfileHostedDomainChanged(
+void ProfilePickerHandler::OnProfileIsManagedChanged(
     const base::FilePath& profile_path) {
   PushProfilesList();
 }

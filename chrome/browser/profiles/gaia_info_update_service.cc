@@ -135,6 +135,7 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
   entry->SetGAIAGivenName(base::UTF8ToUTF16(info.given_name));
   entry->SetGAIAName(base::UTF8ToUTF16(info.full_name));
   entry->SetHostedDomain(info.hosted_domain);
+  entry->SetIsManaged(info.IsManaged());
 
   if (info.picture_url == kNoPictureURLFound) {
     entry->SetGAIAPicture(std::string(), gfx::Image());
@@ -173,6 +174,7 @@ void GAIAInfoUpdateService::ClearProfileEntry() {
   entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAPicture(std::string(), gfx::Image());
   entry->SetHostedDomain(std::string());
+  entry->SetIsManaged(signin::Tribool::kFalse);
   entry->SetIsGlicEligible(false);
 }
 
