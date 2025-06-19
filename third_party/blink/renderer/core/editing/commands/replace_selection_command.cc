@@ -1875,8 +1875,7 @@ static bool IsCharacterSmartReplaceExemptConsideringNonBreakingSpace(
     UChar32 character,
     bool previous_character) {
   return IsCharacterSmartReplaceExempt(
-      character == kNoBreakSpaceCharacter ? ' ' : character,
-      previous_character);
+      character == uchar::kNoBreakSpace ? ' ' : character, previous_character);
 }
 
 void ReplaceSelectionCommand::AddSpacesForSmartReplace(

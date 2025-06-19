@@ -52,16 +52,16 @@ String TextRun::NormalizedUTF16() const {
     // Don't normalize tabs as they are not treated as spaces for word-end.
     if (NormalizeSpace() &&
         Character::IsNormalizedCanvasSpaceCharacter(character)) {
-      character = kSpaceCharacter;
+      character = uchar::kSpace;
     } else if (Character::TreatAsSpace(character) &&
-               character != kNoBreakSpaceCharacter) {
-      character = kSpaceCharacter;
+               character != uchar::kNoBreakSpace) {
+      character = uchar::kSpace;
     } else if (Character::TreatAsZeroWidthSpaceInComplexScriptLegacy(
                    character)) {
       // Repalce only ZWS-like characters in BMP because we'd like to avoid
       // changing the string length.
       DCHECK_LT(character, 0x10000);
-      character = kZeroWidthSpaceCharacter;
+      character = uchar::kZeroWidthSpace;
     }
 
     UNSAFE_TODO(

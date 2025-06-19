@@ -56,7 +56,7 @@ String EscapeForHTML(const String& str) {
 }  // namespace
 
 void ReplaceNBSPWithSpace(String& str) {
-  str.Replace(kNoBreakSpaceCharacter, kSpaceCharacter);
+  str.Replace(uchar::kNoBreakSpace, uchar::kSpace);
 }
 
 String ConvertURIListToURL(const String& uri_list) {

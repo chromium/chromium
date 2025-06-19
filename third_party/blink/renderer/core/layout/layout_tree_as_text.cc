@@ -126,7 +126,7 @@ String QuoteAndEscapeNonPrintables(const String& s) {
     } else if (c == '"') {
       result.Append('\\');
       result.Append('"');
-    } else if (c == '\n' || c == kNoBreakSpaceCharacter) {
+    } else if (c == '\n' || c == uchar::kNoBreakSpace) {
       result.Append(' ');
     } else {
       if (c >= 0x20 && c < 0x7F) {

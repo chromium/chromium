@@ -125,19 +125,20 @@ UChar WhitespaceRebalancingCharToAppend(const String& string,
     return string[index];
 
   if (!index && start_is_start_of_paragraph)
-    return kNoBreakSpaceCharacter;
+    return uchar::kNoBreakSpace;
   if (index + 1 == string.length() && should_emit_nbsp_before_end)
-    return kNoBreakSpaceCharacter;
+    return uchar::kNoBreakSpace;
 
   // Generally, alternate between space and no-break space.
   if (previous == ' ')
-    return kNoBreakSpaceCharacter;
-  if (previous == kNoBreakSpaceCharacter)
+    return uchar::kNoBreakSpace;
+  if (previous == uchar::kNoBreakSpace) {
     return ' ';
+  }
 
   // Run of two or more spaces starts with a no-break space (crbug.com/453042).
   if (index + 1 < string.length() && IsWhitespace(string[index + 1]))
-    return kNoBreakSpaceCharacter;
+    return uchar::kNoBreakSpace;
 
   return ' ';
 }

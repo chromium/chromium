@@ -49,9 +49,10 @@ bool ShouldDeleteNextCharacter(const Node& marker_text_node,
       PlainText(next_character_range, TextIteratorBehavior::Builder().Build());
   const UChar next_character = next_character_str[0];
   // Character immediately following the range is not a space
-  if (next_character != kSpaceCharacter &&
-      next_character != kNoBreakSpaceCharacter)
+  if (next_character != uchar::kSpace &&
+      next_character != uchar::kNoBreakSpace) {
     return false;
+  }
 
   // First case: we're deleting at the beginning of the editable text
   if (marker.StartOffset() == 0)
@@ -70,8 +71,8 @@ bool ShouldDeleteNextCharacter(const Node& marker_text_node,
   // Return true if the character immediately before the range is a space, false
   // otherwise
   const UChar prev_character = prev_character_str[0];
-  return prev_character == kSpaceCharacter ||
-         prev_character == kNoBreakSpaceCharacter;
+  return prev_character == uchar::kSpace ||
+         prev_character == uchar::kNoBreakSpace;
 }
 
 EphemeralRangeInFlatTree ComputeRangeSurroundingCaret(

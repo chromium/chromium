@@ -158,29 +158,29 @@ class PLATFORM_EXPORT Character {
   // Collapsible white space characters defined in CSS:
   // https://drafts.csswg.org/css-text-3/#collapsible-white-space
   static bool IsCollapsibleSpace(UChar c) {
-    return c == kSpaceCharacter || c == kNewlineCharacter ||
-           c == kTabulationCharacter || c == uchar::kCarriageReturn;
+    return c == uchar::kSpace || c == uchar::kLineFeed || c == uchar::kTab ||
+           c == uchar::kCarriageReturn;
   }
-  static bool IsLineFeed(UChar c) { return c == kNewlineCharacter; }
+  static bool IsLineFeed(UChar c) { return c == uchar::kLineFeed; }
   template <typename CharacterType>
   static bool IsOtherSpaceSeparator(CharacterType c) {
     return c == uchar::kIdeographicSpace;
   }
   static bool TreatAsSpace(UChar32 c) {
-    return c == kSpaceCharacter || c == kTabulationCharacter ||
-           c == kNewlineCharacter || c == kNoBreakSpaceCharacter;
+    return c == uchar::kSpace || c == uchar::kTab || c == uchar::kLineFeed ||
+           c == uchar::kNoBreakSpace;
   }
   static bool TreatAsZeroWidthSpace(UChar32 c) {
     return TreatAsZeroWidthSpaceInComplexScript(c) ||
-           c == kZeroWidthNonJoinerCharacter || c == kZeroWidthJoinerCharacter;
+           c == uchar::kZeroWidthNonJoiner || c == uchar::kZeroWidthJoiner;
   }
   static bool TreatAsZeroWidthSpaceInComplexScriptLegacy(UChar32 c) {
     return c == uchar::kFormFeed || c == uchar::kCarriageReturn ||
-           c == kSoftHyphenCharacter || c == kZeroWidthSpaceCharacter ||
-           (c >= uchar::kLeftToRightMark && c <= kRightToLeftMarkCharacter) ||
+           c == uchar::kSoftHyphen || c == uchar::kZeroWidthSpace ||
+           (c >= uchar::kLeftToRightMark && c <= uchar::kRightToLeftMark) ||
            (c >= uchar::kLeftToRightEmbedding &&
-            c <= kRightToLeftOverrideCharacter) ||
-           c == kZeroWidthNoBreakSpaceCharacter ||
+            c <= uchar::kRightToLeftOverride) ||
+           c == uchar::kZeroWidthNoBreakSpace ||
            c == uchar::kObjectReplacementCharacter;
   }
   static bool TreatAsZeroWidthSpaceInComplexScript(UChar32 c) {
@@ -193,7 +193,7 @@ class PLATFORM_EXPORT Character {
   // https://unicode.org/reports/tr44/#Default_Ignorable_Code_Point
   static bool IsDefaultIgnorable(UChar32 c) {
     if (c < 0x0100) {
-      return c == kSoftHyphenCharacter;
+      return c == uchar::kSoftHyphen;
     }
     return u_hasBinaryProperty(c, UCHAR_DEFAULT_IGNORABLE_CODE_POINT);
   }
@@ -285,7 +285,7 @@ class PLATFORM_EXPORT Character {
 inline bool Character::MaybeBidiRtlUtf16(base::StrictNumeric<UChar> ch) {
   return ch >= 0x0590 &&
          // `InlineItemsBuilder` may emit U+200B Zero Width Space.
-         ch != kZeroWidthSpaceCharacter &&
+         ch != uchar::kZeroWidthSpace &&
          // General Punctuation such as curly quotes.
          !IsInRange(ch, 0x2010, 0x2029) &&
          // CJK etc., up to Surrogate Pairs.
@@ -297,7 +297,7 @@ inline bool Character::MaybeBidiRtlUtf16(base::StrictNumeric<UChar> ch) {
 inline bool Character::MaybeBidiRtl(UChar32 ch) {
   return ch >= 0x0590 &&
          // `InlineItemsBuilder` may emit U+200B Zero Width Space.
-         ch != kZeroWidthSpaceCharacter &&
+         ch != uchar::kZeroWidthSpace &&
          // General Punctuation such as curly quotes.
          !IsInRange(ch, 0x2010, 0x2029) &&
          // CJK etc., up to Surrogate Pairs.

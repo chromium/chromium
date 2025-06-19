@@ -452,9 +452,9 @@ TEST_F(InlineNodeTest, SegmentSplit3To4) {
 TEST_F(InlineNodeTest, SegmentBidiOverride) {
   InlineNodeForTest node = CreateInlineNode();
   node.Append("Hello ", layout_object_);
-  node.Append(kRightToLeftOverrideCharacter);
+  node.Append(uchar::kRightToLeftOverride);
   node.Append("ABC", layout_object_);
-  node.Append(kPopDirectionalFormattingCharacter);
+  node.Append(uchar::kPopDirectionalFormatting);
   node.SegmentText();
   InlineItems& items = node.Items();
   ASSERT_EQ(4u, items.size());
@@ -467,13 +467,13 @@ TEST_F(InlineNodeTest, SegmentBidiOverride) {
 static InlineNodeForTest CreateBidiIsolateNode(InlineNodeForTest node,
                                                LayoutObject* layout_object) {
   node.Append("Hello ", layout_object);
-  node.Append(kRightToLeftIsolateCharacter);
+  node.Append(uchar::kRightToLeftIsolate);
   node.Append(u"\u05E2\u05D1\u05E8\u05D9\u05EA ", layout_object);
   node.Append(uchar::kLeftToRightIsolate);
   node.Append("A", layout_object);
-  node.Append(kPopDirectionalIsolateCharacter);
+  node.Append(uchar::kPopDirectionalIsolate);
   node.Append(u"\u05E2\u05D1\u05E8\u05D9\u05EA", layout_object);
-  node.Append(kPopDirectionalIsolateCharacter);
+  node.Append(uchar::kPopDirectionalIsolate);
   node.Append(" World", layout_object);
   node.SegmentText();
   return node;

@@ -352,7 +352,7 @@ CORE_EXPORT bool ElementCannotHaveEndTag(const Node&);
 
 // Miscellaneous functions on Text
 inline bool IsWhitespace(UChar c) {
-  return c == kNoBreakSpaceCharacter || c == ' ' || c == '\n' || c == '\t';
+  return c == uchar::kNoBreakSpace || c == ' ' || c == '\n' || c == '\t';
 }
 
 // FIXME: Can't really answer this question correctly without knowing the

@@ -104,7 +104,7 @@ sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
       // it also checks if a character has a glyph. To look up the first
       // match, use the space character, because all fonts are likely to have
       // a glyph for it.
-      kSpaceCharacter));
+      uchar::kSpace));
   if (!typeface)
     return nullptr;
 
@@ -117,7 +117,7 @@ sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
   typeface->getFamilyName(&skia_family_name);
   sk_sp<SkTypeface> fallback(font_manager->matchFamilyStyleCharacter(
       nullptr, font_description.SkiaFontStyle(), &bcp47,
-      /* bcp47Count */ 1, kSpaceCharacter));
+      /* bcp47Count */ 1, uchar::kSpace));
   SkString skia_fallback_name;
   fallback->getFamilyName(&skia_fallback_name);
   if (typeface != fallback)

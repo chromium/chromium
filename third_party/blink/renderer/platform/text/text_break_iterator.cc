@@ -225,15 +225,15 @@ struct LazyLineBreakIterator::Context {
       if (!GetFastLineBreak(last_ch, ch)) {
         return FastBreakResult::kNoBreak;
       }
-      static_assert(kSoftHyphenCharacter <= kFastLineBreakMaxChar);
-      if (disable_soft_hyphen && last_ch == kSoftHyphenCharacter) [[unlikely]] {
+      static_assert(uchar::kSoftHyphen <= kFastLineBreakMaxChar);
+      if (disable_soft_hyphen && last_ch == uchar::kSoftHyphen) [[unlikely]] {
         return FastBreakResult::kNoBreak;
       }
       return FastBreakResult::kCanBreak;
     }
 
     // Otherwise defer to the Unicode algorithm.
-    static_assert(kNoBreakSpaceCharacter <= kFastLineBreakMaxChar,
+    static_assert(uchar::kNoBreakSpace <= kFastLineBreakMaxChar,
                   "Include NBSP for the performance.");
     return FastBreakResult::kUnknown;
   }
@@ -332,7 +332,7 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
         }
         next_break = following + start_offset_;
         if (disable_soft_hyphen_ && next_break > 0 &&
-            UNSAFE_TODO(str[next_break - 1]) == kSoftHyphenCharacter)
+            UNSAFE_TODO(str[next_break - 1]) == uchar::kSoftHyphen)
             [[unlikely]] {
           continue;
         }

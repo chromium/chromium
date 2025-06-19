@@ -206,8 +206,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   unsigned PreviousBreakOpportunity(unsigned offset, unsigned min = 0) const;
 
   static bool IsBreakableSpace(UChar ch) {
-    return ch == kSpaceCharacter || ch == kTabulationCharacter ||
-           ch == kNewlineCharacter;
+    return ch == uchar::kSpace || ch == uchar::kTab || ch == uchar::kLineFeed;
   }
 
  private:

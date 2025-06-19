@@ -21,7 +21,7 @@ class CORE_EXPORT MathMLTokenElement : public MathMLElement {
 
   struct TokenContent {
     String characters;
-    UChar32 code_point = kNonCharacter;
+    UChar32 code_point = uchar::kNonCharacter;
   };
   const TokenContent& GetTokenContent();
 

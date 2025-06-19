@@ -549,7 +549,7 @@ void TruncateOrPadText(String* text, unsigned length) {
     builder.ReserveCapacity(length);
     builder.Append(*text);
     while (builder.length() < length)
-      builder.Append(kSpaceCharacter);
+      builder.Append(uchar::kSpace);
     *text = builder.ToString();
   }
 }
@@ -1469,8 +1469,9 @@ void InlineNode::ShapeText(InlineItemsData* data,
         }
         // Break shaping at ZWNJ so that it prevents kerning. ZWNJ is always at
         // the beginning of an item for this purpose; see InlineItemsBuilder.
-        if (text_content[item.StartOffset()] == kZeroWidthNonJoinerCharacter)
+        if (text_content[item.StartOffset()] == uchar::kZeroWidthNonJoiner) {
           break;
+        }
         end_offset = item.EndOffset();
         num_text_items++;
       } else if (item.Type() == InlineItem::kOpenTag) {
@@ -1735,7 +1736,7 @@ String CreateTextContentForStickyImagesQuirk(
     const InlineItem& item = *item_ptr;
     if (item.Type() == InlineItem::kAtomicInline && item.IsImage()) {
       DCHECK_EQ(span[item.StartOffset()], uchar::kObjectReplacementCharacter);
-      span[item.StartOffset()] = kNoBreakSpaceCharacter;
+      span[item.StartOffset()] = uchar::kNoBreakSpace;
     }
   }
   return buffer.Release();
@@ -1972,13 +1973,14 @@ static LayoutUnit ComputeContentSize(InlineNode node,
         if (item.Type() == InlineItem::kControl) {
           UChar c = items_data.text_content[item.StartOffset()];
 #if DCHECK_IS_ON()
-          if (c == kNewlineCharacter)
+          if (c == uchar::kLineFeed) {
             DCHECK(line_info.HasForcedBreak());
+          }
 #endif
           // Tabulation characters change the widths by their positions, so
           // their widths for the max size may be different from the widths for
           // the min size. Fall back to 2 pass for now.
-          if (c == kTabulationCharacter) {
+          if (c == uchar::kTab) {
             AddTabulationCharacters(item, result.Length());
             continue;
           }

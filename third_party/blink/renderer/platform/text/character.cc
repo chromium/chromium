@@ -218,7 +218,7 @@ unsigned Character::ExpansionOpportunityCount(
 }
 
 bool Character::CanTextDecorationSkipInk(UChar32 codepoint) {
-  if (codepoint == kSolidusCharacter || codepoint == kReverseSolidusCharacter ||
+  if (codepoint == uchar::kSolidus || codepoint == uchar::kReverseSolidus ||
       codepoint == uchar::kLowLine) {
     return false;
   }
@@ -254,10 +254,9 @@ bool Character::CanReceiveTextEmphasis(UChar32 c) {
   // Draft 3 November 2010.
   // https://www.w3.org/TR/css-text-3/#word-separator
   if (c == uchar::kEthiopicWordspace || c == uchar::kAegeanWordSeparatorLine ||
-      c == uchar::kAegeanWordSeparatorDot ||
-      c == kUgariticWordDividerCharacter ||
-      c == kTibetanMarkIntersyllabicTshegCharacter ||
-      c == kTibetanMarkDelimiterTshegBstarCharacter) {
+      c == uchar::kAegeanWordSeparatorDot || c == uchar::kUgariticWordDivider ||
+      c == uchar::kTibetanMarkIntersyllabicTsheg ||
+      c == uchar::kTibetanMarkDelimiterTshegBstar) {
     return false;
   }
 
@@ -292,11 +291,11 @@ bool Character::IsEmojiComponent(UChar32 c) {
 }
 
 bool Character::MaybeEmojiPresentation(UChar32 c) {
-  return c == kZeroWidthJoinerCharacter || c == 0x00A9 /* copyright sign */ ||
+  return c == uchar::kZeroWidthJoiner || c == 0x00A9 /* copyright sign */ ||
          c == 0x00AE /* registered sign */ || IsEmojiKeycapBase(c) ||
-         IsInRange(c, 0x203C, 0x2B55) || c == kVariationSelector15Character ||
+         IsInRange(c, 0x203C, 0x2B55) || c == uchar::kVariationSelector15 ||
          c == 0x3030 || c == 0x303D || c == 0x3297 || c == 0x3299 ||
-         c == kVariationSelector16Character || c >= 65536;
+         c == uchar::kVariationSelector16 || c >= 65536;
 }
 
 bool Character::IsCommonOrInheritedScript(UChar32 character) {

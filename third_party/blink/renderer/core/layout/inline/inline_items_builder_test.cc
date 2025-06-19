@@ -432,9 +432,9 @@ class CollapsibleSpaceTest : public InlineItemsBuilderTest,
 
 INSTANTIATE_TEST_SUITE_P(InlineItemsBuilderTest,
                          CollapsibleSpaceTest,
-                         testing::Values(kSpaceCharacter,
-                                         kTabulationCharacter,
-                                         kNewlineCharacter));
+                         testing::Values(uchar::kSpace,
+                                         uchar::kTab,
+                                         uchar::kLineFeed));
 
 TEST_P(CollapsibleSpaceTest, CollapsedSpaceAfterNoWrap) {
   UChar space = GetParam();

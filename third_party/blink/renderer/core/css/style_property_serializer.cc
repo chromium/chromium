@@ -2701,7 +2701,7 @@ String StylePropertySerializer::TextBoxValue() const {
   // Otherwise build a multi-value list.
   StringBuilder result;
   result.Append(trim_value->CssText());
-  result.Append(kSpaceCharacter);
+  result.Append(uchar::kSpace);
   result.Append(edge_value->CssText());
   return result.ToString();
 }
@@ -2733,7 +2733,7 @@ String StylePropertySerializer::TextSpacingValue() const {
   }
   if (autospace_id != CSSValueID::kNormal) {
     if (!result.empty()) {
-      result.Append(kSpaceCharacter);
+      result.Append(uchar::kSpace);
     }
     result.Append(GetCSSValueNameAs<StringView>(autospace_id));
   }
@@ -2767,7 +2767,7 @@ String StylePropertySerializer::TextWrapValue() const {
   // If neither is initial, return a list.
   StringBuilder result;
   result.Append(PlatformEnumToCSSValueString(mode));
-  result.Append(kSpaceCharacter);
+  result.Append(uchar::kSpace);
   result.Append(PlatformEnumToCSSValueString(style));
   return result.ToString();
 }
@@ -2797,7 +2797,7 @@ String StylePropertySerializer::WhiteSpaceValue() const {
   }
   if (wrap != ComputedStyleInitialValues::InitialTextWrapMode()) {
     if (!result.empty()) {
-      result.Append(kSpaceCharacter);
+      result.Append(uchar::kSpace);
     }
     result.Append(PlatformEnumToCSSValueString(wrap));
   }

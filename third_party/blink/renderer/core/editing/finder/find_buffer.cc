@@ -76,9 +76,9 @@ std::optional<UChar> FindBuffer::CharConstantForNode(const Node& node) {
     return std::nullopt;
   }
   if (IsA<HTMLBRElement>(To<HTMLElement>(node))) {
-    return kNewlineCharacter;
+    return uchar::kLineFeed;
   }
-  return kNonCharacter;
+  return uchar::kNonCharacter;
 }
 
 namespace {

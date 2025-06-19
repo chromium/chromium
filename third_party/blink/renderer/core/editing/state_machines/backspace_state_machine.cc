@@ -94,8 +94,9 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
   switch (state_) {
     case BackspaceState::kStart:
       code_units_to_be_deleted_ = U16_LENGTH(code_point);
-      if (code_point == kNewlineCharacter)
+      if (code_point == uchar::kLineFeed) {
         return MoveToNextState(BackspaceState::kBeforeLF);
+      }
       if (u_hasBinaryProperty(code_point, UCHAR_VARIATION_SELECTOR))
         return MoveToNextState(BackspaceState::kBeforeVS);
       if (Character::IsRegionalIndicator(code_point))
@@ -159,7 +160,7 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
         code_units_to_be_deleted_ += U16_LENGTH(code_point);
       return Finish();
     case BackspaceState::kBeforeZWJEmoji:
-      return code_point == kZeroWidthJoinerCharacter
+      return code_point == uchar::kZeroWidthJoiner
                  ? MoveToNextState(BackspaceState::kBeforeZWJ)
                  : Finish();
     case BackspaceState::kBeforeZWJ:

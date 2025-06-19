@@ -50,7 +50,7 @@ UStringSearch* CreateSearcher() {
   String search_collator_name =
       CurrentSearchLocaleID() + String("@collation=search");
   UStringSearch* searcher =
-      usearch_open(&kNewlineCharacter, 1, &kNewlineCharacter, 1,
+      usearch_open(&uchar::kLineFeed, 1, &uchar::kLineFeed, 1,
                    search_collator_name.Utf8().c_str(), nullptr, &status);
   DCHECK(U_SUCCESS(status)) << status;
   return searcher;
@@ -80,9 +80,9 @@ class SearcherFactory {
       // text=buffer). Otherwise, usearch_reset() will results in
       // 'use-after-free' error.
       UErrorCode status = U_ZERO_ERROR;
-      usearch_setPattern(searcher, &kNewlineCharacter, 1, &status);
+      usearch_setPattern(searcher, &uchar::kLineFeed, 1, &status);
       DCHECK(U_SUCCESS(status));
-      usearch_setText(searcher, &kNewlineCharacter, 1, &status);
+      usearch_setText(searcher, &uchar::kLineFeed, 1, &status);
       DCHECK(U_SUCCESS(status));
       Instance().Unlock();
     } else {

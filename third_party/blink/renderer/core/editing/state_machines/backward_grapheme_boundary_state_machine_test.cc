@@ -321,7 +321,7 @@ TEST_F(BackwardGraphemeBoundaryStatemachineTest,
 
 TEST_F(BackwardGraphemeBoundaryStatemachineTest, MuchLongerCase) {
   const UChar32 kMan = uchar::kManCharacter;
-  const UChar32 kZwj = uchar::kZeroWidthJoinerCharacter;
+  const UChar32 kZwj = uchar::kZeroWidthJoiner;
   const UChar32 kHeart = uchar::kHeavyBlackHeartCharacter;
   const UChar32 kKiss = uchar::kKissMarkCharacter;
 

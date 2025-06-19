@@ -40,7 +40,7 @@ bool BufferedLineReader::GetLine(String& line) {
     // in the middle of a CRLF pair. If the next character is a LF (U+000A)
     // then skip it, and then (unconditionally) return the buffered line.
     if (!buffer_.IsEmpty()) {
-      ScanCharacter(kNewlineCharacter);
+      ScanCharacter(uchar::kLineFeed);
       maybe_skip_lf_ = false;
     }
     // If there was no (new) data available, then keep maybe_skip_lf_ set,
@@ -54,7 +54,7 @@ bool BufferedLineReader::GetLine(String& line) {
     UChar c = buffer_.CurrentChar();
     buffer_.Advance();
 
-    if (c == kNewlineCharacter || c == uchar::kCarriageReturn) {
+    if (c == uchar::kLineFeed || c == uchar::kCarriageReturn) {
       // We found a line ending. Return the accumulated line.
       should_return_line = true;
       check_for_lf = (c == uchar::kCarriageReturn);
@@ -73,7 +73,7 @@ bool BufferedLineReader::GetLine(String& line) {
     // May be in the middle of a CRLF pair.
     if (!buffer_.IsEmpty()) {
       // Scan a potential newline character.
-      ScanCharacter(kNewlineCharacter);
+      ScanCharacter(uchar::kLineFeed);
     } else {
       // Check for the LF on the next call (unless we reached EOS, in
       // which case we'll return the contents of the line buffer, and

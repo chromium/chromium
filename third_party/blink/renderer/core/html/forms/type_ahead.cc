@@ -46,7 +46,7 @@ static String StripLeadingWhiteSpace(const String& string) {
 
   unsigned i;
   for (i = 0; i < length; ++i) {
-    if (string[i] != kNoBreakSpaceCharacter &&
+    if (string[i] != uchar::kNoBreakSpace &&
         !unicode::IsSpaceOrNewline(string[i])) {
       break;
     }

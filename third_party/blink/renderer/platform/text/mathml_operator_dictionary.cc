@@ -138,14 +138,14 @@ MathMLOperatorDictionaryCategory FindCategory(
   // Handle special categories that are not encoded in the compact dictionary.
   // https://w3c.github.io/mathml-core/#operator-dictionary-categories-values
   if (form == MathMLOperatorDictionaryForm::kInfix &&
-      (key == kVerticalLineCharacter || key == kTildeOperatorCharacter)) {
+      (key == uchar::kVerticalLine || key == uchar::kTildeOperator)) {
     return MathMLOperatorDictionaryCategory::kForceDefault;
   }
   if (form == MathMLOperatorDictionaryForm::kPrefix &&
       ((uchar::kDoubleStruckItalicCapitalD <= key &&
         key <= uchar::kDoubleStruckItalicSmallD) ||
        key == uchar::kPartialDifferential ||
-       (kSquareRootCharacter <= key && key <= uchar::kFourthRoot))) {
+       (uchar::kSquareRoot <= key && key <= uchar::kFourthRoot))) {
     return MathMLOperatorDictionaryCategory::kL;
   }
   if (form == MathMLOperatorDictionaryForm::kInfix &&

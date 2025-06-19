@@ -4577,7 +4577,7 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
         mask_character = uchar::kBullet;
         break;
       case ETextSecurity::kCircle:
-        mask_character = kWhiteBulletCharacter;
+        mask_character = uchar::kWhiteBullet;
         break;
       case ETextSecurity::kSquare:
         mask_character = uchar::kBlackSquare;

@@ -1420,7 +1420,7 @@ static PositionTemplate<Strategy> SkipWhitespaceAlgorithm(
   // it as trailing white space.
   for (; char_it.length(); char_it.Advance(1)) {
     UChar c = char_it.CharacterAt(0);
-    if ((!unicode::IsSpaceOrNewline(c) && c != kNoBreakSpaceCharacter) ||
+    if ((!unicode::IsSpaceOrNewline(c) && c != uchar::kNoBreakSpace) ||
         c == '\n') {
       return runner;
     }

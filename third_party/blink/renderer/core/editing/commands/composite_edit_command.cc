@@ -99,7 +99,7 @@ namespace {
 
 bool IsWhitespaceForRebalance(const Text& text_node, UChar character) {
   if (IsWhitespace(character)) {
-    if (character == kNewlineCharacter &&
+    if (character == uchar::kLineFeed &&
         RuntimeEnabledFeatures::InsertLineBreakIfPhrasingContentEnabled()) {
       return !text_node.GetLayoutObject() ||
              text_node.GetLayoutObject()->StyleRef().ShouldCollapseBreaks();

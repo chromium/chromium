@@ -274,8 +274,8 @@ TEST(CharacterTest, HanKerning) {
     HanKerningCharType type;
   } data_list[] = {
       {uchar::kLeftDoubleQuotationMark, HanKerningCharType::kOpenQuote},
-      {kRightDoubleQuotationMarkCharacter, HanKerningCharType::kCloseQuote},
-      {kMiddleDotCharacter, HanKerningCharType::kMiddle},
+      {uchar::kRightDoubleQuotationMark, HanKerningCharType::kCloseQuote},
+      {uchar::kMiddleDot, HanKerningCharType::kMiddle},
       {uchar::kIdeographicSpace, HanKerningCharType::kMiddle},
       {uchar::kFullwidthComma, HanKerningCharType::kDot},
       {0x3008, HanKerningCharType::kOpen},
@@ -382,14 +382,14 @@ TEST(CharacterTest, Truncation) {
   const UChar32 kBase = 0x90000;
   UChar32 test_char = 0;
 
-  test_char = kBase + kSpaceCharacter;
+  test_char = kBase + uchar::kSpace;
   EXPECT_FALSE(Character::TreatAsSpace(test_char));
-  test_char = kBase + kNoBreakSpaceCharacter;
+  test_char = kBase + uchar::kNoBreakSpace;
   EXPECT_FALSE(Character::TreatAsSpace(test_char));
 
-  test_char = kBase + kZeroWidthNonJoinerCharacter;
+  test_char = kBase + uchar::kZeroWidthNonJoiner;
   EXPECT_FALSE(Character::TreatAsZeroWidthSpace(test_char));
-  test_char = kBase + kZeroWidthJoinerCharacter;
+  test_char = kBase + uchar::kZeroWidthJoiner;
   EXPECT_FALSE(Character::TreatAsZeroWidthSpace(test_char));
 
   test_char = kBase + 0x12;

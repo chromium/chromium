@@ -304,18 +304,18 @@ void InlineItem::Split(InlineItems& items, unsigned index, unsigned offset) {
 void InlineItem::CheckTextType(const String& text_content) const {
   const UChar character = Length() ? text_content[StartOffset()] : 0;
   switch (character) {
-    case kNewlineCharacter:
+    case uchar::kLineFeed:
       DCHECK_EQ(Length(), 1u);
       DCHECK_EQ(Type(), InlineItemType::kControl);
       DCHECK_EQ(TextType(), TextItemType::kForcedLineBreak);
       break;
-    case kTabulationCharacter:
+    case uchar::kTab:
       DCHECK_EQ(Type(), InlineItemType::kControl);
       DCHECK_EQ(TextType(), TextItemType::kFlowControl);
       break;
     case uchar::kCarriageReturn:
     case uchar::kFormFeed:
-    case kZeroWidthSpaceCharacter:
+    case uchar::kZeroWidthSpace:
       if (Type() == InlineItemType::kControl) {
         DCHECK_EQ(Length(), 1u);
         DCHECK_EQ(TextType(), TextItemType::kFlowControl);

@@ -123,7 +123,7 @@ TEST_F(SimplifiedBackwardsTextIteratorTest, NbspCharacter) {
   EXPECT_EQ('9', iterator.CharacterAt(0));
   EXPECT_EQ('8', iterator.CharacterAt(1));
   EXPECT_EQ('7', iterator.CharacterAt(2));
-  EXPECT_EQ(kNoBreakSpaceCharacter, iterator.CharacterAt(3));
+  EXPECT_EQ(uchar::kNoBreakSpace, iterator.CharacterAt(3));
   EXPECT_EQ('6', iterator.CharacterAt(4));
   EXPECT_EQ('5', iterator.CharacterAt(5));
   EXPECT_EQ('4', iterator.CharacterAt(6));

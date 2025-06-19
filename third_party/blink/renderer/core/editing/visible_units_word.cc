@@ -48,7 +48,7 @@ namespace {
 
 // Helpers used during word movement
 static bool IsLineBreak(UChar ch) {
-  return ch == kNewlineCharacter || ch == uchar::kCarriageReturn;
+  return ch == uchar::kLineFeed || ch == uchar::kCarriageReturn;
 }
 
 PositionInFlatTree EndOfWordPositionInternal(const PositionInFlatTree& position,
@@ -154,8 +154,9 @@ PositionInFlatTree NextWordPositionInternal(
                  IsWhitespace(text[runner - 1]) && IsWordBreak(text[runner]))
           return SkipWhitespaceIfNeeded(text, runner);
       }
-      if (text[text.length() - 1] != kNewlineCharacter)
+      if (text[text.length() - 1] != uchar::kLineFeed) {
         return Position::After(text.length() - 1);
+      }
       return Position();
     }
 

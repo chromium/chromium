@@ -333,7 +333,7 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
       // Quote characters. In a common convention, they are proportional (Latin)
       // in Japanese, but fullwidth in Chinese.
       uchar::kLeftDoubleQuotationMark, uchar::kLeftSingleQuotationMark,
-      kRightDoubleQuotationMarkCharacter, kRightSingleQuotationMarkCharacter};
+      uchar::kRightDoubleQuotationMark, uchar::kRightSingleQuotationMark};
   constexpr unsigned kDotSize = 4;
   constexpr unsigned kColonIndex = 4;
   constexpr unsigned kSemicolonIndex = 5;

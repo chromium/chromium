@@ -15,7 +15,7 @@ namespace blink {
 
 namespace {
 inline bool IsHangingSpace(UChar c) {
-  return c == kSpaceCharacter || Character::IsOtherSpaceSeparator(c);
+  return c == uchar::kSpace || Character::IsOtherSpaceSeparator(c);
 }
 
 wtf_size_t GlyphCount(const InlineItemResult& item_result) {
@@ -219,7 +219,7 @@ unsigned LineInfo::InflowEndOffsetInternal(bool skip_forced_break) const {
     const InlineItem& item = *item_result.item;
     if (skip_forced_break) {
       if (item.Type() == InlineItem::kControl &&
-          ItemsData().text_content[item.StartOffset()] == kNewlineCharacter) {
+          ItemsData().text_content[item.StartOffset()] == uchar::kLineFeed) {
         continue;
       } else if (item.Type() == InlineItem::kText && item.Length() == 0) {
         continue;

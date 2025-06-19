@@ -2000,7 +2000,7 @@ const AtomicString& ComputedStyle::TextEmphasisMarkString() const {
       DEFINE_STATIC_LOCAL(AtomicString, filled_dot_string,
                           (base::span_from_ref(uchar::kBullet)));
       DEFINE_STATIC_LOCAL(AtomicString, open_dot_string,
-                          (base::span_from_ref(kWhiteBulletCharacter)));
+                          (base::span_from_ref(uchar::kWhiteBullet)));
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
                  ? filled_dot_string
                  : open_dot_string;
@@ -2009,7 +2009,7 @@ const AtomicString& ComputedStyle::TextEmphasisMarkString() const {
       DEFINE_STATIC_LOCAL(AtomicString, filled_circle_string,
                           (base::span_from_ref(uchar::kBlackCircle)));
       DEFINE_STATIC_LOCAL(AtomicString, open_circle_string,
-                          (base::span_from_ref(kWhiteCircleCharacter)));
+                          (base::span_from_ref(uchar::kWhiteCircle)));
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
                  ? filled_circle_string
                  : open_circle_string;
@@ -2029,16 +2029,16 @@ const AtomicString& ComputedStyle::TextEmphasisMarkString() const {
           (base::span_from_ref(uchar::kBlackUpPointingTriangle)));
       DEFINE_STATIC_LOCAL(
           AtomicString, open_triangle_string,
-          (base::span_from_ref(kWhiteUpPointingTriangleCharacter)));
+          (base::span_from_ref(uchar::kWhiteUpPointingTriangle)));
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
                  ? filled_triangle_string
                  : open_triangle_string;
     }
     case TextEmphasisMark::kSesame: {
       DEFINE_STATIC_LOCAL(AtomicString, filled_sesame_string,
-                          (base::span_from_ref(kSesameDotCharacter)));
+                          (base::span_from_ref(uchar::kSesameDot)));
       DEFINE_STATIC_LOCAL(AtomicString, open_sesame_string,
-                          (base::span_from_ref(kWhiteSesameDotCharacter)));
+                          (base::span_from_ref(uchar::kWhiteSesameDot)));
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
                  ? filled_sesame_string
                  : open_sesame_string;

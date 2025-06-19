@@ -97,7 +97,7 @@ void AppendWrappedNode(const Element& container,
   if (IsA<HTMLBRElement>(node)) {
     if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() &&
         !TextControlElement::IsPlaceholderBreakElement(&node)) {
-      result.Append(kNewlineCharacter);
+      result.Append(uchar::kLineFeed);
     } else {
       DCHECK_EQ(&node, container.lastChild());
     }
@@ -112,7 +112,7 @@ void AppendWrappedNode(const Element& container,
       if (break_offset > position) {
         result.Append(data, position, break_offset - position);
         position = break_offset;
-        result.Append(kNewlineCharacter);
+        result.Append(uchar::kLineFeed);
       }
       break_position = GetNextSoftBreak(mapping, cursor);
     }
@@ -223,7 +223,7 @@ String TextControlElement::StrippedPlaceholder() const {
   // the attribute value.
   const AtomicString& attribute_value =
       FastGetAttribute(html_names::kPlaceholderAttr);
-  if (!attribute_value.Contains(kNewlineCharacter) &&
+  if (!attribute_value.Contains(uchar::kLineFeed) &&
       !attribute_value.Contains(uchar::kCarriageReturn)) {
     return attribute_value;
   }
@@ -233,7 +233,7 @@ String TextControlElement::StrippedPlaceholder() const {
   stripped.ReserveCapacity(length);
   for (unsigned i = 0; i < length; ++i) {
     UChar character = attribute_value[i];
-    if (character == kNewlineCharacter || character == uchar::kCarriageReturn) {
+    if (character == uchar::kLineFeed || character == uchar::kCarriageReturn) {
       continue;
     }
     stripped.Append(character);
@@ -1060,12 +1060,12 @@ String TextControlElement::SerializeInnerEditorValue() const {
     if (IsA<HTMLBRElement>(node)) {
       if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
         if (!IsPlaceholderBreakElement(&node)) {
-          result.Append(kNewlineCharacter);
+          result.Append(uchar::kLineFeed);
         }
       } else {
         DCHECK_EQ(&node, inner_editor->lastChild());
         if (&node != inner_editor->lastChild()) {
-          result.Append(kNewlineCharacter);
+          result.Append(uchar::kLineFeed);
         }
       }
     } else if (auto* text_node = DynamicTo<Text>(node)) {
@@ -1117,7 +1117,7 @@ String TextControlElement::SerializeInnerEditorValueInternal(
         span.take_first(text->data().length()).copy_from(text->data().Span8());
       } else if (!IsPlaceholderBreakElement(&child)) {
         DCHECK(IsA<HTMLBRElement>(child));
-        span[0] = kNewlineCharacter;
+        span[0] = uchar::kLineFeed;
         span = span.subspan(1u);
       }
     }
@@ -1135,7 +1135,7 @@ String TextControlElement::SerializeInnerEditorValueInternal(
       }
     } else if (!IsPlaceholderBreakElement(&child)) {
       DCHECK(IsA<HTMLBRElement>(child));
-      span[0] = kNewlineCharacter;
+      span[0] = uchar::kLineFeed;
       span = span.subspan(1u);
     }
   }

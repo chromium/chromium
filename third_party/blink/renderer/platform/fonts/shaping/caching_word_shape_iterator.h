@@ -88,8 +88,8 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
     // As of 2025 March, Google Docs always wraps text with BiDi control
     // characters, and they are replaced with ZWS for HarfBuzzShaper.
     // Assuming ZWS as a word delimiter improves hit rate of a shape cache.
-    return ch == kSpaceCharacter || ch == kTabulationCharacter ||
-           (split_by_zws && ch == kZeroWidthSpaceCharacter);
+    return ch == uchar::kSpace || ch == uchar::kTab ||
+           (split_by_zws && ch == uchar::kZeroWidthSpace);
   }
 
   // TODO(crbug.com/389726691): Move NextWordEndIndex() to a new file because
@@ -138,9 +138,10 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
       ch = text.CodePointAtAndNext(next_end);
       // Modifier check in order not to split Emoji sequences.
       if (U_GET_GC_MASK(ch) & (U_GC_M_MASK | U_GC_LM_MASK | U_GC_SK_MASK) ||
-          ch == kZeroWidthJoinerCharacter || Character::IsEmojiComponent(ch) ||
-          Character::IsExtendedPictographic(ch))
+          ch == uchar::kZeroWidthJoiner || Character::IsEmojiComponent(ch) ||
+          Character::IsExtendedPictographic(ch)) {
         continue;
+      }
       // Avoid delimiting COMMON/INHERITED alone, which makes harder to
       // identify the script.
       if (Character::IsCJKIdeographOrSymbol(ch)) {

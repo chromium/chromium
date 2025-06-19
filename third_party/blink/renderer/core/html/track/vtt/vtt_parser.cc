@@ -225,9 +225,9 @@ bool VTTParser::HasRequiredFileIdentifier(const String& line) {
     UChar maybe_separator = line[kFileIdentifierLength];
     // The line reader handles the line break characters, so we don't need
     // to check for LF here.
-    if (maybe_separator != kSpaceCharacter &&
-        maybe_separator != kTabulationCharacter)
+    if (maybe_separator != uchar::kSpace && maybe_separator != uchar::kTab) {
       return false;
+    }
   }
   return true;
 }

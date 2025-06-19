@@ -13,7 +13,7 @@ namespace blink {
 struct CapitalizeTestData {
   String input;
   String expected;
-  UChar previous_character = kSpaceCharacter;
+  UChar previous_character = uchar::kSpace;
 };
 
 class CapitalizeTest : public testing::Test,

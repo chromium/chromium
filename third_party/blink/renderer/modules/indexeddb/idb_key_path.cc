@@ -56,8 +56,8 @@ static inline bool IsIdentifierCharacter(UChar c) {
   return (unicode::Category(c) &
           (kUnicodeLetter | kUnicodeCombiningMark | kUnicodeDigit |
            kUnicodeConnectorPunctuation)) ||
-         (c == '$') || (c == '_') || (c == kZeroWidthNonJoinerCharacter) ||
-         (c == kZeroWidthJoinerCharacter);
+         (c == '$') || (c == '_') || (c == uchar::kZeroWidthNonJoiner) ||
+         (c == uchar::kZeroWidthJoiner);
 }
 
 bool IsIdentifier(const String& s) {

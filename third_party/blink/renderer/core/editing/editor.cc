@@ -162,7 +162,7 @@ static bool IsCaretAtStartOfWrappedLine(const FrameSelection& selection) {
     return false;
   int prev_offset = prev.ComputeOffsetInContainerNode();
   UChar prev_char = prev_node->data()[prev_offset];
-  return prev_char == kSpaceCharacter;
+  return prev_char == uchar::kSpace;
 }
 
 bool Editor::HandleTextEvent(TextEvent* event) {

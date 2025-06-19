@@ -46,8 +46,8 @@ String TextIgnoringCSSTextTransforms(const LayoutText& layout_text,
   // Non-preserved newline or tab characters should be converted into a space
   // to reflect what the user sees on the screen
   if (!layout_text.StyleRef().ShouldPreserveBreaks()) {
-    text.Replace(kNewlineCharacter, kSpaceCharacter);
-    text.Replace(kTabulationCharacter, kSpaceCharacter);
+    text.Replace(uchar::kLineFeed, uchar::kSpace);
+    text.Replace(uchar::kTab, uchar::kSpace);
   }
   return text;
 }
@@ -90,7 +90,7 @@ StringAndOffsetRange ComputeTextAndOffsetsForEmission(
   if (behavior.EmitsSpaceForNbsp()) {
     result.string =
         result.string.Substring(result.start, result.end - result.start);
-    result.string.Replace(kNoBreakSpaceCharacter, kSpaceCharacter);
+    result.string.Replace(uchar::kNoBreakSpace, uchar::kSpace);
     result.start = 0;
     result.end = result.string.length();
   }

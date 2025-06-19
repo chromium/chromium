@@ -30,13 +30,13 @@ EmojiSegmentationCategory GetEmojiSegmentationCategory(UChar32 codepoint) {
   if (codepoint == uchar::kCombiningEnclosingCircleBackslash) {
     return EmojiSegmentationCategory::COMBINING_ENCLOSING_CIRCLE_BACKSLASH;
   }
-  if (codepoint == kZeroWidthJoinerCharacter) {
+  if (codepoint == uchar::kZeroWidthJoiner) {
     return EmojiSegmentationCategory::ZWJ;
   }
-  if (codepoint == kVariationSelector15Character) {
+  if (codepoint == uchar::kVariationSelector15) {
     return EmojiSegmentationCategory::VS15;
   }
-  if (codepoint == kVariationSelector16Character) {
+  if (codepoint == uchar::kVariationSelector16) {
     return EmojiSegmentationCategory::VS16;
   }
   if (codepoint == 0x1F3F4) {

@@ -529,7 +529,7 @@ void ElementInnerTextCollector::ProcessTextNode(const Text& node) {
 
 void ElementInnerTextCollector::Result::EmitNewline() {
   FlushRequiredLineBreak();
-  builder_.Append(kNewlineCharacter);
+  builder_.Append(uchar::kLineFeed);
 }
 
 void ElementInnerTextCollector::Result::EmitRequiredLineBreak(
@@ -551,7 +551,7 @@ void ElementInnerTextCollector::Result::EmitRequiredLineBreak(
 
 void ElementInnerTextCollector::Result::EmitTab() {
   FlushRequiredLineBreak();
-  builder_.Append(kTabulationCharacter);
+  builder_.Append(uchar::kTab);
 }
 
 void ElementInnerTextCollector::Result::EmitText(const StringView& text) {

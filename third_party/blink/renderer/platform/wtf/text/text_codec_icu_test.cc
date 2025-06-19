@@ -15,7 +15,7 @@ TEST(TextCodecIcuTest, IgnorableCodePoint) {
   std::unique_ptr<TextCodec> codec = TextCodecIcu::Create(iso2022jp, nullptr);
   Vector<UChar> source;
   source.push_back('a');
-  source.push_back(kZeroWidthJoinerCharacter);
+  source.push_back(uchar::kZeroWidthJoiner);
   std::string encoded = codec->Encode(
       base::span(source), UnencodableHandling::kEntitiesForUnencodables);
   EXPECT_EQ("a&#8205;", encoded);

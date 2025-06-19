@@ -86,10 +86,10 @@ bool IsGraphemeBreak(UChar32 prev_code_point, UChar32 next_code_point) {
 
   // Rule GB9, x (Extend | ZWJ)
   // Rule GB9a, x SpacingMark
-  if (next_prop == U_GCB_EXTEND ||
-      next_code_point == kZeroWidthJoinerCharacter ||
-      next_prop == U_GCB_SPACING_MARK)
+  if (next_prop == U_GCB_EXTEND || next_code_point == uchar::kZeroWidthJoiner ||
+      next_prop == U_GCB_SPACING_MARK) {
     return false;
+  }
 
   // Rule GB9b, Prepend x
   if (prev_prop == U_GCB_PREPEND)
@@ -102,9 +102,10 @@ bool IsGraphemeBreak(UChar32 prev_code_point, UChar32 next_code_point) {
     return false;
 
   // GB11, ZWJ x Emoji
-  if (prev_code_point == kZeroWidthJoinerCharacter &&
-      (Character::IsEmoji(next_code_point)))
+  if (prev_code_point == uchar::kZeroWidthJoiner &&
+      (Character::IsEmoji(next_code_point))) {
     return false;
+  }
 
   // GB12 for RI(Regional Indicator) is handled elsewhere because it requires
   // counting the number of consecutive RIs.

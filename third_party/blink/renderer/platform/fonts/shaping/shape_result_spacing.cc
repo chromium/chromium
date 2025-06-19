@@ -133,8 +133,9 @@ TextRunLayoutUnit ShapeResultSpacing<TextContainerType>::ComputeSpacing(
        (normalize_space_ &&
         Character::IsNormalizedCanvasSpaceCharacter(character))) &&
       (character != '\t' || !allow_tabs_);
-  if (treat_as_space && character != kNoBreakSpaceCharacter)
-    character = kSpaceCharacter;
+  if (treat_as_space && character != uchar::kNoBreakSpace) {
+    character = uchar::kSpace;
+  }
 
   TextRunLayoutUnit spacing;
 
@@ -150,7 +151,7 @@ TextRunLayoutUnit ShapeResultSpacing<TextContainerType>::ComputeSpacing(
   }
 
   if (treat_as_space && (allow_word_spacing_anywhere_ || index ||
-                         character == kNoBreakSpaceCharacter)) {
+                         character == uchar::kNoBreakSpace)) {
     spacing += word_spacing_;
     is_word_spacing_applied_ = true;
   }

@@ -211,8 +211,7 @@ inline void ShapingLineBreaker::SetBreakOffset(unsigned break_offset,
                                                const String& text,
                                                Result* result) {
   result->break_offset = break_offset;
-  result->is_hyphenated =
-      text[result->break_offset - 1] == kSoftHyphenCharacter;
+  result->is_hyphenated = text[result->break_offset - 1] == uchar::kSoftHyphen;
 }
 
 inline void ShapingLineBreaker::SetBreakOffset(
@@ -220,9 +219,8 @@ inline void ShapingLineBreaker::SetBreakOffset(
     const String& text,
     Result* result) {
   result->break_offset = break_opportunity.offset;
-  result->is_hyphenated =
-      break_opportunity.is_hyphenated ||
-      text[result->break_offset - 1] == kSoftHyphenCharacter;
+  result->is_hyphenated = break_opportunity.is_hyphenated ||
+                          text[result->break_offset - 1] == uchar::kSoftHyphen;
 }
 
 // Shapes a line of text by finding a valid and appropriate break opportunity

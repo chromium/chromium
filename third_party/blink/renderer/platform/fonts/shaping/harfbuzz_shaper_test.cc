@@ -774,14 +774,14 @@ TEST_P(ShapeParameterTest, MaxGlyphsClusterDevanagari) {
 }
 
 TEST_P(ShapeParameterTest, ZeroWidthSpace) {
-  UChar string[] = {kZeroWidthSpaceCharacter,
-                    kZeroWidthSpaceCharacter,
+  UChar string[] = {uchar::kZeroWidthSpace,
+                    uchar::kZeroWidthSpace,
                     0x0627,
                     0x0631,
                     0x062F,
                     0x0648,
-                    kZeroWidthSpaceCharacter,
-                    kZeroWidthSpaceCharacter};
+                    uchar::kZeroWidthSpace,
+                    uchar::kZeroWidthSpace};
   HarfBuzzShaper shaper{String(base::span(string))};
   const ShapeResult* result = ShapeWithParameter(&shaper);
   EXPECT_EQ(0u, result->StartIndex());

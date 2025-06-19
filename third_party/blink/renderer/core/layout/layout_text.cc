@@ -489,7 +489,7 @@ String LayoutText::PlainText() const {
     const unsigned end_offset = text_box.dom_start_offset + text_box.dom_length;
     if (last_end_offset && text_box.dom_start_offset > last_end_offset &&
         !IsASCIISpace(text_[end_offset - 1])) {
-      plain_text_builder.Append(kSpaceCharacter);
+      plain_text_builder.Append(uchar::kSpace);
     }
     last_end_offset = end_offset;
 
@@ -891,7 +891,7 @@ UChar LayoutText::PreviousCharacter() const {
       break;
     }
   }
-  UChar prev = kSpaceCharacter;
+  UChar prev = uchar::kSpace;
   if (previous_text && previous_text->IsText()) {
     if (const String& previous_string =
             To<LayoutText>(previous_text)->TransformedText()) {
@@ -907,7 +907,7 @@ void LayoutText::SetTextInternal(String text) {
   text_ = String(std::move(text));
   DCHECK(text_);
   DCHECK(!IsBR() ||
-         (TransformedTextLength() == 1 && text_[0] == kNewlineCharacter));
+         (TransformedTextLength() == 1 && text_[0] == uchar::kLineFeed));
 }
 
 String LayoutText::TransformAndSecureText(const String& original,
@@ -924,7 +924,7 @@ String LayoutText::TransformAndSecureText(const String& original,
       case ETextSecurity::kNone:
         return transformed;
       case ETextSecurity::kCircle:
-        mask = kWhiteBulletCharacter;
+        mask = uchar::kWhiteBullet;
         break;
       case ETextSecurity::kDisc:
         mask = uchar::kBullet;
@@ -1331,7 +1331,7 @@ bool LayoutText::ContainsCaretOffset(int text_offset) const {
     // The previous character isn't collapsed. Return `false` if it's a newline,
     // otherwise `true`.
     if (std::optional<UChar> ch = mapping->GetCharacterBefore(position)) {
-      return *ch != kNewlineCharacter;
+      return *ch != uchar::kLineFeed;
     }
     // TODO(crbug.com/326745564): It's not clear when the code reaches here, and
     // thus it's not clear whether it should return `true` or `false`.

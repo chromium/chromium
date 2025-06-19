@@ -18,9 +18,9 @@ TEST(UTF16RagelIteratorTest, CharacterClasses) {
   UChar32 class_examples_codepoints[] = {
       uchar::kCombiningEnclosingKeycap,
       uchar::kCombiningEnclosingCircleBackslash,
-      kZeroWidthJoinerCharacter,
-      kVariationSelector15Character,
-      kVariationSelector16Character,
+      uchar::kZeroWidthJoiner,
+      uchar::kVariationSelector15,
+      uchar::kVariationSelector16,
       0x1f3f4,
       0xE0030,
       uchar::kCancelTag,
@@ -69,9 +69,9 @@ TEST(UTF16RagelIteratorTest, CharacterClasses) {
 
 TEST(UTF16RagelIteratorTest, ArithmeticOperators) {
   UChar32 class_examples_codepoints[] = {
-      kVariationSelector15Character, kVariationSelector15Character,
-      kVariationSelector15Character, kVariationSelector16Character,
-      kVariationSelector16Character, kVariationSelector16Character,
+      uchar::kVariationSelector15, uchar::kVariationSelector15,
+      uchar::kVariationSelector15, uchar::kVariationSelector16,
+      uchar::kVariationSelector16, uchar::kVariationSelector16,
   };
   icu::UnicodeString class_examples_unicode_string =
       icu::UnicodeString::fromUTF32(class_examples_codepoints,

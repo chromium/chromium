@@ -99,11 +99,11 @@ Vector<uint8_t> EncodeEucJp(StringView string, UnencodableHandling handling) {
       result.push_back(code_point);
       continue;
     }
-    if (code_point == kYenSignCharacter) {
+    if (code_point == uchar::kYenSign) {
       result.push_back(0x5C);
       continue;
     }
-    if (code_point == kOverlineCharacter) {
+    if (code_point == uchar::kOverline) {
       result.push_back(0x7E);
       continue;
     }
@@ -112,8 +112,9 @@ Vector<uint8_t> EncodeEucJp(StringView string, UnencodableHandling handling) {
       result.push_back(code_point - 0xFF61 + 0xA1);
       continue;
     }
-    if (code_point == kMinusSignCharacter)
+    if (code_point == uchar::kMinusSign) {
       code_point = 0xFF0D;
+    }
 
     auto pointer =
         FindFirstInSortedPairs(EnsureJis0208EncodeIndexForEncode(), code_point);
@@ -194,11 +195,11 @@ class Iso2022JpEncoder {
         result_.push_back(code_point);
         return;
       }
-      if (code_point == kYenSignCharacter) {
+      if (code_point == uchar::kYenSign) {
         result_.push_back(0x5C);
         return;
       }
-      if (code_point == kOverlineCharacter) {
+      if (code_point == uchar::kOverline) {
         result_.push_back(0x7E);
         return;
       }
@@ -208,14 +209,15 @@ class Iso2022JpEncoder {
       ParseCodePoint(code_point);
       return;
     }
-    if ((code_point == kYenSignCharacter || code_point == kOverlineCharacter) &&
+    if ((code_point == uchar::kYenSign || code_point == uchar::kOverline) &&
         state_ != State::kRoman) {
       ChangeStateToRoman();
       ParseCodePoint(code_point);
       return;
     }
-    if (code_point == kMinusSignCharacter)
+    if (code_point == uchar::kMinusSign) {
       code_point = 0xFF0D;
+    }
     if (code_point >= 0xFF61 && code_point <= 0xFF9F) {
       code_point = kIso2022JpKatakana[code_point - 0xFF61];
     }
@@ -270,11 +272,11 @@ Vector<uint8_t> EncodeShiftJis(StringView string,
       result.push_back(code_point);
       continue;
     }
-    if (code_point == kYenSignCharacter) {
+    if (code_point == uchar::kYenSign) {
       result.push_back(0x5C);
       continue;
     }
-    if (code_point == kOverlineCharacter) {
+    if (code_point == uchar::kOverline) {
       result.push_back(0x7E);
       continue;
     }
@@ -282,8 +284,9 @@ Vector<uint8_t> EncodeShiftJis(StringView string,
       result.push_back(code_point - 0xFF61 + 0xA1);
       continue;
     }
-    if (code_point == kMinusSignCharacter)
+    if (code_point == uchar::kMinusSign) {
       code_point = 0xFF0D;
+    }
 
     auto range =
         FindInSortedPairs(EnsureJis0208EncodeIndexForEncode(), code_point);
@@ -690,12 +693,12 @@ class Iso2022JpDecoder : public TextCodecCjk::Decoder {
         }
         if (byte == 0x5C) {
           output_ = false;
-          result.Append(static_cast<UChar>(kYenSignCharacter));
+          result.Append(uchar::kYenSign);
           break;
         }
         if (byte == 0x7E) {
           output_ = false;
-          result.Append(static_cast<UChar>(kOverlineCharacter));
+          result.Append(uchar::kOverline);
           break;
         }
         if (byte <= 0x7F && byte != 0x0E && byte != 0x0F && byte != 0x1B &&

@@ -46,16 +46,16 @@ std::pair<String, bool> NormalizeSpacesAndMaybeBidiInternal(
     UChar32 normalized = character;
     // Don't normalize tabs as they are not treated as spaces for word-end.
     if (is_canvas && Character::IsNormalizedCanvasSpaceCharacter(character)) {
-      normalized = kSpaceCharacter;
+      normalized = uchar::kSpace;
     } else if (Character::TreatAsSpace(character) &&
-               character != kNoBreakSpaceCharacter) {
-      normalized = kSpaceCharacter;
+               character != uchar::kNoBreakSpace) {
+      normalized = uchar::kSpace;
     } else if (Character::TreatAsZeroWidthSpaceInComplexScriptLegacy(
                    character)) {
       // Replace only ZWS-like characters in BMP because we'd like to avoid
       // changing the string length.
       DCHECK_LT(character, 0x10000);
-      normalized = kZeroWidthSpaceCharacter;
+      normalized = uchar::kZeroWidthSpace;
     }
 
     if (!maybe_bidi && Character::MaybeBidiRtl(character)) {
@@ -154,10 +154,10 @@ void PlainTextNode::SegmentText(const TextRun& run,
     if (bidi_overridden) {
       // See BidiParagraph::StringWithDirectionalOverride().
       DCHECK(original_text[0] == uchar::kLeftToRightOverride ||
-             original_text[0] == kRightToLeftOverrideCharacter)
+             original_text[0] == uchar::kRightToLeftOverride)
           << original_text;
       DCHECK(original_text[original_text.length() - 1] ==
-             kPopDirectionalFormattingCharacter)
+             uchar::kPopDirectionalFormatting)
           << original_text;
       text_content_ = text_content_.Substring(1, text_content_.length() - 2);
     }

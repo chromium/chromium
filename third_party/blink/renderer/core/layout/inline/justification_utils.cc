@@ -94,7 +94,7 @@ String BuildJustificationText(const String& text_content,
     // Remove the trailing \n.  See crbug.com/331729346.
     wtf_size_t text_length = line_text_builder.length();
     if (text_length > 0u &&
-        line_text_builder[text_length - 1] == kNewlineCharacter) {
+        line_text_builder[text_length - 1] == uchar::kLineFeed) {
       if (text_length == 1u) {
         return String();
       }

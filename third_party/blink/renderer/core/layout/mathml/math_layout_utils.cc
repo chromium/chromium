@@ -246,7 +246,7 @@ bool IsOperatorWithSpecialShaping(const BlockNode& node) {
   // https://w3c.github.io/mathml-core/#layout-of-operators
   if (auto* element = DynamicTo<MathMLOperatorElement>(node.GetDOMNode())) {
     UChar32 base_code_point = element->GetTokenContent().code_point;
-    if (base_code_point == kNonCharacter ||
+    if (base_code_point == uchar::kNonCharacter ||
         !node.Style().GetFont()->PrimaryFont() ||
         !node.Style().GetFont()->PrimaryFont()->GlyphForCharacter(
             base_code_point)) {

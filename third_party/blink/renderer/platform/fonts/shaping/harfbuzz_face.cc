@@ -118,7 +118,7 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
   // compare: https://www.unicode.org/faq/unsup_char.html#2.
   if (unicode == uchar::kLineSeparator ||
       unicode == uchar::kParagraphSeparator) {
-    unicode = kSpaceCharacter;
+    unicode = uchar::kSpace;
   }
 
   bool consider_variation_selector = false;
@@ -161,18 +161,18 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
       if (variation_selector_mode == kForceVariationSelector15 ||
           (variation_selector_mode == kUseUnicodeDefaultPresentation &&
            Character::IsEmojiTextDefault(unicode))) {
-        variation_selector = kVariationSelector15Character;
+        variation_selector = uchar::kVariationSelector15;
       } else if (variation_selector_mode == kForceVariationSelector16 ||
                  (variation_selector_mode == kUseUnicodeDefaultPresentation &&
                   Character::IsEmojiEmojiDefault(unicode))) {
-        variation_selector = kVariationSelector16Character;
+        variation_selector = uchar::kVariationSelector16;
       }
     }
 
     text_presentation_requested =
-        (variation_selector == kVariationSelector15Character);
+        (variation_selector == uchar::kVariationSelector15);
     emoji_presentation_requested =
-        (variation_selector == kVariationSelector16Character);
+        (variation_selector == uchar::kVariationSelector16);
 
     hb_bool_t hb_has_vs_glyph = hb_font_get_variation_glyph(
         hb_font_get_parent(hb_font), unicode, variation_selector, glyph);
@@ -339,7 +339,7 @@ static inline bool TableHasSpace(hb_face_t* face,
 }
 
 static bool GetSpaceGlyph(hb_font_t* font, hb_codepoint_t& space) {
-  return hb_font_get_nominal_glyph(font, kSpaceCharacter, &space);
+  return hb_font_get_nominal_glyph(font, uchar::kSpace, &space);
 }
 
 bool HarfBuzzFace::HasSpaceInLigaturesOrKerning(TypesettingFeatures features) {

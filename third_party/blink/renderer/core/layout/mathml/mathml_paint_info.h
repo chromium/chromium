@@ -42,7 +42,7 @@ struct CORE_EXPORT MathMLPaintInfo : public GarbageCollected<MathMLPaintInfo> {
   bool IsRadicalOperator() const {
     return radical_operator_inline_offset.has_value();
   }
-  UChar operator_character{kNonCharacter};
+  UChar operator_character{uchar::kNonCharacter};
   Member<const ShapeResultView> operator_shape_result_view;
   LayoutUnit operator_inline_size;
   LayoutUnit operator_ascent;

@@ -172,7 +172,7 @@ bool ShouldApplyInlineKerning(const PhysicalBoxFragment& box_fragment) {
 // spaces because it handles trailing spaces differently from other normal
 // characters, but breaking before newline characters is not desired.
 inline bool IsBreakableSpace(UChar c) {
-  return c == kSpaceCharacter || c == kTabulationCharacter;
+  return c == uchar::kSpace || c == uchar::kTab;
 }
 
 inline bool IsBreakableSpaceOrOtherSeparator(UChar c) {
@@ -631,8 +631,7 @@ void LineBreaker::ComputeBaseDirection() {
     if (!current_.text_offset) {
       return;
     }
-    start_offset =
-        text.ReverseFind(kNewlineCharacter, current_.text_offset - 1);
+    start_offset = text.ReverseFind(uchar::kLineFeed, current_.text_offset - 1);
     if (start_offset == kNotFound)
       return;
     ++start_offset;
@@ -1181,7 +1180,7 @@ bool LineBreaker::CanBreakAfter(const InlineItem& item) const {
     return can_break_after;
 
   // We can not break before sticky images quirk was applied.
-  if (Text()[atomic_inline_item->StartOffset()] == kNoBreakSpaceCharacter)
+  if (Text()[atomic_inline_item->StartOffset()] == uchar::kNoBreakSpace)
       [[unlikely]] {
     // "One " <img> => We can break after "One ".
     // "One" <img> => We can not break after "One".
@@ -1222,7 +1221,7 @@ bool LineBreaker::MayBeAtomicInline(wtf_size_t offset) const {
   if (char_code == uchar::kObjectReplacementCharacter) {
     return true;
   }
-  return sticky_images_quirk_ && char_code == kNoBreakSpaceCharacter;
+  return sticky_images_quirk_ && char_code == uchar::kNoBreakSpace;
 }
 
 const InlineItem* LineBreaker::TryGetAtomicInlineItemAfter(
@@ -1274,7 +1273,7 @@ void LineBreaker::HandleText(const InlineItem& item,
                              LineInfo* line_info) {
   DCHECK(item.Type() == InlineItem::kText ||
          (item.Type() == InlineItem::kControl &&
-          Text()[item.StartOffset()] == kTabulationCharacter));
+          Text()[item.StartOffset()] == uchar::kTab));
   DCHECK(&shape_result);
   DCHECK_EQ(auto_wrap_, ShouldAutoWrap(*item.Style()));
 
@@ -1289,7 +1288,7 @@ void LineBreaker::HandleText(const InlineItem& item,
   // but there are some cases doing so is too complex.
   if (trailing_whitespace_ == WhitespaceState::kLeading) {
     if (item.Style()->ShouldCollapseWhiteSpaces() &&
-        Text()[current_.text_offset] == kSpaceCharacter) {
+        Text()[current_.text_offset] == uchar::kSpace) {
       // Skipping one whitespace removes all collapsible spaces because
       // collapsible spaces are collapsed to single space in
       // InlineItemBuilder.
@@ -1559,7 +1558,7 @@ LineBreaker::BreakResult LineBreaker::BreakText(
     LineInfo* line_info) {
   DCHECK(item.Type() == InlineItem::kText ||
          (item.Type() == InlineItem::kControl &&
-          Text()[item.StartOffset()] == kTabulationCharacter));
+          Text()[item.StartOffset()] == uchar::kTab));
   DCHECK(&item_shape_result);
   item.AssertOffset(item_result->StartOffset());
 
@@ -1798,7 +1797,7 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
   DCHECK(auto_wrap_);
   DCHECK(item.Type() == InlineItem::kText ||
          (item.Type() == InlineItem::kControl &&
-          Text()[item.StartOffset()] == kTabulationCharacter));
+          Text()[item.StartOffset()] == uchar::kTab));
   DCHECK(&shape_result);
 
   // Break the text at every break opportunity and measure each word.
@@ -1879,7 +1878,7 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
         can_break_after = false;
       } else {
         const UChar next_ch = text[next_break - 1];
-        if (next_ch == kNewlineCharacter) {
+        if (next_ch == uchar::kLineFeed) {
           // Optimize to avoid splitting `InlineItemResult`. If the next is a
           // forced break, this line ends without additional widths.
           next_break = item_end_offset;
@@ -1910,7 +1909,7 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
     DCHECK_GE(non_hangable_run_end, start_offset);
     if (const wtf_size_t word_len = non_hangable_run_end - start_offset) {
       bool has_hyphen = can_break_after &&
-                        text[non_hangable_run_end - 1] == kSoftHyphenCharacter;
+                        text[non_hangable_run_end - 1] == uchar::kSoftHyphen;
       if (hyphenation_) [[unlikely]] {
         const StringView word(text, start_offset, word_len);
         if (should_break_at_first_opportunity) [[unlikely]] {
@@ -2241,7 +2240,7 @@ void LineBreaker::AppendCandidates(const InlineItemResult& item_result,
       DCHECK(!is_hyphenated);
       if (end_offset == item_result.EndOffset()) {
         is_hyphenated = item_result.is_hyphenated;
-      } else if (last_ch == kSoftHyphenCharacter &&
+      } else if (last_ch == uchar::kSoftHyphen &&
                  next_state == LineBreakCandidateContext::kBreak) [[unlikely]] {
         is_hyphenated = true;
       }
@@ -2362,9 +2361,9 @@ void LineBreaker::HandleTrailingSpaces(const InlineItem& item,
                                        LineInfo* line_info) {
   DCHECK(item.Type() == InlineItem::kText ||
          (item.Type() == InlineItem::kControl &&
-          Text()[item.StartOffset()] == kTabulationCharacter));
+          Text()[item.StartOffset()] == uchar::kTab));
   bool is_control_tab = item.Type() == InlineItem::kControl &&
-                        Text()[item.StartOffset()] == kTabulationCharacter;
+                        Text()[item.StartOffset()] == uchar::kTab;
   DCHECK(item.Type() == InlineItem::kText || is_control_tab);
   DCHECK_GE(current_.text_offset, item.StartOffset());
   DCHECK_LT(current_.text_offset, item.EndOffset());
@@ -2380,7 +2379,7 @@ void LineBreaker::HandleTrailingSpaces(const InlineItem& item,
 
   if (style.ShouldCollapseWhiteSpaces() &&
       !Character::IsOtherSpaceSeparator(text[current_.text_offset])) {
-    if (text[current_.text_offset] != kSpaceCharacter) {
+    if (text[current_.text_offset] != uchar::kSpace) {
       if (current_.text_offset > 0 &&
           IsBreakableSpace(text[current_.text_offset - 1])) {
         trailing_whitespace_ = WhitespaceState::kCollapsible;
@@ -2744,7 +2743,7 @@ bool LineBreaker::ComputeTrailingCollapsibleSpaceHelper(LineInfo& line_info) {
     }
     if (item.Type() == InlineItem::kControl) {
       if (item.TextType() == TextItemType::kForcedLineBreak) {
-        DCHECK_EQ(text[item.StartOffset()], kNewlineCharacter);
+        DCHECK_EQ(text[item.StartOffset()], uchar::kLineFeed);
         continue;
       }
       trailing_whitespace_ = WhitespaceState::kPreserved;
@@ -2872,7 +2871,7 @@ void LineBreaker::HandleForcedLineBreak(const InlineItem* item,
 
   if (item) {
     DCHECK_EQ(item->TextType(), TextItemType::kForcedLineBreak);
-    DCHECK_EQ(Text()[item->StartOffset()], kNewlineCharacter);
+    DCHECK_EQ(Text()[item->StartOffset()], uchar::kLineFeed);
 
     // Special-code for BR clear elements. If we have floats that extend into
     // subsequent fragmentainers, we cannot get past the floats in the current
@@ -2963,7 +2962,7 @@ void LineBreaker::HandleControlItem(const InlineItem& item,
   DCHECK_EQ(item.TextType(), TextItemType::kFlowControl);
   UChar character = Text()[item.StartOffset()];
   switch (character) {
-    case kTabulationCharacter: {
+    case uchar::kTab: {
       DCHECK(item.Style());
       const ComputedStyle& style = *item.Style();
       if (!style.GetFont()->PrimaryFont()) {
@@ -2978,7 +2977,7 @@ void LineBreaker::HandleControlItem(const InlineItem& item,
       HandleText(item, *shape_result, line_info);
       return;
     }
-    case kZeroWidthSpaceCharacter: {
+    case uchar::kZeroWidthSpace: {
       // <wbr> tag creates break opportunities regardless of auto_wrap.
       InlineItemResult* item_result = AddItem(item, line_info);
       // A generated break opportunity doesn't generate fragments, but we still
@@ -3010,8 +3009,8 @@ void LineBreaker::HandleBidiControlItem(const InlineItem& item,
   // characters simialr to open-tag, while "exit" (pop) characters similar to
   // close-tag.
   UChar character = Text()[item.StartOffset()];
-  bool is_pop = character == kPopDirectionalIsolateCharacter ||
-                character == kPopDirectionalFormattingCharacter;
+  bool is_pop = character == uchar::kPopDirectionalIsolate ||
+                character == uchar::kPopDirectionalFormatting;
   InlineItemResults* item_results = line_info->MutableResults();
   if (is_pop) {
     if (!item_results->empty()) {
@@ -4308,7 +4307,7 @@ void LineBreaker::RewindOverflow(unsigned new_end, LineInfo* line_info) {
       // All control characters except newline are trailable if auto_wrap. We
       // should not have rewound if there was a newline, so safe to assume all
       // controls are trailable.
-      DCHECK_NE(text[item_result.StartOffset()], kNewlineCharacter);
+      DCHECK_NE(text[item_result.StartOffset()], uchar::kLineFeed);
       DCHECK(item.Style());
       const ComputedStyle& style = *item.Style();
       if (ShouldWrapLine(style) && !style.ShouldBreakSpaces()) {

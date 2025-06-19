@@ -262,7 +262,7 @@ bool SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::HandleTextNode() {
   String text = layout_object->TransformedText();
 
   if (behavior_.EmitsSpaceForNbsp())
-    text.Replace(kNoBreakSpaceCharacter, kSpaceCharacter);
+    text.Replace(uchar::kNoBreakSpace, uchar::kSpace);
 
   if (!layout_object->HasInlineFragments() && text.length() > 0)
     return true;

@@ -46,13 +46,13 @@ static inline CharType FoldQuoteMarkOrSoftHyphen(CharType c) {
   switch (static_cast<UChar>(c)) {
     case uchar::kHebrewPunctuationGershayim:
     case uchar::kLeftDoubleQuotationMark:
-    case kRightDoubleQuotationMarkCharacter:
+    case uchar::kRightDoubleQuotationMark:
       return '"';
     case uchar::kHebrewPunctuationGeresh:
     case uchar::kLeftSingleQuotationMark:
-    case kRightSingleQuotationMarkCharacter:
+    case uchar::kRightSingleQuotationMark:
       return '\'';
-    case kSoftHyphenCharacter:
+    case uchar::kSoftHyphen:
       // Replace soft hyphen with an ignorable character so that their presence
       // or absence will
       // not affect string comparison.
@@ -73,12 +73,12 @@ void FoldQuoteMarksAndSoftHyphens(String& s) {
   s.Replace(uchar::kHebrewPunctuationGershayim, '"');
   s.Replace(uchar::kLeftDoubleQuotationMark, '"');
   s.Replace(uchar::kLeftSingleQuotationMark, '\'');
-  s.Replace(kRightDoubleQuotationMarkCharacter, '"');
-  s.Replace(kRightSingleQuotationMarkCharacter, '\'');
+  s.Replace(uchar::kRightDoubleQuotationMark, '"');
+  s.Replace(uchar::kRightSingleQuotationMark, '\'');
   // Replace soft hyphen with an ignorable character so that their presence or
   // absence will
   // not affect string comparison.
-  s.Replace(kSoftHyphenCharacter, static_cast<UChar>('\0'));
+  s.Replace(uchar::kSoftHyphen, static_cast<UChar>('\0'));
 }
 
 static bool IsNonLatin1Separator(UChar32 character) {

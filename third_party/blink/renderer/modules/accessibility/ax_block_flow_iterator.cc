@@ -55,7 +55,7 @@ bool IncludeTrailingWhitespace(const WTF::String& text,
     return false;
   }
 
-  if (text[offset] != uchar::kSpaceCharacter) {
+  if (text[offset] != uchar::kSpace) {
     return false;
   }
 

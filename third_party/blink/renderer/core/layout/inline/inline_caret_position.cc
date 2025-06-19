@@ -482,7 +482,7 @@ InlineCaretPosition ComputeInlineCaretPosition(
   // See AccessibilitySelectionTest.FromCurrentSelectionInTextareaWithAffinity
   const unsigned adjusted_offset =
       affinity == TextAffinity::kUpstream && offset &&
-              mapping->GetText()[offset - 1] == kZeroWidthSpaceCharacter
+              mapping->GetText()[offset - 1] == uchar::kZeroWidthSpace
           ? offset - 1
           : offset;
   return ComputeInlineCaretPosition(*context, adjusted_offset, affinity,

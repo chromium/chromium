@@ -1532,7 +1532,7 @@ InlineLayoutAlgorithm::DoesRemainderFitInLineWithoutEllipsis(
                item.Type() == InlineItem::kBidiControl) {
       if (breakpoint_status != kHasBreakpoints &&
           item.Type() == InlineItem::kControl &&
-          text[item.StartOffset()] == kZeroWidthSpaceCharacter) {
+          text[item.StartOffset()] == uchar::kZeroWidthSpace) {
         breakpoint_status = kHasBreakpoints;
       }
       if (current.text_offset == item.EndOffset()) {

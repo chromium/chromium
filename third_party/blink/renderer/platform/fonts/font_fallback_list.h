@@ -88,7 +88,7 @@ class PLATFORM_EXPORT FontFallbackList
     }
     if (!cached_primary_simple_font_data_with_space_) {
       cached_primary_simple_font_data_with_space_ =
-          DeterminePrimarySimpleFontData(font_description, kSpaceCharacter);
+          DeterminePrimarySimpleFontData(font_description, uchar::kSpace);
       DCHECK(cached_primary_simple_font_data_with_space_);
     }
     return cached_primary_simple_font_data_with_space_;
@@ -137,10 +137,10 @@ class PLATFORM_EXPORT FontFallbackList
 
   const SimpleFontData* DeterminePrimarySimpleFontData(
       const FontDescription&,
-      UChar32 lookup_character = kSpaceCharacter);
+      UChar32 lookup_character = uchar::kSpace);
   const SimpleFontData* DeterminePrimarySimpleFontDataCore(
       const FontDescription&,
-      UChar32 lookup_character = kSpaceCharacter);
+      UChar32 lookup_character = uchar::kSpace);
 
   void ComputeFontFeatures(const FontDescription&);
   bool ComputeCanShapeWordByWord(const FontDescription&);

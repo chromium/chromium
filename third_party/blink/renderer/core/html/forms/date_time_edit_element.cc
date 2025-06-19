@@ -499,7 +499,7 @@ void DateTimeEditBuilder::VisitLiteral(const String& text) {
         dir == unicode::kWhiteSpaceNeutral || dir == unicode::kOtherNeutral) {
       element->AppendChild(
           Text::Create(EditElement().GetDocument(),
-                       String(base::span_from_ref(kRightToLeftMarkCharacter))));
+                       String(base::span_from_ref(uchar::kRightToLeftMark))));
     }
   }
   element->AppendChild(Text::Create(EditElement().GetDocument(), text));
