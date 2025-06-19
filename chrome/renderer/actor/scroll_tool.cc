@@ -10,6 +10,7 @@
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -87,25 +88,22 @@ ScrollTool::ValidatedResult ScrollTool::Validate() const {
         mojom::ActionResultCode::kArgumentsInvalid, "Negative Distance"));
   }
 
+  if (action_->target->is_coordinate()) {
+    NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
+    return base::unexpected(MakeErrorResult());
+  }
 
   WebElement scrolling_element;
-  if (!action_->target) {
+  int32_t dom_node_id = action_->target->get_dom_node_id();
+  if (dom_node_id == kRootElementDomNodeId) {
     scrolling_element = web_frame->GetDocument().ScrollingElement();
-
     if (scrolling_element.IsNull()) {
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kScrollNoScrollingElement));
     }
   } else {
-    if (action_->target->is_coordinate()) {
-      NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
-      return base::unexpected(MakeErrorResult());
-    }
-
-    int32_t dom_node_id = action_->target->get_dom_node_id();
     scrolling_element =
         GetNodeFromId(frame_.get(), dom_node_id).DynamicTo<WebElement>();
-
     if (scrolling_element.IsNull()) {
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));

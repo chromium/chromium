@@ -88,7 +88,7 @@ struct ScrollAction {
   // This target is the element to scroll. A null target implies scrolling the
   // page's viewport. If the scroll action returns failure, it means the target
   // isn't scrollable.
-  ToolTarget? target;
+  ToolTarget target;
   ScrollDirection direction;
   // Scroll distance in physical pixels, and it should always be positive.
   float distance;

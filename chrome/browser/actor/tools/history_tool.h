@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_HISTORY_TOOL_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_HISTORY_TOOL_H_
 
+#include <memory>
 #include <optional>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
+#include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -25,12 +29,8 @@ namespace actor {
 // Performs a history navigation in a WebContents.
 class HistoryTool : public Tool, content::WebContentsObserver {
  public:
-  enum Direction {
-    kBack,
-    kForward,
-  };
-
-  HistoryTool(content::WebContents& web_contents, Direction direction);
+  HistoryTool(content::WebContents& web_contents,
+              HistoryToolRequest::Direction direction);
   ~HistoryTool() override;
 
   // actor::Tool
@@ -38,6 +38,8 @@ class HistoryTool : public Tool, content::WebContentsObserver {
   void Invoke(InvokeCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
+  std::unique_ptr<ObservationDelayController> GetObservationDelayer()
+      const override;
 
   // content::WebContentsObserver
   void DidStartNavigation(
@@ -53,7 +55,7 @@ class HistoryTool : public Tool, content::WebContentsObserver {
   bool IsInvokeInProgress() const;
 
   // Whether the navigation is backwards or forwards in session history.
-  Direction direction_;
+  HistoryToolRequest::Direction direction_;
 
   // This class tracks all navigation handles created as a result of the history
   // traversal in `pending_navigations_`. However, these navigations may or may

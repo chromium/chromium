@@ -4,19 +4,19 @@
 
 #include "chrome/browser/actor/tools/tool.h"
 
-#include <memory>
-
-#include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/common/actor/action_result.h"
 
 namespace actor {
 
-std::unique_ptr<ObservationDelayController> Tool::GetObservationDelayer(
-    content::RenderFrameHost& target_frame) const {
-  return std::make_unique<ObservationDelayController>(target_frame);
+mojom::ActionResultPtr Tool::TimeOfUseValidation(
+    const optimization_guide::proto::AnnotatedPageContent* last_observation)
+    const {
+  // TODO(crbug.com/411462297): This should be made pure-virtual.
+  return MakeOkResult();
 }
 
-bool Tool::RequiresFrame() const {
-  return true;
+GURL Tool::JournalURL() const {
+  return GURL::EmptyGURL();
 }
 
 }  // namespace actor

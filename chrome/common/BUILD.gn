@@ -361,6 +361,7 @@ static_library("common_lib") {
     sources += [
       "actor/action_result.cc",
       "actor/action_result.h",
+      "actor/actor_constants.h",
       "actor/actor_logging.h",
       "read_anything/read_anything_util.cc",
       "read_anything/read_anything_util.h",

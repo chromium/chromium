@@ -8,9 +8,16 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/actor/tools/page_tool_request.h"
+#include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
-#include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -20,172 +27,158 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/gfx/geometry/point.h"
 
-namespace {
+namespace actor {
 
 using ::content::GlobalRenderFrameHostId;
 using ::content::RenderFrameHost;
+using ::content::RenderWidgetHost;
 using ::content::WebContents;
 using ::content::WebContentsObserver;
-using ::optimization_guide::proto::Action;
-using ::optimization_guide::proto::ActionTarget;
-using ::optimization_guide::proto::ClickAction_ClickCount;
-using ::optimization_guide::proto::ClickAction_ClickType;
-using ::optimization_guide::proto::ScrollAction_ScrollDirection;
-using ::optimization_guide::proto::TypeAction_TypeMode;
+using ::optimization_guide::DocumentIdentifierUserData;
+using optimization_guide::proto::ActionTarget;
+using optimization_guide::proto::AnnotatedPageContent;
+using ::tabs::TabHandle;
+using ::tabs::TabInterface;
 
-void SetMojoTarget(const ActionTarget& target,
-                   actor::mojom::ToolTargetPtr& out_mojo_target) {
-  if (target.has_coordinate()) {
-    out_mojo_target = actor::mojom::ToolTarget::NewCoordinate(
-        gfx::Point(target.coordinate().x(), target.coordinate().y()));
-  } else {
-    // A ContentNodeId of 0 indicates the viewport. The mojo message indicates
-    // viewport by omitting a target.
-    if (target.content_node_id() > 0) {
-      out_mojo_target =
-          actor::mojom::ToolTarget::NewDomNodeId(target.content_node_id());
+namespace {
+
+// Finds the local root of a given RenderFrameHost. The local root is the
+// highest ancestor in the frame tree that shares the same RenderWidgetHost.
+RenderFrameHost* GetLocalRoot(RenderFrameHost* rfh) {
+  RenderFrameHost* local_root = rfh;
+  while (local_root && local_root->GetParent()) {
+    if (local_root->GetRenderWidgetHost() !=
+        local_root->GetParent()->GetRenderWidgetHost()) {
+      break;
     }
+    local_root = local_root->GetParent();
   }
+  return local_root;
 }
 
-// Set mojom for click action based on proto. Returns false if the proto does
-// not contain correct/sufficient information, true otherwise.
-bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
-                      const Action& action) {
-  SetMojoTarget(action.click().target(), click->target);
-
-  switch (action.click().click_type()) {
-    case ClickAction_ClickType::ClickAction_ClickType_LEFT:
-      click->type = actor::mojom::ClickAction::Type::kLeft;
-      break;
-    case ClickAction_ClickType::ClickAction_ClickType_RIGHT:
-      click->type = actor::mojom::ClickAction::Type::kRight;
-      break;
-    case ClickAction_ClickType::ClickAction_ClickType_UNKNOWN_CLICK_TYPE:
-    case ClickAction_ClickType::
-        ClickAction_ClickType_ClickAction_ClickType_INT_MAX_SENTINEL_DO_NOT_USE_:
-    case ClickAction_ClickType::
-        ClickAction_ClickType_ClickAction_ClickType_INT_MIN_SENTINEL_DO_NOT_USE_:
-      // TODO(issuetracker.google.com/412700289): Revert once this is set.
-      click->type = actor::mojom::ClickAction::Type::kLeft;
-      break;
-      // return false;
-  }
-
-  switch (action.click().click_count()) {
-    case ClickAction_ClickCount::ClickAction_ClickCount_SINGLE:
-      click->count = actor::mojom::ClickAction::Count::kSingle;
-      break;
-    case ClickAction_ClickCount::ClickAction_ClickCount_DOUBLE:
-      click->count = actor::mojom::ClickAction::Count::kDouble;
-      break;
-    case ClickAction_ClickCount::ClickAction_ClickCount_UNKNOWN_CLICK_COUNT:
-    case ClickAction_ClickCount::
-        ClickAction_ClickCount_ClickAction_ClickCount_INT_MIN_SENTINEL_DO_NOT_USE_:
-    case ClickAction_ClickCount::
-        ClickAction_ClickCount_ClickAction_ClickCount_INT_MAX_SENTINEL_DO_NOT_USE_:
-      // TODO(issuetracker.google.com/412700289): Revert once this is set.
-      click->count = actor::mojom::ClickAction::Count::kSingle;
-      break;
-      // return false;
-  }
-  return true;
+RenderFrameHost* GetRenderFrameForDocumentIdentifier(
+    content::WebContents& web_contents,
+    std::string_view target_document_token) {
+  RenderFrameHost* render_frame = nullptr;
+  web_contents.ForEachRenderFrameHostWithAction([&target_document_token,
+                                                 &render_frame](
+                                                    RenderFrameHost* rfh) {
+    // Skip inactive frame and its children.
+    if (!rfh->IsActive()) {
+      return RenderFrameHost::FrameIterationAction::kSkipChildren;
+    }
+    auto* user_data = DocumentIdentifierUserData::GetForCurrentDocument(rfh);
+    if (user_data && user_data->serialized_token() == target_document_token) {
+      render_frame = rfh;
+      return RenderFrameHost::FrameIterationAction::kStop;
+    }
+    return RenderFrameHost::FrameIterationAction::kContinue;
+  });
+  return render_frame;
 }
 
-// Set mojom for mouse move action based on proto.
-void SetMouseMoveToolArgs(actor::mojom::MouseMoveActionPtr& move,
-                          const Action& action) {
-  SetMojoTarget(action.move_mouse().target(), move->target);
+RenderFrameHost* GetRootFrameForWidget(content::WebContents& web_contents,
+                                       RenderWidgetHost* rwh) {
+  RenderFrameHost* root_frame = nullptr;
+  web_contents.ForEachRenderFrameHostWithAction([rwh, &root_frame](
+                                                    RenderFrameHost* rfh) {
+    if (!rfh->IsActive()) {
+      return RenderFrameHost::FrameIterationAction::kSkipChildren;
+    }
+    // A frame is a local root if it has no parent or if its parent belongs
+    // to a different widget. We are looking for the local root frame
+    // associated with the target widget.
+    if (rfh->GetRenderWidgetHost() == rwh &&
+        (!rfh->GetParent() || rfh->GetParent()->GetRenderWidgetHost() != rwh)) {
+      root_frame = rfh;
+      return RenderFrameHost::FrameIterationAction::kStop;
+    }
+    return RenderFrameHost::FrameIterationAction::kContinue;
+  });
+  return root_frame;
 }
 
-// Set mojom for type action based on proto.
-// Returns false if the proto does not contain correct/sufficient information,
-// true otherwise.
-bool SetTypeToolArgs(actor::mojom::TypeActionPtr& type_action,
-                     const Action& action) {
-  SetMojoTarget(action.type().target(), type_action->target);
-
-  type_action->text = action.type().text();
-  type_action->follow_by_enter = action.type().follow_by_enter();
-
-  // Map proto enum to mojom enum
-  switch (action.type().mode()) {
-    case TypeAction_TypeMode::TypeAction_TypeMode_DELETE_EXISTING:
-      type_action->mode = actor::mojom::TypeAction::Mode::kDeleteExisting;
-      break;
-    case TypeAction_TypeMode::TypeAction_TypeMode_PREPEND:
-      type_action->mode = actor::mojom::TypeAction::Mode::kPrepend;
-      break;
-    case TypeAction_TypeMode::TypeAction_TypeMode_APPEND:
-      type_action->mode = actor::mojom::TypeAction::Mode::kAppend;
-      break;
-    case TypeAction_TypeMode::TypeAction_TypeMode_UNKNOWN_TYPE_MODE:
-    case TypeAction_TypeMode::
-        TypeAction_TypeMode_TypeAction_TypeMode_INT_MIN_SENTINEL_DO_NOT_USE_:
-    case TypeAction_TypeMode::
-        TypeAction_TypeMode_TypeAction_TypeMode_INT_MAX_SENTINEL_DO_NOT_USE_:
-      // TODO(issuetracker.google.com/412700289): Revert once this is set.
-      type_action->mode = actor::mojom::TypeAction::Mode::kDeleteExisting;
-      break;
-      //      DLOG(ERROR) << "TypeAction proto type mode not supported"
-      //                  << action.type().mode();
-      //      return false;
+RenderFrameHost* FindTargetLocalRootFrame(
+    TabHandle tab_handle,
+    std::optional<std::string> document_identifier,
+    PageToolRequest::Target target) {
+  TabInterface* tab = tab_handle.Get();
+  if (!tab) {
+    return nullptr;
   }
 
-  return true;
-}
+  WebContents& contents = *tab->GetContents();
 
-bool SetScrollToolArgs(actor::mojom::ScrollActionPtr& scroll,
-                       const Action& action) {
-  if (action.scroll().has_target()) {
-    SetMojoTarget(action.scroll().target(), scroll->target);
+  if (std::holds_alternative<PageToolRequest::CoordinateTarget>(target)) {
+    auto coordinate = std::get<PageToolRequest::CoordinateTarget>(target);
+
+    RenderWidgetHost* target_rwh =
+        contents.FindWidgetAtPoint(gfx::PointF(coordinate));
+    if (!target_rwh) {
+      return nullptr;
+    }
+    return GetRootFrameForWidget(contents, target_rwh);
   }
-  switch (action.scroll().direction()) {
-    case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_LEFT:
-      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kLeft;
-      break;
-    case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_RIGHT:
-      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kRight;
-      break;
-    case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_UP:
-      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kUp;
-      break;
-    case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_DOWN:
-      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kDown;
-      break;
-    case ScrollAction_ScrollDirection::
-        ScrollAction_ScrollDirection_UNKNOWN_SCROLL_DIRECTION:
-    case ScrollAction_ScrollDirection::
-        ScrollAction_ScrollDirection_ScrollAction_ScrollDirection_INT_MIN_SENTINEL_DO_NOT_USE_:
-    case ScrollAction_ScrollDirection::
-        ScrollAction_ScrollDirection_ScrollAction_ScrollDirection_INT_MAX_SENTINEL_DO_NOT_USE_:
-      // TODO(issuetracker.google.com/412700289): Revert once this is set.
-      scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kDown;
-      break;
-      // return false;
+
+  CHECK(std::holds_alternative<PageToolRequest::NodeTarget>(target));
+
+  CHECK(document_identifier.has_value());
+  const std::string& serialized_token = document_identifier.value();
+
+  RenderFrameHost* target_frame = GetRenderFrameForDocumentIdentifier(
+      *tab->GetContents(), serialized_token);
+
+  // After finding the target frame, walk up to its local root.
+  return GetLocalRoot(target_frame);
+}
+
+// Perform validation based on APC and document identifier for coordinate based
+// target to compare the candidate frame with the target frame identified in
+// last observation.
+bool ValidateTargetFrameCandidate(
+    const PageToolRequest::Target& target,
+    RenderFrameHost* candidate_frame,
+    WebContents& web_contents,
+    const AnnotatedPageContent* last_observed_page_content) {
+  // Frame validation is performed only when targeting using coordinates.
+  CHECK(std::holds_alternative<PageToolRequest::CoordinateTarget>(target));
+
+  if (!last_observed_page_content) {
+    // TODO(bokan): We can't perform a TOCTOU check If there's no last
+    // observation. Consider what to do in this case.
+    return true;
   }
-  scroll->distance = action.scroll().distance();
-  return true;
-}
 
-void SetSelectToolArgs(actor::mojom::SelectActionPtr& select,
-                       const Action& action) {
-  SetMojoTarget(action.select().target(), select->target);
-  select->value = action.select().value();
-}
+  // TODO(bokan): This helper should take a gfx::Point.
+  auto coordinate = std::get<PageToolRequest::CoordinateTarget>(target);
+  optimization_guide::proto::Coordinate apc_coordinate;
+  apc_coordinate.set_x(coordinate.x());
+  apc_coordinate.set_y(coordinate.y());
 
-void SetDragAndReleaseToolArgs(
-    actor::mojom::DragAndReleaseActionPtr& drag_and_release,
-    Action action) {
-  SetMojoTarget(action.drag_and_release().from_target(),
-                drag_and_release->from_target);
-  SetMojoTarget(action.drag_and_release().to_target(),
-                drag_and_release->to_target);
+  // TODO(crbug.com/426021822): FindNodeAtPoint does not handle corner cases
+  // like clip paths. Need more checks to ensure we don't drop actions
+  // unnecessarily.
+  std::optional<optimization_guide::TargetNodeInfo> target_node_info =
+      optimization_guide::FindNodeAtPoint(*last_observed_page_content,
+                                          apc_coordinate);
+  if (!target_node_info) {
+    return false;
+  }
+
+  RenderFrameHost* apc_target_frame = GetRenderFrameForDocumentIdentifier(
+      web_contents, target_node_info->document_identifier.serialized_token());
+
+  // Only return the candidate if its RenderWidgetHost matches the target
+  // and it's also a local root frame(i.e. has no parent or parent has
+  // a different RenderWidgetHost)
+  if (apc_target_frame && apc_target_frame->GetRenderWidgetHost() ==
+                              candidate_frame->GetRenderWidgetHost()) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
-
-namespace actor {
 
 // Observer to track if the a given RenderFrameHost is changed.
 class RenderFrameChangeObserver : public WebContentsObserver {
@@ -212,11 +205,17 @@ class RenderFrameChangeObserver : public WebContentsObserver {
   base::OnceClosure callback_;
 };
 
-PageTool::PageTool(AggregatedJournal& journal,
-                   RenderFrameHost& frame,
-                   const Action& action)
-    : render_frame_host_(frame.GetWeakDocumentPtr()), action_(action) {
-  journal.EnsureJournalBound(frame);
+PageTool::PageTool(const PageToolRequest& request, AggregatedJournal& journal)
+    : request_(request.Clone()) {
+  // TODO(crbug.com/411462297): We shouldn't assume we have a frame until TOCTOU
+  // checks are done - a frame should only be resolved at that time. Same for
+  // tab.
+  RenderFrameHost* frame = FindTargetLocalRootFrame(
+      request.GetTabHandle(), request.DocumentIdentifier(),
+      request.GetTarget());
+  if (frame) {
+    journal.EnsureJournalBound(*frame);
+  }
 }
 
 PageTool::~PageTool() = default;
@@ -227,77 +226,46 @@ void PageTool::Validate(ValidateCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
 }
 
+mojom::ActionResultPtr PageTool::TimeOfUseValidation(
+    const AnnotatedPageContent* last_observation) const {
+  RenderFrameHost* frame = FindTargetLocalRootFrame(
+      request_->GetTabHandle(), request_->DocumentIdentifier(),
+      request_->GetTarget());
+  if (!frame) {
+    return MakeResult(mojom::ActionResultCode::kFrameWentAway);
+  }
+
+  TabInterface* tab = request_->GetTabHandle().Get();
+  // If the frame still exists the tab must as well.
+  CHECK(tab);
+
+  // Perform validation for coordinate based target only.
+  if (std::holds_alternative<PageToolRequest::CoordinateTarget>(
+          request_->GetTarget())) {
+    if (!ValidateTargetFrameCandidate(request_->GetTarget(), frame,
+                                      *tab->GetContents(), last_observation)) {
+      return MakeResult(
+          mojom::ActionResultCode::kFrameLocationChangedSinceObservation);
+    }
+  }
+
+  return MakeOkResult();
+}
+
 void PageTool::Invoke(InvokeCallback callback) {
   invoke_callback_ = std::move(callback);
-  RenderFrameHost* frame = render_frame_host_.AsRenderFrameHostIfValid();
-  if (!frame) {
-    PostFinishInvoke(mojom::ActionResultCode::kFrameWentAway);
-    return;
-  }
+
+  // Frame was validated in TimeOfUseValidation.
+  RenderFrameHost* frame = FindTargetLocalRootFrame(
+      request_->GetTabHandle(), request_->DocumentIdentifier(),
+      request_->GetTarget());
+  CHECK(frame);
 
   auto request = actor::mojom::ToolInvocation::New();
+  request->action = request_->ToMojoToolAction();
 
-  switch (action_.action_case()) {
-    case Action::ActionCase::kClick: {
-      auto click = mojom::ClickAction::New();
-      if (!SetClickToolArgs(click, action_)) {
-        PostFinishInvoke(mojom::ActionResultCode::kArgumentsInvalid);
-        return;
-      }
-      request->action = mojom::ToolAction::NewClick(std::move(click));
-      break;
-    }
-    case Action::ActionCase::kType: {
-      auto type = mojom::TypeAction::New();
-      if (!SetTypeToolArgs(type, action_)) {
-        PostFinishInvoke(mojom::ActionResultCode::kArgumentsInvalid);
-        return;
-      }
-      request->action = mojom::ToolAction::NewType(std::move(type));
-      break;
-    }
-    case Action::ActionCase::kScroll: {
-      auto scroll = mojom::ScrollAction::New();
-      if (!SetScrollToolArgs(scroll, action_)) {
-        PostFinishInvoke(mojom::ActionResultCode::kArgumentsInvalid);
-        return;
-      }
-      request->action = mojom::ToolAction::NewScroll(std::move(scroll));
-      break;
-    }
-    case Action::ActionCase::kMoveMouse: {
-      auto mouse_move = mojom::MouseMoveAction::New();
-      SetMouseMoveToolArgs(mouse_move, action_);
-      request->action = mojom::ToolAction::NewMouseMove(std::move(mouse_move));
-      break;
-    }
-    case Action::ActionCase::kDragAndRelease: {
-      auto drag_and_release = mojom::DragAndReleaseAction::New();
-      SetDragAndReleaseToolArgs(drag_and_release, action_);
-      request->action =
-          mojom::ToolAction::NewDragAndRelease(std::move(drag_and_release));
-      break;
-    }
-    case Action::ActionCase::kSelect: {
-      auto select = mojom::SelectAction::New();
-      SetSelectToolArgs(select, action_);
-      request->action = mojom::ToolAction::NewSelect(std::move(select));
-      break;
-    }
-    case Action::ActionCase::kNavigate:
-    case Action::ActionCase::kBack:
-    case Action::ActionCase::kForward:
-    case Action::ActionCase::kWait:
-    case Action::kCreateTab:
-    case Action::kCloseTab:
-    case Action::kActivateTab:
-    case Action::kCreateWindow:
-    case Action::kCloseWindow:
-    case Action::kActivateWindow:
-    case Action::kYieldToUser:
-    case Action::ActionCase::ACTION_NOT_SET:
-      NOTREACHED();
-  }
+  // ToolRequest params are checked for validity at creation.
+  CHECK(request->action);
 
   frame->GetRemoteAssociatedInterfaces()->GetInterface(&chrome_render_frame_);
 
@@ -339,40 +307,23 @@ std::string PageTool::DebugString() const {
   return absl::StrFormat("PageTool:%s", JournalEvent().c_str());
 }
 
+GURL PageTool::JournalURL() const {
+  return request_->GetURLForJournal();
+}
+
 std::string PageTool::JournalEvent() const {
-  switch (action_.action_case()) {
-    case Action::ActionCase::kClick: {
-      return "Click";
-    }
-    case Action::ActionCase::kType: {
-      return "Type";
-    }
-    case Action::ActionCase::kScroll: {
-      return "Scroll";
-    }
-    case Action::ActionCase::kMoveMouse: {
-      return "MoveMouse";
-    }
-    case Action::ActionCase::kDragAndRelease: {
-      return "DragAndRelease";
-    }
-    case Action::ActionCase::kSelect: {
-      return "Select";
-    }
-    case Action::ActionCase::kNavigate:
-    case Action::ActionCase::kBack:
-    case Action::ActionCase::kForward:
-    case Action::ActionCase::kWait:
-    case Action::kCreateTab:
-    case Action::kCloseTab:
-    case Action::kActivateTab:
-    case Action::kCreateWindow:
-    case Action::kCloseWindow:
-    case Action::kActivateWindow:
-    case Action::kYieldToUser:
-    case Action::ActionCase::ACTION_NOT_SET:
-      NOTREACHED();
-  }
+  return request_->JournalEvent();
+}
+
+std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer()
+    const {
+  RenderFrameHost* frame = FindTargetLocalRootFrame(
+      request_->GetTabHandle(), request_->DocumentIdentifier(),
+      request_->GetTarget());
+  // It's the caller's responsibility to ensure a frame is still live if calling
+  // this method.
+  CHECK(frame);
+  return std::make_unique<ObservationDelayController>(*frame);
 }
 
 void PageTool::FinishInvoke(mojom::ActionResultPtr result) {

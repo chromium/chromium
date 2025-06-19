@@ -14,15 +14,10 @@
 
 namespace actor {
 
-namespace {
-
-constexpr base::TimeDelta kWaitTime = base::Seconds(3);
-
-}  // namespace
-
 bool WaitTool::no_delay_for_testing_ = false;
 
-WaitTool::WaitTool() = default;
+WaitTool::WaitTool(base::TimeDelta wait_duration)
+    : wait_duration_(wait_duration) {}
 
 WaitTool::~WaitTool() = default;
 
@@ -35,7 +30,7 @@ void WaitTool::Invoke(InvokeCallback callback) {
       FROM_HERE,
       base::BindOnce(&WaitTool::OnDelayFinished, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback)),
-      no_delay_for_testing_ ? base::TimeDelta() : kWaitTime);
+      no_delay_for_testing_ ? base::TimeDelta() : wait_duration_);
 }
 
 std::string WaitTool::DebugString() const {
@@ -46,8 +41,8 @@ std::string WaitTool::JournalEvent() const {
   return "Wait";
 }
 
-std::unique_ptr<ObservationDelayController> WaitTool::GetObservationDelayer(
-    content::RenderFrameHost&) const {
+std::unique_ptr<ObservationDelayController> WaitTool::GetObservationDelayer()
+    const {
   // Wait tool shouldn't delay observation aside from its own built-in delay.
   return nullptr;
 }

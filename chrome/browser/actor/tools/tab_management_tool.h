@@ -7,17 +7,26 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/tools/tool.h"
-#include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "chrome/browser/actor/tools/tool_request.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace actor {
+
+class ObservationDelayController;
 
 // A tool to manage the tabs in a browser window, e.g. create, close,
 // activate, etc.
 // TODO(crbug.com/411462297): Implement actions other than create.
 class TabManagementTool : public Tool {
  public:
-  TabManagementTool(int32_t window_id,
-                    const optimization_guide::proto::CreateTabAction& action);
+  enum Action { kCreate, kActivate, kClose };
+
+  // Public for std::make_unique, use For* static methods above.
+  // Create constructor
+  TabManagementTool(int32_t window, WindowOpenDisposition create_disposition);
+  // Activate|Close constructor.
+  TabManagementTool(Action action, tabs::TabHandle target_tab);
+
   ~TabManagementTool() override;
 
   // actor::Tool:
@@ -25,11 +34,20 @@ class TabManagementTool : public Tool {
   void Invoke(InvokeCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
-  bool RequiresFrame() const override;
+  std::unique_ptr<ObservationDelayController> GetObservationDelayer()
+      const override;
 
  private:
-  int32_t window_id_;
-  const optimization_guide::proto::CreateTabAction action_;
+  Action action_;
+
+  // Used for activate or close action.
+  std::optional<tabs::TabHandle> target_tab_;
+
+  // If creating a tab, whether to create in the foreground.
+  std::optional<WindowOpenDisposition> create_disposition_;
+
+  // If creating a tab, the window in which to create the tab.
+  std::optional<int32_t> window_id_;
 
   base::WeakPtrFactory<TabManagementTool> weak_ptr_factory_{this};
 };
