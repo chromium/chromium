@@ -100,6 +100,10 @@ namespace send_tab_to_self {
 class SendTabToSelfToolbarBubbleController;
 }  // namespace send_tab_to_self
 
+namespace split_tabs {
+class SplitTabScrimController;
+}  // namespace split_tabs
+
 // This class owns the core controllers for features that are scoped to a given
 // browser window on desktop. It can be subclassed by tests to perform
 // dependency injection.
@@ -284,6 +288,10 @@ class BrowserWindowFeatures {
     return new_tab_footer_controller_.get();
   }
 
+  split_tabs::SplitTabScrimController* split_tab_scrim_controller() {
+    return split_tab_scrim_controller_.get();
+  }
+
   // Get the FindBarController for this browser window, creating it if it does
   // not yet exist.
   FindBarController* GetFindBarController();
@@ -413,6 +421,9 @@ class BrowserWindowFeatures {
 
   // TODO(crbug.com/423956131): Remove this.
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
+
+  std::unique_ptr<split_tabs::SplitTabScrimController>
+      split_tab_scrim_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

@@ -46,6 +46,8 @@ class MultiContentsView : public views::View,
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kStartContainerViewScrimElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kEndContainerViewScrimElementId);
 
   struct ViewWidths {
     double start_width = 0;
@@ -87,6 +89,9 @@ class MultiContentsView : public views::View,
 
   // Updates the the size of the contents views based on |ratio|.
   void UpdateSplitRatio(double ratio);
+
+  // Sets whether a scrim should show over the inactive contents view.
+  void SetInactiveScrimVisibility(bool show_inactive_scrim);
 
   // Helper method to execute an arbitrary callback on each visible contents
   // view. Will execute the callback on the active contents view first.
@@ -193,6 +198,8 @@ class MultiContentsView : public views::View,
   // Insets of the start and end contents view when in split view
   gfx::Insets start_contents_view_inset_;
   gfx::Insets end_contents_view_inset_;
+
+  bool show_inactive_scrim_ = false;
 
   std::optional<int> min_contents_width_for_testing_ = std::nullopt;
 };

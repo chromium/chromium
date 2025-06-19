@@ -12,6 +12,7 @@
 class BrowserView;
 class ContentsWebView;
 class MultiContentsViewMiniToolbar;
+class ScrimView;
 
 // ContentsContainerView is owned by MultiContentsView and holds the
 // ContentsWebView and the outlines and minitoolbar when in split view.
@@ -25,8 +26,11 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
 
   ContentsWebView* GetContentsView() { return contents_view_; }
   MultiContentsViewMiniToolbar* GetMiniToolbar() { return mini_toolbar_; }
+  ScrimView* GetScrimView() { return scrim_view_; }
 
-  void UpdateBorderAndOverlay(bool is_in_split, bool is_active);
+  void UpdateBorderAndOverlay(bool is_in_split,
+                              bool is_active,
+                              bool show_scrim);
 
  private:
   // LayoutDelegate:
@@ -34,6 +38,7 @@ class ContentsContainerView : public views::View, public views::LayoutDelegate {
       const views::SizeBounds& size_bounds) const override;
 
   raw_ptr<ContentsWebView> contents_view_;
+  raw_ptr<ScrimView> scrim_view_;
   raw_ptr<MultiContentsViewMiniToolbar> mini_toolbar_;
 };
 

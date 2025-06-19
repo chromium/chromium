@@ -21,6 +21,7 @@
 #include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_focus_state.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
@@ -100,6 +101,7 @@ void OmniboxTabHelper::OnInputInProgress(bool in_progress) {
 
 void OmniboxTabHelper::OnFocusChanged(OmniboxFocusState state,
                                       OmniboxFocusChangeReason reason) {
+  focus_state_ = state;
   for (auto& observer : observers_) {
     observer.OnOmniboxFocusChanged(state, reason);
   }
@@ -120,6 +122,10 @@ void OmniboxTabHelper::OnPopupVisibilityChanged(
 
 std::optional<bool> OmniboxTabHelper::IsPagePaywalled() {
   return page_has_apc_paywall_signal_;
+}
+
+OmniboxFocusState OmniboxTabHelper::focus_state() const {
+  return focus_state_;
 }
 
 void OmniboxTabHelper::OnPageContentExtracted(

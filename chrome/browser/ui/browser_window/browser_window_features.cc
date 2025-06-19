@@ -43,6 +43,8 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
+#include "chrome/browser/ui/tabs/split_tab_scrim_controller.h"
+#include "chrome/browser/ui/tabs/split_tab_scrim_delegate.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -374,6 +376,14 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
           std::make_unique<media_router::CastBrowserController>(
               browser_view->browser());
     }
+
+    if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+      split_tab_scrim_controller_ =
+          std::make_unique<split_tabs::SplitTabScrimController>(
+              std::make_unique<split_tabs::SplitTabScrimDelegateImpl>(
+                  browser_view),
+              browser_view->browser());
+    }
   }
 
   if (download::IsDownloadBubbleEnabled()) {
@@ -431,6 +441,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   // TODO(crbug.com/423956131): Update reset order once FindBarController is
   // deterministically constructed.
   find_bar_controller_.reset();
+
+  split_tab_scrim_controller_.reset();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

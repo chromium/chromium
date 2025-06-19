@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
+#include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -28,6 +29,10 @@
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
                                       kMultiContentsViewElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
+                                      kStartContainerViewScrimElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
+                                      kEndContainerViewScrimElementId);
 
 MultiContentsView::MultiContentsView(
     BrowserView* browser_view,
@@ -44,6 +49,8 @@ MultiContentsView::MultiContentsView(
   contents_container_views_[0]
       ->GetContentsView()
       ->set_is_primary_web_contents_for_window(true);
+  contents_container_views_[0]->GetScrimView()->SetProperty(
+      views::kElementIdentifierKey, kStartContainerViewScrimElementId);
 
   resize_area_ = AddChildView(std::make_unique<MultiContentsResizeArea>(this));
   resize_area_->SetVisible(false);
@@ -51,6 +58,8 @@ MultiContentsView::MultiContentsView(
   contents_container_views_.push_back(
       AddChildView(std::make_unique<ContentsContainerView>(browser_view_)));
   contents_container_views_[1]->SetVisible(false);
+  contents_container_views_[1]->GetScrimView()->SetProperty(
+      views::kElementIdentifierKey, kEndContainerViewScrimElementId);
 
   for (auto* contents_container_view : contents_container_views_) {
     web_contents_focused_subscriptions_.push_back(
@@ -138,6 +147,13 @@ void MultiContentsView::UpdateSplitRatio(double ratio) {
 
   start_ratio_ = ratio;
   InvalidateLayout();
+}
+
+void MultiContentsView::SetInactiveScrimVisibility(bool show_inactive_scrim) {
+  if (show_inactive_scrim_ != show_inactive_scrim) {
+    show_inactive_scrim_ = show_inactive_scrim;
+    UpdateContentsBorderAndOverlay();
+  }
 }
 
 void MultiContentsView::ExecuteOnEachVisibleContentsView(
@@ -317,7 +333,8 @@ void MultiContentsView::UpdateContentsBorderAndOverlay() {
   for (auto* contents_container_view : contents_container_views_) {
     const bool is_active =
         contents_container_view->GetContentsView() == GetActiveContentsView();
-    contents_container_view->UpdateBorderAndOverlay(IsInSplitView(), is_active);
+    contents_container_view->UpdateBorderAndOverlay(IsInSplitView(), is_active,
+                                                    show_inactive_scrim_);
   }
 }
 

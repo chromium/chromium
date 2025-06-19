@@ -29,6 +29,8 @@
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_modifiers.h"
@@ -67,13 +69,24 @@ class MultiContentsViewBoundsChangedObserver
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
 }  // namespace
 
 class MultiContentsViewUiTest
     : public SplitTabsInteractiveTestMixin<
           TabStripInteractiveTestMixin<InteractiveBrowserTest>> {
+ public:
+  void SetUpOnMainThread() override {
+    SplitTabsInteractiveTestMixin::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
  protected:
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
+
+  GURL GetTestUrl() { return embedded_test_server()->GetURL("/title1.html"); }
 
   auto CreateTabsAndEnterSplitView() {
     auto result = Steps(
@@ -618,6 +631,53 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
                     ->mini_toolbar_for_testing(1)
                     ->GetVisible();
       }));
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ShowScrimOnOmniboxFocus) {
+  RunTestSequence(
+      InstrumentTab(kNewTab), AddInstrumentedTab(kSecondTab, GetTestUrl()),
+      SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+      FocusElement(kNewTab),
+      WaitForHide(MultiContentsView::kEndContainerViewScrimElementId),
+      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
+      FocusElement(kOmniboxElementId),
+      WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
+      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
+      // Move focus to the inactive tab and trigger scrim on the start tab
+      FocusInactiveTabInSplit(),
+      WaitForHide(MultiContentsView::kEndContainerViewScrimElementId),
+      FocusElement(kOmniboxElementId),
+      WaitForShow(MultiContentsView::kStartContainerViewScrimElementId),
+      EnsureNotPresent(MultiContentsView::kEndContainerViewScrimElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+                       ScrimUpdatesForMultipleSplitTabs) {
+  RunTestSequence(
+      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
+      EnsureNotPresent(MultiContentsView::kEndContainerViewScrimElementId),
+      // Create a split tab and verify that the scrim shows
+      AddInstrumentedTab(kSecondTab, GetTestUrl()),
+      SelectTab(kTabStripElementId, 0), FocusElement(kOmniboxElementId),
+      EnterSplitView(0, 1),
+      WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
+      // Create a second split tab
+      AddInstrumentedTab(kThirdTab, GetTestUrl()),
+      AddInstrumentedTab(kFourthTab, GetTestUrl()),
+      SelectTab(kTabStripElementId, 2), FocusElement(kOmniboxElementId),
+      EnterSplitView(2, 3),
+      WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
+      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
+      // Remove focus from the omnibox split to ensure the second split
+      // isn't showing a scrim
+      FocusElement(kThirdTab),
+      WaitForHide(MultiContentsView::kEndContainerViewScrimElementId),
+      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId),
+      // Ensure the scrim is showing when the first split tab is selected
+      // because it had the omnibox focus
+      SelectTab(kTabStripElementId, 0),
+      WaitForShow(MultiContentsView::kEndContainerViewScrimElementId),
+      EnsureNotPresent(MultiContentsView::kStartContainerViewScrimElementId));
 }
 
 // TODO(crbug.com/414590951): There's limited support for testing drag and drop

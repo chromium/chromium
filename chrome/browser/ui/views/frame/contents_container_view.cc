@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 
+#include <memory>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
+#include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -32,17 +35,21 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view) {
 
   contents_view_ = AddChildView(
       std::make_unique<ContentsWebView>(browser_view->GetProfile()));
+  scrim_view_ = AddChildView(std::make_unique<ScrimView>());
   mini_toolbar_ = AddChildView(std::make_unique<MultiContentsViewMiniToolbar>(
       browser_view, contents_view_));
 }
 
 void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
-                                                   bool is_active) {
-  // The border and mini toolbar should not be visible if not in a split.
+                                                   bool is_active,
+                                                   bool show_scrim) {
+  // The border, mini toolbar, and scrim should not be visible if not in a
+  // split.
   if (!is_in_split) {
     SetBorder(nullptr);
     contents_view_->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{0});
     mini_toolbar_->SetVisible(false);
+    scrim_view_->SetVisible(false);
     return;
   }
 
@@ -62,6 +69,9 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
   // Mini toolbar should only be visible for the inactive contents
   // container view.
   mini_toolbar_->SetVisible(!is_active);
+  // Scrim should only be allowed to show the scrim for inactive contents
+  // container view.
+  scrim_view_->SetVisible(!is_active && show_scrim);
 }
 
 views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
@@ -78,6 +88,11 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
   gfx::Rect contents_rect = GetContentsBounds();
   layouts.child_layouts.emplace_back(
       contents_view_.get(), contents_view_->GetVisible(), contents_rect);
+
+  // The scrim view should cover and take up the same space as the contents
+  // view.
+  layouts.child_layouts.emplace_back(scrim_view_.get(),
+                                     scrim_view_->GetVisible(), contents_rect);
 
   // |mini_toolbar_| should be offset in the bottom right corner, overlapping
   // the outline.
