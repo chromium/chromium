@@ -6520,7 +6520,7 @@ crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/blob-valid-be
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor-direction-objectstore-keyrange.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor-direction-objectstore.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor_advance_objectstore.any.html [ Pass ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor_continue_objectstore.any.html [ Pass ]
+crbug.com/419208485 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor_continue_objectstore.any.html [ Crash Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor_update_objectstore.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_openCursor.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_openKeyCursor.any.html [ Pass ]
