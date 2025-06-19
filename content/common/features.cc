@@ -197,7 +197,7 @@ BASE_FEATURE(kFedCmSameSiteLax,
 // Enables installed web app matching for getInstalledRelatedApps API.
 BASE_FEATURE(kFilterInstalledAppsWebAppMatching,
              "FilterInstalledAppsWebAppMatching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_WIN)
 // Enables installed windows app matching for getInstalledRelatedApps API.
 // Note: This is enabled by default as a kill switch, since the functionality
