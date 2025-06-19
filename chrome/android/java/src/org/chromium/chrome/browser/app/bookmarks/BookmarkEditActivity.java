@@ -56,9 +56,6 @@ public class BookmarkEditActivity extends SnackbarActivity {
     /** The intent extra specifying the ID of the bookmark to be edited. */
     public static final String INTENT_BOOKMARK_ID = "BookmarkEditActivity.BookmarkId";
 
-    /** The code when starting the folder move activity for a result. */
-    static final int MOVE_REQUEST_CODE = 15;
-
     private static final String TAG = "BookmarkEdit";
 
     private BookmarkModel mModel;
@@ -66,7 +63,6 @@ public class BookmarkEditActivity extends SnackbarActivity {
     private BookmarkUiPrefs mBookmarkUiPrefs;
     private BookmarkManagerOpener mBookmarkManagerOpener;
     private BookmarkId mBookmarkId;
-    private boolean mInFolderSelect;
     private PropertyModel mFolderSelectRowModel;
 
     private ImprovedBookmarkRowCoordinator mFolderSelectRowCoordinator;
@@ -91,10 +87,6 @@ public class BookmarkEditActivity extends SnackbarActivity {
                 public void bookmarkModelChanged() {
                     if (mModel.doesBookmarkExist(mBookmarkId)) {
                         updateViewContent(true);
-                    } else if (!mInFolderSelect) {
-                        // This happens either when the user clicks delete button or partner
-                        // bookmark is removed in background.
-                        finish();
                     }
                 }
             };
