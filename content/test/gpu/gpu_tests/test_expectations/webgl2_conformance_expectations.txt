@@ -755,8 +755,10 @@ crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_
 crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance2/textures/canvas/tex-2d-rgb565-rgb-unsigned_byte.html [ Failure ]
 crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance2/textures/canvas/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance2/textures/canvas/tex-2d-rg8-rg-unsigned_byte.html [ Failure ]
 crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance2/textures/canvas/tex-2d-rgb8ui-rgb_integer-unsigned_byte.html [ Failure ]
 crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance2/textures/canvas/tex-3d-rgba8ui-rgba_integer-unsigned_byte.html [ Failure ]
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance2/textures/canvas/tex-3d-rgb9_e5-rgb-float.html [ Failure ]
 crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance2/textures/canvas/tex-3d-rgb9_e5-rgb-half_float.html [ Failure ]
 crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Failure ]
 crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance2/textures/canvas_sub_rectangle/tex-3d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ Failure ]
@@ -777,6 +779,8 @@ crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance2/textures/webgl
 crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance2/textures/webgl_canvas/tex-3d-rgba16f-rgba-float.html [ Failure ]
 crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] conformance2/textures/webgl_canvas/tex-3d-rgba32f-rgba-float.html [ Failure ]
 crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] deqp/functional/gles3/fbomultisample.8_samples.html [ Failure ]
+crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] deqp/functional/gles3/framebufferblit/conversion_24.html [ Failure ]
 
 ## Mac / Apple Silicon ##
 
