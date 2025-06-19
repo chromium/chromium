@@ -276,7 +276,7 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
                      resource->resource_id, texture_rect,
                      iter.CurrentTiling()->tile_size(),
                      /*nearest_neighbor=*/false,
-                     /*enable_edge_aa=*/false);
+                     !layer_tree_impl()->settings().enable_edge_anti_aliasing);
         has_draw_quad = true;
       } else if (auto color = iter->solid_color()) {
         has_draw_quad = true;
