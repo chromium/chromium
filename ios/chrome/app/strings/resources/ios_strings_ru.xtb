@@ -1760,7 +1760,7 @@
 <translation id="8263809106706527890">Возможно, ваш браузер по умолчанию был изменен. Это можно проверить в настройках.</translation>
 <translation id="8264966119170358612">Несколько ваших сохраненных паролей были раскрыты в результате утечки данных в стороннем сервисе. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">В результате сброса настроек iPad произошел выход из аккаунта <ph name="USER_NAME" />. Чтобы войти, нажмите "Продолжить" ниже.</translation>
-<translation id="8273982424131314219">Вы вводите данные на сайте <ph name="URL" /></translation>
+<translation id="8273982424131314219">Данные будут вставлены на сайте <ph name="URL" /></translation>
 <translation id="8275068909952022340">Ещё…</translation>
 <translation id="8278488584187265939">Настройка главной страницы</translation>
 <translation id="8281781826761538115">Язык по умолчанию: <ph name="DEFAULT_LOCALE" /></translation>
