@@ -1473,6 +1473,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.RestrictedCandidates.MungeAllowed"
+    enum="Boolean" expires_after="2025-12-31">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <summary>
+    For added remote candidates with munged ufrag, this records whether the
+    candidate was allowed or not in the check for restricted addresses.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.RestrictedCandidates.Port"
     units="candidates" expires_after="2025-12-31">
   <owner>tov@chromium.org</owner>
