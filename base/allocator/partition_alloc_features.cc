@@ -213,6 +213,12 @@ BASE_FEATURE_ENUM_PARAM(BackupRefPtrMode,
 // Note: Do not use the prepared macro as of no need for a local cache.
 constinit const FeatureParam<int> kBackupRefPtrExtraExtrasSizeParam{
     &kPartitionAllocBackupRefPtr, "brp-extra-extras-size", 0};
+constinit const FeatureParam<bool> kBackupRefPtrSuppressDoubleFreeDetectedCrash{
+    &kPartitionAllocBackupRefPtr, "brp-suppress-double-free-detected-crash",
+    false};
+constinit const FeatureParam<bool> kBackupRefPtrSuppressCorruptionDetectedCrash{
+    &kPartitionAllocBackupRefPtr, "brp-suppress-corruption-detected-crash",
+    false};
 
 BASE_FEATURE(kPartitionAllocMemoryTagging,
              "PartitionAllocMemoryTagging",

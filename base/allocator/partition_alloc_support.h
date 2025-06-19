@@ -54,6 +54,8 @@ class BASE_EXPORT PartitionAllocSupport {
 
     // TODO(https://crbug.com/371135823): Remove after the investigation.
     size_t extra_extras_size = 0;
+    bool suppress_double_free_detected_crash = false;
+    bool suppress_corruption_detected_crash = false;
   };
 
   // Reconfigure* functions re-configure PartitionAlloc. It is impossible to

@@ -437,10 +437,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   }
 #endif  // PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE)
 
-  [[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED static void
-  DoubleFreeOrCorruptionDetected(CountType count,
-                                 uintptr_t slot_start,
-                                 SlotSpanMetadata<MetadataKind::kReadOnly>*);
+#if !PA_BUILDFLAG(IS_IOS)
+  [[noreturn]]
+#endif  // !PA_BUILDFLAG(IS_IOS)
+  PA_NOINLINE PA_NOT_TAIL_CALLED static void DoubleFreeOrCorruptionDetected(
+      CountType count,
+      uintptr_t slot_start,
+      SlotSpanMetadata<MetadataKind::kReadOnly>*);
 
   // Note that in free slots, this is overwritten by encoded freelist
   // pointer(s). The way the pointers are encoded on 64-bit little-endian
@@ -563,6 +566,13 @@ static inline constexpr size_t kInSlotMetadataSizeAdjustment =
 #else
     0ul;
 #endif
+
+#if PA_BUILDFLAG(IS_IOS)
+// Once called, all detected double frees are just ignored.
+void SuppressDoubleFreeDetectedCrash();
+// Once called, all corruptions detected are just ignored.
+void SuppressCorruptionDetectedCrash();
+#endif  // PA_BUILDFLAG(IS_IOS)
 
 }  // namespace partition_alloc::internal
 

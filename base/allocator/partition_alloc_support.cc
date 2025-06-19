@@ -47,6 +47,7 @@
 #include "partition_alloc/allocation_guard.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
+#include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/memory_reclaimer.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_base/debug/alias.h"
@@ -928,6 +929,10 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         .enable_brp = true,
         .extra_extras_size = static_cast<size_t>(
             base::features::kBackupRefPtrExtraExtrasSizeParam.Get()),
+        .suppress_double_free_detected_crash = static_cast<bool>(
+            base::features::kBackupRefPtrSuppressDoubleFreeDetectedCrash.Get()),
+        .suppress_corruption_detected_crash = static_cast<bool>(
+            base::features::kBackupRefPtrSuppressCorruptionDetectedCrash.Get()),
     };
   }
 #endif
@@ -935,6 +940,8 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   return {
       .enable_brp = false,
       .extra_extras_size = 0,
+      .suppress_double_free_detected_crash = false,
+      .suppress_corruption_detected_crash = false,
   };
 }
 
@@ -1036,6 +1043,14 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   DCHECK_NE(process_type, switches::kZygoteProcess);
   [[maybe_unused]] BrpConfiguration brp_config =
       GetBrpConfiguration(process_type);
+#if PA_BUILDFLAG(IS_IOS) && PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  if (brp_config.suppress_double_free_detected_crash) {
+    partition_alloc::internal::SuppressDoubleFreeDetectedCrash();
+  }
+  if (brp_config.suppress_corruption_detected_crash) {
+    partition_alloc::internal::SuppressCorruptionDetectedCrash();
+  }
+#endif  // PA_BUILDFLAG(IS_IOS) && PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
   // Configure ASAN hooks to report the `MiraclePtr status`. This is enabled
   // only if BackupRefPtr is normally enabled in the current process for the

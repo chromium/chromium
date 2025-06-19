@@ -162,6 +162,12 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(BackupRefPtrMode,
                                        kBackupRefPtrModeParam);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                        kBackupRefPtrExtraExtrasSizeParam);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kBackupRefPtrSuppressDoubleFreeDetectedCrash);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kBackupRefPtrSuppressCorruptionDetectedCrash);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryTagging);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(MemtagMode, kMemtagModeParam);
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(RetagMode, kRetagModeParam);
