@@ -1407,6 +1407,7 @@ void ChromeContentBrowserClient::RegisterLocalStatePrefs(
   registry->RegisterIntegerPref(prefs::kSCTAuditingHashdanceReportCount, 0);
   registry->RegisterBooleanPref(prefs::kDataURLWhitespacePreservationEnabled,
                                 true);
+  registry->RegisterBooleanPref(prefs::kEnableUnsafeSwiftShader, false);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kOutOfProcessSystemDnsResolutionEnabled,
                                 true);

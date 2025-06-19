@@ -523,6 +523,7 @@ source_set("browser_tests") {
 
       # Chrome OS does not support this policy.
       "test/native_messaging_policy_browsertest.cc",
+      "test/swiftshader_enabled_browsertest.cc",
     ]
   }
 

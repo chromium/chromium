@@ -603,6 +603,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDisable3DAPIs,
     prefs::kDisable3DAPIs,
     base::Value::Type::BOOLEAN },
+#if !BUILDFLAG(IS_CHROMEOS)
+  { key::kEnableUnsafeSwiftShader,
+    prefs::kEnableUnsafeSwiftShader,
+    base::Value::Type::BOOLEAN },
+#endif
   { key::kDisableScreenshots,
     prefs::kDisableScreenshots,
     base::Value::Type::BOOLEAN },

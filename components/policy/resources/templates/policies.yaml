@@ -1368,6 +1368,7 @@ policies:
   1367: AIModeSettings
   1368: WatermarkStyle
   1369: KioskApplicationLogCollectionEnabled
+  1370: EnableUnsafeSwiftShader
 
 atomic_groups:
   1: Homepage

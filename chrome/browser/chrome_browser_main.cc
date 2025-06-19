@@ -122,6 +122,7 @@
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/gl/gl_switches.h"
 
 // Per-platform #include blocks, in alphabetical order.
 
@@ -1079,6 +1080,10 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   if (!local_state->GetBoolean(prefs::kDataURLWhitespacePreservationEnabled) &&
       !command_line->HasSwitch(net::kRemoveWhitespaceForDataURLs)) {
     command_line->AppendSwitch(net::kRemoveWhitespaceForDataURLs);
+  }
+
+  if (local_state->GetBoolean(prefs::kEnableUnsafeSwiftShader)) {
+    command_line->AppendSwitch(switches::kEnableUnsafeSwiftShader);
   }
 
 #if BUILDFLAG(IS_ANDROID)
