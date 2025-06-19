@@ -15808,7 +15808,6 @@
                 {
                     "name": "Enabled_5_PSuggest_4_AIM_Without_Backfill",
                     "params": {
-                        "LocalHistoryNonNormalizedContents": "true",
                         "SuppressPsuggestBackfillWithMIA": "true"
                     },
                     "enable_features": [
