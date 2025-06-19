@@ -159,6 +159,14 @@ std::vector<UsernameAndRealm> AccountSelectFillData::RetrieveSuggestions(
   std::vector<UsernameAndRealm> usernames;
   for (const Credential& credential : credentials_) {
     usernames.push_back({credential.username, credential.realm});
+    // If `credential` has a backup password, create a separate UsernameAndRealm
+    // entry for it.
+    if (credential.backup_password &&
+        base::FeatureList::IsEnabled(
+            password_manager::features::kIOSFillRecoveryPassword)) {
+      usernames.push_back({credential.username, credential.realm,
+                           /*is_backup_credential=*/true});
+    }
   }
 
   return usernames;

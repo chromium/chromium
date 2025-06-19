@@ -24,6 +24,7 @@ namespace password_manager {
 struct UsernameAndRealm {
   std::u16string username;
   std::string realm;
+  bool is_backup_credential = false;
 };
 
 // Keeps all required for filling information from Password Form.
