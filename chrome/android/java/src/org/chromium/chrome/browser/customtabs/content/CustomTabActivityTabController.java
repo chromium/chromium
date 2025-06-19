@@ -401,7 +401,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     }
 
     /** Encapsulates CustomTabsConnection#takeHiddenTab() with additional initialization logic. */
-    public static @Nullable HiddenTab getHiddenTab(
+    public static @Nullable HiddenTab takeHiddenTab(
             BrowserServicesIntentDataProvider intentDataProvider) {
         String url = intentDataProvider.getUrlToLoad();
         SessionHolder<?> token = intentDataProvider.getSession();

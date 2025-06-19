@@ -521,7 +521,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         HiddenTab hiddenTab =
                 mIntentDataProvider.isOffTheRecord()
                         ? null
-                        : CustomTabActivityTabController.getHiddenTab(mIntentDataProvider);
+                        : CustomTabActivityTabController.takeHiddenTab(mIntentDataProvider);
 
         if (hiddenTab != null) {
             mTabProvider = new CustomTabActivityTabProvider(hiddenTab.url);
