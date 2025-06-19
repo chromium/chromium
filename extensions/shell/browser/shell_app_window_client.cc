@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/notimplemented.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/shell/browser/shell_app_delegate.h"
 

@@ -13,7 +13,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/metrics/user_metrics.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"

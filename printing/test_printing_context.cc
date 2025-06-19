@@ -9,7 +9,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "printing/backend/print_backend.h"

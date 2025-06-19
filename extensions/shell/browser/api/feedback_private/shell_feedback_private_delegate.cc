@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/content/feedback_uploader_factory.h"

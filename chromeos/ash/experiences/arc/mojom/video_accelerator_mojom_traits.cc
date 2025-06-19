@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/experiences/arc/mojom/video_accelerator_mojom_traits.h"
 
+#include "base/notimplemented.h"
+
 namespace mojo {
 
 // Make sure values in arc::mojom::VideoCodecProfile match to the values in

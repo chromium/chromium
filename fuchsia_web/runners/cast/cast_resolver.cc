@@ -8,7 +8,6 @@
 #include <fidl/fuchsia.component/cpp/fidl.h>
 #include <fidl/fuchsia.ui.app/cpp/wire_messaging.h>
 #include <lib/fidl/cpp/natural_types.h>
-
 #include <stdint.h>
 
 #include <string>
@@ -17,7 +16,7 @@
 
 #include "base/files/file_util.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/numerics/byte_conversions.h"
 
 namespace {

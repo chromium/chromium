@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "chromecast/media/cma/backend/system_volume_control.h"
 
 namespace chromecast {

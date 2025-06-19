@@ -12,7 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"

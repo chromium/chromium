@@ -12,7 +12,7 @@
 #include <stddef.h>
 
 #include "base/memory/ptr_util.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/pickle.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"

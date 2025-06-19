@@ -10,7 +10,7 @@
 #include <string_view>
 
 #include "base/auto_reset.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"

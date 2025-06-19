@@ -5,9 +5,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "python/descriptor_containers.h"
-
+#include "base/notimplemented.h"
 #include "python/descriptor.h"
+#include "python/descriptor_containers.h"
 #include "python/protobuf.h"
 #include "upb/reflection/def.h"
 

@@ -8,7 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/callback.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller.h"
 #include "fuchsia_web/webengine/browser/frame_impl.h"

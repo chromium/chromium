@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/tether/network_host_scan_cache.h"
 
 #include "base/containers/contains.h"
+#include "base/notimplemented.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"

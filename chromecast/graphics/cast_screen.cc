@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "ui/aura/env.h"
 #include "ui/display/display.h"
 

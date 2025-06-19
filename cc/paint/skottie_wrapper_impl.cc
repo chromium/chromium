@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/paint/skottie_wrapper.h"
-
 #include <functional>
 #include <memory>
 #include <string_view>
@@ -15,11 +13,12 @@
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/skottie_mru_resource_provider.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkFontMgr.h"

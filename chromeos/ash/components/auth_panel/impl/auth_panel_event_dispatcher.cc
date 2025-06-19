@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
 
 namespace ash {

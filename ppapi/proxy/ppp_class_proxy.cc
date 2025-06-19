@@ -4,6 +4,7 @@
 
 #include "ppapi/proxy/ppp_class_proxy.h"
 
+#include "base/notimplemented.h"
 #include "ppapi/c/dev/ppb_var_deprecated.h"
 #include "ppapi/c/dev/ppp_class_deprecated.h"
 #include "ppapi/c/pp_var.h"

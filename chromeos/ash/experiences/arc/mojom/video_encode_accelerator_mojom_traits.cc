@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/notimplemented.h"
 #include "chromeos/ash/experiences/arc/mojom/video_accelerator_mojom_traits.h"
 
 namespace mojo {

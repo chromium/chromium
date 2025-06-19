@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/system_cpu/cpu_info_provider.h"
 
+#include "base/notimplemented.h"
+
 namespace extensions {
 
 bool CpuInfoProvider::QueryCpuTimePerProcessor(

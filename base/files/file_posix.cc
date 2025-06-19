@@ -9,6 +9,8 @@
 
 #include "base/files/file.h"
 
+#include "base/notimplemented.h"
+
 // The only 32-bit platform that uses this file is Android. On Android APIs
 // >= 21, this standard define is the right way to express that you want a
 // 64-bit offset in struct stat, and the stat64 struct and functions aren't

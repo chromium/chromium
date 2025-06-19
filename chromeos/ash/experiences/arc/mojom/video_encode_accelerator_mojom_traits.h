@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 
+#include "base/notimplemented.h"
 #include "chromeos/ash/experiences/arc/mojom/video_encode_accelerator.mojom-shared.h"
 #include "media/base/bitrate.h"
 #include "media/video/video_encode_accelerator.h"

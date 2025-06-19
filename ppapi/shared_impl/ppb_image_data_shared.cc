@@ -4,7 +4,7 @@
 
 #include "ppapi/shared_impl/ppb_image_data_shared.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "components/nacl/common/buildflags.h"
 

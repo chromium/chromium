@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "ppapi/c/private/ppb_testing_private.h"
 #include "ppapi/proxy/enter_proxy.h"

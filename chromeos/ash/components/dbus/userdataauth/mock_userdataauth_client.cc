@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace ash {
 
