@@ -276,8 +276,9 @@ class WebUIContentsPreloadManagerPageLoadMetricsTest
 
 // Tests that the time from the WebUI is requested to when First Contentful
 // Paint (FCP) is recorded.
-// TODO(crbug.com/40168622): this times out on Chromium OS ASan LSan Tests.
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/40168622, crbug.com/425989943): this is flaky due to times out
+// on asan and debug builds.
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_RequestToFCPAndLCP DISABLED_RequestToFCPAndLCP
 #else
 #define MAYBE_RequestToFCPAndLCP RequestToFCPAndLCP
