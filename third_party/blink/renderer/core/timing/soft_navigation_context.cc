@@ -174,12 +174,6 @@ void SoftNavigationContext::OnInputOrScroll() {
     return;
   }
   first_input_or_scroll_time_ = base::TimeTicks::Now();
-
-  // TODO(crbug.com/422958651): Same as with hard-LCP, although we have just
-  // scrolled/had input, we might still be waiting for presentation time
-  // feedback from paints that came before that scroll/input.  It seems
-  // perfectly reasonable to keep lcp_calculator_ around until those report.
-  lcp_calculator_ = nullptr;
 }
 
 // TODO(crbug.com/419386429): This gets called after each new presentation time
@@ -207,17 +201,45 @@ void SoftNavigationContext::OnInputOrScroll() {
 // Soft-nav entry if we already have candidates to report.  Similar to above,
 // there are concerns with reporting Candidates after Paint but before
 // Presentation.
-void SoftNavigationContext::UpdateSoftLcpCandidate() {
-  // Check if we have already stopped measuring LCP (Input or Scroll)
-  if (!lcp_calculator_) {
-    return;
-  }
-  // Check if we are ready to start measuring LCP (After soft-nav entry).
-  if (!WasEmitted()) {
-    return;
-  }
+void SoftNavigationContext::UpdateWebExposedLargestContentfulPaintIfNeeded() {
   lcp_calculator_->UpdateWebExposedLargestContentfulPaintIfNeeded(
       largest_text_, largest_image_, true);
+}
+
+bool SoftNavigationContext::TryUpdateLcpCandidate() {
+  // After we are ready to start measuring LCP (was emitted soft-nav entry) and
+  // before we want to stop (input or scroll), we update LCP candidate.
+  if (!WasEmitted() || !first_input_or_scroll_time_.is_null()) {
+    return false;
+  }
+  // TODO(crbug.com/425398556): Consider updating `lcp_calculator_` to accept
+  // ImageRecord and TextRecord and to extract its own timings/sizes rather than
+  // passing them manually here-- similar to how
+  // `UpdateWebExposedLargestContentfulPaintIfNeeded` does it.
+  bool latest_lcp_details_for_ukm_changed = false;
+  // TODO(crbug.com/425989954): Guard on paint_time, because although this
+  // TryUpdateLcpCandidate gets called after presentation feedback, it might not
+  // be the right presentation time for this specific text/image record.
+  if (largest_text_ && !largest_text_->paint_time.is_null()) {
+    latest_lcp_details_for_ukm_changed =
+        latest_lcp_details_for_ukm_changed ||
+        lcp_calculator_->NotifyMetricsIfLargestTextPaintChanged(
+            largest_text_->paint_time, largest_text_->recorded_size);
+  }
+  if (largest_image_ && !largest_image_->paint_time.is_null()) {
+    latest_lcp_details_for_ukm_changed =
+        latest_lcp_details_for_ukm_changed ||
+        lcp_calculator_->NotifyMetricsIfLargestImagePaintChanged(
+            largest_image_->paint_time, largest_image_->recorded_size,
+            largest_image_, largest_image_->EntropyForLCP(),
+            largest_image_->RequestPriority());
+  }
+  return latest_lcp_details_for_ukm_changed;
+}
+
+const LargestContentfulPaintDetails&
+SoftNavigationContext::LatestLcpDetailsForUkm() {
+  return lcp_calculator_->LatestLcpDetails();
 }
 
 void SoftNavigationContext::WriteIntoTrace(

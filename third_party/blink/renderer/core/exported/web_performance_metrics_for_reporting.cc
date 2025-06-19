@@ -147,8 +147,8 @@ double WebPerformanceMetricsForReporting::FirstImagePaint() const {
 }
 
 double WebPerformanceMetricsForReporting::FirstContentfulPaint() const {
-  return base::Milliseconds(private_->timingForReporting()
-                                ->FirstContentfulPaintIgnoringSoftNavigations())
+  return base::Milliseconds(
+             private_->timingForReporting()->FirstContentfulPaint())
       .InSecondsF();
 }
 

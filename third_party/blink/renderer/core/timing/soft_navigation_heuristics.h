@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
@@ -105,6 +106,11 @@ class CORE_EXPORT SoftNavigationHeuristics
   void OnInputOrScroll();
   void UpdateSoftLcpCandidate();
 
+  const LargestContentfulPaintDetails&
+  SoftNavigationLargestContentfulPaintDetailsForMetrics() const {
+    return soft_navigation_lcp_details_for_metrics_;
+  }
+
   // Returns an `EventScope` suitable for navigation. Used for navigations not
   // yet associated with an event.
   EventScope CreateNavigationEventScope(ScriptState* script_state) {
@@ -180,6 +186,9 @@ class CORE_EXPORT SoftNavigationHeuristics
   // which should happen before the tracker is destroyed, since its lifetime is
   // tied to the lifetime of the isolate/main thread.
   scheduler::TaskAttributionTracker* task_attribution_tracker_;
+
+  // The soft navigation LCP details reported to metrics (UKM).
+  LargestContentfulPaintDetails soft_navigation_lcp_details_for_metrics_;
 };
 
 }  // namespace blink

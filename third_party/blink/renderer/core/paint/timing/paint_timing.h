@@ -120,10 +120,9 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   }
 
   // Returns the first time that 'contentful' content was painted in the current
-  // document after a hard navigation (and ignoring soft navigations). For
-  // instance, the first time that text or image content was painted after the
-  // user landed on the page.
-  base::TimeTicks FirstContentfulPaintIgnoringSoftNavigations() const {
+  // document after a hard navigation. For instance, the first time that text or
+  // image content was painted after the user landed on the page.
+  base::TimeTicks FirstContentfulPaint() const {
     return first_contentful_paint_presentation_;
   }
 
@@ -250,10 +249,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   DOMPaintTimingInfo ToDOMPaintTimingInfo(const PaintTimingInfo&) const;
 
   PaintDetails paint_details_;
-  // First paint timestamp that doesn't update after soft navigations, and only
-  // used for UKM reporting.
+  // Timestamps used for UKM reporting.
   base::TimeTicks first_paint_presentation_for_ukm_;
-  // FCP timestamp that does not update after soft navigations.
   base::TimeTicks first_contentful_paint_presentation_;
   base::TimeTicks first_meaningful_paint_presentation_;
   base::TimeTicks first_meaningful_paint_candidate_;

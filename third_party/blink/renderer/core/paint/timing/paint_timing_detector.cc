@@ -317,9 +317,8 @@ void PaintTimingDetector::UpdateMetricsLcp() {
     return;
   }
 
-  auto latest_lcp_details =
+  lcp_details_for_metrics_ =
       GetLargestContentfulPaintCalculator()->LatestLcpDetails();
-  lcp_details_for_metrics_ = latest_lcp_details;
 
   DidChangePerformanceTiming();
 }

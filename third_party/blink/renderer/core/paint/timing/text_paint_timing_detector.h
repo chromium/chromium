@@ -59,7 +59,7 @@ class CORE_EXPORT TextRecord final : public GarbageCollected<TextRecord> {
   gfx::RectF root_visual_rect_;
   std::unique_ptr<LCPRectInfo> lcp_rect_info_;
   // The time of the first paint after fully loaded.
-  base::TimeTicks paint_time = base::TimeTicks();
+  base::TimeTicks paint_time;
   DOMPaintTimingInfo paint_timing_info;
   bool is_needed_for_timing_ = false;
   WeakMember<SoftNavigationContext> soft_navigation_context_;

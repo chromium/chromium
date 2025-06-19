@@ -25,6 +25,7 @@ class DocumentTiming;
 class InteractiveDetector;
 class PaintTiming;
 struct LargestContentfulPaintDetails;
+class SoftNavigationHeuristics;
 
 // This class is only used for non-web-exposed reporting purposes (e.g. UKM).
 class CORE_EXPORT PerformanceTimingForReporting final
@@ -76,7 +77,7 @@ class CORE_EXPORT PerformanceTimingForReporting final
 
   // The time of the first 'contentful' paint. A contentful paint is a paint
   // that includes content of some kind (for example, text or image content).
-  uint64_t FirstContentfulPaintIgnoringSoftNavigations() const;
+  uint64_t FirstContentfulPaint() const;
 
   // The first 'contentful' paint as full-resolution monotonic time. Intended to
   // be used for correlation with other events internal to blink.
@@ -181,6 +182,7 @@ class CORE_EXPORT PerformanceTimingForReporting final
   const DocumentParserTiming* GetDocumentParserTiming() const;
   const PaintTiming* GetPaintTiming() const;
   PaintTimingDetector* GetPaintTimingDetector() const;
+  SoftNavigationHeuristics* GetSoftNavigationHeuristics() const;
   DocumentLoader* GetDocumentLoader() const;
   DocumentLoadTiming* GetDocumentLoadTiming() const;
   InteractiveDetector* GetInteractiveDetector() const;

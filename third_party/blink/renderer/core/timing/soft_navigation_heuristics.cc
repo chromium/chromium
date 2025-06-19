@@ -441,14 +441,37 @@ void SoftNavigationHeuristics::OnInputOrScroll() {
 }
 
 void SoftNavigationHeuristics::UpdateSoftLcpCandidate() {
+  // This is called from PaintTimingMixin on every paint timing update, without
+  // feature flag check. We shouldn't have a url context without the feature.
   if (!context_for_current_url_) {
     return;
   }
-  // Performance timeline won't allow emitting LCP entries without this flag,
-  // but we can save a lot of needless work by also just not even trying.
-  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
-    context_for_current_url_->UpdateSoftLcpCandidate();
+  CHECK(RuntimeEnabledFeatures::SoftNavigationDetectionEnabled(window_));
+
+  bool has_new_lcp_candidate =
+      context_for_current_url_->TryUpdateLcpCandidate();
+  if (!has_new_lcp_candidate) {
+    return;
   }
+
+  // Performance timeline won't allow emitting soft-LCP entries without this
+  // flag, but we can save some needless work by just not even trying to report.
+  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
+    context_for_current_url_->UpdateWebExposedLargestContentfulPaintIfNeeded();
+  }
+
+  soft_navigation_lcp_details_for_metrics_ =
+      context_for_current_url_->LatestLcpDetailsForUkm();
+
+  Document* document = window_->document();
+  if (!document) {
+    return;
+  }
+  DocumentLoader* loader = document->Loader();
+  if (!loader) {
+    return;
+  }
+  loader->DidChangePerformanceTiming();
 }
 
 void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(

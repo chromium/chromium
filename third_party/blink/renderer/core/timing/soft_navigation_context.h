@@ -22,6 +22,7 @@ class Node;
 class TextRecord;
 class ImageRecord;
 class LargestContentfulPaintCalculator;
+struct LargestContentfulPaintDetails;
 
 class CORE_EXPORT SoftNavigationContext
     : public GarbageCollected<SoftNavigationContext> {
@@ -72,7 +73,9 @@ class CORE_EXPORT SoftNavigationContext
   // Used to check if it is worthwhile to call `SatisfiesSoftNavPaintCriteria`.
   bool OnPaintFinished();
   void OnInputOrScroll();
-  void UpdateSoftLcpCandidate();
+  bool TryUpdateLcpCandidate();
+  void UpdateWebExposedLargestContentfulPaintIfNeeded();
+  const LargestContentfulPaintDetails& LatestLcpDetailsForUkm();
 
   bool SatisfiesSoftNavNonPaintCriteria() const;
   bool SatisfiesSoftNavPaintCriteria(uint64_t required_paint_area) const;

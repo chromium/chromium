@@ -103,10 +103,6 @@ class CORE_EXPORT PaintTimingDetector
       const {
     return lcp_details_for_metrics_;
   }
-  const LargestContentfulPaintDetails&
-  SoftNavigationLargestContentfulPaintDetailsForMetrics() const {
-    return soft_navigation_lcp_details_for_metrics_;
-  }
 
   const LargestContentfulPaintDetails& LatestLcpDetailsForTest();
 
@@ -153,8 +149,6 @@ class CORE_EXPORT PaintTimingDetector
 
   // The LCP details reported to metrics (UKM).
   LargestContentfulPaintDetails lcp_details_for_metrics_;
-  // The soft navigation LCP details reported to metrics (UKM).
-  LargestContentfulPaintDetails soft_navigation_lcp_details_for_metrics_;
 };
 
 // Largest Text Paint and Text Element Timing aggregate text nodes by these
