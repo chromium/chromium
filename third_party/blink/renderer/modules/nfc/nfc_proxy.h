@@ -22,7 +22,7 @@ namespace blink {
 class LocalDOMWindow;
 class NDEFReader;
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 using NFCClientType = device::mojom::blink::RawNFCClient;
 #else
 using NFCClientType = device::mojom::blink::NFCClient;
@@ -65,7 +65,7 @@ class MODULES_EXPORT NFCProxy final : public GarbageCollected<NFCProxy>,
 
   // Implementation of device::mojom::blink::NFCClient and
   // device::mojom::blink::RawNFCClient.
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
   void OnWatch(const Vector<uint32_t>&,
                device::mojom::blink::NDEFRawMessagePtr) override;
 #else

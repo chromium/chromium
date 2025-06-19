@@ -6,6 +6,10 @@ import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 
+if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")
+}
+
 mojom("mojom") {
   generate_java = true
   sources = [
@@ -53,6 +57,13 @@ mojom("mojom") {
       "mtp_manager.mojom",
       "mtp_storage_info.mojom",
     ]
+  }
+
+  if (is_ios) {
+    enabled_features = []
+    if (is_ios && target_platform == "iphoneos") {
+      enabled_features += [ "is_ios_iphoneos" ]
+    }
   }
 
   cpp_typemaps = [

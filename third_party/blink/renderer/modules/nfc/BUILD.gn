@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/mobile_config.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("nfc") {
@@ -22,7 +23,7 @@ blink_modules_sources("nfc") {
 
   deps = [ "//third_party/blink/renderer/modules/permissions" ]
 
-  if (is_ios) {
+  if (is_ios && target_platform == "iphoneos") {
     sources += [
       "nfc_parser_ios.h",
       "nfc_parser_ios.mm",

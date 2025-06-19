@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/modules/nfc/ndef_reader.h"
 #include "third_party/blink/renderer/modules/nfc/nfc_type_converters.h"
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 #include "third_party/blink/renderer/modules/nfc/nfc_parser_ios.h"
 #endif
 
@@ -121,7 +121,7 @@ void NFCProxy::NotifyWatchers(const Vector<uint32_t>& watch_ids,
 }
 
 // device::mojom::blink::NFCClient implementation.
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 void NFCProxy::OnWatch(const Vector<uint32_t>& watch_ids,
                        device::mojom::blink::NDEFRawMessagePtr message) {
   auto ndef_message = ParseRawNDEFMessage(std::move(message));
@@ -131,14 +131,13 @@ void NFCProxy::OnWatch(const Vector<uint32_t>& watch_ids,
 
   NotifyWatchers(watch_ids, String(), std::move(ndef_message));
 }
-
 #else
 void NFCProxy::OnWatch(const Vector<uint32_t>& watch_ids,
                        const String& serial_number,
                        device::mojom::blink::NDEFMessagePtr message) {
   NotifyWatchers(watch_ids, serial_number, std::move(message));
 }
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 
 void NFCProxy::OnError(device::mojom::blink::NDEFErrorPtr error) {
   // Dispatch the event to all readers. We iterate on a copy of |readers_|

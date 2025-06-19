@@ -99,7 +99,7 @@ struct NDEFMessage {
   array<NDEFRecord> data;
 };
 
-[EnableIf=is_ios]
+[EnableIf=is_ios_iphoneos]
 enum NSRawTypeNameFormat {
   kAbsoluteURI,
   kEmpty,
@@ -113,7 +113,7 @@ enum NSRawTypeNameFormat {
 // On iOS we want to parse the NDEFRecord in the renderer so we just
 // simply pass the data received from the NFC API directly. The raw
 // data comes from the card directly.
-[EnableIf=is_ios]
+[EnableIf=is_ios_iphoneos]
 struct NDEFRawRecord {
   // Identifier of the NDEFRawRecord.
   array<uint8> identifier;
@@ -127,7 +127,7 @@ struct NDEFRawRecord {
 
 // On iOS we want to parse the NDEFMessage using CoreNFC inside the
 // renderer process so we pass the raw message across.
-[EnableIf=is_ios]
+[EnableIf=is_ios_iphoneos]
 struct NDEFRawMessage {
   array<NDEFRawRecord> data;
 };
@@ -144,11 +144,11 @@ struct NDEFWriteOptions {
 interface NFC {
   // NFCClient interface is used to notify |client| when watching for nearby
   // NFC devices.
-  [EnableIfNot=is_ios]
+  [EnableIfNot=is_ios_iphoneos]
   SetClient(pending_remote<NFCClient> client);
 
   // Same as above, but sets the raw client which is used for iOS.
-  [EnableIf=is_ios]
+  [EnableIf=is_ios_iphoneos]
   SetClient(pending_remote<RawNFCClient> client);
 
   // Pushes data to NFC device.
@@ -174,7 +174,7 @@ interface NFC {
 
 // Interface that client of the NFC interface must implement to get notified of
 // nearby NFC devices.
-[EnableIfNot=is_ios]
+[EnableIfNot=is_ios_iphoneos]
 interface NFCClient {
   // Sends |message| to those readers that have registered |watch_ids| via
   // NFC.Watch(), i.e. |message| matches their filtering criteria.
@@ -186,7 +186,7 @@ interface NFCClient {
   // Same as above but takes a raw message which is unparsed. Since we do
   // not want to parse untrusted data in the browser we leave it for the
   // renderer to parse.
-  [EnableIf=is_ios]
+  [EnableIf=is_ios_iphoneos]
   OnWatch(array<uint32> watch_ids, NDEFRawMessage message);
 
   // Sends |error| to all readers that are trying to read some data from the nfc
@@ -198,11 +198,11 @@ interface NFCClient {
 // nearby NFC devices. Similar to NFCClient (above) but takes a raw message
 // which is unparsed. We do not want to parse untrusted data in the browser we
 // leave it for the renderer to parse.
-[EnableIf=is_ios]
+[EnableIf=is_ios_iphoneos]
 interface RawNFCClient {
   // Sends |message| to those readers that have registered |watch_ids| via
   // NFC.Watch(), i.e. |message| matches their filtering criteria.
-  [EnableIf=is_ios]
+  [EnableIf=is_ios_iphoneos]
   OnWatch(array<uint32> watch_ids, NDEFRawMessage message);
 
   // Sends |error| to all readers that are trying to read some data from the nfc
