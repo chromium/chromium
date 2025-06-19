@@ -65,10 +65,12 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*clamp_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*concat_inputs=*/{},
-       /*conv2d_input=*/{},
-       /*conv2d_bias=*/{},
-       /*conv_transpose2d_input=*/{},
-       /*conv_transpose2d_bias=*/{},
+       /*conv2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 8}},
+       /*conv2d_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
+       /*conv_transpose2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 8}},
+       /*conv_transpose2d_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cumulative_sum_input=*/{},
        /*dequantize_linear_input=*/{},
        /*dequantize_linear_scale=*/{},

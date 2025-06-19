@@ -116,6 +116,7 @@ class GraphBuilderOrt {
   void AddCastOperation(const mojom::ElementWiseUnary& cast);
 
   void AddClampOperation(const mojom::Clamp& clamp);
+  void AddConv2dOperation(const mojom::Conv2d& conv2d);
   void AddElementWiseBinaryOperation(
       const mojom::ElementWiseBinary& element_wise_binary);
   void AddElementWiseUnaryOperation(

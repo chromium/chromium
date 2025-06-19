@@ -48,6 +48,8 @@ constexpr base::cstring_view kOpTypeReciprocal = "Reciprocal";
 constexpr base::cstring_view kOpTypeCast = "Cast";
 
 constexpr base::cstring_view kOpTypeClamp = "Clip";
+constexpr base::cstring_view kOpTypeConv2d = "Conv";
+constexpr base::cstring_view kOpTypeConvTranspose2d = "ConvTranspose";
 constexpr base::cstring_view kOpTypeGelu = "Gelu";
 constexpr base::cstring_view kOpTypeGemm = "Gemm";
 constexpr base::cstring_view kOpTypeHardSwish = "HardSwish";
@@ -129,6 +131,27 @@ struct TensorTypeMap<uint8_t> {
   static constexpr ONNXTensorElementDataType value =
       ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8;
 };
+
+// Calculate the output_padding according to the ONNX ConvTranspose2d
+// documentation:
+// https://onnx.ai/onnx/operators/onnx__ConvTranspose.html#summary
+int64_t CalculateOutputPaddingSize(int64_t input_size,
+                                   int64_t filter_size,
+                                   int64_t stride,
+                                   int64_t dilation,
+                                   int64_t pad_begin,
+                                   int64_t pad_end,
+                                   int64_t output_size) {
+  const auto output_padding =
+      base::MakeCheckedNum(output_size) - stride * (input_size - 1) -
+      ((filter_size - 1) * dilation + 1) + pad_begin + pad_end;
+  // `output_padding` is validated by
+  // `ValidateAndCalculateConvTranspose2dOutputSizes()`. Because Conv2d mojo
+  // struct doesn't include `output_padding`, for ORT backend, we need to
+  // re-compute it by using other attributes.
+  CHECK(output_padding.IsValid());
+  return output_padding.ValueOrDie();
+}
 
 }  // namespace
 
@@ -252,6 +275,105 @@ void GraphBuilderOrt::AddCastOperation(const mojom::ElementWiseUnary& cast) {
       model_editor_.CreateAttribute(kAttrTo, attr_to_data)};
 
   model_editor_.AddNode(kOpTypeCast, node, inputs, outputs, attributes);
+}
+
+void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
+  const std::string node_name = GenerateOperationName(conv2d.label);
+  const std::string input = GetOperandNameById(conv2d.input_operand_id);
+  const std::string filter = GetOperandNameById(conv2d.filter_operand_id);
+  const std::string output = GetOperandNameById(conv2d.output_operand_id);
+
+  const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
+  CHECK(data_type_limits.conv2d_input.Supports(
+      GetOperand(conv2d.input_operand_id).descriptor));
+  CHECK(data_type_limits.conv2d_input.Supports(
+      GetOperand(conv2d.filter_operand_id).descriptor));
+  std::vector<const char*> inputs = {input.c_str(), filter.c_str()};
+  if (conv2d.bias_operand_id.has_value()) {
+    CHECK(data_type_limits.conv2d_bias.Supports(
+        GetOperand(conv2d.bias_operand_id.value()).descriptor));
+    const std::string bias = GetOperandNameById(conv2d.bias_operand_id.value());
+    inputs.push_back(bias.c_str());
+  }
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(5);
+  std::array<int64_t, 2> dilations = {
+      base::checked_cast<int64_t>(conv2d.dilations->height),
+      base::checked_cast<int64_t>(conv2d.dilations->width)};
+  constexpr base::cstring_view kAttrDilations = "dilations";
+  attributes.push_back(
+      model_editor_.CreateAttribute(kAttrDilations, dilations));
+
+  int64_t group = base::checked_cast<int64_t>(conv2d.groups);
+  constexpr base::cstring_view kAttrGroup = "group";
+  attributes.push_back(model_editor_.CreateAttribute(kAttrGroup, group));
+
+  std::array<int64_t, 4> pads = {
+      base::checked_cast<int64_t>(conv2d.padding->beginning->height),
+      base::checked_cast<int64_t>(conv2d.padding->beginning->width),
+      base::checked_cast<int64_t>(conv2d.padding->ending->height),
+      base::checked_cast<int64_t>(conv2d.padding->ending->width)};
+  constexpr base::cstring_view kAttrPads = "pads";
+  attributes.push_back(model_editor_.CreateAttribute(kAttrPads, pads));
+
+  std::array<int64_t, 2> strides = {
+      base::checked_cast<int64_t>(conv2d.strides->height),
+      base::checked_cast<int64_t>(conv2d.strides->width)};
+  constexpr base::cstring_view kAttrStrides = "strides";
+  attributes.push_back(model_editor_.CreateAttribute(kAttrStrides, strides));
+
+  switch (conv2d.kind) {
+    case mojom::Conv2d::Kind::kDirect:
+      model_editor_.AddNode(kOpTypeConv2d, node_name, inputs, outputs,
+                            attributes);
+      break;
+    case mojom::Conv2d::Kind::kTransposed:
+      // According to the ONNX ConvTranspose2d documentation, `output_padding`
+      // is a zero vector if not specified and `pads` will be auto generated if
+      // `output_shape` is specified. So we need to calculate the
+      // `output_padding` and explicitly set it to ensure that the attributes
+      // information is not missing. Since the `pads` attribute has already been
+      // set, there is no need to set `output_size` attribute.
+      // https://onnx.ai/onnx/operators/onnx__ConvTranspose.html#attributes
+      const std::vector<uint32_t>& input_shape =
+          GetOperand(conv2d.input_operand_id).descriptor.shape();
+      const std::vector<uint32_t>& filter_shape =
+          GetOperand(conv2d.filter_operand_id).descriptor.shape();
+      const std::vector<uint32_t>& output_shape =
+          GetOperand(conv2d.output_operand_id).descriptor.shape();
+      // Since ONNX Runtime uses nchw input layout and oihw filter layout，
+      // input/filter/output_shape[2] and input/filter/output_shape[3] are used
+      // here to access the height and width dimensions of the
+      // input/filter/output_shape tensor shape.
+      std::array<int64_t, 2> input_size = {
+          base::checked_cast<int64_t>(input_shape[2]),
+          base::checked_cast<int64_t>(input_shape[3])};
+      std::array<int64_t, 2> filter_size = {
+          base::checked_cast<int64_t>(filter_shape[2]),
+          base::checked_cast<int64_t>(filter_shape[3])};
+      std::array<int64_t, 2> output_size = {
+          base::checked_cast<int64_t>(output_shape[2]),
+          base::checked_cast<int64_t>(output_shape[3])};
+
+      int64_t output_padding_height = CalculateOutputPaddingSize(
+          input_size[0], filter_size[0], strides[0], dilations[0], pads[0],
+          pads[2], output_size[0]);
+      int64_t output_padding_width = CalculateOutputPaddingSize(
+          input_size[1], filter_size[1], strides[1], dilations[1], pads[1],
+          pads[3], output_size[1]);
+      std::array<int64_t, 2> output_padding = {output_padding_height,
+                                               output_padding_width};
+
+      constexpr base::cstring_view kAttrOutputPadding = "output_padding";
+      attributes.push_back(
+          model_editor_.CreateAttribute(kAttrOutputPadding, output_padding));
+
+      model_editor_.AddNode(kOpTypeConvTranspose2d, node_name, inputs, outputs,
+                            attributes);
+      break;
+  }
 }
 
 void GraphBuilderOrt::AddElementWiseBinaryOperation(
@@ -674,6 +796,10 @@ GraphBuilderOrt::BuildModel() {
         AddClampOperation(*operation->get_clamp());
         break;
       }
+      case mojom::Operation::Tag::kConv2d: {
+        AddConv2dOperation(*operation->get_conv2d());
+        break;
+      }
       case mojom::Operation::Tag::kElementWiseBinary: {
         AddElementWiseBinaryOperation(*operation->get_element_wise_binary());
         break;
@@ -743,7 +869,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kArgMinMax:
       case mojom::Operation::Tag::kBatchNormalization:
       case mojom::Operation::Tag::kConcat:
-      case mojom::Operation::Tag::kConv2d:
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kElu:
