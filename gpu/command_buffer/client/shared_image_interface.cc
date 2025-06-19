@@ -7,6 +7,7 @@
 #include <GLES2/gl2.h>
 
 #include "base/functional/callback_helpers.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/process/memory.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"

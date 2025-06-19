@@ -22,6 +22,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/power_monitor/power_monitor.h"

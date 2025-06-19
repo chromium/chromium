@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/run_loop.h"
 #include "base/trace_event/trace_event.h"

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"

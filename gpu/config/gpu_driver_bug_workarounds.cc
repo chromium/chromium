@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace {
 // Construct GpuDriverBugWorkarounds from a set of enabled workaround IDs.

@@ -5,6 +5,7 @@
 #include "gpu/vulkan/tests/native_window.h"
 
 #include "base/containers/flat_map.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"

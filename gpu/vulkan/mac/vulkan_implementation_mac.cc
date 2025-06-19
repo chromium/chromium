@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"

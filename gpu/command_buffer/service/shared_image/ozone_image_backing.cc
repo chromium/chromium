@@ -13,6 +13,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"

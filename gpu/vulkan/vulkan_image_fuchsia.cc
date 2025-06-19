@@ -5,6 +5,7 @@
 #include "gpu/vulkan/vulkan_image.h"
 
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"

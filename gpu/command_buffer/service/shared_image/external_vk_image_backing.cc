@@ -14,6 +14,7 @@
 
 #include "base/bits.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"

@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/viz/common/resources/resource_sizes.h"

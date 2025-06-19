@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"

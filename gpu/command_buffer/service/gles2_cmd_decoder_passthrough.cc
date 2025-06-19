@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_split.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
