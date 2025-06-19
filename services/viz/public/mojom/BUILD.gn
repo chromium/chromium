@@ -703,6 +703,7 @@ mojom("shared_image_format") {
       ]
       traits_headers = [ "//services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h" ]
       traits_sources = [ "//services/viz/public/cpp/compositing/shared_image_format_mojom_traits.cc" ]
+      traits_public_deps = [ "//components/viz/common:shared_image_format" ]
     },
   ]
 
