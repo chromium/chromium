@@ -3659,7 +3659,6 @@ crbug.com/626703 [ Win11-arm64 ] virtual/shared-storage-fenced-frame-mparch/exte
 crbug.com/626703 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box-005.html [ Failure ]
 crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-box/svgbox-stroke-box-005.html [ Failure ]
 crbug.com/626703 external/wpt/mathml/presentation-markup/mrow/semantics-005.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-percent-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/word-spacing/word-spacing-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/word-spacing/word-spacing-percent-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text-decor/text-shadow/svg-stroke.html [ Failure ]

@@ -639,7 +639,8 @@ CSSValue* ConsumeBorderWidth(CSSParserTokenStream&,
                              const CSSParserContext&,
                              UnitlessQuirk);
 CSSValue* ConsumeSVGPaint(CSSParserTokenStream&, const CSSParserContext&);
-CSSValue* ParseSpacing(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ParseLetterSpacing(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ParseWordSpacing(CSSParserTokenStream&, const CSSParserContext&);
 
 CSSValue* ConsumeSingleContainerName(CSSParserTokenStream&,
                                      const CSSParserContext&);

@@ -31,6 +31,7 @@
 #include "third_party/blink/public/platform/web_font_description.h"
 
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 
 namespace blink {
 
@@ -65,7 +66,7 @@ WebFontDescription::operator FontDescription() const {
   static_assert(static_cast<int>(WebFontDescription::kWeight900) == 8,
                 "kWeight900 conversion");
   desc.SetWeight(FontSelectionValue((weight + 1) * 100));
-  desc.SetLetterSpacing(letter_spacing);
+  desc.SetLetterSpacing(Length(letter_spacing, Length::kFixed));
   desc.SetWordSpacing(word_spacing);
   return desc;
 }

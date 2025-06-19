@@ -8392,12 +8392,27 @@ CSSValue* ConsumeBorderWidth(CSSParserTokenStream& stream,
   return ConsumeLineWidth(stream, context, unitless);
 }
 
-CSSValue* ParseSpacing(CSSParserTokenStream& stream,
-                       const CSSParserContext& context) {
+// TODO(crbug.com/327740939): Merge ParseLetterSpacing and ParseWordSpacing if
+// percentage for word-spacing is implemented.
+CSSValue* ParseLetterSpacing(CSSParserTokenStream& stream,
+                             const CSSParserContext& context) {
   if (stream.Peek().Id() == CSSValueID::kNormal) {
     return ConsumeIdent(stream);
   }
-  // TODO(timloh): allow <percentage>s in word-spacing.
+  if (RuntimeEnabledFeatures::CSSLetterSpacingPercentageEnabled()) {
+    return ConsumeLengthOrPercent(stream, context,
+                                  CSSPrimitiveValue::ValueRange::kAll,
+                                  UnitlessQuirk::kAllow);
+  }
+  return ConsumeLength(stream, context, CSSPrimitiveValue::ValueRange::kAll,
+                       UnitlessQuirk::kAllow);
+}
+
+CSSValue* ParseWordSpacing(CSSParserTokenStream& stream,
+                           const CSSParserContext& context) {
+  if (stream.Peek().Id() == CSSValueID::kNormal) {
+    return ConsumeIdent(stream);
+  }
   return ConsumeLength(stream, context, CSSPrimitiveValue::ValueRange::kAll,
                        UnitlessQuirk::kAllow);
 }

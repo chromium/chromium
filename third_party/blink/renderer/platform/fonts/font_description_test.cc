@@ -28,6 +28,9 @@
 
 #include <array>
 
+#include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
+#include "third_party/blink/renderer/platform/geometry/calculation_value.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -430,7 +433,7 @@ TEST_F(FontDescriptionTest, AllFeaturesHash) {
   key_a = font_description.GetHash();
   EXPECT_EQ(key_a, key_b);
 
-  font_description.SetLetterSpacing(0.9);
+  font_description.SetLetterSpacing(Length::Fixed(0.9));
   key_b = font_description.GetHash();
   EXPECT_NE(key_a, key_b);
   key_a = font_description.GetHash();
@@ -535,7 +538,7 @@ TEST_F(FontDescriptionTest, ToString) {
   description.SetAdjustedSize(3.3f);
   description.SetSizeAdjust(
       FontSizeAdjust(4.4f, FontSizeAdjust::Metric::kCapHeight));
-  description.SetLetterSpacing(5.5f);
+  description.SetLetterSpacing(Length::Fixed(5.5f));
   description.SetWordSpacing(6.6f);
 
   description.SetStyle(FontSelectionValue(31.5));
@@ -634,6 +637,28 @@ TEST_F(FontDescriptionTest, NegativeZeroEmFontSize) {
   // Equal font descriptions must have equal hash values
   EXPECT_EQ(description1, description2);
   EXPECT_EQ(description1.GetHash(), description2.GetHash());
+}
+
+TEST_F(FontDescriptionTest, LetterSpacing) {
+  FontDescription description;
+  description.SetComputedSize(20.0);
+
+  description.SetLetterSpacing(Length::Fixed(10.0));
+  EXPECT_EQ(description.LetterSpacing(), 10.0);
+
+  description.SetLetterSpacing(Length::Percent(50.0));
+  EXPECT_EQ(description.LetterSpacing(), 10.0);
+
+  const auto twenty_px_ten_percent =
+      PixelsAndPercent(20.0, 50.0, /*has_explicit_pixels=*/true,
+                       /*has_explicit_percent=*/true);
+  const auto* expression =
+      MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
+          twenty_px_ten_percent);
+  const auto* calculation =
+      CalculationValue::CreateSimplified(expression, Length::ValueRange::kAll);
+  description.SetLetterSpacing(Length(calculation));
+  EXPECT_EQ(description.LetterSpacing(), 30.0);
 }
 
 }  // namespace blink

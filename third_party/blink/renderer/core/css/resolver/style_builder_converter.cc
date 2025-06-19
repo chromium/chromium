@@ -1954,7 +1954,7 @@ TabSize StyleBuilderConverter::ConvertLengthOrTabSpaces(
       TabSizeValueType::kLength);
 }
 
-static CSSToLengthConversionData LineHeightToLengthConversionData(
+static CSSToLengthConversionData AdjustedZoomConversionData(
     StyleResolverState& state) {
   float multiplier = state.StyleBuilder().EffectiveZoom();
   if (LocalFrame* frame = state.GetDocument().GetFrame()) {
@@ -1975,26 +1975,25 @@ Length StyleBuilderConverter::ConvertLineHeight(StyleResolverState& state,
   if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
     if (primitive_value->IsLength()) {
       return primitive_value->ComputeLength<Length>(
-          LineHeightToLengthConversionData(state));
+          AdjustedZoomConversionData(state));
     }
     if (primitive_value->IsNumber()) {
-      return Length::Percent(
-          ClampTo<float>(primitive_value->ComputeNumber(
-                             LineHeightToLengthConversionData(state)) *
-                         100.0));
+      return Length::Percent(ClampTo<float>(
+          primitive_value->ComputeNumber(AdjustedZoomConversionData(state)) *
+          100.0));
     }
     float computed_font_size =
         state.StyleBuilder().GetFontDescription().ComputedSize();
     if (primitive_value->IsPercentage()) {
       return Length::Fixed(
           (computed_font_size * ClampTo<int>(primitive_value->ComputePercentage(
-                                    LineHeightToLengthConversionData(state)))) /
+                                    AdjustedZoomConversionData(state)))) /
           100.0);
     }
     if (primitive_value->IsCalculated()) {
       Length zoomed_length =
           Length(To<CSSMathFunctionValue>(primitive_value)
-                     ->ToCalcValue(LineHeightToLengthConversionData(state)));
+                     ->ToCalcValue(AdjustedZoomConversionData(state)));
       return Length::Fixed(
           ValueForLength(zoomed_length, LayoutUnit(computed_font_size)));
     }
@@ -2527,8 +2526,20 @@ ShapeValue* StyleBuilderConverter::ConvertShapeValue(StyleResolverState& state,
   return MakeGarbageCollected<ShapeValue>(css_box);
 }
 
-float StyleBuilderConverter::ConvertSpacing(StyleResolverState& state,
-                                            const CSSValue& value) {
+// TODO(crbug.com/327740939): Merge ConvertLetterSpacing and ConvertWordSpacing
+// if percentage for word-spacing is implemented.
+Length StyleBuilderConverter::ConvertLetterSpacing(StyleResolverState& state,
+                                                   const CSSValue& value) {
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (identifier_value &&
+      identifier_value->GetValueID() == CSSValueID::kNormal) {
+    return ComputedStyleInitialValues::InitialLetterSpacing();
+  }
+  return ConvertLength(state, value);
+}
+
+float StyleBuilderConverter::ConvertWordSpacing(StyleResolverState& state,
+                                                const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kNormal) {

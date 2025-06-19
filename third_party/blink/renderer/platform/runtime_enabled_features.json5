@@ -1327,6 +1327,10 @@
       status: "experimental",
     },
     {
+      name: "CSSLetterSpacingPercentage",
+      status: "experimental",
+    },
+    {
       name: "CSSLineClamp",
       status: "experimental",
     },
