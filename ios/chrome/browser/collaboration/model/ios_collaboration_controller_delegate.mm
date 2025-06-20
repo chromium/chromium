@@ -446,11 +446,10 @@ void IOSCollaborationControllerDelegate::ShareGroupAndGenerateLink(
     std::string collaboration_group_id,
     std::string access_token,
     base::OnceCallback<void(GURL)> callback) {
-  if (!browser_) {
+  if (!browser_ || !share_screen_callback_) {
     return;
   }
 
-  CHECK(share_screen_callback_);
   link_generation_callback_ = std::move(callback);
   data_sharing::GroupToken token(data_sharing::GroupId(collaboration_group_id),
                                  access_token);
