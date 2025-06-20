@@ -232,7 +232,8 @@ crbug.com/365565140 [ angle-opengl debug graphite-disabled intel-0x3e9b arch-x86
 # Renderer Hung Possibly just Slow
 crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan graphite-disabled ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan graphite-disabled ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
-
+crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan ] ContextLost_WebGLContextLostOverlyLargeUniform [ RetryOnFailure ]
+crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan ] GpuNormalTermination_NewWebGLNotBlocked [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
