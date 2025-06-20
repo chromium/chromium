@@ -175,8 +175,7 @@ bool DualLayerUserPrefStore::IsInitializationComplete() const {
 
 bool DualLayerUserPrefStore::GetValue(std::string_view key,
                                       const base::Value** result) const {
-  const std::string pref_name(key);
-  if (!ShouldGetValueFromAccountStore(pref_name)) {
+  if (!ShouldGetValueFromAccountStore(key)) {
     return local_pref_store_->GetValue(key, result);
   }
 
@@ -194,7 +193,7 @@ bool DualLayerUserPrefStore::GetValue(std::string_view key,
   if (result) {
     // Merge pref if `key` exists in both the stores.
     if (account_value && local_value) {
-      *result = MaybeMerge(pref_name, *local_value, *account_value);
+      *result = MaybeMerge(key, *local_value, *account_value);
       CHECK(*result);
     } else if (account_value) {
       *result = account_value;
