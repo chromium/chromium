@@ -685,7 +685,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidMinimalUiLargeScreen =
             newCachedFlag(ANDROID_MINIMAL_UI_LARGE_SCREEN, false, true);
     public static final CachedFlag sAndroidProgressBarVisualUpdate =
-            newCachedFlag(ANDROID_PROGRESS_BAR_VISUAL_UPDATE, false);
+            newCachedFlag(
+                    ANDROID_PROGRESS_BAR_VISUAL_UPDATE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidSurfaceColorUpdate =
             newCachedFlag(
                     ANDROID_SURFACE_COLOR_UPDATE,

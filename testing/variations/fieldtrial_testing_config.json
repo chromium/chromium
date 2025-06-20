@@ -761,6 +761,21 @@
             ]
         }
     ],
+    "AndroidProgressBarVisualUpdate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidProgressBarVisualUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidRaiseDisplayCriticalThreadPriority": [
         {
             "platforms": [
