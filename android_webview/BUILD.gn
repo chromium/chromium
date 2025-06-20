@@ -684,13 +684,14 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/common/MediaIntegrityErrorWrapper.java",
       "java/src/org/chromium/android_webview/common/MediaIntegrityNonRecoverableErrorLogger.java",
       "java/src/org/chromium/android_webview/common/MediaIntegrityProvider.java",
+      "java/src/org/chromium/android_webview/common/NoOpPlatformServiceBridge.java",
       "java/src/org/chromium/android_webview/common/PlatformServiceBridge.java",
-      "java/src/org/chromium/android_webview/common/PlatformServiceBridgeImpl.java",
       "java/src/org/chromium/android_webview/common/ValueOrErrorCallback.java",
     ]
 
     deps = [
       "//base:base_java",
+      "//base:service_loader_java",
       "//components/embedder_support/android/metrics:java",
       "//content/public/android:content_full_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -700,13 +701,6 @@ if (_is_default_toolchain) {
     # The appropriate .class file will be loaded via a dependency to a library
     # like :platform_service_bridge_upstream_implementation_java below. We only include the
     # .java file because other files in the target depend on it.
-    jar_excluded_patterns = [ "*/PlatformServiceBridgeImpl.class" ]
-  }
-
-  # This target compiles the implementation of PlatformServiceBridge for AOSP targets.
-  android_library("platform_service_bridge_upstream_implementation_java") {
-    sources = [ "java/src/org/chromium/android_webview/common/PlatformServiceBridgeImpl.java" ]
-    deps = [ ":common_platform_services_java" ]
   }
 
   android_library("crash_client_java") {

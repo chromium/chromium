@@ -26,8 +26,8 @@ import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.android_webview.common.MediaIntegrityErrorCode;
 import org.chromium.android_webview.common.MediaIntegrityErrorWrapper;
 import org.chromium.android_webview.common.MediaIntegrityProvider;
+import org.chromium.android_webview.common.NoOpPlatformServiceBridge;
 import org.chromium.android_webview.common.PlatformServiceBridge;
-import org.chromium.android_webview.common.PlatformServiceBridgeImpl;
 import org.chromium.android_webview.common.ValueOrErrorCallback;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.base.ThreadUtils;
@@ -1065,7 +1065,7 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
     }
 
     /** PlatformServiceBridge where MediaIntegrityProvider responses can be queued. */
-    private static class MockPlatformServiceBridge extends PlatformServiceBridgeImpl {
+    private static class MockPlatformServiceBridge extends NoOpPlatformServiceBridge {
 
         private static class CallKey {
 
