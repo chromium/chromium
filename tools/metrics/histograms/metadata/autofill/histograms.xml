@@ -1112,6 +1112,45 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Ai.KeyMetrics{KeyMetric}{EntityGranularity}"
+    enum="Boolean" expires_after="2025-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Similar to Autofill.KeyMetrics.*. Emitted only for users who have AutofillAi
+    enabled in settings.
+
+    {KeyMetric}
+
+    {EntityGranularity}
+  </summary>
+  <token key="KeyMetric">
+    <variant name=".FillingAcceptance"
+        summary="Records, at form submission, and given that the user saw an
+                 Autofill AI prompt, whether the user used AutofillAI to fill
+                 the form or not."/>
+    <variant name=".FillingAssistance"
+        summary="Records, at form submission, whether the user used Autofill
+                 AI to fill the form or not."/>
+    <variant name=".FillingCorrectness"
+        summary="Records, at form submission, and given that the user filled
+                 an Autofill AI suggestion, whether the user manually edited
+                 an autofilled field filled by Autofill AI or not."/>
+    <variant name=".FillingReadiness"
+        summary="Records, at form submission, whether the user had Autofill
+                 AI data to fill the form or not."/>
+  </token>
+  <token key="EntityGranularity">
+    <variant name=""
+        summary="Emitted for all entities supported by Autofill AI."/>
+    <variant name=".DriversLicense"
+        summary="Emitted for driver's license forms only."/>
+    <variant name=".Passport" summary="Emitted for passport forms only."/>
+    <variant name=".Vehicle"
+        summary="Emitted for vehicle information forms only."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Ai.ModelExecutionStatus"
     enum="AutofillAiModelExecutionStatus" expires_after="2026-04-30">
   <owner>jkeitel@google.com</owner>

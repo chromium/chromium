@@ -16,7 +16,9 @@ namespace autofill {
 
 namespace {
 
-constexpr char funnel_histogram_prefix[] = "Autofill.Ai.Funnel.";
+constexpr std::string_view funnel_histogram_prefix = "Autofill.Ai.Funnel.";
+constexpr std::string_view key_metric_histogram_prefix =
+    "Autofill.Ai.KeyMetrics.";
 
 void LogFunnelMetric(std::string_view funnel_metric_name,
                      bool submission_state,
@@ -28,6 +30,12 @@ void LogFunnelMetric(std::string_view funnel_metric_name,
       base::StrCat({funnel_histogram_prefix, "Aggregate.", funnel_metric_name});
   base::UmaHistogramBoolean(specific_histogram_name, metric_value);
   base::UmaHistogramBoolean(aggregate_histogram_name, metric_value);
+}
+
+void LogKeyMetric(std::string_view key_metric_name, bool metric_value) {
+  const std::string generic_histogram_name =
+      base::StrCat({key_metric_histogram_prefix, key_metric_name});
+  base::UmaHistogramBoolean(generic_histogram_name, metric_value);
 }
 
 }  // namespace
@@ -90,24 +98,42 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
         /*suggestion_filled=*/state.did_fill_suggestions,
         /*edited_autofilled_field=*/state.edited_autofilled_field,
         /*opt_in_status=*/opt_in_status);
+    if (opt_in_status) {
+      RecordKeyMetrics(state);
+    }
   }
+  RecordFunnelMetrics(state, submission_state);
+}
 
-  LogFunnelMetric("Eligibility", submission_state, state.is_eligible);
-  if (!state.is_eligible) {
+void AutofillAiLogger::RecordFunnelMetrics(const FunnelState& funnel_state,
+                                           bool submission_state) const {
+  LogFunnelMetric("Eligibility", submission_state, funnel_state.is_eligible);
+  if (!funnel_state.is_eligible) {
     return;
   }
   LogFunnelMetric("ReadinessAfterEligibility", submission_state,
-                  state.has_data_to_fill);
-  if (!state.has_data_to_fill) {
+                  funnel_state.has_data_to_fill);
+  if (!funnel_state.has_data_to_fill) {
     return;
   }
   LogFunnelMetric("FillAfterSuggestion", submission_state,
-                  state.did_fill_suggestions);
-  if (!state.did_fill_suggestions) {
+                  funnel_state.did_fill_suggestions);
+  if (!funnel_state.did_fill_suggestions) {
     return;
   }
   LogFunnelMetric("CorrectionAfterFill", submission_state,
-                  state.edited_autofilled_field);
+                  funnel_state.edited_autofilled_field);
+}
+
+void AutofillAiLogger::RecordKeyMetrics(const FunnelState& funnel_state) const {
+  LogKeyMetric("FillingReadiness", funnel_state.has_data_to_fill);
+  LogKeyMetric("FillingAssistance", funnel_state.did_fill_suggestions);
+  if (funnel_state.suggestions_shown) {
+    LogKeyMetric("FillingAcceptance", funnel_state.did_fill_suggestions);
+  }
+  if (funnel_state.did_fill_suggestions) {
+    LogKeyMetric("FillingCorrectness", !funnel_state.edited_autofilled_field);
+  }
 }
 
 }  // namespace autofill
