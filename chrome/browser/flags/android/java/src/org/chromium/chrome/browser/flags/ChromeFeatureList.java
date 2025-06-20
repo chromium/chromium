@@ -1456,6 +1456,12 @@ public abstract class ChromeFeatureList {
                     "max_legacy_tab_state_files_deleted_per_session",
                     100);
 
+    public static final IntCachedFeatureParam sDisableInstanceLimitMemoryThresholdMb =
+            newIntCachedFeatureParam(
+                    DISABLE_INSTANCE_LIMIT, "max_instance_limit_memory_threshold_mb", 6500);
+    public static final IntCachedFeatureParam sDisableInstanceLimitMaxCount =
+            newIntCachedFeatureParam(DISABLE_INSTANCE_LIMIT, "max_instance_limit", 20);
+
     /** Cached param whether we disable e2e on the recent tabs page. */
     public static final BooleanCachedFeatureParam sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e =
             newBooleanCachedFeatureParam(
@@ -1669,6 +1675,8 @@ public abstract class ChromeFeatureList {
                     sCollectAndroidFrameTimelineMetricsJankTrackerDelayedStartMs,
                     sDeleteLegacyTabStateFilesBatchSize,
                     sDeleteMigratedLegacyTabStateFilesAfterRestore,
+                    sDisableInstanceLimitMaxCount,
+                    sDisableInstanceLimitMemoryThresholdMb,
                     sDrawKeyNativeEdgeToEdgeDisableCctMediaViewerE2e,
                     sDrawKeyNativeEdgeToEdgeDisableHubE2e,
                     sDrawKeyNativeEdgeToEdgeDisableIncognitoNtpE2e,

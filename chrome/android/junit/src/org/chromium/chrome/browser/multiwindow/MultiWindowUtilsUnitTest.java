@@ -43,14 +43,20 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
+import org.chromium.base.FeatureOverrides;
+import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowMultiInstanceManagerApi31;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -61,6 +67,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -69,13 +76,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /** Unit tests for {@link MultiWindowUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowMultiInstanceManagerApi31.class})
+        shadows = {ShadowMultiInstanceManagerApi31.class, ShadowSysUtils.class})
 public class MultiWindowUtilsUnitTest {
     /** Shadows {@link MultiInstanceManagerApi31} class for testing. */
     @Implements(MultiInstanceManagerApi31.class)
@@ -111,6 +121,21 @@ public class MultiWindowUtilsUnitTest {
         @Implementation
         public static int getRunningTabbedActivityCount() {
             return sRunningTabbedActivityCount;
+        }
+    }
+
+    /** Shadows {@link SysUtils} class for testing. */
+    @Implements(SysUtils.class)
+    public static class ShadowSysUtils {
+        private static int sMemoryInMB;
+
+        public static void setMemoryInMB(int memoryInMB) {
+            sMemoryInMB = memoryInMB;
+        }
+
+        @Implementation
+        public static int amountOfPhysicalMemoryKB() {
+            return sMemoryInMB * ConversionUtils.KILOBYTES_PER_MEGABYTE;
         }
     }
 
@@ -204,6 +229,8 @@ public class MultiWindowUtilsUnitTest {
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
         when(mTabModelSupplier.get()).thenReturn(mNormalTabModel);
+
+        ShadowSysUtils.setMemoryInMB(7000);
     }
 
     @After
@@ -855,6 +882,150 @@ public class MultiWindowUtilsUnitTest {
         assertFalse("Message should not be enqueued.", shown);
 
         verify(messageDispatcher, times(1)).enqueueWindowScopedMessage(any(), anyBoolean());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
+    public void testMaxInstances_DisableInstanceLimitDisabled() {
+        // Verify instance limit on Android S- devices.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        assertEquals(
+                "Instance limit for Android S- devices is incorrect.",
+                3,
+                MultiWindowUtils.getMaxInstances());
+
+        // Verify instance limit when FF is disabled.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        assertEquals(
+                "Instance limit when feature is disabled is incorrect.",
+                5,
+                MultiWindowUtils.getMaxInstances());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
+    public void testMaxInstances_DefaultValuesOnTablet() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+
+        // Verify default instance limit for low-memory device, using default memory threshold.
+        ShadowSysUtils.setMemoryInMB(4000);
+        assertEquals(
+                "Instance limit on low-memory tablet device is incorrect.",
+                5,
+                MultiWindowUtils.getMaxInstances());
+
+        // Verify default instance limit for high-memory device, using default memory threshold.
+        ShadowSysUtils.setMemoryInMB(7000);
+        assertEquals(
+                "Instance limit on high-memory tablet device is incorrect.",
+                20,
+                MultiWindowUtils.getMaxInstances());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
+    public void testMaxInstances_CustomInstanceLimit_HighMemoryTablet() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        Map<String, Integer> featureParams = new HashMap<>();
+        featureParams.put("max_instance_limit", 50);
+        updateFeatureParams(ChromeFeatureList.DISABLE_INSTANCE_LIMIT, featureParams);
+
+        assertEquals(
+                "Instance limit on high-memory tablet device is incorrect.",
+                50,
+                MultiWindowUtils.getMaxInstances());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
+    public void testMaxInstances_CustomInstanceLimit_LowMemoryTablet() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        ShadowSysUtils.setMemoryInMB(4000);
+        Map<String, Integer> featureParams = new HashMap<>();
+        featureParams.put("max_instance_limit", 50);
+        updateFeatureParams(ChromeFeatureList.DISABLE_INSTANCE_LIMIT, featureParams);
+
+        assertEquals(
+                "Instance limit on high-memory tablet device is incorrect.",
+                5,
+                MultiWindowUtils.getMaxInstances());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
+    public void testMaxInstances_CustomMemoryThreshold_HighMemoryTablet() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        ShadowSysUtils.setMemoryInMB(8500);
+        Map<String, Integer> featureParams = new HashMap<>();
+        featureParams.put("max_instance_limit_memory_threshold_mb", 8000);
+        updateFeatureParams(ChromeFeatureList.DISABLE_INSTANCE_LIMIT, featureParams);
+
+        assertEquals(
+                "Instance limit on high-memory tablet device is incorrect.",
+                20,
+                MultiWindowUtils.getMaxInstances());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
+    public void testMaxInstances_CustomMemoryThreshold_LowMemoryTablet() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        ShadowSysUtils.setMemoryInMB(7500);
+        Map<String, Integer> featureParams = new HashMap<>();
+        featureParams.put("max_instance_limit_memory_threshold_mb", 8000);
+        updateFeatureParams(ChromeFeatureList.DISABLE_INSTANCE_LIMIT, featureParams);
+
+        assertEquals(
+                "Instance limit on low-memory tablet device is incorrect.",
+                5,
+                MultiWindowUtils.getMaxInstances());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
+    public void testMaxInstances_CustomInstanceLimit_CustomMemoryThreshold_HighMemoryTablet() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        ShadowSysUtils.setMemoryInMB(8500);
+        Map<String, Integer> featureParams = new HashMap<>();
+        featureParams.put("max_instance_limit", 50);
+        featureParams.put("max_instance_limit_memory_threshold_mb", 8000);
+        updateFeatureParams(ChromeFeatureList.DISABLE_INSTANCE_LIMIT, featureParams);
+
+        assertEquals(
+                "Instance limit on high-memory tablet device is incorrect.",
+                50,
+                MultiWindowUtils.getMaxInstances());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
+    public void testMaxInstances_CustomInstanceLimit_CustomMemoryThreshold_LowMemoryTablet() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        ShadowSysUtils.setMemoryInMB(7500);
+        Map<String, Integer> featureParams = new HashMap<>();
+        featureParams.put("max_instance_limit", 50);
+        featureParams.put("max_instance_limit_memory_threshold_mb", 8000);
+        updateFeatureParams(ChromeFeatureList.DISABLE_INSTANCE_LIMIT, featureParams);
+
+        assertEquals(
+                "Instance limit on low-memory tablet device is incorrect.",
+                5,
+                MultiWindowUtils.getMaxInstances());
+    }
+
+    private void updateFeatureParams(String feature, Map<String, Integer> featureParams) {
+        FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder().enable(feature);
+        for (Entry<String, Integer> entry : featureParams.entrySet()) {
+            overrides = overrides.param(entry.getKey(), entry.getValue());
+        }
+        overrides.apply();
     }
 
     private void testRecordTabCountForRelaunchWhenActivityPausedImpl(int windowId) {

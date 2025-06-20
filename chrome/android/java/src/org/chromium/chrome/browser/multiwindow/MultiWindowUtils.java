@@ -35,6 +35,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -58,11 +59,13 @@ import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -189,13 +192,33 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return The maximum number of instances that a user is allowed to create.
      */
     public static int getMaxInstances() {
-        return sMaxInstancesForTesting != null
-                ? sMaxInstancesForTesting
-                : (isMultiInstanceApi31Enabled()
-                        ? (ChromeFeatureList.sDisableInstanceLimit.isEnabled()
-                                ? TabWindowManager.MAX_SELECTORS
-                                : TabWindowManager.MAX_SELECTORS_S)
-                        : TabWindowManager.MAX_SELECTORS_LEGACY);
+        if (sMaxInstancesForTesting != null) {
+            return sMaxInstancesForTesting;
+        }
+
+        if (!isMultiInstanceApi31Enabled()) {
+            return TabWindowManager.MAX_SELECTORS_LEGACY;
+        }
+
+        if (!ChromeFeatureList.sDisableInstanceLimit.isEnabled()) {
+            return TabWindowManager.MAX_SELECTORS_S;
+        }
+
+        Context context = ContextUtils.getApplicationContext();
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            int memoryThresholdMb =
+                    ChromeFeatureList.sDisableInstanceLimitMemoryThresholdMb.getValue();
+            boolean isAboveMemoryThreshold =
+                    SysUtils.amountOfPhysicalMemoryKB()
+                            >= memoryThresholdMb * ConversionUtils.KILOBYTES_PER_MEGABYTE;
+            if (isAboveMemoryThreshold) {
+                return ChromeFeatureList.sDisableInstanceLimitMaxCount.getValue();
+            } else {
+                return TabWindowManager.MAX_SELECTORS_S;
+            }
+        }
+
+        return TabWindowManager.MAX_SELECTORS;
     }
 
     /** Returns the singleton instance of MultiWindowUtils. */
