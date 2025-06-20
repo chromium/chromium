@@ -60,7 +60,9 @@ std::optional<chrome::cros::reporting::proto::PasswordBreachEvent>
 GetPasswordBreachEvent(
     const std::string& trigger,
     const std::vector<std::pair<GURL, std::u16string>>& identities,
-    const enterprise_connectors::ReportingSettings& settings);
+    const enterprise_connectors::ReportingSettings& settings,
+    const std::string& profile_identifier,
+    const std::string& profile_username);
 
 chrome::cros::reporting::proto::SafeBrowsingPasswordReuseEvent
 GetPasswordReuseEvent(const GURL& url,

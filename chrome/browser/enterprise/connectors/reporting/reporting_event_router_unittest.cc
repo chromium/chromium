@@ -236,23 +236,37 @@ TEST_P(ReportingEventRouterTest, TestOnLoginEventFederated) {
 }
 
 TEST_P(ReportingEventRouterTest, TestOnPasswordBreach) {
-  // TODO(crbug.com/396436374): Migrate password breach event to proto format.
-  if (use_proto_format()) {
-    return;
-  }
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/{{kKeyPasswordBreachEvent, {"*"}}});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectPasswordBreachEvent(
-      "SAFETY_CHECK",
-      {
-          {"https://first.example.com/", u"*****"},
-          {"https://second.example.com/", u"*****@gmail.com"},
-      },
-      profile_->GetProfileUserName(), GetProfileIdentifier());
+  chrome::cros::reporting::proto::PasswordBreachEvent expected_event;
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::PasswordBreachEvent::Identity identity_1;
+    identity_1.set_url("https://first.example.com/");
+    identity_1.set_username("*****");
+    chrome::cros::reporting::proto::PasswordBreachEvent::Identity identity_2;
+    identity_2.set_url("https://second.example.com/");
+    identity_2.set_username("*****@gmail.com");
+    *expected_event.add_identities() = identity_1;
+    *expected_event.add_identities() = identity_2;
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::PasswordBreachEvent::SAFETY_CHECK);
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+
+    validator.ExpectPasswordBreachEvent(std::move(expected_event));
+  } else {
+    validator.ExpectPasswordBreachEvent(
+        "SAFETY_CHECK",
+        {
+            {"https://first.example.com/", u"*****"},
+            {"https://second.example.com/", u"*****@gmail.com"},
+        },
+        profile_->GetProfileUserName(), GetProfileIdentifier());
+  }
 
   reporting_event_router_->OnPasswordBreach(
       "SAFETY_CHECK",
@@ -263,10 +277,6 @@ TEST_P(ReportingEventRouterTest, TestOnPasswordBreach) {
 }
 
 TEST_P(ReportingEventRouterTest, TestOnPasswordBreachNoMatchingUrlPattern) {
-  // TODO(crbug.com/396436374): Migrate password breach event to proto format.
-  if (use_proto_format()) {
-    return;
-  }
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{},
@@ -286,10 +296,6 @@ TEST_P(ReportingEventRouterTest, TestOnPasswordBreachNoMatchingUrlPattern) {
 
 TEST_P(ReportingEventRouterTest,
        TestOnPasswordBreachPartiallyMatchingUrlPatterns) {
-  // TODO(crbug.com/396436374): Migrate password breach event to proto format.
-  if (use_proto_format()) {
-    return;
-  }
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{},
@@ -299,12 +305,27 @@ TEST_P(ReportingEventRouterTest,
   // The event is only enabled on secondexample.com, so expect only the
   // information related to that origin to be reported.
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectPasswordBreachEvent(
-      "SAFETY_CHECK",
-      {
-          {"https://secondexample.com/", u"*****"},
-      },
-      profile_->GetProfileUserName(), GetProfileIdentifier());
+  chrome::cros::reporting::proto::PasswordBreachEvent expected_event;
+
+  if (use_proto_format()) {
+    chrome::cros::reporting::proto::PasswordBreachEvent::Identity identity;
+    identity.set_url("https://secondexample.com/");
+    identity.set_username("*****");
+    *expected_event.add_identities() = identity;
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::PasswordBreachEvent::SAFETY_CHECK);
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+
+    validator.ExpectPasswordBreachEvent(std::move(expected_event));
+  } else {
+    validator.ExpectPasswordBreachEvent(
+        "SAFETY_CHECK",
+        {
+            {"https://secondexample.com/", u"*****"},
+        },
+        profile_->GetProfileUserName(), GetProfileIdentifier());
+  }
 
   reporting_event_router_->OnPasswordBreach(
       "SAFETY_CHECK",

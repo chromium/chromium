@@ -31,13 +31,16 @@ TEST(ReportingUtilsTest, GetPasswordBreachEventReturnsValidEvent) {
   settings.enabled_opt_in_events.insert(enabled_opt_in_events.begin(),
                                         enabled_opt_in_events.end());
 
-  auto event = GetPasswordBreachEvent(kPasswordTrigger, identities, settings);
+  auto event = GetPasswordBreachEvent(kPasswordTrigger, identities, settings,
+                                      "identifier", "profile_username");
   ASSERT_EQ(
       event->trigger(),
       chrome::cros::reporting::proto::PasswordBreachEvent::PASSWORD_ENTRY);
   auto identity = event->identities()[0];
   ASSERT_EQ(identity.url(), "https://google.com/");
   ASSERT_EQ(identity.username(), "*****");
+  ASSERT_EQ(event->profile_identifier(), "identifier");
+  ASSERT_EQ(event->profile_user_name(), "profile_username");
 }
 
 TEST(ReportingUtilsTest,
@@ -50,7 +53,8 @@ TEST(ReportingUtilsTest,
   settings.enabled_opt_in_events.insert(enabled_opt_in_events.begin(),
                                         enabled_opt_in_events.end());
 
-  auto event = GetPasswordBreachEvent(kPasswordTrigger, identities, settings);
+  auto event = GetPasswordBreachEvent(kPasswordTrigger, identities, settings,
+                                      "identifier", "profile_username");
   ASSERT_FALSE(event.has_value());
 }
 
@@ -60,7 +64,8 @@ TEST(ReportingUtilsTest,
       {GURL("https://google.com/"), u"username"}};
   ReportingSettings settings;
 
-  auto event = GetPasswordBreachEvent(kPasswordTrigger, identities, settings);
+  auto event = GetPasswordBreachEvent(kPasswordTrigger, identities, settings,
+                                      "identifier", "profile_username");
   ASSERT_FALSE(event.has_value());
 }
 

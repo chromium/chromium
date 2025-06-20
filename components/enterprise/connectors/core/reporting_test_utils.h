@@ -52,8 +52,12 @@ class EventReportValidatorBase {
   void ExpectLoginEvent(
       chrome::cros::reporting::proto::LoginEvent expected_login_event);
 
-  // TODO(crbug.com/396436374): Use password breach event proto instead of raw
-  // json string for validation.
+  void ExpectPasswordBreachEvent(
+      chrome::cros::reporting::proto::PasswordBreachEvent
+          expected_password_breach_event);
+
+  // TODO(crbug.com/396436374): Delete this method once proto migration is
+  // complete.
   void ExpectPasswordBreachEvent(
       const std::string& expected_trigger,
       const std::vector<std::pair<std::string, std::u16string>>&

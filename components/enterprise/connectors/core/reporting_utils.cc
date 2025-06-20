@@ -227,7 +227,9 @@ void AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(
 std::optional<proto::PasswordBreachEvent> GetPasswordBreachEvent(
     const std::string& trigger,
     const std::vector<std::pair<GURL, std::u16string>>& identities,
-    const enterprise_connectors::ReportingSettings& settings) {
+    const enterprise_connectors::ReportingSettings& settings,
+    const std::string& profile_identifier,
+    const std::string& profile_username) {
   std::unique_ptr<url_matcher::URLMatcher> matcher =
       CreateURLMatcherForOptInEvent(settings, kKeyPasswordBreachEvent);
   if (!matcher) {
@@ -254,6 +256,8 @@ std::optional<proto::PasswordBreachEvent> GetPasswordBreachEvent(
                                     converted_identities.end());
   }
   event.set_trigger(GetTriggerType(trigger));
+  event.set_profile_identifier(profile_identifier);
+  event.set_profile_user_name(profile_username);
 
   return event;
 }
