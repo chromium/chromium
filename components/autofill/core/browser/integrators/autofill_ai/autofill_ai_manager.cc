@@ -27,6 +27,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "base/types/zip.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -41,6 +42,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
+#include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
@@ -380,7 +382,7 @@ std::vector<Suggestion> AutofillAiManager::GetSuggestions(
 }
 
 bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
-                                         FieldGlobalId field) const {
+                                         FieldGlobalId field_id) const {
   if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kIphForOptIn)) {
     return false;
   }
@@ -396,44 +398,28 @@ bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
       !paydm.HasMaskedBankAccounts()) {
     return false;
   }
-  const AutofillField* const focused_field = form.GetFieldById(field);
+  const AutofillField* const focused_field = form.GetFieldById(field_id);
   if (!focused_field) {
     return false;
   }
 
-  // The focused field needs to be AutofillAI-related.
-  if (!focused_field->GetAutofillAiServerTypePredictions()) {
-    return false;
-  }
-
-  // Submitting the form should lead to an import if the user fills all of the
-  // currently focused section's fields that are related to AutofillAI
+  // We want to show IPH if filling the `focused_field` and fields that belong
+  // to the same entity leads to an import.
   std::map<EntityType, DenseSet<AttributeType>> attributes_in_form;
-  for (const std::unique_ptr<AutofillField>& current_field : form.fields()) {
-    if (current_field->section() != focused_field->section()) {
-      continue;
-    }
-    const std::optional<FieldType> autofill_ai_type =
-        current_field->GetAutofillAiServerTypePredictions();
-    if (!autofill_ai_type) {
-      continue;
-    }
-    const std::optional<AttributeType> attribute_type =
-        AttributeType::FromFieldType(*autofill_ai_type);
-    if (!attribute_type) {
-      continue;
-    }
-
-    const EntityType entity_type = attribute_type->entity_type();
-    DenseSet<AttributeType>& attributes_found_so_far =
-        attributes_in_form[entity_type];
-    attributes_found_so_far.insert(*attribute_type);
-    if (AttributesMeetImportConstraints(entity_type, attributes_found_so_far)) {
-      return true;
+  for (auto [entity, fields_and_types] :
+       DetermineAttributeTypes(form.fields(), focused_field->section())) {
+    if (base::Contains(fields_and_types, focused_field->global_id(),
+                       [](const AutofillFieldWithAttributeType& f) {
+                         return f.field->global_id();
+                       })) {
+      attributes_in_form[entity].insert_all(
+          DenseSet(fields_and_types, &AutofillFieldWithAttributeType::type));
     }
   }
 
-  return false;
+  return std::ranges::any_of(attributes_in_form, [](const auto& p) {
+    return AttributesMeetImportConstraints(p.first, p.second);
+  });
 }
 
 LogManager* AutofillAiManager::GetCurrentLogManager() {

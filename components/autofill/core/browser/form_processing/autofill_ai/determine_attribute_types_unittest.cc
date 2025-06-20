@@ -66,14 +66,32 @@ testing::Matcher<AutofillFieldWithAttributeType> FieldAndType(
 
 // Tests that DetermineAttributeTypes() doesn't crash on empty lists.
 TEST(DetermineAttributeTypesTest, ToleratesEmptyList) {
-  // base::test::ScopedFeatureList features_{features::kAutofillAiNoTagTypes};
   EXPECT_THAT(DetermineAttributeTypes({}), IsEmpty());
   EXPECT_THAT(DetermineAttributeTypes({}, Section()), IsEmpty());
   EXPECT_THAT(DetermineAttributeTypes({}, Section(), kPassport), IsEmpty());
 }
 
+// Tests that DetermineAttributeTypes() is empty on forms that have no entities.
+TEST(DetermineAttributeTypesTest, IsEmptyInUnrelatedForm) {
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {NAME_FULL},
+      {ADDRESS_HOME_LINE1},
+      {ADDRESS_HOME_LINE2},
+      {ADDRESS_HOME_LINE3},
+      {ADDRESS_HOME_ZIP},
+      {ADDRESS_HOME_CITY},
+      {ADDRESS_HOME_STATE},
+      {ADDRESS_HOME_COUNTRY},
+  });
+
+  EXPECT_THAT(DetermineAttributeTypes(fields), IsEmpty());
+  EXPECT_THAT(DetermineAttributeTypes(fields, Section()), IsEmpty());
+  EXPECT_THAT(DetermineAttributeTypes(fields, Section(), kPassport), IsEmpty());
+}
+
 // Tests that DetermineAttributeTypes() processes `*_TAG` correctly if
 TEST(DetermineAttributeTypesTest, LegacyBehavior) {
+  base::test::ScopedFeatureList features_{features::kAutofillAiNoTagTypes};
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAutofillAiNoTagTypes);
 
