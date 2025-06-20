@@ -1815,6 +1815,142 @@ const subgraphTests = [
     }
   },
   {
+    'name': 'quantized gemm with bias',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            49.1112174987793, 11.907459259033203, 11.115795135498047,
+            21.115795135498047, 70.7490005493164, 31.115795135498047
+          ],
+          'descriptor': {shape: [2, 3], dataType: 'float32'},
+          'constant': false
+        },
+        'inputAScale': {
+          'data': [0.003921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputAZeroPoint': {
+          'data': [-128],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'inputB': {
+          'data': [
+            21, 24, 8, 15, 6, 7
+          ],
+          'descriptor': {shape: [3, 2], dataType: 'int8'},
+          'constant': true
+        },
+        'inputBScale': {
+          'data': [0.023458752938762234],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputBZeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'inputC': {
+          'data': [
+            8, 15
+          ],
+          'descriptor': {shape: [2], dataType: 'int32'},
+          'constant': true
+        },
+        'inputCScale': {
+          'data': [0.000091995115004270],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputCZeroPoint': {
+          'data': [0],
+          'descriptor': {shape: [1], dataType: 'int32'},
+          'constant': true
+        },
+        'outputScale': {
+          'data': [0.3921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'outputZeroPoint': {
+          'data': [16],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'inputA'},
+            {'scale': 'inputAScale', 'zeroPoint': 'inputAZeroPoint'}
+          ],
+          'outputs': 'quantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInputA'},
+            {'scale': 'inputAScale', 'zeroPoint': 'inputAZeroPoint'}
+          ],
+          'outputs': 'dequantizedInputA'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'inputB'},
+            {'scale': 'inputBScale', 'zeroPoint': 'inputBZeroPoint'}
+          ],
+          'outputs': 'dequantizedInputB'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'inputC'},
+            {'scale': 'inputCScale', 'zeroPoint': 'inputCZeroPoint'}
+          ],
+          'outputs': 'dequantizedInputC'
+        },
+        {
+          'name': 'gemm',
+          'arguments': [
+            {'a': 'dequantizedInputA'}, {'b': 'dequantizedInputB'},
+            {'options': {'c': 'dequantizedInputC'}}
+          ],
+          'outputs': 'gemmOutput'
+        },
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'gemmOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'quantizedGemmOutput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedGemmOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'output'
+        }
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0.7843137979507446, 1.1764707565307617,
+            0.7843137979507446, 1.1764707565307617,
+          ],
+          'descriptor': {shape: [2, 2], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
     'name': 'quantized transpose',
     'graph': {
       'inputs': {

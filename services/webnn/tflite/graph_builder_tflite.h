@@ -745,6 +745,8 @@ class GraphBuilderTflite final {
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(const mojom::Elu& elu);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Gather& gather);
+  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
+      const mojom::Gemm& gemm);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(const mojom::Pad& pad);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Pool2d& pool2d);
