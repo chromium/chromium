@@ -172,13 +172,11 @@ def GetDisassembleObjDumpPath(arch):
 
 
 def GetStripPath():
-  # Chromium's toolchain uses //buildtools/third_party/eu-strip, but first
-  # look for the test-only "fakestrip" for the sake of tests.
+  # First look for the test-only "fakestrip" for the sake of tests.
   fake_strip = _LlvmTool('fakestrip')
   if os.path.exists(fake_strip):
     return fake_strip
-  return FromToolsSrcRoot('buildtools', 'third_party', 'eu-strip', 'bin',
-                          'eu-strip')
+  return _LlvmTool('strip')
 
 
 def GetApkAnalyzerPath():

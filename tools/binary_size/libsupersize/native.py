@@ -804,7 +804,10 @@ def CreateSymbols(*,
     with tempfile.NamedTemporaryFile(
         suffix=os.path.basename(native_spec.elf_path)) as f:
       strip_path = path_util.GetStripPath()
-      subprocess.run([strip_path, '-o', f.name, native_spec.elf_path],
+      subprocess.run([
+          strip_path, '--strip-debug', '--strip-unneeded', '-o', f.name,
+          native_spec.elf_path
+      ],
                      check=True)
       elf_info = _CreateElfInfo(f.name)
 
