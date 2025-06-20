@@ -23,16 +23,12 @@ optimization_guide::proto::BrowserAction MakeClick(
     int content_node_id);
 optimization_guide::proto::BrowserAction MakeClick(
     const gfx::Point& click_point);
-optimization_guide::proto::BrowserAction MakeClick(
-    content::RenderFrameHost& rfh,
-    const gfx::Point& click_point);
 optimization_guide::proto::BrowserAction MakeHistoryBack();
 optimization_guide::proto::BrowserAction MakeHistoryForward();
 optimization_guide::proto::BrowserAction MakeMouseMove(
     content::RenderFrameHost& rfh,
     int content_node_id);
 optimization_guide::proto::BrowserAction MakeMouseMove(
-    content::RenderFrameHost& rfh,
     const gfx::Point& move_point);
 optimization_guide::proto::BrowserAction MakeNavigate(
     std::string_view target_url);
@@ -40,8 +36,7 @@ optimization_guide::proto::BrowserAction MakeType(content::RenderFrameHost& rfh,
                                                   int content_node_id,
                                                   std::string_view text,
                                                   bool follow_by_enter);
-optimization_guide::proto::BrowserAction MakeType(content::RenderFrameHost& rfh,
-                                                  const gfx::Point& type_point,
+optimization_guide::proto::BrowserAction MakeType(const gfx::Point& type_point,
                                                   std::string_view text,
                                                   bool follow_by_enter);
 optimization_guide::proto::BrowserAction MakeSelect(
@@ -55,7 +50,6 @@ optimization_guide::proto::BrowserAction MakeScroll(
     float scroll_offset_x,
     float scroll_offset_y);
 optimization_guide::proto::BrowserAction MakeDragAndRelease(
-    content::RenderFrameHost& rfh,
     const gfx::Point& from_point,
     const gfx::Point& to_point);
 optimization_guide::proto::BrowserAction MakeWait();

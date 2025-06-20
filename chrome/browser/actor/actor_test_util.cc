@@ -44,20 +44,6 @@ BrowserAction MakeClick(RenderFrameHost& rfh, int content_node_id) {
   return action;
 }
 
-BrowserAction MakeClick(RenderFrameHost& rfh, const gfx::Point& click_point) {
-  BrowserAction action;
-  ClickAction* click = action.add_actions()->mutable_click();
-  Coordinate* coordinate = click->mutable_target()->mutable_coordinate();
-  coordinate->set_x(click_point.x());
-  coordinate->set_y(click_point.y());
-  click->mutable_target()->mutable_document_identifier()->set_serialized_token(
-      *DocumentIdentifierUserData::GetDocumentIdentifier(
-          rfh.GetGlobalFrameToken()));
-  click->set_click_type(ClickAction::LEFT);
-  click->set_click_count(ClickAction::SINGLE);
-  return action;
-}
-
 BrowserAction MakeClick(const gfx::Point& click_point) {
   BrowserAction action;
   ClickAction* click = action.add_actions()->mutable_click();
@@ -91,16 +77,12 @@ BrowserAction MakeMouseMove(RenderFrameHost& rfh, int content_node_id) {
   return action;
 }
 
-BrowserAction MakeMouseMove(RenderFrameHost& rfh,
-                            const gfx::Point& move_point) {
+BrowserAction MakeMouseMove(const gfx::Point& move_point) {
   BrowserAction action;
   MoveMouseAction* move = action.add_actions()->mutable_move_mouse();
   Coordinate* coordinate = move->mutable_target()->mutable_coordinate();
   coordinate->set_x(move_point.x());
   coordinate->set_y(move_point.y());
-  move->mutable_target()->mutable_document_identifier()->set_serialized_token(
-      *DocumentIdentifierUserData::GetDocumentIdentifier(
-          rfh.GetGlobalFrameToken()));
   return action;
 }
 
@@ -130,8 +112,7 @@ BrowserAction MakeType(RenderFrameHost& rfh,
   return action;
 }
 
-BrowserAction MakeType(RenderFrameHost& rfh,
-                       const gfx::Point& type_point,
+BrowserAction MakeType(const gfx::Point& type_point,
                        std::string_view text,
                        bool follow_by_enter) {
   BrowserAction action;
@@ -139,10 +120,6 @@ BrowserAction MakeType(RenderFrameHost& rfh,
   Coordinate* coordinate = type_action->mutable_target()->mutable_coordinate();
   coordinate->set_x(type_point.x());
   coordinate->set_y(type_point.y());
-  type_action->mutable_target()
-      ->mutable_document_identifier()
-      ->set_serialized_token(*DocumentIdentifierUserData::GetDocumentIdentifier(
-          rfh.GetGlobalFrameToken()));
   type_action->set_text(text);
   // TODO(crbug.com/409570203): Tests should set a mode.
   type_action->set_mode(
@@ -203,8 +180,7 @@ BrowserAction MakeSelect(RenderFrameHost& rfh,
   return action;
 }
 
-BrowserAction MakeDragAndRelease(RenderFrameHost& rfh,
-                                 const gfx::Point& from_point,
+BrowserAction MakeDragAndRelease(const gfx::Point& from_point,
                                  const gfx::Point& to_point) {
   BrowserAction action;
   DragAndReleaseAction* drag_and_release =
@@ -213,18 +189,10 @@ BrowserAction MakeDragAndRelease(RenderFrameHost& rfh,
       from_point.x());
   drag_and_release->mutable_from_target()->mutable_coordinate()->set_y(
       from_point.y());
-  drag_and_release->mutable_from_target()
-      ->mutable_document_identifier()
-      ->set_serialized_token(*DocumentIdentifierUserData::GetDocumentIdentifier(
-          rfh.GetGlobalFrameToken()));
   drag_and_release->mutable_to_target()->mutable_coordinate()->set_x(
       to_point.x());
   drag_and_release->mutable_to_target()->mutable_coordinate()->set_y(
       to_point.y());
-  drag_and_release->mutable_to_target()
-      ->mutable_document_identifier()
-      ->set_serialized_token(*DocumentIdentifierUserData::GetDocumentIdentifier(
-          rfh.GetGlobalFrameToken()));
   return action;
 }
 
