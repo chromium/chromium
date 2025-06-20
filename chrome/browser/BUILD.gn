@@ -149,6 +149,35 @@ source_set("global_features") {
   ]
 }
 
+source_set("flags") {
+  sources = [
+    "about_flags.h",
+    "flag_descriptions.h",
+  ]
+  public_deps = [
+    "//base",
+    "//base:debugging_buildflags",
+    "//build:branding_buildflags",
+    "//build:buildflag_header_h",
+    "//chrome/common:buildflags",
+    "//components/compose:buildflags",
+    "//components/enterprise/buildflags",
+    "//components/nacl/common:buildflags",
+    "//components/paint_preview/buildflags",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/webui/flags",
+    "//content/public/common",
+    "//device/vr/buildflags",
+    "//extensions/buildflags",
+    "//media:media_buildflags",
+    "//net:buildflags",
+    "//pdf:buildflags",
+    "//printing/buildflags",
+    "//skia:buildflags",
+    "//third_party/blink/public/common:buildflags",
+  ]
+}
+
 source_set("shell_integration") {
   sources = [ "shell_integration.h" ]
   deps = [
@@ -163,7 +192,6 @@ source_set("shell_integration") {
 static_library("browser") {
   sources = [
     "about_flags.cc",
-    "about_flags.h",
     "accessibility/accessibility_labels_service.cc",
     "accessibility/accessibility_labels_service.h",
     "accessibility/accessibility_labels_service_factory.cc",
@@ -548,7 +576,6 @@ static_library("browser") {
     "first_party_sets/first_party_sets_policy_service_factory.cc",
     "first_party_sets/first_party_sets_policy_service_factory.h",
     "flag_descriptions.cc",
-    "flag_descriptions.h",
     "font_family_cache.cc",
     "font_family_cache.h",
     "gcm/gcm_product_util.cc",
@@ -8495,6 +8522,13 @@ static_library("browser_public_dependencies") {
     # //chrome/browser:browser needing to include 2 separate targets, we include
     # generated files here.
     ":browser_generated_files",
+
+    # To avoid that the huge amount of source files that include either
+    # "about_flags.h" or "flag_description.h" to depend directly on //c/b:flags
+    # for now, it is added temporarily as a public dependency of //c/b:b.
+    #
+    # TODO(crbug.com/369436587): Make all targets that include these headers to depend directly //c/b:flags.
+    ":flags",
 
     # //chrome/browser/ui and //chrome/browser are semantically the same target,
     # and thus their public dependencies are shared.
