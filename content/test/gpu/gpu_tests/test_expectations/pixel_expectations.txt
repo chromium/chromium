@@ -500,12 +500,6 @@ crbug.com/425671158 [ mac intel-0x3e9b angle-metal ] Pixel_WebGPUCopyExternalIma
 # Flaky Timeout on Mac m3
 crbug.com/425739516 [ mac apple-angle-metal-renderer:-apple-m3 	angle-metal graphite-enabled ] Pixel_ReflectedDiv [ Slow ]
 
-# Mac Retina Consistent Incorrect Image
-crbug.com/426514463 [ mac amd-0x7340 angle-metal ] Pixel_WebGPUImportVideoFrame [ Failure ]
-crbug.com/426514463 [ mac amd-0x7340 angle-metal ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
-crbug.com/426514463 [ mac amd-0x7340 angle-metal ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
-crbug.com/426514463 [ mac amd-0x7340 angle-metal ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
-
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
