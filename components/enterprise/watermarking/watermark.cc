@@ -62,6 +62,7 @@ std::unique_ptr<gfx::RenderText> CreateRenderText(const gfx::Rect& display_rect,
   render_text->SetFontList(WatermarkFontList());
   render_text->SetWeight(WatermarkFontWeight());
   render_text->SetDisplayOffset(gfx::Vector2d(0, 0));
+  render_text->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
   render_text->SetDisplayRect(display_rect);
   render_text->SetText(text);
   render_text->SetMultiline(true);
@@ -130,12 +131,6 @@ int max_x(double angle, const SkSize& bounds, int block_width) {
   // An extra `block_width_offset()` length is added so that the last column for
   // staggered rows doesn't appear on resizes.
   return cos(angle) * bounds.width() + block_width_offset(block_width);
-}
-
-int min_y(double angle, const SkSize& bounds) {
-  // Instead of starting at Y=0, starting at `kTextSize` lets the first line of
-  // text be in frame as text is drawn with (0,0) as the bottom-left corner.
-  return kTextSize;
 }
 
 int max_y(double angle, const SkSize& bounds) {
@@ -246,8 +241,11 @@ void DrawWatermark(WatermarkBlockRenderer* watermark_block_renderer,
   for (int x = min_x(kRotationAngle, contents_bounds, block_width);
        x <= upper_x; x += block_width_offset(block_width)) {
     bool apply_stagger = false;
-    for (int y = min_y(kRotationAngle, contents_bounds); y < upper_y;
-         y += block_height_offset(block_height)) {
+
+    // The vertical alignment of the watermark's RenderText is set to
+    // ALIGN_TOP. Starting at Y=0 with this setting aligns the top edge of the
+    // text with the top edge of the contents area.
+    for (int y = 0; y < upper_y; y += block_height_offset(block_height)) {
       // Every other row, stagger the text horizontally to give a
       // "brick tiling" effect.
       int stagger = apply_stagger ? block_width_offset(block_width) / 2 : 0;
