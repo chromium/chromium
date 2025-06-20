@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -311,12 +312,18 @@ TEST_F(NewTabFooterHandlerExtensionTest, ContextMenu_Shows) {
 }
 
 TEST_F(NewTabFooterHandlerExtensionTest, ContextMenu_HidesFooter) {
+  base::HistogramTester histogram_tester;
+  const std::string& hide_footer = "NewTabPage.Footer.ContextMenuClicked";
   ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible));
+  histogram_tester.ExpectTotalCount(hide_footer, 0);
 
   FooterContextMenu menu(profile());
   menu.ExecuteCommand(0 /* COMMAND_CLOSE_FOOTER */, /*event_flags=*/0);
 
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kNtpFooterVisible));
+  histogram_tester.ExpectTotalCount(hide_footer, 1);
+  histogram_tester.ExpectBucketCount(
+      hide_footer, new_tab_footer::FooterContextMenuItem::kHideFooter, 1);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

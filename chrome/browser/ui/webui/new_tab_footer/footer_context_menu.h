@@ -8,6 +8,15 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/menus/simple_menu_model.h"
 
+namespace new_tab_footer {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FooterContextMenuItem {
+  kHideFooter = 0,
+  kMaxValue = kHideFooter,
+};
+}  // namespace new_tab_footer
+
 class Profile;
 
 // The context menu for the New Tab Page footer.
