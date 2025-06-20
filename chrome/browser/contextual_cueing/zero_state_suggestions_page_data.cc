@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_helper.h"
@@ -251,6 +252,9 @@ void ZeroStateSuggestionsPageData::FetchSuggestions(
   suggestions_request_->set_is_fre(is_fre);
   *suggestions_request_->mutable_supported_tools() = {supported_tools.begin(),
                                                       supported_tools.end()};
+  if (g_browser_process) {
+    suggestions_request_->set_locale(g_browser_process->GetApplicationLocale());
+  }
   suggestions_callbacks_.AddUnsafe(std::move(callback));
   RequestSuggestionsIfComplete();
 }
