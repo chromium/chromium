@@ -1370,6 +1370,7 @@ policies:
   1369: KioskApplicationLogCollectionEnabled
   1370: EnableUnsafeSwiftShader
   1371: LocalNetworkAccessAllowedForUrls
+  1372: LocalNetworkAccessBlockedForUrls
 
 atomic_groups:
   1: Homepage

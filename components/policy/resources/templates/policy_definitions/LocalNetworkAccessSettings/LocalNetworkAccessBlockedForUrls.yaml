@@ -3,12 +3,14 @@ owners:
 - cthomp@chromium.org
 - chrome-secure-web-and-net@chromium.org
 
-caption: Allow sites to make requests to local network endpoints.
+caption: Block sites from making requests to local network endpoints.
 
 desc: |-
-  List of URL patterns. Requests initiated from websites served by matching origins are not subject to <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> checks.
+  List of URL patterns. Requests initiated from websites served by matching origins are blocked from issuing <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> requests.
 
-  If an origin is covered by both this policy and by LocalNetworkAccessBlockedForUrls, LocalNetworkAccessBlockedForUrls takes precedence.
+  If an origin is covered by both this policy and by LocalNetworkAccessAllowedForUrls, this policy takes precedence.
+
+  Depending on the stage of the rollout of <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph>, LocalNetworkAccessRestrictionsEnabled may also need to be enabled for this policy to block <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> requests.
 
   For origins not covered by the patterns specified here, the user's personal configuration will apply.
 
@@ -37,5 +39,4 @@ schema:
     type: string
   type: array
 
-tags:
-- system-security
+tags: []

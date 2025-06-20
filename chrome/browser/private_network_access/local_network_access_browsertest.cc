@@ -104,7 +104,7 @@ class LocalNetworkAccessBrowserTest : public policy::PolicyTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       CheckSecurityStateDefaultPolicy) {
+                       CheckSecurityStateDefaultPolicyDenyPermission) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       https_server().GetURL(
@@ -120,12 +120,37 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   bubble_factory->set_response_type(
       permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 
-  // LNA fetch should fail (default is currently in warning mode).
+  // LNA fetch should fail.
   EXPECT_THAT(content::EvalJs(
                   web_contents(),
                   content::JsReplace("fetch($1).then(response => response.ok)",
                                      https_server().GetURL("b.com", kLnaPath))),
               content::EvalJsResult::IsError());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       CheckSecurityStateDefaultPolicyAcceptPermission) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server().GetURL(
+          "a.com",
+          "/private_network_access/no-favicon-treat-as-public-address.html")));
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+  // Enable auto-accept of LNA permission request.
+  bubble_factory->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // LNA fetch should succeed.
+  ASSERT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("fetch($1).then(response => response.ok)",
+                                   https_server().GetURL("b.com", kLnaPath))));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
@@ -217,11 +242,49 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
           "a.com",
           "/private_network_access/no-favicon-treat-as-public-address.html")));
 
-  // LNA fetch should pass (default is currently in warning mode).
+  // LNA fetch should pass.
   ASSERT_EQ(true,
             content::EvalJs(
                 web_contents(),
                 content::JsReplace("fetch($1).then(response => response.ok)",
                                    https_server().GetURL("b.com", kLnaPath))));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       LocalNetworkAccessBlockedForUrlsPolicy) {
+  // Set both policies. Block should override Allow
+  policy::PolicyMap policies;
+  base::Value::List allowlist;
+  allowlist.Append(base::Value("*"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(std::move(allowlist)));
+  base::Value::List blocklist;
+  blocklist.Append(base::Value("*"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessBlockedForUrls,
+            base::Value(std::move(blocklist)));
+  UpdateProviderPolicy(policies);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server().GetURL(
+          "a.com",
+          "/private_network_access/no-favicon-treat-as-public-address.html")));
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+  // Enable auto-accept of LNA permission request, although it should not be
+  // checked.
+  bubble_factory->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  // LNA fetch should fail.
+  EXPECT_THAT(content::EvalJs(
+                  web_contents(),
+                  content::JsReplace("fetch($1).then(response => response.ok)",
+                                     https_server().GetURL("b.com", kLnaPath))),
+              content::EvalJsResult::IsError());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -2,4 +2,5 @@ LocalNetworkAccessSettings:
   caption: Local Network Access settings
   policies:
   - LocalNetworkAccessAllowedForUrls
+  - LocalNetworkAccessBlockedForUrls
   - LocalNetworkAccessRestrictionsEnabled
