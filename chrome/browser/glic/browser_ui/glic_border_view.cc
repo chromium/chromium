@@ -23,6 +23,7 @@
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/context_factory.h"
 #include "content/public/browser/gpu_data_manager.h"
+#include "content/public/common/color_parser.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -84,6 +85,37 @@ gfx::Insets GetContentsBorderInsets(BrowserView& browser_view) {
   }
   return insets_for_contents_border;
 }
+
+std::vector<SkColor> GetParameterizedColors() {
+  std::vector<SkColor> colors;
+  if (base::FeatureList::IsEnabled(features::kGlicParameterizedShader)) {
+    std::vector<std::string> unparsed_colors =
+        base::SplitString(::features::kGlicParameterizedShaderColors.Get(), "#",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    for (const auto& unparsed : unparsed_colors) {
+      SkColor result;
+      CHECK(content::ParseHexColorString("#" + unparsed, &result));
+      colors.push_back(result);
+    }
+  }
+  return colors;
+}
+
+std::vector<float> GetParameterizedFloats() {
+  std::vector<float> floats;
+  if (base::FeatureList::IsEnabled(features::kGlicParameterizedShader)) {
+    std::vector<std::string> unparsed_floats =
+        base::SplitString(::features::kGlicParameterizedShaderFloats.Get(), "#",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    for (const auto& unparsed : unparsed_floats) {
+      double result;
+      CHECK(base::StringToDouble(unparsed, &result));
+      floats.push_back(static_cast<float>(result));
+    }
+  }
+  return floats;
+}
+
 }  // namespace
 
 GlicBorderView::Factory* GlicBorderView::Factory::factory_ = nullptr;
@@ -298,6 +330,8 @@ GlicBorderView::GlicBorderView(Browser* browser, std::unique_ptr<Tester> tester)
     : updater_(std::make_unique<BorderViewUpdater>(browser, this)),
       creation_time_(base::TimeTicks::Now()),
       tester_(std::move(tester)),
+      colors_(GetParameterizedColors()),
+      floats_(GetParameterizedFloats()),
       theme_service_(ThemeServiceFactory::GetForProfile(browser->GetProfile())),
       browser_(browser) {
   auto* gpu_data_manager = content::GpuDataManager::GetInstance();
@@ -308,12 +342,7 @@ GlicBorderView::GlicBorderView(Browser* browser, std::unique_ptr<Tester> tester)
   // will observe GPU changes to keep hardware acceleration status updated.
   gpu_data_manager_observer_.Observe(gpu_data_manager);
 
-  shader_ =
-      ForceSimplifiedShader()
-          ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-                IDR_GLIC_SIMPLIFIED_BORDER_SHADER)
-          : ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-                IDR_GLIC_BORDER_SHADER);
+  UpdateShader();
   CHECK(!shader_.empty()) << "Shader not initialized.";
 
   auto* glic_service =
@@ -374,12 +403,31 @@ void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
       {.name = SkString("u_dark"),
        .value = UseDarkMode(theme_service_) ? 1 : 0}};
 
+  std::vector<cc::PaintShader::Float4Uniform> float4_uniforms;
+  if (base::FeatureList::IsEnabled(features::kGlicParameterizedShader)) {
+    for (int i = 0; i < static_cast<int>(colors_.size()); ++i) {
+      float4_uniforms.push_back(
+          {.name = SkString(absl::StrFormat("u_color%d", i + 1)),
+           .value =
+               SkV4{static_cast<float>(SkColorGetR(colors_[i]) / 255.0),
+                    static_cast<float>(SkColorGetG(colors_[i]) / 255.0),
+                    static_cast<float>(SkColorGetB(colors_[i]) / 255.0), 1.f}});
+    }
+    for (int i = 0; i < static_cast<int>(floats_.size()); ++i) {
+      float_uniforms.push_back(
+          {.name = SkString(absl::StrFormat("u_float%d", i + 1)),
+           .value = floats_[i]});
+    }
+  }
+
   views::View::OnPaint(canvas);
 
   cc::PaintFlags flags;
   auto shader = cc::PaintShader::MakeSkSLCommand(
       shader_, std::move(float_uniforms), std::move(float2_uniforms),
-      /*float4_uniforms=*/{}, std::move(int_uniforms), cached_paint_shader_);
+      std::move(float4_uniforms), std::move(int_uniforms),
+      cached_paint_shader_);
+
   flags.setShader(shader);
 
   if (base::FeatureList::IsEnabled(features::kGlicUseShaderCache)) {
@@ -506,12 +554,7 @@ void GlicBorderView::OnGpuInfoUpdate() {
 
   if (has_hardware_acceleration_ != has_hardware_acceleration) {
     has_hardware_acceleration_ = has_hardware_acceleration;
-    shader_ =
-        ForceSimplifiedShader()
-            ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-                  IDR_GLIC_SIMPLIFIED_BORDER_SHADER)
-            : ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-                  IDR_GLIC_BORDER_SHADER);
+    UpdateShader();
 
     if (IsShowing()) {
       SchedulePaint();
@@ -732,6 +775,24 @@ GlicKeyedService* GlicBorderView::GetGlicService() const {
       GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
   CHECK(service);
   return service;
+}
+
+void GlicBorderView::UpdateShader() {
+  if (base::FeatureList::IsEnabled(features::kGlicParameterizedShader)) {
+    shader_ =
+        ForceSimplifiedShader()
+            ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+                  IDR_GLIC_SIMPLIFIED_PARAMETERIZED_BORDER_SHADER)
+            : ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+                  IDR_GLIC_PARAMETERIZED_BORDER_SHADER);
+  } else {
+    shader_ =
+        ForceSimplifiedShader()
+            ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+                  IDR_GLIC_SIMPLIFIED_BORDER_SHADER)
+            : ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+                  IDR_GLIC_BORDER_SHADER);
+  }
 }
 
 BEGIN_METADATA(GlicBorderView)

@@ -131,6 +131,8 @@ class GlicBorderView : public views::View,
 
   GlicKeyedService* GetGlicService() const;
 
+  void UpdateShader();
+
   // A utility class that subscribe to `GlicKeyedService` for various browser UI
   // status change.
   class BorderViewUpdater;
@@ -174,6 +176,9 @@ class GlicBorderView : public views::View,
   const std::unique_ptr<Tester> tester_;
 
   sk_sp<cc::PaintShader> cached_paint_shader_;
+
+  const std::vector<SkColor> colors_;
+  const std::vector<float> floats_;
 
   raw_ptr<ui::Compositor> compositor_ = nullptr;
   raw_ptr<ThemeService> theme_service_ = nullptr;

@@ -645,6 +645,14 @@ BASE_FEATURE(kGlicWebClientUnresponsiveMetrics,
 
 BASE_FEATURE(kGlicTabGlow, "GlicTabGlow", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicParameterizedShader,
+             "GlicParameterizedShader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+extern const base::FeatureParam<std::string> kGlicParameterizedShaderColors{
+    &kGlicParameterizedShader, "glic-parameterized-shader-colors", ""};
+extern const base::FeatureParam<std::string> kGlicParameterizedShaderFloats{
+    &kGlicParameterizedShader, "glic-parameterized-shader-floats", ""};
+
 BASE_FEATURE(kGlicMultiTab, "GlicMultiTab", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
