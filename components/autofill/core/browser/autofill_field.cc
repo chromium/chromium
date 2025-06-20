@@ -378,7 +378,9 @@ void AutofillField::MaybeAddServerPrediction(
     server_predictions_.clear();
   }
 
-  prediction.set_type(ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
+  const FieldType field_type =
+      ToSafeFieldType(prediction.type(), NO_SERVER_DATA);
+  prediction.set_type(field_type);
 
   if (!prediction.has_source()) {
     // TODO(crbug.com/40243028): captured tests store old autofill api
@@ -402,7 +404,9 @@ void AutofillField::MaybeAddServerPrediction(
   if (IsDefaultPrediction(prediction)) {
     server_predictions_.push_back(std::move(prediction));
   } else if (IsAutofillAiPrediction(prediction)) {
-    if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
+    if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema) &&
+        (!IsTagType(field_type) ||
+         !base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes))) {
       server_predictions_.push_back(std::move(prediction));
     }
   } else {
