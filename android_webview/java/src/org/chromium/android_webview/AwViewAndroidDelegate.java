@@ -169,6 +169,10 @@ public class AwViewAndroidDelegate extends ViewAndroidDelegate {
     @RequiresApi(Build.VERSION_CODES.R)
     private WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
         View containerView = getContainerView();
+        if (containerView.getDisplay() == null) {
+            // View is not attached yet, do nothing and pass insets through.
+            return insets;
+        }
         int[] pos = new int[2];
         containerView.getLocationOnScreen(pos);
         int imeSize = insets.getInsets(WindowInsets.Type.ime()).bottom;
