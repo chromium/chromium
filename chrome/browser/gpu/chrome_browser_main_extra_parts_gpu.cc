@@ -11,7 +11,8 @@
 #include "gpu/config/gpu_preferences.h"
 
 namespace {
-const char kTrialName[] = "SkiaBackend";
+const char kSkiaTrialName[] = "SkiaBackend";
+const char kEGLTrialName[] = "EGLDisplayType";
 
 // Synthetic trial group names. Groups added here should be added to finch
 // service side as well.
@@ -47,8 +48,16 @@ void ChromeBrowserMainExtraPartsGpu::PreCreateThreads() {
 void ChromeBrowserMainExtraPartsGpu::OnGpuInfoUpdate() {
   const auto* backend_name = GetSkiaBackendName();
   if (backend_name) {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(kTrialName,
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(kSkiaTrialName,
                                                               backend_name);
+  }
+  auto* manager = content::GpuDataManager::GetInstance();
+  if (manager->IsEssentialGpuInfoAvailable()) {
+    const std::string& display_type = manager->GetGPUInfo().display_type;
+    if (!display_type.empty()) {
+      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(kEGLTrialName,
+                                                                display_type);
+    }
   }
 }
 
