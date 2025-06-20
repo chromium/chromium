@@ -2,6 +2,7 @@ Name: Fuchsia SDK
 URL: https://fuchsia.dev/fuchsia-src/development/sdk
 Version: N/A
 Revision: DEPS
+Update Mechanism: Autoroll
 Security Critical: yes
 Shipped: yes
 License: BSD-2-Clause, Apache-2.0, MIT
