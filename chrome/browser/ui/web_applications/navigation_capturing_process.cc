@@ -656,12 +656,6 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
     return CancelInitialNavigation(
         NavigationCapturingInitialResult::kNavigationCanceled);
   }
-  // App popups and picture-in-picture are handled in the switch statement in
-  // `GetBrowserAndTabForDisposition()`.
-  if (disposition_ == WindowOpenDisposition::NEW_POPUP ||
-      disposition_ == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
-    return CapturingDisabled();
-  }
 
   const webapps::AppId& iwa_id = *first_navigation_app_id_;
 
@@ -669,19 +663,34 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
   bool iwa_browser =
       params.browser &&
       web_app::AppBrowserController::IsForWebApp(params.browser, iwa_id);
-  if (iwa_browser) {
-    if (disposition_ == WindowOpenDisposition::CURRENT_TAB) {
-      return CapturingDisabled();
-    }
 
-    // If the browser window does not yet have any tabs, and we are
-    // attempting to add the first tab to it, allow for it to be reused.
-    bool navigating_new_tab =
-        disposition_ == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-        disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB;
-    if (navigating_new_tab && params.browser->tab_strip_model()->empty()) {
-      return CapturingDisabled();
+  bool capturing_disabled = [&]() {
+    switch (disposition_) {
+      case WindowOpenDisposition::NEW_POPUP:
+      case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+        // App popups and picture-in-picture are handled in the switch statement
+        // in `GetBrowserAndTabForDisposition()`.
+        return true;
+      case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+      case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+        // If the browser window does not yet have any tabs, and we are
+        // attempting to add the first tab to it, allow for it to be reused.
+        return iwa_browser && params.browser->tab_strip_model()->empty();
+      case WindowOpenDisposition::CURRENT_TAB:
+        return iwa_browser;
+      case WindowOpenDisposition::NEW_WINDOW:
+      case WindowOpenDisposition::UNKNOWN:
+      case WindowOpenDisposition::SINGLETON_TAB:
+      case WindowOpenDisposition::SAVE_TO_DISK:
+      case WindowOpenDisposition::OFF_THE_RECORD:
+      case WindowOpenDisposition::IGNORE_ACTION:
+      case WindowOpenDisposition::SWITCH_TO_TAB:
+        return false;
     }
+  }();
+
+  if (capturing_disabled) {
+    return CapturingDisabled();
   }
 
   Browser* host_window = CreateWebAppWindowFromNavigationParams(
