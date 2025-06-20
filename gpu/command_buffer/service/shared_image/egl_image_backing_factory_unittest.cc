@@ -499,12 +499,20 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
   DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
 
+#ifdef WGPU_BREAKING_CHANGE_INSTANCE_FEATURES_LIMITS
+  static constexpr auto kTimedWaitAny = wgpu::InstanceFeatureName::TimedWaitAny;
+  wgpu::InstanceDescriptor instance_desc = {
+      .requiredFeatureCount = 1,
+      .requiredFeatures = &kTimedWaitAny,
+  };
+#else
   wgpu::InstanceDescriptor instance_desc = {
       .capabilities =
           {
               .timedWaitAnyEnable = true,
           },
   };
+#endif
   dawn::native::Instance instance(&instance_desc);
 
   // Create a Dawn OpenGLES device.
