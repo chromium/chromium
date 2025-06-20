@@ -314,7 +314,8 @@ D3D11VideoDecoder::CreateD3DVideoDecoderWrapper(
     return nullptr;
   }
   use_single_video_decoder_texture_ =
-      use_single_texture.value() | use_shared_handle_;
+      use_single_texture.value() || use_shared_handle_ ||
+      gpu_workarounds_.disable_decode_into_array_texture;
   if (use_single_video_decoder_texture_) {
     MEDIA_LOG(INFO, media_log_) << "D3D11VideoDecoder is using single textures";
   } else {
