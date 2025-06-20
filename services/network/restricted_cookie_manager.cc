@@ -67,7 +67,6 @@ static constexpr int kHoursInOneYear = 24 * 365;
 // adding a user-perceptible delay.
 constexpr base::TimeDelta kCookiesAccessedTimeout = base::Milliseconds(100);
 constexpr size_t kMaxCookieCacheCount = 32u;
-constexpr size_t kIncreasedMaxCookieCacheCount = 100u;
 
 // TODO(https://crbug.com/375352611): add the check for enabling third-party
 // cookies.
@@ -427,7 +426,7 @@ RestrictedCookieManager::RestrictedCookieManager(
       metrics_updater_(metrics_updater),
       max_cookie_cache_count_(
           base::FeatureList::IsEnabled(features::kIncreaseCookieAccessCacheSize)
-              ? kIncreasedMaxCookieCacheCount
+              ? features::kCookieAccessCacheSize.Get()
               : kMaxCookieCacheCount),
       cookies_access_timer_(
           FROM_HERE,
