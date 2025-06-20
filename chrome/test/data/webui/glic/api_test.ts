@@ -114,15 +114,24 @@ const glicHostRegistry = Promise.withResolvers<GlicHostRegistry>();
 
 class ApiTestFixtureBase {
   private clientValue?: WebClient;
+  private testStepLabel: string;
+  private testStepCount: number;
   // Test parameters passed to `ExecuteJsTest()`. This is undefined until
   // ExecuteJsTest() is called.
   testParams: any;
-  constructor(protected testStepper: TestStepper) {}
+  constructor(protected testStepper: TestStepper) {
+    this.testStepCount = 1;
+    this.testStepLabel = `step #${this.testStepCount} (single or first)`;
+  }
 
   // Return to the C++ side, and wait for it to call ContinueJsTest() to
   // continue execution in the JS test. Optionally, pass data to the C++ side.
-  advanceToNextStep(data?: any): Promise<void> {
-    return this.testStepper.nextStep(data);
+  async advanceToNextStep(data?: any): Promise<void> {
+    this.testStepLabel =
+        `in between steps ${this.testStepCount} and ${this.testStepCount + 1}`;
+    await this.testStepper.nextStep(data);
+    this.testStepCount += 1;
+    this.testStepLabel = `step #${this.testStepCount}`;
   }
 
   // Sets up the web client. This is called when the web contents loads,
@@ -155,6 +164,14 @@ class ApiTestFixtureBase {
   get client(): WebClient {
     assertTrue(!!this.clientValue);
     return this.clientValue;
+  }
+
+  getStepLabel(): string {
+    return this.testStepLabel;
+  }
+
+  getStepCount(): number {
+    return this.testStepCount;
   }
 }
 
@@ -1203,16 +1220,20 @@ class TestRunner implements TestStepper {
       }
     } catch (e) {
       if (e instanceof Error) {
-        console.error(await improveStackTrace(e.stack ?? ''));
+        console.error(
+            `Test ${this.testName} failed at ${
+                this.fixture!.getStepLabel()}.\n` +
+            await improveStackTrace(e.stack ?? ''));
       }
-      return `fail: ${e}`;
+      return `Failed at ${this.fixture!.getStepLabel()} due to: ${e}`;
     }
     return 'pass';
   }
 
   // TestStepper implementation.
   nextStep(payload: any): Promise<void> {
-    console.info(`Waiting for next step in test ${this.testName}`);
+    console.info(`Waiting to continue to step #${
+        this.fixture!.getStepCount() + 1} in test ${this.testName}...`);
     payload = payload ?? {};  // undefined is not serializable to base::Value.
     this.nextStepPromise.resolve({id: 'next-step', payload});
     return this.continuePromise.promise;
@@ -1221,7 +1242,9 @@ class TestRunner implements TestStepper {
 
 // Adds js source lines to the stack trace.
 async function improveStackTrace(stack: string) {
-  const outLines = [];
+  const outLines: string[] = [];
+  const contextLines = 2;  // Must be >= 1
+  let stackLevel = 0;
   for (const line of stack.split('\n')) {
     const m = line.match(/^\s+at.*\((.*):(\d+):(\d+)\)$/);
     if (m) {
@@ -1230,16 +1253,28 @@ async function improveStackTrace(stack: string) {
         const response = await fetch(file!);
         const text = await response.text();
         const lines = text.split('\n');
-        const lineStr = lines[Number(lineNo) - 1];
-        outLines.push(`${line.trim()}\n- ${lineStr}\n  ${
-                                    ' '.repeat(Number(column) - 1)}^`);
+        const failureLineNo = Number(lineNo) - 1;
+        outLines.push(`[${stackLevel}] ${line.trim()}:`);
+        const spacePrefixedIntroLines =
+            lines.slice(failureLineNo - contextLines, failureLineNo)
+                .map((l) => '| ' + l);
+        outLines.push(...spacePrefixedIntroLines);
+        const lineStr = lines[failureLineNo];
+        outLines.push(`> ${lineStr}`);
+        outLines.push(`__${'_'.repeat(Number(column) - 1)}^`);
+        const spacePrefixedOutroLines =
+            lines.slice(failureLineNo + 1, failureLineNo + contextLines + 1)
+                .map((l) => '| ' + l);
+        outLines.push(...spacePrefixedOutroLines);
       } catch (e) {
         outLines.push(`${line}`);
       }
+      stackLevel += 1;
     } else {
       outLines.push(line);
     }
   }
+  outLines.push('');
   return outLines.join('\n');
 }
 
