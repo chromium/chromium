@@ -3256,6 +3256,7 @@
       name: "NavigationId",
       status: "experimental",
       origin_trial_feature_name: "SoftNavigationHeuristics",
+      implied_by: ["SoftNavigationHeuristics"],
     },
     {
       name: "NavigatorContentUtils",
