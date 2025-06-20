@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -141,6 +142,9 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickStartEnabled, ForwardFlowManual) {
 
 IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickStartEnabled,
                        ForwardFlowUserEntersQuickStart) {
+  // Showing GAIA Info screen after exiting quick start screen requires OOBE to
+  // be completed.
+  StartupUtils::MarkOobeCompleted();
   ShowGaiaInfoScreen();
   OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
 
