@@ -311,6 +311,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
 
   // WebAppRegistrarObserver:
   void OnAppRegistrarDestroyed() override;
+  void OnWebAppProtocolSettingsChanged(const webapps::AppId& app_id) override;
   void OnWebAppFileHandlerApprovalStateChanged(
       const webapps::AppId& app_id) override;
   void OnWebAppLastLaunchTimeChanged(

@@ -127,8 +127,8 @@ class OsIntegrationManager {
   // Proxy calls for WebAppProtocolHandlerManager.
   virtual std::optional<GURL> TranslateProtocolUrl(const webapps::AppId& app_id,
                                                    const GURL& protocol_url);
-  virtual std::vector<custom_handlers::ProtocolHandler> GetAppProtocolHandlers(
-      const webapps::AppId& app_id);
+  std::vector<custom_handlers::ProtocolHandler> GetAppProtocolHandlers(
+      const webapps::AppId& app_id) const;
   virtual std::vector<custom_handlers::ProtocolHandler>
   GetAllowedHandlersForProtocol(const std::string& protocol);
   virtual std::vector<custom_handlers::ProtocolHandler>

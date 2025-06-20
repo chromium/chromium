@@ -522,7 +522,7 @@ class WebAppRegistrar {
   void AddObserver(WebAppRegistrarObserver* observer);
   void RemoveObserver(WebAppRegistrarObserver* observer);
 
-  void NotifyWebAppProtocolSettingsChanged();
+  void NotifyWebAppProtocolSettingsChanged(const webapps::AppId& app_id);
   void NotifyWebAppFileHandlerApprovalStateChanged(
       const webapps::AppId& app_id);
   void NotifyWebAppsWillBeUpdatedFromSync(

@@ -414,7 +414,7 @@ apps::IntentFilters CreateIntentFiltersFromScopeExtensionInfo(
 }
 
 apps::IntentFilters CreateIntentFiltersFromProtocolHandlers(
-    const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers) {
+    const std::vector<custom_handlers::ProtocolHandler>& protocol_handlers) {
   apps::IntentFilters filters;
   for (const auto& handler : protocol_handlers) {
     auto intent_filter = std::make_unique<apps::IntentFilter>();
@@ -422,7 +422,7 @@ apps::IntentFilters CreateIntentFiltersFromProtocolHandlers(
                                            apps_util::kIntentActionView,
                                            apps::PatternMatchType::kLiteral);
     intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme,
-                                           handler.protocol,
+                                           handler.protocol(),
                                            apps::PatternMatchType::kLiteral);
     filters.push_back(std::move(intent_filter));
   }
@@ -662,8 +662,12 @@ apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
                  CreateShareIntentFiltersFromShareTarget(*app.share_target()));
   }
 
-  base::Extend(filters, CreateIntentFiltersFromProtocolHandlers(
-                            app.protocol_handlers()));
+  // Includes all protocol handlers except for the ones that the user has
+  // explicitly disallowed.
+  const std::vector<custom_handlers::ProtocolHandler> protocol_handlers =
+      provider.os_integration_manager().GetAppProtocolHandlers(app.app_id());
+  base::Extend(filters,
+               CreateIntentFiltersFromProtocolHandlers(protocol_handlers));
 
   const apps::FileHandlers* enabled_file_handlers =
       provider.os_integration_manager().GetEnabledFileHandlers(app.app_id());
@@ -1327,6 +1331,14 @@ WebAppInstallManager& WebAppPublisherHelper::install_manager() const {
 
 bool WebAppPublisherHelper::IsShuttingDown() const {
   return is_shutting_down_;
+}
+
+void WebAppPublisherHelper::OnWebAppProtocolSettingsChanged(
+    const webapps::AppId& app_id) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (web_app) {
+    delegate_->PublishWebApp(CreateWebApp(web_app));
+  }
 }
 
 void WebAppPublisherHelper::OnWebAppFileHandlerApprovalStateChanged(

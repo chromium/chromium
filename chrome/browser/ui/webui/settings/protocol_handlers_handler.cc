@@ -134,7 +134,8 @@ void ProtocolHandlersHandler::OnProtocolHandlerRegistryChanged() {
   UpdateHandlerList();
 }
 
-void ProtocolHandlersHandler::OnWebAppProtocolSettingsChanged() {
+void ProtocolHandlersHandler::OnWebAppProtocolSettingsChanged(
+    const webapps::AppId& app_id) {
   UpdateAllAllowedLaunchProtocols();
   UpdateAllDisallowedLaunchProtocols();
 }
@@ -146,7 +147,7 @@ void ProtocolHandlersHandler::OnAppRegistrarDestroyed() {
 void ProtocolHandlersHandler::OnWebAppUninstalled(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
-  OnWebAppProtocolSettingsChanged();
+  OnWebAppProtocolSettingsChanged(app_id);
 }
 
 void ProtocolHandlersHandler::OnWebAppInstallManagerDestroyed() {

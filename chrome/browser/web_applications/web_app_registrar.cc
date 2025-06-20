@@ -330,10 +330,11 @@ void WebAppRegistrar::RemoveObserver(WebAppRegistrarObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void WebAppRegistrar::NotifyWebAppProtocolSettingsChanged() {
+void WebAppRegistrar::NotifyWebAppProtocolSettingsChanged(
+    const webapps::AppId& app_id) {
   DVLOG(1) << "NotifyWebAppProtocolSettingsChanged";
   for (WebAppRegistrarObserver& observer : observers_) {
-    observer.OnWebAppProtocolSettingsChanged();
+    observer.OnWebAppProtocolSettingsChanged(app_id);
   }
 }
 

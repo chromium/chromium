@@ -374,7 +374,8 @@ std::optional<GURL> OsIntegrationManager::TranslateProtocolUrl(
 }
 
 std::vector<custom_handlers::ProtocolHandler>
-OsIntegrationManager::GetAppProtocolHandlers(const webapps::AppId& app_id) {
+OsIntegrationManager::GetAppProtocolHandlers(
+    const webapps::AppId& app_id) const {
   if (!protocol_handler_manager_)
     return std::vector<custom_handlers::ProtocolHandler>();
 

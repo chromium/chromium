@@ -185,7 +185,8 @@ void WebAppTestRegistryObserverAdapter::OnWebAppLastBadgingTimeChanged(
     app_last_badging_time_changed_delegate_.Run(app_id, time);
 }
 
-void WebAppTestRegistryObserverAdapter::OnWebAppProtocolSettingsChanged() {
+void WebAppTestRegistryObserverAdapter::OnWebAppProtocolSettingsChanged(
+    const webapps::AppId& app_id) {
   if (app_protocol_settings_changed_delegate_)
     app_protocol_settings_changed_delegate_.Run();
 }
