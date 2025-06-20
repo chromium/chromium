@@ -10,7 +10,6 @@ symbol files.
 """
 
 import io
-import optparse
 import os
 import struct
 import sys
