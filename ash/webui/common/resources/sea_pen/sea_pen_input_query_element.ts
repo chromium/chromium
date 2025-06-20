@@ -186,7 +186,8 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     this.textValue_ = e.detail;
     this.showCreateButton_();
     this.focusInput_();
-    if (e.type === SeaPenSampleSelectedEvent.EVENT_NAME) {
+    if (e.type === SeaPenSampleSelectedEvent.EVENT_NAME &&
+        !this.thumbnailsLoading_) {
       this.searchInputQuery_();
     }
   }
