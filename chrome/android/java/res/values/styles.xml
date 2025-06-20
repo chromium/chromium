@@ -8,11 +8,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- TODO(huayinz): Move themes to another xml file. -->
     <!-- Application themes -->
-    <!-- On Android N, if the ChromeLauncherActivity is NoDisplay then
-         intents are not always immediately sent when Chrome is docked to
-         the top of the screen in multi-window mode. Use Translucent.NoTitleBar
-         for the theme instead. See crbug.com/645074. -->
-    <style name="LauncherTheme" parent="Theme.BrowserUI.Translucent.NoTitleBar" />
+    <style name="LauncherTheme" parent="Theme.BrowserUI.NoDisplay" />
 
     <style name="Base.V21.Theme.Chromium" parent="Theme.BrowserUI.DayNight">
         <!-- Set android alert dialog attributes because the context menu dialog is
