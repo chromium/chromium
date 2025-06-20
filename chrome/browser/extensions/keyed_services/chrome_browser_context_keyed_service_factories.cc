@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_allowlist_factory.h"
+#include "chrome/browser/extensions/extension_error_controller_factory.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
 #include "chrome/browser/extensions/extension_gcm_app_handler.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -29,14 +30,13 @@
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service_factory.h"
 #include "chrome/browser/extensions/updater/extension_updater_factory.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_error_controller_factory.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
-#include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/plugin_manager.h"
 #include "chrome/browser/extensions/warning_badge_service_factory.h"
@@ -67,6 +67,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ErrorConsoleFactory::GetInstance();
   extensions::ExtensionActionDispatcher::GetFactoryInstance();
   extensions::ExtensionAllowlistFactory::GetInstance();
+  extensions::ExtensionErrorControllerFactory::GetInstance();
   extensions::ExtensionGarbageCollectorFactory::GetInstance();
   extensions::ExtensionGCMAppHandler::GetFactoryInstance();
   extensions::ExtensionManagementFactory::GetInstance();
@@ -78,12 +79,11 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::InstallTrackerFactory::GetInstance();
   extensions::InstallVerifierFactory::GetInstance();
   extensions::ManifestV2ExperimentManager::GetFactory();
+  extensions::MenuManagerFactory::GetInstance();
   extensions::PermissionsUpdater::EnsureAssociatedFactoryBuilt();
   extensions::SharedModuleServiceFactory::GetInstance();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extensions::ExtensionErrorControllerFactory::GetInstance();
-  extensions::MenuManagerFactory::GetInstance();
 #if BUILDFLAG(ENABLE_PLUGINS)
   extensions::PluginManager::GetFactoryInstance();
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
