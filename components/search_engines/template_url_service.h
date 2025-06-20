@@ -497,13 +497,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
       KeywordWebDataService::Handle h,
       std::unique_ptr<WDTypedResult> result) override;
 
-  // Returns the locale-direction-adjusted short name for the given keyword.
-  // Also sets the out param to indicate whether the keyword belongs to an
-  // Omnibox extension or the Gemini starter pack engine.
-  std::u16string GetKeywordShortName(const std::u16string& keyword,
-                                     bool* is_omnibox_api_extension_keyword,
-                                     bool* is_gemini_keyword) const;
-
   // Called by the history service when a URL is visited.
   void OnHistoryURLVisited(const URLVisitedDetails& details);
 
