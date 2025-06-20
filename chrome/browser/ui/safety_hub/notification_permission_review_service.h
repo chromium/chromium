@@ -5,35 +5,17 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_PERMISSION_REVIEW_SERVICE_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_PERMISSION_REVIEW_SERVICE_H_
 
-#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_result.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-
-inline constexpr char kSafetyHubNotificationInfoString[] =
-    "notificationInfoString";
-inline constexpr char kSafetyHubNotificationPermissionsResultKey[] =
-    "notificationPermissions";
-
-struct NotificationPermissions {
-  ContentSettingsPattern primary_pattern;
-  ContentSettingsPattern secondary_pattern;
-  int notification_count;
-
-  NotificationPermissions(const ContentSettingsPattern& primary_pattern,
-                          const ContentSettingsPattern& secondary_pattern,
-                          int notification_count);
-  ~NotificationPermissions();
-};
 
 // This class provides data for the "Review Notification Permissions" dialog.
 // This module shows the domains that send a lot of notification, but have low
@@ -41,50 +23,6 @@ struct NotificationPermissions {
 class NotificationPermissionsReviewService : public SafetyHubService,
                                              public content_settings::Observer {
  public:
-  // The result of the periodic update contains the sites that sent a large
-  // number of notifications, along with the number of notifications that they
-  // sent. The sites that are added to the review blocklist should not be added
-  // here.
-  class NotificationPermissionsResult : public SafetyHubService::Result {
-   public:
-    NotificationPermissionsResult();
-
-    NotificationPermissionsResult(const NotificationPermissionsResult&);
-    NotificationPermissionsResult& operator=(
-        const NotificationPermissionsResult&) = default;
-
-    ~NotificationPermissionsResult() override;
-
-    // TODO(crbug.com/40267370): Make methods private if they are not required
-    // to be public.
-
-    void AddNotificationPermission(const NotificationPermissions&);
-
-    std::vector<NotificationPermissions> GetSortedNotificationPermissions();
-
-    std::set<ContentSettingsPattern> GetOrigins() const;
-
-    base::Value::List GetSortedListValueForUI();
-
-    // SafetyHubService::Result implementation
-
-    std::unique_ptr<SafetyHubService::Result> Clone() const override;
-
-    base::Value::Dict ToDictValue() const override;
-
-    bool IsTriggerForMenuNotification() const override;
-
-    bool WarrantsNewMenuNotification(
-        const base::Value::Dict& previous_result_dict) const override;
-
-    std::u16string GetNotificationString() const override;
-
-    int GetNotificationCommandId() const override;
-
-   private:
-    std::vector<NotificationPermissions> notification_permissions_;
-  };
-
   explicit NotificationPermissionsReviewService(
       HostContentSettingsMap* hcsm,
       site_engagement::SiteEngagementService* engagement_service);
@@ -128,7 +66,8 @@ class NotificationPermissionsReviewService : public SafetyHubService,
   base::Value::List PopulateNotificationPermissionReviewData();
 
   // Returns the list of all notification permissions that should be reviewed.
-  std::unique_ptr<Result> GetNotificationPermissions();
+  std::unique_ptr<NotificationPermissionsReviewResult>
+  GetNotificationPermissions();
 
   // Sets the notification permission for the given origin.
   void SetNotificationPermissionsForOrigin(std::string origin,

@@ -47,12 +47,10 @@ std::vector<NotificationPermissions> GetNotificationPermissions(
   NotificationPermissionsReviewService* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile);
   CHECK(service);
-  std::unique_ptr<SafetyHubService::Result> result =
+  std::unique_ptr<NotificationPermissionsReviewResult> result =
       service->GetNotificationPermissions();
 
-  return (static_cast<NotificationPermissionsReviewService::
-                          NotificationPermissionsResult*>(result.get()))
-      ->GetSortedNotificationPermissions();
+  return result->GetSortedNotificationPermissions();
 }
 
 void IgnoreOriginForNotificationPermissionReview(Profile* profile,
