@@ -236,6 +236,11 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
       AutocompleteInput::FeaturedKeywordMode::kFalse) {
     return;
   }
+  // Don't add featured keywords in realbox.
+  if (input.current_page_classification() ==
+      metrics::OmniboxEventProto::NTP_REALBOX) {
+    return;
+  }
 
   size_t enterprise_count = 0;
   TemplateURLService::TemplateURLVector turls;
@@ -262,9 +267,7 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
     } else if (turl->featured_by_policy() &&
                IsEnterpriseSearchAggregatorTemplateURLEnabled(
                    *turl, client_->IsOffTheRecord()) &&
-               enterprise_count < kMaxEnterpriseSuggestions &&
-               input.current_page_classification() !=
-                   metrics::OmniboxEventProto::NTP_REALBOX) {
+               enterprise_count < kMaxEnterpriseSuggestions) {
       AddFeaturedEnterpriseSearchMatch(*turl, input);
       enterprise_count++;
     }
@@ -293,56 +296,37 @@ void FeaturedSearchProvider::AddStarterPackMatch(
   }
   match.destination_url = GURL(destination_url);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
-  if (input.current_page_classification() !=
-          metrics::OmniboxEventProto::NTP_REALBOX &&
-      template_url.keyword().starts_with(u'@')) {
-    // The Gemini provider doesn't follow the "Search X" pattern and should
-    // also be ranked first.
-    // TODO(b/41494524): Currently templateurlservice returns the keywords in
-    //  alphabetical order, which is the order we rank them. There should be a
-    //  more sustainable way for specifying the order they should appear in the
-    //  omnibox.
-    if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
-        template_url.starter_pack_id() == TemplateURLStarterPackData::kGemini) {
-      match.description = l10n_util::GetStringFUTF16(
-          IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT, template_url.keyword(),
-          template_url.short_name());
-      match.relevance = kGeminiRelevance;
-    } else {
-      std::u16string short_name = template_url.short_name();
-      if (template_url.short_name() == u"Tabs") {
-        // Very special request from UX to sentence-case "Tabs" -> "tabs" only
-        // in this context. It needs to stay capitalized elsewhere since it's
-        // treated like a proper engine name.
-        match.description = short_name = u"tabs";
-      }
-      match.description =
-          l10n_util::GetStringFUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT,
-                                     template_url.keyword(), short_name);
-    }
-    match.description_class = {
-        {0, ACMatchClassification::NONE},
-        {template_url.keyword().size(), ACMatchClassification::DIM}};
-    match.contents.clear();
-    match.contents_class = {{}};
-    match.allowed_to_be_default_match = false;
-    match.keyword = template_url.keyword();
+  // The Gemini provider doesn't follow the "Search X" pattern and should
+  // also be ranked first.
+  // TODO(b/41494524): Currently templateurlservice returns the keywords in
+  //  alphabetical order, which is the order we rank them. There should be a
+  //  more sustainable way for specifying the order they should appear in the
+  //  omnibox.
+  if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
+      template_url.starter_pack_id() == TemplateURLStarterPackData::kGemini) {
+    match.description = l10n_util::GetStringFUTF16(
+        IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT, template_url.keyword(),
+        template_url.short_name());
+    match.relevance = kGeminiRelevance;
   } else {
-    // The Gemini provider should be ranked first.
-    // TODO(b/41494524): Currently templateurlservice returns the keywords in
-    //  alphabetical order, which is the order we rank them. There should be a
-    //  more sustainable way for specifying the order they should appear in the
-    //  omnibox.
-    if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
-        template_url.starter_pack_id() == TemplateURLStarterPackData::kGemini) {
-      match.relevance = kGeminiRelevance;
+    std::u16string short_name = template_url.short_name();
+    if (template_url.short_name() == u"Tabs") {
+      // Very special request from UX to sentence-case "Tabs" -> "tabs" only
+      // in this context. It needs to stay capitalized elsewhere since it's
+      // treated like a proper engine name.
+      match.description = short_name = u"tabs";
     }
-    match.description = template_url.short_name();
-    match.description_class.emplace_back(0, ACMatchClassification::NONE);
-    match.contents = destination_url;
-    match.contents_class.emplace_back(0, ACMatchClassification::URL);
-    match.SetAllowedToBeDefault(input);
+    match.description =
+        l10n_util::GetStringFUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT,
+                                   template_url.keyword(), short_name);
   }
+  match.description_class = {
+      {0, ACMatchClassification::NONE},
+      {template_url.keyword().size(), ACMatchClassification::DIM}};
+  match.contents.clear();
+  match.contents_class = {{}};
+  match.allowed_to_be_default_match = false;
+  match.keyword = template_url.keyword();
   matches_.push_back(match);
 }
 
