@@ -166,45 +166,7 @@ class FormFiller {
   friend class TestFormFiller;
 
   struct AugmentedFillingPayload;
-
-  // Keeps track of the filling context for a form, used to make refill
-  // attempts.
-  struct RefillContext {
-    // |filling_payload| contains the data used to perform the initial filling
-    // operation.
-    RefillContext(const AutofillField& field,
-                  const AugmentedFillingPayload& filling_payload);
-    ~RefillContext();
-
-    // Whether a refill attempt was made.
-    bool attempted_refill = false;
-    // The profile or credit card that was used for the initial fill. This is
-    // slightly different from `filling_payload` that is used by the filling
-    // function: This contains actual objects because this needs to survive
-    // potential storage mutation, and this only contains payloads that support
-    // refills.
-    std::variant<CreditCard, AutofillProfile> profile_or_credit_card;
-    // Possible identifiers of the field that was focused when the form was
-    // initially filled. A refill shall be triggered from the same field.
-    const FieldGlobalId filled_field_id;
-    const FieldSignature filled_field_signature;
-    // The security origin from which the field was filled.
-    url::Origin filled_origin;
-    // The time at which the initial fill occurred.
-    // TODO(crbug.com/41490871): Remove in favor of
-    // FormStructure::last_filling_timestamp_.
-    const base::TimeTicks original_fill_time;
-    // The timer used to trigger a refill.
-    base::OneShotTimer on_refill_timer;
-    // The field type groups that were initially filled.
-    DenseSet<FieldTypeGroup> type_groups_originally_filled;
-    // If populated, this map determines which values will be filled into a
-    // field (it does not matter whether the field already contains a value).
-    std::map<FieldGlobalId, std::u16string> forced_fill_values;
-    // The form filled in the first attempt for filling. Used to check whether
-    // a refill should be attempted upon parsing an updated FormData.
-    std::optional<FormData> filled_form;
-  };
+  struct RefillContext;
 
   void SetRefillContext(FormGlobalId form_id,
                         std::unique_ptr<RefillContext> context);
