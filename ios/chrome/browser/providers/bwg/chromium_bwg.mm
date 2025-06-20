@@ -19,10 +19,13 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest() {
   return nullptr;
 }
 
+// TODO(crbug.com/422506000): Remove this once the provider is migrated.
 void StartBwgOverlay(
     UIViewController* base_view_controller,
     raw_ptr<AuthenticationService> auth_service,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context) {}
+
+void StartBwgOverlay(BWGConfiguration* bwg_configuration) {}
 
 const std::u16string GetPageContextShouldDetachScript() {
   return kShouldDetachPageContextScript;
