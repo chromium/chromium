@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
+#include "base/notreached.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -24,7 +25,9 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/browser_process.h"
@@ -67,6 +70,7 @@ using UpdateDiscoveryTaskFuture = TestFuture<DiscoveryTask::CompletionStatus>;
 using UpdateApplyTaskFuture = TestFuture<ApplyTask::CompletionStatus>;
 
 using ash::KioskMixin;
+using ash::LoginManagerMixin;
 using ash::kiosk::test::LaunchAppManually;
 using ash::kiosk::test::TheKioskApp;
 using ash::kiosk::test::WaitKioskLaunched;
@@ -123,11 +127,23 @@ void WaitForProfile() {
   waiter.WaitForProfileAdded();
 }
 
+void WaitForUserSessionLaunch() {
+  if (session_manager::SessionManager::Get()->IsSessionStarted()) {
+    return;
+  }
+  if (ash::WizardController::default_controller()) {
+    ash::WizardController::default_controller()
+        ->SkipPostLoginScreensForTesting();
+  }
+  ash::test::WaitForPrimaryUserSessionStart();
+}
+
 }  // namespace
 
 enum class SessionType {
   kManagedGuestSession = 0,
   kKiosk = 1,
+  kUserSession = 2,
 };
 
 // This mixin helps browser tests to test Managed Guest Session(MGS) mode.
@@ -264,7 +280,6 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   }
 
   void ConfigureSession(const SignedWebBundleId& installed_iwa) {
-    // Configure MGS or kiosk.
     std::visit(absl::Overload{
                    [&](MgsMixin& mgs_mixin) {
                      mgs_mixin.ConfigureMgsWithIwa(
@@ -287,6 +302,9 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
                              installed_iwa,
                              iwa_mixin_.GetUpdateManifestUrl(installed_iwa)));
                    },
+                   [&](LoginManagerMixin& login_manager_mixin) {
+                     login_manager_mixin.AppendRegularUsers(1);
+                   },
                },
                session_mixin_);
   }
@@ -296,18 +314,24 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
         absl::Overload([](MgsMixin& mgs_mixin) { mgs_mixin.LaunchMgs(); },
                        [](KioskMixin& kiosk_mixin) {
                          ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+                       },
+                       [this](LoginManagerMixin& login_manager_mixin) {
+                         LoginUser(login_manager_mixin.users()[0].account_id);
                        }),
         session_mixin_);
-    WaitForProfile();
 
-    // The initial update is checked on the session start, initialize the waiter
-    // here to avoid race conditions.
-    initial_discovery_update_future_ =
-        std::make_unique<UpdateDiscoveryTaskFuture>();
-    initial_discovery_update_waiter_ =
-        std::make_unique<UpdateDiscoveryTaskResultWaiter>(
-            provider(), GetAppId(bundle_id),
-            initial_discovery_update_future_->GetCallback());
+    if (session_type() != SessionType::kUserSession) {
+      WaitForProfile();
+
+      // The initial update is checked on the session start inside Managed Guest
+      // Session and kiosk, initialize the waiter here to avoid race conditions.
+      initial_discovery_update_future_ =
+          std::make_unique<UpdateDiscoveryTaskFuture>();
+      initial_discovery_update_waiter_ =
+          std::make_unique<UpdateDiscoveryTaskResultWaiter>(
+              provider(), GetAppId(bundle_id),
+              initial_discovery_update_future_->GetCallback());
+    }
 
     WaitForSessionLaunch();
   }
@@ -329,8 +353,21 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
 
   base::FilePath GetCachedBundlePath(const SignedWebBundleId& bundle_id,
                                      std::string_view version) {
-    base::FilePath bundle_directory_path = cache_root_dir_;
-    switch (session_type()) {
+    return GetCachedBundlePath(bundle_id, version, session_type());
+  }
+
+  base::FilePath GetCachedBundlePath(const SignedWebBundleId& bundle_id,
+                                     std::string_view version,
+                                     SessionType session_type) {
+    return GetCachedBundleDir(bundle_id, version, session_type)
+        .AppendASCII(kMainSwbnFileName);
+  }
+
+  base::FilePath GetCachedBundleDir(const SignedWebBundleId& bundle_id,
+                                    std::string_view version,
+                                    SessionType session_type) {
+    base::FilePath bundle_directory_path = cache_root_dir();
+    switch (session_type) {
       case SessionType::kManagedGuestSession:
         bundle_directory_path =
             bundle_directory_path.AppendASCII(IwaCacheClient::kMgsDirName);
@@ -339,10 +376,12 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
         bundle_directory_path =
             bundle_directory_path.AppendASCII(IwaCacheClient::kKioskDirName);
         break;
+      case SessionType::kUserSession:
+        NOTREACHED()
+            << "No cache path since IWAs are not cached in user session.";
     }
     return bundle_directory_path.AppendASCII(bundle_id.id())
-        .AppendASCII(version)
-        .AppendASCII(kMainSwbnFileName);
+        .AppendASCII(version);
   }
 
   // Ensures that the follow-up installation is done via cache, since it's not
@@ -405,12 +444,17 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
 
   SessionType session_type() const { return session_type_; }
 
+  const base::FilePath& cache_root_dir() const { return cache_root_dir_; }
+
  private:
   void WaitForSessionLaunch() {
     std::visit(
         absl::Overload(
             [](MgsMixin& mgs_mixin) { mgs_mixin.WaitForMgsLaunch(); },
-            [](KioskMixin& kiosk_mixin) { ASSERT_TRUE(WaitKioskLaunched()); }),
+            [](KioskMixin& kiosk_mixin) { ASSERT_TRUE(WaitKioskLaunched()); },
+            [](LoginManagerMixin& login_manager_mixin) {
+              WaitForUserSessionLaunch();
+            }),
         session_mixin_);
   }
 
@@ -436,15 +480,19 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
     return &iwa;
   }
 
-  std::variant<MgsMixin, KioskMixin> CreateSessionMixin(
+  std::variant<MgsMixin, KioskMixin, LoginManagerMixin> CreateSessionMixin(
       SessionType session_type) {
     switch (session_type) {
       case SessionType::kManagedGuestSession:
-        return std::variant<MgsMixin, KioskMixin>{std::in_place_type<MgsMixin>,
-                                                  &mixin_host_};
+        return std::variant<MgsMixin, KioskMixin, LoginManagerMixin>{
+            std::in_place_type<MgsMixin>, &mixin_host_};
       case SessionType::kKiosk:
-        return std::variant<MgsMixin, KioskMixin>{
+        return std::variant<MgsMixin, KioskMixin, LoginManagerMixin>{
             std::in_place_type<KioskMixin>, &mixin_host_};
+      case SessionType::kUserSession:
+        return std::variant<MgsMixin, KioskMixin, LoginManagerMixin>{
+            std::in_place_type<LoginManagerMixin>, &mixin_host_};
+        ;
     }
   }
 
@@ -468,7 +516,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   policy::DevicePolicyCrosTestHelper policy_helper_;
   base::FilePath cache_root_dir_;
   std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
-  std::variant<MgsMixin, KioskMixin> session_mixin_;
+  std::variant<MgsMixin, KioskMixin, LoginManagerMixin> session_mixin_;
   std::unique_ptr<UpdateDiscoveryTaskFuture> initial_discovery_update_future_;
   std::unique_ptr<UpdateDiscoveryTaskResultWaiter>
       initial_discovery_update_waiter_;
@@ -608,16 +656,14 @@ INSTANTIATE_TEST_SUITE_P(
 // This test class is made for cases when session configuration need to be
 // different from the one in `IwaCacheBaseTest`. Call `ConfigureSession` in
 // tests with specified parameters.
-class IwaCacheNonConfiguredSessionTest
-    : public IwaCacheBaseTest,
-      public testing::WithParamInterface<SessionType> {
+class IwaCacheNonConfiguredMgsSessionTest : public IwaCacheBaseTest {
  public:
-  IwaCacheNonConfiguredSessionTest()
-      : IwaCacheBaseTest(GetParam(),
+  IwaCacheNonConfiguredMgsSessionTest()
+      : IwaCacheBaseTest(SessionType::kManagedGuestSession,
                          /*should_configure_session=*/false) {}
 };
 
-IN_PROC_BROWSER_TEST_P(IwaCacheNonConfiguredSessionTest,
+IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
                        PRE_RemoveCachedBundleForUninstalledIwa) {
   ConfigureSession(kWebBundleId);
   LaunchSession(kWebBundleId);
@@ -627,7 +673,7 @@ IN_PROC_BROWSER_TEST_P(IwaCacheNonConfiguredSessionTest,
 
 // When IWA is no longer in the policy list, `IwaCacheManager` will remove
 // it's cache on session start.
-IN_PROC_BROWSER_TEST_P(IwaCacheNonConfiguredSessionTest,
+IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
                        RemoveCachedBundleForUninstalledIwa) {
   AddNewIwaToServer(kPublicKeyPair2, kBaseVersion);
   ConfigureSession(kWebBundleId2);
@@ -638,11 +684,6 @@ IN_PROC_BROWSER_TEST_P(IwaCacheNonConfiguredSessionTest,
   // Cache for `kWebBundleId` should be removed.
   WaitUntilPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kBaseVersion));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    IwaCacheNonConfiguredSessionTest,
-    testing::Values(SessionType::kManagedGuestSession, SessionType::kKiosk));
 
 // Covers Managed Guest Session (MGS) specific tests which cannot be tested in
 // kiosk. For example, kiosk always launch the IWA app, but in MGS it is
@@ -723,5 +764,84 @@ IN_PROC_BROWSER_TEST_F(IwaMgsCacheTest, CopyToCacheFailed) {
                               /*wait_for_initial_installation=*/false);
   CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId, kUpdateVersion));
 }
+
+// Class to test that Managed Guest Session (MGS) and kiosk cache is cleaned
+// during the next (even user) session start when MGS or kiosk are not
+// configured anymore.
+class IwaCacheCrossSessionCleanupTest
+    : public IwaCacheBaseTest,
+      public testing::WithParamInterface<SessionType> {
+ public:
+  IwaCacheCrossSessionCleanupTest() : IwaCacheBaseTest(GetParam()) {}
+
+  base::FilePath CreateBundlePath(const SignedWebBundleId& bundle_id,
+                                  std::string_view version,
+                                  SessionType session_type) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath bundle_directory_path =
+        GetCachedBundleDir(bundle_id, version, session_type);
+    EXPECT_TRUE(base::CreateDirectory(bundle_directory_path));
+
+    base::FilePath temp_file;
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(cache_root_dir(), &temp_file));
+    base::FilePath bundle_path =
+        GetCachedBundlePath(bundle_id, version, session_type);
+    EXPECT_TRUE(base::CopyFile(temp_file, bundle_path));
+    return bundle_path;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
+                       RemoveObsoleteKioskIwaCache) {
+  base::FilePath kiosk_bundle =
+      CreateBundlePath(kWebBundleId2, kUpdateVersion, SessionType::kKiosk);
+
+  LaunchSession(kWebBundleId);
+
+  WaitUntilPathDoesNotExist(kiosk_bundle);
+}
+
+IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
+                       RemoveTwoObsoleteKioskIwaCaches) {
+  base::FilePath kiosk_bundle1 =
+      CreateBundlePath(kWebBundleId2, kBaseVersion, SessionType::kKiosk);
+  base::FilePath kiosk_bundle2 =
+      CreateBundlePath(kWebBundleId2, kUpdateVersion, SessionType::kKiosk);
+
+  LaunchSession(kWebBundleId);
+
+  WaitUntilPathDoesNotExist(kiosk_bundle1);
+  WaitUntilPathDoesNotExist(kiosk_bundle2);
+}
+
+IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
+                       RemoveObsoleteMgsCache) {
+  base::FilePath mgs_bundle = CreateBundlePath(
+      kWebBundleId2, kUpdateVersion, SessionType::kManagedGuestSession);
+
+  LaunchSession(kWebBundleId);
+
+  WaitUntilPathDoesNotExist(mgs_bundle);
+}
+
+IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
+                       RemoveObsoleteMgsAndKioskCache) {
+  base::FilePath mgs_bundle = CreateBundlePath(
+      kWebBundleId2, kUpdateVersion, SessionType::kManagedGuestSession);
+  base::FilePath kiosk_bundle =
+      CreateBundlePath(kWebBundleId2, kBaseVersion, SessionType::kKiosk);
+
+  LaunchSession(kWebBundleId);
+
+  WaitUntilPathDoesNotExist(mgs_bundle);
+  WaitUntilPathDoesNotExist(kiosk_bundle);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    IwaCacheCrossSessionCleanupTest,
+    testing::Values(SessionType::kManagedGuestSession,
+                    SessionType::kKiosk,
+                    SessionType::kUserSession));
 
 }  // namespace web_app

@@ -58,7 +58,7 @@ IsolatedWebAppUpdateApplyTask::IsolatedWebAppUpdateApplyTask(
                    .Set("bundle_id", url_info_.web_bundle_id().id())
                    .Set("app_id", url_info_.app_id());
 #if BUILDFLAG(IS_CHROMEOS)
-  if (IsIwaBundleCacheEnabled()) {
+  if (IsIwaBundleCacheEnabledInCurrentSession()) {
     debug_log_.Set("bundle_cache", "IWA bundle cache is enabled");
     cache_client_ = std::make_unique<IwaCacheClient>();
   }
@@ -94,7 +94,7 @@ void IsolatedWebAppUpdateApplyTask::OnUpdateApplied(CompletionStatus result) {
                                .error_or("Success"));
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (result.has_value() && IsIwaBundleCacheEnabled()) {
+  if (result.has_value() && IsIwaBundleCacheEnabledInCurrentSession()) {
     CopyUpdatedBundleToCache(result.value());
     return;
   }

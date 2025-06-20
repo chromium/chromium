@@ -153,7 +153,7 @@ IwaInstaller::IwaInstaller(
       provider_(provider),
       callback_(std::move(callback)) {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (IsIwaBundleCacheEnabled()) {
+  if (IsIwaBundleCacheEnabledInCurrentSession()) {
     log_->Append(base::Value(u"IWA bundle cache is enabled"));
     cache_client_ = std::make_unique<IwaCacheClient>();
   }
@@ -178,7 +178,7 @@ void IwaInstaller::Start() {
     return;
   }
 
-  if (IsIwaBundleCacheEnabled()) {
+  if (IsIwaBundleCacheEnabledInCurrentSession()) {
     // Install IWA from cache if possible, otherwise install it from the
     // Internet.
     log_->Append(base::Value(u"looking for cached bundle"));
@@ -400,7 +400,7 @@ void IwaInstaller::OnIwaInstalledFromInternet(
     return;
   }
 #if BUILDFLAG(IS_CHROMEOS)
-  if (IsIwaBundleCacheEnabled()) {
+  if (IsIwaBundleCacheEnabledInCurrentSession()) {
     // Successfully installed bundles should be copied to cache, so next time
     // the installation will happen from the cache.
     log_->Append(base::Value(

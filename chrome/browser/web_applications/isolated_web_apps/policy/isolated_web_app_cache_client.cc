@@ -30,9 +30,13 @@ namespace web_app {
 
 using SessionType = IwaCacheClient::SessionType;
 
-bool IsIwaBundleCacheEnabled() {
-  return base::FeatureList::IsEnabled(features::kIsolatedWebAppBundleCache) &&
+bool IsIwaBundleCacheEnabledInCurrentSession() {
+  return IsIwaBundleCacheFeatureEnabled() &&
          (chromeos::IsManagedGuestSession() || chromeos::IsKioskSession());
+}
+
+bool IsIwaBundleCacheFeatureEnabled() {
+  return base::FeatureList::IsEnabled(features::kIsolatedWebAppBundleCache);
 }
 
 // static

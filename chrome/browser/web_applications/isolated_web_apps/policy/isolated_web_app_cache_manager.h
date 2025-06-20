@@ -40,11 +40,27 @@ class IwaBundleCacheManager : public WebAppInstallManagerObserver {
   void OnWebAppInstallManagerDestroyed() override;
 
  private:
-  // Cleans IWA bundle cache for the current session. Which means if Managed
-  // Guest Session is launched, cache will be cleaned only for Managed Guest
-  // Session and not for kiosk. And vice versa.
-  void CleanCacheForIwasDeletedFromPolicy();
-  void OnCleanCacheForIwasDeletedFromPolicy(CleanupBundleCacheResult result);
+  // If Managed Guest Session is not in configured on the device anymore, remove
+  // all IWA bundle cache for it.
+  void MaybeRemoveManagedGuestSessionCache();
+  void OnMaybeRemoveManagedGuestSessionCache(
+      base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>
+          result);
+
+  // If some IWA kiosks are not in the policy list anymore, remove their bundles
+  // from cache.
+  void RemoveCacheForIwaKioskDeletedFromPolicy();
+  void OnRemoveCacheForIwaKioskDeletedFromPolicy(
+      base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>
+          result);
+
+  // Cleans IWA bundle cache for the IWAs which are not in the policy list for
+  // current Managed Guest Session. Does nothing when called outside of the
+  // Managed Guest Session.
+  void CleanupManagedGuestSessionOrphanedIwas();
+  void OnCleanupManagedGuestSessionOrphanedIwas(
+      base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>
+          result);
 
   void TriggerIwaUpdateCheck(const WebApp& iwa);
 

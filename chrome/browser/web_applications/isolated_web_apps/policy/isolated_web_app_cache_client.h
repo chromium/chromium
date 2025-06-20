@@ -20,7 +20,10 @@ namespace web_app {
 
 // Cache is enabled only for Managed Guest Session (MGS) and for kiosk sessions
 // and only when the feature flag is enabled.
-bool IsIwaBundleCacheEnabled();
+bool IsIwaBundleCacheEnabledInCurrentSession();
+
+// Checks that the feature flag is enabled.
+bool IsIwaBundleCacheFeatureEnabled();
 
 // This class should be used only when `IsIwaBundleCacheEnabled()` returns
 // true. This is checked in the constructor. This class can be created
