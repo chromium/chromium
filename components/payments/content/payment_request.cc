@@ -21,6 +21,7 @@
 #include "components/payments/content/payment_request_converter.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds.h"
+#include "components/payments/content/secure_payment_confirmation_transaction_mode.h"
 #include "components/payments/core/error_message_util.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/features.h"

@@ -32,13 +32,7 @@ class RenderFrameHost;
 
 namespace payments {
 class ContentPaymentRequestDelegate;
-
-enum class SPCTransactionMode {
-  NONE,
-  AUTOACCEPT,
-  AUTOREJECT,
-  AUTOOPTOUT,
-};
+enum class SPCTransactionMode;
 
 // This class manages the interaction between the renderer (through the
 // PaymentRequestClient and Mojo stub implementation) and the desktop Payment UI

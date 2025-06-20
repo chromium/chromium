@@ -74,11 +74,21 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
         PaymentRequestWebContentsDataJni.get().recordActivationlessShow(webContents);
     }
 
+    public @SPCTransactionMode int getSPCTransactionMode() {
+        WebContents webContents = getWebContents();
+        if (webContents == null || webContents.isDestroyed()) {
+            return SPCTransactionMode.NONE;
+        }
+        return PaymentRequestWebContentsDataJni.get().getSPCTransactionMode(webContents);
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         boolean hadActivationlessShow(WebContents webContents);
 
         void recordActivationlessShow(WebContents webContents);
+
+        int getSPCTransactionMode(WebContents webContents);
     }
 }

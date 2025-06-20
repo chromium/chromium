@@ -53,6 +53,7 @@ static_library("content") {
     "secure_payment_confirmation_service.h",
     "secure_payment_confirmation_service_factory.cc",
     "secure_payment_confirmation_service_factory.h",
+    "secure_payment_confirmation_transaction_mode.h",
     "secure_payment_confirmation_view.h",
     "service_worker_payment_app.cc",
     "service_worker_payment_app.h",

@@ -15,6 +15,7 @@
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/secure_payment_confirmation_app.h"
+#include "components/payments/content/secure_payment_confirmation_transaction_mode.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"

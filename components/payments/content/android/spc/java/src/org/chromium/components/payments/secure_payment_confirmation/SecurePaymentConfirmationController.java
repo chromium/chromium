@@ -22,6 +22,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.payments.PaymentApp.PaymentEntityLogo;
 import org.chromium.components.payments.R;
+import org.chromium.components.payments.SPCTransactionMode;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationBottomSheetObserver.ControllerDelegate;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationProperties.ItemProperties;
 import org.chromium.components.payments.ui.CurrencyFormatter;
@@ -79,8 +80,9 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
     private final SecurePaymentConfirmationView mView;
     private final PropertyModel mModel;
     private final BottomSheetController mBottomSheetController;
-    private final Callback<Integer> mResponseCallback;
     private final Boolean mInformOnly;
+    private final Callback<Integer> mResponseCallback;
+    private final @SPCTransactionMode int mTransactionMode;
     private SecurePaymentConfirmationBottomSheetObserver mBottomSheetObserver;
     private InputProtector mInputProtector = new InputProtector();
 
@@ -99,6 +101,7 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
      * @param showOptOut Whether to show the opt out UX to the user.
      * @param informOnly Whether to show the inform-only UX.
      * @param responseCallback The function to call on sheet dismiss; called with SpcResponseStatus.
+     * @param transactionMode The automation transaction mode; NONE when not under automation.
      */
     public SecurePaymentConfirmationController(
             WindowAndroid window,
@@ -112,7 +115,8 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
             String relyingPartyId,
             boolean showOptOut,
             boolean informOnly,
-            Callback<Integer> responseCallback) {
+            Callback<Integer> responseCallback,
+            @SPCTransactionMode int transactionMode) {
         Context context = assertNonNull(window.getContext().get());
         BottomSheetController bottomSheetController =
                 assertNonNull(BottomSheetControllerProvider.from(window));
@@ -120,6 +124,7 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
         mBottomSheetController = bottomSheetController;
         mInformOnly = informOnly;
         mResponseCallback = responseCallback;
+        mTransactionMode = transactionMode;
         mInputProtector.markShowTime();
 
         ModelList itemList = new ModelList();
@@ -289,6 +294,25 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
     public boolean show() {
         if (mBottomSheetController.requestShowContent(mContent, /* animate= */ true)) {
             mBottomSheetObserver.begin(this);
+
+            // For browser automation use-cases (such as WebDriver), SPC can be placed in
+            // transaction mode where it will immediately take some action on the dialog without
+            // user interaction.  We deliberately wait until after the dialog is created and shown
+            // to handle this, in order to keep the automation codepath close to the real one.
+            //
+            // https://w3c.github.io/secure-payment-confirmation/#sctn-transaction-ux-test-automation
+            switch (mTransactionMode) {
+                case SPCTransactionMode.AUTOACCEPT:
+                    onContinue();
+                    break;
+                case SPCTransactionMode.AUTOOPTOUT:
+                    onOptOut();
+                    break;
+                case SPCTransactionMode.AUTOREJECT:
+                    onCancel();
+                    break;
+            }
+
             return true;
         }
         return false;
@@ -301,7 +325,11 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
     }
 
     private void onContinue() {
-        if (!mInputProtector.shouldInputBeProcessed()) return;
+        if (!mInputProtector.shouldInputBeProcessed()
+                && mTransactionMode == SPCTransactionMode.NONE) {
+            return;
+        }
+
         hide();
         if (mInformOnly) {
             mResponseCallback.onResult(SpcResponseStatus.ANOTHER_WAY);
@@ -312,19 +340,28 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
 
     @Override
     public void onCancel() {
-        if (!mInputProtector.shouldInputBeProcessed()) return;
+        if (!mInputProtector.shouldInputBeProcessed()
+                && mTransactionMode == SPCTransactionMode.NONE) {
+            return;
+        }
         hide();
         mResponseCallback.onResult(SpcResponseStatus.CANCEL);
     }
 
     private void onVerifyAnotherWay() {
-        if (!mInputProtector.shouldInputBeProcessed()) return;
+        if (!mInputProtector.shouldInputBeProcessed()
+                && mTransactionMode == SPCTransactionMode.NONE) {
+            return;
+        }
         hide();
         mResponseCallback.onResult(SpcResponseStatus.ANOTHER_WAY);
     }
 
     private void onOptOut() {
-        if (!mInputProtector.shouldInputBeProcessed()) return;
+        if (!mInputProtector.shouldInputBeProcessed()
+                && mTransactionMode == SPCTransactionMode.NONE) {
+            return;
+        }
         hide();
         mResponseCallback.onResult(SpcResponseStatus.OPT_OUT);
     }

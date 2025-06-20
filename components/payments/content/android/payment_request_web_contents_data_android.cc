@@ -4,6 +4,7 @@
 
 #include "base/android/jni_android.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
+#include "components/payments/content/secure_payment_confirmation_transaction_mode.h"
 #include "content/public/browser/web_contents.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -18,7 +19,7 @@ jboolean JNI_PaymentRequestWebContentsData_HadActivationlessShow(
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK(web_contents);
+  CHECK(web_contents);
 
   return PaymentRequestWebContentsManager::GetOrCreateForWebContents(
              web_contents)
@@ -31,10 +32,23 @@ void JNI_PaymentRequestWebContentsData_RecordActivationlessShow(
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK(web_contents);
+  CHECK(web_contents);
 
   PaymentRequestWebContentsManager::GetOrCreateForWebContents(web_contents)
       ->RecordActivationlessShow();
+}
+
+// static
+jint JNI_PaymentRequestWebContentsData_GetSPCTransactionMode(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jweb_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  CHECK(web_contents);
+
+  return static_cast<jint>(
+      PaymentRequestWebContentsManager::GetOrCreateForWebContents(web_contents)
+          ->transaction_mode());
 }
 
 }  // namespace android

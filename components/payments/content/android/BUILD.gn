@@ -280,6 +280,7 @@ android_library("minimal_java") {
     ":method_strings_generated_srcjar",
     ":minimal_jni",
     ":payment_app_type_generated_enum",
+    ":spc_transaction_mode_generated_enum",
   ]
   resources_package = "org.chromium.components.payments"
 }
@@ -328,6 +329,10 @@ java_cpp_enum("app_creation_failure_reason_generated_enum") {
 
 java_cpp_enum("payments_journey_logger_enum_javagen") {
   sources = [ "//components/payments/core/journey_logger.h" ]
+}
+
+java_cpp_enum("spc_transaction_mode_generated_enum") {
+  sources = [ "//components/payments/content/secure_payment_confirmation_transaction_mode.h" ]
 }
 
 robolectric_library("junit_test_support") {

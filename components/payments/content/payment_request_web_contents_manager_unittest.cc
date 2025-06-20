@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/payments/content/payment_request.h"
 #include "components/payments/content/test_content_payment_request_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.payments;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
@@ -44,8 +45,10 @@ import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.components.payments.PaymentRequestUpdateEventListener;
+import org.chromium.components.payments.PaymentRequestWebContentsData;
 import org.chromium.components.payments.PaymentResponseHelper;
 import org.chromium.components.payments.PaymentResponseHelperInterface;
+import org.chromium.components.payments.SPCTransactionMode;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationAuthnController;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationAuthnController.SpcResponseStatus;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationController;
@@ -374,6 +377,12 @@ public class ChromePaymentRequestService
         PaymentMethodData spcMethodData =
                 assertNonNull(mSpec.getMethodData().get(MethodStrings.SECURE_PAYMENT_CONFIRMATION));
 
+        PaymentRequestWebContentsData paymentRequestWebContentsData =
+                PaymentRequestWebContentsData.from(mWebContents);
+        assumeNonNull(paymentRequestWebContentsData);
+        @SPCTransactionMode
+        int transactionMode = paymentRequestWebContentsData.getSPCTransactionMode();
+
         if (ContentFeatureMap.isEnabled(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)) {
             assert mSpcController == null;
             WindowAndroid windowAndroid =
@@ -427,7 +436,8 @@ public class ChromePaymentRequestService
                             spcMethodData.securePaymentConfirmation.rpId,
                             spcMethodData.securePaymentConfirmation.showOptOut,
                             /* informOnly= */ true,
-                            responseCallback);
+                            responseCallback,
+                            transactionMode);
             return mSpcController.show();
         }
 
@@ -522,6 +532,12 @@ public class ChromePaymentRequestService
                     assertNonNull(
                             mSpec.getMethodData().get(MethodStrings.SECURE_PAYMENT_CONFIRMATION));
 
+            PaymentRequestWebContentsData paymentRequestWebContentsData =
+                    PaymentRequestWebContentsData.from(mWebContents);
+            assumeNonNull(paymentRequestWebContentsData);
+            @SPCTransactionMode
+            int transactionMode = paymentRequestWebContentsData.getSPCTransactionMode();
+
             if (ContentFeatureMap.isEnabled(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_UX_REFRESH)) {
                 assert mSpcController == null;
                 Callback<Integer> responseCallback =
@@ -580,7 +596,8 @@ public class ChromePaymentRequestService
                                 spcMethodData.securePaymentConfirmation.rpId,
                                 spcMethodData.securePaymentConfirmation.showOptOut,
                                 /* informOnly= */ false,
-                                responseCallback);
+                                responseCallback,
+                                transactionMode);
 
                 if (mSpcController.show()) {
                     mJourneyLogger.setShown();

@@ -46,6 +46,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.payments.PaymentApp.PaymentEntityLogo;
+import org.chromium.components.payments.SPCTransactionMode;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationController.SpcResponseStatus;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationProperties.ItemProperties;
 import org.chromium.components.payments.ui.CurrencyFormatter;
@@ -478,7 +479,73 @@ public class SecurePaymentConfirmationControllerTest {
         verifyNoInteractions(mBottomSheetController);
     }
 
+    @Test
+    public void testTransactionMode_autoAccept() {
+        createController(
+                /* showOptOut= */ false, /* informOnly= */ false, SPCTransactionMode.AUTOACCEPT);
+        assertTrue(mController.show());
+
+        // The automation should run immediately when show is called, and accept the prompt.
+        verify(mResponseCallback).onResult(eq(SpcResponseStatus.ACCEPT));
+    }
+
+    @Test
+    public void testTransactionMode_autoAccept_withInformOnly() {
+        createController(
+                /* showOptOut= */ false, /* informOnly= */ true, SPCTransactionMode.AUTOACCEPT);
+        assertTrue(mController.show());
+
+        // The automation should run immediately when show is called, and accept the prompt. For the
+        // inform prompt, this is equivalent to verify another way.
+        verify(mResponseCallback).onResult(eq(SpcResponseStatus.ANOTHER_WAY));
+    }
+
+    @Test
+    public void testTransactionMode_autoReject() {
+        createController(
+                /* showOptOut= */ false, /* informOnly= */ false, SPCTransactionMode.AUTOREJECT);
+        assertTrue(mController.show());
+
+        // The automation should run immediately when show is called, and reject the prompt.
+        verify(mResponseCallback).onResult(eq(SpcResponseStatus.CANCEL));
+    }
+
+    @Test
+    public void testTransactionMode_autoReject_withInformOnly() {
+        createController(
+                /* showOptOut= */ false, /* informOnly= */ true, SPCTransactionMode.AUTOREJECT);
+        assertTrue(mController.show());
+
+        // The automation should run immediately when show is called, and reject the prompt.
+        verify(mResponseCallback).onResult(eq(SpcResponseStatus.CANCEL));
+    }
+
+    @Test
+    public void testTransactionMode_autoOptOut() {
+        createController(
+                /* showOptOut= */ true, /* informOnly= */ false, SPCTransactionMode.AUTOOPTOUT);
+        assertTrue(mController.show());
+
+        // The automation should run immediately when show is called, and opt out of the prompt.
+        verify(mResponseCallback).onResult(eq(SpcResponseStatus.OPT_OUT));
+    }
+
+    @Test
+    public void testTransactionMode_autoOptOut_withInformOnly() {
+        createController(
+                /* showOptOut= */ true, /* informOnly= */ true, SPCTransactionMode.AUTOOPTOUT);
+        assertTrue(mController.show());
+
+        // The automation should run immediately when show is called, and opt out of the prompt.
+        verify(mResponseCallback).onResult(eq(SpcResponseStatus.OPT_OUT));
+    }
+
     private void createController(boolean showOptOut, boolean informOnly) {
+        createController(showOptOut, informOnly, SPCTransactionMode.NONE);
+    }
+
+    private void createController(
+            boolean showOptOut, boolean informOnly, @SPCTransactionMode int transactionMode) {
         mController =
                 new SecurePaymentConfirmationController(
                         mWindow,
@@ -492,7 +559,8 @@ public class SecurePaymentConfirmationControllerTest {
                         mRelyingPartyId,
                         showOptOut,
                         informOnly,
-                        mResponseCallback);
+                        mResponseCallback,
+                        transactionMode);
         InputProtector inputProtector = new InputProtector(mClock);
         inputProtector.markShowTime();
         mController.setInputProtectorForTesting(inputProtector);
