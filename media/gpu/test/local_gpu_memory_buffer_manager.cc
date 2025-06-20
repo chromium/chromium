@@ -105,7 +105,7 @@ uint32_t GetGbmUsage(gfx::BufferUsage usage) {
 
 GpuMemoryBufferImplGbm::GpuMemoryBufferImplGbm(gfx::BufferFormat format,
                                                gbm_bo* buffer_object)
-    : format_(format), buffer_object_(buffer_object), mapped_(false) {
+    : buffer_object_(buffer_object), mapped_(false) {
   gfx::NativePixmapHandle native_pixmap_handle;
   for (size_t i = 0;
        i < static_cast<size_t>(gbm_bo_get_plane_count(buffer_object)); ++i) {
@@ -182,20 +182,8 @@ gfx::Size GpuMemoryBufferImplGbm::GetSize() const {
                    gbm_bo_get_height(buffer_object_));
 }
 
-gfx::BufferFormat GpuMemoryBufferImplGbm::GetFormat() const {
-  return format_;
-}
-
 int GpuMemoryBufferImplGbm::stride(size_t plane) const {
   return gbm_bo_get_stride_for_plane(buffer_object_, plane);
-}
-
-gfx::GpuMemoryBufferId GpuMemoryBufferImplGbm::GetId() const {
-  return handle_.id;
-}
-
-gfx::GpuMemoryBufferType GpuMemoryBufferImplGbm::GetType() const {
-  return gfx::NATIVE_PIXMAP;
 }
 
 gfx::GpuMemoryBufferHandle GpuMemoryBufferImplGbm::CloneHandle() const {
@@ -204,17 +192,6 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplGbm::CloneHandle() const {
       gfx::CloneHandleForIPC(handle_.native_pixmap_handle()));
   handle.id = handle_.id;
   return handle;
-}
-
-void GpuMemoryBufferImplGbm::OnMemoryDump(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-    uint64_t tracing_process_id,
-    int importance) const {
-  auto shared_buffer_guid =
-      gfx::GetGenericSharedGpuMemoryGUIDForTracing(tracing_process_id, GetId());
-  pmd->CreateSharedGlobalAllocatorDump(shared_buffer_guid);
-  pmd->AddOwnershipEdge(buffer_dump_guid, shared_buffer_guid, importance);
 }
 
 LocalGpuMemoryBufferManager::LocalGpuMemoryBufferManager()

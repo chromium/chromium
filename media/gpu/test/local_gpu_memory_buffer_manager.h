@@ -15,13 +15,6 @@
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/linux/scoped_gbm_device.h"
 
-namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-class MemoryAllocatorDumpGuid;
-}  // namespace trace_event
-}  // namespace base
-
 namespace gfx {
 class GpuMemoryBuffer;
 struct NativePixmapHandle;
@@ -87,16 +80,8 @@ class GpuMemoryBufferImplGbm {
   void* memory(size_t plane);
   void Unmap();
   gfx::Size GetSize() const;
-  gfx::BufferFormat GetFormat() const;
   int stride(size_t plane) const;
-  gfx::GpuMemoryBufferId GetId() const;
-  gfx::GpuMemoryBufferType GetType() const;
   gfx::GpuMemoryBufferHandle CloneHandle() const;
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const;
 
  private:
   struct MappedPlane {
@@ -104,7 +89,6 @@ class GpuMemoryBufferImplGbm {
     raw_ptr<void> mapped_data;
   };
 
-  gfx::BufferFormat format_;
   raw_ptr<gbm_bo> buffer_object_;
   gfx::GpuMemoryBufferHandle handle_;
   bool mapped_;
