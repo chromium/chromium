@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser.media.capture;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
@@ -25,9 +27,10 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicReference;
@@ -38,10 +41,20 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ScreenCapture {
     private static final String TAG = "ScreenCapture";
 
+    private static class PickState {
+        final WebContents mWebContents;
+        final ActivityResult mActivityResult;
+
+        PickState(WebContents webContents, ActivityResult activityResult) {
+            mWebContents = webContents;
+            mActivityResult = activityResult;
+        }
+    }
+
     // Starting a MediaProjection session involves plumbing the results from the content picker,
     // which is done via ActivityResult. This class does not handle how that is achieved, but
-    // requires the ActivityResult to begin the session.
-    private static final AtomicReference<ActivityResult> sNextResult = new AtomicReference(null);
+    // requires this state to begin the session.
+    private static final AtomicReference<PickState> sNextPickState = new AtomicReference<>(null);
 
     // Starting a MediaProjection session requires a foreground service to be running. This class
     // does not handle how that is achieved, but `sLatch` provides a way for this class to wait
@@ -55,6 +68,7 @@ public class ScreenCapture {
 
     private final HandlerThread mBackgroundThread = new HandlerThread("ScreenCapture");
     private @Nullable Handler mBackgroundHandler;
+    private @Nullable WebContents mWebContents;
     private @Nullable MediaProjection mMediaProjection;
 
     // While capture is running these references should only be modified on the background thread.
@@ -79,11 +93,19 @@ public class ScreenCapture {
      *
      * <p>The {@link ActivityResult} is consumed by a subsequent call to {@link #startCapture()}.
      *
-     * @param nextResult The {@link ActivityResult} from the MediaProjection API.
+     * @param webContents The {@link WebContents} initiating the capture.
+     * @param activityResult The {@link ActivityResult} from the MediaProjection API.
      */
-    public static void onPick(ActivityResult nextResult) {
-        var oldResult = sNextResult.getAndSet(nextResult);
-        assert oldResult == null;
+    public static void onPick(WebContents webContents, ActivityResult activityResult) {
+        final PickState oldPickState =
+                sNextPickState.getAndSet(new PickState(webContents, activityResult));
+        assert oldPickState == null;
+    }
+
+    private @Nullable Context maybeGetContext() {
+        final WindowAndroid window = assumeNonNull(mWebContents).getTopLevelNativeWindow();
+        if (window == null) return null;
+        return window.getContext().get();
     }
 
     @CalledByNative
@@ -93,24 +115,28 @@ public class ScreenCapture {
 
     @CalledByNative
     boolean startCapture() {
-        var nextResult = sNextResult.getAndSet(null);
-        assert nextResult != null;
-        assert nextResult.getData() != null;
+        final PickState pickState = sNextPickState.getAndSet(null);
+        assert pickState != null;
+        mWebContents = pickState.mWebContents;
+
+        final ActivityResult activityResult = pickState.mActivityResult;
+        assert activityResult.getData() != null;
 
         // We need to wait for the foreground service to start before trying to use the
         // MediaProjection API. It's okay to block here since we are on the desktop capturer thread.
         sLatch.block();
 
-        // TODO(crbug.com/352187279): Use the specific activity context for the captured target
-        // here.
-        final Context context = ContextUtils.getApplicationContext();
+        // TODO(crbug.com/352187279): Update the context if the WebContents is reparented.
+        final Context context = maybeGetContext();
+        if (context == null) return false;
 
         var manager =
                 (MediaProjectionManager) context.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         if (manager == null) return false;
 
         mMediaProjection =
-                manager.getMediaProjection(nextResult.getResultCode(), nextResult.getData());
+                manager.getMediaProjection(
+                        activityResult.getResultCode(), activityResult.getData());
         if (mMediaProjection == null) return false;
 
         mBackgroundThread.start();

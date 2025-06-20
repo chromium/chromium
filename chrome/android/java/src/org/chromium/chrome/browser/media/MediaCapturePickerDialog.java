@@ -24,8 +24,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.media.capture.ScreenCapture;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -39,6 +41,8 @@ import java.util.Map;
 
 /** Dialog for selecting a media source for media capture. */
 public class MediaCapturePickerDialog implements AllTabObserver.Observer {
+    // This web contents is the one that is receiving the shared content.
+    private final WebContents mWebContents;
     private final ModalDialogManager mModalDialogManager;
     private final String mAppName;
     private final View mDialogView;
@@ -114,32 +118,39 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
         int DEFAULT = 0;
     }
 
+    private static @Nullable Context maybeGetContext(WebContents webContents) {
+        final WindowAndroid window = webContents.getTopLevelNativeWindow();
+        if (window == null) return null;
+        return window.getContext().get();
+    }
+
     /**
      * Shows the media capture picker dialog.
      *
-     * @param modalDialogManager Manager for managing the modal dialog.
+     * @param webContents The {@link WebContents} to show the dialog on behalf of.
      * @param appName Name of the app that wants to share content.
      * @param requestAudio True if audio sharing is also requested.
      * @param delegate Invoked with a WebContents if a tab is selected, or {@code null} if the
      *     dialog is dismissed.
      */
     public static void showDialog(
-            Context context,
-            ModalDialogManager modalDialogManager,
-            String appName,
-            boolean requestAudio,
-            Delegate delegate) {
-        new MediaCapturePickerDialog(context, modalDialogManager, appName, requestAudio, delegate)
-                .show();
+            WebContents webContents, String appName, boolean requestAudio, Delegate delegate) {
+        final Context context = maybeGetContext(webContents);
+        if (context == null) {
+            delegate.onCancel();
+            return;
+        }
+        new MediaCapturePickerDialog(context, webContents, appName, requestAudio, delegate).show();
     }
 
     private MediaCapturePickerDialog(
             Context context,
-            ModalDialogManager modalDialogManager,
+            WebContents webContents,
             String appName,
             boolean requestAudio,
             Delegate delegate) {
-        mModalDialogManager = modalDialogManager;
+        mWebContents = webContents;
+        mModalDialogManager = ((ModalDialogManagerHolder) context).getModalDialogManager();
         mAppName = appName;
         mDelegate = delegate;
 
@@ -198,7 +209,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
         fragment.startAndroidCapturePrompt(
                 (action, result) -> {
                     if (action != CaptureAction.CAPTURE_CANCELLED) {
-                        ScreenCapture.onPick(result);
+                        ScreenCapture.onPick(mWebContents, result);
                     }
 
                     switch (action) {
