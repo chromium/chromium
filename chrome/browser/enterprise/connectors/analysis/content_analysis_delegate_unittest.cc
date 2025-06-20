@@ -89,6 +89,20 @@ constexpr char kBlockingScansForDlp[] = R"(
   "block_until_verdict": 1
 })";
 
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+constexpr char kBlockingScansForLocalDlp[] = R"(
+{
+  "service_provider": "local_user_agent",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp"]
+    }
+  ],
+  "block_until_verdict": 1
+})";
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+
 constexpr char kBlockingScansForMalware[] = R"(
 {
   "service_provider": "google",
@@ -604,6 +618,13 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
 
   // DLP response to ovewrite in the callback if present.
   std::optional<ContentAnalysisResponse> dlp_response_ = std::nullopt;
+
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+  // This installs a fake SDK manager that creates fake SDK clients when
+  // its GetClient() method is called. This is needed so that calls to
+  // ContentAnalysisSdkManager::Get()->GetClient() do not fail.
+  FakeContentAnalysisSdkManager sdk_manager_;
+#endif
 };
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, Empty) {
@@ -1175,7 +1196,10 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataNoDLP) {
   EXPECT_TRUE(called);
 }
 
-TEST_F(ContentAnalysisDelegateAuditOnlyTest, ImageData) {
+TEST_F(ContentAnalysisDelegateAuditOnlyTest, ImageDataCloudScan) {
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(), BULK_DATA_ENTRY, kBlockingScansForDlp);
+
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
@@ -1195,12 +1219,80 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, ImageData) {
                  },
                  &called));
   RunUntilDone();
+
+  // There shouldn't be any image request made when the policy is set to do
+  // cloud scanning.
+  EXPECT_EQ(0,
+            test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
+  EXPECT_TRUE(called);
+}
+
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+TEST_F(ContentAnalysisDelegateAuditOnlyTest, ImageDataLocalScan) {
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(), BULK_DATA_ENTRY, kBlockingScansForLocalDlp);
+
+  GURL url(kTestUrl);
+  ContentAnalysisDelegate::Data data;
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
+
+  data.image = large_text();
+
+  bool called = false;
+  ScanUpload(contents(), std::move(data),
+             base::BindOnce(
+                 [](bool* called, const ContentAnalysisDelegate::Data& data,
+                    ContentAnalysisDelegate::Result& result) {
+                   EXPECT_EQ(0u, data.text.size());
+                   EXPECT_EQ(0u, result.text_results.size());
+                   EXPECT_TRUE(result.image_result);
+                   *called = true;
+                 },
+                 &called));
+  RunUntilDone();
+
+  EXPECT_EQ(1,
+            test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
+  EXPECT_TRUE(called);
+}
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+
+TEST_F(ContentAnalysisDelegateAuditOnlyTest, TextAndImageDataCloudScan) {
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(), BULK_DATA_ENTRY, kBlockingScansForDlp);
+
+  GURL url(kTestUrl);
+  ContentAnalysisDelegate::Data data;
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
+  data.text.emplace_back(large_text());
+  data.image = large_text();
+
+  bool called = false;
+  ScanUpload(contents(), std::move(data),
+             base::BindOnce(
+                 [](bool* called, const ContentAnalysisDelegate::Data& data,
+                    ContentAnalysisDelegate::Result& result) {
+                   EXPECT_EQ(1u, result.text_results.size());
+                   EXPECT_TRUE(result.text_results[0]);
+                   EXPECT_TRUE(result.image_result);
+                   *called = true;
+                 },
+                 &called));
+  RunUntilDone();
+
+  // Only the text data is scanned for cloud scans.
   EXPECT_EQ(1,
             test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
 
-TEST_F(ContentAnalysisDelegateAuditOnlyTest, TextAndImageData) {
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+TEST_F(ContentAnalysisDelegateAuditOnlyTest, TextAndImageDataLocalScan) {
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(), BULK_DATA_ENTRY, kBlockingScansForLocalDlp);
+
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
@@ -1224,6 +1316,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, TextAndImageData) {
             test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringFileDataFailedDLP) {
   SetScanPolicies(/*dlp=*/true, /*malware=*/false);
