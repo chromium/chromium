@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.offlinepages;
 
 import android.app.Activity;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -28,7 +27,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
@@ -293,10 +291,6 @@ public class OfflinePageUtilsTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({"enable-features=OfflinePagesSharing"})
-    @DisableIf.Build(
-            message = "https://crbug.com/1001506",
-            sdk_is_greater_than = Build.VERSION_CODES.N,
-            sdk_is_less_than = Build.VERSION_CODES.P)
     public void testShareTemporaryOfflinePage() throws Exception {
         loadOfflinePage(SUGGESTED_ARTICLES_ID);
         final Semaphore semaphore = new Semaphore(0);

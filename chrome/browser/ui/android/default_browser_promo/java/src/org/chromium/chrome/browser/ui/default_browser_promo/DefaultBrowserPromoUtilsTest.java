@@ -16,7 +16,6 @@ import android.app.Activity;
 import android.app.role.RoleManager;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
-import android.os.Build;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -88,10 +87,8 @@ public class DefaultBrowserPromoUtilsTest {
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMockMessageDispatcher);
         SearchEngineChoiceService.setInstanceForTests(mMockSearchEngineChoiceService);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            mShadowRoleManager = shadowOf(mActivity.getSystemService(RoleManager.class));
-            mShadowRoleManager.addAvailableRole(RoleManager.ROLE_BROWSER);
-        }
+        mShadowRoleManager = shadowOf(mActivity.getSystemService(RoleManager.class));
+        mShadowRoleManager.addAvailableRole(RoleManager.ROLE_BROWSER);
 
         mUtils = new DefaultBrowserPromoUtils(mCounter, mProvider);
         setDepsMockWithDefaultValues();

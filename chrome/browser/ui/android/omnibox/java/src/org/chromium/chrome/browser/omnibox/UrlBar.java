@@ -445,17 +445,15 @@ public class UrlBar extends AutocompleteEditText {
         // See crbug.com/410642190
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // Due to crbug.com/1103555, Autofill had to be disabled on the UrlBar to work around
-            // an issue on Android Q+. With Autofill disabled, the Autofill compat mode no longer
-            // learns of changes to the UrlBar, which prevents it from cancelling the session if
-            // the domain changes. We restore this behavior by mimicking the relevant part of
-            // TextView.notifyListeningManagersAfterTextChanged().
-            // https://cs.android.com/android/platform/superproject/+/5d123b67756dffcfdebdb936ab2de2b29c799321:frameworks/base/core/java/android/widget/TextView.java;l=10618;drc=master;bpv=0
-            final AutofillManager afm = getContext().getSystemService(AutofillManager.class);
-            if (afm != null) {
-                afm.notifyValueChanged(this);
-            }
+        // Due to crbug.com/1103555, Autofill had to be disabled on the UrlBar to work around
+        // an issue on Android Q+. With Autofill disabled, the Autofill compat mode no longer
+        // learns of changes to the UrlBar, which prevents it from cancelling the session if
+        // the domain changes. We restore this behavior by mimicking the relevant part of
+        // TextView.notifyListeningManagersAfterTextChanged().
+        // https://cs.android.com/android/platform/superproject/+/5d123b67756dffcfdebdb936ab2de2b29c799321:frameworks/base/core/java/android/widget/TextView.java;l=10618;drc=master;bpv=0
+        final AutofillManager afm = getContext().getSystemService(AutofillManager.class);
+        if (afm != null) {
+            afm.notifyValueChanged(this);
         }
 
         limitDisplayableLength();

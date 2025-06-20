@@ -15,10 +15,7 @@ import android.content.Context;
 import android.hardware.biometrics.BiometricManager;
 import android.hardware.biometrics.BiometricPrompt;
 import android.hardware.biometrics.BiometricPrompt.AuthenticationCallback;
-import android.os.Build;
 import android.os.CancellationSignal;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -31,29 +28,23 @@ import java.util.concurrent.Executor;
 class DeviceAuthenticatorControllerImpl implements DeviceAuthenticatorController {
     private final Context mContext;
     private final Delegate mDelegate;
-    private @Nullable BiometricPrompt mBiometricPrompt;
+    private final @Nullable BiometricPrompt mBiometricPrompt;
     protected @Nullable CancellationSignal mCancellationSignal;
 
     public DeviceAuthenticatorControllerImpl(Context context, Delegate delegate) {
         mContext = context;
         mDelegate = delegate;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            BiometricPrompt.Builder promptBuilder =
-                    new BiometricPrompt.Builder(mContext)
-                            .setTitle(
-                                    mContext.getString(
-                                            R.string.password_filling_reauth_prompt_title));
-            promptBuilder.setDeviceCredentialAllowed(true);
-            promptBuilder.setConfirmationRequired(false);
-            mBiometricPrompt = promptBuilder.build();
-        }
+        BiometricPrompt.Builder promptBuilder =
+                new BiometricPrompt.Builder(mContext)
+                        .setTitle(
+                                mContext.getString(R.string.password_filling_reauth_prompt_title));
+        promptBuilder.setDeviceCredentialAllowed(true);
+        promptBuilder.setConfirmationRequired(false);
+        mBiometricPrompt = promptBuilder.build();
     }
 
     @Override
     public @BiometricsAvailability int canAuthenticateWithBiometric() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return BiometricsAvailability.ANDROID_VERSION_NOT_SUPPORTED;
-        }
         BiometricManager biometricManager = mContext.getSystemService(BiometricManager.class);
         if (biometricManager == null) return BiometricsAvailability.OTHER_ERROR;
 
@@ -82,15 +73,10 @@ class DeviceAuthenticatorControllerImpl implements DeviceAuthenticatorController
 
     @Override
     public boolean canAuthenticateWithBiometricOrScreenLock() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return false;
-        }
-
         @BiometricsAvailability int availability = canAuthenticateWithBiometric();
         return (availability == BiometricsAvailability.AVAILABLE) || hasScreenLockSetUp();
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
     @Override
     public void authenticate() {
         if (mBiometricPrompt == null) {

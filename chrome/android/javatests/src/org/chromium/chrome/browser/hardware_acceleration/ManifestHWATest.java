@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @DisableIf.Build(
-        sdk_is_greater_than = Build.VERSION_CODES.P,
         sdk_is_less_than = Build.VERSION_CODES.TIRAMISU,
         supported_abis_includes = "x86_64",
         message = "vr tests do not apply to emulator")

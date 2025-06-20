@@ -10,8 +10,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.os.Build.VERSION;
 import android.os.Handler;
 import android.transition.ChangeBounds;
 import android.transition.Fade;
@@ -325,8 +323,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         // Set hover state tooltip text for optional toolbar buttons(e.g. share, voice search, new
         // tab and profile).
         if (buttonSpec.getHoverTooltipTextId() != ButtonSpec.INVALID_TOOLTIP_TEXT_ID
-                && mButton != null
-                && VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                && mButton != null) {
             TooltipCompat.setTooltipText(
                     mButton, getContext().getString(buttonSpec.getHoverTooltipTextId()));
         } else {

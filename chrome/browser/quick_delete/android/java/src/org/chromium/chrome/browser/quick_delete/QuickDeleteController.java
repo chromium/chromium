@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.quick_delete;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.LayoutInflater;
@@ -233,12 +232,7 @@ public class QuickDeleteController {
     private void triggerHapticFeedback() {
         Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         final long duration = 50;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE));
-        } else {
-            // Deprecated in API 26.
-            v.vibrate(duration);
-        }
+        v.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE));
     }
 
     /** A method to show the quick delete snack-bar. */

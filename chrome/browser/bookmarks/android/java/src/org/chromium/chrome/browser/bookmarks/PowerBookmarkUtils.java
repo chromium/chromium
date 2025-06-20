@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.res.Resources;
-import android.os.Build;
 
 import com.google.common.primitives.UnsignedLongs;
 
@@ -195,9 +194,7 @@ public class PowerBookmarkUtils {
         // Make sure the notification channel is initialized when the user tracks a product.
         // TODO(crbug.com/40245507): Add a SubscriptionsObserver in the PriceDropNotificationManager
         // and initialize the channel there.
-        if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            priceDropNotificationManager.createNotificationChannel();
-        }
+        priceDropNotificationManager.createNotificationChannel();
         PriceTrackingUtils.setPriceTrackingStateForBookmark(
                 profile, bookmarkId.getId(), enabled, wrapperCallback);
     }

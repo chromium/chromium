@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <int value="0" label="Available and turned on in Chrome settings"/>
   <int value="1" label="Not allowed by policy"/>
-  <int value="2" label="Android OS version is too old"/>
+  <int value="2" label="(obsolete) Android OS version is too old"/>
   <int value="3" label="The system's AutofillManager is not available"/>
   <int value="4" label="The system does not support autofill"/>
   <int value="5" label="The system's AutofillService cannot be determined."/>

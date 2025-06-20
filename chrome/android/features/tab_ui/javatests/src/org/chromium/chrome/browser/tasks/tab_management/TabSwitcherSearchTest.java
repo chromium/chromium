@@ -12,8 +12,6 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.base.DeviceFormFactor.PHONE;
 
-import android.os.Build;
-
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -29,7 +27,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -59,10 +56,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-// Disable in Pie because search box does not get focus automatically.
-@DisableIf.Build(
-        sdk_is_greater_than = Build.VERSION_CODES.O_MR1,
-        sdk_is_less_than = Build.VERSION_CODES.Q)
 public class TabSwitcherSearchTest {
     private static final int SERVER_PORT = 13245;
     private static final String URL_PREFIX = "127.0.0.1:" + SERVER_PORT;

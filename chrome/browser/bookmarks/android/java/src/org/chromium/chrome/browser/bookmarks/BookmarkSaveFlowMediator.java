@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -346,9 +345,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         setPriceTrackingToggleVisualsOnly(true);
 
         // Make sure the notification channel is initialized when the user tracks the product.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mPriceDropNotificationManager.createNotificationChannel();
-        }
+        mPriceDropNotificationManager.createNotificationChannel();
     }
 
     @Override

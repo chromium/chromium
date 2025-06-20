@@ -17,8 +17,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_MANAGER_NOT_AVAILABLE;
 import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_SERVICE_IS_GOOGLE;
-import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.ANDROID_VERSION_TOO_OLD;
 import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.AVAILABLE;
 import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.NOT_ALLOWED_BY_POLICY;
 import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.UNKNOWN_ANDROID_AUTOFILL_SERVICE;
@@ -217,7 +217,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void overrideForAwgDoesntAllowOtherChecksToBeSkipped() {
-        setAutofillAvailabilityToUseForTesting(ANDROID_VERSION_TOO_OLD);
+        setAutofillAvailabilityToUseForTesting(ANDROID_AUTOFILL_MANAGER_NOT_AVAILABLE);
         addFeatureOverrideToSkipChecks(ONLY_SKIP_AWG_CHECK_PARAM_VALUE);
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
 

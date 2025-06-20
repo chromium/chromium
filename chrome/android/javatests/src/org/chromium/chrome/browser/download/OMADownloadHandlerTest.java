@@ -9,7 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build.VERSION_CODES;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
@@ -29,7 +28,7 @@ import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.download.DownloadManagerBridge.DownloadQueryResult;
@@ -312,10 +311,9 @@ public class OMADownloadHandlerTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.P) // https://crbug.com/338971643
+    @DisabledTest(message = "https://crbug.com/338971643")
     @Feature({"Download"})
     public void testQueryDownloadResult() {
-        Context context = getTestContext();
         DownloadManager manager =
                 (DownloadManager) getTestContext().getSystemService(Context.DOWNLOAD_SERVICE);
         long downloadId1 =
@@ -346,7 +344,7 @@ public class OMADownloadHandlerTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.P) // https://crbug.com/338971643
+    @DisabledTest(message = "https://crbug.com/338971643")
     @Feature({"Download"})
     public void testClearPendingOMADownloads() {
         Context context = getTestContext();

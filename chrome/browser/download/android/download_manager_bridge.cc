@@ -39,23 +39,12 @@ void DownloadManagerBridge::AddCompletedDownload(
     download::DownloadItem* download,
     AddCompletedDownloadCallback callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  std::string file_name = download->GetFileNameToReportUser().value();
-  std::string mime_type = download->GetMimeType();
-  std::string file_path = download->GetTargetFilePath().value();
-  int64_t file_size = download->GetReceivedBytes();
-  ScopedJavaLocalRef<jobject> joriginal_url =
-      url::GURLAndroid::FromNativeGURL(env, download->GetOriginalUrl());
-  ScopedJavaLocalRef<jobject> jreferer =
-      url::GURLAndroid::FromNativeGURL(env, download->GetReferrerUrl());
-  std::string download_guid = download->GetGuid();
 
   // Make copy on the heap so we can pass the pointer through JNI.
   intptr_t callback_id = reinterpret_cast<intptr_t>(
       new AddCompletedDownloadCallback(std::move(callback)));
 
-  Java_DownloadManagerBridge_addCompletedDownload(
-      env, file_name, file_name, mime_type, file_path, file_size, joriginal_url,
-      jreferer, download_guid, callback_id);
+  Java_DownloadManagerBridge_addCompletedDownload(env, callback_id);
 }
 
 void DownloadManagerBridge::RemoveCompletedDownload(

@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.AUTOF
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
-import android.os.Build;
 import android.view.autofill.AutofillManager;
 
 import org.jni_zero.CalledByNative;
@@ -95,9 +94,6 @@ public class AutofillClientProviderUtils {
         }
         if (!prefs.getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED)) {
             return AndroidAutofillAvailabilityStatus.NOT_ALLOWED_BY_POLICY;
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            return AndroidAutofillAvailabilityStatus.ANDROID_VERSION_TOO_OLD;
         }
         AutofillManager manager =
                 ContextUtils.getApplicationContext().getSystemService(AutofillManager.class);

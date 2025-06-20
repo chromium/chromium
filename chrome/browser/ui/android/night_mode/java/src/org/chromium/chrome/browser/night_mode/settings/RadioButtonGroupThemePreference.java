@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.night_mode.settings;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.CheckBox;
@@ -96,11 +95,9 @@ public class RadioButtonGroupThemePreference extends Preference
         mButtons.set(
                 ThemeType.SYSTEM_DEFAULT,
                 (RadioButtonWithDescription) holder.findViewById(R.id.system_default));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            mButtons.get(ThemeType.SYSTEM_DEFAULT)
-                    .setDescriptionText(
-                            getContext().getString(R.string.themes_system_default_summary_api_29));
-        }
+        mButtons.get(ThemeType.SYSTEM_DEFAULT)
+                .setDescriptionText(
+                        getContext().getString(R.string.themes_system_default_summary_api_29));
         mButtons.set(ThemeType.LIGHT, (RadioButtonWithDescription) holder.findViewById(R.id.light));
         mButtons.set(ThemeType.DARK, (RadioButtonWithDescription) holder.findViewById(R.id.dark));
 

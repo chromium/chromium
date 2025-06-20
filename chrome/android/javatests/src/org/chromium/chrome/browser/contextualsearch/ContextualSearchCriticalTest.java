@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
-import android.os.Build.VERSION_CODES;
-
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.MatcherAssert;
@@ -24,7 +22,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -140,7 +137,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     // Previously disabled: crbug.com/765403
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.P, message = "crbug.com/377363763")
+    @DisabledTest(message = "crbug.com/377363763")
     public void testSearchTermResolutionError() throws Exception {
         simulateSlowResolveSearch("states");
         assertSearchTermRequested();

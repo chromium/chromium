@@ -146,7 +146,6 @@ DeviceAuthenticatorAndroid::GetBiometricAvailabilityStatus() {
     case device_reauth::BiometricsAvailability::kHwUnavailable:
     case device_reauth::BiometricsAvailability::kNotEnrolled:
     case device_reauth::BiometricsAvailability::kSecurityUpdateRequired:
-    case device_reauth::BiometricsAvailability::kAndroidVersionNotSupported:
     case device_reauth::BiometricsAvailability::kOtherError:
       break;
   }

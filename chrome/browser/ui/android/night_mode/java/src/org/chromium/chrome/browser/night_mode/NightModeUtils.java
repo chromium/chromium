@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_TH
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.StyleRes;
@@ -58,16 +57,7 @@ public class NightModeUtils {
 
         // Rebase the theme against the new configuration, so the attributes get resolved to the
         // correct colors based on the night mode setting. See https://crbug.com/1280540.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            activity.getTheme().rebase();
-        } else {
-            // Theme#rebase() is only available on APIs 29+ and the support library of the method
-            // isn't guaranteed to succeed on older versions. So, we manually re-apply all the
-            // cached styles.
-            for (Integer themeResId : themeResIds) {
-                activity.getTheme().applyStyle(themeResId, true);
-            }
-        }
+        activity.getTheme().rebase();
     }
 
     /**
@@ -122,7 +112,7 @@ public class NightModeUtils {
     public static @ThemeType int getThemeSetting() {
         int userSetting = ChromeSharedPreferences.getInstance().readInt(UI_THEME_SETTING, -1);
         if (userSetting == -1) {
-            return isNightModeDefaultToLight() ? ThemeType.LIGHT : ThemeType.SYSTEM_DEFAULT;
+            return ThemeType.SYSTEM_DEFAULT;
         } else {
             return userSetting;
         }
@@ -150,12 +140,5 @@ public class NightModeUtils {
     public static void setNightModeSupportedForTesting(@Nullable Boolean nightModeSupported) {
         sNightModeSupportedForTest = nightModeSupported;
         ResettersForTesting.register(() -> sNightModeSupportedForTest = null);
-    }
-
-    /**
-     * @return Whether or not to default to the light theme.
-     */
-    public static boolean isNightModeDefaultToLight() {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.Q;
     }
 }

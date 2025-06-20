@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.night_mode.settings;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 
-import android.os.Build;
 import android.os.Bundle;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -24,7 +23,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.ui.UiUtils;
 
 /** Fragment to manage the theme user settings. */
 @NullMarked
@@ -86,20 +84,6 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
     @Override
     public ObservableSupplier<String> getPageTitle() {
         return mPageTitle;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        // On O_MR1, the flag View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR in this fragment is not
-        // updated to the attribute android:windowLightNavigationBar set in preference theme, so
-        // we set the flag explicitly to workaround the issue. See https://crbug.com/942551.
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O_MR1) {
-            UiUtils.setNavigationBarIconColor(
-                    getActivity().getWindow().getDecorView(),
-                    getResources().getBoolean(R.bool.window_light_navigation_bar));
-        }
     }
 
     @Override

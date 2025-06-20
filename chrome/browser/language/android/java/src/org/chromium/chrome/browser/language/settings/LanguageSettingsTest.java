@@ -121,7 +121,6 @@ public class LanguageSettingsTest {
     @Test
     @SmallTest
     @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.P,
             sdk_is_less_than = Build.VERSION_CODES.S,
             message = "Flaky in Q and R, crbug.com/40190787")
     public void testToggleOfferToTranslate() {

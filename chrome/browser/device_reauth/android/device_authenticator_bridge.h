@@ -38,7 +38,7 @@ enum class BiometricsAvailability {
   kHwUnavailable = 4,
   kNotEnrolled = 5,
   kSecurityUpdateRequired = 6,
-  kAndroidVersionNotSupported = 7,
+  // Deprecated: kAndroidVersionNotSupported = 7,
   kRequired = 8,
   kRequiredButHasError = 9,
 

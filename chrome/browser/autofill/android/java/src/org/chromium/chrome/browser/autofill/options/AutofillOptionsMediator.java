@@ -138,7 +138,6 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
             case AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF: // Pref may be changed!
             case AndroidAutofillAvailabilityStatus.AVAILABLE:
                 return false;
-            case AndroidAutofillAvailabilityStatus.ANDROID_VERSION_TOO_OLD:
             case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_MANAGER_NOT_AVAILABLE:
             case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_NOT_SUPPORTED:
             case AndroidAutofillAvailabilityStatus.UNKNOWN_ANDROID_AUTOFILL_SERVICE:

@@ -9,9 +9,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.text.TextUtils;
 
@@ -20,7 +17,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -30,7 +26,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.DownloadUtils;
-import org.chromium.url.GURL;
 
 import java.io.File;
 import java.util.concurrent.RejectedExecutionException;
@@ -82,41 +77,6 @@ public class DownloadManagerBridge {
         public boolean result;
         public int failureReason;
         public long startTime;
-    }
-
-    /**
-     * Adds a download to the Android DownloadManager.
-     * @see android.app.DownloadManager#addCompletedDownload(String, String, boolean, String,
-     * String, long, boolean)
-     */
-    public static long addCompletedDownload(
-            String fileName,
-            String description,
-            String mimeType,
-            String filePath,
-            long fileSizeBytes,
-            GURL originalUrl,
-            GURL referer,
-            String downloadGuid) {
-        assert !ThreadUtils.runningOnUiThread();
-        assert VERSION.SDK_INT < VERSION_CODES.Q
-                : "addCompletedDownload is deprecated in Q, may cause crash.";
-        long downloadId = getDownloadIdForDownloadGuid(downloadGuid);
-        if (downloadId != DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID) return downloadId;
-
-        downloadId =
-                DownloadUtils.addCompletedDownload(
-                        fileName,
-                        description,
-                        mimeType,
-                        filePath,
-                        fileSizeBytes,
-                        originalUrl,
-                        referer);
-        if (downloadId != DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID) {
-            addDownloadIdMapping(downloadId, downloadGuid);
-        }
-        return downloadId;
     }
 
     /**
@@ -242,25 +202,11 @@ public class DownloadManagerBridge {
     }
 
     /**
-     * Inserts a new download ID mapping into the SharedPreferences
-     *
-     * @param downloadId system download ID from Android DownloadManager.
-     * @param downloadGuid Download GUID.
-     */
-    private static void addDownloadIdMapping(long downloadId, String downloadGuid) {
-        synchronized (sLock) {
-            SharedPreferences sharedPrefs = getSharedPreferences();
-            SharedPreferences.Editor editor = sharedPrefs.edit();
-            editor.putLong(downloadGuid, downloadId);
-            editor.apply();
-        }
-    }
-
-    /**
      * Removes a download Id mapping from the SharedPreferences given the download GUID.
+     *
      * @param downloadGuid Download GUID.
      * @return the Android DownloadManager's download ID that is removed, or
-     *         INVALID_SYSTEM_DOWNLOAD_ID if it is not found.
+     *     INVALID_SYSTEM_DOWNLOAD_ID if it is not found.
      */
     private static long removeDownloadIdMapping(String downloadGuid) {
         long downloadId = DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID;
@@ -296,38 +242,12 @@ public class DownloadManagerBridge {
      * to the android's DownloadManager if the download is not a content URI.
      */
     @CalledByNative
-    private static void addCompletedDownload(
-            @JniType("std::string") String fileName,
-            @JniType("std::string") String description,
-            @JniType("std::string") String originalMimeType,
-            @JniType("std::string") String filePath,
-            long fileSizeBytes,
-            GURL originalUrl,
-            GURL referrer,
-            @JniType("std::string") String downloadGuid,
-            long callbackId) {
-        final String mimeType =
-                MimeUtils.remapGenericMimeType(originalMimeType, originalUrl.getSpec(), fileName);
+    private static void addCompletedDownload(long callbackId) {
         AsyncTask<Long> task =
                 new AsyncTask<>() {
                     @Override
                     protected Long doInBackground() {
-                        long downloadId = DownloadConstants.INVALID_DOWNLOAD_ID;
-                        // On Android Q-, add the completed download to Android download manager.
-                        if (!ContentUriUtils.isContentUri(filePath)
-                                && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                            downloadId =
-                                    addCompletedDownload(
-                                            fileName,
-                                            description,
-                                            mimeType,
-                                            filePath,
-                                            fileSizeBytes,
-                                            originalUrl,
-                                            referrer,
-                                            downloadGuid);
-                        }
-                        return downloadId;
+                        return DownloadConstants.INVALID_DOWNLOAD_ID;
                     }
 
                     @Override

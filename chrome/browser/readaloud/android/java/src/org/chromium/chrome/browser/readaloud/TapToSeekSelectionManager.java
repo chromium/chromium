@@ -5,7 +5,6 @@ package org.chromium.chrome.browser.readaloud;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.os.Build;
 import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.VisibleForTesting;
@@ -29,11 +28,6 @@ import org.chromium.ui.touch_selection.SelectionEventType;
  */
 @NullMarked
 public class TapToSeekSelectionManager implements SelectionClient.SurroundingTextCallback {
-    // Whether Smart Select is allowed to be enabled in Chrome. Set to true for Android O+. This
-    // check is also mirrored in {@link SelectionClientManager} when making the Smart Selection
-    // Client
-    private static final boolean IS_SMART_SELECTION_ENABLED_IN_CHROME =
-            Build.VERSION.SDK_INT > Build.VERSION_CODES.O;
     // Tab that Tap to Seek is hooked into. Can be null if not hooked into any tab.
     private @Nullable Tab mObservingTab;
     private final ReadAloudController mReadAloudController;
@@ -51,9 +45,7 @@ public class TapToSeekSelectionManager implements SelectionClient.SurroundingTex
             ReadAloudController readAloudController,
             ObservableSupplier<@Nullable Tab> activePlaybackTab) {
         mReadAloudController = readAloudController;
-        if (IS_SMART_SELECTION_ENABLED_IN_CHROME) {
-            activePlaybackTab.addObserver(this::onActivePlaybackTabUpdated);
-        }
+        activePlaybackTab.addObserver(this::onActivePlaybackTabUpdated);
     }
 
     @Override
@@ -88,7 +80,7 @@ public class TapToSeekSelectionManager implements SelectionClient.SurroundingTex
     }
 
     private void addHooks(@Nullable WebContents webContents) {
-        if (IS_SMART_SELECTION_ENABLED_IN_CHROME && webContents != null) {
+        if (webContents != null) {
             mSelectionClient =
                     new TapToSeekSelectionClient(
                             assumeNonNull(

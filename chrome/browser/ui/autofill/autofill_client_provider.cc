@@ -92,7 +92,6 @@ AndroidAutofillAvailabilityStatus GetAndroidAutofillAvailabilityStatus(
         availability = AndroidAutofillAvailabilityStatus::kAvailable;
       }
       ABSL_FALLTHROUGH_INTENDED;  // No skip-awg-check but skip-all may apply.
-    case AndroidAutofillAvailabilityStatus::kAndroidVersionTooOld:
     case AndroidAutofillAvailabilityStatus::kAndroidAutofillManagerNotAvailable:
     case AndroidAutofillAvailabilityStatus::kAndroidAutofillNotSupported:
     case AndroidAutofillAvailabilityStatus::kUnknownAndroidAutofillService:
