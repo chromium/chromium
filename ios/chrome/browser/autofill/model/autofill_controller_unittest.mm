@@ -1208,7 +1208,8 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
   LoadAndFillCreditCardForm();
 
   __block bool save_card_bottomsheet_shown = false;
-  OCMStub([autofill_commands_handler_ showSaveCardBottomSheet])
+  OCMStub([autofill_commands_handler_
+              showSaveCardBottomSheetOnOriginWebState:web_state()])
       .andDo(^(NSInvocation* invocation) {
         save_card_bottomsheet_shown = true;
       });
@@ -1259,7 +1260,8 @@ TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
   LoadAndFillCreditCardForm();
 
   __block bool save_card_bottomsheet_shown = false;
-  OCMStub([autofill_commands_handler_ showSaveCardBottomSheet])
+  OCMStub([autofill_commands_handler_
+              showSaveCardBottomSheetOnOriginWebState:web_state()])
       .andDo(^(NSInvocation* invocation) {
         save_card_bottomsheet_shown = true;
       });
@@ -1343,7 +1345,8 @@ TEST_F(AutofillControllerTest,
                                        FieldPropertiesFlags::kAutofilled);
 
   __block bool save_card_bottomsheet_shown = false;
-  OCMStub([autofill_commands_handler_ showSaveCardBottomSheet])
+  OCMStub([autofill_commands_handler_
+              showSaveCardBottomSheetOnOriginWebState:web_state()])
       .andDo(^(NSInvocation* invocation) {
         save_card_bottomsheet_shown = true;
       });

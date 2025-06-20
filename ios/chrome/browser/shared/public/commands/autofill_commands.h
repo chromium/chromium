@@ -38,7 +38,7 @@ class WebState;
 - (void)showPlusAddressesBottomSheet;
 
 // Commands to manage save card bottomsheet.
-- (void)showSaveCardBottomSheet;
+- (void)showSaveCardBottomSheetOnOriginWebState:(web::WebState*)originWebState;
 - (void)dismissSaveCardBottomSheet;
 
 // Sends a command to show the VCN enrollment Bottom Sheet.

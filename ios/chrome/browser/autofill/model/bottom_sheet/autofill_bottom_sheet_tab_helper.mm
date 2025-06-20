@@ -131,7 +131,7 @@ void AutofillBottomSheetTabHelper::ShowPlusAddressesBottomSheet(
 void AutofillBottomSheetTabHelper::ShowSaveCardBottomSheet(
     std::unique_ptr<autofill::SaveCardBottomSheetModel> model) {
   save_card_bottom_sheet_model_ = std::move(model);
-  [commands_handler_ showSaveCardBottomSheet];
+  [commands_handler_ showSaveCardBottomSheetOnOriginWebState:web_state_];
 }
 
 void AutofillBottomSheetTabHelper::ShowVirtualCardEnrollmentBottomSheet(

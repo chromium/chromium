@@ -2071,9 +2071,15 @@ enum class ToolbarKind {
   [self.plusAddressBottomSheetCoordinator start];
 }
 
-- (void)showSaveCardBottomSheet {
+- (void)showSaveCardBottomSheetOnOriginWebState:(web::WebState*)originWebState {
   if (self.saveCardBottomSheetCoordinator) {
     [self.saveCardBottomSheetCoordinator stop];
+  }
+
+  if (self.activeWebState != originWebState) {
+    // Do not show the sheet if the current tab is not the one where the
+    // bottomsheet show request was triggered from.
+    return;
   }
 
   self.saveCardBottomSheetCoordinator = [[SaveCardBottomSheetCoordinator alloc]
