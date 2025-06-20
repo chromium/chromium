@@ -79,10 +79,9 @@ CGFloat const kSheetCornerRadius = 30;
 - (void)start {
   __weak __typeof(self) weakSelf = self;
   image_fetcher::ImageFetcherService* imageFetcherService =
-      ImageFetcherServiceFactory::GetForProfile(self.browser->GetProfile());
+      ImageFetcherServiceFactory::GetForProfile(self.profile);
   HomeBackgroundImageService* homeBackgroundImageService =
-      HomeBackgroundImageServiceFactory::GetForProfile(
-          self.browser->GetProfile());
+      HomeBackgroundImageServiceFactory::GetForProfile(self.profile);
 
   _mediator =
       [[HomeCustomizationBackgroundPickerActionSheetMediator alloc] init];
