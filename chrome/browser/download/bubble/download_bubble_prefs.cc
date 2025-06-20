@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
@@ -29,6 +30,11 @@ bool IsDownloadBubbleEnabled() {
 }
 
 bool ShouldShowDownloadBubble(Profile* profile) {
+  // There is no need to display download bubble in headless mode. This prevents
+  // http://crbug.com/379994807 but also makes sense on other platforms.
+  if (headless::IsHeadlessMode()) {
+    return false;
+  }
   // If the download UI is disabled by at least one extension, do not show the
   // bubble and the toolbar icon.
   return DownloadCoreServiceFactory::GetForBrowserContext(
