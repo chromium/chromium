@@ -972,12 +972,16 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   if (end_access_desc.fenceCount > 0) {
     // For write access, we would need to WaitForCommandsToBeScheduled
     // before the image is used by CoreAnimation or WebGL later.
-    // However, we defer the wait on this device until CoreAnimation
-    // or WebGL actually needs to access the image. This could avoid repeated
-    // and unnecessary waits.
+    // However, when it's not thread safe (DrDC is disabled), we defer the wait
+    // on this device until CoreAnimation or WebGL actually needs to access the
+    // image. This could avoid repeated and unnecessary waits.
     // TODO(b/328411251): Investigate whether this is needed if the access
     // is readonly.
-    iosurface_backing->AddWGPUDeviceWithPendingCommands(device_);
+    if (iosurface_backing->is_thread_safe()) {
+      dawn::native::metal::WaitForCommandsToBeScheduled(device_.Get());
+    } else {
+      iosurface_backing->AddWGPUDeviceWithPendingCommands(device_);
+    }
   }
 
   texture_ = nullptr;
