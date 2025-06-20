@@ -1255,6 +1255,12 @@
     <message name="IDS_AUTOFILL_BOTTOM_SHEET_MANAGE_PAYMENT_METHODS" desc="An option in the autofill bottom sheet that triggers navigation to the payment settings." formatter_data="android_java">
       Manage payment methods
     </message>
+    <message name="IDS_AUTOFILL_BOTTOM_SHEET_ALL_YOUR_LOYALTY_CARDS" desc="An option in the autofill bottom sheet that shows all loyalty cards of a user." formatter_data="android_java">
+      All your loyalty cards
+    </message>
+    <message name="IDS_AUTOFILL_BOTTOM_SHEET_EXPAND_ALL_LOYALTY_CARDS_DESCRIPTION" desc="Accessibility string for the icon that allows entering the screen with all loyalty cards of a user." formatter_data="android_java">
+      Change to all loyalty cards under this menu item.
+    </message>
     <message name="IDS_AUTOFILL_BOTTOM_SHEET_MANAGE_LOYALTY_CARDS" desc="An option in the autofill bottom sheet that triggers navigation to the loyalty cards management UI in Google Wallet." formatter_data="android_java">
       Manage loyalty cards
     </message>

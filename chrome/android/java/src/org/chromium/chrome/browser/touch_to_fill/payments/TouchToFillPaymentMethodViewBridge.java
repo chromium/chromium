@@ -88,7 +88,7 @@ class TouchToFillPaymentMethodViewBridge {
             @JniType("std::vector") List<LoyaltyCard> affiliatedLoyaltyCards,
             @JniType("std::vector") List<LoyaltyCard> allLoyaltyCards,
             boolean firstTimeUsage) {
-        mComponent.showLoyaltyCards(allLoyaltyCards, affiliatedLoyaltyCards, firstTimeUsage);
+        mComponent.showLoyaltyCards(affiliatedLoyaltyCards, allLoyaltyCards, firstTimeUsage);
     }
 
     @CalledByNative

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getValuableIcon;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
@@ -131,6 +132,10 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 LOYALTY_CARD,
                 TouchToFillPaymentMethodViewBinder::createLoyaltyCardItemView,
                 TouchToFillPaymentMethodViewBinder::bindLoyaltyCardItemView);
+        adapter.registerType(
+                ALL_LOYALTY_CARDS,
+                TouchToFillPaymentMethodViewBinder::createAllLoyaltyCardsItemView,
+                TouchToFillPaymentMethodViewBinder::bindAllLoyaltyCardsItemView);
         adapter.registerType(
                 HEADER,
                 TouchToFillPaymentMethodViewBinder::createHeaderItemView,

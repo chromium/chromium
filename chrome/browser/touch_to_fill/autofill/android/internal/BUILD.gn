@@ -46,6 +46,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/layout/touch_to_fill_all_loyalty_cards_item.xml",
     "java/res/layout/touch_to_fill_credit_card_sheet_item.xml",
     "java/res/layout/touch_to_fill_iban_sheet_item.xml",
     "java/res/layout/touch_to_fill_loyalty_card_sheet_item.xml",

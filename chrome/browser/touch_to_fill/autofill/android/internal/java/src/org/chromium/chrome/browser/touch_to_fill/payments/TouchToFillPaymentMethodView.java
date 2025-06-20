@@ -50,6 +50,7 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 case ItemType.CREDIT_CARD:
                 case ItemType.IBAN:
                 case ItemType.LOYALTY_CARD:
+                case ItemType.ALL_LOYALTY_CARDS:
                     return false;
             }
             assert false : "Undefined whether to skip setting background for item of type: " + type;

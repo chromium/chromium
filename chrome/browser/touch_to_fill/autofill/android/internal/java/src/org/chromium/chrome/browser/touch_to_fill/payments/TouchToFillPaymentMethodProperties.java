@@ -43,18 +43,21 @@ class TouchToFillPaymentMethodProperties {
         // A section containing the loyalty card data.
         int LOYALTY_CARD = 3;
 
+        // An item which displays all user's loyalty cards upon click.
+        int ALL_LOYALTY_CARDS = 4;
+
         // A "Continue" button, which is shown when there is only one payment
         // method available.
-        int FILL_BUTTON = 4;
+        int FILL_BUTTON = 5;
 
         // A button that redirects the user to the Wallet settings in Chrome.
-        int WALLET_SETTINGS_BUTTON = 5;
+        int WALLET_SETTINGS_BUTTON = 6;
 
         // A footer section containing additional actions.
-        int FOOTER = 6;
+        int FOOTER = 7;
 
         // A section with a terms label is present when card benefits are available.
-        int TERMS_LABEL = 7;
+        int TERMS_LABEL = 8;
     }
 
     /** Metadata associated with a card's image. */
@@ -149,6 +152,16 @@ class TouchToFillPaymentMethodProperties {
         };
 
         private LoyaltyCardProperties() {}
+    }
+
+    /** Properties for the "All your loyalty cards" item in the TouchToFill sheet for payments. */
+    static class AllLoyaltyCardsItemProperties {
+        static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_ACTION =
+                new PropertyModel.ReadableObjectPropertyKey<>("all_loyalty_cards_on_click_action");
+
+        static final PropertyKey[] ALL_KEYS = {ON_CLICK_ACTION};
+
+        private AllLoyaltyCardsItemProperties() {}
     }
 
     /**
