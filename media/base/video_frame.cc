@@ -1574,15 +1574,6 @@ void VideoFrame::SetReleaseMailboxCB(ReleaseMailboxCB release_mailbox_cb) {
       WrapReleaseMailboxCB(std::move(release_mailbox_cb));
 }
 
-void VideoFrame::SetReleaseMailboxAndGpuMemoryBufferCB(
-    ReleaseMailboxAndGpuMemoryBufferCB release_mailbox_cb) {
-  // See remarks in SetReleaseMailboxCB.
-  DCHECK(release_mailbox_cb);
-  DCHECK(!mailbox_holder_and_gmb_release_cb_);
-  DCHECK(!wrapped_frame_);
-  mailbox_holder_and_gmb_release_cb_ = std::move(release_mailbox_cb);
-}
-
 bool VideoFrame::HasReleaseMailboxCB() const {
   return wrapped_frame_ ? wrapped_frame_->HasReleaseMailboxCB()
                         : !!mailbox_holder_and_gmb_release_cb_;

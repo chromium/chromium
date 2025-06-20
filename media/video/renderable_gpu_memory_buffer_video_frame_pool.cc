@@ -26,7 +26,6 @@
 #include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
@@ -115,15 +114,8 @@ class InternalRefCountedPool
 
   // Callback made when the VideoFrame is destroyed. This callback then either
   // returns |frame_resources| to |available_frame_resources_| or destroys it.
-  // TODO(crbug.com/40263579): Remove |gpu_memory_buffer| from this method once
-  // VideoFrame and all its clients are fully converted to use MappableSI
-  // instead of GpuMemoryBuffer. Currently for this client, VideoFrame runs
-  // this callback with null |gpu_memory_buffer| always as this client uses
-  // MappableSI.
-  void OnVideoFrameDestroyed(
-      std::unique_ptr<FrameResources> frame_resources,
-      const gpu::SyncToken& sync_token,
-      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer);
+  void OnVideoFrameDestroyed(std::unique_ptr<FrameResources> frame_resources,
+                             const gpu::SyncToken& sync_token);
 
   const VideoPixelFormat format_;
   const std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool::Context>
@@ -335,23 +327,18 @@ scoped_refptr<VideoFrame> InternalRefCountedPool::MaybeCreateVideoFrame(
     return nullptr;
   }
 
-  // Set the ReleaseMailboxAndGpuMemoryBufferCB to return the GpuMemoryBuffer to
-  // the FrameResources, and return the FrameResources to the available pool. Do
-  // this on the calling thread.
+  // Set the ReleaseMailboxCB to return the FrameResources to the available
+  // pool. Do this on the calling thread.
   auto callback = base::BindOnce(&InternalRefCountedPool::OnVideoFrameDestroyed,
                                  this, std::move(frame_resources));
-  video_frame->SetReleaseMailboxAndGpuMemoryBufferCB(
+  video_frame->SetReleaseMailboxCB(
       base::BindPostTaskToCurrentDefault(std::move(callback), FROM_HERE));
   return video_frame;
 }
 
 void InternalRefCountedPool::OnVideoFrameDestroyed(
     std::unique_ptr<FrameResources> frame_resources,
-    const gpu::SyncToken& sync_token,
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer) {
-  // |gpu_memory_buffer| returned here by VideoFrame should always be null
-  // since we use MappableSI.
-  CHECK(!gpu_memory_buffer);
+    const gpu::SyncToken& sync_token) {
   frame_resources->SetSharedImageReleaseSyncToken(sync_token);
 
   if (shutting_down_) {
