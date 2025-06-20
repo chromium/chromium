@@ -7360,6 +7360,8 @@ def generate_install_properties_per_feature(function_name,
     ])
     source_node.accumulator.add_include_headers([
         "base/containers/span.h",
+        "base/notimplemented.h",
+        "base/notreached.h",
         "third_party/blink/renderer/platform/bindings/script_state.h",
         "third_party/blink/renderer/platform/bindings/v8_per_context_data.h",
         "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h",
