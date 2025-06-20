@@ -91,6 +91,26 @@ int StarterPackRelevance(
   return 0;
 }
 
+// Returns description for starter pack suggestions.
+std::u16string StarterPackDescription(const AutocompleteInput& input,
+                                      const TemplateURL& template_url) {
+  if (template_url.starter_pack_id() == TemplateURLStarterPackData::kGemini) {
+    return l10n_util::GetStringFUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT,
+                                      template_url.keyword(),
+                                      template_url.short_name());
+  } else if (template_url.short_name() == u"Tabs") {
+    // Very special request from UX to sentence-case "Tabs" -> "tabs" only in
+    // this context. It needs to stay capitalized elsewhere since it's treated
+    // like a proper engine name.
+    return l10n_util::GetStringFUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT,
+                                      template_url.keyword(), u"tabs");
+  } else {
+    return l10n_util::GetStringFUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT,
+                                      template_url.keyword(),
+                                      template_url.short_name());
+  }
+}
+
 std::string GetIphDismissedPrefNameFor(IphType iph_type) {
   switch (iph_type) {
     case IphType::kNone:
@@ -320,23 +340,7 @@ void FeaturedSearchProvider::AddStarterPackMatch(
   }
   match.destination_url = GURL(destination_url);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
-  if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
-      template_url.starter_pack_id() == TemplateURLStarterPackData::kGemini) {
-    match.description = l10n_util::GetStringFUTF16(
-        IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT, template_url.keyword(),
-        template_url.short_name());
-  } else {
-    std::u16string short_name = template_url.short_name();
-    if (template_url.short_name() == u"Tabs") {
-      // Very special request from UX to sentence-case "Tabs" -> "tabs" only
-      // in this context. It needs to stay capitalized elsewhere since it's
-      // treated like a proper engine name.
-      match.description = short_name = u"tabs";
-    }
-    match.description =
-        l10n_util::GetStringFUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT,
-                                   template_url.keyword(), short_name);
-  }
+  match.description = StarterPackDescription(input, template_url);
   match.description_class = {
       {0, ACMatchClassification::NONE},
       {template_url.keyword().size(), ACMatchClassification::DIM}};
