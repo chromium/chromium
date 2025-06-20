@@ -328,9 +328,18 @@
     /* Colors for searchbox ghost loader */
     --color-searchbox-ghost-loader-loading-bar-1: #F1F3F4;
     --color-searchbox-ghost-loader-loading-bar-2: #ECEDEF;
+    /* The size of the searchbox container doesn't match the searchbox and ghost
+       loader, so don't allow pointer events on the searchbox container. Only
+       allow pointer events on the searchbox and ghost loader. */
+    pointer-events: none;
     position: absolute;
     inset-block-start: 40px;
     inset-inline-end: 140px;
+  }
+
+  #searchboxContainer > * {
+    /* Allow pointer events on the searchbox and ghost loader. */
+    pointer-events: all;
   }
 
   :host(:not([is-translate-button-enabled])) #searchboxContainer {
