@@ -191,7 +191,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
           self.browser->GetWebStateList(), beginTime, endTime, cachedTabsInfo);
 
   TabGroupService* groupService =
-      TabGroupServiceFactory::GetForProfile(self.browser->GetProfile());
+      TabGroupServiceFactory::GetForProfile(self.profile);
   std::set<tab_groups::TabGroupId> sharedGroups;
   if (groupService) {
     for (const TabGroup* group : webStateList->GetGroups()) {
