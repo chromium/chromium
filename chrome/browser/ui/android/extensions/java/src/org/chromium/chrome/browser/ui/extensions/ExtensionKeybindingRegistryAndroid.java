@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui.extensions;
 
 import android.view.KeyEvent;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -17,6 +19,7 @@ import org.chromium.chrome.browser.profiles.Profile;
  * ExtensionKeybindingRegistryAndroid object and handles communication between Java and C++.
  */
 @NullMarked
+@JNINamespace("extensions")
 @ServiceImpl(ExtensionKeybindingRegistry.class)
 public class ExtensionKeybindingRegistryAndroid implements ExtensionKeybindingRegistry {
     private long mNativeExtensionKeybindingRegistryAndroid;
@@ -49,10 +52,12 @@ public class ExtensionKeybindingRegistryAndroid implements ExtensionKeybindingRe
 
     @NativeMethods
     interface Natives {
-        long init(Profile profile);
+        long init(@JniType("Profile*") Profile profile);
 
         void destroy(long nativeExtensionKeybindingRegistryAndroid);
 
-        boolean handleKeyEvent(long nativeExtensionKeybindingRegistryAndroid, KeyEvent event);
+        boolean handleKeyEvent(
+                long nativeExtensionKeybindingRegistryAndroid,
+                @JniType("ui::KeyEventAndroid") KeyEvent event);
     }
 }

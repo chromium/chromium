@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/extensions/jni_headers/ExtensionKeybindingRegistryAndroid_jni.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -20,6 +19,11 @@
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform_event.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/extensions/jni_headers/ExtensionKeybindingRegistryAndroid_jni.h"
+
+namespace extensions {
 
 ExtensionKeybindingRegistryAndroid::ExtensionKeybindingRegistryAndroid(
     content::BrowserContext* context,
@@ -61,10 +65,8 @@ void ExtensionKeybindingRegistryAndroid::OnShortcutHandlingSuspended(
 
 // JNI functions
 
-static jlong JNI_ExtensionKeybindingRegistryAndroid_Init(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& profile_obj) {
-  Profile* profile = Profile::FromJavaObject(profile_obj);
+static jlong JNI_ExtensionKeybindingRegistryAndroid_Init(JNIEnv* env,
+                                                         Profile* profile) {
   ExtensionKeybindingRegistryAndroid* instance =
       new ExtensionKeybindingRegistryAndroid(
           profile, extensions::ExtensionKeybindingRegistry::ALL_EXTENSIONS,
@@ -76,14 +78,14 @@ void ExtensionKeybindingRegistryAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jboolean ExtensionKeybindingRegistryAndroid::HandleKeyEvent(
+bool ExtensionKeybindingRegistryAndroid::HandleKeyEvent(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& java_key_event) {
+    const ui::KeyEventAndroid& key_event) {
   if (is_shortcut_handling_suspended_) {
     return false;
   }
 
-  ui::PlatformEvent native_event((ui::KeyEventAndroid(env, java_key_event)));
+  ui::PlatformEvent native_event(key_event);
   ui::Accelerator accelerator((ui::KeyEvent(native_event)));
 
   if (!active_accelerators_.contains(accelerator)) {
@@ -92,3 +94,5 @@ jboolean ExtensionKeybindingRegistryAndroid::HandleKeyEvent(
 
   return NotifyEventTargets(accelerator);
 }
+
+}  // namespace extensions

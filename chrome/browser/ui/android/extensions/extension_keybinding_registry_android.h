@@ -7,10 +7,13 @@
 
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/events/android/key_event_android.h"
 
 namespace content {
 class BrowserContext;
 }
+
+namespace extensions {
 
 // This class handles keyboard accelerators for extensions on Android.
 class ExtensionKeybindingRegistryAndroid
@@ -32,9 +35,7 @@ class ExtensionKeybindingRegistryAndroid
 
   // Handles the key event. It returns whether the key event was handled. It
   // immediately returns false if the given key event should not intercept.
-  jboolean HandleKeyEvent(
-      JNIEnv* env,
-      const jni_zero::JavaParamRef<jobject>& java_key_event);
+  bool HandleKeyEvent(JNIEnv* env, const ui::KeyEventAndroid& key_event);
 
  private:
   // Overridden from ExtensionKeybindingRegistry:
@@ -47,5 +48,7 @@ class ExtensionKeybindingRegistryAndroid
   std::set<ui::Accelerator> active_accelerators_;
   bool is_shortcut_handling_suspended_ = false;
 };
+
+}  // namespace extensions
 
 #endif  // CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSION_KEYBINDING_REGISTRY_ANDROID_H_

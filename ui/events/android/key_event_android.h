@@ -40,4 +40,22 @@ class EVENTS_EXPORT KeyEventAndroid {
 
 }  // namespace ui
 
+namespace jni_zero {
+
+// @JniType conversion function.
+template <>
+inline ui::KeyEventAndroid FromJniType<ui::KeyEventAndroid>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_obj) {
+  return ui::KeyEventAndroid(env, j_obj.obj());
+}
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<ui::KeyEventAndroid>(
+    JNIEnv* env,
+    const ui::KeyEventAndroid& obj) {
+  return obj.GetJavaObject();
+}
+
+}  // namespace jni_zero
+
 #endif  // UI_EVENTS_ANDROID_KEY_EVENT_ANDROID_H_
