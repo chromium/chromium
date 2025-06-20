@@ -1049,7 +1049,8 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, BrokenBlobResponse) {
   // However, since the blob is broken we should get an error while transferring
   // the body.
   client_.RunUntilComplete();
-  EXPECT_EQ(net::ERR_OUT_OF_MEMORY, client_.completion_status().error_code);
+  EXPECT_EQ(net::ERR_BLOB_OUT_OF_MEMORY,
+            client_.completion_status().error_code);
 
   if (LoaderRecordsTimingMetrics()) {
     // Timing histograms shouldn't be recorded on broken response.

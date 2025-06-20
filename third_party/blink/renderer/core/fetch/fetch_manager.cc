@@ -843,6 +843,13 @@ void FetchManager::Loader::DidFinishLoading(uint64_t) {
 
 void FetchManager::Loader::DidFail(uint64_t identifier,
                                    const ResourceError& error) {
+  // Record the failures for blob fetch request.
+  if (GetFetchRequestData() &&
+      GetFetchRequestData()->Url().ProtocolIs("blob")) {
+    base::UmaHistogramSparse("Net.BlobFetch.ResponseNetErrorCode",
+                             -error.ErrorCode());
+  }
+
   if (GetFetchRequestData() && GetFetchRequestData()->TrustTokenParams()) {
     HistogramNetErrorForTrustTokensOperation(
         GetFetchRequestData()->TrustTokenParams()->operation,
