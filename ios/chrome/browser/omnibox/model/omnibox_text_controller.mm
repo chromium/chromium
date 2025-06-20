@@ -204,11 +204,7 @@ const char kOmniboxFocusResultedInNavigation[] =
 }
 
 - (void)revertAll {
-  // This will clear the model's `user_input_in_progress_`.
-  if (_omniboxEditModel) {
-    _omniboxEditModel->Revert();
-  }
-
+  [self revertState];
   // This will stop the `AutocompleteController`. This should happen after
   // `user_input_in_progress_` is cleared above; otherwise, closing the popup
   // will trigger unnecessary `AutocompleteClassifier::Classify()` calls to
@@ -236,6 +232,28 @@ const char kOmniboxFocusResultedInNavigation[] =
     }
     [self notifyClientOnUserInputInProgressChange:inProgress];
   }
+}
+
+- (void)revertState {
+  [self setInputInProgress:NO];
+  _omniboxTextModel->input.Clear();
+  _omniboxTextModel->paste_state = OmniboxPasteState::kNone;
+  _omniboxTextModel->UpdateUserText(std::u16string());
+  size_t start, end;
+  [self getSelectionBounds:&start end:&end];
+  _omniboxTextModel->current_match = AutocompleteMatch();
+  // First home the cursor, so view of text is scrolled to left, then correct
+  // it. `SetCaretPos()` doesn't scroll the text, so doing that first wouldn't
+  // accomplish anything.
+  std::u16string current_permanent_url = _omniboxTextModel->url_for_editing;
+
+  [self setWindowText:current_permanent_url
+               caretPos:0
+      startAutocomplete:false
+      notifyTextChanged:true];
+  [self setCaretPos:std::min(current_permanent_url.length(), start)];
+
+  _omniboxController->client()->OnRevert();
 }
 
 #pragma mark - Autocomplete events

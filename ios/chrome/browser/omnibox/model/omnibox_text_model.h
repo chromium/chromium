@@ -118,6 +118,12 @@ struct OmniboxTextModel {
   // This is needed to properly update the SearchModel state when the user
   // presses escape.
   bool in_revert;
+  // Used to know what should be displayed. Updated when e.g. the popup
+  // selection changes, the results change, on navigation, on tab switch etc; it
+  // should always be up-to-date.
+  AutocompleteMatch current_match;
+  // The initial text representing the current URL suitable for editing.
+  std::u16string url_for_editing;
 };
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_TEXT_MODEL_H_

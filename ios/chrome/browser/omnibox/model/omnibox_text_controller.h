@@ -81,6 +81,10 @@ class OmniboxEditModelIOS;
 /// Updates the text model input_in_progress state.
 - (void)setInputInProgress:(BOOL)inProgress;
 
+/// Reverts the text model back to its unedited state (permanent text showing,
+/// no user input in progress).
+- (void)revertState;
+
 #pragma mark - Autocomplete event
 
 /// Sets the additional text.

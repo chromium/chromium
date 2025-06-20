@@ -103,7 +103,7 @@ OmniboxEditModelIOS::GetPageClassification() const {
 AutocompleteMatch OmniboxEditModelIOS::CurrentMatch(
     GURL* alternate_nav_url) const {
   // If we have a valid match use it. Otherwise get one for the current text.
-  AutocompleteMatch match = current_match_;
+  AutocompleteMatch match = text_model_->current_match;
   if (!match.destination_url.is_valid()) {
     GetInfoForCurrentText(&match, alternate_nav_url);
   } else if (alternate_nav_url) {
@@ -117,7 +117,7 @@ AutocompleteMatch OmniboxEditModelIOS::CurrentMatch(
 
 bool OmniboxEditModelIOS::ResetDisplayTexts() {
   const std::u16string old_display_text = GetPermanentDisplayText();
-  url_for_editing_ = controller_->client()->GetFormattedFullURL();
+  text_model_->url_for_editing = controller_->client()->GetFormattedFullURL();
   // When there's new permanent text, and the user isn't interacting with the
   // omnibox, we want to revert the edit to show the new text.  We could simply
   // define "interacting" as "the omnibox has focus", but we still allow updates
@@ -134,13 +134,13 @@ bool OmniboxEditModelIOS::ResetDisplayTexts() {
 }
 
 std::u16string OmniboxEditModelIOS::GetPermanentDisplayText() const {
-  return url_for_editing_;
+  return text_model_->url_for_editing;
 }
 
 void OmniboxEditModelIOS::SetUserText(const std::u16string& text) {
   [text_controller_ setInputInProgress:YES];
   text_model_->UpdateUserText(text);
-  GetInfoForCurrentText(&current_match_, nullptr);
+  GetInfoForCurrentText(&text_model_->current_match, nullptr);
   text_model_->paste_state = OmniboxPasteState::kNone;
 }
 
@@ -171,7 +171,7 @@ void OmniboxEditModelIOS::AdjustTextForCopy(int sel_min,
   omnibox::AdjustTextForCopy(
       sel_min, text,
       /*has_user_modified_text=*/text_model_->user_input_in_progress ||
-          *text != url_for_editing_,
+          *text != text_model_->url_for_editing,
       /*is_keyword_selected=*/false,
       PopupIsOpen() ? std::optional<AutocompleteMatch>(CurrentMatch(nullptr))
                     : std::nullopt,
@@ -179,28 +179,7 @@ void OmniboxEditModelIOS::AdjustTextForCopy(int sel_min,
 }
 
 void OmniboxEditModelIOS::Revert() {
-  [text_controller_ setInputInProgress:NO];
-  text_model_->input.Clear();
-  text_model_->paste_state = OmniboxPasteState::kNone;
-  text_model_->UpdateUserText(std::u16string());
-  size_t start, end;
-  if (text_controller_) {
-    [text_controller_ getSelectionBounds:&start end:&end];
-  }
-  current_match_ = AutocompleteMatch();
-  // First home the cursor, so view of text is scrolled to left, then correct
-  // it. `SetCaretPos()` doesn't scroll the text, so doing that first wouldn't
-  // accomplish anything.
-  std::u16string current_permanent_url = GetPermanentDisplayText();
-
-  [text_controller_ setWindowText:current_permanent_url
-                         caretPos:0
-                startAutocomplete:false
-                notifyTextChanged:true];
-  [text_controller_
-      setCaretPos:std::min(current_permanent_url.length(), start)];
-
-  controller_->client()->OnRevert();
+  [text_controller_ revertState];
 }
 
 void OmniboxEditModelIOS::OpenSelection(OmniboxPopupSelection selection,
@@ -260,8 +239,7 @@ void OmniboxEditModelIOS::OnPopupDataChanged(
     const std::u16string& inline_autocompletion,
     const std::u16string& additional_text,
     const AutocompleteMatch& new_match) {
-  current_match_ = new_match;
-
+  text_model_->current_match = new_match;
   text_model_->inline_autocompletion = inline_autocompletion;
 
   const std::u16string& user_text = text_model_->user_input_in_progress
@@ -324,7 +302,7 @@ void OmniboxEditModelIOS::GetInfoForCurrentText(AutocompleteMatch* match,
     // user input is in progress.
     std::u16string text_for_match_generation =
         text_model_->user_input_in_progress ? text_model_->user_text
-                                            : url_for_editing_;
+                                            : text_model_->url_for_editing;
 
     controller_->client()->GetAutocompleteClassifier()->Classify(
         text_for_match_generation, false, true, GetPageClassification(), match,
@@ -439,8 +417,9 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
 
   std::u16string input_text(pasted_text);
   if (input_text.empty()) {
-    input_text = text_model_->user_input_in_progress ? text_model_->user_text
-                                                     : url_for_editing_;
+    input_text = text_model_->user_input_in_progress
+                     ? text_model_->user_text
+                     : text_model_->url_for_editing;
   }
   // Create a dummy AutocompleteInput for use in calling VerbatimMatchForInput()
   // to create an alternate navigational match.

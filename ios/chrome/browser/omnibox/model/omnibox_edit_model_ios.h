@@ -281,13 +281,6 @@ class OmniboxEditModelIOS {
   // The autocomplete controller.
   __weak OmniboxAutocompleteController* omnibox_autocomplete_controller_ = nil;
 
-  // The initial text representing the current URL suitable for editing.
-  std::u16string url_for_editing_;
-
-  // Used to know what should be displayed. Updated when e.g. the popup
-  // selection changes, the results change, on navigation, on tab switch etc; it
-  // should always be up-to-date.
-  AutocompleteMatch current_match_;
   // The popup view is nullptr when there's no popup, and is non-null when
   // a popup view exists (i.e. between calls to `set_popup_view`).
   raw_ptr<OmniboxPopupViewIOS> popup_view_ = nullptr;
