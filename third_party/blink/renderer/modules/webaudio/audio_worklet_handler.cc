@@ -151,17 +151,14 @@ void AudioWorkletHandler::ProcessInternal(uint32_t frames_to_process) {
     }
   }
 
-  for (const auto& param_name : param_value_map_.Keys()) {
-    auto* const param_handler = param_handler_map_.at(param_name);
-    AudioFloatArray* param_values = param_value_map_.at(param_name);
+  for (auto& entry : param_value_map_) {
+    auto* const param_handler = param_handler_map_.at(entry.key);
+    auto param_values = entry.value->as_span().first(frames_to_process);
     if (param_handler->HasSampleAccurateValues() &&
         param_handler->IsAudioRate()) {
-      param_handler->CalculateSampleAccurateValues(
-          param_values->as_span().first(frames_to_process));
+      param_handler->CalculateSampleAccurateValues(param_values);
     } else {
-      std::fill(param_values->Data(),
-                UNSAFE_TODO(param_values->Data() + frames_to_process),
-                param_handler->FinalValue());
+      std::ranges::fill(param_values, param_handler->FinalValue());
     }
   }
 
