@@ -147,6 +147,12 @@
       <message name="IDS_IOS_ACCNAME_LENS" desc="The accessibility label for the Lens visual search button in the location bar [Length: unlimited]">
         Lens visual search
       </message>
+      <message name="IDS_IOS_ACCNAME_MIA" desc="The accessibility label for the AI Mode search button on the new tab page [Length: unlimited]">
+        Ask AI mode
+      </message>
+      <message name="IDS_IOS_ACCNAME_NEW_INCOGNITO_TAB" desc="The accessibility label for the new incognito tab button on the new tab page [Length: unlimited]">
+        New incognito tab
+      </message>
       <message name="IDS_IOS_ACCNAME_RELOAD" desc="The accessibility label for the reload button [Length: unlimited] [iOS only]">
         Reload
       </message>

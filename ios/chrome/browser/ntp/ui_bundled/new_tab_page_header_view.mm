@@ -43,6 +43,7 @@
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
@@ -422,6 +423,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   if (self.shouldShowMIAEntrypoint) {
     self.miaButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+    [self.miaButton
+        setAccessibilityLabel:l10n_util::GetNSString(IDS_IOS_ACCNAME_MIA)];
+    [self.miaButton setAccessibilityIdentifier:@"MIA"];
+
     [_buttonStack addArrangedSubview:self.miaButton];
     if (self.useInlineMIA) {
       [self addMIAAndVoiceDivider];
