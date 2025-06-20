@@ -120,7 +120,7 @@ enum class OverrideFormat {
   //          "predictions": ["NAME_FIRST"]
   //        },
   //        "456": {
-  //          "predictions": ["NAME_FIRST", "PASSPORT_NAME_TAG"]
+  //          "predictions": ["NAME_FIRST", "PASSPORT_NUMBER"]
   //        },
   //     },
   //     "67890": {

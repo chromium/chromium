@@ -41,6 +41,7 @@ bool IsAlternativeNameType(FieldType type);
 
 // A tag type is a type that doesn't provide complete information about a field
 // on its own, and that instead needs a second type to complement its meaning.
+// TODO(crbug.com/422563282): Remove when cleaning up kAutofillAiNoTagTypes.
 bool IsTagType(FieldType type);
 
 }  // namespace autofill
