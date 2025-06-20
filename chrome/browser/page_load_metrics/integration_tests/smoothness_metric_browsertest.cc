@@ -77,14 +77,8 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   web_contents()->ClosePage();
   ui_test_utils::WaitForBrowserToClose(browser());
 
-  int64_t fsm_pdf_value, avg_value;
-  // Ensure that the smoothness UKM is reported.
-  ASSERT_TRUE(ExtractUKMSmoothnessMetric(
-      ukm_recorder(),
-      Graphics_Smoothness_NormalizedPercentDroppedFrames::kEntryName,
-      Graphics_Smoothness_NormalizedPercentDroppedFrames::kAverageName,
-      &avg_value));
-  // FrameSequenceMetric export should also show a value.
+  int64_t fsm_pdf_value;
+  // FrameSequenceMetric export should show a value.
   ASSERT_TRUE(ExtractUKMSmoothnessMetric(
       ukm_recorder(), Graphics_Smoothness_FrameSequence::kEntryName,
       Graphics_Smoothness_FrameSequence::kPercentDroppedFramesName,
@@ -93,5 +87,4 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   // Some of the frames should be dropped. It is not possible to measure the
   // exact number of dropped frames, so validate that it is non-zero.
   EXPECT_NE(fsm_pdf_value, 0);
-  EXPECT_NE(avg_value, 0);
 }

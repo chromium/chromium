@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/base/features.h"
-#include "cc/metrics/dropped_frame_counter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -47,7 +46,6 @@ class CompositorTimingHistoryTest : public testing::Test {
   TestCompositorTimingHistory timing_history_;
   base::TimeTicks now_;
   uint64_t sequence_number = 0;
-  DroppedFrameCounter dropped_counter;
 
   viz::BeginFrameArgs GetFakeBeginFrameArg(bool on_critical_path = true) {
     viz::BeginFrameArgs args = viz::BeginFrameArgs();

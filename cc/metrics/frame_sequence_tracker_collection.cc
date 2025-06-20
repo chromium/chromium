@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
-#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/frame_sequence_tracker.h"
@@ -32,10 +31,8 @@ bool IsScrollType(FrameSequenceTrackerType type) {
 }  // namespace
 
 FrameSequenceTrackerCollection::FrameSequenceTrackerCollection(
-    bool is_single_threaded,
-    DroppedFrameCounter* dropped_frame_counter)
-    : is_single_threaded_(is_single_threaded),
-      dropped_frame_counter_(dropped_frame_counter) {}
+    bool is_single_threaded)
+    : is_single_threaded_(is_single_threaded) {}
 
 FrameSequenceTrackerCollection::~FrameSequenceTrackerCollection() {
   CleanUp();
@@ -222,9 +219,6 @@ void FrameSequenceTrackerCollection::StopSequence(
 
   auto tracker = std::move(frame_trackers_[key]);
   active_trackers_.reset(static_cast<size_t>(tracker->type()));
-  if (dropped_frame_counter_) {
-    dropped_frame_counter_->ReportFrames();
-  }
 
   if (tracker->metrics()->GetEffectiveThread() == ThreadType::kCompositor) {
     DCHECK_GT(compositor_thread_driving_smoothness_, 0u);

@@ -16,7 +16,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
-#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_metrics.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -195,8 +194,7 @@ class CompositorFrameReporterTest : public testing::Test {
   }
 
   std::unique_ptr<CompositorFrameReporter> CreatePipelineReporter() {
-    GlobalMetricsTrackers trackers{&dropped_frame_counter_,
-                                   nullptr,
+    GlobalMetricsTrackers trackers{nullptr,
                                    nullptr,
                                    nullptr,
                                    nullptr,
@@ -228,7 +226,6 @@ class CompositorFrameReporterTest : public testing::Test {
   // and destroyed after that.
   base::SimpleTestTickClock test_tick_clock_;
 
-  DroppedFrameCounter dropped_frame_counter_;
   FrameSorter frame_sorter_;
   std::unique_ptr<CompositorFrameReporter> pipeline_reporter_;
 

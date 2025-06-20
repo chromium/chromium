@@ -32,7 +32,6 @@ struct FrameTimingDetails;
 }
 
 namespace cc {
-class DroppedFrameCounter;
 class EventLatencyTracker;
 struct BeginMainFrameMetrics;
 struct FrameInfo;
@@ -105,17 +104,6 @@ class CC_EXPORT CompositorFrameReportingController {
 
   void SetFrameSorter(FrameSorter* frame_sorter) {
     global_trackers_.frame_sorter = frame_sorter;
-  }
-
-  void SetDroppedFrameCounter(DroppedFrameCounter* counter);
-
-  void ClearDroppedFrameCounter() {
-    if (global_trackers_.frame_sorter &&
-        global_trackers_.dropped_frame_counter) {
-      global_trackers_.frame_sorter->RemoveObserver(
-          global_trackers_.dropped_frame_counter);
-    }
-    global_trackers_.dropped_frame_counter = nullptr;
   }
 
   void SetFrameSequenceTrackerCollection(

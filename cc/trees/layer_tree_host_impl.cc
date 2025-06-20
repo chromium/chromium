@@ -26,7 +26,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -466,8 +465,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
                   .single_thread_proxy_scheduler,
               /*should_report_ukm=*/!settings.single_thread_proxy_scheduler,
               id)),
-      frame_trackers_(settings.single_thread_proxy_scheduler,
-                      &dropped_frame_counter_),
+      frame_trackers_(settings.single_thread_proxy_scheduler),
       lcd_text_metrics_reporter_(LCDTextMetricsReporter::CreateIfNeeded(this)),
       has_input_resetter_(
           GetTaskRunner(),
@@ -513,8 +511,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
 
   SetDebugState(settings.initial_debug_state);
   compositor_frame_reporting_controller_->SetFrameSorter(&frame_sorter_);
-  compositor_frame_reporting_controller_->SetDroppedFrameCounter(
-      &dropped_frame_counter_);
   compositor_frame_reporting_controller_->SetFrameSequenceTrackerCollection(
       &frame_trackers_);
 
@@ -523,7 +519,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
     compositor_frame_reporting_controller_->set_event_latency_tracker(this);
 
 #if BUILDFLAG(IS_CHROMEOS)
-    dropped_frame_counter_.EnableReportForUI();
     frame_sorter_.EnableReportForUI();
     frame_trackers_.StartSequence(
         FrameSequenceTrackerType::kCompositorAnimation);
@@ -582,7 +577,6 @@ LayerTreeHostImpl::~LayerTreeHostImpl() {
   // CFRC needs to unregister the frame trackers from the frame_sorter observer
   // set before being cleaned up.
   compositor_frame_reporting_controller_->ClearFrameSequenceTrackerCollection();
-  compositor_frame_reporting_controller_->ClearDroppedFrameCounter();
 }
 
 InputHandler& LayerTreeHostImpl::GetInputHandler() {
@@ -630,17 +624,14 @@ void LayerTreeHostImpl::BeginMainFrameAborted(
 }
 
 void LayerTreeHostImpl::ReadyToCommit(
-    const viz::BeginFrameArgs& commit_args,
     bool scroll_and_viewport_changes_synced,
     const BeginMainFrameMetrics* begin_main_frame_metrics,
     bool commit_timeout) {
-  if (!is_measuring_smoothness_ &&
-      ((begin_main_frame_metrics &&
+  if (((begin_main_frame_metrics &&
         begin_main_frame_metrics->should_measure_smoothness) ||
-       commit_timeout)) {
-    is_measuring_smoothness_ = true;
+       commit_timeout) &&
+      !frame_sorter_.first_contentful_paint_received()) {
     frame_sorter_.OnFirstContentfulPaintReceived();
-    dropped_frame_counter()->OnFirstContentfulPaintReceived();
   }
 
   // Notify the browser controls manager that we have processed any
@@ -3734,7 +3725,6 @@ void LayerTreeHostImpl::DidLoseLayerTreeFrameSink() {
   client_->DidLoseLayerTreeFrameSinkOnImplThread();
   lag_tracking_manager_.Clear();
   frame_sorter_.Reset(/*reset_fcp=*/false);
-  dropped_frame_counter_.ResetPendingFrames(base::TimeTicks::Now());
 }
 
 bool LayerTreeHostImpl::OnlyExpandTopControlsAtPageTop() const {
@@ -4036,9 +4026,7 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
   }
 
   if (!visible_) {
-    auto now = base::TimeTicks::Now();
     frame_sorter_.Reset(/*reset_fcp=*/false);
-    dropped_frame_counter_.ResetPendingFrames(now);
 
     // When page is invisible, throw away corresponding EventsMetrics since
     // these metrics will be incorrect due to duration of page being invisible.
@@ -5970,14 +5958,10 @@ void LayerTreeHostImpl::SetActiveURL(const GURL& url, ukm::SourceId source_id) {
   // The source id has already been associated to the URL.
   compositor_frame_reporting_controller_->SetSourceId(source_id);
   frame_sorter_.Reset(/*reset_fcp=*/true);
-  dropped_frame_counter_.Reset();
-  is_measuring_smoothness_ = false;
 }
 
 void LayerTreeHostImpl::SetUkmSmoothnessDestination(
     base::WritableSharedMemoryMapping ukm_smoothness_data) {
-  dropped_frame_counter_.SetUkmSmoothnessDestination(
-      ukm_smoothness_data.GetMemoryAs<UkmSmoothnessDataShared>());
   ukm_smoothness_mapping_ = std::move(ukm_smoothness_data);
 }
 

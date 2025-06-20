@@ -1981,10 +1981,6 @@ ImageAnimationController* LayerTreeImpl::image_animation_controller() const {
   return host_impl_->image_animation_controller();
 }
 
-DroppedFrameCounter* LayerTreeImpl::dropped_frame_counter() const {
-  return host_impl_->dropped_frame_counter();
-}
-
 FrameSorter* LayerTreeImpl::frame_sorter() const {
   return host_impl_->frame_sorter();
 }

@@ -9,7 +9,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "cc/metrics/compositor_frame_reporter.h"
-#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/latency_ukm_reporter.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
@@ -66,10 +65,6 @@ CompositorFrameReportingController::~CompositorFrameReportingController() {
   predictor_jank_tracker_->set_scroll_jank_ukm_reporter(nullptr);
   scroll_jank_dropped_frame_tracker_->set_scroll_jank_ukm_reporter(nullptr);
   if (global_trackers_.frame_sorter) {
-    if (global_trackers_.dropped_frame_counter) {
-      global_trackers_.frame_sorter->RemoveObserver(
-          global_trackers_.dropped_frame_counter);
-    }
     if (global_trackers_.frame_sequence_trackers) {
       global_trackers_.frame_sorter->RemoveObserver(
           global_trackers_.frame_sequence_trackers);
@@ -852,18 +847,6 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
                              args.deadline);
     reporter->set_is_backfill(true);
   }
-}
-
-void CompositorFrameReportingController::SetDroppedFrameCounter(
-    DroppedFrameCounter* counter) {
-  if (global_trackers_.dropped_frame_counter && global_trackers_.frame_sorter) {
-    global_trackers_.frame_sorter->RemoveObserver(
-        global_trackers_.dropped_frame_counter);
-  }
-  if (global_trackers_.frame_sorter) {
-    global_trackers_.frame_sorter->AddObserver(counter);
-  }
-  global_trackers_.dropped_frame_counter = counter;
 }
 
 }  // namespace cc

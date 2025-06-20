@@ -15,7 +15,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_trace_processor.h"
 #include "base/time/time.h"
-#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
@@ -118,14 +117,13 @@ class TestCompositorFrameReportingController
 class CompositorFrameReportingControllerTest : public testing::Test {
  public:
   CompositorFrameReportingControllerTest()
-      : current_id_(1, 1), tracker_collection_(false, &dropped_counter_) {
+      : current_id_(1, 1), tracker_collection_(false) {
     test_tick_clock_.SetNowTicks(base::TimeTicks::Now());
     reporting_controller_.set_tick_clock(&test_tick_clock_);
     args_ = SimulateBeginFrameArgs(current_id_);
     reporting_controller_.SetFrameSorter(&frame_sorter_);
     reporting_controller_.SetFrameSequenceTrackerCollection(
         &tracker_collection_);
-    reporting_controller_.SetDroppedFrameCounter(&dropped_counter_);
   }
 
   // The following functions simulate the actions that would
@@ -345,7 +343,6 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   viz::FrameTokenGenerator current_token_;
   FrameSorter frame_sorter_;
   FrameSequenceTrackerCollection tracker_collection_;
-  DroppedFrameCounter dropped_counter_;
   TestCompositorFrameReportingController reporting_controller_;
   ::base::test::TracingEnvironment tracing_environment_;
 };
@@ -1458,7 +1455,6 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   reporting_controller_.ResetReporters();
   reporting_controller_.ClearFrameSequenceTrackerCollection();
-  reporting_controller_.ClearDroppedFrameCounter();
   reporting_controller_.SetFrameSorter(nullptr);
 }
 
@@ -1520,7 +1516,6 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   reporting_controller_.ResetReporters();
   reporting_controller_.ClearFrameSequenceTrackerCollection();
-  reporting_controller_.ClearDroppedFrameCounter();
   reporting_controller_.SetFrameSorter(nullptr);
 }
 
@@ -1549,7 +1544,6 @@ TEST_F(CompositorFrameReportingControllerTest,
   // Stop requesting frames, skip over a few frames, and submit + present
   // another frame. There should no new dropped frames.
   frame_sorter_.Reset(/*reset_fcp=*/true);
-  dropped_counter_.Reset();
   reporting_controller_.OnStoppedRequestingBeginFrames();
   for (uint32_t i = 0; i < kSkipFrames; ++i)
     IncrementCurrentId();
@@ -1560,7 +1554,6 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   reporting_controller_.ResetReporters();
   reporting_controller_.ClearFrameSequenceTrackerCollection();
-  reporting_controller_.ClearDroppedFrameCounter();
   reporting_controller_.SetFrameSorter(nullptr);
 }
 
@@ -1649,7 +1642,6 @@ TEST_F(CompositorFrameReportingControllerTest,
   tracker_collection_.StartSequence(
       FrameSequenceTrackerType::kCompositorAnimation);
   EXPECT_EQ(tracker_collection_.GetSmoothThread(), thread_type_compositor);
-  dropped_counter_.OnFirstContentfulPaintReceived();
   frame_sorter_.OnFirstContentfulPaintReceived();
 
   // Submit and present two compositor frames.
@@ -1671,7 +1663,6 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(3u + kSkipFrames_1, frame_sorter_.total_frames());
   EXPECT_EQ(0u, frame_sorter_.total_partial());
   EXPECT_EQ(kSkipFrames_1, frame_sorter_.total_dropped());
-  EXPECT_EQ(kSkipFrames_1, dropped_counter_.total_smoothness_dropped());
 
   // Now skip over a few frames which are not affecting smoothness.
   tracker_collection_.StopSequence(
@@ -1685,7 +1676,6 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(4u + kSkipFrames_1 + kSkipFrames_2, frame_sorter_.total_frames());
   EXPECT_EQ(0u, frame_sorter_.total_partial());
   EXPECT_EQ(kSkipFrames_1 + kSkipFrames_2, frame_sorter_.total_dropped());
-  EXPECT_EQ(kSkipFrames_1, dropped_counter_.total_smoothness_dropped());
 
   // Now skip over a few frames more frames which are affecting smoothness.
   tracker_collection_.StartSequence(
@@ -1700,8 +1690,6 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(0u, frame_sorter_.total_partial());
   EXPECT_EQ(kSkipFrames_1 + kSkipFrames_2 + kSkipFrames_3,
             frame_sorter_.total_dropped());
-  EXPECT_EQ(kSkipFrames_1 + kSkipFrames_3,
-            dropped_counter_.total_smoothness_dropped());
 }
 
 TEST_F(CompositorFrameReportingControllerTest,
@@ -1793,10 +1781,7 @@ TEST_F(CompositorFrameReportingControllerTest,
       FrameSequenceTrackerType::kMainThreadAnimation);
   EXPECT_EQ(tracker_collection_.GetSmoothThread(), thread_type_main);
 
-  dropped_counter_.OnFirstContentfulPaintReceived();
   frame_sorter_.OnFirstContentfulPaintReceived();
-  dropped_counter_.SetTimeFirstContentfulPaintReceivedForTesting(
-      args_.frame_time);
 
   SimulateBeginMainFrame();
   reporting_controller_.OnFinishImplFrame(current_id_);
@@ -1831,17 +1816,11 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   // There are two frames with partial updates
   EXPECT_EQ(2u, frame_sorter_.total_partial());
-  // Which one is accompanied with new main thread update so only one affects
-  // smoothness
-  EXPECT_EQ(1u, dropped_counter_.total_smoothness_dropped());
 }
 
 TEST_F(CompositorFrameReportingControllerTest,
        NoUpdateCompositorWithJankyMain) {
-  dropped_counter_.OnFirstContentfulPaintReceived();
   frame_sorter_.OnFirstContentfulPaintReceived();
-  dropped_counter_.SetTimeFirstContentfulPaintReceivedForTesting(
-      args_.frame_time);
 
   // Start a new frame and take it all the way to start the frame on the main
   // thread (i.e. 'begin main frame').

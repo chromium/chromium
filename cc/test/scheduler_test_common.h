@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "cc/metrics/compositor_timing_history.h"
-#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/scheduler/scheduler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

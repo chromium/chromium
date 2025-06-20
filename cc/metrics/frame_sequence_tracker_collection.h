@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
-#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/frame_sorter.h"
@@ -37,8 +36,7 @@ typedef uint16_t ActiveFrameSequenceTrackers;
 // submitted frames.
 class CC_EXPORT FrameSequenceTrackerCollection : public FrameSorterObserver {
  public:
-  FrameSequenceTrackerCollection(bool is_single_threaded,
-                                 DroppedFrameCounter* dropped_frame_counter);
+  explicit FrameSequenceTrackerCollection(bool is_single_threaded);
   ~FrameSequenceTrackerCollection() override;
 
   FrameSequenceTrackerCollection(const FrameSequenceTrackerCollection&) =
@@ -157,7 +155,6 @@ class CC_EXPORT FrameSequenceTrackerCollection : public FrameSorterObserver {
   NotifyCustomerTrackerResutlsCallback custom_tracker_results_added_callback_;
 
   std::vector<std::unique_ptr<FrameSequenceTracker>> removal_trackers_;
-  const raw_ptr<DroppedFrameCounter> dropped_frame_counter_ = nullptr;
   ActiveTrackers active_trackers_;
   FrameInfo::SmoothEffectDrivingThread scrolling_thread_ =
       FrameInfo::SmoothEffectDrivingThread::kUnknown;

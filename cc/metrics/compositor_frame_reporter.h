@@ -37,7 +37,6 @@ struct FrameTimingDetails;
 }
 
 namespace cc {
-class DroppedFrameCounter;
 class EventLatencyTracker;
 class FrameSorter;
 class LatencyUkmReporter;
@@ -45,7 +44,6 @@ class LatencyUkmReporter;
 struct GlobalMetricsTrackers {
   // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
   // stacks.
-  RAW_PTR_EXCLUSION DroppedFrameCounter* dropped_frame_counter = nullptr;
   RAW_PTR_EXCLUSION LatencyUkmReporter* latency_ukm_reporter = nullptr;
   RAW_PTR_EXCLUSION FrameSequenceTrackerCollection* frame_sequence_trackers =
       nullptr;

@@ -31,7 +31,6 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
-#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/test/fake_compositor_frame_reporting_controller.h"
@@ -377,7 +376,7 @@ class SchedulerTest : public testing::Test {
   SchedulerTest()
       : task_runner_(base::MakeRefCounted<SchedulerTestTaskRunner>()),
         fake_external_begin_frame_source_(nullptr),
-        tracker_collection_(false, &dropped_counter) {}
+        tracker_collection_(false) {}
 
   ~SchedulerTest() override { client_->set_scheduler(nullptr); }
 
@@ -417,7 +416,6 @@ class SchedulerTest : public testing::Test {
     reporting_controller->SetFrameSorter(&frame_sorter);
     reporting_controller->SetFrameSequenceTrackerCollection(
         &tracker_collection_);
-    reporting_controller->SetDroppedFrameCounter(&dropped_counter);
 
     scheduler_ = std::make_unique<TestScheduler>(
         task_runner_->GetMockTickClock(), client_.get(), scheduler_settings_, 0,
@@ -619,7 +617,6 @@ class SchedulerTest : public testing::Test {
   std::unique_ptr<FakeSchedulerClient> client_;
   std::unique_ptr<TestScheduler> scheduler_;
   raw_ptr<FakeCompositorTimingHistory> fake_compositor_timing_history_;
-  DroppedFrameCounter dropped_counter;
   FrameSequenceTrackerCollection tracker_collection_;
   FrameSorter frame_sorter;
   // Since CFRC destructor cleans up the FrameSorter's

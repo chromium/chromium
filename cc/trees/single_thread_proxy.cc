@@ -821,7 +821,7 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
     layer_tree_host_->RecordStartOfFrameMetrics();
     DoBeginMainFrame(begin_frame_args);
     commit_requested_ = false;
-    DoPainting(begin_frame_args);
+    DoPainting();
     layer_tree_host_->RecordEndOfFrameMetrics(frame_begin_time,
                                               /* trackers */ 0u);
     DoCommit(begin_frame_args);
@@ -1008,10 +1008,9 @@ void SingleThreadProxy::SetRenderFrameObserver(
   host_impl_->SetRenderFrameObserver(std::move(observer));
 }
 
-double SingleThreadProxy::GetPercentDroppedFrames() const {
+double SingleThreadProxy::GetAverageThroughput() const {
   DebugScopedSetImplThread impl(task_runner_provider_);
-  return host_impl_->dropped_frame_counter()
-      ->sliding_window_current_percent_dropped();
+  return host_impl_->frame_sorter()->GetAverageThroughput();
 }
 
 void SingleThreadProxy::UpdateBrowserControlsState(
@@ -1154,7 +1153,7 @@ void SingleThreadProxy::BeginMainFrame(
     return;
   }
 
-  DoPainting(begin_frame_args);
+  DoPainting();
   layer_tree_host_->RecordEndOfFrameMetrics(frame_start_time,
                                             /* trackers */ 0u);
 }
@@ -1193,14 +1192,13 @@ void SingleThreadProxy::DoBeginMainFrame(
   did_apply_compositor_deltas_ = false;
 }
 
-void SingleThreadProxy::DoPainting(const viz::BeginFrameArgs& commit_args) {
+void SingleThreadProxy::DoPainting() {
   layer_tree_host_->UpdateLayers();
   update_layers_requested_ = false;
 
   std::unique_ptr<BeginMainFrameMetrics> begin_main_frame_metrics =
       layer_tree_host_->TakeBeginMainFrameMetrics();
-  host_impl_->ReadyToCommit(commit_args,
-                            /*scroll_and_viewport_changes_synced=*/true,
+  host_impl_->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,
                             begin_main_frame_metrics.get(),
                             /*commit_timeout=*/false);
 

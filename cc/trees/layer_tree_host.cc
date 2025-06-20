@@ -2041,9 +2041,9 @@ LayerTreeHost::TakeViewTransitionCallbacksForTesting() {
   return result;
 }
 
-double LayerTreeHost::GetPercentDroppedFrames() const {
+double LayerTreeHost::GetAverageThroughput() const {
   DCHECK(IsMainThread());
-  return proxy_->GetPercentDroppedFrames();
+  return proxy_->GetAverageThroughput();
 }
 
 void LayerTreeHost::DropActiveScrollDeltaNextCommit(ElementId scroll_element) {

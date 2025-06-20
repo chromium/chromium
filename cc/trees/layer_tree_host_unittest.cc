@@ -9708,85 +9708,6 @@ class LayerTreeHostTestIgnoreEventsMetricsForNoUpdate
 // TODO(crbug.com/40756887): Disabled because test is flaky on Linux and CrOS.
 // MULTI_THREAD_TEST_F(LayerTreeHostTestIgnoreEventsMetricsForNoUpdate);
 
-class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
- public:
-  LayerTreeHostUkmSmoothnessMetric() = default;
-  ~LayerTreeHostUkmSmoothnessMetric() override = default;
-
-  void InitializeSettings(LayerTreeSettings* settings) override {
-    settings->commit_to_active_tree = false;
-  }
-
-  void SetupTree() override {
-    LayerTreeTest::SetupTree();
-    shmem_region_ = layer_tree_host()->CreateSharedMemoryForSmoothnessUkm();
-    shmem_region_dropped_frames_ =
-        layer_tree_host()->CreateSharedMemoryForDroppedFramesUkm();
-  }
-
-  void BeginTest() override {
-    // Start with requesting main-frames.
-    PostSetNeedsCommitToMainThread();
-  }
-
-  void AfterTest() override {
-    ASSERT_TRUE(shmem_region_.IsValid());
-    auto mapping = shmem_region_.Map();
-    auto* smoothness = mapping.GetMemoryAs<UkmSmoothnessDataShared>();
-    ASSERT_TRUE(smoothness);
-    // It is not always possible to guarantee an exact number of dropped frames.
-    // So validate that there are non-zero dropped frames.
-    EXPECT_GT(smoothness->data.avg_smoothness, 0);
-
-    ASSERT_TRUE(shmem_region_dropped_frames_.IsValid());
-    auto mapping_dropped_frames = shmem_region_dropped_frames_.Map();
-    auto* smoothness_dropped_frames =
-        mapping.GetMemoryAs<UkmDroppedFramesDataShared>();
-    ASSERT_TRUE(smoothness_dropped_frames);
-    // It is not always possible to guarantee an exact number of dropped frames.
-    // So validate that there are non-zero dropped frames.
-    EXPECT_GT(smoothness_dropped_frames->data.percent_dropped_frames, 0);
-  }
-
-  void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
-                                  const viz::BeginFrameArgs& args,
-                                  bool has_damage) override {
-    last_args_ = args;
-    if (!fcp_sent_) {
-      host_impl->dropped_frame_counter()->OnFirstContentfulPaintReceived();
-      fcp_sent_ = true;
-    }
-    host_impl->frame_sorter_for_testing()->AddNewFrame(last_args_);
-  }
-
-  void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) override {
-    if (TestEnded())
-      return;
-
-    if (frames_counter_ == 0) {
-      EndTest();
-      return;
-    }
-
-    // Mark every frame as a dropped frame affecting smoothness.
-    // Delegates to DFC::AddSortedFrame, which calls DFC::OnEndFrame.
-    host_impl->frame_sorter_for_testing()->AddFrameResult(
-        last_args_, CreateFakeImplDroppedFrameInfo());
-    host_impl->SetNeedsRedraw();
-    --frames_counter_;
-  }
-
- private:
-  const uint32_t kTotalFramesForTest = 5;
-  uint32_t frames_counter_ = kTotalFramesForTest;
-  bool fcp_sent_ = false;
-  viz::BeginFrameArgs last_args_;
-  base::ReadOnlySharedMemoryRegion shmem_region_;
-  base::ReadOnlySharedMemoryRegion shmem_region_dropped_frames_;
-};
-
-MULTI_THREAD_TEST_F(LayerTreeHostUkmSmoothnessMetric);
-
 class LayerTreeHostUkmSmoothnessMemoryOwnership : public LayerTreeTest {
  public:
   LayerTreeHostUkmSmoothnessMemoryOwnership() = default;
@@ -9809,7 +9730,6 @@ class LayerTreeHostUkmSmoothnessMemoryOwnership : public LayerTreeTest {
                                   bool has_damage) override {
     last_args_ = args;
     if (!fcp_sent_) {
-      host_impl->dropped_frame_counter()->OnFirstContentfulPaintReceived();
       fcp_sent_ = true;
     }
     host_impl->SetNeedsCommit();

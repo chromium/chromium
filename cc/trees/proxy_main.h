@@ -141,7 +141,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   void CompositeImmediatelyForTest(base::TimeTicks frame_begin_time,
                                    bool raster,
                                    base::OnceClosure callback) override;
-  double GetPercentDroppedFrames() const override;
+  double GetAverageThroughput() const override;
   bool IsRenderingPaused() const override;
   void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
 

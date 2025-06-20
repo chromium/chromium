@@ -25,8 +25,8 @@ struct CC_EXPORT BeginMainFrameMetrics {
   base::TimeDelta paint;
   base::TimeDelta composite_commit;
   base::TimeDelta update_layers;
-  // True if we should measure smoothness in TotalFrameCounter and
-  // DroppedFrameCounter. Currently true when first contentful paint is done.
+  // True if we should measure smoothness in TotalFrameCounter.
+  // Currently true when first contentful paint is done.
   bool should_measure_smoothness = false;
 
   BeginMainFrameMetrics();

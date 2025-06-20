@@ -30,7 +30,6 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/base/rolling_time_delta_history.h"
 #include "cc/metrics/custom_metrics_recorder.h"
-#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_latency_tracing_recorder.h"
 #include "cc/metrics/event_latency_tracker.h"
 #include "cc/metrics/event_metrics.h"
@@ -515,7 +514,6 @@ CompositorFrameReporter::CompositorFrameReporter(
       smooth_thread_(smooth_thread),
       layer_tree_host_id_(layer_tree_host_id),
       global_trackers_(trackers) {
-  DCHECK(global_trackers_.dropped_frame_counter);
   DCHECK(global_trackers_.frame_sorter);
   if (global_trackers_.frame_sorter->first_contentful_paint_received()) {
     global_trackers_.frame_sorter->AddNewFrame(args);
@@ -890,15 +888,6 @@ void CompositorFrameReporter::TerminateReporter() {
     ReportPaintMetric();
   }
 
-  if (TestReportType(FrameReportType::kDroppedFrame)) {
-    global_trackers_.dropped_frame_counter->AddDroppedFrame();
-  } else {
-    if (has_partial_update_) {
-      global_trackers_.dropped_frame_counter->AddPartialFrame();
-    } else {
-      global_trackers_.dropped_frame_counter->AddGoodFrame();
-    }
-  }
   global_trackers_.frame_sorter->AddFrameInfoToBuffer(frame_info);
   if (global_trackers_.frame_sorter->first_contentful_paint_received()) {
     // Delegates call to DFC->OnEndFrame.

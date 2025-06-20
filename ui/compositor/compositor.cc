@@ -786,8 +786,8 @@ CompositorMetricsTracker Compositor::RequestNewCompositorMetricsTracker() {
                                   weak_ptr_factory_.GetWeakPtr());
 }
 
-double Compositor::GetPercentDroppedFrames() const {
-  return host_->GetPercentDroppedFrames();
+double Compositor::GetAverageThroughput() const {
+  return host_->GetAverageThroughput();
 }
 
 std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor>

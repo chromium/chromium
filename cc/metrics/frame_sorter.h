@@ -70,8 +70,8 @@ class CC_EXPORT FrameSorter {
 
   // The results can be added in any order. However, the frame must have been
   // added by an earlier call to |AddNewFrame()|.
-  void AddFrameResult(const viz::BeginFrameArgs& args,
-                      const FrameInfo& frame_info);
+  virtual void AddFrameResult(const viz::BeginFrameArgs& args,
+                              const FrameInfo& frame_info);
 
   // Check if a frame has been previously reported as dropped.
   bool IsAlreadyReportedDropped(const viz::BeginFrameId& id) const;

@@ -14446,8 +14446,6 @@ TEST_P(LayerTreeHostImplTest,
 
 // Test that TotalFrameCounter resets itself under certain conditions
 TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
-  DroppedFrameCounter* dropped_frame_counter =
-      host_impl_->dropped_frame_counter_for_testing();
   FrameSorter* frame_sorter = host_impl_->frame_sorter_for_testing();
   EXPECT_EQ(frame_sorter->total_frames(), 0u);
   FrameInfo frame_info;
@@ -14467,23 +14465,20 @@ TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
   frame_sorter->AddFrameResult(
       args, CreateFakeFrameInfo(FrameInfo::FrameFinalState::kDropped));
   // FCP not received, so the total_smoothness_dropped_ won't increase.
-  EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 0u);
+  EXPECT_EQ(frame_sorter->total_dropped(), 0u);
 
   BeginMainFrameMetrics begin_frame_metrics;
   begin_frame_metrics.should_measure_smoothness = true;
-  host_impl_->ReadyToCommit(args, /*scroll_and_viewport_changes_synced=*/true,
+  host_impl_->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,
                             &begin_frame_metrics, /*commit_timeout=*/false);
-  dropped_frame_counter->SetTimeFirstContentfulPaintReceivedForTesting(
-      args.frame_time);
   frame_sorter->AddNewFrame(args);
   // Delegates to DFC::AddSortedFrame, which calls DFC::OnEndFrame.
   frame_sorter->AddFrameResult(
       args, CreateFakeFrameInfo(FrameInfo::FrameFinalState::kDropped));
-  EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 1u);
   frame_sorter->AddFrameInfoToBuffer(frame_info);
   host_impl_->SetActiveURL(GURL(), 1u);
   EXPECT_EQ(frame_sorter->total_frames(), 0u);
-  EXPECT_EQ(dropped_frame_counter->total_dropped(), 0u);
+  EXPECT_EQ(frame_sorter->total_dropped(), 0u);
 }
 
 // Test that TotalFrameCounter does not reset itself under certain conditions
@@ -14499,7 +14494,7 @@ TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
       deadline, interval, viz::BeginFrameArgs::NORMAL);
   BeginMainFrameMetrics begin_frame_metrics;
   begin_frame_metrics.should_measure_smoothness = true;
-  host_impl_->ReadyToCommit(arg1, /*scroll_and_viewport_changes_synced=*/true,
+  host_impl_->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,
                             &begin_frame_metrics, /*commit_timeout=*/false);
   EXPECT_EQ(frame_sorter->total_frames(), 0u);
   FrameInfo frame_info;
@@ -14514,7 +14509,7 @@ TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
       deadline, interval, viz::BeginFrameArgs::NORMAL);
   // Consecutive BeginFrameMetrics with the same |should_measure_smoothness|
   // flag should not reset the counter.
-  host_impl_->ReadyToCommit(arg2, /*scroll_and_viewport_changes_synced=*/true,
+  host_impl_->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,
                             &begin_frame_metrics, /*commit_timeout=*/false);
   EXPECT_EQ(frame_sorter->total_frames(), 1u);
 }

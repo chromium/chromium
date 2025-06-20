@@ -94,7 +94,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
                                  std::unique_ptr<CommitState> commit_state,
                                  const ThreadUnsafeCommitState* unsafe_state,
                                  base::TimeTicks main_thread_start_time,
-                                 const viz::BeginFrameArgs& commit_args,
                                  bool scroll_and_viewport_changes_synced,
                                  CommitTimestamps* commit_timestamps,
                                  bool commit_timeout = false);
