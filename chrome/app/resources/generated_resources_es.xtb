@@ -360,7 +360,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1235458158152011030">Redes conocidas</translation>
 <translation id="123578888592755962">Disco lleno</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{texto}other{# textos}}</translation>
-<translation id="1236009322878349843">Editar teléfono</translation>
 <translation id="1237251612871334180">Actualiza para guardar contraseñas</translation>
 <translation id="1237950098253310325">Reordena <ph name="BUTTON_NAME" /> usando Ctrl + flecha hacia arriba o flecha hacia abajo</translation>
 <translation id="1238293488628890871">¿Cambiar de perfil?</translation>
@@ -577,7 +576,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1395832189806039783">Destacar elemento con el enfoque del teclado</translation>
 <translation id="1396120028054416908">Volver a <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">No se ha podido configurar la impresora</translation>
-<translation id="1397594434718759194">Has iniciado sesión en Chrome en estos dispositivos, por lo que puedes usarlos como llaves de seguridad.</translation>
 <translation id="1398853756734560583">Maximizar</translation>
 <translation id="1399261165075500043">No se pueden cargar los Términos del Servicio de Google Play</translation>
 <translation id="1400243387594338234">Puedes usar este PIN para iniciar sesión en tu dispositivo</translation>
@@ -1694,7 +1692,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2162705204091149050">Leer información sobre tu navegador, tu SO, tu dispositivo, el software que tienes instalado y tus archivos</translation>
 <translation id="2163470535490402084">Conéctate a Internet para iniciar sesión en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> y 1 interruptor más</translation>
-<translation id="2165102982098084499">Has vinculado estos dispositivos escaneando un código QR.</translation>
 <translation id="2165177462441582039">Elige cuánto tiempo debe estar destacado cada elemento</translation>
 <translation id="2166369534954157698">Benjamín pidió una bebida de kiwi y fresa. Noé, sin vergüenza, la más exquisita champaña del menú.</translation>
 <translation id="2169062631698640254">Iniciar sesión de todas formas</translation>
@@ -4300,7 +4297,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3959969108528118741">Propietario</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Más acciones para <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3963753386716096475">Utilizar un teléfono, una tablet o una llave de seguridad diferentes</translation>
 <translation id="3964480518399667971">Desactivar red móvil</translation>
 <translation id="3965467402665811906">Los sitios pueden solicitar permiso para usar la información que hayan guardado sobre ti</translation>
 <translation id="3965965397408324205">Salir de <ph name="PROFILE_NAME" /></translation>
@@ -4858,7 +4854,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4370975561335139969">La dirección de correo electrónico y la contraseña que has introducido no coinciden</translation>
 <translation id="4373418556073552953">Iniciar sesión con tu teléfono Android</translation>
 <translation id="4373973310429385827">Faro</translation>
-<translation id="4374805630006466253">Usar otro teléfono o tablet</translation>
 <translation id="4374831787438678295">Instalador de Linux</translation>
 <translation id="4375035964737468845">Abrir archivos descargados</translation>
 <translation id="4376226992615520204">Ubicación desactivada</translation>
@@ -5468,7 +5463,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4814114628197290459">Eliminar IBAN</translation>
 <translation id="4814327014588285482">Saltar y recordármelo más tarde</translation>
 <translation id="4814378367953456825">Escribe un nombre para esta huella digital</translation>
-<translation id="481574578487123132">Dispositivos vinculados</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, detalles</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 marcador eliminado}other{{COUNT} marcadores eliminados}}</translation>
 <translation id="481689174647911539">Este archivo podría ser un virus o malware.<ph name="LINE_BREAK" />Puedes enviarlo a Navegación segura de Google para comprobar su seguridad. Los análisis suelen tardar unos segundos.</translation>
@@ -8439,7 +8433,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6965607054907047032">Liberar memoria en función de la inactividad de las pestañas</translation>
 <translation id="6965648386495488594">Puerto</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
-<translation id="6966370001499648704">Controla qué teléfonos usas como llaves de seguridad</translation>
 <translation id="6967112302799758487">Las aplicaciones y los juegos instalados con Steam para Chromebook (beta) se eliminarán de este dispositivo. También se quitarán los datos asociados a esas aplicaciones y juegos. Asegúrate de crear una copia de seguridad de las aplicaciones y los juegos guardados antes de desinstalar Steam.</translation>
 <translation id="6967430741871315905">No se ha podido comprobar si el dispositivo está permitido</translation>
 <translation id="6968288415730398122">Introduce tu contraseña para configurar el bloqueo de pantalla</translation>
@@ -11125,7 +11118,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Opaco</translation>
 <translation id="8838770651474809439">Hamburguesa</translation>
-<translation id="8838778928843281408">Gestionar teléfonos</translation>
 <translation id="8838841425230629509">Desfijar grupo de la barra de marcadores</translation>
 <translation id="883924185304953854">Búsqueda por imágenes</translation>
 <translation id="8841786407272321022">La contraseña se ha guardado solo en este dispositivo. Para guardar contraseñas nuevas en tu cuenta de Google, actualiza Servicios de Google Play.</translation>

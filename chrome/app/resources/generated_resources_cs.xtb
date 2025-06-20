@@ -362,7 +362,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1235458158152011030">Známé sítě</translation>
 <translation id="123578888592755962">Disk je plný</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{text}few{# texty}many{# textu}other{# textů}}</translation>
-<translation id="1236009322878349843">Úprava telefonu</translation>
 <translation id="1237251612871334180">Pokud chcete ukládat hesla, proveďte aktualizaci</translation>
 <translation id="1237950098253310325">Stisknutím kombinace kláves Ctrl plus Šipka nahoru nebo dolů můžete tlačítko <ph name="BUTTON_NAME" /> přesunout na jinou pozici</translation>
 <translation id="1238293488628890871">Přepnout profil?</translation>
@@ -579,7 +578,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1395832189806039783">Zvýraznit položku pomocí výběru klávesnicí</translation>
 <translation id="1396120028054416908">Zpět do složky <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Při nastavování tiskárny došlo k chybě</translation>
-<translation id="1397594434718759194">Na těchto zařízeních jste přihlášeni do Chromu a můžete je použít jako bezpečnostní klíče.</translation>
 <translation id="1398853756734560583">Maximalizovat</translation>
 <translation id="1399261165075500043">Smluvní podmínky Google Play nelze načíst</translation>
 <translation id="1400243387594338234">Pomocí tohoto kódu PIN se můžete přihlašovat do svého zařízení</translation>
@@ -1696,7 +1694,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2162705204091149050">Čtení informací o prohlížeči, operačním systému, zařízení, nainstalovaném softwaru a souborech</translation>
 <translation id="2163470535490402084">Chcete-li se přihlásit do zařízení <ph name="DEVICE_TYPE" />, připojte se k internetu.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a 1 další přepínač</translation>
-<translation id="2165102982098084499">Tato zařízení jste propojili naskenováním QR kódu.</translation>
 <translation id="2165177462441582039">Zvolte, jak dlouho mají jednotlivé položky zůstat zvýrazněny</translation>
 <translation id="2166369534954157698">Příliš žluťoučký kůň úpěl ďábelské ódy</translation>
 <translation id="2169062631698640254">Přesto se přihlásit</translation>
@@ -4299,7 +4296,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3959969108528118741">Vlastník</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Další akce pro <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3963753386716096475">Použít jiný telefon, tablet nebo bezpečnostní klíč</translation>
 <translation id="3964480518399667971">Vypnout mobilní síť</translation>
 <translation id="3965467402665811906">Weby mohou žádat o použití informací, které o vás uložily</translation>
 <translation id="3965965397408324205">Zavřít profil <ph name="PROFILE_NAME" /></translation>
@@ -4857,7 +4853,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4370975561335139969">Zadaný e-mail a heslo se neshodují.</translation>
 <translation id="4373418556073552953">Přihlaste se pomocí telefonu s Androidem</translation>
 <translation id="4373973310429385827">Maják</translation>
-<translation id="4374805630006466253">Použít jiný telefon nebo tablet</translation>
 <translation id="4374831787438678295">Instalační program Linuxu</translation>
 <translation id="4375035964737468845">Otevírání stažených souborů</translation>
 <translation id="4376226992615520204">Poloha je vypnutá</translation>
@@ -5467,7 +5462,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4814114628197290459">Smazat IBAN</translation>
 <translation id="4814327014588285482">Přeskočit a připomenout později</translation>
 <translation id="4814378367953456825">Zadejte název tohoto otisku prstu</translation>
-<translation id="481574578487123132">Propojená zařízení</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, podrobnosti</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Byla smazána 1 záložka}few{Byly smazány {COUNT} záložky}many{Bylo smazáno {COUNT} záložky}other{Bylo smazáno {COUNT} záložek}}</translation>
 <translation id="481689174647911539">Tento soubor může být vir nebo malware.<ph name="LINE_BREAK" />Můžete ho odeslat do Bezpečného prohlížení Google ke kontrole, zda je bezpečný. Kontroly obvykle trvají několik sekund.</translation>
@@ -8439,7 +8433,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6965607054907047032">Uvolňovat paměť na základě nečinnosti karet</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Zařízení</translation>
-<translation id="6966370001499648704">Nastavte, které telefony použijete jako bezpečnostní klíč</translation>
 <translation id="6967112302799758487">Všechny aplikace a hry nainstalované pomocí služby Steam pro Chromebook (Beta) budou z tohoto zařízení odstraněny. Data spojená s těmito aplikacemi a hrami budou také odstraněna. Před odinstalací si uložené aplikace a hry nezapomeňte zálohovat.</translation>
 <translation id="6967430741871315905">Nelze zkontrolovat, zda je zařízení povoleno</translation>
 <translation id="6968288415730398122">Chcete-li nakonfigurovat zámek obrazovky, zadejte heslo</translation>
@@ -11125,7 +11118,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Neprůhledné</translation>
 <translation id="8838770651474809439">Hamburger</translation>
-<translation id="8838778928843281408">Správa telefonů</translation>
 <translation id="8838841425230629509">Odepnout skupinu z lišty záložek</translation>
 <translation id="883924185304953854">Vyhledávání podle obrázku</translation>
 <translation id="8841786407272321022">Heslo je uloženo pouze v tomto zařízení. Pokud nová hesla chcete ukládat do účtu Google, aktualizujte služby Google Play.</translation>

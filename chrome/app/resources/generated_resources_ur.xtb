@@ -360,7 +360,6 @@
 <translation id="1235458158152011030">معلوم نیٹ ورکس</translation>
 <translation id="123578888592755962">ڈسک بھری ہوئی ہے</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{ٹیکسٹ}other{# ٹیکسٹس}}</translation>
-<translation id="1236009322878349843">فون میں ترمیم کریں</translation>
 <translation id="1237251612871334180">پاس ورڈ محفوظ کرنے کے لیے اپ ڈیٹ کریں</translation>
 <translation id="1237950098253310325">‏ctrl پلس اوپر یا نیچے تیر کے نشان کا استعمال کرتے ہوئے <ph name="BUTTON_NAME" /> دوبارہ ترتیب دیں</translation>
 <translation id="1238293488628890871">پروفائل سوئچ کریں؟</translation>
@@ -577,7 +576,6 @@
 <translation id="1395832189806039783">کی بورڈ فوکس کی مدد سے آئٹم کو نمایاں کریں</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> پر واپس جائیں</translation>
 <translation id="1396139853388185343">پرنٹر سیٹ اپ کرنے میں خرابی</translation>
-<translation id="1397594434718759194">‏آپ ان آلات پر Chrome میں سائن ان ہیں، لہذا آپ انہیں سیکیورٹی کلیدوں کے طور پر استعمال کر سکتے ہیں۔</translation>
 <translation id="1398853756734560583">بڑا کریں</translation>
 <translation id="1399261165075500043">‏Google Play کی سروس کی شرائط کو لوڈ نہیں کیا جا سکتا</translation>
 <translation id="1400243387594338234">‏آپ اپنے آلے میں سائن ان کرنے کے لیے یہ PIN استعمال کر سکتے ہیں۔</translation>
@@ -1695,7 +1693,6 @@
 <translation id="2162705204091149050">‏اپنے براؤزر، OS، آلے، انسٹال کردہ سافٹ ویئر اور فائلز سے متعلق معلومات پڑھیں</translation>
 <translation id="2163470535490402084">براہ کرم اپنے <ph name="DEVICE_TYPE" /> میں سائن ان کرنے کیلئے انٹرنیٹ سے منسلک ہوں۔</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" /> اور 1 مزید سوئچ</translation>
-<translation id="2165102982098084499">‏آپ نے QR کوڈ اسکین کر کے ان آلات کو لنک کیا ہے۔</translation>
 <translation id="2165177462441582039">منتخب کریں کہ ہائی لائٹ کو ہر آئٹم پر کتنی دیر رہنا چاہیے</translation>
 <translation id="2166369534954157698">ایک ٹیلے پر واقع مزار خواجہ فرید الدین گنج شکر کے احاطۂ صحن میں ذرا سی ژالہ باری چاندی کے ڈھیروں کی مثل بڑے غضب کا نظارہ دیتی ہے۔</translation>
 <translation id="2169062631698640254">بہر صورت سائن ان کریں</translation>
@@ -4278,7 +4275,7 @@
 <translation id="3948334586359655083">یہ ٹیب آڈیو چلا رہا ہے</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> مندرجہ ذیل فولڈرز کی فائلز میں ترمیم کر سکتا ہے</translation>
 <translation id="3948985214866944547">زیادہ تر لوگ اس سائٹ کے لیے قطعی مقام کے اشتراک کو مسدود کر دیتے ہیں</translation>
-<translation id="394930357226768495">اپنی تنظیم سے تجاویز اور نتائج دکھائیں</translation>
+<translation id="394930357226768495">اپنی تنظیم کی تجاویز اور نتائج دکھائیں</translation>
 <translation id="394984172568887996">‏IE سے درآمد کردہ</translation>
 <translation id="3949999964543783947">فائلز ڈاؤن لوڈ کرنا محفوظ تر بنانے کے لیے <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">تیزی سے سائن ان کرنے کے لیے خودکار طور پر ایک پاس کی بنائیں</translation>
@@ -4300,7 +4297,6 @@
 <translation id="3959969108528118741">مالک</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> کے لیے مزید کارروائیاں</translation>
-<translation id="3963753386716096475">مختلف فون، ٹیبلیٹ یا سیکیورٹی کلید استعمال کریں</translation>
 <translation id="3964480518399667971">سیلولر نیٹ ورک کو آف کریں</translation>
 <translation id="3965467402665811906">سائٹس ان معلومات کو استعمال کرنے کے لیے پوچھ سکتی ہیں جو انہوں نے آپ کے بارے میں محفوظ کی ہیں</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> سے باہر نکلیں</translation>
@@ -4858,7 +4854,6 @@
 <translation id="4370975561335139969">آپ کی جانب سے درج کردہ ای میل اور پاس ورڈ مماثل نہیں ہیں</translation>
 <translation id="4373418556073552953">‏اپنے Android فون سے سائن ان کریں</translation>
 <translation id="4373973310429385827">لائٹ ہاؤس</translation>
-<translation id="4374805630006466253">مختلف فون یا ٹیبلیٹ استعمال کریں</translation>
 <translation id="4374831787438678295">‏Linux انسٹالر</translation>
 <translation id="4375035964737468845">ڈاؤن لوڈ کردہ فائلیں کھولیں</translation>
 <translation id="4376226992615520204">مقام آف ہے</translation>
@@ -5468,7 +5463,6 @@
 <translation id="4814114628197290459">‏IBAN کو حذف کریں</translation>
 <translation id="4814327014588285482">نظر انداز کریں اور بعد میں مجھے یاد دلائیں</translation>
 <translation id="4814378367953456825">اس فنگر پرنٹ کے لئے ایک نام درج کریں</translation>
-<translation id="481574578487123132">لنک کردہ آلات</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />، تفصیلات</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 بُک مارک حذف کیا گیا}other{{COUNT} بُک مارکس حذف کئے گئے}}</translation>
 <translation id="481689174647911539">‏یہ فائل وائرس یا مالویئر ہو سکتی ہے۔<ph name="LINE_BREAK" />آپ اسے Google محفوظ براؤزنگ پر بھیج سکتے ہیں تاکہ یہ چیک کر سکیں کہ آیا یہ غیر محفوظ ہے۔ اسکینز میں عام طور پر چند سیکنڈ لگتے ہیں۔</translation>
@@ -8438,7 +8432,6 @@
 <translation id="6965607054907047032">ٹیب کی غیر فعالیت پر مبنی میموری کو خالی کریں</translation>
 <translation id="6965648386495488594">پورٹ</translation>
 <translation id="6965978654500191972">آلہ</translation>
-<translation id="6966370001499648704">کنٹرول کریں کہ آپ کون سے فونز کو سیکیورٹی کلیدوں کے طور پر استعمال کرتے ہیں</translation>
 <translation id="6967112302799758487">‏Steam برائے Chromebook (بی ٹا) کا استعمال کرتے ہوئے انسٹال کردہ کوئی بھی ایپس اور گیمز اس آلہ سے ہٹا دی جائیں گی۔ ان ایپس اور گیمز سے وابستہ ڈیٹا بھی ہٹا دیا جائے گا۔ ان انسٹال کرنے سے پہلے محفوظ کردہ ایپس اور گیمز کا بیک اپ لینا یقینی بنائیں۔</translation>
 <translation id="6967430741871315905">‏یہ چیک کرنے سے قاصر ہے کہ آیا آلہ پر VM چلانے کی اجازت ہے</translation>
 <translation id="6968288415730398122">اسکرین لاک کنفیگر کرنے کیلئے اپنا پاس ورڈ درج کریں</translation>
@@ -11122,7 +11115,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">دھندلا</translation>
 <translation id="8838770651474809439">ہیمبرگر</translation>
-<translation id="8838778928843281408">فونز کا نظم کریں</translation>
 <translation id="8838841425230629509">بُک مارکس بار سے گروپ کا پن ہٹائیں</translation>
 <translation id="883924185304953854">تصویر کے لحاظ سے تلاش کریں</translation>
 <translation id="8841786407272321022">‏پاس ورڈ صرف اس آلہ پر ہی محفوظ ہوتا ہے۔ نئے پاس ورڈز کو اپنے Google اکاؤنٹ میں محفوظ کرنے کے لیے، Google Play سروسز کو اپ ڈیٹ کریں۔</translation>

@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Perkongsian gagal kerana anda tidak disambungkan ke rangkaian.</translation>
 <translation id="1668001730617725852">Buka dalam Kumpulan Tab Baharu</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> kepada <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Kini anda boleh membuka Google Lens daripada bar alamat anda dan mencari apa-apa perkara yang anda lihat</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
 <translation id="169048873465870056">Alih keluar tab dan padamkan kumpulan?</translation>
 <translation id="1698090540708020240">Import kata laluan…</translation>
@@ -266,6 +267,7 @@
 <translation id="2044681667265133332">Akaun <ph name="USER_EMAIL" /> diurus oleh <ph name="HOSTED_DOMAIN" />, yang boleh melihat sesetengah maklumat. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">item baharu</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> akaun menggunakan kata laluan yang sama</translation>
+<translation id="205013082884273671">Cari apa-apa perkara pada skrin anda</translation>
 <translation id="2054044186557130763">Log masuk sebagai <ph name="NAME" /> <ph name="EMAIL" />, diurus oleh organisasi anda.</translation>
 <translation id="2059166748188874810">Perbandaran</translation>
 <translation id="2060638295449304809">Alamat ini hanya disimpan pada peranti ini. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan tersebut dalam Google Account anda, <ph name="USER_EMAIL" /></translation>
@@ -458,6 +460,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2819667972867209401">Apabila dihidupkan, data disimpan pada Google Account anda. Apabila dimatikan, data akan disimpan hanya pada peranti ini dan akan dipadamkan jika anda log keluar.</translation>
 <translation id="2827760117436553203">Simpan data berasingan?</translation>
 <translation id="2829172210806130158">Cari pada skrin anda</translation>
+<translation id="2831109159746537587">Cuba membulatkan atau mengetik gambar untuk mencari</translation>
 <translation id="2834399722155632105">3. Ketik Pilihan Kata Laluan</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Masa</translation>

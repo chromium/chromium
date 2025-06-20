@@ -360,7 +360,6 @@
 <translation id="1235458158152011030">Мэдэгдэж байгаа сүлжээ</translation>
 <translation id="123578888592755962">Диск дүүрсэн</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{текст}other{# текст}}</translation>
-<translation id="1236009322878349843">Утсыг засах</translation>
 <translation id="1237251612871334180">Нууц үгнүүдийг хадгалахын тулд шинэчилнэ үү</translation>
 <translation id="1237950098253310325">Ctrl нэмэх нь дээш заасан эсвэл доош заасан сумыг ашиглан <ph name="BUTTON_NAME" />-г дахин эрэмбэлэх</translation>
 <translation id="1238293488628890871">Профайлыг сэлгэх үү?</translation>
@@ -577,7 +576,6 @@
 <translation id="1395832189806039783">Гарын фокусаар зүйл тодруулах</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> руу буцах</translation>
 <translation id="1396139853388185343">Хэвлэгчийг тохируулахад алдаа гарлаа</translation>
-<translation id="1397594434718759194">Та эдгээр төхөөрөмж дээр Chrome-д нэвтэрсэн тул тэдгээрийг аюулгүй байдлын түлхүүрээр ашиглах боломжтой.</translation>
 <translation id="1398853756734560583">Хэмжээг ихэсгэх</translation>
 <translation id="1399261165075500043">Google Play-н үйлчилгээний нөхцөлийг ачаалах боломжгүй</translation>
 <translation id="1400243387594338234">Та энэ ПИН-г төхөөрөмждөө нэвтрэхэд ашиглах боломжтой</translation>
@@ -1244,6 +1242,7 @@
 <translation id="184862733444771842">Онцлогийн хүсэлт</translation>
 <translation id="1849016657376805933">Дурын HID төхөөрөмж</translation>
 <translation id="1849022541429818637">Таны хулганын оролтын мэдээллийг авч, ашиглахыг зөвшөөрсөн</translation>
+<translation id="1849252834922144634">Товчлол бэхлэхийн тулд товшоод удаан дарна уу</translation>
 <translation id="1850145825777333687">Төхөөрөмжийн мандат үнэмлэх</translation>
 <translation id="1850508293116537636">Цагийн зүүний дагуу эргүүлэх</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Бүртгүүлэхээсээ өмнө та TPM-г цэвэрлэх шаардлагатай бөгөөд ингэснээр <ph name="DEVICE_OS" /> нь төхөөрөмжийн өмчлөлийг авах боломжтой.<ph name="END_PARAGRAPH1" />
@@ -1699,7 +1698,6 @@
 <translation id="2162705204091149050">Таны хөтөч, OS, төхөөрөмж, суулгасан программ хангамж болон файлуудын талаарх мэдээллийг унших</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" />-д нэвтрэхийн тулд интернэтэд холбогдоно уу.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> болон өөр 1 сэлгүүр</translation>
-<translation id="2165102982098084499">Та эдгээр төхөөрөмжийг QR кодыг скан хийж холбосон.</translation>
 <translation id="2165177462441582039">Тодруулгыг зүйл бүрд хэр удаан байлгахыг сонгоно уу</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">Ямар ч байсан нэвтэр</translation>
@@ -2802,6 +2800,7 @@
 <translation id="2912247081180973411">Цонхнуудыг хаах</translation>
 <translation id="2915102088417824677">Үйл ажиллагааны логийг харах</translation>
 <translation id="2915873080513663243">Автомат скан</translation>
+<translation id="2916067990491711240">Удирддаг зочны харилцан үйлдлээс гарах</translation>
 <translation id="2916073183900451334">Веб хуудсан дээрх  цонхон дээр дарснаар холбоосууд тодрохоос гадна талбарууд үүсч бий болдог.</translation>
 <translation id="2916745397441987255">Өргөтгөл хайх</translation>
 <translation id="2918484639460781603">Тохиргоо руу очих</translation>
@@ -4284,6 +4283,7 @@
 <translation id="3948334586359655083">Энэ таб аудио тоглуулж байна</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> нь дараах фолдерт байгаа файлыг засах боломжтой</translation>
 <translation id="3948985214866944547">Ихэнх хүн энэ сайтын хувьд нарийвчилсан байршил хуваалцахыг блоклодог</translation>
+<translation id="394930357226768495">Байгууллагаасаа зөвлөмж, илэрц харуулах</translation>
 <translation id="394984172568887996">IE-аас импортолж авсан</translation>
 <translation id="3949999964543783947">Файлууд татахыг илүү аюулгүй болгохын тулд <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">Илүү хурдан нэвтрэхийн тулд нэвтрэх түлхүүр автоматаар үүсгэх</translation>
@@ -4305,7 +4305,6 @@
 <translation id="3959969108528118741">Өмчлөгч</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />-н бусад үйлдэл</translation>
-<translation id="3963753386716096475">Өөр утас, таблет эсвэл аюулгүй байдлын түлхүүр ашиглах</translation>
 <translation id="3964480518399667971">Үүрэн холбооны сүлжээг унтраах</translation>
 <translation id="3965467402665811906">Сайт таны талаар хадгалсан мэдээллээ ашиглахыг хүсэх боломжтой</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" />-с гарах</translation>
@@ -4863,7 +4862,6 @@
 <translation id="4370975561335139969">Таны оруулсан имэйл болон нууц үг таарахгүй байна</translation>
 <translation id="4373418556073552953">Android утсаараа нэвтрэх</translation>
 <translation id="4373973310429385827">Гэрэлт цамхаг</translation>
-<translation id="4374805630006466253">Өөр утас эсвэл таблет ашиглах</translation>
 <translation id="4374831787438678295">Linux суулгагч</translation>
 <translation id="4375035964737468845">Татаж авсан файлуудыг нээх</translation>
 <translation id="4376226992615520204">Байршил унтраалттай байна</translation>
@@ -5473,7 +5471,6 @@
 <translation id="4814114628197290459">Олон улсын банк акаунтны дугаарыг устгах</translation>
 <translation id="4814327014588285482">Алгасаад, надад дараа сануул</translation>
 <translation id="4814378367953456825">Энэ хурууны хээний нэрийг оруулна уу</translation>
-<translation id="481574578487123132">Холбосон төхөөрөмжүүд</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 хавчуургыг устгасан}other{{COUNT} хавчуургыг устгасан}}</translation>
 <translation id="481689174647911539">Энэ файл вирус эсвэл хортой программ байж магадгүй.<ph name="LINE_BREAK" />Та үүнийг аюултай эсэхийг шалгуулахаар Google-н аюулгүй хөтөч рүү илгээх боломжтой. Скан хийхэд ихэвчлэн хэдэн секунд зарцуулдаг.</translation>
@@ -8446,7 +8443,6 @@
 <translation id="6965607054907047032">Табын идэвхгүй байдалд тулгуурлан санах ой чөлөөлөх</translation>
 <translation id="6965648386495488594">Порт</translation>
 <translation id="6965978654500191972">Төхөөрөмж</translation>
-<translation id="6966370001499648704">Та аль утсыг аюулгүй байдлын түлхүүрээр ашиглахаа хянана уу</translation>
 <translation id="6967112302799758487">Chromebook-н Steam-г (Бета) ашиглан суулгасан аливаа апп болон тоглоомыг энэ төхөөрөмжөөс хасна. Эдгээр апп болон тоглоомтой холбоотой өгөгдлийг мөн хасна. Устгахаасаа өмнө хадгалсан апп болон тоглоомуудыг хуулбарлаарай.</translation>
 <translation id="6967430741871315905">Төхөөрөмжийг зөвшөөрөгдсөн эсэхийг шалгах боломжгүй байна</translation>
 <translation id="6968288415730398122">Дэлгэцийн түгжээг тохируулахын тулд нууц үгээ оруулна уу</translation>
@@ -11126,7 +11122,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Тунгалаг бус</translation>
 <translation id="8838770651474809439">Гамбургер</translation>
-<translation id="8838778928843281408">Утас удирдах</translation>
 <translation id="8838841425230629509">Бүлгийг хавчуургын хэсэгт бэхэлснийг болиулах</translation>
 <translation id="883924185304953854">Зургаар хайх</translation>
 <translation id="8841786407272321022">Нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Google Бүртгэлдээ шинэ нууц үгнүүд хадгалахын тулд Google Play үйлчилгээг шинэчилнэ үү.</translation>

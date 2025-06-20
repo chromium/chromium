@@ -361,7 +361,6 @@
 <translation id="1235458158152011030">જાણીતા નેટવર્ક્સ</translation>
 <translation id="123578888592755962">ડિસ્ક સંપૂર્ણ ભરેલી છે</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{ટેક્સ્ટ}one{# ટેક્સ્ટ}other{# ટેક્સ્ટ}}</translation>
-<translation id="1236009322878349843">ફોનમાં ફેરફાર કરો</translation>
 <translation id="1237251612871334180">પાસવર્ડ સાચવવા માટે અપડેટ કરો</translation>
 <translation id="1237950098253310325">ctrl વત્તા ઉપરની ઍરો કી અથવા નીચેની ઍરો કીનો ઉપયોગ કરીને <ph name="BUTTON_NAME" />ને ફરીથી ક્રમમાં ગોઠવો</translation>
 <translation id="1238293488628890871">પ્રોફાઇલ સ્વિચ કરીએ?</translation>
@@ -578,7 +577,6 @@
 <translation id="1395832189806039783">કીબોર્ડના ફોકસ વડે આઇટમને હાઇલાઇટ કરો</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> પર પાછા જાઓ</translation>
 <translation id="1396139853388185343">પ્રિન્ટર સેટ કરવામાં ભૂલ</translation>
-<translation id="1397594434718759194">તમે આ ડિવાઇસ પર Chromeમાં સાઇન ઇન કરેલું છે, આથી તમે તેમનો સિક્યુરિટી કી તરીકે ઉપયોગ કરી શકો છો.</translation>
 <translation id="1398853756734560583">મોટું કરો</translation>
 <translation id="1399261165075500043">Google Play સેવાની શરતો લોડ કરી શકાતી નથી</translation>
 <translation id="1400243387594338234">તમારા ડિવાઇસમાં સાઇન ઇન કરવા માટે, તમે આ પિનનો ઉપયોગ કરી શકો છો</translation>
@@ -1236,6 +1234,7 @@
 <translation id="184862733444771842">સુવિધા માટેની વિનંતી</translation>
 <translation id="1849016657376805933">કોઈપણ HID ડિવાઇસ</translation>
 <translation id="1849022541429818637">તમારા કીબોર્ડ ઇનપુટને કૅપ્ચર કરવાની અને તેનો ઉપયોગ કરવાની મંજૂરી ધરાવતી સાઇટની સૂચિ</translation>
+<translation id="1849252834922144634">શૉર્ટકટને પિન કરવા માટે ટૅપ કરીને દબાવી રાખો</translation>
 <translation id="1850145825777333687">ડિવાઇસની લૉગ ઇન વિગતો</translation>
 <translation id="1850508293116537636">&amp;ઘડિયાળની દિશામાં ફેરવો</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />નોંધણી કરતા પહેલાં તમારે TPM સાફ કરવું જરૂરી છે, જેથી <ph name="DEVICE_OS" /> ડિવાઇસ પર માલિકીનો અધિકાર પ્રાપ્ત કરી શકે.<ph name="END_PARAGRAPH1" />
@@ -1690,7 +1689,6 @@
 <translation id="2162705204091149050">તમારા બ્રાઉઝર, OS, ડિવાઇસ, ઇન્સ્ટૉલ કરેલા સૉફ્ટવેર અને ફાઇલો વિશેની માહિતી વાંચો</translation>
 <translation id="2163470535490402084">કૃપા કરીને તમારા <ph name="DEVICE_TYPE" /> માં સાઇન ઇન કરવા માટે ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> અને વધુ 1 સ્વિચ</translation>
-<translation id="2165102982098084499">તમે QR કોડ સ્કૅન કરીને આ ડિવાઇસ લિંક કર્યા છે.</translation>
 <translation id="2165177462441582039">દરેક આઇટમ પર હાઇલાઇટ કેટલીવાર સુધી રહેશે તે પસંદ કરો</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">કોઈપણ રીતે સાઇન ઇન કરો</translation>
@@ -2791,6 +2789,7 @@
 <translation id="2912247081180973411">વિન્ડો બંધ કરો</translation>
 <translation id="2915102088417824677">પ્રવૃત્તિ લૉગ જુઓ</translation>
 <translation id="2915873080513663243">ઑટો સ્કેન</translation>
+<translation id="2916067990491711240">મેનેજ કરેલા અતિથિ સત્રોમાંથી બહાર નીકળો</translation>
 <translation id="2916073183900451334">વેબપેજ પર ટૅબને દબાવવાથી લિંકની સાથે ફોર્મ ફીલ્ડ હાઇલાઇટ થાય છે</translation>
 <translation id="2916745397441987255">એક્સ્ટેન્શન શોધો</translation>
 <translation id="2918484639460781603">સેટિંગ્સ પર જાઓ </translation>
@@ -4274,6 +4273,7 @@
 <translation id="3948334586359655083">આ ટૅબ ઑડિયો ચલાવી રહ્યું છે</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> નીચેના ફોલ્ડરોમાં સાચવેલી ફાઇલોમાં ફેરફાર કરી શકે છે</translation>
 <translation id="3948985214866944547">મોટાભાગના લોકો આ સાઇટ માટે સચોટ લોકેશન શેર કરવાનું બ્લૉક કરે છે</translation>
+<translation id="394930357226768495">તમારી સંસ્થા તરફથી મળતા સૂચનો અને પરિણામો બતાવો</translation>
 <translation id="394984172568887996">IE થી આયાત કરેલ</translation>
 <translation id="3949999964543783947">સલામત રીતે ફાઇલો ડાઉનલોડ કરવા માટે <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">ઝડપથી સાઇન ઇન કરવા માટે ઑટોમૅટિક રીતે પાસકી બનાવો</translation>
@@ -4295,7 +4295,6 @@
 <translation id="3959969108528118741">માલિક</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> માટે વધુ ક્રિયાઓ</translation>
-<translation id="3963753386716096475">કોઈ અલગ ફોન, ટૅબ્લેટ કે સિક્યુરિટી કીનો ઉપયોગ કરો</translation>
 <translation id="3964480518399667971">સેલ્યુલર નેટવર્ક બંધ કરો</translation>
 <translation id="3965467402665811906">આ સાઇટ, તેમણે તમારા વિશે સાચવેલી માહિતીનો ઉપયોગ કરવા માટે પૂછી શકે છે</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" />માંથી બહાર નીકળો</translation>
@@ -4853,7 +4852,6 @@
 <translation id="4370975561335139969">તમે દાખલ કરેલ ઇમેઇલ અને પાસવર્ડ મેળ ખાતા નથી</translation>
 <translation id="4373418556073552953">તમારા Android ફોન વડે સાઇન ઇન કરો</translation>
 <translation id="4373973310429385827">દીવાદાંડી</translation>
-<translation id="4374805630006466253">કોઈ અલગ ફોન કે ટૅબ્લેટનો ઉપયોગ કરો</translation>
 <translation id="4374831787438678295">Linux ઇન્સ્ટૉલર</translation>
 <translation id="4375035964737468845">ડાઉનલોડ કરેલી ફાઇલોને ખોલો</translation>
 <translation id="4376226992615520204">સ્થાન બંધ કર્યું</translation>
@@ -5463,7 +5461,6 @@
 <translation id="4814114628197290459">IBAN ડિલીટ કરો</translation>
 <translation id="4814327014588285482">છોડો અને પછીથી મને યાદ કરાવો</translation>
 <translation id="4814378367953456825">આ ફિંગરપ્રિન્ટ માટેનું નામ દાખલ કરો</translation>
-<translation id="481574578487123132">લિંક કરેલા ડિવાઇસ</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, વિગતો</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 બુકમાર્ક ડિલીટ કર્યું}one{{COUNT} બુકમાર્ક ડિલીટ કર્યું}other{{COUNT} બુકમાર્ક ડિલીટ કર્યા}}</translation>
 <translation id="481689174647911539">આ ફાઇલ વાયરસ અથવા માલવેર હોઈ શકે છે.<ph name="LINE_BREAK" />તે અસુરક્ષિત છે કે કેમ તે ચેક કરવા માટે તમે તેને Google Safe Browsing પર મોકલી શકો છો. સ્કૅન કરવામાં સામાન્ય રીતે થોડી સેકન્ડ લાગે છે.</translation>
@@ -8440,7 +8437,6 @@ USB ડિવાઇસ</translation>
 <translation id="6965607054907047032">ટૅબની નિષ્ક્રિયતાના આધારે મેમરી ખાલી કરો</translation>
 <translation id="6965648386495488594">પોર્ટ</translation>
 <translation id="6965978654500191972">ઉપકરણ</translation>
-<translation id="6966370001499648704">તમે સિક્યુરિટી કી તરીકે કયા ફોનનો ઉપયોગ કરો છો તે નિયંત્રિત કરો</translation>
 <translation id="6967112302799758487">Chromebook માટે Steam (બીટા)નો ઉપયોગ કરીને ઇન્સ્ટૉલ કરવામાં આવેલી કોઈપણ ઍપ અને ગેમને આ ડિવાઇસ પરથી કાઢી નાખવામાં આવશે. આ ઍપ અને ગેમ સાથે સંકળાયેલા ડેટાને પણ કાઢી નાખવામાં આવશે. અનઇન્સ્ટૉલ કરતા પહેલાં સાચવેલી ઍપ અને ગેમના ડેટાનું બૅકઅપ લેવાની ખાતરી કરો.</translation>
 <translation id="6967430741871315905">ડિવાઇસને મંજૂરી આપવામાં આવી છે કે નહીં, તે ચેક કરી શકાતું નથી</translation>
 <translation id="6968288415730398122">સ્ક્રીન લૉક ગોઠવવા માટે તમારો પાસવર્ડ દાખલ કરો</translation>
@@ -11121,7 +11117,6 @@ USB ડિવાઇસ</translation>
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">અપારદર્શક</translation>
 <translation id="8838770651474809439">હૅમ્બર્ગર</translation>
-<translation id="8838778928843281408">ફોન મેનેજ કરો</translation>
 <translation id="8838841425230629509">બુકમાર્ક બારમાંથી ગ્રૂપને અનપિન કરો</translation>
 <translation id="883924185304953854">છબી દ્વારા શોધો</translation>
 <translation id="8841786407272321022">પાસવર્ડ માત્ર આ ડિવાઇસ પર જ સાચવવામાં આવ્યો છે. નવા પાસવર્ડને તમારા Google એકાઉન્ટમાં સાચવવા માટે, Google Play સેવાઓ અપડેટ કરો.</translation>

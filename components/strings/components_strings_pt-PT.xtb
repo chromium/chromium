@@ -693,6 +693,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2157640075051554492">Notificações de monitorização de preços</translation>
 <translation id="21613918653299710">Galerias de imagens online</translation>
 <translation id="2161656808144014275">Texto</translation>
+<translation id="2162435186600002085">Logótipo do cabeçalho principal</translation>
 <translation id="2162620598375156287">Agora a <ph name="CURRENT_PRICE" /> em <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Verifique se existe algum erro ortográfico em <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Acesso de gestor total</translation>
@@ -851,6 +852,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2400263725572336749">Adicione um passaporte</translation>
 <translation id="2400271059665846158">Faça a gestão dos seus cartões de fidelidade na Carteira do Google</translation>
 <translation id="2400600116338235695">Pode solicitar a ligação a portas de série</translation>
+<translation id="240450251994300576">Logótipo do cabeçalho secundário</translation>
 <translation id="2404884497378469141">Tente copiar os ficheiros novamente</translation>
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o respetivo certificado de segurança poderá ser revogado. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
@@ -981,6 +983,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2627847595568876492">A extrair texto do PDF…</translation>
 <translation id="2628224721443278970">Iniciar sessão no Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Não foi possível encontrar o endereço IP do servidor de <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Escreva @ para pesquisar em <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Estado:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tecido (semibrilhante)</translation>
@@ -2267,6 +2270,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4827283332383516812">Elimine o cartão</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> selecionados</translation>
 <translation id="4831993743164297314">Papel para imagesetter</translation>
+<translation id="4832388034239846146">Para partilhar grupos de separadores, atualize o Chrome</translation>
 <translation id="483241715238664915">Ativar avisos</translation>
 <translation id="4832961164064927107">Churrascos e grelhados</translation>
 <translation id="4834250788637067901">Métodos de pagamento, ofertas e endereços com o Google Pay</translation>
@@ -2974,6 +2978,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6043357981274314628">Concluído.</translation>
 <translation id="6044573915096792553">Tamanho 12</translation>
 <translation id="6045164183059402045">Modelo de imposição</translation>
+<translation id="6046892054959167494">Escreva <ph name="SEARCH_AGGREGATOR_KEYWORD" /> para pesquisar ou fazer um pedido a <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Este conteúdo pode tentar enganá-lo de forma a que instale software ou revele informações pessoais. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">Fornecimento da página</translation>

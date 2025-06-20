@@ -360,7 +360,6 @@
 <translation id="1235458158152011030">已知網路</translation>
 <translation id="123578888592755962">磁碟空間已滿</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
-<translation id="1236009322878349843">編輯手機</translation>
 <translation id="1237251612871334180">須更新才能儲存密碼</translation>
 <translation id="1237950098253310325">使用 Ctrl + 向上鍵或向下鍵調整「<ph name="BUTTON_NAME" />」的順序</translation>
 <translation id="1238293488628890871">要切換設定檔嗎？</translation>
@@ -577,7 +576,6 @@
 <translation id="1395832189806039783">醒目顯示鍵盤焦點所在項目</translation>
 <translation id="1396120028054416908">返回「<ph name="FOLDER_TITLE" />」</translation>
 <translation id="1396139853388185343">設定印表機時發生錯誤</translation>
-<translation id="1397594434718759194">你已在這些裝置上登入 Chrome，因此可以將這些裝置當做安全金鑰使用。</translation>
 <translation id="1398853756734560583">放到最大</translation>
 <translation id="1399261165075500043">無法載入《Google Play 服務條款》</translation>
 <translation id="1400243387594338234">你可以使用這個 PIN 碼登入裝置</translation>
@@ -1239,6 +1237,7 @@
 <translation id="184862733444771842">功能要求</translation>
 <translation id="1849016657376805933">任何 HID 裝置</translation>
 <translation id="1849022541429818637">允許擷取及使用滑鼠輸入內容</translation>
+<translation id="1849252834922144634">按住即可固定捷徑</translation>
 <translation id="1850145825777333687">裝置憑證</translation>
 <translation id="1850508293116537636">順時針旋轉(&amp;C)</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />進行註冊前，你必須清除 TPM，<ph name="DEVICE_OS" /> 才能取得裝置的擁有權。<ph name="END_PARAGRAPH1" />
@@ -1693,7 +1692,6 @@
 <translation id="2162705204091149050">讀取瀏覽器、OS、裝置、已安裝的軟體和檔案的相關資訊</translation>
 <translation id="2163470535490402084">請連線至網際網路，以登入您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />，以及另外 1 個按鍵</translation>
-<translation id="2165102982098084499">透過掃描 QR 圖碼的方式連結了這些裝置。</translation>
 <translation id="2165177462441582039">選擇醒目顯示範圍停留在每個項目上的時間長度</translation>
 <translation id="2166369534954157698">狐狗大戰</translation>
 <translation id="2169062631698640254">繼續登入</translation>
@@ -2793,6 +2791,7 @@
 <translation id="2912247081180973411">關閉視窗</translation>
 <translation id="2915102088417824677">查看活動記錄</translation>
 <translation id="2915873080513663243">自動掃描</translation>
+<translation id="2916067990491711240">結束受管理的訪客工作階段</translation>
 <translation id="2916073183900451334">在網頁上按 Tab 鍵可反白顯示連結和表單欄位</translation>
 <translation id="2916745397441987255">搜尋擴充功能</translation>
 <translation id="2918484639460781603">前往設定</translation>
@@ -4272,6 +4271,7 @@
 <translation id="3948334586359655083">這個分頁正在播放音訊</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可以編輯下列資料夾中的檔案</translation>
 <translation id="3948985214866944547">大多數使用者已封鎖這個網站的「分享精確位置」功能</translation>
+<translation id="394930357226768495">顯示貴機構的建議和搜尋結果</translation>
 <translation id="394984172568887996">從 IE 匯入</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />，以更安全的方式下載檔案</translation>
 <translation id="3950479158728806902">自動建立密碼金鑰，加快登入速度</translation>
@@ -4293,7 +4293,6 @@
 <translation id="3959969108528118741">擁有者</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">可對<ph name="IBAN_DESCRIPTION" /> 執行的其他動作</translation>
-<translation id="3963753386716096475">使用其他手機、平板電腦或安全金鑰</translation>
 <translation id="3964480518399667971">關閉行動數據網路</translation>
 <translation id="3965467402665811906">網站可以要求使用與你相關的既有資訊</translation>
 <translation id="3965965397408324205">離開<ph name="PROFILE_NAME" /></translation>
@@ -4851,7 +4850,6 @@
 <translation id="4370975561335139969">您所輸入的電子郵件和密碼不相符</translation>
 <translation id="4373418556073552953">使用 Android 手機登入</translation>
 <translation id="4373973310429385827">燈塔</translation>
-<translation id="4374805630006466253">使用其他手機或平板電腦</translation>
 <translation id="4374831787438678295">Linux 安裝程式</translation>
 <translation id="4375035964737468845">開啟已下載的檔案。</translation>
 <translation id="4376226992615520204">已關閉定位功能</translation>
@@ -5461,7 +5459,6 @@
 <translation id="4814114628197290459">刪除 IBAN</translation>
 <translation id="4814327014588285482">略過並稍後提醒我</translation>
 <translation id="4814378367953456825">請輸入這個指紋的名稱</translation>
-<translation id="481574578487123132">連結的裝置</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />，詳細資料</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{已刪除 1 個書籤}other{已刪除 {COUNT} 個書籤}}</translation>
 <translation id="481689174647911539">這個檔案可能是病毒或惡意軟體。<ph name="LINE_BREAK" />你可以將檔案傳送給 Google 安全瀏覽，檢查是否安全。掃描通常需要幾秒鐘的時間。</translation>
@@ -8428,7 +8425,6 @@
 <translation id="6965607054907047032">依據分頁閒置情形釋出記憶體</translation>
 <translation id="6965648386495488594">連接埠</translation>
 <translation id="6965978654500191972">裝置</translation>
-<translation id="6966370001499648704">控管要使用哪些手機做為安全金鑰</translation>
 <translation id="6967112302799758487">系統將從這部裝置上移除所有使用 Steam for Chromebook (Beta 版) 安裝的應用程式和遊戲，以及與這些應用程式和遊戲相關聯的資料。因此，請務必先備份已儲存的應用程式和遊戲，再解除安裝。</translation>
 <translation id="6967430741871315905">無法檢查裝置是否已獲准</translation>
 <translation id="6968288415730398122">如要設定螢幕鎖定，請輸入你的密碼</translation>
@@ -11113,7 +11109,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">漢堡</translation>
-<translation id="8838778928843281408">管理手機</translation>
 <translation id="8838841425230629509">將群組從書籤列上取消固定</translation>
 <translation id="883924185304953854">以圖搜尋</translation>
 <translation id="8841786407272321022">密碼只會儲存在這部裝置上。如要將新密碼儲存到 Google 帳戶，請更新 Google Play 服務。</translation>

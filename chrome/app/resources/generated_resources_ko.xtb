@@ -360,7 +360,6 @@
 <translation id="1235458158152011030">알려진 네트워크</translation>
 <translation id="123578888592755962">디스크가 가득 참</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{텍스트}other{텍스트 #개}}</translation>
-<translation id="1236009322878349843">휴대전화 수정</translation>
 <translation id="1237251612871334180">업데이트하여 비밀번호 저장</translation>
 <translation id="1237950098253310325">Ctrl과 위쪽 또는 아래쪽 화살표를 사용하여 <ph name="BUTTON_NAME" />의 순서 변경</translation>
 <translation id="1238293488628890871">프로필을 전환하시겠습니까?</translation>
@@ -577,7 +576,6 @@
 <translation id="1395832189806039783">키보드 포커스로 항목 강조표시</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> 폴더로 돌아가기</translation>
 <translation id="1396139853388185343">프린터를 설정하는 중에 오류가 발생했습니다.</translation>
-<translation id="1397594434718759194">다음 기기에서 Chrome에 로그인되어 있으므로 기기를 보안 키로 사용할 수 있습니다.</translation>
 <translation id="1398853756734560583">최대화</translation>
 <translation id="1399261165075500043">Google Play 서비스 약관을 로드할 수 없습니다</translation>
 <translation id="1400243387594338234">이 PIN을 사용하여 기기에 로그인할 수 있습니다</translation>
@@ -1248,6 +1246,7 @@
 <translation id="184862733444771842">기능 요청</translation>
 <translation id="1849016657376805933">모든 HID 기기</translation>
 <translation id="1849022541429818637">마우스 입력을 캡처하고 사용하도록 허용함</translation>
+<translation id="1849252834922144634">바로가기를 고정하려면 길게 탭하세요</translation>
 <translation id="1850145825777333687">기기 사용자 인증 정보</translation>
 <translation id="1850508293116537636">시계 방향으로 회전(&amp;C)</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />등록하기 전에 <ph name="DEVICE_OS" />에서 기기 소유권을 가질 수 있도록 TPM을 삭제해야 합니다.<ph name="END_PARAGRAPH1" />
@@ -1704,7 +1703,6 @@
 <translation id="2162705204091149050">브라우저, OS, 기기, 설치된 소프트웨어, 파일에 관한 정보 읽기</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> 기기에 로그인하려면 인터넷에 연결하세요.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> 외 1개</translation>
-<translation id="2165102982098084499">QR 코드를 스캔하여 기기를 연결했습니다.</translation>
 <translation id="2165177462441582039">강조표시가 각 항목에 유지되는 시간 선택</translation>
 <translation id="2166369534954157698">재빠른 갈색 여우가 게으른 개를 뛰어넘습니다.</translation>
 <translation id="2169062631698640254">로그인</translation>
@@ -2808,6 +2806,7 @@
 <translation id="2912247081180973411">창 닫기</translation>
 <translation id="2915102088417824677">활동 로그 보기</translation>
 <translation id="2915873080513663243">자동 스캔</translation>
+<translation id="2916067990491711240">관리 게스트 세션 종료</translation>
 <translation id="2916073183900451334">웹페이지에서 Tab 키를 누르면 링크뿐 아니라 양식 입력란도 강조표시됩니다.</translation>
 <translation id="2916745397441987255">확장 프로그램 검색</translation>
 <translation id="2918484639460781603">설정으로 이동</translation>
@@ -4291,6 +4290,7 @@
 <translation id="3948334586359655083">이 탭은 오디오를 재생합니다</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />에서 다음 폴더의 파일을 수정할 수 있습니다.</translation>
 <translation id="3948985214866944547">대부분의 사용자가 이 사이트의 정확한 위치 공유를 차단합니다</translation>
+<translation id="394930357226768495">조직의 검색 애그리게이터에서 제공하는 추천 및 검색 결과 표시</translation>
 <translation id="394984172568887996">IE에서 가져온 북마크</translation>
 <translation id="3949999964543783947">파일을 더 안전하게 다운로드하려면 <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950479158728806902">패스키를 자동으로 생성하여 더 빠르게 로그인</translation>
@@ -4312,7 +4312,6 @@
 <translation id="3959969108528118741">소유자</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />의 작업 더보기</translation>
-<translation id="3963753386716096475">다른 휴대전화, 태블릿 또는 보안 키 사용</translation>
 <translation id="3964480518399667971">셀룰러 네트워크 끄기</translation>
 <translation id="3965467402665811906">사이트에서 나에 관해 저장된 정보 사용을 요청할 수 있음</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> 나가기</translation>
@@ -4868,7 +4867,6 @@
 <translation id="4370975561335139969">입력한 이메일과 비밀번호가 일치하지 않습니다.</translation>
 <translation id="4373418556073552953">Android 휴대전화로 로그인</translation>
 <translation id="4373973310429385827">등대</translation>
-<translation id="4374805630006466253">다른 휴대전화 또는 태블릿 사용</translation>
 <translation id="4374831787438678295">Linux 설치 프로그램</translation>
 <translation id="4375035964737468845">다운로드한 파일 열기</translation>
 <translation id="4376226992615520204">위치 사용 중지됨</translation>
@@ -5479,7 +5477,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4814114628197290459">IBAN 삭제</translation>
 <translation id="4814327014588285482">건너뛰고 나중에 알림</translation>
 <translation id="4814378367953456825">지문 이름 입력</translation>
-<translation id="481574578487123132">연결된 기기</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, 세부정보</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{북마크 1개 삭제됨}other{북마크 {COUNT}개 삭제됨}}</translation>
 <translation id="481689174647911539">바이러스 또는 멀웨어일 수 있는 파일입니다.<ph name="LINE_BREAK" />안전하지 않은 파일인지 확인하기 위해 이 파일을 Google 세이프 브라우징에 전송할 수 있습니다. 검사는 일반적으로 몇 초 정도 걸립니다.</translation>
@@ -8452,7 +8449,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6965607054907047032">탭 비활성 상태에 따라 메모리 확보</translation>
 <translation id="6965648386495488594">포트</translation>
 <translation id="6965978654500191972">기기</translation>
-<translation id="6966370001499648704">보안 키로 사용하는 전화를 제어합니다.</translation>
 <translation id="6967112302799758487">Chromebook용 Steam(베타)을 사용하여 설치한 모든 앱과 게임이 이 기기에서 삭제됩니다. 이러한 앱 및 게임과 관련된 데이터도 삭제됩니다. 설치를 제거하기 전에 저장된 앱과 게임을 백업하세요.</translation>
 <translation id="6967430741871315905">기기 허용 여부를 확인할 수 없습니다.</translation>
 <translation id="6968288415730398122">비밀번호를 입력하여 화면 잠금을 설정하세요.</translation>
@@ -11138,7 +11134,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" />(<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">불투명</translation>
 <translation id="8838770651474809439">햄버거</translation>
-<translation id="8838778928843281408">휴대전화 관리</translation>
 <translation id="8838841425230629509">북마크바에서 그룹 고정 해제</translation>
 <translation id="883924185304953854">이미지로 검색</translation>
 <translation id="8841786407272321022">비밀번호가 이 기기에만 저장되었습니다. Google 계정에 새 비밀번호를 저장하려면 Google Play 서비스를 업데이트하세요.</translation>

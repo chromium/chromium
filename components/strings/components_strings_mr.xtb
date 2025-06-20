@@ -358,6 +358,7 @@
 <translation id="1593359183944365958">२७० अंश</translation>
 <translation id="1594030484168838125">निवडा</translation>
 <translation id="1597307423671074806">WebM व्हिडिओ</translation>
+<translation id="159800670740560023">Chrome शी संबंधित टीप याची लिंक, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> उघडण्यासाठी एंटर प्रेस करा</translation>
 <translation id="1599199147673445968">नवीन कार्ड हवे आहे? <ph name="BEGIN_LINK" />कार्ड तपशील एंटर करा<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">पिन</translation>
 <translation id="1604192142734009334">सौंदर्य आणि फिटनेस</translation>
@@ -835,6 +836,7 @@
 <translation id="2383455408879745299">Chrome सेटिंग्जमध्ये तुमची अ‍ॅक्सेसिबिलिटी टूल पर्सनलाइझ करा</translation>
 <translation id="2384307209577226199">एंटरप्राइझ डीफॉल्ट</translation>
 <translation id="238459632961158867">वेबसाइट</translation>
+<translation id="2384823392576123225">बुकमार्क शोधा</translation>
 <translation id="2385809941344967209">तुमच्‍या Chrome सेटिंग्जमधून Chrome अपडेट करा</translation>
 <translation id="2386255080630008482">सर्व्हरचे सर्टिफिकेट रिव्होक केले गेले.</translation>
 <translation id="2388828676877700238">कर भरणा आणि नियोजन</translation>
@@ -1449,6 +1451,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> ला क्लिपबोर्डवर कॉपी केलेला मजकूर आणि इमेज पहायच्या आहेत</translation>
 <translation id="3461824795358126837">हायलाइटर</translation>
 <translation id="3462200631372590220">प्रगत लपवा</translation>
+<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />, या पेजबद्दल Google ला विचारण्यासाठी एंटर प्रेस करा</translation>
 <translation id="3465972433695735758">ही PDF ॲक्सेस करण्यायोग्य नाही. मजकूर काढला आहे, Google AI द्वारे प्रायोजित</translation>
 <translation id="346601286295919445">रसायनशास्त्र</translation>
 <translation id="3467081767799433066">जाहिरात मापनासह, साइटला भेट दिल्यावर तुम्ही खरेदी केली की नाही यासारखा मर्यादित प्रकारचा डेटा हा साइटदरम्यान त्यांच्या जाहिरातींच्या परफॉर्मन्सचे मापन करण्यासाठी शेअर केला जातो.</translation>
@@ -2056,6 +2059,7 @@
 <translation id="444116852243722675">सर्व (<ph name="ITEMS" />) उघडा</translation>
 <translation id="4441832193888514600">दुर्लक्ष केले आहे, कारण हे धोरण फक्त क्लाउड वापरकर्ता धोरण म्हणून सेट केले जाऊ शकते.</translation>
 <translation id="4445133368066241428">लोकप्रिय विषय</translation>
+<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, टॅब शोधण्यासाठी एंटर प्रेस करा</translation>
 <translation id="4445964943162061557">हे प्रायोगिक वैशिष्ट्य आहे आणि ते नेहमीच बरोबर असेल असे नाही.</translation>
 <translation id="4449116177348980384">साइट सेटिंग्ज व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये परवानग्या आणि सर्व साइटवर स्टोअर केलेला डेटा व्यवस्थापित करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="4451135742916150903">HID डिव्हाइसशी कनेक्ट करण्याची विनंती करू शकते</translation>
@@ -2251,6 +2255,7 @@
 <translation id="4811450222531576619">त्याचे स्रोत आणि विषय यांबद्दल जाणून घ्या</translation>
 <translation id="4813512666221746211">नेटवर्क एरर</translation>
 <translation id="4814114628197290459">IBAN हटवा</translation>
+<translation id="4816341377198595747">बुकमार्क शोधण्यासाठी, बुकमार्क बटण शोधा अ‍ॅक्टिव्हेट करा</translation>
 <translation id="4816492930507672669">पृष्‍ठानुरुप करा</translation>
 <translation id="4819347708020428563">भाष्ये डीफॉल्ट व्ह्यूमध्ये संपादित करायची आहेत का?</translation>
 <translation id="4822493756793346865">सामान्य किमती या गेल्या ९० दिवसांतील संपूर्ण वेबवरील स्टोअरवर आधारित असतात.</translation>
@@ -2380,6 +2385,7 @@
 <translation id="5021557570875267742">Chrome वापरून किमतीचा माग ठेवा</translation>
 <translation id="5023310440958281426">तुमच्या ॲडमिनिस्ट्रेटरची धोरणे तपासा</translation>
 <translation id="5024171724744627792">तुमचे कार्ड सेव्ह केलेले असते, तेव्हा जलदपणे पेमेंट करा. कार्डचे तपशील तुमच्या Google खाते मध्ये एन्क्रिप्ट केले जातात.</translation>
+<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, इतिहास शोधण्यासाठी एंटर प्रेस करा</translation>
 <translation id="5030338702439866405">द्वारा जारी</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" साठी मूळ सर्टिफिकेट आवश्यक आहे परंतु ते इंस्टॉल केलेले नाही. तुमच्या IT अ‍ॅडमिनिस्ट्रेटरने ही समस्या सोडण्यासाठी "<ph name="SOFTWARE_NAME" />" साठीच्या कॉन्फिगरेशन सूचना पहाव्यात. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">तुलना मध्ये जोडायचे आहे का?</translation>
@@ -2736,6 +2742,7 @@
 <translation id="5619721953841297650">प्रीसेट</translation>
 <translation id="5624120631404540903">पासवर्ड व्यवस्थापित करा</translation>
 <translation id="5629630648637658800">धोरण सेटिंग्ज लोड करण्यात अयशस्वी</translation>
+<translation id="5630981295558454585">या पेजविषयी Google ला विचारा बटण, या पेजविषयी Google ला विचारण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="5631439013527180824">चुकीचे डिव्हाइस व्यवस्थापन टोकन</translation>
 <translation id="5632485077360054581">मला कसे ते दाखवा</translation>
 <translation id="563324245173044180">फसवणारा आशय ब्लॉक केला.</translation>
@@ -3617,6 +3624,7 @@
 <translation id="7139892792842608322">प्राथमिक ट्रे</translation>
 <translation id="7140087718106278457">पेमेंट पद्धतींची सूची बंद आहे.</translation>
 <translation id="714064300541049402">साइड २ इमेज X शिफ्ट</translation>
+<translation id="7140922144008419614">टॅब शोधा बटण, टॅब शोधण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
@@ -3852,6 +3860,7 @@
 <translation id="7526934274050461096">या साइटवर तुमचे कनेक्शन खाजगी नाही</translation>
 <translation id="7529884293139707752">घरी दिलेले शिक्षण</translation>
 <translation id="7531464389616946220">कार्ड स्कॅन करा</translation>
+<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, बुकमार्क शोधण्यासाठी एंटर प्रेस करा</translation>
 <translation id="7534987659046836932">एन्व्हलप सी७</translation>
 <translation id="7535087603100972091">मूल्य</translation>
 <translation id="753556296624075801">Google द्वारे प्रायोजित</translation>
@@ -4230,6 +4239,7 @@
 <translation id="8194412401381329820">तुम्ही या अव्यवस्थापित डिव्हाइसवरील व्यवस्थापित केलेल्या खात्यावरून हे पेज वापरू शकत नाही. या डिव्‍हाइससारख्या घटकाद्वारे व्‍यवस्‍थापित केलेली खाती (संलग्‍न खाती) वगळता, तुम्ही हे पेज वापरल्‍यास सर्व व्यवस्थापित केलेली खाती लॉक केली जातील.</translation>
 <translation id="8194797478851900357">&amp;हलवा पूर्ववत करा</translation>
 <translation id="8194956568907463262">शूटर गेम</translation>
+<translation id="8198379961710069585">शोध इतिहास बटण, Search इतिहासासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="8199437620497683918">ऑप्टिकल डिस्क (ग्लॉसी)</translation>
 <translation id="8199730148066603000">HTTPS नसलेल्या URL चे पूर्वावलोकन करण्याची अनुमती नाही.</translation>
 <translation id="8200772114523450471">रेझ्युमे</translation>

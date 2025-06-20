@@ -360,7 +360,6 @@
 <translation id="1235458158152011030">เครือข่ายที่รู้จัก</translation>
 <translation id="123578888592755962">ดิสก์เต็ม</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{ข้อความ}other{# ข้อความ}}</translation>
-<translation id="1236009322878349843">แก้ไขโทรศัพท์</translation>
 <translation id="1237251612871334180">อัปเดตเพื่อบันทึกรหัสผ่าน</translation>
 <translation id="1237950098253310325">เรียงลำดับ<ph name="BUTTON_NAME" />ใหม่โดยใช้ Ctrl + ลูกศรขึ้นหรือลง</translation>
 <translation id="1238293488628890871">สลับโปรไฟล์ไหม</translation>
@@ -577,7 +576,6 @@
 <translation id="1395832189806039783">ไฮไลต์รายการที่มีโฟกัสของแป้นพิมพ์</translation>
 <translation id="1396120028054416908">กลับไปที่ <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">เกิดข้อผิดพลาดในการตั้งค่าเครื่องพิมพ์</translation>
-<translation id="1397594434718759194">คุณลงชื่อเข้าใช้ Chrome ในอุปกรณ์เหล่านี้ จึงสามารถใช้อุปกรณ์ดังกล่าวเป็นคีย์ความปลอดภัย</translation>
 <translation id="1398853756734560583">ขยายใหญ่สุด</translation>
 <translation id="1399261165075500043">โหลดข้อกำหนดในการให้บริการของ Google Play ไม่ได้</translation>
 <translation id="1400243387594338234">คุณใช้ PIN นี้เพื่อลงชื่อเข้าใช้อุปกรณ์ได้</translation>
@@ -1694,7 +1692,6 @@
 <translation id="2162705204091149050">อ่านข้อมูลเกี่ยวกับเบราว์เซอร์ ระบบปฏิบัติการ อุปกรณ์ ซอฟต์แวร์ที่ติดตั้ง และไฟล์</translation>
 <translation id="2163470535490402084">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่อลงชื่อเข้าใช้ <ph name="DEVICE_TYPE" /></translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> และสวิตช์อีก 1 รายการ</translation>
-<translation id="2165102982098084499">คุณลิงก์อุปกรณ์เหล่านี้ด้วยการสแกนคิวอาร์โค้ด</translation>
 <translation id="2165177462441582039">เลือกระยะเวลาที่ไฮไลต์ควรแสดงอยู่ที่แต่ละรายการ</translation>
 <translation id="2166369534954157698">สุนัขจิ้งจอกที่ปราดเปรียวกระโดดข้ามสุนัขเกียจคร้าน</translation>
 <translation id="2169062631698640254">ลงชื่อเข้าใช้ต่อไป</translation>
@@ -4298,7 +4295,6 @@
 <translation id="3959969108528118741">เจ้าของ</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">การดำเนินการเพิ่มเติมสำหรับ <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3963753386716096475">ใช้โทรศัพท์ แท็บเล็ต หรือคีย์ความปลอดภัยอื่น</translation>
 <translation id="3964480518399667971">ปิดเครือข่ายมือถือ</translation>
 <translation id="3965467402665811906">เว็บไซต์สามารถขอใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณ</translation>
 <translation id="3965965397408324205">ออกจาก <ph name="PROFILE_NAME" /></translation>
@@ -4856,7 +4852,6 @@
 <translation id="4370975561335139969">อีเมลและรหัสผ่านที่คุณป้อนไม่ตรงกัน</translation>
 <translation id="4373418556073552953">ลงชื่อเข้าใช้ด้วยโทรศัพท์ Android</translation>
 <translation id="4373973310429385827">ประภาคาร</translation>
-<translation id="4374805630006466253">ใช้โทรศัพท์หรือแท็บเล็ตเครื่องอื่น</translation>
 <translation id="4374831787438678295">โปรแกรมติดตั้ง Linux</translation>
 <translation id="4375035964737468845">เปิดไฟล์ที่ดาวน์โหลดมา</translation>
 <translation id="4376226992615520204">ตำแหน่งปิดอยู่</translation>
@@ -5466,7 +5461,6 @@
 <translation id="4814114628197290459">ลบ IBAN</translation>
 <translation id="4814327014588285482">ข้ามและเตือนฉันในภายหลัง</translation>
 <translation id="4814378367953456825">ป้อนชื่อให้ลายนิ้วมือนี้</translation>
-<translation id="481574578487123132">อุปกรณ์ที่ลิงก์</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, รายละเอียด</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{ลบบุ๊กมาร์ก 1 รายการแล้ว}other{ลบบุ๊กมาร์ก {COUNT} รายการแล้ว}}</translation>
 <translation id="481689174647911539">ไฟล์นี้อาจเป็นไวรัสหรือมัลแวร์<ph name="LINE_BREAK" />คุณส่งไปยัง Google Safe Browsing เพื่อตรวจสอบได้ว่าไฟล์ดังกล่าวไม่ปลอดภัยหรือไม่ โดยปกติแล้ว การสแกนจะใช้เวลา 2-3 วินาที</translation>
@@ -8009,7 +8003,7 @@
 <translation id="6670983860904543332">การอัปเดตอัตโนมัติทำให้คุณได้ใช้ฟีเจอร์ล่าสุด สำรวจไฮไลต์จากการอัปเดตล่าสุด</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{1 ที่อยู่}other{# ที่อยู่}}</translation>
 <translation id="6671497123040790595">กำลังตั้งค่าการจัดการโดย <ph name="MANAGER" /></translation>
-<translation id="6672697278890207089">ป้อนข้อความรหัสผ่านของคุณ</translation>
+<translation id="6672697278890207089">ป้อนรหัสผ่านของคุณ</translation>
 <translation id="6672917148207387131">เพิ่ม <ph name="DOMAIN" /></translation>
 <translation id="6673353404516008367">โหมดไม่ระบุตัวตนทำให้<ph name="BEGIN_LINK" />การท่องเว็บของคุณเป็นแบบส่วนตัวจากผู้อื่น<ph name="END_LINK" />ที่ใช้อุปกรณ์ของคุณ</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
@@ -8434,7 +8428,6 @@
 <translation id="6965607054907047032">เพิ่มหน่วยความจำจากแท็บที่ไม่ได้ใช้งาน</translation>
 <translation id="6965648386495488594">พอร์ต</translation>
 <translation id="6965978654500191972">อุปกรณ์</translation>
-<translation id="6966370001499648704">ควบคุมโทรศัพท์ที่คุณจะใช้เป็นคีย์ความปลอดภัย</translation>
 <translation id="6967112302799758487">ระบบจะนำแอปและเกมที่ติดตั้งโดยใช้ Steam สำหรับ Chromebook (เบต้า) ออกจากอุปกรณ์นี้ รวมถึงจะนำข้อมูลที่เชื่อมโยงกับแอปและเกมเหล่านี้ออกด้วย อย่าลืมสำรองข้อมูลแอปและเกมที่บันทึกไว้ก่อนถอนการติดตั้ง</translation>
 <translation id="6967430741871315905">ไม่สามารถตรวจสอบว่าอุปกรณ์ได้รับอนุญาตหรือไม่</translation>
 <translation id="6968288415730398122">ป้อนรหัสผ่านเพื่อกำหนดค่าการล็อกหน้าจอ</translation>
@@ -11119,7 +11112,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">ทึบ</translation>
 <translation id="8838770651474809439">แฮมเบอร์เกอร์</translation>
-<translation id="8838778928843281408">จัดการโทรศัพท์</translation>
 <translation id="8838841425230629509">เลิกปักหมุดกลุ่มจากแถบบุ๊กมาร์ก</translation>
 <translation id="883924185304953854">ค้นหาจากภาพ</translation>
 <translation id="8841786407272321022">ระบบบันทึกรหัสผ่านไว้ในอุปกรณ์นี้เท่านั้น หากต้องการบันทึกรหัสผ่านใหม่ในบัญชี Google โปรดอัปเดตบริการ Google Play</translation>

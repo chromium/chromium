@@ -364,7 +364,6 @@
 <translation id="1235458158152011030">الشبكات المعروفة</translation>
 <translation id="123578888592755962">القرص ممتلئ</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{نص واحد}zero{# نص}two{نصّان}few{# نصوص}many{# نصًّا}other{# نص}}</translation>
-<translation id="1236009322878349843">تعديل بيانات الهاتف</translation>
 <translation id="1237251612871334180">‏يجب تحديث "خدمات Google Play" لحفظ كلمات المرور</translation>
 <translation id="1237950098253310325">‏أعِد ترتيب <ph name="BUTTON_NAME" /> باستخدام مفتاح Ctrl + السهم المتّجه للأعلى أو السهم المتّجه للأسفل</translation>
 <translation id="1238293488628890871">هل تريد تبديل الملف الشخصي؟</translation>
@@ -581,7 +580,6 @@
 <translation id="1395832189806039783">تمييز العنصر باستخدام تركيز لوحة المفاتيح</translation>
 <translation id="1396120028054416908">الرجوع إلى "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="1396139853388185343">حدث خطأ أثناء إعداد الطابعة</translation>
-<translation id="1397594434718759194">‏أنت مسجّل دخولك إلى Chrome على هذه الأجهزة، ما يعني أنّ بإمكانك استخدامها كمفاتيح أمان.</translation>
 <translation id="1398853756734560583">تكبير</translation>
 <translation id="1399261165075500043">‏يتعذَّر تحميل "بنود خدمة Google Play".</translation>
 <translation id="1400243387594338234">يمكنك استخدام رقم التعريف الشخصي هذا لتسجيل الدخول إلى جهازك</translation>
@@ -1243,6 +1241,7 @@
 <translation id="184862733444771842">طلب ميزة</translation>
 <translation id="1849016657376805933">‏كل أجهزة HID</translation>
 <translation id="1849022541429818637">المواقع الإلكترونية المسموح لها بتخزين إدخالات الماوس واستخدامها</translation>
+<translation id="1849252834922144634">يمكنك النقر مع الاستمرار لتثبيت الاختصارات</translation>
 <translation id="1850145825777333687">بيانات اعتماد الجهاز</translation>
 <translation id="1850508293116537636">تدوير &amp;في اتجاه عقارب الساعة</translation>
 <translation id="185111092974636561">‏<ph name="BEGIN_PARAGRAPH1" />قبل التسجيل، عليك محو وحدة النظام الأساسي الموثوقة (TPM) ليتمكّن نظام التشغيل <ph name="DEVICE_OS" /> من الحصول على ملكية الجهاز.<ph name="END_PARAGRAPH1" />
@@ -1698,7 +1697,6 @@
 <translation id="2162705204091149050">الاطّلاع على معلومات عن المتصفّح ونظام التشغيل والجهاز والبرامج المُثبَّتة والملفات</translation>
 <translation id="2163470535490402084">يُرجى الاتصال بالإنترنت لتسجيل الدخول إلى <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /> و<ph name="THIRD_SWITCH" /> ومفتاح تبديل آخر</translation>
-<translation id="2165102982098084499">تم ربط هذه الأجهزة من خلال المسح الضوئي لرمز الاستجابة السريعة.</translation>
 <translation id="2165177462441582039">اختَر مدة إبقاء كل عنصر مميّزًا.</translation>
 <translation id="2166369534954157698">أبجد هوز حطي كلمن سعفص قرشت ثخذ ضظغ</translation>
 <translation id="2169062631698640254">تسجيل الدخول على أيّ حال</translation>
@@ -2798,6 +2796,7 @@
 <translation id="2912247081180973411">إغلاق النوافذ</translation>
 <translation id="2915102088417824677">عرض سِجلّ الأنشطة</translation>
 <translation id="2915873080513663243">المسح التلقائي</translation>
+<translation id="2916067990491711240">الخروج من جلسات الضيف المُدارة</translation>
 <translation id="2916073183900451334">يؤدي الضغط على علامة تبويب في صفحة الويب إلى إبراز الروابط وكذلك حقول النماذج</translation>
 <translation id="2916745397441987255">بحث في الإضافات</translation>
 <translation id="2918484639460781603">الانتقال إلى الإعدادات</translation>
@@ -4301,7 +4300,6 @@
 <translation id="3959969108528118741">المالك</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">مزيد من الإجراءات لـ "<ph name="IBAN_DESCRIPTION" />"</translation>
-<translation id="3963753386716096475">استخدام هواتف أو أجهزة لوحية أو مفاتيح أمان مختلفة</translation>
 <translation id="3964480518399667971">إيقاف شبكة الجوّال</translation>
 <translation id="3965467402665811906">السماح للمواقع الإلكترونية بطلب استخدام المعلومات التي تم حفظها عنك</translation>
 <translation id="3965965397408324205">الخروج من <ph name="PROFILE_NAME" /></translation>
@@ -4859,7 +4857,6 @@
 <translation id="4370975561335139969">البريد الإلكتروني وكلمة المرور اللذان أدخلتهما غير متطابقين</translation>
 <translation id="4373418556073552953">‏تسجيل الدخول باستخدام هاتف Android</translation>
 <translation id="4373973310429385827">منارة</translation>
-<translation id="4374805630006466253">استخدام هاتف أو جهاز لوحي آخر</translation>
 <translation id="4374831787438678295">‏أداة تثبيت Linux</translation>
 <translation id="4375035964737468845">فتح الملفات التي تم تنزيلها</translation>
 <translation id="4376226992615520204">تم إيقاف إذن تحديد الموقع الجغرافي.</translation>
@@ -5469,7 +5466,6 @@
 <translation id="4814114628197290459">‏حذف رقم الحساب بصيغة IBAN</translation>
 <translation id="4814327014588285482">التخطّي وتذكيري لاحقًا</translation>
 <translation id="4814378367953456825">يُرجى إدخال اسم لبصمة الإصبع هذه</translation>
-<translation id="481574578487123132">الأجهزة المرتبطة</translation>
 <translation id="4816097470512964351">الشبكة <ph name="DEVICE" />، التفاصيل</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{تم حذف إشارة مرجعية واحدة.}zero{تم حذف {COUNT} إشارة مرجعية.}two{تم حذف إشارتَين مرجعيتَين ({COUNT}).}few{تم حذف {COUNT} إشارات مرجعية.}many{تم حذف {COUNT} إشارة مرجعية.}other{تم حذف {COUNT} إشارة مرجعية.}}</translation>
 <translation id="481689174647911539">‏قد يكون هذا الملف فيروسًا أو برنامجًا ضارًا.<ph name="LINE_BREAK" />يمكنك إرساله إلى "التصفح الآمن من Google" للتأكّد من أمانه. تستغرق عمليات الفحص عادةً بضع ثوانٍ.</translation>
@@ -8450,7 +8446,6 @@
 <translation id="6965607054907047032">إخلاء مساحة من الذاكرة استنادًا إلى علامات التبويب غير النشطة</translation>
 <translation id="6965648386495488594">المنفذ</translation>
 <translation id="6965978654500191972">جهاز</translation>
-<translation id="6966370001499648704">التحكّم في الهواتف التي تستخدمها كمفاتيح أمان</translation>
 <translation id="6967112302799758487">‏ستُزال من هذا الجهاز أي تطبيقات وألعاب تم تثبيتها باستخدام تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي). ستتم أيضًا إزالة البيانات المرتبطة بهذه التطبيقات والألعاب. احرص على الاحتفاظ بنسخة احتياطية من التطبيقات والألعاب المحفوظة قبل إلغاء التثبيت.</translation>
 <translation id="6967430741871315905">تعذّر التحقّق مما إذا كان الجهاز مسموحًا له بتنفيذ هذا الإجراء.</translation>
 <translation id="6968288415730398122">أدخل كلمة المرور لإعداد قفل الشاشة</translation>
@@ -11141,7 +11136,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">معتم</translation>
 <translation id="8838770651474809439">هامبورجر</translation>
-<translation id="8838778928843281408">إدارة أجهزة الهاتف</translation>
 <translation id="8838841425230629509">إزالة تثبيت المجموعة من شريط الإشارات</translation>
 <translation id="883924185304953854">البحث باستخدام الصور</translation>
 <translation id="8841786407272321022">‏تم حفظ كلمة المرور على هذا الجهاز فقط. لحفظ كلمات مرور جديدة في حسابك على Google، يجب تحديث "خدمات Google Play".</translation>

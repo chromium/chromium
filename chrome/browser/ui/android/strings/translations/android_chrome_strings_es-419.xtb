@@ -894,6 +894,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="506254248375231072">No hay pestañas</translation>
 <translation id="5062960805900435602">La actualización sobre la combinación de contraseñas está cerrada</translation>
 <translation id="5075939510584558547">Guardar sin encriptación</translation>
+<translation id="5082172173036123513">Las ventanas inactivas se borran de forma permanente después de 6 meses de inactividad.</translation>
 <translation id="5085038751173179818">Accede a este sitio y a Chrome para obtener tus favoritos y mucho más en todos tus dispositivos</translation>
 <translation id="5091199029769593641">Pronto, cuando abras una nueva pestaña, verás historias de <ph name="SITE_NAME" />. Los sitios que sigues se guardan en tu Cuenta de Google. Puedes administrarlos en la configuración de Descubre.</translation>
 <translation id="509429900233858213">Se ha producido un error.</translation>
@@ -1552,6 +1553,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7844171778363018843">No se seleccionaron datos para sincronizar</translation>
 <translation id="7846161022626028328">Se produjo un error. Vuelve a intentarlo.</translation>
 <translation id="7846296061357476882">Servicios de Google</translation>
+<translation id="784652447248278262">Ventana actual</translation>
 <translation id="784934925303690534">Intervalo de tiempo</translation>
 <translation id="7851858861565204677">Otros dispositivos</translation>
 <translation id="7853202427316060426">Actividad</translation>
@@ -1631,6 +1633,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="813082847718468539">Ver la información del sitio</translation>
 <translation id="8135406045838672858">Los archivos PDF descargados se abren automáticamente con <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">No será necesario que recuerdes esta contraseña. Se guardará en el Administrador de contraseñas de Google.</translation>
+<translation id="8146563639948412265">Puedes tener hasta <ph name="MAX_WINDOW_COUNT" /> ventanas en total. Para restablecer una ventana, cierra <ph name="WINDOW_COUNT" /> ventanas activas o inactivas.</translation>
 <translation id="8152331954420209374">Ir a Lens</translation>
 <translation id="8163820386638255770">Para usar y guardar contraseñas en tu Cuenta de Google, verifica tu identidad</translation>
 <translation id="8186512483418048923">Quedan <ph name="FILES" /> archivos</translation>

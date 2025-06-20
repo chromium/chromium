@@ -358,6 +358,7 @@
 <translation id="1593359183944365958">၂၇၀ ဒီဂရီ</translation>
 <translation id="1594030484168838125">ရွေးချယ်ရန်</translation>
 <translation id="1597307423671074806">WebM ဗီဒီယို</translation>
+<translation id="159800670740560023">Chrome အကြံပြုချက်လင့်ခ်၊ <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> ကို ဖွင့်ရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="1599199147673445968">ကတ် အသစ်လား? <ph name="BEGIN_LINK" />ကတ် အသေးစိတ်ထည့်ရန်<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">အလှအပ၊ ကြံ့ခိုင်ရေး</translation>
@@ -836,6 +837,7 @@
 <translation id="2383455408879745299">Chrome ဆက်တင်များတွင် သင့်အများသုံးစွဲနိုင်မှု တူးလ်များကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ပါ</translation>
 <translation id="2384307209577226199">လုပ်ငန်းဆိုင်ရာ ပုံမှန်</translation>
 <translation id="238459632961158867">ဝဘ်ဆိုက်</translation>
+<translation id="2384823392576123225">လိပ်စာများရှာရန်</translation>
 <translation id="2385809941344967209">သင့် Chrome ဆက်တင်များတွင် Chrome ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="2386255080630008482">ဆာဗာ၏ လက်မှတ်မှာ ရုပ်သိမ်းခံခဲ့ရသည်။</translation>
 <translation id="2388828676877700238">အခွန် ပြင်ဆင်ခြင်း၊ အစီအစဉ်ဆွဲခြင်း</translation>
@@ -1451,6 +1453,7 @@
 <translation id="3461266716147554923">ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည့် စာသားနှင့် ပုံများကို <ph name="URL" /> က ကြည့်လိုသည်</translation>
 <translation id="3461824795358126837">ရောင်စုံမင်တံ</translation>
 <translation id="3462200631372590220">အဆင့်မြင့်များကို ဝှက်ထားရန်</translation>
+<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ ဤစာမျက်နှာအကြောင်း Google ကို မေးရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="3465972433695735758">ဤ PDF ကို ဖွင့်၍မရပါ။ စာသားထုတ်ယူပြီးပြီ။ Google AI က ပံ့ပိုးပါသည်</translation>
 <translation id="346601286295919445">ဓာတုဗေဒ</translation>
 <translation id="3467081767799433066">ကြော်ငြာတိုင်းတာမှုဖြင့် ဝဘ်ဆိုက်များ၏ ကြော်ငြာစွမ်းဆောင်ရည်တိုင်းတာရန် ဝဘ်ဆိုက်တစ်ခုအား သင်ဝင်ကြည့်ပြီးနောက် ဝယ်ယူခြင်း ရှိ၊ မရှိကဲ့သို့သော ကန့်သတ်ဒေတာအမျိုးအစားများကို ဝဘ်ဆိုက်များအကြား မျှဝေသည်။</translation>
@@ -2058,6 +2061,7 @@
 <translation id="444116852243722675">အားလုံးဖွင့်ရန် (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">မူဝါဒကို cloud အသုံးပြုသူလိုက်နာရမည့် မူဝါဒအဖြစ်သာ သတ်မှတ်နိုင်သောကြောင့် လျစ်လျူရှုထားသည်။</translation>
 <translation id="4445133368066241428">ရေပန်းစားသော အကြောင်းအရာများ</translation>
+<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ တဘ်များကို ရှာရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="4445964943162061557">၎င်းသည် စမ်းသပ်ဆဲ ဝန်ဆောင်မှုဖြစ်ပြီး အမြဲတမ်း မှန်ကန်မည်မဟုတ်ပါ။</translation>
 <translation id="4449116177348980384">Chrome ဆက်တင်များတွင် ဝဘ်ဆိုက်များရှိ သိမ်းထားသော ခွင့်ပြုချက်နှင့် ဒေတာများ စီမံရန်အတွက် ‘ဝဘ်ဆိုက်ဆက်တင်များ စီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="4451135742916150903">HID ကိရိယာများနှင့် ချိတ်ဆက်ရန် ခွင့်တောင်းနိုင်သည်</translation>
@@ -2253,6 +2257,7 @@
 <translation id="4811450222531576619">၎င်း၏အကြောင်းအရာနှင့် ရင်းမြစ်အကြောင်းကို ပိုမိုလေ့လာနိုင်ပါသည်</translation>
 <translation id="4813512666221746211">ကွန်ရက် ပြဿနာ</translation>
 <translation id="4814114628197290459">IBAN ဖျက်ခြင်း</translation>
+<translation id="4816341377198595747">လိပ်စာများရှာရန် ခလုတ်၊ လိပ်စာများကို ရှာရန် ဖွင့်ပါ</translation>
 <translation id="4816492930507672669">စာမျက်နှာ ကွက်တိ လုပ်ပေးရန်</translation>
 <translation id="4819347708020428563">မှတ်ချက်များကို မူရင်းမြင်ကွင်းတွင် တည်းဖြတ်မလား။</translation>
 <translation id="4822493756793346865">ပုံမှန်ဈေးနှုန်းများသည် ပြီးခဲ့သော ရက် ၉၀ အတွင်း ဝဘ်တစ်ခုလုံးရှိ ဆိုင်များအပေါ် အခြေခံထားသည်။</translation>
@@ -2382,6 +2387,7 @@
 <translation id="5021557570875267742">Chrome ဖြင့် ဈေးနှုန်းစောင့်ကြည့်ခြင်း</translation>
 <translation id="5023310440958281426">သင့် စီမံအုပ်ချုပ်သူ၏ မူဝါဒများကို စစ်ဆေးကြည့်ရန်</translation>
 <translation id="5024171724744627792">သင့်ကတ်ကို သိမ်းထားသောအခါ ပိုမိုလျင်မြန်စွာ ပေးချေနိုင်သည်။ ကတ်အသေးစိတ်အချက်များကို သင့် Google Account တွင် အသွင်ဝှက်ထားသည်။</translation>
+<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ မှတ်တမ်းကို ရှာရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="5030338702439866405">ထုတ်ပေးခဲ့သူ</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" အတွက် ပင်မအသိအမှတ်ပြုလက်မှတ် လိုအပ်သော်လည်း ထည့်သွင်းမထားပါ။ ဤပြဿနာကို ဖြေရှင်းရန် IT စီမံခန့်ခွဲသူသည် "<ph name="SOFTWARE_NAME" />" အတွက် စီစဉ်သတ်မှတ်ခြင်း လမ်းညွှန်ချက်များကို ကြည့်သင့်ပါသည်။ <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">နှိုင်းယှဉ်မှုတွင် ထည့်မလား။</translation>
@@ -2738,6 +2744,7 @@
 <translation id="5619721953841297650">အသင့်သုံး</translation>
 <translation id="5624120631404540903">စကားဝှက်များကို စီမံကွပ်ကဲရန်</translation>
 <translation id="5629630648637658800">မူဝါဒ ဆက်တင်များကို တင် မပေးနိုင်ခဲ့</translation>
+<translation id="5630981295558454585">ဤစာမျက်နှာအကြောင်း Google ကို မေးရန် ခလုတ်၊ ဤစာမျက်နှာအကြောင်း Google ကို မေးရန် ဖွင့်ပါ</translation>
 <translation id="5631439013527180824">ကိရိယာ စီမံကွပ်ကဲရေး တိုကင် မမှန်</translation>
 <translation id="5632485077360054581">လုပ်နည်း ပြရန်</translation>
 <translation id="563324245173044180">လှည့်ဖြားတတ်သည့် အကြောင်းအရာများကို ပိတ်ထားပါသည်။</translation>
@@ -3617,6 +3624,7 @@
 <translation id="7139892792842608322">ပင်မဗန်း</translation>
 <translation id="7140087718106278457">ငွေပေးချေနည်းလမ်း စာရင်းကို ပိတ်ထားသည်။</translation>
 <translation id="714064300541049402">ဘေး ၂ ပုံ အလျားလိုက် အရွှေ့</translation>
+<translation id="7140922144008419614">တဘ်များရှာရန် ခလုတ်၊ တဘ်များကို ရှာရန် ဖွင့်ပါ</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
 <translation id="7152230779180489711">နောက်ဆုံး ဝင်ကြည့်ထားချိန်</translation>
@@ -3852,6 +3860,7 @@
 <translation id="7526934274050461096">ဤဝဘ်ဆိုက်သို့ သင့်ချိတ်ဆက်ထားမှုသည် သီးသန့်မဟုတ်ပါ</translation>
 <translation id="7529884293139707752">အိမ်တွင်းစာသင်ကြားခြင်း</translation>
 <translation id="7531464389616946220">ကတ် စကင်ဖတ်ရန်</translation>
+<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ လိပ်စာများကို ရှာရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="7534987659046836932">C7 စာအိတ်</translation>
 <translation id="7535087603100972091">တန်ဖိုး</translation>
 <translation id="753556296624075801">Google က ပံ့ပိုးသည်</translation>
@@ -4231,6 +4240,7 @@
 <translation id="8194412401381329820">ဤစီမံမထားသောစက်တွင် ဤစာမျက်နှာကို စီမံခန့်ခွဲထားသည့်အကောင့်မှ သုံး၍မရပါ။ ဤစာမျက်နှာကို သုံးပါက ဤစက်ကဲ့သို့ တူညီသောပုဂ္ဂိုလ်က စီမံထားသောအကောင့်များမှလွဲ၍ (ချိတ်ဆက်ထားသော အကောင့်များ) စီမံခန့်ခွဲထားသည့်အကောင့်အားလုံးကို လော့ခ်ချပါမည်။</translation>
 <translation id="8194797478851900357">&amp;ရွေ့ရှားမှုကို တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="8194956568907463262">အပစ်အခတ်ဂိမ်း</translation>
+<translation id="8198379961710069585">မှတ်တမ်းရှာရန် ခလုတ်၊ မှတ်တမ်းကို ရှာရန် ဖွင့်ပါ</translation>
 <translation id="8199437620497683918">ဒစ်ခွေ (တောက်ပြောင်)</translation>
 <translation id="8199730148066603000">HTTPS မဟုတ်သည့် URL ကို အစမ်းကြည့်ရှုခွင့်မပြုပါ။</translation>
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>

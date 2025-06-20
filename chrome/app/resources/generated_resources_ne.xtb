@@ -358,7 +358,6 @@
 <translation id="1235458158152011030">ज्ञात नेटवर्कहरू</translation>
 <translation id="123578888592755962">डिस्क भरियो</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{पाठ}other{# वटा पाठ}}</translation>
-<translation id="1236009322878349843">फोन नम्बर बदल्नुहोस्</translation>
 <translation id="1237251612871334180">पासवर्ड सेभ गर्न अपडेट गर्नुहोस्</translation>
 <translation id="1237950098253310325">Ctrl अनि अप एरो वा डाउन एरो प्रयोग गरी <ph name="BUTTON_NAME" /> को क्रम मिलाउनुहोस्</translation>
 <translation id="1238293488628890871">प्रोफाइल बदल्ने हो?</translation>
@@ -575,7 +574,6 @@
 <translation id="1395832189806039783">किबोर्डको फोकसका सहायताले वस्तु हाइलाइट गर्नुहोस्</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> मा फर्कनुहोस्</translation>
 <translation id="1396139853388185343">प्रिन्टर सेटअप गर्दा त्रुटि</translation>
-<translation id="1397594434718759194">तपाईं यी डिभाइसहरूमा Chrome मा साइन इन अवस्थामा हुनुहुन्छ, त्यसैले तपाईं यी डिभाइसलाई सुरक्षा साँचोका रूपमा प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="1398853756734560583">अधिकतम बनाउनुहोस्</translation>
 <translation id="1399261165075500043">Google Play का सेवाका सर्तहरू लोड गर्न सकिएन</translation>
 <translation id="1400243387594338234">तपाईं आफ्नो डिभाइसमा साइन इन गर्न यो PIN प्रयोग गर्न सक्नुहुन्छ</translation>
@@ -1691,7 +1689,6 @@
 <translation id="2162705204091149050">तपाईंका ब्राउजर, OS, डिभाइस, इन्स्टल गरिएका सफ्टवेयर र फाइलहरूसम्बन्धी जानकारी पढ्नुहोस्</translation>
 <translation id="2163470535490402084">तपाईँको <ph name="DEVICE_TYPE" /> मा साइन इन गर्न कृपया इन्टरनेट कनेक्ट गर्नुहोस्।</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> र थप एउटा स्विच</translation>
-<translation id="2165102982098084499">तपाईंले QR कोड स्क्यान गरेर यी डिभाइसहरू लिंक गर्नुभएको छ।</translation>
 <translation id="2165177462441582039">कुनै वस्तु कति बेरसम्म हाइलाइट गर्ने हो छनौट गर्नुहोस्</translation>
 <translation id="2166369534954157698">अ आ इ ई उ ऊ ए ऐ ओ औ अं अ: क ख ग घ ङ</translation>
 <translation id="2169062631698640254">कुनैपनि अवस्थामा साइन इन गर्नुहोस्</translation>
@@ -4295,7 +4292,6 @@
 <translation id="3959969108528118741">मालिक</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
-<translation id="3963753386716096475">कुनै अर्को फोन, ट्याब्लेट वा सुरक्षा साँचो प्रयोग गर्नुहोस्</translation>
 <translation id="3964480518399667971">सेलुलर नेटवर्क अफ गर्नुहोस्</translation>
 <translation id="3965467402665811906">साइटहरूले तपाईंका बारेमा सेभ गरिएको जानकारी प्रयोग गर्ने अनुमति माग्न सक्छन्</translation>
 <translation id="3965965397408324205">बाहिरिन निस्कनुहोस् <ph name="PROFILE_NAME" /></translation>
@@ -4853,7 +4849,6 @@
 <translation id="4370975561335139969">तपाईँले प्रविष्टि गर्नुभएको इमेल र पासवर्ड मेल खाँदैनन्</translation>
 <translation id="4373418556073552953">आफ्नो Android फोनमार्फत साइन इन गर्नुहोस्</translation>
 <translation id="4373973310429385827">लाइटहाउस</translation>
-<translation id="4374805630006466253">कुनै अर्को फोन वा ट्याब्लेट प्रयोग गर्नुहोस्</translation>
 <translation id="4374831787438678295">Linux को स्थापनाकर्ता</translation>
 <translation id="4375035964737468845">डाउनलोड गरिएका फाइलहरू खोल्नुहोस्</translation>
 <translation id="4376226992615520204">स्थान अफ गरिएको छ</translation>
@@ -5463,7 +5458,6 @@
 <translation id="4814114628197290459">IBAN मेटाउनुहोस्</translation>
 <translation id="4814327014588285482">स्किप गर्नुहोस् र मलाई फेरि सम्झाइयोस्</translation>
 <translation id="4814378367953456825">यो फिंगरप्रिन्टको नाम हाल्नुहोस्</translation>
-<translation id="481574578487123132">लिंक गरिएका डिभाइसहरू</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, विवरणहरू</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{एउटा पुस्तक चिन्ह मेटाइयो}other{{COUNT} वटा पुस्तक चिन्ह मेटाइए}}</translation>
 <translation id="481689174647911539">यो फाइल भाइरस वा मालवेयर हुन सक्छ।<ph name="LINE_BREAK" />तपाईं यो फाइल सुरक्षित छ कि छैन भन्ने कुरा जाँच्न यसलाई Google सुरक्षित ब्राउजिङमा पठाउन सक्नुहुन्छ। स्क्यान गर्न सामान्यतया केही सेकेन्ड लाग्छ।</translation>
@@ -8435,7 +8429,6 @@
 <translation id="6965607054907047032">निष्क्रिय ट्याबका आधारमा मेमोरी खाली गर्नुहोस्</translation>
 <translation id="6965648386495488594">पोर्ट</translation>
 <translation id="6965978654500191972">डिभाइस</translation>
-<translation id="6966370001499648704">कुन फोनलाई सुरक्षा साँचोका रूपमा प्रयोग गर्ने भन्ने कुरा तय गर्नुहोस्</translation>
 <translation id="6967112302799758487">यो डिभाइसमा Steam for Chromebook (बिटा) प्रयोग गरी डाउनलोड गरिएका सबै एप र गेमहरू मेटाइने छन्। यी एप र गेमहरूसँग सम्बन्धित डेटा पनि मेटाइने छ। सेभ गरिएका एप र गेमहरू अनइन्स्टल गर्नुअघि ती एप र गेमहरू ब्याकअप गर्न नभुल्नुहोला।</translation>
 <translation id="6967430741871315905">यो डिभाइस प्रयोग गर्ने अनुमति दिइएको छ कि छैन भन्ने कुरा जाँच गर्न सकिएन</translation>
 <translation id="6968288415730398122">स्क्रिन लक कन्फिगर गर्न आफ्नो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
@@ -11119,7 +11112,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">अपारदर्शी</translation>
 <translation id="8838770651474809439">ह्यामबर्गर</translation>
-<translation id="8838778928843281408">फोनहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8838841425230629509">समूहलाई बुकमार्क बारमा अनपिन गर्नुहोस्</translation>
 <translation id="883924185304953854">फोटोअनुसार खोज्नुहोस्</translation>
 <translation id="8841786407272321022">पासवर्ड यो डिभाइसमा मात्र सेभ गरिएको छ। आफ्नो Google खातामा नयाँ पासवर्डहरू सेभ गर्न Google Play services अपडेट गर्नुहोस्।</translation>

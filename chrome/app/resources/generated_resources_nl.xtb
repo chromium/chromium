@@ -360,7 +360,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1235458158152011030">Bekende netwerken</translation>
 <translation id="123578888592755962">Schijf is vol</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{tekstfragment}other{# tekstfragmenten}}</translation>
-<translation id="1236009322878349843">Telefoon bewerken</translation>
 <translation id="1237251612871334180">Update om wachtwoorden op te slaan</translation>
 <translation id="1237950098253310325">Wijzig de volgorde van <ph name="BUTTON_NAME" /> met Ctrl + pijl-omhoog of pijl-omlaag</translation>
 <translation id="1238293488628890871">Van profiel wisselen?</translation>
@@ -577,7 +576,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1395832189806039783">Item markeren met toetsenbordfocus</translation>
 <translation id="1396120028054416908">Terug naar <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Fout bij instellen van printer</translation>
-<translation id="1397594434718759194">Je bent op deze apparaten ingelogd bij Chrome, dus kun je ze als beveiligingssleutels gebruiken.</translation>
 <translation id="1398853756734560583">Maximaliseren</translation>
 <translation id="1399261165075500043">Kan de Servicevoorwaarden voor Google Play niet laden</translation>
 <translation id="1400243387594338234">Je kunt deze pincode gebruiken om in te loggen op je apparaat</translation>
@@ -1239,6 +1237,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="184862733444771842">Functieverzoek</translation>
 <translation id="1849016657376805933">Elk HID-apparaat</translation>
 <translation id="1849022541429818637">Toestemming om je muisinvoer vast te leggen en te gebruiken</translation>
+<translation id="1849252834922144634">Houd je vinger op snelkoppelingen om ze vast te zetten</translation>
 <translation id="1850145825777333687">Inloggegevens van apparaat</translation>
 <translation id="1850508293116537636">Rechtsom &amp;draaien</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Voordat je je inschrijft, moet je de TPM wissen, zodat <ph name="DEVICE_OS" /> eigenaar van het apparaat kan worden.<ph name="END_PARAGRAPH1" />
@@ -1693,7 +1692,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2162705204091149050">Informatie over je browser, OS, apparaat, geïnstalleerde software en bestanden lezen</translation>
 <translation id="2163470535490402084">Maak verbinding met internet om in te loggen op je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> en nog 1 schakelaar</translation>
-<translation id="2165102982098084499">Je hebt deze apparaten gekoppeld door een QR-code te scannen.</translation>
 <translation id="2165177462441582039">Kiezen hoelang elk item gemarkeerd moet blijven</translation>
 <translation id="2166369534954157698">Pa's wijze lynx bezag vroom het fikse aquaduct</translation>
 <translation id="2169062631698640254">Toch inloggen</translation>
@@ -2793,6 +2791,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2912247081180973411">Vensters sluiten</translation>
 <translation id="2915102088417824677">Activiteitenlogboek bekijken</translation>
 <translation id="2915873080513663243">Automatisch scannen</translation>
+<translation id="2916067990491711240">Beheerde gastsessies beëindigen</translation>
 <translation id="2916073183900451334">Links en velden in formulieren markeren als je op een webpagina op Tab drukt</translation>
 <translation id="2916745397441987255">Extensies zoeken</translation>
 <translation id="2918484639460781603">Ga naar instellingen</translation>
@@ -4296,7 +4295,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3959969108528118741">Eigenaar</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Meer acties voor <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3963753386716096475">Een andere telefoon, tablet of beveiligingssleutel gebruiken</translation>
 <translation id="3964480518399667971">Mobiel netwerk uitzetten</translation>
 <translation id="3965467402665811906">Sites kunnen vragen of ze informatie over je mogen gebruiken</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> sluiten</translation>
@@ -4853,7 +4851,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4370975561335139969">Het opgegeven e-mailadres en wachtwoord komen niet overeen</translation>
 <translation id="4373418556073552953">Inloggen met je Android-telefoon</translation>
 <translation id="4373973310429385827">Vuurtoren</translation>
-<translation id="4374805630006466253">Een andere telefoon of tablet gebruiken</translation>
 <translation id="4374831787438678295">Linux-installatieprogramma</translation>
 <translation id="4375035964737468845">Gedownloade bestanden openen</translation>
 <translation id="4376226992615520204">Locatie staat uit</translation>
@@ -5463,7 +5460,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4814114628197290459">IBAN verwijderen</translation>
 <translation id="4814327014588285482">Overslaan en later herinneren</translation>
 <translation id="4814378367953456825">Geef een naam op voor deze vingerafdruk</translation>
-<translation id="481574578487123132">Gekoppelde apparaten</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, details</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bookmark verwijderd}other{{COUNT} bookmarks verwijderd}}</translation>
 <translation id="481689174647911539">Dit bestand is misschien een virus of malware.<ph name="LINE_BREAK" />Je kunt het bestand naar Google Safe Browsing sturen om te checken of het onveilig is. Scans duren meestal een paar seconden.</translation>
@@ -8431,7 +8427,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6965607054907047032">Geheugen vrijmaken op basis van inactiviteit van tabbladen</translation>
 <translation id="6965648386495488594">Poort</translation>
 <translation id="6965978654500191972">Apparaat</translation>
-<translation id="6966370001499648704">Beheren welke telefoons je gebruikt als beveiligingssleutels</translation>
 <translation id="6967112302799758487">Apps en games die zijn geïnstalleerd met Steam voor Chromebook (bèta) worden verwijderd van dit apparaat. Gegevens die aan deze apps en games zijn gekoppeld, worden ook verwijderd. Maak een back-up van opgeslagen apps en games voordat je de app verwijdert.</translation>
 <translation id="6967430741871315905">Kan niet checken of het apparaat is toegestaan</translation>
 <translation id="6968288415730398122">Geef je wachtwoord op om de schermvergrendeling te configureren</translation>
@@ -11116,7 +11111,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Ondoorzichtig</translation>
 <translation id="8838770651474809439">Hamburger</translation>
-<translation id="8838778928843281408">Telefoons beheren</translation>
 <translation id="8838841425230629509">Groep losmaken van bookmarkbalk</translation>
 <translation id="883924185304953854">Zoeken op afbeelding</translation>
 <translation id="8841786407272321022">Wachtwoord alleen opgeslagen op dit apparaat. Update Google Play-services om nieuwe wachtwoorden op te slaan in je Google-account.</translation>

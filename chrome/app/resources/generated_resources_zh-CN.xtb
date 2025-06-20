@@ -360,7 +360,6 @@
 <translation id="1235458158152011030">已知网络</translation>
 <translation id="123578888592755962">磁盘已满</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
-<translation id="1236009322878349843">修改手机详情</translation>
 <translation id="1237251612871334180">必须更新才能保存密码</translation>
 <translation id="1237950098253310325">使用 Ctrl + 向上箭头或向下箭头对<ph name="BUTTON_NAME" />重新排序</translation>
 <translation id="1238293488628890871">是否切换个人资料？</translation>
@@ -577,7 +576,6 @@
 <translation id="1395832189806039783">突出显示键盘焦点所在的项</translation>
 <translation id="1396120028054416908">返回“<ph name="FOLDER_TITLE" />”</translation>
 <translation id="1396139853388185343">设置打印机时出错</translation>
-<translation id="1397594434718759194">您已在这些设备上登录 Chrome，因此您可以将他们用作安全密钥。</translation>
 <translation id="1398853756734560583">最大化</translation>
 <translation id="1399261165075500043">无法加载《Google Play 服务条款》</translation>
 <translation id="1400243387594338234">您可以使用此 PIN 码登录设备</translation>
@@ -1234,6 +1232,7 @@
 <translation id="184862733444771842">功能请求</translation>
 <translation id="1849016657376805933">任何 HID 设备</translation>
 <translation id="1849022541429818637">可以捕获和使用您的鼠标输入</translation>
+<translation id="1849252834922144634">按住即可固定快捷方式</translation>
 <translation id="1850145825777333687">设备凭据</translation>
 <translation id="1850508293116537636">顺时针旋转(&amp;C)</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />注册之前，您需要清除 TPM，以使 <ph name="DEVICE_OS" /> 拥有对设备的所有权。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />您还可彻底关闭 TPM 设备。您的数据仍会通过软件加密技术得到妥善存储，但某些安全功能（例如由硬件支持的证书）将被停用。<ph name="END_PARAGRAPH2" /><ph name="BEGIN_PARAGRAPH3" />若要更改您的 TPM 设置，请重新启动并进入系统 BIOS/UEFI 设置。具体步骤因设备型号而异。如需了解详情，请于重新启动之前在另外一部设备上打开 <ph name="DEVICE_OS" /> 文档：g.co/flex/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>
@@ -1686,7 +1685,6 @@
 <translation id="2162705204091149050">读取您的浏览器、操作系统、设备、已安装软件和文件的相关信息</translation>
 <translation id="2163470535490402084">请连接到互联网，以便登录您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 1 个开关键</translation>
-<translation id="2165102982098084499">您已通过扫描二维码关联这些设备。</translation>
 <translation id="2165177462441582039">选择系统应将每项内容突出显示多久</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">仍然登录</translation>
@@ -2785,6 +2783,7 @@
 <translation id="2912247081180973411">关闭所有窗口</translation>
 <translation id="2915102088417824677">查看活动日志</translation>
 <translation id="2915873080513663243">自动扫描</translation>
+<translation id="2916067990491711240">退出受管理的访客会话</translation>
 <translation id="2916073183900451334">在网页上按 Tab 可突出显示链接以及表单字段</translation>
 <translation id="2916745397441987255">搜索扩展程序</translation>
 <translation id="2918484639460781603">前往“设置”</translation>
@@ -4265,6 +4264,7 @@
 <translation id="3948334586359655083">此标签页正在播放音频</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可修改以下文件夹内的文件</translation>
 <translation id="3948985214866944547">多数人阻止与此网站分享精确位置信息</translation>
+<translation id="394930357226768495">显示组织的建议和结果</translation>
 <translation id="394984172568887996">从 IE 中导入</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />可更安全地下载文件</translation>
 <translation id="3950479158728806902">自动创建通行密钥，登录更迅速</translation>
@@ -4286,7 +4286,6 @@
 <translation id="3959969108528118741">所有者</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">可对“<ph name="IBAN_DESCRIPTION" />”执行的更多操作</translation>
-<translation id="3963753386716096475">换个手机、平板电脑或安全密钥</translation>
 <translation id="3964480518399667971">关闭移动网络</translation>
 <translation id="3965467402665811906">网站可以请求使用其保存的与您相关的信息</translation>
 <translation id="3965965397408324205">退出<ph name="PROFILE_NAME" /></translation>
@@ -4844,7 +4843,6 @@
 <translation id="4370975561335139969">您输入的电子邮件地址和密码不匹配。</translation>
 <translation id="4373418556073552953">通过 Android 手机登录</translation>
 <translation id="4373973310429385827">灯塔</translation>
-<translation id="4374805630006466253">改用别的手机或平板电脑</translation>
 <translation id="4374831787438678295">Linux 安装程序</translation>
 <translation id="4375035964737468845">打开已下载的文件</translation>
 <translation id="4376226992615520204">已关闭位置信息服务</translation>
@@ -5454,7 +5452,6 @@
 <translation id="4814114628197290459">删除 IBAN</translation>
 <translation id="4814327014588285482">跳过，稍后再提醒我</translation>
 <translation id="4814378367953456825">请为此指纹输入一个名称</translation>
-<translation id="481574578487123132">已关联的设备</translation>
 <translation id="4816097470512964351">设备名称为“<ph name="DEVICE" />”，详细信息</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{已删除 1 个书签}other{已删除 {COUNT} 个书签}}</translation>
 <translation id="481689174647911539">此文件可能是病毒或恶意软件。<ph name="LINE_BREAK" />您可将它发送给 Google 安全浏览服务以检查它是否安全。扫描通常需要几秒钟的时间。</translation>
@@ -8422,7 +8419,6 @@
 <translation id="6965607054907047032">在标签页处于闲置状态时释放内存</translation>
 <translation id="6965648386495488594">端口</translation>
 <translation id="6965978654500191972">设备</translation>
-<translation id="6966370001499648704">控制您使用哪些手机作为安全密钥</translation>
 <translation id="6967112302799758487">系统将从此设备中移除使用 Steam for Chromebook（Beta 版）安装的所有应用和游戏。与这些应用和游戏关联的数据也将被移除。请务必先备份已保存的应用和游戏，然后再卸载。</translation>
 <translation id="6967430741871315905">无法检查是否已允许此设备运行虚拟机</translation>
 <translation id="6968288415730398122">需输入您的密码，才能配置屏幕锁定</translation>
@@ -11108,7 +11104,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" />（<ph name="SUPPORT_INFO" />）</translation>
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">汉堡</translation>
-<translation id="8838778928843281408">管理手机</translation>
 <translation id="8838841425230629509">从书签栏上取消固定分组</translation>
 <translation id="883924185304953854">按图搜索</translation>
 <translation id="8841786407272321022">系统仅会将密码保存在此设备上。若要将新密码保存到您的 Google 账号中，请更新 Google Play 服务。</translation>

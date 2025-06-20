@@ -353,6 +353,7 @@
 <translation id="1593359183944365958">270 డిగ్రీలు</translation>
 <translation id="1594030484168838125">ఎంచుకోండి</translation>
 <translation id="1597307423671074806">WebM వీడియో</translation>
+<translation id="159800670740560023">Chrome చిట్కా లింక్, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" />‌ను తెరవడానికి Enterను నొక్కండి</translation>
 <translation id="1599199147673445968">కొత్త కార్డా? <ph name="BEGIN_LINK" />కార్డ్ వివరాలను ఎంటర్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">అందం &amp; ఆరోగ్యం</translation>
@@ -830,6 +831,7 @@
 <translation id="2383455408879745299">Chrome సెట్టింగ్‌లలో మీ యాక్సెసిబిలిటీ టూల్స్‌ను వ్యక్తిగతీకరించండి</translation>
 <translation id="2384307209577226199">ఎంటర్‌ప్రైజ్ డిఫాల్ట్</translation>
 <translation id="238459632961158867">వెబ్‌సైట్</translation>
+<translation id="2384823392576123225">బుక్‌మార్క్‌లను సెర్చ్ చేయండి</translation>
 <translation id="2385809941344967209">మీ Chrome సెట్టింగ్‌ల నుండి Chromeను అప్‌డేట్ చేయండి</translation>
 <translation id="2386255080630008482">సర్వర్ ప్రమాణపత్రం రద్దు చేయబడింది.</translation>
 <translation id="2388828676877700238">ట్యాక్స్ ప్రిపరేషన్ &amp; ప్లానింగ్</translation>
@@ -1444,6 +1446,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> క్లిప్‌బోర్డ్‌కు కాపీ చేసిన వచనం మరియు చిత్రాలను చూడాలనుకుంటోంది.</translation>
 <translation id="3461824795358126837">హైలైటర్</translation>
 <translation id="3462200631372590220">అధునాతనం దాచు</translation>
+<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ఈ పేజీ వివరాల గురించి Googleను అడగడానికి Enterను నొక్కండి</translation>
 <translation id="3465972433695735758">ఈ PDFను యాక్సెస్ చేయడం సాధ్యం కాదు. Googleకు చెందిన AI టెక్నాలజీల సహాయంతో టెక్స్ట్ ఎక్స్‌ట్రాక్ట్ చేయబడింది</translation>
 <translation id="346601286295919445">రసాయన శాస్త్రం</translation>
 <translation id="3467081767799433066">యాడ్ మెజర్‌మెంట్‌తో, మీరు సైట్‌ను సందర్శించిన తర్వాత కొనుగోలు చేశారా లేదా వంటి వాటి యాడ్‌ల పనితీరును కొలవడానికి సైట్‌ల మధ్య పరిమిత రకాల డేటా షేర్ చేయబడుతుంది.</translation>
@@ -2052,6 +2055,7 @@
 <translation id="444116852243722675">అన్నింటినీ (<ph name="ITEMS" />) తెరవండి</translation>
 <translation id="4441832193888514600">క్లౌడ్ యూజర్ పాలసీ ద్వారా మాత్రమే పాలసీని సెట్ చేయాలి కాబట్టి ఇది విస్మరించబడింది.</translation>
 <translation id="4445133368066241428">జనాదరణ పొందిన టాపిక్‌లు</translation>
+<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ట్యాబ్‌లను సెర్చ్ చేయడానికి Enterను నొక్కండి</translation>
 <translation id="4445964943162061557">ఇది ప్రయోగాత్మక ఫీచర్, ఇది నూటికి నూరు శాతం సరైనదని చెప్పలేము.</translation>
 <translation id="4449116177348980384">'సైట్ సెట్టింగ్‌లను మేనేజ్ చేయండి' బటన్, Chrome సెట్టింగ్‌లలో అనుమతులను, సైట్‌లలో స్టోర్ చేసిన డేటాను మేనేజ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="4451135742916150903">HID పరికరాలకు కనెక్ట్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
@@ -2247,6 +2251,7 @@
 <translation id="4811450222531576619">సోర్స్, టాపిక్ గురించి తెలుసుకోండి</translation>
 <translation id="4813512666221746211">నెట్‌వర్క్ ఎర్రర్</translation>
 <translation id="4814114628197290459">IBANని తొలగించండి</translation>
+<translation id="4816341377198595747">'బుక్‌మార్క్‌లను సెర్చ్ చేయండి' అనే బటన్, బుక్‌మార్క్‌లను సెర్చ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="4816492930507672669">పేజీకి తగినట్లు అమర్చు</translation>
 <translation id="4819347708020428563">అదనపు గమనికలను ఆటోమేటిక్ వీక్షణలో ఎడిట్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="4822493756793346865">సాధారణ ధరలు గత 90 రోజులలో వెబ్ అంతటా ఉన్న స్టోర్‌లపై ఆధారపడి ఉంటాయి.</translation>
@@ -2376,6 +2381,7 @@
 <translation id="5021557570875267742">Chromeతో ధరలు ట్రాక్ చేయండి</translation>
 <translation id="5023310440958281426">మీ నిర్వాహకుని విధానాలను చూడండి</translation>
 <translation id="5024171724744627792">మీ కార్డ్ సేవ్ అయినప్పుడు వేగంగా పేమెంట్ చేయండి. కార్డ్ వివరాలు మీ Google ఖాతాలో ఎన్‌క్రిప్ట్ చేసి ఉంటాయి.</translation>
+<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, హిస్టరీని సెర్చ్ చేయడానికి Enterను నొక్కండి</translation>
 <translation id="5030338702439866405">వీరిచే జారీచేయబడింది</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" యొక్క రూట్ సర్టిఫికేట్ అవసరం, కానీ అది ఇన్‌స్టాల్ చేయబడలేదు. ఈ సమస్యను పరిష్కరించాలంటే, మీ IT నిర్వాహకులు "<ph name="SOFTWARE_NAME" />" యొక్క కాన్ఫిగరేషన్ సూచనలను పరిశీలించాలి. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">కంపారిజన్‌కు జోడించాలా?</translation>
@@ -2732,6 +2738,7 @@
 <translation id="5619721953841297650">ప్రీసెట్</translation>
 <translation id="5624120631404540903">పాస్‌వర్డ్‌లను నిర్వహించండి</translation>
 <translation id="5629630648637658800">విధాన సెట్టింగ్‌లను లోడ్ చేయడంలో విఫలమైంది</translation>
+<translation id="5630981295558454585">'ఈ పేజీ వివరాల గురించి Googleను అడగండి' అనే బటన్, ఈ పేజీ వివరాల గురించి Googleను అడగడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="5631439013527180824">చెల్లని పరికర నిర్వహణ టోకెన్</translation>
 <translation id="5632485077360054581">ఎలా చేయాలో నాకు చూపించు</translation>
 <translation id="563324245173044180">మోసపూరిత కంటెంట్ బ్లాక్ చేయబడింది.</translation>
@@ -3612,6 +3619,7 @@
 <translation id="7139892792842608322">ప్రైమరీ ట్రే</translation>
 <translation id="7140087718106278457">పేమెంట్ ఆప్షన్‌ల లిస్ట్ మూసివేయబడింది.</translation>
 <translation id="714064300541049402">2వ వైపు ప్రింట్‌లో చిత్రాన్ని X అక్షంలో జరపు</translation>
+<translation id="7140922144008419614">'ట్యాబ్‌లను సెర్చ్ చేయండి' అనే బటన్, ట్యాబ్‌లను సెర్చ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">మళ్లీ ట్రై చేయండి</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
@@ -3847,6 +3855,7 @@
 <translation id="7526934274050461096">ఈ సైట్‌తో మీకున్న కనెక్షన్ ప్రైవేట్‌గా లేదు</translation>
 <translation id="7529884293139707752">ఇంటి వద్దనే చదువు నేర్చుకోవడం</translation>
 <translation id="7531464389616946220">కార్డ్‌ను స్కాన్ చేయండి</translation>
+<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, బుక్‌మార్క్‌లను సెర్చ్ చేయడానికి Enterను నొక్కండి</translation>
 <translation id="7534987659046836932">ఎన్వలప్ C7</translation>
 <translation id="7535087603100972091">విలువ</translation>
 <translation id="753556296624075801">Google అందిస్తోంది</translation>
@@ -4225,6 +4234,7 @@
 <translation id="8194412401381329820">మీరు మేనేజ్ చేయని ఈ పరికరంలో మేనేజ్ చేసే ఖాతా నుండి ఈ పేజీని ఉపయోగించలేరు. ఈ పేజీని ఉపయోగించినట్లయితే, మేనేజ్ చేయబడే ఖాతాలన్నీ లాక్ చేయబడతాయి. అయితే, ఈ పరికరాన్ని నిర్వహించే ఎంటిటీ ద్వారా మేనేజ్ చేయబడే ఖాతాలు (అనుబంధ ఖాతాలు) లాక్ చేయబడవు.</translation>
 <translation id="8194797478851900357">&amp;తరలించడాన్ని రద్దు చేయండి</translation>
 <translation id="8194956568907463262">షూటర్ గేమ్‌లు</translation>
+<translation id="8198379961710069585">'హిస్టరీని సెర్చ్ చేయండి' అనే బటన్, హిస్టరీని సెర్చ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="8199437620497683918">ఆప్టికల్ డిస్క్ (గ్లాసీ)</translation>
 <translation id="8199730148066603000">HTTPS కాని URLను ప్రివ్యూ చేయడం అనుమతించబడదు.</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>

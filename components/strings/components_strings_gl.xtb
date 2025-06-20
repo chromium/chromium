@@ -358,6 +358,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1593359183944365958">270 graos</translation>
 <translation id="1594030484168838125">Escoller</translation>
 <translation id="1597307423671074806">Vídeo WebM</translation>
+<translation id="159800670740560023">Ligazón Consello de Chrome. Preme Introducir para abrir <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">Tes unha tarxeta nova? Podes <ph name="BEGIN_LINK" />poñer os seus datos<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">ZIP</translation>
 <translation id="1604192142734009334">Beleza e actividade física</translation>
@@ -835,6 +836,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2383455408879745299">Personalizar as túas ferramentas de accesibilidade na configuración de Chrome</translation>
 <translation id="2384307209577226199">Política predeterminada da empresa</translation>
 <translation id="238459632961158867">Sitio web</translation>
+<translation id="2384823392576123225">Buscar marcadores</translation>
 <translation id="2385809941344967209">Actualizar Chrome desde a súa configuración</translation>
 <translation id="2386255080630008482">Revogouse o certificado do servidor.</translation>
 <translation id="2388828676877700238">Planificación e asesoramento fiscal</translation>
@@ -1449,6 +1451,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3461266716147554923">O URL <ph name="URL" /> quere ver o texto e as imaxes que se copian no portapapeis</translation>
 <translation id="3461824795358126837">Marcador</translation>
 <translation id="3462200631372590220">Ocultar detalles</translation>
+<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Introducir para preguntarlle a Google acerca desta páxina</translation>
 <translation id="3465972433695735758">Non se pode acceder a este PDF. Extraeuse o texto coa tecnoloxía da IA de Google</translation>
 <translation id="346601286295919445">Química</translation>
 <translation id="3467081767799433066">Coa medición de anuncios, certo tipo de datos (como, por exemplo, se fixeches unha compra despois de visitar un sitio) compártese entre os sitios para medir o rendemento dos seus anuncios.</translation>
@@ -2057,6 +2060,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="444116852243722675">Abrir todos os URL (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Ignorada porque a política só se pode configurar como unha política de usuario da nube.</translation>
 <translation id="4445133368066241428">Temas populares</translation>
+<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Introducir para facer buscas nas pestanas</translation>
 <translation id="4445964943162061557">Esta función é experimental, polo que non sempre acerta.</translation>
 <translation id="4449116177348980384">Botón para xestionar a configuración dos sitios. Actívao para xestionar na configuración de Chrome os permisos e os datos almacenados dos sitios</translation>
 <translation id="4451135742916150903">Pode pedirche permiso para conectarse a dispositivos de interface humana</translation>
@@ -2252,6 +2256,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4811450222531576619">Obtén información sobre esta fonte e este tema</translation>
 <translation id="4813512666221746211">Erro de rede</translation>
 <translation id="4814114628197290459">Eliminar o IBAN</translation>
+<translation id="4816341377198595747">Botón Buscar marcadores. Actívao para facer buscas nos marcadores</translation>
 <translation id="4816492930507672669">Axustar á páxina</translation>
 <translation id="4819347708020428563">Queres editar as anotacións na vista predeterminada?</translation>
 <translation id="4822493756793346865">Os prezos habituais baséanse en datos procedentes de tendas da Web recompilados ao longo dos últimos 90 días.</translation>
@@ -2381,6 +2386,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5021557570875267742">Facer un seguimento dos prezos con Chrome</translation>
 <translation id="5023310440958281426">Comproba as túas políticas de administrador</translation>
 <translation id="5024171724744627792">Garda a tarxeta para pagar máis rápido. Os detalles da tarxeta encríptanse na túa Conta de Google.</translation>
+<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Introducir para facer buscas no historial</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Precísase un certificado raíz para <ph name="SOFTWARE_NAME" />, pero non está instalado. O teu administrador de TI debe comprobar as instrucións de configuración de <ph name="SOFTWARE_NAME" /> para solucionar este problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">Queres engadila á comparación?</translation>
@@ -2737,6 +2743,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5619721953841297650">Opción de configuración predeterminada</translation>
 <translation id="5624120631404540903">Xestionar contrasinais</translation>
 <translation id="5629630648637658800">Erro ao cargar a configuración da política</translation>
+<translation id="5630981295558454585">Botón Pregúntalle a Google sobre esta páxina. Actívao para preguntarlle a Google acerca desta páxina</translation>
 <translation id="5631439013527180824">Token de xestión de dispositivo non válido</translation>
 <translation id="5632485077360054581">Ver como facelo</translation>
 <translation id="563324245173044180">Bloqueouse contido enganoso.</translation>
@@ -3617,6 +3624,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7139892792842608322">Bandexa principal</translation>
 <translation id="7140087718106278457">A lista de métodos de pago está pechada.</translation>
 <translation id="714064300541049402">Desprazamento do lado 2 da imaxe no eixe X</translation>
+<translation id="7140922144008419614">Botón de facer buscas nas pestanas. Actívao para buscar o que queiras nas pestanas</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
 <translation id="7152230779180489711">Última visita</translation>
@@ -3851,6 +3859,7 @@ Detalles adicionais:
 <translation id="7526934274050461096">A túa conexión a este sitio non é privada</translation>
 <translation id="7529884293139707752">Educación na casa</translation>
 <translation id="7531464389616946220">Escanear tarxeta</translation>
+<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Introducir para facer buscas nos marcadores</translation>
 <translation id="7534987659046836932">Sobre C7</translation>
 <translation id="7535087603100972091">Valor</translation>
 <translation id="753556296624075801">Coa tecnoloxía de Google</translation>
@@ -4229,6 +4238,7 @@ Detalles adicionais:
 <translation id="8194412401381329820">Non podes usar esta páxina desde unha conta xestionada neste dispositivo non xestionado. Se o fas, bloquearanse todas as contas xestionadas, excepto as que administre a mesma entidade que xestiona este dispositivo (contas afiliadas).</translation>
 <translation id="8194797478851900357">&amp;Desfacer movemento</translation>
 <translation id="8194956568907463262">Xogos de disparos</translation>
+<translation id="8198379961710069585">Botón Historial de busca. Actívao para facer buscas no historial</translation>
 <translation id="8199437620497683918">Disco óptico (brillo)</translation>
 <translation id="8199730148066603000">Non se permite previsualizar os URL que non sexan HTTPS.</translation>
 <translation id="8200772114523450471">Retomar</translation>

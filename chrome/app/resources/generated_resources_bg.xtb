@@ -360,7 +360,6 @@
 <translation id="1235458158152011030">Известни мрежи</translation>
 <translation id="123578888592755962">Дискът е пълен</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{SMS съобщение}other{# SMS съобщения}}</translation>
-<translation id="1236009322878349843">Редактиране на телефона</translation>
 <translation id="1237251612871334180">Актуализиране с цел запазване на пароли</translation>
 <translation id="1237950098253310325">За пренареждане на „<ph name="BUTTON_NAME" />“ използвайте Ctrl плюс стрелката нагоре или надолу</translation>
 <translation id="1238293488628890871">Да се превключи ли потребителският профил?</translation>
@@ -577,7 +576,6 @@
 <translation id="1395832189806039783">Открояване на елемента, върху който е фокусът на клавиатурата</translation>
 <translation id="1396120028054416908">Назад към <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">При настройването на принтера възникна грешка</translation>
-<translation id="1397594434718759194">Влезли сте в профила си в Chrome на тези устройства, така че можете да ги използвате като ключове за сигурност.</translation>
 <translation id="1398853756734560583">Увеличаване</translation>
 <translation id="1399261165075500043">Общите условия на Google Play не могат да се заредят</translation>
 <translation id="1400243387594338234">Можете да използвате този ПИН код, за да влезете в профила си на устройството си</translation>
@@ -1700,7 +1698,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2162705204091149050">Четене на информация за вашите браузър, операционна система, устройство, инсталиран софтуер и файлове</translation>
 <translation id="2163470535490402084">Моля, свържете се с интернет, за да влезте в устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и още 1 превключвател</translation>
-<translation id="2165102982098084499">Свързахте тези устройства, като сканирахте QR код.</translation>
 <translation id="2165177462441582039">Изберете продължителността на открояване на отделните елементи</translation>
 <translation id="2166369534954157698">Ах, чудна българска земьо, полюшвай цъфтящи жита!</translation>
 <translation id="2169062631698640254">Влизане въпреки това</translation>
@@ -4310,7 +4307,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3959969108528118741">Собственик</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Още действия за <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3963753386716096475">Използване на друг телефон, таблет или ключ за сигурност</translation>
 <translation id="3964480518399667971">Изключване на мобилната мрежа</translation>
 <translation id="3965467402665811906">Сайтовете могат да извеждат запитвания за използване на информацията, която са запазили за вас</translation>
 <translation id="3965965397408324205">Изход от <ph name="PROFILE_NAME" /></translation>
@@ -4868,7 +4864,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4370975561335139969">Въведените имейл адрес и парола не съвпадат</translation>
 <translation id="4373418556073552953">Вход с телефона ви с Android</translation>
 <translation id="4373973310429385827">Морски фар</translation>
-<translation id="4374805630006466253">Използване на друг телефон или таблет</translation>
 <translation id="4374831787438678295">Инсталационна програма за Linux</translation>
 <translation id="4375035964737468845">Отваряне на изтеглени файлове</translation>
 <translation id="4376226992615520204">Местоположението е изключено</translation>
@@ -5478,7 +5473,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4814114628197290459">Изтриване на IBAN</translation>
 <translation id="4814327014588285482">Пропускане и напомняне по-късно</translation>
 <translation id="4814378367953456825">Въведете име за този отпечатък</translation>
-<translation id="481574578487123132">Свързани устройства</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, подробности</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Изтрихте 1 отметка}other{Изтрихте {COUNT} отметки}}</translation>
 <translation id="481689174647911539">Този файл може да е вирус или злонамерен софтуер.<ph name="LINE_BREAK" />Можете да го изпратите до Google Безопасно сърфиране, за да проверите дали е опасен. Сканирането обикновено отнема няколко секунди.</translation>
@@ -8452,7 +8446,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6965607054907047032">Освобождаване на памет въз основа на липсата на активност на разделите</translation>
 <translation id="6965648386495488594">Порт</translation>
 <translation id="6965978654500191972">Устройство</translation>
-<translation id="6966370001499648704">Контролирайте кои телефони да използвате като ключове за сигурност</translation>
 <translation id="6967112302799758487">Всички приложения и игри, инсталирани посредством бета-версията на Steam за Chromebook, ще бъдат премахнати от устройството. Свързаните с тях данни също ще бъдат премахнати. Уверете се, че сте създали резервни копия на запазените приложения и игри, преди да ги деинсталирате.</translation>
 <translation id="6967430741871315905">Не може да се провери дали устройството е разрешено</translation>
 <translation id="6968288415730398122">Въведете паролата си, за да конфигурирате заключването на екрана</translation>
@@ -11138,7 +11131,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Непрозрачно</translation>
 <translation id="8838770651474809439">Хамбургер</translation>
-<translation id="8838778928843281408">Управление на телефоните</translation>
 <translation id="8838841425230629509">Освобождаване на групата от лентата на отметките</translation>
 <translation id="883924185304953854">Търсене по изображение</translation>
 <translation id="8841786407272321022">Паролата е запазена само на това устройство. За да запазвате нови пароли в профила си в Google, актуализирайте услугите за Google Play.</translation>

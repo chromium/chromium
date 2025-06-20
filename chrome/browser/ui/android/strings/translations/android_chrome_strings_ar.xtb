@@ -896,6 +896,7 @@
 <translation id="506254248375231072">ما مِن علامات تبويب</translation>
 <translation id="5062960805900435602">تم إغلاق الإشعار المتعلّق بدمج كلمة المرور.</translation>
 <translation id="5075939510584558547">الحفظ بدون تشفير</translation>
+<translation id="5082172173036123513">يتم حذف النوافذ غير النشطة نهائيًا بعد مرور 6 أشهر على عدم نشاطها.</translation>
 <translation id="5085038751173179818">‏يمكنك تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى Chrome للحصول على إشاراتك المرجعية وغيرها على جميع أجهزتك</translation>
 <translation id="5091199029769593641">‏قريبًا، ستظهر لك قصص من <ph name="SITE_NAME" /> عند فتح علامة تبويب جديدة. تم حفظ المواقع الإلكترونية التي تتابعها في حسابك على Google. ويمكنك إدارة هذه المواقع الإلكترونية من خلال إعدادات "اقتراحات".</translation>
 <translation id="509429900233858213">حدث خطأ.</translation>
@@ -1555,6 +1556,7 @@
 <translation id="7844171778363018843">لم يتم اختيار أي بيانات لمزامنتها.</translation>
 <translation id="7846161022626028328">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="7846296061357476882">‏خدمات Google</translation>
+<translation id="784652447248278262">النافذة الحالية</translation>
 <translation id="784934925303690534">النطاق الزمني</translation>
 <translation id="7851858861565204677">أجهزة أخرى</translation>
 <translation id="7853202427316060426">النشاط</translation>
@@ -1634,6 +1636,7 @@
 <translation id="813082847718468539">عرض معلومات الموقع</translation>
 <translation id="8135406045838672858">‏يتم تلقائيًا فتح ملفات PDF التي تم تنزيلها باستخدام "<ph name="APP_NAME" />".</translation>
 <translation id="8137562778192957619">‏لن تحتاج إلى تذكُّر كلمة المرور هذه لأنها ستُحفظ في "مدير كلمات المرور في Google".</translation>
+<translation id="8146563639948412265">يمكنك فتح نوافذ يصل عددها إلى <ph name="MAX_WINDOW_COUNT" /> كحد أقصى. لاستعادة نافذة، عليك إغلاق نوافذ نشطة أو غير نشطة بعدد <ph name="WINDOW_COUNT" />.</translation>
 <translation id="8152331954420209374">‏الانتقال إلى "عدسة Google"</translation>
 <translation id="8163820386638255770">‏عليك إثبات هويتك لاستخدام كلمات المرور وحفظها في حسابك على Google</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> من الملفات المتبقية</translation>

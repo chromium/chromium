@@ -895,6 +895,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="506254248375231072">Inga flikar</translation>
 <translation id="5062960805900435602">Uppdateringen om lösenordssammanslagning har stängts</translation>
 <translation id="5075939510584558547">Spara utan kryptering</translation>
+<translation id="5082172173036123513">Inaktiva fönster raderas permanent efter sex månaders inaktivitet.</translation>
 <translation id="5085038751173179818">Logga in på den här webbplatsen och i Chrome om du vill få dina bokmärken med mera på alla dina enheter</translation>
 <translation id="5091199029769593641">Snart visas artiklar från <ph name="SITE_NAME" /> när du öppnar en ny flik. Webbplatser som du följer sparas i Google-kontot. Du kan hantera dem i inställningarna för Förslag.</translation>
 <translation id="509429900233858213">Det har uppstått ett fel.</translation>
@@ -1553,6 +1554,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7844171778363018843">Du har inte valt någon data att synkronisera</translation>
 <translation id="7846161022626028328">Något gick fel. Försök igen.</translation>
 <translation id="7846296061357476882">Googles tjänster</translation>
+<translation id="784652447248278262">Aktuellt fönster</translation>
 <translation id="784934925303690534">Tidsintervall</translation>
 <translation id="7851858861565204677">Andra enheter</translation>
 <translation id="7853202427316060426">Aktivitet</translation>
@@ -1632,6 +1634,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
 <translation id="8135406045838672858">Nedladdade PDF-filer öppnas automatiskt med <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering.</translation>
+<translation id="8146563639948412265">Du kan ha upp till <ph name="MAX_WINDOW_COUNT" /> fönster totalt. Om du vill återställa ett fönster stänger du <ph name="WINDOW_COUNT" /> aktiva eller inaktiva fönster.</translation>
 <translation id="8152331954420209374">Öppna Lens</translation>
 <translation id="8163820386638255770">Verifiera din identitet om du vill använda och spara lösenord i Google-kontot</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> filer återstår</translation>

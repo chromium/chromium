@@ -358,6 +358,7 @@
 <translation id="1593359183944365958">270 градусів</translation>
 <translation id="1594030484168838125">Вибрати</translation>
 <translation id="1597307423671074806">Відео у форматі WebM</translation>
+<translation id="159800670740560023">Посилання на пораду щодо Chrome. Натисніть клавішу Enter, щоб відкрити посилання "<ph name="IPH_LINK_FOCUSED_LINK_TEXT" />".</translation>
 <translation id="1599199147673445968">Якщо це нова картка, введіть її дані <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="1601786938618212857">Створити ZIP-архів</translation>
 <translation id="1604192142734009334">Краса й фітнес</translation>
@@ -835,6 +836,7 @@
 <translation id="2383455408879745299">Персоналізуйте інструменти спеціальних можливостей у налаштуваннях Chrome</translation>
 <translation id="2384307209577226199">Стандартне корпоративне правило</translation>
 <translation id="238459632961158867">Веб-сайт</translation>
+<translation id="2384823392576123225">Пошук закладок</translation>
 <translation id="2385809941344967209">Оновити веб-переглядач Chrome у його налаштуваннях</translation>
 <translation id="2386255080630008482">Сертифікат сервера відкликано.</translation>
 <translation id="2388828676877700238">Розрахунок і планування податків</translation>
@@ -1449,6 +1451,7 @@
 <translation id="3461266716147554923">Сайт <ph name="URL" /> хоче переглядати тексти й зображення в буфері обміну</translation>
 <translation id="3461824795358126837">Фломастер</translation>
 <translation id="3462200631372590220">Сховати додаткову інформацію</translation>
+<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натисніть клавішу Enter, щоб запитати Google про цю сторінку.</translation>
 <translation id="3465972433695735758">Цей файл PDF недоступний. Текст видобуто за допомогою ШІ від Google.</translation>
 <translation id="346601286295919445">Хімія</translation>
 <translation id="3467081767799433066">Коли ввімкнено налаштування "Оцінка ефективності реклами", сайти обмінюються лише певними типами даних, наприклад про те, чи здійснили ви покупку після відвідування сайту.</translation>
@@ -2057,6 +2060,7 @@
 <translation id="444116852243722675">Відкрити всі (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Ігнорується, оскільки це правило можна налаштувати лише як хмарне правило для користувачів.</translation>
 <translation id="4445133368066241428">Популярні теми</translation>
+<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натисніть клавішу Enter, щоб шукати вкладки.</translation>
 <translation id="4445964943162061557">Це експериментальна функція, тому вона не завжди працює правильно.</translation>
 <translation id="4449116177348980384">Кнопка "Керувати налаштуваннями сайтів"; активуйте, щоб керувати в налаштуваннях Chrome дозволами й даними, що зберігаються на сайтах</translation>
 <translation id="4451135742916150903">Може просити дозвіл підключатися до пристроїв HID</translation>
@@ -2252,6 +2256,7 @@
 <translation id="4811450222531576619">Докладніше про джерело й тему</translation>
 <translation id="4813512666221746211">Помилка мережі</translation>
 <translation id="4814114628197290459">Видалити IBAN</translation>
+<translation id="4816341377198595747">Кнопка "Пошук закладок". Активуйте її, щоб шукати закладки.</translation>
 <translation id="4816492930507672669">За розміром сторінки</translation>
 <translation id="4819347708020428563">Редагувати примітки в режимі перегляду за умовчанням?</translation>
 <translation id="4822493756793346865">Звичайні ціни на основі даних з онлайн-магазинів за останні 90 днів.</translation>
@@ -2381,6 +2386,7 @@
 <translation id="5021557570875267742">Відстежуйте ціни за допомогою Chrome</translation>
 <translation id="5023310440958281426">Перегляньте правила свого адміністратора</translation>
 <translation id="5024171724744627792">Збережіть картку, щоб платити швидше. Дані картки шифруються у вашому обліковому записі Google.</translation>
+<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натисніть клавішу Enter, щоб шукати в історії.</translation>
 <translation id="5030338702439866405">Ким видано:</translation>
 <translation id="503069730517007720">Для програмного забезпечення <ph name="SOFTWARE_NAME" /> потрібен кореневий сертифікат, однак його не встановлено. Вашому IT-адміністратору потрібно переглянути вказівки з налаштування <ph name="SOFTWARE_NAME" />, щоб вирішити цю проблему. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">Додати до порівняння?</translation>
@@ -2737,6 +2743,7 @@
 <translation id="5619721953841297650">Набір налаштувань</translation>
 <translation id="5624120631404540903">Керувати паролями</translation>
 <translation id="5629630648637658800">Помилка завантаження налаштувань правила</translation>
+<translation id="5630981295558454585">Кнопка "Запитати Google про цю сторінку". Активуйте її, щоб запитати Google про цю сторінку.</translation>
 <translation id="5631439013527180824">Недійсний маркер керування пристрою</translation>
 <translation id="5632485077360054581">Докладніше</translation>
 <translation id="563324245173044180">Заблоковано оманливий вміст.</translation>
@@ -3617,6 +3624,7 @@
 <translation id="7139892792842608322">Основний рулон</translation>
 <translation id="7140087718106278457">Список способів оплати закрито.</translation>
 <translation id="714064300541049402">Горизонтальний зсув сторони 2 зображення</translation>
+<translation id="7140922144008419614">Кнопка "Шукати вкладки". Активуйте її, щоб знайти потрібну вкладку.</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
@@ -3852,6 +3860,7 @@
 <translation id="7526934274050461096">Ваше з’єднання з цим сайтом не конфіденційне</translation>
 <translation id="7529884293139707752">Домашнє навчання</translation>
 <translation id="7531464389616946220">Сканувати картку</translation>
+<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натисніть клавішу Enter, щоб шукати закладки.</translation>
 <translation id="7534987659046836932">Конверт C7</translation>
 <translation id="7535087603100972091">Яскравість</translation>
 <translation id="753556296624075801">Технологія Google</translation>
@@ -4230,6 +4239,7 @@
 <translation id="8194412401381329820">Ви не можете використовувати цю сторінку з керованого облікового запису на некерованому пристрої. Якщо ви нею скористаєтеся, усі керовані облікові записи буде заблоковано, крім тих, якими керує цей пристрій (зв’язані облікові записи).</translation>
 <translation id="8194797478851900357">&amp;Відмінити переміщення</translation>
 <translation id="8194956568907463262">Стрілялки</translation>
+<translation id="8198379961710069585">Кнопка "Історія пошуку". Активуйте її, щоб знайти інформацію в історії пошуку.</translation>
 <translation id="8199437620497683918">Оптичний диск (глянцевий)</translation>
 <translation id="8199730148066603000">Попередній перегляд URL-адрес, які не використовують протокол HTTPS, заборонено.</translation>
 <translation id="8200772114523450471">Відновити</translation>

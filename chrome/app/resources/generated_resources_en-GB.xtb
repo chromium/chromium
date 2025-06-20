@@ -360,7 +360,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1235458158152011030">Known networks</translation>
 <translation id="123578888592755962">Disk full</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{text}other{# texts}}</translation>
-<translation id="1236009322878349843">Edit phone</translation>
 <translation id="1237251612871334180">Update to save passwords</translation>
 <translation id="1237950098253310325">Reorder <ph name="BUTTON_NAME" /> using Ctrl plus arrow up or arrow down</translation>
 <translation id="1238293488628890871">Switch profile?</translation>
@@ -577,7 +576,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1395832189806039783">Highlight item with keyboard focus</translation>
 <translation id="1396120028054416908">Back to <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Error setting up printer</translation>
-<translation id="1397594434718759194">You're signed in to Chrome on these devices, so you can use them as security keys.</translation>
 <translation id="1398853756734560583">Maximise</translation>
 <translation id="1399261165075500043">Can't load Google Play Terms of Service</translation>
 <translation id="1400243387594338234">You can use this PIN to sign in to your device</translation>
@@ -1704,7 +1702,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2162705204091149050">Read information about your browser, OS, device, installed software and files</translation>
 <translation id="2163470535490402084">Please connect to the Internet to sign in to your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> and 1 more switch</translation>
-<translation id="2165102982098084499">You linked these devices by scanning a QR code.</translation>
 <translation id="2165177462441582039">Choose how long the highlight should stay on each item</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">Sign in anyway</translation>
@@ -4313,7 +4310,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3959969108528118741">Owner</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">More actions for <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3963753386716096475">Use a different phone, tablet or security key</translation>
 <translation id="3964480518399667971">Turn off mobile network</translation>
 <translation id="3965467402665811906">Sites can ask to use information that they've saved about you</translation>
 <translation id="3965965397408324205">Exit <ph name="PROFILE_NAME" /></translation>
@@ -4871,7 +4867,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4370975561335139969">The email and password that you entered don't match.</translation>
 <translation id="4373418556073552953">Sign in with your Android phone</translation>
 <translation id="4373973310429385827">Lighthouse</translation>
-<translation id="4374805630006466253">Use a different phone or tablet</translation>
 <translation id="4374831787438678295">Linux installer</translation>
 <translation id="4375035964737468845">Open downloaded files</translation>
 <translation id="4376226992615520204">Location turned off</translation>
@@ -5481,7 +5476,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4814114628197290459">Delete IBAN</translation>
 <translation id="4814327014588285482">Skip and remind me later</translation>
 <translation id="4814378367953456825">Enter a name for this fingerprint</translation>
-<translation id="481574578487123132">Linked devices</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, Details</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bookmark deleted}other{{COUNT} bookmarks deleted}}</translation>
 <translation id="481689174647911539">This file might be a virus or malware.<ph name="LINE_BREAK" />You can send it to Google Safe Browsing to check if it's unsafe. Scans usually take a few seconds.</translation>
@@ -8454,7 +8448,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6965607054907047032">Free up memory based on tab inactivity</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Device</translation>
-<translation id="6966370001499648704">Control which phones you use as security keys</translation>
 <translation id="6967112302799758487">Any apps and games installed using Steam for Chromebook (Beta) will be removed from this device. Data associated with these apps and games will also be removed. Make sure to back up saved apps and games before uninstalling.</translation>
 <translation id="6967430741871315905">Unable to check whether the device is allowed</translation>
 <translation id="6968288415730398122">Enter your password to configure screen lock</translation>
@@ -11140,7 +11133,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Opaque</translation>
 <translation id="8838770651474809439">Hamburger</translation>
-<translation id="8838778928843281408">Manage phones</translation>
 <translation id="8838841425230629509">Unpin group from bookmarks bar</translation>
 <translation id="883924185304953854">Search by image</translation>
 <translation id="8841786407272321022">Password saved on this device only. To save new passwords in your Google Account, update Google Play services.</translation>

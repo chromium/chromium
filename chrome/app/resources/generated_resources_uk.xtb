@@ -363,7 +363,6 @@
 <translation id="1235458158152011030">Відомі мережі</translation>
 <translation id="123578888592755962">Диск заповнено</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{текст}one{# текст}few{# тексти}many{# текстів}other{# тексту}}</translation>
-<translation id="1236009322878349843">Редагувати інформацію про телефон</translation>
 <translation id="1237251612871334180">Оновіть, щоб зберегти паролі</translation>
 <translation id="1237950098253310325">Щоб перемістити кнопку <ph name="BUTTON_NAME" /> у списку, натисніть клавішу Ctrl і стрілку вгору або вниз</translation>
 <translation id="1238293488628890871">Змінити профіль?</translation>
@@ -580,7 +579,6 @@
 <translation id="1395832189806039783">Виділяти елемент, вибраний за допомогою клавіатури</translation>
 <translation id="1396120028054416908">Назад до папки "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="1396139853388185343">Не вдалося налаштувати принтер</translation>
-<translation id="1397594434718759194">Ви ввійшли в Chrome на цих пристроях, тож можете використовувати їх як ключі безпеки.</translation>
 <translation id="1398853756734560583">Збільшити</translation>
 <translation id="1399261165075500043">Не вдалося завантажити Умови використання Google Play</translation>
 <translation id="1400243387594338234">Ви можете ввійти в обліковий запис на своєму пристрої за допомогою цього PIN-коду</translation>
@@ -1251,6 +1249,7 @@
 <translation id="184862733444771842">Запит на додавання функції</translation>
 <translation id="1849016657376805933">Усі пристрої HID</translation>
 <translation id="1849022541429818637">Дозволено отримувати й використовувати дані, введені за допомогою миші</translation>
+<translation id="1849252834922144634">Натисніть і утримуйте, щоб закріпити ярлики</translation>
 <translation id="1850145825777333687">Облікові дані пристрою</translation>
 <translation id="1850508293116537636">Повернути &amp;за годинниковою стрілкою</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Перед реєстрацією потрібно очистити TPM, щоб ОС <ph name="DEVICE_OS" /> змогла керувати пристроєм.<ph name="END_PARAGRAPH1" />
@@ -1706,7 +1705,6 @@
 <translation id="2162705204091149050">Перегляд інформації про ваш веб-переглядач, ОС, пристрій, установлене програмне забезпечення та файли</translation>
 <translation id="2163470535490402084">Щоб увійти в <ph name="DEVICE_TYPE" />, під’єнайтеся до Інтернету.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> і ще 1 перемикач</translation>
-<translation id="2165102982098084499">Ви підключили ці пристрої, зісканувавши QR-код.</translation>
 <translation id="2165177462441582039">Виберіть тривалість виділення кожного елемента</translation>
 <translation id="2166369534954157698">абвгґдеєжзиіїйклмнопрстуфхцчшщьюя</translation>
 <translation id="2169062631698640254">Усе одно ввійти</translation>
@@ -2809,6 +2807,7 @@
 <translation id="2912247081180973411">Закрити вікна</translation>
 <translation id="2915102088417824677">Переглянути журнал активності</translation>
 <translation id="2915873080513663243">Автосканування</translation>
+<translation id="2916067990491711240">Вихід із керованих сеансів у режимі "Гість"</translation>
 <translation id="2916073183900451334">За допомогою клавіші Tab можна виділяти посилання та поля форми на веб-сторінці</translation>
 <translation id="2916745397441987255">Пошук у розширеннях</translation>
 <translation id="2918484639460781603">Перейти в налаштування</translation>
@@ -4292,6 +4291,7 @@
 <translation id="3948334586359655083">На цій вкладці відтворюється аудіо</translation>
 <translation id="3948507072814225786">Сайт <ph name="ORIGIN" /> може змінювати файли в указаних нижче папках</translation>
 <translation id="3948985214866944547">Більшість людей блокують надсилання даних про точне місцезнаходження на цьому сайті</translation>
+<translation id="394930357226768495">Показувати підказки й результати від вашої організації</translation>
 <translation id="394984172568887996">Імпортовано із IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, щоб завантажувати файли безпечніше</translation>
 <translation id="3950479158728806902">Автоматично створювати ключі доступу, щоб швидше входити в обліковий запис</translation>
@@ -4313,7 +4313,6 @@
 <translation id="3959969108528118741">Власник</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Інші дії для номера "<ph name="IBAN_DESCRIPTION" />"</translation>
-<translation id="3963753386716096475">Вибрати інший телефон, планшет або ключ безпеки</translation>
 <translation id="3964480518399667971">Вимкнути мобільну мережу</translation>
 <translation id="3965467402665811906">Сайти можуть запитувати дозвіл на використання збереженої про вас інформації</translation>
 <translation id="3965965397408324205">Вийти з профілю <ph name="PROFILE_NAME" /></translation>
@@ -4871,7 +4870,6 @@
 <translation id="4370975561335139969">Введені електронна адреса та пароль не збігаються</translation>
 <translation id="4373418556073552953">Вхід в обліковий запис за допомогою телефона Android</translation>
 <translation id="4373973310429385827">Маяк</translation>
-<translation id="4374805630006466253">Вибрати інший телефон або планшет</translation>
 <translation id="4374831787438678295">Файл встановлення Linux</translation>
 <translation id="4375035964737468845">Відкривати завантажені файли</translation>
 <translation id="4376226992615520204">Визначення місцезнаходження вимкнено</translation>
@@ -5481,7 +5479,6 @@
 <translation id="4814114628197290459">Видалити IBAN</translation>
 <translation id="4814327014588285482">Пропустити й нагадати пізніше</translation>
 <translation id="4814378367953456825">Введіть назву цього відбитка пальця</translation>
-<translation id="481574578487123132">Зв’язані пристрої</translation>
 <translation id="4816097470512964351">"<ph name="DEVICE" />", дeталі</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Видалено 1 закладку}one{Видалено {COUNT} закладку}few{Видалено {COUNT} закладки}many{Видалено {COUNT} закладок}other{Видалено {COUNT} закладки}}</translation>
 <translation id="481689174647911539">Цей файл може містити вірус або зловмисне програмне забезпечення.<ph name="LINE_BREAK" />Ви можете надіслати його в Безпечний перегляд Google на перевірку. Сканування зазвичай триває кілька секунд.</translation>
@@ -8455,7 +8452,6 @@
 <translation id="6965607054907047032">Звільняти пам’ять залежно від неактивності вкладки</translation>
 <translation id="6965648386495488594">Порт</translation>
 <translation id="6965978654500191972">Пристрій</translation>
-<translation id="6966370001499648704">Вибирайте, які телефони будуть використовуватися як ключі безпеки</translation>
 <translation id="6967112302799758487">Усі додатки й ігри, установлені за допомогою Steam для Chromebook (бета-версія), а також пов’язані з ними дані буде вилучено з цього пристрою. Перед видаленням створіть резервні копії збережених додатків і ігор.</translation>
 <translation id="6967430741871315905">Не вдалося перевірити, чи цей пристрій дозволений</translation>
 <translation id="6968288415730398122">Введіть пароль, щоб налаштувати блокування екрана</translation>
@@ -11143,7 +11139,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Непрозоро</translation>
 <translation id="8838770651474809439">Гамбургер</translation>
-<translation id="8838778928843281408">Керувати телефонами</translation>
 <translation id="8838841425230629509">Відкріпити групу від панелі закладок</translation>
 <translation id="883924185304953854">Пошук за зображенням</translation>
 <translation id="8841786407272321022">Пароль збережено лише на цьому пристрої. Щоб зберігати нові паролі в обліковому записі Google, оновіть сервіси Google Play.</translation>

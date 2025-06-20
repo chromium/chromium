@@ -894,6 +894,7 @@
 <translation id="506254248375231072">沒有任何分頁</translation>
 <translation id="5062960805900435602">已關閉密碼合併相關更新</translation>
 <translation id="5075939510584558547">不加密直接儲存</translation>
+<translation id="5082172173036123513">視窗閒置 6 個月後就會永久刪除。</translation>
 <translation id="5085038751173179818">登入這個網站和 Chrome，即可在所有裝置上存取書籤和其他設定。</translation>
 <translation id="5091199029769593641">不久後，你就會在開啟新分頁時看到「<ph name="SITE_NAME" />」的網路故事。你追蹤的網站會儲存在 Google 帳戶中，你可以在「探索」設定中管理這些網站。</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
@@ -1552,6 +1553,7 @@
 <translation id="7844171778363018843">沒有選取要同步處理的資料</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="7846296061357476882">Google 服務</translation>
+<translation id="784652447248278262">目前的視窗</translation>
 <translation id="784934925303690534">時間範圍</translation>
 <translation id="7851858861565204677">其他裝置</translation>
 <translation id="7853202427316060426">活動</translation>
@@ -1631,6 +1633,7 @@
 <translation id="813082847718468539">查看網站資訊</translation>
 <translation id="8135406045838672858">自動使用「<ph name="APP_NAME" />」開啟下載的 PDF</translation>
 <translation id="8137562778192957619">你不需要記住這組密碼，系統會將密碼儲存至 Google 密碼管理工具中。</translation>
+<translation id="8146563639948412265">最多可以開啟 <ph name="MAX_WINDOW_COUNT" /> 個視窗。如要還原視窗，請先關閉 <ph name="WINDOW_COUNT" /> 個使用中或閒置視窗。</translation>
 <translation id="8152331954420209374">開啟智慧鏡頭</translation>
 <translation id="8163820386638255770">如要將密碼儲存到 Google 帳戶，或使用帳戶中的密碼，請驗證身分</translation>
 <translation id="8186512483418048923">還剩 <ph name="FILES" /> 個檔案</translation>

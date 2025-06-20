@@ -297,7 +297,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <ph name="DOMAIN" /> requer que você mantenha o cartão inteligente inserido.}}</translation>
 <translation id="119330003005586565">Páginas lidas</translation>
 <translation id="1193927020065025187">O site pode estar tentando enganar você para que permita notificações invasivas</translation>
-<translation id="11947597112837849">endereço de e-mail</translation>
+<translation id="11947597112837849">e-mail</translation>
 <translation id="1195210374336998651">Acessar as configurações do app</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
 <translation id="1195558154361252544">As notificações são bloqueadas automaticamente para todos os sites, exceto para aqueles que têm permissão</translation>
@@ -361,7 +361,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1235458158152011030">Redes conhecidas</translation>
 <translation id="123578888592755962">Disco cheio</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{Mensagem de texto}one{# mensagem de texto}other{# mensagens de texto}}</translation>
-<translation id="1236009322878349843">Editar smartphone</translation>
 <translation id="1237251612871334180">Atualize para salvar senhas</translation>
 <translation id="1237950098253310325">Reordenar o <ph name="BUTTON_NAME" /> usando Ctrl + seta para cima ou para baixo</translation>
 <translation id="1238293488628890871">Trocar de perfil?</translation>
@@ -578,7 +577,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1395832189806039783">Destacar item com o foco do teclado</translation>
 <translation id="1396120028054416908">Voltar para <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Erro na configuração da impressora</translation>
-<translation id="1397594434718759194">Sua conta está conectada ao Chrome nestes dispositivos, então eles podem ser usados como chaves de segurança.</translation>
 <translation id="1398853756734560583">Maximizar</translation>
 <translation id="1399261165075500043">Não foi possível carregar os Termos de Serviço do Google Play</translation>
 <translation id="1400243387594338234">Você pode usar este PIN para fazer login no seu dispositivo</translation>
@@ -1249,6 +1247,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="184862733444771842">Solicitação de recurso</translation>
 <translation id="1849016657376805933">Qualquer dispositivo HID</translation>
 <translation id="1849022541429818637">Com permissão para capturar e usar a entrada do mouse</translation>
+<translation id="1849252834922144634">Toque e mantenha pressionado para fixar atalhos</translation>
 <translation id="1850145825777333687">Credenciais do dispositivo</translation>
 <translation id="1850508293116537636">Girar no &amp;sentido horário</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Antes de fazer o registro, limpe o TPM para que o <ph name="DEVICE_OS" /> possa assumir a propriedade do dispositivo.<ph name="END_PARAGRAPH1" />
@@ -1704,7 +1703,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2162705204091149050">Ler informações sobre seu navegador, SO, dispositivo, softwares instalados e arquivos</translation>
 <translation id="2163470535490402084">Conecte-se à Internet para fazer login no seu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais 1 interruptor</translation>
-<translation id="2165102982098084499">Você vinculou estes dispositivos usando um QR code.</translation>
 <translation id="2165177462441582039">Escolha por quanto tempo o destaque deve permanecer em cada item</translation>
 <translation id="2166369534954157698">Jane quer LP, fax, CD, giz, TV e bom whisky.</translation>
 <translation id="2169062631698640254">Fazer login assim mesmo</translation>
@@ -2806,6 +2804,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2912247081180973411">Fechar janelas</translation>
 <translation id="2915102088417824677">Ver registro de atividades</translation>
 <translation id="2915873080513663243">Leitura automática</translation>
+<translation id="2916067990491711240">Sair das sessões de visitante gerenciadas</translation>
 <translation id="2916073183900451334">Ao pressionar Tab em uma página da Web, os links e os campos de formulário são destacados</translation>
 <translation id="2916745397441987255">Pesquise extensões</translation>
 <translation id="2918484639460781603">Ir a configurações</translation>
@@ -4290,6 +4289,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3948334586359655083">Esta guia está reproduzindo áudio</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar arquivos nas seguintes pastas</translation>
 <translation id="3948985214866944547">A maioria das pessoas bloqueia o compartilhamento de local exato para este site</translation>
+<translation id="394930357226768495">Mostrar sugestões e resultados da sua organização</translation>
 <translation id="394984172568887996">Importado do IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para tornar o download de arquivos mais seguro</translation>
 <translation id="3950479158728806902">Criar automaticamente uma chave de acesso para fazer login mais rápido</translation>
@@ -4311,7 +4311,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3959969108528118741">Proprietário</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Mais ações para o <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3963753386716096475">Usar um smartphone, tablet ou chave de segurança diferente</translation>
 <translation id="3964480518399667971">Desativar a rede celular</translation>
 <translation id="3965467402665811906">Os sites podem pedir para usar informações que salvaram sobre você</translation>
 <translation id="3965965397408324205">Sair de <ph name="PROFILE_NAME" /></translation>
@@ -4869,7 +4868,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4370975561335139969">O e-mail e a senha que você digitou não coincidem.</translation>
 <translation id="4373418556073552953">Fazer login com o smartphone Android</translation>
 <translation id="4373973310429385827">Farol</translation>
-<translation id="4374805630006466253">Usar outro smartphone ou tablet</translation>
 <translation id="4374831787438678295">Instalador do Linux</translation>
 <translation id="4375035964737468845">Abrir arquivos baixados</translation>
 <translation id="4376226992615520204">Localização desativada</translation>
@@ -5479,7 +5477,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4814114628197290459">Excluir IBAN</translation>
 <translation id="4814327014588285482">Pular e me lembrar mais tarde</translation>
 <translation id="4814378367953456825">Insira um nome para essa impressão digital</translation>
-<translation id="481574578487123132">Dispositivos vinculados</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, detalhes</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 favorito excluído}one{{COUNT} favorito excluído}other{{COUNT} favoritos excluídos}}</translation>
 <translation id="481689174647911539">Este arquivo pode ser um vírus ou malware.<ph name="LINE_BREAK" />Você pode enviar para a Navegação segura do Google para verificar se ele não é seguro. As verificações geralmente levam alguns segundos.</translation>
@@ -8455,7 +8452,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6965607054907047032">Liberar memória com base na inatividade da guia</translation>
 <translation id="6965648386495488594">Porta</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
-<translation id="6966370001499648704">Controle quais smartphones você usa como chaves de segurança</translation>
 <translation id="6967112302799758487">Todos os apps e jogos instalados com o Steam para Chromebook (Beta) serão removidos deste dispositivo. Os dados associados a esses apps e jogos também serão removidos. Faça backup dos apps e jogos salvos antes da desinstalação.</translation>
 <translation id="6967430741871315905">Não foi possível verificar se o dispositivo é permitido</translation>
 <translation id="6968288415730398122">Digite sua senha para configurar o bloqueio de tela</translation>
@@ -11142,7 +11138,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Opaco</translation>
 <translation id="8838770651474809439">Hambúrger</translation>
-<translation id="8838778928843281408">Gerenciar smartphones</translation>
 <translation id="8838841425230629509">Liberar grupo da barra de favoritos</translation>
 <translation id="883924185304953854">Pesquisar por imagem</translation>
 <translation id="8841786407272321022">Senha salva apenas neste dispositivo. Para salvar novas senhas na sua Conta do Google, atualize o Google Play Services.</translation>

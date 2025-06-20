@@ -360,7 +360,6 @@
 <translation id="1235458158152011030">已知網絡</translation>
 <translation id="123578888592755962">磁碟空間已滿</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
-<translation id="1236009322878349843">編輯手機</translation>
 <translation id="1237251612871334180">需要更新才能儲存密碼</translation>
 <translation id="1237950098253310325">用 Ctrl 制加向上或向下箭咀嚟重新排列<ph name="BUTTON_NAME" /></translation>
 <translation id="1238293488628890871">要切換個人檔案嗎？</translation>
@@ -577,7 +576,6 @@
 <translation id="1395832189806039783">突顯鍵盤焦點所在項目</translation>
 <translation id="1396120028054416908">返去「<ph name="FOLDER_TITLE" />」</translation>
 <translation id="1396139853388185343">設定打印機時發生錯誤</translation>
-<translation id="1397594434718759194">由於您已在這些裝置上登入 Chrome，因此這些裝置可以用作安全密鑰。</translation>
 <translation id="1398853756734560583">最大化</translation>
 <translation id="1399261165075500043">無法載入《Google Play 服務條款》</translation>
 <translation id="1400243387594338234">你可以使用此 PIN 來登入裝置</translation>
@@ -1704,7 +1702,6 @@
 <translation id="2162705204091149050">讀取瀏覽器、OS、裝置、已安裝的軟件和檔案的相關資料</translation>
 <translation id="2163470535490402084">請連接互聯網，才能登入 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 1 個按鈕裝置</translation>
-<translation id="2165102982098084499">透過掃瞄 QR 碼的方式連結了這些裝置。</translation>
 <translation id="2165177462441582039">選擇突顯範圍在每個項目上的停留時間</translation>
 <translation id="2166369534954157698">繁體中文字體範例 The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">繼續登入</translation>
@@ -4310,7 +4307,6 @@
 <translation id="3959969108528118741">擁有者</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">可以對　<ph name="IBAN_DESCRIPTION" />　執行嘅其他操作</translation>
-<translation id="3963753386716096475">使用其他手機、平板電腦或安全密鑰</translation>
 <translation id="3964480518399667971">關閉流動網絡</translation>
 <translation id="3965467402665811906">網站可要求使用與你相關的既有資料</translation>
 <translation id="3965965397408324205">退出「<ph name="PROFILE_NAME" />」</translation>
@@ -4865,7 +4861,6 @@
 <translation id="4370975561335139969">您所輸入的電郵與密碼不符</translation>
 <translation id="4373418556073552953">使用 Android 手機登入</translation>
 <translation id="4373973310429385827">燈塔</translation>
-<translation id="4374805630006466253">使用其他手機或平板電腦</translation>
 <translation id="4374831787438678295">Linux 安裝程式</translation>
 <translation id="4375035964737468845">開啟已下載的檔案</translation>
 <translation id="4376226992615520204">已關閉位置功能</translation>
@@ -5475,7 +5470,6 @@
 <translation id="4814114628197290459">刪除 IBAN</translation>
 <translation id="4814327014588285482">略過並稍後提醒我</translation>
 <translation id="4814378367953456825">請輸入此指紋的名稱</translation>
-<translation id="481574578487123132">連結的裝置</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />，詳情</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{已刪除 1 個書籤}other{已刪除 {COUNT} 個書籤}}</translation>
 <translation id="481689174647911539">此檔案可能是病毒或惡意軟件。<ph name="LINE_BREAK" />你可將此檔案傳送至「Google 安全瀏覽」，檢查是否不安全。掃瞄通常需時幾秒鐘。</translation>
@@ -8443,7 +8437,6 @@
 <translation id="6965607054907047032">根據分頁的閒置狀態釋出記憶體</translation>
 <translation id="6965648386495488594">連接埠</translation>
 <translation id="6965978654500191972">裝置</translation>
-<translation id="6966370001499648704">控制要使用哪些手機作為安全密鑰</translation>
 <translation id="6967112302799758487">系統將會移除此裝置上所有透過 Chromebook 版 Steam (Beta 版本) 安裝的應用程式和遊戲。系統亦會移除與這些應用程式和遊戲關聯的資料。在解除安裝之前，請確保您已備份已儲存的應用程式和遊戲。</translation>
 <translation id="6967430741871315905">無法檢查裝置是否已獲准</translation>
 <translation id="6968288415730398122">如要設定螢幕鎖定功能，請輸入您的密碼</translation>
@@ -11122,7 +11115,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">漢堡包</translation>
-<translation id="8838778928843281408">管理手機</translation>
 <translation id="8838841425230629509">從書籤列取消固定群組</translation>
 <translation id="883924185304953854">以圖搜尋</translation>
 <translation id="8841786407272321022">密碼只會儲存在此裝置上。如要將新密碼儲存至 Google 帳戶，請更新 Google Play 服務。</translation>

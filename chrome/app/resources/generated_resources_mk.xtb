@@ -361,7 +361,6 @@
 <translation id="1235458158152011030">Познати мрежи</translation>
 <translation id="123578888592755962">Дискот е полн</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{текст}one{# текст}other{# текста}}</translation>
-<translation id="1236009322878349843">Изменете го телефонот</translation>
 <translation id="1237251612871334180">Ажурирајте за да зачувувате лозинки</translation>
 <translation id="1237950098253310325">Променување на редоследот на <ph name="BUTTON_NAME" /> со копчето Ctrl плус копчето со стрелка нагоре или копчето со стрелка надолу</translation>
 <translation id="1238293488628890871">Да се смени профилот?</translation>
@@ -578,7 +577,6 @@
 <translation id="1395832189806039783">Нагласување ставка со фокусот на тастатурата</translation>
 <translation id="1396120028054416908">Назад на <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Грешка при поставување на печатачот</translation>
-<translation id="1397594434718759194">Најавени сте на Chrome на уредиве, па така можете да ги користите како безбедносни клучеви.</translation>
 <translation id="1398853756734560583">Максимизирај</translation>
 <translation id="1399261165075500043">Не може да се вчитаат „Условите за користење на Google Play“</translation>
 <translation id="1400243387594338234">PIN-кодов може да го користите за да се најавувате на уредот</translation>
@@ -1705,7 +1703,6 @@
 <translation id="2162705204091149050">да чита податоци за прелистувачот, оперативниот систем, уредот, инсталираниот софтвер и датотеките</translation>
 <translation id="2163470535490402084">Поврзете се на интернет за да се најавите на <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и уште 1 копче</translation>
-<translation id="2165102982098084499">Ги поврзавте уредиве со скенирање QR-код.</translation>
 <translation id="2165177462441582039">Изберете колку долго да стои нагласувањето на секоја ставка</translation>
 <translation id="2166369534954157698">Ѓакон Гоце и Љутфи Хоџа ноќе ѕвезди бројат. Постоиш ли боже? Молчење.</translation>
 <translation id="2169062631698640254">Сепак, најави се</translation>
@@ -4314,7 +4311,6 @@
 <translation id="3959969108528118741">Сопственик</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Повеќе дејства за <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3963753386716096475">Користете друг телефон, таблет или безбедносен клуч</translation>
 <translation id="3964480518399667971">Исклучување мобилна мрежа</translation>
 <translation id="3965467402665811906">Сајтовите може да бараат да ги користат податоците што ги зачувале за вас</translation>
 <translation id="3965965397408324205">Излези од <ph name="PROFILE_NAME" /></translation>
@@ -4872,7 +4868,6 @@
 <translation id="4370975561335139969">Е-поштата и лозинката што ги внесовте не се совпаѓаат</translation>
 <translation id="4373418556073552953">Најавување со вашиот телефон со Android</translation>
 <translation id="4373973310429385827">Светилник</translation>
-<translation id="4374805630006466253">Користете друг телефон или таблет</translation>
 <translation id="4374831787438678295">Инсталатор на Linux</translation>
 <translation id="4375035964737468845">Отвори преземени датотеки</translation>
 <translation id="4376226992615520204">Локацијата е исклучена</translation>
@@ -5482,7 +5477,6 @@
 <translation id="4814114628197290459">Бришење IBAN</translation>
 <translation id="4814327014588285482">Прескокни и потсети ме подоцна</translation>
 <translation id="4814378367953456825">Внесете име за отпечатоков</translation>
-<translation id="481574578487123132">Поврзани уреди</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, детали</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 обележувач е избришан}one{{COUNT} обележувач е избришан}other{{COUNT} обележувачи се избришани}}</translation>
 <translation id="481689174647911539">Датотекава можеби е вирус или злонамерен софтвер.<ph name="LINE_BREAK" />Може да ја испратите до „Безбедно прелистување со Google“ за да се провери дали е небезбедна. Скенирањата обично траат неколку секунди.</translation>
@@ -8457,7 +8451,6 @@
 <translation id="6965607054907047032">Ослободете меморија според неактивноста во картичките</translation>
 <translation id="6965648386495488594">Порта</translation>
 <translation id="6965978654500191972">Уред</translation>
-<translation id="6966370001499648704">Контролирајте кои телефони ги користите како безбедносни клучеви</translation>
 <translation id="6967112302799758487">Сите апликации и игри инсталирани со „Steam за Chromebook“ (Бета) ќе се отстранат од уредов. Ќе се отстранат и податоците поврзани со овие апликации и игри. Пред да деинсталирате, погрижете се да направите бекап на зачуваните апликации и игри.</translation>
 <translation id="6967430741871315905">Не може да провери дали уредов е дозволен</translation>
 <translation id="6968288415730398122">Внесете ја лозинката за да го конфигурирате заклучувањето на екранот</translation>
@@ -11142,7 +11135,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Непроѕирно</translation>
 <translation id="8838770651474809439">Хамбургер</translation>
-<translation id="8838778928843281408">Управувајте со телефоните</translation>
 <translation id="8838841425230629509">Откачи ја групата од лентата со обележувачи</translation>
 <translation id="883924185304953854">Пребарување со слика</translation>
 <translation id="8841786407272321022">Лозинката е зачувана само на овој уред. За да ги зачувувате новите лозинки во вашата сметка на Google, ажурирајте ги „Услугите на Google Play“.</translation>

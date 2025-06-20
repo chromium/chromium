@@ -693,6 +693,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2157640075051554492">Obaveštenja o praćenju cena</translation>
 <translation id="21613918653299710">Onlajn galerije slika</translation>
 <translation id="2161656808144014275">Tekst</translation>
+<translation id="2162435186600002085">Primarni logotip u zaglavlju</translation>
 <translation id="2162620598375156287">Cena je sada <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Uverite se da <ph name="HOST_NAME" /> ne sadrži slovne greške.</translation>
 <translation id="2166049586286450108">Potpuni administratorski pristup</translation>
@@ -851,6 +852,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2400263725572336749">Dodajte pasoš</translation>
 <translation id="2400271059665846158">Upravljajte karticama lojalnosti u Google novčaniku</translation>
 <translation id="2400600116338235695">Može da traži da se povezuje sa serijskim portovima</translation>
+<translation id="240450251994300576">Sekundarni logotip u zaglavlju</translation>
 <translation id="2404884497378469141">Probajte da ponovo kopirate fajlove</translation>
 <translation id="2413155254802890957">Staro</translation>
 <translation id="2413528052993050574">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat će možda biti opozvan. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
@@ -981,6 +983,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2627847595568876492">Tekst se izdvaja iz PDF-a…</translation>
 <translation id="2628224721443278970">Prijavi me na Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Nismo uspeli da pronađemo IP adresu servera hosta <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Unesite @ da biste pretražili <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tkanina (polusjajna)</translation>
@@ -2267,6 +2270,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4827283332383516812">Izbrišite karticu</translation>
 <translation id="4830443836091007686">Izabrano: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Papir za štampanje slika</translation>
+<translation id="4832388034239846146">Da biste delili grupe kartica, ažurirajte Chrome</translation>
 <translation id="483241715238664915">Uključi upozorenja</translation>
 <translation id="4832961164064927107">Roštilj</translation>
 <translation id="4834250788637067901">Načini plaćanja, ponude i adrese koji koriste Google Pay</translation>
@@ -2974,6 +2978,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6043357981274314628">Gotovo!</translation>
 <translation id="6044573915096792553">Veličina 12</translation>
 <translation id="6045164183059402045">Šablon rasporeda stranice</translation>
+<translation id="6046892054959167494">Unesite <ph name="SEARCH_AGGREGATOR_KEYWORD" /> da biste pretražili ili upitajte <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Ovaj sadržaj će pokušati da vas prevari da instalirate softver ili otkrijete lične podatke. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Koverta B4</translation>
 <translation id="6049488691372270142">Isporuka stranica</translation>

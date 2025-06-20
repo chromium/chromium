@@ -894,6 +894,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="506254248375231072">Aucun onglet</translation>
 <translation id="5062960805900435602">L'avertissement sur la fusion de mots de passe est fermé</translation>
 <translation id="5075939510584558547">Enregistrer sans chiffrement</translation>
+<translation id="5082172173036123513">Les fenêtres inactives sont définitivement supprimées après six mois d'inactivité.</translation>
 <translation id="5085038751173179818">Connectez-vous à ce site et à Chrome pour accéder sur tous vos appareils à vos favoris et bien plus</translation>
 <translation id="5091199029769593641">Vous verrez bientôt les stories de <ph name="SITE_NAME" /> quand vous ouvrirez un onglet. Les sites que vous suivez seront enregistrés dans votre compte Google. Vous pourrez les gérer dans les paramètres Discover.</translation>
 <translation id="509429900233858213">Une erreur s'est produite.</translation>
@@ -1552,6 +1553,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7844171778363018843">Aucune donnée à synchroniser</translation>
 <translation id="7846161022626028328">Une erreur s'est produite. Réessayez.</translation>
 <translation id="7846296061357476882">Services Google</translation>
+<translation id="784652447248278262">Fenêtre actuelle</translation>
 <translation id="784934925303690534">Période</translation>
 <translation id="7851858861565204677">Autres appareils</translation>
 <translation id="7853202427316060426">Activité</translation>
@@ -1631,6 +1633,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="813082847718468539">Afficher des informations à propos du site</translation>
 <translation id="8135406045838672858">Les PDF téléchargés s'ouvrent automatiquement dans <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe de Google.</translation>
+<translation id="8146563639948412265">Vous pouvez avoir jusqu'à <ph name="MAX_WINDOW_COUNT" /> fenêtres au total. Pour restaurer une fenêtre, fermez <ph name="WINDOW_COUNT" /> fenêtres actives ou inactives.</translation>
 <translation id="8152331954420209374">Accéder à Lens</translation>
 <translation id="8163820386638255770">Pour utiliser et enregistrer les mots de passe dans votre compte Google, confirmez votre identité</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fichiers restants</translation>

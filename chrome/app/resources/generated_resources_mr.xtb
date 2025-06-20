@@ -360,7 +360,6 @@
 <translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
 <translation id="123578888592755962">डिस्क भरली</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{मजकूर}other{# मजकूर}}</translation>
-<translation id="1236009322878349843">फोनशी संबंधित तपशील संपादित करा</translation>
 <translation id="1237251612871334180">पासवर्ड सेव्ह करण्यासाठी अपडेट करा</translation>
 <translation id="1237950098253310325">कंट्रोल आणि अ‍ॅरो अप किंवा अ‍ॅरो डाउन वापरून <ph name="BUTTON_NAME" /> पुन्हा क्रमाने लावा</translation>
 <translation id="1238293488628890871">प्रोफाइल स्विच करायची आहे का?</translation>
@@ -577,7 +576,6 @@
 <translation id="1395832189806039783">कीबोर्ड फोकस वापरून आयटम हायलाइट करणे करा</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> वर परत या</translation>
 <translation id="1396139853388185343">प्रिंटर सेट अप करण्यात एरर आली</translation>
-<translation id="1397594434718759194">तुम्ही या डिव्हाइसवर Chrome मध्ये साइन इन केलेले असल्यामुळे ती सिक्युरिटी की म्हणून वापरू शकता.</translation>
 <translation id="1398853756734560583">वाढवा</translation>
 <translation id="1399261165075500043">Google Play सेवा अटी लोड करू शकत नाही</translation>
 <translation id="1400243387594338234">तुम्ही तुमच्या डिव्हाइसमध्ये साइन इन करण्यासाठी हा पिन वापरू शकता</translation>
@@ -1247,6 +1245,7 @@
 <translation id="184862733444771842">वैशिष्ट्याबद्दल विनंती</translation>
 <translation id="1849016657376805933">कोणतेही HID डिव्हाइस</translation>
 <translation id="1849022541429818637">तुमचे माउस इनपुट कॅप्चर करण्याची आणि वापरण्याची अनुमती दिली आहे</translation>
+<translation id="1849252834922144634">शॉर्टकट पिन करण्यासाठी टॅप करून धरून ठेवा</translation>
 <translation id="1850145825777333687">डिव्हाइसची क्रेडेंशियल</translation>
 <translation id="1850508293116537636">&amp;घड्याळाच्या दिशेने फिरवा</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />नोंदणी करण्यापूर्वी, तुम्ही TPM साफ करणे आवश्यक आहे जेणेकरून, <ph name="DEVICE_OS" /> हे डिव्हाइसची मालकी घेऊ शकेल.<ph name="END_PARAGRAPH1" />
@@ -1702,7 +1701,6 @@
 <translation id="2162705204091149050">तुमचा ब्राउझर, OS, डिव्हाइस, इंस्टॉल केलेले सॉफ्टवेअर, आणि फाइल याविषयीची माहिती वाचा</translation>
 <translation id="2163470535490402084">कृपया आपल्‍या <ph name="DEVICE_TYPE" /> मध्‍ये साइन इन करण्‍यासाठी इंटरनेटशी कनेक्ट करा.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> आणि आणखी एक स्विच</translation>
-<translation id="2165102982098084499">तुम्ही QR कोड स्कॅन करून ही डिव्हाइस लिंक केली आहेत.</translation>
 <translation id="2165177462441582039">प्रत्येक आयटमवर किती वेळ हायलाइट रहावे ते निवडा</translation>
 <translation id="2166369534954157698">चपळ तपकिरी कोल्ह्याने आळशी कुत्र्यावर उडी मारली</translation>
 <translation id="2169062631698640254">तरीही साइन इन करा</translation>
@@ -2805,6 +2803,7 @@
 <translation id="2912247081180973411">विंडो बंद करा</translation>
 <translation id="2915102088417824677">ॲक्टिव्हिटी लॉग पहा</translation>
 <translation id="2915873080513663243">ऑटो-स्कॅन</translation>
+<translation id="2916067990491711240">व्यवस्थापित केलेल्या अतिथी सेशनमधून बाहेर पडा</translation>
 <translation id="2916073183900451334">वेबपेजवर टॅब प्रेस केल्यावर लिंक हायलाइट होतात, तसेच फील्ड तयार होतात</translation>
 <translation id="2916745397441987255">शोध विस्तार</translation>
 <translation id="2918484639460781603">सेटिंग्ज वर जा</translation>
@@ -4310,7 +4309,6 @@
 <translation id="3959969108528118741">मालक</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> साठी आणखी कृती</translation>
-<translation id="3963753386716096475">दुसरा फोन, टॅबलेट किंवा सिक्युरिटी की वापरा</translation>
 <translation id="3964480518399667971">मोबाइल नेटवर्क बंद करा</translation>
 <translation id="3965467402665811906">तुमच्याविषयी सेव्ह केलेली माहिती वापरण्याची परवानगी साइट मागू शकतात</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> मधून बाहेर या</translation>
@@ -4866,7 +4864,6 @@
 <translation id="4370975561335139969">तुम्ही एंटर केलेला ईमेल आणि पासवर्ड जुळत नाही</translation>
 <translation id="4373418556073552953">तुमचा Android फोन वापरून साइन इन करा</translation>
 <translation id="4373973310429385827">दीपगृह</translation>
-<translation id="4374805630006466253">वेगळा फोन किंवा टॅबलेट वापरा</translation>
 <translation id="4374831787438678295">Linux इंस्टॉलर</translation>
 <translation id="4375035964737468845">डाउनलोड केलेल्या फाइल उघडा</translation>
 <translation id="4376226992615520204">स्थान बंद केले</translation>
@@ -5476,7 +5473,6 @@
 <translation id="4814114628197290459">IBAN हटवा</translation>
 <translation id="4814327014588285482">वगळा आणि मला नंतर आठवण करून द्या</translation>
 <translation id="4814378367953456825">या फिंगरप्रिंटसाठी एखादे नाव एंटर करा</translation>
-<translation id="481574578487123132">लिंक केलेली डिव्हाइस</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, तपशील</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{एक बुकमार्क हटवला}other{{COUNT} बुकमार्क हटवले}}</translation>
 <translation id="481689174647911539">या फाइलमध्ये व्हायरस किंवा मालवेअर असू शकते.<ph name="LINE_BREAK" />ती असुरक्षित आहे की नाही हे तपासण्यासाठी तुम्ही ती Google सुरक्षित ब्राउझिंग कडे पाठवू शकता. स्कॅनला सहसा काही सेकंद लागतात.</translation>
@@ -8452,7 +8448,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6965607054907047032">टॅब इनॅक्टिव्हिटीवर आधारित मेमरी मोकळी करा</translation>
 <translation id="6965648386495488594">पोर्ट</translation>
 <translation id="6965978654500191972">डिव्हाइस</translation>
-<translation id="6966370001499648704">तुम्ही कोणते फोन सिक्युरिटी की म्हणून वापरता ते नियंत्रित करा</translation>
 <translation id="6967112302799758487">Chromebook (बीटा) साठी Steam वापरून इंस्टॉल केलेली कोणतीही अ‍ॅप्स आणि गेम या डिव्हाइसवरून काढून टाकले जातील. या अ‍ॅप्स आणि गेमशी संबंधित डेटादेखील काढून टाकला जाईल. अनइंस्टॉल करण्यापूर्वी सेव्ह केलेल्या अ‍ॅप्स आणि गेमचा बॅकअप घेतल्याची खात्री करा.</translation>
 <translation id="6967430741871315905">या डिव्हाइसला अनुमती आहे की नाही हे तपासता आले नाही</translation>
 <translation id="6968288415730398122">स्क्रीन लॉक कॉन्फिगर करण्यासाठी तुमचा पासवर्ड एंटर करा</translation>
@@ -11137,7 +11132,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">अपारदर्शक</translation>
 <translation id="8838770651474809439">हॅमबर्गर</translation>
-<translation id="8838778928843281408">फोन व्यवस्थापित करा</translation>
 <translation id="8838841425230629509">बुकमार्क बार वरून गट अनपिन करा</translation>
 <translation id="883924185304953854">इमेजनुसार शोधा</translation>
 <translation id="8841786407272321022">पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. तुमच्या Google खाते मध्ये नवीन पासवर्ड सेव्ह करण्यासाठी, Google Play सेवा अपडेट करा.</translation>

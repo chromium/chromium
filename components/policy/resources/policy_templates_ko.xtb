@@ -10616,6 +10616,11 @@ URL 패턴이 <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />와 충돌하는 
       정책을 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 사용자가 기본 브라우저 여부를 제어하며 기본 브라우저가 아닌 경우 사용자 알림이 표시되어야 하는지를 제어할 수 있습니다.
 
       참고: <ph name="MS_WIN_NAME" /> 관리자의 경우 Windows 7을 실행하는 기기에서만 이 설정을 사용 설정할 수 있습니다. 이후 버전의 경우 <ph name="PRODUCT_NAME" />을(를) <ph name="HTTPS_PROTOCOL" /> 및 <ph name="HTTP_PROTOCOL" /> 프로토콜(선택적으로 <ph name="FTP_PROTOCOL" /> 프로토콜 및 기타 파일 형식)의 핸들러로 설정하는 '기본 애플리케이션 연결' 파일을 배포해야 합니다. Chrome 도움말( https://support.google.com/chrome?p=make_chrome_default_win )을 참조하세요.</translation>
+<translation id="8437836857126992452">사용자가 설치할 수 없는 확장 프로그램을 지정할 수 있습니다. 이미 설치된 확장 프로그램이 차단된 경우 사용 중지되며, 사용자가 사용 설정할 방법은 없습니다. 차단 목록에 포함되어 사용 중지되었던 확장 프로그램이 차단 목록에서 삭제되면 자동으로 다시 사용 설정됩니다.
+
+          차단 목록의 '*' 값은 모든 확장 프로그램이 기본적으로 차단됨을 의미합니다. 허용 목록에 명시적으로 나열된 확장 프로그램은 서명(압축)된 경우 허용됩니다. 압축해제된 모든 확장 프로그램은 차단됩니다.
+
+          이 정책을 설정하지 않으면 사용자는 <ph name="PRODUCT_NAME" />에 모든 확장 프로그램을 설치할 수 있습니다.</translation>
 <translation id="8441105784056442638">전체 복원 기능 사용</translation>
 <translation id="844322176712318428">Translator API 허용</translation>
 <translation id="8444157920689124099">애플리케이션과 결합된 암호화 사용 설정</translation>

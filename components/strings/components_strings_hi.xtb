@@ -358,6 +358,7 @@
 <translation id="1593359183944365958">270 डिग्री</translation>
 <translation id="1594030484168838125">चुनें</translation>
 <translation id="1597307423671074806">WebM वीडियो</translation>
+<translation id="159800670740560023">Chrome से जुड़ी सलाह का लिंक, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> को खोलने के लिए Enter दबाएं</translation>
 <translation id="1599199147673445968">नया कार्ड है? <ph name="BEGIN_LINK" />कार्ड की जानकारी डालें<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">Zip फ़ाइल बनाएं</translation>
 <translation id="1604192142734009334">ब्यूटी और फ़िटनेस</translation>
@@ -836,6 +837,7 @@
 <translation id="2383455408879745299">Chrome की सेटिंग में सुलभता टूल को अपने हिसाब से बनाएं</translation>
 <translation id="2384307209577226199">एंटरप्राइज़ डिफ़ॉल्ट</translation>
 <translation id="238459632961158867">वेबसाइट</translation>
+<translation id="2384823392576123225">बुकमार्क खोजें</translation>
 <translation id="2385809941344967209">अपनी Chrome की सेटिंग में जाकर Chrome को अपडेट करें</translation>
 <translation id="2386255080630008482">सर्वर का प्रमाणपत्र निरस्त कर दिया गया है.</translation>
 <translation id="2388828676877700238">टैक्स की रकम का पता लगाना और योजना बनाना</translation>
@@ -1449,6 +1451,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> वे लेख और इमेज देखना चाहता है जिन्हें क्लिपबोर्ड पर कॉपी किया गया है</translation>
 <translation id="3461824795358126837">हाइलाइटर</translation>
 <translation id="3462200631372590220">बेहतर को छिपाएं</translation>
+<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />, इस पेज के बारे में Google से पूछने के लिए Enter दबाएं</translation>
 <translation id="3465972433695735758">इस PDF को ऐक्सेस नहीं किया जा सकता. Google के एआई की मदद से टेक्स्ट निकाला गया</translation>
 <translation id="346601286295919445">रसायन विज्ञान</translation>
 <translation id="3467081767799433066">'विज्ञापन की परफ़ॉर्मेंस मापना' सेटिंग का इस्तेमाल, साइटों के बीच सीमित डेटा शेयर करने के लिए किया जाता है, ताकि विज्ञापनों की परफ़ॉर्मेंस को मापा जा सके. जैसे, क्या आपने किसी साइट पर जाकर कोई खरीदारी की है.</translation>
@@ -2057,6 +2060,7 @@
 <translation id="444116852243722675">सभी यूआरएल (<ph name="ITEMS" />) खोलें</translation>
 <translation id="4441832193888514600">अनदेखा किया गया है, क्योंकि इस नीति को सिर्फ़ क्लाउड की उपयोगकर्ता नीति के तौर पर सेट किया जा सकता है.</translation>
 <translation id="4445133368066241428">लोकप्रिय विषय</translation>
+<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, टैब खोजने के लिए Enter दबाएं</translation>
 <translation id="4445964943162061557">यह सुविधा एक्सपेरिमेंट के तौर पर उपलब्ध है. यह ज़रूरी नहीं है कि यह सुविधा हमेशा सही तरीके से काम करें.</translation>
 <translation id="4449116177348980384">'साइट की सेटिंग मैनेज करें' बटन, Chrome की सेटिंग में अलग-अलग साइटों पर सेव की गई अनुमतियों और डेटा को मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="4451135742916150903">साइट, एचआईडी डिवाइसों से कनेक्ट करने की अनुमति मांग सकती है</translation>
@@ -2252,6 +2256,7 @@
 <translation id="4811450222531576619">इस पेज के स्रोत और विषय के बारे में जानें</translation>
 <translation id="4813512666221746211">नेटवर्क गड़बड़ी</translation>
 <translation id="4814114628197290459">IBAN मिटाएं</translation>
+<translation id="4816341377198595747">'बुकमार्क खोजें' बटन, बुकमार्क खोजने के लिए इसे चालू करें</translation>
 <translation id="4816492930507672669">पेज में फ़िट करें</translation>
 <translation id="4819347708020428563">क्या आप डिफ़ॉल्ट व्यू में वीडियो के ऊपर टेक्स्ट, लिंक वगैरह में बदलाव करना चाहते हैं?</translation>
 <translation id="4822493756793346865">आम कीमतों की जानकारी, वेब पर मौजूद सभी स्टोर से ली गई है. यह पिछले 90 दिनों की कीमतों के हिसाब से है.</translation>
@@ -2381,6 +2386,7 @@
 <translation id="5021557570875267742">Chrome की मदद से कीमतों को ट्रैक करें</translation>
 <translation id="5023310440958281426">अपने एडमिन की नीतियां देखें</translation>
 <translation id="5024171724744627792">कार्ड की जानकारी सेव होने पर तेज़ी से पेमेंट किया जा सकता है. यह जानकारी आपके Google खाते में एन्क्रिप्ट (सुरक्षित) की जाती है.</translation>
+<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, इतिहास खोजने के लिए Enter दबाएं</translation>
 <translation id="5030338702439866405">जारीकर्ता</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" के रूट प्रमाणपत्र की ज़रूरत है लेकिन वह इंस्टॉल नहीं है. यह समस्या ठीक करने के लिए आपके आईटी व्यवस्थापक को "<ph name="SOFTWARE_NAME" />" के कॉन्फ़िगरेशन से जुड़े निर्देशों पर नज़र डालनी चाहिए. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">क्या इसे तुलना करने के लिए जोड़ना है?</translation>
@@ -2737,6 +2743,7 @@
 <translation id="5619721953841297650">प्रीसेट</translation>
 <translation id="5624120631404540903">पासवर्ड मैनेज करें</translation>
 <translation id="5629630648637658800">नीति सेटिंग लोड करने में विफल</translation>
+<translation id="5630981295558454585">'Google से इस पेज के बारे में पूछें' बटन, Google से इस पेज के बारे में पूछने के लिए इसे चालू करें</translation>
 <translation id="5631439013527180824">अमान्य डिवाइस प्रबंधन टोकन</translation>
 <translation id="5632485077360054581">मुझे इसका तरीका दिखाएं</translation>
 <translation id="563324245173044180">भ्रामक सामग्री ब्लॉक की गई.</translation>
@@ -3617,6 +3624,7 @@
 <translation id="7139892792842608322">प्राइमरी ट्रे</translation>
 <translation id="7140087718106278457">पेमेंट के तरीके दिखाने वाली सूची बंद है.</translation>
 <translation id="714064300541049402">साइड 2 इमेज X शिफ़्ट</translation>
+<translation id="7140922144008419614">'टैब खोजें' बटन, टैब खोजने के लिए इसे चालू करें</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
@@ -3852,6 +3860,7 @@
 <translation id="7526934274050461096">इस साइट से आपका कनेक्‍शन निजी नहीं है</translation>
 <translation id="7529884293139707752">घर पर शिक्षा</translation>
 <translation id="7531464389616946220">कार्ड स्कैन करें</translation>
+<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, बुकमार्क खोजने के लिए Enter दबाएं</translation>
 <translation id="7534987659046836932">C7 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="7535087603100972091">मान</translation>
 <translation id="753556296624075801">Google की ओर से</translation>
@@ -4230,6 +4239,7 @@
 <translation id="8194412401381329820">मैनेज नहीं किए जा रहे इस डिवाइस पर, मैनेज किए जा रहे खाते से इस पेज का इस्तेमाल नहीं किया जा सकता. अगर इस पेज का इस्तेमाल किया जाता है, तो मैनेज किए जा रहे सभी खाते लॉक हो जाएंगे. हालांकि, इस डिवाइस को मैनेज करने वाली इकाई जिन खातों को मैनेज करती है उन्हें लॉक नहीं किया जाएगा (अफ़िलिएट खाते).</translation>
 <translation id="8194797478851900357">&amp;ले जाना वापस लाएं</translation>
 <translation id="8194956568907463262">शूटर गेम</translation>
+<translation id="8198379961710069585">'इतिहास खोजें' बटन, इतिहास खोजने के लिए इसे चालू करें</translation>
 <translation id="8199437620497683918">ऑप्टिकल डिस्क (ग्लॉसी)</translation>
 <translation id="8199730148066603000">बिना एचटीटीपीएस वाले यूआरएल की झलक देखने की अनुमति नहीं है.</translation>
 <translation id="8200772114523450471">फिर से शुरू करें</translation>

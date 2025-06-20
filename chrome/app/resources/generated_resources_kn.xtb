@@ -361,7 +361,6 @@
 <translation id="1235458158152011030">ತಿಳಿದಿರುವ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="123578888592755962">ಡಿಸ್ಕ್ ಪೂರ್ಣವಾಗಿದೆ</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{ಪಠ್ಯ}one{# ಪಠ್ಯಗಳು}other{# ಪಠ್ಯಗಳು}}</translation>
-<translation id="1236009322878349843">ಫೋನ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="1237251612871334180">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="1237950098253310325">ctrl ಜೊತೆಗೆ ಮೇಲಿನ ಆ್ಯರೋ ಅಥವಾ ಕೆಳಗಿನ ಆ್ಯರೋ ಬಳಸಿಕೊಂಡು <ph name="BUTTON_NAME" /> ಅನ್ನು ಮರುಕ್ರಮಗೊಳಿಸಿ</translation>
 <translation id="1238293488628890871">ಪ್ರೊಫೈಲ್‌ ಬದಲಿಸಬೇಕೇ?</translation>
@@ -578,7 +577,6 @@
 <translation id="1395832189806039783">ಕೀಬೋರ್ಡ್ ಫೋಕಸ್‌ನೊಂದಿಗೆ ಐಟಂ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> ಗೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="1396139853388185343">ಪ್ರಿಂಟರ್ ಹೊಂದಿಸುವಲ್ಲಿ ದೋಷ ಸಂಭವಿಸಿದೆ</translation>
-<translation id="1397594434718759194">ಈ ಸಾಧನಗಳಲ್ಲಿ ನೀವು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರುವಿರಿ, ಆದ್ದರಿಂದ ನೀವು ಅವುಗಳನ್ನು ಭದ್ರತಾ ಕೀಗಳಾಗಿ ಬಳಸಬಹುದು.</translation>
 <translation id="1398853756734560583">ಗರಿಷ್ಠಗೊಳಿಸು</translation>
 <translation id="1399261165075500043">Google Play ಸೇವಾ ನಿಯಮಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="1400243387594338234">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ನೀವು ಈ ಪಿನ್ ಅನ್ನು ಬಳಸಬಹುದು</translation>
@@ -1697,7 +1695,6 @@
 <translation id="2162705204091149050">ನಿಮ್ಮ ಬ್ರೌಸರ್, OS, ಸಾಧನ, ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಸಾಫ್ಟ್‌ವೇರ್ ಮತ್ತು ಫೈಲ್‌ಗಳ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ಓದಿ</translation>
 <translation id="2163470535490402084">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಇಂಟರ್ನೆಟ್‌ಗೆ ಸಂಪರ್ಕಗೊಳಿಸಿ.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ಮತ್ತು ಇನ್ನೂ 1 ಸ್ವಿಚ್</translation>
-<translation id="2165102982098084499">QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡುವ ಮೂಲಕ ನೀವು ಈ ಸಾಧನಗಳನ್ನು ಲಿಂಕ್ ಮಾಡಿದ್ದೀರಿ.</translation>
 <translation id="2165177462441582039">ಪ್ರತಿ ಐಟಂನಲ್ಲಿ ಹೈಲೈಟ್‌ ಎಷ್ಟು ಕಾಲ ಉಳಿಯಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2169062631698640254">ಹೇಗಾದರೂ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
@@ -4305,7 +4302,6 @@
 <translation id="3959969108528118741">ಮಾಲೀಕರು</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
-<translation id="3963753386716096475">ಬೇರೆ ಫೋನ್, ಟ್ಯಾಬ್ಲೆಟ್ ಅಥವಾ ಭದ್ರತಾ ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="3964480518399667971">ಸೆಲ್ಯುಲರ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="3965467402665811906">ನಿಮ್ಮ ಕುರಿತು ಸೈಟ್‌ಗಳು ಸೇವ್ ಮಾಡಿರುವ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> ಪ್ರೊಫೈಲ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
@@ -4863,7 +4859,6 @@
 <translation id="4370975561335139969">ನೀವು ನಮೂದಿಸಿದ ಇಮೇಲ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="4373418556073552953">ನಿಮ್ಮ Android ಫೋನ್‌ನೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4373973310429385827">ಲೈಟ್‌ಹೌಸ್</translation>
-<translation id="4374805630006466253">ಬೇರೆ ಫೋನ್ ಅಥವಾ ಟ್ಯಾಬ್ಲೆಟ್ ಬಳಸಿ</translation>
 <translation id="4374831787438678295">Linux ಇನ್‌ಸ್ಟಾಲರ್‌‌</translation>
 <translation id="4375035964737468845">ಡೌನ್‌ಲೋಡ್‌ ಆಗಿರುವ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆ</translation>
 <translation id="4376226992615520204">ಸ್ಥಳ ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -5473,7 +5468,6 @@
 <translation id="4814114628197290459">IBAN ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="4814327014588285482">ಸ್ಕಿಪ್ ಮಾಡಿ ಮತ್ತು ನಂತರ ನನಗೆ ರಿಮೈಂಡ್ ಮಾಡಿ</translation>
 <translation id="4814378367953456825">ಈ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಾಗಿ ಹೆಸರೊಂದನ್ನು ನಮೂದಿಸಿ</translation>
-<translation id="481574578487123132">ಲಿಂಕ್ ಮಾಡಿದ ಸಾಧನಗಳು</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, ವಿವರಗಳು</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 ಬುಕ್‌ಮಾರ್ಕ್ ಅಳಿಸಲಾಗಿದೆ}one{{COUNT} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ}other{{COUNT} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ}}</translation>
 <translation id="481689174647911539">ಈ ಫೈಲ್ ವೈರಸ್ ಅಥವಾ ಮಾಲ್‌ವೇರ್ ಆಗಿರಬಹುದು.<ph name="LINE_BREAK" />ಅದು ಅಸುರಕ್ಷಿತವಾಗಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಲು ನೀವು ಅದನ್ನು Google Safe Browsing ಗೆ ಕಳುಹಿಸಬಹುದು. ಸ್ಕ್ಯಾನ್‌ಗಳಿಗೆ ಕೆಲವು ಸೆಕೆಂಡ್‌ಗಳ ಸಮಯ ಬೇಕಾಗುತ್ತದೆ.</translation>
@@ -8448,7 +8442,6 @@
 <translation id="6965607054907047032">ಟ್ಯಾಬ್ ನಿಷ್ಕ್ರಿಯತೆಯ ಆಧಾರದ ಮೇಲೆ ಮೆಮೊರಿಯನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6965648386495488594">ಪೋರ್ಟ್</translation>
 <translation id="6965978654500191972">ಸಾಧನ</translation>
-<translation id="6966370001499648704">ನೀವು ಯಾವ ಫೋನ್‌ಗಳನ್ನು ಭದ್ರತೆ ಕೀಗಳಾಗಿ ಬಳಸುತ್ತೀರಿ ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="6967112302799758487">Steam for Chromebook (ಬೀಟಾ) ಬಳಸಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಯಾವುದೇ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಗೇಮ್‌ಗಳನ್ನು ಈ ಸಾಧನದಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ. ಈ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಗೇಮ್‌ಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಡೇಟಾವನ್ನು ಸಹ ಅಳಿಸಲಾಗುತ್ತದೆ. ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವ ಮೊದಲು ಸೇವ್ ಮಾಡಿದ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಗೇಮ್‌ಗಳ ಡೇಟಾವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="6967430741871315905">ಸಾಧನವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="6968288415730398122">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಕಾನ್ಫಿಗರ್ ಮಾಡಲು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
@@ -11131,7 +11124,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">ಅಪಾರದರ್ಶಕ</translation>
 <translation id="8838770651474809439">ಹ್ಯಾಂಬರ್ಗರ್</translation>
-<translation id="8838778928843281408">ಫೋನ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8838841425230629509">ಬುಕ್‌ಮಾರ್ಕ್ ಪಟ್ಟಿಯಿಂದ ಗುಂಪನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="883924185304953854">ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಿ</translation>
 <translation id="8841786407272321022">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲು, Google Play ಸೇವೆಗಳನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ.</translation>

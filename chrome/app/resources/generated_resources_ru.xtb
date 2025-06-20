@@ -363,7 +363,6 @@
 <translation id="1235458158152011030">Сохраненные сети</translation>
 <translation id="123578888592755962">Недостаточно места на диске</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{SMS}one{# SMS}few{# SMS}many{# SMS}other{# SMS}}</translation>
-<translation id="1236009322878349843">Измените сведения о смартфоне</translation>
 <translation id="1237251612871334180">Установите обновление</translation>
 <translation id="1237950098253310325">Чтобы изменить расположение этого элемента (<ph name="BUTTON_NAME" />) в списке, используйте сочетание клавиш Ctrl + Стрелка вверх или Ctrl + Стрелка вниз</translation>
 <translation id="1238293488628890871">Сменить профиль?</translation>
@@ -580,7 +579,6 @@
 <translation id="1395832189806039783">Выделять объект с помощью клавиатуры</translation>
 <translation id="1396120028054416908">Вернуться в папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="1396139853388185343">Не удалось настроить принтер</translation>
-<translation id="1397594434718759194">Вы вошли в Chrome на этих устройствах, поэтому их можно использовать как электронные ключи.</translation>
 <translation id="1398853756734560583">Развернуть</translation>
 <translation id="1399261165075500043">Не удается загрузить Условия использования Google Play</translation>
 <translation id="1400243387594338234">Вы можете использовать этот PIN-код для входа в аккаунт на устройстве.</translation>
@@ -1696,7 +1694,6 @@
 <translation id="2162705204091149050">Доступ к информации о вашем устройстве, браузере, ОС, установленном ПО и файлах.</translation>
 <translation id="2163470535490402084">Чтобы войти в аккаунт на устройстве <ph name="DEVICE_TYPE" />, требуется подключение к Интернету.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и ещё 1 переключатель</translation>
-<translation id="2165102982098084499">Вы связали эти устройства с помощью QR-кода.</translation>
 <translation id="2165177462441582039">Задайте скорость перемещения между элементами.</translation>
 <translation id="2166369534954157698">Съешь же ещё этих мягких французских булок, да выпей чаю</translation>
 <translation id="2169062631698640254">Выполнить вход</translation>
@@ -4302,7 +4299,6 @@
 <translation id="3959969108528118741">Владелец</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Другие действия со счетом под названием<ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3963753386716096475">Использовать другой телефон, планшет или ключ доступа</translation>
 <translation id="3964480518399667971">Отключить мобильную сеть</translation>
 <translation id="3965467402665811906">Сайты могут запрашивать разрешение на использование сохраненной информации о вас</translation>
 <translation id="3965965397408324205">Выйти из профиля пользователя <ph name="PROFILE_NAME" /></translation>
@@ -4860,7 +4856,6 @@
 <translation id="4370975561335139969">Указан неправильный адрес или пароль</translation>
 <translation id="4373418556073552953">Вход с помощью телефона Android</translation>
 <translation id="4373973310429385827">Маяк</translation>
-<translation id="4374805630006466253">Использовать другой смартфон или планшет</translation>
 <translation id="4374831787438678295">Установщик Linux</translation>
 <translation id="4375035964737468845">Открывание скачанных файлов</translation>
 <translation id="4376226992615520204">Геолокация отключена</translation>
@@ -5470,7 +5465,6 @@
 <translation id="4814114628197290459">Удаление кода IBAN</translation>
 <translation id="4814327014588285482">Пропустить и напомнить позже</translation>
 <translation id="4814378367953456825">Введите название для этого отпечатка пальца.</translation>
-<translation id="481574578487123132">Связанные устройства</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, подробная информация</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Удалена 1 закладка.}one{Удалена {COUNT} закладка.}few{Удалено {COUNT} закладки.}many{Удалено {COUNT} закладок.}other{Удалено {COUNT} закладки.}}</translation>
 <translation id="481689174647911539">Этот файл может оказаться вирусом или вредоносным ПО.<ph name="LINE_BREAK" />Вы можете отправить его в сервис "Google Безопасный просмотр", чтобы проверить, представляет ли он угрозу. Обычно сканирование занимает несколько секунд.</translation>
@@ -8448,7 +8442,6 @@
 <translation id="6965607054907047032">Освобождать память, удаляя данные неактивных вкладок</translation>
 <translation id="6965648386495488594">Порт</translation>
 <translation id="6965978654500191972">Устройство</translation>
-<translation id="6966370001499648704">Выберите, какие смартфоны будут использованы в качестве электронного ключа.</translation>
 <translation id="6967112302799758487">Все приложения и игры, установленные с помощью Steam для Chromebook (бета), будут удалены с этого устройства. Это относится и к данным, связанным с ними. Перед удалением обязательно создайте резервную копию сохраненных приложений и игр.</translation>
 <translation id="6967430741871315905">Не удалось проверить, можно ли выполнять ВМ на этом устройстве.</translation>
 <translation id="6968288415730398122">Чтобы настроить блокировку экрана, введите пароль</translation>
@@ -11136,7 +11129,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Непрозрачный</translation>
 <translation id="8838770651474809439">Гамбургер</translation>
-<translation id="8838778928843281408">Управление смартфонами</translation>
 <translation id="8838841425230629509">Открепить группу от панели закладок</translation>
 <translation id="883924185304953854">Поиск по картинке</translation>
 <translation id="8841786407272321022">Пароли сохраняются только на устройстве. Чтобы добавлять их в аккаунт Google, обновите сервисы Google Play.</translation>

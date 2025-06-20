@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Дељење није успело зато што нисте повезани са мрежом.</translation>
 <translation id="1668001730617725852">Отвори у новој групи картица</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Сада можете да отворите Google објектив са траке за адресу и претражите све што видите</translation>
 <translation id="1689333818294560261">Надимак</translation>
 <translation id="169048873465870056">Желите да уклоните картицу и избришете групу?</translation>
 <translation id="1698090540708020240">Увези лозинке…</translation>
@@ -266,6 +267,7 @@
 <translation id="2044681667265133332">Налогом <ph name="USER_EMAIL" /> управља <ph name="HOSTED_DOMAIN" />, који може да прегледа одређене информације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нова ставка</translation>
 <translation id="2049727122989709386">Налози (<ph name="COUNT" />) користе исту лозинку</translation>
+<translation id="205013082884273671">Претражите било шта на екрану</translation>
 <translation id="2054044186557130763">Пријавите се преко налога <ph name="NAME" /> <ph name="EMAIL" />, којим управља организација.</translation>
 <translation id="2059166748188874810">Општина</translation>
 <translation id="2060638295449304809">Ова адреса се чува само на овом уређају. Да бисте је користили на другим уређајима, сачувајте је на Google налогу, <ph name="USER_EMAIL" /></translation>
@@ -458,6 +460,7 @@
 <translation id="2819667972867209401">Када је укључено, подаци се чувају на Google налогу. Када је искључено, подаци се чувају само на овом уређају и бришу се ако се одјавите.</translation>
 <translation id="2827760117436553203">Не желите да повежете податке са профилом?</translation>
 <translation id="2829172210806130158">Претражите екран</translation>
+<translation id="2831109159746537587">Пробајте да заокружите или додирнете слику да бисте је претражили</translation>
 <translation id="2834399722155632105">3. Додирните Опције лозинки</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Време</translation>

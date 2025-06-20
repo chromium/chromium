@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">Обавештења о праћењу цена</translation>
 <translation id="21613918653299710">Онлајн галерије слика</translation>
 <translation id="2161656808144014275">Текст</translation>
+<translation id="2162435186600002085">Примарни логотип у заглављу</translation>
 <translation id="2162620598375156287">Цена је сада <ph name="CURRENT_PRICE" /> на <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Уверите се да <ph name="HOST_NAME" /> не садржи словне грешке.</translation>
 <translation id="2166049586286450108">Потпуни администраторски приступ</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">Додајте пасош</translation>
 <translation id="2400271059665846158">Управљајте картицама лојалности у Google новчанику</translation>
 <translation id="2400600116338235695">Може да тражи да се повезује са серијским портовима</translation>
+<translation id="240450251994300576">Секундарни логотип у заглављу</translation>
 <translation id="2404884497378469141">Пробајте да поново копирате фајлове</translation>
 <translation id="2413155254802890957">Старо</translation>
 <translation id="2413528052993050574">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат ће можда бити опозван. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">Текст се издваја из PDF-а…</translation>
 <translation id="2628224721443278970">Пријави ме на Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Нисмо успели да пронађемо IP адресу сервера хоста <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Унесите @ да бисте претражили <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Статус:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Тканина (полусјајна)</translation>
@@ -2267,6 +2270,7 @@
 <translation id="4827283332383516812">Избришите картицу</translation>
 <translation id="4830443836091007686">Изабрано: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Папир за штампање слика</translation>
+<translation id="4832388034239846146">Да бисте делили групе картица, ажурирајте Chrome</translation>
 <translation id="483241715238664915">Укључи упозорења</translation>
 <translation id="4832961164064927107">Роштиљ</translation>
 <translation id="4834250788637067901">Начини плаћања, понуде и адресе који користе Google Pay</translation>
@@ -2974,6 +2978,7 @@
 <translation id="6043357981274314628">Готово!</translation>
 <translation id="6044573915096792553">Величина 12</translation>
 <translation id="6045164183059402045">Шаблон распореда странице</translation>
+<translation id="6046892054959167494">Унесите <ph name="SEARCH_AGGREGATOR_KEYWORD" /> да бисте претражили или упитајте <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Овај садржај ће покушати да вас превари да инсталирате софтвер или откријете личне податке. <ph name="BEGIN_LINK" />Ипак прикажи<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Коверта B4</translation>
 <translation id="6049488691372270142">Испорука страница</translation>

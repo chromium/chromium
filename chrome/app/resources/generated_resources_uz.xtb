@@ -360,7 +360,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1235458158152011030">Tanish tarmoqlar</translation>
 <translation id="123578888592755962">Diskda bo‘sh joy juda kam qoldi</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{matn}other{# ta matn}}</translation>
-<translation id="1236009322878349843">Telefonni tahrirlash</translation>
 <translation id="1237251612871334180">Parollarni saqlashni yangilash</translation>
 <translation id="1237950098253310325"><ph name="BUTTON_NAME" /> tartibini ctrl + yuqoriga yoki pastga strelka tugmalari yordamida oʻzgartiring</translation>
 <translation id="1238293488628890871">Profil almashtirilsinmi?</translation>
@@ -577,7 +576,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1395832189806039783">Elementni klaviatura fokusi orqali ajratib belgilash</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> sahifasiga qaytish</translation>
 <translation id="1396139853388185343">Printer sozlanmadi</translation>
-<translation id="1397594434718759194">Chromega quyidagi qurilmalardan kirgansiz va ularni elektron kalit sifatida ishlatishingiz mumkin.</translation>
 <translation id="1398853756734560583">Yoyish</translation>
 <translation id="1399261165075500043">Google Play xizmat shartlari yuklanmadi</translation>
 <translation id="1400243387594338234">Bu PIN kod orqali qurilmadagi hisobga kirish mumkin</translation>
@@ -1693,7 +1691,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2162705204091149050">Brauzer, OT, qurilma, oʻrnatilgan dasturlar va fayllar haqidagi axborot bilan tanishing</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> qurilmasiga kirish uchun internetga ulaning.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> va yana 1 ta kalit tugma</translation>
-<translation id="2165102982098084499">Quyidagi quruilmalarni QR kodni skanerlash orqali ulagansiz.</translation>
 <translation id="2165177462441582039">Har bir element qancha vaqt ajratib turilishini tanlang</translation>
 <translation id="2166369534954157698">Chaqqon malla tulki yalqov itning ustidan sakrab o‘tdi</translation>
 <translation id="2169062631698640254">Tizimga baribir kirish</translation>
@@ -4300,7 +4297,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3959969108528118741">Egasi</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> uchun boshqa amallar</translation>
-<translation id="3963753386716096475">Boshqa telefon, planshet yoki elektron kalitdan foydalaning</translation>
 <translation id="3964480518399667971">Mobil tarmoqni faolsizlantirish</translation>
 <translation id="3965467402665811906">Saytlar shaxsiy maʼlumotlaringizdan foydalanishga ruxsat soʻrashi mumkin</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> profilidan chiqish</translation>
@@ -4858,7 +4854,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4370975561335139969">Siz kiritgan e-pochta va parol mos kelmadi</translation>
 <translation id="4373418556073552953">Android telefonidan kiring</translation>
 <translation id="4373973310429385827">Mayoq</translation>
-<translation id="4374805630006466253">Boshqa telefon yoki planshet orqali</translation>
 <translation id="4374831787438678295">Linux uchun o‘rnatkich</translation>
 <translation id="4375035964737468845">Yuklab olingan fayllarni ochish</translation>
 <translation id="4376226992615520204">Joylashuvni aniqlash xususiyati yoniq emas</translation>
@@ -5468,7 +5463,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4814114628197290459">IBAN raqamini oʻchirish</translation>
 <translation id="4814327014588285482">Tashlab ketish va keyinroq eslatish</translation>
 <translation id="4814378367953456825">Bu barmoq izini nomlang</translation>
-<translation id="481574578487123132">Ulangan qurilmalar</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, Batafsil</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 ta bukmark oʻchirib tashlandi}other{{COUNT} ta bukmark oʻchirib tashlandi}}</translation>
 <translation id="481689174647911539">Bu fayl virus yoki zararli boʻlishi mumkin.<ph name="LINE_BREAK" />Xavfsiz ekanligini tekshirish uchun uni Google saytlarni xavfsiz kezish tekshiruviga yuborish mumkin. Tekshiruv uchun odatda bir necha soniya ketadi.</translation>
@@ -8440,7 +8434,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6965607054907047032">Varaq nofaolligi asosida xotirani boʻshatish</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Qurilma</translation>
-<translation id="6966370001499648704">Qaysi telefonlar elektron kalit sifatida ishlatilishini boshqaring</translation>
 <translation id="6967112302799758487">Chromebook uchun Steam (Beta) xizmati orqali oʻrnatilgan barcha ilovalar va oʻyinlar bu qurilmadan olib tashlanadi. Bu ilovalar va oʻyinlar bilan aloqador maʼlumotlar ham oʻchirib tashlanadi. Oʻchirib tashlashdan oldin saqlangan ilovalar va oʻyinlarni zaxiralab oling.</translation>
 <translation id="6967430741871315905">Bu qurilmaning ruxsat etilgani tekshirilmadi</translation>
 <translation id="6968288415730398122">Ekran qulfini sozlash uchun parolingizni kiriting</translation>
@@ -11123,7 +11116,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Shaffoflik</translation>
 <translation id="8838770651474809439">Gamburger</translation>
-<translation id="8838778928843281408">Telefonlarni boshqarish</translation>
 <translation id="8838841425230629509">Guruhni bukmarklar panelidan olib tashlash</translation>
 <translation id="883924185304953854">Rasm asosida qidirish</translation>
 <translation id="8841786407272321022">Parol faqat shu qurilmaga saqlanadi. Yangi parollarni Google hisobingizga saqlash uchun Google Play xizmatlarini yangilang.</translation>

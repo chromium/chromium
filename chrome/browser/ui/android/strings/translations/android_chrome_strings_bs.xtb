@@ -894,7 +894,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="506254248375231072">Nema kartica</translation>
 <translation id="5062960805900435602">Obavještenje o spajanju lozinki je zatvoreno</translation>
 <translation id="5075939510584558547">Sačuvajte bez šifriranja</translation>
-<translation id="5082172173036123513">Neaktivni prozori trajno se brišu nakon šest mjeseci neaktivnosti.</translation>
+<translation id="5082172173036123513">Neaktivni prozori se trajno brišu nakon 6 mjeseci neaktivnosti.</translation>
 <translation id="5085038751173179818">Prijavite se na ovu web lokaciju i u Chrome da dobijete svoje oznake i još mnogo toga na svim svojim uređajima</translation>
 <translation id="5091199029769593641">Uskoro ćete vidjeti priče s web lokacije <ph name="SITE_NAME" /> kada otvorite novu karticu. Web lokacije koje pratite se pohranjuju na vaš Google račun. Njima možete upravljati u postavkama Discovera.</translation>
 <translation id="509429900233858213">Došlo je do greške.</translation>
@@ -1553,7 +1553,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7844171778363018843">Nije odabrana nijedna vrsta podataka za sinhroniziranje</translation>
 <translation id="7846161022626028328">Došlo je do greške. Pokušajte ponovo.</translation>
 <translation id="7846296061357476882">Googleove usluge</translation>
-<translation id="784652447248278262">Trenutačni prozor</translation>
+<translation id="784652447248278262">Trenutni prozor</translation>
 <translation id="784934925303690534">Vremenski raspon</translation>
 <translation id="7851858861565204677">Drugi uređaji</translation>
 <translation id="7853202427316060426">Aktivnost</translation>
@@ -1633,7 +1633,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="813082847718468539">Prikaz informacija o web lokaciji</translation>
 <translation id="8135406045838672858">Preuzeti PDF-ovi se automatski otvaraju putem aplikacije <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Nećete morati zapamtiti ovu lozinku. Sačuvat će se u Google upravitelju lozinki.</translation>
-<translation id="8146563639948412265">Možete imati najviše ovoliko prozora: <ph name="MAX_WINDOW_COUNT" />. Da biste vratili prozor, zatvorite aktivne ili neaktivne prozore (njih <ph name="WINDOW_COUNT" />).</translation>
+<translation id="8146563639948412265">Ukupno možete imati do <ph name="MAX_WINDOW_COUNT" /> prozora. Da vratite jedan prozor, zatvorite aktivne ili neaktivne prozore (ukupno <ph name="WINDOW_COUNT" />.</translation>
 <translation id="8152331954420209374">Odlazak u Objektiv</translation>
 <translation id="8163820386638255770">Da koristite i sačuvate lozinke na Google računu, potvrdite identitet</translation>
 <translation id="8186512483418048923">Broj preostalih fajlova: <ph name="FILES" /></translation>

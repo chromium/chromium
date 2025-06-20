@@ -10259,6 +10259,11 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
       如果未設定這項政策，<ph name="PRODUCT_NAME" /> 將允許使用者決定其是否為預設瀏覽器，並在不是預設瀏覽器時允許使用者控制是否要顯示使用者通知。
 
       注意：<ph name="MS_WIN_NAME" /> 的系統管理員只能在搭載 Windows 7 的電腦上開啟這項設定。如果是較新版本的電腦，系統管理員必須部署「預設應用程式關聯」檔案，將 <ph name="PRODUCT_NAME" /> 做為 <ph name="HTTPS_PROTOCOL" /> 和 <ph name="HTTP_PROTOCOL" /> 通訊協定的處理常式 (也可以一併做為 <ph name="FTP_PROTOCOL" /> 通訊協定和其他檔案格式的處理常式)。請參閱 Chrome 說明文章：https://support.google.com/chrome?p=make_chrome_default_win。</translation>
+<translation id="8437836857126992452">你可以透過這項政策，指定禁止使用者安裝的擴充功能。如果封鎖已安裝的擴充功能，系統會將其停用，使用者無法以任何方式啟用。加入封鎖清單中的擴充功能就會停用，只要從清單中移除，就會自動啟用。
+
+          如果封鎖清單的值是「*」，系統預設會封鎖所有擴充功能。擴充功能明確列入許可清單後，只要完成簽署 (封裝)，就允許執行。系統會封鎖所有未封裝的擴充功能。
+
+          如果不設定這項政策，使用者就能在 <ph name="PRODUCT_NAME" /> 中安裝任何擴充功能。</translation>
 <translation id="8441105784056442638">啟用完整還原功能</translation>
 <translation id="844322176712318428">允許 Translator API</translation>
 <translation id="8444157920689124099">啟用應用程式繫結加密</translation>

@@ -361,7 +361,6 @@
 <translation id="1235458158152011030">পরিচিত নেটওয়ার্কগুলি</translation>
 <translation id="123578888592755962">ডিস্ক পূর্ণ</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{টেক্সট}one{#টি টেক্সট}other{#টি টেক্সট}}</translation>
-<translation id="1236009322878349843">ফোন এডিট করুন</translation>
 <translation id="1237251612871334180">পাসওয়ার্ড সেভ করতে আপডেট করুন</translation>
 <translation id="1237950098253310325">ctrl এর সাথে উপরের দিকের তীরচিহ্ন বা নিচের দিকের তীরচিহ্ন ব্যবহার করে <ph name="BUTTON_NAME" /> আবার সাজান</translation>
 <translation id="1238293488628890871">প্রোফাইল পাল্টাতে চান?</translation>
@@ -578,7 +577,6 @@
 <translation id="1395832189806039783">কীবোর্ড ফোকাসের সাহায্যে আইটেম হাইলাইট করা</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" />-এ ফিরে যান</translation>
 <translation id="1396139853388185343">প্রিন্টার সেট-আপ করার সময় ত্রুটি হয়েছে</translation>
-<translation id="1397594434718759194">আপনি এইসব ডিভাইসে Chrome-এ সাইন-ইন করেছেন, তার জন্য এগুলি নিরাপত্তা কী হিসেবে ব্যবহার করতে পারবেন।</translation>
 <translation id="1398853756734560583">বড় করুন</translation>
 <translation id="1399261165075500043">Google Play পরিষেবার শর্তাবলী লোড করা যাচ্ছে না</translation>
 <translation id="1400243387594338234">আপনার ডিভাইসে সাইন-ইন করতে এই পিন আপনি ব্যবহার করতে পারবেন</translation>
@@ -1705,7 +1703,6 @@
 <translation id="2162705204091149050">আপনার ব্রাউজার, OS, ডিভাইস, ইনস্টল করা সফ্টওয়্যার এবং ফাইলের ব্যাপারে তথ্য পড়ুন</translation>
 <translation id="2163470535490402084">আপনার <ph name="DEVICE_TYPE" />এ সাইন-ইন করতে ইন্টারনেটে কানেক্ট করুন।</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> এবং আরও একটি সুইচ</translation>
-<translation id="2165102982098084499">একটি QR কোড স্ক্যান করে আপনি এইসব ডিভাইস লিঙ্ক করেছেন।</translation>
 <translation id="2165177462441582039">প্রতিটি আইটেমে কতটা সময় হাইলাইট থাকবে সেটি বেছে নিন</translation>
 <translation id="2166369534954157698">বিষণ্ণ ঔদাসীন্যে ঊষাবৌদি বাংলাভাষায় প্রচলিত ঈশপের নিখুঁত গল্পটির ডালপালা অর্ধেক ছড়াতেই ঋতু ভুঁইঞা আর ঐন্দ্রিলা ধড়ফড়িয়ে দারুণ হৈ-হৈ করে উঠল-- ওঃ, ব্যাস্ এবার থামো তো, বুঝেছি বড্ডো পুরানো ঢঙের কেমন এক গল্প যার নীতিবাক্য হল,“মূঢ় আড়ম্বর ও আত্মশ্লাঘার ফল জীবনে বিঘ্ন ও বৃহৎ ক্ষতি”-- তাই না, এ্যাঁ?</translation>
 <translation id="2169062631698640254">যেকোনো প্রকারে সাইন-ইন করুন</translation>
@@ -4313,7 +4310,6 @@
 <translation id="3959969108528118741">মালিক</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />-এর জন্য আরও অ্যাকশন</translation>
-<translation id="3963753386716096475">আলাদা ফোন, ট্যাবলেট বা নিরাপত্তা কী ব্যবহার করুন</translation>
 <translation id="3964480518399667971">মোবাইল নেটওয়ার্ক বন্ধ করুন</translation>
 <translation id="3965467402665811906">আপনার সম্পর্কে যে তথ্য সাইটে সেভ হয়েছে, তা ব্যবহারের জন্য সেখান থেকে অনুমতি চাওয়া হতে পারে</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> ছেড়ে যান</translation>
@@ -4872,7 +4868,6 @@
 <translation id="4370975561335139969">আপনার লেখা ইমেল আইডি এবং পাসওয়ার্ড মিলছে না</translation>
 <translation id="4373418556073552953">আপনার Android ফোন দিয়ে সাইন-ইন করুন</translation>
 <translation id="4373973310429385827">লাইটহাউস</translation>
-<translation id="4374805630006466253">অন্য একটি ফোন বা ট্যাবলেট ব্যবহার করুন</translation>
 <translation id="4374831787438678295">Linux ইনস্টলার</translation>
 <translation id="4375035964737468845">ডাউনলোড করা ফাইলগুলি খুলুন</translation>
 <translation id="4376226992615520204">লোকেশন ব্যবহার করার সুবিধা বন্ধ করা আছে</translation>
@@ -5482,7 +5477,6 @@
 <translation id="4814114628197290459">IBAN মুছুন</translation>
 <translation id="4814327014588285482">এড়িয়ে যাও ও আমাকে পরে মনে করিও না</translation>
 <translation id="4814378367953456825">এই আঙুলের ছাপের একটি নাম লিখুন</translation>
-<translation id="481574578487123132">লিঙ্ক করা ডিভাইস</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, বিবরণ</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{১টি বুকমার্ক মোছা হয়েছে}one{{COUNT}টি বুকমার্ক মোছা হয়েছে}other{{COUNT}টি বুকমার্ক মোছা হয়েছে}}</translation>
 <translation id="481689174647911539">এই ফাইলটি ভাইরাস বা ম্যালওয়্যার হতে পারে।<ph name="LINE_BREAK" />এটি অসুরক্ষিত কিনা তা চেক করতে Google Safe Browsing-এ পাঠাতে পারবেন। স্ক্যান করতে সাধারণত কয়েক সেকেন্ড সময় লাগে।</translation>
@@ -8458,7 +8452,6 @@
 <translation id="6965607054907047032">ট্যাবের ইনঅ্যাক্টিভ থাকার উপর ভিত্তি করে মেমরি খালি করুন</translation>
 <translation id="6965648386495488594">পোর্ট</translation>
 <translation id="6965978654500191972">ডিভাইস</translation>
-<translation id="6966370001499648704">নিরাপত্তা কী হিসেবে আপনি কোন ফোন ব্যবহার করেন তা নিয়ন্ত্রণ করুন</translation>
 <translation id="6967112302799758487">Chromebook (বিটা)-এর জন্য Steam ব্যবহার করে ইনস্টল করা যেকোনও অ্যাপ ও গেম এই ডিভাইস থেকে সরিয়ে দেওয়া হবে। এইসব অ্যাপ ও গেমের সাথে সংশ্লিষ্ট ডেটাও মুছে দেওয়া হবে। আনইনস্টল করার আগে সেভ করা অ্যাপ ও গেমের ব্যাক-আপ নিয়েছেন কিনা তা নিশ্চিত করুন।</translation>
 <translation id="6967430741871315905">ডিভাইসটি ব্যবহার করা যাবে কিনা তা চেক করতে অক্ষম</translation>
 <translation id="6968288415730398122">স্ক্রিন লক কনফিগার করতে আপনার পাসওয়ার্ড লিখুন</translation>
@@ -11144,7 +11137,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">অস্বচ্ছ</translation>
 <translation id="8838770651474809439">হ্যামবার্গার</translation>
-<translation id="8838778928843281408">ফোন ম্যানেজ করুন</translation>
 <translation id="8838841425230629509">গ্রুপ বুকমার্ক বার থেকে আনপিন করুন</translation>
 <translation id="883924185304953854">ছবি দিয়ে সার্চ করুন</translation>
 <translation id="8841786407272321022">পাওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ করা হয়েছে। আপনার Google অ্যাকাউন্টে নতুন পাসওয়ার্ড সেভ করতে, Google Play পরিষেবা আপডেট করুন।</translation>

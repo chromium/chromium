@@ -360,7 +360,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1235458158152011030">Kjente nettverk:</translation>
 <translation id="123578888592755962">Harddisken er full</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{tekst}other{# tekster}}</translation>
-<translation id="1236009322878349843">Rediger telefon</translation>
 <translation id="1237251612871334180">Oppdater for å lagre passord</translation>
 <translation id="1237950098253310325">Endre rekkefølgen på <ph name="BUTTON_NAME" /> ved å trykke på Ctrl + oppoverpilen eller nedoverpilen</translation>
 <translation id="1238293488628890871">Vil du bytte profil?</translation>
@@ -577,7 +576,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1395832189806039783">Fremhev elementet med tastaturfokus</translation>
 <translation id="1396120028054416908">Tilbake til <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Feil ved konfigurasjonen av skriveren</translation>
-<translation id="1397594434718759194">Du er logget på Chrome på disse enhetene, så du kan bruke dem som sikkerhetsnøkler.</translation>
 <translation id="1398853756734560583">Maksimer</translation>
 <translation id="1399261165075500043">Kan ikke laste inn vilkårene for bruk av Google Play</translation>
 <translation id="1400243387594338234">Du kan bruke denne PIN-koden til å logge på enheten din</translation>
@@ -1698,7 +1696,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2162705204091149050">lese informasjon om nettleseren, OS-et, enheten, installert programvare og filer</translation>
 <translation id="2163470535490402084">Koble til Internett for å logge på <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 bryter til</translation>
-<translation id="2165102982098084499">Du tilknyttet disse enhetene ved å skanne en QR-kode.</translation>
 <translation id="2165177462441582039">Velg hvor lenge hvert element skal fremheves</translation>
 <translation id="2166369534954157698">Høvdingens kjære squaw får litt pizza i Mexico by</translation>
 <translation id="2169062631698640254">Logg på likevel</translation>
@@ -4305,7 +4302,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3959969108528118741">Eier</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Flere handlinger for <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3963753386716096475">Bruk en annen telefon, et annet nettbrett eller en annen sikkerhetsnøkkel</translation>
 <translation id="3964480518399667971">Slå av mobildata</translation>
 <translation id="3965467402665811906">Nettsteder kan be om å få bruke informasjon de har lagret om deg</translation>
 <translation id="3965965397408324205">Gå ut av <ph name="PROFILE_NAME" /></translation>
@@ -4863,7 +4859,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4370975561335139969">E-posten og passordet du skrev inn, stemmer ikke overens.</translation>
 <translation id="4373418556073552953">Logg på med Android-telefonen din</translation>
 <translation id="4373973310429385827">Fyrtårn</translation>
-<translation id="4374805630006466253">Bruk en annen telefon eller et annet nettbrett</translation>
 <translation id="4374831787438678295">Linux-installasjonsprogram</translation>
 <translation id="4375035964737468845">åpne nedlastede filer</translation>
 <translation id="4376226992615520204">Posisjon er slått av</translation>
@@ -5473,7 +5468,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4814114628197290459">Slett IBAN</translation>
 <translation id="4814327014588285482">Hopp over og minn meg på dette senere</translation>
 <translation id="4814378367953456825">Skriv inn et navn for dette fingeravtrykket</translation>
-<translation id="481574578487123132">Tilknyttede enheter</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, detaljer</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bokmerke er slettet}other{{COUNT} bokmerker er slettet}}</translation>
 <translation id="481689174647911539">Denne filen kan være et virus eller skadelig programvare.<ph name="LINE_BREAK" />Du kan sende den til Google Safe Browsing for å sjekke om den er utrygg. Skanninger tar vanligvis noen sekunder.</translation>
@@ -8443,7 +8437,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6965607054907047032">Frigjør minne basert på inaktivitet på faner</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Enhet</translation>
-<translation id="6966370001499648704">Kontroller hvilke telefoner du bruker som sikkerhetsnøkler</translation>
 <translation id="6967112302799758487">Alle apper og spill som er installert via Steam for Chromebook (beta), blir fjernet fra denne enheten. Data som er tilknyttet disse appene og spillene, fjernes også. Sørg for at du sikkerhetskopierer lagrede apper og spill før du avinstallerer.</translation>
 <translation id="6967430741871315905">Kunne ikke sjekke om enheten er tillatt</translation>
 <translation id="6968288415730398122">Skriv inn passordet ditt for å konfigurere skjermlåsen</translation>
@@ -11129,7 +11122,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Ugjennomsiktig</translation>
 <translation id="8838770651474809439">Hamburger</translation>
-<translation id="8838778928843281408">Administrer telefoner</translation>
 <translation id="8838841425230629509">Løsne gruppen fra bokmerkeraden</translation>
 <translation id="883924185304953854">Søk med bilder</translation>
 <translation id="8841786407272321022">Passordet er bare lagret på denne enheten. For å lagre nye passord i Google-kontoen din, oppdater Google Play-tjenester.</translation>

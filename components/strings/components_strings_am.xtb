@@ -358,6 +358,7 @@
 <translation id="1593359183944365958">270 ዲግሪ</translation>
 <translation id="1594030484168838125">ምረጥ</translation>
 <translation id="1597307423671074806">WebM ቪድዮ</translation>
+<translation id="159800670740560023">Chrome ጠቃሚ ምክር አገናኝ፣ <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> ለመክፈት አስገባን ይጫኑ</translation>
 <translation id="1599199147673445968">አዲስ ካርድ? <ph name="BEGIN_LINK" />የካርድ ዝርዝሮችን ያስገቡ<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">ዚፕ</translation>
 <translation id="1604192142734009334">ውበት እና የአካል ብቃት</translation>
@@ -835,6 +836,7 @@
 <translation id="2383455408879745299">በChrome ቅንብሮች ውስጥ የተደራሽነት መሣሪያዎችዎ ግላዊነትን ያላብሱ</translation>
 <translation id="2384307209577226199">የንግድ ድርጅት ነባሪ</translation>
 <translation id="238459632961158867">ድር ጣቢያ</translation>
+<translation id="2384823392576123225">ዕልባቶችን ፈልግ</translation>
 <translation id="2385809941344967209">ከእርስዎ የChrome ቅንብሮች ሆነው Chromeን ያዘምኑ</translation>
 <translation id="2386255080630008482">የአገልጋይ እውቅና ማረጋገጫ ተሽሯል።</translation>
 <translation id="2388828676877700238">ግብር ማዘጋጀት እና ማቀድ</translation>
@@ -1448,6 +1450,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> ወደ ቅንጥብ ሰሌዳው የተቀዱ ጽሑፍን እና ምስሎችን መመልከት ይፈልጋል</translation>
 <translation id="3461824795358126837">ማድመቂያ</translation>
 <translation id="3462200631372590220">የላቁ ደብቅ</translation>
+<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ስለ እዚህ ገፅ Googleን ለመጠየቅ አስገባ የሚለውን ይጫኑ</translation>
 <translation id="3465972433695735758">ይህ PDF ተደራሽ አይደለም። ጽሁፍ ወጥቷል፣ በGoogle ሰው ሠራሽ አስተውሎት የተጎላበተ</translation>
 <translation id="346601286295919445">ኬሚስትሪ</translation>
 <translation id="3467081767799433066">በማስታወቂያዎች ልኬት ጊዜ፣ ውስን የውሂብ ዓይነቶች የማስታወቂያዎቻቸውን አፈጻጸም ለመለካት በጣቢያዎች መካከል ይጋራሉ፣ ለምሳሌ አንድን ጣቢያ ከጎበኙ በኋላ ግዢ ከፈጸሙ።</translation>
@@ -2056,6 +2059,7 @@
 <translation id="444116852243722675">ሁሉንም (<ph name="ITEMS" />) ክፈት</translation>
 <translation id="4441832193888514600">መመሪያው ሊዋቀር የሚችለው እንደ ደመና ተጠቃሚ መመሪያ ብቻ ስለሆነ ችላ ተብሏል።</translation>
 <translation id="4445133368066241428">ታዋቂ ርዕሶች</translation>
+<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ትሮችን ለመፈልግ አስገባ የሚለውን ይጫኑ</translation>
 <translation id="4445964943162061557">ይህ የሙከራ ባህሪ ሲሆን ሁልጊዜም ትክክል አይሆንም።</translation>
 <translation id="4449116177348980384">የጣቢያ ቅንብሮች አዝራርን ያስተዳድሩ፣ በChrome ቅንብሮች ውስጥ ፈቃዶችን እና በመላ ጣቢያዎች ላይ የተከማቸ ውሂብን ለማቀናበር ያግብሩ</translation>
 <translation id="4451135742916150903">ከHID መሣሪያዎች ጋር ለመገናኘት መጠየቅ ይችላል</translation>
@@ -2251,6 +2255,7 @@
 <translation id="4811450222531576619">ስለምንጩ እና ርዕሱ ይወቁ</translation>
 <translation id="4813512666221746211">የአውታረ መረብ ስህተት</translation>
 <translation id="4814114628197290459">አይቢኤኤንን ሰርዝ</translation>
+<translation id="4816341377198595747">የፍለጋ ዕልባቶች አዝራር፣ ዕልባቶችን ለመፈለግ ያግብሩ</translation>
 <translation id="4816492930507672669">ገጹን አመጣጥን</translation>
 <translation id="4819347708020428563">በነባሪ ዕይታ ውስጥ ማብራሪያዎችን ያርትዑ?</translation>
 <translation id="4822493756793346865">የተለመዱ ዋጋዎች ባለፉት 90 ቀናት በመላው ድር ላይ ባሉ መደብሮች ላይ የተመሠረቱ ናቸው።</translation>
@@ -2380,6 +2385,7 @@
 <translation id="5021557570875267742">በChrome አማካኝነት ዋጋዎችን ይከታተሉ</translation>
 <translation id="5023310440958281426">የአስተዳዳሪዎ መመሪያዎችን ያረጋግጡ</translation>
 <translation id="5024171724744627792">ካርድዎ ሲቀመጥ በፍጥነት ይክፈሉ። የካርድ ዝርዝሮች በGoogle መለያዎ ውስጥ የተመሰጠሩ ናቸው።</translation>
+<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ታሪክ ለመፈለግ አስገባን ይጫኑ</translation>
 <translation id="5030338702439866405">የቀረበው</translation>
 <translation id="503069730517007720">ለ«<ph name="SOFTWARE_NAME" />» ስር እውቅና ማረጋገጫ ያስፈልጋል፣ ነገር ግን አልተጫነም። የእርስዎ አይቲ አስተዳዳሪ ይህን ችግር ለመፍታት የ«<ph name="SOFTWARE_NAME" />» ውቅረት መመሪያዎችን መመልከት አለበት። <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">ወደ ንጽጽር ይታከል?</translation>
@@ -2736,6 +2742,7 @@
 <translation id="5619721953841297650">ቅድመ-ቅምጥ</translation>
 <translation id="5624120631404540903">የይለፍ ቃሎችን አስተዳድር</translation>
 <translation id="5629630648637658800">የመምሪያ ቅንብሮችን መጫን አልተሳካም</translation>
+<translation id="5630981295558454585">ስለ እዚህ ገፅ አዝራር Googleን ይጠይቁ፣ ስለ እዚህ ገፅ Googleን ለመጠየቅ ያግብሩ</translation>
 <translation id="5631439013527180824">ልክ ያልሆነ የመሣሪያ አስተዳደር ማስመሰያ</translation>
 <translation id="5632485077360054581">እንዴት እንደሆነ አሳየኝ</translation>
 <translation id="563324245173044180">አታላይ ይዘት ታግዷል።</translation>
@@ -3616,6 +3623,7 @@
 <translation id="7139892792842608322">ዋና መሳቢያ</translation>
 <translation id="7140087718106278457">የመክፈያ ዘዴዎች ዝርዝር ተዘግቷል።</translation>
 <translation id="714064300541049402">ጎን 2 ምስል X ሽግሽግ</translation>
+<translation id="7140922144008419614">የፍለጋ ትሮች አዝራር፣ ትሮችን ለመፈለግ ያግብሩ</translation>
 <translation id="7143682719845053166">ፒአርሲ 32ኬ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
@@ -3851,6 +3859,7 @@
 <translation id="7526934274050461096">ከዚሃ ጣቢያ ጋር ያለዎት ግንኙነት የግል አይደለም</translation>
 <translation id="7529884293139707752">በቤት ውስጥ ማስተማር</translation>
 <translation id="7531464389616946220">ካርድ ይቃኙ</translation>
+<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ዕልባቶችችን ለመፈልግ አስገባን ይጫኑ</translation>
 <translation id="7534987659046836932">ሲ7 ፖስታ</translation>
 <translation id="7535087603100972091">እሴት</translation>
 <translation id="753556296624075801">በGoogle የተጎላበተ</translation>
@@ -4229,6 +4238,7 @@
 <translation id="8194412401381329820">በዚህ የማይተዳደር መሣሪያ ላይ ከሚተዳደር መለያ ይህን ገጽ መጠቀም አይችሉም። ይህን ገጽ የሚጠቀሙ ከሆነ ከዚህ መሣሪያ ጋር ተመሳሳይ በሆነ ሕጋዊ አካል ከሚተዳደሩ መለያዎች ውጭ (አጋር የሆኑ መለያዎች) ሁሉም የሚተዳደሩ መለያዎች ይቆለፋሉ።</translation>
 <translation id="8194797478851900357">&amp;ውሰድን ቀልብስ</translation>
 <translation id="8194956568907463262">የተኳሽ ጨዋታዎች</translation>
+<translation id="8198379961710069585">የፍለጋ ታሪክ አዝራር፣ ታሪክ ለመፈልግ ያግብሩ</translation>
 <translation id="8199437620497683918">ኦፕቲካል ዲስክ (አንጸባራቂ)</translation>
 <translation id="8199730148066603000">የኤችቲቲፒኤስ ያልሆነን ዩአርኤል አስቀድመው ማየት አይፈቀድም።</translation>
 <translation id="8200772114523450471">ከቆመበት ቀጥል</translation>

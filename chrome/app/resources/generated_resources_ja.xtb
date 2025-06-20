@@ -360,7 +360,6 @@
 <translation id="1235458158152011030">既知のネットワーク</translation>
 <translation id="123578888592755962">ディスクがいっぱいです</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{テキスト}other{# 件のテキスト}}</translation>
-<translation id="1236009322878349843">スマートフォンの編集</translation>
 <translation id="1237251612871334180">パスワードを保存するには更新してください</translation>
 <translation id="1237950098253310325"><ph name="BUTTON_NAME" /> を並べ替えるにはCtrl+上または下矢印を使用します</translation>
 <translation id="1238293488628890871">プロファイルの切り替え</translation>
@@ -577,7 +576,6 @@
 <translation id="1395832189806039783">キーボードのフォーカスがある項目をハイライト表示する</translation>
 <translation id="1396120028054416908">「<ph name="FOLDER_TITLE" />」に戻る</translation>
 <translation id="1396139853388185343">プリンタの設定中にエラーが発生しました</translation>
-<translation id="1397594434718759194">以下のデバイスで Chrome にログインしており、セキュリティ キーとして使用できます。</translation>
 <translation id="1398853756734560583">最大化</translation>
 <translation id="1399261165075500043">Google Play 利用規約を読み込めません</translation>
 <translation id="1400243387594338234">この PIN を使用してデバイスにログインできます</translation>
@@ -1691,7 +1689,6 @@
 <translation id="2162705204091149050">ブラウザ、OS、デバイス、インストール済みソフトウェア、ファイルに関する情報の読み取り</translation>
 <translation id="2163470535490402084">お使いの <ph name="DEVICE_TYPE" /> にログインするにはインターネットに接続してください。</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />、他 1 個のスイッチ</translation>
-<translation id="2165102982098084499">次のデバイスを QR コードのスキャンによりリンクしました。</translation>
 <translation id="2165177462441582039">各項目のハイライト表示の長さを選択します</translation>
 <translation id="2166369534954157698">あいうえおアイウエオABCabc123漢字</translation>
 <translation id="2169062631698640254">このままログインする</translation>
@@ -4291,7 +4288,6 @@
 <translation id="3959969108528118741">オーナー</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> に対するその他の操作</translation>
-<translation id="3963753386716096475">別のスマートフォン、タブレット、またはセキュリティ キーを使用する</translation>
 <translation id="3964480518399667971">モバイル ネットワークをオフにする</translation>
 <translation id="3965467402665811906">サイトがあなたに関する保存済みの情報の使用を要求できるようにする</translation>
 <translation id="3965965397408324205">「<ph name="PROFILE_NAME" />」を終了</translation>
@@ -4848,7 +4844,6 @@
 <translation id="4370975561335139969">入力したメールアドレスとパスワードが一致しません</translation>
 <translation id="4373418556073552953">Android スマートフォンでログイン</translation>
 <translation id="4373973310429385827">灯台</translation>
-<translation id="4374805630006466253">別のスマートフォンまたはタブレットを使用する</translation>
 <translation id="4374831787438678295">Linux インストーラ</translation>
 <translation id="4375035964737468845">ダウンロードしたファイルを開く</translation>
 <translation id="4376226992615520204">位置情報は OFF です</translation>
@@ -5457,7 +5452,6 @@
 <translation id="4814114628197290459">IBAN の削除</translation>
 <translation id="4814327014588285482">スキップして後で通知</translation>
 <translation id="4814378367953456825">このフィンガープリントの名前を入力してください</translation>
-<translation id="481574578487123132">リンクしたデバイス</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />、詳細</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 個のブックマークが削除されました}other{{COUNT} 個のブックマークが削除されました}}</translation>
 <translation id="481689174647911539">このファイルはウイルスや不正なソフトウェアの可能性があります。<ph name="LINE_BREAK" />Google セーフ ブラウジングに送信して、安全でないかどうかを確認できます。通常、スキャンには数秒かかります。</translation>
@@ -8423,7 +8417,6 @@
 <translation id="6965607054907047032">タブがアクティブでないときにメモリを解放する</translation>
 <translation id="6965648386495488594">ポート</translation>
 <translation id="6965978654500191972">デバイス</translation>
-<translation id="6966370001499648704">セキュリティ キーとして使用するスマートフォンを管理します</translation>
 <translation id="6967112302799758487">Steam for Chromebook（ベータ版）を使用してインストールしたアプリやゲームは、このデバイスから削除されます。これらのアプリやゲームに関連付けられているデータも削除されます。アンインストールする前に、保存したアプリやゲームを必ずバックアップしてください。</translation>
 <translation id="6967430741871315905">デバイスが許可されているかどうか確認できません</translation>
 <translation id="6968288415730398122">画面ロックを設定するにはパスワードを入力します</translation>
@@ -11108,7 +11101,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" />（<ph name="SUPPORT_INFO" />）</translation>
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">ハンバーガー</translation>
-<translation id="8838778928843281408">スマートフォンの管理</translation>
 <translation id="8838841425230629509">ブックマーク バーへのグループの固定を解除</translation>
 <translation id="883924185304953854">画像で検索</translation>
 <translation id="8841786407272321022">パスワードはこのデバイスにのみ保存されます。Google アカウントに新しいパスワードを保存するには、Google Play 開発者サービスを更新してください。</translation>

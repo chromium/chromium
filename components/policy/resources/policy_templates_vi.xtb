@@ -6811,6 +6811,9 @@ Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="5740636973289452345">Bật chính sách báo cáo thông tin về tiện ích và trình bổ trợ</translation>
 <translation id="5740716956489996914">Sử dụng hành vi mặc định khi xác định xem các trang web có thể gửi yêu cầu đến thiết bị đầu cuối trên mạng cục bộ hay không</translation>
 <translation id="5741110260062082926">Tắt Orca</translation>
+<translation id="5746126833785204233">Nếu bạn đặt chính sách này thành Bật, nhật ký ở cấp ứng dụng kiosk sẽ được thu thập khi một ứng dụng kiosk chạy trên thiết bị. Nhật ký sẽ được thu thập cho tất cả các loại ứng dụng kiosk.
+Các nhật ký này sẽ được lưu trữ trong một tệp kiosk_apps.log riêng.
+Nếu bạn không đặt chính sách này hoặc đặt chính sách này thành Tắt, thì hệ thống sẽ không thu thập nhật ký cấp ứng dụng Kiosk.</translation>
 <translation id="5746149754419996562">Cho phép Tiện ích xem nhanh hiện diện trên <ph name="PRODUCT_OS_NAME" />. Cụ thể, người dùng sẽ có thể truy cập các tiện ích này qua khối ngày trên kệ.
 Khi bạn bật chính sách này, Tiện ích xem nhanh sẽ bật trên <ph name="PRODUCT_OS_NAME" />.
 Khi bạn tắt hoặc không đặt chính sách này, Tiện ích xem nhanh sẽ không bật trên <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -8633,6 +8636,7 @@ Nếu bạn không đặt chính sách <ph name="DEVICE_POWER_BATTERY_CHARGING_O
 <translation id="6907778402784621686">Chặn nội dung không an toàn trên các trang web này</translation>
 <translation id="6908335885425855120">Dùng Trình xem PDF sử dụng iframe ngoài quy trình</translation>
 <translation id="6908640907898649429">Định cấu hình nhà cung cấp dịch vụ tìm kiếm mặc định. Bạn có thể chỉ định nhà cung cấp dịch vụ tìm kiếm mặc định mà người dùng sẽ sử dụng hoặc chọn tắt tìm kiếm mặc định.</translation>
+<translation id="6910715067772088598">Tắt nhật ký ứng dụng Kiosk</translation>
 <translation id="6913068954484253496">Cho phép <ph name="PRODUCT_NAME" /> kết nối với Thiết bị truyền trên tất cả các địa chỉ IP.</translation>
 <translation id="6915493311660114995">Nếu bạn đặt chính sách này thành Bật, <ph name="PRODUCT_NAME" /> sẽ
 cho phép yêu cầu Xác thực web trên các trang web có chứng chỉ TLS kèm theo
@@ -8711,6 +8715,7 @@ Chính sách này sẽ bị xoá trong tương lai, sau khi chúng tôi triển 
       Nếu bạn không đặt chính sách này, sẽ không có máy in nào trên thiết bị, đồng thời, các chính sách <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> sẽ bị bỏ qua.</translation>
 <translation id="69525503251220566">Tham số cung cấp tính năng tìm theo hình ảnh cho nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="6953102253399571439">Cho phép in mã PIN theo mặc định</translation>
+<translation id="695532899547292238">Bật tính năng thu thập nhật ký ứng dụng kiosk</translation>
 <translation id="6956272732789158625">Không cho phép bất kỳ trang web nào sử dụng tạo khóa</translation>
 <translation id="6960996423652450945">Tắt tính năng làm nổi bật con nháy trên màn hình đăng nhập</translation>
 <translation id="6961602002757991199">Nếu bạn đặt chính sách này thành một URL hợp lệ, thì <ph name="PRODUCT_NAME" /> sẽ tải danh sách trang web xuống từ URL đó, rồi áp dụng các quy tắc như thể các quy tắc đó được định cấu hình bằng chính sách <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Các chính sách này ngăn <ph name="PRODUCT_NAME" /> mở trình duyệt thay thế và ngược lại.
@@ -9519,6 +9524,7 @@ Nếu bạn để trống chính sách này, <ph name="FLOATING_SSO_DOMAIN_BLOCK
 <translation id="7586199729147257934">Bật tính năng cấp chứng chỉ máy khách cho trình duyệt được quản lý</translation>
 <translation id="7587345076013230465">Nhắc người dùng chọn chứng chỉ máy khách mỗi khi chính sách tự động chọn khớp với nhiều chứng chỉ trên màn hình đăng nhập</translation>
 <translation id="7587921466180902617">Bật thử nghiệm nội bộ Screencast cho người dùng Family Link</translation>
+<translation id="7588140323025689972">Bật nhật ký ứng dụng Kiosk</translation>
 <translation id="7595074040612182185">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL để chỉ định những trang web được phép hiển thị hình ảnh.
 
       Khi bạn không đặt giá trị cho chính sách này, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho mọi trang web. Nếu không, chế độ cài đặt do người dùng chọn sẽ được áp dụng.

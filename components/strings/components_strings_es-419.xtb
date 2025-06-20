@@ -358,6 +358,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1593359183944365958">270 grados</translation>
 <translation id="1594030484168838125">Seleccionar</translation>
 <translation id="1597307423671074806">Video WebM</translation>
+<translation id="159800670740560023">Vínculo de sugerencia de Chrome, presiona Intro para abrir <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">¿Tienes una tarjeta nueva? <ph name="BEGIN_LINK" />Ingresa sus detalles aquí<ph name="END_LINK" />.</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1604192142734009334">Belleza y estado físico</translation>
@@ -835,6 +836,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2383455408879745299">Personaliza tus herramientas de accesibilidad en la configuración de Chrome</translation>
 <translation id="2384307209577226199">Empresa (predeterminada)</translation>
 <translation id="238459632961158867">Sitio web</translation>
+<translation id="2384823392576123225">Buscar Favoritos</translation>
 <translation id="2385809941344967209">Actualiza Chrome desde la configuración</translation>
 <translation id="2386255080630008482">Se ha revocado el certificado del servidor.</translation>
 <translation id="2388828676877700238">Preparación y planificación de impuestos</translation>
@@ -1450,6 +1452,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3461266716147554923"><ph name="URL" /> desea ver el texto y las imágenes copiados en el portapapeles</translation>
 <translation id="3461824795358126837">Resaltador</translation>
 <translation id="3462200631372590220">Ocultar detalles avanzados</translation>
+<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Intro para preguntarle a Google acerca de esta página</translation>
 <translation id="3465972433695735758">El PDF es inaccesible. Se extrajo texto con la tecnología de IA de Google</translation>
 <translation id="346601286295919445">Química</translation>
 <translation id="3467081767799433066">Con la medición de anuncios, se comparten tipos limitados de datos entre sitios para medir el rendimiento de sus anuncios, por ejemplo, si realizaste una compra después de visitar un sitio.</translation>
@@ -2058,6 +2061,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="444116852243722675">Abrir todo (<ph name="ITEMS" />)</translation>
 <translation id="4441832193888514600">Se ignoró porque la política puede establecerse solo como política del usuario basada en la nube.</translation>
 <translation id="4445133368066241428">Temas populares</translation>
+<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Intro para buscar pestañas</translation>
 <translation id="4445964943162061557">Esta es una función experimental y puede tener errores.</translation>
 <translation id="4449116177348980384">Botón Administrar la configuración de sitios: actívalo para administrar en la configuración de Chrome los permisos y datos almacenados en los sitios</translation>
 <translation id="4451135742916150903">Puede solicitar permiso para conectarse a dispositivos HID</translation>
@@ -2253,6 +2257,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4811450222531576619">Más información sobre el tema y la fuente</translation>
 <translation id="4813512666221746211">Error de red</translation>
 <translation id="4814114628197290459">Borrar IBAN</translation>
+<translation id="4816341377198595747">Botón Buscar favoritos, actívalo para buscar favoritos</translation>
 <translation id="4816492930507672669">Ajustar a la página</translation>
 <translation id="4819347708020428563">¿Quieres editar anotaciones en la vista predeterminada?</translation>
 <translation id="4822493756793346865">Los precios típicos se basan en las tiendas de toda la Web durante los últimos 90 días.</translation>
@@ -2382,6 +2387,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5021557570875267742">Haz un seguimiento de los precios con Chrome</translation>
 <translation id="5023310440958281426">Revisa las políticas del administrador.</translation>
 <translation id="5024171724744627792">Podrás pagar más rápido cuando tu tarjeta esté guardada. Los detalles de la tarjeta se encriptan en tu Cuenta de Google.</translation>
+<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Intro para buscar en el historial</translation>
 <translation id="5030338702439866405">Proporcionada por</translation>
 <translation id="503069730517007720">Se requiere un certificado raíz para "<ph name="SOFTWARE_NAME" />", pero no está instalado. Tu administrador de TI debe analizar las instrucciones de configuración de "<ph name="SOFTWARE_NAME" />" para corregir este problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">¿Quieres agregarla a la comparación?</translation>
@@ -2738,6 +2744,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5619721953841297650">Ajuste predeterminado</translation>
 <translation id="5624120631404540903">Administrar contraseñas</translation>
 <translation id="5629630648637658800">Error al cargar la configuración de la política</translation>
+<translation id="5630981295558454585">Botón Preguntar a Google acerca de esta página, actívalo para preguntar a Google acerca de esta página</translation>
 <translation id="5631439013527180824">Token de administración de dispositivos no válido</translation>
 <translation id="5632485077360054581">Cómo hacerlo</translation>
 <translation id="563324245173044180">Se bloqueó contenido engañoso.</translation>
@@ -3618,6 +3625,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7139892792842608322">Bandeja principal</translation>
 <translation id="7140087718106278457">La lista de formas de pago está cerrada.</translation>
 <translation id="714064300541049402">Cambio en el eje X del lado 2 de la imagen</translation>
+<translation id="7140922144008419614">Botón Buscar pestañas, actívalo para buscar en las pestañas</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
@@ -3853,6 +3861,7 @@ Detalles adicionales:
 <translation id="7526934274050461096">Tu conexión con este sitio no es privada</translation>
 <translation id="7529884293139707752">Educación en casa</translation>
 <translation id="7531464389616946220">Escanear tarjeta</translation>
+<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Intro para buscar favoritos</translation>
 <translation id="7534987659046836932">Sobre C7</translation>
 <translation id="7535087603100972091">Valor</translation>
 <translation id="753556296624075801">Con la tecnología de Google</translation>
@@ -4231,6 +4240,7 @@ Detalles adicionales:
 <translation id="8194412401381329820">No puedes usar esta página desde una cuenta administrada en este dispositivo no administrado. Si usas esta página, se bloquearán todas las cuentas administradas, excepto las cuentas administradas por la misma entidad que este dispositivo (cuentas afiliadas).</translation>
 <translation id="8194797478851900357">&amp;Deshacer Mover</translation>
 <translation id="8194956568907463262">Juegos de disparos</translation>
+<translation id="8198379961710069585">Botón Historial de búsqueda, actívalo para ver el historial</translation>
 <translation id="8199437620497683918">Disco óptico (brillante)</translation>
 <translation id="8199730148066603000">No se permite obtener una vista previa de URLs que no sean HTTPS.</translation>
 <translation id="8200772114523450471">Reanudar</translation>

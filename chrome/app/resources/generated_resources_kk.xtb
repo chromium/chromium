@@ -360,7 +360,6 @@
 <translation id="1235458158152011030">Сақталған желілер</translation>
 <translation id="123578888592755962">Диск толы</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{мәтін}other{# мәтін}}</translation>
-<translation id="1236009322878349843">Телефон мәліметтерін өзгерту</translation>
 <translation id="1237251612871334180">Құпия сөздерді сақтау үшін жаңартыңыз</translation>
 <translation id="1237950098253310325">Ctrl және жоғары не төмен бағыт пернесін басып, <ph name="BUTTON_NAME" /> ретін өзгертуге болады</translation>
 <translation id="1238293488628890871">Басқа профильге ауысасыз ба?</translation>
@@ -577,7 +576,6 @@
 <translation id="1395832189806039783">Элементті пернетақта фокусымен ерекшелеу</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> қалтасына оралу</translation>
 <translation id="1396139853388185343">Принтерді реттеу кезінде қате кетті</translation>
-<translation id="1397594434718759194">Осы құрылғылардағы Chrome браузеріне кіресіз және оларды қауіпсіздік кілттері ретінде пайдалана аласыз.</translation>
 <translation id="1398853756734560583">Жаю</translation>
 <translation id="1399261165075500043">Google Play Қызмет көрсету шарттарын жүктеу мүмкін емес</translation>
 <translation id="1400243387594338234">Бұл PIN кодымен құрылғыға кіруге болады.</translation>
@@ -1691,7 +1689,6 @@
 <translation id="2162705204091149050">Браузер, операциялық жүйе, құрылғы, орнатылған бағдарламалық құрал және файлдар туралы ақпаратты оқу.</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> құрылғысына кіру үшін, интернетке қосылыңыз.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> және тағы 1 ауыстырғыш</translation>
-<translation id="2165102982098084499">Бұл құрылғыларды QR кодын сканерлеу арқылы байланыстырдыңыз.</translation>
 <translation id="2165177462441582039">Әр элемент қанша уақыт ерекшеленіп тұруы керектігін таңдаңыз</translation>
 <translation id="2166369534954157698">аәбвгғдеёжзийкқлмнңоөпрстуұүфхһцчшщъыіьэюя</translation>
 <translation id="2169062631698640254">Бәрібір кіру</translation>
@@ -4295,7 +4292,6 @@
 <translation id="3959969108528118741">Иесі</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> арналған қосымша әрекеттер</translation>
-<translation id="3963753386716096475">Басқа телефонды, планшетті немесе қауіпсіздік кілтін пайдалану</translation>
 <translation id="3964480518399667971">Ұялы байланыс желісін өшіру</translation>
 <translation id="3965467402665811906">Сайттар сіз туралы өздері сақтаған ақпаратты пайдалануды сұрай алады.</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> профилінен шығу</translation>
@@ -4853,7 +4849,6 @@
 <translation id="4370975561335139969">Сіз енгізген электрондық пошта және құпия сөз сәйкес емес</translation>
 <translation id="4373418556073552953">Android телефоныңызбен кіру</translation>
 <translation id="4373973310429385827">Шамшырақ</translation>
-<translation id="4374805630006466253">Басқа телефонды немесе планшетті пайдалану</translation>
 <translation id="4374831787438678295">Linux орнату құралы</translation>
 <translation id="4375035964737468845">Жүктелген файлдарды ашу</translation>
 <translation id="4376226992615520204">Локация өшірулі.</translation>
@@ -5463,7 +5458,6 @@
 <translation id="4814114628197290459">IBAN нөмірін жою</translation>
 <translation id="4814327014588285482">Өткізіп жіберу және кейінірек еске салу</translation>
 <translation id="4814378367953456825">Осы саусақ ізінің атауын енгізіңіз.</translation>
-<translation id="481574578487123132">Байланысқан құрылғылар</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, мәліметтер</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 бетбелгі жойылды.}other{{COUNT} бетбелгі жойылды.}}</translation>
 <translation id="481689174647911539">Бұл файл вирус немесе зиянды бағдарлама болуы мүмкін.<ph name="LINE_BREAK" />Қауіпсіз емес екенін тексеру үшін оны Google Safe Browsing жүйесіне жіберуге болады. Сканерлеу жұмыстары әдетте бірнеше секундқа созылады.</translation>
@@ -8431,7 +8425,6 @@
 <translation id="6965607054907047032">Қойынды әрекетсіздігіне қарай жадты босату</translation>
 <translation id="6965648386495488594">Порт</translation>
 <translation id="6965978654500191972">Құрылғы</translation>
-<translation id="6966370001499648704">Қауіпсіздік кілттері ретінде пайдаланылатын телефондарды басқарады.</translation>
 <translation id="6967112302799758487">Steam for Chromebook (бета) арқылы орнатылған қолданбалар мен ойындар осы құрылғыдан өшіріледі. Осы қолданбалармен және ойындармен байланыстырылған деректер де өшіріледі. Жою алдында сақталған қолданбалар мен ойындардың сақтық көшірмесін жасағаныңызға көз жеткізіңіз.</translation>
 <translation id="6967430741871315905">Құрылғыға рұқсат берілгенін тексеру мүмкін емес.</translation>
 <translation id="6968288415730398122">Экран құлпын конфигурациялау үшін құпия сөзді енгізіңіз</translation>
@@ -11114,7 +11107,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Тұнық емес</translation>
 <translation id="8838770651474809439">Гамбургер</translation>
-<translation id="8838778928843281408">Телефондарды басқару</translation>
 <translation id="8838841425230629509">Топты бетбелгілер жолағынан босату</translation>
 <translation id="883924185304953854">Кескін бойынша іздеу</translation>
 <translation id="8841786407272321022">Құпия сөз тек осы құрылғыға сақталды. Жаңа құпия сөздерді Google аккаунтыңызға сақтау үшін Google Play Services қолданбасын жаңартыңыз.</translation>

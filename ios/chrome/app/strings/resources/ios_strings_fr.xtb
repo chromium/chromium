@@ -237,7 +237,7 @@
 <translation id="1956138802718275401">Accéder aux mots de passe depuis l'écran d'accueil</translation>
 <translation id="1959441496380398824">Appuyez de manière prolongée sur une date.</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> a partagé avec vous un mot de passe pour <ph name="WEBSITE" /></translation>
-<translation id="1962969542251276847">Verrouiller l'écran</translation>
+<translation id="1962969542251276847">Écran de verrouillage</translation>
 <translation id="1963976881984600709">Protection standard</translation>
 <translation id="1966313166384086081">données des sites</translation>
 <translation id="1967461193809857427">{count,plural, =1{Afficher l'onglet que vous avez quitté sur Android ?}one{Afficher l'onglet que vous avez quitté sur Android ?}other{Afficher les onglets que vous avez quittés sur Android ?}}</translation>

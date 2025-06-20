@@ -360,7 +360,6 @@
 <translation id="1235458158152011030">ცნობილი ქსელები</translation>
 <translation id="123578888592755962">დისკი სავსეა</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{ტექსტი}other{# ტექსტი}}</translation>
-<translation id="1236009322878349843">ტელეფონის რედაქტირება</translation>
 <translation id="1237251612871334180">განაახლეთ, პაროლები რომ შეინახოთ</translation>
 <translation id="1237950098253310325"><ph name="BUTTON_NAME" /> რომ გადააადგილოთ, გამოიყენეთ კლავიში ctrl პლუს კლავიში ზემოთ ან ქვემოთ მიმართული ისრით</translation>
 <translation id="1238293488628890871">გსურთ პროფილის გადართვა?</translation>
@@ -577,7 +576,6 @@
 <translation id="1395832189806039783">ერთეულის გამოყოფა კლავიატურით ფოკუსირების მეშვეობით</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" />-ზე დაბრუნება</translation>
 <translation id="1396139853388185343">პრინტერის დაყენებისას შეცდომა წარმოიქმნა</translation>
-<translation id="1397594434718759194">თქვენ შესული ხართ Chrome-ში ამ მოწყობილობებზე. ასე რომ, შეგიძლიათ გამოიყენოთ ისინი უსაფრთხოების გასაღებების სახით.</translation>
 <translation id="1398853756734560583">გაშლა</translation>
 <translation id="1399261165075500043">Google Play-ს მომსახურების პირობები ვერ ჩაიტვირთა</translation>
 <translation id="1400243387594338234">ამ PIN-კოდის გამოყენებით შეგიძლიათ თქვენს ტელეფონში შესვლა</translation>
@@ -1694,7 +1692,6 @@
 <translation id="2162705204091149050">ინფორმაციის წაკითხვა თქვენი ბრაუზერის, ოპერაციული სისტემის, მოწყობილობის, დაინსტალირებული პროგრამული უზრუნველყოფისა და ფაილების შესახებ</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" />-ის მეშვეობით შესასვლელად, გთხოვთ, დაუკავშირდეთ ინტერნეტს.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> და 1 სხვა გადამრთველი</translation>
-<translation id="2165102982098084499">თქვენ ეს მოწყობილობები მიაბით QR კოდის სკანირების მეშვეობით.</translation>
 <translation id="2165177462441582039">აირჩიეთ, რა პერიოდის განმავლობაში უნდა დარჩეს გამოყოფა თითოეულ ერთეულზე</translation>
 <translation id="2166369534954157698">აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ</translation>
 <translation id="2169062631698640254">სისტემაში შესვლა ყველა ვარიანტში</translation>
@@ -4300,7 +4297,6 @@
 <translation id="3959969108528118741">მფლობელი</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">სხვა ქმედებები <ph name="IBAN_DESCRIPTION" />-ისთვის</translation>
-<translation id="3963753386716096475">სხვა ტელეფონის, ტაბლეტის ან უსაფრთხოების გასაღების გამოყენება</translation>
 <translation id="3964480518399667971">ფიჭური ქსელის გამორთვა</translation>
 <translation id="3965467402665811906">საიტებს შეუძლია ნებართვის მოთხოვნა მათ მიერ თქვენ შესახებ შენახული ინფორმაციის გამოსაყენებლად</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" />-იდან გასვლა</translation>
@@ -4858,7 +4854,6 @@
 <translation id="4370975561335139969">თქვენ მიერ შეყვანილი ელფოსტა და პაროლი არ ემთხვევა</translation>
 <translation id="4373418556073552953">შედით თქვენი Android ტელეფონით</translation>
 <translation id="4373973310429385827">შუქურა</translation>
-<translation id="4374805630006466253">სხვა ტელეფონის ან ტაბლეტის გამოყენება</translation>
 <translation id="4374831787438678295">Linux ინსტალატორი</translation>
 <translation id="4375035964737468845">გახსენით გადმოწერილი ფაილი</translation>
 <translation id="4376226992615520204">მდებარეობა გამორთულია</translation>
@@ -5468,7 +5463,6 @@
 <translation id="4814114628197290459">IBAN-ის წაშლა</translation>
 <translation id="4814327014588285482">გამოტოვება და მოგვიანებით შეხსენება</translation>
 <translation id="4814378367953456825">შეიყვანეთ თითის ამ ანაბეჭდის სახელი</translation>
-<translation id="481574578487123132">მიბმული მოწყობილობები</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, დეტალები</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 სანიშნე წაიშალა}other{{COUNT} სანიშნე წაიშალა}}</translation>
 <translation id="481689174647911539">ეს ფაილი, შესაძლოა, ვირუსი ან მავნე პროგრამა იყოს.<ph name="LINE_BREAK" />შეგიძლიათ გაუგზავნოთ ის Google Safe Browsing-ს მისი უსაფრთხოების შესამოწმებლად. სკანირებას, როგორც წესი, რამდენიმე წამი სჭირდება.</translation>
@@ -8441,7 +8435,6 @@
 <translation id="6965607054907047032">გაათავისუფლეთ მეხსიერება უმოქმედო ჩანართების საფუძველზე</translation>
 <translation id="6965648386495488594">პორტი</translation>
 <translation id="6965978654500191972">მოწყობილობა</translation>
-<translation id="6966370001499648704">აკონტროლეთ, თუ რომელ ტელეფონებს გამოიყენებთ უსაფრთხოების გასაღებების სახით</translation>
 <translation id="6967112302799758487">Steam for Chromebook-ის (ბეტა) მეშვეობით დაინსტალირებული აპები და თამაშები წაიშლება ამ მოწყობილობიდან. აღნიშნულ აპებთან და თამაშებთან დაკავშირებული მონაცემები ასევე ამოიშლება. დეინსტალაციამდე შექმენით შენახული აპებისა და თამაშების სარეზერვო ასლები.</translation>
 <translation id="6967430741871315905">ვერ ხერხდება იმის შემოწმება, დაშვებულია თუ არა ეს მოწყობილობა</translation>
 <translation id="6968288415730398122">ეკრანის დაბლოკვის მეთოდის კონფიგურაციისთვის შეიყვანეთ თქვენი პაროლი</translation>
@@ -11124,7 +11117,6 @@
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">გაუმჭვირვალე</translation>
 <translation id="8838770651474809439">ჰამბურგერი</translation>
-<translation id="8838778928843281408">ტელეფონების მართვა</translation>
 <translation id="8838841425230629509">ჯგუფის ჩამაგრების მოხსნა სანიშნეების ზოლიდან</translation>
 <translation id="883924185304953854">სურათებით ძიება</translation>
 <translation id="8841786407272321022">პაროლი შენახულია მხოლოდ ამ მოწყობილობაზე. ახალი პაროლები თქვენს Google ანგარიშში რომ შეინახოთ, განაახლეთ Google Play Services.</translation>

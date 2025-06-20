@@ -10964,6 +10964,11 @@ las configuren.</translation>
       Si no la estableces, <ph name="PRODUCT_NAME" /> permitirá que los usuarios decidan si será el navegador predeterminado y, en caso de no seleccionarlo, si se mostrarán las notificaciones para el usuario.
 
       Nota para los administradores de <ph name="MS_WIN_NAME" />: Esta opción de configuración solo podrá habilitarse en máquinas con Windows 7. Para las versiones posteriores, el usuario debe implementar un archivo con "asociaciones de apps predeterminadas" que convierta a <ph name="PRODUCT_NAME" /> en el controlador de los protocolos <ph name="HTTPS_PROTOCOL" /> y <ph name="HTTP_PROTOCOL" /> (y, opcionalmente, el protocolo <ph name="FTP_PROTOCOL" /> y otros formatos de archivo). Consulta la Ayuda de Chrome ( https://support.google.com/chrome?p=make_chrome_default_win).</translation>
+<translation id="8437836857126992452">Te permite especificar las extensiones que los usuarios NO pueden instalar. Si se bloquean extensiones que ya están instaladas, no funcionarán y el usuario no podrá habilitarlas. Si las quitas de la lista de extensiones bloqueadas, se volverán a habilitar automáticamente.
+
+          Un valor de asterisco (*) en la lista de extensiones bloqueadas significa que todas las extensiones están incluidas en esa lista de forma predeterminada. Las extensiones que se enumeran de forma explícita en la lista de extensiones permitidas se admiten si están firmadas (comprimidas). Todas las extensiones sin empaquetar están bloqueadas.
+
+          Si no estableces esta política, el usuario podrá instalar cualquier extensión de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8441105784056442638">Habilitar la función de restauración completa</translation>
 <translation id="844322176712318428">Permitir la API de Translator</translation>
 <translation id="8444157920689124099">Habilitar la encriptación vinculada a la aplicación</translation>

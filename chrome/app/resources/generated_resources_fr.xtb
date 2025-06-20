@@ -361,7 +361,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1235458158152011030">Réseaux connus</translation>
 <translation id="123578888592755962">Disque saturé.</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{SMS}one{# SMS}other{# SMS}}</translation>
-<translation id="1236009322878349843">Modifier le téléphone</translation>
 <translation id="1237251612871334180">Mettre à jour pour enregistrer les mots de passe</translation>
 <translation id="1237950098253310325">Réorganiser <ph name="BUTTON_NAME" /> avec Ctrl+Flèche vers le haut ou vers le bas</translation>
 <translation id="1238293488628890871">Changer de profil ?</translation>
@@ -578,7 +577,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1395832189806039783">Mettre en surbrillance l'élément sélectionné au clavier</translation>
 <translation id="1396120028054416908">Revenir à <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Erreur de configuration de l'imprimante</translation>
-<translation id="1397594434718759194">Vous êtes connecté à Chrome sur ces appareils. Vous pouvez donc les utiliser comme clés de sécurité.</translation>
 <translation id="1398853756734560583">Agrandir</translation>
 <translation id="1399261165075500043">Impossible de charger les conditions d'utilisation de Google Play</translation>
 <translation id="1400243387594338234">Vous pouvez utiliser ce code pour vous connecter à votre appareil</translation>
@@ -1240,6 +1238,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="184862733444771842">Demande de fonctionnalité</translation>
 <translation id="1849016657376805933">Tous les appareils HID</translation>
 <translation id="1849022541429818637">Autorisé à capturer et utiliser votre saisie à la souris</translation>
+<translation id="1849252834922144634">Appuyez de manière prolongée pour épingler les raccourcis</translation>
 <translation id="1850145825777333687">Identifiants de l'appareil</translation>
 <translation id="1850508293116537636">Rotation &amp;dans le sens des aiguilles d'une montre</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Avant l'enregistrement, vous devez effacer le TPM pour que <ph name="DEVICE_OS" /> puisse prendre possession de l'appareil.<ph name="END_PARAGRAPH1" />
@@ -1694,7 +1693,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2162705204091149050">Lire les infos sur vos navigateur, OS, appareil, logiciels installés et fichiers</translation>
 <translation id="2163470535490402084">Veuillez vous connecter à Internet pour vous connecter à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre contacteur</translation>
-<translation id="2165102982098084499">Vous avez associé ces appareils en scannant un QR code.</translation>
 <translation id="2165177462441582039">Sélectionnez la durée d'affichage de l'élément en surbrillance</translation>
 <translation id="2166369534954157698">Voici à quoi ressemblera votre texte.</translation>
 <translation id="2169062631698640254">Se connecter quand même</translation>
@@ -2794,6 +2792,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2912247081180973411">Fermer les fenêtres</translation>
 <translation id="2915102088417824677">Afficher le journal d'activité</translation>
 <translation id="2915873080513663243">Exploration automatique</translation>
+<translation id="2916067990491711240">Quitter les sessions Invité gérées</translation>
 <translation id="2916073183900451334">La touche TAB permet de sélectionner des liens et d'accéder à des champs de formulaire sur une page Web.</translation>
 <translation id="2916745397441987255">Rechercher dans les extensions</translation>
 <translation id="2918484639460781603">Accéder aux paramètres</translation>
@@ -4275,6 +4274,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3948334586359655083">Cet onglet lit des fichiers audio</translation>
 <translation id="3948507072814225786">Le site <ph name="ORIGIN" /> peut modifier les fichiers des dossiers suivants</translation>
 <translation id="3948985214866944547">La plupart des internautes bloquent le partage de la position exacte pour ce site</translation>
+<translation id="394930357226768495">Afficher les suggestions et les résultats de votre organisation</translation>
 <translation id="394984172568887996">Importés depuis IE</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> pour sécuriser davantage le téléchargement de fichiers</translation>
 <translation id="3950479158728806902">Créer automatiquement une clé d'accès pour vous connecter plus vite</translation>
@@ -4296,7 +4296,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3959969108528118741">Propriétaire</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Plus d'actions pour <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3963753386716096475">Utiliser un autre téléphone, une autre tablette ou une autre clé de sécurité</translation>
 <translation id="3964480518399667971">Désactiver le réseau mobile</translation>
 <translation id="3965467402665811906">Les sites peuvent demander à utiliser les informations qu'ils ont enregistrées vous concernant</translation>
 <translation id="3965965397408324205">Quitter <ph name="PROFILE_NAME" /></translation>
@@ -4854,7 +4853,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4370975561335139969">L'adresse e-mail et le mot de passe saisis ne correspondent pas.</translation>
 <translation id="4373418556073552953">Se connecter à l'aide d'un téléphone Android</translation>
 <translation id="4373973310429385827">Phare</translation>
-<translation id="4374805630006466253">Utiliser un autre téléphone ou une autre tablette</translation>
 <translation id="4374831787438678295">Programme d'installation de Linux</translation>
 <translation id="4375035964737468845">Ouvrir les fichiers téléchargés</translation>
 <translation id="4376226992615520204">Localisation désactivée</translation>
@@ -5464,7 +5462,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4814114628197290459">Supprimer l'IBAN</translation>
 <translation id="4814327014588285482">Ignorer et me le rappeler plus tard</translation>
 <translation id="4814378367953456825">Attribuez un nom à cette empreinte</translation>
-<translation id="481574578487123132">Appareils associés</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, détails</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 favori supprimé}one{{COUNT} favori supprimé}other{{COUNT} favoris supprimés}}</translation>
 <translation id="481689174647911539">Ce fichier est peut-être un virus ou un logiciel malveillant.<ph name="LINE_BREAK" />Vous pouvez l'envoyer à la navigation sécurisée Google pour vérifier s'il est dangereux. Les analyses prennent généralement quelques secondes.</translation>
@@ -8438,7 +8435,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6965607054907047032">Libérer de la mémoire en fonction de l'inactivité des onglets</translation>
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Appareil</translation>
-<translation id="6966370001499648704">Contrôlez les téléphones que vous utilisez comme clés de sécurité</translation>
 <translation id="6967112302799758487">Tous les jeux et applis installés depuis Steam pour Chromebook (bêta) seront supprimés de cet appareil. Les données associées à ces jeux et applis seront également supprimées. Veillez à sauvegarder les applis et jeux enregistrés avant de désinstaller Steam.</translation>
 <translation id="6967430741871315905">Impossible de vérifier si l'appareil est autorisé</translation>
 <translation id="6968288415730398122">Saisissez votre mot de passe pour configurer le verrouillage de l'écran</translation>
@@ -11125,7 +11121,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Opaque</translation>
 <translation id="8838770651474809439">Hamburger</translation>
-<translation id="8838778928843281408">Gérer les téléphones</translation>
 <translation id="8838841425230629509">Retirer le groupe de la barre de favoris</translation>
 <translation id="883924185304953854">Rechercher par image</translation>
 <translation id="8841786407272321022">Mot de passe enregistré sur cet appareil uniquement. Pour enregistrer de nouveaux mots de passe dans votre compte Google, mettez à jour les services Google Play.</translation>

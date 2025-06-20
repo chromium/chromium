@@ -10670,6 +10670,11 @@ la configurazione.</translation>
       Se la policy non è configurata, <ph name="PRODUCT_NAME" /> consente agli utenti di controllare se è impostato come browser predefinito e, in caso contrario, se devono essere visualizzate le notifiche per gli utenti.
 
       Nota per gli amministratori di <ph name="MS_WIN_NAME" />: la configurazione di questa impostazione funziona solo con le macchine che eseguono Windows 7. Per le versioni successive, è necessario eseguire il deployment di un file con associazioni di applicazioni predefinite che imposti <ph name="PRODUCT_NAME" /> come gestore dei protocolli <ph name="HTTPS_PROTOCOL" /> e <ph name="HTTP_PROTOCOL" /> (e facoltativamente del protocollo <ph name="FTP_PROTOCOL" /> e di altri formati di file). Consulta la guida di Chrome (https://support.google.com/chrome?p=make_chrome_default_win).</translation>
+<translation id="8437836857126992452">Consente di specificare le estensioni che gli utenti NON possono installare. Le estensioni già installate vengono disattivate, se bloccate, e l'utente non può attivarle. Un'estensione disattivata da una lista bloccata viene automaticamente riattivata nel caso venga rimossa dalla lista.
+
+          Il valore "*" di una lista bloccata indica che tutte le estensioni sono bloccate per impostazione predefinita. Le estensioni elencate in modo esplicito nella lista consentita sono consentite se sono firmate (pacchettizzate). Tutte le estensioni non pacchettizzate sono bloccate.
+
+          Se questo criterio non viene configurato, l'utente può installare qualsiasi estensione in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8441105784056442638">Attiva la funzionalità di ripristino completo</translation>
 <translation id="844322176712318428">Consenti l'API Translator</translation>
 <translation id="8444157920689124099">Abilita la crittografia per applicazioni</translation>

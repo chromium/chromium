@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">ការចែករំលែកបានបរាជ័យ ពីព្រោះអ្នកមិនបានភ្ជាប់ទៅនឹងបណ្តាញទេ។</translation>
 <translation id="1668001730617725852">បើក​នៅ​ក្នុង​ក្រុមផ្ទាំង​ថ្មី</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ទៅ <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">ឥឡូវនេះ អ្នក​អាចបើក Google Lens ពី​របារអាសយដ្ឋាន​របស់អ្នក និង​ស្វែងរក​អ្វីក៏បាន​ដែលអ្នក​មើលឃើញ</translation>
 <translation id="1689333818294560261">ឈ្មោះ​ហៅក្រៅ</translation>
 <translation id="169048873465870056">ដកផ្ទាំងចេញ និងលុបក្រុមឬ?</translation>
 <translation id="1698090540708020240">នាំចូល​ពាក្យសម្ងាត់…</translation>
@@ -266,6 +267,7 @@
 <translation id="2044681667265133332">គណនី <ph name="USER_EMAIL" /> ស្ថិតក្រោម​ការគ្រប់គ្រង​របស់ <ph name="HOSTED_DOMAIN" /> ដែលប្រហែលជាអាច​មើលព័ត៌មាន​មួយចំនួន​បាន។ <ph name="BEGIN_LINK" />ស្វែងយល់​បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">ធាតុ​ថ្មី</translation>
 <translation id="2049727122989709386">គណនី <ph name="COUNT" /> កំពុងប្រើប្រាស់ពាក្យសម្ងាត់ដូចគ្នា</translation>
+<translation id="205013082884273671">ស្វែងរក​អ្វីក៏បាន​នៅលើ​អេក្រង់​របស់អ្នក</translation>
 <translation id="2054044186557130763">ចូលគណនី​ជា <ph name="NAME" /> (<ph name="EMAIL" />) ដែលស្ថិត​ក្រោម​ការ​គ្រប់គ្រង​របស់ស្ថាប័ន​អ្នក។</translation>
 <translation id="2059166748188874810">ក្រុង</translation>
 <translation id="2060638295449304809">អាសយដ្ឋាននេះ​ត្រូវបានរក្សាទុក​ទៅក្នុង​ឧបករណ៍នេះតែ​ប៉ុណ្ណោះ។ ដើម្បី​ប្រើវា​នៅលើ​ឧបករណ៍​ផ្សេងទៀត​របស់អ្នក សូម​រក្សាទុកវា​នៅក្នុង​គណនី Google <ph name="USER_EMAIL" /> របស់អ្នក</translation>
@@ -458,6 +460,7 @@
 <translation id="2819667972867209401">នៅពេល​បើក ទិន្នន័យ​ត្រូវបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក។ នៅពេលបិទ ទិន្នន័យ​ត្រូវបាន​រក្សាទុក​តែនៅលើ​ឧបករណ៍នេះ​ប៉ុណ្ណោះ និង​ត្រូវបានលុប ប្រសិនបើ​អ្នកចេញពី​គណនី។</translation>
 <translation id="2827760117436553203">រក្សា​ទិន្នន័យ​ដាច់ដោយឡែក​ឬ?</translation>
 <translation id="2829172210806130158">ស្វែងរកនៅលើអេក្រង់របស់អ្នក</translation>
+<translation id="2831109159746537587">សាកល្បង​គូររង្វង់ ឬ​ចុចលើ​រូបភាព​ដើម្បី​ស្វែងរក</translation>
 <translation id="2834399722155632105">3. ចុច "ជម្រើស​ពាក្យសម្ងាត់"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">ពេលវេលា</translation>

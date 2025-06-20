@@ -358,6 +358,7 @@
 <translation id="1593359183944365958">২৭০ ডিগ্ৰী</translation>
 <translation id="1594030484168838125">বাছনি কৰক</translation>
 <translation id="1597307423671074806">WebM ভিডিঅ’</translation>
+<translation id="159800670740560023">Chrome Tip লিংক, <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /> খুলিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="1599199147673445968">নতুন কাৰ্ড? <ph name="BEGIN_LINK" />কাৰ্ডৰ সবিশেষ দিয়ক<ph name="END_LINK" /></translation>
 <translation id="1601786938618212857">জিপ কৰক</translation>
 <translation id="1604192142734009334">ৰূপচৰ্চা আৰু সুস্থতা</translation>
@@ -835,6 +836,7 @@
 <translation id="2383455408879745299">Chromeৰ ছেটিঙত আপোনাৰ সাধ্য সুবিধাৰ সঁজুলি ব্যক্তিগতকৰণ কৰক</translation>
 <translation id="2384307209577226199">এণ্টাৰপ্ৰাইজৰ ডিফ’ল্ট</translation>
 <translation id="238459632961158867">ৱেবছাইট</translation>
+<translation id="2384823392576123225">বুকমাৰ্ক সন্ধান কৰক</translation>
 <translation id="2385809941344967209">আপোনাৰ Chromeৰ ছেটিংসমূহৰ পৰা Chrome আপডে’ট কৰক</translation>
 <translation id="2386255080630008482">ছাৰ্ভাৰৰ প্ৰমাণপত্ৰ প্ৰত্যাহাৰ কৰা হৈছে।</translation>
 <translation id="2388828676877700238">কৰৰ পৰিমাণ নিৰ্ধাৰণ আৰু পৰিকল্পনা কৰা</translation>
@@ -1447,6 +1449,7 @@
 <translation id="3461266716147554923"><ph name="URL" />এ ক্লিপব'ৰ্ডলৈ কপি কৰা পাঠ আৰু প্ৰতিচ্ছবি চাব বিচাৰে</translation>
 <translation id="3461824795358126837">হাইলাইটাৰ</translation>
 <translation id="3462200631372590220">এডভাঞ্চখিনি লুকুৱাওক</translation>
+<translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Googleক এই পৃষ্ঠাখনৰ বিষয়ে সুধিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="3465972433695735758">এই PDFটো এক্সেছ কৰিব নোৱাৰি। পাঠখিনি আহৰণ কৰা হ’ল, Google AIএ সঞ্চালন কৰা</translation>
 <translation id="346601286295919445">ৰসায়ন বিজ্ঞান</translation>
 <translation id="3467081767799433066">বিজ্ঞাপনৰ জোখ-মাখৰ ক্ষেত্ৰত, ছাইটসমূহৰ মাজত সেইবিলাকে দেখুওৱা বিজ্ঞাপনৰ পাৰদৰ্শিতা জোখ-মাখ কৰিবলৈ সীমিত ধৰণৰ ডেটা শ্বেয়াৰ কৰা হয়, যেনে- আপুনি এটা ছাইট চোৱাৰ পাছত ক্ৰয় কৰিছে নে নাই।</translation>
@@ -2053,6 +2056,7 @@
 <translation id="444116852243722675">আটাইবোৰ (<ph name="ITEMS" /> টা) খোলক</translation>
 <translation id="4441832193888514600">নীতিটো কেৱল ক্লাউড ব্যৱহাৰকাৰীৰ নীতি হিচাপে ছেট কৰিব পাৰে বাবে উপেক্ষা কৰা হৈছে।</translation>
 <translation id="4445133368066241428">জনপ্ৰিয় বিষয়বস্তু</translation>
+<translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, টেব সন্ধান কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="4445964943162061557">এইটো এটা পৰীক্ষামূলক সুবিধা আৰু এইটোৱে সদায়েই শুদ্ধ ফলাফল নিদিয়ে।</translation>
 <translation id="4449116177348980384">ছাইটৰ ছেটিং পৰিচালনা কৰাৰ বুটাম, Chromeৰ ছেটিঙত সমগ্ৰ ছাইটত ষ্ট’ৰ কৰি ৰখা ডেটা আৰু অনুমতি পৰিচালনা কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="4451135742916150903">HID ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
@@ -2248,6 +2252,7 @@
 <translation id="4811450222531576619">ইয়াৰ উৎস আৰু বিষয়বস্তুৰ সম্পৰ্কে অধিক জানক</translation>
 <translation id="4813512666221746211">নেটৱৰ্কৰ আসোঁৱাহ</translation>
 <translation id="4814114628197290459">IBAN মচক</translation>
+<translation id="4816341377198595747">বুকমাৰ্ক সন্ধান কৰাৰ বুটাম, বুকমাৰ্ক সন্ধান কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="4816492930507672669">পৃষ্ঠাৰ আকাৰ অনুসৰি খাপ খুৱাওক</translation>
 <translation id="4819347708020428563">ডিফ’ল্ট ভিউত এন’টেশ্বন সম্পাদনা কৰিবনে?</translation>
 <translation id="4822493756793346865">সচৰাচৰ মূল্য সমগ্ৰ ৱেবত থকা ষ্ট’ৰৰ যোৱা ৯০ দিনৰ ওপৰত আধাৰিত হয়।</translation>
@@ -2377,6 +2382,7 @@
 <translation id="5021557570875267742">Chromeৰ জৰিয়তে মূল্য ট্ৰেক কৰক</translation>
 <translation id="5023310440958281426">আপোনাৰ প্ৰশাসকৰ নীতি পৰীক্ষা কৰক</translation>
 <translation id="5024171724744627792">আপুনি কাৰ্ডখন ছেভ কৰি থোৱা থাকিলে ক্ষিপ্ৰভাৱে পৰিশোধ কৰক। আপোনাৰ Google একাউণ্টত কাৰ্ডৰ সবিশেষ এনক্ৰিপ্ট কৰা হয়।</translation>
+<translation id="5026466266082155886"><ph name="STARTER_PACK_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ইতিহাস সন্ধান কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="5030338702439866405">প্ৰদান কৰোঁতা:</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />"ৰ বাবে এখন মূল প্ৰমাণপত্ৰৰ আৱশ্যক, কিন্তু সেইখন ইনষ্টল কৰা হোৱা নাই। আপোনাৰ আইটি প্ৰশাসকে এই সমস্যাটো সমাধান কৰিবলৈ "<ph name="SOFTWARE_NAME" />"ৰ বাবে থকা কনফিগাৰেশ্বনৰ নিৰ্দেশনাৱলী চোৱা উচিত। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">তুলনা কৰিবলৈ যোগ দিবনে?</translation>
@@ -2733,6 +2739,7 @@
 <translation id="5619721953841297650">প্ৰিছেট</translation>
 <translation id="5624120631404540903">পাছৱৰ্ড সলনি কৰক</translation>
 <translation id="5629630648637658800">নীতিৰ ছেটিংসমূহ ল’ড কৰিব পৰা নগ’ল</translation>
+<translation id="5630981295558454585">এই পৃষ্ঠা সম্পৰ্কে বুটামটোৰ বিষয়ে Googleক সোধক, Googleক এই পৃষ্ঠাখনৰ বিষয়ে সুধিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="5631439013527180824">অমান্য ডিভাইচ পৰিচালনাৰ ট’কেন</translation>
 <translation id="5632485077360054581">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
 <translation id="563324245173044180">বিভ্ৰান্তিকৰ সমল অৱৰোধ কৰা হৈছে।</translation>
@@ -3612,6 +3619,7 @@
 <translation id="7139892792842608322">প্ৰাথমিক ট্ৰে’</translation>
 <translation id="7140087718106278457">পৰিশোধ পদ্ধতিৰ সূচীখন বন্ধ কৰা হৈছে।</translation>
 <translation id="714064300541049402">কাষৰ ২ প্ৰতিচ্ছবি X শ্বিফ্ট</translation>
+<translation id="7140922144008419614">টেব সন্ধান কৰাৰ বুটাম, টেব সন্ধান কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
 <translation id="7152230779180489711">অন্তিমবাৰ চোৱাৰ সময়</translation>
@@ -3846,6 +3854,7 @@
 <translation id="7526934274050461096">এই ছাইটলৈ থকা আপোনাৰ সংযোগটো ব্যক্তিগত নহয়</translation>
 <translation id="7529884293139707752">হ’মস্কুলিং</translation>
 <translation id="7531464389616946220">কাৰ্ড স্কেন কৰক</translation>
+<translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, বুকমাৰ্ক সন্ধান কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="7534987659046836932">এনভেল’প C7</translation>
 <translation id="7535087603100972091">মান</translation>
 <translation id="753556296624075801">Googleএ আগবঢ়োৱা</translation>
@@ -4224,6 +4233,7 @@
 <translation id="8194412401381329820">আপুনি এটা পৰিচালিত একাউণ্টৰ এইখন পৃষ্ঠা এইটো অপৰিচালিত ডিভাইচত ব্যৱহাৰ কৰি নোৱাৰে। আপুনি এইখন পৃষ্ঠা ব্যৱহাৰ কৰিলে, এইটো ডিভাইচৰ দৰে একে এণ্টিটীয়ে পৰিচালনা কৰা একাউণ্ট (অনুমোদিত একাউণ্ট)ৰ বাহিৰে অন্য আটাইবোৰ পৰিচালিত একাউণ্ট লক কৰা হ’ব।</translation>
 <translation id="8194797478851900357">আঁতৰোৱা কাৰ্য &amp;আনডু কৰক</translation>
 <translation id="8194956568907463262">শ্বুটাৰ গে’ম</translation>
+<translation id="8198379961710069585">ইতিহাস সন্ধান কৰাৰ বুটাম, ইতিহাস সন্ধান কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="8199437620497683918">অপ্টিকেল ডিস্ক (গ্লছযুক্ত)</translation>
 <translation id="8199730148066603000">অনা-HTTPS URL পূৰ্বদৰ্শন কৰাৰ অনুমতি নাই।</translation>
 <translation id="8200772114523450471">পুনৰ আৰম্ভ কৰক</translation>
