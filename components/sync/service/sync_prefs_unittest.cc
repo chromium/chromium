@@ -34,7 +34,9 @@ namespace {
 
 using ::testing::_;
 using ::testing::AtMost;
+using ::testing::ContainerEq;
 using ::testing::InSequence;
+using ::testing::IsEmpty;
 using ::testing::StrictMock;
 
 // Copy of the same constant in sync_prefs.cc, for testing purposes.
@@ -284,8 +286,8 @@ TEST_F(SyncPrefsTest, Basic) {
 TEST_F(SyncPrefsTest, SelectedTypesKeepEverythingSynced) {
   ASSERT_TRUE(sync_prefs_->HasKeepEverythingSynced());
 
-  EXPECT_EQ(UserSelectableTypeSet::All(),
-            sync_prefs_->GetSelectedTypesForSyncingUser());
+  EXPECT_THAT(sync_prefs_->GetSelectedTypesForSyncingUser(),
+              ContainerEq(UserSelectableTypeSet::All()));
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
     sync_prefs_->AddObserver(&mock_sync_pref_observer);
@@ -300,8 +302,8 @@ TEST_F(SyncPrefsTest, SelectedTypesKeepEverythingSynced) {
         /*keep_everything_synced=*/true,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/{type});
-    EXPECT_EQ(UserSelectableTypeSet::All(),
-              sync_prefs_->GetSelectedTypesForSyncingUser());
+    EXPECT_THAT(sync_prefs_->GetSelectedTypesForSyncingUser(),
+                ContainerEq(UserSelectableTypeSet::All()));
 
     sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
   }
@@ -323,7 +325,8 @@ TEST_F(SyncPrefsTest, SelectedTypesKeepEverythingSyncedButPolicyRestricted) {
 
   UserSelectableTypeSet expected_type_set = UserSelectableTypeSet::All();
   expected_type_set.Remove(UserSelectableType::kPreferences);
-  EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedTypesForSyncingUser());
+  EXPECT_THAT(sync_prefs_->GetSelectedTypesForSyncingUser(),
+              ContainerEq(expected_type_set));
 }
 
 TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSynced) {
@@ -347,8 +350,8 @@ TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSynced) {
         /*keep_everything_synced=*/false,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/{type});
-    EXPECT_EQ(UserSelectableTypeSet({type}),
-              sync_prefs_->GetSelectedTypesForSyncingUser());
+    EXPECT_THAT(sync_prefs_->GetSelectedTypesForSyncingUser(),
+                ContainerEq(UserSelectableTypeSet({type})));
 
     sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
   }
@@ -371,7 +374,8 @@ TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSyncedAndPolicyRestricted) {
         /*selected_types=*/{type});
     UserSelectableTypeSet expected_type_set = {type};
     expected_type_set.Remove(UserSelectableType::kPreferences);
-    EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedTypesForSyncingUser());
+    EXPECT_THAT(sync_prefs_->GetSelectedTypesForSyncingUser(),
+                ContainerEq(expected_type_set));
   }
 }
 
@@ -444,22 +448,25 @@ TEST_F(SyncPrefsTest, SetTypeDisabledByCustodian) {
       sync_prefs_->IsTypeManagedByCustodian(UserSelectableType::kAutofill));
 }
 
+// kReplaceSyncPromosWithSignInPromos has been enabled by default on mobile
+// platforms for a long time, so the feature-disabled case is not worth testing.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(SyncPrefsTest,
        DefaultSelectedTypesForAccountInTransportMode_SyncToSigninDisabled) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode,
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             switches::kEnablePreferencesAccountStorage},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
-  EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
-            UserSelectableTypeSet({UserSelectableType::kPasswords,
-                                   UserSelectableType::kAutofill,
-                                   UserSelectableType::kPayments}));
+  EXPECT_THAT(
+      sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
+      ContainerEq(UserSelectableTypeSet({UserSelectableType::kPasswords,
+                                         UserSelectableType::kAutofill,
+                                         UserSelectableType::kPayments})));
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(SyncPrefsTest,
        DefaultSelectedTypesForAccountInTransportMode_SyncToSigninEnabled) {
@@ -470,32 +477,30 @@ TEST_F(SyncPrefsTest,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
                             kSeparateLocalAndAccountSearchEngines,
-                            syncer::kSeparateLocalAndAccountThemes,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+                            syncer::kSeparateLocalAndAccountThemes,
+                            switches::kEnableExtensionsExplicitBrowserSignin,
                             switches::kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
 
-  // Based on the feature flags set above, ReadingList, Passwords,
-  // Autofill, Payments, Preferences and Themes are supported and enabled by
-  // default.
-  // Extensions is supported, but not enabled by default. (History and Tabs are
-  // also supported, but require a separate opt-in.) Transport mode is required
-  // for new sync types moving forward. Compare is one of those and is enabled
-  // when kReplaceSyncPromosWithSignInPromos is enabled.
+  // All except history-guarded types should be enabled.
   UserSelectableTypeSet expected_types{
-      UserSelectableType::kBookmarks,   UserSelectableType::kProductComparison,
-      UserSelectableType::kReadingList, UserSelectableType::kPasswords,
-      UserSelectableType::kAutofill,    UserSelectableType::kPayments,
-      UserSelectableType::kPreferences};
-
-  // TODO(crbug.com/424124636): The below special-casing shouldn't be needed.
+      UserSelectableType::kBookmarks,
+      UserSelectableType::kProductComparison,
+      UserSelectableType::kReadingList,
+      UserSelectableType::kPasswords,
+      UserSelectableType::kAutofill,
+      UserSelectableType::kPayments,
+      UserSelectableType::kPreferences,
+      UserSelectableType::kExtensions,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Because `prefs::kPrefsThemesSearchEnginesAccountStorageEnabled` is not set,
-  // kPreferences are disabled.
-  expected_types.Remove(UserSelectableType::kPreferences);
-#endif
+      // kThemes is not supported on mobile.
+      UserSelectableType::kThemes,
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  };
 
-  EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_), expected_types);
+  EXPECT_THAT(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
+              ContainerEq(expected_types));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
@@ -503,9 +508,7 @@ TEST_F(SyncPrefsTest, DefaultWithImplicitBrowserSignin_SyncToSigninDisabled) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode,
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             switches::kEnablePreferencesAccountStorage},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
@@ -513,8 +516,9 @@ TEST_F(SyncPrefsTest, DefaultWithImplicitBrowserSignin_SyncToSigninDisabled) {
   ASSERT_FALSE(sync_prefs_->IsExplicitBrowserSignin());
 
   UserSelectableTypeSet expected_types{UserSelectableType::kPayments};
-  EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
-            UserSelectableTypeSet{UserSelectableType::kPayments});
+  EXPECT_THAT(
+      sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
+      ContainerEq(UserSelectableTypeSet{UserSelectableType::kPayments}));
 }
 
 TEST_F(SyncPrefsTest, DefaultWithImplicitBrowserSignin_SyncToSigninEnabled) {
@@ -522,21 +526,18 @@ TEST_F(SyncPrefsTest, DefaultWithImplicitBrowserSignin_SyncToSigninEnabled) {
   features.InitWithFeatures(
       /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode,
                             kReplaceSyncPromosWithSignInPromos,
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             kReadingListEnableSyncTransportModeUponSignIn,
                             kSeparateLocalAndAccountSearchEngines,
                             syncer::kSeparateLocalAndAccountThemes,
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             switches::kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
 
   pref_service_.ClearPref(::prefs::kExplicitBrowserSignin);
   ASSERT_FALSE(sync_prefs_->IsExplicitBrowserSignin());
 
-  // TODO(crbug.com/424124636): kProductComparison shouldn't be listed below.
-  EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
-            UserSelectableTypeSet({UserSelectableType::kPayments,
-                                   UserSelectableType::kProductComparison}));
+  EXPECT_THAT(
+      sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
+      ContainerEq(UserSelectableTypeSet{UserSelectableType::kPayments}));
 }
 
 #endif
@@ -558,12 +559,12 @@ TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
   sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 
   // kPayments should be disabled, other default values should be unaffected.
-  EXPECT_EQ(
-      sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
-      Difference(default_selected_types, {UserSelectableType::kPayments}));
+  EXPECT_THAT(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
+              ContainerEq(Difference(default_selected_types,
+                                     {UserSelectableType::kPayments})));
   // Other accounts should be unnafected.
-  EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(GaiaId("account_gaia_2")),
-            default_selected_types);
+  EXPECT_THAT(sync_prefs_->GetSelectedTypesForAccount(GaiaId("account_gaia_2")),
+              ContainerEq(default_selected_types));
 }
 
 TEST_F(SyncPrefsTest,
@@ -619,12 +620,12 @@ TEST_F(SyncPrefsTest, KeepAccountSettingsPrefsOnlyForUsers) {
       /*available_gaia_ids=*/{gaia_id_});
 
   // Nothing should change on account 1.
-  EXPECT_EQ(
-      sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
-      Difference(default_selected_types, {UserSelectableType::kPasswords}));
+  EXPECT_THAT(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
+              ContainerEq(Difference(default_selected_types,
+                                     {UserSelectableType::kPasswords})));
   // Account 2 should be cleared to default values.
-  EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_2),
-            default_selected_types);
+  EXPECT_THAT(sync_prefs_->GetSelectedTypesForAccount(gaia_id_2),
+              ContainerEq(default_selected_types));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -648,7 +649,8 @@ TEST_F(SyncPrefsTest, IsSyncAllOsTypesEnabled) {
 
 TEST_F(SyncPrefsTest, GetSelectedOsTypesWithAllOsTypesEnabled) {
   EXPECT_TRUE(sync_prefs_->IsSyncAllOsTypesEnabled());
-  EXPECT_EQ(UserSelectableOsTypeSet::All(), sync_prefs_->GetSelectedOsTypes());
+  EXPECT_THAT(sync_prefs_->GetSelectedOsTypes(),
+              ContainerEq(UserSelectableOsTypeSet::All()));
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     sync_prefs_->SetSelectedOsTypes(
         /*sync_all_os_types=*/true,
@@ -667,19 +669,21 @@ TEST_F(SyncPrefsTest, GetSelectedOsTypesNotAllOsTypesSelected) {
       /*sync_all_os_types=*/false,
       /*registered_types=*/UserSelectableOsTypeSet::All(),
       /*selected_types=*/UserSelectableOsTypeSet());
-  EXPECT_EQ(UserSelectableOsTypeSet(), sync_prefs_->GetSelectedOsTypes());
+  EXPECT_THAT(sync_prefs_->GetSelectedOsTypes(), IsEmpty());
   // Browser types are not changed.
-  EXPECT_EQ(browser_types, sync_prefs_->GetSelectedTypesForSyncingUser());
+  EXPECT_THAT(sync_prefs_->GetSelectedTypesForSyncingUser(),
+              ContainerEq(browser_types));
 
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     sync_prefs_->SetSelectedOsTypes(
         /*sync_all_os_types=*/false,
         /*registered_types=*/UserSelectableOsTypeSet::All(),
         /*selected_types=*/{type});
-    EXPECT_EQ(UserSelectableOsTypeSet({type}),
-              sync_prefs_->GetSelectedOsTypes());
+    EXPECT_THAT(sync_prefs_->GetSelectedOsTypes(),
+                ContainerEq(UserSelectableOsTypeSet({type})));
     // Browser types are not changed.
-    EXPECT_EQ(browser_types, sync_prefs_->GetSelectedTypesForSyncingUser());
+    EXPECT_THAT(sync_prefs_->GetSelectedTypesForSyncingUser(),
+                ContainerEq(browser_types));
   }
 }
 
@@ -690,7 +694,8 @@ TEST_F(SyncPrefsTest, SelectedOsTypesKeepEverythingSyncedButPolicyRestricted) {
 
   UserSelectableOsTypeSet expected_type_set = UserSelectableOsTypeSet::All();
   expected_type_set.Remove(UserSelectableOsType::kOsPreferences);
-  EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedOsTypes());
+  EXPECT_THAT(sync_prefs_->GetSelectedOsTypes(),
+              ContainerEq(expected_type_set));
 }
 
 TEST_F(SyncPrefsTest,
@@ -711,7 +716,8 @@ TEST_F(SyncPrefsTest,
         /*selected_types=*/{type});
     UserSelectableOsTypeSet expected_type_set = {type};
     expected_type_set.Remove(UserSelectableOsType::kOsPreferences);
-    EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedOsTypes());
+    EXPECT_THAT(sync_prefs_->GetSelectedOsTypes(),
+                ContainerEq(expected_type_set));
   }
 }
 
@@ -1525,7 +1531,8 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomState) {
 
   // After the migration, exactly the same types should be selected as before.
   SyncPrefs prefs(&pref_service_);
-  EXPECT_EQ(prefs.GetSelectedTypesForAccount(gaia_id_), old_selected_types);
+  EXPECT_THAT(prefs.GetSelectedTypesForAccount(gaia_id_),
+              ContainerEq(old_selected_types));
 }
 
 TEST_F(SyncPrefsMigrationTest, GlobalToAccount_HistoryDisabled) {

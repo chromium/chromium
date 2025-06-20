@@ -87,6 +87,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/port_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -1144,6 +1145,14 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
       allowed_types.Put(syncer::PRODUCT_COMPARISON);
     }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    if (base::FeatureList::IsEnabled(
+            switches::kEnableExtensionsExplicitBrowserSignin)) {
+      allowed_types.Put(syncer::EXTENSIONS);
+      allowed_types.Put(syncer::EXTENSION_SETTINGS);
+    }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
     allowed_types.Put(syncer::AUTOFILL_VALUABLE);

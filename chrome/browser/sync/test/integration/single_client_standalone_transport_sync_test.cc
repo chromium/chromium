@@ -90,6 +90,7 @@ class SingleClientStandaloneTransportSyncTest
           .InitWithFeatures(/*enabled_features=*/
                             {syncer::
                                  kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
+                             switches::kEnableExtensionsExplicitBrowserSignin,
                              switches::kSyncEnableBookmarksInTransportMode,
 #if !BUILDFLAG(IS_ANDROID)
                              syncer::
@@ -98,17 +99,8 @@ class SingleClientStandaloneTransportSyncTest
                              syncer::kReplaceSyncPromosWithSignInPromos},
                             /*disabled_features=*/{});
     } else {
-      // TODO(crbug.com/424698545): The special-casing below for CromeOS may not
-      // be needed once the underlying bug is solved. Before that, enabling
-      // those flags on ChromeOS influences the behavior upon dashboard reset.
       override_features_.InitWithFeatures(
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
           /*enabled_features=*/{},
-#else   // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-          /*enabled_features=*/
-          {switches::kSyncEnableBookmarksInTransportMode,
-           syncer::kReadingListEnableSyncTransportModeUponSignIn},
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
           /*disabled_features=*/
           {syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
            syncer::kReplaceSyncPromosWithSignInPromos});
@@ -456,16 +448,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
                                      syncer::SECURITY_EVENTS,
                                      syncer::SHARING_MESSAGE};
 
-  // TODO(crbug.com/424124636): The types below should probably be excluded.
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    expected_types.Put(syncer::AUTOFILL_WALLET_METADATA);
-    expected_types.Put(syncer::AUTOFILL_WALLET_OFFER);
-    if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-      expected_types.Put(syncer::PRODUCT_COMPARISON);
-    }
-  }
-
   EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));
 }
@@ -574,21 +556,25 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-INSTANTIATE_TEST_SUITE_P(ReplaceSyncWithSignin,
+INSTANTIATE_TEST_SUITE_P(,
                          SingleClientStandaloneTransportSyncTest,
 #if BUILDFLAG(IS_CHROMEOS)
                          // On ChromeOS, the behavior after enabling
                          // `syncer::kReplaceSyncPromosWithSignInPromos` is
                          // unspecified, so no need to test it.
-                         ::testing::Values(false));
+                         ::testing::Values(false),
 #elif BUILDFLAG(IS_ANDROID)
                          // On Android, the feature has been enabled by
                          // default for a long time. There is no need to
                          // test the flag-disabled case.
-                         ::testing::Values(true));
+                         ::testing::Values(true),
 #else
-                         ::testing::Bool());
+                         ::testing::Bool(),
 #endif
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "AfterSyncToSigninEnabled"
+                                             : "BeforeSyncToSigninEnabled";
+                         });
 
 // ReplaceSyncWithSigninMigrationSyncTest is
 // disabled on CrOS as the signed in, non-syncing state does not exist.

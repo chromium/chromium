@@ -29,10 +29,19 @@ namespace {
 
 // Converts `selected_types` to the corresponding DataTypeSet (e.g.
 // {kExtensions} becomes {EXTENSIONS, EXTENSION_SETTINGS}).
-DataTypeSet UserSelectableTypesToDataTypes(
-    UserSelectableTypeSet selected_types) {
+DataTypeSet UserSelectableTypesToDataTypes(UserSelectableTypeSet selected_types,
+                                           bool is_explicit_browser_sign_in) {
   DataTypeSet preferred_types;
   for (UserSelectableType type : selected_types) {
+    if (type == UserSelectableType::kPayments && !is_explicit_browser_sign_in) {
+      // If sign-in is implicit (legacy desktop Dice state), types such as
+      // AUTOFILL_WALLET_METADATA must be excluded.
+      preferred_types.PutAll(Intersection(
+          UserSelectableTypeToAllDataTypes(type),
+          DataTypeSet{AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_CREDENTIAL,
+                      AUTOFILL_WALLET_USAGE}));
+      continue;
+    }
     preferred_types.PutAll(UserSelectableTypeToAllDataTypes(type));
   }
   return preferred_types;
@@ -373,7 +382,11 @@ SyncUserSettingsImpl::GetExplicitPassphraseDecryptionNigoriKey() const {
 }
 
 DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
-  DataTypeSet types = UserSelectableTypesToDataTypes(GetSelectedTypes());
+  DataTypeSet types = UserSelectableTypesToDataTypes(
+      GetSelectedTypes(), prefs_->IsExplicitBrowserSignin() ||
+                              delegate_->GetSyncAccountStateForPrefs() ==
+                                  SyncPrefs::SyncAccountState::kSyncing);
+
   types.PutAll(AlwaysPreferredUserTypes());
 #if BUILDFLAG(IS_CHROMEOS)
   types.PutAll(UserSelectableOsTypesToDataTypes(GetSelectedOsTypes()));
