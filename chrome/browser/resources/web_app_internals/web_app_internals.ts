@@ -235,6 +235,13 @@ async function iwaDevFetchUpdateManifest() {
   const installButton = getRequiredElement<HTMLButtonElement>(
       'iwa-update-manifest-dialog-install');
 
+  const closeButton =
+      getRequiredElement<HTMLButtonElement>('iwa-update-manifest-dialog-close');
+
+  closeButton.addEventListener('click', () => {
+    iwaDevUpdateManifestDialog.close();
+  }, {once: true});
+
   const installEventListener = async () => {
     installButton.removeEventListener('click', installEventListener);
 
