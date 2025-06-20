@@ -47,6 +47,7 @@ if (is_android) {
     ]
 
     deps = [
+      "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//components/strings:components_strings_grd",
       "//ui/android:ui_java_resources",
     ]

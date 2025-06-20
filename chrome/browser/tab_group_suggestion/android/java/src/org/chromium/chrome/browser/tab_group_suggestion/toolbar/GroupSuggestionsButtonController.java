@@ -27,12 +27,12 @@ public class GroupSuggestionsButtonController extends BaseButtonDataProvider {
                 buttonDrawable,
                 /* TODO(salg): Replace placeholder strings. */
                 /* contentDescription= */ context.getString(
-                        R.string.data_sharing_shared_tab_groups_activity, 2),
-                /* actionChipLabelResId= */ R.string.data_sharing_shared_tab_groups_activity,
+                        R.string.tab_group_suggestion_action_chip_label),
+                /* actionChipLabelResId= */ R.string.tab_group_suggestion_action_chip_label,
                 /* supportsTinting= */ true,
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.TAB_GROUPING,
-                /* tooltipTextResId= */ R.string.data_sharing_shared_tab_groups_activity);
+                /* tooltipTextResId= */ R.string.tab_group_suggestion_action_chip_label);
     }
 
     @Override

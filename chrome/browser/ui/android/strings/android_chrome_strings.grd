@@ -7224,6 +7224,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DEFAULT_BROWSER_PROMO_MESSAGE_SETTINGS_BUTTON" desc="Text that displayed on button that allows the user to open Android settings to set a default browser.">
         Settings
       </message>
+
+      <!-- Tab group suggestions -->
+      <message name="IDS_TAB_GROUP_SUGGESTION_ACTION_CHIP_LABEL" desc="The label for the action chip for tab group suggestions in the top toolbar.">
+        Group tabs
+      </message>
+
     </messages>
   </release>
 </grit>

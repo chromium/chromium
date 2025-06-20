@@ -43,7 +43,7 @@ AdaptiveToolbarButtonVariant ActionLabelToAdaptiveToolbarButtonVariant(
              segmentation_platform::kContextualPageActionModelLabelDiscounts) {
     action = AdaptiveToolbarButtonVariant::kDiscounts;
   } else if (label == segmentation_platform::
-                          kContextualPageActionModelInputTabGrouping) {
+                          kContextualPageActionModelLabelTabGrouping) {
     action = AdaptiveToolbarButtonVariant::kTabGrouping;
   }
   return action;
