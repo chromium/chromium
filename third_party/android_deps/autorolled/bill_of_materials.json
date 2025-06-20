@@ -1767,17 +1767,17 @@
     {
         "name": "annotations",
         "group": "org.robolectric",
-        "version": "4.15-beta-1"
+        "version": "4.15"
     },
     {
         "name": "junit",
         "group": "org.robolectric",
-        "version": "4.15-beta-1"
+        "version": "4.15"
     },
     {
         "name": "nativeruntime",
         "group": "org.robolectric",
-        "version": "4.15-beta-1"
+        "version": "4.15"
     },
     {
         "name": "nativeruntime-dist-compat",
@@ -1787,47 +1787,47 @@
     {
         "name": "pluginapi",
         "group": "org.robolectric",
-        "version": "4.15-beta-1"
+        "version": "4.15"
     },
     {
         "name": "plugins-maven-dependency-resolver",
         "group": "org.robolectric",
-        "version": "4.15-beta-1"
+        "version": "4.15"
     },
     {
         "name": "resources",
         "group": "org.robolectric",
-        "version": "4.15-beta-1"
+        "version": "4.15"
     },
     {
         "name": "robolectric",
         "group": "org.robolectric",
-        "version": "4.15-beta-1"
+        "version": "4.15"
     },
     {
         "name": "sandbox",
         "group": "org.robolectric",
-        "version": "4.15-beta-1"
+        "version": "4.15"
     },
     {
         "name": "shadowapi",
         "group": "org.robolectric",
-        "version": "4.15-beta-1"
+        "version": "4.15"
     },
     {
         "name": "shadows-framework",
         "group": "org.robolectric",
-        "version": "4.15-beta-1"
+        "version": "4.15"
     },
     {
         "name": "utils",
         "group": "org.robolectric",
-        "version": "4.15-beta-1"
+        "version": "4.15"
     },
     {
         "name": "utils-reflector",
         "group": "org.robolectric",
-        "version": "4.15-beta-1"
+        "version": "4.15"
     },
     {
         "name": "snakeyaml",

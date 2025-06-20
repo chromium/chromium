@@ -1,7 +1,7 @@
 Name: robolectric
 Short Name: robolectric
-URL: http://robolectric.org
-Version: 4.15-beta-1
+URL: https://robolectric.org
+Version: 4.15
 Update Mechanism: Autoroll
 License: Apache-2.0, MIT
 License File: LICENSE
