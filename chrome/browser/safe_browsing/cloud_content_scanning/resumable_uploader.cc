@@ -296,9 +296,9 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
   }
 
   // If chrome is being told to upload the content but the content is too large
-  // or is encrypted, fail now.
+  // or is encrypted and encrypted file upload is not enabled, fail now.
   if (get_data_result_ == BinaryUploadService::Result::FILE_TOO_LARGE ||
-      get_data_result_ == BinaryUploadService::Result::FILE_ENCRYPTED) {
+    (get_data_result_ == BinaryUploadService::Result::FILE_ENCRYPTED && !ShouldUploadEncryptedFile())) {
     Finish(net::ERR_FAILED, net::HTTP_BAD_REQUEST, std::move(response_body));
     return;
   }
@@ -307,6 +307,11 @@ void ResumableUploadRequest::OnMetadataUploadCompleted(
   SendContentSoon(headers->GetNormalizedHeader(kUploadUrlHeader).value());
 }
 
+bool ResumableUploadRequest::ShouldUploadEncryptedFile() {
+  return base::FeatureList::IsEnabled(
+             enterprise_connectors::kEnableEncryptedFileUpload) &&
+         scan_type_ == ASYNC;
+}
 void ResumableUploadRequest::SendContentSoon(const std::string& upload_url) {
   auto request = std::make_unique<network::ResourceRequest>();
   request->method = "POST";

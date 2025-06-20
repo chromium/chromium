@@ -26,6 +26,9 @@ BASE_DECLARE_FEATURE(kEnableNewUploadSizeLimit);
 // Controls the maximum file size for content analysis in MB.
 BASE_DECLARE_FEATURE_PARAM(size_t, kMaxContentAnalysisFileSizeMB);
 
+// Controls whether encrypted file upload is enabled.
+BASE_DECLARE_FEATURE(kEnableEncryptedFileUpload);
+
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_FEATURES_H_

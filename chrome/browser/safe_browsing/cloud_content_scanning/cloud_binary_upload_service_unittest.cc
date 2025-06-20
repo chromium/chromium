@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -308,6 +310,85 @@ TEST_F(CloudBinaryUploadServiceTest, FailsForLargeFile) {
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::UPLOAD_FAILURE);
+}
+
+TEST_F(CloudBinaryUploadServiceTest, FailsForEncryptedFile) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      enterprise_connectors::kEnableEncryptedFileUpload);
+  BinaryUploadService::Result scanning_result;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath file_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &file_path));
+  file_path = file_path.AppendASCII("safe_browsing")
+                  .AppendASCII("download_protection")
+                  .AppendASCII("encrypted.zip");
+
+  ExpectNetworkResponse(/*should_succeed=*/false,
+                        enterprise_connectors::ContentAnalysisResponse());
+
+  std::unique_ptr<MockRequest> request = MakeRequest(
+      &scanning_result, &scanning_response, /*is_advanced_protection*/ false);
+  request->set_analysis_connector(
+      enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
+  ON_CALL(*request, GetRequestData(_))
+      .WillByDefault(Invoke(
+          [file_path](BinaryUploadService::Request::DataCallback callback) {
+            BinaryUploadService::Request::Data data;
+            data.path = file_path;
+            data.size = 4;  // Must not be zero.
+            std::move(callback).Run(BinaryUploadService::Result::FILE_ENCRYPTED,
+                                    std::move(data));
+          }));
+  UploadForDeepScanning(std::move(request));
+
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UPLOAD_FAILURE);
+}
+
+TEST_F(CloudBinaryUploadServiceTest, PassesForEncryptedFileIfEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEnableEncryptedFileUpload);
+  BinaryUploadService::Result scanning_result;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath file_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &file_path));
+  file_path = file_path.AppendASCII("safe_browsing")
+                  .AppendASCII("download_protection")
+                  .AppendASCII("encrypted.zip");
+  ExpectNetworkResponse(/*should_succeed=*/true,
+                        enterprise_connectors::ContentAnalysisResponse());
+
+  std::unique_ptr<MockRequest> request = MakeRequest(
+      &scanning_result, &scanning_response, /*is_advanced_protection*/ false);
+  request->set_analysis_connector(
+      enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
+  ON_CALL(*request, GetRequestData(_))
+      .WillByDefault(Invoke(
+          [file_path](BinaryUploadService::Request::DataCallback callback) {
+            BinaryUploadService::Request::Data data;
+            data.path = file_path;
+            data.size = 4;  // Must not be zero.
+            std::move(callback).Run(BinaryUploadService::Result::FILE_ENCRYPTED,
+                                    std::move(data));
+          }));
+  UploadForDeepScanning(std::move(request));
+
+  // TODO(crbug.com/418020892): Use BrowserTaskEnvironment::RunUntilIdle()
+  // instead.
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(scanning_result, BinaryUploadService::Result::SUCCESS);
 }
 
 TEST_F(CloudBinaryUploadServiceTest, Succeeds) {

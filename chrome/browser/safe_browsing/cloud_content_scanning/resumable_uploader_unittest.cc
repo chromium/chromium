@@ -589,6 +589,59 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesFailedContentScan) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_P(ResumableUploadSendContentRequestTest,
+       HandlesEncryptedFileContentUploadIfEnabled) {
+  base::RunLoop run_loop;
+  base::RunLoop async_content_upload_run_loop;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEnableEncryptedFileUpload);
+
+  auto verdict_callback = base::BindLambdaForTesting(
+      [&](bool success, int http_status, const std::string& response_data) {
+        run_loop.Quit();
+      });
+
+  auto content_callback =
+      base::BindLambdaForTesting([&async_content_upload_run_loop]() {
+        async_content_upload_run_loop.Quit();
+      });
+
+  auto mock_request = CreateRequest<MockResumableUploadRequest>(
+      BinaryUploadService::Result::FILE_ENCRYPTED, std::move(verdict_callback),
+      std::move(content_callback), false);
+
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url == GURL("https://google.com")) {
+          auto metadata_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                     "active");
+          metadata_response_head->headers->AddHeader("X-Goog-Upload-URL",
+                                                     kUploadUrl);
+          test_url_loader_factory_.AddResponse(
+              GURL("https://google.com"), std::move(metadata_response_head),
+              "metadata_response", network::URLLoaderCompletionStatus(net::OK));
+        } else if (request.url == GURL(kUploadUrl)) {
+          ASSERT_EQ(request.method, "POST");
+          auto content_response_head =
+              network::CreateURLResponseHead(net::HTTP_OK);
+          content_response_head->headers->AddHeader("X-Goog-Upload-Status",
+                                                    "final");
+          test_url_loader_factory_.AddResponse(
+              GURL(kUploadUrl), std::move(content_response_head),
+              "final_response", network::URLLoaderCompletionStatus(net::OK));
+        } else {
+          NOTREACHED();
+        }
+      }));
+  mock_request->Start();
+  run_loop.Run();
+  async_content_upload_run_loop.Run();
+}
+
 struct AsyncUploadResult {
   bool success;
   net::HttpStatusCode response_code;
