@@ -165,13 +165,15 @@ class FormFiller {
   friend class FormFillerTestApi;
   friend class TestFormFiller;
 
+  struct AugmentedFillingPayload;
+
   // Keeps track of the filling context for a form, used to make refill
   // attempts.
   struct RefillContext {
     // |filling_payload| contains the data used to perform the initial filling
     // operation.
     RefillContext(const AutofillField& field,
-                  const FillingPayload& filling_payload);
+                  const AugmentedFillingPayload& filling_payload);
     ~RefillContext();
 
     // Whether a refill attempt was made.
@@ -232,7 +234,7 @@ class FormFiller {
   // override.
   FieldFillingData GetFieldFillingData(
       const AutofillField& autofill_field,
-      const FillingPayload& filling_payload,
+      const AugmentedFillingPayload& filling_payload,
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       const FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,
@@ -246,7 +248,7 @@ class FormFiller {
   // TODO(crbug.com/40227071): Cleanup API and logic.
   bool FillField(
       AutofillField& autofill_field,
-      const FillingPayload& filling_payload,
+      const AugmentedFillingPayload& filling_payload,
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,

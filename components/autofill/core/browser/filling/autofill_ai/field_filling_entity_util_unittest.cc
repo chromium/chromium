@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer_impl.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -48,6 +49,21 @@ using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using FieldPrediction = autofill::AutofillQueryResponse::FormSuggestion::
     FieldSuggestion::FieldPrediction;
+
+// Wrapper for GetFillValueForEntity() that calls DetermineAttributeTypes() for
+// the single `field`.
+std::u16string GetFillValueForEntity(
+    const EntityInstance& entity,
+    const std::unique_ptr<AutofillField>& field,
+    mojom::ActionPersistence action_persistence,
+    const std::string& app_locale = kAppLocaleUS,
+    AddressNormalizer* address_normalizer = nullptr) {
+  return autofill::GetFillValueForEntity(
+      entity,
+      DetermineAttributeTypes(base::span_from_ref(field), field->section(),
+                              entity.type()),
+      *field, action_persistence, app_locale, address_normalizer);
+}
 
 class GetFieldsFillableByAutofillAiTest : public testing::Test {
  public:
@@ -141,7 +157,7 @@ class GetFillValueForEntityTest : public testing::Test {
 };
 
 TEST_F(GetFillValueForEntityTest, UnobfuscatedAttributes) {
-  AutofillField field;
+  auto field = std::make_unique<AutofillField>();
   {
     FieldPrediction prediction1;
     prediction1.set_type(NAME_FIRST);
@@ -153,43 +169,39 @@ TEST_F(GetFillValueForEntityTest, UnobfuscatedAttributes) {
     prediction1.set_source(
         autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
             FieldPrediction::SOURCE_AUTOFILL_AI);
-    field.set_server_predictions({prediction1, prediction2});
+    field->set_server_predictions({prediction1, prediction2});
   }
 
   constexpr char16_t kName[] = u"John";
   EntityInstance passport = test::GetPassportEntityInstance({.name = kName});
-  EXPECT_EQ(
-      GetFillValueForEntity(passport, field, mojom::ActionPersistence::kPreview,
-                            kAppLocaleUS, /*address_normalizer=*/nullptr),
-      kName);
   EXPECT_EQ(GetFillValueForEntity(passport, field,
-                                  mojom::ActionPersistence::kFill, kAppLocaleUS,
-                                  /*address_normalizer=*/nullptr),
+                                  mojom::ActionPersistence::kPreview),
             kName);
+  EXPECT_EQ(
+      GetFillValueForEntity(passport, field, mojom::ActionPersistence::kFill),
+      kName);
 }
 
 TEST_F(GetFillValueForEntityTest, ObfuscatedAttributes) {
-  AutofillField field;
+  auto field = std::make_unique<AutofillField>();
   {
     FieldPrediction prediction;
     prediction.set_type(PASSPORT_NUMBER);
     prediction.set_source(
         autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
             FieldPrediction::SOURCE_AUTOFILL_AI);
-    field.set_server_predictions({prediction});
+    field->set_server_predictions({prediction});
   }
 
   constexpr char16_t kNumber[] = u"12";
   EntityInstance passport =
       test::GetPassportEntityInstance({.number = kNumber});
-  EXPECT_EQ(
-      GetFillValueForEntity(passport, field, mojom::ActionPersistence::kPreview,
-                            kAppLocaleUS, /*address_normalizer=*/nullptr),
-      u"\u2022\u2060\u2006\u2060\u2022\u2060\u2006\u2060");
   EXPECT_EQ(GetFillValueForEntity(passport, field,
-                                  mojom::ActionPersistence::kFill, kAppLocaleUS,
-                                  /*address_normalizer=*/nullptr),
-            kNumber);
+                                  mojom::ActionPersistence::kPreview),
+            u"\u2022\u2060\u2006\u2060\u2022\u2060\u2006\u2060");
+  EXPECT_EQ(
+      GetFillValueForEntity(passport, field, mojom::ActionPersistence::kFill),
+      kNumber);
 }
 
 // Tests that we can correctly fill structured name information into fields.
@@ -200,18 +212,17 @@ TEST_F(GetFillValueForEntityTest, FillingStructuredNames) {
            {NAME_FULL, u"Pippi Långstrump"},
            {NAME_FIRST, u"Pippi"},
            {NAME_LAST, u"Långstrump"}}) {
-    AutofillField field;
+    auto field = std::make_unique<AutofillField>();
     FieldPrediction prediction;
     prediction.set_type(PASSPORT_NAME_TAG);
     prediction.set_source(
         autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
             FieldPrediction::SOURCE_AUTOFILL_AI);
-    field.set_server_predictions({prediction});
-    field.SetTypeTo(type, AutofillPredictionSource::kServerCrowdsourcing);
+    field->set_server_predictions({prediction});
+    field->SetTypeTo(type, AutofillPredictionSource::kServerCrowdsourcing);
 
     EXPECT_EQ(
-        GetFillValueForEntity(passport, field, mojom::ActionPersistence::kFill,
-                              kAppLocaleUS, /*address_normalizer=*/nullptr),
+        GetFillValueForEntity(passport, field, mojom::ActionPersistence::kFill),
         expectation)
         << FieldTypeToStringView(type);
   }
@@ -228,19 +239,18 @@ TEST_F(GetFillValueForEntityTest, FillingLocalizedCountries) {
            {"fr-FR", u"Liban"},
            {"de-DE", u"Libanon"},
            {"ar-LB", u"لبنان"}}) {
-    AutofillField field;
+    auto field = std::make_unique<AutofillField>();
     FieldPrediction prediction;
     prediction.set_type(PASSPORT_ISSUING_COUNTRY);
     prediction.set_source(
         autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
             FieldPrediction::SOURCE_AUTOFILL_AI);
-    field.set_server_predictions({prediction});
-    field.SetTypeTo(ADDRESS_HOME_COUNTRY,
-                    AutofillPredictionSource::kServerCrowdsourcing);
+    field->set_server_predictions({prediction});
+    field->SetTypeTo(ADDRESS_HOME_COUNTRY,
+                     AutofillPredictionSource::kServerCrowdsourcing);
 
     EXPECT_EQ(GetFillValueForEntity(passport, field,
-                                    mojom::ActionPersistence::kFill, locale,
-                                    /*address_normalizer=*/nullptr),
+                                    mojom::ActionPersistence::kFill, locale),
               expectation)
         << locale;
   }
@@ -255,38 +265,37 @@ TEST_F(GetFillValueForEntityTest, FillingSelectControlWithCountries) {
        std::vector<std::pair<std::vector<const char*>, std::u16string>>{
            {{"FR", "CA", "SE", "BR"}, u"SE"},
            {{"France", "Sweden", "Canada", "Brazil"}, u"Sweden"}}) {
-    AutofillField field{test::CreateTestSelectField(options)};
+    auto field =
+        std::make_unique<AutofillField>(test::CreateTestSelectField(options));
     FieldPrediction prediction;
     prediction.set_type(PASSPORT_ISSUING_COUNTRY);
     prediction.set_source(
         autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
             FieldPrediction::SOURCE_AUTOFILL_AI);
-    field.set_server_predictions({prediction});
-    field.SetTypeTo(ADDRESS_HOME_COUNTRY,
-                    AutofillPredictionSource::kServerCrowdsourcing);
+    field->set_server_predictions({prediction});
+    field->SetTypeTo(ADDRESS_HOME_COUNTRY,
+                     AutofillPredictionSource::kServerCrowdsourcing);
 
     EXPECT_EQ(
-        GetFillValueForEntity(passport, field, mojom::ActionPersistence::kFill,
-                              kAppLocaleUS, /*address_normalizer=*/nullptr),
+        GetFillValueForEntity(passport, field, mojom::ActionPersistence::kFill),
         expectation);
   }
 }
 
 TEST_F(GetFillValueForEntityTest, DifferentEntities) {
-  AutofillField field;
+  auto field = std::make_unique<AutofillField>();
   {
     FieldPrediction prediction;
     prediction.set_type(VEHICLE_LICENSE_PLATE);
     prediction.set_source(
         autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
             FieldPrediction::SOURCE_AUTOFILL_AI);
-    field.set_server_predictions({prediction});
+    field->set_server_predictions({prediction});
   }
 
   EntityInstance drivers_license = test::GetDriversLicenseEntityInstance();
   EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
-                                  mojom::ActionPersistence::kPreview,
-                                  kAppLocaleUS, /*address_normalizer=*/nullptr),
+                                  mojom::ActionPersistence::kPreview),
             u"");
 }
 
@@ -342,16 +351,16 @@ TEST_F(GetFillValueForEntityStateTest, FillingStateValueIntoInput) {
   for (const auto& [max_length, expectation] :
        std::vector<std::pair<size_t, std::u16string>>{{50u, u"California"},
                                                       {2u, u"CA"}}) {
-    AutofillField field;
+    auto field = std::make_unique<AutofillField>();
     FieldPrediction prediction;
     prediction.set_type(DRIVERS_LICENSE_REGION);
     prediction.set_source(
         autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
             FieldPrediction::SOURCE_AUTOFILL_AI);
-    field.set_server_predictions({prediction});
-    field.SetTypeTo(ADDRESS_HOME_STATE,
-                    AutofillPredictionSource::kServerCrowdsourcing);
-    field.set_max_length(max_length);
+    field->set_server_predictions({prediction});
+    field->SetTypeTo(ADDRESS_HOME_STATE,
+                     AutofillPredictionSource::kServerCrowdsourcing);
+    field->set_max_length(max_length);
 
     EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
                                     mojom::ActionPersistence::kFill,
@@ -370,15 +379,16 @@ TEST_F(GetFillValueForEntityStateTest, FillingSelectControlWithState) {
        std::vector<std::pair<std::vector<const char*>, std::u16string>>{
            {{"NY", "CA", "IL", "NV"}, u"CA"},
            {{"New York", "California", "Illinois", "Nevada"}, u"California"}}) {
-    AutofillField field{test::CreateTestSelectField(options)};
+    auto field =
+        std::make_unique<AutofillField>(test::CreateTestSelectField(options));
     FieldPrediction prediction;
     prediction.set_type(DRIVERS_LICENSE_REGION);
     prediction.set_source(
         autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
             FieldPrediction::SOURCE_AUTOFILL_AI);
-    field.set_server_predictions({prediction});
-    field.SetTypeTo(ADDRESS_HOME_STATE,
-                    AutofillPredictionSource::kServerCrowdsourcing);
+    field->set_server_predictions({prediction});
+    field->SetTypeTo(ADDRESS_HOME_STATE,
+                     AutofillPredictionSource::kServerCrowdsourcing);
 
     EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
                                     mojom::ActionPersistence::kFill,
@@ -396,23 +406,25 @@ class GetFillValueForEntityTest_Date : public GetFillValueForEntityTest {
     return test::GetPassportEntityInstance({.issue_date = u"2022-12-16"});
   }
 
-  AutofillField CreateInput(FormControlType form_control_type) {
-    AutofillField field = AutofillField(
+  std::unique_ptr<AutofillField> CreateInput(
+      FormControlType form_control_type) {
+    auto field = std::make_unique<AutofillField>(
         test::CreateTestFormField(/*label=*/"",
                                   /*name=*/"",
                                   /*value=*/"", form_control_type));
-    AddPrediction(field);
+    AddPrediction(*field);
     return field;
   }
 
-  AutofillField CreateSelect(const std::vector<std::string>& values,
-                             const std::vector<std::string>& texts) {
-    AutofillField field = AutofillField(test::CreateTestSelectField(
+  std::unique_ptr<AutofillField> CreateSelect(
+      const std::vector<std::string>& values,
+      const std::vector<std::string>& texts) {
+    auto field = std::make_unique<AutofillField>(test::CreateTestSelectField(
         /*label=*/"", /*name=*/"", /*value=*/"",
         /*autocomplete=*/"",
         /*values=*/base::ToVector(values, &std::string::c_str),
         /*contents=*/base::ToVector(texts, &std::string::c_str)));
-    AddPrediction(field);
+    AddPrediction(*field);
     return field;
   }
 
@@ -429,8 +441,8 @@ class GetFillValueForEntityTest_Date : public GetFillValueForEntityTest {
 
 // Tests that a date is filled into an input according to the format string.
 TEST_F(GetFillValueForEntityTest_Date, FillingDateValueIntoTextInput) {
-  AutofillField field = CreateInput(FormControlType::kInputText);
-  field.set_format_string_unless_overruled(
+  auto field = CreateInput(FormControlType::kInputText);
+  field->set_format_string_unless_overruled(
       u"DD/MM/YYYY", AutofillField::FormatStringSource::kServer);
   EXPECT_EQ(
       GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
@@ -441,7 +453,7 @@ TEST_F(GetFillValueForEntityTest_Date, FillingDateValueIntoTextInput) {
 
 // Tests that a date is filled into an input according to the format string.
 TEST_F(GetFillValueForEntityTest_Date, FillingDateValueIntoDateInput) {
-  AutofillField field = CreateInput(FormControlType::kInputDate);
+  auto field = CreateInput(FormControlType::kInputDate);
   EXPECT_EQ(
       GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
                             /*app_locale=*/"",
@@ -451,7 +463,7 @@ TEST_F(GetFillValueForEntityTest_Date, FillingDateValueIntoDateInput) {
 
 // Tests that a date is filled into an input according to the format string.
 TEST_F(GetFillValueForEntityTest_Date, FillingDateValueIntoMonthInput) {
-  AutofillField field = CreateInput(FormControlType::kInputMonth);
+  auto field = CreateInput(FormControlType::kInputMonth);
   EXPECT_EQ(
       GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
                             /*app_locale=*/"",
@@ -539,8 +551,7 @@ TEST_P(GetFillValueForEntityTest_Date_Select_Integral, GetFillValueForEntity) {
                                       /*values=*/values,
                                       /*texts=*/texts),
                                   mojom::ActionPersistence::kFill,
-                                  /*app_locale=*/"",
-                                  /*address_normalizer=*/nullptr),
+                                  /*app_locale=*/""),
             base::UTF8ToUTF16(p.expectation));
 }
 
@@ -655,11 +666,10 @@ TEST_F(GetFillValueForEntityTest_Date, MonthString) {
   std::vector<std::string> months = {
       "January", "February", "March",     "April",   "May",      "June",
       "July",    "August",   "September", "October", "November", "December"};
-  AutofillField field = CreateSelect(months, months);
+  auto field = CreateSelect(months, months);
   EXPECT_EQ(
       GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
-                            /*app_locale=*/"",
-                            /*address_normalizer=*/nullptr),
+                            /*app_locale=*/""),
       u"December");
 }
 
@@ -668,11 +678,10 @@ TEST_F(GetFillValueForEntityTest_Date, MonthString) {
 TEST_F(GetFillValueForEntityTest_Date, MonthStringAbbreviations) {
   std::vector<std::string> months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-  AutofillField field = CreateSelect(months, months);
+  auto field = CreateSelect(months, months);
   EXPECT_EQ(
       GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
-                            /*app_locale=*/"",
-                            /*address_normalizer=*/nullptr),
+                            /*app_locale=*/""),
       u"Dec");
 }
 

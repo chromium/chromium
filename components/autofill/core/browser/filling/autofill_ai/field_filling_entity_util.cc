@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/autofill_ai/select_date_matching.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
+#include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
@@ -123,50 +124,71 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
   if (!MayPerformAutofillAiAction(client, AutofillAiAction::kFilling) || !edm) {
     return {};
   }
-  auto fillable_by_autofill_ai =
-      [&, fillable_types =
-              std::optional<FieldTypeSet>()](FieldType field_type) mutable {
-        if (!fillable_types) {
-          fillable_types.emplace();
-          for (const EntityInstance& entity : edm->GetEntityInstances()) {
-            for (const AttributeInstance& attribute : entity.attributes()) {
-              fillable_types->insert(attribute.type().field_type());
-            }
-          }
-        }
-        return fillable_types->contains(field_type);
-      };
 
-  std::vector<FieldGlobalId> fields;
+  std::optional<base::flat_map<
+      Section,
+      base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>>>
+      fields_and_types;
+
+  // Returns true if there is data present that could fill the `field`.
+  auto is_fillable = [&](const AutofillField& field) {
+    return std::ranges::any_of(
+        edm->GetEntityInstances(), [&](const EntityInstance& entity) {
+          if (!fields_and_types) {
+            fields_and_types = DetermineAttributeTypes(form.fields());
+          }
+          auto it = fields_and_types->find(field.section());
+          if (it == fields_and_types->end()) {
+            return false;
+          }
+          auto jt = it->second.find(entity.type());
+          if (jt == it->second.end()) {
+            return false;
+          }
+          auto kt =
+              std::ranges::find(jt->second, field.global_id(),
+                                [](const AutofillFieldWithAttributeType& f) {
+                                  return f.field->global_id();
+                                });
+          if (kt == jt->second.end()) {
+            return false;
+          }
+          AttributeType type = kt->type;
+          return entity.attribute(type).has_value();
+        });
+  };
+
+  std::vector<FieldGlobalId> fillable_fields;
   for (const auto& field : form.fields()) {
-    std::optional<FieldType> field_type =
-        field->GetAutofillAiServerTypePredictions();
-    if (field_type && fillable_by_autofill_ai(*field_type)) {
-      fields.push_back(field->global_id());
+    if (is_fillable(*field)) {
+      fillable_fields.push_back(field->global_id());
     }
   }
-  return std::move(fields);
+  return fillable_fields;
 }
 
 std::u16string GetFillValueForEntity(
     const EntityInstance& entity,
+    base::span<const AutofillFieldWithAttributeType> fields_and_types,
     const AutofillField& field,
     mojom::ActionPersistence action_persistence,
     const std::string& app_locale,
     AddressNormalizer* address_normalizer) {
-  std::optional<FieldType> field_type =
-      field.GetAutofillAiServerTypePredictions();
-  if (!field_type) {
-    return u"";
-  }
-  std::optional<AttributeType> attribute_type =
-      AttributeType::FromFieldType(*field_type);
-  if (!attribute_type || attribute_type->entity_type() != entity.type()) {
-    return u"";
-  }
+  auto attribute = [&]() -> base::optional_ref<const AttributeInstance> {
+    auto it = std::ranges::find(fields_and_types, field.global_id(),
+                                [](const AutofillFieldWithAttributeType& f) {
+                                  return f.field->global_id();
+                                });
+    if (it == fields_and_types.end()) {
+      return std::nullopt;
+    }
+    AttributeType type = it->type;
+    if (type.entity_type() != entity.type()) {
+      return std::nullopt;
+    }
+    return entity.attribute(it->type);
+  }();
 
-  base::optional_ref<const AttributeInstance> attribute =
-      entity.attribute(*attribute_type);
   if (!attribute) {
     return u"";
   }
