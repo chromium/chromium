@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Close peerconnection causes close event and error on many channels, negotiated datachannel
+  promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'createDataChannel' on 'RTCPeerConnection': RTCDataChannel creation failed"
+Harness: the test ran to completion.
+

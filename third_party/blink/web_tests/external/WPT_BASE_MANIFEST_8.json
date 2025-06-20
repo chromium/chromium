@@ -8044,6 +8044,13 @@
         {}
        ]
       ],
+      "details-crash.html": [
+       "448a71581f211ad3ed716ebb7503fcc6284aa52e",
+       [
+        null,
+        {}
+       ]
+      ],
       "empty-crash.html": [
        "d409eff4a88c88011e7a8ffc48d1dc7e71462d7a",
        [
@@ -178213,7 +178220,7 @@
       ]
      ],
      "scroll-target-group-002.html": [
-      "e3e83769db2ffab1b8cbab1b00e795bfc9ec4c4f",
+      "5e32462426c1be6056d07b1936c3b3b45fb6b5b4",
       [
        null,
        [
@@ -178226,7 +178233,7 @@
       ]
      ],
      "scroll-target-group-003.html": [
-      "39e1beff02acd0f29577e067f8e2cbe7aa42b82d",
+      "413e99f4eb791b7823458fa55a95109bb1b7bc3e",
       [
        null,
        [
@@ -528330,29 +528337,36 @@
        {}
       ]
      ],
+     "3d-point-mapping-2-transforminterop.html": [
+      "1322fc753d1732a69096c535c23506ac09193b48",
+      [
+       null,
+       {}
+      ]
+     ],
      "3d-point-mapping-3.html": [
-      "906171e20caed1294dffc947edabf9c8e65a0bcd",
+      "458ea62dd4e4b69eb29129325d960a7f67af4782",
       [
        null,
        {}
       ]
      ],
      "3d-point-mapping-coplanar.html": [
-      "0ae0ab1ee483f627c9a1142f82d9976ce7ee5a3c",
+      "7d0288015ba8ecf30565ad83aaf915409260f115",
       [
        null,
        {}
       ]
      ],
      "3d-point-mapping-overlapping.html": [
-      "ffcfc1ae042697fc083ceb108182ba09086b4593",
+      "ea93c7e9ce1a58282d5947dd9ee48ed5778862fd",
       [
        null,
        {}
       ]
      ],
      "3d-point-mapping.html": [
-      "fd6ea8d109a6a8cfd8dd6db9bfd25007886e8c1d",
+      "1600031f501490907ca5085f19f2dc158c145f46",
       [
        null,
        {}
@@ -717588,15 +717602,6 @@
          "testdriver": true
         }
        ]
-      ],
-      "raf-loop.html": [
-       "8693aef874ca2e1e015aed473ccf4f685f62af3b",
-       [
-        null,
-        {
-         "testdriver": true
-        }
-       ]
       ]
      }
     },
@@ -779891,7 +779896,7 @@
       ]
      ],
      "qdq_subgraph.https.any.js": [
-      "62312137101c291efbd736da4ee43386450a7bca",
+      "9c7ef624f17a5e651e32c3a556aa9d63190d40a3",
       [
        "webnn/conformance_tests/qdq_subgraph.https.any.html?cpu",
        {
@@ -801241,7 +801246,7 @@
      ]
     ],
     "RTCDataChannel-close.html": [
-     "e215d95ed9a932692d066a06c05dc84d36db8215",
+     "992a490cd3908a8038a880b0cdcddf47a98dc6c4",
      [
       null,
       {
@@ -801282,7 +801287,7 @@
      ]
     ],
     "RTCDataChannel-send.html": [
-     "193f38cd780292e95daceda0aade957ac53c95cc",
+     "69bdf9dbe62b0fb081b764d5f8a39b8880d3457b",
      [
       null,
       {
