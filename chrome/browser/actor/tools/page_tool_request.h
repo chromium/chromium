@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/tabs/public/tab_interface.h"
@@ -21,23 +22,48 @@ class AggregatedJournal;
 // Tool requests targeting a specific, existing document should inherit from
 // this subclass. Being page-scoped implies also being tab-scoped since a page
 // exists inside a tab.
+//
+// Note: A page tool is scoped to a specific (local root) document, however,
+// until tool invocation time it isn't valid to dereference the RenderFrameHost
+// from the request. This is because the final frame that will be used isn't
+// known until the request goes through TimeOfUseValidation and the tool is
+// ready to invoke.
 class PageToolRequest : public TabToolRequest {
  public:
-  // Page tool requests must specify a target within the document. This must be
-  // one of:
-  //   * A coordinate, relative to the local root origin
-  //   * A specific node, specified by DOMNodeId. If not set, targets the root
-  //     element / viewport.
-  using NodeTarget = std::optional<int>;
+  // Page tool requests must specify a target in the page. This must be
+  // one of (mutually exclusive):
+  //   * A main-frame relative coordinate
+  //   * A specific node, specified by DOMNodeId and document identifier pair.
+  //     DOMNodeId can be the kRootElementDomNodeId special value to target the
+  //     viewport.
   using CoordinateTarget = gfx::Point;
-  using Target = std::variant<NodeTarget, CoordinateTarget>;
+  struct NodeTarget {
+    int dom_node_id;
+    std::string document_identifier;
+  };
 
-  // A document identifier is optional if a CoordinateTarget. It is required
-  // when using a NodeTarget.
-  // TODO(crbug.com/411462297): Put document identifier into the Target type.
-  PageToolRequest(tabs::TabHandle tab_handle,
-                  std::string_view document_identifier,
-                  const Target& target);
+  class Target {
+   public:
+    explicit Target(const NodeTarget& node_target);
+    explicit Target(const CoordinateTarget& coordinate_target);
+    Target(const Target& other);
+    ~Target();
+
+    bool is_coordinate() const {
+      return std::holds_alternative<CoordinateTarget>(impl_);
+    }
+    bool is_node() const { return std::holds_alternative<NodeTarget>(impl_); }
+
+    const CoordinateTarget& coordinate() const {
+      return std::get<CoordinateTarget>(impl_);
+    }
+    const NodeTarget& node() const { return std::get<NodeTarget>(impl_); }
+
+   private:
+    std::variant<NodeTarget, CoordinateTarget> impl_;
+  };
+
+  PageToolRequest(tabs::TabHandle tab_handle, const Target& target);
   ~PageToolRequest() override;
   PageToolRequest(const PageToolRequest& other);
 
@@ -50,11 +76,6 @@ class PageToolRequest : public TabToolRequest {
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,
                               AggregatedJournal& journal) const override;
-
-  // The provided document identifier in which this request should act. nullopt
-  // if using coordinates in which case the target document must be hit tested
-  // from coordinates.
-  const std::optional<std::string>& DocumentIdentifier() const;
 
   // Returns what in the page the tool should act upon.
   const Target& GetTarget() const;

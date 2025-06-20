@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
+#include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -67,52 +68,20 @@ TabHandle GetTabHandle(const T& action, TabInterface* deprecated_fallback_tab) {
   return tab_handle;
 }
 
-template <class T>
-PageScopedParams GetPageScopedParams(const T& action,
-                                     TabInterface* deprecated_fallback_tab) {
-  std::string document_identifier;
-  if (action.has_target()) {
-    document_identifier =
-        action.target().document_identifier().serialized_token();
-  }
-
-  tabs::TabHandle tab_handle;
-  if (action.has_tab_id()) {
-    tab_handle = TabHandle(action.tab_id());
-  } else if (deprecated_fallback_tab) {
-    tab_handle = deprecated_fallback_tab->GetHandle();
-  }
-  return {document_identifier, tab_handle};
-}
-
-// DragAndRelease is unusual in that it has no target, it has a from_target and
-// to_target. Specialize and use the from_target as the document-scoping target.
-template <>
-PageScopedParams GetPageScopedParams<DragAndReleaseAction>(
-    const DragAndReleaseAction& action,
-    TabInterface* deprecated_fallback_tab) {
-  std::string document_identifier;
-  if (action.has_from_target()) {
-    document_identifier =
-        action.from_target().document_identifier().serialized_token();
-  }
-
-  tabs::TabHandle tab_handle;
-  if (action.has_tab_id()) {
-    tab_handle = TabHandle(action.tab_id());
-  } else if (deprecated_fallback_tab) {
-    tab_handle = deprecated_fallback_tab->GetHandle();
-  }
-  return {document_identifier, tab_handle};
-}
-
-PageToolRequest::Target ToPageToolTarget(
+std::optional<PageToolRequest::Target> ToPageToolTarget(
     const optimization_guide::proto::ActionTarget& target) {
+  // A valid target must have either a coordinate or a
+  // document_identifier-dom_node_id pair.
   if (target.has_coordinate()) {
     return PageToolRequest::Target(
         gfx::Point(target.coordinate().x(), target.coordinate().y()));
   } else {
-    return PageToolRequest::Target(target.content_node_id());
+    if (!target.has_content_node_id() || !target.has_document_identifier()) {
+      return std::nullopt;
+    }
+    return PageToolRequest::Target(
+        {target.content_node_id(),
+         target.document_identifier().serialized_token()});
   }
 }
 std::unique_ptr<ToolRequest> CreateClickRequest(
@@ -121,10 +90,10 @@ std::unique_ptr<ToolRequest> CreateClickRequest(
   using ClickCount = ClickToolRequest::ClickCount;
   using ClickType = ClickToolRequest::ClickType;
 
-  PageScopedParams page = GetPageScopedParams(action, deprecated_fallback_tab);
+  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
 
   if (!action.has_target() || !action.has_click_count() ||
-      !action.has_click_type() || page.tab_handle == TabHandle::Null()) {
+      !action.has_click_type() || tab_handle == TabHandle::Null()) {
     return nullptr;
   }
 
@@ -164,9 +133,13 @@ std::unique_ptr<ToolRequest> CreateClickRequest(
       break;
   }
 
-  return std::make_unique<ClickToolRequest>(
-      page.tab_handle, page.document_identifier,
-      ToPageToolTarget(action.target()), type, count);
+  auto target = ToPageToolTarget(action.target());
+  if (!target.has_value()) {
+    return nullptr;
+  }
+
+  return std::make_unique<ClickToolRequest>(tab_handle, target.value(), type,
+                                            count);
 }
 
 std::unique_ptr<ToolRequest> CreateTypeRequest(
@@ -174,10 +147,10 @@ std::unique_ptr<ToolRequest> CreateTypeRequest(
     TabInterface* deprecated_fallback_tab) {
   using TypeMode = TypeToolRequest::Mode;
 
-  PageScopedParams page = GetPageScopedParams(action, deprecated_fallback_tab);
+  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
 
   if (!action.has_target() || !action.has_text() || !action.has_mode() ||
-      !action.has_follow_by_enter() || page.tab_handle == TabHandle::Null()) {
+      !action.has_follow_by_enter() || tab_handle == TabHandle::Null()) {
     return nullptr;
   }
 
@@ -201,10 +174,14 @@ std::unique_ptr<ToolRequest> CreateTypeRequest(
       mode = TypeMode::kReplace;
       break;
   }
-  return std::make_unique<TypeToolRequest>(
-      page.tab_handle, page.document_identifier,
-      ToPageToolTarget(action.target()), action.text(),
-      action.follow_by_enter(), mode);
+
+  auto target = ToPageToolTarget(action.target());
+  if (!target.has_value()) {
+    return nullptr;
+  }
+  return std::make_unique<TypeToolRequest>(tab_handle, target.value(),
+                                           action.text(),
+                                           action.follow_by_enter(), mode);
 }
 
 std::unique_ptr<ToolRequest> CreateScrollRequest(
@@ -212,32 +189,33 @@ std::unique_ptr<ToolRequest> CreateScrollRequest(
     TabInterface* deprecated_fallback_tab) {
   using Direction = ScrollToolRequest::Direction;
 
-  PageScopedParams page = GetPageScopedParams(action, deprecated_fallback_tab);
+  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
 
   if (!action.has_direction() || !action.has_distance() ||
-      page.tab_handle == TabHandle::Null()) {
+      tab_handle == TabHandle::Null()) {
     return nullptr;
   }
 
-  PageToolRequest::Target page_target;
-
+  std::optional<PageToolRequest::Target> target;
   if (action.has_target()) {
-    page_target = ToPageToolTarget(action.target());
+    target = ToPageToolTarget(action.target());
   } else {
     // Scroll action may omit a target which means "target the viewport".
-    // TODO(bokan): This can be removed once the scroll action provides the main
-    // document's id in these cases.
-    page_target = std::nullopt;
-    if (page.document_identifier.empty()) {
-      TabInterface* tab = page.tab_handle.Get();
-      if (!tab) {
-        return nullptr;
-      }
-      page.document_identifier =
-          DocumentIdentifierUserData::GetOrCreateForCurrentDocument(
-              tab->GetContents()->GetPrimaryMainFrame())
-              ->serialized_token();
+    TabInterface* tab = tab_handle.Get();
+    if (!tab) {
+      return nullptr;
     }
+    std::string document_identifier =
+        DocumentIdentifierUserData::GetOrCreateForCurrentDocument(
+            tab->GetContents()->GetPrimaryMainFrame())
+            ->serialized_token();
+
+    target.emplace(PageToolRequest::Target(
+        {/*dom_node_id=*/kRootElementDomNodeId, document_identifier}));
+  }
+
+  if (!target) {
+    return nullptr;
   }
 
   Direction direction;
@@ -264,52 +242,66 @@ std::unique_ptr<ToolRequest> CreateScrollRequest(
       break;
   }
 
-  return std::make_unique<ScrollToolRequest>(
-      page.tab_handle, page.document_identifier, page_target, direction,
-      action.distance());
+  return std::make_unique<ScrollToolRequest>(tab_handle, target.value(),
+                                             direction, action.distance());
 }
 
 std::unique_ptr<ToolRequest> CreateMoveMouseRequest(
     const MoveMouseAction& action,
     TabInterface* deprecated_fallback_tab) {
-  PageScopedParams page = GetPageScopedParams(action, deprecated_fallback_tab);
-  if (!action.has_target() || page.tab_handle == TabHandle::Null()) {
+  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
+  if (!action.has_target() || tab_handle == TabHandle::Null()) {
     return nullptr;
   }
 
-  return std::make_unique<MoveMouseToolRequest>(
-      page.tab_handle, page.document_identifier,
-      ToPageToolTarget(action.target()));
+  auto target = ToPageToolTarget(action.target());
+  if (!target.has_value()) {
+    return nullptr;
+  }
+
+  return std::make_unique<MoveMouseToolRequest>(tab_handle, target.value());
 }
 
 std::unique_ptr<ToolRequest> CreateDragAndReleaseRequest(
     const DragAndReleaseAction& action,
     TabInterface* deprecated_fallback_tab) {
-  PageScopedParams page = GetPageScopedParams(action, deprecated_fallback_tab);
+  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
 
   if (!action.has_from_target() || !action.has_to_target() ||
-      page.tab_handle == TabHandle::Null()) {
+      tab_handle == TabHandle::Null()) {
+    return nullptr;
+  }
+
+  auto from_target = ToPageToolTarget(action.from_target());
+  if (!from_target.has_value()) {
+    return nullptr;
+  }
+
+  auto to_target = ToPageToolTarget(action.to_target());
+  if (!to_target.has_value()) {
     return nullptr;
   }
 
   return std::make_unique<DragAndReleaseToolRequest>(
-      page.tab_handle, page.document_identifier,
-      ToPageToolTarget(action.from_target()),
-      ToPageToolTarget(action.to_target()));
+      tab_handle, from_target.value(), to_target.value());
 }
 
 std::unique_ptr<ToolRequest> CreateSelectRequest(
     const SelectAction& action,
     TabInterface* deprecated_fallback_tab) {
-  PageScopedParams page = GetPageScopedParams(action, deprecated_fallback_tab);
+  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
   if (!action.has_value() || !action.has_target() ||
-      page.tab_handle == TabHandle::Null()) {
+      tab_handle == TabHandle::Null()) {
     return nullptr;
   }
 
-  return std::make_unique<SelectToolRequest>(
-      page.tab_handle, page.document_identifier,
-      ToPageToolTarget(action.target()), action.value());
+  auto target = ToPageToolTarget(action.target());
+  if (!target.has_value()) {
+    return nullptr;
+  }
+
+  return std::make_unique<SelectToolRequest>(tab_handle, target.value(),
+                                             action.value());
 }
 
 std::unique_ptr<ToolRequest> CreateNavigateRequest(

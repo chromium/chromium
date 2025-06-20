@@ -19,7 +19,6 @@ class ClickToolRequest : public PageToolRequest {
   enum class ClickCount { kSingle, kDouble };
 
   ClickToolRequest(tabs::TabHandle tab_handle,
-                   std::string_view document_identifier,
                    const Target& target,
                    ClickType type,
                    ClickCount count);

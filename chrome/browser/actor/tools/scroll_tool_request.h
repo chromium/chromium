@@ -22,7 +22,6 @@ class ScrollToolRequest : public PageToolRequest {
   // If Target is a nullopt ContentNodeId, the root viewport is scrolled.
   // Distance is specified in physical pixels.
   ScrollToolRequest(tabs::TabHandle tab_handle,
-                    std::string_view document_identifier,
                     const Target& target,
                     Direction direction,
                     float distance);

@@ -10,12 +10,10 @@ namespace actor {
 
 using ::tabs::TabHandle;
 
-DragAndReleaseToolRequest::DragAndReleaseToolRequest(
-    TabHandle tab_handle,
-    std::string_view document_identifier,
-    const Target& from_target,
-    const Target& to_target)
-    : PageToolRequest(tab_handle, document_identifier, from_target),
+DragAndReleaseToolRequest::DragAndReleaseToolRequest(TabHandle tab_handle,
+                                                     const Target& from_target,
+                                                     const Target& to_target)
+    : PageToolRequest(tab_handle, from_target),
       from_target_(from_target),
       to_target_(to_target) {}
 

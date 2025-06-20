@@ -27,7 +27,6 @@ class TypeToolRequest : public PageToolRequest {
   };
 
   TypeToolRequest(tabs::TabHandle tab_handle,
-                  std::string_view document_identifier,
                   const Target& target,
                   std::string_view text,
                   bool follow_by_enter,

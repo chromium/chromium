@@ -11,11 +11,10 @@ namespace actor {
 using ::tabs::TabHandle;
 
 ClickToolRequest::ClickToolRequest(TabHandle tab_handle,
-                                   std::string_view document_identifier,
                                    const Target& target,
                                    ClickType type,
                                    ClickCount count)
-    : PageToolRequest(tab_handle, document_identifier, target),
+    : PageToolRequest(tab_handle, target),
       click_type_(type),
       click_count_(count) {}
 

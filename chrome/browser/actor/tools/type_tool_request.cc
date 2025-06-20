@@ -11,12 +11,11 @@ namespace actor {
 using ::tabs::TabHandle;
 
 TypeToolRequest::TypeToolRequest(TabHandle tab_handle,
-                                 std::string_view document_identifier,
                                  const Target& target,
                                  std::string_view text,
                                  bool follow_by_enter,
                                  Mode mode)
-    : PageToolRequest(tab_handle, document_identifier, target),
+    : PageToolRequest(tab_handle, target),
       text(text),
       follow_by_enter(follow_by_enter),
       mode(mode) {}

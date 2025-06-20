@@ -11,11 +11,10 @@ namespace actor {
 using ::tabs::TabHandle;
 
 ScrollToolRequest::ScrollToolRequest(TabHandle tab_handle,
-                                     std::string_view document_identifier,
                                      const Target& target,
                                      Direction direction,
                                      float distance)
-    : PageToolRequest(tab_handle, document_identifier, target),
+    : PageToolRequest(tab_handle, target),
       direction_(direction),
       distance_(distance) {}
 

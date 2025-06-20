@@ -16,9 +16,7 @@ namespace actor {
 // Injects a mouse move event at the given target.
 class MoveMouseToolRequest : public PageToolRequest {
  public:
-  MoveMouseToolRequest(tabs::TabHandle tab_handle,
-                       std::string_view document_identifier,
-                       const Target& target);
+  MoveMouseToolRequest(tabs::TabHandle tab_handle, const Target& target);
   ~MoveMouseToolRequest() override;
 
   // ToolRequest

@@ -97,10 +97,8 @@ RenderFrameHost* GetRootFrameForWidget(content::WebContents& web_contents,
   return root_frame;
 }
 
-RenderFrameHost* FindTargetLocalRootFrame(
-    TabHandle tab_handle,
-    std::optional<std::string> document_identifier,
-    PageToolRequest::Target target) {
+RenderFrameHost* FindTargetLocalRootFrame(TabHandle tab_handle,
+                                          PageToolRequest::Target target) {
   TabInterface* tab = tab_handle.Get();
   if (!tab) {
     return nullptr;
@@ -108,24 +106,19 @@ RenderFrameHost* FindTargetLocalRootFrame(
 
   WebContents& contents = *tab->GetContents();
 
-  if (std::holds_alternative<PageToolRequest::CoordinateTarget>(target)) {
-    auto coordinate = std::get<PageToolRequest::CoordinateTarget>(target);
-
+  if (target.is_coordinate()) {
     RenderWidgetHost* target_rwh =
-        contents.FindWidgetAtPoint(gfx::PointF(coordinate));
+        contents.FindWidgetAtPoint(gfx::PointF(target.coordinate()));
     if (!target_rwh) {
       return nullptr;
     }
     return GetRootFrameForWidget(contents, target_rwh);
   }
 
-  CHECK(std::holds_alternative<PageToolRequest::NodeTarget>(target));
-
-  CHECK(document_identifier.has_value());
-  const std::string& serialized_token = document_identifier.value();
+  CHECK(target.is_node());
 
   RenderFrameHost* target_frame = GetRenderFrameForDocumentIdentifier(
-      *tab->GetContents(), serialized_token);
+      *tab->GetContents(), target.node().document_identifier);
 
   // After finding the target frame, walk up to its local root.
   return GetLocalRoot(target_frame);
@@ -140,7 +133,7 @@ bool ValidateTargetFrameCandidate(
     WebContents& web_contents,
     const AnnotatedPageContent* last_observed_page_content) {
   // Frame validation is performed only when targeting using coordinates.
-  CHECK(std::holds_alternative<PageToolRequest::CoordinateTarget>(target));
+  CHECK(target.is_coordinate());
 
   if (!last_observed_page_content) {
     // TODO(bokan): We can't perform a TOCTOU check If there's no last
@@ -149,7 +142,7 @@ bool ValidateTargetFrameCandidate(
   }
 
   // TODO(bokan): This helper should take a gfx::Point.
-  auto coordinate = std::get<PageToolRequest::CoordinateTarget>(target);
+  gfx::Point coordinate = target.coordinate();
   optimization_guide::proto::Coordinate apc_coordinate;
   apc_coordinate.set_x(coordinate.x());
   apc_coordinate.set_y(coordinate.y());
@@ -224,16 +217,14 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
     return MakeResult(mojom::ActionResultCode::kTabWentAway);
   }
 
-  RenderFrameHost* frame = FindTargetLocalRootFrame(
-      request_->GetTabHandle(), request_->DocumentIdentifier(),
-      request_->GetTarget());
+  RenderFrameHost* frame =
+      FindTargetLocalRootFrame(request_->GetTabHandle(), request_->GetTarget());
   if (!frame) {
     return MakeResult(mojom::ActionResultCode::kFrameWentAway);
   }
 
   // Perform validation for coordinate based target only.
-  if (std::holds_alternative<PageToolRequest::CoordinateTarget>(
-          request_->GetTarget())) {
+  if (request_->GetTarget().is_coordinate()) {
     if (!ValidateTargetFrameCandidate(request_->GetTarget(), frame,
                                       *tab->GetContents(), last_observation)) {
       return MakeResult(

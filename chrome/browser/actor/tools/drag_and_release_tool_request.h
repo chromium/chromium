@@ -19,7 +19,6 @@ namespace actor {
 class DragAndReleaseToolRequest : public PageToolRequest {
  public:
   DragAndReleaseToolRequest(tabs::TabHandle tab_handle,
-                            std::string_view document_identifier,
                             const Target& from_target,
                             const Target& to_target);
   ~DragAndReleaseToolRequest() override;

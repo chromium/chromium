@@ -11,10 +11,9 @@ namespace actor {
 using ::tabs::TabHandle;
 
 SelectToolRequest::SelectToolRequest(TabHandle tab_handle,
-                                     std::string_view document_identifier,
                                      const Target& target,
                                      std::string_view value)
-    : PageToolRequest(tab_handle, document_identifier, target), value_(value) {}
+    : PageToolRequest(tab_handle, target), value_(value) {}
 
 SelectToolRequest::~SelectToolRequest() = default;
 

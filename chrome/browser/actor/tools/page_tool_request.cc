@@ -20,24 +20,28 @@ using content::WebContents;
 using optimization_guide::DocumentIdentifierUserData;
 using tabs::TabHandle;
 
+PageToolRequest::Target::Target(const NodeTarget& node_target)
+    : impl_(node_target) {}
+
+PageToolRequest::Target::Target(const CoordinateTarget& coordinate_target)
+    : impl_(coordinate_target) {}
+
+PageToolRequest::Target::Target(const Target& other) = default;
+
+PageToolRequest::Target::~Target() = default;
+
 // static
 mojom::ToolTargetPtr PageToolRequest::ToMojoToolTarget(const Target& target) {
-  if (std::holds_alternative<CoordinateTarget>(target)) {
-    return actor::mojom::ToolTarget::NewCoordinate(
-        std::get<CoordinateTarget>(target));
+  if (target.is_coordinate()) {
+    return actor::mojom::ToolTarget::NewCoordinate(target.coordinate());
   }
 
-  NodeTarget node_id = std::get<NodeTarget>(target);
-  return actor::mojom::ToolTarget::NewDomNodeId(
-      node_id.value_or(kRootElementDomNodeId));
+  CHECK(target.is_node());
+  return actor::mojom::ToolTarget::NewDomNodeId(target.node().dom_node_id);
 }
 
-PageToolRequest::PageToolRequest(TabHandle tab_handle,
-                                 std::string_view document_identifier,
-                                 const Target& target)
-    : TabToolRequest(tab_handle),
-      document_identifier_(document_identifier),
-      target_(target) {}
+PageToolRequest::PageToolRequest(TabHandle tab_handle, const Target& target)
+    : TabToolRequest(tab_handle), target_(target) {}
 
 PageToolRequest::~PageToolRequest() = default;
 
@@ -52,10 +56,6 @@ ToolRequest::CreateToolResult PageToolRequest::CreateTool(
   }
 
   return {std::make_unique<PageTool>(task_id, journal, *this), MakeOkResult()};
-}
-
-const std::optional<std::string>& PageToolRequest::DocumentIdentifier() const {
-  return document_identifier_;
 }
 
 const PageToolRequest::Target& PageToolRequest::GetTarget() const {
