@@ -204,6 +204,7 @@
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator_delegate.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
@@ -871,7 +872,8 @@ void OnListFamilyMembersResponse(
   }
   self.sceneState.URLContextsToOpen = nil;
 
-  if (IsWidgetsForMultiprofileEnabled()) {
+  if (IsWidgetsForMultiprofileEnabled() ||
+      IsShareExtensionForMultiprofileEnabled()) {
     // Find the first context that requires an account change.
     WidgetContext* context = [self findContextRequiringAccountChange:contexts];
     if (context) {
@@ -926,13 +928,29 @@ void OnListFamilyMembersResponse(
   return accountChanges > 1 ? YES : NO;
 }
 
+- (BOOL)URLEligibleForAccountChange:(NSURL*)URL {
+  if (IsWidgetsForMultiprofileEnabled()) {
+    return [URL.scheme isEqualToString:@"chromewidgetkit"];
+  }
+
+  if (IsShareExtensionForMultiprofileEnabled()) {
+    return [URL.path
+        isEqualToString:
+            [NSString
+                stringWithFormat:@"/%s",
+                                 app_group::kChromeAppGroupXCallbackCommand]];
+  }
+
+  return NO;
+}
+
 - (WidgetContext*)findContextRequiringAccountChange:
     (NSSet<UIOpenURLContext*>*)URLContexts {
   NSString* gaiaInApp = nil;
 
   for (UIOpenURLContext* context : URLContexts) {
     // Check that this URL is coming from a widget.
-    if (![context.URL.scheme isEqualToString:@"chromewidgetkit"]) {
+    if (![self URLEligibleForAccountChange:context.URL]) {
       continue;
     }
     std::string newGaia;

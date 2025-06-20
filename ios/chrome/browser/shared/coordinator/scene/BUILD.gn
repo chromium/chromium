@@ -206,6 +206,7 @@ source_set("scene") {
     "//ios/chrome/browser/whats_new/coordinator/promo",
     "//ios/chrome/browser/window_activities/model",
     "//ios/chrome/browser/youtube_incognito/coordinator",
+    "//ios/chrome/common/app_group",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/signin:choice_api",
