@@ -36,7 +36,6 @@ struct ScopedPathUnlinkerTraits {
 using ScopedPathUnlinker =
     ScopedGeneric<const FilePath*, ScopedPathUnlinkerTraits>;
 
-#if !BUILDFLAG(IS_NACL)
 enum class FDAccessModeError {
   kFcntlFailed,
   kMismatch,
@@ -57,7 +56,6 @@ std::optional<FDAccessModeError> CheckFDAccessMode(int fd, int expected_mode) {
 
   return std::nullopt;
 }
-#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace
 
@@ -191,10 +189,6 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               bool executable
 #endif
 ) {
-#if BUILDFLAG(IS_NACL)
-  // Untrusted code can't create descriptors or handles.
-  return {};
-#else
   if (size == 0) {
     return {};
   }
@@ -283,7 +277,6 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   return PlatformSharedMemoryRegion(
       {ScopedFD(shm_file.TakePlatformFile()), std::move(readonly_fd)}, mode,
       size, UnguessableToken::Create());
-#endif  // !BUILDFLAG(IS_NACL)
 }
 
 expected<void, PlatformSharedMemoryRegion::TakeError>
@@ -291,7 +284,6 @@ PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
-#if !BUILDFLAG(IS_NACL)
   if (auto result = CheckFDAccessMode(
           handle.fd, mode == Mode::kReadOnly ? O_RDONLY : O_RDWR);
       result.has_value()) {
@@ -324,12 +316,6 @@ PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   }
 
   return ok();
-#else
-  // fcntl(_, F_GETFL) is not implemented on NaCl.
-  // We also cannot try to mmap() a region as writable and look at the return
-  // status because the plugin process crashes if system mmap() fails.
-  return ok();
-#endif  // !BUILDFLAG(IS_NACL)
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(

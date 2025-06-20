@@ -18,9 +18,7 @@ namespace base {
 
 namespace {
 
-// Note: pointers are 32 bits on all architectures in NaCl. See
-// https://bugs.chromium.org/p/nativeclient/issues/detail?id=1162
-#if defined(ARCH_CPU_32_BITS) || BUILDFLAG(IS_NACL)
+#if defined(ARCH_CPU_32_BITS)
 // No effective limit on 32-bit, since there simply isn't enough address space
 // for ASLR to be particularly effective.
 constexpr size_t kTotalMappedSizeLimit = std::numeric_limits<size_t>::max();

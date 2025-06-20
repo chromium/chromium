@@ -277,9 +277,7 @@ TEST_F(SharedMemoryMappingTest, MAYBE_TotalMappedSizeLimit) {
   // Nothing interesting to test if the address space isn't 64 bits, since
   // there's no real limit enforced on 32 bits other than complete address
   // space exhaustion.
-  // Also exclude NaCl since pointers are 32 bits on all architectures:
-  // https://bugs.chromium.org/p/nativeclient/issues/detail?id=1162
-#if defined(ARCH_CPU_64_BITS) && !BUILDFLAG(IS_NACL)
+#if defined(ARCH_CPU_64_BITS)
   auto region = WritableSharedMemoryRegion::Create(1024 * 1024 * 1024);
   ASSERT_TRUE(region.IsValid());
   // The limit is 32GB of mappings on 64-bit platforms, so the final mapping

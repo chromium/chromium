@@ -24,7 +24,7 @@
 #include "partition_alloc/page_allocator.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_POSIX)
 // For madvise() which is available on all POSIX compatible systems.
 #include <sys/mman.h>
 #endif
@@ -425,7 +425,7 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
 // Note: this memory will not be accessed again.  The segment will be
 // freed asynchronously at a later time, so just do the best
 // immediately.
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_POSIX)
 // Linux and Android provide MADV_REMOVE which is preferred as it has a
 // behavior that can be verified in tests. Other POSIX flavors (MacOSX, BSDs),
 // provide MADV_FREE which has the same result but memory is purged lazily.
