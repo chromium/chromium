@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/tools/tab_management_tool.h"
 
+#include "base/notimplemented.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/ui/browser.h"
