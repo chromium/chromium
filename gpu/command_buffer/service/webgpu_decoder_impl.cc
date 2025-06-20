@@ -1765,6 +1765,9 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
         adapter.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface);
 #elif BUILDFLAG(IS_ANDROID)
     if (adapter_info.backendType == wgpu::BackendType::OpenGLES) {
+      if (!base::FeatureList::IsEnabled(features::kWebGPUAndroidOpenGLES)) {
+        return false;
+      }
       supports_external_textures = native_adapter.SupportsExternalImages();
     } else {
       supports_external_textures = adapter.HasFeature(

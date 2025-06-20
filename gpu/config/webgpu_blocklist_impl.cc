@@ -52,10 +52,6 @@ WebGPUBlocklistReason GetWebGPUAdapterBlocklistReason(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (info.backendType == wgpu::BackendType::OpenGLES) {
-    reason = reason | WebGPUBlocklistReason::AndroidGLES;
-  }
-
   constexpr uint32_t kARMVendorID = 0x13B5;
   constexpr uint32_t kQualcommVendorID = 0x5143;
   constexpr uint32_t kIntelVendorID = 0x8086;
@@ -180,8 +176,6 @@ std::string BlocklistReasonToString(WebGPUBlocklistReason reason) {
           {WebGPUBlocklistReason::AndroidLimitedSupport,
            "crbug.com/40643150: Limited support / testing currently "
            "available on Android."},
-          {WebGPUBlocklistReason::AndroidGLES,
-           "crbug.com/333858788: OpenGLES not fully supported on Android."},
           {WebGPUBlocklistReason::WindowsARM,
            "crbug.com/42242119: Not supported on Windows arm yet."},
           {WebGPUBlocklistReason::IndirectComputeRootConstants,

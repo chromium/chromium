@@ -910,4 +910,8 @@ BASE_FEATURE(kWebGPUCompatibilityMode,
              "WebGPUCompatibilityMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebGPUAndroidOpenGLES,
+             "WebGPUAndroidOpenGLES",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
