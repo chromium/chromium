@@ -261,6 +261,24 @@ bool DiceWebSigninInterceptionBubbleView::GetAccepted() const {
   return accepted_;
 }
 
+void DiceWebSigninInterceptionBubbleView::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  // The user is signed in to Chrome, the signin bubble is not needed anymore.
+  if (IsChromeSignin() &&
+      event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+          signin::PrimaryAccountChangeEvent::Type::kSet) {
+    Dismiss(SigninInterceptionDismissReason::kUserNotEligible);
+  }
+}
+
+void DiceWebSigninInterceptionBubbleView::OnExtendedAccountInfoRemoved(
+    const AccountInfo& info) {
+  // The account has been removed from Chrome, the bubble is not needed anymore.
+  if (info.account_id == bubble_parameters_.intercepted_account.account_id) {
+    Dismiss(SigninInterceptionDismissReason::kUserNotEligible);
+  }
+}
+
 content::WebContents* DiceWebSigninInterceptionBubbleView::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
@@ -323,6 +341,9 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
   set_margins(gfx::Insets());
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  identity_manager_observation_.Observe(
+      IdentityManagerFactory::GetForProfile(profile_));
 }
 
 void DiceWebSigninInterceptionBubbleView::SetHeightAndShowWidget(int height) {

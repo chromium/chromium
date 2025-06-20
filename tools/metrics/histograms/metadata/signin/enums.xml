@@ -919,6 +919,7 @@ chromium-metrics-reviews@google.com.
 <enum name="SigninInterceptionDismissReason">
   <int value="0" label="Pressing the Escape key"/>
   <int value="1" label="Pressing the identity pill"/>
+  <int value="2" label="User is no longer eligible (ex: signed out)"/>
 </enum>
 
 <enum name="SigninInterceptResult">

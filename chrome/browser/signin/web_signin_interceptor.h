@@ -13,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -131,7 +130,12 @@ enum class SigninInterceptionDismissReason {
   kEscKey = 0,
   kIdentityPillPressed = 1,
 
-  kMaxValue = kIdentityPillPressed,
+  // The user is no longer eligible for the interception. This can happen for
+  // example if the user signs out of the account while the interception is in
+  // progress.
+  kUserNotEligible = 2,
+
+  kMaxValue = kUserNotEligible,
 };
 
 // The ScopedWebSigninInterceptionBubbleHandle closes the signin intercept

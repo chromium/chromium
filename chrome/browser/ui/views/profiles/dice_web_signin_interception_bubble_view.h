@@ -10,9 +10,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -29,7 +31,8 @@ class Profile;
 // implemented as a WebUI page rendered inside a native bubble.
 class DiceWebSigninInterceptionBubbleView
     : public views::BubbleDialogDelegateView,
-      content::WebContentsDelegate {
+      public content::WebContentsDelegate,
+      public signin::IdentityManager::Observer {
   METADATA_HEADER(DiceWebSigninInterceptionBubbleView,
                   views::BubbleDialogDelegateView)
 
@@ -59,6 +62,11 @@ class DiceWebSigninInterceptionBubbleView
   // Returns true if the user has accepted the interception.
   bool GetAccepted() const;
 
+  // IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleIgnored);
@@ -82,6 +90,10 @@ class DiceWebSigninInterceptionBubbleView
                            ChromeSigninAccepted);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            ChromeSigninDeclined);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           ChromeSigninSignedOutDismiss);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           ChromeSigninSigninDismiss);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleWithParamBrowserTest,
                            AvatarEffectWithInterceptType);
   FRIEND_TEST_ALL_PREFIXES(ProfileBubbleInteractiveUiTest,
@@ -158,6 +170,9 @@ class DiceWebSigninInterceptionBubbleView
 
   base::WeakPtr<Browser> browser_;
   raw_ptr<Profile> profile_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
   bool accepted_ = false;
   WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
   base::OnceCallback<void(SigninInterceptionResult)> callback_;
