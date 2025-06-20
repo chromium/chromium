@@ -268,9 +268,9 @@
       message: "The website requested a subresource from a network that it could only access because of its users' privileged network position. These requests expose non-public devices and servers to the internet, increasing the risk of a cross-site request forgery (CSRF) attack, and/or information leakage. To mitigate these risks, Chrome deprecates requests to non-public subresources when initiated from non-secure contexts, and will start blocking them.",
       translation_note: "This warning occurs when an insecure context (e.g., HTTP) requests a private resource (not on open internet). This is done to mitigate the potential for CSRF and other attacks.",
       web_features: [
-        "kAddressSpacePrivateNonSecureContextEmbeddedLocal",
-        "kAddressSpacePublicNonSecureContextEmbeddedLocal",
-        "kAddressSpacePublicNonSecureContextEmbeddedPrivate",
+        "kAddressSpaceLocalNonSecureContextEmbeddedLoopbackV2",
+        "kAddressSpacePublicNonSecureContextEmbeddedLocalV2",
+        "kAddressSpacePublicNonSecureContextEmbeddedLoopbackV2",
       ],
       chrome_status_feature: 5436853517811712,
       milestone: 92,

@@ -49,9 +49,9 @@ namespace {
 
 // The list of features which should be reported as deprecated.
 constexpr WebFeature kDeprecatedAddressSpaceFeatures[] = {
-    WebFeature::kAddressSpacePublicNonSecureContextEmbeddedPrivate,
-    WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal,
-    WebFeature::kAddressSpacePrivateNonSecureContextEmbeddedLocal,
+    WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocalV2,
+    WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLoopbackV2,
+    WebFeature::kAddressSpaceLocalNonSecureContextEmbeddedLoopbackV2,
 };
 
 // Returns whether |feature| is deprecated.

@@ -147,26 +147,26 @@ std::string FetchSharedWorkerScript(std::string_view path) {
 
 std::vector<WebFeature> AllAddressSpaceFeatures() {
   return {
-      WebFeature::kAddressSpacePrivateSecureContextEmbeddedLocal,
-      WebFeature::kAddressSpacePrivateNonSecureContextEmbeddedLocal,
-      WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal,
-      WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal,
-      WebFeature::kAddressSpaceUnknownSecureContextEmbeddedLocal,
-      WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedLocal,
-      WebFeature::kAddressSpacePublicSecureContextEmbeddedPrivate,
-      WebFeature::kAddressSpacePublicNonSecureContextEmbeddedPrivate,
-      WebFeature::kAddressSpaceUnknownSecureContextEmbeddedPrivate,
-      WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedPrivate,
-      WebFeature::kAddressSpacePrivateSecureContextNavigatedToLocal,
-      WebFeature::kAddressSpacePrivateNonSecureContextNavigatedToLocal,
-      WebFeature::kAddressSpacePublicSecureContextNavigatedToLocal,
-      WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal,
-      WebFeature::kAddressSpaceUnknownSecureContextNavigatedToLocal,
-      WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToLocal,
-      WebFeature::kAddressSpacePublicSecureContextNavigatedToPrivate,
-      WebFeature::kAddressSpacePublicNonSecureContextNavigatedToPrivate,
-      WebFeature::kAddressSpaceUnknownSecureContextNavigatedToPrivate,
-      WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToPrivate,
+      WebFeature::kAddressSpaceLocalSecureContextEmbeddedLoopbackV2,
+      WebFeature::kAddressSpaceLocalNonSecureContextEmbeddedLoopbackV2,
+      WebFeature::kAddressSpacePublicSecureContextEmbeddedLoopbackV2,
+      WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLoopbackV2,
+      WebFeature::kAddressSpaceUnknownSecureContextEmbeddedLoopbackV2,
+      WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedLoopbackV2,
+      WebFeature::kAddressSpacePublicSecureContextEmbeddedLocalV2,
+      WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocalV2,
+      WebFeature::kAddressSpaceUnknownSecureContextEmbeddedLocalV2,
+      WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedLocalV2,
+      WebFeature::kAddressSpaceLocalSecureContextNavigatedToLoopbackV2,
+      WebFeature::kAddressSpaceLocalNonSecureContextNavigatedToLoopbackV2,
+      WebFeature::kAddressSpacePublicSecureContextNavigatedToLoopbackV2,
+      WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLoopbackV2,
+      WebFeature::kAddressSpaceUnknownSecureContextNavigatedToLoopbackV2,
+      WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToLoopbackV2,
+      WebFeature::kAddressSpacePublicSecureContextNavigatedToLocalV2,
+      WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocalV2,
+      WebFeature::kAddressSpaceUnknownSecureContextNavigatedToLocalV2,
+      WebFeature::kAddressSpaceUnknownNonSecureContextNavigatedToLocalV2,
       WebFeature::kPrivateNetworkAccessFetchedWorkerScript,
       WebFeature::kPrivateNetworkAccessFetchedSubFrame,
       WebFeature::kPrivateNetworkAccessFetchedTopFrame,
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
   feature_histogram_tester.ExpectCounts(AddFeatureCounts(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
-          {WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal, 1},
+          {WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocalV2, 1},
       }));
 }
 
@@ -423,7 +423,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
   feature_histogram_tester.ExpectCounts(AddFeatureCounts(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
-          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1},
+          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocalV2,
+           1},
           {WebFeature::kPrivateNetworkAccessFetchedTopFrame, 1},
       }));
 }
@@ -455,7 +456,8 @@ IN_PROC_BROWSER_TEST_F(
   feature_histogram_tester.ExpectCounts(AddFeatureCounts(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
-          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1},
+          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocalV2,
+           1},
           {WebFeature::kPrivateNetworkAccessFetchedTopFrame, 1},
       }));
 }
@@ -515,7 +517,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
   feature_histogram_tester.ExpectCounts(AddFeatureCounts(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
-          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1},
+          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocalV2,
+           1},
           {WebFeature::kPrivateNetworkAccessFetchedSubFrame, 1},
       }));
 }
@@ -557,7 +560,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
   feature_histogram_tester.ExpectCounts(AddFeatureCounts(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
-          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1},
+          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocalV2,
+           1},
           {WebFeature::kPrivateNetworkAccessFetchedSubFrame, 1},
       }));
 }
@@ -589,7 +593,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
   feature_histogram_tester.ExpectCounts(AddFeatureCounts(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
-          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1},
+          {WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocalV2,
+           1},
           {WebFeature::kPrivateNetworkAccessFetchedSubFrame, 1},
       }));
 }
@@ -781,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   feature_histogram_tester.ExpectCounts(AddFeatureCounts(
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
-          {WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal, 1},
+          {WebFeature::kAddressSpacePublicSecureContextEmbeddedLocalV2, 1},
       }));
 }
 

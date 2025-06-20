@@ -271,7 +271,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                 content::JsReplace("fetch($1).then(response => response.ok)",
                                    https_server().GetURL("b.com", kPnaPath))));
 
-  CheckCounter(WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal, 1);
+  CheckCounter(WebFeature::kAddressSpacePublicSecureContextEmbeddedLoopbackV2,
+               1);
   CheckCounter(WebFeature::kPrivateNetworkAccessPreflightSuccess, 1);
 }
 
@@ -298,7 +299,8 @@ IN_PROC_BROWSER_TEST_F(
                           "fetch($1).then(response => response.ok)",
                           https_server().GetURL("b.com", "/cors-ok.txt"))));
 
-  CheckCounter(WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal, 1);
+  CheckCounter(WebFeature::kAddressSpacePublicSecureContextEmbeddedLoopbackV2,
+               1);
   CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
 }
 

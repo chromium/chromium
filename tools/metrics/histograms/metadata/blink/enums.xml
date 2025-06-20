@@ -4198,30 +4198,37 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3750" label="PaymentHandlerStandardizedPaymentMethodIdentifier"/>
   <int value="3751" label="WebCodecsAudioEncoder"/>
   <int value="3752" label="EmbeddedCrossOriginFrameWithoutFrameAncestorsOrXFO"/>
-  <int value="3753" label="AddressSpacePrivateSecureContextEmbeddedLocal"/>
-  <int value="3754" label="AddressSpacePrivateNonSecureContextEmbeddedLocal"/>
-  <int value="3755" label="AddressSpacePublicSecureContextEmbeddedLocal"/>
-  <int value="3756" label="AddressSpacePublicNonSecureContextEmbeddedLocal"/>
-  <int value="3757" label="AddressSpacePublicSecureContextEmbeddedPrivate"/>
-  <int value="3758" label="AddressSpacePublicNonSecureContextEmbeddedPrivate"/>
-  <int value="3759" label="AddressSpaceUnknownSecureContextEmbeddedLocal"/>
-  <int value="3760" label="AddressSpaceUnknownNonSecureContextEmbeddedLocal"/>
-  <int value="3761" label="AddressSpaceUnknownSecureContextEmbeddedPrivate"/>
-  <int value="3762" label="AddressSpaceUnknownNonSecureContextEmbeddedPrivate"/>
-  <int value="3763" label="AddressSpacePrivateSecureContextNavigatedToLocal"/>
+  <int value="3753" label="AddressSpaceLocalSecureContextEmbeddedLoopbackV2"/>
+  <int value="3754"
+      label="AddressSpaceLocalNonSecureContextEmbeddedLoopbackV2"/>
+  <int value="3755" label="AddressSpacePublicSecureContextEmbeddedLoopbackV2"/>
+  <int value="3756"
+      label="AddressSpacePublicNonSecureContextEmbeddedLoopbackV2"/>
+  <int value="3757" label="AddressSpacePublicSecureContextEmbeddedLocalV2"/>
+  <int value="3758" label="AddressSpacePublicNonSecureContextEmbeddedLocalV2"/>
+  <int value="3759" label="AddressSpaceUnknownSecureContextEmbeddedLoopbackV2"/>
+  <int value="3760"
+      label="AddressSpaceUnknownNonSecureContextEmbeddedLoopbackV2"/>
+  <int value="3761" label="AddressSpaceUnknownSecureContextEmbeddedLocalV2"/>
+  <int value="3762" label="AddressSpaceUnknownNonSecureContextEmbeddedLocalV2"/>
+  <int value="3763"
+      label="AddressSpaceLocalSecureContextNavigatedToLoopbackV2"/>
   <int value="3764"
-      label="AddressSpacePrivateNonSecureContextNavigatedToLocal"/>
-  <int value="3765" label="AddressSpacePublicSecureContextNavigatedToLocal"/>
-  <int value="3766" label="AddressSpacePublicNonSecureContextNavigatedToLocal"/>
-  <int value="3767" label="AddressSpacePublicSecureContextNavigatedToPrivate"/>
+      label="AddressSpaceLocalNonSecureContextNavigatedToLoopbackV2"/>
+  <int value="3765"
+      label="AddressSpacePublicSecureContextNavigatedToLoopbackV2"/>
+  <int value="3766"
+      label="AddressSpacePublicNonSecureContextNavigatedToLoopbackV2"/>
+  <int value="3767" label="AddressSpacePublicSecureContextNavigatedToLocalV2"/>
   <int value="3768"
-      label="AddressSpacePublicNonSecureContextNavigatedToPrivate"/>
-  <int value="3769" label="AddressSpaceUnknownSecureContextNavigatedToLocal"/>
+      label="AddressSpacePublicNonSecureContextNavigatedToLocalV2"/>
+  <int value="3769"
+      label="AddressSpaceUnknownSecureContextNavigatedToLoopbackV2"/>
   <int value="3770"
-      label="AddressSpaceUnknownNonSecureContextNavigatedToLocal"/>
-  <int value="3771" label="AddressSpaceUnknownSecureContextNavigatedToPrivate"/>
+      label="AddressSpaceUnknownNonSecureContextNavigatedToLoopbackV2"/>
+  <int value="3771" label="AddressSpaceUnknownSecureContextNavigatedToLocalV2"/>
   <int value="3772"
-      label="AddressSpaceUnknownNonSecureContextNavigatedToPrivate"/>
+      label="AddressSpaceUnknownNonSecureContextNavigatedToLocalV2"/>
   <int value="3773" label="OBSOLETE_RTCPeerConnectionSdpSemanticsPlanB"/>
   <int value="3774" label="FetchRespondWithNoResponseWithUsedRequestBody"/>
   <int value="3775" label="V8TCPSocket_Close_Method"/>
