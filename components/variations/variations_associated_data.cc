@@ -114,6 +114,28 @@ class GroupMapAccessor {
     }
   }
 
+  base::Time GetNextTimeWindowEvent(base::Time current_time) const {
+    base::AutoLock scoped_lock(lock_);
+    base::Time next_event = base::Time::Max();
+    // This double loop is O(N) where N is the number of field trials having an
+    // associated variations ID, which should be in the order of 10s at most.
+    for (const auto& id_map : group_to_id_maps_) {
+      for (const auto& [id, entry] : id_map) {
+        // Update the next time window event if the start or end time is after
+        // 'now' but also before `next_time_window_event_`.
+        if (entry.time_window.start() > current_time &&
+            entry.time_window.start() < next_event) {
+          next_event = entry.time_window.start();
+        }
+        if (entry.time_window.end() > current_time &&
+            entry.time_window.end() < next_event) {
+          next_event = entry.time_window.end();
+        }
+      }
+    }
+    return next_event;
+  }
+
  private:
   friend struct base::DefaultSingletonTraits<GroupMapAccessor>;
 
@@ -125,7 +147,7 @@ class GroupMapAccessor {
   GroupMapAccessor() { group_to_id_maps_.resize(ID_COLLECTION_COUNT); }
   ~GroupMapAccessor() = default;
 
-  base::Lock lock_;
+  mutable base::Lock lock_;
   std::vector<GroupToIDMap> group_to_id_maps_;
 };
 
@@ -176,6 +198,10 @@ VariationID GetGoogleVariationIDFromHashes(
     std::optional<base::Time> current_time) {
   return GroupMapAccessor::GetInstance()->GetID(key, active_group,
                                                 current_time);
+}
+
+base::Time GetNextTimeWindowEvent(base::Time current_time) {
+  return GroupMapAccessor::GetInstance()->GetNextTimeWindowEvent(current_time);
 }
 
 // Functions below are exposed for testing explicitly behind this namespace.

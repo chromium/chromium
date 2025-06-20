@@ -5,6 +5,8 @@
 #include "components/variations/variations_associated_data.h"
 
 #include "base/metrics/field_trial.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/mock_entropy_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -156,6 +158,66 @@ TEST_F(VariationsAssociatedDataTest, Timeboxing) {
             GetGoogleVariationID(APP, TRIAL, GROUP, end + base::Seconds(1)));
   EXPECT_EQ(EMPTY_ID,
             GetGoogleVariationID(APP, TRIAL, GROUP, end + base::Days(15)));
+}
+
+TEST_F(VariationsAssociatedDataTest, GetNextTimeWindowEvent_Basic) {
+  const base::Time timestamp = base::Time::Now();
+  const base::Time start = timestamp + base::Days(7);
+  const base::Time end = timestamp + base::Days(14);
+
+  EXPECT_EQ(base::Time::Max(), GetNextTimeWindowEvent(start));
+  EXPECT_EQ(base::Time::Max(), GetNextTimeWindowEvent(end));
+
+  // Associate a variation id that becomes visible in 7 days, for 7 days.
+  AssociateGoogleVariationID(APP, TRIAL, GROUP, TEST_VALUE_A, {start, end});
+
+  // Validate the next time window event as 'current_time' moves forward.
+  EXPECT_EQ(start, GetNextTimeWindowEvent(start - base::Days(1)));
+  EXPECT_EQ(start, GetNextTimeWindowEvent(start - base::Seconds(1)));
+  EXPECT_EQ(end, GetNextTimeWindowEvent(start));
+  EXPECT_EQ(end, GetNextTimeWindowEvent(end - base::Days(1)));
+  EXPECT_EQ(end, GetNextTimeWindowEvent(end - base::Seconds(1)));
+  EXPECT_EQ(base::Time::Max(), GetNextTimeWindowEvent(end));
+  EXPECT_EQ(base::Time::Max(), GetNextTimeWindowEvent(end + base::Seconds(1)));
+}
+
+TEST_F(VariationsAssociatedDataTest,
+       GetNextTimeWindowEvent_DisjointAndOverlapping) {
+  const base::Time timestamp = base::Time::Now();
+
+  const TimeWindow windows[] = {
+      {timestamp + base::Days(3), timestamp + base::Days(6)},    // Disjoint.
+      {timestamp + base::Days(7), timestamp + base::Days(14)},   // Overlapped.
+      {timestamp + base::Days(9), timestamp + base::Days(11)},   // Contained.
+      {timestamp + base::Days(10), timestamp + base::Days(16)},  // Partial.
+  };
+
+  // Associate a variation id for each time window.
+  int i = 0;
+  for (const auto& window : windows) {
+    AssociateGoogleVariationID(
+        APP, base::StrCat({TRIAL, "_", base::NumberToString(i)}), GROUP,
+        TEST_VALUE_A + i, window);
+    ++i;
+  }
+
+  // Put all of the time window events into vector, then sort that vector. This
+  // is the order that GetNextTimeWindowEvent() should return them.
+  std::vector<base::Time> times;
+  for (const auto& window : windows) {
+    times.push_back(window.start());
+    times.push_back(window.end());
+  }
+  std::sort(times.begin(), times.end());
+
+  // Validate that the next time window event is always the next event in the
+  // sorted event list.
+  base::Time prev = base::Time::Min();
+  for (const auto& time : times) {
+    EXPECT_EQ(time, GetNextTimeWindowEvent(prev));
+    prev = time;
+  }
+  EXPECT_EQ(base::Time::Max(), GetNextTimeWindowEvent(prev));
 }
 
 }  // namespace variations

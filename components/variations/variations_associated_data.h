@@ -159,6 +159,10 @@ VariationID GetGoogleVariationIDFromHashes(
     ActiveGroupId active_group,
     std::optional<base::Time> current_time = std::nullopt);
 
+// Given `current_time`, returns the next time that a time windows will start or
+// end for a VariationID.
+COMPONENT_EXPORT(VARIATIONS)
+base::Time GetNextTimeWindowEvent(base::Time current_time);
 
 // Expose some functions for testing.
 namespace testing {
