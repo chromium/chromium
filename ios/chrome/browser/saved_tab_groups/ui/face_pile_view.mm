@@ -17,17 +17,14 @@ namespace {
 // Spacing between overlapping avatars.
 const CGFloat kAvatarSpacing = -6;
 
-// Substracted stroke around avatars.
-const CGFloat kAvatarSubstractredStroke = 2;
+// Substracted stroke around containers.
+const CGFloat kContainerSubstractredStroke = 2;
 
 // Font size of `plusXLabel`.
 const CGFloat kPlusXlabelFontSize = 9;
 
 // horizontal inner margin in for the `_plusXLabelContainer`.
 const CGFloat kPlusXlabelContainerHorizontalInnerMargin = 6;
-
-// Substracted stroke around `_plusXLabelContainer`.
-const CGFloat kPlusXLabelContainerSubstractredStroke = 2;
 
 // Alpha value of the `_plusXLabelContainer` background color.
 const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
@@ -54,6 +51,7 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
 - (instancetype)init {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+    self.layer.masksToBounds = YES;
     _facesStackView = [[UIStackView alloc] init];
     _facesStackView.translatesAutoresizingMaskIntoConstraints = NO;
     _facesStackView.spacing = kAvatarSpacing;
@@ -82,9 +80,8 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
   if (!backgroundColor) {
     return;
   }
-  // TODO(crbug.com/422737259): Render an outer stroke when the
-  // `_facePileBackgroundColor` is not nil.
   _facePileBackgroundColor = backgroundColor;
+  self.backgroundColor = _facePileBackgroundColor;
 }
 
 - (void)updateWithFaces:(NSArray<id<ShareKitAvatarPrimitive>>*)faces
@@ -95,7 +92,7 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
   }
 
   _avatars = faces;
-  CGFloat containerSize = _avatarSize + kAvatarSubstractredStroke * 2;
+  CGFloat containerSize = _avatarSize + kContainerSubstractredStroke * 2;
   NSInteger avatarsCount = static_cast<NSUInteger>(_avatars.count);
 
   for (NSInteger index = 0; index < avatarsCount; index++) {
@@ -138,6 +135,7 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
     // This is needed to avoid anti-aliasing artifacts around the border itself.
     UIView* plusXContainerView =
         [self createCircularContainerWithSize:containerSize];
+    plusXContainerView.layer.cornerRadius = containerSize / 2.0;
     [plusXContainerView addSubview:plusXLabel];
 
     [_facesStackView addArrangedSubview:plusXContainerView];
@@ -148,10 +146,10 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
       [plusXLabel.heightAnchor constraintEqualToConstant:_avatarSize],
       [plusXLabel.leadingAnchor
           constraintEqualToAnchor:plusXContainerView.leadingAnchor
-                         constant:kPlusXLabelContainerSubstractredStroke],
+                         constant:kContainerSubstractredStroke],
       [plusXLabel.trailingAnchor
           constraintEqualToAnchor:plusXContainerView.trailingAnchor
-                         constant:-kPlusXLabelContainerSubstractredStroke],
+                         constant:-kContainerSubstractredStroke],
 
       [plusXContainerView.heightAnchor constraintEqualToConstant:containerSize]
     ]];
@@ -161,6 +159,8 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
 
 - (void)setAvatarSize:(CGFloat)avatarSize {
   _avatarSize = avatarSize;
+  CGFloat containerSize = _avatarSize + kContainerSubstractredStroke * 2;
+  self.layer.cornerRadius = containerSize / 2.0;
 }
 
 #pragma mark - Private
