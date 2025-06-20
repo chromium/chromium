@@ -26,10 +26,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "crypto/ec_private_key.h"
 #include "crypto/hash.h"
-#include "crypto/rsa_private_key.h"
-#include "crypto/sha2.h"
+#include "crypto/keypair.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/ct_objects_extractor.h"
 #include "net/cert/ct_serialization.h"
@@ -1203,13 +1201,14 @@ void CertBuilder::Invalidate() {
 }
 
 void CertBuilder::GenerateECKey() {
-  auto private_key = crypto::ECPrivateKey::Create();
-  SetKey(bssl::UpRef(private_key->key()));
+  auto private_key = crypto::keypair::PrivateKey::GenerateEcP256();
+  SetKey(bssl::UpRef(private_key.key()));
 }
 
 void CertBuilder::GenerateRSAKey() {
-  auto private_key = crypto::RSAPrivateKey::Create(2048);
-  SetKey(bssl::UpRef(private_key->key()));
+  // TODO(https://crbug.com/426228064): Can we just use a hardcoded key here?
+  auto private_key = crypto::keypair::PrivateKey::GenerateRsa2048();
+  SetKey(bssl::UpRef(private_key.key()));
 }
 
 bool CertBuilder::UseKeyFromFile(const base::FilePath& key_file) {
