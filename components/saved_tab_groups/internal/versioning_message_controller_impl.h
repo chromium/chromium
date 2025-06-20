@@ -39,7 +39,7 @@ class VersioningMessageControllerImpl : public VersioningMessageController,
 
  private:
   bool ShouldShowMessageUi(MessageType message_type);
-  void ResetMessagePrefsOnStartup();
+  void ComputePrefsOnStartup();
 
   raw_ptr<PrefService> pref_service_;
   raw_ptr<TabGroupSyncService> tab_group_sync_service_;

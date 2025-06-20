@@ -205,12 +205,13 @@ class TabGroupSyncServiceTest : public testing::Test {
     pref_service_.registry()->RegisterDictionaryPref(
         prefs::kLocallyClosedRemoteTabGroupIds, base::Value::Dict());
     pref_service_.registry()->RegisterBooleanPref(
-        prefs::kDataSharingHasShownVersionUpdatedMessage, false);
+        prefs::kEligibleForVersionUpdatedMessage, false);
     pref_service_.registry()->RegisterBooleanPref(
-        prefs::kDataSharingHasShownVersionOutOfDateInstantMessage, false);
+        prefs::kEligibleForVersionOutOfDateInstantMessage, false);
     pref_service_.registry()->RegisterBooleanPref(
-        prefs::kDataSharingHasDismissedVersionOutOfDatePersistentMessage,
-        false);
+        prefs::kEligibleForVersionOutOfDatePersistentMessage, false);
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kHasShownAnyVersionOutOfDateMessage, false);
 
     auto metrics_logger =
         std::make_unique<TabGroupSyncMetricsLoggerImpl>(&device_info_tracker_);

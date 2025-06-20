@@ -76,18 +76,22 @@ inline constexpr char kDidEnableSharedTabGroupsInLastSession[] =
 
 // Prefs for Data Sharing (Versioning).
 // Stores whether the instant message prompting users to update chrome to
-// continue using shared tab groups has been shown.
-inline constexpr char kDataSharingHasShownVersionOutOfDateInstantMessage[] =
-    "data_sharing.has_shown_out_of_date_instant_message";
+// continue using shared tab groups should be shown.
+inline constexpr char kEligibleForVersionOutOfDateInstantMessage[] =
+    "data_sharing.eligible_for_version_out_of_date_instant_message";
 // Stores whether the persistent message prompting users to update chrome to
-// continue using shared tab groups has been shown and dismissed by the user.
-inline constexpr char
-    kDataSharingHasDismissedVersionOutOfDatePersistentMessage[] =
-        "data_sharing.has_dismissed_out_of_date_persistent_message";
+// continue using shared tab groups should be shown.
+inline constexpr char kEligibleForVersionOutOfDatePersistentMessage[] =
+    "data_sharing.eligible_for_version_out_of_date_persistent_message";
 // Stores whether the message that chrome has been updated to support shared tab
-// groups has been shown.
-inline constexpr char kDataSharingHasShownVersionUpdatedMessage[] =
-    "data_sharing.has_shown_version_updated_message";
+// groups should be shown.
+inline constexpr char kEligibleForVersionUpdatedMessage[] =
+    "data_sharing.eligible_for_version_updated_message";
+
+// Stores whether any message (persistent or instant) prompting the user to
+// update chrome to continue using shared tab groups has been shown.
+inline constexpr char kHasShownAnyVersionOutOfDateMessage[] =
+    "data_sharing.has_shown_any_version_out_of_date_message";
 
 // Registers the Clear Browsing Data UI prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

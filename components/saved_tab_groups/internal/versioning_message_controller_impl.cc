@@ -17,24 +17,14 @@ bool IsVersionOutOfDate() {
       data_sharing::features::kDataSharingEnableUpdateChromeUI);
 }
 
-bool MeetsEligibilityCriteria(
-    PrefService* pref_service,
-    VersioningMessageController::MessageType message_type) {
-  switch (message_type) {
-    case VersioningMessageController::MessageType::
-        VERSION_OUT_OF_DATE_INSTANT_MESSAGE:
-      return !pref_service->GetBoolean(
-          prefs::kDataSharingHasShownVersionOutOfDateInstantMessage);
-    case VersioningMessageController::MessageType::
-        VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE:
-      return !pref_service->GetBoolean(
-          prefs::kDataSharingHasDismissedVersionOutOfDatePersistentMessage);
-    case VersioningMessageController::MessageType::VERSION_UPDATED_MESSAGE:
-      return !pref_service->GetBoolean(
-          prefs::kDataSharingHasShownVersionUpdatedMessage);
-    default:
-      return false;
+bool HasCurrentSharedTabGroups(TabGroupSyncService* tab_group_sync_service) {
+  for (const auto* saved_tab_group : tab_group_sync_service->ReadAllGroups()) {
+    if (saved_tab_group->collaboration_id().has_value()) {
+      return true;
+    }
   }
+
+  return false;
 }
 
 }  // namespace
@@ -44,7 +34,6 @@ VersioningMessageControllerImpl::VersioningMessageControllerImpl(
     TabGroupSyncService* tab_group_sync_service)
     : pref_service_(pref_service),
       tab_group_sync_service_(tab_group_sync_service) {
-  ResetMessagePrefsOnStartup();
   tab_group_sync_service_->AddObserver(this);
 }
 
@@ -52,22 +41,53 @@ VersioningMessageControllerImpl::~VersioningMessageControllerImpl() {
   tab_group_sync_service_->RemoveObserver(this);
 }
 
-void VersioningMessageControllerImpl::ResetMessagePrefsOnStartup() {
-  // On startup, reset the message prefs based on the state of the
-  // feature flag.
+void VersioningMessageControllerImpl::ComputePrefsOnStartup() {
+  // On startup, read and compute the state of the prefs based on the feature
+  // flag and number of shared tab groups in the previous session.
+
   if (IsVersionOutOfDate()) {
-    // If versioning is disabled, reset the pref used for showing the re-enabled
-    // message shown in the enabled state.
-    pref_service_->SetBoolean(prefs::kDataSharingHasShownVersionUpdatedMessage,
+    // Version is out-of-date. If there were shared tab groups last session,
+    // that means that the version just switched. Compute the pref states
+    // accordingly.
+
+    // Determine if previous session had shared tab groups that make
+    // it eligible for the instant/persistent message.
+    const bool had_open_shared_tab_groups =
+        tab_group_sync_service_->HadSharedTabGroupsLastSession(
+            /*open_shared_tab_groups=*/true);
+    const bool had_any_shared_tab_groups =
+        tab_group_sync_service_->HadSharedTabGroupsLastSession(
+            /*open_shared_tab_groups=*/false);
+
+    if (had_open_shared_tab_groups) {
+      pref_service_->SetBoolean(
+          prefs::kEligibleForVersionOutOfDateInstantMessage, true);
+    }
+
+    if (had_any_shared_tab_groups) {
+      pref_service_->SetBoolean(
+          prefs::kEligibleForVersionOutOfDatePersistentMessage, true);
+    }
+
+    // Always reset the 'updated' message eligibility when out of date.
+    pref_service_->SetBoolean(prefs::kEligibleForVersionUpdatedMessage, false);
+  } else {  // Version is up-to-date.
+
+    // Determine if eligible for the 'version updated' message.
+    const bool had_any_out_of_date_messages_before =
+        pref_service_->GetBoolean(prefs::kHasShownAnyVersionOutOfDateMessage);
+
+    if (had_any_out_of_date_messages_before) {
+      pref_service_->SetBoolean(prefs::kEligibleForVersionUpdatedMessage, true);
+    }
+
+    // Always reset the 'out-of-date' message eligibilities when up to date.
+    pref_service_->SetBoolean(prefs::kEligibleForVersionOutOfDateInstantMessage,
                               false);
-  } else {
-    // If versioning is enabled, reset the prefs used for showing the instant
-    // and persistent messages shown in the disabled state.
+    pref_service_->SetBoolean(prefs::kHasShownAnyVersionOutOfDateMessage,
+                              false);
     pref_service_->SetBoolean(
-        prefs::kDataSharingHasShownVersionOutOfDateInstantMessage, false);
-    pref_service_->SetBoolean(
-        prefs::kDataSharingHasDismissedVersionOutOfDatePersistentMessage,
-        false);
+        prefs::kEligibleForVersionOutOfDatePersistentMessage, false);
   }
 }
 
@@ -88,27 +108,17 @@ void VersioningMessageControllerImpl::ShouldShowMessageUiAsync(
 bool VersioningMessageControllerImpl::ShouldShowMessageUi(
     MessageType message_type) {
   CHECK(is_initialized_);
-  bool is_version_out_of_date = IsVersionOutOfDate();
-  bool had_open_shared_tab_groups =
-      tab_group_sync_service_->HadSharedTabGroupsLastSession(
-          /*open_shared_tab_groups=*/true);
-  bool had_shared_tab_groups =
-      tab_group_sync_service_->HadSharedTabGroupsLastSession(
-          /*open_shared_tab_groups=*/false);
-  // Determines if the message can be shown, considering past displays or
-  // dismissals.
-  bool meets_eligibility_criteria =
-      MeetsEligibilityCriteria(pref_service_, message_type);
-
   switch (message_type) {
     case MessageType::VERSION_OUT_OF_DATE_INSTANT_MESSAGE:
-      return is_version_out_of_date && had_open_shared_tab_groups &&
-             meets_eligibility_criteria;
+      return pref_service_->GetBoolean(
+          prefs::kEligibleForVersionOutOfDateInstantMessage);
     case MessageType::VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE:
-      return is_version_out_of_date && had_shared_tab_groups &&
-             meets_eligibility_criteria;
+      return pref_service_->GetBoolean(
+          prefs::kEligibleForVersionOutOfDatePersistentMessage);
     case MessageType::VERSION_UPDATED_MESSAGE:
-      return !is_version_out_of_date && meets_eligibility_criteria;
+      return pref_service_->GetBoolean(
+                 prefs::kEligibleForVersionUpdatedMessage) &&
+             HasCurrentSharedTabGroups(tab_group_sync_service_);
     default:
       return false;
   }
@@ -119,11 +129,17 @@ void VersioningMessageControllerImpl::OnMessageUiShown(
   switch (message_type) {
     case MessageType::VERSION_OUT_OF_DATE_INSTANT_MESSAGE:
       pref_service_->SetBoolean(
-          prefs::kDataSharingHasShownVersionOutOfDateInstantMessage, true);
+          prefs::kEligibleForVersionOutOfDateInstantMessage, false);
+      pref_service_->SetBoolean(prefs::kHasShownAnyVersionOutOfDateMessage,
+                                true);
+      break;
+    case MessageType::VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE:
+      pref_service_->SetBoolean(prefs::kHasShownAnyVersionOutOfDateMessage,
+                                true);
       break;
     case MessageType::VERSION_UPDATED_MESSAGE:
-      pref_service_->SetBoolean(
-          prefs::kDataSharingHasShownVersionUpdatedMessage, true);
+      pref_service_->SetBoolean(prefs::kEligibleForVersionUpdatedMessage,
+                                false);
       break;
     default:
       break;
@@ -134,12 +150,14 @@ void VersioningMessageControllerImpl::OnMessageUiDismissed(
     MessageType message_type) {
   if (message_type == MessageType::VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE) {
     pref_service_->SetBoolean(
-        prefs::kDataSharingHasDismissedVersionOutOfDatePersistentMessage, true);
+        prefs::kEligibleForVersionOutOfDatePersistentMessage, false);
   }
 }
 
 void VersioningMessageControllerImpl::OnInitialized() {
   is_initialized_ = true;
+  ComputePrefsOnStartup();
+
   for (auto& callback : pending_callbacks_) {
     std::move(callback).Run();
   }
