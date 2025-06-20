@@ -8,6 +8,7 @@ include_rules = [
   "+extensions/common/switches.h",
   "+google_apis",
   "+net",
+  "+services/network/public/cpp",
   "+third_party/boringssl/src/include",
   "+third_party/re2",
 ]

@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/process/launch.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"
@@ -23,7 +24,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_provider {
@@ -46,7 +47,7 @@ class GcpUsingChromeTest : public ::testing::Test {
     bool response_given_;
   };
 
-  GcpUsingChromeTest();
+  GcpUsingChromeTest() = default;
 
   void SetUp() override;
   void TearDown() override;
@@ -85,16 +86,12 @@ class GcpUsingChromeTest : public ::testing::Test {
   CredentialProviderSigninDialogTestDataStorage test_data_storage_;
   net::test_server::EmbeddedTestServer gaia_server_;
   net::test_server::EmbeddedTestServer google_apis_server_;
-  net::SpawnedTestServer proxy_server_;
 
   TestGoogleApiResponse signin_token_response_;
   TestGoogleApiResponse user_info_response_;
   TestGoogleApiResponse token_info_response_;
   TestGoogleApiResponse mdm_token_response_;
 };
-
-GcpUsingChromeTest::GcpUsingChromeTest()
-    : proxy_server_(net::SpawnedTestServer::TYPE_PROXY, base::FilePath()) {}
 
 void GcpUsingChromeTest::SetUp() {
   // Redirect connections to signin related pages to a handler that will
@@ -108,17 +105,11 @@ void GcpUsingChromeTest::SetUp() {
       base::BindRepeating(&GcpUsingChromeTest::GoogleApisHtmlResponseHandler,
                           base::Unretained(this)));
   EXPECT_TRUE(google_apis_server_.Start());
-
-  // Run a proxy server to redirect all non signin related requests to a
-  // page showing failed connections.
-  proxy_server_.set_redirect_connect_to_localhost(true);
-  EXPECT_TRUE(proxy_server_.Start());
 }
 
 void GcpUsingChromeTest::TearDown() {
   EXPECT_TRUE(gaia_server_.ShutdownAndWaitUntilComplete());
   EXPECT_TRUE(google_apis_server_.ShutdownAndWaitUntilComplete());
-  EXPECT_TRUE(proxy_server_.Stop());
 }
 
 std::string GcpUsingChromeTest::RunChromeAndExtractOutput() const {
@@ -145,8 +136,16 @@ base::CommandLine GcpUsingChromeTest::GetCommandLineForChromeGls(
 
   command_line.AppendSwitch(kGcpwSigninSwitch);
   command_line.AppendSwitchPath("user-data-dir", user_data_dir);
-  command_line.AppendSwitchASCII("proxy-server",
-                                 proxy_server_.host_port_pair().ToString());
+
+  // Redirect all requests to `gaia_server_` except those made to
+  // `google_apis_server_`. This results in any requests made by other Chrome
+  // modules being redirected harmlessly to `gaia_server_`.
+  command_line.AppendSwitchASCII(
+      network::switches::kHostResolverRules,
+      base::StringPrintf(
+          "MAP * %s, EXCLUDE %s",
+          gaia_server_.host_port_pair().ToString().c_str(),
+          google_apis_server_.host_port_pair().ToString().c_str()));
   return command_line;
 }
 

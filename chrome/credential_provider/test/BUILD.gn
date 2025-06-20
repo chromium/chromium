@@ -57,6 +57,7 @@ test("gcp_unittests") {
     "//extensions/common",
     "//google_apis",
     "//net:test_support",
+    "//services/network/public/cpp:flags_and_switches",
     "//testing/gmock",
     "//testing/gtest",
   ]
