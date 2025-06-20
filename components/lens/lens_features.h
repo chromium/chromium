@@ -46,6 +46,11 @@ BASE_DECLARE_FEATURE(kLensOverlayContextualSearchbox);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayContextualSearchboxForOmniboxSuggestions);
 
+// Enables the migration for Lens overlay suggestions URL params, independent
+// of the CSB feature.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlaySuggestionsMigration);
+
 // Enables the Lens overlay optimizations.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayLatencyOptimizations);
