@@ -25,7 +25,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.policy.AwPolicyProvider;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
@@ -993,9 +992,6 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         setupWithProvidedContentsClient(new DestroyInCallbackClient());
         mShouldOverrideUrlLoadingHelper = mContentsClient.getShouldOverrideUrlLoadingHelper();
 
-        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
-        int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
-
         mActivityTestRule.loadDataSync(
                 mAwContents,
                 mContentsClient.getOnPageFinishedHelper(),
@@ -1315,7 +1311,6 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         try {
             standardSetup();
             mActivityTestRule.getActivity().setIgnoreStartActivity(true);
-            AwSettings contentSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
 
             final AwPolicyProvider testProvider =
                     new AwPolicyProvider(mActivityTestRule.getActivity().getApplicationContext());
@@ -1351,7 +1346,6 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         try {
             standardSetup();
             mActivityTestRule.getActivity().setIgnoreStartActivity(true);
-            AwSettings contentSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
             final AwPolicyProvider testProvider =
                     new AwPolicyProvider(mActivityTestRule.getActivity().getApplicationContext());
             ThreadUtils.runOnUiThreadBlocking(
@@ -1448,11 +1442,6 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         final String path1 = "/from.html";
         final String path2 = BAD_SCHEME + "to.html";
         final String fromUrl = mWebServer.setRedirect(path1, path2);
-        final String toUrl =
-                mWebServer.setResponse(
-                        path2,
-                        CommonResources.ABOUT_HTML,
-                        CommonResources.getTextHtmlHeaders(true));
         mActivityTestRule.loadUrlAsync(mAwContents, fromUrl);
         client.waitForLatch();
         // Wait for an arbitrary amount of time to ensure onReceivedError is never called.
