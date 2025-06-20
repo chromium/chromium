@@ -7,11 +7,8 @@ import SwiftUI
 
 enum DeletedAccountUIConstants {
   static let cornerRadius: CGFloat = 22
-  static let smallWidgetHeight: CGFloat = 140
-  static let smallWidgetWidth: CGFloat = 140
-  static let mediumWidgetHeight: CGFloat = 140
-  static let mediumWidgetWidth: CGFloat = 320
-  static let padding: CGFloat = 7
+  static let padding: CGFloat = 3
+  static let whiteBorder: CGFloat = 11
 }
 
 // Store in NSUserDefaults that the deleted account view appeared.
@@ -24,10 +21,6 @@ func SmallWidgetDeletedAccountView() -> some View {
   VStack {
     ZStack {
       RoundedRectangle(cornerRadius: DeletedAccountUIConstants.cornerRadius)
-        .frame(
-          width: DeletedAccountUIConstants.smallWidgetHeight,
-          height: DeletedAccountUIConstants.smallWidgetHeight
-        )
         .foregroundColor(Color("widget_search_bar_color"))
         .overlay(
           Text("IDS_IOS_WIDGET_KIT_EXTENSION_DELETED_ACCOUNT")
@@ -37,6 +30,8 @@ func SmallWidgetDeletedAccountView() -> some View {
             .padding(DeletedAccountUIConstants.padding)
         )
     }
+    .frame(minWidth: 0, maxWidth: .infinity)
+    .padding(DeletedAccountUIConstants.whiteBorder)
   }
   .crContainerBackground(Color("widget_background_color").unredacted())
   .onAppear {
@@ -48,10 +43,6 @@ func MediumWidgetDeletedAccountView() -> some View {
   VStack {
     ZStack {
       RoundedRectangle(cornerRadius: DeletedAccountUIConstants.cornerRadius)
-        .frame(
-          width: DeletedAccountUIConstants.mediumWidgetWidth,
-          height: DeletedAccountUIConstants.mediumWidgetHeight
-        )
         .foregroundColor(Color("widget_search_bar_color"))
         .overlay(
           VStack {
@@ -67,6 +58,8 @@ func MediumWidgetDeletedAccountView() -> some View {
           }
         )
     }
+    .frame(minWidth: 0, maxWidth: .infinity)
+    .padding(DeletedAccountUIConstants.whiteBorder)
   }
   .crContainerBackground(Color("widget_background_color").unredacted())
   .onAppear {
