@@ -20061,6 +20061,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AvoidCloneArgsOnExtensionFunctionDispatch",
                         "AvoidUnnecessaryGetMinimizeButtonOffset",
                         "ReducePPMs"
                     ]
