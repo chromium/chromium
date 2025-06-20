@@ -11,11 +11,16 @@
 namespace bwg {
 
 // Different BWG entry points.
+// Logged as IOSBWGEntryPoint enum for the IOS.BWG.EntryPoint histogram.
+// LINT.IfChange(IOSBWGEntryPoint)
 typedef NS_ENUM(NSInteger, EntryPoint) {
   EntryPointPromo,
   EntryPointOverflow,
   EntryPointAIHub,
+  EntryPointOmniboxChip,
+  kMaxValue = EntryPointOmniboxChip,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSBWGEntryPoint)
 
 }  // namespace bwg
 

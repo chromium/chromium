@@ -264,6 +264,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Open tabs"/>
 </enum>
 
+<enum name="IOSBWGEntryPoint">
+  <int value="0" label="Promo"/>
+  <int value="1" label="Overflow Menu"/>
+  <int value="2" label="AI Hub"/>
+  <int value="3" label="Omnibox Chip"/>
+</enum>
+
 <enum name="iOSCredentialIdentityStoreErrorForReporting">
   <int value="0" label="Unknown Error"/>
   <int value="1" label="Internal Error"/>

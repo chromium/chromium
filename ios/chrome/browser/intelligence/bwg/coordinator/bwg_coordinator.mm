@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_navigation_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -101,8 +103,13 @@
   BOOL showConsent = [self shouldShowBWGConsent];
 
   if (!showPromo && !showConsent) {
+    // Record the entry point metrics for the non-FRE case.
+    base::UmaHistogramEnumeration(kEntryPointHistogram, _entryPoint);
+
     return NO;
   }
+
+  base::UmaHistogramEnumeration(kFREEntryPointHistogram, _entryPoint);
 
   // If promo was shown outside the promos manager, ensure the promo doesn't
   // show through the promos manager.
