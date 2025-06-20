@@ -7144,7 +7144,6 @@ crbug.com/1349215 external/wpt/fullscreen/api/document-fullscreen-enabled-cross-
 crbug.com/1349215 external/wpt/fullscreen/api/document-exit-fullscreen-nested-in-iframe.html [ Timeout ]
 
 # Sheriff 2022-11-21
-crbug.com/1380188 external/wpt/html/browsers/browsing-the-web/history-traversal/event-order/before-load-hash.html [ Failure Pass ]
 crbug.com/1385809 external/wpt/clipboard-apis/async-navigator-clipboard-basics.https.html [ Failure Pass Timeout ]
 
 # Sheriff 2022-11-21 - EMEA
