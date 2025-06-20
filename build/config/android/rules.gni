@@ -637,7 +637,13 @@ if (!is_robolectric && enable_java_templates) {
       _stripped_output_path = "$root_out_dir/${invoker.lib_name}"
       _unstripped_output_path =
           "$root_out_dir/lib.unstripped/${invoker.lib_name}"
-      inputs = [ _lib_path ]
+      inputs = [
+        _lib_path,
+        "${clang_base_path}/bin/llvm-strip",
+
+        # llvm-objcopy is required since llvm-strip symlinks to it.
+        "${clang_base_path}/bin/llvm-objcopy",
+      ]
       outputs = [
         _stripped_output_path,
         _unstripped_output_path,
@@ -653,8 +659,7 @@ if (!is_robolectric && enable_java_templates) {
       _rebased_unstripped_ouput_path =
           rebase_path(_unstripped_output_path, root_build_dir)
       _strip_tool_path =
-          rebase_path("//buildtools/third_party/eu-strip/bin/eu-strip",
-                      root_build_dir)
+          rebase_path("${clang_base_path}/bin/llvm-strip", root_build_dir)
 
       args = [
         "--strip-path=$_strip_tool_path",

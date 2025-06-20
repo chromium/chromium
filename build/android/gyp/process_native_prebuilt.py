@@ -27,9 +27,11 @@ def main(args):
   with action_helpers.atomic_output(options.stripped_output_path) as out:
     cmd = [
         options.strip_path,
-        options.input_path,
+        '--strip-debug',
+        '--strip-unneeded',
         '-o',
         out.name,
+        options.input_path,
     ]
     build_utils.CheckOutput(cmd)
   shutil.copyfile(options.input_path, options.unstripped_output_path)
