@@ -30,6 +30,15 @@ public interface DesktopWindowStateManager {
          *     mode.
          */
         default void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {}
+
+        /**
+         * Called when the activity focus state changes. See {@link
+         * Activity#onTopResumedActivityChanged(boolean)}.
+         *
+         * @param isFocused Whether the activity is in a focused state. {@code true} when the
+         *     activity is focused, {@code false} when the activity is unfocused.
+         */
+        default void onActivityFocusStateChanged(boolean isFocused) {}
     }
 
     /**

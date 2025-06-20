@@ -608,7 +608,8 @@ public class AppHeaderCoordinatorBrowserTest {
                             new AppHeaderState(
                                     mWindowRect, mWidestUnoccludedRect, isInDesktopWindow);
                     ((AppHeaderCoordinator) appHeaderStateProvider)
-                            .setStateForTesting(isInDesktopWindow, appHeaderState);
+                            .setStateForTesting(
+                                    isInDesktopWindow, appHeaderState, /* isFocused= */ true);
                     AppHeaderUtils.setAppInDesktopWindowForTesting(isInDesktopWindow);
                 });
     }

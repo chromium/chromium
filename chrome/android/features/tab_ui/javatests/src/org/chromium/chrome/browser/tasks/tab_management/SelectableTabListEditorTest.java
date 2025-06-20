@@ -385,7 +385,8 @@ public class SelectableTabListEditorTest {
                     Rect widestUnoccludedRect =
                             new Rect(windowRect.left, 0, windowRect.right, appHeaderHeight);
                     var state = new AppHeaderState(windowRect, widestUnoccludedRect, true);
-                    mAppHeaderStateProvider.setStateForTesting(true, state);
+                    mAppHeaderStateProvider.setStateForTesting(
+                            /* isInDesktopWindow= */ true, state, /* isFocused= */ true);
                 });
 
         prepareBlankTab(2, false);
@@ -398,7 +399,8 @@ public class SelectableTabListEditorTest {
                 () -> {
                     // Exit desktop window.
                     var state = new AppHeaderState(windowRect, new Rect(), false);
-                    mAppHeaderStateProvider.setStateForTesting(false, state);
+                    mAppHeaderStateProvider.setStateForTesting(
+                            /* isInDesktopWindow= */ false, state, /* isFocused= */ true);
                 });
 
         // Verify margin is reset.

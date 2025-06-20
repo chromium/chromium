@@ -27,6 +27,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -81,6 +82,7 @@ public class AppHeaderCoordinator
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
     private @Nullable AppHeaderState mAppHeaderState;
     private boolean mIsInUnfocusedDesktopWindow;
+    private final ObservableSupplierImpl<Boolean> mDesktopWindowTopResumedActivitySupplier;
     private @DesktopWindowHeuristicResult int mHeuristicResult =
             DesktopWindowHeuristicResult.UNKNOWN;
     private @WindowingMode int mWindowingMode = WindowingMode.UNKNOWN;
@@ -126,6 +128,14 @@ public class AppHeaderCoordinator
                 savedInstanceState != null
                         && savedInstanceState.getBoolean(
                                 INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, false);
+
+        mDesktopWindowTopResumedActivitySupplier =
+                new ObservableSupplierImpl<Boolean>(!mIsInUnfocusedDesktopWindow);
+        mDesktopWindowTopResumedActivitySupplier.addObserver(
+                (isFocused) -> {
+                    mObservers.forEach(
+                            (observer) -> observer.onActivityFocusStateChanged(isFocused));
+                });
 
         // Initialize mInsetsRectProvider and setup observers.
         mCaptionBarRectProvider =
@@ -181,6 +191,9 @@ public class AppHeaderCoordinator
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         mIsInUnfocusedDesktopWindow = !isTopResumedActivity && mIsInDesktopWindow;
+        if (mIsInDesktopWindow) {
+            mDesktopWindowTopResumedActivitySupplier.set(isTopResumedActivity);
+        }
     }
 
     // SaveInstanceStateObserver implementation.
@@ -344,14 +357,18 @@ public class AppHeaderCoordinator
     }
 
     /** Set states for testing. */
-    public void setStateForTesting(boolean isInDesktopWindow, AppHeaderState appHeaderState) {
+    public void setStateForTesting(
+            boolean isInDesktopWindow, AppHeaderState appHeaderState, boolean isFocused) {
         mIsInDesktopWindow = isInDesktopWindow;
         setEdgeToEdgeState(mIsInDesktopWindow);
         mAppHeaderState = appHeaderState;
-
+        if (mIsInDesktopWindow) {
+            mDesktopWindowTopResumedActivitySupplier.set(isFocused);
+        }
         for (var observer : mObservers) {
             observer.onAppHeaderStateChanged(mAppHeaderState);
             observer.onDesktopWindowingModeChanged(mIsInDesktopWindow);
+            observer.onActivityFocusStateChanged(isFocused);
         }
     }
 
@@ -386,5 +403,9 @@ public class AppHeaderCoordinator
                 .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE)
                 .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE)
                 .build();
+    }
+
+    /* package */ ObservableSupplierImpl<Boolean> getTopResumedActivitySupplierForTesting() {
+        return mDesktopWindowTopResumedActivitySupplier;
     }
 }

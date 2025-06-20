@@ -32,6 +32,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -419,6 +420,20 @@ public class AppHeaderCoordinatorUnitTest {
         assertTrue(
                 "Window focus state is not correctly set.",
                 mAppHeaderCoordinator.isInUnfocusedDesktopWindow());
+        Assert.assertFalse(mAppHeaderCoordinator.getTopResumedActivitySupplierForTesting().get());
+    }
+
+    @Test
+    public void activityFocusedInDesktopWindow() {
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectConsumer();
+
+        mAppHeaderCoordinator.onTopResumedActivityChanged(true);
+
+        assertFalse(
+                "Window focus state is not correctly set.",
+                mAppHeaderCoordinator.isInUnfocusedDesktopWindow());
+        Assert.assertTrue(mAppHeaderCoordinator.getTopResumedActivitySupplierForTesting().get());
     }
 
     @Test
