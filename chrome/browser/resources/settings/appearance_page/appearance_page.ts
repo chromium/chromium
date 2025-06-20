@@ -30,6 +30,7 @@ import {BaseMixin} from '../base_mixin.js';
 import type {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {pageVisibility} from '../page_visibility.js';
 import type {AppearancePageVisibility} from '../page_visibility.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
@@ -100,7 +101,10 @@ export class SettingsAppearancePageElement extends
       /**
        * Dictionary defining page visibility.
        */
-      pageVisibility: Object,
+      pageVisibility_: {
+        type: Object,
+        value: () => pageVisibility?.appearance,
+      },
 
       defaultZoom_: Number,
 
@@ -269,7 +273,7 @@ export class SettingsAppearancePageElement extends
     ];
   }
 
-  declare pageVisibility: AppearancePageVisibility;
+  declare private pageVisibility_?: AppearancePageVisibility;
   declare private defaultZoom_: number;
   declare private isWallpaperPolicyControlled_: boolean;
   declare private fontSizeOptions_: DropdownMenuOptionList;

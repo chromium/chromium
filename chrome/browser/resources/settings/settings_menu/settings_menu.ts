@@ -28,6 +28,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {pageVisibility} from '../page_visibility.js';
 import type {PageVisibility} from '../page_visibility.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
@@ -58,7 +59,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       /**
        * Dictionary defining page visibility.
        */
-      pageVisibility: Object,
+      pageVisibility_: {
+        type: Object,
+        value: () => pageVisibility,
+      },
 
       showAiPage_: {
         type: Boolean,
@@ -67,14 +71,14 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     };
   }
 
-  declare pageVisibility?: PageVisibility;
+  declare private pageVisibility_?: PageVisibility;
   declare private showAiPage_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
   private showAiPageMenuItem_(): boolean {
     return this.showAiPage_ &&
-        (!this.pageVisibility || this.pageVisibility.ai !== false);
+        (!this.pageVisibility_ || this.pageVisibility_.ai !== false);
   }
 
   override currentRouteChanged(newRoute: Route) {

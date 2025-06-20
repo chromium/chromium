@@ -7,7 +7,7 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsMenuElement, SettingsRoutes} from 'chrome://settings/settings.js';
-import {resetRouterForTesting, loadTimeData, MetricsBrowserProxyImpl, pageVisibility, Router} from 'chrome://settings/settings.js';
+import {resetRouterForTesting, loadTimeData, MetricsBrowserProxyImpl, resetPageVisibilityForTesting, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -33,6 +33,10 @@ suite('SettingsMenu', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     createSettingsMenu();
+  });
+
+  teardown(function() {
+    resetPageVisibilityForTesting();
   });
 
   // Test that navigating via the paper menu always clears the current
@@ -134,21 +138,19 @@ suite('SettingsMenu', function() {
     assertPagesHidden(false);
 
     // Set the visibility of the pages under test to "false".
-    settingsMenu.pageVisibility = Object.assign(pageVisibility || {}, {
+    resetPageVisibilityForTesting({
       a11y: false,
       advancedSettings: false,
       appearance: false,
       defaultBrowser: false,
       downloads: false,
       languages: false,
-      multidevice: false,
       onStartup: false,
       people: false,
       reset: false,
-      safetyCheck: false,
       system: false,
     });
-    flush();
+    createSettingsMenu();
 
     // Now, the menu items should be hidden.
     assertPagesHidden(true);

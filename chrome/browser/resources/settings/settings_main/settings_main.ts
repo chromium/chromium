@@ -23,7 +23,6 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import type {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
 
@@ -93,11 +92,6 @@ export class SettingsMainElement extends SettingsMainElementBase {
         value: false,
         notify: true,
       },
-
-      /**
-       * Dictionary defining page visibility.
-       */
-      pageVisibility: Object,
     };
   }
 
@@ -107,7 +101,6 @@ export class SettingsMainElement extends SettingsMainElementBase {
   declare private showNoResultsFound_: boolean;
   declare private showingSubpage_: boolean;
   declare toolbarSpinnerActive: boolean;
-  declare pageVisibility?: PageVisibility;
 
   /**
    * Updates the hidden state of the about and settings pages based on the

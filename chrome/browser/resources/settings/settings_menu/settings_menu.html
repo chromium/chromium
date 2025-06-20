@@ -46,7 +46,7 @@
           attr-for-selected="href" on-iron-activate="onSelectorActivate_"
           on-click="onLinkClick_" selected-attribute="selected">
         <a role="menuitem"
-            id="people" href="/people" hidden="[[!pageVisibility.people]]"
+            id="people" href="/people" hidden="[[!pageVisibility_.people]]"
             class="cr-nav-menu-item">
 <if expr="not _google_chrome">
           <cr-icon icon="settings:person"></cr-icon>
@@ -58,14 +58,14 @@
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="autofill" href="/autofill"
-            hidden="[[!pageVisibility.autofill]]"
+            hidden="[[!pageVisibility_.autofill]]"
             class="cr-nav-menu-item">
           <cr-icon icon="settings:assignment"></cr-icon>
           $i18n{autofillPageTitle}
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" href="/privacy"
-            hidden="[[!pageVisibility.privacy]]"
+            hidden="[[!pageVisibility_.privacy]]"
             class="cr-nav-menu-item">
           <cr-icon icon="settings:security"></cr-icon>
           $i18n{privacyPageTitle}
@@ -73,13 +73,13 @@
         </a>
         <a role="menuitem" id="performance" href="/performance"
             class="cr-nav-menu-item"
-            hidden="[[!pageVisibility.performance]]">
+            hidden="[[!pageVisibility_.performance]]">
           <cr-icon icon="settings:navigation-performance"></cr-icon>
           $i18n{performancePageTitle}
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" href="/ai"
-            hidden="[[!showAiPageMenuItem_(showAiPage_, pageVisibility.ai)]]"
+            hidden="[[!showAiPageMenuItem_(showAiPage_, pageVisibility_.ai)]]"
             on-click="onAiPageClick_"
             class="cr-nav-menu-item">
           <cr-icon icon="settings20:magic"></cr-icon>
@@ -87,7 +87,7 @@
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="appearance" href="/appearance"
-            hidden="[[!pageVisibility.appearance]]"
+            hidden="[[!pageVisibility_.appearance]]"
             class="cr-nav-menu-item">
           <cr-icon icon="settings:palette"></cr-icon>
           $i18n{appearancePageTitle}
@@ -101,7 +101,7 @@
 <if expr="not is_chromeos">
         <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item"
           href="/defaultBrowser"
-          hidden="[[!pageVisibility.defaultBrowser]]">
+          hidden="[[!pageVisibility_.defaultBrowser]]">
           <cr-icon icon="settings:web"></cr-icon>
           $i18n{defaultBrowser}
           <cr-ripple></cr-ripple>
@@ -109,7 +109,7 @@
 </if>
         <a role="menuitem" id="onStartup" href="/onStartup"
             class="cr-nav-menu-item"
-            hidden="[[!pageVisibility.onStartup]]">
+            hidden="[[!pageVisibility_.onStartup]]">
           <cr-icon icon="settings:power-settings"></cr-icon>
           $i18n{onStartup}
           <cr-ripple></cr-ripple>
@@ -117,44 +117,44 @@
         <div class="menu-separator"></div>
         <a role="menuitem" id="languages" href="/languages"
             class="cr-nav-menu-item"
-            hidden="[[!pageVisibility.languages]]">
+            hidden="[[!pageVisibility_.languages]]">
           <cr-icon icon="settings:navigation-language"></cr-icon>
           $i18n{languagesPageTitle}
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="downloads" href="/downloads"
             class="cr-nav-menu-item"
-            hidden="[[!pageVisibility.downloads]]">
+            hidden="[[!pageVisibility_.downloads]]">
           <cr-icon icon="settings:download"></cr-icon>
           $i18n{downloadsPageTitle}
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="accessibility" href="/accessibility"
             class="cr-nav-menu-item"
-            hidden="[[!pageVisibility.a11y]]">
+            hidden="[[!pageVisibility_.a11y]]">
           <cr-icon icon="settings:accessibility"></cr-icon>
           $i18n{a11yPageTitle}
           <cr-ripple></cr-ripple>
         </a>
 <if expr="not chromeos_ash">
         <a role="menuitem" id="system" href="/system" class="cr-nav-menu-item"
-            hidden="[[!pageVisibility.system]]">
+            hidden="[[!pageVisibility_.system]]">
           <cr-icon icon="settings:system"></cr-icon>
           $i18n{systemPageTitle}
           <cr-ripple></cr-ripple>
         </a>
 </if>
         <a role="menuitem" id="reset" href="/reset"
-            hidden="[[!pageVisibility.reset]]" class="cr-nav-menu-item">
+            hidden="[[!pageVisibility_.reset]]" class="cr-nav-menu-item">
           <cr-icon icon="settings:restore"></cr-icon>
           $i18n{resetPageTitle}
           <cr-ripple></cr-ripple>
         </a>
-        <div hidden="[[!pageVisibility.advancedSettings]]"
+        <div hidden="[[!pageVisibility_.advancedSettings]]"
             class="menu-separator"></div>
         <a role="menuitem" id="extensionsLink" class="cr-nav-menu-item"
             href="chrome://extensions" target="_blank"
-            hidden="[[!pageVisibility.extensions]]"
+            hidden="[[!pageVisibility_.extensions]]"
             on-click="onExtensionsLinkClick_"
             title="$i18n{extensionsLinkTooltip}">
           <cr-icon icon="settings:extension"></cr-icon>

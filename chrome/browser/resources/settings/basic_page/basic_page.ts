@@ -57,6 +57,7 @@ import {loadTimeData} from '../i18n_setup.js';
 // <if expr="not chromeos_ash">
 import type {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
 // </if>
+import {pageVisibility} from '../page_visibility.js';
 import type {PageVisibility} from '../page_visibility.js';
 import type {PerformanceBrowserProxy} from '../performance_page/performance_browser_proxy.js';
 import {PerformanceBrowserProxyImpl, PerformanceFeedbackCategory} from '../performance_page/performance_browser_proxy.js';
@@ -100,10 +101,10 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
       /**
        * Dictionary defining page visibility.
        */
-      pageVisibility: {
+      pageVisibility_: {
         type: Object,
         value() {
-          return {};
+          return pageVisibility || {};
         },
       },
 
@@ -180,7 +181,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   declare languages?: LanguagesModel;
   declare languageHelper: LanguageHelper;
   // </if>
-  declare pageVisibility: PageVisibility;
+  declare private pageVisibility_: PageVisibility;
   declare inSearchMode: boolean;
   declare private showResetProfileBanner_: boolean;
 
@@ -254,7 +255,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   private updatePrivacyGuidePromoVisibility_() {
     if (!this.isPrivacyGuideAvailable ||
-        this.pageVisibility.privacy === false || this.prefs === undefined ||
+        this.pageVisibility_.privacy === false || this.prefs === undefined ||
         this.getPref('privacy_guide.viewed').value ||
         this.privacyGuideBrowserProxy_.getPromoImpressionCount() >=
             MAX_PRIVACY_GUIDE_PROMO_IMPRESSION ||
@@ -286,7 +287,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
       getSearchManager().search(query, basicPage),
     ];
 
-    if (this.pageVisibility.advancedSettings !== false) {
+    if (this.pageVisibility_.advancedSettings !== false) {
       whenSearchDone.push(this.getIdleLoad_().then(function(advancedPage) {
         return getSearchManager().search(query, advancedPage);
       }));

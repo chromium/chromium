@@ -13,7 +13,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, SyncStatus} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, pageVisibility, PerformanceBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, PerformanceBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -430,10 +430,9 @@ suite('Performance', () => {
   }
 
   async function createNewBasicPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     performanceBrowserProxy = new TestPerformanceBrowserProxy();
     PerformanceBrowserProxyImpl.setInstance(performanceBrowserProxy);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-basic-page');
     document.body.appendChild(page);
     flush();
@@ -443,9 +442,12 @@ suite('Performance', () => {
     assertTrue(sections.length > 1);
   }
 
+  teardown(function() {
+    resetPageVisibilityForTesting();
+  });
+
   test('performanceSectionTitlesVisible', async function() {
     await createNewBasicPage();
-    page.pageVisibility = pageVisibility || {};
     flush();
 
     assertEquals(
@@ -467,8 +469,6 @@ suite('Performance', () => {
 
   test('performanceVisibilityTestFeaturesAvailable', async function() {
     await createNewBasicPage();
-    // Set the visibility of the pages under test to their default value.
-    page.pageVisibility = pageVisibility || {};
     flush();
 
     assertTrue(
@@ -485,9 +485,8 @@ suite('Performance', () => {
         'Speed section should exist with default page visibility');
 
     // Set the visibility of the pages under test to "false".
-    page.pageVisibility = Object.assign(pageVisibility || {}, {
-      performance: false,
-    });
+    resetPageVisibilityForTesting({performance: false});
+    await createNewBasicPage();
     flush();
 
     assertFalse(
@@ -506,7 +505,6 @@ suite('Performance', () => {
 
   test('performanceVisibilityTestDeviceHasBattery', async function() {
     await createNewBasicPage();
-    page.pageVisibility = pageVisibility || {};
     flush();
 
     await performanceBrowserProxy.whenCalled('getDeviceHasBattery');

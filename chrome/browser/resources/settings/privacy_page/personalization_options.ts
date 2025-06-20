@@ -38,6 +38,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {pageVisibility} from '../page_visibility.js';
 import type {PrivacyPageVisibility} from '../page_visibility.js';
 import type {SettingsSignoutDialogElement} from '../people_page/signout_dialog.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
@@ -75,8 +76,6 @@ export class SettingsPersonalizationOptionsElement extends
 
   static get properties() {
     return {
-      pageVisibility: Object,
-
       syncStatus: Object,
 
       // <if expr="_google_chrome and not chromeos_ash">
@@ -140,7 +139,6 @@ export class SettingsPersonalizationOptionsElement extends
     };
   }
 
-  declare pageVisibility: PrivacyPageVisibility;
   declare syncStatus: SyncStatus;
 
   // <if expr="_google_chrome and not chromeos_ash">
@@ -257,18 +255,18 @@ export class SettingsPersonalizationOptionsElement extends
   // </if>
 
   private showSearchSuggestToggle_(): boolean {
-    if (this.pageVisibility === undefined) {
+    if (pageVisibility?.privacy === undefined) {
       // pageVisibility isn't defined in non-Guest profiles (crbug.com/1288911).
       return true;
     }
-    return this.pageVisibility.searchPrediction;
+    return (pageVisibility.privacy as PrivacyPageVisibility).searchPrediction;
   }
 
+  // <if expr="chromeos_ash">
   private navigateTo_(url: string): void {
     window.location.href = url;
   }
 
-  // <if expr="chromeos_ash">
   private onMetricsReportingLinkClick_() {
     // TODO(wesokuhara) Deep link directly to metrics toggle via settingId.
     this.navigateTo_(loadTimeData.getString('osSettingsPrivacyHubSubpageUrl'));

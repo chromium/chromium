@@ -181,10 +181,6 @@ function createAppearancePage() {
     },
   });
 
-  appearancePage.set('pageVisibility', {
-    setWallpaper: true,
-  });
-
   document.body.appendChild(appearancePage);
   flush();
 }

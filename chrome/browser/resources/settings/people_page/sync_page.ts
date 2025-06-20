@@ -42,7 +42,6 @@ import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
-import type {PageVisibility} from '../page_visibility.js';
 // <if expr="chromeos_ash">
 import type {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
 // </if>
@@ -108,14 +107,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         type: String,
         value: PageStatus.CONFIGURE,
       },
-
-      /**
-       * Dictionary defining page visibility.
-       * TODO(dpapad): Restore the type information here
-       * (PrivacyPageVisibility), when this file is no longer shared with
-       * chrome://os-settings.
-       */
-      pageVisibility: Object,
 
       /**
        * The current sync preferences, supplied by SyncBrowserProxy.
@@ -229,7 +220,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   declare prefs: {[key: string]: any};
   declare focusConfig: FocusConfig;
   declare private pageStatus_: PageStatus;
-  declare pageVisibility: PageVisibility;
   declare syncPrefs?: SyncPrefs;
   declare syncStatus: SyncStatus;
   declare private dataEncrypted_: boolean;

@@ -16,14 +16,14 @@ import type {CrCheckboxElement} from 'chrome://settings/lazy_load.js';
 // </if>
 
 import {loadTimeData} from 'chrome://settings/settings.js';
-
 import type {SettingsPeoplePageElement} from 'chrome://settings/settings.js';
-import {pageVisibility, ProfileInfoBrowserProxyImpl, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {ProfileInfoBrowserProxyImpl, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // <if expr="not is_chromeos">
 import {assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+
 // </if>
 
 import {simulateSyncStatus} from './sync_test_util.js';
@@ -59,7 +59,6 @@ suite('ProfileInfoTests', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     peoplePage = document.createElement('settings-people-page');
-    peoplePage.pageVisibility = pageVisibility || {};
     document.body.appendChild(peoplePage);
 
     await syncBrowserProxy.whenCalled('getSyncStatus');
@@ -111,7 +110,6 @@ suite('SigninDisallowedTests', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     peoplePage = document.createElement('settings-people-page');
-    peoplePage.pageVisibility = pageVisibility || {};
     document.body.appendChild(peoplePage);
   });
 
@@ -151,7 +149,6 @@ suite('SyncStatusTests', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     peoplePage = document.createElement('settings-people-page');
-    peoplePage.pageVisibility = pageVisibility || {};
     document.body.appendChild(peoplePage);
   });
 
@@ -431,7 +428,6 @@ suite('SyncSettings', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     peoplePage = document.createElement('settings-people-page');
-    peoplePage.pageVisibility = pageVisibility || {};
     document.body.appendChild(peoplePage);
 
     await syncBrowserProxy.whenCalled('getSyncStatus');

@@ -41,7 +41,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {BaseMixin} from '../base_mixin.js';
 import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
-import type {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
@@ -131,11 +130,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
       syncStatus: Object,
 
       /**
-       * Dictionary defining page visibility.
-       */
-      pageVisibility: Object,
-
-      /**
        * Authentication token provided by settings-lock-screen.
        */
       authToken_: {
@@ -214,7 +208,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   declare private signinAllowed_: boolean;
   declare private isDasherlessProfile_: boolean;
   declare syncStatus: SyncStatus|null;
-  declare pageVisibility: PageVisibility;
   declare private authToken_: string;
   declare private profileIconUrl_: string;
   declare private isProfileActionable_: boolean;
