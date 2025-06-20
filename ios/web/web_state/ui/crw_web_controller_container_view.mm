@@ -41,8 +41,10 @@ constexpr base::TimeDelta kFixZoomScaleOnRotationDelay = base::Seconds(0.1);
     DCHECK(delegate);
     _delegate = delegate;
     self.backgroundColor = [UIColor whiteColor];
-    self.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.autoresizingMask = UIViewAutoresizingFlexibleWidth |
+                            UIViewAutoresizingFlexibleHeight |
+                            UIViewAutoresizingFlexibleTopMargin |
+                            UIViewAutoresizingFlexibleLeftMargin;
     if (@available(iOS 17, *)) {
       __weak __typeof(self) weakSelf = self;
       UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
@@ -199,6 +201,12 @@ constexpr base::TimeDelta kFixZoomScaleOnRotationDelay = base::Seconds(0.1);
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     [self.webViewContentView setFrame:self.bounds];
   } else {
+    // TODO(crbug.com/425651125): There appears to be a timing issue causing UI
+    // glitches when a website uses viewport-fit=cover. We suspect this is
+    // because our JavaScript injection, which detects viewport-fit=cover, isn't
+    // always resizing the container at the optimal moment. We aim to eliminate
+    // these glitches once viewport-fit=cover can be directly managed by the web
+    // view.
     if (self.cover) {
       [self.webViewContentView setFrame:self.bounds];
     } else {
