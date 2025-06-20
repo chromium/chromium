@@ -25078,23 +25078,6 @@
             ]
         }
     ],
-    "UnoPhase2FastFollowsAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UnoForAuto",
-                        "UnoPhase2FollowUp",
-                        "UseHostedDomainForManagementCheckOnSignin"
-                    ]
-                }
-            ]
-        }
-    ],
     "UploadOfficeToCloud": [
         {
             "platforms": [
