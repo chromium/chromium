@@ -1884,7 +1884,14 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   // glFlush on OpenGL. Defer the call until CoreAnimation, Dawn, or another
   // ANGLE EGLDisplay needs to access to avoid unnecessary overhead. This also
   // ensures that the Metal shared event enqueued above is eventually flushed.
-  AddEGLDisplayWithPendingCommands(display);
+  if (is_thread_safe()) {
+    // With DrDC and Graphite enabled, don't call
+    // AddEGLDisplayWithPendingCommands to avoid the GL context flush on
+    // the Viz thread.
+    eglWaitUntilWorkScheduledANGLE(display->GetDisplay());
+  } else {
+    AddEGLDisplayWithPendingCommands(display);
+  }
 
   // When SwANGLE is used as the GL implementation, it holds an internal
   // texture. We have to call ReleaseTexImage here to trigger a copy from that
