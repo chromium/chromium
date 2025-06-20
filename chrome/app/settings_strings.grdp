@@ -3174,6 +3174,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_RESET_MENU" desc="Label for the menu item to remove the permission for a particular site (make it ask you again next time).">
     Remove
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_RESET_FROM_LIST_A11Y" desc="Text read by screen readers when focusing on the remove icon for a particular site. Activating this button will remove the permission for the selected site. This text only announced by screen readers and is not visible in the UI.">
+    Remove <ph name="SITE">$1<ex>www.example.com</ex></ph> from the <ph name="SECTION_HEADER">$2<ex>Allowed to see your location</ex></ph> list
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_VIEW_FROM_LIST_A11Y" desc="Text read by screen readers when focusing on the view icon for a particular site. Activating this button will open the subpage for the permission for the selected site. This text only announced by screen readers and is not visible in the UI.">
+    View site details for <ph name="SITE">$1<ex>www.example.com</ex></ph> from the <ph name="SECTION_HEADER">$2<ex>Allowed to see your location</ex></ph> list
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SESSION_ONLY_MENU" desc="Label for the menu item to set cookies to be deleted on browser exit.">
     Delete on exit
   </message>
