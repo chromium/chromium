@@ -43,15 +43,14 @@ ToolController::ToolController(TaskId task_id, AggregatedJournal& journal)
 
 ToolController::~ToolController() = default;
 
-void ToolController::Invoke(std::unique_ptr<ToolRequest> request,
+void ToolController::Invoke(const ToolRequest& request,
                             const AnnotatedPageContent* last_observation,
                             ResultCallback result_callback) {
-  CHECK(request);
-  ToolRequest::CreateToolResult create_result = request->CreateTool(*journal_);
+  ToolRequest::CreateToolResult create_result = request.CreateTool(*journal_);
 
   if (!IsOk(*create_result.result)) {
     CHECK(!create_result.tool);
-    journal_->Log(request->GetURLForJournal(), task_id_,
+    journal_->Log(request.GetURLForJournal(), task_id_,
                   "ToolController Invoke Failed",
                   create_result.result->message);
     PostResponseTask(std::move(result_callback),

@@ -365,8 +365,8 @@ void ExecutionEngine::ExecuteNextAction() {
 
   // TODO(bokan): ExecutionEngine shouldn't know about the Action proto, it
   // should operate in terms of ToolRequest.
-  std::unique_ptr<ToolRequest> tool_request = CreateToolRequest(action, tab_);
-  if (!tool_request) {
+  active_tool_request_ = CreateToolRequest(action, tab_);
+  if (!active_tool_request_) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
                   "Failed to convert ActionInformation proto to ToolRequest");
     CompleteActions(MakeResult(mojom::ActionResultCode::kArgumentsInvalid));
@@ -374,12 +374,14 @@ void ExecutionEngine::ExecuteNextAction() {
   }
 
   tool_controller_->Invoke(
-      std::move(tool_request), last_observed_page_content_.get(),
+      *active_tool_request_, last_observed_page_content_.get(),
       base::BindOnce(&ExecutionEngine::FinishOneAction, GetWeakPtr()));
 }
 
 void ExecutionEngine::FinishOneAction(mojom::ActionResultPtr result) {
   CHECK(actions_v1_ || actions_v2_);
+
+  active_tool_request_.reset();
 
   // The current action errored out. Stop the chain.
   if (!IsOk(*result)) {

@@ -38,7 +38,7 @@ class ToolController {
 
   // Invokes a tool action.
   void Invoke(
-      std::unique_ptr<ToolRequest> request,
+      const ToolRequest& request,
       const optimization_guide::proto::AnnotatedPageContent* last_observation,
       ResultCallback result_callback);
 
