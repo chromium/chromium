@@ -61,6 +61,8 @@ class VIEWS_EXPORT Throbber : public View {
 
   // Overrides the default color, ui::kColorThrobber, if set.
   std::optional<ui::ColorId> color_id_;
+
+  base::WeakPtrFactory<Throbber> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Throbber, View)

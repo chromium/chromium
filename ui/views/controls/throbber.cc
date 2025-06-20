@@ -46,9 +46,9 @@ void Throbber::Start() {
   }
 
   start_time_ = base::TimeTicks::Now();
-  timer_.Start(
-      FROM_HERE, base::Milliseconds(GetFrameDelay(diameter_)),
-      base::BindRepeating(&Throbber::SchedulePaint, base::Unretained(this)));
+  timer_.Start(FROM_HERE, base::Milliseconds(GetFrameDelay(diameter_)),
+               base::BindRepeating(&Throbber::SchedulePaint,
+                                   weak_ptr_factory_.GetWeakPtr()));
   SchedulePaint();  // paint right away
 }
 
