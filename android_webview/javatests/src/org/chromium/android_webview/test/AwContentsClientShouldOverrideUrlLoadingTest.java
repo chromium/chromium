@@ -1290,6 +1290,45 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         }
     }
 
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNullContentsClientIntentSelectorRemoved() throws Throwable {
+        try {
+            // The test will fire real intents through the test activity.
+            // Need to temporarily suppress startActivity otherwise there will be a
+            // handler selection window and the test can't dismiss that.
+            mActivityTestRule.getActivity().setIgnoreStartActivity(true);
+            final String testUrl =
+                    "intent:wtai://wp/#Intent;SEL;action=android.settings.SETTINGS;"
+                            + "component=package/class;end";
+            setupWithProvidedContentsClient(new TestDefaultContentsClient());
+            AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+            final String pageTitle = "Click Title";
+            final String htmlWithLink =
+                    "<html><title>"
+                            + pageTitle
+                            + "</title>"
+                            + "<body><a id='link' href='"
+                            + testUrl
+                            + "'>Click this!</a></body></html>";
+            final String urlWithLink =
+                    mWebServer.setResponse(
+                            "/html_with_link.html",
+                            htmlWithLink,
+                            CommonResources.getTextHtmlHeaders(true));
+
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), urlWithLink);
+            JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
+            mActivityTestRule.pollUiThread(
+                    () -> mActivityTestRule.getActivity().getLastSentIntent() != null);
+            Assert.assertNull(mActivityTestRule.getActivity().getLastSentIntent().getSelector());
+        } finally {
+            mActivityTestRule.getActivity().setIgnoreStartActivity(false);
+        }
+    }
+
     private void setAppLinkPolicy(final AwPolicyProvider testProvider, String url) {
         final PolicyData[] policies = {
             new PolicyData.Str(sEnterpriseAuthAppLinkPolicy, "[{ \"url\": \"" + url + "\"}]")

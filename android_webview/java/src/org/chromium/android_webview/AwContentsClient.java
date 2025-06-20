@@ -241,11 +241,10 @@ public abstract class AwContentsClient {
         // security (only access to BROWSABLE activities).
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         intent.setComponent(null);
-        Intent selector = intent.getSelector();
-        if (selector != null) {
-            selector.addCategory(Intent.CATEGORY_BROWSABLE);
-            selector.setComponent(null);
-        }
+
+        // Intent Selectors allow intents to bypass the intent filter and potentially send apps URIs
+        // they were not expecting to handle. https://crbug.com/1254422
+        intent.setSelector(null);
 
         // Pass the package name as application ID so that the intent from the
         // same application can be opened in the same tab.
