@@ -5847,8 +5847,6 @@ static_library("test_support") {
       "browser_window/test/mock_browser_window_interface.h",
       "passwords/credential_manager_dialog_controller_mock.cc",
       "passwords/credential_manager_dialog_controller_mock.h",
-      "passwords/manage_passwords_ui_controller_mock.cc",
-      "passwords/manage_passwords_ui_controller_mock.h",
       "passwords/passwords_leak_dialog_delegate_mock.cc",
       "passwords/passwords_leak_dialog_delegate_mock.h",
       "passwords/passwords_model_delegate_mock.cc",
