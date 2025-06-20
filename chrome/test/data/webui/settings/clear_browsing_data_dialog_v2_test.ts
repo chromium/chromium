@@ -473,6 +473,22 @@ suite('DeleteBrowsingDataDialog', function() {
     assertEquals(args[1], TimePeriod.LAST_WEEK);
   });
 
+  test('SyncStatusChangesRestartCounters', async function() {
+    // Clear previous restartCounters calls.
+    testClearBrowsingDataBrowserProxy.reset();
+
+    // Set the SyncStatus TimePeriod to signed-in.
+    webUIListenerCallback('sync-status-changed', {
+      signedInState: SignedInState.SIGNED_IN,
+    });
+    await flushTasks();
+
+    const args =
+        await testClearBrowsingDataBrowserProxy.whenCalled('restartCounters');
+    assertEquals(args[0], /*isBasic=*/ false);
+    assertEquals(args[1], TimePeriod.LAST_HOUR);
+  });
+
   test('CountersUpdateCheckboxSubLabel', async function() {
     // Case 1, Counter updates a checkbox in the expanded options list.
     // Simulate a browsing data counter result for history. The History

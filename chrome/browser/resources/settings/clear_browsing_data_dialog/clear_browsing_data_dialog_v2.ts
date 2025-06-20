@@ -197,7 +197,10 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
       moreBrowsingDataTypeOptionsList_: Array,
 
-      syncStatus_: Object,
+      syncStatus_: {
+        type: Object,
+        observer: 'onSyncStatusChanged_',
+      },
     };
   }
 
@@ -257,6 +260,11 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
   private handleSyncStatus_(syncStatus: SyncStatus) {
     this.syncStatus_ = syncStatus;
+  }
+
+  private onSyncStatusChanged_() {
+    this.clearBrowsingDataBrowserProxy_.restartCounters(
+        /*isBasic=*/ false, this.$.timePicker.getSelectedTimePeriod());
   }
 
   override connectedCallback() {
