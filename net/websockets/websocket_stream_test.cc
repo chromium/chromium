@@ -242,12 +242,11 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
 
     // First request.  This is necessary, because a WebSockets request currently
     // does not open a new HTTP/2 connection, it only uses an existing one.
-    const char* const kExtraRequestHeaders[] = {
+    std::string_view kExtraRequestHeaders[] = {
         "user-agent",      "",        "accept-encoding", "gzip, deflate",
         "accept-language", "en-us,fr"};
-    frames_.push_back(spdy_util_.ConstructSpdyGet(
-        kExtraRequestHeaders, std::size(kExtraRequestHeaders) / 2, 1,
-        DEFAULT_PRIORITY));
+    frames_.push_back(
+        spdy_util_.ConstructSpdyGet(kExtraRequestHeaders, 1, DEFAULT_PRIORITY));
     AddWrite(&frames_.back());
 
     // SETTINGS ACK frame sent by the server in response to the client's
@@ -256,7 +255,8 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
     AddRead(&frames_.back());
 
     // Response headers to first request.
-    frames_.push_back(spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+    frames_.push_back(spdy_util_.ConstructSpdyGetReply(
+        base::span<const std::string_view>(), 1));
     AddRead(&frames_.back());
 
     // Response body to first request.
@@ -280,20 +280,19 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
     } else {
       // Response to WebSocket request.
       std::vector<std::string> extra_response_header_keys;
-      std::vector<const char*> extra_response_headers_vector;
+      std::vector<std::string_view> extra_response_headers_vector;
       for (const auto& extra_header : extra_response_headers) {
         // Save a lowercase copy of the header key.
         extra_response_header_keys.push_back(
             base::ToLowerASCII(extra_header.first));
         // Save a pointer to this lowercase copy.
         extra_response_headers_vector.push_back(
-            extra_response_header_keys.back().c_str());
+            extra_response_header_keys.back());
         // Save a pointer to the original header value provided by the caller.
-        extra_response_headers_vector.push_back(extra_header.second.c_str());
+        extra_response_headers_vector.push_back(extra_header.second);
       }
       frames_.push_back(spdy_util_.ConstructSpdyReplyError(
-          http2_response_status_, extra_response_headers_vector.data(),
-          extra_response_headers_vector.size() / 2, 3));
+          http2_response_status_, extra_response_headers_vector, 3));
       AddRead(&frames_.back());
 
       // WebSocket data received.

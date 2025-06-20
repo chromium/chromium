@@ -6807,7 +6807,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectSpdyServer) {
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), 1, 1,
           false, ConstructDataFrame({get_frame.data(), get_frame.size()})));
   spdy::SpdySerializedFrame resp_frame =
-      spdy_util.ConstructSpdyGetReply(nullptr, 0, 1);
+      spdy_util.ConstructSpdyGetReply(base::span<const std::string_view>(), 1);
   mock_quic_data.AddRead(
       ASYNC, ConstructServerDataPacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false,
@@ -7321,7 +7321,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
           false, ConstructDataFrame({get_frame.data(), get_frame.size()})));
 
   spdy::SpdySerializedFrame resp_frame =
-      spdy_util.ConstructSpdyGetReply(nullptr, 0, 1);
+      spdy_util.ConstructSpdyGetReply(base::span<const std::string_view>(), 1);
   mock_quic_data.AddRead(
       ASYNC, ConstructServerDataPacket(
                  5, GetNthClientInitiatedBidirectionalStreamId(1), false,

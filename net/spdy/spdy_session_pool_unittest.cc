@@ -1487,8 +1487,8 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
 
   SpdyTestUtil spdy_util;
 
-  spdy::SpdySerializedFrame req(
-      spdy_util.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
+  spdy::SpdySerializedFrame req(spdy_util.ConstructSpdyGet(
+      base::span<const std::string_view>(), 1, LOWEST));
   spdy::SpdySerializedFrame settings_ack(spdy_util.ConstructSpdySettingsAck());
   MockWrite writes[] = {CreateMockWrite(req, 0),
                         CreateMockWrite(settings_ack, 2)};
@@ -1498,7 +1498,7 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
   spdy::SpdySerializedFrame settings_frame(
       spdy_util.ConstructSpdySettings(settings));
   spdy::SpdySerializedFrame resp(
-      spdy_util.ConstructSpdyGetReply(nullptr, 0, 1));
+      spdy_util.ConstructSpdyGetReply(base::span<const std::string_view>(), 1));
   spdy::SpdySerializedFrame body(spdy_util.ConstructSpdyDataFrame(1, true));
   MockRead reads[] = {CreateMockRead(settings_frame, 1),
                       CreateMockRead(resp, 3), CreateMockRead(body, 4),
@@ -1924,8 +1924,8 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithStreams) {
   spdy::SpdySerializedFrame settings_frame =
       spdy_util.ConstructSpdySettings(settings);
   spdy::SpdySerializedFrame settings_ack = spdy_util.ConstructSpdySettingsAck();
-  spdy::SpdySerializedFrame req(
-      spdy_util.ConstructSpdyGet(nullptr, 0, 1, MEDIUM));
+  spdy::SpdySerializedFrame req(spdy_util.ConstructSpdyGet(
+      base::span<const std::string_view>(), 1, MEDIUM));
 
   const MockConnect connect_data(SYNCHRONOUS, OK);
   const MockRead reads[] = {

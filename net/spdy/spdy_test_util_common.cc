@@ -112,22 +112,22 @@ std::unique_ptr<MockWrite[]> ChopWriteFrame(
 // where the even entries are the header names, and the odd entries are the
 // header values.
 // |headers| gets filled in from |extra_headers|.
-void AppendToHeaderBlock(const char* const extra_headers[],
-                         int extra_header_count,
+void AppendToHeaderBlock(base::span<const std::string_view> extra_headers,
                          quiche::HttpHeaderBlock* headers) {
-  if (!extra_header_count)
+  if (extra_headers.empty()) {
     return;
+  }
 
-  // Sanity check: Non-NULL header list.
-  DCHECK(extra_headers) << "NULL header value pair list";
+  // Sanity check: Event length list.
+  CHECK_EQ(extra_headers.size() % 2, 0u) << "Odd length header value pair list";
   // Sanity check: Non-NULL header map.
-  DCHECK(headers) << "NULL header map";
+  CHECK(headers) << "NULL header map";
 
   // Copy in the headers.
-  for (int i = 0; i < extra_header_count; i++) {
-    std::string_view key(extra_headers[i * 2]);
-    std::string_view value(extra_headers[i * 2 + 1]);
-    DCHECK(!key.empty()) << "Header key must not be empty.";
+  for (size_t i = 0; i < extra_headers.size(); i += 2) {
+    std::string_view key = extra_headers[i];
+    std::string_view value = extra_headers[i + 1];
+    CHECK(!key.empty()) << "Header key must not be empty.";
     headers->AppendValueOrAddHeader(key, value);
   }
 }
@@ -767,8 +767,7 @@ spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyGet(
 }
 
 spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyGet(
-    const char* const extra_headers[],
-    int extra_header_count,
+    base::span<const std::string_view> extra_headers,
     int stream_id,
     RequestPriority request_priority,
     bool priority_incremental,
@@ -776,23 +775,22 @@ spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyGet(
   quiche::HttpHeaderBlock block;
   block[spdy::kHttp2MethodHeader] = "GET";
   AddUrlToHeaderBlock(default_url_.spec(), &block);
-  AppendToHeaderBlock(extra_headers, extra_header_count, &block);
+  AppendToHeaderBlock(extra_headers, &block);
   return ConstructSpdyHeaders(stream_id, std::move(block), request_priority,
                               true, priority_incremental,
                               header_request_priority);
 }
 
 spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyConnect(
-    const char* const extra_headers[],
-    int extra_header_count,
+    base::span<const std::string_view> extra_headers,
     int stream_id,
     RequestPriority priority,
     const HostPortPair& host_port_pair) {
   quiche::HttpHeaderBlock block;
   block[spdy::kHttp2MethodHeader] = "CONNECT";
   block[spdy::kHttp2AuthorityHeader] = host_port_pair.ToString();
-  if (extra_headers) {
-    AppendToHeaderBlock(extra_headers, extra_header_count, &block);
+  if (!extra_headers.empty()) {
+    AppendToHeaderBlock(extra_headers, &block);
   } else {
     block["user-agent"] = "test-ua";
   }
@@ -870,30 +868,29 @@ spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyReply(
 
 spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyReplyError(
     const char* const status,
-    const char* const* const extra_headers,
-    int extra_header_count,
+    base::span<const std::string_view> extra_headers,
     int stream_id) {
   quiche::HttpHeaderBlock block;
   block[spdy::kHttp2StatusHeader] = status;
   block["hello"] = "bye";
-  AppendToHeaderBlock(extra_headers, extra_header_count, &block);
+  AppendToHeaderBlock(extra_headers, &block);
 
   spdy::SpdyHeadersIR reply(stream_id, std::move(block));
   return spdy::SpdySerializedFrame(response_spdy_framer_.SerializeFrame(reply));
 }
 
 spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyReplyError(int stream_id) {
-  return ConstructSpdyReplyError("500", nullptr, 0, stream_id);
+  return ConstructSpdyReplyError("500", base::span<const std::string_view>(),
+                                 stream_id);
 }
 
 spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyGetReply(
-    const char* const extra_headers[],
-    int extra_header_count,
+    base::span<const std::string_view> extra_headers,
     int stream_id) {
   quiche::HttpHeaderBlock block;
   block[spdy::kHttp2StatusHeader] = "200";
   block["hello"] = "bye";
-  AppendToHeaderBlock(extra_headers, extra_header_count, &block);
+  AppendToHeaderBlock(extra_headers, &block);
 
   return ConstructSpdyReply(stream_id, std::move(block));
 }
@@ -903,33 +900,30 @@ spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyPost(
     spdy::SpdyStreamId stream_id,
     int64_t content_length,
     RequestPriority request_priority,
-    const char* const extra_headers[],
-    int extra_header_count,
+    base::span<const std::string_view> extra_headers,
     bool priority_incremental) {
   quiche::HttpHeaderBlock block(ConstructPostHeaderBlock(url, content_length));
-  AppendToHeaderBlock(extra_headers, extra_header_count, &block);
+  AppendToHeaderBlock(extra_headers, &block);
   return ConstructSpdyHeaders(stream_id, std::move(block), request_priority,
                               false, priority_incremental);
 }
 
 spdy::SpdySerializedFrame SpdyTestUtil::ConstructChunkedSpdyPost(
-    const char* const extra_headers[],
-    int extra_header_count,
+    base::span<const std::string_view> extra_headers,
     RequestPriority request_priority,
     bool priority_incremental) {
   quiche::HttpHeaderBlock block;
   block[spdy::kHttp2MethodHeader] = "POST";
   AddUrlToHeaderBlock(default_url_.spec(), &block);
-  AppendToHeaderBlock(extra_headers, extra_header_count, &block);
+  AppendToHeaderBlock(extra_headers, &block);
   return ConstructSpdyHeaders(1, std::move(block), request_priority, false,
                               priority_incremental);
 }
 
 spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyPostReply(
-    const char* const extra_headers[],
-    int extra_header_count) {
+    base::span<const std::string_view> extra_headers) {
   // TODO(jgraettinger): Remove this method.
-  return ConstructSpdyGetReply(extra_headers, extra_header_count, 1);
+  return ConstructSpdyGetReply(extra_headers, 1);
 }
 
 spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyDataFrame(int stream_id,
