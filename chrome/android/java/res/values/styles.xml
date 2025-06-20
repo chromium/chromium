@@ -10,17 +10,14 @@ found in the LICENSE file.
     <!-- Application themes -->
     <style name="LauncherTheme" parent="Theme.BrowserUI.NoDisplay" />
 
-    <style name="Base.V21.Theme.Chromium" parent="Theme.BrowserUI.DayNight">
+    <style name="Base.Theme.Chromium" parent="Theme.BrowserUI.DayNight">
         <!-- Set android alert dialog attributes because the context menu dialog is
              OS-dependent. -->
         <item name="android:alertDialogTheme">@style/ThemeOverlay.BrowserUI.AlertDialog</item>
     </style>
-    <style name="Base.Theme.Chromium" parent="Base.V21.Theme.Chromium" />
 
     <style name="Base.Theme.Chromium.WithWindowAnimation">
         <item name="android:windowContentOverlay">@null</item>
-
-        <!-- Navigation Transitions, requires API level 21 -->
         <item name="android:windowAllowEnterTransitionOverlap">false</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowContentTransitions">true</item>
@@ -41,17 +38,14 @@ found in the LICENSE file.
     <style name="Theme.Chromium.Activity" parent="Theme.Chromium.WithWindowAnimation" />
     <!-- This is distinct from Theme.Chromium.Activity.Fullscreen.Transparent, which makes the
          payment handler window overlap the bottom nav bar. -->
-    <style name="Base.Theme.Chromium.Activity.Fullscreen" parent="Theme.BrowserUI.DayNight" />
-    <style name="Base.V27.Theme.Chromium.Activity.Fullscreen"
-        parent="Base.Theme.Chromium.Activity.Fullscreen">
+    <style name="Base.Theme.Chromium.Activity.Fullscreen" parent="Theme.BrowserUI.DayNight">
         <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
         <item name="android:navigationBarDividerColor">@macro/bottom_system_nav_divider_color</item>
         <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>
-    </style>
-    <style name="Theme.Chromium.Activity.Fullscreen" parent="Base.V27.Theme.Chromium.Activity.Fullscreen">
         <item name="android:statusBarColor">@macro/default_bg_color</item>
         <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
     </style>
+    <style name="Theme.Chromium.Activity.Fullscreen" parent="Base.Theme.Chromium.Activity.Fullscreen" />
 
     <style name="Theme.Chromium.Activity.Fullscreen.Transparent">
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -86,6 +80,11 @@ found in the LICENSE file.
         <item name="preferenceTheme">@style/PreferenceTheme</item>
         <item name="alertDialogTheme">@style/ThemeOverlay.BrowserUI.AlertDialog</item>
         <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
+        <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
+        <item name="android:navigationBarDividerColor">@macro/bottom_system_nav_divider_color</item>
+        <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>
+        <item name="android:statusBarColor">@macro/default_bg_color</item>
+        <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
 
         <!-- Text style attributes used by the preference_material.xml layout. -->
         <item name="android:textAppearanceListItem">@style/TextAppearance.TextLarge.Primary</item>
@@ -93,17 +92,7 @@ found in the LICENSE file.
         <item name="android:textAppearanceListItemSecondary">@style/TextAppearance.TextMedium.Secondary</item>
         <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
     </style>
-    <style name="Base.V27.Theme.Chromium.Settings" parent="Base.Theme.Chromium.Settings">
-        <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
-        <item name="android:navigationBarDividerColor">@macro/bottom_system_nav_divider_color</item>
-        <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>
-    </style>
-    <!-- The windowLightStatusBar attribute was added in API 23, but we avoid using it via XML prior
-         to 28 due to: https://crbug.com/884144 and https://crbug.com/1014844 -->
-    <style name="Theme.Chromium.Settings" parent="Base.V27.Theme.Chromium.Settings">
-        <item name="android:statusBarColor">@macro/default_bg_color</item>
-        <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
-    </style>
+    <style name="Theme.Chromium.Settings" parent="Base.Theme.Chromium.Settings" />
 
     <style name="Theme.Chromium.Settings.ManageSpace">
         <!-- With ActionBar -->
@@ -166,20 +155,17 @@ found in the LICENSE file.
         <item name="colorControlHighlight">@color/control_highlight_color</item>
         <item name="spinnerStyle">@style/SpinnerStyle</item>
         <item name="textInputStyle">@style/Widget.BrowserUI.TextInputLayout</item>
+        <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
+        <item name="android:navigationBarDividerColor">@macro/bottom_system_nav_divider_color</item>
+        <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>
+        <item name="android:statusBarColor">@macro/default_bg_color</item>
+        <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
 
         <!-- Remove ActionBar -->
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
     </style>
-    <style name="Base.V27.Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge">
-        <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
-        <item name="android:navigationBarDividerColor">@macro/bottom_system_nav_divider_color</item>
-        <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>
-    </style>
-    <style name="Theme.Chromium.DialogWhenLarge" parent="Base.V27.Theme.Chromium.DialogWhenLarge">
-        <item name="android:statusBarColor">@macro/default_bg_color</item>
-        <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
-    </style>
+    <style name="Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge" />
     <style name="DimmingDialog" parent="Base.Theme.Chromium.DialogWhenLarge">
         <item name="android:windowLightNavigationBar" tools:targetApi="28">false</item>
     </style>
