@@ -29,6 +29,7 @@ import android.app.ActivityManager.AppTask;
 import android.app.ActivityManager.RecentTaskInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -95,6 +96,7 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.XrUtils;
@@ -467,6 +469,10 @@ public class MultiInstanceManagerApi31UnitTest {
     public void tearDown() {
         ChromeSharedPreferences.getInstance()
                 .removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_LIMIT);
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
         ApplicationStatus.destroyForJUnitTests();
         mMultiInstanceManager.mTestBuildInstancesList = false;
@@ -648,10 +654,8 @@ public class MultiInstanceManagerApi31UnitTest {
     public void testGetInstanceInfo_closesInstancesOlderThanSixMonths() {
         MultiWindowTestUtils.enableMultiInstance();
         // Setting up two additional Multi-instance managers; mMultiInstanceManager already exists.
-        MultiInstanceManagerApi31 multiInstanceManager1 =
-                createMultiInstanceManager(mActivityTask57);
-        MultiInstanceManagerApi31 multiInstanceManager2 =
-                createMultiInstanceManager(mActivityTask58);
+        createMultiInstanceManager(mActivityTask57);
+        createMultiInstanceManager(mActivityTask58);
 
         // Current activity is mActivityTask56, managed by mMultiInstanceManager.
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
@@ -1563,6 +1567,78 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mTabbedActivityTask63).onNewIntent(intent);
     }
 
+    @Test
+    public void showInstanceRestorationMessage() {
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        MultiWindowUtils.setMaxInstancesForTesting(2);
+        var messageDispatcher = mock(MessageDispatcher.class);
+        when(mCurrentActivity.getResources()).thenReturn(mock(Resources.class));
+
+        mMultiInstanceManager.showInstanceRestorationMessage(messageDispatcher);
+        verify(messageDispatcher).enqueueWindowScopedMessage(any(), eq(false));
+        assertTrue(
+                "SharedPref for tracking restoration message should be updated.",
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
+                                false));
+    }
+
+    @Test
+    public void triggerInstanceLimitDowngrade() {
+        // Set initial instance limit and allocate ids for max instances.
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        mFakeTimeTestRule.advanceMillis(1);
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        mFakeTimeTestRule.advanceMillis(1);
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
+
+        // Decrease instance limit.
+        MultiWindowUtils.setMaxInstancesForTesting(2);
+        // Simulate recreation of mActivityTask58 after instance limit downgrade. New allocation
+        // should result in finishing least recently used activity .
+        removeTaskOnRecentsScreen(mActivityTask58);
+        List<AppTask> appTasks = setupActivityManagerAppTasks(mActivityTask56, mActivityTask57);
+        allocInstanceIndex(2, mActivityTask58);
+
+        verify(appTasks.get(0)).finishAndRemoveTask();
+        assertEquals(
+                "Task map for LRU activity should be updated.",
+                -1,
+                MultiInstanceManagerApi31.getTaskFromMap(0));
+        assertTrue(
+                "SharedPref for tracking downgrade should be updated.",
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys
+                                        .MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED,
+                                false));
+
+        // Subsequent reallocation of an instance should not trigger downgrade path to finish the
+        // LRU activity task.
+        destroyActivity(mActivityTask56);
+        // AppTasks should now contain tasks for instances with id=1 and id=2.
+        appTasks = setupActivityManagerAppTasks(mActivityTask57, mActivityTask58);
+        allocInstanceIndex(0, mActivityTask56);
+        verify(appTasks.get(0), never()).finishAndRemoveTask();
+        verify(appTasks.get(1), never()).finishAndRemoveTask();
+    }
+
+    private List<AppTask> setupActivityManagerAppTasks(Activity... activities) {
+        List<AppTask> appTasks = new ArrayList<>();
+        for (Activity activity : activities) {
+            int taskId = activity.getTaskId();
+            var appTask = mock(AppTask.class);
+            var appTaskInfo = mock(RecentTaskInfo.class);
+            appTaskInfo.taskId = taskId;
+            when(appTask.getTaskInfo()).thenReturn(appTaskInfo);
+            appTasks.add(appTask);
+        }
+        when(mActivityManager.getAppTasks()).thenReturn(appTasks);
+        return appTasks;
+    }
+
     private void doTestOpenInstanceWithValidTask(boolean isActivityAlive) {
         // Setup mocks to ensure that MultiWindowUtils#createNewWindowIntent() runs as expected.
         MultiWindowTestUtils.enableMultiInstance();
@@ -1586,40 +1662,30 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
 
         // Setup AppTask's for both activities.
-        int taskId62 = mTabbedActivityTask62.getTaskId();
-        int taskId63 = mTabbedActivityTask63.getTaskId();
-        var appTask62 = mock(AppTask.class);
-        var appTaskInfo62 = mock(RecentTaskInfo.class);
-        appTaskInfo62.taskId = taskId62;
-        when(appTask62.getTaskInfo()).thenReturn(appTaskInfo62);
-        var appTask63 = mock(AppTask.class);
-        var appTaskInfo63 = mock(RecentTaskInfo.class);
-        appTaskInfo63.taskId = taskId63;
-        when(appTask63.getTaskInfo()).thenReturn(appTaskInfo63);
-        List<AppTask> appTasks = List.of(appTask62, appTask63);
-        when(mActivityManager.getAppTasks()).thenReturn(appTasks);
+        List<AppTask> appTasks =
+                setupActivityManagerAppTasks(mTabbedActivityTask62, mTabbedActivityTask63);
 
         if (!isActivityAlive) {
             // Force destruction of |mTabbedActivityTask63|.
             destroyActivity(mTabbedActivityTask63);
         }
 
-        // Try to restore the instance in task |taskId63|, from |mTabbedActivityTask62|.
-        multiInstanceManager.openInstance(1, taskId63);
+        // Try to restore the instance in task TASK_ID_63, from |mTabbedActivityTask62|.
+        multiInstanceManager.openInstance(1, TASK_ID_63);
 
         if (isActivityAlive) {
             // If |mTabbedActivityTask63| is alive, verify that its instance was restored in the
             // existing task by bringing it to the foreground.
-            verify(mActivityManager).moveTaskToFront(taskId63, 0);
+            verify(mActivityManager).moveTaskToFront(TASK_ID_63, 0);
             verify(mTabbedActivityTask62, never()).startActivity(any());
-            verify(appTask63, never()).finishAndRemoveTask();
+            verify(appTasks.get(1), never()).finishAndRemoveTask();
         } else {
             // If |mTabbedActivityTask63| is not alive, verify that |mTabbedActivityTask62| starts a
             // new activity and finishes and removes the old task, and does not attempt to bring the
             // old task to the foreground.
             verify(mTabbedActivityTask62).startActivity(any());
-            verify(appTask63).finishAndRemoveTask();
-            verify(mActivityManager, never()).moveTaskToFront(taskId63, 0);
+            verify(appTasks.get(1)).finishAndRemoveTask();
+            verify(mActivityManager, never()).moveTaskToFront(TASK_ID_63, 0);
         }
     }
 

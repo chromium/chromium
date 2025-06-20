@@ -1137,13 +1137,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // Initializes Privacy Sandbox related logic
         recordPrivacySandboxActivityType(profile);
 
-        boolean didTriggerPromo = maybeShowRequiredPromptsAndPromos(profile, intentWithEffect);
-
-        if (!didTriggerPromo) {
-            didTriggerPromo =
-                    RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
-                            profile, mMessageDispatcher, mActivity);
-        }
+        boolean didTriggerPromo =
+                maybeShowRequiredPromptsAndPromos(profile, intentWithEffect)
+                        || mMultiInstanceManager.showInstanceRestorationMessage(mMessageDispatcher)
+                        || RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
+                                profile, mMessageDispatcher, mActivity);
 
         if (!didTriggerPromo) {
             mToolbarButtonInProductHelpController.showColdStartIph();

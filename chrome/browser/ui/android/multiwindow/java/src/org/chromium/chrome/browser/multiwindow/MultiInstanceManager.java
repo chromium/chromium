@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
+import org.chromium.components.messages.MessageDispatcher;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -208,6 +209,19 @@ public abstract class MultiInstanceManager {
      */
     public void cleanupSyncedTabGroupsIfOnlyInstance(TabModelSelector selector) {
         // Not implemented
+    }
+
+    /**
+     * Shows a message to notify the user when excess of {@link MultiWindowUtils#getMaxInstances()}
+     * running activities have been finished after an instance limit downgrade causing existence of
+     * more active instances than the instance limit.
+     *
+     * @param messageDispatcher The {@link MessageDispatcher} to enqueue the instance restoration
+     *     message.
+     * @return {@code true} if the instance restoration message was shown, {@code false} otherwise.
+     */
+    public boolean showInstanceRestorationMessage(@Nullable MessageDispatcher messageDispatcher) {
+        return false;
     }
 
     public abstract void setCurrentDisplayIdForTesting(int displayId);
