@@ -65,11 +65,31 @@ constexpr int kMaxEnterpriseSuggestions = 4;
 // google" suggestions, which ranks higher than the other starter pack
 // suggestions.
 constexpr int kFeaturedEnterpriseSearchRelevance = 1470;
-constexpr int kGeminiRelevance = 1460;
-constexpr int kStarterPackRelevance = 1450;
 // IPH suggestions are grouped after all other suggestions. But they still
 // need to score within top N suggestions to be shown.
-constexpr int kIPHRelevance = 5000;
+constexpr int kIphRelevance = 5000;
+
+// Returns relevance for starter pack suggestions.
+int StarterPackRelevance(
+    TemplateURLStarterPackData::StarterPackID starter_pack_id) {
+  // TODO(crbug.com/421415393) 1460 reserved for ai mode starter pack.
+  switch (starter_pack_id) {
+    case TemplateURLStarterPackData::StarterPackID::kGemini:
+      return 1459;
+    case TemplateURLStarterPackData::StarterPackID::kHistory:
+      return 1458;
+    case TemplateURLStarterPackData::StarterPackID::kBookmarks:
+      return 1457;
+    case TemplateURLStarterPackData::StarterPackID::kPage:
+      return 1456;
+    case TemplateURLStarterPackData::StarterPackID::kTabs:
+      return 1455;
+    case TemplateURLStarterPackData::StarterPackID::kMaxStarterPackID:
+      break;
+  }
+  // Can occur when syncing between different chrome versions.
+  return 0;
+}
 
 std::string GetIphDismissedPrefNameFor(IphType iph_type) {
   switch (iph_type) {
@@ -283,8 +303,12 @@ void FeaturedSearchProvider::AddStarterPackMatch(
   // TODO(yoangela): This should be updated so the keyword chip only attaches to
   //  STARTER_PACK type suggestions rather than rely on out-scoring all other
   //  suggestions.
-  AutocompleteMatch match(this, kStarterPackRelevance, false,
-                          AutocompleteMatchType::STARTER_PACK);
+  AutocompleteMatch match(
+      this,
+      StarterPackRelevance(
+          static_cast<TemplateURLStarterPackData::StarterPackID>(
+              template_url.starter_pack_id())),
+      false, AutocompleteMatchType::STARTER_PACK);
 
   const std::u16string destination_url =
       TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(
@@ -296,18 +320,11 @@ void FeaturedSearchProvider::AddStarterPackMatch(
   }
   match.destination_url = GURL(destination_url);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
-  // The Gemini provider doesn't follow the "Search X" pattern and should
-  // also be ranked first.
-  // TODO(b/41494524): Currently templateurlservice returns the keywords in
-  //  alphabetical order, which is the order we rank them. There should be a
-  //  more sustainable way for specifying the order they should appear in the
-  //  omnibox.
   if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
       template_url.starter_pack_id() == TemplateURLStarterPackData::kGemini) {
     match.description = l10n_util::GetStringFUTF16(
         IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT, template_url.keyword(),
         template_url.short_name());
-    match.relevance = kGeminiRelevance;
   } else {
     std::u16string short_name = template_url.short_name();
     if (template_url.short_name() == u"Tabs") {
@@ -543,7 +560,7 @@ void FeaturedSearchProvider::AddHistoryEmbeddingsSettingsPromoIphMatch() {
               /*matched_term=*/u"",
               /*iph_link_text=*/link_text,
               /*iph_link_url=*/GURL("chrome://settings/ai/historySearch"),
-              /*relevance=*/kIPHRelevance,
+              /*relevance=*/kIphRelevance,
               /*deletable=*/true);
 }
 
@@ -567,7 +584,7 @@ void FeaturedSearchProvider::AddHistoryEmbeddingsDisclaimerIphMatch() {
               /*matched_term=*/u"",
               /*iph_link_text=*/link_text,
               /*iph_link_url=*/GURL("chrome://settings/ai/historySearch"),
-              /*relevance=*/kIPHRelevance,
+              /*relevance=*/kIphRelevance,
               /*deletable=*/false);
 }
 

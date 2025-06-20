@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -51,9 +50,9 @@ const std::string kBookmarksUrl =
 const std::string kHistoryUrl =
     TemplateURLStarterPackData::history.destination_url;
 const std::string kTabsUrl = TemplateURLStarterPackData::tabs.destination_url;
-const std::string kPageUrl = TemplateURLStarterPackData::page.destination_url;
 const std::string kGeminiUrl =
     TemplateURLStarterPackData::Gemini.destination_url;
+const std::string kPageUrl = TemplateURLStarterPackData::page.destination_url;
 
 struct TestData {
   const std::u16string input;
@@ -110,7 +109,7 @@ class FeaturedSearchProviderTest : public testing::Test {
       matches = provider_->matches();
       ASSERT_EQ(cases[i].output.size(), matches.size());
       for (size_t j = 0; j < cases[i].output.size(); ++j) {
-        EXPECT_EQ(GURL(cases[i].output[j]), matches[j].destination_url);
+        EXPECT_EQ(matches[j].destination_url, GURL(cases[i].output[j]));
       }
     }
   }
@@ -315,15 +314,12 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
     return x.relevance > y.relevance;
   });
 
-  auto expected_match_order = std::to_array<std::string>({
-      kGeminiUrl,
-      kBookmarksUrl,
-      kHistoryUrl,
-      kPageUrl,
-      kTabsUrl,
-  });
+  auto expected_match_order = std::vector<std::string>{
+      kGeminiUrl, kHistoryUrl, kBookmarksUrl, kPageUrl, kTabsUrl,
+  };
+  ASSERT_EQ(matches.size(), expected_match_order.size());
   for (size_t i = 0; i < matches.size(); i++) {
-    EXPECT_EQ(matches[i].destination_url, GURL(expected_match_order[i]));
+    EXPECT_EQ(matches[i].destination_url, GURL(expected_match_order[i])) << i;
   }
 }
 
