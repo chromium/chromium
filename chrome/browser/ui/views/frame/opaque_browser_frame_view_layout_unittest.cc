@@ -35,7 +35,7 @@ const int kMaximizeButtonWidth = 25;
 const int kCloseButtonWidth = 43;
 const int kMaximizedExtraCloseWidth =
     OpaqueBrowserFrameViewLayout::kFrameBorderThickness -
-    views::NonClientFrameView::kFrameShadowThickness;
+    OpaqueBrowserFrameViewLayout::kFrameShadowThickness;
 const int kCaptionButtonsWidth =
     kMinimizeButtonWidth + kMaximizeButtonWidth + kCloseButtonWidth;
 const int kCaptionButtonHeight = 18;
@@ -190,7 +190,7 @@ class OpaqueBrowserFrameViewLayoutTest
   int CaptionY() const {
     return delegate_->IsMaximized()
                ? 0
-               : views::NonClientFrameView::kFrameShadowThickness;
+               : OpaqueBrowserFrameViewLayout::kFrameShadowThickness;
   }
 
   int CaptionLeft() const {

@@ -58,13 +58,13 @@ IN_PROC_BROWSER_TEST_F(NonClientFrameViewTest,
   chromeos::FrameCaptionButtonContainerView::TestApi test_api(
       header_view()->caption_button_container());
 
-  EXPECT_TRUE(frame_view()->ShouldPaintAsActive());
+  EXPECT_TRUE(frame_view()->GetWidget()->ShouldPaintAsActive());
   EXPECT_TRUE(test_api.size_button()->GetPaintAsActive());
 
   widget()->Deactivate();
   ASSERT_TRUE(base::test::RunUntil([&]() { return !widget()->IsActive(); }));
 
-  EXPECT_FALSE(frame_view()->ShouldPaintAsActive());
+  EXPECT_FALSE(frame_view()->GetWidget()->ShouldPaintAsActive());
   EXPECT_FALSE(test_api.size_button()->GetPaintAsActive());
 }
 

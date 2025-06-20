@@ -956,7 +956,6 @@ TEST_F(PowerButtonControllerTest, FormerlyActiveWindowInShowingMenu) {
   // painted as active to avoid frame color change.
   EXPECT_FALSE(widget->IsActive());
   EXPECT_TRUE(widget->ShouldPaintAsActive());
-  EXPECT_TRUE(widget->non_client_view()->frame_view()->ShouldPaintAsActive());
   EXPECT_TRUE(
       wm::IsActiveWindow(power_button_test_api_->GetPowerButtonMenuView()
                              ->GetWidget()

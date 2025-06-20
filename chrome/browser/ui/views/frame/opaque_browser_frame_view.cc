@@ -868,13 +868,14 @@ void OpaqueBrowserFrameView::PaintClientEdge(gfx::Canvas* canvas) const {
   }
 
   // For popup windows, draw location bar sides.
+  static constexpr int kLocationBarBorderThickness = 1;
   const SkColor location_bar_border_color =
       GetColorProvider()->GetColor(kColorLocationBarBorderOpaque);
   if (!tabstrip_visible && IsToolbarVisible()) {
-    gfx::Rect side(client_bounds.x() - kClientEdgeThickness, y,
-                   kClientEdgeThickness, toolbar_bounds.height());
+    gfx::Rect side(client_bounds.x() - kLocationBarBorderThickness, y,
+                   kLocationBarBorderThickness, toolbar_bounds.height());
     canvas->FillRect(side, location_bar_border_color);
-    side.Offset(client_bounds.width() + kClientEdgeThickness, 0);
+    side.Offset(client_bounds.width() + kLocationBarBorderThickness, 0);
     canvas->FillRect(side, location_bar_border_color);
   }
 }

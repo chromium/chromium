@@ -46,6 +46,9 @@ namespace views {
 
 namespace {
 
+// Various edges of the frame border have a 1 px shadow along their edges;
+// in a few cases we shift elements based on this amount for visual appeal.
+constexpr int kFrameShadowThickness = 1;
 // The frame border is only visible in restored mode and is hardcoded to 4 px on
 // each side regardless of the system window border size.
 constexpr int kFrameBorderThickness = 4;
@@ -63,6 +66,9 @@ constexpr int kIconLeftSpacing = 2;
 constexpr int kTitleIconOffsetX = 4;
 // The space between the title text and the caption buttons.
 constexpr int kTitleCaptionSpacing = 5;
+// In restored mode, we draw a 1 px edge around the content area inside the
+// frame border.
+constexpr int kClientEdgeThickness = 1;
 
 void LayoutButton(ImageButton* button, const gfx::Rect& bounds) {
   button->SetVisible(true);

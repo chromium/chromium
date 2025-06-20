@@ -31,25 +31,10 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   METADATA_HEADER(NonClientFrameView, View)
 
  public:
-  enum {
-    // Various edges of the frame border have a 1 px shadow along their edges;
-    // in a few cases we shift elements based on this amount for visual appeal.
-    kFrameShadowThickness = 1,
-
-    // In restored mode, we draw a 1 px edge around the content area inside the
-    // frame border.
-    kClientEdgeThickness = 1,
-  };
-
   NonClientFrameView();
   NonClientFrameView(const NonClientFrameView&) = delete;
   NonClientFrameView& operator=(const NonClientFrameView&) = delete;
   ~NonClientFrameView() override;
-
-  // Used to determine if the frame should be painted as active. Keyed off the
-  // window's actual active state and whether the widget should be rendered as
-  // active.
-  bool ShouldPaintAsActive() const;
 
   // Helper for non-client view implementations to determine which area of the
   // window border the specified |point| falls within. The other parameters are
@@ -112,15 +97,20 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   // Whether the widget can be resized or maximized has changed.
   virtual void SizeConstraintsChanged() {}
 
+  // Inserts the passed client view into this NonClientFrameView. Subclasses can
+  // override this method to indicate a specific insertion spot for the client
+  // view.
+  virtual void InsertClientView(ClientView* client_view);
+
   // View:
   void OnThemeChanged() override;
   void Layout(PassKey) override;
   Views GetChildrenInZOrder() override;
 
-  // Inserts the passed client view into this NonClientFrameView. Subclasses can
-  // override this method to indicate a specific insertion spot for the client
-  // view.
-  virtual void InsertClientView(ClientView* client_view);
+ protected:
+  // Used to determine if the frame should be painted as active. Convenience
+  // method; equivalent to GetWidget()->ShouldPaintAsActive().
+  bool ShouldPaintAsActive() const;
 
  private:
 #if BUILDFLAG(IS_WIN)
