@@ -245,11 +245,17 @@ void RemoteSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-  // The allowlist check is not yet implemented.
-  // TODO(crbug.com/397407934): Implement checking UrlCsdDownloadAllowlist.
+  bool is_match = false;
+  // Note: non-supported URL schemes by default do NOT match the allowlist.
+  if (CanCheckUrl(url)) {
+    // Check a local copy of UrlCsdDownloadAllowlist.
+    // TODO(crbug.com/418842288): Improve this list.
+    is_match = SafeBrowsingApiHandlerBridge::GetInstance()
+                   .StartCSDDownloadAllowlistCheck(url);
+  }
   ui_task_runner()->PostTask(FROM_HERE,
                              base::BindOnce(std::move(callback),
-                                            /*is_allowlisted=*/false));
+                                            /*is_allowlisted=*/is_match));
 }
 
 safe_browsing::ThreatSource

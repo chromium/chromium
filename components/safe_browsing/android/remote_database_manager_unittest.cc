@@ -12,8 +12,10 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_test_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
@@ -88,13 +90,16 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
 
 }  // namespace
 
-class RemoteDatabaseManagerTest : public testing::Test {
+class RemoteDatabaseManagerTest
+    : public testing::Test,
+      public safe_browsing::test::WithMockSafeBrowsingApiHandler {
  protected:
   using enum SBThreatType;
 
   RemoteDatabaseManagerTest() = default;
 
   void SetUp() override {
+    safe_browsing::test::WithMockSafeBrowsingApiHandler::SetUp();
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
@@ -110,6 +115,7 @@ class RemoteDatabaseManagerTest : public testing::Test {
   void TearDown() override {
     db_->StopOnUIThread(/*shutdown=*/false);
     db_ = nullptr;
+    safe_browsing::test::WithMockSafeBrowsingApiHandler::TearDown();
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -171,6 +177,42 @@ TEST_F(RemoteDatabaseManagerTest, ThreatSource) {
             db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashDatabase));
   EXPECT_EQ(ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME,
             db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashRealTime));
+}
+
+TEST_F(RemoteDatabaseManagerTest, MatchDownloadAllowlistUrl) {
+  GURL allowlisted_url{"https://www.example.test"};
+  AddLocalAllowlistEntry(allowlisted_url, /*is_download_allowlist=*/true,
+                         /*is_match=*/true);
+
+  // Allowlisted URL should match.
+  {
+    base::test::TestFuture<bool> result_future;
+    db_->MatchDownloadAllowlistUrl(allowlisted_url,
+                                   result_future.GetCallback());
+    EXPECT_TRUE(result_future.Get());
+  }
+
+  // Not on the allowlist.
+  {
+    GURL url{"https://www.notexample.test"};
+    base::test::TestFuture<bool> result_future;
+    db_->MatchDownloadAllowlistUrl(url, result_future.GetCallback());
+    EXPECT_FALSE(result_future.Get());
+  }
+
+  // Not checked because of URL scheme.
+  {
+    GURL url{"data:,Hello%2C%20World%21"};
+    base::test::TestFuture<bool> result_future;
+    db_->MatchDownloadAllowlistUrl(url, result_future.GetCallback());
+    EXPECT_FALSE(result_future.Get());
+  }
+  {
+    GURL url{"file:///usr/home/foo"};
+    base::test::TestFuture<bool> result_future;
+    db_->MatchDownloadAllowlistUrl(url, result_future.GetCallback());
+    EXPECT_FALSE(result_future.Get());
+  }
 }
 
 }  // namespace safe_browsing

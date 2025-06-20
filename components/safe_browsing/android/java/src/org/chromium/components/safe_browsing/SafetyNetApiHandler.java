@@ -53,12 +53,13 @@ public interface SafetyNetApiHandler {
     int initialize(Observer observer);
 
     /**
-     * Start a check to determine if a uri is in an allowlist. If true, password protection service
-     * will consider the uri to be safe. Requires initialized state {@code INITIALIZED} or {@code
+     * Start a check to determine if a uri is in an allowlist. If true, Safe Browsing will consider
+     * the uri to be safe. Requires initialized state {@code INITIALIZED} or {@code
      * INITIALIZED_FIRST_PARTY}.
      *
-     * @param uri The uri from a password protection event(user focuses on password form or user
-     *     reuses their password)
+     * @param uri The uri from a safe browsing relevant event (for password protection: user focuses
+     *     on password form or user reuses their password; for download protection: a downloaded
+     *     file of appropriate filetype).
      * @param threatType determines the type of the allowlist that the uri will be matched to.
      * @return true if the uri is found in the corresponding allowlist. Otherwise, false.
      */

@@ -44,6 +44,10 @@ const char kDownloadRequestDefaultUrl[] =
 // Content-Type HTTP header field for the request.
 const char kProtobufContentType[] = "application/x-protobuf";
 
+// We sample 1% of allowlisted downloads to still send out download pings if
+// other conditions are met.
+const double kAllowlistDownloadSampleRate = 0.01;
+
 bool IsDownloadRequestUrlValid(const GURL& url) {
   return url.is_valid() && url.SchemeIs(url::kHttpsScheme) &&
          google_util::IsGoogleAssociatedDomainUrl(url);
@@ -246,9 +250,7 @@ net::NetworkTrafficAnnotationTag DownloadProtectionDelegateAndroid::
 
 float DownloadProtectionDelegateAndroid::GetAllowlistedDownloadSampleRate()
     const {
-  // TODO(chlily): The allowlist is not implemented yet for Android download
-  // protection.
-  return 0.0;
+  return kAllowlistDownloadSampleRate;
 }
 
 float DownloadProtectionDelegateAndroid::GetUnsupportedFileSampleRate(

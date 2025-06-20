@@ -14,9 +14,12 @@
 namespace safe_browsing {
 
 // Threat types as per the Java code.
-// This must match those in SafeBrowsingThreat.java in GMS's SafetyNet API.
+// Threat type values must be consistent with values in SafeBrowsingThreat.java
+// in GMS's SafetyNet API.
 enum class SafetyNetJavaThreatType {
-  // Magic numbers for allowlists. Not actually used by GMSCore.
+  // Below listed entries are magic numbers for allowlists. These are not
+  // actually threat types used by GMSCore.
+  CSD_DOWNLOAD_ALLOWLIST = 9,
   CSD_ALLOWLIST = 16,
   MAX_VALUE
 };

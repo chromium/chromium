@@ -24,7 +24,8 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
      */
     public static class MockSafetyNetApiHandler implements SafetyNetApiHandler {
         private Observer mObserver;
-        // See safe_browsing_handler_util.h --> JavaThreatTypes
+        // See safe_browsing_api_handler_util.h --> SafetyNetJavaThreatType
+        private static final int THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST = 9;
         private static final int THREAT_TYPE_CSD_ALLOWLIST = 16;
         // The result that will be returned in {@link #isVerifyAppsEnabled(long)} or {@link
         // #enableVerifyApps(long)}.
@@ -32,6 +33,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
         // Maps to store preset values, keyed by uri.
         private static final Map<String, Boolean> sCsdAllowlistMap = new HashMap<>();
+        private static final Map<String, Boolean> sCsdDownloadAllowlistMap = new HashMap<>();
 
         // The initialization state of the API handler. The default value of -1 signifies
         // uninitialized.
@@ -54,8 +56,14 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
         @Override
         public boolean startAllowlistLookup(final String uri, int threatType) {
-            Assert.assertTrue(threatType == THREAT_TYPE_CSD_ALLOWLIST);
-            return Boolean.TRUE.equals(sCsdAllowlistMap.get(uri));
+            if (threatType == THREAT_TYPE_CSD_ALLOWLIST) {
+                return Boolean.TRUE.equals(sCsdAllowlistMap.get(uri));
+            }
+            if (threatType == THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST) {
+                return Boolean.TRUE.equals(sCsdDownloadAllowlistMap.get(uri));
+            }
+            assert false : "Unsupported threatType";
+            return false;
         }
 
         @Override
@@ -81,12 +89,17 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
         public static void tearDown() {
             sCsdAllowlistMap.clear();
+            sCsdDownloadAllowlistMap.clear();
             sSafetyNetApiInitializationState = -1;
             sGetSafetyNetIdCount = 0;
         }
 
         public static void setCsdAllowlistMatch(String uri, boolean match) {
             sCsdAllowlistMap.put(uri, match);
+        }
+
+        public static void setCsdDownloadAllowlistMatch(String uri, boolean match) {
+            sCsdDownloadAllowlistMap.put(uri, match);
         }
 
         public static void setVerifyAppsResult(int result) {
@@ -239,6 +252,11 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     @CalledByNative
     static void setCsdAllowlistMatch(String uri, boolean match) {
         MockSafetyNetApiHandler.setCsdAllowlistMatch(uri, match);
+    }
+
+    @CalledByNative
+    static void setCsdDownloadAllowlistMatch(String uri, boolean match) {
+        MockSafetyNetApiHandler.setCsdDownloadAllowlistMatch(uri, match);
     }
 
     @CalledByNative

@@ -420,7 +420,7 @@ PendingGetSafetyNetIdCallbacksList& GetPendingGetSafetyNetIdCallbacks() {
   return *pending_get_safety_net_id_callbacks;
 }
 
-bool StartAllowlistCheck(const GURL& url, const SBThreatType& sb_threat_type) {
+bool StartAllowlistCheck(const GURL& url, SafetyNetJavaThreatType threat_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   if (!Java_SafeBrowsingApiBridge_ensureSafetyNetApiInitialized(env)) {
@@ -428,8 +428,7 @@ bool StartAllowlistCheck(const GURL& url, const SBThreatType& sb_threat_type) {
   }
 
   ScopedJavaLocalRef<jstring> j_url = ConvertUTF8ToJavaString(env, url.spec());
-  int j_threat_type =
-      static_cast<int>(SBThreatTypeToSafetyNetJavaThreatType(sb_threat_type));
+  int j_threat_type = static_cast<int>(threat_type);
   return Java_SafeBrowsingApiBridge_startAllowlistLookup(env, j_url,
                                                          j_threat_type);
 }
@@ -663,10 +662,15 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafeBrowsing(
 }
 
 bool SafeBrowsingApiHandlerBridge::StartCSDAllowlistCheck(const GURL& url) {
-  if (interceptor_for_testing_)
-    return false;
   return StartAllowlistCheck(
-      url, safe_browsing::SBThreatType::SB_THREAT_TYPE_CSD_ALLOWLIST);
+      url, SBThreatTypeToSafetyNetJavaThreatType(
+               safe_browsing::SBThreatType::SB_THREAT_TYPE_CSD_ALLOWLIST));
+}
+
+bool SafeBrowsingApiHandlerBridge::StartCSDDownloadAllowlistCheck(
+    const GURL& url) {
+  return StartAllowlistCheck(url,
+                             SafetyNetJavaThreatType::CSD_DOWNLOAD_ALLOWLIST);
 }
 
 void SafeBrowsingApiHandlerBridge::StartIsVerifyAppsEnabled(

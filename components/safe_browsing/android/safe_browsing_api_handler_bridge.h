@@ -60,7 +60,9 @@ class SafeBrowsingApiHandlerBridge {
                                  const GURL& url,
                                  const SBThreatTypeSet& threat_types);
 
+  // Check whether `url` matches a local allowlist.
   bool StartCSDAllowlistCheck(const GURL& url);
+  bool StartCSDDownloadAllowlistCheck(const GURL& url);
 
   // Query whether app verification is enabled. Will run `callback` with
   // the result of the query.

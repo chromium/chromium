@@ -162,6 +162,22 @@ generate_jni("native_j_unittests_jni_headers") {
   sources = [ "native_java_unittests/src/org/chromium/components/safe_browsing/SafeBrowsingApiHandlerBridgeNativeUnitTestHelper.java" ]
 }
 
+source_set("unit_tests_mobile_test_support") {
+  testonly = true
+  sources = [
+    "safe_browsing_api_handler_test_util.cc",
+    "safe_browsing_api_handler_test_util.h",
+  ]
+  deps = [
+    ":native_j_unittests_jni_headers",
+    ":safe_browsing_api_handler",
+    ":safe_browsing_api_handler_util",
+    "//base",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
 source_set("unit_tests_mobile") {
   testonly = true
   sources = [
@@ -170,11 +186,11 @@ source_set("unit_tests_mobile") {
     "safe_browsing_api_handler_util_unittest.cc",
   ]
   deps = [
-    ":native_j_unittests_jni_headers",
     ":native_java_unittests_java",
     ":remote_database_manager",
     ":safe_browsing_api_handler",
     ":safe_browsing_api_handler_util",
+    ":unit_tests_mobile_test_support",
     "//base",
     "//components/resources:components_resources_grit",
     "//components/safe_browsing/android:realtimeallowlist_proto",
