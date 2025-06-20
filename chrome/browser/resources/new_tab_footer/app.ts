@@ -4,6 +4,8 @@
 
 import '/strings.m.js';
 import 'chrome://newtab-footer/shared/customize_buttons/customize_buttons.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert.js';

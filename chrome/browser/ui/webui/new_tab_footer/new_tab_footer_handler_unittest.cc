@@ -480,9 +480,8 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SetNtpManagementNotice_CustomLogo) {
       .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
         EXPECT_EQ("Managed by your organization", notice->text);
         // We only test the base URL as the data is very long and not readable.
-        EXPECT_TRUE(base::StartsWith(notice->bitmap_data_url.spec(),
+        EXPECT_TRUE(base::StartsWith(notice->custom_bitmap_data_url->spec(),
                                      "data:image/png;base64,"));
-        EXPECT_TRUE(notice->is_custom_logo);
       });
   handler().UpdateManagementNotice();
 
@@ -496,20 +495,11 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SetNtpManagementNotice_DefaultLogo) {
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
 
-  const gfx::ImageSkia default_logo =
-      gfx::CreateVectorIcon(gfx::IconDescription(
-          vector_icons::kBusinessIcon, 20,
-          web_contents_->GetColorProvider().GetColor(kColorNewTabFooterText)));
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      default_logo.GetRepresentation(1.0f).GetBitmap(),
-      handler_->GetManagementNoticeIconBitmap()));
   EXPECT_CALL(document_, SetManagementNotice)
       .WillOnce([](new_tab_footer::mojom::ManagementNoticePtr notice) {
         EXPECT_EQ("Managed by your organization", notice->text);
         // We only test the base URL as the data is very long and not readable.
-        EXPECT_TRUE(base::StartsWith(notice->bitmap_data_url.spec(),
-                                     "data:image/png;base64,"));
-        EXPECT_FALSE(notice->is_custom_logo);
+        EXPECT_FALSE(notice->custom_bitmap_data_url);
       });
   handler().UpdateManagementNotice();
 
@@ -643,14 +633,13 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SettingLogoPolicyUpdatesIcon) {
 
   handler_->OnEnterpriseLogoUpdatedForBrowser();
 
-  // Verify that the icon is set and recognized as a custom icon.
+  // Verify that the custom icon is set.
   document_.FlushForTesting();
   testing::Mock::VerifyAndClearExpectations(&document_);
   EXPECT_EQ("Managed by your organization", updated_notice->text);
   // We only test the base URL as the data is very long and not readable.
-  EXPECT_TRUE(base::StartsWith(updated_notice->bitmap_data_url.spec(),
+  EXPECT_TRUE(base::StartsWith(updated_notice->custom_bitmap_data_url->spec(),
                                "data:image/png;base64,"));
-  EXPECT_TRUE(updated_notice->is_custom_logo);
 
   // Trigger a logo change to unset the custom logo.
   EXPECT_CALL(document_, SetManagementNotice)
@@ -663,14 +652,12 @@ TEST_F(NewTabFooterHandlerEnterpriseTest, SettingLogoPolicyUpdatesIcon) {
 
   handler_->OnEnterpriseLogoUpdatedForBrowser();
 
-  // Verify that there is still a loge (default), and it is not a custom one.
+  // Verify that there is no longer a custom icon sent.
   document_.FlushForTesting();
   testing::Mock::VerifyAndClearExpectations(&document_);
   EXPECT_EQ("Managed by your organization", updated_notice->text);
   // We only test the base URL as the data is very long and not readable.
-  EXPECT_TRUE(base::StartsWith(updated_notice->bitmap_data_url.spec(),
-                               "data:image/png;base64,"));
-  EXPECT_FALSE(updated_notice->is_custom_logo);
+  EXPECT_FALSE(updated_notice->custom_bitmap_data_url);
 }
 
 TEST_F(NewTabFooterHandlerEnterpriseTest, SetCustomBackground_None) {

@@ -19,10 +19,13 @@ separated from each other by a divider.
       html`<div id="managementNoticeContainer" class="notice-item"
         title="${this.managementNotice_.text}">
         <div id="managementNoticeLogoContainer"
-             class=${this.managementNotice_.isCustomLogo ?
+             class=${this.managementNotice_.customBitmapDataUrl ?
              'custom_logo' : ''}>
-          <img id="managementNoticeLogo" alt=""
-               src="${this.managementNotice_.bitmapDataUrl.url}">
+          ${this.managementNotice_.customBitmapDataUrl ? html`
+            <img id="managementNoticeLogo" alt=""
+                src="${this.managementNotice_.customBitmapDataUrl.url}">`: html`
+            <cr-icon icon="cr:domain" alt="" id="managementNoticeLogo" >
+            </cr-icon>`}
         </div>
         <button @click="${this.onManagementNoticeClick_}" role="link"
             aria-label="${this.managementNotice_.text}"

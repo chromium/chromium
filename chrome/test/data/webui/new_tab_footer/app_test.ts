@@ -12,6 +12,7 @@ import type {BackgroundAttribution, ManagementNotice, NewTabFooterDocumentRemote
 import {NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerRemote, NewTabPageType} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
 import {WindowProxy} from 'chrome://newtab-footer/window_proxy.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -143,8 +144,8 @@ suite('NewTabFooterAppTest', () => {
       // Arrange.
       const managementNotice: ManagementNotice = {
         text: 'Managed by your organization',
-        bitmapDataUrl: {url: 'chrome://resources/images/chrome_logo_dark.svg'},
-        isCustomLogo: false,
+        customBitmapDataUrl:
+            {url: 'chrome://resources/images/chrome_logo_dark.svg'},
       };
 
       // Act.
@@ -183,8 +184,8 @@ suite('NewTabFooterAppTest', () => {
       // Arrange.
       const managementNoticeWithCustomLogo: ManagementNotice = {
         text: 'Managed by your organization',
-        bitmapDataUrl: {url: 'chrome://resources/images/chrome_logo_dark.svg'},
-        isCustomLogo: true,
+        customBitmapDataUrl:
+            {url: 'chrome://resources/images/chrome_logo_dark.svg'},
       };
 
       // Act.
@@ -195,11 +196,13 @@ suite('NewTabFooterAppTest', () => {
       let logoContainter = $$(element, '#managementNoticeLogoContainer');
       assertTrue(!!logoContainter);
       assertTrue(logoContainter.classList.contains('custom_logo'));
+      const customManagementNoticeLogo =
+          $$<HTMLImageElement>(element, '#managementNoticeLogo');
+      assertTrue(!!customManagementNoticeLogo);
 
       const managementNoticeWithDefaultLogo: ManagementNotice = {
         text: 'Managed by your organization',
-        bitmapDataUrl: {url: 'chrome://resources/images/chrome_logo_dark.svg'},
-        isCustomLogo: false,
+        customBitmapDataUrl: null,
       };
 
       // Act.
@@ -209,14 +212,17 @@ suite('NewTabFooterAppTest', () => {
       logoContainter = $$(element, '#managementNoticeLogoContainer');
       assertTrue(!!logoContainter);
       assertEquals(logoContainter.classList.length, 0);
+      const defaultManagementNoticeLogo =
+          $$<CrIconElement>(element, '#managementNoticeLogo');
+      assertTrue(!!defaultManagementNoticeLogo);
+      assertEquals('cr:domain', defaultManagementNoticeLogo.icon);
     });
 
     test('Click manageemnt notice link', async () => {
       // Arrange.
       const managementNotice: ManagementNotice = {
         text: 'Managed by your organization',
-        bitmapDataUrl: {url: 'chrome://resources/images/chrome_logo_dark.svg'},
-        isCustomLogo: false,
+        customBitmapDataUrl: null,
       };
       callbackRouter.setManagementNotice(managementNotice);
       await callbackRouter.$.flushForTesting();

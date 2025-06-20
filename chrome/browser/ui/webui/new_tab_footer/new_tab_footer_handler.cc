@@ -144,11 +144,12 @@ void NewTabFooterHandler::UpdateManagementNotice() {
 
   auto notice = new_tab_footer::mojom::ManagementNotice::New();
   notice->text = GetManagementNoticeText();
-  notice->bitmap_data_url =
-      GURL(webui::GetBitmapDataUrl(GetManagementNoticeIconBitmap()));
-  notice->is_custom_logo =
-      policy::ManagementServiceFactory::GetForProfile(profile_)
-          ->GetManagementIconForBrowser() != nullptr;
+
+  SkBitmap bitmap = GetManagementNoticeIconBitmap();
+  if (!bitmap.empty()) {
+    notice->custom_bitmap_data_url = GURL(webui::GetBitmapDataUrl(bitmap));
+  }
+
   document_->SetManagementNotice(std::move(notice));
 }
 
@@ -195,11 +196,7 @@ SkBitmap NewTabFooterHandler::GetManagementNoticeIconBitmap() {
     return custom_icon->AsBitmap();
   }
 
-  const gfx::ImageSkia default_management_icon =
-      gfx::CreateVectorIcon(gfx::IconDescription(
-          vector_icons::kBusinessIcon, 20,
-          web_contents_->GetColorProvider().GetColor(kColorNewTabFooterText)));
-  return default_management_icon.GetRepresentation(1.0f).GetBitmap();
+  return SkBitmap();
 }
 
 void NewTabFooterHandler::OnExtensionReady(

@@ -91,7 +91,12 @@
   border-radius: 8px;
 }
 
+#managementNoticeLogoContainer > cr-icon,
 #managementNoticeLogoContainer > img {
   width: 20px;
   height: 20px;
+}
+
+cr-icon {
+   --iron-icon-fill-color: var(--color-new-tab-footer-text);
 }

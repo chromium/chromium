@@ -21,10 +21,8 @@ struct ManagementNotice {
   // is managed and the entity managing the browser, which is  customizable via
   // the `EnterpriseCustomLabel` policy.
   string text;
-  // Url to the management icon. This will be a default business icon or custom
-  // icon set by policy.
-  url.mojom.Url bitmap_data_url;
-  bool is_custom_logo;
+  // Url to a custom management icon set by policy.
+  url.mojom.Url? custom_bitmap_data_url;
 };
 
 struct BackgroundAttribution {
