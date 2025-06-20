@@ -992,8 +992,8 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_3pcdOff) {
 }
 
 // Privacy guide integration tests.
-// TODO(crbug.com/40899379): Re-enable when no longer flaky.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
+// TODO(crbug.com/424171352): Flaky, supposedly due to timeouts on debug builds.
+#if !defined(NDEBUG)
 #define MAYBE_Integration DISABLED_Integration
 #else
 #define MAYBE_Integration Integration
