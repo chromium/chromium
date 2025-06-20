@@ -136,16 +136,10 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   // Safety Check Manager and Settings
   local_state()->SetString(prefs::kIosSafetyCheckManagerPasswordCheckResult,
                            "Example");
-  local_state()->SetBoolean(
-      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref, true);
 
   // Account Info
   local_state()->SetDict(prefs::kIosPreRestoreAccountInfo,
                          dict_example.Clone());
-
-  // Tab Resumption Settings
-  local_state()->SetBoolean(tab_resumption_prefs::kTabResumptionDisabledPref,
-                            true);
 
   // Magic Stack Segmentation Impressions
   local_state()->SetInteger(
@@ -172,22 +166,12 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetString(
                 prefs::kIosSafetyCheckManagerPasswordCheckResult),
             "Example");
-  EXPECT_FALSE(pref_service_.GetBoolean(
-      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
-  EXPECT_TRUE(local_state()->GetBoolean(
-      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
 
   // Check Account Info
   EXPECT_EQ(pref_service_.GetDict(prefs::kIosPreRestoreAccountInfo).size(),
             0ul);
   EXPECT_EQ(local_state()->GetDict(prefs::kIosPreRestoreAccountInfo),
             dict_example);
-
-  // Check Tab Resumption Settings
-  EXPECT_FALSE(pref_service_.GetBoolean(
-      tab_resumption_prefs::kTabResumptionDisabledPref));
-  EXPECT_TRUE(local_state()->GetBoolean(
-      tab_resumption_prefs::kTabResumptionDisabledPref));
 
   // Check Magic Stack Segmentation Impressions in pref_service (should be -1)
   EXPECT_EQ(pref_service_.GetInteger(
@@ -251,22 +235,12 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetString(
                 prefs::kIosSafetyCheckManagerPasswordCheckResult),
             NameForSafetyCheckState(PasswordSafetyCheckState::kDefault));
-  EXPECT_TRUE(pref_service_.GetBoolean(
-      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
-  EXPECT_FALSE(local_state()->GetBoolean(
-      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref));
 
   // Check Account Info
   EXPECT_EQ(pref_service_.GetDict(prefs::kIosPreRestoreAccountInfo),
             dict_example);
   EXPECT_EQ(local_state()->GetDict(prefs::kIosPreRestoreAccountInfo).size(),
             0ul);
-
-  // Check Tab Resumption Settings
-  EXPECT_TRUE(pref_service_.GetBoolean(
-      tab_resumption_prefs::kTabResumptionDisabledPref));
-  EXPECT_FALSE(local_state()->GetBoolean(
-      tab_resumption_prefs::kTabResumptionDisabledPref));
 
   // Check Magic Stack Segmentation Impressions in pref_service
   EXPECT_EQ(pref_service_.GetInteger(

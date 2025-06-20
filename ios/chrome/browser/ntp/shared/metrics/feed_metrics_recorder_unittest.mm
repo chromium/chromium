@@ -130,7 +130,7 @@ TEST_F(FeedMetricsRecorderTest, GoodVisit_NonGoodVisitActionTriggered) {
   histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 0);
   // Trigger a non-Good Visit action.
-  [recorder_ recordHeaderMenuManageTapped];
+  [recorder_ recordDeviceOrientationChanged:UIDeviceOrientationLandscapeRight];
   // There should not be a Good Visit recorded as the action was not a trigger
   // for a Good Visit.
   histogram_tester_->ExpectBucketCount(kAllFeedsEngagementTypeHistogram,
@@ -302,7 +302,7 @@ TEST_F(FeedMetricsRecorderTest,
   histogram_tester_->ExpectBucketCount(kDiscoverFeedEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 0);
   // Trigger a non-Good Visit action.
-  [recorder_ recordHeaderMenuManageTapped];
+  [recorder_ recordDeviceOrientationChanged:UIDeviceOrientationLandscapeRight];
   // There should not be a Good Visit recorded as the action was not a trigger
   // for a Good Visit.
   histogram_tester_->ExpectBucketCount(kDiscoverFeedEngagementTypeHistogram,
@@ -411,7 +411,7 @@ TEST_F(FeedMetricsRecorderTest,
   histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
                                        FeedEngagementType::kGoodVisit, 0);
   // Trigger a non-Good Visit action.
-  [recorder_ recordHeaderMenuManageTapped];
+  [recorder_ recordDeviceOrientationChanged:UIDeviceOrientationLandscapeRight];
   // There should not be a Good Visit recorded as the action was not a trigger
   // for a Good Visit.
   histogram_tester_->ExpectBucketCount(kFollowingFeedEngagementTypeHistogram,
@@ -516,12 +516,6 @@ TEST_F(FeedMetricsRecorderTest, Actions_RecordChangeOrientation) {
 TEST_F(FeedMetricsRecorderTest, Actions_PreviewTapped) {
   EXPECT_ACTION(kDiscoverFeedUserActionPreviewTapped,
                 recordDiscoverFeedPreviewTapped);
-}
-
-// Testing `recordHeaderMenuManageFollowingTapped`.
-TEST_F(FeedMetricsRecorderTest, Actions_ManageFollowingTapped) {
-  EXPECT_ACTION(kDiscoverFeedUserActionManageFollowingTapped,
-                recordHeaderMenuManageFollowingTapped);
 }
 
 // Testing `recordOpenURLInNewTab`.

@@ -342,12 +342,7 @@ extern const char kFeedHandlingErrorPrefix[];
 extern const char kDiscoverFeedHistogramDeviceOrientationChangedToPortrait[];
 extern const char kDiscoverFeedHistogramDeviceOrientationChangedToLandscape[];
 
-// User action names for toggling the feed visibility from the header menu.
-extern const char kDiscoverFeedUserActionTurnOn[];
-extern const char kDiscoverFeedUserActionTurnOff[];
-
 // User action names for feed back of card items.
-extern const char kDiscoverFeedUserActionLearnMoreTapped[];
 extern const char kDiscoverFeedUserActionOpenSameTab[];
 extern const char kDiscoverFeedUserActionOpenIncognitoTab[];
 extern const char kDiscoverFeedUserActionOpenNewTab[];
@@ -364,13 +359,6 @@ extern const char kDiscoverFeedUserActionNativePulldownMenuClosed[];
 extern const char kDiscoverFeedUserActionReportContentOpened[];
 extern const char kDiscoverFeedUserActionReportContentClosed[];
 extern const char kDiscoverFeedUserActionPreviewTapped[];
-
-// User action names for feed header menu.
-extern const char kDiscoverFeedUserActionManageTapped[];
-extern const char kDiscoverFeedUserActionManageActivityTapped[];
-extern const char kDiscoverFeedUserActionManageInterestsTapped[];
-extern const char kDiscoverFeedUserActionManageHiddenTapped[];
-extern const char kDiscoverFeedUserActionManageFollowingTapped[];
 
 // User action names for following operations.
 extern const char kFollowRequested[];

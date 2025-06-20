@@ -290,21 +290,6 @@ using feed::FeedUserActionType;
       base::UserMetricsAction(kDiscoverFeedUserActionPreviewTapped));
 }
 
-- (void)recordHeaderMenuManageTapped {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedManage
-                                asInteraction:NO];
-  base::RecordAction(
-      base::UserMetricsAction(kDiscoverFeedUserActionManageTapped));
-}
-
-- (void)recordHeaderMenuManageFollowingTapped {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedManageFollowing
-                                asInteraction:NO];
-  base::RecordAction(
-      base::UserMetricsAction(kDiscoverFeedUserActionManageFollowingTapped));
-}
-
 - (void)recordOpenURLInSameTab {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedOnCard
                                 asInteraction:YES];

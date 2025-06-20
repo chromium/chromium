@@ -103,12 +103,6 @@ const char kDiscoverFeedHistogramDeviceOrientationChangedToPortrait[] =
     "ContentSuggestions.Feed.DeviceOrientationChanged.Portrait";
 const char kDiscoverFeedHistogramDeviceOrientationChangedToLandscape[] =
     "ContentSuggestions.Feed.DeviceOrientationChanged.Landscape";
-const char kDiscoverFeedUserActionTurnOn[] =
-    "Suggestions.ExpandableHeader.Expanded";
-const char kDiscoverFeedUserActionTurnOff[] =
-    "Suggestions.ExpandableHeader.Collapsed";
-const char kDiscoverFeedUserActionLearnMoreTapped[] =
-    "ContentSuggestions.Feed.CardAction.LearnMore";
 const char kDiscoverFeedUserActionOpenSameTab[] =
     "ContentSuggestions.Feed.CardAction.Open";
 const char kDiscoverFeedUserActionOpenIncognitoTab[] =
@@ -141,16 +135,6 @@ const char kDiscoverFeedUserActionReportContentClosed[] =
     "ContentSuggestions.Feed.CardAction.ClosedReportContent";
 const char kDiscoverFeedUserActionPreviewTapped[] =
     "ContentSuggestions.Feed.CardAction.TapPreview";
-const char kDiscoverFeedUserActionManageTapped[] =
-    "ContentSuggestions.Feed.HeaderAction.Manage";
-const char kDiscoverFeedUserActionManageActivityTapped[] =
-    "ContentSuggestions.Feed.HeaderAction.ManageActivity";
-const char kDiscoverFeedUserActionManageInterestsTapped[] =
-    "ContentSuggestions.Feed.HeaderAction.ManageInterests";
-const char kDiscoverFeedUserActionManageHiddenTapped[] =
-    "ContentSuggestions.Feed.HeaderAction.ManageHidden";
-const char kDiscoverFeedUserActionManageFollowingTapped[] =
-    "ContentSuggestions.Feed.HeaderAction.ManageFollowing";
 const char kFollowRequested[] = "ContentSuggestions.Follow.FollowRequested";
 const char kUnfollowRequested[] = "ContentSuggestions.Follow.UnfollowRequested";
 const char kSnackbarGoToFeedButtonTapped[] =

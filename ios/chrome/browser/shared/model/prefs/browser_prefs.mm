@@ -1296,6 +1296,10 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 06/2025.
   prefs->ClearPref(kGaiaCookiePeriodicReportTimeDeprecated);
+
+  // Added 06/2025.
+  prefs->ClearPref(safety_check_prefs::kSafetyCheckInMagicStackDisabledPref);
+  prefs->ClearPref(tab_resumption_prefs::kTabResumptionDisabledPref);
 }
 
 void MigrateObsoleteUserDefault() {

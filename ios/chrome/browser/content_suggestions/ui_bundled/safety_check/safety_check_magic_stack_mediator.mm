@@ -134,10 +134,6 @@ int ImpressionsCount(const base::Value::List& impressions,
       _userPrefChangeRegistrar.Init(userState);
 
       _prefObserverBridge->ObserveChangesForPreference(
-          safety_check_prefs::kSafetyCheckInMagicStackDisabledPref,
-          &_userPrefChangeRegistrar);
-
-      _prefObserverBridge->ObserveChangesForPreference(
           prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
           &_userPrefChangeRegistrar);
 
@@ -358,11 +354,6 @@ int ImpressionsCount(const base::Value::List& impressions,
     // Trigger a module update when the Last Run Time, or Safe Browsing state,
     // has changed.
     [self runningStateChanged:_safetyCheckState.runningState];
-  } else if (preferenceName ==
-             safety_check_prefs::kSafetyCheckInMagicStackDisabledPref) {
-    if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_userState)) {
-      [self.delegate removeSafetyCheckModule];
-    }
   } else if (preferenceName ==
                  prefs::kHomeCustomizationMagicStackSafetyCheckEnabled &&
              !_userState->GetBoolean(
