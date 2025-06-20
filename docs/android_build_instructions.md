@@ -124,7 +124,8 @@ development and testing purposes.
 
 ## Setting up the build
 
-Chromium uses [Ninja](https://ninja-build.org) as its main build tool along with
+Chromium uses [Siso](https://pkg.go.dev/go.chromium.org/infra/build/siso#section-readme)
+as its main build tool along with
 a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md)
 to generate `.ninja` files. You can create any number of *build directories*
 with different configurations. To create a build directory which builds Chrome
@@ -138,7 +139,7 @@ use_remoteexec = true  # Enables distributed builds. See "Faster Builds".
 is_component_build = false  # Unless you do a lot of native code edits. See "Faster Builds".
 ```
 
-* You only have to run this once for each new build directory, Ninja will
+* You only have to run this once for each new build directory, Siso will
   update the build files as needed.
 * You can replace `Default` with another name, but
   it should be a subdirectory of `out`.
@@ -174,14 +175,14 @@ as the WebView provider.
 
 ## Build Chromium
 
-Build Chromium with Ninja using the command:
+Build Chromium with Siso or Ninja using the command:
 
 ```shell
 autoninja -C out/Default chrome_public_apk
 ```
 
 (`autoninja` is a wrapper that automatically provides optimal values for the
-arguments passed to `ninja`.)
+arguments passed to `siso` or `ninja`.)
 
 You can get a list of all of the other build targets from GN by running `gn ls
 out/Default` from the command line. To compile one, pass the GN label to Ninja
@@ -371,7 +372,7 @@ For information on running tests, see
 
 Args that affect build speed:
  * `use_remoteexec = true` *(default=false)*
-   * What it does: Enables distributed builds via Reclient
+   * What it does: Enables distributed builds with remote exec API.
  * `symbol_level = 0` *(default=1)*
    * What it does: Disables most debug information in native code.
      * Stack traces will still show, but be missing frames for inlined functions and source lines.
@@ -421,10 +422,10 @@ See the status of the server at any time via:
 build/android/fast_local_dev_server.py --print-status-all
 ```
 
-### Use Reclient
+### Use Remote Execution
 
 *** note
-**Warning:** If you are a Google employee, do not follow the Reclient instructions
+**Warning:** If you are a Google employee, do not follow the instructions
 in this section. Set up remote execution as described in
 [go/building-android-chrome](https://goto.google.com/building-android-chrome)
 instead.
@@ -435,8 +436,8 @@ compatible with [REAPI](https://github.com/bazelbuild/remote-apis). This allows
 you to benefit from remote caching and executing many build actions in parallel
 on a shared cluster of workers.
 
-To use Reclient, follow the corresponding
-[Linux build instructions](linux/build_instructions.md#use-reclient).
+To use Remote Execution, follow the corresponding
+[Linux build instructions](linux/build_instructions.md#use-remote-execution).
 
 ### Incremental Install
 [Incremental Install](/build/android/incremental_install/README.md) uses
