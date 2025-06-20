@@ -11,7 +11,8 @@
 
 namespace views {
 
-WidgetAXManager::WidgetAXManager(Widget* widget) : widget_(widget) {
+WidgetAXManager::WidgetAXManager(Widget* widget)
+    : widget_(widget), ax_tree_id_(ui::AXTreeID::CreateNewAXTreeID()) {
   CHECK(::features::IsAccessibilityTreeForViewsEnabled())
       << "WidgetAXManager should only be created when the "
          "accessibility tree feature is enabled.";
@@ -51,6 +52,16 @@ void WidgetAXManager::OnDataChanged(ViewAccessibility& view_ax) {
   pending_data_updates_.insert(view_ax.GetUniqueId());
 
   SchedulePendingUpdate();
+}
+
+void WidgetAXManager::OnChildAdded(WidgetAXManager* child_manager) {
+  CHECK(child_manager);
+  child_manager->parent_ax_tree_id_ = ax_tree_id_;
+}
+
+void WidgetAXManager::OnChildRemoved(WidgetAXManager* child_manager) {
+  CHECK(child_manager);
+  child_manager->parent_ax_tree_id_ = ui::AXTreeID();
 }
 
 void WidgetAXManager::OnAXModeAdded(ui::AXMode mode) {

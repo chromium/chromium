@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/views/views_export.h"
 
@@ -37,6 +38,9 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver {
   void OnEvent(ViewAccessibility& view_ax, ax::mojom::Event event_type);
   void OnDataChanged(ViewAccessibility& view_ax);
 
+  void OnChildAdded(WidgetAXManager* child_manager);
+  void OnChildRemoved(WidgetAXManager* child_manager);
+
   // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;
 
@@ -48,6 +52,12 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver {
 
   // The widget this manager is owned by.
   raw_ptr<Widget> widget_;
+
+  // The AXTreeID for this widget's accessibility tree. Must be unique.
+  const ui::AXTreeID ax_tree_id_;
+
+  // The AXTreeID of the parent widget's accessibility tree, if any.
+  ui::AXTreeID parent_ax_tree_id_;
 
   // Indicates whether we're actively serializing widget accessibility data.
   bool is_enabled_ = false;

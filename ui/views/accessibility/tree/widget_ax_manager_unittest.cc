@@ -60,6 +60,62 @@ TEST_F(WidgetAXManagerTest, IsEnabledAfterAXModeAdded) {
   EXPECT_TRUE(manager()->is_enabled());
 }
 
+TEST_F(WidgetAXManagerTest, InitParamsCreatesParentRelationship) {
+  WidgetAXManagerTestApi parent_api(manager());
+
+  std::unique_ptr<Widget> child_widget =
+      base::WrapUnique(CreateChildNativeWidgetWithParent(
+          widget(), Widget::InitParams::CLIENT_OWNS_WIDGET));
+  auto* child_mgr = child_widget->ax_manager();
+  WidgetAXManagerTestApi child_api(child_mgr);
+
+  // The AX manager should have picked up the parent when Init() ran.
+  EXPECT_EQ(child_api.parent_ax_tree_id(), parent_api.ax_tree_id());
+
+  child_api.TearDown();
+
+  child_widget->CloseNow();
+  child_widget.reset();
+}
+
+TEST_F(WidgetAXManagerTest, ReparentWidgetBetweenParents) {
+  WidgetAXManagerTestApi parent1_api(manager());
+
+  WidgetAutoclosePtr parent2(CreateTopLevelPlatformWidget());
+  WidgetAXManagerTestApi parent2_api(parent2->ax_manager());
+
+  std::unique_ptr<Widget> child_widget =
+      base::WrapUnique(CreateChildNativeWidgetWithParent(
+          widget(), Widget::InitParams::CLIENT_OWNS_WIDGET));
+
+  WidgetAXManagerTestApi child_api(child_widget->ax_manager());
+  EXPECT_EQ(child_api.parent_ax_tree_id(), parent1_api.ax_tree_id());
+
+  // Reparent via Widget::Reparent() should update the parent AXTreeID.
+  child_widget->Reparent(parent2.get());
+  EXPECT_EQ(child_api.parent_ax_tree_id(), parent2_api.ax_tree_id());
+
+  child_api.TearDown();
+  child_widget->CloseNow();
+  child_widget.reset();
+}
+
+TEST_F(WidgetAXManagerTest, RemovingChildResetsParent) {
+  std::unique_ptr<Widget> child_widget =
+      base::WrapUnique(CreateChildNativeWidgetWithParent(
+          widget(), Widget::InitParams::CLIENT_OWNS_WIDGET));
+  WidgetAXManagerTestApi child_api(child_widget->ax_manager());
+  ASSERT_NE(child_api.parent_ax_tree_id(), ui::AXTreeID());
+
+  // Detach the child widget from its parent should reset the parent AXTreeID.
+  child_widget->Reparent(nullptr);
+  EXPECT_EQ(child_api.parent_ax_tree_id(), ui::AXTreeID());
+
+  child_api.TearDown();
+  child_widget->CloseNow();
+  child_widget.reset();
+}
+
 class WidgetAXManagerOffTest : public ViewsTestBase {
  protected:
   WidgetAXManagerOffTest() {

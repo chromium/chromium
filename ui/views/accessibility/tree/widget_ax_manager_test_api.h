@@ -22,6 +22,13 @@ class WidgetAXManagerTestApi {
     return manager_->processing_update_posted_;
   }
 
+  const ui::AXTreeID& ax_tree_id() const { return manager_->ax_tree_id_; }
+  const ui::AXTreeID& parent_ax_tree_id() const {
+    return manager_->parent_ax_tree_id_;
+  }
+
+  void TearDown() { manager_ = nullptr; }
+
  private:
   raw_ptr<WidgetAXManager> manager_;
 };
