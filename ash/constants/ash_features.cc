@@ -2625,7 +2625,7 @@ BASE_FEATURE(kFeatureManagementSeaPen,
 // Enables sea pen text input feature in the personalization app.
 BASE_FEATURE(kSeaPenTextInput,
              "SeaPenTextInput",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables sea pen text input translation feature.
 BASE_FEATURE(kSeaPenTextInputTranslation,
