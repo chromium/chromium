@@ -122,7 +122,7 @@ public class EdgeToEdgeUtils {
      * <p>When enabled, Chrome will replace the OS navigation bar with a thin "Chin" layer in the
      * browser controls and can be scrolled off the screen on web pages.
      */
-    static boolean isBottomChinFeatureEnabled() {
+    public static boolean isBottomChinFeatureEnabled() {
         return ChromeFeatureList.sEdgeToEdgeBottomChin.isEnabled();
     }
 

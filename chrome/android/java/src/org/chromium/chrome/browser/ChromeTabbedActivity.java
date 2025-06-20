@@ -2610,7 +2610,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     new TabbedSystemBarColorHelper(
                             ensureEdgeToEdgeLayoutCoordinator(), mBottomChinSupplier));
             return mSystemBarColorHelperSupplier;
-        } else if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(this)) {
+        } else if (EdgeToEdgeUtils.isBottomChinFeatureEnabled()) {
             // If isEdgeToEdgeBottomChinEnabled() && !isEdgeToEdgeEverywhereEnabled()
             return mBottomChinSupplier;
         }
