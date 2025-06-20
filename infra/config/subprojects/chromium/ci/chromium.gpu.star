@@ -571,6 +571,13 @@ ci.thin_tester(
             "puppet_production",
         ],
         per_test_modifications = {
+            "pixel_skia_gold_metal_passthrough_graphite_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 2,
+                    ),
+                ),
+            ),
             "tab_capture_end2end_tests": targets.remove(
                 reason = "Run these only on Release bots.",
             ),
