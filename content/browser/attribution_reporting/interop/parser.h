@@ -72,7 +72,13 @@ struct AttributionSimulationEvent {
     int64_t request_id;
   };
 
-  using Data = std::variant<StartRequest, Response, EndRequest>;
+  // TODO(crbug.com/426412563): Scope connection events to individual report
+  // URLs.
+  struct Connection {
+    bool connected;
+  };
+
+  using Data = std::variant<StartRequest, Response, EndRequest, Connection>;
 
   base::Time time;
   Data data;

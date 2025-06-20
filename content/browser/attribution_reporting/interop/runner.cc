@@ -81,6 +81,7 @@
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -421,6 +422,7 @@ void FastForwardUntilReportsConsumed(AttributionManager& manager,
     run_loop.Run();
 
     if (delta.is_negative()) {
+      task_environment.FastForwardBy(base::TimeDelta());
       break;
     }
     task_environment.FastForwardBy(delta);
@@ -558,9 +560,36 @@ RunAttributionInteropSimulation(
 
   for (const auto& event : run.events) {
     task_environment.FastForwardBy(event.time - base::Time::Now());
-
     std::visit(
-        [&](const auto& data) { Handle(data, *manager->GetDataHostManager()); },
+        absl::Overload{
+            [&](const AttributionSimulationEvent::Connection& event) {
+              if (!event.connected) {
+                test_url_loader_factory.SetInterceptor(
+                    base::BindLambdaForTesting([&](const network::
+                                                       ResourceRequest& req) {
+                      test_url_loader_factory.AddResponse(
+                          req.url, network::mojom::URLResponseHead::New(),
+                          /*content=*/"",
+                          network::URLLoaderCompletionStatus(
+                              net::ERR_INTERNET_DISCONNECTED),
+                          network::TestURLLoaderFactory::Redirects(),
+                          network::TestURLLoaderFactory::ResponseProduceFlags::
+                              kSendHeadersOnNetworkError);
+                    }));
+              } else {
+                test_url_loader_factory.SetInterceptor(
+                    base::BindLambdaForTesting(
+                        [&](const network::ResourceRequest& req) {
+                          output.reports.emplace_back(
+                              MakeReport(req, time_origin, hpke_key));
+                          test_url_loader_factory.AddResponse(req.url.spec(),
+                                                              /*content=*/"");
+                        }));
+              }
+            },
+            [&](const auto& data) {
+              Handle(data, *manager->GetDataHostManager());
+            }},
         event.data);
   }
 

@@ -380,6 +380,13 @@ class AttributionInteropParser {
                                                    : events.back().time,
                   /*strictly_greater=*/true);
 
+    if (dict.contains("connection")) {
+      bool connected = *dict.FindBool("connection");
+      events.emplace_back(time,
+                          AttributionSimulationEvent::Connection(connected));
+      return;
+    }
+
     std::optional<SuitableOrigin> context_origin;
     AttributionReportingEligibility eligibility;
     bool fenced = false;

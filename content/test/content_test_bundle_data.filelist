@@ -6447,6 +6447,8 @@ data/attribution_reporting/interop/attribution_scopes_parsing_failures.json
 data/attribution_reporting/interop/attribution_scopes_smaller_scope_limit.json
 data/attribution_reporting/interop/basic.json
 data/attribution_reporting/interop/basic_aggregatable.json
+data/attribution_reporting/interop/basic_disconnected.json
+data/attribution_reporting/interop/basic_retry.json
 data/attribution_reporting/interop/channel_capacity.json
 data/attribution_reporting/interop/clamp_aggregatable_report_window.json
 data/attribution_reporting/interop/clamp_event_report_window.json
