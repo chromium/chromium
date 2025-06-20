@@ -18,14 +18,16 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 @NullMarked
 public class ArchivedTabsAutoDeletePromoSheetContent implements BottomSheetContent {
     private final View mContentView;
+    private final String mDescriptionString;
 
     /**
      * Constructor.
      *
      * @param contentView The inflated view for the bottom sheet.
      */
-    public ArchivedTabsAutoDeletePromoSheetContent(View contentView) {
+    public ArchivedTabsAutoDeletePromoSheetContent(View contentView, String descriptionString) {
         mContentView = contentView;
+        mDescriptionString = descriptionString;
     }
 
     @Override
@@ -69,21 +71,21 @@ public class ArchivedTabsAutoDeletePromoSheetContent implements BottomSheetConte
 
     @Override
     public String getSheetContentDescription(Context context) {
-        return context.getString(R.string.archived_tabs_auto_delete_promo_description);
+        return mDescriptionString;
     }
 
     @Override
     public @StringRes int getSheetClosedAccessibilityStringId() {
-        return R.string.archived_tabs_auto_delete_promo_description;
+        return R.string.archived_tabs_auto_delete_promo_closed;
     }
 
     @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.archived_tabs_auto_delete_promo_description;
+        return R.string.archived_tabs_auto_delete_promo_half_height;
     }
 
     @Override
     public @StringRes int getSheetFullHeightAccessibilityStringId() {
-        return R.string.archived_tabs_auto_delete_promo_description;
+        return R.string.archived_tabs_auto_delete_promo_full_height;
     }
 }

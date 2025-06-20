@@ -14,6 +14,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** Properties for the "Auto Delete Archived Tabs Decision Promo" bottom sheet. */
 @NullMarked
 public class ArchivedTabsAutoDeletePromoProperties {
+    // Text Properties
+    public static final WritableObjectPropertyKey<String> PROMO_DESCRIPTION_STRING =
+            new WritableObjectPropertyKey<>("promo_description_string");
     // Click Listener Properties
     public static final WritableObjectPropertyKey<OnClickListener> ON_YES_BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>("on_yes_click");
@@ -21,7 +24,7 @@ public class ArchivedTabsAutoDeletePromoProperties {
             new WritableObjectPropertyKey<>("on_no_click");
 
     public static final PropertyKey[] ALL_KEYS = {
-        ON_YES_BUTTON_CLICK_LISTENER, ON_NO_BUTTON_CLICK_LISTENER
+        PROMO_DESCRIPTION_STRING, ON_YES_BUTTON_CLICK_LISTENER, ON_NO_BUTTON_CLICK_LISTENER
     };
 
     /**

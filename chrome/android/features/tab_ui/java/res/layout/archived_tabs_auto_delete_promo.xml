@@ -74,8 +74,7 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
                 android:lineSpacingExtra="4dp"
-                android:gravity="center_horizontal|top"
-                android:text="@string/archived_tabs_auto_delete_promo_description"/>
+                android:gravity="center_horizontal|top"/>
         </ScrollView>
 
         <org.chromium.ui.widget.ButtonCompat

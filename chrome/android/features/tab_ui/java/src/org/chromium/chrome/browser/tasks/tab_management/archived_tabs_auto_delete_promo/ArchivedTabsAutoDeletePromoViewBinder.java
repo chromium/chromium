@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management.archived_tabs_auto_delete_promo;
 
 import android.view.View;
+import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
@@ -23,7 +24,12 @@ public class ArchivedTabsAutoDeletePromoViewBinder {
      * @param propertyKey The {@link PropertyKey} that changed.
      */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (ArchivedTabsAutoDeletePromoProperties.ON_YES_BUTTON_CLICK_LISTENER == propertyKey) {
+        if (ArchivedTabsAutoDeletePromoProperties.PROMO_DESCRIPTION_STRING == propertyKey) {
+            TextView description = view.findViewById(R.id.promo_description_text);
+            description.setText(
+                    model.get(ArchivedTabsAutoDeletePromoProperties.PROMO_DESCRIPTION_STRING));
+        } else if (ArchivedTabsAutoDeletePromoProperties.ON_YES_BUTTON_CLICK_LISTENER
+                == propertyKey) {
             ButtonCompat yesButton = view.findViewById(R.id.promo_yes_button);
             yesButton.setOnClickListener(
                     model.get(ArchivedTabsAutoDeletePromoProperties.ON_YES_BUTTON_CLICK_LISTENER));

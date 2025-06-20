@@ -111,6 +111,8 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
         // In case a previous show attempt was interrupted before cleanup completed
         cleanupSheetResourcesOnly();
 
+        String descriptionString = setPromoDescription();
+
         mIsFinalizedThisInstance = false;
 
         View contentView =
@@ -121,7 +123,7 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
                 PropertyModelChangeProcessor.create(
                         mModel, contentView, ArchivedTabsAutoDeletePromoViewBinder::bind);
 
-        mSheetContent = new ArchivedTabsAutoDeletePromoSheetContent(contentView);
+        mSheetContent = new ArchivedTabsAutoDeletePromoSheetContent(contentView, descriptionString);
 
         mSheetObserver =
                 new EmptyBottomSheetObserver() {
@@ -202,6 +204,20 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
             mViewBinder = null;
         }
         mIsSheetCurrentlyManagedByController = false;
+    }
+
+    /* Sets and returns the auto delete delay variable in the description string. */
+    private String setPromoDescription() {
+        int autoDeleteTimeFrame = mTabArchiveSettings.getAutoDeleteTimeDeltaDays();
+        String descriptionString =
+                mContext.getResources()
+                        .getQuantityString(
+                                R.plurals.archived_tabs_auto_delete_promo_description,
+                                autoDeleteTimeFrame,
+                                autoDeleteTimeFrame);
+        mModel.set(
+                ArchivedTabsAutoDeletePromoProperties.PROMO_DESCRIPTION_STRING, descriptionString);
+        return descriptionString;
     }
 
     PropertyModel getModelForTesting() {
