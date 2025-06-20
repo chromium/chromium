@@ -106,8 +106,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
  private:
   friend class SessionServiceImplWithStoreTest;
 
-  // The key is the site (eTLD+1) of the session's origin.
-  using SessionsMap = std::multimap<SchemefulSite, std::unique_ptr<Session>>;
+  // The key is the site (eTLD+1) of the session's origin and the
+  // session id.
+  using SessionsMap = std::map<SessionKey, std::unique_ptr<Session>>;
   using DeferredRequestsMap =
       std::unordered_map<Session::Id,
                          absl::InlinedVector<DeferredURLRequest, 1>>;

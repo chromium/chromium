@@ -184,8 +184,12 @@ void SessionServiceImpl::OnRegistrationComplete(
 std::ranges::subrange<SessionServiceImpl::SessionsMap::iterator>
 SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
   const auto now = base::Time::Now();
-  auto [begin, end] = unpartitioned_sessions_.equal_range(site);
-  for (auto it = begin; it != end;) {
+  // Session keys are sorted by site, then identifier. So the first
+  // element not less than (`site`, "") is the first session for this
+  // site.
+  auto it =
+      unpartitioned_sessions_.lower_bound(SessionKey{site, Session::Id("")});
+  while (it != unpartitioned_sessions_.end() && it->first.site == site) {
     auto curit = it;
     ++it;
 
@@ -198,9 +202,9 @@ SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
     }
   }
 
-  auto sessions_for_site = unpartitioned_sessions_.equal_range(site);
-  return std::ranges::subrange<SessionsMap::iterator>(sessions_for_site.first,
-                                                      sessions_for_site.second);
+  return std::ranges::subrange<SessionsMap::iterator>(
+      unpartitioned_sessions_.lower_bound(SessionKey{site, Session::Id("")}),
+      it);
 }
 
 std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
@@ -373,11 +377,8 @@ void SessionServiceImpl::GetAllSessionsAsync(
         // `queued_operations_`, which is owned by `this`.
         base::Unretained(this), std::move(callback)));
   } else {
-    std::vector<SessionKey> sessions =
-        base::ToVector(unpartitioned_sessions_, [](const auto& pair) {
-          const auto& [site, session] = pair;
-          return SessionKey(site, session->id());
-        });
+    std::vector<SessionKey> sessions = base::ToVector(
+        unpartitioned_sessions_, [](const auto& pair) { return pair.first; });
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(sessions)));
   }
@@ -387,26 +388,20 @@ void SessionServiceImpl::DeleteSessionAndNotify(
     const SchemefulSite& site,
     const Session::Id& id,
     SessionService::OnAccessCallback per_request_callback) {
-  auto range = unpartitioned_sessions_.equal_range(site);
-  for (auto it = range.first; it != range.second; ++it) {
-    if (it->second->id() == id) {
-      DeleteSessionAndNotifyInternal(it, per_request_callback);
-      return;
-    }
+  auto it = unpartitioned_sessions_.find(SessionKey{site, id});
+  if (it == unpartitioned_sessions_.end()) {
+    return;
   }
+
+  DeleteSessionAndNotifyInternal(it, per_request_callback);
 }
 
 Session* SessionServiceImpl::GetSession(const SchemefulSite& site,
                                         const Session::Id& session_id) const {
-  // Intentionally do not use `GetSessionsForSite` here so we do not
-  // modify the session during testing.
-  auto range = unpartitioned_sessions_.equal_range(site);
-  for (auto it = range.first; it != range.second; ++it) {
-    if (it->second->id() == session_id) {
-      return it->second.get();
-    }
+  auto it = unpartitioned_sessions_.find(SessionKey{site, session_id});
+  if (it != unpartitioned_sessions_.end()) {
+    return it->second.get();
   }
-
   return nullptr;
 }
 
@@ -415,8 +410,9 @@ void SessionServiceImpl::AddSession(const SchemefulSite& site,
   if (session_store_) {
     session_store_->SaveSession(site, *session);
   }
-  // TODO(crbug.com/402020386): Enforce unique session ids per site.
-  unpartitioned_sessions_.emplace(site, std::move(session));
+
+  unpartitioned_sessions_.emplace(SessionKey{site, session->id()},
+                                  std::move(session));
 }
 
 void SessionServiceImpl::DeleteAllSessions(
@@ -430,8 +426,9 @@ void SessionServiceImpl::DeleteAllSessions(
     auto curit = it;
     ++it;
 
-    if (SessionMatchesFilter(curit->first, *curit->second, created_after_time,
-                             created_before_time, origin_and_site_matcher)) {
+    if (SessionMatchesFilter(curit->first.site, *curit->second,
+                             created_after_time, created_before_time,
+                             origin_and_site_matcher)) {
       DeleteSessionAndNotifyInternal(curit, base::NullCallback());
     }
   }
@@ -454,11 +451,11 @@ void SessionServiceImpl::DeleteSessionAndNotifyInternal(
     SessionServiceImpl::SessionsMap::iterator it,
     SessionService::OnAccessCallback per_request_callback) {
   if (session_store_) {
-    session_store_->DeleteSession(it->first, it->second->id());
+    session_store_->DeleteSession(it->first);
   }
 
   NotifySessionAccess(per_request_callback,
-                      SessionAccess::AccessType::kTermination, it->first,
+                      SessionAccess::AccessType::kTermination, it->first.site,
                       *it->second);
 
   unpartitioned_sessions_.erase(it);

@@ -114,7 +114,8 @@ SessionStore::SessionsMap CreateAndSaveSessions(
         CreateSessionHelper(key_service, cfg.url, cfg.session_id, cfg.origin);
     EXPECT_TRUE(session);
     store.SaveSession(site, *session);
-    session_map.emplace(std::move(site), std::move(session));
+    session_map.emplace(SessionKey{std::move(site), session->id()},
+                        std::move(session));
   }
 
   return session_map;
@@ -232,7 +233,7 @@ TEST_F(SessionStoreImplTest, RequireDBInit) {
   EXPECT_EQ(store().GetAllSessions().size(), 0u);
 
   // Verify that delete session call is ignored.
-  store().DeleteSession(site, session->id());
+  store().DeleteSession(SessionKey{site, session->id()});
   EXPECT_EQ(store().GetAllSessions().size(), 0u);
 
   // Verify that restore session binding key call fails.
@@ -267,8 +268,8 @@ TEST_F(SessionStoreImplTest, SaveNewSessions) {
   SessionStore::SessionsMap store_sessions = store().GetAllSessions();
 
   // Restore the binding keys in the store session objects.
-  for (auto& [site, session] : store_sessions) {
-    RestoreSessionBindingKey(site, session.get());
+  for (auto& [key, session] : store_sessions) {
+    RestoreSessionBindingKey(key.site, session.get());
   }
 
   // Verify the session store contents.
@@ -296,10 +297,11 @@ TEST_F(SessionStoreImplTest, UpdateExistingSession) {
   // match the updated data.
   SessionStore::SessionsMap store_sessions = store().GetAllSessions();
   EXPECT_EQ(store_sessions.size(), 1u);
-  for (auto& [store_site, store_session] : store_sessions) {
-    EXPECT_TRUE(store_site == site);
+  for (auto& [key, store_session] : store_sessions) {
+    EXPECT_TRUE(key.site == site);
+    EXPECT_TRUE(key.id == store_session->id());
     EXPECT_TRUE(store_session->expiry_date() == session->expiry_date());
-    RestoreSessionBindingKey(store_site, store_session.get());
+    RestoreSessionBindingKey(key.site, store_session.get());
     EXPECT_TRUE(store_session->IsEqualForTesting(*session));
   }
 }
@@ -309,7 +311,7 @@ TEST_F(SessionStoreImplTest, HandleNonexistingSite) {
 
   // Try to delete a session associated with a nonexisting site (in the store).
   auto site = net::SchemefulSite(GURL("https://foo.test"));
-  store().DeleteSession(site, Session::Id("session"));
+  store().DeleteSession(SessionKey{site, Session::Id("session")});
   EXPECT_EQ(store().GetAllSessions().size(), 0u);
 
   // Create a session but don't save it to the store.
@@ -338,7 +340,7 @@ TEST_F(SessionStoreImplTest, HandleNonexistingSession) {
       unexportable_key_service(), "https://foo.test", "session2");
 
   // Try to delete the unsaved session.
-  store().DeleteSession(site, session2->id());
+  store().DeleteSession(SessionKey{site, session2->id()});
   EXPECT_EQ(store().GetAllSessions().size(), 1u);
 
   // Try to restore the unsaved session's binding key.
@@ -371,18 +373,21 @@ TEST_F(SessionStoreImplTest, DeleteSessions) {
   EXPECT_EQ(store_sessions.size(), 3u);
 
   // Delete the valid sessions one by one and check store contents.
-  store().DeleteSession(site2, Session::Id(cfgs[2].session_id));
+  store().DeleteSession(SessionKey{site2, Session::Id(cfgs[2].session_id)});
   store_sessions = store().GetAllSessions();
-  EXPECT_TRUE(store_sessions.find(site2) == store_sessions.end());
+  EXPECT_TRUE(
+      store_sessions.find(SessionKey{site2, Session::Id(cfgs[2].session_id)}) ==
+      store_sessions.end());
 
-  store().DeleteSession(site1, Session::Id(cfgs[0].session_id));
+  store().DeleteSession(SessionKey{site1, Session::Id(cfgs[0].session_id)});
   store_sessions = store().GetAllSessions();
   EXPECT_EQ(store_sessions.size(), 1u);
-  EXPECT_EQ(store_sessions.begin()->first, site1);
+  SessionKey expected_key{site1, Session::Id(cfgs[1].session_id)};
+  EXPECT_EQ(store_sessions.begin()->first, expected_key);
   EXPECT_EQ(store_sessions.begin()->second->id(),
             Session::Id(cfgs[1].session_id));
 
-  store().DeleteSession(site1, Session::Id(cfgs[1].session_id));
+  store().DeleteSession(SessionKey{site1, Session::Id(cfgs[1].session_id)});
   store_sessions = store().GetAllSessions();
   EXPECT_EQ(store_sessions.size(), 0u);
 }
@@ -402,8 +407,8 @@ TEST_F(SessionStoreImplTest, LoadSavedSessions) {
 
   SessionStore::SessionsMap loaded_sessions = LoadSessions();
   // Restore the binding keys in the store session objects.
-  for (auto& [site, session] : loaded_sessions) {
-    RestoreSessionBindingKey(site, session.get());
+  for (auto& [key, session] : loaded_sessions) {
+    RestoreSessionBindingKey(key.site, session.get());
   }
 
   EXPECT_TRUE(SessionMapsAreEqual(saved_sessions, loaded_sessions));
@@ -441,7 +446,8 @@ TEST_F(SessionStoreImplTest, PruneLoadedEntryWithInvalidSite) {
   // - entry with invalid site is not present and is included in the
   //   keys_to_delete list.
   EXPECT_EQ(sessions_map.size(), 1u);
-  EXPECT_EQ(sessions_map.count(site2), 1u);
+  SessionKey key{site2, Session::Id("session_id")};
+  EXPECT_EQ(sessions_map.count(key), 1u);
   EXPECT_EQ(keys_to_delete.size(), 1u);
   EXPECT_EQ(keys_to_delete[0], "about:blank");
 }

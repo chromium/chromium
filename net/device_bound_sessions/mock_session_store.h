@@ -26,10 +26,7 @@ class SessionStoreMock : public SessionStore {
               SaveSession,
               (const SchemefulSite& site, const Session& session),
               (override));
-  MOCK_METHOD(void,
-              DeleteSession,
-              (const SchemefulSite& site, const Session::Id& session_id),
-              (override));
+  MOCK_METHOD(void, DeleteSession, (const SessionKey& key), (override));
   MOCK_METHOD(SessionStore::SessionsMap, GetAllSessions, (), (const, override));
   MOCK_METHOD(void,
               RestoreSessionBindingKey,

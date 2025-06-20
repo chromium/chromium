@@ -1085,7 +1085,8 @@ TEST_F(SessionServiceImplWithStoreTest, GetAllSessionsWaitsForSessionsToLoad) {
 
   // Complete loading. If we did not defer, we'd miss this session.
   SessionStore::SessionsMap session_map;
-  session_map.insert({SchemefulSite(kTestUrl), std::move(session)});
+  session_map.insert(
+      {SessionKey{SchemefulSite(kTestUrl), session->id()}, std::move(session)});
   FinishLoadingSessions(std::move(session_map));
 
   // But we did defer, so we found it.
@@ -1157,7 +1158,8 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
   ASSERT_TRUE(session);
 
   SessionStore::SessionsMap session_map;
-  session_map.insert({SchemefulSite(kTestUrl), std::move(session)});
+  session_map.insert(
+      {SessionKey{SchemefulSite(kTestUrl), session->id()}, std::move(session)});
   FinishLoadingSessions(std::move(session_map));
 
   // Create a request that should be deferred due to the session
@@ -1176,7 +1178,7 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
   // Now actually defer the request
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
       kSessionId, kUrlString, kOrigin);
-  EXPECT_CALL(store(), DeleteSession(_, _)).Times(1);
+  EXPECT_CALL(store(), DeleteSession(_)).Times(1);
   EXPECT_CALL(store(), SaveSession(_, _)).Times(1);
   EXPECT_CALL(store(), RestoreSessionBindingKey(SchemefulSite(kTestUrl),
                                                 Session::Id(kSessionId), _))

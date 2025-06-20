@@ -174,7 +174,8 @@ SessionStore::SessionsMap SessionStoreImpl::CreateSessionsFromLoadedData(
       }
 
       // Restored session entry has passed basic validation checks. Save it.
-      site_sessions.emplace(site, std::move(session));
+      site_sessions.emplace(SessionKey{site, session->id()},
+                            std::move(session));
     }
 
     // Remove the entire site entry from the DB if a single invalid session is
@@ -226,19 +227,18 @@ void SessionStoreImpl::SaveSession(const SchemefulSite& site,
   session_data_->UpdateData(site_str, site_proto);
 }
 
-void SessionStoreImpl::DeleteSession(const SchemefulSite& site,
-                                     const Session::Id& session_id) {
+void SessionStoreImpl::DeleteSession(const SessionKey& key) {
   if (db_status_ != DBStatus::kSuccess) {
     return;
   }
 
   proto::SiteSessions site_proto;
-  std::string site_str = site.Serialize();
+  std::string site_str = key.site.Serialize();
   if (!session_data_->TryGetData(site_str, &site_proto)) {
     return;
   }
 
-  if (site_proto.sessions().count(*session_id) == 0) {
+  if (site_proto.sessions().count(*key.id) == 0) {
     return;
   }
 
@@ -249,10 +249,10 @@ void SessionStoreImpl::DeleteSession(const SchemefulSite& site,
     return;
   }
 
-  site_proto.mutable_sessions()->erase(*session_id);
+  site_proto.mutable_sessions()->erase(*key.id);
 
   // Schedule a DB update for the site entry.
-  session_data_->UpdateData(site.Serialize(), site_proto);
+  session_data_->UpdateData(key.site.Serialize(), site_proto);
 }
 
 SessionStore::SessionsMap SessionStoreImpl::GetAllSessions() const {
