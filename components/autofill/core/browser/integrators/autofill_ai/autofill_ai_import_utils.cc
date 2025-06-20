@@ -12,10 +12,12 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/filling/autofill_ai/select_date_matching.h"
+#include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -45,14 +47,10 @@ struct ValueAndFormatString {
 };
 
 // Returns the value and format string of `field` for import by Autofill AI.
-ValueAndFormatString GetValueAndFormatString(const AutofillField& field) {
-  std::optional<FieldType> field_type =
-      field.GetAutofillAiServerTypePredictions();
-  if (!field_type) {
-    return {};
-  }
-
-  if (!IsDateFieldType(*field_type) || !field.IsSelectElement()) {
+ValueAndFormatString GetValueAndFormatString(const AutofillField& field,
+                                             AttributeType attribute_type) {
+  if (attribute_type.data_type() != AttributeType::DataType::kDate ||
+      !field.IsSelectElement()) {
     std::u16string value = field.value_for_import();
     base::TrimWhitespace(value, base::TRIM_ALL, &value);
     return {
@@ -91,29 +89,31 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
   std::map<Section,
            std::map<EntityType, std::map<AttributeType, AttributeInstance>>>
       section_to_entity_types_attributes;
-  for (const std::unique_ptr<AutofillField>& field : fields) {
-    std::optional<FieldType> field_type =
-        field->GetAutofillAiServerTypePredictions();
-    if (!field_type) {
-      continue;
+
+  // DetermineAttributeTypes() effectively gives us a map
+  // Section -> EntityType -> AttributeType
+  // and to build section_to_entity_types_attributes we want a map
+  // Section -> EntityType -> AttributeType -> AttributeInstance.
+  for (const auto& [section, entities_with_fields_and_types] :
+       DetermineAttributeTypes(fields)) {
+    for (const auto& [entity, fields_with_types] :
+         entities_with_fields_and_types) {
+      for (const auto& [field, attribute_type] : fields_with_types) {
+        ValueAndFormatString value =
+            GetValueAndFormatString(*field, attribute_type);
+        if (value.value.empty()) {
+          continue;
+        }
+        std::map<AttributeType, AttributeInstance>& entity_attributes =
+            section_to_entity_types_attributes[section]
+                                              [attribute_type.entity_type()];
+        auto attribute_it =
+            entity_attributes.try_emplace(attribute_type, attribute_type).first;
+        attribute_it->second.SetInfo(
+            field->Type().GetStorableType(), value.value, app_locale,
+            value.format_string, VerificationStatus::kObserved);
+      }
     }
-
-    ValueAndFormatString value = GetValueAndFormatString(*field);
-    if (value.value.empty()) {
-      continue;
-    }
-
-    std::optional<AttributeType> attribute_type =
-        AttributeType::FromFieldType(*field_type);
-
-    std::map<AttributeType, AttributeInstance>& entity_attributes =
-        section_to_entity_types_attributes[field->section()]
-                                          [attribute_type->entity_type()];
-    auto attribute_it =
-        entity_attributes.try_emplace(*attribute_type, *attribute_type).first;
-    attribute_it->second.SetInfo(field->Type().GetStorableType(), value.value,
-                                 app_locale, value.format_string,
-                                 VerificationStatus::kObserved);
   }
 
   for (auto& [section, entities] : section_to_entity_types_attributes) {
