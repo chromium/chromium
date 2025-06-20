@@ -48,6 +48,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/find_bar:find_bar",
       "//chrome/browser/ui/lens",

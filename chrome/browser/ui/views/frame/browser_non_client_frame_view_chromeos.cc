@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -684,7 +685,7 @@ void BrowserNonClientFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
   ImmersiveModeController* immersive_mode_controller =
       browser_view()->immersive_mode_controller();
   ExclusiveAccessManager* exclusive_access_manager =
-      browser_view()->browser()->exclusive_access_manager();
+      browser_view()->browser()->GetFeatures().exclusive_access_manager();
 
   const bool was_immersive = immersive_mode_controller->IsEnabled();
   const bool was_fullscreen =

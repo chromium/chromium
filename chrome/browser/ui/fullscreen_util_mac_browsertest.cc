@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -36,7 +37,10 @@ class FullscreenUtilMacTest : public InProcessBrowserTest {
   }
 
   FullscreenController* GetFullscreenController() {
-    return browser()->exclusive_access_manager()->fullscreen_controller();
+    return browser()
+        ->GetFeatures()
+        .exclusive_access_manager()
+        ->fullscreen_controller();
   }
 
   bool IsBrowserFullscreen() {

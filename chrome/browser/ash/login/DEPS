@@ -144,6 +144,7 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_navigator_params.h",
     "+chrome/browser/ui/browser_tabstrip.h",
     "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_features.h",
     "+chrome/browser/ui/test",
     "+chrome/test/base",
     "+chrome/test/interaction",

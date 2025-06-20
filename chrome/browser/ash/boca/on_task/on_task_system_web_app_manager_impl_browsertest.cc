@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -248,8 +249,9 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   ASSERT_THAT(boca_app_browser, NotNull());
 
   // Toggle fullscreen mode but do not pin the window.
-  auto* const fullscreen_controller =
-      boca_app_browser->exclusive_access_manager()->fullscreen_controller();
+  auto* const fullscreen_controller = boca_app_browser->GetFeatures()
+                                          .exclusive_access_manager()
+                                          ->fullscreen_controller();
   fullscreen_controller->ToggleBrowserFullscreenMode(/*user_initiated=*/false);
   ASSERT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
 

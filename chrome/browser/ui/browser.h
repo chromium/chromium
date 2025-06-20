@@ -71,7 +71,6 @@ class BrowserLiveTabContext;
 class BrowserView;
 class BrowserWindow;
 class BrowserWindowFeatures;
-class ExclusiveAccessManager;
 class FindBarController;
 class OverscrollPrefManager;
 class Profile;
@@ -788,10 +787,6 @@ class Browser : public TabStripModelObserver,
   // Called each time the browser window is shown.
   void OnWindowDidShow();
 
-  ExclusiveAccessManager* exclusive_access_manager() {
-    return exclusive_access_manager_.get();
-  }
-
   bool ShouldRunUnloadListenerBeforeClosing(content::WebContents* web_contents);
   bool RunUnloadListenerBeforeClosing(content::WebContents* web_contents);
 
@@ -1418,8 +1413,6 @@ class Browser : public TabStripModelObserver,
   const std::unique_ptr<web_app::AppBrowserController> app_controller_;
 
   BookmarkBar::State bookmark_bar_state_;
-
-  std::unique_ptr<ExclusiveAccessManager> exclusive_access_manager_;
 
   std::unique_ptr<BrowserActions> browser_actions_;
 

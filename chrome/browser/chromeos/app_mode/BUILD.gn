@@ -129,6 +129,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/apps",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/tabs:test_support",
     "//chrome/browser/web_applications",

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -118,7 +119,8 @@ void DownloadDisplayController::OnNewItem(bool show_animation) {
   if (display_->ShouldShowExclusiveAccessBubble()) {
     fullscreen_notification_shown_ = true;
     // ExclusiveAccessContext can be null in tests.
-    if (auto* context = browser_->exclusive_access_manager()->context()) {
+    if (auto* context =
+            browser_->GetFeatures().exclusive_access_manager()->context()) {
       context->UpdateExclusiveAccessBubble(
           {.has_download = true, .force_update = true}, base::NullCallback());
     }
@@ -215,8 +217,9 @@ void DownloadDisplayController::HideBubble() {
 }
 
 void DownloadDisplayController::ListenToFullScreenChanges() {
-  observation_.Observe(
-      browser_->exclusive_access_manager()->fullscreen_controller());
+  observation_.Observe(browser_->GetFeatures()
+                           .exclusive_access_manager()
+                           ->fullscreen_controller());
 }
 
 void DownloadDisplayController::OnFullscreenStateChanged() {

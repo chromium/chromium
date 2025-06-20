@@ -326,6 +326,7 @@ static_library("devtools") {
     deps += [
       "//chrome/app:command_ids",
       "//chrome/browser/first_party_sets",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/media_router",
       "//components/custom_handlers",
       "//components/media_router/browser",

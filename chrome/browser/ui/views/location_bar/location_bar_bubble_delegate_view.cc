@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -91,9 +92,11 @@ LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
     Browser* browser = chrome::FindBrowserWithTab(web_contents);
     // |browser| can be null in tests.
     if (browser) {
-      fullscreen_observation_.Observe(
-          browser->exclusive_access_manager()->fullscreen_controller());
-      fullscreen_controller_ = browser->exclusive_access_manager()
+      fullscreen_observation_.Observe(browser->GetFeatures()
+                                          .exclusive_access_manager()
+                                          ->fullscreen_controller());
+      fullscreen_controller_ = browser->GetFeatures()
+                                   .exclusive_access_manager()
                                    ->fullscreen_controller()
                                    ->GetWeakPtr();
     }

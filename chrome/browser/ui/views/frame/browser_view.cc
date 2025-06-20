@@ -6321,7 +6321,7 @@ bool BrowserView::CanUserExitFullscreen() const {
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, ExclusiveAccessBubbleViewsContext implementation:
 ExclusiveAccessManager* BrowserView::GetExclusiveAccessManager() {
-  return browser_->exclusive_access_manager();
+  return browser_->GetFeatures().exclusive_access_manager();
 }
 
 ui::AcceleratorProvider* BrowserView::GetAcceleratorProvider() {

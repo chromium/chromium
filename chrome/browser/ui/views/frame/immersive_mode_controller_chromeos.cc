@@ -8,6 +8,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -80,7 +81,8 @@ void ImmersiveModeControllerChromeos::SetEnabled(bool enabled) {
 
   if (!fullscreen_observer_.IsObserving()) {
     fullscreen_observer_.Observe(browser_view_->browser()
-                                     ->exclusive_access_manager()
+                                     ->GetFeatures()
+                                     .exclusive_access_manager()
                                      ->fullscreen_controller());
   }
 
@@ -279,7 +281,8 @@ void ImmersiveModeControllerChromeos::OnFullscreenStateChanged() {
 
   // Auto hide the shelf in immersive browser fullscreen.
   bool in_tab_fullscreen = browser_view_->browser()
-                               ->exclusive_access_manager()
+                               ->GetFeatures()
+                               .exclusive_access_manager()
                                ->fullscreen_controller()
                                ->IsWindowFullscreenForTabOrPending();
   browser_view_->GetNativeWindow()->SetProperty(

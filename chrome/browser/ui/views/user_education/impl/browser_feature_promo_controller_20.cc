@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -89,7 +90,7 @@ BrowserFeaturePromoController20::CanShowPromoForElement(
   // Turn off IPH while the browser is showing fullscreen content (like a
   // video). See https://crbug.com/411475424.
   auto* const fullscreen_controller =
-      browser.exclusive_access_manager()->fullscreen_controller();
+      browser.GetFeatures().exclusive_access_manager()->fullscreen_controller();
   if (fullscreen_controller->IsWindowFullscreenForTabOrPending() ||
       fullscreen_controller->IsExtensionFullscreenOrPending()) {
     return user_education::FeaturePromoResult::kBlockedByUi;

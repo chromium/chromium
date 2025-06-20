@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -70,7 +71,8 @@ bool FullscreenKeyboardBrowserTestBase::IsActiveTabFullscreen() const {
 
 bool FullscreenKeyboardBrowserTestBase::IsInBrowserFullscreen() const {
   return GetActiveBrowser()
-      ->exclusive_access_manager()
+      ->GetFeatures()
+      .exclusive_access_manager()
       ->fullscreen_controller()
       ->IsFullscreenForBrowser();
 }
@@ -189,8 +191,11 @@ void FullscreenKeyboardBrowserTestBase::SendShiftShortcut(
 void FullscreenKeyboardBrowserTestBase::SendFullscreenShortcutAndWait() {
   // On MacOSX, entering and exiting fullscreen are not synchronous. So we wait
   // for the observer to notice the change of fullscreen state.
-  bool current =
-      GetActiveBrowser()->exclusive_access_manager()->context()->IsFullscreen();
+  bool current = GetActiveBrowser()
+                     ->GetFeatures()
+                     .exclusive_access_manager()
+                     ->context()
+                     ->IsFullscreen();
   ui_test_utils::FullscreenWaiter waiter(
       GetActiveBrowser(), current
                               ? ui_test_utils::FullscreenWaiter::kNoFullscreen

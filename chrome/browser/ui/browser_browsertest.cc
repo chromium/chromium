@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_ui_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
@@ -2607,10 +2608,13 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_ChangeDisplayMode) {
   auto* app_contents = app_browser->tab_strip_model()->GetActiveWebContents();
   CheckDisplayModeMQ(u"standalone", app_contents);
 
-  app_browser->exclusive_access_manager()->context()->EnterFullscreen(
-      url::Origin(),
-      EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
-      display::kInvalidDisplayId);
+  app_browser->GetFeatures()
+      .exclusive_access_manager()
+      ->context()
+      ->EnterFullscreen(
+          url::Origin(),
+          EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
+          display::kInvalidDisplayId);
 
   // Sync navigation just to make sure IPC has passed (updated
   // display mode is delivered to RP).

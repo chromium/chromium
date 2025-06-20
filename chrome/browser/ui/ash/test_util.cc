@@ -14,6 +14,7 @@
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
@@ -154,7 +155,8 @@ void ChromeOSBrowserUITest::ExitTabFullscreenMode(
     Browser* browser,
     content::WebContents* web_contents) {
   ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = false});
-  browser->exclusive_access_manager()
+  browser->GetFeatures()
+      .exclusive_access_manager()
       ->fullscreen_controller()
       ->ExitFullscreenModeForTab(web_contents);
   waiter.Wait();

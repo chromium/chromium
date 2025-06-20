@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -520,7 +521,9 @@ bool MaximizeAndWaitUntilUIUpdateDone(Browser& browser) {
 FullscreenWaiter::FullscreenWaiter(Browser* browser,
                                    FullscreenWaiter::Expectation expectation)
     : expectation_(std::move(expectation)),
-      controller_(browser->exclusive_access_manager()->fullscreen_controller()),
+      controller_(browser->GetFeatures()
+                      .exclusive_access_manager()
+                      ->fullscreen_controller()),
       // Sometimes, the wait is called on a sequeunce, e.g.
       // as a part of interactive_ui_tests's RunTestSequence.
       // To handle that case, we can process pending task posted to the
@@ -580,7 +583,10 @@ void ToggleFullscreenModeAndWait(Browser* browser) {
   // The waiting condition is following the current implementation.
   // If the mode is either browser/tab fullscreen, it will be existed.
   // Otherwise, entering into browser fullscreen.
-  bool current = browser->exclusive_access_manager()->context()->IsFullscreen();
+  bool current = browser->GetFeatures()
+                     .exclusive_access_manager()
+                     ->context()
+                     ->IsFullscreen();
   FullscreenWaiter waiter(browser, current ? FullscreenWaiter::kNoFullscreen
                                            : FullscreenWaiter::Expectation{
                                                  .browser_fullscreen = true});

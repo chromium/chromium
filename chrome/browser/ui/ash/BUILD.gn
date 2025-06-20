@@ -22,6 +22,7 @@ static_library("test_support") {
     "//chrome/browser",
     "//chrome/browser/ash/crosapi:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/exclusive_access:test_support",
     "//chrome/browser/ui/views/frame:immersive_mode_controller",

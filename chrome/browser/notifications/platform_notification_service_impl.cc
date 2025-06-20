@@ -28,6 +28,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
@@ -141,7 +142,10 @@ static bool ShouldDisplayWebNotificationOnFullScreen(Profile* profile,
     //  (b) the browser is fullscreen
     //  (c) the browser has focus.
     if (active_contents->GetURL().DeprecatedGetOriginAsURL() == origin &&
-        browser->exclusive_access_manager()->context()->IsFullscreen() &&
+        browser->GetFeatures()
+            .exclusive_access_manager()
+            ->context()
+            ->IsFullscreen() &&
         browser->window()->IsActive()) {
       return true;
     }

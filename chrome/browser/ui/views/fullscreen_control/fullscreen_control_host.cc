@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -120,7 +121,7 @@ void FullscreenControlHost::OnKeyEvent(const ui::KeyEvent& event) {
   }
 
   ExclusiveAccessManager* const exclusive_access_manager =
-      browser_view_->browser()->exclusive_access_manager();
+      browser_view_->browser()->GetFeatures().exclusive_access_manager();
 
   // FullscreenControlHost UI is not needed for the keyboard input method in any
   // fullscreen mode except for tab-initiated fullscreen (and only when the user

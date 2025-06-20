@@ -29,6 +29,7 @@ class ChromeLabsCoordinator;
 class CookieControlsBubbleCoordinator;
 class DesktopBrowserWindowCapabilities;
 class DownloadToolbarUIController;
+class ExclusiveAccessManager;
 class FindBarController;
 class HistorySidePanelCoordinator;
 class LocationBarModel;
@@ -308,6 +309,10 @@ class BrowserWindowFeatures {
   // Returns true if a FindBarController exists for this browser window.
   bool HasFindBarController() const;
 
+  ExclusiveAccessManager* exclusive_access_manager() {
+    return exclusive_access_manager_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -332,6 +337,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<commerce::ProductSpecificationsEntryPointController>
       product_specifications_entry_point_controller_;
+
+  std::unique_ptr<ExclusiveAccessManager> exclusive_access_manager_;
 
   std::unique_ptr<lens::LensOverlayEntryPointController>
       lens_overlay_entry_point_controller_;

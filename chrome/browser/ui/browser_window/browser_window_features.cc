@@ -13,6 +13,8 @@
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
@@ -247,6 +250,15 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   desktop_browser_window_capabilities_ =
       std::make_unique<DesktopBrowserWindowCapabilities>(
           browser, browser->window(), browser->GetUnownedUserDataHost());
+
+  exclusive_access_manager_ = std::make_unique<ExclusiveAccessManager>(
+      browser->window()->GetExclusiveAccessContext());
+
+  // This code needs exclusive access manager to be initialized.
+  if (download_toolbar_ui_controller_) {
+    download_toolbar_ui_controller_->display_controller()
+        ->ListenToFullScreenChanges();
+  }
 
   // Features that are only enabled for normal browser windows (e.g. a window
   // with an omnibox and a tab strip). By default most features should be

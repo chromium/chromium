@@ -30,6 +30,7 @@ include_rules = [
   "+chrome/browser/ui/browser_list_observer.h",
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_features.h",
   "+chrome/browser/ui/exclusive_access/exclusive_access_manager.h",
   "+chrome/browser/ui/exclusive_access/fullscreen_controller.h",
   "+chrome/browser/ui/views/frame/browser_view.h",

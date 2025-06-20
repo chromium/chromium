@@ -10,6 +10,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -88,8 +89,9 @@ ContentNotFullscreenPrecondition::~ContentNotFullscreenPrecondition() = default;
 user_education::FeaturePromoResult
 ContentNotFullscreenPrecondition::CheckPrecondition(
     ui::UnownedTypedDataCollection& data) const {
-  auto* const fullscreen_controller =
-      browser_->exclusive_access_manager()->fullscreen_controller();
+  auto* const fullscreen_controller = browser_->GetFeatures()
+                                          .exclusive_access_manager()
+                                          ->fullscreen_controller();
   if (fullscreen_controller->IsWindowFullscreenForTabOrPending() ||
       fullscreen_controller->IsExtensionFullscreenOrPending()) {
     return user_education::FeaturePromoResult::kBlockedByUi;

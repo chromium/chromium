@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
@@ -645,7 +646,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20FullscreenUiTest,
       WithElement(kTabId,
                   [this](ui::TrackedElement* tab) {
                     browser()
-                        ->exclusive_access_manager()
+                        ->GetFeatures()
+                        .exclusive_access_manager()
                         ->fullscreen_controller()
                         ->EnterFullscreenModeForTab(
                             AsInstrumentedWebContents(tab)
@@ -655,7 +657,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20FullscreenUiTest,
       CheckResult(
           [this]() {
             return browser()
-                ->exclusive_access_manager()
+                ->GetFeatures()
+                .exclusive_access_manager()
                 ->fullscreen_controller()
                 ->IsTabFullscreen();
           },
@@ -676,7 +679,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20FullscreenUiTest,
       WithElement(kTabId,
                   [this](ui::TrackedElement* tab) {
                     browser()
-                        ->exclusive_access_manager()
+                        ->GetFeatures()
+                        .exclusive_access_manager()
                         ->fullscreen_controller()
                         ->EnterFullscreenModeForTab(
                             AsInstrumentedWebContents(tab)
@@ -686,7 +690,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20FullscreenUiTest,
       WithElement(kTabId,
                   [this](ui::TrackedElement* tab) {
                     browser()
-                        ->exclusive_access_manager()
+                        ->GetFeatures()
+                        .exclusive_access_manager()
                         ->fullscreen_controller()
                         ->ExitFullscreenModeForTab(
                             AsInstrumentedWebContents(tab)->web_contents());
@@ -694,7 +699,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20FullscreenUiTest,
       CheckResult(
           [this]() {
             return browser()
-                ->exclusive_access_manager()
+                ->GetFeatures()
+                .exclusive_access_manager()
                 ->fullscreen_controller()
                 ->IsTabFullscreen();
           },

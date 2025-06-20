@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
@@ -109,7 +110,8 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
   void PressKeyAndWaitForPointerLockRequest(ui::KeyboardCode key_code) {
     base::RunLoop run_loop;
     browser()
-        ->exclusive_access_manager()
+        ->GetFeatures()
+        .exclusive_access_manager()
         ->pointer_lock_controller()
         ->set_lock_state_callback_for_test(run_loop.QuitClosure());
     ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key_code, false,
@@ -123,7 +125,10 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
     }
 
     PointerLockController* pointer_lock_controller =
-        browser()->exclusive_access_manager()->pointer_lock_controller();
+        browser()
+            ->GetFeatures()
+            .exclusive_access_manager()
+            ->pointer_lock_controller();
     base::RunLoop run_loop;
     pointer_lock_controller->set_bubble_hide_callback_for_test(
         base::BindRepeating(
@@ -703,7 +708,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   {
     base::RunLoop run_loop;
     browser()
-        ->exclusive_access_manager()
+        ->GetFeatures()
+        .exclusive_access_manager()
         ->pointer_lock_controller()
         ->set_lock_state_callback_for_test(run_loop.QuitClosure());
     Reload();

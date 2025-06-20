@@ -7,6 +7,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -170,8 +171,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
             chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR));
 
   // Enter into tab fullscreen mode from browser fullscreen mode.
-  FullscreenController* controller =
-      browser()->exclusive_access_manager()->fullscreen_controller();
+  FullscreenController* controller = browser()
+                                         ->GetFeatures()
+                                         .exclusive_access_manager()
+                                         ->fullscreen_controller();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   controller->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
@@ -188,7 +191,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
       blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   event.windows_key_code = ui::VKEY_ESCAPE;
-  browser()->exclusive_access_manager()->HandleUserKeyEvent(event);
+  browser()->GetFeatures().exclusive_access_manager()->HandleUserKeyEvent(
+      event);
   EXPECT_TRUE(browser_view->IsFullscreen());
   EXPECT_EQ(top_view_in_browser_fullscreen, browser_view->GetTabStripVisible());
   // This makes sure that the layout was updated accordingly.
@@ -213,8 +217,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenShowTopView) {
   EXPECT_TRUE(browser_view->GetTabStripVisible());
 
   // Enter into tab fullscreen mode.
-  FullscreenController* controller =
-      browser()->exclusive_access_manager()->fullscreen_controller();
+  FullscreenController* controller = browser()
+                                         ->GetFeatures()
+                                         .exclusive_access_manager()
+                                         ->fullscreen_controller();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   controller->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
@@ -248,8 +254,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenHideSplitView) {
   EXPECT_TRUE(browser_view->IsInSplitView());
 
   // Enter into tab fullscreen mode.
-  FullscreenController* controller =
-      browser()->exclusive_access_manager()->fullscreen_controller();
+  FullscreenController* controller = browser()
+                                         ->GetFeatures()
+                                         .exclusive_access_manager()
+                                         ->fullscreen_controller();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   controller->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
@@ -545,28 +553,38 @@ using BrowserViewLockedFullscreenTestChromeOS = BrowserViewTest;
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        ShowExclusiveAccessBubbleWhenNotLocked) {
   PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/false);
-  browser()->exclusive_access_manager()->context()->UpdateExclusiveAccessBubble(
-      {
-          .origin = url::Origin::Create(GURL(
-              "http://www.example.com")),  // Should be non-empty to show bubble
-          .type = ExclusiveAccessBubbleType::
-              EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
-          .force_update = true,
-      },
-      base::NullCallback());
+  browser()
+      ->GetFeatures()
+      .exclusive_access_manager()
+      ->context()
+      ->UpdateExclusiveAccessBubble(
+          {
+              .origin = url::Origin::Create(
+                  GURL("http://www.example.com")),  // Should be non-empty to
+                                                    // show bubble
+              .type = ExclusiveAccessBubbleType::
+                  EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
+              .force_update = true,
+          },
+          base::NullCallback());
   EXPECT_TRUE(browser_view()->IsExclusiveAccessBubbleDisplayed());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        HideExclusiveAccessBubbleWhenLocked) {
   PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
-  browser()->exclusive_access_manager()->context()->UpdateExclusiveAccessBubble(
-      {.origin = url::Origin::Create(GURL(
-           "http://www.example.com")),  // Should be non-empty to show bubble
-       .type = ExclusiveAccessBubbleType::
-           EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
-       .force_update = true},
-      base::NullCallback());
+  browser()
+      ->GetFeatures()
+      .exclusive_access_manager()
+      ->context()
+      ->UpdateExclusiveAccessBubble(
+          {.origin = url::Origin::Create(
+               GURL("http://www.example.com")),  // Should be non-empty to show
+                                                 // bubble
+           .type = ExclusiveAccessBubbleType::
+               EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
+           .force_update = true},
+          base::NullCallback());
   EXPECT_FALSE(browser_view()->IsExclusiveAccessBubbleDisplayed());
 }
 

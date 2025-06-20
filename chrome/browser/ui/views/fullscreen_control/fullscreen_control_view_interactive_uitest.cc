@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
@@ -113,7 +114,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   }
 
   ExclusiveAccessManager* GetExclusiveAccessManager() {
-    return browser()->exclusive_access_manager();
+    return browser()->GetFeatures().exclusive_access_manager();
   }
 
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() {

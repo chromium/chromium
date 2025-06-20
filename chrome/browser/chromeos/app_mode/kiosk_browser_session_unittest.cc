@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
@@ -131,7 +132,8 @@ class FakeBrowser {
   bool IsClosed() { return closed_future_.IsReady(); }
 
   bool IsFullscreen() {
-    return browser_->exclusive_access_manager()
+    return browser_->GetFeatures()
+        .exclusive_access_manager()
         ->fullscreen_controller()
         ->IsFullscreenForBrowser();
   }

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -152,8 +153,9 @@ BEGIN_METADATA(ZoomValue)
 END_METADATA
 
 bool IsBrowserFullscreen(Browser* browser) {
-  DCHECK(browser->window() &&
-         browser->exclusive_access_manager()->fullscreen_controller());
+  DCHECK(browser->window() && browser->GetFeatures()
+                                  .exclusive_access_manager()
+                                  ->fullscreen_controller());
   return browser->window()->IsFullscreen();
 }
 

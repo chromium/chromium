@@ -1457,8 +1457,9 @@ bool RenderViewContextMenu::IsHTML5Fullscreen() const {
     return false;
   }
 
-  FullscreenController* controller =
-      browser->exclusive_access_manager()->fullscreen_controller();
+  FullscreenController* controller = browser->GetFeatures()
+                                         .exclusive_access_manager()
+                                         ->fullscreen_controller();
   return controller->IsTabFullscreen();
 }
 
@@ -1468,8 +1469,9 @@ bool RenderViewContextMenu::IsPressAndHoldEscRequiredToExitFullscreen() const {
     return false;
   }
 
-  KeyboardLockController* controller =
-      browser->exclusive_access_manager()->keyboard_lock_controller();
+  KeyboardLockController* controller = browser->GetFeatures()
+                                           .exclusive_access_manager()
+                                           ->keyboard_lock_controller();
   return controller->RequiresPressAndHoldEscToExit();
 }
 
@@ -2163,7 +2165,8 @@ void RenderViewContextMenu::AppendExitFullscreenItem() {
   }
 
   // Only show item if in fullscreen mode.
-  if (!browser->exclusive_access_manager()
+  if (!browser->GetFeatures()
+           .exclusive_access_manager()
            ->fullscreen_controller()
            ->IsControllerInitiatedFullscreen()) {
     return;
@@ -4210,7 +4213,7 @@ void RenderViewContextMenu::ExecExitFullscreen() {
     NOTREACHED();
   }
 
-  browser->exclusive_access_manager()->ExitExclusiveAccess();
+  browser->GetFeatures().exclusive_access_manager()->ExitExclusiveAccess();
 }
 
 void RenderViewContextMenu::ExecCopyLinkText() {

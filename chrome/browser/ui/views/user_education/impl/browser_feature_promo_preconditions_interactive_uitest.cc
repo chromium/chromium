@@ -13,6 +13,7 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
@@ -177,34 +178,35 @@ IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest,
 
 IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, Fullscreen) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
-  RunTestSequence(
-      InstrumentTab(kTabId),
-      NavigateWebContents(kTabId,
-                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
-      WithElement(kTabId,
-                  [this](ui::TrackedElement* tab) {
-                    browser()
-                        ->exclusive_access_manager()
-                        ->fullscreen_controller()
-                        ->EnterFullscreenModeForTab(
-                            AsInstrumentedWebContents(tab)
-                                ->web_contents()
-                                ->GetPrimaryMainFrame());
-                  }),
-      CheckResult(
-          [this]() {
-            return browser()
-                ->exclusive_access_manager()
-                ->fullscreen_controller()
-                ->IsTabFullscreen();
-          },
-          true),
-      CheckResult(
-          [this]() {
-            ContentNotFullscreenPrecondition precond(*browser());
-            return precond.CheckPrecondition(data_);
-          },
-          user_education::FeaturePromoResult::kBlockedByUi));
+  RunTestSequence(InstrumentTab(kTabId),
+                  NavigateWebContents(
+                      kTabId, GURL(chrome::kChromeUIUserEducationInternalsURL)),
+                  WithElement(kTabId,
+                              [this](ui::TrackedElement* tab) {
+                                browser()
+                                    ->GetFeatures()
+                                    .exclusive_access_manager()
+                                    ->fullscreen_controller()
+                                    ->EnterFullscreenModeForTab(
+                                        AsInstrumentedWebContents(tab)
+                                            ->web_contents()
+                                            ->GetPrimaryMainFrame());
+                              }),
+                  CheckResult(
+                      [this]() {
+                        return browser()
+                            ->GetFeatures()
+                            .exclusive_access_manager()
+                            ->fullscreen_controller()
+                            ->IsTabFullscreen();
+                      },
+                      true),
+                  CheckResult(
+                      [this]() {
+                        ContentNotFullscreenPrecondition precond(*browser());
+                        return precond.CheckPrecondition(data_);
+                      },
+                      user_education::FeaturePromoResult::kBlockedByUi));
 }
 
 IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, ExitFullscreen) {
@@ -216,7 +218,8 @@ IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, ExitFullscreen) {
       WithElement(kTabId,
                   [this](ui::TrackedElement* tab) {
                     browser()
-                        ->exclusive_access_manager()
+                        ->GetFeatures()
+                        .exclusive_access_manager()
                         ->fullscreen_controller()
                         ->EnterFullscreenModeForTab(
                             AsInstrumentedWebContents(tab)
@@ -226,7 +229,8 @@ IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, ExitFullscreen) {
       WithElement(kTabId,
                   [this](ui::TrackedElement* tab) {
                     browser()
-                        ->exclusive_access_manager()
+                        ->GetFeatures()
+                        .exclusive_access_manager()
                         ->fullscreen_controller()
                         ->ExitFullscreenModeForTab(
                             AsInstrumentedWebContents(tab)->web_contents());
@@ -234,7 +238,8 @@ IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, ExitFullscreen) {
       CheckResult(
           [this]() {
             return browser()
-                ->exclusive_access_manager()
+                ->GetFeatures()
+                .exclusive_access_manager()
                 ->fullscreen_controller()
                 ->IsTabFullscreen();
           },

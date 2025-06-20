@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
@@ -49,7 +50,8 @@ void WaitForDisplayed(Browser* browser) {
   base::RunLoop outer_loop;
   auto wait_for_state = base::BindRepeating(
       [](base::RunLoop* outer_loop, Browser* browser) {
-        ExclusiveAccessManager* manager = browser->exclusive_access_manager();
+        ExclusiveAccessManager* manager =
+            browser->GetFeatures().exclusive_access_manager();
         if (manager->context()->IsExclusiveAccessBubbleDisplayed()) {
           outer_loop->Quit();
         }

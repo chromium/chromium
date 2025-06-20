@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -284,7 +285,7 @@ FullscreenController* ExclusiveAccessTest::GetFullscreenController() {
 }
 
 ExclusiveAccessManager* ExclusiveAccessTest::GetExclusiveAccessManager() {
-  return browser()->exclusive_access_manager();
+  return browser()->GetFeatures().exclusive_access_manager();
 }
 
 void ExclusiveAccessTest::SetEscRepeatWindowLength(

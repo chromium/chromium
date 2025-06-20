@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -143,8 +144,9 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
   // Exit fullscreen mode if necessary. This is especially needed for certain
   // cases where the web app window is in fullscreen mode but not pinned, like
   // on session restore.
-  auto* const fullscreen_controller =
-      browser->exclusive_access_manager()->fullscreen_controller();
+  auto* const fullscreen_controller = browser->GetFeatures()
+                                          .exclusive_access_manager()
+                                          ->fullscreen_controller();
   if (fullscreen_controller->IsFullscreenForBrowser() && !pinned) {
     fullscreen_controller->ToggleBrowserFullscreenMode(
         /*user_initiated=*/false);

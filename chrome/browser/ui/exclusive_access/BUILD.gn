@@ -90,6 +90,7 @@ if (!is_android) {
     ]
     public_deps = [
       ":exclusive_access",
+      "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//content/test:test_support",
