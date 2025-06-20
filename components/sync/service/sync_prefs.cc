@@ -1127,15 +1127,15 @@ bool SyncPrefs::IsTypeSelectedByDefaultInTransportMode(
       return IsExplicitBrowserSignin();
     case UserSelectableType::kBookmarks:
     case UserSelectableType::kReadingList:
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
-#else
-      // Bookmarks and Reading List require a specific explicit sign in.
-      return SigninPrefs(*pref_service_)
+      // Before kReplaceSyncPromosWithSignInPromos, Bookmarks and Reading List
+      // require a specific explicit sign in (relevant for desktop only).
+      return (IsExplicitBrowserSignin() &&
+              base::FeatureList::IsEnabled(
+                  kReplaceSyncPromosWithSignInPromos)) ||
+             SigninPrefs(*pref_service_)
                  .GetBookmarksExplicitBrowserSignin(gaia_id) ||
              base::FeatureList::IsEnabled(
                  kEnableBookmarksSelectedTypeOnSigninForTesting);
-#endif
     case UserSelectableType::kPreferences:
     case UserSelectableType::kThemes:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

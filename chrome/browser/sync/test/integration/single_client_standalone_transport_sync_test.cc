@@ -90,11 +90,25 @@ class SingleClientStandaloneTransportSyncTest
           .InitWithFeatures(/*enabled_features=*/
                             {syncer::
                                  kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
+                             switches::kSyncEnableBookmarksInTransportMode,
+#if !BUILDFLAG(IS_ANDROID)
+                             syncer::
+                                 kReadingListEnableSyncTransportModeUponSignIn,
+#endif  // !BUILDFLAG(IS_ANDROID)
                              syncer::kReplaceSyncPromosWithSignInPromos},
                             /*disabled_features=*/{});
     } else {
+      // TODO(crbug.com/424698545): The special-casing below for CromeOS may not
+      // be needed once the underlying bug is solved. Before that, enabling
+      // those flags on ChromeOS influences the behavior upon dashboard reset.
       override_features_.InitWithFeatures(
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
           /*enabled_features=*/{},
+#else   // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+          /*enabled_features=*/
+          {switches::kSyncEnableBookmarksInTransportMode,
+           syncer::kReadingListEnableSyncTransportModeUponSignIn},
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
           /*disabled_features=*/
           {syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
            syncer::kReplaceSyncPromosWithSignInPromos});
@@ -157,10 +171,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
 
   // Bookmarks and reading list require a separate opt in, unless
   // `syncer::kReplaceSyncPromosWithSignInPromos` is enabled.
-  // TODO(crbug.com/424124636): This shouldn't be necessary if
-  // `kReplaceSyncPromosWithSignInPromos` is enabled.
-  expected_types.Remove(syncer::BOOKMARKS);
-  expected_types.Remove(syncer::READING_LIST);
+  if (!GetParam()) {
+    expected_types.Remove(syncer::BOOKMARKS);
+    expected_types.Remove(syncer::READING_LIST);
+  }
 
   ASSERT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));
@@ -357,14 +371,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
   syncer::DataTypeSet expected_types = Difference(
       AllowedTypesInStandaloneTransportMode(), kTypesGatedBehindHistoryOptIn);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Bookmarks and reading list require a separate opt in, unless
   // `syncer::kReplaceSyncPromosWithSignInPromos` is enabled.
-  // TODO(crbug.com/424124636): This shouldn't be necessary if
-  // `kReplaceSyncPromosWithSignInPromos` is enabled.
-  expected_types.Remove(syncer::BOOKMARKS);
-  expected_types.Remove(syncer::READING_LIST);
-#endif  // !BUILDFLAG(IS_ANDROID)
+  if (!GetParam()) {
+    expected_types.Remove(syncer::BOOKMARKS);
+    expected_types.Remove(syncer::READING_LIST);
+  }
 
   EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));
@@ -406,14 +418,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
   // be active.
   syncer::DataTypeSet expected_types = AllowedTypesInStandaloneTransportMode();
 
-#if !BUILDFLAG(IS_ANDROID)
   // Bookmarks and reading list require a separate opt in, unless
   // `syncer::kReplaceSyncPromosWithSignInPromos` is enabled.
-  // TODO(crbug.com/424124636): This shouldn't be necessary if
-  // `kReplaceSyncPromosWithSignInPromos` is enabled.
-  expected_types.Remove(syncer::BOOKMARKS);
-  expected_types.Remove(syncer::READING_LIST);
-#endif  // !BUILDFLAG(IS_ANDROID)
+  if (!GetParam()) {
+    expected_types.Remove(syncer::BOOKMARKS);
+    expected_types.Remove(syncer::READING_LIST);
+  }
 
   EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));
@@ -494,10 +504,10 @@ IN_PROC_BROWSER_TEST_P(
 
   // Bookmarks and reading list require a separate opt in, unless
   // `syncer::kReplaceSyncPromosWithSignInPromos` is enabled.
-  // TODO(crbug.com/424124636): This shouldn't be necessary if
-  // `kReplaceSyncPromosWithSignInPromos` is enabled.
-  expected_types.Remove(syncer::BOOKMARKS);
-  expected_types.Remove(syncer::READING_LIST);
+  if (!GetParam()) {
+    expected_types.Remove(syncer::BOOKMARKS);
+    expected_types.Remove(syncer::READING_LIST);
+  }
 
   ASSERT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));
@@ -531,14 +541,6 @@ IN_PROC_BROWSER_TEST_P(
 
     // But SESSIONS aka Open Tabs still works.
     CHECK(expected_types_after_history_opt_in.Has(syncer::SESSIONS));
-
-#if !BUILDFLAG(IS_ANDROID)
-    // On desktop, bookmarks and reading list require a separate opt in.
-    // TODO(crbug.com/424124636): This shouldn't be necessary if
-    // `kReplaceSyncPromosWithSignInPromos` is enabled.
-    expected_types_after_history_opt_in.Remove(syncer::BOOKMARKS);
-    expected_types_after_history_opt_in.Remove(syncer::READING_LIST);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
     EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
                 ContainerEq(expected_types_after_history_opt_in));

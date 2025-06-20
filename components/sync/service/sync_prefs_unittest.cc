@@ -493,10 +493,6 @@ TEST_F(SyncPrefsTest,
   // Because `prefs::kPrefsThemesSearchEnginesAccountStorageEnabled` is not set,
   // kPreferences are disabled.
   expected_types.Remove(UserSelectableType::kPreferences);
-  // Because `kBookmarksExplicitBrowserSigninEnabled` is not set, kBookmarks and
-  // kReadingList are disabled.
-  expected_types.Remove(UserSelectableType::kBookmarks);
-  expected_types.Remove(UserSelectableType::kReadingList);
 #endif
 
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_), expected_types);
@@ -1313,14 +1309,6 @@ TEST_F(SyncPrefsMigrationTest, MigratesBookmarksNotOptedIn) {
     // and the migration runs.
     base::test::ScopedFeatureList enable_sync_to_signin(
         kReplaceSyncPromosWithSignInPromos);
-
-    // TODO(crbug.com/424124636): The below shouldn't be needed.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    // `kBookmarksExplicitBrowserSigninEnabled` needs to be set to enable
-    // Bookmarks and ReadingList on Desktop.
-    SigninPrefs(pref_service_)
-        .SetBookmarksExplicitBrowserSignin(gaia_id_, true);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
     SyncPrefs prefs(&pref_service_);
 
