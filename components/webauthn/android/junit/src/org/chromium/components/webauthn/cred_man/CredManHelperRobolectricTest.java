@@ -26,7 +26,6 @@ import android.credentials.GetCredentialException;
 import android.credentials.GetCredentialRequest;
 import android.credentials.GetCredentialResponse;
 import android.credentials.PrepareGetCredentialResponse;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.test.filters.SmallTest;
@@ -45,7 +44,6 @@ import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
@@ -86,7 +84,6 @@ import org.chromium.mojo_base.mojom.String16;
             ShadowPrepareGetCredentialResponse.class,
             ShadowWebContentsStatics.class
         })
-@MinAndroidSdkLevel(Build.VERSION_CODES.P)
 public class CredManHelperRobolectricTest {
     private CredManHelper mCredManHelper;
     private Fido2ApiTestHelper.AuthenticatorCallback mCallback;

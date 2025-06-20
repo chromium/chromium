@@ -9,7 +9,6 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.test.filters.SmallTest;
@@ -23,12 +22,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.P)
 public class IdentityCredentialsHelperRobolectricTest {
     private static final String ORIGIN_STRING = "https://subdomain.coolwebsitekayserispor.com";
     private static final byte[] CLIENT_DATA_HASH = new byte[] {1, 2, 3};

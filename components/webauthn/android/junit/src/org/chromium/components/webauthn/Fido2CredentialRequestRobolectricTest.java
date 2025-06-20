@@ -48,7 +48,6 @@ import org.robolectric.shadows.ShadowApplication;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
@@ -78,7 +77,6 @@ import java.util.List;
         shadows = {
             ShadowCredentialManager.class,
         })
-@MinAndroidSdkLevel(Build.VERSION_CODES.P)
 public class Fido2CredentialRequestRobolectricTest {
     private static final String TEST_CHANNEL_EXTRA = "stable";
     private static final Boolean TEST_INCOGNITO_EXTRA = true;
