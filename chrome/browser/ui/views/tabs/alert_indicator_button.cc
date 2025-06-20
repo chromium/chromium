@@ -364,8 +364,16 @@ Tab* AlertIndicatorButton::GetTab() {
 }
 
 void AlertIndicatorButton::UpdateIconForAlertState(tabs::TabAlert state) {
-  const ui::ColorId color = parent_tab_->GetAlertIndicatorColor(state);
+  const ui::ColorId color =
+      parent_tab_->GetColorProvider()
+          ? tabs::GetAlertIndicatorColor(
+                state,
+                parent_tab_->tab_style_views()->GetApparentActiveState() ==
+                    TabActive::kActive,
+                GetWidget()->ShouldPaintAsActive())
+          : gfx::kPlaceholderColor;
   const ui::ImageModel indicator_image = tabs::GetAlertImageModel(state, color);
+
   SetImageModel(views::Button::STATE_NORMAL, indicator_image);
   SetImageModel(views::Button::STATE_DISABLED, indicator_image);
   SetImageModel(views::Button::STATE_PRESSED,

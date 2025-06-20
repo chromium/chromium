@@ -16,6 +16,11 @@ namespace tabs {
 
 enum class TabAlert;
 
+// Returns the corresponding color for the given alert.
+ui::ColorId GetAlertIndicatorColor(TabAlert state,
+                                   bool is_tab_active,
+                                   bool is_frame_active);
+
 // Returns the corresponding icon for the given alert.
 const gfx::VectorIcon& GetAlertIcon(TabAlert alert_state);
 

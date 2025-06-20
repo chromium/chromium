@@ -55,34 +55,6 @@ tabs::TabInterface* GetTabInterface(content::WebContents* web_contents) {
   return web_contents ? tabs::TabInterface::GetFromContents(web_contents)
                       : nullptr;
 }
-
-ui::ColorId GetAlertStatusColor(tabs::TabAlert alert,
-                                const ui::ColorProvider* color_provider) {
-  if (color_provider) {
-    switch (alert) {
-      case tabs::TabAlert::MEDIA_RECORDING:
-      case tabs::TabAlert::AUDIO_RECORDING:
-      case tabs::TabAlert::VIDEO_RECORDING:
-      case tabs::TabAlert::DESKTOP_CAPTURING:
-        return kColorTabAlertMediaRecordingActiveFrameActive;
-      case tabs::TabAlert::TAB_CAPTURING:
-      case tabs::TabAlert::PIP_PLAYING:
-      case tabs::TabAlert::GLIC_ACCESSING:
-      case tabs::TabAlert::GLIC_SHARING:
-        return kColorTabAlertPipPlayingActiveFrameActive;
-      case tabs::TabAlert::AUDIO_PLAYING:
-      case tabs::TabAlert::AUDIO_MUTING:
-      case tabs::TabAlert::BLUETOOTH_CONNECTED:
-      case tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE:
-      case tabs::TabAlert::USB_CONNECTED:
-      case tabs::TabAlert::HID_CONNECTED:
-      case tabs::TabAlert::SERIAL_CONNECTED:
-      case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
-        return kColorTabAlertAudioPlayingActiveFrameActive;
-    }
-  }
-  return gfx::kPlaceholderColor;
-}
 }  // namespace
 
 MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
@@ -227,6 +199,7 @@ void MultiContentsViewMiniToolbar::OnThemeChanged() {
     OnAlertStatusIndicatorChanged(tab_alert_controller->GetAlertToShow());
   }
 }
+
 SkPath MultiContentsViewMiniToolbar::GetPath(bool border_stroke_only) const {
   const float corner_radius = kMiniToolbarOutlineCornerRadius;
   const gfx::Rect local_bounds = GetLocalBounds();
@@ -273,8 +246,9 @@ void MultiContentsViewMiniToolbar::RegisterTabAlertSubscription() {
 void MultiContentsViewMiniToolbar::OnAlertStatusIndicatorChanged(
     std::optional<tabs::TabAlert> new_alert) {
   if (new_alert.has_value()) {
-    ui::ColorId color =
-        GetAlertStatusColor(new_alert.value(), GetColorProvider());
+    ui::ColorId color = GetColorProvider() ? tabs::GetAlertIndicatorColor(
+                                                 new_alert.value(), true, true)
+                                           : gfx::kPlaceholderColor;
     alert_state_indicator_->SetImage(
         tabs::GetAlertImageModel(new_alert.value(), color));
     alert_state_indicator_->SetTooltipText(
