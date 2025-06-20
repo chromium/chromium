@@ -101,6 +101,10 @@ TEST_F(PasswordAccessLossWarningBridgeImplTest,
 
 TEST_F(PasswordAccessLossWarningBridgeImplTest,
        ShouldShowWarningOnStartupWithAllThePreconditionsSatisfied) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kLoginDbDeprecationAndroid);
+
   // Simulate that the sheet was shown on startup more than a week ago.
   pref_service()->SetTime(
       password_manager::prefs::kPasswordAccessLossWarningShownTimestamp,
@@ -116,6 +120,10 @@ TEST_F(PasswordAccessLossWarningBridgeImplTest,
 
 TEST_F(PasswordAccessLossWarningBridgeImplTest,
        ShouldShowWarningWithAllThePreconditionsSatisfied) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kLoginDbDeprecationAndroid);
+
   // Simulate that the sheet was shown on startup two days ago so it can be
   // shown again from an entry point which is not startup.
   pref_service()->SetTime(
