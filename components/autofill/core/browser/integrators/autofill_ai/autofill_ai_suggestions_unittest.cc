@@ -62,12 +62,11 @@ size_t CountFillingSuggestions(base::span<const Suggestion> suggestions) {
   });
 }
 
-std::u16string GetEntityInstanceValueForFieldType(
+std::u16string GetEntityInstanceValue(
     const EntityInstance entity,
-    FieldType type,
+    AttributeType attribute,
     const std::string& app_locale = kAppLocaleUS) {
-  return entity.attribute(*AttributeType::FromFieldType(type))
-      ->GetInfo(type, app_locale, /*format_string=*/std::nullopt);
+  return entity.attribute(attribute)->GetCompleteInfo(app_locale);
 }
 
 std::optional<std::u16string> GetFillValueForField(
@@ -126,6 +125,8 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PassportEntity) {
   std::vector<EntityInstance> entities = {passport_entity};
 
   FieldType triggering_field_type = PASSPORT_NAME_TAG;
+  AttributeType triggering_attribute_type =
+      AttributeType(AttributeTypeName::kPassportName);
   std::unique_ptr<FormStructure> form = CreateFormStructure(
       {triggering_field_type, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
   std::vector<Suggestion> suggestions = CreateFillingSuggestions(
@@ -135,8 +136,7 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PassportEntity) {
   // value for the `triggering_field_type`.
   EXPECT_EQ(suggestions.size(), 3u);
   EXPECT_EQ(suggestions[0].main_text.value,
-            GetEntityInstanceValueForFieldType(passport_entity,
-                                               triggering_field_type));
+            GetEntityInstanceValue(passport_entity, triggering_attribute_type));
   EXPECT_EQ(suggestions[1].type, SuggestionType::kSeparator);
   EXPECT_EQ(suggestions[2].type, SuggestionType::kManageAutofillAi);
 
@@ -147,12 +147,12 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PassportEntity) {
 
   // The triggering/first field is of AutofillAi Type.
   EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[0]),
-            GetEntityInstanceValueForFieldType(passport_entity,
-                                               triggering_field_type));
+            GetEntityInstanceValue(passport_entity, triggering_attribute_type));
   // The second field in the form is also of AutofillAi.
   EXPECT_EQ(
       GetFillValueForField(entities, *payload, *form->fields()[1]),
-      GetEntityInstanceValueForFieldType(passport_entity, PASSPORT_NUMBER));
+      GetEntityInstanceValue(
+          passport_entity, AttributeType(AttributeTypeName::kPassportNumber)));
   // The third field is not of AutofillAi type.
   EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[2]),
             std::nullopt);
@@ -166,6 +166,8 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PrefixMatching) {
       MakePassportWithRandomGuid({.name = u"Harry Potter"});
 
   FieldType triggering_field_type = PASSPORT_NAME_TAG;
+  AttributeType triggering_attribute_type =
+      AttributeType(AttributeTypeName::kPassportName);
   std::unique_ptr<FormStructure> form = CreateFormStructure(
       {triggering_field_type, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
 
@@ -180,8 +182,8 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PrefixMatching) {
   // Note that there is one separator and one footer suggestion as well.
   EXPECT_EQ(suggestions.size(), 3u);
   EXPECT_EQ(suggestions[0].main_text.value,
-            GetEntityInstanceValueForFieldType(passport_prefix_matches,
-                                               triggering_field_type));
+            GetEntityInstanceValue(passport_prefix_matches,
+                                   triggering_attribute_type));
 }
 
 // Tests that no prefix matching is performed if the attribute that would be
@@ -207,6 +209,8 @@ TEST_F(AutofillAiSuggestionsTest,
   std::vector<EntityInstance> entities = {passport_entity};
 
   FieldType triggering_field_type = PASSPORT_NAME_TAG;
+  AttributeType triggering_attribute_type =
+      AttributeType(AttributeTypeName::kPassportName);
   std::unique_ptr<FormStructure> form =
       CreateFormStructure({triggering_field_type, PASSPORT_NUMBER});
   // Assign different sections to the fields.
@@ -222,16 +226,14 @@ TEST_F(AutofillAiSuggestionsTest,
   // value for the `triggering_field_type`.
   EXPECT_THAT(suggestions, SizeIs(Ge(1)));
   EXPECT_EQ(suggestions[0].main_text.value,
-            GetEntityInstanceValueForFieldType(passport_entity,
-                                               triggering_field_type));
+            GetEntityInstanceValue(passport_entity, triggering_attribute_type));
 
   const Suggestion::AutofillAiPayload* payload =
       std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
   ASSERT_TRUE(payload);
   // The triggering/first field is of AutofillAi Type.
   EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[0]),
-            GetEntityInstanceValueForFieldType(passport_entity,
-                                               triggering_field_type));
+            GetEntityInstanceValue(passport_entity, triggering_attribute_type));
 }
 
 TEST_F(AutofillAiSuggestionsTest, NonMatchingEntity_DoNoReturnSuggestions) {
@@ -294,6 +296,8 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
                                           passport_a_without_an_expiry_date};
 
   FieldType triggering_field_type = PASSPORT_NAME_TAG;
+  AttributeType triggering_attribute_type =
+      AttributeType(AttributeTypeName::kPassportName);
   std::unique_ptr<FormStructure> form = CreateFormStructure(
       {triggering_field_type, PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY});
   std::vector<Suggestion> suggestions = CreateFillingSuggestions(
@@ -307,11 +311,10 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   // proper subset of `passport`.
   ASSERT_THAT(suggestions, SizeIs(Ge(2)));
   EXPECT_EQ(suggestions[0].main_text.value,
-            GetEntityInstanceValueForFieldType(another_persons_passport,
-                                               triggering_field_type));
-  EXPECT_EQ(
-      suggestions[1].main_text.value,
-      GetEntityInstanceValueForFieldType(passport, triggering_field_type));
+            GetEntityInstanceValue(another_persons_passport,
+                                   triggering_attribute_type));
+  EXPECT_EQ(suggestions[1].main_text.value,
+            GetEntityInstanceValue(passport, triggering_attribute_type));
 }
 
 // Tests that an "Undo Autofill" suggestion is appended if the trigger field

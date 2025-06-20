@@ -14,29 +14,6 @@
 
 namespace autofill {
 
-// AttributeType::field_type() must be injective: distinct AttributeTypes must
-// be mapped to distinct FieldTypes.
-static_assert(
-    std::ranges::all_of(DenseSet<AttributeType>::all(), [](AttributeType a) {
-      return std::ranges::all_of(
-          DenseSet<AttributeType>::all(), [&a](AttributeType b) {
-            return a == b || a.field_type() != b.field_type();
-          });
-    }));
-
-// static
-std::optional<AttributeType> AttributeType::FromFieldType(FieldType type) {
-  // This lookup table is the inverse of AttributeType::field_type().
-  static constexpr auto kTable = []() {
-    std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
-    for (AttributeType at : DenseSet<AttributeType>::all()) {
-      arr[at.field_type()] = at;
-    }
-    return arr;
-  }();
-  return 0 <= type && type < kTable.size() ? kTable[type] : std::nullopt;
-}
-
 FieldTypeSet AttributeType::storable_field_types(
     base::PassKey<EntityTable> pass_key) const {
   if (data_type() == DataType::kName) {

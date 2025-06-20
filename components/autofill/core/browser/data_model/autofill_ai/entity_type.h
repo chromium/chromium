@@ -61,9 +61,6 @@ class AttributeType final {
   static bool DisambiguationOrder(const AttributeType& lhs,
                                   const AttributeType& rhs);
 
-  // Maps each Autofill AI `FieldType` to the corresponding AttributeType.
-  static std::optional<AttributeType> FromFieldType(FieldType type);
-
   constexpr explicit AttributeType(AttributeTypeName n) : name_(n) {}
 
   constexpr AttributeType(const AttributeType&) = default;
@@ -79,7 +76,11 @@ class AttributeType final {
 
   // There are three kinds of AttributeType / FieldType associations:
   // - `field_type()` is the one that best describes the full attribute.
-  //   Except for name types, `FromFieldType(field_type()) == field_type()`.
+  //   If kAutofillAiNoTagTypes is disabled:
+  //   The `field_type()` uniquely identifies the AttributeType.
+  //   If kAutofillAiNoTagTypes is enabled:
+  //   Except for name types, the `field_type()` uniquely identifies the
+  //   AttributeType.
   // - `field_subtypes()` additionally include more fine-granular ones.
   //   Except for name types, `field_subtypes() == {field_type}`.
   //   For name types, `field_subtypes()` includes `NAME_FIRST` etc.

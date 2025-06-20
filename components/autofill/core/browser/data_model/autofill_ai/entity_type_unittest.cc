@@ -25,7 +25,6 @@ TEST(AutofillAttributeTypeTest, Relationships) {
                   NAME_LAST_SECOND, NAME_LAST_CONJUNCTION, NAME_MIDDLE_INITIAL,
                   NAME_FULL, NAME_SUFFIX, ALTERNATIVE_FAMILY_NAME,
                   ALTERNATIVE_GIVEN_NAME, ALTERNATIVE_FULL_NAME));
-  EXPECT_EQ(a, AttributeType::FromFieldType(PASSPORT_NAME_TAG));
 }
 
 TEST(AutofillAttributeTypeTest, IsObfuscated) {

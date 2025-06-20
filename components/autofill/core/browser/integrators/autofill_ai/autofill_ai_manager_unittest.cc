@@ -319,15 +319,10 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
     return form;
   }
 
-  std::u16string GetValueFromEntityForFieldType(const EntityInstance entity,
-                                                FieldType type,
-                                                const std::string& app_locale) {
-    std::optional<AttributeType> attribute = AttributeType::FromFieldType(type);
-    CHECK(attribute);
-    base::optional_ref<const AttributeInstance> instance =
-        entity.attribute(*attribute);
-    CHECK(instance);
-    return instance->GetInfo(type, app_locale, /*format_string=*/std::nullopt);
+  std::u16string GetValueFromEntity(const EntityInstance entity,
+                                    AttributeType attribute,
+                                    const std::string& app_locale = "") {
+    return entity.attribute(attribute)->GetCompleteInfo(app_locale);
   }
 
   std::u16string GetValueFromEntityForAttributeTypeName(
@@ -720,14 +715,15 @@ TEST_F(AutofillAiManagerImportFormTest,
 // In this test, we simulate the user submitting a form with data that is
 // already contained in one of the entities.
 TEST_F(AutofillAiManagerImportFormTest, EntityAlreadyStored_DoNotShowPrompt) {
+  using enum AttributeTypeName;
   std::unique_ptr<FormStructure> form =
       CreateFormStructure({DRIVERS_LICENSE_NAME_TAG, DRIVERS_LICENSE_NUMBER});
   EntityInstance entity = test::GetDriversLicenseEntityInstance();
   // Set the filled values to be the same as the ones already stored.
-  form->field(0)->set_value(GetValueFromEntityForFieldType(
-      entity, DRIVERS_LICENSE_NAME_TAG, /*app_locale=*/""));
-  form->field(1)->set_value(GetValueFromEntityForFieldType(
-      entity, DRIVERS_LICENSE_NUMBER, /*app_locale=*/""));
+  form->field(0)->set_value(
+      GetValueFromEntity(entity, AttributeType(kDriversLicenseName)));
+  form->field(1)->set_value(
+      GetValueFromEntity(entity, AttributeType(kDriversLicenseNumber)));
   AddOrUpdateEntityInstance(entity);
 
   EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble).Times(0);
@@ -781,6 +777,7 @@ TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
 }
 
 TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
+  using enum AttributeTypeName;
   // The submitted form will have issue date info.
   std::unique_ptr<FormStructure> form =
       CreateFormStructure({PASSPORT_NAME_TAG, PASSPORT_NUMBER,
@@ -795,12 +792,12 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
 
   // Set the filled values to be the same as the ones already stored in the
   // existing entity, also fill the issue and expiry dates.
-  form->field(0)->set_value(GetValueFromEntityForFieldType(
-      existing_entity_without_issue_and_expiry_dates, PASSPORT_NAME_TAG,
-      /*app_locale=*/""));
-  form->field(1)->set_value(GetValueFromEntityForFieldType(
-      existing_entity_without_issue_and_expiry_dates, PASSPORT_NUMBER,
-      /*app_locale=*/""));
+  form->field(0)->set_value(
+      GetValueFromEntity(existing_entity_without_issue_and_expiry_dates,
+                         AttributeType(kPassportName)));
+  form->field(1)->set_value(
+      GetValueFromEntity(existing_entity_without_issue_and_expiry_dates,
+                         AttributeType(kPassportNumber)));
   // Issue date.
   form->field(2)->set_value(u"01/02/16");
   form->field(2)->set_format_string_unless_overruled(

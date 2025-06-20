@@ -28,10 +28,32 @@ using EntityMap =
     base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>;
 using SectionMap = base::flat_map<Section, EntityMap>;
 
+// AttributeType::field_type() must be injective: distinct AttributeTypes must
+// be mapped to distinct FieldTypes.
+static_assert(
+    std::ranges::all_of(DenseSet<AttributeType>::all(), [](AttributeType a) {
+      return std::ranges::all_of(
+          DenseSet<AttributeType>::all(), [&a](AttributeType b) {
+            return a == b || a.field_type() != b.field_type();
+          });
+    }));
+
 std::optional<AttributeType> GetStaticAttributeType(
     const AutofillField& field) {
+  // This lookup table is the inverse of AttributeType::field_type().
+  static constexpr auto kTable = []() {
+    std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
+    for (AttributeType at : DenseSet<AttributeType>::all()) {
+      arr[at.field_type()] = at;
+    }
+    return arr;
+  }();
+
   std::optional<FieldType> ft = field.GetAutofillAiServerTypePredictions();
-  return ft ? AttributeType::FromFieldType(*ft) : std::nullopt;
+  if (!ft) {
+    return std::nullopt;
+  }
+  return 0 <= *ft && *ft < kTable.size() ? kTable[*ft] : std::nullopt;
 }
 
 // The `i`th element of the returned vector contains the type of `fields[i]`.

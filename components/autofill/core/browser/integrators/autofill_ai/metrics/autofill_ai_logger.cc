@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -140,10 +141,10 @@ void AutofillAiLogger::RecordFunnelMetrics(const FunnelState& funnel_state,
 void AutofillAiLogger::RecordKeyMetrics(const FormStructure& form,
                                         const FunnelState& funnel_state) const {
   const std::string_view entity_type = [&] {
-    for (const std::unique_ptr<AutofillField>& field : form) {
-      if (std::optional<FieldType> ai_type =
-              field->GetAutofillAiServerTypePredictions()) {
-        switch (AttributeType::FromFieldType(*ai_type)->entity_type().name()) {
+    for (const auto& [section, entities_and_fields] :
+         DetermineAttributeTypes(form.fields())) {
+      for (const auto& [entity, fields_and_types] : entities_and_fields) {
+        switch (entity.name()) {
           case EntityTypeName::kPassport:
             return "Passport";
           case EntityTypeName::kDriversLicense:
