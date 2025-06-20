@@ -12,7 +12,6 @@ import android.text.TextUtils;
 import android.view.ActionMode;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.RequiresApi;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -153,7 +152,6 @@ class UrlBarViewBinder {
         view.setHighlightColor(highlightColor);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     private static void updateCursorAndSelectHandleColor(UrlBar view, boolean useIncognitoColors) {
         // These get* methods may fail on some devices, so we're calling all of them before
         // applying tint to any of the drawables. See https://crbug.com/1263630.

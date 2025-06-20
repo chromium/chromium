@@ -7,10 +7,8 @@ package org.chromium.chrome.browser;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -56,8 +54,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@RequiresApi(VERSION_CODES.N_MR1)
-@MinAndroidSdkLevel(Build.VERSION_CODES.N_MR1)
 @DoNotBatch(reason = "This class tests activity start behavior and thus cannot be batched.")
 public class LauncherShortcutTest {
 

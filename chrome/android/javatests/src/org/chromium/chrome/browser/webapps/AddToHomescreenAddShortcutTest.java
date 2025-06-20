@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.webapps;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
 
@@ -26,7 +25,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ShortcutHelper;
@@ -248,7 +246,6 @@ public class AddToHomescreenAddShortcutTest {
     @Test
     @SmallTest
     @Feature("{Webapp}")
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testAddAdaptableShortcut() throws Exception {
         // Test the baseline of no adaptive icon.
         loadUrl(

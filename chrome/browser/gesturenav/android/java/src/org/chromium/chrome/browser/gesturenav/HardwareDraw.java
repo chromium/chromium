@@ -14,13 +14,10 @@ import android.graphics.Rect;
 import android.graphics.RenderNode;
 import android.media.Image;
 import android.media.ImageReader;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.view.Surface;
 import android.view.View;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -39,9 +36,8 @@ import java.util.concurrent.Executors;
 /**
  * Uses a {@link RenderNode} to perform bitmap capture of a java View. This walks the View hierarchy
  * synchronously, populating a list of instructions. Then, on a separate thread,the instructions are
- * executed to paint colors onto a {@link Bitmap}. Uses functionality that requires Android Q+.
+ * executed to paint colors onto a {@link Bitmap}.
  */
-@RequiresApi(Build.VERSION_CODES.Q)
 @NullMarked
 public class HardwareDraw {
 
@@ -52,10 +48,7 @@ public class HardwareDraw {
      * consumer. On the thread pool, the Renderer requests and blocks waiting the producer to
      * produce a frame, but the producer itself runs on a hidden Android render thread. The consumer
      * part of the Renderer runs on a dedicated thread.
-     *
-     * <p>RenderNode was added in API level 29 (Android 10). So restrict Renderer as well.
      */
-    @RequiresApi(Build.VERSION_CODES.Q)
     private static class Renderer implements ImageReader.OnImageAvailableListener {
         private final ThreadUtils.ThreadChecker mUiThreadChecker;
 

@@ -16,7 +16,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -44,7 +43,6 @@ public class VirtualViewStructureInstrumentationTest {
 
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(value = 28)
     @EnableFeatures({AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID})
     @DisabledTest(message = "https://crbug.com/414988519")
     public void testLogs3PModeDisabledMetrics() {
@@ -67,7 +65,6 @@ public class VirtualViewStructureInstrumentationTest {
 
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(value = 28)
     @EnableFeatures({AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID})
     public void testDoesntLog3PModeDisabledMetricsWhen3PModeEnabled() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();

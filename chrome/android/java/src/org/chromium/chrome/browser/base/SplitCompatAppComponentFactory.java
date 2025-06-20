@@ -13,10 +13,8 @@ import android.content.BroadcastReceiver;
 import android.content.ContentProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
@@ -37,7 +35,6 @@ import java.lang.annotation.RetentionPolicy;
  * <p>Note: this workaround is not needed for services, since they always uses the base module's
  * ClassLoader, see b/169196314 for more details.
  */
-@RequiresApi(Build.VERSION_CODES.P)
 @NullMarked
 public class SplitCompatAppComponentFactory extends AppComponentFactory {
     private static final String TAG = "SplitCompat";

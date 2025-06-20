@@ -260,10 +260,6 @@ public class CustomTabExternalNavigationTest {
     @Test
     @SmallTest
     @DisableIf.Build(
-            supported_abis_includes = "x86",
-            sdk_equals = VERSION_CODES.P,
-            message = "crbug.com/1188920")
-    @DisableIf.Build(
             supported_abis_includes = "x86_64",
             sdk_is_less_than = VERSION_CODES.TIRAMISU,
             message = "crbug.com/1188920")

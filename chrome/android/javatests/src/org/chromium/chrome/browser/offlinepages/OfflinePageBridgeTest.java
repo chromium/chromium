@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
-import android.net.Uri;
-import android.os.Build.VERSION_CODES;
 import android.util.Base64;
 
 import androidx.test.filters.MediumTest;
@@ -24,8 +22,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.MaxAndroidSdkLevel;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.SavePageCallback;
@@ -43,11 +39,6 @@ import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.NetworkChangeNotifier;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -447,9 +438,6 @@ public class OfflinePageBridgeTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(
-            value = VERSION_CODES.Q,
-            reason = "OfflinePage File Path is content uri on Q+")
     // TODO: expand this test to match testGetLoadUrlParamsForOpeningMhtmlFileUrl_File.
     public void testGetLoadUrlParamsForOpeningMhtmlFileUrl_ContentUri() throws Exception {
         mActivityTestRule.loadUrl(mTestUrl);
@@ -476,81 +464,6 @@ public class OfflinePageBridgeTest {
                                         Base64.NO_WRAP)));
         Assert.assertNotEquals(
                 -1, extraHeaders.indexOf("id=" + Long.toString(offlinePage.getOfflineId())));
-    }
-
-    @Test
-    @MediumTest
-    @MaxAndroidSdkLevel(
-            value = VERSION_CODES.P,
-            reason = "OfflinePage File Path is content uri on Q+")
-    public void testGetLoadUrlParamsForOpeningMhtmlFileUrl_File() throws Exception {
-        mActivityTestRule.loadUrl(mTestUrl);
-        savePage(SavePageResult.SUCCESS, mTestUrl);
-        List<OfflinePageItem> allPages = OfflineTestUtil.getAllPages();
-        Assert.assertEquals(1, allPages.size());
-        OfflinePageItem offlinePage = allPages.get(0);
-        File archiveFile = new File(offlinePage.getFilePath());
-
-        // The file URL pointing to the archive file should be replaced with http/https URL of the
-        // offline page.
-        String fileUrl = Uri.fromFile(archiveFile).toString();
-        LoadUrlParams loadUrlParams = getLoadUrlParamsForOpeningMhtmlFileOrContent(fileUrl);
-        Assert.assertEquals(offlinePage.getUrl(), loadUrlParams.getUrl());
-        String extraHeaders = loadUrlParams.getVerbatimHeaders();
-        Assert.assertNotNull(extraHeaders);
-        Assert.assertNotEquals(-1, extraHeaders.indexOf("reason=file_url_intent"));
-        Assert.assertNotEquals(
-                "intent_url field not found in header: " + extraHeaders,
-                -1,
-                extraHeaders.indexOf(
-                        "intent_url="
-                                + Base64.encodeToString(
-                                        ApiCompatibilityUtils.getBytesUtf8(fileUrl),
-                                        Base64.NO_WRAP)));
-        Assert.assertNotEquals(
-                -1, extraHeaders.indexOf("id=" + Long.toString(offlinePage.getOfflineId())));
-
-        // Make a copy of the original archive file.
-        File tempFile = File.createTempFile("Test", "");
-        copyFile(archiveFile, tempFile);
-
-        // The file URL pointing to file copy should also be replaced with http/https URL of the
-        // offline page.
-        String tempFileUrl = Uri.fromFile(tempFile).toString();
-        loadUrlParams = getLoadUrlParamsForOpeningMhtmlFileOrContent(tempFileUrl);
-        Assert.assertEquals(offlinePage.getUrl(), loadUrlParams.getUrl());
-        extraHeaders = loadUrlParams.getVerbatimHeaders();
-        Assert.assertNotNull(extraHeaders);
-        Assert.assertNotEquals(
-                "reason field not found in header: " + extraHeaders,
-                -1,
-                extraHeaders.indexOf("reason=file_url_intent"));
-        Assert.assertNotEquals(
-                "intent_url field not found in header: " + extraHeaders,
-                -1,
-                extraHeaders.indexOf(
-                        "intent_url="
-                                + Base64.encodeToString(
-                                        ApiCompatibilityUtils.getBytesUtf8(tempFileUrl),
-                                        Base64.NO_WRAP)));
-        Assert.assertNotEquals(
-                "id field not found in header: " + extraHeaders,
-                -1,
-                extraHeaders.indexOf("id=" + Long.toString(offlinePage.getOfflineId())));
-
-        // Modify the copied file.
-        FileChannel tempFileChannel = new FileOutputStream(tempFile, true).getChannel();
-        tempFileChannel.truncate(10);
-        tempFileChannel.close();
-
-        // The file URL pointing to modified file copy should still get the file URL.
-        loadUrlParams = getLoadUrlParamsForOpeningMhtmlFileOrContent(tempFileUrl);
-        Assert.assertEquals(tempFileUrl, loadUrlParams.getUrl());
-        extraHeaders = loadUrlParams.getVerbatimHeaders();
-        Assert.assertNull(extraHeaders);
-
-        // Cleans up.
-        Assert.assertTrue(tempFile.delete());
     }
 
     // Returns offline ID.
@@ -687,18 +600,5 @@ public class OfflinePageBridgeTest {
                 });
         Assert.assertTrue(semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         return ref.get();
-    }
-
-    private static void copyFile(File source, File dest) throws IOException {
-        FileChannel inputChannel = null;
-        FileChannel outputChannel = null;
-        try {
-            inputChannel = new FileInputStream(source).getChannel();
-            outputChannel = new FileOutputStream(dest).getChannel();
-            outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
-        } finally {
-            inputChannel.close();
-            outputChannel.close();
-        }
     }
 }

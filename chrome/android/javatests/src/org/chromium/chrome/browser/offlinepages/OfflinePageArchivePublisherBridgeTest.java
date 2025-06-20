@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
-import android.os.Build;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -21,8 +19,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.MaxAndroidSdkLevel;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.SavePageCallback;
@@ -103,70 +99,12 @@ public class OfflinePageArchivePublisherBridgeTest {
         mTestUrl = mActivityTestRule.getTestServer().getURL(TEST_PAGE);
     }
 
-    @Test
-    @SmallTest
-    @MaxAndroidSdkLevel(
-            value = Build.VERSION_CODES.P,
-            reason =
-                    "On Android Q+, publish offline pages to the downloads collection "
-                            + "rather than DownloadManager.")
-    public void testAddCompletedDownload() throws InterruptedException, TimeoutException {
-        Assert.assertTrue(OfflinePageArchivePublisherBridge.isAndroidDownloadManagerInstalled());
-
-        WebPageStation webPage =
-                mActivityTestRule.startOnBlankPage().loadWebPageProgrammatically(mTestUrl);
-        savePage(TEST_CLIENT_ID, webPage);
-        OfflinePageItem page = OfflineTestUtil.getAllPages().get(0);
-
-        long downloadId =
-                OfflinePageArchivePublisherBridge.addCompletedDownload(
-                        page.getTitle(),
-                        "description",
-                        page.getFilePath(),
-                        page.getFileSize(),
-                        page.getUrl(),
-                        "");
-
-        Assert.assertNotEquals(0L, downloadId);
-    }
-
-    @Test
-    @SmallTest
-    @MaxAndroidSdkLevel(
-            value = Build.VERSION_CODES.P,
-            reason =
-                    "On Android Q+, publish offline pages to the downloads collection "
-                            + "rather than DownloadManager.")
-    public void testRemove() throws InterruptedException, TimeoutException {
-        Assert.assertTrue(OfflinePageArchivePublisherBridge.isAndroidDownloadManagerInstalled());
-
-        WebPageStation webPage =
-                mActivityTestRule.startOnBlankPage().loadWebPageProgrammatically(mTestUrl);
-        savePage(TEST_CLIENT_ID, webPage);
-        OfflinePageItem page = OfflineTestUtil.getAllPages().get(0);
-
-        long downloadId =
-                OfflinePageArchivePublisherBridge.addCompletedDownload(
-                        page.getTitle(),
-                        "description",
-                        page.getFilePath(),
-                        page.getFileSize(),
-                        page.getUrl(),
-                        "");
-
-        Assert.assertNotEquals(0L, downloadId);
-
-        long[] ids = new long[] {downloadId};
-        Assert.assertEquals(1, OfflinePageArchivePublisherBridge.remove(ids));
-    }
-
     /**
      * TODO(crbug.com/40683443): This test fails on Android Q/10 (SDK 29). Leaving it enabled for
      * now as there's currently no bot running tests with that OS version.
      */
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(29)
     @DisabledTest(message = "https://crbug.com/1068408")
     public void testPublishArchiveToDownloadsCollection()
             throws InterruptedException, TimeoutException {
@@ -192,7 +130,6 @@ public class OfflinePageArchivePublisherBridgeTest {
      */
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(29)
     @DisabledTest(message = "https://crbug.com/1068408")
     public void
             testPublishArchiveToDownloadsCollection_NoCrashWhenAndroidCantGenerateUniqueFilename()

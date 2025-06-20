@@ -740,7 +740,6 @@ public class NotificationPlatformBridgeTest {
     @LargeTest
     @Feature({"Browser", "Notifications"})
     @Features.EnableFeatures(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testNotificationProvisionalUnsubscribeAndCommit() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
@@ -790,7 +789,6 @@ public class NotificationPlatformBridgeTest {
     @LargeTest
     @Feature({"Browser", "Notifications"})
     @Features.EnableFeatures(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testNotificationProvisionalUnsubscribeAndUndo() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
@@ -866,7 +864,6 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     @Features.EnableFeatures(
             ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + ":use_service_intent/true")
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testNotificationProvisionalUnsubscribeWithServiceIntent() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
@@ -1050,7 +1047,6 @@ public class NotificationPlatformBridgeTest {
         ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE,
         ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
     })
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testNotificationShowWarningNotificationsThenDismissAndUnsubscribe()
             throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
@@ -1175,7 +1171,6 @@ public class NotificationPlatformBridgeTest {
         ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE,
         ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
     })
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testNotificationShowWarningNotificationThenShowNotificationThenAlwaysAllow()
             throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
@@ -1285,7 +1280,6 @@ public class NotificationPlatformBridgeTest {
         ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE,
         ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
     })
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testShowWarningFeatureDoesNotWarnForUnsuspiciousNotification() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
@@ -1356,7 +1350,6 @@ public class NotificationPlatformBridgeTest {
         ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE,
         ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
     })
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testShowWarningFeatureSwitchButtons() throws Exception {
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS,
@@ -1430,7 +1423,6 @@ public class NotificationPlatformBridgeTest {
         ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA,
         ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
     })
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testReportAsSafe() throws Exception {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -1513,7 +1505,6 @@ public class NotificationPlatformBridgeTest {
         ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA,
         ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
     })
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testReportWarnedNotificationAsSpam() throws Exception {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -1604,7 +1595,6 @@ public class NotificationPlatformBridgeTest {
         ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA,
         ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
     })
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testReportUnwarnedNotificationAsSpam() throws Exception {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -1678,7 +1668,6 @@ public class NotificationPlatformBridgeTest {
         ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA,
         ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
     })
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testReportOptionNotAvailableIfNoOriginalShown() throws Exception {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()

@@ -10,10 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
-import android.os.Build;
 import android.text.TextUtils;
-
-import androidx.annotation.RequiresApi;
 
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -213,7 +210,6 @@ public class NotificationSuspender {
                 });
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
     private Bitmap getBitmapFromIcon(Icon icon) {
         if (icon == null || icon.getType() != Icon.TYPE_BITMAP) return null;
         return ((BitmapDrawable) icon.loadDrawable(mContext)).getBitmap();

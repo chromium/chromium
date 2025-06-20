@@ -11,8 +11,6 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import android.os.Build;
-
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
@@ -32,7 +30,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
@@ -230,9 +227,6 @@ public class GoogleServicesSettingsTest {
 
     @Test
     @LargeTest
-    @MinAndroidSdkLevel(
-            value = Build.VERSION_CODES.Q,
-            reason = "Digital Wellbeing is only available from Q.")
     public void testUsageStatsReportingShown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -254,9 +248,6 @@ public class GoogleServicesSettingsTest {
 
     @Test
     @LargeTest
-    @MinAndroidSdkLevel(
-            value = Build.VERSION_CODES.Q,
-            reason = "Digital Wellbeing is only available from Q.")
     public void testUsageStatsReportingNotShown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

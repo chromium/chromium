@@ -615,7 +615,6 @@ public class TabModelMergingTest {
 
     @Test
     @LargeTest
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P)
     @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/338997261
     public void testMergeOnMultiDisplay_CTA_Resumed_CTA2_Not_Resumed() throws TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(
@@ -667,7 +666,6 @@ public class TabModelMergingTest {
 
     @Test
     @LargeTest
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P)
     @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/338997261
     public void testMergeOnMultiDisplay_OnDisplayChanged() throws TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(

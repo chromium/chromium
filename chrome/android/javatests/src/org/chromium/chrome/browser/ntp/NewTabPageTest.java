@@ -283,7 +283,6 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.P, message = "http://crbug.com/40664848")
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.R, message = "http://crbug.com/40664848")
     public void testFocusFakebox() {
         int initialFakeboxTop = getFakeboxTop(mNtp);

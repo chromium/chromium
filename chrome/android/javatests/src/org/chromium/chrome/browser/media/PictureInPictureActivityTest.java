@@ -19,12 +19,10 @@ import android.app.RemoteAction;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Rational;
 import android.view.View;
 
-import androidx.annotation.RequiresApi;
 import androidx.lifecycle.Lifecycle;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -47,7 +45,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -70,7 +67,6 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-@RequiresApi(Build.VERSION_CODES.O)
 public class PictureInPictureActivityTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -127,7 +123,6 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testStartActivity() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
 
@@ -139,7 +134,6 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testExitOnClose() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         testExitOn(activity, () -> activity.close());
@@ -147,7 +141,6 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testExitOnCrash() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         testExitOn(activity, () -> WebContentsUtils.simulateRendererKilled(getWebContents()));
@@ -156,7 +149,6 @@ public class PictureInPictureActivityTest {
     @Test
     @MediumTest
     @DisabledTest(message = "b/353025645")
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testMakeEnterPictureInPictureWithBadSourceRect() throws Throwable {
         mSourceRectHint.left = -1;
@@ -168,7 +160,6 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testExitOnBackToTab() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
@@ -183,7 +174,6 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testResize() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
@@ -203,7 +193,6 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testMediaActions() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
@@ -253,7 +242,6 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testMediaActionsForVideoConferencing() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
@@ -279,7 +267,6 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testMediaActionsForTrackControl() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
@@ -301,7 +288,6 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testMediaActionsForSlideControl() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
@@ -323,7 +309,6 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testActionsInSync() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
@@ -371,7 +356,6 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testNotifyNativeWhenTabClose() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
@@ -381,7 +365,6 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testPipWindowExitsIfTokenDoesNotExist() throws Throwable {
         // If the window token doesn't produce a native window, then the activity should exit.

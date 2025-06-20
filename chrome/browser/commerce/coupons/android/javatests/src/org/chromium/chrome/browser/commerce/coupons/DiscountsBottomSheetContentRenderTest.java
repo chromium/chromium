@@ -13,7 +13,6 @@ import static org.chromium.chrome.browser.commerce.coupons.DiscountsBottomSheetC
 import static org.chromium.ui.test.util.RenderTestRule.Component.UI_BROWSER_SHOPPING;
 
 import android.app.Activity;
-import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,7 +31,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.tab.Tab;
@@ -95,7 +93,6 @@ public class DiscountsBottomSheetContentRenderTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P, message = "crbug.com/382335140")
     public void testSingleDiscountContent() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -114,7 +111,6 @@ public class DiscountsBottomSheetContentRenderTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P, message = "crbug.com/382335140")
     public void testMultipleDiscountsContents() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

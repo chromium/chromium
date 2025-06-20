@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.RequiresApi;
 import androidx.core.graphics.ColorUtils;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -80,8 +79,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-@MinAndroidSdkLevel(Build.VERSION_CODES.O_MR1)
-@RequiresApi(Build.VERSION_CODES.O_MR1)
 @SuppressLint("NewApi")
 public class TabbedNavigationBarColorControllerTest {
     @Rule

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
-import android.os.Build;
 import android.view.WindowManager;
 
 import androidx.test.filters.LargeTest;
@@ -15,7 +14,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -25,7 +23,6 @@ import java.util.concurrent.TimeoutException;
 /** Tests the display cutout on a WebApp. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@MinAndroidSdkLevel(Build.VERSION_CODES.P)
 public class WebappDisplayCutoutTest {
     @Rule public WebappDisplayCutoutTestRule mTestRule = new WebappDisplayCutoutTestRule();
 

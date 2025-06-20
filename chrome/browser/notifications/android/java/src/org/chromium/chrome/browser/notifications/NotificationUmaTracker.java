@@ -8,7 +8,6 @@ import android.app.Notification;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.Callback;
@@ -711,7 +710,6 @@ public class NotificationUmaTracker {
                 });
     }
 
-    @RequiresApi(26)
     private void isChannelBlocked(
             @ChromeChannelDefinitions.ChannelId String channelId, Callback<Boolean> callback) {
         mNotificationManager.getNotificationChannel(

@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import android.os.Build;
-
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
@@ -21,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.AutofillSaveCardInfoBar;
@@ -104,9 +101,6 @@ public class AutofillUpstreamTest {
     @Test
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.Q,
-            message = "https://crbug.com/1424178")
     public void testSaveCardInfoBarWithAllFieldsFilled() throws TimeoutException {
         mActivityTestRule.loadUrl(mServer.getURL(TEST_FORM_URL));
         final WebContents webContents = mActivityTestRule.getActivity().getCurrentWebContents();
@@ -189,9 +183,6 @@ public class AutofillUpstreamTest {
     @Test
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.Q,
-            message = "https://crbug.com/1424178")
     public void testSaveCardInfoBarWithEmptyName() throws TimeoutException {
         mActivityTestRule.loadUrl(mServer.getURL(TEST_FORM_URL));
         final WebContents webContents = mActivityTestRule.getActivity().getCurrentWebContents();

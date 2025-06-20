@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.WindowManager;
 
@@ -21,7 +20,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -41,7 +39,6 @@ import java.util.concurrent.TimeoutException;
     ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE,
     ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
 })
-@MinAndroidSdkLevel(Build.VERSION_CODES.P)
 public class DisplayCutoutTest {
     @Rule
     public DisplayCutoutTestRule mTestRule = new DisplayCutoutTestRule<>(ChromeActivity.class);

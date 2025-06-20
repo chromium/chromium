@@ -12,8 +12,6 @@ import android.os.Process;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -35,7 +33,6 @@ public class PackageMetrics {
         public long cacheSize;
     }
 
-    @RequiresApi(26)
     private static @Nullable PackageMetricsData getPackageStatsForAndroidO() {
         Context context = ContextUtils.getApplicationContext();
         StorageManager storageManager = context.getSystemService(StorageManager.class);

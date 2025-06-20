@@ -80,7 +80,6 @@ class SplashUtilsForS {
      * Activity bounds, so to make sure that the screen doesn't change between the shell and Chrome,
      * we provide a screenshot without the areas normally covered by the status and navigation bar.
      */
-    @RequiresApi(api = VERSION_CODES.Q)
     private static Bitmap screenshotSplashScreenView(
             View splashView, View iconView, Insets insets, int backgroundColor, int maxSizeBytes) {
         int width = splashView.getWidth() - insets.right - insets.left;

@@ -28,7 +28,6 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.widget.ProgressBar;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -54,7 +53,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -469,9 +467,6 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    // There is an issue causing {@link Activity.setRequestedOrientation} to throw an exception in
-    // Android 8 which was fixed in Android 8.1. See b/70718000 for example.
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O_MR1)
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testScreenRotation() {
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);

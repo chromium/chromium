@@ -5,38 +5,27 @@
 package org.chromium.chrome.browser.permissions;
 
 import android.Manifest;
-import android.os.Build;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.MaxAndroidSdkLevel;
-import org.chromium.chrome.browser.download.DownloadItem;
-import org.chromium.chrome.browser.download.DownloadManagerService;
-import org.chromium.chrome.browser.download.DownloadManagerService.DownloadObserver;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.RuntimePromptResponse;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
-import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.permissions.DismissalType;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
-
-import java.util.List;
 
 /** Testing the interaction with the runtime permission prompt (Android level prompt). */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -232,58 +221,6 @@ public class RuntimePermissionTest {
                 /* waitForUpdater= */ true,
                 "getUserMediaAndStopLegacy({video: false, audio: true});",
                 R.string.infobar_missing_microphone_permission_text);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RuntimePermissions", "Downloads"})
-    @MaxAndroidSdkLevel(
-            value = Build.VERSION_CODES.P,
-            reason =
-                    "WRITE_EXTERNAL_STORAGE is not supported starting in Android R and Q requires a"
-                        + " workaround")
-    public void testDenyRuntimeDownload() throws Exception {
-        DownloadObserver observer =
-                new DownloadObserver() {
-                    @Override
-                    public void onAllDownloadsRetrieved(
-                            final List<DownloadItem> list, ProfileKey profileKey) {}
-
-                    @Override
-                    public void onDownloadItemUpdated(DownloadItem item) {}
-
-                    @Override
-                    public void onDownloadItemRemoved(String guid) {}
-
-                    @Override
-                    public void onAddOrReplaceDownloadSharedPreferenceEntry(ContentId id) {}
-
-                    @Override
-                    public void onDownloadItemCreated(DownloadItem item) {
-                        Assert.assertFalse("Should not have started a download item", true);
-                    }
-                };
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    DownloadManagerService.getDownloadManagerService()
-                            .addDownloadObserver(observer);
-                });
-
-        String[] requestablePermission = new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        mTestAndroidPermissionDelegate =
-                new TestAndroidPermissionDelegate(
-                        requestablePermission, RuntimePromptResponse.DENY);
-        RuntimePermissionTestUtils.runTest(
-                mPermissionTestRule,
-                mTestAndroidPermissionDelegate,
-                DOWNLOAD_TEST,
-                /* expectPermissionAllowed= */ false,
-                /* promptDecision= */ PermissionTestRule.PromptDecision.NONE,
-                /* waitForMissingPermissionPrompt= */ true,
-                /* waitForUpdater= */ false,
-                "document.getElementsByTagName('a')[0].click();",
-                R.string.missing_storage_permission_download_education_text);
     }
 
     @Test
