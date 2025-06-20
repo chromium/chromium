@@ -31,29 +31,26 @@
   padding-top: 4px;
 }
 
-#loadingState.status-container {
-  padding-inline-start: 16px;
-}
-
 :host([enable-csb-motion-tweaks]) #loadingState.status-container {
   display: none;
 }
 
 .loader-text {
-  position: absolute;
-  padding-inline-start: 38px;
-  padding-inline-end: 14px;
   font-weight: var(--cr-searchbox-match-font-weight);
   font-size: 14px;
-  width: 234px;
-}
-
-#loadingState .loader-text {
-  padding-inline-start: 36px;
+  position: relative;
+  width: 100%;
 }
 
 #hint-text2 {
   opacity: 0;
+}
+
+.hint-text {
+  align-items: center;
+  display: flex;
+  inset: 0;
+  position: absolute;
 }
 
 :host([enable-summarize-suggestion-hint]) #hint-text1 {
@@ -82,6 +79,11 @@
 .spinner {
   --cr-spinner-color: var(--color-searchbox-ghost-loader-spinner);
   --cr-spinner-size: 20px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  /* 28px to match the error icon size. */
+  width: 28px;
 }
 
 .suggestion-loader-container {
@@ -166,6 +168,7 @@
 :host([show-error-state]) #errorState,
 #hintState {
   display: flex;
+  gap: 16px;
 }
 
 :host([show-error-state]) #loadingState,
@@ -215,12 +218,14 @@
   <template is="dom-if" if="[[showContextualSearchboxLoadingState]]">
     <div id="loadingState" class="status-container">
       <div class="spinner"></div>
-      <span id="hint-text1" class="loader-text">
-        [[ghostLoaderPrimaryMessage]]
-      </span>
-      <span id="hint-text2" class="loader-text">
-        $i18n{searchboxGhostLoaderHintTextSecondary}
-      </span>
+      <div class="loader-text">
+        <span id="hint-text1" class="hint-text">
+          [[ghostLoaderPrimaryMessage]]
+        </span>
+        <span id="hint-text2" class="hint-text">
+          $i18n{searchboxGhostLoaderHintTextSecondary}
+        </span>
+      </div>
     </div>
     <div class="suggestion-loader-container">
       <template is="dom-repeat"
