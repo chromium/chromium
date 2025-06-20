@@ -26,9 +26,14 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace {
 
@@ -100,6 +105,26 @@ std::unique_ptr<ui::DialogModel> CreatePasswordChangeFailedDialog(
       .Build();
 }
 
+// Creates a BubbleFrameView to be used as the non-client frame view for the
+// toast widget. This frame view provides rounded corners and a custom
+// background color.
+std::unique_ptr<views::NonClientFrameView> CreateToastFrameView(
+    const gfx::Insets& content_margins,
+    views::Widget* widget) {
+  auto frame_view =
+      std::make_unique<views::BubbleFrameView>(gfx::Insets(), content_margins);
+  auto border = std::make_unique<views::BubbleBorder>(
+      views::BubbleBorder::Arrow::NONE,
+      views::BubbleBorder::Shadow::STANDARD_SHADOW);
+  const int corner_radius = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_TOAST_BUBBLE_HEIGHT);
+  border->set_rounded_corners(gfx::RoundedCornersF(corner_radius));
+  border->set_draw_border_stroke(false);
+  frame_view->SetBubbleBorder(std::move(border));
+  frame_view->SetBackgroundColor(ui::kColorToastBackgroundProminent);
+  return frame_view;
+}
+
 // Creates dialog for `PasswordChangeDelegate::State::kOtpDetected`.
 std::unique_ptr<ui::DialogModel> CreateOtpDetectedDialog(
     base::OnceClosure accept_callback) {
@@ -139,15 +164,10 @@ void PasswordChangeUIController::UpdateState(
       GetDialogOrToastConfiguration(state);
 
   if (std::holds_alternative<ToastOptions>(configuration)) {
-    if (toast_view_) {
-      CHECK(toast_delegate_);
-      toast_view_->UpdateLayout(
-          std::move(std::get<ToastOptions>(configuration)));
-      toast_delegate_->set_margins(toast_view_->CalculateMargins());
-      toast_view_->GetWidget()->SetBounds(
-          toast_delegate_->GetDesiredWidgetBounds());
-      return;
-    }
+    // Close the existing dialog before showing toast. This is needed in
+    // PasswordChangeToastBrowserTest.InvokeUi_Toast.
+    CloseDialogWidget(views::Widget::ClosedReason::kUnspecified);
+    CloseToastWidget(views::Widget::ClosedReason::kUnspecified);
     ShowToast(std::move(std::get<ToastOptions>(configuration)));
     return;
   }
@@ -240,39 +260,40 @@ void PasswordChangeUIController::ShowToast(ToastOptions options) {
   std::u16string title = options.text;
   auto toast_view = std::make_unique<PasswordChangeToast>(std::move(options));
   toast_view_ = toast_view.get();
-  auto params = std::make_unique<tabs::TabDialogManager::Params>();
-  params->close_on_navigate = false;
-  params->close_on_detach = false;
-  params->disable_input = false;
 
-  toast_delegate_ = std::make_unique<views::DialogDelegate>();
-  toast_delegate_->SetModalType(ui::mojom::ModalType::kChild);
-  toast_delegate_->SetOwnershipOfNewWidget(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  toast_delegate_->set_use_custom_frame(true);
-  toast_delegate_->SetShowCloseButton(false);
-  toast_delegate_->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  toast_delegate_->SetContentsView(std::move(toast_view));
-  toast_delegate_->set_corner_radius(
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_TOAST_BUBBLE_HEIGHT));
-  toast_delegate_->set_margins(toast_view_->CalculateMargins());
-  toast_delegate_->SetAccessibleWindowRole(ax::mojom::Role::kAlert);
-  toast_delegate_->SetAccessibleTitle(title);
-  toast_delegate_->RegisterWidgetInitializedCallback(base::BindOnce(
-      [](views::DialogDelegate* delegate) {
-        views::BubbleFrameView* frame_view = delegate->GetBubbleFrameView();
-        if (frame_view) {
-          frame_view->SetBackgroundColor(ui::kColorToastBackgroundProminent);
-          frame_view->bubble_border()->set_draw_border_stroke(false);
-        }
-      },
-      base::Unretained(toast_delegate_.get())));
+  auto toast_delegate = std::make_unique<views::WidgetDelegate>();
+  toast_delegate->SetModalType(ui::mojom::ModalType::kChild);
+  toast_delegate->SetContentsView(std::move(toast_view));
+  toast_delegate->SetAccessibleWindowRole(ax::mojom::Role::kAlert);
+  toast_delegate->SetAccessibleTitle(title);
+  toast_delegate->SetShowCloseButton(false);
+  toast_delegate->SetNonClientFrameViewFactory(base::BindRepeating(
+      &CreateToastFrameView, toast_view_->CalculateMargins()));
+  toast_delegate_ = std::move(toast_delegate);
 
-  toast_widget_ =
-      tab_interface_->GetTabFeatures()
-          ->tab_dialog_manager()
-          ->CreateAndShowDialog(toast_delegate_.get(), std::move(params));
+  auto* tab_dialog_manager =
+      tab_interface_->GetTabFeatures()->tab_dialog_manager();
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams init_params(
+      views::Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET);
+  init_params.delegate = toast_delegate_.get();
+  // Use translucency to enable rounded corners.
+  init_params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  init_params.parent = tab_dialog_manager->GetHostWidget()->GetNativeView();
+  // Disable the system shadow. BubbleFrameView will draw a custom shadow.
+  init_params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+  init_params.remove_standard_frame = true;
+  init_params.name = "PasswordChangeToast";
+  widget->Init(std::move(init_params));
+
+  auto tab_dialog_params = std::make_unique<tabs::TabDialogManager::Params>();
+  tab_dialog_params->close_on_navigate = false;
+  tab_dialog_params->close_on_detach = false;
+  tab_dialog_params->disable_input = false;
+
+  tab_dialog_manager->ShowDialog(widget.get(), std::move(tab_dialog_params));
+
+  toast_widget_ = std::move(widget);
   toast_widget_->MakeCloseSynchronous(
       base::BindOnce(&PasswordChangeUIController::CloseToastWidget,
                      weak_ptr_factory_.GetWeakPtr()));

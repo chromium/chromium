@@ -3524,6 +3524,7 @@ if (!is_android) {
       "../browser/ui/views/location_bar/intent_chip_button_test_base.cc",
       "../browser/ui/views/location_bar/intent_chip_button_test_base.h",
       "../browser/ui/views/media_router/cast_dialog_coordinator_browsertest.cc",
+      "../browser/ui/views/passwords/password_change/password_change_toast_browsertest.cc",
       "../browser/ui/views/passwords/password_change/password_change_ui_browsertest.cc",
       "../browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc",
       "../browser/ui/views/profiles/avatar_toolbar_button_browsertest.cc",

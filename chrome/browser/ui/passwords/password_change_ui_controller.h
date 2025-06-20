@@ -19,10 +19,6 @@ namespace ui {
 class DialogModel;
 }  // namespace ui
 
-namespace views {
-class DialogDelegate;
-}  // namespace views
-
 // Responsible for creating and displaying appropriate views based on the
 // current state of the password change flow.
 class PasswordChangeUIController {
@@ -68,8 +64,8 @@ class PasswordChangeUIController {
   // View displaying the progress of password change.
   raw_ptr<PasswordChangeToast> toast_view_;
 
-  // Delegate for the `toast_view_`.
-  std::unique_ptr<views::DialogDelegate> toast_delegate_;
+  // Delegate for the `toast_widget_`.
+  std::unique_ptr<views::WidgetDelegate> toast_delegate_;
 
   // Widget containing the currently open toast, if any.
   std::unique_ptr<views::Widget> toast_widget_;

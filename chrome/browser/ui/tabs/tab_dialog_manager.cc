@@ -261,8 +261,7 @@ TabDialogManager::~TabDialogManager() = default;
 std::unique_ptr<views::Widget> TabDialogManager::CreateTabScopedDialog(
     views::DialogDelegate* delegate) {
   DCHECK_EQ(ui::mojom::ModalType::kChild, delegate->GetModalType());
-  views::Widget* host =
-      tab_interface_->GetBrowserWindowInterface()->TopContainer()->GetWidget();
+  views::Widget* host = GetHostWidget();
   CHECK(host);
   return base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
       delegate, gfx::NativeWindow(), host->GetNativeView()));
@@ -334,6 +333,12 @@ void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
       ->SetWebContentsBlocked(tab_interface_->GetContents(), /*blocked=*/false);
 }
 
+views::Widget* TabDialogManager::GetHostWidget() const {
+  return tab_interface_->GetBrowserWindowInterface()
+      ->TopContainer()
+      ->GetWidget();
+}
+
 void TabDialogManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!widget_) {
@@ -376,8 +381,7 @@ void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
                                                       widget_.get());
     // Check if the tab was detached and dragged to a new browser window. This
     // ensures the widget is properly reparented.
-    auto* parent_widget =
-        tab_interface->GetBrowserWindowInterface()->TopContainer()->GetWidget();
+    auto* parent_widget = GetHostWidget();
     if (parent_widget != widget_->parent()) {
       widget_->Reparent(parent_widget);
     }

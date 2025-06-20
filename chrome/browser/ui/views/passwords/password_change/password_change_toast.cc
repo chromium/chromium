@@ -133,7 +133,6 @@ PasswordChangeToast::PasswordChangeToast(ToastOptions toast_configuration) {
                 layout_provider->GetDistanceMetric(
                     DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON)));
   action_button_->SetStyle(ui::ButtonStyle::kProminent);
-  action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
   action_button_->SetProperty(views::kElementIdentifierKey,
                               kPasswordChangeActionButton);
   action_button_->SetAppearDisabledInInactiveWidget(false);
@@ -222,7 +221,15 @@ void PasswordChangeToast::UpdateConfiguration(ToastOptions configuration) {
                   layout_provider->GetDistanceMetric(
                       DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON)));
   }
-  action_button_->SetVisible(configuration.action_button_text.has_value());
+  if (configuration.action_button_text.has_value()) {
+    // Only set kAlert a11y role when text is not empty, otherwise it triggers
+    // a DCHECK in views::RunAccessibilityPaintChecks().
+    action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
+    action_button_->SetVisible(true);
+  } else {
+    action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+    action_button_->SetVisible(false);
+  }
   close_button_->SetVisible(configuration.has_close_button);
 }
 

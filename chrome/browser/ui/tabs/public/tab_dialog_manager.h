@@ -82,6 +82,10 @@ class TabDialogManager : public content::WebContentsObserver {
   //  * From CloseDialog(), right before calling Close() on the widget.
   void WidgetDestroyed(views::Widget* widget);
 
+  // Returns the widget associated with the browser window. This widget is used
+  // as the parent for tab-scoped widgets.
+  views::Widget* GetHostWidget() const;
+
  private:
   // Overridden from content::WebContentObserver:
   void DidFinishNavigation(

@@ -842,6 +842,10 @@ bool BubbleFrameView::GetDisplayVisibleArrow() const {
 
 void BubbleFrameView::SetBackgroundColor(ui::ColorVariant color) {
   bubble_border_->SetColor(color);
+  if (!GetWidget()) {
+    return;
+  }
+
   UpdateClientViewBackground();
   SchedulePaint();
 }
