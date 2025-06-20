@@ -307,7 +307,7 @@ BASE_FEATURE_PARAM(int,
                    kTcpPortRandomizationWinVersionMinimum,
                    &kTcpPortRandomizationWin,
                    "TcpPortRandomizationWinVersionMinimum",
-                   static_cast<int>(base::win::Version::WIN10_20H1));
+                   static_cast<int>(base::win::Version::WIN11_22H2));
 
 BASE_FEATURE(kTcpPortReuseMetricsWin,
              "TcpPortReuseMetricsWin",

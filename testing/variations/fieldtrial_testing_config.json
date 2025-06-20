@@ -24432,7 +24432,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "TcpPortRandomizationWinVersionMinimum": "16"
+                        "TcpPortRandomizationWinVersionMinimum": "23"
                     },
                     "enable_features": [
                         "TcpPortRandomizationWin"
