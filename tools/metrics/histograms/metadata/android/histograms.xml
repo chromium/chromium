@@ -1238,6 +1238,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ChildProcessConnection.OnServiceConnectedCounts"
+    units="count" expires_after="M143">
+  <owner>boliu@chromium.org</owner>
+  <owner>kawasin@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Record the accumulated count of
+    ChildServiceConnectionDelegate.onServiceConnected. This is recorded every
+    time the callback is triggered. The metric with number more than 1 indicates
+    that the child process is restarted after the service process connected.
+    Note that the lower buckets double-counts the higher buckets since this is
+    recorded at each restart (e.g. when 4 is recorded, 1,2,3 are also recorded).
+  </summary>
+</histogram>
+
 <histogram name="Android.ChildProcessStartTimeV2.{Type}" units="ms"
     expires_after="2023-02-22">
   <owner>cduvall@chromium.org</owner>
