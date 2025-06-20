@@ -780,6 +780,13 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     return gfx::ToEnclosingRect(bounds_f);
   }
 
+  void LayoutWebAppWindowTitle(
+      const gfx::Rect& available_space,
+      views::Label& window_title_label) const override {
+    browser_view_->frame()->LayoutWebAppWindowTitle(available_space,
+                                                    window_title_label);
+  }
+
   int GetTopInsetInBrowserView() const override {
     // BrowserView should fill the full window when window controls overlay
     // is enabled or when immersive fullscreen with tabs is enabled.

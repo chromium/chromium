@@ -494,8 +494,8 @@ int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
     if (delegate_->ShouldDrawTabStrip()) {
       web_app_window_title_->SetVisible(false);
     } else {
-      browser_view_->frame()->LayoutWebAppWindowTitle(window_title_bounds,
-                                                      *web_app_window_title_);
+      delegate_->LayoutWebAppWindowTitle(window_title_bounds,
+                                         *web_app_window_title_);
     }
   }
 

@@ -252,6 +252,12 @@ gfx::Rect OpaqueBrowserFrameView::GetBoundsForWebAppFrameToolbar(
   return layout_->GetBoundsForWebAppFrameToolbar(toolbar_preferred_size);
 }
 
+void OpaqueBrowserFrameView::LayoutWebAppWindowTitle(
+    const gfx::Rect& available_space,
+    views::Label& window_title_label) const {
+  layout_->LayoutWebAppWindowTitle(available_space, window_title_label);
+}
+
 int OpaqueBrowserFrameView::GetTopInset(bool restored) const {
   return layout_->NonClientTopHeight(restored);
 }

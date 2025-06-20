@@ -78,6 +78,13 @@ class BrowserNonClientFrameView : public views::NonClientFrameView {
   virtual gfx::Rect GetBoundsForWebAppFrameToolbar(
       const gfx::Size& toolbar_preferred_size) const = 0;
 
+  // Lays out the window title for a web app within the given available space.
+  // This method doesn't just return bounds; it may also modify properties of
+  // the label itself, such as text alignment, based on the implementation.
+  virtual void LayoutWebAppWindowTitle(
+      const gfx::Rect& available_space,
+      views::Label& window_title_label) const = 0;
+
   // Returns the inset from the top of the window to the top of the client
   // view. For a tabbed browser, this is the space occupied by the tab strip.
   // For popup windows, this is the toolbar. For app windows, this is the

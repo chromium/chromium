@@ -634,6 +634,10 @@ gfx::Rect PictureInPictureBrowserFrameView::GetBoundsForWebAppFrameToolbar(
   return gfx::Rect();
 }
 
+void PictureInPictureBrowserFrameView::LayoutWebAppWindowTitle(
+    const gfx::Rect& available_space,
+    views::Label& window_title_label) const {}
+
 int PictureInPictureBrowserFrameView::GetTopInset(bool restored) const {
   return GetTopAreaHeight();
 }
