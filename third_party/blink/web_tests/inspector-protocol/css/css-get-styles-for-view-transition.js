@@ -2,7 +2,9 @@
   const {page, session, dp} = await testRunner.startHTML(`
       <style> ::view-transition-new(shared) {animation-duration: 300s;} </style>
       <style> ::view-transition-old(*) {background: red;} </style>
-      <div style='width:100px; height:100px; view-transition-name: shared; contain:paint;'></div>`,
+      <style> ::view-transition-group(.transition-group) {font-size: 10px;} </style>
+      <style> ::view-transition-image-pair(shared.transition-group) {left: 100px;} </style>
+      <div style='width:100px; height:100px; view-transition-name: shared; view-transition-class: transition-group; contain:paint;'></div>`,
       'The test verifies functionality of querying style information for view-transition pseudo elements');
 
   await session.evaluateAsync(`

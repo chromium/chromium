@@ -127,6 +127,7 @@
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -2481,6 +2482,23 @@ void StyleResolver::CollectPseudoRulesForElement(
     // TODO(crbug.com/339298411): handle :current?
     style_request.search_text_request = StyleRequest::kNotCurrent;
   }
+
+  if (IsTransitionPseudoElement(pseudo_id) && pseudo_id != kPseudoIdViewTransition) {
+    // Check view transition classes in addition to view transition names.
+    auto* view_transition_element =
+        element.GetPseudoElement(kPseudoIdViewTransition);
+    if (view_transition_element) {
+      auto* view_transition_group_element =
+          view_transition_element->GetPseudoElement(
+              kPseudoIdViewTransitionGroup, view_transition_name);
+      if (view_transition_group_element) {
+        style_request.pseudo_ident_list =
+            To<ViewTransitionPseudoElementBase>(*view_transition_group_element)
+                .ViewTransitionClassList();
+      }
+    }
+  }
+
   collector.SetPseudoElementStyleRequest(style_request);
 
   if (rules_to_include & kUACSSRules) {

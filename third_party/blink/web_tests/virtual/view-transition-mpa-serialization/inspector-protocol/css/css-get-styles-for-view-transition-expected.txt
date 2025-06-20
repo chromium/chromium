@@ -715,6 +715,79 @@ The test verifies functionality of querying style information for view-transitio
                             ]
                         }
                     }
+                    [4] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : regular
+                            ruleTypes : [
+                            ]
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        range : {
+                                            endColumn : 43
+                                            endLine : 0
+                                            startColumn : 1
+                                            startLine : 0
+                                        }
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 1
+                                        }
+                                        text : ::view-transition-group(.transition-group)
+                                    }
+                                ]
+                                text : ::view-transition-group(*.transition-group)
+                            }
+                            startingStyles : [
+                            ]
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        disabled : false
+                                        implicit : false
+                                        name : font-size
+                                        range : {
+                                            endColumn : 61
+                                            endLine : 0
+                                            startColumn : 45
+                                            startLine : 0
+                                        }
+                                        text : font-size: 10px;
+                                        value : 10px
+                                    }
+                                    [1] : {
+                                        name : font-size
+                                        value : 10px
+                                    }
+                                ]
+                                cssText : font-size: 10px;
+                                range : {
+                                    endColumn : 61
+                                    endLine : 0
+                                    startColumn : 45
+                                    startLine : 0
+                                }
+                                shorthandEntries : [
+                                ]
+                                styleSheetId : <string>
+                            }
+                            styleSheetId : <string>
+                            supports : [
+                            ]
+                        }
+                    }
                 ]
                 pseudoIdentifier : shared
                 pseudoType : view-transition-group
@@ -1057,6 +1130,79 @@ The test verifies functionality of querying style information for view-transitio
                                 shorthandEntries : [
                                 ]
                             }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [3] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : regular
+                            ruleTypes : [
+                            ]
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        range : {
+                                            endColumn : 54
+                                            endLine : 0
+                                            startColumn : 1
+                                            startLine : 0
+                                        }
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 1
+                                        }
+                                        text : ::view-transition-image-pair(shared.transition-group)
+                                    }
+                                ]
+                                text : ::view-transition-image-pair(shared.transition-group)
+                            }
+                            startingStyles : [
+                            ]
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        disabled : false
+                                        implicit : false
+                                        name : left
+                                        range : {
+                                            endColumn : 68
+                                            endLine : 0
+                                            startColumn : 56
+                                            startLine : 0
+                                        }
+                                        text : left: 100px;
+                                        value : 100px
+                                    }
+                                    [1] : {
+                                        name : left
+                                        value : 100px
+                                    }
+                                ]
+                                cssText : left: 100px;
+                                range : {
+                                    endColumn : 68
+                                    endLine : 0
+                                    startColumn : 56
+                                    startLine : 0
+                                }
+                                shorthandEntries : [
+                                ]
+                                styleSheetId : <string>
+                            }
+                            styleSheetId : <string>
                             supports : [
                             ]
                         }
@@ -3596,6 +3742,79 @@ Dumping styles for : ::view-transition-group with id shared{
                     ]
                 }
             }
+            [4] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : regular
+                    ruleTypes : [
+                    ]
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                range : {
+                                    endColumn : 43
+                                    endLine : 0
+                                    startColumn : 1
+                                    startLine : 0
+                                }
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 1
+                                }
+                                text : ::view-transition-group(.transition-group)
+                            }
+                        ]
+                        text : ::view-transition-group(*.transition-group)
+                    }
+                    startingStyles : [
+                    ]
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                disabled : false
+                                implicit : false
+                                name : font-size
+                                range : {
+                                    endColumn : 61
+                                    endLine : 0
+                                    startColumn : 45
+                                    startLine : 0
+                                }
+                                text : font-size: 10px;
+                                value : 10px
+                            }
+                            [1] : {
+                                name : font-size
+                                value : 10px
+                            }
+                        ]
+                        cssText : font-size: 10px;
+                        range : {
+                            endColumn : 61
+                            endLine : 0
+                            startColumn : 45
+                            startLine : 0
+                        }
+                        shorthandEntries : [
+                        ]
+                        styleSheetId : <string>
+                    }
+                    styleSheetId : <string>
+                    supports : [
+                    ]
+                }
+            }
         ]
     }
     sessionId : <string>
@@ -3775,6 +3994,79 @@ Dumping styles for : ::view-transition-image-pair with id shared{
                         shorthandEntries : [
                         ]
                     }
+                    supports : [
+                    ]
+                }
+            }
+            [3] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : regular
+                    ruleTypes : [
+                    ]
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                range : {
+                                    endColumn : 54
+                                    endLine : 0
+                                    startColumn : 1
+                                    startLine : 0
+                                }
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 1
+                                }
+                                text : ::view-transition-image-pair(shared.transition-group)
+                            }
+                        ]
+                        text : ::view-transition-image-pair(shared.transition-group)
+                    }
+                    startingStyles : [
+                    ]
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                disabled : false
+                                implicit : false
+                                name : left
+                                range : {
+                                    endColumn : 68
+                                    endLine : 0
+                                    startColumn : 56
+                                    startLine : 0
+                                }
+                                text : left: 100px;
+                                value : 100px
+                            }
+                            [1] : {
+                                name : left
+                                value : 100px
+                            }
+                        ]
+                        cssText : left: 100px;
+                        range : {
+                            endColumn : 68
+                            endLine : 0
+                            startColumn : 56
+                            startLine : 0
+                        }
+                        shorthandEntries : [
+                        ]
+                        styleSheetId : <string>
+                    }
+                    styleSheetId : <string>
                     supports : [
                     ]
                 }
