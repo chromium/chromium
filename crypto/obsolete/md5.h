@@ -51,6 +51,10 @@ namespace trusted_vault {
 std::string MD5StringForTrustedVault(const std::string& local_trusted_value);
 }
 
+namespace bookmarks {
+class BookmarkCodec;
+}  // namespace bookmarks
+
 namespace crypto::obsolete {
 
 // This class is used for computing MD5 hashes, either one-shot via Md5::Hash(),
@@ -103,6 +107,9 @@ class CRYPTO_EXPORT Md5 {
   // TODO(https://crbug.com/425990763): get rid of this
   friend std::string trusted_vault::MD5StringForTrustedVault(
       const std::string& local_trusted_value);
+
+  // TODO(https://crbug.com/426243026): get rid of this.
+  friend class bookmarks::BookmarkCodec;
 
   Md5();
   static std::array<uint8_t, kSize> Hash(std::string_view data);

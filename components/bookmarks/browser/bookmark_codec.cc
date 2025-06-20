@@ -495,13 +495,12 @@ void BookmarkCodec::ReassignIDsHelper(BookmarkNode* node) {
 }
 
 void BookmarkCodec::UpdateChecksum(const std::string& str) {
-  base::MD5Update(&md5_context_, str);
+  md5_hasher_.Update(str);
 }
 
 void BookmarkCodec::UpdateChecksum(const std::u16string& str) {
-  base::MD5Update(&md5_context_,
-                  std::string_view(reinterpret_cast<const char*>(str.data()),
-                                   str.length() * sizeof(str[0])));
+  md5_hasher_.Update(std::string_view(reinterpret_cast<const char*>(str.data()),
+                                      str.length() * sizeof(str[0])));
 }
 
 void BookmarkCodec::UpdateChecksumWithUrlNode(const std::string& id,
@@ -522,13 +521,12 @@ void BookmarkCodec::UpdateChecksumWithFolderNode(const std::string& id,
 }
 
 void BookmarkCodec::InitializeChecksum() {
-  base::MD5Init(&md5_context_);
+  md5_hasher_ = crypto::obsolete::Md5();
 }
 
 void BookmarkCodec::FinalizeChecksum() {
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &md5_context_);
-  computed_checksum_ = base::MD5DigestToBase16(digest);
+  computed_checksum_ =
+      base::ToLowerASCII(base::HexEncode(md5_hasher_.Finish()));
 }
 
 }  // namespace bookmarks

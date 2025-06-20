@@ -12,10 +12,10 @@
 #include <set>
 #include <string>
 
-#include "base/hash/md5.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "crypto/obsolete/md5.h"
 
 namespace bookmarks {
 
@@ -202,7 +202,7 @@ class BookmarkCodec {
   std::set<base::Uuid> uuids_;
 
   // MD5 context used to compute MD5 hash of all bookmark data.
-  base::MD5Context md5_context_;
+  crypto::obsolete::Md5 md5_hasher_;
 
   // Checksum computed during last encoding/decoding call.
   std::string computed_checksum_;
