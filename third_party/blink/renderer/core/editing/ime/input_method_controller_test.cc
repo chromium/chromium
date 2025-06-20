@@ -3677,7 +3677,7 @@ TEST_F(InputMethodControllerTest, SetCompositionInMyanmar) {
   Element* div =
       InsertHTMLElement("<div id='sample' contenteditable></div>", "sample");
 
-  // Add character U+200C: 'kZeroWidthNonJoinerCharacter' and Myanmar vowel
+  // Add character U+200C: 'kZeroWidthNonJoiner' and Myanmar vowel
   Controller().SetComposition(String::FromUTF8("\xE2\x80\x8C\xE1\x80\xB1"),
                               Vector<ImeTextSpan>(), 0, 0);
 
@@ -3691,7 +3691,7 @@ TEST_F(InputMethodControllerTest, SetCompositionInMyanmar) {
                           Vector<ImeTextSpan>(), 1);
   EXPECT_EQ(String::FromUTF8("\xE2\x80\x8C\xE1\x80\xB1"), div->innerHTML());
 
-  // Add character U+200C: 'kZeroWidthNonJoinerCharacter' and Myanmar vowel
+  // Add character U+200C: 'kZeroWidthNonJoiner' and Myanmar vowel
   Controller().SetComposition(String::FromUTF8("\xE2\x80\x8C\xE1\x80\xB1"),
                               Vector<ImeTextSpan>(), 2, 2);
   Controller().CommitText(String::FromUTF8("\xE2\x80\x8C\xE1\x80\xB1"),
