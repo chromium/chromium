@@ -545,7 +545,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         ->AddPrefetchContainerWithHandle(std::move(prefetch_container));
   }
 
-  std::unique_ptr<content::PrefetchHandle> MakePrefetchFromBrowserContext(
+  [[nodiscard]] std::unique_ptr<content::PrefetchHandle>
+  MakePrefetchFromBrowserContext(
       const GURL& url,
       std::optional<net::HttpNoVarySearchData> no_vary_search_data,
       const net::HttpRequestHeaders& additional_headers,
