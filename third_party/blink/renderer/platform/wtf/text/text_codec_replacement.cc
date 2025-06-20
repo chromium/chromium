@@ -25,13 +25,12 @@ void TextCodecReplacement::RegisterEncodingNames(
 }
 
 static std::unique_ptr<TextCodec> NewStreamingTextDecoderReplacement(
-    const TextEncoding&,
-    const void*) {
+    const TextEncoding&) {
   return std::make_unique<TextCodecReplacement>();
 }
 
 void TextCodecReplacement::RegisterCodecs(TextCodecRegistrar registrar) {
-  registrar("replacement", NewStreamingTextDecoderReplacement, nullptr);
+  registrar("replacement", NewStreamingTextDecoderReplacement);
 }
 
 String TextCodecReplacement::Decode(base::span<const uint8_t> data,

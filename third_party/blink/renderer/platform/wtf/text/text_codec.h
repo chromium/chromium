@@ -115,11 +115,8 @@ class WTF_EXPORT TextCodec {
 
 typedef void (*EncodingNameRegistrar)(const char* alias, const char* name);
 
-typedef std::unique_ptr<TextCodec> (
-    *NewTextCodecFunction)(const TextEncoding&, const void* additional_data);
-typedef void (*TextCodecRegistrar)(const char* name,
-                                   NewTextCodecFunction,
-                                   const void* additional_data);
+typedef std::unique_ptr<TextCodec> (*NewTextCodecFunction)(const TextEncoding&);
+typedef void (*TextCodecRegistrar)(const char* name, NewTextCodecFunction);
 
 }  // namespace blink
 

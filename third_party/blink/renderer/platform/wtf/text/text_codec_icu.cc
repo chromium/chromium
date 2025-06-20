@@ -59,8 +59,7 @@ static UConverter*& CachedConverterIcu() {
   return WtfThreading().CachedConverterIcu().converter;
 }
 
-std::unique_ptr<TextCodec> TextCodecIcu::Create(const TextEncoding& encoding,
-                                                const void*) {
+std::unique_ptr<TextCodec> TextCodecIcu::Create(const TextEncoding& encoding) {
   return base::WrapUnique(new TextCodecIcu(encoding));
 }
 
@@ -272,7 +271,7 @@ void TextCodecIcu::RegisterEncodingNames(EncodingNameRegistrar registrar) {
 
 void TextCodecIcu::RegisterCodecs(TextCodecRegistrar registrar) {
   // See comment above in registerEncodingNames.
-  registrar("ISO-8859-8-I", Create, nullptr);
+  registrar("ISO-8859-8-I", Create);
 
   int32_t num_encodings = ucnv_countAvailable();
   for (int32_t i = 0; i < num_encodings; ++i) {
@@ -298,7 +297,7 @@ void TextCodecIcu::RegisterCodecs(TextCodecRegistrar registrar) {
     if (TextCodecCjk::IsSupported(standard_name)) {
       continue;
     }
-    registrar(standard_name, Create, nullptr);
+    registrar(standard_name, Create);
   }
 }
 

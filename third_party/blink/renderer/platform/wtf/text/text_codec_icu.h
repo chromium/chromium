@@ -48,8 +48,7 @@ class TextCodecIcu final : public TextCodec {
 
  private:
   explicit TextCodecIcu(const TextEncoding&);
-  WTF_EXPORT static std::unique_ptr<TextCodec> Create(const TextEncoding&,
-                                                      const void*);
+  WTF_EXPORT static std::unique_ptr<TextCodec> Create(const TextEncoding&);
 
   String Decode(base::span<const uint8_t> data,
                 FlushBehavior,

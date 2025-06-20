@@ -43,13 +43,12 @@ void TextCodecUserDefined::RegisterEncodingNames(
 }
 
 static std::unique_ptr<TextCodec> NewStreamingTextDecoderUserDefined(
-    const TextEncoding&,
-    const void*) {
+    const TextEncoding&) {
   return std::make_unique<TextCodecUserDefined>();
 }
 
 void TextCodecUserDefined::RegisterCodecs(TextCodecRegistrar registrar) {
-  registrar("x-user-defined", NewStreamingTextDecoderUserDefined, nullptr);
+  registrar("x-user-defined", NewStreamingTextDecoderUserDefined);
 }
 
 String TextCodecUserDefined::Decode(base::span<const uint8_t> data,

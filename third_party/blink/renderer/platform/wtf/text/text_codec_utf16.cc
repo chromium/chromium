@@ -52,20 +52,18 @@ void TextCodecUtf16::RegisterEncodingNames(EncodingNameRegistrar registrar) {
 }
 
 static std::unique_ptr<TextCodec> NewStreamingTextDecoderUtf16le(
-    const TextEncoding&,
-    const void*) {
+    const TextEncoding&) {
   return std::make_unique<TextCodecUtf16>(true);
 }
 
 static std::unique_ptr<TextCodec> NewStreamingTextDecoderUtf16be(
-    const TextEncoding&,
-    const void*) {
+    const TextEncoding&) {
   return std::make_unique<TextCodecUtf16>(false);
 }
 
 void TextCodecUtf16::RegisterCodecs(TextCodecRegistrar registrar) {
-  registrar("UTF-16LE", NewStreamingTextDecoderUtf16le, nullptr);
-  registrar("UTF-16BE", NewStreamingTextDecoderUtf16be, nullptr);
+  registrar("UTF-16LE", NewStreamingTextDecoderUtf16le);
+  registrar("UTF-16BE", NewStreamingTextDecoderUtf16be);
 }
 
 String TextCodecUtf16::Decode(base::span<const uint8_t> bytes,

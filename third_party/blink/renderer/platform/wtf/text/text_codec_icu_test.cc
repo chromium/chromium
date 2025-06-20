@@ -12,7 +12,7 @@ namespace blink {
 
 TEST(TextCodecIcuTest, IgnorableCodePoint) {
   TextEncoding iso2022jp("iso-2022-jp");
-  std::unique_ptr<TextCodec> codec = TextCodecIcu::Create(iso2022jp, nullptr);
+  std::unique_ptr<TextCodec> codec = TextCodecIcu::Create(iso2022jp);
   Vector<UChar> source;
   source.push_back('a');
   source.push_back(uchar::kZeroWidthJoiner);

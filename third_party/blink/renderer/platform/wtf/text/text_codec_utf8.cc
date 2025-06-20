@@ -55,8 +55,7 @@ ALWAYS_INLINE size_t LengthOfNonCharacter(int character) {
   return -character;
 }
 
-std::unique_ptr<TextCodec> TextCodecUtf8::Create(const TextEncoding&,
-                                                 const void*) {
+std::unique_ptr<TextCodec> TextCodecUtf8::Create(const TextEncoding&) {
   return base::WrapUnique(new TextCodecUtf8());
 }
 
@@ -79,7 +78,7 @@ void TextCodecUtf8::RegisterEncodingNames(EncodingNameRegistrar registrar) {
 }
 
 void TextCodecUtf8::RegisterCodecs(TextCodecRegistrar registrar) {
-  registrar("UTF-8", Create, nullptr);
+  registrar("UTF-8", Create);
 }
 
 static constexpr std::array<uint8_t, 256> kNonASCIISequenceLength = {

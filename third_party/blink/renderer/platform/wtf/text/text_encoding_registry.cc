@@ -59,10 +59,7 @@ const size_t kMaxEncodingNameLength = 63;
 
 struct TextCodecFactory {
   NewTextCodecFunction function;
-  const void* additional_data;
-  explicit TextCodecFactory(NewTextCodecFunction f = nullptr,
-                            const void* d = nullptr)
-      : function(f), additional_data(d) {}
+  explicit TextCodecFactory(NewTextCodecFunction f = nullptr) : function(f) {}
 };
 
 typedef HashMap<const char*, const char*, CaseFoldingHashTraits<const char*>>
@@ -145,12 +142,9 @@ static void AddToTextEncodingNameMap(const char* alias, const char* name) {
   g_text_encoding_name_map->insert(alias, atomic_name);
 }
 
-static void AddToTextCodecMap(const char* name,
-                              NewTextCodecFunction function,
-                              const void* additional_data) {
+static void AddToTextCodecMap(const char* name, NewTextCodecFunction function) {
   EncodingRegistryLock().AssertAcquired();
-  g_text_codec_map->insert(AtomicString(name),
-                           TextCodecFactory(function, additional_data));
+  g_text_codec_map->insert(AtomicString(name), TextCodecFactory(function));
 }
 
 // Note that this can be called both the main thread and worker threads.
@@ -192,7 +186,7 @@ std::unique_ptr<TextCodec> NewTextCodec(const TextEncoding& encoding) {
   DCHECK(g_text_codec_map);
   TextCodecFactory factory = g_text_codec_map->at(encoding.GetName());
   DCHECK(factory.function);
-  return factory.function(encoding, factory.additional_data);
+  return factory.function(encoding);
 }
 
 const char* AtomicCanonicalTextEncodingName(const char* name) {

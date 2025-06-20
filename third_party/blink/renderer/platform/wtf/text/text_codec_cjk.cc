@@ -1046,12 +1046,11 @@ void TextCodecCjk::RegisterEncodingNames(EncodingNameRegistrar registrar) {
 
 void TextCodecCjk::RegisterCodecs(TextCodecRegistrar registrar) {
   for (auto* name : kSupportedCanonicalNames) {
-    registrar(name, Create, nullptr);
+    registrar(name, Create);
   }
 }
 
-std::unique_ptr<TextCodec> TextCodecCjk::Create(const TextEncoding& encoding,
-                                                const void*) {
+std::unique_ptr<TextCodec> TextCodecCjk::Create(const TextEncoding& encoding) {
   const AtomicString& name = encoding.GetName();
 
   // To keep the `TextCodecCjk` constructor private, we intend to `new`
