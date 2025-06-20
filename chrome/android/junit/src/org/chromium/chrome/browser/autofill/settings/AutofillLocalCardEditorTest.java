@@ -93,7 +93,7 @@ public class AutofillLocalCardEditorTest {
                 /* name= */ "John Doe",
                 /* number= */ NON_AMEX_CARD_NUMBER,
                 /* networkAndLastFourDigits= */ "",
-                /* month= */ "5",
+                /* month= */ "05",
                 AutofillTestHelper.nextYear(),
                 /* basicCardIssuerNetwork= */ "visa",
                 /* issuerIconDrawableId= */ 0,
@@ -111,7 +111,7 @@ public class AutofillLocalCardEditorTest {
                 /* name= */ "John Doe",
                 /* number= */ NON_AMEX_CARD_NUMBER,
                 /* networkAndLastFourDigits= */ "",
-                /* month= */ "5",
+                /* month= */ "05",
                 AutofillTestHelper.nextYear(),
                 /* basicCardIssuerNetwork= */ "visa",
                 /* issuerIconDrawableId= */ 0,
@@ -141,7 +141,7 @@ public class AutofillLocalCardEditorTest {
                 /* name= */ "John Doe",
                 /* number= */ AMEX_CARD_NUMBER,
                 /* networkAndLastFourDigits= */ "",
-                /* month= */ "5",
+                /* month= */ "05",
                 AutofillTestHelper.nextYear(),
                 /* basicCardIssuerNetwork= */ "amex",
                 /* issuerIconDrawableId= */ 0,
@@ -322,7 +322,7 @@ public class AutofillLocalCardEditorTest {
         initFragment(getSampleLocalCard());
 
         assertThat(mNicknameText.getText().toString()).isEmpty();
-        assertFalse(mDoneButton.isEnabled());
+        assertTrue(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
     }
 
     @Test
@@ -334,8 +334,7 @@ public class AutofillLocalCardEditorTest {
         initFragment(card);
 
         assertThat(mNicknameText.getText().toString()).isEqualTo(nickname);
-        // If the nickname is not modified `mDoneButton` button should be disabled.
-        assertFalse(mDoneButton.isEnabled());
+        assertTrue(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
     }
 
     @Test
@@ -354,8 +353,8 @@ public class AutofillLocalCardEditorTest {
         mNicknameText.setText("Nickname 123");
 
         assertThat(mNicknameLabel.getError()).isEqualTo(mNicknameInvalidError);
-        // Since the nickname has an error, the done button should be disabled.
-        assertFalse(mDoneButton.isEnabled());
+        // Since the nickname has an error, the form should not be valid.
+        assertFalse(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
     }
 
     @Test
@@ -371,7 +370,7 @@ public class AutofillLocalCardEditorTest {
         // Set the nickname to valid one.
         mNicknameText.setText("Valid Nickname");
         assertThat(mNicknameLabel.getError()).isNull();
-        assertTrue(mDoneButton.isEnabled());
+        assertTrue(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
     }
 
     @Test
@@ -388,7 +387,7 @@ public class AutofillLocalCardEditorTest {
         mNicknameText.setText(null);
 
         assertThat(mNicknameLabel.getError()).isNull();
-        assertTrue(mDoneButton.isEnabled());
+        assertTrue(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
     }
 
     @Test
@@ -446,7 +445,7 @@ public class AutofillLocalCardEditorTest {
         initFragment(card);
 
         assertThat(mCvc.getText().toString()).isEqualTo(cvc);
-        assertFalse(mDoneButton.isEnabled());
+        assertTrue(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
     }
 
     @Test
@@ -529,7 +528,7 @@ public class AutofillLocalCardEditorTest {
                 .isEqualTo(
                         String.format(
                                 "%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
-        assertFalse(mDoneButton.isEnabled());
+        assertTrue(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
     }
 
     @Test
@@ -543,7 +542,7 @@ public class AutofillLocalCardEditorTest {
                 String.format("%s/%s", invalidExpirationMonth, validExpirationYear.substring(2)));
 
         assertThat(mExpirationDate.getError()).isEqualTo(mExpirationDateInvalidError);
-        assertFalse(mDoneButton.isEnabled());
+        assertFalse(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
     }
 
     @Test
@@ -558,7 +557,7 @@ public class AutofillLocalCardEditorTest {
                         "%s/%s", validExpirationMonth, invalidPastExpirationYear.substring(2)));
 
         assertThat(mExpirationDate.getError()).isEqualTo(mExpiredCardError);
-        assertFalse(mDoneButton.isEnabled());
+        assertFalse(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
     }
 
     @Test
@@ -574,13 +573,13 @@ public class AutofillLocalCardEditorTest {
         initFragment(card);
 
         assertThat(mExpirationDate.getError()).isEqualTo(mExpiredCardError);
-        assertFalse(mDoneButton.isEnabled());
+        assertFalse(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
 
         mExpirationDate.setText(
                 String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
 
         assertThat(mExpirationDate.getError()).isNull();
-        assertTrue(mDoneButton.isEnabled());
+        assertTrue(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
     }
 
     @Test
@@ -594,13 +593,13 @@ public class AutofillLocalCardEditorTest {
                 String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
 
         assertThat(mExpirationDate.getError()).isNull();
-        assertTrue(mDoneButton.isEnabled());
+        assertTrue(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
 
         mExpirationDate.setText(
                 String.format("%s/%s", validExpirationMonth, /* expiration year */ ""));
 
-        // Button should be disabled, but no error should be visible too.
-        assertFalse(mDoneButton.isEnabled());
+        // Empty expiration date should make the form invalid.
+        assertFalse(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
         assertThat(mDoneButton.getError()).isNull();
     }
 
@@ -615,12 +614,12 @@ public class AutofillLocalCardEditorTest {
                 String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
 
         assertThat(mExpirationDate.getError()).isNull();
-        assertTrue(mDoneButton.isEnabled());
+        assertTrue(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
 
         mExpirationDate.setText(/* date= */ "");
 
-        // Button should be disabled, but no error should be visible too.
-        assertFalse(mDoneButton.isEnabled());
+        // Clearing the expiration data should make the form invalid.
+        assertFalse(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
         assertThat(mDoneButton.getError()).isNull();
     }
 
@@ -639,21 +638,21 @@ public class AutofillLocalCardEditorTest {
                 String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
         mNicknameText.setText(validNickname);
 
-        assertTrue(mDoneButton.isEnabled());
+        assertTrue(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
 
         mExpirationDate.setText(
                 String.format(
                         "%s/%s", validExpirationMonth, invalidPastExpirationYear.substring(2)));
         mNicknameText.setText(invalidNickname);
 
-        // Button should be disabled, but no error should be visible too.
-        assertFalse(mDoneButton.isEnabled());
+        // Invalid nickname and expiration year should make the form invalid.
+        assertFalse(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
         assertThat(mDoneButton.getError()).isNull();
 
         mNicknameText.setText(validNickname);
 
-        // Button should be disabled, but no error should be visible too.
-        assertFalse(mDoneButton.isEnabled());
+        // Invalid expiration year keeps the form invalid.
+        assertFalse(mCardEditor.validateFormAndUpdateErrorAndFocusErrorField());
         assertThat(mDoneButton.getError()).isNull();
     }
 

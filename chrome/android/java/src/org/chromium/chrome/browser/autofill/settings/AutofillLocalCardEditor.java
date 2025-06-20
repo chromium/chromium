@@ -93,7 +93,6 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
     protected @MonotonicNonNull EditText mExpirationDate;
     protected @MonotonicNonNull EditText mCvc;
     protected @MonotonicNonNull ImageView mCvcHintImage;
-    private boolean mIsValidExpirationDate;
     private int mInitialExpirationYearPos;
     protected Button mScanButton;
     private CreditCardScannerManager mScannerManager;
@@ -148,6 +147,9 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
                     @Override
                     public void afterTextChanged(Editable s) {
                         mScannerManager.fieldEdited(FieldType.NUMBER);
+                        if (mNumberLabel.getError() != null) {
+                            validateCardNumberAndUpdateError(removeSpaces(s.toString()));
+                        }
                     }
                 });
 
@@ -236,22 +238,15 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        boolean isAddressSpinnerUpdated =
-                parent == mBillingAddress && position != mInitialBillingAddressPos;
-        if (isAddressSpinnerUpdated) {
-            updateSaveButtonEnabled();
-        }
         if (!mIsCvcStorageEnabled) {
             // If the month spinner was updated.
             if (parent == mExpirationMonth && position != mInitialExpirationMonthPos) {
                 mScannerManager.fieldEdited(FieldType.MONTH);
-                updateSaveButtonEnabled();
             }
 
             // If the year spinner was updated.
             if (parent == mExpirationYear && position != mInitialExpirationYearPos) {
                 mScannerManager.fieldEdited(FieldType.YEAR);
-                updateSaveButtonEnabled();
             }
         }
         mScannerManager.fieldEdited(FieldType.UNKNOWN);
@@ -259,7 +254,6 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
 
     @Override
     public void afterTextChanged(Editable s) {
-        updateSaveButtonEnabled();
         mScannerManager.fieldEdited(FieldType.UNKNOWN);
     }
 
@@ -371,20 +365,15 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
 
     @Override
     protected boolean saveEntry() {
-        // Remove all spaces in editText.
-        String cardNumber = mNumberText.getText().toString().replaceAll("\\s+", "");
-        // Issuer network will be empty if credit card number is not valid.
-        if (TextUtils.isEmpty(
-                PersonalDataManager.getBasicCardIssuerNetwork(
-                        cardNumber, /* emptyIfInvalid= */ true))) {
-            mNumberLabel.setError(
-                    mContext.getString(R.string.payments_card_number_invalid_validation_message));
+        if (!validateFormAndUpdateErrorAndFocusErrorField()) {
             return false;
         }
 
         PersonalDataManager personalDataManager =
                 PersonalDataManagerFactory.getForProfile(getProfile());
-        CreditCard card = personalDataManager.getCreditCardForNumber(cardNumber);
+        CreditCard card =
+                personalDataManager.getCreditCardForNumber(
+                        removeSpaces(mNumberText.getText().toString()));
         card.setGUID(mGUID);
         card.setOrigin(SETTINGS_ORIGIN);
         card.setName(mNameText.getText().toString().trim());
@@ -393,12 +382,6 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
             assumeNonNull(mExpirationDate);
             assumeNonNull(mCvc);
             String expirationDate = mExpirationDate.getText().toString().trim();
-            if (TextUtils.isEmpty(expirationDate)) {
-                mExpirationDate.setError(
-                        mContext.getString(
-                                R.string.autofill_credit_card_editor_invalid_expiration_date));
-                return false;
-            }
             card.setMonth(AutofillLocalCardEditor.getExpirationMonth(expirationDate));
             card.setYear(AutofillLocalCardEditor.getExpirationYear(expirationDate));
             card.setCvc(mCvc.getText().toString().trim());
@@ -465,6 +448,48 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         return true;
     }
 
+    @VisibleForTesting
+    public boolean validateFormAndUpdateErrorAndFocusErrorField() {
+        if (!validateCardNumberAndUpdateError(removeSpaces(mNumberText.getText().toString()))) {
+            mNumberText.requestFocus();
+            return false;
+        }
+
+        if (mIsCvcStorageEnabled) {
+            assumeNonNull(mExpirationDate);
+            if (!validateExpirationDateAndUpdateError(
+                    mExpirationDate.getText().toString().trim())) {
+                mExpirationDate.requestFocus();
+                return false;
+            }
+        }
+
+        if (!mIsValidNickname) {
+            mNicknameText.requestFocus();
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validateCardNumberAndUpdateError(String cardNumber) {
+        // Issuer network will be empty if credit card number is not valid.
+        if (TextUtils.isEmpty(
+                PersonalDataManager.getBasicCardIssuerNetwork(
+                        cardNumber, /* emptyIfInvalid= */ true))) {
+            mNumberLabel.setError(
+                    mContext.getString(R.string.payments_card_number_invalid_validation_message));
+            return false;
+        } else {
+            mNumberLabel.setError(null);
+            return true;
+        }
+    }
+
+    private String removeSpaces(String s) {
+        return s.replaceAll("\\s+", "");
+    }
+
     @Override
     protected void deleteEntry() {
         if (mGUID != null) {
@@ -475,6 +500,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
     @Override
     protected void initializeButtons(View v) {
         super.initializeButtons(v);
+        mDoneButton.setEnabled(true);
 
         // Listen for change to inputs. Enable the save button after something has changed.
         mNameText.addTextChangedListener(this);
@@ -532,17 +558,6 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         addCardDataToEditFields();
     }
 
-    private void updateSaveButtonEnabled() {
-        // Enable save button if credit card number is not empty and the nickname is valid
-        // and the expiration date is valid. We validate the credit card number when the user
-        // presses the save button.
-        boolean enabled =
-                !TextUtils.isEmpty(mNumberText.getText())
-                        && mIsValidNickname
-                        && (!mIsCvcStorageEnabled || mIsValidExpirationDate);
-        mDoneButton.setEnabled(enabled);
-    }
-
     private TextWatcher nicknameTextWatcher() {
         return new EmptyTextWatcher() {
             @Override
@@ -554,7 +569,6 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
                                 ? ""
                                 : mContext.getString(
                                         R.string.autofill_credit_card_editor_invalid_nickname));
-                updateSaveButtonEnabled();
             }
         };
     }
@@ -572,30 +586,32 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
                     s.insert(SEPARATOR_INDEX, EXPIRATION_DATE_SEPARATOR);
                 }
                 if (s.length() == VALID_DATE_LENGTH) {
-                    if (!validExpirationDate(s.toString())) {
-                        mExpirationDate.setError(
-                                mContext.getString(
-                                        R.string
-                                                .autofill_credit_card_editor_invalid_expiration_date));
-                    } else if (!validFutureExpirationDate(s.toString())) {
-                        mExpirationDate.setError(
-                                mContext.getString(
-                                        R.string.autofill_credit_card_editor_expired_card));
-                    } else if (mExpirationDate.getError() != null) {
-                        // Removes error message if a previous error exists and the user inputs
-                        // a valid date.
-                        mExpirationDate.setError(null);
-                    }
+                    validateExpirationDateAndUpdateError(s.toString());
                 }
-                mIsValidExpirationDate =
-                        validExpirationDate(s.toString())
-                                && validFutureExpirationDate(s.toString());
-                updateSaveButtonEnabled();
 
                 mScannerManager.fieldEdited(FieldType.MONTH);
                 mScannerManager.fieldEdited(FieldType.YEAR);
             }
         };
+    }
+
+    private boolean validateExpirationDateAndUpdateError(String expirationDate) {
+        assumeNonNull(mExpirationDate);
+        if (!validExpirationDate(expirationDate)) {
+            mExpirationDate.setError(
+                    mContext.getString(
+                            R.string.autofill_credit_card_editor_invalid_expiration_date));
+            return false;
+        } else if (!validFutureExpirationDate(expirationDate)) {
+            mExpirationDate.setError(
+                    mContext.getString(R.string.autofill_credit_card_editor_expired_card));
+            return false;
+        } else if (mExpirationDate.getError() != null) {
+            // Removes error message if a previous error exists and the user inputs
+            // a valid date.
+            mExpirationDate.setError(null);
+        }
+        return true;
     }
 
     private TextWatcher creditCardNumberTextWatcherForCvc() {
