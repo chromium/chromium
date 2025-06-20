@@ -2688,9 +2688,10 @@ class LensOverlayBrowserTest : public LensBrowserBaseTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    // Permits sharing the page screenshot by default.
+    // Permits sharing the page screenshot and content by default.
     PrefService* prefs = browser()->profile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
+    prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, true);
   }
 
   void TearDownOnMainThread() override {

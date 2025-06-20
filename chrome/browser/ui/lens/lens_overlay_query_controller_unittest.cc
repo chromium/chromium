@@ -3847,7 +3847,7 @@ TEST_F(LensOverlayQueryControllerTest,
       /*primary_content_type=*/lens::MimeType::kUnknown,
       /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
-  ASSERT_FALSE(query_controller.last_cluster_info_request().has_value());
+  ASSERT_TRUE(query_controller.last_cluster_info_request().has_value());
 
   query_controller.SendRegionSearch(
       kTestTime, std::move(region), lens::REGION_SEARCH,

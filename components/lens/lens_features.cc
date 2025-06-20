@@ -41,7 +41,7 @@ BASE_FEATURE(kLensOverlayImageContextMenuActions,
 
 BASE_FEATURE(kLensOverlayContextualSearchbox,
              "LensOverlayContextualSearchbox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayContextualSearchboxForOmniboxSuggestions,
              "LensOverlayContextualSearchboxForOmniboxSuggestions",
