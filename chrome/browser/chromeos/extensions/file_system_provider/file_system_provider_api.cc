@@ -327,7 +327,7 @@ FileSystemProviderInternalRespondToMountRequestFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   int64_t request_id = params->request_id;
-  bool result = ForwardMountResult(request_id, mutable_args());
+  bool result = ForwardMountResult(request_id, GetMutableArgs());
   if (!result)
     Respond(Error(kInterfaceUnavailable));
   return RespondLater();
@@ -365,7 +365,7 @@ FileSystemProviderInternalUnmountRequestedSuccessFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   bool result = ForwardOperationResult(
-      params, mutable_args(),
+      params, GetMutableArgs(),
       crosapi::mojom::FSPOperationResponse::kUnmountSuccess);
   if (!result)
     Respond(Error(kInterfaceUnavailable));
@@ -379,7 +379,7 @@ FileSystemProviderInternalGetMetadataRequestedSuccessFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   bool result = ForwardOperationResult(
-      params, mutable_args(),
+      params, GetMutableArgs(),
       crosapi::mojom::FSPOperationResponse::kGetEntryMetadataSuccess);
   if (!result)
     return RespondNow(Error(kInterfaceUnavailable));
@@ -392,7 +392,7 @@ FileSystemProviderInternalGetActionsRequestedSuccessFunction::Run() {
   std::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   bool result = ForwardOperationResult(
-      params, mutable_args(),
+      params, GetMutableArgs(),
       crosapi::mojom::FSPOperationResponse::kGetActionsSuccess);
   if (!result)
     return RespondNow(Error(kInterfaceUnavailable));
@@ -406,7 +406,7 @@ FileSystemProviderInternalReadDirectoryRequestedSuccessFunction::Run() {
   std::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   bool result = ForwardOperationResult(
-      params, mutable_args(),
+      params, GetMutableArgs(),
       crosapi::mojom::FSPOperationResponse::kReadDirectorySuccess);
   if (!result)
     return RespondNow(Error(kInterfaceUnavailable));
@@ -422,7 +422,7 @@ FileSystemProviderInternalReadFileRequestedSuccessFunction::Run() {
   std::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   bool result = ForwardOperationResult(
-      params, mutable_args(),
+      params, GetMutableArgs(),
       crosapi::mojom::FSPOperationResponse::kReadFileSuccess);
   if (!result)
     return RespondNow(Error(kInterfaceUnavailable));
@@ -438,7 +438,7 @@ FileSystemProviderInternalOpenFileRequestedSuccessFunction::Run() {
   std::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   bool result = ForwardOpenFileFinishedSuccessullyResult(std::move(params),
-                                                         mutable_args());
+                                                         GetMutableArgs());
   if (!result) {
     return RespondNow(Error(kInterfaceUnavailable));
   }
@@ -468,7 +468,7 @@ bool FileSystemProviderInternal::ForwardOpenFileFinishedSuccessullyResult(
       ->crosapi_ash()
       ->file_system_provider_service_ash()
       ->OpenFileFinishedSuccessfullyWithProfile(
-          std::move(file_system_id), request_id, std::move(mutable_args()),
+          std::move(file_system_id), request_id, std::move(GetMutableArgs()),
           std::move(callback), profile);
   return true;
 }
@@ -480,7 +480,7 @@ FileSystemProviderInternalOperationRequestedSuccessFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   bool result = ForwardOperationResult(
-      params, mutable_args(),
+      params, GetMutableArgs(),
       crosapi::mojom::FSPOperationResponse::kGenericSuccess);
   if (!result)
     return RespondNow(Error(kInterfaceUnavailable));
@@ -499,7 +499,7 @@ FileSystemProviderInternalOperationRequestedErrorFunction::Run() {
   }
 
   bool result = ForwardOperationResult(
-      params, mutable_args(),
+      params, GetMutableArgs(),
       crosapi::mojom::FSPOperationResponse::kGenericFailure);
   if (!result)
     return RespondNow(Error(kInterfaceUnavailable));

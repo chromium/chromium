@@ -11,6 +11,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -46,6 +47,7 @@
 #include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_api.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
@@ -607,6 +609,22 @@ bool ExtensionFunction::ShouldKeepWorkerAliveIndefinitely() {
   return false;
 }
 
+const base::Value::List& ExtensionFunction::GetOriginalArgs() const {
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kAvoidCloneArgsOnExtensionFunctionDispatch));
+
+  if (original_args_.has_value()) {
+    // Return `original_args_`, which were copied from `args_` on the first call
+    // to GetMutableArgs().
+    return *original_args_;
+  }
+
+  // Return `args_`, which haven't been modified since they were set by
+  // SetArgs(), since GetMutableArgs() was never called.
+  DCHECK(args_.has_value());
+  return *args_;
+}
+
 void ExtensionFunction::OnResponseAck() {
   // Derived classes must override this if they require and implement an
   // ACK from the renderer.
@@ -696,6 +714,19 @@ void ExtensionFunction::SetTransferredBlobs(
     std::vector<blink::mojom::SerializedBlobPtr> blobs) {
   DCHECK(transferred_blobs_.empty());  // Should only be called once.
   transferred_blobs_ = std::move(blobs);
+}
+
+base::Value::List& ExtensionFunction::GetMutableArgs() {
+  DCHECK(args_);
+  if (!original_args_.has_value() &&
+      base::FeatureList::IsEnabled(
+          extensions_features::kAvoidCloneArgsOnExtensionFunctionDispatch)) {
+    // Preserve original args before allowing modification of `args_`. Not
+    // needed when `kAvoidCloneArgsOnExtensionFunctionDispatch` is disabled
+    // since GetOriginalArgs() is disallowed in that configuration.
+    original_args_ = args_->Clone();
+  }
+  return *args_;
 }
 
 void ExtensionFunction::SendResponseImpl(bool success) {

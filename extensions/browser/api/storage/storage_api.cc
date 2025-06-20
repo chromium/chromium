@@ -103,10 +103,12 @@ bool SettingsFunction::PreRunValidation(std::string* error) {
   EXTENSION_FUNCTION_PRERUN_VALIDATE(args().size() >= 1);
   EXTENSION_FUNCTION_PRERUN_VALIDATE(args()[0].is_string());
 
-  // Not a ref since we remove the underlying value after.
-  std::string storage_area_string = args()[0].GetString();
+  base::ListValue& mutable_args = GetMutableArgs();
 
-  mutable_args().erase(args().begin());
+  // Not a ref since we remove the underlying value after.
+  const std::string storage_area_string(std::move(mutable_args[0].GetString()));
+
+  mutable_args.erase(mutable_args.begin());
   storage_area_ = StorageAreaFromString(storage_area_string);
   EXTENSION_FUNCTION_PRERUN_VALIDATE(storage_area_ !=
                                      StorageAreaNamespace::kInvalid);
@@ -187,8 +189,10 @@ ExtensionFunction::ResponseAction StorageStorageAreaGetFunction::Run() {
     return RespondNow(BadMessage());
   }
 
-  base::Value input = std::move(mutable_args()[0]);
-  mutable_args().erase(args().begin());
+  base::ListValue& mutable_args = GetMutableArgs();
+
+  base::Value input = std::move(mutable_args[0]);
+  mutable_args.erase(args().begin());
 
   std::optional<std::vector<std::string>> keys;
   std::optional<base::Value::Dict> defaults;
@@ -343,9 +347,11 @@ ExtensionFunction::ResponseAction StorageStorageAreaSetFunction::Run() {
     return RespondNow(BadMessage());
   }
 
+  base::ListValue& mutable_args = GetMutableArgs();
+
   // Retrieve and delete input from `args_` since they will be moved to storage.
-  base::Value input = std::move(mutable_args()[0]);
-  mutable_args().erase(args().begin());
+  base::Value input = std::move(mutable_args[0]);
+  mutable_args.erase(args().begin());
 
   StorageFrontend* frontend = StorageFrontend::Get(browser_context());
   frontend->Set(

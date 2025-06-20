@@ -48,6 +48,7 @@
 #include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_api.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -198,7 +199,7 @@ void ExtensionFunctionDispatcher::Dispatch(
 
   // TODO(crbug.com/40056469): Validate (or remove) `params.source_url`.
   DispatchWithCallbackInternal(
-      *params, &frame, *frame.GetProcess(),
+      std::move(params), &frame, *frame.GetProcess(),
       base::BindOnce(
           [](mojom::LocalFrameHost::RequestCallback callback,
              ExtensionFunction::ResponseType type, base::Value::List results,
@@ -254,7 +255,7 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
   }
 
   DispatchWithCallbackInternal(
-      *params, nullptr, *rph,
+      std::move(params), nullptr, *rph,
       base::BindOnce(
           [](mojom::ServiceWorkerHost::RequestWorkerCallback callback,
              ExtensionFunction::ResponseType type, base::Value::List results,
@@ -268,7 +269,7 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
 }
 
 void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
-    const mojom::RequestParams& params,
+    mojom::RequestParamsPtr params,
     content::RenderFrameHost* render_frame_host,
     content::RenderProcessHost& render_process_host,
     ExtensionFunction::ResponseCallback callback) {
@@ -293,10 +294,10 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   const Extension* extension =
-      registry->enabled_extensions().GetByID(params.extension_id);
+      registry->enabled_extensions().GetByID(params->extension_id);
   // Check if the call is from a hosted app. Hosted apps can only make call from
   // render frames, so we can use `render_frame_host_url`.
-  // TODO(devlin): Isn't `params.extension_id` still populated for hosted app
+  // TODO(devlin): Isn't `params->extension_id` still populated for hosted app
   // calls?
   if (!extension && render_frame_host_url) {
     extension = registry->enabled_extensions().GetHostedAppByURL(
@@ -304,7 +305,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   }
 
   if (!process_map->CanProcessHostContextType(extension, render_process_host,
-                                              params.context_type)) {
+                                              params->context_type)) {
     // TODO(crbug.com/40055126): Ideally, we'd be able to mark some
     // of these as bad messages. We can't do that in all cases because there
     // are times some of these might legitimately fail (for instance, during
@@ -318,7 +319,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
     return;
   }
 
-  if (params.context_type == mojom::ContextType::kUntrustedWebUi) {
+  if (params->context_type == mojom::ContextType::kUntrustedWebUi) {
     // TODO(crbug.com/40265193): We should, at minimum, be using an
     // origin here. It'd be even better if we could have a more robust way of
     // checking that a process can host untrusted webui.
@@ -333,11 +334,19 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
     }
   }
 
-  const bool is_worker_request = IsRequestFromServiceWorker(params);
+  const bool is_worker_request = IsRequestFromServiceWorker(*params);
+
+  base::ListValue arguments;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kAvoidCloneArgsOnExtensionFunctionDispatch)) {
+    arguments = std::move(params->arguments);
+  } else {
+    arguments = params->arguments.Clone();
+  }
 
   scoped_refptr<ExtensionFunction> function = CreateExtensionFunction(
-      params, extension, render_process_id, is_worker_request,
-      render_frame_host_url, params.context_type,
+      *params, std::move(arguments), extension, render_process_id,
+      is_worker_request, render_frame_host_url, params->context_type,
       ExtensionAPI::GetSharedInstance(), std::move(callback),
       render_frame_host);
   if (!function.get()) {
@@ -373,18 +382,29 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   // Fetch the ProcessManager before |this| is possibly invalidated.
   ProcessManager* process_manager = ProcessManager::Get(browser_context_);
 
+  // TODO(crbug.com/424432184): When the
+  // `kAvoidCloneArgsOnExtensionFunctionDispatch` feature is cleaned up, this
+  // lambda can be removed and references to it can be replaced with
+  // `function->GetOriginalArgs()`.
+  auto original_args = [&]() -> const base::ListValue& {
+    if (base::FeatureList::IsEnabled(
+            extensions_features::kAvoidCloneArgsOnExtensionFunctionDispatch)) {
+      return function->GetOriginalArgs();
+    }
+    return params->arguments;
+  };
+
   ExtensionSystem* extension_system = ExtensionSystem::Get(browser_context_);
   QuotaService* quota = extension_system->quota_service();
-  std::string violation_error =
-      quota->Assess(extension->id(), function.get(), params.arguments,
-                    base::TimeTicks::Now());
+  std::string violation_error = quota->Assess(
+      extension->id(), function.get(), original_args(), base::TimeTicks::Now());
 
   function->set_request_uuid(base::Uuid::GenerateRandomV4());
 
   // Increment the keepalive to ensure the extension doesn't shut down while
   // it's executing an API function. This is balanced in
   // `OnExtensionFunctionCompleted()`.
-  if (IsRequestFromServiceWorker(params)) {
+  if (is_worker_request) {
     CHECK(function->worker_id());
     content::ServiceWorkerExternalRequestTimeoutType timeout_type =
         function->ShouldKeepWorkerAliveIndefinitely()
@@ -404,7 +424,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   if (violation_error.empty()) {
     // See crbug.com/39178.
     ExtensionsBrowserClient::Get()->PermitExternalProtocolHandler();
-    NotifyApiFunctionCalled(extension->id(), params.name, params.arguments,
+    NotifyApiFunctionCalled(extension->id(), params->name, original_args(),
                             browser_context_);
 
     // Since sandboxed frames listed in the manifest don't get access to the
@@ -432,7 +452,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
       }
     }
 
-    if (IsRequestFromServiceWorker(params)) {
+    if (is_worker_request) {
       base::UmaHistogramSparse(
           "Extensions.Functions.ExtensionServiceWorkerCalls",
           function->histogram_value());
@@ -535,7 +555,8 @@ void ExtensionFunctionDispatcher::ProcessResponseAck(
 
 scoped_refptr<ExtensionFunction>
 ExtensionFunctionDispatcher::CreateExtensionFunction(
-    const mojom::RequestParams& params,
+    const mojom::RequestParams& params_without_args,
+    base::ListValue arguments,
     const Extension* extension,
     int requesting_process_id,
     bool is_worker_request,
@@ -547,16 +568,17 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   constexpr char kCreationFailed[] = "Access to extension API denied.";
 
   scoped_refptr<ExtensionFunction> function =
-      ExtensionFunctionRegistry::GetInstance().NewFunction(params.name);
+      ExtensionFunctionRegistry::GetInstance().NewFunction(
+          params_without_args.name);
   if (!function) {
-    LOG(ERROR) << "Unknown Extension API - " << params.name;
+    LOG(ERROR) << "Unknown Extension API - " << params_without_args.name;
     ResponseCallbackOnError(std::move(callback),
                             ExtensionFunction::ResponseType::kFailed,
                             kCreationFailed);
     return nullptr;
   }
 
-  function->SetArgs(params.arguments.Clone());
+  function->SetArgs(std::move(arguments));
 
   // Determine the source URL. When possible, prefer fetching this value from
   // the RenderFrameHost, but fallback to the value in the `params` object if
@@ -566,17 +588,17 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   if (is_worker_request) {
     // TODO(crbug.com/40056469): Validate this URL further. Or, better,
     // remove it from `mojom::RequestParams`.
-    function->set_source_url(params.source_url);
+    function->set_source_url(params_without_args.source_url);
   } else {
     DCHECK(render_frame_host_url);
     function->set_source_url(*render_frame_host_url);
   }
 
-  function->set_has_callback(params.has_callback);
-  function->set_user_gesture(params.user_gesture);
+  function->set_has_callback(params_without_args.has_callback);
+  function->set_user_gesture(params_without_args.user_gesture);
   function->set_extension(extension);
-  if (params.js_callstack.has_value()) {
-    function->set_js_callstack(*params.js_callstack);
+  if (params_without_args.js_callstack.has_value()) {
+    function->set_js_callstack(*params_without_args.js_callstack);
   }
   function->set_response_callback(std::move(callback));
   function->set_source_context_type(context_type);
@@ -584,8 +606,8 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   if (is_worker_request) {
     CHECK(extension);
     WorkerId worker_id;
-    worker_id.thread_id = params.worker_thread_id;
-    worker_id.version_id = params.service_worker_version_id;
+    worker_id.thread_id = params_without_args.worker_thread_id;
+    worker_id.version_id = params_without_args.service_worker_version_id;
     worker_id.render_process_id = requesting_process_id;
     worker_id.extension_id = extension->id();
     function->set_worker_id(std::move(worker_id));
@@ -599,7 +621,7 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   function->SetDispatcher(weak_ptr_factory_.GetWeakPtr());
 
   if (!function->HasPermission()) {
-    LOG(ERROR) << "Permission denied for " << params.name;
+    LOG(ERROR) << "Permission denied for " << params_without_args.name;
     function->RespondWithError(kCreationFailed);
     return nullptr;
   }

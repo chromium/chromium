@@ -130,7 +130,7 @@ bool ExtensionActionFunction::ExtractDataFromArguments() {
     return true;
   }
 
-  base::Value& first_arg = mutable_args()[0];
+  const base::Value& first_arg = args()[0];
 
   switch (first_arg.type()) {
     case base::Value::Type::INTEGER:
@@ -141,7 +141,7 @@ bool ExtensionActionFunction::ExtractDataFromArguments() {
       // Found the details argument.
       details_ = &first_arg.GetDict();
       // Still need to check for the tabId within details.
-      if (base::Value* tab_id_value = details_->Find("tabId")) {
+      if (const base::Value* tab_id_value = details_->Find("tabId")) {
         switch (tab_id_value->type()) {
           case base::Value::Type::NONE:
             // OK; tabId is optional, leave it default.
@@ -212,7 +212,7 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
 
   // setIcon can take a variant argument: either a dictionary of canvas
   // ImageData, or an icon index.
-  base::Value::Dict* canvas_set = details_->FindDict("imageData");
+  const base::Value::Dict* canvas_set = details_->FindDict("imageData");
   if (canvas_set) {
     gfx::ImageSkia icon;
 
@@ -257,7 +257,7 @@ ExtensionActionSetTitleFunction::RunExtensionAction() {
 ExtensionFunction::ResponseAction
 ExtensionActionSetPopupFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(details_);
-  std::string* popup_string = details_->FindString("popup");
+  const std::string* popup_string = details_->FindString("popup");
   EXTENSION_FUNCTION_VALIDATE(popup_string);
   GURL popup_url;
 
@@ -280,7 +280,7 @@ ExtensionFunction::ResponseAction
 ExtensionActionSetBadgeTextFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(details_);
 
-  std::string* badge_text = details_->FindString("text");
+  const std::string* badge_text = details_->FindString("text");
   if (badge_text) {
     extension_action_->SetBadgeText(tab_id_, *badge_text);
   } else {
@@ -294,7 +294,7 @@ ExtensionActionSetBadgeTextFunction::RunExtensionAction() {
 ExtensionFunction::ResponseAction
 ExtensionActionSetBadgeBackgroundColorFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(details_);
-  base::Value* color_value = details_->Find("color");
+  const base::Value* color_value = details_->Find("color");
   EXTENSION_FUNCTION_VALIDATE(color_value);
   SkColor color = 0;
   if (!ParseColor(*color_value, color)) {
@@ -308,7 +308,7 @@ ExtensionActionSetBadgeBackgroundColorFunction::RunExtensionAction() {
 ExtensionFunction::ResponseAction
 ActionSetBadgeTextColorFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(details_);
-  base::Value* color_value = details_->Find("color");
+  const base::Value* color_value = details_->Find("color");
   EXTENSION_FUNCTION_VALIDATE(color_value);
   SkColor color = 0;
   if (!ParseColor(*color_value, color)) {

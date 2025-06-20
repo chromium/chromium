@@ -449,6 +449,12 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // via `AddResponseTarget()`.
   virtual void OnResponseAck();
 
+  // Returns original args, as they were set by SetArgs() (doesn't include
+  // modifications via GetMutableArgs()). Can only be called when the
+  // "AvoidCloneArgsOnExtensionFunctionDispatch" feature is enabled (otherwise
+  // the `ExtensionFunction` owner has preserved the original args).
+  const base::Value::List& GetOriginalArgs() const;
+
   // Sets did_respond_ to true so that the function won't DCHECK if it never
   // sends a response. Typically, this shouldn't be used, even in testing. It's
   // only for when you want to test functionality that doesn't exercise the
@@ -593,15 +599,14 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   bool has_args() const { return args_.has_value(); }
 
+  // Returns args. They may have been modified via GetMutableArgs() since they
+  // were set with SetArgs().
   const base::Value::List& args() const {
     DCHECK(args_);
     return *args_;
   }
 
-  base::Value::List& mutable_args() {
-    DCHECK(args_);
-    return *args_;
-  }
+  base::Value::List& GetMutableArgs();
 
   // The extension that called this function.
   scoped_refptr<const extensions::Extension> extension_;
@@ -629,8 +634,18 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // failed, `error_` should be set.
   void SendResponseImpl(bool success);
 
-  // The arguments to the API. Only non-null if arguments were specified.
+  // The arguments to the API. Populated by SetArgs(). May be modified via
+  // GetMutableArgs().
   std::optional<base::Value::List> args_;
+
+  // Original arguments to the API. Populated from `args_` when GetMutableArgs()
+  // is first invoked, otherwise nullopt. This exists because an extension
+  // function may modify its args via GetMutableArgs(), but the owner of this
+  // object may need to access the original args via GetOriginalArgs() (the
+  // owner could also copy the args before passing them to the extension
+  // function, but that would result in an unnecessary copy when the extension
+  // function doesn't modify its args).
+  std::optional<base::Value::List> original_args_;
 
   base::ElapsedTimer timer_;
 

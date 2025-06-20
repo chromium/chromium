@@ -80,7 +80,8 @@ namespace extensions {
 ExtensionFunction::ResponseAction
 ContentSettingsContentSettingClearFunction::Run() {
   ContentSettingsType content_type;
-  EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
+  EXTENSION_FUNCTION_VALIDATE(
+      RemoveContentType(GetMutableArgs(), &content_type));
 
   std::optional<Clear::Params> params = Clear::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -117,7 +118,8 @@ ContentSettingsContentSettingClearFunction::Run() {
 ExtensionFunction::ResponseAction
 ContentSettingsContentSettingGetFunction::Run() {
   ContentSettingsType content_type;
-  EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
+  EXTENSION_FUNCTION_VALIDATE(
+      RemoveContentType(GetMutableArgs(), &content_type));
 
   std::optional<Get::Params> params = Get::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -189,7 +191,8 @@ ContentSettingsContentSettingGetFunction::Run() {
 ExtensionFunction::ResponseAction
 ContentSettingsContentSettingSetFunction::Run() {
   ContentSettingsType content_type;
-  EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
+  EXTENSION_FUNCTION_VALIDATE(
+      RemoveContentType(GetMutableArgs(), &content_type));
 
   std::optional<Set::Params> params = Set::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);

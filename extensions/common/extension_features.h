@@ -281,6 +281,12 @@ BASE_DECLARE_FEATURE(kRuntimeOnMessagePromiseReturnSupport);
 // initiating a start.
 BASE_DECLARE_FEATURE(kOptimizeServiceWorkerStartRequests);
 
+// When enabled, a call to base::ListValue::Clone is avoided when dispatching an
+// extension function. Behind a feature to assess impact
+// (go/chrome-performance-work-should-be-finched).
+// TODO(crbug.com/424432184): Clean up when experiment is complete.
+BASE_DECLARE_FEATURE(kAvoidCloneArgsOnExtensionFunctionDispatch);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

@@ -202,7 +202,7 @@ EventsEventAddRulesFunction::EventsEventAddRulesFunction() = default;
 EventsEventAddRulesFunction::~EventsEventAddRulesFunction() = default;
 
 bool EventsEventAddRulesFunction::CreateParams() {
-  ConvertBinaryListElementsToBase64(mutable_args());
+  ConvertBinaryListElementsToBase64(GetMutableArgs());
   params_ = AddRules::Params::Create(args());
   return params_.has_value();
 }
