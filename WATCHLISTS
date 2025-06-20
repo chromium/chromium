@@ -2530,7 +2530,6 @@
     'ai_page_content': ['mfoltz+watch@chromium.org'],
     'ai_settings_page_desktop': ['rainhard+watch@chromium.org'],
     'android_accessibility': ['mschillaci+watcha11y@google.com',
-                              'zhangwenyu+watcha11y@google.com',
                               'cambickel+watcha11y@google.com',
                               'michaelcheco+watcha11y@google.com',
                               'jhawkins+watcha11y@google.com'],
