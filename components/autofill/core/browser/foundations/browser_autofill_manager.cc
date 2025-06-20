@@ -994,7 +994,7 @@ void BrowserAutofillManager::OnTextFieldValueChangedImpl(
     autofill_field->set_is_autofilled(false);
     autofill_field->set_previously_autofilled(true);
     if (logger) {
-      logger->OnEditedAutofilledField(field_id);
+      logger->OnEditedAutofilledField(autofill_field->global_id());
     }
     if (AutofillAiManager* ai_manager = client().GetAutofillAiManager();
         ai_manager &&
@@ -1004,7 +1004,7 @@ void BrowserAutofillManager::OnTextFieldValueChangedImpl(
     }
   } else {
     if (logger) {
-      logger->OnEditedNonFilledField(field_id);
+      logger->OnEditedNonFilledField(autofill_field->global_id());
     }
   }
   UpdateInitialInteractionTimestamp(timestamp);
@@ -1023,6 +1023,7 @@ bool BrowserAutofillManager::IsFormNonSecure(const FormData& form) const {
 SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     const FormData& form,
     const FormStructure* form_structure,
+    const FormFieldData& field,
     const AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source) {
   SuggestionsContext context;
@@ -1088,7 +1089,7 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     context.do_not_generate_autofill_suggestions = true;
     // If the user begins typing, we interpret that as dismissing the warning.
     // No suggestions are allowed, but the warning is no longer shown.
-    if (autofill_field->properties_mask() & kUserTyped) {
+    if (field.properties_mask() & kUserTyped) {
       context.suppress_reason = SuppressReason::kInsecureForm;
     } else {
       context.should_show_mixed_content_warning = true;
@@ -1168,13 +1169,13 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       std::make_unique<IbanSuggestionGenerator>());
 
   SuggestionsContext context = BuildSuggestionsContext(
-      form, form_structure, autofill_field, trigger_source);
+      form, form_structure, field, autofill_field, trigger_source);
 
   auto barrier_callback = base::BarrierCallback<std::pair<
       FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>>(
       suggestion_generators_.size(),
       base::BindOnce(&BrowserAutofillManager::OnSuggestionDataFetched,
-                     weak_ptr_factory_.GetWeakPtr(), form.global_id(), field_id,
+                     weak_ptr_factory_.GetWeakPtr(), form, field,
                      trigger_source, context));
 
   for (const auto& suggestion_generator : suggestion_generators_) {
@@ -1184,8 +1185,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 }
 
 void BrowserAutofillManager::OnSuggestionDataFetched(
-    const FormGlobalId& form_id,
-    const FieldGlobalId& field_id,
+    const FormData& form,
+    const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
     std::vector<std::pair<FillingProduct,
@@ -1196,13 +1197,13 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
           suggestion_generators_.size(),
           base::BindOnce(
               &BrowserAutofillManager::OnIndividualSuggestionsGenerated,
-              weak_ptr_factory_.GetWeakPtr(), form_id, field_id, trigger_source,
+              weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
               context));
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form_id, field_id, &form_structure,
-                             &autofill_field)) {
+  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
+                             &form_structure, &autofill_field)) {
     // Form is not autofillable, or either the form or the field cannot be
     // found.
     return;
@@ -1215,8 +1216,8 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
 }
 
 void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
-    const FormGlobalId& form_id,
-    const FieldGlobalId& field_id,
+    const FormData& form,
+    const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
     std::vector<SuggestionGenerator::ReturnedSuggestions>
@@ -1230,8 +1231,8 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
                        filling_suggestions.end());
   }
 
-  OnGenerateSuggestionsComplete(form_id, field_id, trigger_source, context,
-                                true, suggestions, std::nullopt);
+  OnGenerateSuggestionsComplete(form, field, trigger_source, context, true,
+                                suggestions, std::nullopt);
   // Suggestion generators lifespan should be limited to only when they are
   // needed.
   suggestion_generators_.clear();
@@ -1258,7 +1259,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
                                       &form_structure, &autofill_field);
 
   SuggestionsContext context = BuildSuggestionsContext(
-      form, form_structure, autofill_field, trigger_source);
+      form, form_structure, field, autofill_field, trigger_source);
   context.field_is_relevant_for_plus_addresses =
       IsPlusAddressesManuallyTriggered(trigger_source) ||
       (!context.should_show_mixed_content_warning &&
@@ -1291,10 +1292,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
     std::vector<std::string> plus_addresses) {
-  OnGenerateSuggestionsCallback callback =
-      base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
-                     weak_ptr_factory_.GetWeakPtr(), form.global_id(),
-                     field.global_id(), trigger_source, context);
+  OnGenerateSuggestionsCallback callback = base::BindOnce(
+      &BrowserAutofillManager::OnGenerateSuggestionsComplete,
+      weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context);
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
@@ -1400,8 +1400,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
 
     MixPlusAddressAndAddressSuggestions(
         std::move(plus_address_suggestions), std::move(suggestions),
-        suggestions_context, password_form_classification.type,
-        form.global_id(), field.global_id(), std::move(callback));
+        suggestions_context, password_form_classification.type, form, field,
+        std::move(callback));
 
     return;
   }
@@ -1478,7 +1478,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
           OnGeneratedPlusAddressAndSingleFieldFillSuggestions,
       weak_ptr_factory_.GetWeakPtr(),
       AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
-      password_form_classification.type, form.global_id(), field,
+      password_form_classification.type, form, field,
       should_offer_single_field_form_fill, std::move(callback),
       std::move(plus_address_suggestions));
 
@@ -1527,7 +1527,7 @@ void BrowserAutofillManager::
     OnGeneratedPlusAddressAndSingleFieldFillSuggestions(
         AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
         PasswordFormClassification::Type password_form_type,
-        const FormGlobalId& form_id,
+        const FormData& form,
         const FormFieldData& field,
         bool should_offer_single_field_form_fill,
         OnGenerateSuggestionsCallback callback,
@@ -1568,7 +1568,7 @@ void BrowserAutofillManager::
 
   if (!plus_address_suggestions.empty()) {
     client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
-        *this, form_id, field.global_id(), suggestions_context,
+        *this, form.global_id(), field.global_id(), suggestions_context,
         password_form_type, suggestions[0].type);
 
     // Include ManagePlusAddressSuggestion item.
@@ -1584,8 +1584,8 @@ void BrowserAutofillManager::
 }
 
 void BrowserAutofillManager::OnGenerateSuggestionsComplete(
-    const FormGlobalId& form_id,
-    const FieldGlobalId& field_id,
+    const FormData& form,
+    const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     const SuggestionsContext& context,
     bool show_suggestions,
@@ -1597,7 +1597,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   bool form_and_field_cached = GetCachedFormAndField(
-      form_id, field_id, &form_structure, &autofill_field);
+      form.global_id(), field.global_id(), &form_structure, &autofill_field);
   if (trigger_source ==
           AutofillSuggestionTriggerSource::kFormControlElementClicked &&
       form_and_field_cached) {
@@ -1634,7 +1634,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
 
   if (show_suggestions) {
     // Send Autofill suggestions (could be an empty list).
-    external_delegate_->OnSuggestionsReturned(field_id, suggestions,
+    external_delegate_->OnSuggestionsReturned(field.global_id(), suggestions,
                                               std::move(ranking_context));
   }
 }
@@ -1644,8 +1644,8 @@ void BrowserAutofillManager::MixPlusAddressAndAddressSuggestions(
     std::vector<Suggestion> address_suggestions,
     AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
     PasswordFormClassification::Type password_form_type,
-    const FormGlobalId& form_id,
-    const FieldGlobalId& field_id,
+    const FormData& form,
+    const FormFieldData& field,
     OnGenerateSuggestionsCallback callback) {
   if (plus_address_suggestions.empty()) {
     std::move(callback).Run(/*show_suggestions=*/true,
@@ -1654,8 +1654,8 @@ void BrowserAutofillManager::MixPlusAddressAndAddressSuggestions(
   }
 
   client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
-      *this, form_id, field_id, suggestions_context, password_form_type,
-      plus_address_suggestions[0].type);
+      *this, form.global_id(), field.global_id(), suggestions_context,
+      password_form_type, plus_address_suggestions[0].type);
   if (address_suggestions.empty()) {
     plus_address_suggestions.emplace_back(SuggestionType::kSeparator);
     plus_address_suggestions.push_back(
@@ -1987,7 +1987,7 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
 
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   SuggestionsContext context =
-      BuildSuggestionsContext(form, form_structure, autofill_field,
+      BuildSuggestionsContext(form, form_structure, field, autofill_field,
                               AutofillSuggestionTriggerSource::kUnspecified);
   autofill_metrics::SuggestionRankingContext ranking_context;
 
@@ -2581,8 +2581,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                                     *profile, trigger_source,
                                     refill_trigger_reason.has_value());
             MaybeShowPlusAddressEmailOverrideNotification(
-                safe_filled_autofill_fields, *profile,
-                form_structure.global_id());
+                safe_filled_autofill_fields, *profile, form_structure);
           },
           [&](const CreditCard* credit_card) {
             LogAndRecordCreditCardFill(form_structure, trigger_autofill_field,
@@ -2742,7 +2741,7 @@ void BrowserAutofillManager::LogAndRecordLoyaltyCardFill(
 void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
     base::span<const AutofillField*> safe_filled_autofill_fields,
     const AutofillProfile& filled_profile,
-    const FormGlobalId& form_id) {
+    const FormStructure& form_structure) {
   // `filled_profile` might have had its email overridden, which is what makes
   // it different from `original_profile`.
   const AutofillProfile* original_profile =
@@ -2783,7 +2782,8 @@ void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
     client().ShowPlusAddressEmailOverrideNotification(
         base::UTF16ToUTF8(original_email),
         base::BindOnce(&BrowserAutofillManager::OnEmailOverrideUndone,
-                       weak_ptr_factory_.GetWeakPtr(), original_email, form_id,
+                       weak_ptr_factory_.GetWeakPtr(), original_email,
+                       form_structure.global_id(),
                        email_autofill_field->global_id()));
   }
 }
