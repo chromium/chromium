@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
+  assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(url(\\"http://localhost/test-1\\") 50.1%, url(\\"http://localhost/test-2\\"))"
+[FAIL] background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(url(\\"http://localhost/test-1\\") 57.1741%, url(\\"http://localhost/test-2\\"))"
+[FAIL] background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(url(\\"http://localhost/test-1\\") 57.1741%, url(\\"http://localhost/test-2\\"))"
+[FAIL] border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
+  assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(url(\\"http://localhost/test-1\\") 50.1%, url(\\"http://localhost/test-2\\"))"
+[FAIL] border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(url(\\"http://localhost/test-1\\") 57.1741%, url(\\"http://localhost/test-2\\"))"
+[FAIL] border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(url(\\"http://localhost/test-1\\") 57.1741%, url(\\"http://localhost/test-2\\"))"
+[FAIL] columns supports animating as a positive integer
+  assert_equals: The value should be 2 at 500ms expected "2" but got "auto 2"
+[FAIL] columns supports animating as a length
+  assert_equals: The value should be 30px at 500ms expected "30px" but got "30px auto"
+[FAIL] columns supports animating as a length of rem
+  assert_equals: The value should be 30px at 500ms expected "30px" but got "30px auto"
+[FAIL] flex-flow uses discrete animation when animating between "row" and "row-reverse wrap" with linear easing
+  assert_equals: The value should be row at 0ms expected "row" but got "row nowrap"
+[FAIL] flex-flow uses discrete animation when animating between "row" and "row-reverse wrap" with effect easing
+  assert_equals: The value should be row at 0ms expected "row" but got "row nowrap"
+[FAIL] flex-flow uses discrete animation when animating between "row" and "row-reverse wrap" with keyframe easing
+  assert_equals: The value should be row at 0ms expected "row" but got "row nowrap"
+[FAIL] font-style uses discrete animation when animating between "italic" and "oblique" with linear easing
+  assert_equals: The value should be oblique at 500ms expected "oblique" but got "italic"
+[FAIL] font-style uses discrete animation when animating between "italic" and "oblique" with effect easing
+  assert_equals: The value should be oblique at 960ms expected "oblique" but got "italic"
+[FAIL] font-style uses discrete animation when animating between "italic" and "oblique" with keyframe easing
+  assert_equals: The value should be oblique at 960ms expected "oblique" but got "italic"
+Harness: the test ran to completion.
+

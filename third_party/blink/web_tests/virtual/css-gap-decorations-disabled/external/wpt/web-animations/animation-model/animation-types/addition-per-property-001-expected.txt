@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] columns: positive integer
+  assert_equals: The value should be 3 at 0ms expected "3" but got "auto 3"
+[FAIL] columns: length
+  assert_equals: The value should be 20px at 0ms expected "20px" but got "20px auto"
+[FAIL] columns: length of rem
+  assert_equals: The value should be 20px at 0ms expected "20px" but got "20px auto"
+[FAIL] flex-flow: "row" onto "row-reverse wrap"
+  assert_equals: The value should be row at 0ms expected "row" but got "row nowrap"
+[FAIL] font-style: "oblique" onto "italic"
+  assert_equals: The value should be oblique at 0ms expected "oblique" but got "italic"
+Harness: the test ran to completion.
+

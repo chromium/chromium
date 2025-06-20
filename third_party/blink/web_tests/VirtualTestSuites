@@ -408,34 +408,19 @@
     ]
   },
   {
-    "prefix": "css-gap-decorations",
-    "exclusive_tests": [
-      "external/wpt/css/css-gaps"
-    ],
-    "platforms": [
-      "Linux"
-    ],
+    "prefix": "css-gap-decorations-disabled",
+    "platforms": ["Linux"],
     "bases": [
-      "external/wpt/css/css-multicol",
-      "external/wpt/web-animations/animation-model/animation-types",
       "animations/interpolation/webkit-column-rule-color-interpolation.html",
-      "fast/multicol",
-      "external/wpt/web-animations/responsive/to-color-change.html",
-      "external/wpt/css/css-typed-om/the-stylepropertymap/properties/column-rule-color.html",
+      "animations/interpolation/webkit-column-rule-width-interpolation.html",
+      "external/wpt/css/css-multicol/animation/column-rule-color-interpolation.html",
       "external/wpt/css/css-animations/responsive/column-rule-color-001.html",
-      "external/wpt/css/css-cascade/all-prop-revert-layer.html",
-      "external/wpt/css/css-ui/compute-kind-widget-no-fallback-props-001.html",
-      "external/wpt/css/cssom/declaration-block-all-crash.html",
-      "external/wpt/css/css-gaps"
-    ],
-    "args": [
-      "--enable-blink-features=CSSGapDecoration"
-    ],
-    "expires": "Oct 1, 2025",
-    "owners": [
-      "samomekarajr@microsoft.com",
-      "almaher@microsoft.com"
-    ]
+      "external/wpt/web-animations/animation-model/animation-types/accumulation-per-property-001.html",
+      "external/wpt/web-animations/animation-model/animation-types/addition-per-property-001.html",
+      "external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-001.html"],
+    "args": ["--disable-blink-features=CSSGapDecoration"],
+    "expires": "June 1, 2026",
+    "owners": ["samomekarajr@microsoft.com", "almaher@microsoft.com", "javiercon@microsoft.com"]
   },
   {
     "prefix": "css-line-clamp-line-breaking-ellipsis",
