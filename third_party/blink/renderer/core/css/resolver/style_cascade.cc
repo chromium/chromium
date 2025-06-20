@@ -2336,8 +2336,9 @@ const CSSValue* StyleCascade::CoerceIntoNumericValue(
     const CSSParserContext& context) {
   STACK_UNINITIALIZED StyleCascade cascade(state);
   CascadeResolver resolver(CascadeFilter(), /* generation */ 0);
-  return cascade.CoerceIntoNumericValueInternal(unparsed_value, tree_scope,
-                                                resolver, context, nullptr);
+  bool is_attr_tainted_unused;
+  return cascade.CoerceIntoNumericValueInternal(
+      unparsed_value, tree_scope, resolver, context, nullptr, is_attr_tainted_unused);
 }
 
 const CSSValue* StyleCascade::CoerceIntoNumericValueInternal(
@@ -2345,7 +2346,8 @@ const CSSValue* StyleCascade::CoerceIntoNumericValueInternal(
     const TreeScope* tree_scope,
     CascadeResolver& resolver,
     const CSSParserContext& context,
-    FunctionContext* function_context) {
+    FunctionContext* function_context,
+    bool& is_attr_tainted) {
   StringView unparsed_value_str(
       unparsed_value.VariableDataValue()->OriginalText());
   CSSVariableData* data = nullptr;
@@ -2365,6 +2367,8 @@ const CSSValue* StyleCascade::CoerceIntoNumericValueInternal(
   if (!data) {
     return nullptr;
   }
+
+  is_attr_tainted |= data->IsAttrTainted();
 
   CSSSyntaxDefinition syntax_definition =
       CSSSyntaxDefinition::CreateNumericSyntax();
@@ -2435,17 +2439,18 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
     DCHECK(RuntimeEnabledFeatures::CSSContainerStyleQueriesRangeEnabled());
     DCHECK(feature.HasStyleRange());
     KleeneValue result = KleeneValue::kTrue;
-    const CSSValue* reference =
-        CoerceIntoNumericValueInternal(feature.ReferenceValue(), tree_scope,
-                                       resolver, context, function_context);
+    const CSSValue* reference = CoerceIntoNumericValueInternal(
+        feature.ReferenceValue(), tree_scope, resolver, context,
+        function_context, is_attr_tainted);
     if (!reference) {
       return KleeneValue::kFalse;
     }
     if (bounds.left.IsValid()) {
       const auto& left =
           To<CSSUnparsedDeclarationValue>(bounds.left.value.GetCSSValue());
-      const CSSValue* left_resolved = CoerceIntoNumericValueInternal(
-          left, tree_scope, resolver, context, function_context);
+      const CSSValue* left_resolved =
+          CoerceIntoNumericValueInternal(left, tree_scope, resolver, context,
+                                         function_context, is_attr_tainted);
       if (!left_resolved) {
         return KleeneValue::kFalse;
       }
@@ -2456,8 +2461,9 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
     if (bounds.right.IsValid()) {
       const auto& right =
           To<CSSUnparsedDeclarationValue>(bounds.right.value.GetCSSValue());
-      const CSSValue* right_resolved = CoerceIntoNumericValueInternal(
-          right, tree_scope, resolver, context, function_context);
+      const CSSValue* right_resolved =
+          CoerceIntoNumericValueInternal(right, tree_scope, resolver, context,
+                                         function_context, is_attr_tainted);
       if (!right_resolved) {
         return KleeneValue::kFalse;
       }

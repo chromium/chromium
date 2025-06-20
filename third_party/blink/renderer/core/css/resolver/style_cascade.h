@@ -559,7 +559,8 @@ class CORE_EXPORT StyleCascade {
       const TreeScope*,
       CascadeResolver&,
       const CSSParserContext&,
-      FunctionContext*);
+      FunctionContext*,
+      bool& is_attr_tainted);
 
   // NOTE: The FunctionContext object must be the _caller's_ function context,
   // not the one the function itself sets up. This is because it is used to
