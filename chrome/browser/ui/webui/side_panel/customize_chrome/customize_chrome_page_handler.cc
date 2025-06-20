@@ -383,14 +383,14 @@ void CustomizeChromePageHandler::UpdateThemeEditable(bool is_theme_editable) {
 
 void CustomizeChromePageHandler::OpenChromeWebStore() {
   open_url_callback_.Run(
-      GURL("https://chrome.google.com/webstore?category=theme"));
+      GURL("https://chromewebstore.google.com/category/themes"));
   UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen",
                             NtpChromeWebStoreOpen::kAppearance);
 }
 
 void CustomizeChromePageHandler::OpenThirdPartyThemePage(
     const std::string& theme_id) {
-  open_url_callback_.Run(GURL("https://chrome.google.com/webstore/detail/" +
+  open_url_callback_.Run(GURL("https://chromewebstore.google.com/detail/" +
                               base::EscapePath(theme_id)));
   UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen",
                             NtpChromeWebStoreOpen::kCollections);

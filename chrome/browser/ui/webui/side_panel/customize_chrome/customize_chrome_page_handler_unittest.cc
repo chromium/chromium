@@ -704,7 +704,7 @@ TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStore) {
   GURL url;
   EXPECT_CALL(mock_open_url_callback_, Run).Times(1).WillOnce(SaveArg<0>(&url));
   handler().OpenChromeWebStore();
-  ASSERT_EQ(GURL("https://chrome.google.com/webstore?category=theme"), url);
+  ASSERT_EQ(GURL("https://chromewebstore.google.com/category/themes"), url);
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
 
   ASSERT_EQ(
@@ -718,7 +718,7 @@ TEST_F(CustomizeChromePageHandlerTest, OpenThirdPartyThemePage) {
   GURL url;
   EXPECT_CALL(mock_open_url_callback_, Run).Times(1).WillOnce(SaveArg<0>(&url));
   handler().OpenThirdPartyThemePage("foo");
-  ASSERT_EQ(GURL("https://chrome.google.com/webstore/detail/foo"), url);
+  ASSERT_EQ(GURL("https://chromewebstore.google.com/detail/foo"), url);
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
   ASSERT_EQ(
       histogram_tester().GetBucketCount("NewTabPage.ChromeWebStoreOpen",
