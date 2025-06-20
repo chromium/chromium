@@ -86,9 +86,10 @@ ChromeTracingDelegate::~ChromeTracingDelegate() {
 #if BUILDFLAG(IS_ANDROID)
 void ChromeTracingDelegate::OnTabModelAdded(TabModel* tab_model) {
   for (const TabModel* model : TabModelList::models()) {
-    if (model->GetProfile()->IsOffTheRecord())
+    if (model->GetProfile()->IsOffTheRecord()) {
       latest_incognito_launched_ = base::TimeTicks::Now();
-    base::trace_event::EmitNamedTrigger("incognito-start");
+      base::trace_event::EmitNamedTrigger("incognito-start");
+    }
   }
 }
 

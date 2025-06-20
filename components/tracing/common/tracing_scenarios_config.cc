@@ -150,6 +150,8 @@ CreateDefaultPresetTracingScenariosConfig() {
       "'Help > Report an Issue'.");
   scenario->add_start_rules()->set_manual_trigger_name("startup");
   scenario->add_start_rules()->set_delay_ms(1);
+  scenario->add_start_rules()->set_manual_trigger_name("incognito-end");
+  scenario->add_stop_rules()->set_manual_trigger_name("incognito-start");
   auto* nested_scenario = scenario->add_nested_scenarios();
   nested_scenario->set_scenario_name("AlwaysOnScenario.Snapshots");
   nested_scenario->add_start_rules()->set_delay_ms(1);
