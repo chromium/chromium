@@ -123,7 +123,7 @@ gfx::Image AutofillImageFetcher::ResolveImage(const GURL& image_url,
     case ImageType::kPixAccountImage:
       NOTREACHED() << "Pix account images are available only on Android";
     case ImageType::kValuableImage:
-      return image;
+      return ResolveValuableImage(image);
   }
 }
 

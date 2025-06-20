@@ -118,4 +118,9 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
   return gfx::Image(image);
 }
 
+gfx::Image AutofillImageFetcherImpl::ResolveValuableImage(
+    const gfx::Image& valuable_image) {
+  return valuable_image;
+}
+
 }  // namespace autofill

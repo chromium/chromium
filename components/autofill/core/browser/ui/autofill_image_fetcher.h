@@ -89,6 +89,9 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
   // resolving via `ResolveImageURL`.
   virtual gfx::Image ResolveCardArtImage(const GURL& card_art_url,
                                          const gfx::Image& card_art_image) = 0;
+  // Subclasses may override this to provide custom handling of a fetched
+  // valuable image.
+  virtual gfx::Image ResolveValuableImage(const gfx::Image& valuable_image) = 0;
 
  private:
   void FetchImageForURL(const GURL& image_url, ImageType image_type);

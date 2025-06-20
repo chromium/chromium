@@ -77,6 +77,10 @@ class AutofillImageFetcherForTest : public AutofillImageFetcher {
                                                : card_art_image;
   }
 
+  gfx::Image ResolveValuableImage(const gfx::Image& valuable_image) override {
+    return valuable_image;
+  }
+
  private:
   gfx::Image card_art_image_override_;
 

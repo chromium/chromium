@@ -91,7 +91,7 @@ GURL AutofillImageFetcherImpl::ResolveImageURL(const GURL& image_url,
       // Pay with Pix is only queried in Chrome on Android.
       NOTREACHED();
     case ImageType::kValuableImage:
-      return GURL(image_url.spec() + "=h24-w24-cc-rp");
+      return GURL(image_url.spec() + "=h96-w96-cc-rp");
   }
 }
 
@@ -139,6 +139,15 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
   return gfx::Image(gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
       kCardArtImageRadius,
       gfx::ImageSkia::CreateFromBitmap(canvas.GetBitmap(), 1.0f)));
+}
+
+gfx::Image AutofillImageFetcherImpl::ResolveValuableImage(
+    const gfx::Image& valuable_image) {
+  // Increase image scale from 1.0 to 4.0 to render higher quality images on
+  // high resolution displays. This decreases the image size from 96x96 to
+  // 24x24.
+  return gfx::Image(
+      gfx::ImageSkia::CreateFromBitmap(valuable_image.AsBitmap(), 4.0f));
 }
 
 // static
