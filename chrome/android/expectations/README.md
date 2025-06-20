@@ -93,7 +93,7 @@ attention or the expected file needs updating.
 
 1. Click on the android-binary-size trybot failure in your CL
 
-2. Click on the stdout link of the compile step
+2. Click on the `failed_expectations` link of the `Checking for expectation failures` step
 
 3. Run the command suggested in the error message to copy the contents of the
    generated file to the expected file path
