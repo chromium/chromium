@@ -22,6 +22,8 @@ enum ProfileReadyState {
   kSignInRequired,
   // The profile is ready for Glic.
   kReady,
+  // The profile is not eligible for Glic.
+  kIneligible,
 };
 
 // Functions provided by the WebUI page.
@@ -102,6 +104,9 @@ interface PageHandler {
 
   // Closes the Glic panel.
   ClosePanel();
+
+  // Opens the profile picker, and closes the Glic panel.
+  OpenProfilePickerAndClosePanel();
 
   // Opens the sign-in page, and closes the Glic panel.
   SignInAndClosePanel();

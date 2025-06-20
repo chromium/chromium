@@ -192,6 +192,30 @@ class GlicPolicyTest : public PolicyTest {
     provider.UpdateChromePolicy(policies);
   }
 
+  // Simulates a click on an element with the given |id|.
+  void ClickElementWithId(content::WebContents* web_contents,
+                          const std::string& id) {
+    // Get the center coordinates of the DOM element.
+    const int x =
+        EvalJs(web_contents,
+               content::JsReplace("const bounds = "
+                                  "document.getElementById($1)."
+                                  "getBoundingClientRect();"
+                                  "Math.floor(bounds.left + bounds.width / 2)",
+                                  id))
+            .ExtractInt();
+    const int y =
+        EvalJs(web_contents,
+               content::JsReplace("const bounds = "
+                                  "document.getElementById($1)."
+                                  "getBoundingClientRect();"
+                                  "Math.floor(bounds.top + bounds.height / 2)",
+                                  id))
+            .ExtractInt();
+    SimulateMouseClickAt(web_contents, 0, blink::WebMouseEvent::Button::kLeft,
+                         gfx::Point(x, y));
+  }
+
   testing::NiceMock<policy::MockConfigurationPolicyProvider>&
   policy_for_profile_1() {
     // This comes from the PolicyTest base class.
@@ -521,6 +545,22 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
   })) << "Timed out waiting for unavailable state. Current state: "
       << service->host().GetPrimaryWebUiState();
   ASSERT_TRUE(service->window_controller().IsShowing());
+
+// Flakiness on linux.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/426583248) Wait for animation to finish instead of using the
+  // arbitrary 1000ms wait.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
+  run_loop.Run();
+  ClickElementWithId(
+      service->window_controller().GetGlicView()->GetWebContents(),
+      "profilePickerButton");
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !service->window_controller().IsShowing();
+  })) << "Timed out waiting for glic to close";
+#endif
 }
 
 // Ensure the chrome://settings page for Glic is available when the feature is

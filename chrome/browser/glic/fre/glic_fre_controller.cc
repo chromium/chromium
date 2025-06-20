@@ -81,9 +81,10 @@ void GlicFreController::Shutdown() {
 }
 
 bool GlicFreController::ShouldShowFreDialog() {
-  // If the given profile has not previously completed the FRE, then it should
-  // be shown.
-  return !GlicEnabling::HasConsentedForProfile(profile_);
+  // If the given profile has not previously completed the FRE and is eligible,
+  // then it should be shown.
+  return GlicEnabling::IsEnabledForProfile(profile_) &&
+         !GlicEnabling::HasConsentedForProfile(profile_);
 }
 
 bool GlicFreController::CanShowFreDialog(Browser* browser) {

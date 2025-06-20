@@ -58,6 +58,8 @@ class GlicPageHandler : public glic::mojom::PageHandler {
 
   void ClosePanel() override;
 
+  void OpenProfilePickerAndClosePanel() override;
+
   void SignInAndClosePanel() override;
 
   void ResizeWidget(const gfx::Size& size,

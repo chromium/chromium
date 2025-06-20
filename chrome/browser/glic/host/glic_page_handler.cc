@@ -1031,6 +1031,11 @@ void GlicPageHandler::ClosePanel() {
   GetGlicService()->ClosePanel();
 }
 
+void GlicPageHandler::OpenProfilePickerAndClosePanel() {
+  glic::GlicProfileManager::GetInstance()->ShowProfilePicker();
+  GetGlicService()->window_controller().Close();
+}
+
 void GlicPageHandler::SignInAndClosePanel() {
   GetGlicService()->GetAuthController().ShowReauthForAccount(base::BindOnce(
       &GlicWindowController::ShowAfterSignIn,

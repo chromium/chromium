@@ -341,9 +341,6 @@ void BrowserCommandHandler::StartSavedTabGroupTutorial() {
 
 void BrowserCommandHandler::OpenGlic() {
 #if BUILDFLAG(ENABLE_GLIC)
-  if (!glic::GlicEnabling::IsEnabledForProfile(profile_)) {
-    return;
-  }
 
   glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(profile_);
 

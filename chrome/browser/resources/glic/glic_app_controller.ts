@@ -45,6 +45,7 @@ interface PageElementTypes {
   guestPanel: HTMLElement;
   webviewHeader: HTMLDivElement;
   webviewContainer: HTMLDivElement;
+  profilePickerButton: HTMLButtonElement;
   signInButton: HTMLButtonElement;
   unresponsiveOverlay: HTMLElement;
 }
@@ -130,6 +131,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     } else {
       this.setState(WebUiState.kOffline);
     }
+    $.profilePickerButton.addEventListener('click', () => {
+      this.openProfilePicker();
+    });
     $.signInButton.addEventListener('click', () => {
       this.signIn();
     });
@@ -350,6 +354,7 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
 
     const readyState = this.profileReadyState;
     switch (readyState) {
+      case ProfileReadyState.kIneligible:
       case ProfileReadyState.kUnknownError:
         this.setState(WebUiState.kUnavailable);
         return;
@@ -573,6 +578,10 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     this.destroyWebview();
     // TODO: Allow the timeout on this load to be longer than the initial load.
     this.setState(WebUiState.kBeginLoad);
+  }
+
+  private openProfilePicker(): void {
+    this.browserProxy.handler.openProfilePickerAndClosePanel();
   }
 
   private signIn(): void {

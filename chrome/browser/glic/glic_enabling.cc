@@ -131,7 +131,7 @@ bool GlicEnabling::IsReadyForProfile(Profile* profile) {
 
 mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
   if (!IsEnabledAndConsentForProfile(profile)) {
-    return mojom::ProfileReadyState::kUnknownError;
+    return mojom::ProfileReadyState::kIneligible;
   }
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
