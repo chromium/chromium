@@ -20,10 +20,6 @@ namespace base {
 class OneShotTimer;
 }
 
-namespace views {
-class Label;
-}
-
 namespace remote_cocoa::mojom {
 enum class ToolbarVisibilityStyle;
 }
@@ -51,8 +47,6 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
       const gfx::Size& tabstrip_minimum_size) const override;
   gfx::Rect GetBoundsForWebAppFrameToolbar(
       const gfx::Size& toolbar_preferred_size) const override;
-  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
-                               views::Label& window_title_label) const override;
   int GetTopInset(bool restored) const override;
   void UpdateFullscreenTopUI() override;
   bool ShouldHideTopUIForFullscreen() const override;

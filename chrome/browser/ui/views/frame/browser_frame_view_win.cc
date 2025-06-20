@@ -177,23 +177,6 @@ gfx::Rect BrowserFrameViewWin::GetBoundsForWebAppFrameToolbar(
                    caption_button_container_->size().height());
 }
 
-void BrowserFrameViewWin::LayoutWebAppWindowTitle(
-    const gfx::Rect& available_space,
-    views::Label& window_title_label) const {
-  gfx::Rect bounds = available_space;
-  // If nothing has been added to the left, match native Windows 10 UWP apps
-  // that don't have window icons.
-  // TODO(crbug.com/40890502): Avoid hardcoding sizes like this.
-  constexpr int kMinimumTitleLeftBorderMargin = 11;
-  if (bounds.x() < kMinimumTitleLeftBorderMargin) {
-    bounds.SetHorizontalBounds(kMinimumTitleLeftBorderMargin, bounds.right());
-  }
-  window_title_label.SetSubpixelRenderingEnabled(false);
-  window_title_label.SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  window_title_label.SetAutoColorReadabilityEnabled(false);
-  window_title_label.SetBoundsRect(bounds);
-}
-
 int BrowserFrameViewWin::GetTopInset(bool restored) const {
   if (browser_view()->GetTabStripVisible() || IsWebUITabStrip()) {
     return TopAreaHeight(restored);
@@ -807,7 +790,7 @@ void BrowserFrameViewWin::LayoutTitleBar() {
   if (show_title && window_title_) {
     window_title_->SetText(browser_view()->GetWindowTitle());
     const int max_text_width = std::max(0, next_trailing_x - next_leading_x);
-    LayoutWebAppWindowTitle(
+    frame()->LayoutWebAppWindowTitle(
         gfx::Rect(next_leading_x, window_icon_bounds.y(), max_text_width,
                   window_icon_bounds.height()),
         *window_title_);

@@ -63,6 +63,16 @@
 #endif
 
 namespace {
+#if BUILDFLAG(IS_MAC)
+// Keep in sync with web_app_frame_toolbar_browsertest.cc
+constexpr double kTitlePaddingWidthFraction = 0.1;
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+// These values are used for Linux/GTK.
+constexpr int kIconTitleSpacing = 4;
+constexpr int kCaptionSpacing = 5;
+#endif
 
 // Helper to track whether a ThemeChange event has been received by the widget.
 class ThemeChangedObserver : public views::WidgetObserver {
@@ -222,11 +232,63 @@ gfx::Rect BrowserFrame::GetBoundsForWebAppFrameToolbar(
 void BrowserFrame::LayoutWebAppWindowTitle(
     const gfx::Rect& available_space,
     views::Label& window_title_label) const {
-  // This can be invoked before |browser_frame_view_| has been set.
-  if (browser_frame_view_) {
-    browser_frame_view_->LayoutWebAppWindowTitle(available_space,
-                                                 window_title_label);
+  if (!browser_frame_view_) {
+    return;
   }
+
+  if (browser_frame_view_->browser_view() &&
+      browser_frame_view_->browser_view()->GetIsPictureInPictureType()) {
+    // Do nothing for picture in picture browsers.
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // No window titles on Chrome OS, so just hide the window title.
+  window_title_label.SetVisible(false);
+#elif BUILDFLAG(IS_MAC)
+  gfx::Rect toolbar_bounds(0, 0, browser_frame_view_->width(),
+                           available_space.height());
+  gfx::Rect title_bounds = available_space;
+
+  const int title_padding = base::ClampRound(browser_frame_view_->width() *
+                                             kTitlePaddingWidthFraction);
+  title_bounds.Inset(gfx::Insets::VH(0, title_padding));
+
+  // Center in the container and make it fit in the available space.
+  int preferred_title_width =
+      window_title_label
+          .GetPreferredSize(views::SizeBounds(window_title_label.width(), {}))
+          .width();
+  toolbar_bounds.ClampToCenteredSize(
+      gfx::Size(preferred_title_width, toolbar_bounds.height()));
+  toolbar_bounds.AdjustToFit(available_space);
+
+  window_title_label.SetBoundsRect(toolbar_bounds);
+  // The background of the title area is always opaquely drawn, but when in
+  // immersive fullscreen, it is drawn in a way that isn't detected by the
+  // DCHECK in Label. As such, disable the DCHECK.
+  window_title_label.SetSkipSubpixelRenderingOpacityCheck(
+      browser_view_->IsImmersiveModeEnabled());
+#elif BUILDFLAG(IS_WIN)
+  gfx::Rect bounds = available_space;
+  // If nothing has been added to the left, match native Windows 10 UWP apps
+  // that don't have window icons.
+  // TODO(crbug.com/40890502): Avoid hardcoding sizes like this.
+  constexpr int kMinimumTitleLeftBorderMargin = 11;
+  if (bounds.x() < kMinimumTitleLeftBorderMargin) {
+    bounds.SetHorizontalBounds(kMinimumTitleLeftBorderMargin, bounds.right());
+  }
+  window_title_label.SetSubpixelRenderingEnabled(false);
+  window_title_label.SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  window_title_label.SetAutoColorReadabilityEnabled(false);
+  window_title_label.SetBoundsRect(bounds);
+#else
+  gfx::Rect bounds = available_space;
+  bounds.Inset(gfx::Insets::TLBR(0, kIconTitleSpacing, 0, kCaptionSpacing));
+  window_title_label.SetSubpixelRenderingEnabled(false);
+  window_title_label.SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  window_title_label.SetBoundsRect(bounds);
+#endif
 }
 
 int BrowserFrame::GetTopInset() const {

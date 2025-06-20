@@ -280,13 +280,6 @@ gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForWebAppFrameToolbar(
   return gfx::Rect(x, 0, std::max(0, available_width), painted_height);
 }
 
-void BrowserNonClientFrameViewChromeOS::LayoutWebAppWindowTitle(
-    const gfx::Rect& available_space,
-    views::Label& window_title_label) const {
-  // No window titles on Chrome OS, so just hide the window title.
-  window_title_label.SetVisible(false);
-}
-
 int BrowserNonClientFrameViewChromeOS::GetTopInset(bool restored) const {
   // TODO(estade): why do callsites in this class hardcode false for |restored|?
 
