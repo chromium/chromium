@@ -111,6 +111,7 @@ class TelemetryLogger
   // If a delayed upload is scheduled, the timer class will hold a reference
   // to this class util the timer is triggered.
   void Flush(base::OnceClosure callback) {
+    VLOG(2) << __func__;
     owning_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -234,10 +235,9 @@ class TelemetryLogger
                  delegate_->MinimumCooldownTime());
     VLOG(1) << "Cooldown time received from server: "
             << response.next_request_wait_millis() << " ms";
-    delegate_->StoreNextAllowedAttemptTime(
-        base::Time::Now() + cooldown_time,
-        base::BindOnce(&TelemetryLogger::SetCooldown,
-                       base::WrapRefCounted(this), cooldown_time));
+    SetCooldown(cooldown_time);
+    delegate_->StoreNextAllowedAttemptTime(base::Time::Now() + cooldown_time,
+                                           base::DoNothing());
   }
 
   void SetCooldown(base::TimeDelta cooldown_time) {
