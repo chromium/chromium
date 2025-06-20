@@ -5,6 +5,7 @@
 #include "components/services/storage/storage_service_impl.h"
 
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -133,10 +134,16 @@ void StorageServiceImpl::BindLocalStorageControl(
       return;
     }
 
+    auto iter = persistent_local_storage_map_.find(*path);
+    bool found = iter != persistent_local_storage_map_.end();
     // The map shouldn't contain an entry for this path. We should only bind a
     // LocalStorage mojom::Receiver once.
-    auto iter = persistent_local_storage_map_.find(*path);
-    CHECK(iter == persistent_local_storage_map_.end());
+    CHECK(!found, base::NotFatalUntil::M140);
+    // TODO(crbug.com/396030877): Remove this workaround to remove the
+    // pre-existing LocalStorage once the issue is resolved.
+    if (found) {
+      ShutDownAndRemoveLocalStorage(iter->second);
+    }
   }
 
   auto new_local_storage = std::make_unique<LocalStorageImpl>(
@@ -160,10 +167,16 @@ void StorageServiceImpl::BindSessionStorageControl(
       return;
     }
 
-    // The map shouldn't contain an entry for this path. We should only bind to
-    // a SessionStorage mojom::Receiver once.
     auto iter = persistent_session_storage_map_.find(*path);
-    CHECK(iter == persistent_session_storage_map_.end());
+    bool found = iter != persistent_session_storage_map_.end();
+    // The map shouldn't contain an entry for this path. We should only bind a
+    // SessionStorage mojom::Receiver once.
+    CHECK(!found, base::NotFatalUntil::M140);
+    // TODO(crbug.com/396030877): Remove this workaround to remove the
+    // pre-existing SessionStorage once the issue is resolved.
+    if (found) {
+      ShutDownAndRemoveSessionStorage(iter->second);
+    }
   }
 
   auto new_session_storage = std::make_unique<SessionStorageImpl>(
