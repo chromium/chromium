@@ -1568,11 +1568,6 @@ targets.binaries.console_test_launcher(
     skip_usage_check = True,
 )
 
-targets.binaries.console_test_launcher(
-    name = "nacl_loader_unittests",
-    label = "//components/nacl/loader:nacl_loader_unittests",
-)
-
 targets.binaries.generated_script(
     name = "build_rust_tests",
     label = "//build/rust/tests:build_rust_tests",
@@ -1798,11 +1793,6 @@ targets.binaries.console_test_launcher(
     label = "//tools/mac/power:power_sampler_unittests",
     # All references have been moved to starlark
     skip_usage_check = True,
-)
-
-targets.binaries.console_test_launcher(
-    name = "ppapi_unittests",
-    label = "//ppapi:ppapi_unittests",
 )
 
 targets.binaries.console_test_launcher(

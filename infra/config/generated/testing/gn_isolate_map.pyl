@@ -1416,10 +1416,6 @@
     "type": "additional_compile_target",
     "skip_usage_check": True,
   },
-  "nacl_loader_unittests": {
-    "label": "//components/nacl/loader:nacl_loader_unittests",
-    "type": "console_test_launcher",
-  },
   "native_theme_unittests": {
     "label": "//ui/native_theme:native_theme_unittests",
     "type": "windowed_test_launcher",
@@ -1591,10 +1587,6 @@
     "label": "//tools/mac/power:power_sampler_unittests",
     "type": "console_test_launcher",
     "skip_usage_check": True,
-  },
-  "ppapi_unittests": {
-    "label": "//ppapi:ppapi_unittests",
-    "type": "console_test_launcher",
   },
   "previous_version_mini_installer": {
     "label": "//chrome/installer/mini_installer:previous_version_mini_installer",

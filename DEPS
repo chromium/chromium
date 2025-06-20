@@ -46,7 +46,6 @@ gclient_gn_args = [
   'checkout_glic_e2e_tests',
   'checkout_ios_webkit',
   'checkout_mutter',
-  'checkout_nacl',
   'checkout_openxr',
   'checkout_src_internal',
   'checkout_src_internal_infra',
@@ -118,10 +117,6 @@ vars = {
   # Checkout out mutter and its dependencies to be able to run tests like
   # interactive_ui_tests on the linux/wayland compositor.
   'checkout_mutter': False,
-
-  # Check out and download nacl for ChromeOS only.
-  # This can be disabled e.g. with custom_vars.
-  'checkout_nacl': 'checkout_chromeos',
 
   # By default, do not check out src-internal. This can be overridden e.g. with
   # custom_vars.
@@ -344,10 +339,6 @@ vars = {
   # the commit queue can handle CLs rolling breakpad
   # and whatever else without interference from each other.
   'breakpad_revision': '9d1f417714a6883f8d4e345c07802eb79edd2e90',
-  # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling NaCl
-  # and whatever else without interference from each other.
-  'nacl_revision': 'e3fce84f253bc1e77bb239185c0fbff23dc8e3ee',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling freetype
   # and whatever else without interference from each other.
@@ -1658,11 +1649,6 @@ deps = {
 
   'src/media/cdm/api':
     Var('chromium_git') + '/chromium/cdm.git' + '@' + 'a4cbc4325e6de42ead733f2af43c08292d0e65a8',
-
-  'src/native_client': {
-      'url': Var('chromium_git') + '/native_client/src/native_client.git' + '@' + Var('nacl_revision'),
-      'condition': 'checkout_nacl',
-  },
 
   'src/net/third_party/quiche/src':
     Var('quiche_git') + '/quiche.git' + '@' +  Var('quiche_revision'),
@@ -5146,20 +5132,6 @@ hooks = [
         'src/third_party/catapult',
         'src/third_party/mako', # Some failures triggered by crrev.com/c/3686969
         'src/tools',
-    ],
-  },
-  {
-    # This downloads binaries for Native Client's newlib toolchain.
-    # Done in lieu of building the toolchain from scratch as it can take
-    # anywhere from 30 minutes to 4 hours depending on platform to build.
-    'name': 'nacltools',
-    'pattern': '.',
-    'condition': 'checkout_nacl',
-    'action': [
-        'python3',
-        'src/build/download_nacl_toolchains.py',
-        '--mode', 'nacl_core_sdk',
-        'sync', '--extract',
     ],
   },
   {

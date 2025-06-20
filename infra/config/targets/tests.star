@@ -1810,10 +1810,6 @@ targets.tests.gtest_test(
     binary = "interactive_ui_tests",
 )
 
-targets.tests.gtest_test(
-    name = "nacl_loader_unittests",
-)
-
 targets.tests.isolated_script_test(
     name = "build_rust_tests",
 )
@@ -2119,10 +2115,6 @@ targets.tests.isolated_script_test(
         "--test-list=../../third_party/blink/web_tests/TestLists/ppapi",
     ],
     binary = "blink_web_tests",
-)
-
-targets.tests.gtest_test(
-    name = "ppapi_unittests",
 )
 
 targets.tests.gtest_test(
