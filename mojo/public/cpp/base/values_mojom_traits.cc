@@ -35,6 +35,9 @@ bool StructTraits<mojo_base::mojom::ListValueDataView, base::Value::List>::Read(
     base::Value::List* out) {
   mojo::ArrayDataView<mojo_base::mojom::ValueDataView> view;
   data.GetStorageDataView(&view);
+  if (base::features::IsReducePPMsEnabled()) {
+    out->reserve(view.size());
+  }
   base::Value element;
   for (size_t i = 0; i < view.size(); ++i) {
     if (!view.Read(i, &element))
