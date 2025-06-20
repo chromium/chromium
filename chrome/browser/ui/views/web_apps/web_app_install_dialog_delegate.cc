@@ -13,10 +13,8 @@
 #include "base/observer_list_internal.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -30,7 +28,6 @@
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -96,8 +93,7 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
     PrefService* prefs,
     feature_engagement::Tracker* tracker,
     InstallDialogType dialog_type)
-    : content::WebContentsObserver(web_contents),
-      web_contents_(web_contents),
+    : WebAppModalDialogDelegate(web_contents),
       install_info_(std::move(web_app_info)),
       install_tracker_(std::move(install_tracker)),
       callback_(std::move(callback)),
@@ -111,8 +107,11 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
 }
 
 WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() {
+  if (!web_contents()) {
+    return;
+  }
   // TODO(crbug.com/40841129): move this to dialog->SetHighlightedButton.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return;
   }
@@ -128,14 +127,6 @@ WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() {
       install_icon->SetHighlighted(false);
     }
   }
-}
-
-void WebAppInstallDialogDelegate::OnWidgetShownStartTracking(
-    views::Widget* install_dialog_widget) {
-  occlusion_observation_.Observe(install_dialog_widget);
-  widget_observation_.Observe(install_dialog_widget);
-  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
-      install_dialog_widget);
 }
 
 void WebAppInstallDialogDelegate::OnAccept() {
@@ -239,29 +230,6 @@ void WebAppInstallDialogDelegate::OnTextFieldChangedMaybeUpdateButton(
                                    /*enabled=*/!text_field_contents.empty());
 }
 
-void WebAppInstallDialogDelegate::OnVisibilityChanged(
-    content::Visibility visibility) {
-  if (visibility != content::Visibility::VISIBLE) {
-    CloseDialogAsIgnored();
-  }
-}
-
-void WebAppInstallDialogDelegate::WebContentsDestroyed() {
-  CloseDialogAsIgnored();
-}
-
-void WebAppInstallDialogDelegate::PrimaryPageChanged(content::Page& page) {
-  CloseDialogAsIgnored();
-}
-
-void WebAppInstallDialogDelegate::OnOcclusionStateChanged(bool occluded) {
-  // If a picture-in-picture window is occluding the dialog, force it to close
-  // to prevent spoofing.
-  if (occluded) {
-    PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
-  }
-}
-
 void WebAppInstallDialogDelegate::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
@@ -271,10 +239,6 @@ void WebAppInstallDialogDelegate::OnWidgetBoundsChanged(
         base::BindOnce(&WebAppInstallDialogDelegate::CloseDialogAsIgnored,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-}
-
-void WebAppInstallDialogDelegate::OnWidgetDestroyed(views::Widget* widget) {
-  widget_observation_.Reset();
 }
 
 void WebAppInstallDialogDelegate::CloseDialogAsIgnored() {

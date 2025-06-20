@@ -128,6 +128,13 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const std::optional<GURL>& manifest_id,
       InstallCallback callback) override;
 
+  void TriggerLaunchDialogForBackgroundInstall(
+      content::WebContents* initiating_web_contents,
+      const webapps::AppId& app_id,
+      Profile* profile,
+      const std::string& app_name,
+      base::OnceCallback<void(bool accepted)> callback) override;
+
   void PresentUserUninstallDialog(
       const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source,

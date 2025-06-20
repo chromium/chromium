@@ -445,6 +445,16 @@ void WebAppUiManagerImpl::TriggerInstallDialogForBackgroundInstall(
                                             manifest_id, std::move(callback));
 }
 
+void WebAppUiManagerImpl::TriggerLaunchDialogForBackgroundInstall(
+    content::WebContents* initiating_web_contents,
+    const webapps::AppId& app_id,
+    Profile* profile,
+    const std::string& app_name,
+    WebInstallAppLaunchAcceptanceCallback callback) {
+  ShowWebInstallAppLaunchDialog(initiating_web_contents, app_id, profile,
+                                app_name, std::move(callback));
+}
+
 void WebAppUiManagerImpl::PresentUserUninstallDialog(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,

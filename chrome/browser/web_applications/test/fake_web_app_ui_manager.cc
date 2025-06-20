@@ -218,6 +218,15 @@ void FakeWebAppUiManager::TriggerInstallDialogForBackgroundInstall(
   NOTIMPLEMENTED();
 }
 
+void FakeWebAppUiManager::TriggerLaunchDialogForBackgroundInstall(
+    content::WebContents* initiating_web_contents,
+    const webapps::AppId& app_id,
+    Profile* profile,
+    const std::string& app_name,
+    base::OnceCallback<void(bool accepted)> callback) {
+  NOTIMPLEMENTED();
+}
+
 void FakeWebAppUiManager::PresentUserUninstallDialog(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,

@@ -10,23 +10,15 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
-#include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
+#include "chrome/browser/ui/views/web_apps/web_app_modal_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 
 class PrefService;
-
-namespace content {
-class Page;
-class WebContents;
-}  // namespace content
 
 namespace feature_engagement {
 class Tracker;
@@ -75,10 +67,7 @@ std::u16string NormalizeSuggestedAppTitle(const std::u16string& title);
 // irrespective of the size of the browser window triggering it.
 bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget);
 
-class WebAppInstallDialogDelegate : public ui::DialogModelDelegate,
-                                    public content::WebContentsObserver,
-                                    public PictureInPictureOcclusionObserver,
-                                    public views::WidgetObserver {
+class WebAppInstallDialogDelegate : public WebAppModalDialogDelegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDiyAppsDialogOkButtonId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPwaInstallDialogInstallButton);
@@ -95,13 +84,6 @@ class WebAppInstallDialogDelegate : public ui::DialogModelDelegate,
       InstallDialogType dialog_type);
 
   ~WebAppInstallDialogDelegate() override;
-
-  // Once the install dialog is shown, start tracking the widget for:
-  // 1. Observing it to prevent picture in picture occlusion.
-  // 2. Observing it for size changes so that it can be closed if needed.
-  // 3. Tracking it as a security dialog so that extension popups do not appear
-  // over it.
-  void OnWidgetShownStartTracking(views::Widget* install_dialog_widget);
 
   void OnAccept();
   void OnCancel();
@@ -121,27 +103,17 @@ class WebAppInstallDialogDelegate : public ui::DialogModelDelegate,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // content::WebContentsObserver overrides:
-  void OnVisibilityChanged(content::Visibility visibility) override;
-  void WebContentsDestroyed() override;
-  void PrimaryPageChanged(content::Page& page) override;
-
-  // PictureInPictureOcclusionObserver overrides:
-  void OnOcclusionStateChanged(bool occluded) override;
-
   // views::WidgetObserver overrides:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
-  void OnWidgetDestroyed(views::Widget* widget) override;
-
-  void CloseDialogAsIgnored();
+  // WebAppModalDialogDelegate overrides:
+  void CloseDialogAsIgnored() override;
 
  private:
   void MeasureIphOnDialogClose();
   void MeasureAcceptUserActionsForInstallDialog();
   void MeasureCancelUserActionsForInstallDialog();
 
-  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppInstallInfo> install_info_;
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;
   AppInstallationAcceptanceCallback callback_;
@@ -151,10 +123,6 @@ class WebAppInstallDialogDelegate : public ui::DialogModelDelegate,
   InstallDialogType dialog_type_;
   std::u16string text_field_contents_;
   bool received_user_response_ = false;
-  ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_{this};
-
   base::WeakPtrFactory<WebAppInstallDialogDelegate> weak_ptr_factory_{this};
 };
 

@@ -81,6 +81,11 @@ class WebInstallServiceImpl
       InstallCallback callback,
       const std::vector<blink::mojom::PermissionStatus>& permission_status);
 
+  // Used by the launch dialog to report whether the user accepted the launch.
+  void OnBackgroundAppLaunchDialogClosed(InstallCallback callback,
+                                         const GURL& manifest_id,
+                                         bool accepted);
+
   // Used by web app install dialog code as the WebAppInstalledCallback.
   // Reports install success or failure back to Blink via `callback`.
   void OnAppInstalled(InstallCallback callback,

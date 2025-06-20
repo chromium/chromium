@@ -276,6 +276,17 @@ class WebAppUiManager {
       const std::optional<GURL>& manifest_id,
       InstallCallback callback) = 0;
 
+  using WebInstallAppLaunchAcceptanceCallback =
+      base::OnceCallback<void(bool accepted)>;
+  // Triggers the web app launch dialog anchored to `initiating_web_contents`
+  // to launch the app given by `app_id`. Used for the Web Install API.
+  virtual void TriggerLaunchDialogForBackgroundInstall(
+      content::WebContents* initiating_web_contents,
+      const webapps::AppId& app_id,
+      Profile* profile,
+      const std::string& app_name,
+      WebInstallAppLaunchAcceptanceCallback callback) = 0;
+
   // The uninstall dialog will be modal to |parent_window|, or a non-modal if
   // |parent_window| is nullptr. Use this API if a Browser window needs to be
   // passed in along with an UninstallCompleteCallback.

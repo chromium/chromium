@@ -193,6 +193,28 @@ void PostCallbackOnBrowserActivation(
     ui::ElementIdentifier id,
     base::OnceCallback<void(bool)> view_and_element_activated_callback);
 
+// Callback used by the Web Install API to indicate whether the user has
+// accepted the launch of a web app.
+using WebInstallAppLaunchAcceptanceCallback =
+    base::OnceCallback<void(bool accepted)>;
+
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kWebInstallLaunchDialogAppName);
+
+// Shows a web app launch dialog for `app_id`. Used by the Web Install API. The
+// dialog contains the app short name and icon, just like the intent picker. The
+// user can accept or cancel the launch. A response is sent via `callback` so
+// the service implementation can resolve itself based on the user
+// interaction.
+void ShowWebInstallAppLaunchDialog(
+    content::WebContents* web_contents,
+    const webapps::AppId& app_id,
+    Profile* profile,
+    std::string app_name,
+    WebInstallAppLaunchAcceptanceCallback callback);
+
+// Sets whether |ShowWebInstallAppLaunchDialog| should accept immediately.
+base::AutoReset<bool> SetAutoAcceptWebInstallLaunchDialogForTesting();
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_DIALOGS_H_
