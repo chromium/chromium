@@ -303,7 +303,6 @@ void ScrollbarTheme::PaintTrackBackgroundAndButtons(GraphicsContext& context,
                                                     const gfx::Rect& rect) {
   // CustomScrollbarTheme must override this method.
   DCHECK(!scrollbar.IsCustomScrollbar());
-  CHECK_EQ(rect.size(), scrollbar.FrameRect().size());
   gfx::Vector2d offset = rect.origin() - scrollbar.Location();
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(
