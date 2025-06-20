@@ -235,7 +235,8 @@ void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
       frame = media::VideoFrame::WrapExternalData(
           buffer->info->pixel_format, buffer->info->coded_size,
           buffer->info->visible_rect, buffer->info->visible_rect.size(),
-          mapping, buffer->info->timestamp);
+          mapping.GetMemoryAs<uint8_t>(), frame_allocation_size,
+          buffer->info->timestamp);
     }
     buffer_finished_callback =
         base::BindPostTaskToCurrentDefault(base::BindOnce(
@@ -253,7 +254,8 @@ void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
       frame = media::VideoFrame::WrapExternalData(
           buffer->info->pixel_format, buffer->info->coded_size,
           buffer->info->visible_rect, buffer->info->visible_rect.size(),
-          mapping, buffer->info->timestamp);
+          mapping.GetMemoryAs<uint8_t>(), frame_allocation_size,
+          buffer->info->timestamp);
       if (frame) {
         frame->BackWithOwnedSharedMemory(std::move(shm_region),
                                          std::move(mapping));

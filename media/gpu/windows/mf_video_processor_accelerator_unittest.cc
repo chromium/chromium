@@ -524,7 +524,8 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12CPU) {
   auto timestamp = base::Milliseconds(0);
   auto frame = VideoFrame::WrapExternalData(
       VideoPixelFormat::PIXEL_FORMAT_XRGB, {kWidth, kHeight},
-      gfx::Rect(0, 0, kWidth, kHeight), {kWidth, kHeight}, image, timestamp);
+      gfx::Rect(0, 0, kWidth, kHeight), {kWidth, kHeight}, image.data(),
+      image.size(), timestamp);
 
   Microsoft::WRL::ComPtr<IMFSample> sample;
   ASSERT_HRESULT_SUCCEEDED(video_processor->Convert(frame, &sample));

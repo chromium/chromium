@@ -389,7 +389,8 @@ void RecordingService::OnFrameCaptured(
           info->visible_rect);
   scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapExternalData(
       info->pixel_format, info->coded_size, visible_rect, visible_rect.size(),
-      mapping, info->timestamp);
+      reinterpret_cast<const uint8_t*>(mapping.memory()), mapping.size(),
+      info->timestamp);
   if (!frame) {
     DLOG(ERROR) << "Failed to create a VideoFrame.";
     return;

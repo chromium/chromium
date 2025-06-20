@@ -148,7 +148,8 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
     auto video_frame = media::VideoFrame::WrapExternalData(
         frame.frame_info->pixel_format, frame.frame_info->coded_size,
         frame.frame_info->visible_rect, frame.frame_info->visible_rect.size(),
-        mapping, frame.frame_info->timestamp);
+        mapping.GetMemoryAs<const uint8_t>(), mapping.size(),
+        frame.frame_info->timestamp);
     CHECK(video_frame);
 
     video_frame->set_metadata(frame.frame_info->metadata);
