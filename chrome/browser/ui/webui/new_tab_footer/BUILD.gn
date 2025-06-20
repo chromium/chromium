@@ -15,6 +15,7 @@ source_set("new_tab_footer") {
   ]
   public_deps = [
     ":mojo_bindings",
+    "//chrome/browser/search/background",
     "//chrome/browser/ui/webui/customize_buttons:mojo_bindings",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/policy/core/browser",

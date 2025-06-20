@@ -63,6 +63,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Customize Chrome Button"/>
   <int value="2" label="Extension name"/>
   <int value="3" label="Management notice"/>
+  <int value="4" label="Background name"/>
 </enum>
 
 <enum name="ItemSuggestRequestResult">

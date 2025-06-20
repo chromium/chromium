@@ -28,6 +28,9 @@ class MockNewTabFooterDocument
   MOCK_METHOD(void,
               AttachedTabStateUpdated,
               (new_tab_footer::mojom::NewTabPageType ntp_type));
+  MOCK_METHOD(void,
+              SetBackgroundAttribution,
+              (new_tab_footer::mojom::BackgroundAttributionPtr));
 
   mojo::Receiver<new_tab_footer::mojom::NewTabFooterDocument> receiver_{this};
 };

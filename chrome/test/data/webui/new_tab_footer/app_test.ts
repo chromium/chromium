@@ -8,7 +8,7 @@ import {NewTabFooterDocumentProxy} from 'chrome://newtab-footer/browser_proxy.js
 import type {CustomizeButtonsDocumentRemote} from 'chrome://newtab-footer/customize_buttons.mojom-webui.js';
 import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeChromeSection, SidePanelOpenTrigger} from 'chrome://newtab-footer/customize_buttons.mojom-webui.js';
 import {CustomizeButtonsProxy} from 'chrome://newtab-footer/customize_buttons_proxy.js';
-import type {ManagementNotice, NewTabFooterDocumentRemote} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
+import type {BackgroundAttribution, ManagementNotice, NewTabFooterDocumentRemote} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
 import {NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerRemote, NewTabPageType} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
 import {WindowProxy} from 'chrome://newtab-footer/window_proxy.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -153,7 +153,7 @@ suite('NewTabFooterAppTest', () => {
 
       // Assert.
       const managementNoticeContainer =
-          element.shadowRoot.querySelector('#managementNoticeContainer');
+          $$(element, '#managementNoticeContainer');
       assertTrue(!!managementNoticeContainer);
       let managementNoticeLink =
           $$(element, '#managementNoticeContainer [role="link"]');
@@ -415,6 +415,75 @@ suite('NewTabFooterAppTest', () => {
       container.dispatchEvent(new MouseEvent('contextmenu'));
 
       await handler.whenCalled('showContextMenu');
+    });
+  });
+
+  suite('Background attribution', () => {
+    setup(async () => {
+      await setupFooter(NewTabPageType.kFirstPartyWebUI);
+    });
+
+    test('Get background attribution', async () => {
+      // Arrange with empty attribution URL.
+      let backgroundAttribution: BackgroundAttribution = {
+        name: 'background image name',
+        url: {url: ''},
+      };
+
+      // Act.
+      callbackRouter.setBackgroundAttribution(backgroundAttribution);
+      await callbackRouter.$.flushForTesting();
+
+      // Assert that the button is disabled.
+      let backgroundAttributionText =
+          $$(element, '#backgroundAttributionContainer p');
+      assertTrue(!!backgroundAttributionText);
+      assertEquals(
+          backgroundAttributionText.innerText, 'background image name');
+      let backgroundAttributionLink =
+          $$(element, '#backgroundAttributionContainer [role="link"]');
+      assertFalse(!!backgroundAttributionLink);
+
+      // Arrange with a non-empty URL.
+      backgroundAttribution = {
+        name: 'background image name',
+        url: {url: 'https://info.com'},
+      };
+
+      // Act.
+      callbackRouter.setBackgroundAttribution(backgroundAttribution);
+      await callbackRouter.$.flushForTesting();
+
+      // Assert that the button is enabled.
+      backgroundAttributionText =
+          $$(element, '#backgroundAttributionContainer p');
+      assertFalse(!!backgroundAttributionText);
+      backgroundAttributionLink =
+          $$(element, '#backgroundAttributionContainer [role="link"]');
+      assertTrue(!!backgroundAttributionLink);
+      assertEquals(
+          backgroundAttributionLink.innerText, 'background image name');
+    });
+
+    test('Click background attribution link', async () => {
+      // Arrange.
+      const attributionUrl = 'https://info.com';
+      const backgroundAttribution: BackgroundAttribution = {
+        name: 'background image name',
+        url: {url: attributionUrl},
+      };
+      callbackRouter.setBackgroundAttribution(backgroundAttribution);
+      await callbackRouter.$.flushForTesting();
+
+      // Act.
+      const link = $$(element, '#backgroundAttributionContainer [role="link"]');
+      assertTrue(!!link);
+      link.click();
+
+      // Assert.
+      assertEquals(1, handler.getCallCount('openUrlInCurrentTab'));
+      assertEquals(
+          attributionUrl, handler.getArgs('openUrlInCurrentTab')[0].url);
     });
   });
 });

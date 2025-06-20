@@ -27,6 +27,13 @@ struct ManagementNotice {
   bool is_custom_logo;
 };
 
+struct BackgroundAttribution {
+  // Human readable attributions of the background image.
+  string name;
+  // URL associated with the background image. Used for href.
+  url.mojom.Url? url;
+};
+
 // Used by the WebUI document to bootstrap bidirectional communication.
 interface NewTabFooterHandlerFactory {
   // The WebUI page's |BrowserProxy| singleton calls this method when the
@@ -46,12 +53,18 @@ interface NewTabFooterHandler {
   // Updates the current tab state. Triggers a call to
   // |AttachedTabStateUpdated|.
   UpdateAttachedTabState();
+  // Updates the background attribition details for 1P NTP
+  // custom themes if present.
+  // Updates background attribution for 1P WebUI NTP themes.
+  UpdateBackgroundAttribution();
   // Opens the options page for the extension identified by the last call
-  // to |GetNtpExtensionName|. If that call did not determine a valid ID,
+  // to |UpdateNtpExtensionName|. If that call did not determine a valid ID,
   // this opens the extension settings page.
   OpenExtensionOptionsPageWithFallback();
   // Opens the chrome://management page.
   OpenManagementPage();
+  // Opens url in the current tab.
+  OpenUrlInCurrentTab(url.mojom.Url url);
   // Shows context menu.
   ShowContextMenu(gfx.mojom.Point point);
 };
@@ -65,4 +78,7 @@ interface NewTabFooterDocument {
   // Sets information about the tab that is attached to the
   // NewTabFooterDocument.
   AttachedTabStateUpdated(NewTabPageType ntp_type);
+  // Sets the image name and url.
+  SetBackgroundAttribution(
+      BackgroundAttribution? background_image_attribution);
 };

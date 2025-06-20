@@ -9,6 +9,7 @@
 
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
@@ -66,6 +67,8 @@ NewTabFooterUI::NewTabFooterUI(content::WebUI* web_ui)
       {"manageExtension", IDS_MANAGE_EXTENSION},
       {"wallpaperSearchButton", IDS_NTP_WALLPAPER_SEARCH_PAGE_HEADER},
       // TODO(crbug.com/394902303): alphabetically order the following strings.
+      {"backgroundAttributionDesc",
+       IDS_NEW_TAB_FOOTER_BACKGROUND_ATTRIBUTION_ARIA_DESC},
       {"managementLinkDesc", IDS_OPENS_MANAGEMENT_PAGE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
@@ -112,6 +115,7 @@ void NewTabFooterUI::CreateNewTabFooterHandler(
         pending_handler) {
   handler_ = std::make_unique<NewTabFooterHandler>(
       std::move(pending_handler), std::move(pending_document), this->embedder(),
+      NtpCustomBackgroundServiceFactory::GetForProfile(profile_),
       web_ui()->GetWebContents());
   if (!source_tab_url_.is_empty()) {
     handler_->AttachedTabStateUpdated(source_tab_url_);

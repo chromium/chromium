@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/new_tab_footer/mock_new_tab_footer_document.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
@@ -38,7 +39,9 @@ class NewTabFooterHandlerBrowserTest : public extensions::ExtensionBrowserTest {
     handler_ = std::make_unique<NewTabFooterHandler>(
         mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandler>(),
         document_.BindAndGetRemote(),
-        base::WeakPtr<TopChromeWebUIController::Embedder>(), web_contents());
+        base::WeakPtr<TopChromeWebUIController::Embedder>(),
+        NtpCustomBackgroundServiceFactory::GetForProfile(profile()),
+        web_contents());
   }
 
   void TearDownOnMainThread() override {
@@ -56,6 +59,16 @@ class NewTabFooterHandlerBrowserTest : public extensions::ExtensionBrowserTest {
   std::unique_ptr<NewTabFooterHandler> handler_;
   testing::NiceMock<MockNewTabFooterDocument> document_;
 };
+
+IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, OpenUrlInCurrentTab) {
+  const GURL url = GURL("https://google.com");
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  handler().OpenUrlInCurrentTab(url);
+
+  WaitForLoadStop(web_contents());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(url, web_contents()->GetLastCommittedURL());
+}
 
 IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest,
                        OpenExtensionOptionsPage_ExistingExtensionId) {

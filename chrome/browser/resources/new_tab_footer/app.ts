@@ -9,6 +9,7 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -16,7 +17,7 @@ import {NewTabFooterDocumentProxy} from './browser_proxy.js';
 import type {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote} from './customize_buttons.mojom-webui.js';
 import {CustomizeChromeSection, SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
 import {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
-import type {ManagementNotice, NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerInterface} from './new_tab_footer.mojom-webui.js';
+import type {BackgroundAttribution, ManagementNotice, NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerInterface} from './new_tab_footer.mojom-webui.js';
 import {NewTabPageType} from './new_tab_footer.mojom-webui.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -50,7 +51,8 @@ export enum FooterElement {
   CUSTOMIZE_BUTTON = 1,
   EXTENSION_NAME = 2,
   MANAGEMENT_NOTICE = 3,
-  MAX_VALUE = MANAGEMENT_NOTICE,
+  BACKGROUND_ATTRIBUTION = 4,
+  MAX_VALUE = BACKGROUND_ATTRIBUTION,
 }
 
 const CUSTOMIZE_URL_PARAM: string = 'customize';
@@ -88,6 +90,9 @@ export class NewTabFooterAppElement extends CrLitElement {
       showCustomizeText_: {type: Boolean},
       showExtension_: {type: Boolean},
       ntpType_: {type: Object},
+      backgroundAttributionLink_: {type: Object},
+      backgroundAttributionText_: {type: String},
+      showBackgroundAttribution_: {type: Boolean},
     };
   }
 
@@ -98,6 +103,9 @@ export class NewTabFooterAppElement extends CrLitElement {
   protected accessor showCustomizeText_: boolean = true;
   protected accessor showExtension_: boolean = false;
   protected accessor ntpType_: NewTabPageType = NewTabPageType.kOther;
+  protected accessor backgroundAttributionText_: string|null = null;
+  protected accessor backgroundAttributionLink_: Url|null = null;
+  protected accessor showBackgroundAttribution_: boolean = false;
 
   private selectedCustomizeDialogPage_: string|null;
   private callbackRouter_: NewTabFooterDocumentCallbackRouter;
@@ -106,6 +114,7 @@ export class NewTabFooterAppElement extends CrLitElement {
   private customizeHandler_: CustomizeButtonsHandlerRemote;
   private setCustomizeChromeSidePanelVisibilityListener_: number|null = null;
   private setNtpExtensionNameListenerId_: number|null = null;
+  private setBackgroundAttributionListener_: number|null = null;
   private setManagementNoticeListener_: number|null = null;
   private setAttachedTabStateUpdatedListener_: number|null = null;
 
@@ -152,6 +161,18 @@ export class NewTabFooterAppElement extends CrLitElement {
               this.ntpType_ = ntpType;
             });
     this.handler_.updateAttachedTabState();
+    this.setBackgroundAttributionListener_ =
+        this.callbackRouter_.setBackgroundAttribution.addListener(
+            (attribution: BackgroundAttribution) => {
+              if (attribution) {
+                this.backgroundAttributionText_ = attribution.name;
+                this.backgroundAttributionLink_ = attribution.url;
+              } else {
+                this.backgroundAttributionText_ = null;
+                this.backgroundAttributionLink_ = null;
+              }
+            });
+    this.handler_.updateBackgroundAttribution();
     // Open Customize Chrome if there are Customize Chrome URL params.
     if (this.isCustomizeActive_) {
       this.setCustomizeChromeSidePanelVisible(this.isCustomizeActive_);
@@ -168,6 +189,8 @@ export class NewTabFooterAppElement extends CrLitElement {
     assert(this.setAttachedTabStateUpdatedListener_);
     this.callbackRouter_.removeListener(
         this.setAttachedTabStateUpdatedListener_);
+    assert(this.setBackgroundAttributionListener_);
+    this.callbackRouter_.removeListener(this.setBackgroundAttributionListener_);
     assert(this.setCustomizeChromeSidePanelVisibilityListener_);
     this.customizeCallbackRouter_.removeListener(
         this.setCustomizeChromeSidePanelVisibilityListener_);
@@ -187,6 +210,12 @@ export class NewTabFooterAppElement extends CrLitElement {
         changedPrivateProperties.has('extensionName_')) {
       this.showExtension_ = this.computeShowExtension_();
     }
+
+    if (changedPrivateProperties.has('backgroundAttributionText_') ||
+        changedPrivateProperties.has('ntpType_')) {
+      this.showBackgroundAttribution_ =
+          this.computeShowBackgroundAttribution_();
+    }
   }
 
   private computeShowCustomizeButtons_(): boolean {
@@ -196,6 +225,11 @@ export class NewTabFooterAppElement extends CrLitElement {
 
   private computeShowExtension_(): boolean {
     return !!this.extensionName_ && this.ntpType_ === NewTabPageType.kExtension;
+  }
+
+  private computeShowBackgroundAttribution_(): boolean {
+    return !!this.backgroundAttributionText_ &&
+        this.ntpType_ === NewTabPageType.kFirstPartyWebUI;
   }
 
   protected onContextMenu_(e: MouseEvent) {
@@ -212,6 +246,13 @@ export class NewTabFooterAppElement extends CrLitElement {
     e.preventDefault();
     recordClick(FooterElement.MANAGEMENT_NOTICE);
     this.handler_.openManagementPage();
+  }
+
+  protected onBackgroundAttributionClick_(e: Event) {
+    e.preventDefault();
+    recordClick(FooterElement.BACKGROUND_ATTRIBUTION);
+    assert(!!this.backgroundAttributionLink_);
+    this.handler_.openUrlInCurrentTab(this.backgroundAttributionLink_);
   }
 
   protected onCustomizeClick_() {
