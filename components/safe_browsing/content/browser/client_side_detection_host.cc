@@ -1285,11 +1285,7 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
   }
 
   if (intelligent_scan_delegate_->ShouldRequestIntelligentScan(verdict.get())) {
-    bool is_keyboard_lock_requested =
-        verdict->client_side_detection_type() ==
-        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED;
-    if (is_keyboard_lock_requested &&
-        did_match_high_confidence_allowlist.has_value() &&
+    if (did_match_high_confidence_allowlist.has_value() &&
         did_match_high_confidence_allowlist.value()) {
       IntelligentScanInfo intelligent_scan_info;
       intelligent_scan_info.set_no_info_reason(
