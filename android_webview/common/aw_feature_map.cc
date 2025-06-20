@@ -27,6 +27,7 @@ namespace {
 // (e.g. content/, components/, etc).
 const base::Feature* const kFeaturesExposedToJava[] = {
     // Ordered alphabetically on feature name.
+    // keep-sorted start allow_yaml_lists=yes by_regex=['\w+,']
     &metrics::kAndroidMetricsAsyncMetricLogging,
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &safe_browsing::kHashPrefixRealTimeLookups,
@@ -35,6 +36,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &sensitive_content::features::kSensitiveContent,
     &features::kWebViewBackForwardCache,
     &features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
+    &features::kWebViewConnectToComponentProviderInBackground,
     &features::kWebViewDisableCHIPS,
     &features::kWebViewDoNotSendAccessibilityEventsOnGSU,
     &features::kWebViewDrainPrefetchQueueDuringInit,
@@ -53,8 +55,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewReduceUAAndroidVersionDeviceModel,
     &features::kWebViewSafeAreaIncludesSystemBars,
     &features::kWebViewSeparateResourceContext,
-    &features::kWebViewSkipInterceptsForPrefetch,
     &features::kWebViewShortCircuitShouldInterceptRequest,
+    &features::kWebViewSkipInterceptsForPrefetch,
     &features::kWebViewTestFeature,
     &features::kWebViewUseInitialNetworkStateAtStartup,
     &features::kWebViewUseMetricsUploadService,
@@ -62,7 +64,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewUseStartupTasksLogic,
     &features::kWebViewWebauthn,
     &features::kWebViewXRequestedWithHeaderControl,
-    &features::kWebViewConnectToComponentProviderInBackground,
+    // keep-sorted end
 };
 
 // static
