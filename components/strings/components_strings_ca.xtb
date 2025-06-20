@@ -3751,7 +3751,7 @@ Detalls addicionals:
 <translation id="7508255263130623398">L'identificador de dispositiu de la política que s'ha tornat és buit o no coincideix amb l'actual</translation>
 <translation id="7508577201115425418">Serveis documentals i d’impressió</translation>
 <translation id="7508870219247277067">Verd alvocat</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Com els llocs webs utilitzen aquestes dades<ph name="END_BOLD" />: els llocs web poden emmagatzemar informació a Chrome sobre les coses que t'agraden. Per exemple, si utilitzes una aplicació sobre entrenament de maratons, el lloc web pot decidir que t'interessen les sabatilles de córrer. Més endavant, si visites un altre lloc web, aquest lloc web pot mostrar-te un anunci de sabatilles de córrer suggerit pel primer lloc web.</translation>
+<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Com els llocs web utilitzen aquestes dades<ph name="END_BOLD" />: els llocs web poden emmagatzemar informació a Chrome sobre les coses que t'agraden. Per exemple, si utilitzes una aplicació sobre entrenament de maratons, el lloc web pot decidir que t'interessen les sabatilles de córrer. Més endavant, si visites un altre lloc web, aquest lloc web pot mostrar-te un anunci de sabatilles de córrer suggerit pel primer lloc web.</translation>
 <translation id="7510269639068718544">Gats</translation>
 <translation id="7511955381719512146">És possible que la xarxa Wi-Fi que esteu fent servir requereixi que visiteu <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Com que aquesta política no es pot establir en "True" i ser obligatòria, s'ha canviat a recomanada.</translation>

@@ -240,7 +240,7 @@
 <translation id="1956138802718275401">從主畫面快速查詢密碼</translation>
 <translation id="1959441496380398824">按住所需日期。</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" />已將 <ph name="WEBSITE" /> 的密碼分享給你</translation>
-<translation id="1962969542251276847">鎖定螢幕</translation>
+<translation id="1962969542251276847">螢幕鎖定</translation>
 <translation id="1963976881984600709">標準防護</translation>
 <translation id="1966313166384086081">網站資料</translation>
 <translation id="1967461193809857427">{count,plural, =1{要接續使用先前在 Android 上開啟的分頁嗎？}other{要接續使用先前在 Android 上開啟的分頁嗎？}}</translation>
