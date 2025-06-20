@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -1005,7 +1006,11 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
 - (void)handlePageActionMenuEntrypointTapped {
   // TODO(crbug.com/402827015): Log opens.
-  [self.pageActionMenuHandler showPageActionMenu];
+  if (IsDirectBWGEntryPoint()) {
+    [self.BWGHandler startBWGFlow];
+  } else {
+    [self.pageActionMenuHandler showPageActionMenu];
+  }
 }
 
 // Creates and shows the LVF input selection UI.

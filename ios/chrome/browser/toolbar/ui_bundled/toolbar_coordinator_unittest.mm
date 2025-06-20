@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
@@ -91,6 +92,11 @@ class ToolbarCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_page_action_menu_commands
                      forProtocol:@protocol(PageActionMenuCommands)];
+
+    id mock_bwg_commands = OCMProtocolMock(@protocol(BWGCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_bwg_commands
+                     forProtocol:@protocol(BWGCommands)];
 
     id mock_popup_menu_handler = OCMProtocolMock(@protocol(PopupMenuCommands));
     [browser_->GetCommandDispatcher()

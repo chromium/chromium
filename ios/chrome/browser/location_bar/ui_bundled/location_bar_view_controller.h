@@ -17,6 +17,7 @@
 @protocol ApplicationCommands;
 @protocol BadgeViewVisibilityDelegate;
 @protocol BrowserCoordinatorCommands;
+@protocol BWGCommands;
 @protocol ContextualPanelEntrypointVisibilityDelegate;
 @protocol FakeboxButtonsSnapshotProvider;
 @protocol HelpCommands;
@@ -115,6 +116,9 @@ class Tracker;
 
 // The page action menu handler.
 @property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
+
+// The BWG command handler.
+@property(nonatomic, weak) id<BWGCommands> BWGHandler;
 
 // An object to provide a snapshot of the fakebox buttons to be used during
 // focus and defocus transitions.

@@ -103,6 +103,8 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/square_bullet_square.symbolset/square.bullet.square.cr.svg",
     "Assets.xcassets/square_number.symbolset/Contents.json",
     "Assets.xcassets/square_number.symbolset/square.number.cr.svg",
+    "Assets.xcassets/text_spark.symbolset/Contents.json",
+    "Assets.xcassets/text_spark.symbolset/text.spark.cr.svg",
     "Assets.xcassets/top_omnibox_option.symbolset/Contents.json",
     "Assets.xcassets/top_omnibox_option.symbolset/top.omnibox.cr.svg",
     "Assets.xcassets/translate.symbolset/Contents.json",

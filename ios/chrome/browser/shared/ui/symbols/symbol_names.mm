@@ -301,6 +301,7 @@ NSString* const kReaderModeSymbolPostIOS18 = @"text.page";
 NSString* const kCircleBadgeFill = @"circlebadge.fill";
 NSString* const kCounterClockWiseSymbol =
     @"clock.arrow.trianglehead.counterclockwise.rotate.90";
+NSString* const kTextSparkSymbol = @"text_spark";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

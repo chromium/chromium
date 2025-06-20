@@ -19,7 +19,10 @@ BASE_DECLARE_FEATURE(kPageActionMenu);
 // Returns true if the page action menu is enabled.
 bool IsPageActionMenuEnabled();
 
-extern const char kBWGPromoConsentParams[];
+// Whether the omnibox entry point opens the BWG overlay immediately, skipping
+// the AI hub.
+bool IsDirectBWGEntryPoint();
+extern const char kPageActionMenuDirectEntryPointParam[];
 
 // Holds the variations of the BWG Promo Consent flow.
 enum class BWGPromoConsentVariations {
@@ -29,6 +32,7 @@ enum class BWGPromoConsentVariations {
   kSkipConsent = 3,
   kForceConsent = 4,
 };
+extern const char kBWGPromoConsentParams[];
 
 // Returns the variation of the BWG Promo Consent flow.
 BWGPromoConsentVariations BWGPromoConsentVariationsParam();

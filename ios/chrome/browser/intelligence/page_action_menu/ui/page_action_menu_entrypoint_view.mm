@@ -33,7 +33,7 @@ const CGFloat kMinimumWidth = 44;
     self.pointerStyleProvider = CreateDefaultEffectCirclePointerStyleProvider();
     self.tintColor = [UIColor colorNamed:kToolbarButtonColor];
 
-    // TODO(crbug.com/406814389): Add an actual accessibiity label.
+    // TODO(crbug.com/420643840): Add an actual accessibiity label.
     self.accessibilityLabel = @"Page action menu";
 
     UIImageSymbolConfiguration* symbolConfig = [UIImageSymbolConfiguration
@@ -44,7 +44,7 @@ const CGFloat kMinimumWidth = 44;
                           forImageInState:UIControlStateNormal];
 
     // TODO(crbug.com/406814389): Replace with custom symbol.
-    [self setImage:DefaultSymbolWithPointSize(@"sparkle", kIconPointSize)
+    [self setImage:CustomSymbolWithPointSize(kTextSparkSymbol, kIconPointSize)
           forState:UIControlStateNormal];
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;
 

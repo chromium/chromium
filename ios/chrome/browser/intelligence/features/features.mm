@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/features/features.h"
 
+#import "base/check.h"
 #import "base/metrics/field_trial_params.h"
 
 BASE_FEATURE(kEnhancedCalendar,
@@ -18,8 +19,17 @@ BASE_FEATURE(kPageActionMenu,
              "PageActionMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kPageActionMenuDirectEntryPointParam[] =
+    "PageActionMenuDirectEntryPoint";
+
 bool IsPageActionMenuEnabled() {
   return base::FeatureList::IsEnabled(kPageActionMenu);
+}
+
+bool IsDirectBWGEntryPoint() {
+  CHECK(IsPageActionMenuEnabled());
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kPageActionMenu, kPageActionMenuDirectEntryPointParam, false);
 }
 
 const char kBWGPromoConsentParams[] = "BWGPromoConsentVariations";
