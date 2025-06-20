@@ -27,10 +27,10 @@ import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContents.DependencyFactory;
 import org.chromium.android_webview.AwContents.InternalAccessDelegate;
-import org.chromium.android_webview.AwContents.NativeDrawFunctorFactory;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwWebResourceRequest;
+import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.Log;
@@ -526,7 +526,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                         testContainerView,
                         testContainerView.getContext(),
                         testContainerView.getInternalAccessDelegate(),
-                        testContainerView.getNativeDrawFunctorFactory(),
+                        testContainerView.getDrawFnAccess(),
                         awContentsClient,
                         awSettings,
                         testDependencyFactory);
@@ -917,7 +917,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                 ViewGroup containerView,
                 Context context,
                 InternalAccessDelegate internalAccessAdapter,
-                NativeDrawFunctorFactory nativeDrawFunctorFactory,
+                AwDrawFnImpl.DrawFnAccess drawFnAccess,
                 AwContentsClient contentsClient,
                 AwSettings settings,
                 DependencyFactory dependencyFactory) {
@@ -926,7 +926,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                     containerView,
                     context,
                     internalAccessAdapter,
-                    nativeDrawFunctorFactory,
+                    drawFnAccess,
                     contentsClient,
                     settings,
                     dependencyFactory);

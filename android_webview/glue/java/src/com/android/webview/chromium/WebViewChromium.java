@@ -69,7 +69,6 @@ import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -907,7 +906,7 @@ class WebViewChromium
                             mWebView,
                             mContext,
                             new InternalAccessAdapter(),
-                            new WebViewNativeDrawFunctorFactory(),
+                            mFactory.getWebViewDelegate()::drawWebViewFunctor,
                             mContentsClientAdapter,
                             mWebSettings.getAwSettings(),
                             new AwContents.DependencyFactory());
@@ -3582,22 +3581,6 @@ class WebViewChromium
             recordWebViewApiCall(ApiCall.CREATE_PRINT_DOCUMENT_ADAPTER);
             checkThread();
             return new AwPrintDocumentAdapter(mAwContents.getPdfExporter(), documentName);
-        }
-    }
-
-    // AwContents.NativeDrawFunctorFactory implementation ----------------------------------
-    private class WebViewNativeDrawFunctorFactory implements AwContents.NativeDrawFunctorFactory {
-        @Override
-        public AwContents.NativeDrawGLFunctor createGLFunctor(long context) {
-            return new DrawGLFunctor(context, mFactory.getWebViewDelegate());
-        }
-
-        @Override
-        public AwDrawFnImpl.DrawFnAccess getDrawFnAccess() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                return mFactory.getWebViewDelegate()::drawWebViewFunctor;
-            }
-            return null;
         }
     }
 

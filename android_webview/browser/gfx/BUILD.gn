@@ -9,8 +9,6 @@ source_set("gfx") {
   sources = [
     "aw_draw_fn_impl.cc",
     "aw_draw_fn_impl.h",
-    "aw_gl_functor.cc",
-    "aw_gl_functor.h",
     "aw_gl_surface.cc",
     "aw_gl_surface.h",
     "aw_gl_surface_external_stencil.cc",

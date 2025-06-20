@@ -263,7 +263,7 @@ public class AwShellActivity extends Activity {
                         testContainerView,
                         testContainerView.getContext(),
                         testContainerView.getInternalAccessDelegate(),
-                        testContainerView.getNativeDrawFunctorFactory(),
+                        testContainerView.getDrawFnAccess(),
                         awContentsClient,
                         awSettings));
         testContainerView.getAwContents().getSettings().setJavaScriptEnabled(true);

@@ -810,12 +810,8 @@ public class WebViewChromiumAwInit {
     private void initPlatSupportLibrary() {
         try (ScopedSysTraceEvent e =
                 ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.initPlatSupportLibrary")) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                AwDrawFnImpl.setDrawFnFunctionTable(DrawFunctor.getDrawFnFunctionTable());
-            }
-            DrawGLFunctor.setChromiumAwDrawGLFunction(AwContents.getAwDrawGLFunction());
+            AwDrawFnImpl.setDrawFnFunctionTable(DrawFunctor.getDrawFnFunctionTable());
             AwContents.setAwDrawSWFunctionTable(GraphicsUtils.getDrawSWFunctionTable());
-            AwContents.setAwDrawGLFunctionTable(GraphicsUtils.getDrawGLFunctionTable());
         }
     }
 

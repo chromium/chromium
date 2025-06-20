@@ -27,11 +27,11 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContents.DependencyFactory;
 import org.chromium.android_webview.AwContents.InternalAccessDelegate;
-import org.chromium.android_webview.AwContents.NativeDrawFunctorFactory;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.WebviewErrorCode;
+import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.ThreadUtils;
@@ -815,7 +815,7 @@ public class LoadUrlTest extends AwParameterizedTest {
                 ViewGroup containerView,
                 Context context,
                 InternalAccessDelegate internalAccessAdapter,
-                NativeDrawFunctorFactory nativeDrawFunctorFactory,
+                AwDrawFnImpl.DrawFnAccess drawFnAccess,
                 AwContentsClient contentsClient,
                 AwSettings settings,
                 DependencyFactory dependencyFactory) {
@@ -824,7 +824,7 @@ public class LoadUrlTest extends AwParameterizedTest {
                     containerView,
                     context,
                     internalAccessAdapter,
-                    nativeDrawFunctorFactory,
+                    drawFnAccess,
                     contentsClient,
                     settings,
                     dependencyFactory);

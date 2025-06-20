@@ -11,10 +11,6 @@ abstract class GraphicsUtils {
         return nativeGetDrawSWFunctionTable();
     }
 
-    public static long getDrawGLFunctionTable() {
-        return nativeGetDrawGLFunctionTable();
-    }
-
     // The Android framework performs manual JNI registration on these methods, so the method
     // signatures cannot change without updating the framework. We use @UsedByReflection, while not
     // technically true, as a way to preserve these methods and their names.
