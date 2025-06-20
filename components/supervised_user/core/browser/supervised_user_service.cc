@@ -227,6 +227,11 @@ SupervisedUserService::SupervisedUserService(
       << "Settings service is initialized as part of the PrefService, which is "
          "a dependency of this service.";
 
+#if BUILDFLAG(IS_ANDROID)
+  browser_content_filters_observer_->Init();
+  search_content_filters_observer_->Init();
+#endif  // BUILDFLAG(IS_ANDROID)
+
   main_pref_change_registrar_.Init(&user_prefs_.get());
   main_pref_change_registrar_.Add(
       policy::policy_prefs::kIncognitoModeAvailability,
@@ -397,6 +402,12 @@ void SupervisedUserService::UpdateURLFilter(
 void SupervisedUserService::Shutdown() {
   DCHECK(!did_shutdown_);
   did_shutdown_ = true;
+
+#if BUILDFLAG(IS_ANDROID)
+  browser_content_filters_observer_->Shutdown();
+  search_content_filters_observer_->Shutdown();
+#endif  // BUILDFLAG(IS_ANDROID)
+
   if (IsSubjectToParentalControls(user_prefs_.get())) {
     base::RecordAction(UserMetricsAction("ManagedUsers_QuitBrowser"));
   }

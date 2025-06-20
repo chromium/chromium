@@ -346,7 +346,7 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
   // corresponding metric.
   histogram_tester()->ExpectTotalCount(
       kClassifiedEarlierThanContentResponseHistogramName,
-      /*grew_by=*/1);
+      /*expected_count=*/1);
 
   // This throttle continued on request, and proceeded on response because the
   // result was already there.
@@ -400,7 +400,7 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
   // corresponding metric.
   histogram_tester()->ExpectTotalCount(
       kClassifiedLaterThanContentResponseHistogramName,
-      /*grew_by=*/1);
+      /*expected_count=*/1);
 
   // This throttle continued on request, and deferred on response because the
   // result wasn't there. Then it resumed.
@@ -561,7 +561,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   // corresponding metric.
   histogram_tester()->ExpectTotalCount(
       kClassifiedEarlierThanContentResponseHistogramName,
-      /*grew_by=*/1);
+      /*expected_count=*/1);
 
   // This throttle continued on request and redirects and proceeded because
   // verdict was ready.
@@ -614,7 +614,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
     // Classification still not complete.
     histogram_tester()->ExpectTotalCount(
         kClassifiedEarlierThanContentResponseHistogramName,
-        /*grew_by=*/0);
+        /*expected_count=*/0);
   }
 
   // Throttle is not blocked
@@ -631,7 +631,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   // corresponding metric.
   histogram_tester()->ExpectTotalCount(
       kClassifiedEarlierThanContentResponseHistogramName,
-      /*grew_by=*/1);
+      /*expected_count=*/1);
 
   // This throttle continued on request and redirects and then proceeded because
   // verdict was ready.
@@ -706,7 +706,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   // corresponding metric.
   histogram_tester()->ExpectTotalCount(
       kClassifiedLaterThanContentResponseHistogramName,
-      /*grew_by=*/1);
+      /*expected_count=*/1);
 
   // This throttle continued on request and redirects and then deferred because
   // one check was outstanding. After it was completed, the throttle resumed.

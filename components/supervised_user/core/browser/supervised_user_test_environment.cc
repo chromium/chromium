@@ -323,6 +323,13 @@ FakeContentFiltersObserverBridge::FakeContentFiltersObserverBridge(
     : ContentFiltersObserverBridge(setting_name, on_enabled, on_disabled) {}
 FakeContentFiltersObserverBridge::~FakeContentFiltersObserverBridge() = default;
 
+void FakeContentFiltersObserverBridge::Init() {
+  // Do nothing, specifically do not initialize the java bridge from super.
+}
+void FakeContentFiltersObserverBridge::Shutdown() {
+  // Do nothing, specifically do not destroy the java bridge from super.
+}
+
 bool FakeContentFiltersObserverBridge::IsEnabled() const {
   return enabled_;
 }

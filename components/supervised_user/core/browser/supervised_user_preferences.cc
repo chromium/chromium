@@ -228,7 +228,6 @@ void EnableBrowserContentFilters(PrefService& pref_service) {
 }
 
 void DisableBrowserContentFilters(PrefService& pref_service) {
-  CheckEligibilityForContentFilters(pref_service);
   DisableParentalControls(pref_service);
 }
 
@@ -237,7 +236,6 @@ void EnableSearchContentFilters(PrefService& pref_service) {
   pref_service.SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch, true);
 }
 void DisableSearchContentFilters(PrefService& pref_service) {
-  CheckEligibilityForContentFilters(pref_service);
   // Reset the setting to default.
   pref_service.ClearPref(policy::policy_prefs::kForceGoogleSafeSearch);
 }

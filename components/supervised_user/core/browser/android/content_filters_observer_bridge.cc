@@ -23,17 +23,27 @@ ContentFiltersObserverBridge::ContentFiltersObserverBridge(
     : setting_name_(setting_name),
       on_enabled_(on_enabled),
       on_disabled_(on_disabled) {
-  CreateJavaBridge();
 }
 
 ContentFiltersObserverBridge::~ContentFiltersObserverBridge() {
-  DestroyJavaBridge();
+  if (bridge_) {
+    // Just in case when the owner forgot to call Shutdown().
+    Shutdown();
+    bridge_ = nullptr;
+  }
 }
 
 void ContentFiltersObserverBridge::OnChange(JNIEnv* env, bool enabled) {
   LOG(INFO) << "ContentFiltersObserverBridge received onChange for setting "
             << setting_name_ << " with value "
             << (enabled ? "enabled" : "disabled");
+  if (!base::FeatureList::IsEnabled(
+          kPropagateDeviceContentFiltersToSupervisedUser)) {
+    LOG(INFO)
+        << "ContentFiltersObserverBridge change ignored: feature disabled";
+    return;
+  }
+
   if (enabled) {
     on_enabled_.Run();
   } else {
@@ -41,37 +51,22 @@ void ContentFiltersObserverBridge::OnChange(JNIEnv* env, bool enabled) {
   }
 }
 
-void ContentFiltersObserverBridge::CreateJavaBridge() {
-  if (!base::FeatureList::IsEnabled(
-          kPropagateDeviceContentFiltersToSupervisedUser)) {
-    // TODO(crbug.com/422435683): Link the java bridge class to relevant
-    // unit-test binaries.
-    LOG(INFO) << "ContentFiltersObserverBridge is disabled.";
-    return;
-  }
-
+void ContentFiltersObserverBridge::Init() {
   JNIEnv* env = base::android::AttachCurrentThread();
   bridge_ = Java_ContentFiltersObserverBridge_Constructor(
       env, reinterpret_cast<jlong>(this),
       base::android::ConvertUTF8ToJavaString(env, setting_name_));
 }
 
-void ContentFiltersObserverBridge::DestroyJavaBridge() {
-  if (!base::FeatureList::IsEnabled(
-          kPropagateDeviceContentFiltersToSupervisedUser)) {
-    // TODO(crbug.com/422435683): Link the java bridge class to relevant
-    // unit-test binaries.
-    return;
-  }
+void ContentFiltersObserverBridge::Shutdown() {
   Java_ContentFiltersObserverBridge_destroy(
       base::android::AttachCurrentThread(), bridge_);
+  bridge_ = nullptr;
 }
 
 bool ContentFiltersObserverBridge::IsEnabled() const {
   if (!base::FeatureList::IsEnabled(
           kPropagateDeviceContentFiltersToSupervisedUser)) {
-    // TODO(crbug.com/422435683): Link the java bridge class to relevant
-    // unit-test binaries.
     return false;
   }
 

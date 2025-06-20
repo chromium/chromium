@@ -91,13 +91,17 @@ class FakeContentFiltersObserverBridge final
   FakeContentFiltersObserverBridge& operator=(
       const FakeContentFiltersObserverBridge&) = delete;
   ~FakeContentFiltersObserverBridge() override;
+
+  // Override to suppress initialization of the java bridge.
+  void Init() override;
+  void Shutdown() override;
+
+  // Override to return mocked value.
   bool IsEnabled() const override;
+  // Set mocked value.
   void SetEnabled(bool enabled);
 
  private:
-  // Do not create nor destroy the java bridge in tests.
-  void CreateJavaBridge() override {}
-  void DestroyJavaBridge() override {}
   // Stores actual value (in place of secure settings storage). Note: In prod
   // environment there is one setting value for all profiles, but this fake
   // is bound to a specific profile.

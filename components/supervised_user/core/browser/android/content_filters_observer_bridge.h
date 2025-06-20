@@ -29,6 +29,10 @@ class ContentFiltersObserverBridge {
       const ContentFiltersObserverBridge&) = delete;
   virtual ~ContentFiltersObserverBridge();
 
+  // Initializes and shuts down the java class.
+  virtual void Init();
+  virtual void Shutdown();
+
   // Called after creating the bridge and when the setting is enabled or
   // disabled.
   void OnChange(JNIEnv* env, bool enabled);
@@ -36,11 +40,7 @@ class ContentFiltersObserverBridge {
   // Reads the last broadcasted value of the setting from the Java side.
   virtual bool IsEnabled() const;
 
- private:
-  // Create and destroy the Java bridge class.
-  virtual void CreateJavaBridge();
-  virtual void DestroyJavaBridge();
-
+private:
   std::string setting_name_;
   base::RepeatingClosure on_enabled_;
   base::RepeatingClosure on_disabled_;

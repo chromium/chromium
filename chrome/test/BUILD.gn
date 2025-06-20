@@ -7791,6 +7791,7 @@ test("unit_tests") {
       "//components/services/unzip:in_process",
       "//components/signin/core/browser",
       "//components/signin/public/android:signin_java_test_support",
+      "//components/supervised_user/android:content_filters_observer_bridge_java",
       "//components/supervised_user/core/browser/proto",
       "//components/supervised_user/core/common",
       "//components/translate/content/android:android",

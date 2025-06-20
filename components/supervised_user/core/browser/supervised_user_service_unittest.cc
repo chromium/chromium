@@ -127,15 +127,6 @@ TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Death tests tend to be flaky on Android or ChromeOS.
-TEST_F(SupervisedUserServiceTest, CantDisableFilteringUsingUserControls) {
-  GTEST_FLAG_SET(death_test_style, "threadsafe");
-  EXPECT_DEATH_IF_SUPPORTED(
-      DisableBrowserContentFilters(
-          *supervised_user_test_environment_.pref_service()),
-      "Users who are subject to Family Link parental controls cannot change "
-      "browser content filters");
-}
-
 TEST_F(SupervisedUserServiceTest, CantEnableFilteringUsingUserControls) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DEATH_IF_SUPPORTED(

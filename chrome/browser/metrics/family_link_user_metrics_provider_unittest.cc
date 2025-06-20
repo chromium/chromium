@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -25,6 +26,7 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/test/browser_task_environment.h"
@@ -629,6 +631,11 @@ class FamilyLinkUserMetricsProviderWithContentFiltersTest
   }
 
  private:
+  // Required to propagate the device content filters to the supervised user
+  // service. FakeContentFiltersObserverBridge which is in action here only
+  // avoids creating the java bridge class, but uses prod notification patterns.
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kPropagateDeviceContentFiltersToSupervisedUser};
   std::vector<std::string> email_addresses_{kTestEmail, kTestEmail1};
   std::vector<std::string> profile_names_{kTestProfile, kTestProfile1};
 
