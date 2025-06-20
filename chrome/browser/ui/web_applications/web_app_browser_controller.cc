@@ -584,6 +584,10 @@ std::u16string WebAppBrowserController::GetTitle() const {
     return app_name;
   }
 
+  if (provider_->ui_manager().GetNumWindowsForApp(app_id()) == 1) {
+    return app_name;
+  }
+
   return base::StrCat({app_name, u" - ", raw_title});
 }
 

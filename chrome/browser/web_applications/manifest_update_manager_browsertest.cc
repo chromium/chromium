@@ -4675,7 +4675,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerImmediateUpdateBrowserTest,
   // Check update takes effect on live web app window.
   app_window_update.Run();
   AppBrowserController* app_controller = app_browser->app_controller();
-  EXPECT_EQ(app_controller->GetTitle(), u"New name - Web app banner test page");
+  EXPECT_EQ(app_controller->GetTitle(), u"New name");
   EXPECT_EQ(app_controller->GetThemeColor(), SK_ColorGREEN);
 
   // Force the app icon to load again and check that it's the new one.
