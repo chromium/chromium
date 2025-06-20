@@ -9068,6 +9068,10 @@ int WebGLRenderingContextBase::AllocatedBufferCountPerPixel() {
     }
   }
 
+  if (!Host()) {
+    return buffer_count;
+  }
+
   auto* provider = Host()->GetResourceProviderForWebGL();
   if (provider) {
     buffer_count++;

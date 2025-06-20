@@ -3493,7 +3493,12 @@ gfx::ColorSpace WebGLRenderingContextWebGPUBase::GetColorSpace() const {
 
 int WebGLRenderingContextWebGPUBase::AllocatedBufferCountPerPixel() {
   // Front and back buffers.
+  // TODO(413078308): Add support configuring MSAA and depth-stencil.
   int buffer_count = 2;
+
+  if (!Host()) {
+    return buffer_count;
+  }
 
   auto* provider = Host()->GetResourceProviderForWebGL();
   if (provider) {
@@ -3507,7 +3512,6 @@ int WebGLRenderingContextWebGPUBase::AllocatedBufferCountPerPixel() {
     }
   }
 
-  // TODO(413078308): Add support configuring MSAA and depth-stencil.
   return buffer_count;
 }
 
