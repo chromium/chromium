@@ -461,7 +461,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.BrowserReadyOnClassifierNotReady"
-    enum="BooleanReady" expires_after="2025-07-24">
+    enum="BooleanReady" expires_after="2026-07-24">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
