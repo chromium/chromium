@@ -42,11 +42,11 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/component_export.h"
 #include "base/memory/raw_ref.h"
 #include "base/rand_util.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/malloc_dump_provider.h"
+#include "components/gwp_asan/client/export.h"
 #include "partition_alloc/internal_allocator_forward.h"
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_lock.h"
@@ -63,7 +63,7 @@ struct ExtremeLightweightDetectorQuarantineBranchConfig {
 
 class ExtremeLightweightDetectorQuarantineBranch;
 
-class COMPONENT_EXPORT(GWP_ASAN) ExtremeLightweightDetectorQuarantineRoot {
+class GWP_ASAN_EXPORT ExtremeLightweightDetectorQuarantineRoot {
  public:
   explicit ExtremeLightweightDetectorQuarantineRoot(
       partition_alloc::PartitionRoot& allocator_root)
@@ -100,7 +100,7 @@ class COMPONENT_EXPORT(GWP_ASAN) ExtremeLightweightDetectorQuarantineRoot {
   friend class ExtremeLightweightDetectorQuarantineBranch;
 };
 
-class COMPONENT_EXPORT(GWP_ASAN) ExtremeLightweightDetectorQuarantineBranch {
+class GWP_ASAN_EXPORT ExtremeLightweightDetectorQuarantineBranch {
  public:
   using Root = ExtremeLightweightDetectorQuarantineRoot;
 
