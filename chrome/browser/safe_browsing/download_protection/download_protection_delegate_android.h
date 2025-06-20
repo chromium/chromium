@@ -45,8 +45,9 @@ class DownloadProtectionDelegateAndroid : public DownloadProtectionDelegate {
   MayCheckDownloadResult IsSupportedDownload(
       download::DownloadItem& item,
       const base::FilePath& target_path) const override;
-  void PreSerializeRequest(const download::DownloadItem* item,
-                           ClientDownloadRequest& request_proto) override;
+  std::vector<PendingClientDownloadRequestModification>
+  ProduceClientDownloadRequestModifications(
+      const download::DownloadItem* item) override;
   void FinalizeResourceRequest(
       network::ResourceRequest& resource_request) override;
   const GURL& GetDownloadRequestUrl() const override;

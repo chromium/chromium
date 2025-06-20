@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -167,6 +168,10 @@ bool IsDownloadReportGatedByExtendedReporting(
 #endif
 
 }  // namespace
+
+ClientDownloadRequestModification NoModificationToRequestProto() {
+  return base::DoNothing();
+}
 
 void GetCertificateAllowlistStrings(
     const net::X509Certificate& certificate,

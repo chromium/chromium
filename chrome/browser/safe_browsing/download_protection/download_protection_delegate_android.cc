@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -106,6 +107,36 @@ void LogGetReferringAppInfoResult(internal::GetReferringAppInfoResult result) {
       "SBClientDownload.Android.GetReferringAppInfo.Result", result);
 }
 
+void PopulateReferringAppInfoInProto(internal::ReferringAppInfo info,
+                                     ClientDownloadRequest* request_proto) {
+  *request_proto->mutable_referring_app_info() = GetReferringAppInfoProto(info);
+}
+
+void MaybePopulateReferringAppInfo(const download::DownloadItem* item,
+                                   CollectModificationCallback callback) {
+  CHECK(item);
+  // Note: The web_contents will be null if the original download page has
+  // been navigated away from.
+  content::WebContents* web_contents =
+      content::DownloadItemUtils::GetWebContents(item);
+  if (!web_contents) {
+    LogGetReferringAppInfoResult(
+        internal::GetReferringAppInfoResult::kNotAttempted);
+    std::move(callback).Run(NoModificationToRequestProto());
+    return;
+  }
+  internal::ReferringAppInfo info =
+      GetReferringAppInfo(web_contents, /*get_webapk_info=*/true);
+  LogGetReferringAppInfoResult(internal::ReferringAppInfoToResult(info));
+  if (!info.has_referring_app() && !info.has_referring_webapk()) {
+    std::move(callback).Run(NoModificationToRequestProto());
+    return;
+  }
+
+  std::move(callback).Run(
+      base::BindOnce(&PopulateReferringAppInfoInProto, std::move(info)));
+}
+
 }  // namespace
 
 DownloadProtectionDelegateAndroid::DownloadProtectionDelegateAndroid()
@@ -172,30 +203,16 @@ MayCheckDownloadResult DownloadProtectionDelegateAndroid::IsSupportedDownload(
   return may_check_download_result;
 }
 
-void DownloadProtectionDelegateAndroid::PreSerializeRequest(
-    const download::DownloadItem* item,
-    safe_browsing::ClientDownloadRequest& request_proto) {
-  if (!item) {
-    return;
-  }
+std::vector<PendingClientDownloadRequestModification>
+DownloadProtectionDelegateAndroid::ProduceClientDownloadRequestModifications(
+    const download::DownloadItem* item) {
+  std::vector<PendingClientDownloadRequestModification> modifications;
 
-  // Populate the ReferringAppInfo in the ClientDownloadRequest.
-  // Note: The web_contents will be null if the original download page has
-  // been navigated away from.
-  content::WebContents* web_contents =
-      content::DownloadItemUtils::GetWebContents(item);
-  if (!web_contents) {
-    LogGetReferringAppInfoResult(
-        internal::GetReferringAppInfoResult::kNotAttempted);
-    return;
+  if (item) {
+    modifications.emplace_back(
+        base::BindOnce(&MaybePopulateReferringAppInfo, item));
   }
-  internal::ReferringAppInfo info =
-      GetReferringAppInfo(web_contents, /*get_webapk_info=*/true);
-  LogGetReferringAppInfoResult(internal::ReferringAppInfoToResult(info));
-  if (!info.has_referring_app() && !info.has_referring_webapk()) {
-    return;
-  }
-  *request_proto.mutable_referring_app_info() = GetReferringAppInfoProto(info);
+  return modifications;
 }
 
 void DownloadProtectionDelegateAndroid::FinalizeResourceRequest(

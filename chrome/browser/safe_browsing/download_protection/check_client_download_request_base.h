@@ -88,6 +88,20 @@ class CheckClientDownloadRequestBase {
   void OnRequestBuilt(DownloadRequestMaker::RequestCreationDetails details,
                       std::unique_ptr<ClientDownloadRequest> request_proto);
 
+  // Give the DownloadProtectionDelegate a chance to modify the request proto
+  // in various ways before serializing and sending it. This is a two-phase
+  // process because the individual modifications may be asynchronous.
+  // First, `StartModificationsFromDelegate()` solicits a number of pending
+  // modifications from the delegate, in the form of callbacks, which it
+  // kicks off to evaluate the modifications (potentially simultaneously and
+  // asynchronously). Then, `ApplyModificationsAndSendRequest` is run when the
+  // modifications have all been computed, to apply the modifications and
+  // continue with the request flow. There are no ordering guarantees on the
+  // modifications that ultimately get run.
+  void StartModificationsFromDelegate();
+  void ApplyModificationsAndSendRequest(
+      std::vector<ClientDownloadRequestModification> modifications);
+
   void StartTimeout();
   void SendRequest();
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);

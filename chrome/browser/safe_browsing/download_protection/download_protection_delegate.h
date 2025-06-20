@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_DELEGATE_H_
 
 #include <memory>
+#include <vector>
 
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -72,12 +73,17 @@ class DownloadProtectionDelegate {
       download::DownloadItem& item,
       const base::FilePath& target_path) const = 0;
 
-  // Called immediately prior to serializing the ClientDownloadRequest into the
-  // string to send in the POST request body, which is followed by sending out
-  // the network request. Allows the delegate to make final modifications to
-  // the request. `item` is the download this pertains to, which may be null.
-  virtual void PreSerializeRequest(const download::DownloadItem* item,
-                                   ClientDownloadRequest& request_proto) {}
+  // Called after the ClientDownloadRequest has been constructed, prior to
+  // serializing the ClientDownloadRequest into a string to send in the POST
+  // request body of the network request. Allows the delegate to request final
+  // modifications to apply to the request, in the form of a vector of callbacks
+  // to invoke, each of which will yield a modification to be made to
+  // ClientDownloadRequest.
+  //
+  // `item` is the download this pertains to, which may be null, e.g. if this
+  // request is not for a download.
+  virtual std::vector<PendingClientDownloadRequestModification>
+  ProduceClientDownloadRequestModifications(const download::DownloadItem* item);
 
   // Called immediately prior to consuming the ResourceRequest used to send out
   // a download ping. Allows the delegate to make final modifications to the

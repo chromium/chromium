@@ -22,4 +22,10 @@ DownloadProtectionDelegate::CreateForPlatform() {
 #endif
 }
 
+std::vector<PendingClientDownloadRequestModification>
+DownloadProtectionDelegate::ProduceClientDownloadRequestModifications(
+    const download::DownloadItem* item) {
+  return std::vector<PendingClientDownloadRequestModification>();
+}
+
 }  // namespace safe_browsing

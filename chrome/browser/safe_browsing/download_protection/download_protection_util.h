@@ -164,6 +164,28 @@ using PPAPIDownloadRequestCallbackList =
 using PPAPIDownloadRequestCallback =
     PPAPIDownloadRequestCallbackList::CallbackType;
 
+// Types used for the BarrierCallback mechanism in
+// CheckClientDownloadRequestBase::StartModificationsFromDelegate():
+
+// Callback that, when invoked, makes a modification to a ClientDownloadRequest.
+using ClientDownloadRequestModification =
+    base::OnceCallback<void(ClientDownloadRequest*)>;
+// Type of the helper callback that should be called exactly once for each
+// ClientDownloadRequestModification that should be done. Calling the
+// CollectModificationCallback collects a modification, i.e. registers the
+// modification to be executed on the ClientDownloadRequest after all such
+// modifications have been collected.
+using CollectModificationCallback =
+    base::OnceCallback<void(ClientDownloadRequestModification)>;
+// Callback that, when run, generates an appropriate
+// ClientDownloadRequestModification that should be executed, and invokes
+// the passed-in CollectModificationCallback with the desired modification.
+using PendingClientDownloadRequestModification =
+    base::OnceCallback<void(CollectModificationCallback)>;
+
+// Returns a ClientDownloadRequestModification that is a no-op.
+ClientDownloadRequestModification NoModificationToRequestProto();
+
 // Given a certificate and its immediate issuer certificate, generates the
 // list of strings that need to be checked against the download allowlist to
 // determine whether the certificate is allowlisted.
