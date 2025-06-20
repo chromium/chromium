@@ -34,10 +34,12 @@ class LocalNetworkAccessBrowserTest : public policy::PolicyTest {
 
   LocalNetworkAccessBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    // Some builders run with field_trial disabled, need to  enable this
+    // Some builders run with field_trial disabled, need to enable this
     // manually.
-    features_.InitAndEnableFeature(
-        network::features::kLocalNetworkAccessChecks);
+    base::FieldTrialParams params;
+    params["LocalNetworkAccessChecksWarn"] = "false";
+    features_.InitAndEnableFeatureWithParameters(
+        network::features::kLocalNetworkAccessChecks, params);
   }
 
   content::WebContents* web_contents() const {
@@ -109,12 +111,21 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
           "a.com",
           "/private_network_access/no-favicon-treat-as-public-address.html")));
 
-  // LNA fetch should pass (default is currently in warning mode).
-  ASSERT_EQ(true,
-            content::EvalJs(
-                web_contents(),
-                content::JsReplace("fetch($1).then(response => response.ok)",
-                                   https_server().GetURL("b.com", kLnaPath))));
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+  // Enable auto-denial of LNA permission request.
+  bubble_factory->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
+
+  // LNA fetch should fail (default is currently in warning mode).
+  EXPECT_THAT(content::EvalJs(
+                  web_contents(),
+                  content::JsReplace("fetch($1).then(response => response.ok)",
+                                     https_server().GetURL("b.com", kLnaPath))),
+              content::EvalJsResult::IsError());
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
@@ -188,3 +199,29 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 
   CheckCounter(WebFeature::kLocalNetworkAccessPrivateAliasUse, 0);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/400455013): Add LNA support on Android
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       LocalNetworkAccessAllowedForUrlsPolicy) {
+  policy::PolicyMap policies;
+  base::Value::List allowlist;
+  allowlist.Append(base::Value("*"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(std::move(allowlist)));
+  UpdateProviderPolicy(policies);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server().GetURL(
+          "a.com",
+          "/private_network_access/no-favicon-treat-as-public-address.html")));
+
+  // LNA fetch should pass (default is currently in warning mode).
+  ASSERT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("fetch($1).then(response => response.ok)",
+                                   https_server().GetURL("b.com", kLnaPath))));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

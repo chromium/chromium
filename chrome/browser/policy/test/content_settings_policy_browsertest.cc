@@ -542,6 +542,96 @@ IN_PROC_BROWSER_TEST_F(WebPrintingPolicyTest, WebPrintingBlockedForUrls) {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+
+// TODO(crbug.com/400455013): Add LNA support on Android
+class LocalNetworkAccessPolicyTest : public PolicyTest {
+ public:
+  ContentSetting GetLocalNetworkAccessDefaultContentSetting() {
+    return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+        ->GetDefaultContentSetting(ContentSettingsType::LOCAL_NETWORK_ACCESS,
+                                   /*provider_id=*/nullptr);
+  }
+
+  ContentSetting GetLocalNetworkAccessContentSetting(const GURL& url) {
+    return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+        ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url,
+                            ContentSettingsType::LOCAL_NETWORK_ACCESS);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, Default) {
+  // By default, we should be asking the user
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            GetLocalNetworkAccessContentSetting(GURL("http://bleep.com")));
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetLocalNetworkAccessDefaultContentSetting());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, AllowByURL) {
+  PolicyMap policies;
+  base::Value::List allowlist;
+  allowlist.Append(base::Value("http://bleep.com"));
+  allowlist.Append(base::Value("http://woohoo.com:1234"));
+  allowlist.Append(base::Value("http://[*.]meep.com"));
+  SetPolicy(&policies, key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(std::move(allowlist)));
+  UpdateProviderPolicy(policies);
+
+  // Domain is not the in allowlist.
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            GetLocalNetworkAccessContentSetting(GURL("http://default.com")));
+
+  // Path does not matter, only the origin.
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            GetLocalNetworkAccessContentSetting(GURL("http://bleep.com/heyo")));
+
+  // Scheme matters: https is not http.
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            GetLocalNetworkAccessContentSetting(GURL("https://bleep.com")));
+
+  // Subdomains not allowed for bleep.com
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            GetLocalNetworkAccessContentSetting(GURL("http://fez.bleep.com")));
+
+  // Subdomains are allowed for meep.com
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            GetLocalNetworkAccessContentSetting(GURL("http://fez.meep.com")));
+
+  // Port is checked too.
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetLocalNetworkAccessContentSetting(GURL(
+                                       "http://woohoo.com:1234/index.html")));
+
+  // The wrong port does not match (default is 80).
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetLocalNetworkAccessContentSetting(
+                                     GURL("http://woohoo.com/index.html")));
+
+  // Opaque origins never match the allowlist.
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            GetLocalNetworkAccessContentSetting(
+                url::Origin::Create(GURL("http://bleep.com"))
+                    .DeriveNewOpaqueOrigin()
+                    .GetURL()));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, AllowEverythingByURL) {
+  PolicyMap policies;
+  base::Value::List allowlist;
+  allowlist.Append(base::Value("*"));
+  SetPolicy(&policies, key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(std::move(allowlist)));
+  UpdateProviderPolicy(policies);
+
+  // Everything is allowed!
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            GetLocalNetworkAccessContentSetting(GURL("https://default.com")));
+
+  // Even opaque origins!
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            GetLocalNetworkAccessContentSetting(
+                url::Origin::Create(GURL("http://bleep.com"))
+                    .DeriveNewOpaqueOrigin()
+                    .GetURL()));
+}
+
 class DirectSocketsPolicyTest : public PolicyTest {
  public:
   void SetUpOnMainThread() override {

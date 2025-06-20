@@ -2238,6 +2238,7 @@ chromium-metrics-reviews@google.com.
   <int value="1368" label="WatermarkStyle"/>
   <int value="1369" label="KioskApplicationLogCollectionEnabled"/>
   <int value="1370" label="EnableUnsafeSwiftShader"/>
+  <int value="1371" label="LocalNetworkAccessAllowedForUrls"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
