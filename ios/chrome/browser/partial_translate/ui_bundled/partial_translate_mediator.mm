@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/translate/model/translate_service_ios.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_response.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -168,6 +169,10 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   if (!self.alertDelegate) {
     return;
   }
+  if (![self URLIsTranslatable]) {
+    ReportErrorOutcome(error, false);
+    return;
+  }
   NSString* message;
   switch (error) {
     case PartialTranslateError::kSelectionTooLong:
@@ -265,6 +270,16 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   }
   WebSelectionTabHelper* helper = WebSelectionTabHelper::FromWebState(webState);
   return helper;
+}
+
+- (BOOL)URLIsTranslatable {
+  web::WebState* webState =
+      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+  if (!webState) {
+    return NO;
+  }
+  return TranslateServiceIOS::IsTranslatableURL(
+      webState->GetLastCommittedURL());
 }
 
 - (void)addItemWithCompletion:(ProceduralBlockWithItemArray)completion {

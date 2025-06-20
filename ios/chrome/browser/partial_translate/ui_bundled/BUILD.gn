@@ -20,6 +20,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/web_selection/model",
     "//ios/public/provider/chrome/browser/partial_translate:partial_translate_api",
     "//ios/web/public",
