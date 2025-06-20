@@ -14,7 +14,6 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/display/display.h"
-#include "ui/gfx/win/wuc_backdrop.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
@@ -297,11 +296,12 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // Call Windows API to update the window display affinity.
   void UpdateAllowScreenshots();
 
-  // Creates a Windows.Ui.Composition backdrop and attaches it to the hwnd if
-  // the window does not have a redirection bitmap and Chromium is responsible
-  // for drawing the frame. Also resets the backdrop if the frame mode is
-  // changed to be system drawn.
-  void UpdateWUCBackdrop(std::optional<SkColor> color);
+  // Designates an acrylic DWM_SYSTEMBACKDROP to the window if it does not have
+  // a redirection bitmap.
+  void UpdateBackdropColorMode();
+
+  // Returns true if a DWM Backdrop should be applied to the window.
+  bool ShouldAddDWMBackdrop();
 
   void ClearBackgroundPaintBrush();
 
@@ -347,9 +347,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // True if the window is allow to take screenshots, by default is true.
   bool allow_screenshots_ = true;
-
-  // A Windows.Ui.Composition visual tree that represents the window backdrop.
-  std::unique_ptr<gfx::WUCBackdrop> wuc_backdrop_;
 
   // Visibility of the cursor. On Windows we can have multiple root windows and
   // the implementation of ::ShowCursor() is based on a counter, so making this

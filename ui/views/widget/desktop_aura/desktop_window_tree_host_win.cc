@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -191,7 +192,15 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
       display::win::GetScreenWin()->DIPToScreenRect(nullptr, params.bounds);
   message_handler_->Init(parent_hwnd, pixel_bounds);
 
-  UpdateWUCBackdrop(params.background_color);
+  if (ShouldAddDWMBackdrop()) {
+    DWM_SYSTEMBACKDROP_TYPE backdrop = DWMSBT_TRANSIENTWINDOW;
+    HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_SYSTEMBACKDROP_TYPE,
+                                       &backdrop, sizeof(backdrop));
+    CHECK_EQ(hr, S_OK);
+  }
+
+  UpdateBackdropColorMode();
+
   CreateCompositor(params.force_software_compositing);
   OnAcceleratedWidgetAvailable();
   InitHost();
@@ -229,7 +238,7 @@ void DesktopWindowTreeHostWin::OnWidgetInitDone() {}
 void DesktopWindowTreeHostWin::OnWidgetThemeChanged(
     ui::ColorProviderKey::ColorMode color_mode,
     std::optional<SkColor> background_color) {
-  UpdateWUCBackdrop(background_color);
+  UpdateBackdropColorMode();
   if (background_color) {
     ClearBackgroundPaintBrush();
     background_paint_brush_ =
@@ -1463,34 +1472,39 @@ void DesktopWindowTreeHostWin::UpdateAllowScreenshots() {
                            allow_screenshots_ ? WDA_NONE : WDA_MONITOR);
 }
 
-void DesktopWindowTreeHostWin::UpdateWUCBackdrop(std::optional<SkColor> color) {
-  // If the Redirection Surface is removed, there needs to be a replacement
-  // "background" of the Chromium window. Create a Windows.Ui.Composition
-  // backdrop and apply it to the window. If the frame is system drawn, it means
-  // that the window controls are rendered by Windows. In that case, they would
-  // be covered by the WUC backdrop, so only create the backdrop when frame mode
-  // is not `FrameMode::SYSTEM_DRAWN`. If the backdrop already exists, we need
-  // to check whether to keep it before updating it.
-  if (GetFrameMode() == FrameMode::SYSTEM_DRAWN) {
-    wuc_backdrop_.reset();
+void DesktopWindowTreeHostWin::UpdateBackdropColorMode() {
+  // Update backdrop theme using DWMWA_USE_IMMERSIVE_DARK_MODE.
+  if (!ShouldAddDWMBackdrop()) {
     return;
   }
 
-  if (GetWidget() &&
-      ((message_handler_->window_ex_style() & WS_EX_NOREDIRECTIONBITMAP) ==
-       WS_EX_NOREDIRECTIONBITMAP) &&
-      !message_handler_->is_translucent()) {
-    // Ensure that the hwnd has been created.
-    CHECK(GetHWND());
-
-    // Apply backdrop to the window.
-    if (!wuc_backdrop_) {
-      wuc_backdrop_ = std::make_unique<gfx::WUCBackdrop>(GetHWND());
-    }
-
-    wuc_backdrop_->UpdateBackdropColor(color.value_or(
-        GetWidget()->GetColorProvider()->GetColor(ui::kColorFrameActive)));
+  // Ensure that the backdrop honors the OS dark mode setting.
+  BOOL use_dark_mode =
+      GetWidget()->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
+  HRESULT hr = DwmSetWindowAttribute(GetHWND(), DWMWA_USE_IMMERSIVE_DARK_MODE,
+                                     &use_dark_mode, sizeof(use_dark_mode));
+  if FAILED (hr) {
+    // TODO(crbug.com/415385215) DwmSetWindowAttribute can fail in certain
+    // scenarios. Create a dump so that these scenarios can be studied and
+    // prevented.
+    base::debug::Alias(&hr);
+    base::debug::DumpWithoutCrashing();
   }
+}
+
+bool DesktopWindowTreeHostWin::ShouldAddDWMBackdrop() {
+  // If the Redirection Surface is removed, there needs to be a replacement
+  // "background" of the Chromium window. `DWM_SYSTEMBACKDROP_TYPE` tells DWM
+  // to blur the contents behind the chromium window to yield a translucent
+  // "frosted glass" effect. This will show whenever the GPU crashes or is not
+  // ready by the time the window updates size or shape. Translucent windows
+  // do not need a backdrop as it would show up in unexpected ways - i.e. a
+  // gutter. Additionally, ensure that this effect is only applied to top level
+  // windows since child windows are not supported.
+  return ((message_handler_->window_ex_style() & WS_EX_NOREDIRECTIONBITMAP) ==
+          WS_EX_NOREDIRECTIONBITMAP) &&
+         !message_handler_->is_translucent() &&
+         (GetHWND() == GetAncestor(GetHWND(), GA_ROOT));
 }
 
 void DesktopWindowTreeHostWin::ClearBackgroundPaintBrush() {

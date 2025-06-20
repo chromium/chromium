@@ -582,7 +582,9 @@ bool ShouldRemoveRedirectionBitmap() {
   // can take the Swiftshader rendering path, which also needs the Redirection
   // Bitmap. On devices with DComp disabled, ANGLE draws to the redirection
   // bitmap via a blit swap chain, so check for the command line switch as well.
-  return base::win::GetVersion() >= base::win::Version::WIN11 &&
+  // 22H2 is specified because it is the lowest version supporting DWM system
+  // backdrop.
+  return base::win::GetVersion() >= base::win::Version::WIN11_22H2 &&
          base::FeatureList::IsEnabled(kRemoveRedirectionBitmap) &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kOverrideUseSoftwareGLForTests) &&
