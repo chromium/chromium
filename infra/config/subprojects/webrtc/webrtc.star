@@ -140,7 +140,7 @@ builder(
             "webrtc_chromium_simple_gtests",
         ],
         mixins = [
-            "chromium_pixel_2_pie",
+            "panther_on_14",
         ],
     ),
     targets_settings = targets.settings(

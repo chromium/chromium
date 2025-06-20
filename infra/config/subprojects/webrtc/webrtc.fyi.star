@@ -249,7 +249,7 @@ builder(
             "webrtc_chromium_simple_gtests",
         ],
         mixins = [
-            "chromium_pixel_2_pie",
+            "panther_on_14",
         ],
         per_test_modifications = {
             "content_browsertests": targets.mixin(
@@ -293,7 +293,7 @@ builder(
             "webrtc_chromium_simple_gtests",
         ],
         mixins = [
-            "chromium_pixel_2_pie",
+            "panther_on_14",
         ],
         per_test_modifications = {
             "content_browsertests": targets.mixin(
