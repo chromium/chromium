@@ -39,6 +39,12 @@ class CORE_EXPORT PositionTryFallback {
 
   bool operator==(const PositionTryFallback& other) const;
 
+  // Returns true if this fallback matches 'other' for anchored(fallback)
+  // container queries. This differs from operator== in that this method handles
+  // tree-scoped names per spec, and does not require the TreeScopes to be the
+  // same when matching @position-try names.
+  bool Matches(const PositionTryFallback& other) const;
+
   bool IsNone() const {
     return !position_try_name_ && tactic_list_[0] == TryTactic::kNone &&
            position_area_.IsNone();

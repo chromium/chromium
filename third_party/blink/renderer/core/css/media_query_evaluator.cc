@@ -1712,7 +1712,7 @@ static bool FallbackMediaFeatureEval(const MediaQueryExpValue& value,
           state, value.GetCSSValue());
   query_fallback = ToPhysicalFallback(query_fallback, media_values);
   fallback = ToPhysicalFallback(fallback, media_values);
-  return fallback == query_fallback;
+  return fallback.Matches(query_fallback);
 }
 
 static MediaQueryOperator ReverseOperator(MediaQueryOperator op) {
