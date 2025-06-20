@@ -435,6 +435,10 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
       return;
     match.actions.push_back(base::MakeRefCounted<T>());
   };
+  if (config.show_history_action) {
+    check_and_add.operator()<StarterPackHistoryAction>(
+        TemplateURLStarterPackData::StarterPackID::kHistory);
+  }
   if (config.show_bookmarks_action) {
     check_and_add.operator()<StarterPackBookmarksAction>(
         TemplateURLStarterPackData::StarterPackID::kBookmarks);
@@ -443,11 +447,6 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
     check_and_add.operator()<StarterPackTabsAction>(
         TemplateURLStarterPackData::StarterPackID::kTabs);
   }
-  if (config.show_history_action) {
-    check_and_add.operator()<StarterPackHistoryAction>(
-        TemplateURLStarterPackData::StarterPackID::kHistory);
-  }
-
   matches_.push_back(match);
   return true;
 }
