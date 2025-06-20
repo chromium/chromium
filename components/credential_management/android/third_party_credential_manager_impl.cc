@@ -29,6 +29,12 @@ ThirdPartyCredentialManagerImpl::~ThirdPartyCredentialManagerImpl() = default;
 void ThirdPartyCredentialManagerImpl::Store(
     const password_manager::CredentialInfo& credential,
     StoreCallback callback) {
+  // Don't store empty credentials.
+  if (credential.type ==
+      password_manager::CredentialType::CREDENTIAL_TYPE_EMPTY) {
+    return;
+  }
+
   std::u16string username = credential.id.value_or(u"");
   std::u16string password = credential.password.value_or(u"");
   bridge_->Store(username, password,

@@ -96,6 +96,22 @@ TEST_F(ThirdPartyCredentialManagerImplTest, TestStore) {
   credential_manager()->Store(info, StoreCallback());
 }
 
+TEST_F(ThirdPartyCredentialManagerImplTest, TestDoesntStoreEmptyCredentials) {
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL(kTestOrigin));
+
+  EXPECT_CALL(*mock_bridge(), Store(_, _, kTestOrigin, _)).Times(0);
+  password_manager::CredentialInfo info = password_manager::CredentialInfo(
+      password_manager::CredentialType::CREDENTIAL_TYPE_EMPTY,
+      /*id=*/u"",
+      /*name=*/u"",
+      /*icon=*/GURL(),
+      /*password=*/u"",
+      /*federation=*/url::SchemeHostPort(GURL()));
+
+  credential_manager()->Store(info, StoreCallback());
+}
+
 TEST_F(ThirdPartyCredentialManagerImplTest, TestGetWithOptionalMediation) {
   NavigateToTestOrigin();
 
