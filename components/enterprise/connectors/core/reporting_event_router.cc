@@ -209,25 +209,39 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
     return;
   }
 
-  base::Value::Dict event;
-  event.Set(kKeyUrl, url.spec());
-  EventResult event_result = GetEventResultFromThreatType(threat_type);
-  event.Set(kKeyClickedThrough,
-            event_result == enterprise_connectors::EventResult::BYPASSED);
-  if (!threat_type.empty()) {
-    event.Set(kKeyThreatType, threat_type);
-  }
-  AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(response, event);
-  event.Set(kKeyEventResult,
-            enterprise_connectors::EventResultToString(event_result));
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::Event event;
+    *event.mutable_url_filtering_interstitial_event() =
+        GetUrlFilteringInterstitialEvent(
+            url, threat_type, response,
+            reporting_client_->GetProfileIdentifier(),
+            reporting_client_->GetProfileUserName(), referrer_chain);
+    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
-    AddReferrerChainToEvent(referrer_chain, event);
-  }
+    reporting_client_->ReportEvent(std::move(event), settings.value());
+  } else {
+    base::Value::Dict event;
+    event.Set(kKeyUrl, url.spec());
+    EventResult event_result = GetEventResultFromThreatType(threat_type);
+    event.Set(kKeyClickedThrough,
+              event_result == enterprise_connectors::EventResult::BYPASSED);
+    if (!threat_type.empty()) {
+      event.Set(kKeyThreatType, threat_type);
+    }
+    AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(response, event);
+    event.Set(kKeyEventResult,
+              enterprise_connectors::EventResultToString(event_result));
 
-  reporting_client_->ReportEventWithTimestampDeprecated(
-      kKeyUrlFilteringInterstitialEvent, std::move(settings.value()),
-      std::move(event), base::Time::Now(), /*include_profile_user_name=*/true);
+    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+      AddReferrerChainToEvent(referrer_chain, event);
+    }
+
+    reporting_client_->ReportEventWithTimestampDeprecated(
+        kKeyUrlFilteringInterstitialEvent, std::move(settings.value()),
+        std::move(event), base::Time::Now(),
+        /*include_profile_user_name=*/true);
+  }
 }
 
 void ReportingEventRouter::OnSecurityInterstitialProceeded(

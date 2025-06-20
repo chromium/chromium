@@ -336,28 +336,32 @@ TEST_P(ReportingEventRouterTest,
 }
 
 TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
-  // TODO(crbug.com/396439420): Migrate url filtering event to proto format.
-  if (use_proto_format()) {
-    return;
-  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
+  test::EventReportValidatorBase validator(client_.get());
   chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
+
   expected_event.set_url("https://filteredurl.com/");
   expected_event.set_event_result(
       chrome::cros::reporting::proto::EVENT_RESULT_BLOCKED);
+  expected_event.set_threat_type(
+      chrome::cros::reporting::proto::UrlFilteringInterstitialEvent::
+          ENTERPRISE_BLOCKED_SEEN);
   expected_event.set_profile_user_name(profile_->GetProfileUserName());
   expected_event.set_profile_identifier(GetProfileIdentifier());
   *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::BLOCK, /*has_watermark=*/false);
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
-  test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
+  if (use_proto_format()) {
+    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  } else {
+    validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
+  }
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -368,36 +372,41 @@ TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   matched_url_navigation_rule->set_rule_id("123");
   matched_url_navigation_rule->set_rule_name("test rule name");
   matched_url_navigation_rule->set_matched_url_category("test rule category");
-  ReferrerChain referrer_chain;
 
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_BLOCKED_SEEN", response,
       referrer_chain);
 }
 
 TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
-  // TODO(crbug.com/396439420): Migrate url filtering event to proto format.
-  if (use_proto_format()) {
-    return;
-  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
+  test::EventReportValidatorBase validator(client_.get());
   chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
+
   expected_event.set_url("https://filteredurl.com/");
   expected_event.set_event_result(
       chrome::cros::reporting::proto::EVENT_RESULT_WARNED);
+  expected_event.set_threat_type(
+      chrome::cros::reporting::proto::UrlFilteringInterstitialEvent::
+          ENTERPRISE_WARNED_SEEN);
   expected_event.set_profile_user_name(profile_->GetProfileUserName());
   expected_event.set_profile_identifier(GetProfileIdentifier());
   *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::WARN, /*has_watermark=*/true);
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
-  test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
+  if (use_proto_format()) {
+    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  } else {
+    validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
+  }
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -410,36 +419,42 @@ TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   matched_url_navigation_rule->set_matched_url_category("test rule category");
   matched_url_navigation_rule->mutable_watermark_message()
       ->set_watermark_message("watermark message");
-  ReferrerChain referrer_chain;
 
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_SEEN", response,
       referrer_chain);
 }
 
 TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
-  // TODO(crbug.com/396439420): Migrate url filtering event to proto format.
-  if (use_proto_format()) {
-    return;
-  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
+  test::EventReportValidatorBase validator(client_.get());
   chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
+
   expected_event.set_url("https://filteredurl.com/");
   expected_event.set_event_result(
       chrome::cros::reporting::proto::EVENT_RESULT_BYPASSED);
+  expected_event.set_clicked_through(true);
+  expected_event.set_threat_type(
+      chrome::cros::reporting::proto::UrlFilteringInterstitialEvent::
+          ENTERPRISE_WARNED_BYPASS);
   expected_event.set_profile_user_name(profile_->GetProfileUserName());
   expected_event.set_profile_identifier(GetProfileIdentifier());
   *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::WARN, /*has_watermark=*/true);
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
-  test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
+  if (use_proto_format()) {
+    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  } else {
+    validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
+  }
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
@@ -452,8 +467,9 @@ TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   matched_url_navigation_rule->set_matched_url_category("test rule category");
   matched_url_navigation_rule->mutable_watermark_message()
       ->set_watermark_message("confidential");
-  ReferrerChain referrer_chain;
 
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_BYPASS", response,
       referrer_chain);
@@ -461,28 +477,32 @@ TEST_P(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
 
 TEST_P(ReportingEventRouterTest,
        TestOnUrlFilteringInterstitial_WatermarkAudit) {
-  // TODO(crbug.com/396439420): Migrate url filtering event to proto format.
-  if (use_proto_format()) {
-    return;
-  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyUrlFilteringInterstitialEvent},
       /*enabled_opt_in_events=*/{});
 
+  test::EventReportValidatorBase validator(client_.get());
   chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
+
   expected_event.set_url("https://filteredurl.com/");
   expected_event.set_event_result(
       chrome::cros::reporting::proto::EVENT_RESULT_ALLOWED);
+  expected_event.set_threat_type(
+      chrome::cros::reporting::proto::UrlFilteringInterstitialEvent::
+          UNKNOWN_INTERSTITIAL_THREAT_TYPE);
   expected_event.set_profile_user_name(profile_->GetProfileUserName());
   expected_event.set_profile_identifier(GetProfileIdentifier());
   *expected_event.add_triggered_rule_info() = test::MakeTriggeredRuleInfo(
       /*action=*/TriggeredRuleInfo::ACTION_UNKNOWN, /*has_watermark=*/true);
   *expected_event.add_referrers() = test::MakeUrlInfoReferrer();
 
-  test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
+  if (use_proto_format()) {
+    validator.ExpectProtoBasedUrlFilteringInterstitialEvent(expected_event);
+  } else {
+    validator.ExpectURLFilteringInterstitialEventWithReferrers(expected_event);
+  }
 
   safe_browsing::RTLookupResponse response;
   auto* threat_info = response.add_threat_info();
