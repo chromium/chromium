@@ -780,6 +780,10 @@ inline constexpr char kWaitingForMultiProfileForcedMigrationTimestamp[] =
 // triggered right after the FRE.
 inline constexpr char kNextSSORecallTime[] = "ios.next_sso_recall_time";
 
+// An integer determining the enabled status of Gemini by policy.
+// 0 means Gemini is enabled (default), and 1 means it's disabled.
+inline constexpr char kGeminiEnabledByPolicy[] = "ios.gemini_enabled_by_policy";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

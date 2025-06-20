@@ -7,10 +7,13 @@
 #import <memory>
 
 #import "base/test/metrics/histogram_tester.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -35,10 +38,14 @@ class BwgServiceTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
 
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    pref_service_->registry()->RegisterIntegerPref(
+        prefs::kGeminiEnabledByPolicy, 0);
+
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     identity_manager_ = identity_test_env_.identity_manager();
-    bwg_service_ =
-        std::make_unique<BwgService>(auth_service_, identity_manager_);
+    bwg_service_ = std::make_unique<BwgService>(
+        auth_service_, identity_manager_, pref_service_.get());
   }
 
   // Signs in a user and sets their model execution capability.
@@ -62,6 +69,7 @@ class BwgServiceTest : public PlatformTest {
   // Profile and services that depend on the environment are declared next.
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<BwgService> bwg_service_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   raw_ptr<AuthenticationService> auth_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
 
@@ -72,6 +80,7 @@ class BwgServiceTest : public PlatformTest {
 // account has the `can_use_model_execution_features` capability.
 TEST_F(BwgServiceTest, IsEligibleForBWG_WhenUserIsEligible) {
   SignInAndSetCapability(true);
+  pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 0);
 
   EXPECT_TRUE(bwg_service_->IsEligibleForBWG());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
@@ -83,6 +92,18 @@ TEST_F(BwgServiceTest, IsEligibleForBWG_WhenUserIsEligible) {
 // capability is explicitly false.
 TEST_F(BwgServiceTest, IsEligibleForBWG_IneligibleByCapability) {
   SignInAndSetCapability(false);
+  pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 0);
+
+  EXPECT_FALSE(bwg_service_->IsEligibleForBWG());
+  histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
+                                       /*sample=*/false,
+                                       /*expected_count=*/1);
+}
+
+// Tests that a user is ineligible if the Gemini policy is disabled.
+TEST_F(BwgServiceTest, IsEligibleForBWG_IneligibleByPolicy) {
+  SignInAndSetCapability(true);
+  pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 1);
 
   EXPECT_FALSE(bwg_service_->IsEligibleForBWG());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,

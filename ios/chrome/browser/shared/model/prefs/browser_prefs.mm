@@ -1037,6 +1037,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterIntegerPref(omnibox::kAIModeSettings, 0);
 
+  registry->RegisterIntegerPref(prefs::kGeminiEnabledByPolicy, 0);
+
   // Deprecated 09/2024 (migrated to localState prefs).
   registry->RegisterBooleanPref(prefs::kIncognitoInterstitialEnabled, false);
 

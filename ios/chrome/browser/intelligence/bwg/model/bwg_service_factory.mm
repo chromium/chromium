@@ -24,7 +24,7 @@ std::unique_ptr<KeyedService> BuildBwgService(web::BrowserState* context) {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<BwgService>(
       AuthenticationServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile));
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
 }
 
 }  // namespace

@@ -15,12 +15,14 @@ class AuthenticationService;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
+class PrefService;
 
 // A browser-context keyed service for BWG.
 class BwgService : public KeyedService {
  public:
   BwgService(AuthenticationService* auth_service,
-             signin::IdentityManager* identity_manager);
+             signin::IdentityManager* identity_manager,
+             PrefService* pref_service);
   ~BwgService() override;
 
   // Presents the overlay on a given view controller.
@@ -38,6 +40,9 @@ class BwgService : public KeyedService {
 
   // Identity manager used to check account capabilities.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
+  // The PrefService associated with the Profile.
+  raw_ptr<PrefService> pref_service_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_H_

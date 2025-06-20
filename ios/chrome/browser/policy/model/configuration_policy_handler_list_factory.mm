@@ -172,6 +172,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kAIModeSettings,
     omnibox::kAIModeSettings,
     base::Value::Type::INTEGER },
+  { policy::key::kGeminiSettings,
+    prefs::kGeminiEnabledByPolicy,
+    base::Value::Type::INTEGER },
 };
 // clang-format on
 
