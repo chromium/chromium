@@ -48,7 +48,6 @@ is_fuchsia = current_os == "fuchsia"
 is_ios = current_os == "ios"
 is_linux = current_os == "linux"
 is_mac = current_os == "mac"
-is_nacl = false
 is_win = current_os == "win" || current_os == "winuwp"
 is_cast_android = false
 is_castos = false

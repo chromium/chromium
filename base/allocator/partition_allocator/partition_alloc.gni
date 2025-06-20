@@ -65,12 +65,8 @@ is_clang_or_gcc = is_clang || !is_win
 
 # Whether 64-bit pointers are used.
 # A static_assert in partition_alloc_config.h verifies that.
-if (is_nacl) {
-  # NaCl targets don't use 64-bit pointers.
-  has_64_bit_pointers = false
-} else if (current_cpu == "x64" || current_cpu == "arm64" ||
-           current_cpu == "arm64e" || current_cpu == "loong64" ||
-           current_cpu == "riscv64") {
+if (current_cpu == "x64" || current_cpu == "arm64" || current_cpu == "arm64e" ||
+    current_cpu == "loong64" || current_cpu == "riscv64") {
   assert(current_cpu != "arm64e" || (is_ios && target_environment == "device"))
   has_64_bit_pointers = true
 } else if (current_cpu == "x86" || current_cpu == "arm" ||
@@ -123,7 +119,7 @@ declare_args() {
   #     and doesn't wish to incur the library size increase (crbug.com/674570).
   # 2.  On NaCl (through this declaration), where PartitionAlloc doesn't
   #     build at all.
-  use_partition_alloc = !is_nacl && is_clang_or_gcc
+  use_partition_alloc = is_clang_or_gcc
 }
 
 if (!is_clang_or_gcc) {
@@ -131,10 +127,6 @@ if (!is_clang_or_gcc) {
          "PartitionAlloc's allocator does not support this compiler")
   assert(!use_allocator_shim,
          "PartitionAlloc's allocator shim does not support this compiler")
-}
-
-if (is_nacl) {
-  assert(!use_partition_alloc, "PartitionAlloc doesn't build on NaCl")
 }
 
 declare_args() {
@@ -167,9 +159,6 @@ declare_args() {
 assert(
     !enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support || use_partition_alloc_as_malloc,
     "PartitionAlloc with advanced checks requires PartitionAlloc itself.")
-
-assert(!use_allocator_shim || !is_nacl,
-       "The allocator shim supports every platform, except nacl")
 
 if (use_allocator_shim && is_win) {
   # It's hard to override CRT's malloc family in every case in the component

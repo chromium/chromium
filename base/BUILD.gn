@@ -29,7 +29,6 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/logging.gni")
-import("//build/config/nacl/config.gni")
 import("//build/config/profiling/profiling.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
@@ -96,9 +95,6 @@ declare_args() {
 assert(!enable_mutex_priority_inheritance ||
            (is_castos || is_cast_android || is_android),
        "Do not enable PI mutexes without consulting the security team")
-
-assert(!is_nacl || is_nacl_saigo,
-       "base must not be built in most nacl toolchains")
 
 # Prevent //base having to support a toolchain that uses a different
 # llvm/libc++ version.
@@ -1054,16 +1050,14 @@ component("base") {
     "//build/config/compiler:compiler_buildflags",
     "//third_party/modp_b64",
   ]
-  if (!is_nacl) {
-    # Used by metrics/crc32, except on NaCl builds.
-    deps += [ "//third_party/zlib" ]
 
-    # NaCl does not support Rust.
-    deps += [
-      ":rust_logger",
-      "//third_party/rust/serde_json_lenient/v0_2/wrapper",
-    ]
-  }
+  # Used by metrics/crc32
+  deps += [ "//third_party/zlib" ]
+
+  deps += [
+    ":rust_logger",
+    "//third_party/rust/serde_json_lenient/v0_2/wrapper",
+  ]
 
   # `raw_ptr` cannot be made a component due to CRT symbol issues.
   # Its gateway to being a component is through `//base`, so we have
@@ -1098,16 +1092,14 @@ component("base") {
     "//third_party/abseil-cpp:absl",
   ]
 
-  if (!is_nacl) {
-    sources += [
-      "containers/span_rust.h",
-      "strings/string_view_rust.h",
-    ]
+  sources += [
+    "containers/span_rust.h",
+    "strings/string_view_rust.h",
+  ]
 
-    # Base provides conversions between CXX types and base types (e.g.
-    # std::string_view).
-    public_deps += [ "//build/rust:cxx_cppdeps" ]
-  }
+  # Base provides conversions between CXX types and base types (e.g.
+  # std::string_view).
+  public_deps += [ "//build/rust:cxx_cppdeps" ]
 
   # Needed for <atomic> if using newer C++ library than sysroot, except if
   # building inside the cros_sdk environment - use host_toolchain as a
@@ -1539,245 +1531,207 @@ component("base") {
     public_configs = [ ":fuchsia_sync_lib" ]
   }
 
-  # Several helpers in //base are backed by BoringSSL; however, NaCl builds
-  # cannot easily depend on BoringSSL due to the nacl_io library, so NaCl builds
-  # still retain a dedicated local implementation of the functionality.
-  #
-  # TODO(crbug.com/40511454) Use only boringssl when NaCl is removed.
   sources += [
     "hash/md5.h",
+    "hash/md5_boringssl.cc",
+    "hash/md5_boringssl.h",
     "hash/sha1.h",
+    "hash/sha1_boringssl.cc",
+    "hash/sha1_boringssl.h",
   ]
-  if (is_nacl) {
+  public_deps += [ "//third_party/boringssl" ]
+
+  sources += [
+    "base_paths.cc",
+    "base_paths.h",
+    "cpu.cc",
+    "cpu.h",
+    "debug/crash_logging.cc",
+    "debug/crash_logging.h",
+    "debug/stack_trace.cc",
+    "debug/stack_trace.h",
+    "files/drive_info.cc",
+    "files/drive_info.h",
+    "files/file_enumerator.cc",
+    "files/file_enumerator.h",
+    "files/file_proxy.cc",
+    "files/file_proxy.h",
+    "files/file_util.cc",
+    "files/file_util.h",
+    "files/important_file_writer.cc",
+    "files/important_file_writer.h",
+    "files/important_file_writer_cleaner.cc",
+    "files/important_file_writer_cleaner.h",
+    "files/scoped_temp_dir.cc",
+    "files/scoped_temp_dir.h",
+    "files/scoped_temp_file.cc",
+    "files/scoped_temp_file.h",
+    "json/json_file_value_serializer.cc",
+    "json/json_file_value_serializer.h",
+    "logging/rust_log_integration.cc",
+    "logging/rust_log_integration.h",
+    "memory/discardable_memory.cc",
+    "memory/discardable_memory.h",
+    "memory/discardable_memory_allocator.cc",
+    "memory/discardable_memory_allocator.h",
+    "memory/discardable_memory_internal.h",
+    "metrics/persistent_histogram_storage.cc",
+    "metrics/persistent_histogram_storage.h",
+    "native_library.cc",
+    "native_library.h",
+    "path_service.cc",
+    "path_service.h",
+    "process/process_metrics.cc",
+    "process/process_metrics.h",
+    "scoped_native_library.cc",
+    "scoped_native_library.h",
+    "system/sys_info.cc",
+    "system/sys_info.h",
+    "system/sys_info_internal.h",
+    "task/thread_pool/initialization_util.cc",
+    "task/thread_pool/initialization_util.h",
+  ]
+
+  if (is_win) {
     sources += [
-      "hash/md5_nacl.cc",
-      "hash/md5_nacl.h",
-      "hash/sha1_nacl.cc",
-      "hash/sha1_nacl.h",
+      "base_paths_win.cc",
+      "base_paths_win.h",
     ]
-  } else {
-    sources += [
-      "hash/md5_boringssl.cc",
-      "hash/md5_boringssl.h",
-      "hash/sha1_boringssl.cc",
-      "hash/sha1_boringssl.h",
-    ]
-    public_deps += [ "//third_party/boringssl" ]
   }
 
-  # NaCl.
-  if (is_nacl) {
-    # Explicitly include the linux file.
+  if (is_apple) {
     sources += [
-      "debug/stack_trace_nacl.cc",
-      "files/file_path_watcher_stub.cc",
-      "memory/page_size_nacl.cc",
-      "os_compat_nacl.cc",
-      "os_compat_nacl.h",
-      "process/process_stubs.cc",
-      "rand_util_nacl.cc",
-      "sync_socket_nacl.cc",
-      "system/sys_info_nacl.cc",
-      "threading/platform_thread_linux_base.cc",
-      "threading/platform_thread_nacl.cc",
+      "base_paths_apple.cc",
+      "base_paths_apple.h",
     ]
-  } else {
+  }
+
+  if (is_mac) {
     sources += [
-      "base_paths.cc",
-      "base_paths.h",
-      "cpu.cc",
-      "cpu.h",
-      "debug/crash_logging.cc",
-      "debug/crash_logging.h",
-      "debug/stack_trace.cc",
-      "debug/stack_trace.h",
-      "files/drive_info.cc",
-      "files/drive_info.h",
-      "files/file_enumerator.cc",
-      "files/file_enumerator.h",
-      "files/file_proxy.cc",
-      "files/file_proxy.h",
-      "files/file_util.cc",
-      "files/file_util.h",
-      "files/important_file_writer.cc",
-      "files/important_file_writer.h",
-      "files/important_file_writer_cleaner.cc",
-      "files/important_file_writer_cleaner.h",
-      "files/scoped_temp_dir.cc",
-      "files/scoped_temp_dir.h",
-      "files/scoped_temp_file.cc",
-      "files/scoped_temp_file.h",
-      "json/json_file_value_serializer.cc",
-      "json/json_file_value_serializer.h",
-      "logging/rust_log_integration.cc",
-      "logging/rust_log_integration.h",
-      "memory/discardable_memory.cc",
-      "memory/discardable_memory.h",
-      "memory/discardable_memory_allocator.cc",
-      "memory/discardable_memory_allocator.h",
-      "memory/discardable_memory_internal.h",
-      "metrics/persistent_histogram_storage.cc",
-      "metrics/persistent_histogram_storage.h",
-      "native_library.cc",
-      "native_library.h",
-      "path_service.cc",
-      "path_service.h",
-      "process/process_metrics.cc",
-      "process/process_metrics.h",
-      "scoped_native_library.cc",
-      "scoped_native_library.h",
-      "system/sys_info.cc",
-      "system/sys_info.h",
-      "system/sys_info_internal.h",
-      "task/thread_pool/initialization_util.cc",
-      "task/thread_pool/initialization_util.h",
+      "base_paths_mac.h",
+      "base_paths_mac.mm",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "base_paths_android.cc",
+      "base_paths_android.h",
+    ]
+  }
+
+  if (is_posix) {
+    sources += [
+      "base_paths_posix.h",
+      "memory/madv_free_discardable_memory_allocator_posix.cc",
+      "memory/madv_free_discardable_memory_allocator_posix.h",
+      "memory/madv_free_discardable_memory_posix.cc",
+      "memory/madv_free_discardable_memory_posix.h",
+      "posix/unix_domain_socket.cc",
+      "posix/unix_domain_socket.h",
+      "rand_util_posix.cc",
+      "system/sys_info_posix.cc",
+    ]
+  }
+
+  if (is_posix || is_fuchsia) {
+    sources += [
+      "files/file_descriptor_watcher_posix.cc",
+      "files/file_descriptor_watcher_posix.h",
+      "files/file_enumerator_posix.cc",
+      "files/file_util_posix.cc",
+      "memory/page_size_posix.cc",
     ]
 
-    if (is_win) {
-      sources += [
-        "base_paths_win.cc",
-        "base_paths_win.h",
-      ]
+    if (!is_apple) {
+      sources += [ "files/drive_info_posix.cc" ]
     }
+  }
 
-    if (is_apple) {
-      sources += [
-        "base_paths_apple.cc",
-        "base_paths_apple.h",
-      ]
-    }
+  if ((is_posix && !is_ios) || is_fuchsia) {
+    sources += [
+      "process/process_metrics_posix.cc",
+      "sync_socket_posix.cc",
+    ]
+  }
 
-    if (is_mac) {
-      sources += [
-        "base_paths_mac.h",
-        "base_paths_mac.mm",
-      ]
-    }
+  if (is_posix && !is_apple) {
+    sources += [
+      "native_library_posix.cc",
+      "posix/can_lower_nice_to.cc",
+      "posix/can_lower_nice_to.h",
+      "process/launch_posix.cc",
+      "profiler/module_cache_posix.cc",
+      "profiler/stack_base_address_posix.cc",
+      "profiler/stack_base_address_posix.h",
+      "profiler/stack_copier_signal.cc",
+      "profiler/stack_copier_signal.h",
+      "profiler/thread_delegate_posix.cc",
+      "profiler/thread_delegate_posix.h",
+    ]
+  }
 
-    if (is_android) {
-      sources += [
-        "base_paths_android.cc",
-        "base_paths_android.h",
-      ]
-    }
+  if (is_posix && !is_android) {
+    sources += [ "debug/stack_trace_posix.cc" ]
+  }
+
+  if (is_posix && !is_ios) {
+    sources += [ "process/process_posix.cc" ]
+  }
+  if (!is_win && !is_chromeos && !is_android && !is_linux) {
+    sources += [ "synchronization/cancelable_event_default.cc" ]
+  }
+
+  if (is_linux || is_chromeos || is_android) {
+    sources += [ "synchronization/cancelable_event_posix.cc" ]
+  }
+
+  if (use_blink) {
+    sources += [
+      "memory/discardable_shared_memory.cc",
+      "memory/discardable_shared_memory.h",
+      "memory/shared_memory_switch.cc",
+      "memory/shared_memory_switch.h",
+      "metrics/histogram_shared_memory.cc",
+      "metrics/histogram_shared_memory.h",
+      "process/kill.cc",
+      "process/kill.h",
+      "process/launch.cc",
+      "process/launch.h",
+      "process/memory.cc",
+      "process/memory.h",
+      "process/process_iterator.cc",
+      "process/process_iterator.h",
+    ]
 
     if (is_posix) {
-      sources += [
-        "base_paths_posix.h",
-        "memory/madv_free_discardable_memory_allocator_posix.cc",
-        "memory/madv_free_discardable_memory_allocator_posix.h",
-        "memory/madv_free_discardable_memory_posix.cc",
-        "memory/madv_free_discardable_memory_posix.h",
-        "posix/unix_domain_socket.cc",
-        "posix/unix_domain_socket.h",
-        "rand_util_posix.cc",
-        "system/sys_info_posix.cc",
-      ]
+      sources += [ "process/kill_posix.cc" ]
     }
+  }
 
-    if (is_posix || is_fuchsia) {
-      sources += [
-        "files/file_descriptor_watcher_posix.cc",
-        "files/file_descriptor_watcher_posix.h",
-        "files/file_enumerator_posix.cc",
-        "files/file_util_posix.cc",
-        "memory/page_size_posix.cc",
-      ]
-
-      if (!is_apple) {
-        sources += [ "files/drive_info_posix.cc" ]
-      }
-    }
-
-    if ((is_posix && !is_ios) || is_fuchsia) {
-      sources += [
-        "process/process_metrics_posix.cc",
-        "sync_socket_posix.cc",
-      ]
-    }
-
-    if (is_posix && !is_apple) {
-      sources += [
-        "native_library_posix.cc",
-        "posix/can_lower_nice_to.cc",
-        "posix/can_lower_nice_to.h",
-        "process/launch_posix.cc",
-        "profiler/module_cache_posix.cc",
-        "profiler/stack_base_address_posix.cc",
-        "profiler/stack_base_address_posix.h",
-        "profiler/stack_copier_signal.cc",
-        "profiler/stack_copier_signal.h",
-        "profiler/thread_delegate_posix.cc",
-        "profiler/thread_delegate_posix.h",
-      ]
-    }
-
-    if (is_posix && !is_android) {
-      sources += [ "debug/stack_trace_posix.cc" ]
-    }
-
-    if (is_posix && !is_ios) {
-      sources += [ "process/process_posix.cc" ]
-    }
-    if (!is_win && !is_chromeos && !is_android && !is_linux) {
-      sources += [ "synchronization/cancelable_event_default.cc" ]
-    }
-
-    if (is_linux || is_chromeos || is_android) {
-      sources += [ "synchronization/cancelable_event_posix.cc" ]
-    }
-
-    if (use_blink) {
-      sources += [
-        "memory/discardable_shared_memory.cc",
-        "memory/discardable_shared_memory.h",
-        "memory/shared_memory_switch.cc",
-        "memory/shared_memory_switch.h",
-        "metrics/histogram_shared_memory.cc",
-        "metrics/histogram_shared_memory.h",
-        "process/kill.cc",
-        "process/kill.h",
-        "process/launch.cc",
-        "process/launch.h",
-        "process/memory.cc",
-        "process/memory.h",
-        "process/process_iterator.cc",
-        "process/process_iterator.h",
-      ]
-
-      if (is_posix) {
-        sources += [ "process/kill_posix.cc" ]
-      }
-    }
-
-    if (is_linux || is_chromeos) {
-      sources += [
-        "base_paths_posix.cc",
-        "debug/elf_reader.cc",
-        "debug/elf_reader.h",
-        "stack_canary_linux.cc",
-        "stack_canary_linux.h",
-      ]
-    }
-    if (use_partition_alloc) {
-      # Add stuff that doesn't work in NaCl or other environments that disable
-      # partition_alloc.
-      sources += [
-        "allocator/dispatcher/memory_tagging.cc",
-        "allocator/dispatcher/memory_tagging.h",
-
-        # PartitionAlloc uses SpinLock, which doesn't work in NaCl (see below).
-        "allocator/miracle_parameter.cc",
-        "allocator/miracle_parameter.h",
-        "allocator/partition_alloc_features.cc",
-        "allocator/partition_alloc_features.h",
-        "allocator/partition_alloc_support.cc",
-        "allocator/partition_alloc_support.h",
-      ]
-    }
-    if (use_allocator_shim) {
-      public_deps += [ "allocator/partition_allocator:allocator_shim" ]
-    }
+  if (is_linux || is_chromeos) {
+    sources += [
+      "base_paths_posix.cc",
+      "debug/elf_reader.cc",
+      "debug/elf_reader.h",
+      "stack_canary_linux.cc",
+      "stack_canary_linux.h",
+    ]
+  }
+  if (use_partition_alloc) {
+    sources += [
+      "allocator/dispatcher/memory_tagging.cc",
+      "allocator/dispatcher/memory_tagging.h",
+      "allocator/miracle_parameter.cc",
+      "allocator/miracle_parameter.h",
+      "allocator/partition_alloc_features.cc",
+      "allocator/partition_alloc_features.h",
+      "allocator/partition_alloc_support.cc",
+      "allocator/partition_alloc_support.h",
+    ]
+  }
+  if (use_allocator_shim) {
+    public_deps += [ "allocator/partition_allocator:allocator_shim" ]
   }
 
   # Windows.
@@ -3248,7 +3202,7 @@ if (is_apple) {
   }
 }
 
-if (!is_nacl && (is_linux || is_chromeos)) {
+if (is_linux || is_chromeos) {
   # This test must compile with -fstack-protector-all
   source_set("stack_canary_linux_unittests") {
     testonly = true
@@ -3743,12 +3697,10 @@ test("base_unittests") {
     sources += [ "location_unittest.cc" ]
   }
 
-  if (!is_nacl) {
-    sources += [
-      "containers/span_rust_unittest.cc",
-      "strings/string_piece_rust_unittest.cc",
-    ]
-  }
+  sources += [
+    "containers/span_rust_unittest.cc",
+    "strings/string_piece_rust_unittest.cc",
+  ]
 
   if (use_safe_libcxx || use_safe_libstdcxx) {
     sources += [ "libcpp_hardening_test.cc" ]
@@ -3798,9 +3750,7 @@ test("base_unittests") {
     deps += [ "allocator/partition_allocator/src/partition_alloc:unittests" ]
   }
 
-  if (!is_nacl) {
-    deps += [ "//build/rust:cxx_cppdeps" ]
-  }
+  deps += [ "//build/rust:cxx_cppdeps" ]
 
   data_deps = [
     "//base/test:immediate_crash_test_helper",
@@ -3946,9 +3896,7 @@ test("base_unittests") {
       "process/set_process_title_linux_unittest.cc",
     ]
 
-    if (!is_nacl) {
-      deps += [ ":stack_canary_linux_unittests" ]
-    }
+    deps += [ ":stack_canary_linux_unittests" ]
   }
 
   sources += [ "test/test_trace_processor_example_unittest.cc" ]
@@ -3964,7 +3912,7 @@ test("base_unittests") {
       "posix/file_descriptor_shuffle_unittest.cc",
       "posix/unix_domain_socket_unittest.cc",
     ]
-    if (!is_nacl && !is_apple) {
+    if (!is_apple) {
       sources += [
         "profiler/stack_base_address_posix_unittest.cc",
         "profiler/stack_copier_signal_unittest.cc",
