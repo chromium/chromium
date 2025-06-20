@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_consumer.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_item.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -79,6 +81,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 @end
 
 @implementation BadgeMediator
+@synthesize offTheRecordBadge = _offTheRecordBadge;
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                     overlayPresenter:(OverlayPresenter*)overlayPresenter
@@ -214,6 +217,20 @@ const char kInfobarOverflowBadgeShownUserAction[] =
                  permissionStates[@(web::PermissionCamera)].unsignedIntValue
              ? kBadgeTypePermissionsMicrophone
              : kBadgeTypePermissionsCamera;
+}
+
+- (id<BadgeItem>)offTheRecordBadge {
+  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+    return _offTheRecordBadge;
+  }
+
+  // When Parity is enabled, don't show the incognito badge on NTP. The
+  // placeholder with the default search engine logo will be shown instead.
+  if ([self isCurrentWebStateShowingNTP]) {
+    return nil;
+  }
+
+  return _offTheRecordBadge;
 }
 
 #pragma mark - Accessor helpers
@@ -494,6 +511,15 @@ const char kInfobarOverflowBadgeShownUserAction[] =
           base::UserMetricsAction("MobileMessagesBadgeNonAcceptedTapped"));
       break;
   }
+}
+
+- (BOOL)isCurrentWebStateShowingNTP {
+  if (!self.webStateList || !self.webStateList->GetActiveWebState()) {
+    return NO;
+  }
+
+  return self.webStateList->GetActiveWebState()->GetVisibleURL() ==
+         kChromeUINewTabURL;
 }
 
 @end
