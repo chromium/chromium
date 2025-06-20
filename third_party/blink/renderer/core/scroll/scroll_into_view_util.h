@@ -22,6 +22,7 @@ namespace blink {
 
 class LayoutObject;
 class LayoutView;
+class LayoutBox;
 struct PhysicalRect;
 class ScrollableArea;
 class ComputedStyle;
@@ -67,6 +68,10 @@ ScrollOffset GetScrollOffsetToExpose(
     const PhysicalBoxStrut& expose_scroll_margin,
     const mojom::blink::ScrollAlignment& align_x,
     const mojom::blink::ScrollAlignment& align_y);
+
+ScrollableArea* GetScrollableAreaForLayoutBox(
+    const LayoutBox& box,
+    bool make_visible_in_visual_viewport);
 
 mojom::blink::ScrollAlignment ResolveToPhysicalAlignment(
     V8ScrollLogicalPosition::Enum inline_alignment,

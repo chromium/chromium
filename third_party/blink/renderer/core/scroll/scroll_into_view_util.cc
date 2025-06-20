@@ -77,19 +77,6 @@ bool AllowedToPropagateToParent(
   return !from_frame.GetDocument()->IsVerticalScrollEnforced();
 }
 
-ALWAYS_INLINE ScrollableArea* GetScrollableAreaForLayoutBox(
-    const LayoutBox& box,
-    const mojom::blink::ScrollIntoViewParamsPtr& params) {
-  if (box.IsScrollContainer() && !box.IsLayoutView()) {
-    return box.GetScrollableArea();
-  } else if (!box.ContainingBlock()) {
-    return params->make_visible_in_visual_viewport
-               ? box.GetFrameView()->GetScrollableArea()
-               : box.GetFrameView()->LayoutViewport();
-  }
-  return nullptr;
-}
-
 // Helper to return the parent LayoutBox, crossing local frame boundaries, that
 // a scroll should bubble up to or nullptr if the local root has been reached.
 // The return optional will be empty if the scroll is blocked from bubbling to
@@ -218,7 +205,8 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
 
     ScrollableArea* area_to_scroll = nullptr;
     if (include_self || current_box != &box) {
-      area_to_scroll = GetScrollableAreaForLayoutBox(*current_box, params);
+      area_to_scroll = scroll_into_view_util::GetScrollableAreaForLayoutBox(
+          *current_box, params->make_visible_in_visual_viewport);
     }
     if (area_to_scroll) {
       ScrollOffset scroll_before = area_to_scroll->GetScrollOffset();
@@ -334,6 +322,19 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
 }  // namespace
 
 namespace scroll_into_view_util {
+
+ScrollableArea* GetScrollableAreaForLayoutBox(
+    const LayoutBox& box,
+    bool make_visible_in_visual_viewport) {
+  if (box.IsScrollContainer() && !box.IsLayoutView()) {
+    return box.GetScrollableArea();
+  } else if (!box.ContainingBlock()) {
+    return make_visible_in_visual_viewport
+               ? box.GetFrameView()->GetScrollableArea()
+               : box.GetFrameView()->LayoutViewport();
+  }
+  return nullptr;
+}
 
 void ScrollRectToVisible(const LayoutObject& layout_object,
                          const PhysicalRect& absolute_rect,

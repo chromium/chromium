@@ -923,6 +923,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
   HeapHashSet<Member<ScrollMarkerGroupData>> scroll_marker_group_data_set_;
 };
 
+template <>
+struct DowncastTraits<PaintLayerScrollableArea> {
+  static bool AllowFrom(const ScrollableArea& from) {
+    return from.IsPaintLayerScrollableArea();
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_SCROLLABLE_AREA_H_
