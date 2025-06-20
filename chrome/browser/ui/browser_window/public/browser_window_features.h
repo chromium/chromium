@@ -46,6 +46,10 @@ class ToastController;
 class ToastService;
 class TranslateBubbleController;
 
+#if BUILDFLAG(IS_WIN)
+class WindowsTaskbarIconUpdater;
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 namespace pdf::infobar {
 class PdfInfoBarController;
@@ -431,6 +435,10 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<split_tabs::SplitTabScrimController>
       split_tab_scrim_controller_;
+
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<WindowsTaskbarIconUpdater> windows_taskbar_icon_updater_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

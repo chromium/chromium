@@ -222,7 +222,7 @@ bool BrowserFrameViewWin::HasVisibleBackgroundTabShapes(
 
 SkColor BrowserFrameViewWin::GetCaptionColor(
     BrowserFrameActiveState active_state) const {
-  return GetColorProvider()->GetColor(ShouldPaintAsActive(active_state)
+  return GetColorProvider()->GetColor(ShouldPaintAsActiveForState(active_state)
                                           ? kColorCaptionForegroundActive
                                           : kColorCaptionForegroundInactive);
 }

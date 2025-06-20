@@ -134,13 +134,13 @@ class BrowserNonClientFrameViewChromeOS
  protected:
   // BrowserNonClientFrameView:
   void PaintAsActiveChanged() override;
-  void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
   void AddedToWidget() override;
 
  private:
   friend class BrowserNonClientFrameViewChromeOSTestApi;
   FRIEND_TEST_ALL_PREFIXES(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
                            ImmersiveFullscreen);
+  class ProfileChangeObserver;
 
   // App is a PWA and has borderless in its manifest. This doesn't yet mean
   // that the `window-management` permission has been granted and borderless

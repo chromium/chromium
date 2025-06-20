@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/non_client_view.h"
@@ -24,8 +23,7 @@ enum class BrowserFrameActiveState {
 
 // A specialization of the NonClientFrameView object that provides additional
 // Browser-specific methods.
-class BrowserNonClientFrameView : public views::NonClientFrameView,
-                                  public ProfileAttributesStorage::Observer {
+class BrowserNonClientFrameView : public views::NonClientFrameView {
   METADATA_HEADER(BrowserNonClientFrameView, views::NonClientFrameView)
 
  public:
@@ -129,10 +127,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   // or disabled.
   virtual void WindowControlsOverlayEnabledChanged() {}
 
-  // views::NonClientFrameView:
-  using views::NonClientFrameView::ShouldPaintAsActive;
-  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
-
   // Returns the insets from the edge of the native window to the client view in
   // DIPs. The value is left-to-right even on RTL locales. That is,
   // insets.left() will be on the left in screen coordinates.
@@ -167,7 +161,7 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
 
   // Converts an ActiveState to a bool representing whether the frame should be
   // treated as active.
-  bool ShouldPaintAsActive(BrowserFrameActiveState active_state) const;
+  bool ShouldPaintAsActiveForState(BrowserFrameActiveState active_state) const;
 
   // Compute aspects of the frame needed to paint the frame background.
   gfx::ImageSkia GetFrameImage(BrowserFrameActiveState active_state =
@@ -175,14 +169,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   gfx::ImageSkia GetFrameOverlayImage(
       BrowserFrameActiveState active_state =
           BrowserFrameActiveState::kUseCurrent) const;
-
-  // ProfileAttributesStorage::Observer:
-  void OnProfileAdded(const base::FilePath& profile_path) override;
-  void OnProfileWasRemoved(const base::FilePath& profile_path,
-                           const std::u16string& profile_name) override;
-  void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
-  void OnProfileHighResAvatarLoaded(
-      const base::FilePath& profile_path) override;
 
  private:
 #if BUILDFLAG(IS_WIN)

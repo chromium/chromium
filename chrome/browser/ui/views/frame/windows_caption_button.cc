@@ -74,7 +74,7 @@ gfx::Size WindowsCaptionButton::CalculatePreferredSize(
 
 SkColor WindowsCaptionButton::GetBaseForegroundColor() const {
   return GetColorProvider()->GetColor(
-      frame_view_->ShouldPaintAsActive()
+      GetWidget()->ShouldPaintAsActive()
           ? kColorCaptionButtonForegroundActive
           : kColorCaptionButtonForegroundInactive);
 }
@@ -186,7 +186,7 @@ void WindowsCaptionButton::PaintSymbol(gfx::Canvas* canvas) {
   const SkColor hovered_color =
       GetColorProvider()->GetColor(kColorCaptionCloseButtonForegroundHovered);
   if (!GetEnabled() ||
-      (!frame_view_->ShouldPaintAsActive() && GetState() != STATE_HOVERED &&
+      (!GetWidget()->ShouldPaintAsActive() && GetState() != STATE_HOVERED &&
        GetState() != STATE_PRESSED)) {
     symbol_color =
         SkColorSetA(symbol_color, SkColorGetA(GetColorProvider()->GetColor(

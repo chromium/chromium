@@ -89,6 +89,10 @@
 #include "chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/views/frame/windows_taskbar_icon_updater.h"
+#endif
+
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
@@ -399,6 +403,11 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
         std::make_unique<new_tab_footer::NewTabFooterController>(
             browser_view->browser(), browser_view->new_tab_footer_web_view());
   }
+
+#if BUILDFLAG(IS_WIN)
+  windows_taskbar_icon_updater_ =
+      std::make_unique<WindowsTaskbarIconUpdater>(*browser_view);
+#endif
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
@@ -446,6 +455,10 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   find_bar_controller_.reset();
 
   split_tab_scrim_controller_.reset();
+
+#if BUILDFLAG(IS_WIN)
+  windows_taskbar_icon_updater_.reset();
+#endif
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

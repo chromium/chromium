@@ -16,8 +16,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session/session_util.h"
@@ -128,6 +131,44 @@ bool UsePackagedAppHeaderStyle(const Browser* browser) {
 }
 
 }  // namespace
+
+class BrowserNonClientFrameViewChromeOS::ProfileChangeObserver
+    : public ProfileAttributesStorage::Observer {
+ public:
+  explicit ProfileChangeObserver(BrowserNonClientFrameViewChromeOS& frame)
+      : frame_(frame) {
+    if (g_browser_process->profile_manager()) {
+      profile_observation_.Observe(
+          &g_browser_process->profile_manager()->GetProfileAttributesStorage());
+    } else {
+      CHECK_IS_TEST();
+    }
+  }
+
+  ~ProfileChangeObserver() override = default;
+
+  // ProfileAttributesStorage::Observer:
+  void OnProfileAdded(const base::FilePath& profile_path) override {
+    frame_->UpdateProfileIcons();
+  }
+  void OnProfileWasRemoved(const base::FilePath& profile_path,
+                           const std::u16string& profile_name) override {
+    frame_->UpdateProfileIcons();
+  }
+  void OnProfileAvatarChanged(const base::FilePath& profile_path) override {
+    frame_->UpdateProfileIcons();
+  }
+  void OnProfileHighResAvatarLoaded(
+      const base::FilePath& profile_path) override {
+    frame_->UpdateProfileIcons();
+  }
+
+ private:
+  raw_ref<BrowserNonClientFrameViewChromeOS> frame_;
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      profile_observation_{this};
+};
 
 BrowserNonClientFrameViewChromeOS::BrowserNonClientFrameViewChromeOS(
     BrowserFrame* frame,
@@ -306,7 +347,7 @@ SkColor BrowserNonClientFrameViewChromeOS::GetCaptionColor(
   const SkColor active_caption_color =
       views::FrameCaptionButton::GetButtonColor(frame_color);
 
-  if (ShouldPaintAsActive(active_state)) {
+  if (ShouldPaintAsActiveForState(active_state)) {
     return active_caption_color;
   }
 
@@ -839,12 +880,6 @@ void BrowserNonClientFrameViewChromeOS::PaintAsActiveChanged() {
   if (frame_header_) {
     frame_header_->SetPaintAsActive(ShouldPaintAsActive());
   }
-}
-
-void BrowserNonClientFrameViewChromeOS::OnProfileAvatarChanged(
-    const base::FilePath& profile_path) {
-  BrowserNonClientFrameView::OnProfileAvatarChanged(profile_path);
-  UpdateProfileIcons();
 }
 
 void BrowserNonClientFrameViewChromeOS::AddedToWidget() {
