@@ -1706,6 +1706,7 @@ android_library(
     "src/org/chromium/chrome/browser/customtabs/CustomTabLaunchCauseMetricsTest.java",
     "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCardCoordinatorTest.java",
     "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCardViewBinderTest.java",
+    "src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarButtonsViewBinderTest.java",
   ]
 
   deps = [ ":common_unit_test_deps_java" ]

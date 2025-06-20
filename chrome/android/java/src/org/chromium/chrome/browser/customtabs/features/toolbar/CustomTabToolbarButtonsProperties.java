@@ -151,7 +151,7 @@ public class CustomTabToolbarButtonsProperties {
     public static final ReadableBooleanPropertyKey TITLE_VISIBLE = new ReadableBooleanPropertyKey();
 
     /** Property key for whether the CCT is incognito. */
-    public static final ReadableBooleanPropertyKey IS_INCOGNITO = new ReadableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
 
     public static PropertyModel create(
             boolean customActionButtonsVisible,
