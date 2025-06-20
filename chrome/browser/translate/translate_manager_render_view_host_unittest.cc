@@ -245,7 +245,8 @@ class TranslateManagerRenderViewHostTest
     // expiration delay to a large value by default (in case it was zeroed in a
     // previous test).
     TranslateService::InitializeForTesting(
-        network::mojom::ConnectionType::CONNECTION_WIFI);
+        network::mojom::ConnectionType::CONNECTION_WIFI,
+        /*wait_for_eula=*/false);
     translate::TranslateDownloadManager* download_manager =
         translate::TranslateDownloadManager::GetInstance();
     download_manager->ClearTranslateScriptForTesting();

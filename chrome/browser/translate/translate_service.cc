@@ -4,6 +4,7 @@
 
 #include "chrome/browser/translate/translate_service.h"
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
@@ -34,6 +35,10 @@
 namespace {
 // The singleton instance of TranslateService.
 TranslateService* g_translate_service = nullptr;
+
+// Controls whether EULA is checked for resource requests.
+// May be false only in test.
+bool g_wait_for_eula = true;
 }  // namespace
 
 TranslateService::TranslateService()
@@ -41,7 +46,11 @@ TranslateService::TranslateService()
           g_browser_process->local_state(),
           switches::kDisableBackgroundNetworking,
           base::BindOnce(&content::GetNetworkConnectionTracker)) {
-  resource_request_allowed_notifier_.Init(this, true /* leaky */);
+  if (!g_wait_for_eula) {
+    CHECK_IS_TEST();
+  }
+  resource_request_allowed_notifier_.Init(this, true /* leaky */,
+                                          g_wait_for_eula);
 }
 
 TranslateService::~TranslateService() = default;
@@ -75,8 +84,10 @@ void TranslateService::Shutdown() {
 }
 
 // static
-void TranslateService::InitializeForTesting(
-    network::mojom::ConnectionType type) {
+void TranslateService::InitializeForTesting(network::mojom::ConnectionType type,
+                                            bool wait_for_eula) {
+  g_wait_for_eula = wait_for_eula;
+
   translate::TranslateDownloadManager::GetInstance()->ResetForTesting();
   TranslateService::Initialize();
   translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
@@ -89,6 +100,7 @@ void TranslateService::InitializeForTesting(
 // static
 void TranslateService::ShutdownForTesting() {
   TranslateService::Shutdown();
+  g_wait_for_eula = true;
 }
 
 void TranslateService::OnResourceRequestsAllowed() {
