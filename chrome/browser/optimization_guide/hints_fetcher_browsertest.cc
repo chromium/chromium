@@ -306,8 +306,9 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
       // Acquire the |lock_| inside to avoid starving other consumers of the
       // lock.
       base::AutoLock lock(lock_);
-      if (count_hints_requests_received_ > 0)
+      if (count_hints_requests_received_ > 0) {
         return;
+      }
     }
 
     base::RunLoop run_loop;
@@ -402,8 +403,9 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
               static_cast<size_t>(hints_request.hosts().size()));
 
     // Only verify the hints if there are hosts in the request.
-    if (!hints_request.hosts().empty())
+    if (!hints_request.hosts().empty()) {
       VerifyHintsMatchExpectedHostsAndUrls(hints_request);
+    }
 
     if (response_type_ ==
         optimization_guide::HintsFetcherRemoteResponseType::kSuccessful) {
@@ -448,8 +450,9 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   // hosts in not matched.
   void VerifyHintsMatchExpectedHostsAndUrls(
       const optimization_guide::proto::GetHintsRequest& hints_request) const {
-    if (!expect_hints_request_for_hosts_and_urls_)
+    if (!expect_hints_request_for_hosts_and_urls_) {
       return;
+    }
 
     base::flat_set<std::string> hosts_and_urls_requested;
     for (const auto& host : hints_request.hosts()) {
@@ -1810,6 +1813,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizedHintsFetcherBrowserTest, UserSignedIn) {
       optimization_guide::FetcherRequestStatus::kSuccess, 1);
 }
 
+// TODO(crbug.com/425936619): Add checks for url, hint counts, context.
 class ProactivePersonalizationHintsFetcherBrowserTest
     : public HintsFetcherBrowserTest {
  public:
@@ -1905,6 +1909,36 @@ IN_PROC_BROWSER_TEST_F(ProactivePersonalizationHintsFetcherBrowserTest,
             1);
 }
 
+// Verify access token is attached during url fetching if a
+// personalizable optimization type is requested.
+// TODO(crbug.com/40919396): De-leakify and re-enable.
+#if BUILDFLAG(IS_LINUX) && defined(LEAK_SANITIZER)
+#define MAYBE_FetchingUrlFetchesWithAccessToken \
+  DISABLED_FetchingUrlFetchesWithAccessToken
+#else
+#define MAYBE_FetchingUrlFetchesWithAccessToken \
+  FetchingUrlFetchesWithAccessToken
+#endif
+IN_PROC_BROWSER_TEST_F(ProactivePersonalizationHintsFetcherBrowserTest,
+                       MAYBE_FetchingUrlFetchesWithAccessToken) {
+  const base::HistogramTester* histogram_tester = GetHistogramTester();
+
+  EnableSignin();
+  SetExpectedBearerAccessToken("Bearer access_token");
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), search_results_page_url()));
+
+  WaitUntilHintsFetcherRequestReceived();
+
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
+                histogram_tester,
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+                "BatchUpdateGoogleSRP",
+                1),
+            1);
+}
+
 class ProactivePersonalizationNoAllowedTypesHintsFetcherBrowserTest
     : public ProactivePersonalizationHintsFetcherBrowserTest {
  public:
@@ -1953,6 +1987,37 @@ IN_PROC_BROWSER_TEST_F(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
                 "BatchUpdateActiveTabs",
+                1),
+            1);
+}
+
+// Verify access token is not attached during url fetching if no personalizable
+// optimization type is requested.
+// TODO(crbug.com/40919396): De-leakify and re-enable.
+#if BUILDFLAG(IS_LINUX) && defined(LEAK_SANITIZER)
+#define MAYBE_FetchingUrlDoesNotFetchWithAccessToken \
+  DISABLED_FetchingUrlDoesNotFetchWithAccessToken
+#else
+#define MAYBE_FetchingUrlDoesNotFetchWithAccessToken \
+  FetchingUrlDoesNotFetchWithAccessToken
+#endif
+IN_PROC_BROWSER_TEST_F(
+    ProactivePersonalizationNoAllowedTypesHintsFetcherBrowserTest,
+    MAYBE_FetchingUrlDoesNotFetchWithAccessToken) {
+  const base::HistogramTester* histogram_tester = GetHistogramTester();
+
+  EnableSignin();
+  SetExpectedBearerAccessToken(std::string());
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), search_results_page_url()));
+
+  WaitUntilHintsFetcherRequestReceived();
+
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
+                histogram_tester,
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+                "BatchUpdateGoogleSRP",
                 1),
             1);
 }

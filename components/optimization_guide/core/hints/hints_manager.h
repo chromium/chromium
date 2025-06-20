@@ -596,14 +596,20 @@ class HintsManager : public OptimizationHintsComponentObserver,
   base::WeakPtrFactory<HintsManager> weak_ptr_factory_{this};
 
   // Wrapper that immediately invokes HintsFetcher for the purposes of fetching
+  // hints for urls.
+  void FetchHintsForURLsInternal(
+      const InsertionOrderedSet<std::string>& target_hosts,
+      const InsertionOrderedSet<GURL>& target_urls,
+      optimization_guide::proto::RequestContext request_context,
+      const std::string& access_token);
+
+  // Wrapper that immediately invokes HintsFetcher for the purposes of fetching
   // hints for active tabs.
   void FetchHintsForActiveTabsInternal(
       const std::vector<std::string>& top_hosts,
       const std::vector<GURL>& active_tab_urls_to_refresh,
       optimization_guide::proto::RequestContext request_context,
-      bool skip_cache,
       HintsFetchedCallback hints_fetched_callback,
-      std::optional<proto::RequestContextMetadata> request_context_metadata,
       const std::string& access_token);
 };
 
