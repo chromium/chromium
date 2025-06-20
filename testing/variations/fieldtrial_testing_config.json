@@ -16550,6 +16550,8 @@
                     "name": "Enabled",
                     "params": {
                         "autofill_address": "true",
+                        "file_system_access": "true",
+                        "intent_picker": "true",
                         "lens_overlay": "true",
                         "memory_saver": "true",
                         "offer_notification": "true",
