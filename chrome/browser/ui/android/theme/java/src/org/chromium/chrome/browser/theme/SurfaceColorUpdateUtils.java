@@ -42,8 +42,10 @@ public class SurfaceColorUpdateUtils {
         return ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled();
     }
 
+    /** Whether new GM3 colors are being used for the tab group colors. */
     public static boolean useNewGm3GtsTabGroupColors() {
-        return ChromeFeatureList.sAndroidTabGroupsColorUpdateGm3.isEnabled();
+        return ChromeFeatureList.sAndroidTabGroupsColorUpdateGm3.isEnabled()
+                || ThemeModuleUtils.isForceEnableDependencies();
     }
 
     /**
