@@ -56,7 +56,7 @@ void NotifyTimezoneChangeOnWorkerThread(WorkerThread* worker_thread) {
 String GetTimezoneId(const icu::TimeZone& timezone) {
   icu::UnicodeString unicode_timezone_id;
   timezone.getID(unicode_timezone_id);
-  return String(WTF::unicode::ToSpan(unicode_timezone_id));
+  return String(unicode::ToSpan(unicode_timezone_id));
 }
 
 String GetCurrentTimezoneId() {

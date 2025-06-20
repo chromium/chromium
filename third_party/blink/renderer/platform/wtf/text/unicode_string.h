@@ -33,7 +33,7 @@
 #include <unicode/char16ptr.h>
 #endif
 
-namespace WTF {
+namespace blink {
 namespace unicode {
 
 inline int FoldCase(UChar* result,
@@ -63,6 +63,6 @@ inline base::span<const UChar> ToSpan(const icu::UnicodeString& ustring) {
 }
 
 }  // namespace unicode
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_UNICODE_STRING_H_

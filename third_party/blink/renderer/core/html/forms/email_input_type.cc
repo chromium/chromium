@@ -104,7 +104,7 @@ String EmailInputType::ConvertEmailAddressToASCII(const ScriptRegexp& regexp,
 
   StringBuilder builder;
   builder.Append(address, 0, at_position + 1);
-  builder.Append(WTF::unicode::ToSpan(domain_name));
+  builder.Append(unicode::ToSpan(domain_name));
   String ascii_email = builder.ToString();
   return IsValidEmailAddress(regexp, ascii_email) ? ascii_email : address;
 }

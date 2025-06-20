@@ -510,16 +510,16 @@ scoped_refptr<StringImpl> StringImpl::FoldCase() {
 
   // Do a slower implementation for cases that include non-ASCII characters.
   bool error;
-  const int32_t real_length = unicode::FoldCase(
+  const int32_t real_length = blink::unicode::FoldCase(
       data16.data(), static_cast<int32_t>(data16.size()), source16.data(),
       static_cast<int32_t>(source16.size()), &error);
   if (!error && real_length == static_cast<int32_t>(data16.size())) {
     return new_impl;
   }
   new_impl = CreateUninitialized(real_length, data16);
-  unicode::FoldCase(data16.data(), static_cast<int32_t>(data16.size()),
-                    source16.data(), static_cast<int32_t>(source16.size()),
-                    &error);
+  blink::unicode::FoldCase(data16.data(), static_cast<int32_t>(data16.size()),
+                           source16.data(),
+                           static_cast<int32_t>(source16.size()), &error);
   if (error)
     return this;
   return new_impl;
@@ -872,7 +872,7 @@ bool DeprecatedEqualIgnoringCase(base::span<const UChar> a,
   if (a.data() == b.data()) {
     return true;
   }
-  return !unicode::Umemcasecmp(a.data(), b.data(), length);
+  return !blink::unicode::Umemcasecmp(a.data(), b.data(), length);
 }
 
 bool DeprecatedEqualIgnoringCase(base::span<const UChar> a,

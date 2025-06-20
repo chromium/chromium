@@ -50,14 +50,14 @@ TEST(UTF16RagelIteratorTest, CharacterClasses) {
       EmojiSegmentationCategory::EMOJI_TEXT_PRESENTATION,
   });
   UTF16RagelIterator ragel_iterator(
-      WTF::unicode::ToSpan(class_examples_unicode_string));
+      unicode::ToSpan(class_examples_unicode_string));
   for (const EmojiSegmentationCategory& category : categories) {
     CHECK_EQ(category, *ragel_iterator);
     ragel_iterator++;
   }
 
   UTF16RagelIterator reverse_ragel_iterator(
-      WTF::unicode::ToSpan(class_examples_unicode_string),
+      unicode::ToSpan(class_examples_unicode_string),
       class_examples_unicode_string.length() - 1);
   size_t i = std::size(categories) - 1;
   while (reverse_ragel_iterator.Cursor() > 0) {
@@ -78,7 +78,7 @@ TEST(UTF16RagelIteratorTest, ArithmeticOperators) {
                                     std::size(class_examples_codepoints));
 
   UTF16RagelIterator ragel_iterator(
-      WTF::unicode::ToSpan(class_examples_unicode_string));
+      unicode::ToSpan(class_examples_unicode_string));
 
   CHECK_EQ(*ragel_iterator, EmojiSegmentationCategory::VS15);
   CHECK_EQ(*(ragel_iterator + 2), EmojiSegmentationCategory::VS15);
@@ -116,7 +116,7 @@ TEST(UTF16RagelIteratorTest, CursorPositioning) {
 
   icu::UnicodeString flags_unicode_string = icu::UnicodeString::fromUTF32(
       flags_codepoints, std::size(flags_codepoints));
-  UTF16RagelIterator ragel_iterator(WTF::unicode::ToSpan(flags_unicode_string));
+  UTF16RagelIterator ragel_iterator(unicode::ToSpan(flags_unicode_string));
 
   CHECK_EQ(ragel_iterator.end().Cursor(), 8u);
 
