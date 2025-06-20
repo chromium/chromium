@@ -3514,6 +3514,20 @@ be describing additional metrics about the same event.
     quality. They are recorded on navigation if a form was submitted before,
     only if the submitted form had Autofill AI prediction.
   </summary>
+  <metric name="AutofillAiFilledFieldCount">
+    <summary>
+      The number of fields at form submission that are autofilled and that were
+      autofilled by AutofillAi. Fields filled with any other source will be
+      excluded from this count.
+    </summary>
+  </metric>
+  <metric name="AutofillFilledFieldCount">
+    <summary>
+      The number of fields at form submission that are autofilled. This will
+      include fields that are autofilled by any source except Autocomplete,
+      including AutofillAi.
+    </summary>
+  </metric>
   <metric name="FillingAcceptance">
     <summary>
       Has value 1 if user accepted the suggestion to fill values on a submitted

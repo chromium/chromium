@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <type_traits>
 
@@ -12,6 +13,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -111,6 +113,29 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
                                         bool suggestion_filled,
                                         bool edited_autofilled_field,
                                         bool opt_in_status) {
+  const int autofill_filled_field_count = std::ranges::count_if(
+      form, [&](const std::unique_ptr<AutofillField>& field) {
+        switch (field->filling_product()) {
+          case FillingProduct::kAddress:
+          case FillingProduct::kCreditCard:
+          case FillingProduct::kMerchantPromoCode:
+          case FillingProduct::kIban:
+          case FillingProduct::kPassword:
+          case FillingProduct::kPlusAddresses:
+          case FillingProduct::kAutofillAi:
+          case FillingProduct::kLoyaltyCard:
+          case FillingProduct::kIdentityCredential:
+            return true;
+          case FillingProduct::kAutocomplete:
+          case FillingProduct::kCompose:
+          case FillingProduct::kDataList:
+          case FillingProduct::kNone:
+            return false;
+        }
+      });
+  const int autofill_ai_filled_field_count = std::ranges::count(
+      form, FillingProduct::kAutofillAi, &AutofillField::filling_product);
+
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
           client_->GetMqlsUploadService();
       uploader_ &&
@@ -132,6 +157,10 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
     mqls_key_metrics->set_form_signature(form.form_signature().value());
     mqls_key_metrics->set_form_session_identifier(
         autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()));
+    mqls_key_metrics->set_autofill_filled_field_count(
+        autofill_filled_field_count);
+    mqls_key_metrics->set_autofill_ai_filled_field_count(
+        autofill_ai_filled_field_count);
     mqls_key_metrics->set_filling_readiness(data_to_fill_available);
     mqls_key_metrics->set_filling_assistance(suggestion_filled);
     if (suggestions_shown) {
@@ -152,7 +181,9 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
           autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()))
       .SetFillingReadiness(data_to_fill_available)
       .SetFillingAssistance(suggestion_filled)
-      .SetOptInStatus(opt_in_status);
+      .SetOptInStatus(opt_in_status)
+      .SetAutofillFilledFieldCount(autofill_filled_field_count)
+      .SetAutofillAiFilledFieldCount(autofill_ai_filled_field_count);
   if (suggestions_shown) {
     builder.SetFillingAcceptance(suggestion_filled);
   }

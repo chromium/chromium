@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -135,8 +136,10 @@ class BaseAutofillAiTest : public testing::Test {
       form_description.fields.emplace_back(
           test::FieldDescription({.role = field_type}));
     }
-    auto form_structure =
-        std::make_unique<FormStructure>(test::GetFormData(form_description));
+    FormData form_data = test::GetFormData(form_description);
+    form_data.set_main_frame_origin(
+        url::Origin::Create(GURL("https://myform_root.com/form.html")));
+    auto form_structure = std::make_unique<FormStructure>(form_data);
     for (size_t i = 0; i < form_structure->field_count(); i++) {
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
           prediction;
@@ -578,23 +581,6 @@ class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
         << event;
   }
 
-  void ExpectCorrectMqlsKeyMetricsLogging(
-      const optimization_guide::proto::AutofillAiKeyMetrics& mqls_key_metrics,
-      const FormStructure& form,
-      bool filling_readiness,
-      bool filling_assistance,
-      bool filling_acceptance,
-      bool filling_correctness) {
-    EXPECT_EQ(mqls_key_metrics.domain(), "myform_root.com");
-    EXPECT_EQ(mqls_key_metrics.form_signature(), form.form_signature().value());
-    EXPECT_EQ(mqls_key_metrics.form_session_identifier(),
-              autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()));
-    EXPECT_EQ(mqls_key_metrics.filling_readiness(), filling_readiness);
-    EXPECT_EQ(mqls_key_metrics.filling_assistance(), filling_assistance);
-    EXPECT_EQ(mqls_key_metrics.filling_acceptance(), filling_acceptance);
-    EXPECT_EQ(mqls_key_metrics.filling_correctness(), filling_correctness);
-  }
-
  private:
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<optimization_guide::TestModelQualityLogsUploaderService>
@@ -635,13 +621,21 @@ TEST_F(AutofillAiMqlsMetricsTest, FieldEvent) {
 }
 
 TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
-  std::unique_ptr<FormStructure> form = CreateEligibleForm();
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
 
   test_api(manager()).logger().OnFormHasDataToFill(form->global_id());
   test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
                                                   /*ukm_source_id=*/{});
+  form->field(0)->set_is_autofilled(true);
+  form->field(0)->set_filling_product(FillingProduct::kAddress);
+  form->field(1)->set_is_autofilled(true);
+  form->field(1)->set_filling_product(FillingProduct::kAutofillAi);
+  form->field(2)->set_is_autofilled(true);
+  form->field(2)->set_filling_product(FillingProduct::kAutocomplete);
+
   test_api(manager()).logger().OnDidFillSuggestion(*form, *form->field(0),
                                                    /*ukm_source_id=*/{});
+
   test_api(manager()).logger().OnEditedAutofilledField(*form, *form->field(0),
                                                        /*ukm_source_id=*/{});
 
@@ -649,10 +643,19 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
                                                  /*submission_state=*/true,
                                                  /*opt_in_status=*/true);
   ASSERT_EQ(mqls_logs().size(), 4u);
-  ExpectCorrectMqlsKeyMetricsLogging(
-      GetKeyMetricsLogs(), *form, /*filling_readiness=*/true,
-      /*filling_assistance=*/true,
-      /*filling_acceptance=*/true, /*filling_correctness=*/false);
+  const optimization_guide::proto::AutofillAiKeyMetrics& mqls_key_metrics =
+      GetKeyMetricsLogs();
+
+  EXPECT_EQ(mqls_key_metrics.domain(), "myform_root.com");
+  EXPECT_EQ(mqls_key_metrics.form_signature(), form->form_signature().value());
+  EXPECT_EQ(mqls_key_metrics.form_session_identifier(),
+            autofill_metrics::FormGlobalIdToHash64Bit(form->global_id()));
+  EXPECT_TRUE(mqls_key_metrics.filling_readiness());
+  EXPECT_TRUE(mqls_key_metrics.filling_assistance());
+  EXPECT_TRUE(mqls_key_metrics.filling_acceptance());
+  EXPECT_FALSE(mqls_key_metrics.filling_correctness());
+  EXPECT_EQ(mqls_key_metrics.autofill_filled_field_count(), 2);
+  EXPECT_EQ(mqls_key_metrics.autofill_ai_filled_field_count(), 1);
 }
 
 // Tests that KeyMetrics MQLS metrics aren't recorded if the user is not opted
