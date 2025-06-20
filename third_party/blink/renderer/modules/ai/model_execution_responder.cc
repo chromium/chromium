@@ -271,7 +271,6 @@ class StreamingResponder final
     }
     RecordResponseMetrics();
     Cleanup();
-    return;
   }
 
   void OnError(ModelStreamingResponseStatus status,

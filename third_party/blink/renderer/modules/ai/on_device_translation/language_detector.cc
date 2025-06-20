@@ -58,18 +58,6 @@ bool RequiresUserActivation(
   }
 }
 
-// Rejects if the OnceClosure is destroyed before it is ran.
-template <typename T>
-base::OnceClosure RejectOnDestruction(ScriptPromiseResolver<T>* resolver) {
-  RunOnDestruction run_on_destruction(WTF::BindOnce(
-      [](ScriptPromiseResolver<T>* resolver) { resolver->Reject(); },
-      WrapPersistent(resolver)));
-
-  return WTF::BindOnce(
-      [](RunOnDestruction resolver_holder) { resolver_holder.Reset(); },
-      std::move(run_on_destruction));
-}
-
 class LanguageDetectorCreateTask
     : public GarbageCollected<LanguageDetectorCreateTask>,
       public ExecutionContextClient,

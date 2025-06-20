@@ -27,7 +27,7 @@ class Writer final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  Writer(ExecutionContext* execution_context,
+  Writer(ScriptState* script_state,
          scoped_refptr<base::SequencedTaskRunner> task_runner,
          mojo::PendingRemote<mojom::blink::AIWriter> pending_remote,
          WriterCreateOptions* options);

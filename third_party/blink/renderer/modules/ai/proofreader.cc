@@ -42,12 +42,12 @@ void AIWritingAssistanceCreateClient<
 }
 
 Proofreader::Proofreader(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojo::PendingRemote<mojom::blink::AIProofreader> pending_remote,
     ProofreaderCreateOptions* options)
-    : ExecutionContextClient(execution_context),
-      remote_(execution_context),
+    : ExecutionContextClient(ExecutionContext::From(script_state)),
+      remote_(GetExecutionContext()),
       options_(std::move(options)),
       task_runner_(std::move(task_runner)) {
   remote_.Bind(std::move(pending_remote), task_runner_);
@@ -75,8 +75,7 @@ ScriptPromise<V8Availability> Proofreader::availability(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(script_state);
   auto promise = resolver->Promise();
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -206,9 +205,9 @@ void Proofreader::destroy(ScriptState* script_state,
     return;
   }
 
-  base::UmaHistogramEnumeration(
-      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kProofreader),
-      AIMetrics::AIAPI::kSessionDestroy);
+  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
+                                    AIMetrics::AISessionType::kProofreader),
+                                AIMetrics::AIAPI::kSessionDestroy);
 
   remote_.reset();
 }

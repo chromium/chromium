@@ -27,7 +27,7 @@ class Rewriter final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  Rewriter(ExecutionContext* execution_context,
+  Rewriter(ScriptState* script_state,
            scoped_refptr<base::SequencedTaskRunner> task_runner,
            mojo::PendingRemote<mojom::blink::AIRewriter> pending_remote,
            RewriterCreateOptions* options);

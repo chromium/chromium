@@ -142,7 +142,7 @@ void WriterBase::RecordCreateOptionMetrics(
   }
 }
 
-Writer::Writer(ExecutionContext* execution_context,
+Writer::Writer(ScriptState* script_state,
                scoped_refptr<base::SequencedTaskRunner> task_runner,
                mojo::PendingRemote<mojom::blink::AIWriter> pending_remote,
                WriterCreateOptions* options)
@@ -152,7 +152,7 @@ Writer::Writer(ExecutionContext* execution_context,
                               WriterCreateCoreOptions,
                               WriterCreateOptions,
                               WriterWriteOptions>(
-          execution_context,
+          script_state,
           task_runner,
           std::move(pending_remote),
           std::move(options),

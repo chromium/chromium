@@ -27,7 +27,7 @@ class Summarizer final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  Summarizer(ExecutionContext* execution_context,
+  Summarizer(ScriptState* script_state,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
              mojo::PendingRemote<mojom::blink::AISummarizer> pending_remote,
              SummarizerCreateOptions* options);

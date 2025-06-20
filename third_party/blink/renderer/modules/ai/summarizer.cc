@@ -149,7 +149,7 @@ void SummarizerBase::RecordCreateOptionMetrics(
 }
 
 Summarizer::Summarizer(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojo::PendingRemote<mojom::blink::AISummarizer> pending_remote,
     SummarizerCreateOptions* options)
@@ -159,7 +159,7 @@ Summarizer::Summarizer(
                               SummarizerCreateCoreOptions,
                               SummarizerCreateOptions,
                               SummarizerSummarizeOptions>(
-          execution_context,
+          script_state,
           task_runner,
           std::move(pending_remote),
           std::move(options),

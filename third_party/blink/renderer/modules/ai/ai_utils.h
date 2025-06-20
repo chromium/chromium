@@ -12,11 +12,13 @@
 #include "third_party/blink/public/mojom/ai/ai_rewriter.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_summarizer.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_writer.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_expected.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofreader_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rewriter_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_summarizer_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_writer_create_options.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/availability.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
@@ -137,6 +139,26 @@ class RunOnDestruction {
  private:
   base::OnceClosure callback_;
 };
+
+// Returns a closure that rejects `resolver` if it's destroyed before being run.
+// If `signal` is aborted on destruction, its reason is passed with rejection.
+template <typename T>
+base::OnceClosure RejectOnDestruction(ScriptPromiseResolver<T>* resolver,
+                                      AbortSignal* signal = nullptr) {
+  RunOnDestruction run_on_destruction(WTF::BindOnce(
+      [](ScriptPromiseResolver<T>* resolver, AbortSignal* signal) {
+        if (signal && signal->aborted()) {
+          resolver->Reject(signal->reason(resolver->GetScriptState()));
+        } else {
+          resolver->Reject();
+        }
+      },
+      WrapPersistent(resolver), WrapPersistent(signal)));
+
+  return WTF::BindOnce(
+      [](RunOnDestruction resolver_holder) { resolver_holder.Reset(); },
+      std::move(run_on_destruction));
+}
 
 }  // namespace blink
 

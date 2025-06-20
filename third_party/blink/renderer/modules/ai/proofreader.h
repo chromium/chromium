@@ -30,7 +30,7 @@ class Proofreader final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  Proofreader(ExecutionContext* execution_context,
+  Proofreader(ScriptState* script_state,
               scoped_refptr<base::SequencedTaskRunner> task_runner,
               mojo::PendingRemote<mojom::blink::AIProofreader> pending_remote,
               ProofreaderCreateOptions* options);

@@ -112,9 +112,9 @@ class AIWritingAssistanceCreateClient
       }
     }
 
-    if (GetExecutionContext() && pending_remote) {
+    if (pending_remote) {
       this->GetResolver()->Resolve(MakeGarbageCollected<V8SessionObjectType>(
-          GetExecutionContext(), task_runner_, std::move(pending_remote),
+          this->GetScriptState(), task_runner_, std::move(pending_remote),
           options_));
     } else {
       this->GetResolver()->RejectWithDOMException(

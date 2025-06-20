@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -95,24 +96,36 @@ template <typename V8SessionObjectType,
           typename ExecuteOptions>
 class AIWritingAssistanceBase : public ExecutionContextClient {
  public:
-  AIWritingAssistanceBase(ExecutionContext* execution_context,
+  AIWritingAssistanceBase(ScriptState* script_state,
                           scoped_refptr<base::SequencedTaskRunner> task_runner,
                           mojo::PendingRemote<AIMojoClient> pending_remote,
                           CreateOptions* options,
                           bool echo_whitespace_input)
-      : ExecutionContextClient(execution_context),
-        remote_(execution_context),
+      : ExecutionContextClient(ExecutionContext::From(script_state)),
+        remote_(GetExecutionContext()),
         options_(options),
+        destruction_abort_controller_(AbortController::Create(script_state)),
+        create_abort_signal_(options->getSignalOr(nullptr)),
         task_runner_(std::move(task_runner)),
         metric_session_type_(GetSessionType()),
         echo_whitespace_input_(echo_whitespace_input) {
     remote_.Bind(std::move(pending_remote), task_runner_);
+
+    if (create_abort_signal_) {
+      CHECK(!create_abort_signal_->aborted());
+      create_abort_handle_ = create_abort_signal_->AddAlgorithm(WTF::BindOnce(
+          &AIWritingAssistanceBase::OnCreateAbortSignalAborted,
+          WrapWeakPersistent(this), WrapWeakPersistent(script_state)));
+    }
   }
 
   void Trace(Visitor* visitor) const override {
     ExecutionContextClient::Trace(visitor);
     visitor->Trace(remote_);
     visitor->Trace(options_);
+    visitor->Trace(destruction_abort_controller_);
+    visitor->Trace(create_abort_signal_);
+    visitor->Trace(create_abort_handle_);
   }
 
   static ScriptPromise<V8Availability> availability(
@@ -177,16 +190,15 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       return ScriptPromise<V8SessionObjectType>();
     }
 
+    AbortSignal* signal = options->getSignalOr(nullptr);
+    if (HandleAbortSignal(signal, script_state, exception_state)) {
+      return EmptyPromise();
+    }
+
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<V8SessionObjectType>>(
             script_state);
     auto promise = resolver->Promise();
-    AbortSignal* signal = options->getSignalOr(nullptr);
-    if (signal && signal->aborted()) {
-      resolver->Reject(signal->reason(script_state));
-      return promise;
-    }
-
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
     // Block access if the Permission Policy is not enabled.
@@ -221,6 +233,14 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       ThrowInvalidContextException(exception_state);
       return ScriptPromise<IDLString>();
     }
+
+    CHECK(options);
+    AbortSignal* composite_signal =
+        CreateCompositeSignal(script_state, options);
+    if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
+      return EmptyPromise();
+    }
+
     if (!remote_) {
       ThrowSessionDestroyedException(exception_state);
       return ScriptPromise<IDLString>();
@@ -233,16 +253,9 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
         AIMetrics::GetAISessionRequestSizeMetricName(metric_session_type_),
         static_cast<int>(input.CharactersSizeInBytes()));
 
-    CHECK(options);
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
     auto promise = resolver->Promise();
-
-    AbortSignal* signal = options->getSignalOr(nullptr);
-    if (signal && signal->aborted()) {
-      resolver->Reject(signal->reason(script_state));
-      return promise;
-    }
 
     String trimmed_input = input.StripWhiteSpace();
     if (trimmed_input.empty()) {
@@ -254,7 +267,8 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
         options->getContextOr(g_empty_string).StripWhiteSpace();
     // Pass persistent refs to keep this instance alive during the response.
     auto pending_remote = CreateModelExecutionResponder(
-        script_state, signal, resolver, task_runner_, metric_session_type_,
+        script_state, composite_signal, resolver, task_runner_,
+        metric_session_type_,
         base::DoNothingWithBoundArgs(WrapPersistent(this)),
         base::DoNothingWithBoundArgs(WrapPersistent(this)),
         /*resolve_override_callback=*/base::NullCallback());
@@ -273,6 +287,14 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       ThrowInvalidContextException(exception_state);
       return nullptr;
     }
+
+    CHECK(options);
+    AbortSignal* composite_signal =
+        CreateCompositeSignal(script_state, options);
+    if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
+      return nullptr;
+    }
+
     if (!remote_) {
       ThrowSessionDestroyedException(exception_state);
       return nullptr;
@@ -285,12 +307,6 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
         AIMetrics::GetAISessionRequestSizeMetricName(metric_session_type_),
         static_cast<int>(input.CharactersSizeInBytes()));
 
-    CHECK(options);
-    AbortSignal* signal = options->getSignalOr(nullptr);
-    if (HandleAbortSignal(signal, script_state, exception_state)) {
-      return nullptr;
-    }
-
     String trimmed_input = input.StripWhiteSpace();
     if (trimmed_input.empty()) {
       return CreateEmptyReadableStream(script_state, metric_session_type_);
@@ -301,7 +317,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     // Pass persistent refs to keep this instance alive during the response.
     auto [readable_stream, pending_remote] =
         CreateModelExecutionStreamingResponder(
-            script_state, signal, task_runner_, metric_session_type_,
+            script_state, composite_signal, task_runner_, metric_session_type_,
             base::DoNothingWithBoundArgs(WrapPersistent(this)),
             base::DoNothingWithBoundArgs(WrapPersistent(this)));
     remoteExecute(trimmed_input, trimmed_context, std::move(pending_remote));
@@ -317,6 +333,13 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       return ScriptPromise<IDLDouble>();
     }
 
+    CHECK(options);
+    AbortSignal* composite_signal =
+        CreateCompositeSignal(script_state, options);
+    if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
+      return EmptyPromise();
+    }
+
     if (!remote_) {
       ThrowSessionDestroyedException(exception_state);
       return ScriptPromise<IDLDouble>();
@@ -325,12 +348,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(script_state);
     auto promise = resolver->Promise();
-    CHECK(options);
-    AbortSignal* signal = options->getSignalOr(nullptr);
-    if (signal && signal->aborted()) {
-      resolver->Reject(signal->reason(script_state));
-      return promise;
-    }
+    auto reject_fn = RejectOnDestruction(resolver, composite_signal);
 
     remote_->MeasureUsage(
         input, options->getContextOr(g_empty_string),
@@ -354,8 +372,8 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
               }
               resolver->Resolve(static_cast<double>(usage.value()));
             },
-            WrapPersistent(resolver),
-            WrapPersistent(options->getSignalOr(nullptr))));
+            WrapPersistent(resolver), WrapPersistent(composite_signal))
+            .Then(std::move(reject_fn)));
 
     return promise;
   }
@@ -370,7 +388,8 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
         AIMetrics::GetAIAPIUsageMetricName(metric_session_type_),
         AIMetrics::AIAPI::kSessionDestroy);
 
-    remote_.reset();
+    destruction_abort_controller_->abort(script_state);
+    DestroyImpl();
   }
 
   String sharedContext() const {
@@ -430,6 +449,37 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
   Member<CreateOptions> options_;
 
  private:
+  void DestroyImpl() {
+    remote_.reset();
+
+    if (create_abort_handle_) {
+      create_abort_signal_->RemoveAlgorithm(create_abort_handle_);
+      create_abort_handle_ = nullptr;
+    }
+  }
+
+  void OnCreateAbortSignalAborted(ScriptState* script_state) {
+    if (script_state) {
+      destruction_abort_controller_->abort(
+          script_state, create_abort_signal_->reason(script_state));
+    }
+    DestroyImpl();
+  }
+
+  AbortSignal* CreateCompositeSignal(ScriptState* script_state,
+                                     const ExecuteOptions* options) {
+    HeapVector<Member<AbortSignal>> signals;
+
+    signals.push_back(destruction_abort_controller_->signal());
+
+    CHECK(options);
+    if (options->hasSignal()) {
+      signals.push_back(options->signal());
+    }
+
+    return MakeGarbageCollected<AbortSignal>(script_state, signals);
+  }
+
   static bool ValidateAndCanonicalizeOptionLanguages(
       v8::Isolate* isolate,
       CreateCoreOptions* options) {
@@ -463,8 +513,20 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     return true;
   }
 
+  // Abort controller triggered on destroy() or when create abort signal is
+  // executed.
+  Member<AbortController> destruction_abort_controller_;
+
+  // Abort signal passed to CreateOptions.
+  Member<AbortSignal> create_abort_signal_;
+
+  // Handle to hold create_abort_signal_ callback, which is run when aborted.
+  Member<AbortSignal::AlgorithmHandle> create_abort_handle_;
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
   AIMetrics::AISessionType metric_session_type_;
+
   // Whether to echo back the original input if it only contains whitespace.
   // If false, it returns an empty string.
   bool echo_whitespace_input_;
