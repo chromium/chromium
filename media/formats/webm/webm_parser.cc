@@ -1,6 +1,13 @@
 // Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// This file contains code to parse WebM file elements. It was created
+// from information in the Matroska spec.
+// http://www.matroska.org/technical/specs/index.html
+//
+// WebM Container Guidelines is at https://www.webmproject.org/docs/container/
+// WebM Encryption spec is at: https://www.webmproject.org/docs/webm-encryption/
 
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
@@ -9,29 +16,20 @@
 
 #include "media/formats/webm/webm_parser.h"
 
-#include <array>
-
-#include "base/containers/span.h"
-#include "base/memory/raw_span.h"
-
-// This file contains code to parse WebM file elements. It was created
-// from information in the Matroska spec.
-// http://www.matroska.org/technical/specs/index.html
-//
-// WebM Container Guidelines is at https://www.webmproject.org/docs/container/
-// WebM Encryption spec is at: https://www.webmproject.org/docs/webm-encryption/
-
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 #include <iomanip>
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
+#include "base/memory/raw_span.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/formats/webm/webm_constants.h"
 
