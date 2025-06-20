@@ -6,13 +6,11 @@
 #define CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION_CONTEXT_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "content/public/browser/federated_identity_auto_reauthn_permission_context_delegate.h"
 
-namespace content {
-class BrowserContext;
+namespace password_manager {
+class PasswordManagerSettingsService;
 }
 
 namespace permissions {
@@ -23,21 +21,37 @@ namespace url {
 class Origin;
 }
 
+class HostContentSettingsMap;
+
 // Context for storing user permission to use the browser FedCM API's auto
 // sign-in feature.
 class FederatedIdentityAutoReauthnPermissionContext
     : public content::FederatedIdentityAutoReauthnPermissionContextDelegate,
       public KeyedService {
  public:
-  explicit FederatedIdentityAutoReauthnPermissionContext(
-      content::BrowserContext* browser_context);
-
-  ~FederatedIdentityAutoReauthnPermissionContext() override;
+  // DO NOT pass a Profile here. Inject other keyed service dependencies
+  // explicitly and add a corresponding DependsOn() in the factory. See
+  // crbug.com/368297674.
+  // `host_content_settings_map` and `permission_autoblocker` must be non-null
+  // and outlive this service.
+  FederatedIdentityAutoReauthnPermissionContext(
+      HostContentSettingsMap* host_content_settings_map,
+      permissions::PermissionDecisionAutoBlocker* permission_autoblocker);
 
   FederatedIdentityAutoReauthnPermissionContext(
       const FederatedIdentityAutoReauthnPermissionContext&) = delete;
   FederatedIdentityAutoReauthnPermissionContext& operator=(
       const FederatedIdentityAutoReauthnPermissionContext&) = delete;
+
+  ~FederatedIdentityAutoReauthnPermissionContext() override;
+
+  // Initializes cyclic dependency. `settings_service` must be non-null and
+  // can be used until Shutdown().
+  void OnPasswordManagerSettingsServiceInitialized(
+      password_manager::PasswordManagerSettingsService* settings_service);
+
+  // KeyedService:
+  void Shutdown() override;
 
   // content::FederatedIdentityAutoReauthnPermissionContextDelegate:
   bool IsAutoReauthnSettingEnabled() override;
@@ -57,7 +71,9 @@ class FederatedIdentityAutoReauthnPermissionContext
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   const raw_ptr<permissions::PermissionDecisionAutoBlocker, DanglingUntriaged>
       permission_autoblocker_;
-  const raw_ptr<content::BrowserContext> browser_context_;
+
+  raw_ptr<password_manager::PasswordManagerSettingsService>
+      password_manager_settings_service_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION_CONTEXT_H_

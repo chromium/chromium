@@ -16,6 +16,8 @@
 #include "chrome/browser/password_manager/android/password_manager_settings_service_android_impl.h"
 #include "chrome/browser/password_manager/android/password_manager_settings_service_android_migration_impl.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
+#include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context.h"
+#include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context_factory.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
@@ -77,8 +79,13 @@ PasswordManagerSettingsServiceFactory::BuildServiceInstanceForBrowserContext(
             profile->GetPrefs(),
             std::make_unique<
                 password_manager_android_util::PasswordManagerUtilBridge>())) {
-      return std::make_unique<PasswordManagerSettingsServiceAndroidImpl>(
-          profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
+      auto service =
+          std::make_unique<PasswordManagerSettingsServiceAndroidImpl>(
+              profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
+      FederatedIdentityAutoReauthnPermissionContextFactory::GetForProfile(
+          profile)
+          ->OnPasswordManagerSettingsServiceInitialized(service.get());
+      return service;
     }
     return nullptr;
   }
