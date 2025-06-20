@@ -1,23 +1,14 @@
 <!DOCTYPE html>
-<html>
-<title>Canvas.drawElement: green rect with shadow</title>
+<title>Canvas.drawElement: transparent background rect composited (ref)</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="author" href="mailto:schenney@chromium.org">
-<link rel="match" href="shadow-basic-ref.html">
-<meta name=fuzzy content="0-2;0-1990">
 <style>
-#child {
-  width: 100px;
-  height: 100px;
-  background: green;
-}
 #canvas {
   background: grey;
 }
 </style>
 
 <canvas id=canvas width="200" height="200" layoutsubtree>
-  <div id=child></div>
 </canvas>
 
 <script>
@@ -27,10 +18,13 @@ function runTest() {
   context.shadowBlur = 5;
   context.shadowOffsetX = 20;
   context.shadowOffsetY = 10;
-  context.drawElement(child, 20, 30);
+  context.fillStyle = "green";
+  context.fillRect(20, 30, 20, 20);
+  context.fillRect(20, 110, 20, 20);
+  context.fillRect(100, 30, 20, 20);
+  context.fillRect(100, 110, 20, 20);
 }
 
 onload = () => runTest();
 
 </script>
-</html>
