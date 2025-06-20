@@ -196,6 +196,21 @@ features::SoftNavigationHeuristicsMode GetPaintAttributionMode(
   return features::SoftNavigationHeuristicsMode::kBasic;
 }
 
+SoftNavigationHeuristics* GetHeuristicsForNodeIfShouldTrack(const Node& node) {
+  const Document& document = node.GetDocument();
+  if (!document.IsTrackingSoftNavigationHeuristics()) {
+    return nullptr;
+  }
+  if (!node.isConnected()) {
+    return nullptr;
+  }
+  LocalDOMWindow* window = document.domWindow();
+  if (!window) {
+    return nullptr;
+  }
+  return window->GetSoftNavigationHeuristics();
+}
+
 }  // namespace
 
 SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow* window)
@@ -702,6 +717,30 @@ uint64_t SoftNavigationHeuristics::CalculateRequiredPaintArea() const {
     return required_paint_area;
   }
   return kMinRequiredArea;
+}
+
+// static
+void SoftNavigationHeuristics::InsertedNode(Node* inserted_node,
+                                            Node* container_node) {
+  auto* heuristics = GetHeuristicsForNodeIfShouldTrack(*inserted_node);
+  if (!heuristics) {
+    return;
+  }
+  // When a child node, which is an HTML-element, is modified within a parent
+  // (added, moved, etc), mark that child as modified by soft navigation.
+  // Otherwise, if the child is not an HTML-element, mark the parent instead.
+  // TODO(crbug.com/41494072): This does not filter out updates from isolated
+  // worlds. Should it?
+  heuristics->ModifiedDOM(inserted_node->IsHTMLElement() ? inserted_node
+                                                         : container_node);
+}
+
+void SoftNavigationHeuristics::ModifiedNode(Node* node) {
+  auto* heuristics = GetHeuristicsForNodeIfShouldTrack(*node);
+  if (!heuristics) {
+    return;
+  }
+  heuristics->ModifiedDOM(node);
 }
 
 // SoftNavigationHeuristics::EventScope implementation

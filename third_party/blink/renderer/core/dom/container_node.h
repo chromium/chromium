@@ -572,9 +572,6 @@ class CORE_EXPORT ContainerNode : public Node {
   inline bool IsHostIncludingInclusiveAncestorOfThis(const Node&,
                                                      ExceptionState&) const;
 
-  void CheckSoftNavigationHeuristicsTracking(const Document& document,
-                                             Node& inserted_node);
-
   Member<Node> first_child_;
   Member<Node> last_child_;
 };

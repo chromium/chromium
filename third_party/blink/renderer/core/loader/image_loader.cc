@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -665,6 +666,13 @@ void ImageLoader::UpdateFromElement(UpdateFromElementBehavior update_behavior,
     // Here we need to clear delay_until_do_update_from_element to avoid causing
     // a memory leak in case it's already created.
     delay_until_do_update_from_element_ = nullptr;
+  }
+
+  // Soft Navigation tracking needs to know about image changes caused by
+  // attribute changes, e.g. changing an HTMLImageElement's src, so it can
+  // attribute the subsequent paint.
+  if (update_behavior == kUpdateIgnorePreviousError) {
+    SoftNavigationHeuristics::ModifiedNode(element_.Get());
   }
 
   const KURL image_source_kurl = ImageSourceToKURL(image_source_url);

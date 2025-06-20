@@ -80,6 +80,16 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   static SoftNavigationHeuristics* CreateIfNeeded(LocalDOMWindow*);
 
+  // Inform `SoftNavigationHeuristics` that `inserted_node` was inserted into
+  // `container_node`. Sets up paint tracking if the modification is
+  // attributable to a `SoftNavigationContext` and connected to the DOM.
+  static void InsertedNode(Node* inserted_node, Node* container_node);
+
+  // Inform `SoftNavigationHeuristics` that `node` was modified in some way.
+  // Sets up paint tracking if the modification is attributable to a
+  // `SoftNavigationContext` and connected to the DOM.
+  static void ModifiedNode(Node* node);
+
   // GarbageCollected boilerplate.
   void Trace(Visitor*) const override;
 

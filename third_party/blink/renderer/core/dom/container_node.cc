@@ -383,11 +383,11 @@ void ContainerNode::DidInsertNodeVector(
     const NodeVector& post_insertion_notification_targets) {
   Node* unchanged_previous =
       targets.size() > 0 ? targets[0]->previousSibling() : nullptr;
-  const Document& document = GetDocument();
   for (const auto& target_node : targets) {
     ChildrenChanged(ChildrenChange::ForInsertion(
         *target_node, unchanged_previous, next, ChildrenChangeSource::kAPI));
-    CheckSoftNavigationHeuristicsTracking(document, *target_node);
+    SoftNavigationHeuristics::InsertedNode(target_node,
+                                           /*container_node=*/this);
   }
   for (const auto& descendant : post_insertion_notification_targets) {
     if (descendant->isConnected())
@@ -1869,31 +1869,6 @@ void ContainerNode::ReplaceChildren(const VectorOf<Node>& nodes,
   }
 
   AppendChildren(nodes, exception_state);
-}
-
-void ContainerNode::CheckSoftNavigationHeuristicsTracking(
-    const Document& document,
-    Node& inserted_node) {
-  if (!document.IsTrackingSoftNavigationHeuristics()) {
-    return;
-  }
-  if (!inserted_node.isConnected()) {
-    return;
-  }
-  LocalDOMWindow* window = document.domWindow();
-  if (!window) {
-    return;
-  }
-  if (SoftNavigationHeuristics* heuristics =
-          window->GetSoftNavigationHeuristics()) {
-    // When a child node, which is an HTML-element, is modified within a parent
-    // (added, moved, etc), mark that child as modified by soft navigation.
-    // Otherwise, if the child is not an HTML-element, mark the parent instead.
-    // TODO(crbug.com/1521100): This does not filter out updates from isolated
-    // worlds. Should it?
-    Node* updated_node = inserted_node.IsHTMLElement() ? &inserted_node : this;
-    heuristics->ModifiedDOM(updated_node);
-  }
 }
 
 String ContainerNode::getHTML(const GetHTMLOptions* options,
