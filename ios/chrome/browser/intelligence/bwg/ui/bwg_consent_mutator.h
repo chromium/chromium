@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_CONSENT_MUTATOR_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_CONSENT_MUTATOR_H_
 
+#import "url/gurl.h"
+
 // Mutator protocol for the view controller to communicate with the
 // `BWGConsentMediator`.
 @protocol BWGConsentMutator
@@ -19,7 +21,7 @@
 - (void)didCloseBWGPromo;
 
 // Handles tap on learn about your choices.
-- (void)handleLearnAboutYourChoicesTapped;
+- (void)openNewTabWithURL:(const GURL&)URL;
 
 @end
 

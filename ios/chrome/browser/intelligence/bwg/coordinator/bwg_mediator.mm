@@ -23,12 +23,6 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "url/gurl.h"
 
-namespace {
-// TODO(crbug.com/423816346): Change link when clicking on the attributed
-// strings.
-const char kFootnoteLinkURL[] = "https://google.com";
-}  // namespace
-
 @interface BWGMediator ()
 
 // The base view controller to present UI.
@@ -102,10 +96,9 @@ const char kFootnoteLinkURL[] = "https://google.com";
   [_delegate dismissBWGFlow];
 }
 
-// Handles tap on learn about your choices.
-- (void)handleLearnAboutYourChoicesTapped {
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:GURL(kFootnoteLinkURL)];
+// Open a new tab page given a URL.
+- (void)openNewTabWithURL:(const GURL&)URL {
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
   [HandlerForProtocol(_browser->GetCommandDispatcher(), ApplicationCommands)
       openURLInNewTab:command];
 }

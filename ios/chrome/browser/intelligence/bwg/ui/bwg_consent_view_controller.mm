@@ -14,6 +14,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -40,20 +41,38 @@ const CGFloat kInnerStackViewPadding = 12.0;
 // String constants for UI elements.
 NSString* const kBWGConsentFirstBoxTitleText =
     @"Lorem ipsum dolor sit amet, consecte tur adipiscing elit.";
-NSString* const kBWGConsentFirstBoxBodyText =
+NSString* const kBWGConsentFirstBoxBodyTextNonManagedAccount =
     @"Sed do eiusmod tempor incididunt. Sed do eiusmod tempor incididunt. Sed "
     @"do eiusmod tempor incididunt";
-NSString* const kBWGConsentSecondBoxTitleText = @"Lorem ipsum dolor sit amet";
-NSString* const kBWGConsentSecondBoxBodyText =
+NSString* const kBWGConsentFirstBoxBodyTextManagedAccount =
+    @"Sed do eiusmod tempor incididunt. Sed do eiusmod tempor incididunt. Sed "
+    @"do eiusmod tempor incididunt. Do eiusmod tempor incididun.";
+NSString* const kBWGConsentSecondBoxTitleTextNonManagedAccount =
+    @"Lorem ipsum dolor sit amet";
+NSString* const kBWGConsentSecondBoxTitleTextManagedAccount =
+    @"Lorem ipsum dolor sit amet sit amet";
+NSString* const kBWGConsentSecondBoxBodyTextNonManagedAccount =
     @"Lorem ipsum dolor sit amet, consecte tur adipiscing purposes. Sed do "
-    @"eiusmod tempor incididunt ut labore et dolore magna ali. eiusmod tempor ";
-NSString* const kBWGConsentFootnoteText =
+    @"eiusmod tempor incididunt ut labore et dolore magna ali. Eiusmod tempor";
+NSString* const kBWGConsentSecondBoxBodyTextManagedAccount =
+    @"Eiusmod tempor incididunt ut labore et dolore magna ali. eiusmod tempor.";
+NSString* const kBWGConsentFootnoteTextNonManagedAccount =
     @"Google terms dolor sit amet, Apps Privacy Notice tur adipiscing "
     @"purposes.";
+NSString* const kBWGConsentFootnoteTextManagedAccount =
+    @"Your Privacy dolor sit amet.";
 
 // Action identifier on a tap on links in the footnote.
-NSString* const kFootnoteLinkAction = @"footnoteLinkAction";
+NSString* const kFirstFootnoteLinkAction = @"firstFootnoteLinkAction";
+NSString* const kSecondFootnoteLinkAction = @"secondFootnoteLinkAction";
+NSString* const kFootnoteLinkActionManagedAccount =
+    @"footnoteLinkActionManagedAccount";
 
+// TODO(crbug.com/423816346): Change link when clicking on the attributed
+// strings.
+const char kFirstFootnoteLinkURL[] = "https://google.com";
+const char kSecondFootnoteLinkURL[] = "https://youtube.com";
+const char kFootnoteLinkURLManagedAccount[] = "https://gmail.com";
 }  // namespace
 
 @interface BWGConsentViewController () <UITextViewDelegate>
@@ -96,7 +115,8 @@ NSString* const kFootnoteLinkAction = @"footnoteLinkAction";
 
 // Creates an attributed string for the footnote with hyperlinks.
 - (NSAttributedString*)createFootnoteAttributedText {
-  NSString* text = kBWGConsentFootnoteText;
+  NSString* text = _isAccountManaged ? kBWGConsentFootnoteTextManagedAccount
+                                     : kBWGConsentFootnoteTextNonManagedAccount;
 
   NSMutableParagraphStyle* centeredTextStyle =
       [[NSMutableParagraphStyle alloc] init];
@@ -111,15 +131,29 @@ NSString* const kFootnoteLinkAction = @"footnoteLinkAction";
       [[NSMutableAttributedString alloc] initWithString:text
                                              attributes:textAttributes];
 
-  NSDictionary* linkAttributes = @{
-    NSLinkAttributeName : kFootnoteLinkAction,
+  NSDictionary* firstLinkAttributes = @{
+    NSLinkAttributeName : kFirstFootnoteLinkAction,
+  };
+
+  NSDictionary* secondLinkAttributes = @{
+    NSLinkAttributeName : kSecondFootnoteLinkAction,
+  };
+
+  NSDictionary* linkAttributesManagedAccount = @{
+    NSLinkAttributeName : kFootnoteLinkActionManagedAccount,
   };
 
   // TODO(crbug.com/414778685): Add strings.
   NSRange firstLinkRange = [text rangeOfString:@"Google terms"];
-  [attributedText addAttributes:linkAttributes range:firstLinkRange];
+  [attributedText addAttributes:firstLinkAttributes range:firstLinkRange];
+
   NSRange secondLinkRange = [text rangeOfString:@"Apps Privacy Notice"];
-  [attributedText addAttributes:linkAttributes range:secondLinkRange];
+  [attributedText addAttributes:secondLinkAttributes range:secondLinkRange];
+
+  NSRange linkRangeManagedAccount = [text rangeOfString:@"Your Privacy"];
+  [attributedText addAttributes:linkAttributesManagedAccount
+                          range:linkRangeManagedAccount];
+
   return attributedText;
 }
 
@@ -155,15 +189,21 @@ NSString* const kFootnoteLinkAction = @"footnoteLinkAction";
   boxesStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSString* firstTitle = kBWGConsentFirstBoxTitleText;
-  NSString* firstBody = kBWGConsentFirstBoxBodyText;
+  NSString* firstBody = _isAccountManaged
+                            ? kBWGConsentFirstBoxBodyTextManagedAccount
+                            : kBWGConsentFirstBoxBodyTextNonManagedAccount;
   UIView* firstBox =
       [self createHorizontalBoxWithIcon:kInfoIconName
                                 boxView:[self createBoxWithTitle:firstTitle
                                                         bodyText:firstBody]];
   [boxesStackView addArrangedSubview:firstBox];
 
-  NSString* secondTitle = kBWGConsentSecondBoxTitleText;
-  NSString* secondBody = kBWGConsentSecondBoxBodyText;
+  NSString* secondTitle = _isAccountManaged
+                              ? kBWGConsentSecondBoxTitleTextManagedAccount
+                              : kBWGConsentSecondBoxTitleTextNonManagedAccount;
+  NSString* secondBody = _isAccountManaged
+                             ? kBWGConsentSecondBoxBodyTextManagedAccount
+                             : kBWGConsentSecondBoxBodyTextNonManagedAccount;
   UIView* secondBox =
       [self createHorizontalBoxWithIcon:kCounterClockWiseSymbol
                                 boxView:[self createBoxWithTitle:secondTitle
@@ -306,14 +346,29 @@ NSString* const kFootnoteLinkAction = @"footnoteLinkAction";
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
                defaultAction:(UIAction*)defaultAction {
-  if (textItem.link &&
-      [textItem.link.absoluteString isEqualToString:kFootnoteLinkAction]) {
+  if (!textItem.link) {
+    return defaultAction;
+  }
+  if ([textItem.link.absoluteString isEqualToString:kFirstFootnoteLinkAction]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
-      [weakSelf.mutator handleLearnAboutYourChoicesTapped];
+      [weakSelf.mutator openNewTabWithURL:GURL(kFirstFootnoteLinkURL)];
     }];
   }
-
+  if ([textItem.link.absoluteString
+          isEqualToString:kSecondFootnoteLinkAction]) {
+    __weak __typeof(self) weakSelf = self;
+    return [UIAction actionWithHandler:^(UIAction* action) {
+      [weakSelf.mutator openNewTabWithURL:GURL(kSecondFootnoteLinkURL)];
+    }];
+  }
+  if ([textItem.link.absoluteString
+          isEqualToString:kFootnoteLinkActionManagedAccount]) {
+    __weak __typeof(self) weakSelf = self;
+    return [UIAction actionWithHandler:^(UIAction* action) {
+      [weakSelf.mutator openNewTabWithURL:GURL(kFootnoteLinkURLManagedAccount)];
+    }];
+  }
   return defaultAction;
 }
 
