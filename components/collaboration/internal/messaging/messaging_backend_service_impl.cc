@@ -171,8 +171,6 @@ CollaborationEvent ToCollaborationEvent(
       return CollaborationEvent::COLLABORATION_MEMBER_ADDED;
     case collaboration_pb::COLLABORATION_MEMBER_REMOVED:
       return CollaborationEvent::COLLABORATION_MEMBER_REMOVED;
-    case collaboration_pb::VERSION_OUT_OF_DATE:
-      return CollaborationEvent::VERSION_OUT_OF_DATE;
     default:
       return CollaborationEvent::UNDEFINED;
   }
@@ -198,8 +196,6 @@ RecentActivityAction GetRecentActivityActionFromCollaborationEvent(
     case CollaborationEvent::COLLABORATION_MEMBER_ADDED:
     case CollaborationEvent::COLLABORATION_MEMBER_REMOVED:
       return RecentActivityAction::kManageSharing;
-    case CollaborationEvent::VERSION_OUT_OF_DATE:
-      return RecentActivityAction::kNone;
     case CollaborationEvent::UNDEFINED:
       return RecentActivityAction::kNone;
   }
@@ -1321,7 +1317,6 @@ int GetTitleStringRes(CollaborationEvent collaboration_event,
     case CollaborationEvent::TAB_GROUP_REMOVED:
     case CollaborationEvent::COLLABORATION_ADDED:
     case CollaborationEvent::COLLABORATION_REMOVED:
-    case CollaborationEvent::VERSION_OUT_OF_DATE:
     case CollaborationEvent::UNDEFINED:
       CHECK(false) << "No string res for collaboration event "
                    << static_cast<size_t>(collaboration_event);

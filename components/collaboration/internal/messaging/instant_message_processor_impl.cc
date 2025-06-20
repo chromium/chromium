@@ -53,7 +53,6 @@ bool ShouldAggregate(const InstantMessage& message) {
   switch (message.collaboration_event) {
     case CollaborationEvent::TAB_UPDATED:
     case CollaborationEvent::TAB_REMOVED:
-    case CollaborationEvent::VERSION_OUT_OF_DATE:
       return false;
     case CollaborationEvent::TAB_GROUP_REMOVED:
     case CollaborationEvent::COLLABORATION_MEMBER_ADDED:

@@ -83,7 +83,6 @@ RecentActivityAction GetRecentActivityActionFromCollaborationEvent(
     case CollaborationEvent::COLLABORATION_MEMBER_ADDED:
     case CollaborationEvent::COLLABORATION_MEMBER_REMOVED:
       return RecentActivityAction::kManageSharing;
-    case CollaborationEvent::VERSION_OUT_OF_DATE:
     case CollaborationEvent::UNDEFINED:
       return RecentActivityAction::kNone;
   }

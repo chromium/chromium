@@ -41,9 +41,6 @@ enum class CollaborationEvent {
   // Deprecated: Migrated to TAB_GROUP_REMOVED instead. Current user left or
   // lost access.
   COLLABORATION_REMOVED,
-
-  // Source: Finch.
-  VERSION_OUT_OF_DATE,
 };
 
 // Different types of instant notifications that need to be shown immediately

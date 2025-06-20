@@ -107,7 +107,6 @@ std::optional<data_sharing::GroupMember> GetRelevantUserForActivity(
     case CollaborationEvent::TAB_GROUP_REMOVED:
     case CollaborationEvent::COLLABORATION_ADDED:
     case CollaborationEvent::COLLABORATION_REMOVED:
-    case CollaborationEvent::VERSION_OUT_OF_DATE:
     case CollaborationEvent::UNDEFINED:
       NOTREACHED();
   }

@@ -274,10 +274,6 @@ std::optional<ToastParams> InstantMessageQueueProcessor::GetParamsForMessage(
       params.body_string_override = queued_message.message.localized_message;
       return params;
     }
-    case CollaborationEvent::VERSION_OUT_OF_DATE: {
-      // TODO(crbug.com/420680426): Implement version UI.
-      return std::nullopt;
-    }
     default:
       return std::nullopt;
   }
