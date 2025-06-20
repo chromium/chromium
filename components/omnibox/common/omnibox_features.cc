@@ -335,6 +335,12 @@ BASE_FEATURE(kOmniboxShortcutsAndroid, "OmniboxShortcutsAndroid", ENABLED);
 // Android and iOS.
 BASE_FEATURE(kOmniboxMobileParityUpdate, "OmniboxMobileParityUpdate", DISABLED);
 
+// Updates various NTP/Omnibox assets and descriptions for visual alignment on
+// Android and iOS, V2.
+BASE_FEATURE(kOmniboxMobileParityUpdateV2,
+             "OmniboxMobileParityUpdateV2",
+             DISABLED);
+
 // The features below allow tuning number of suggestions offered to users in
 // specific contexts. These features are default enabled and are used to control
 // related fieldtrial parameters.
@@ -411,7 +417,8 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kJumpStartOmnibox,
       &kAndroidHubSearchTabGroups,
       &kPostDelayedTaskFocusTab,
-      &kOmniboxMobileParityUpdate};
+      &kOmniboxMobileParityUpdate,
+      &kOmniboxMobileParityUpdateV2};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<jlong>(kFeatureMap.get());

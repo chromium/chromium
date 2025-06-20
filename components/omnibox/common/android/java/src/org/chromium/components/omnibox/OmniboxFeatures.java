@@ -116,6 +116,11 @@ public class OmniboxFeatures {
     public static final CachedFlag sOmniboxMobileParityUpdate =
             newFlag(OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE, FeatureState.ENABLED_IN_TEST);
 
+    public static final CachedFlag sOmniboxMobileParityUpdateV2 =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2,
+                    FeatureState.ENABLED_IN_TEST);
+
     public static final BooleanCachedFeatureParam sOmniboxParityRetrieveTrueFavicon =
             newBooleanParam(sOmniboxMobileParityUpdate, "retrieve_true_favicon", false);
 

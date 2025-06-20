@@ -16810,6 +16810,7 @@ from previous Chrome versions.
   <int value="1072517479" label="ImprovedCookieControls:enabled"/>
   <int value="1073143086" label="TopControlsRefactor:disabled"/>
   <int value="1073699828" label="ScrollUpdateOptimizations:enabled"/>
+  <int value="1074310931" label="OmniboxMobileParityUpdateV2:disabled"/>
   <int value="1074359194" label="UseSuggestionsEvenIfFew:enabled"/>
   <int value="1074427701" label="NewPrintPreviewLayout:enabled"/>
   <int value="1075191614" label="LauncherSystemInfoAnswerCards:disabled"/>
@@ -18648,6 +18649,7 @@ from previous Chrome versions.
   <int value="1736698988" label="FsNosymfollow:disabled"/>
   <int value="1737406099" label="TrustSafetySentimentSurvey:disabled"/>
   <int value="1738520473" label="SystemTrayMicGainSetting:disabled"/>
+  <int value="1739253215" label="OmniboxMobileParityUpdateV2:enabled"/>
   <int value="1739456903" label="PWAFullCodeCache:enabled"/>
   <int value="1739507233" label="EarlyEstablishGpuChannel:enabled"/>
   <int value="1739782037" label="LinkDoctorDeprecationAndroid:enabled"/>
