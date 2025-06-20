@@ -75,6 +75,10 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
                   initWithReauthModule:stub_reauth_module_
             applicationCommandsHandler:application_commands_handler_mock_]) {
     scene_state_.controller = scene_controller_;
+    // Set UIEnabled here as this would trigger a callback in the agent, and we
+    // usually test the behavior when foregrounding. When testing the UIEnabled
+    // callback, we first set it to NO.
+    scene_state_.UIEnabled = YES;
     scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
     [scene_state_ addAgent:agent_];
   }
@@ -231,34 +235,34 @@ TEST_F(IncognitoReauthSceneAgentTest, FailedSkippedAuth) {
   EXPECT_TRUE(agent_.authenticationRequired);
 }
 
-// Test that when the feature is enabled, auth isn't required if we foreground
+// Test that when the feature is enabled, auth is required if we foreground
 // without any incognito tabs.
-TEST_F(IncognitoReauthSceneAgentTest, AuthNotRequiredWhenNoIncognitoTabs) {
+TEST_F(IncognitoReauthSceneAgentTest, AuthRequiredWhenNoIncognitoTabs) {
   SetUpTestObjects(/*tab_count=*/0, /*enable_pref=*/true);
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-  EXPECT_FALSE(agent_.authenticationRequired);
+  EXPECT_TRUE(agent_.authenticationRequired);
 }
 
 // Test that when the feature is enabled, we're foregrounded with some incognito
-// content already present, auth is required
+// content already present, auth is required.
 TEST_F(IncognitoReauthSceneAgentTest,
-       AuthNotRequiredWhenNoIncognitoTabsOnForeground) {
+       AuthRequiredWhenNoIncognitoTabsOnForeground) {
   SetUpTestObjects(/*tab_count=*/0, /*enable_pref=*/true);
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-  EXPECT_FALSE(agent_.authenticationRequired);
+  EXPECT_TRUE(agent_.authenticationRequired);
 
   // Open another tab.
   test_browser_->GetWebStateList()->InsertWebState(
       std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionParams::AtIndex(0));
 
-  EXPECT_FALSE(agent_.authenticationRequired);
+  EXPECT_TRUE(agent_.authenticationRequired);
 }
 
 #pragma mark - Soft Lock tests
@@ -490,7 +494,6 @@ TEST_F(IncognitoReauthSceneAgentTest, TestScreenTransitionOnForeground) {
   // Satisfy transition conditions.
   OCMStub([scene_controller_mock_ isTabGridVisible]).andReturn(NO);
   scene_state_.incognitoContentVisible = YES;
-  scene_state_.UIEnabled = YES;
 
   OCMExpect([application_commands_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
@@ -529,7 +532,6 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnNoLock) {
 
   // Satisfy transition conditions.
   OCMStub([scene_controller_mock_ isTabGridVisible]).andReturn(NO);
-  scene_state_.UIEnabled = YES;
   scene_state_.incognitoContentVisible = YES;
 
   // Go foreground.
@@ -566,7 +568,6 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnNormalInterface) {
 
   // Satisfy transition conditions.
   OCMStub([scene_controller_mock_ isTabGridVisible]).andReturn(NO);
-  scene_state_.UIEnabled = YES;
   scene_state_.incognitoContentVisible = NO;
 
   // Go foreground.
@@ -584,7 +585,6 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnTabGrid) {
 
   // Satisfy transition conditions.
   OCMStub([scene_controller_mock_ isTabGridVisible]).andReturn(YES);
-  scene_state_.UIEnabled = YES;
   scene_state_.incognitoContentVisible = YES;
 
   // Go foreground.
@@ -602,7 +602,6 @@ TEST_F(IncognitoReauthSceneAgentTest, TestScreenTransitionToTab) {
   OCMExpect([application_commands_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
   scene_state_.incognitoContentVisible = YES;
-  scene_state_.UIEnabled = YES;
 
   // Go to foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -628,7 +627,6 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionToTab) {
   OCMReject([application_commands_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
   scene_state_.incognitoContentVisible = YES;
-  scene_state_.UIEnabled = YES;
 
   // Go to foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;

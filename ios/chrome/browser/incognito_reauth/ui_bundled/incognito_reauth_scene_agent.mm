@@ -116,12 +116,12 @@
 }
 
 - (IncognitoLockState)incognitoLockState {
-  if (self.windowHadIncognitoContentWhenBackgrounded &&
-      !self.authenticatedSinceLastForeground) {
+  if (!self.authenticatedSinceLastForeground) {
     if ([self isReauthFeatureEnabled]) {
       return IncognitoLockState::kReauth;
     } else if ([self isSoftLockFeatureEnabled] &&
-               self.backgroundedForEnoughTime) {
+               self.backgroundedForEnoughTime &&
+               self.windowHadIncognitoContentWhenBackgrounded) {
       return IncognitoLockState::kSoftLock;
     }
   }
@@ -483,7 +483,8 @@
             ->count() > 0;
     // If there is no tabs, act as if the user authenticated since last
     // foreground to avoid issue with multiwindows.
-    if (!hasIncognitoContent) {
+    if (!hasIncognitoContent &&
+        self.incognitoLockState != IncognitoLockState::kReauth) {
       self.authenticatedSinceLastForeground = YES;
     }
   }
