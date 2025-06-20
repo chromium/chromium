@@ -211,6 +211,14 @@ export class SettingsClearBrowsingDataTimePicker extends
     }
   }
 
+  private onMenuTimePeriodSelected_(event: DomRepeatEvent<TimePeriodOption>) {
+    this.onTimePeriodSelected_(event);
+    const actionMenu = this.shadowRoot!.querySelector('cr-action-menu');
+    if (actionMenu) {
+      actionMenu.close();
+    }
+  }
+
   private onMoreTimePeriodsButtonClick_(e: Event) {
     const target = e.currentTarget as HTMLElement;
 
