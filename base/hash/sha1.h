@@ -6,6 +6,7 @@
 #define BASE_HASH_SHA1_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <array>
 #include <string>
@@ -15,13 +16,13 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
-#if BUILDFLAG(IS_NACL)
-#include "base/hash/sha1_nacl.h"
-#else
-#include "base/hash/sha1_boringssl.h"
-#endif
+#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace base {
+
+// Used for storing intermediate data during an SHA1 computation. Callers
+// should not access the data.
+using SHA1Context = SHA_CTX;
 
 enum { kSHA1Length = 20 };  // Length in bytes of a SHA-1 hash.
 

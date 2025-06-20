@@ -6,7 +6,6 @@
 
 #include "ash/test/ash_test_util.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
-#include "base/hash/md5_boringssl.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "build/branding_buildflags.h"

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/hash/sha1_boringssl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(SHA1Test, Test1) {

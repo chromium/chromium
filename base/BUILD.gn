@@ -1530,12 +1530,10 @@ component("base") {
   }
 
   sources += [
+    "hash/md5.cc",
     "hash/md5.h",
-    "hash/md5_boringssl.cc",
-    "hash/md5_boringssl.h",
+    "hash/sha1.cc",
     "hash/sha1.h",
-    "hash/sha1_boringssl.cc",
-    "hash/sha1_boringssl.h",
   ]
   public_deps += [ "//third_party/boringssl" ]
 

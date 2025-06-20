@@ -12,7 +12,6 @@
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
-#include "base/hash/md5_boringssl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

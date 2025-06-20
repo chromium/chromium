@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/hash/md5_boringssl.h"
+#include "base/hash/md5.h"
 
 #include <cstdint>
 #include <string>

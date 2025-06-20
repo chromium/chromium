@@ -5,18 +5,16 @@
 #ifndef BASE_HASH_MD5_H_
 #define BASE_HASH_MD5_H_
 
+#include <stdint.h>
+
+#include <array>
 #include <string>
 #include <string_view>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(IS_NACL)
-#include "base/hash/md5_nacl.h"
-#else
-#include "base/hash/md5_boringssl.h"
-#endif
+#include "third_party/boringssl/src/include/openssl/md5.h"
 
 // MD5 stands for Message Digest algorithm 5.
 //
@@ -50,6 +48,15 @@
 // You can call MD5DigestToBase16() to generate a string of the digest.
 
 namespace base {
+
+// The output of an MD5 operation.
+struct MD5Digest {
+  std::array<uint8_t, MD5_DIGEST_LENGTH> a;
+};
+
+// Used for storing intermediate data during an MD5 computation. Callers
+// should not access the data.
+using MD5Context = MD5_CTX;
 
 // Initializes the given MD5 context structure for subsequent calls to
 // MD5Update().

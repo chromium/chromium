@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/hash/sha1_boringssl.h"
+#include "base/hash/sha1.h"
 
 #include <stdint.h>
 
