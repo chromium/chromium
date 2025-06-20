@@ -93,7 +93,7 @@ int CSSMathFunctionValue::ComputeInteger(
   // percentages.
   DCHECK_EQ(kCalcNumber, expression_->Category());
   DCHECK(!expression_->HasPercentage());
-  return ClampTo<int>(
+  return ClampToWithNaNTo0<int>(
       ClampToPermittedRange(expression_->ComputeNumber(length_resolver)));
 }
 
