@@ -190,7 +190,7 @@ std::string GraphBuilderOrt::GetOperandNameById(OperandId operand_id) const {
                         operand_id);
 }
 
-std::string GraphBuilderOrt::GenerateOperationName(std::string_view label) {
+std::string GraphBuilderOrt::GenerateNodeName(std::string_view label) {
   return base::JoinString({label, base::NumberToString(next_operation_id_++)},
                           kUnderscore);
 }
@@ -234,7 +234,7 @@ std::string GraphBuilderOrt::CreateScalarInitializer(const DataType& value) {
 template <typename T>
 void GraphBuilderOrt::AddBinaryOperation(const T& operation,
                                          base::cstring_view op_type) {
-  const std::string node = GenerateOperationName(operation.label);
+  const std::string node_name = GenerateNodeName(operation.label);
   const std::string lhs = GetOperandNameById(operation.lhs_operand_id);
   const std::string rhs = GetOperandNameById(operation.rhs_operand_id);
   const std::string output = GetOperandNameById(operation.output_operand_id);
@@ -242,24 +242,24 @@ void GraphBuilderOrt::AddBinaryOperation(const T& operation,
   std::array<const char*, 2> inputs = {lhs.c_str(), rhs.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(op_type, node, inputs, outputs);
+  model_editor_.AddNode(op_type, node_name, inputs, outputs);
 }
 
 template <typename T>
 void GraphBuilderOrt::AddUnaryOperation(const T& operation,
                                         base::cstring_view op_type) {
-  const std::string node = GenerateOperationName(operation.label);
+  const std::string node_name = GenerateNodeName(operation.label);
   const std::string input = GetOperandNameById(operation.input_operand_id);
   const std::string output = GetOperandNameById(operation.output_operand_id);
 
   std::array<const char*, 1> inputs = {input.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(op_type, node, inputs, outputs);
+  model_editor_.AddNode(op_type, node_name, inputs, outputs);
 }
 
 void GraphBuilderOrt::AddCastOperation(const mojom::ElementWiseUnary& cast) {
-  const std::string node = GenerateOperationName(cast.label);
+  const std::string node_name = GenerateNodeName(cast.label);
   const std::string input = GetOperandNameById(cast.input_operand_id);
   const std::string output = GetOperandNameById(cast.output_operand_id);
 
@@ -274,11 +274,11 @@ void GraphBuilderOrt::AddCastOperation(const mojom::ElementWiseUnary& cast) {
   std::array<ScopedOrtOpAttr, 1> attributes = {
       model_editor_.CreateAttribute(kAttrTo, attr_to_data)};
 
-  model_editor_.AddNode(kOpTypeCast, node, inputs, outputs, attributes);
+  model_editor_.AddNode(kOpTypeCast, node_name, inputs, outputs, attributes);
 }
 
 void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
-  const std::string node_name = GenerateOperationName(conv2d.label);
+  const std::string node_name = GenerateNodeName(conv2d.label);
   const std::string input = GetOperandNameById(conv2d.input_operand_id);
   const std::string filter = GetOperandNameById(conv2d.filter_operand_id);
   const std::string output = GetOperandNameById(conv2d.output_operand_id);
@@ -506,7 +506,7 @@ void GraphBuilderOrt::AddElementWiseUnaryOperation(
 }
 
 void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
-  const std::string node = GenerateOperationName(clamp.label);
+  const std::string node_name = GenerateNodeName(clamp.label);
   const std::string input = GetOperandNameById(clamp.input_operand_id);
   const std::string output = GetOperandNameById(clamp.output_operand_id);
 
@@ -582,11 +582,11 @@ void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
   std::array<const char*, 3> inputs = {input.c_str(), min.c_str(), max.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeClamp, node, inputs, outputs);
+  model_editor_.AddNode(kOpTypeClamp, node_name, inputs, outputs);
 }
 
 void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
-  const std::string node = GenerateOperationName(gemm.label);
+  const std::string node_name = GenerateNodeName(gemm.label);
   const std::string input_a = GetOperandNameById(gemm.a_operand_id);
   const std::string input_b = GetOperandNameById(gemm.b_operand_id);
   const std::string output = GetOperandNameById(gemm.output_operand_id);
@@ -625,7 +625,7 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
       model_editor_.CreateAttribute(kAttrTransB,
                                     static_cast<int64_t>(gemm.b_transpose))};
 
-  model_editor_.AddNode(kOpTypeGemm, node, inputs, outputs, attributes);
+  model_editor_.AddNode(kOpTypeGemm, node_name, inputs, outputs, attributes);
 }
 
 void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
@@ -704,17 +704,17 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
     }
   }
 
-  const std::string node = GenerateOperationName(pool2d.label);
+  const std::string node_name = GenerateNodeName(pool2d.label);
   const std::string input = GetOperandNameById(pool2d.input_operand_id);
   const std::string output = GetOperandNameById(pool2d.output_operand_id);
   std::array<const char*, 1> inputs = {input.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(op_type, node, inputs, outputs, attributes);
+  model_editor_.AddNode(op_type, node_name, inputs, outputs, attributes);
 }
 
 void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
-  const std::string node = GenerateOperationName(reshape.label);
+  const std::string node_name = GenerateNodeName(reshape.label);
   const std::string input = GetOperandNameById(reshape.input_operand_id);
   const std::string output = GetOperandNameById(reshape.output_operand_id);
 
@@ -734,11 +734,11 @@ void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   std::array<const char*, 2> inputs = {input.c_str(), new_shape.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
-  model_editor_.AddNode(kOpTypeReshape, node, inputs, outputs);
+  model_editor_.AddNode(kOpTypeReshape, node_name, inputs, outputs);
 }
 
 void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
-  const std::string node = GenerateOperationName(softmax.label);
+  const std::string node_name = GenerateNodeName(softmax.label);
   const std::string input = GetOperandNameById(softmax.input_operand_id);
   const std::string output = GetOperandNameById(softmax.output_operand_id);
 
@@ -752,11 +752,11 @@ void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
   std::array<ScopedOrtOpAttr, 1> attributes = {model_editor_.CreateAttribute(
       kAttrAxis, static_cast<int64_t>(softmax.axis))};
 
-  model_editor_.AddNode(kOpTypeSoftmax, node, inputs, outputs, attributes);
+  model_editor_.AddNode(kOpTypeSoftmax, node_name, inputs, outputs, attributes);
 }
 
 void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
-  const std::string node = GenerateOperationName(transpose.label);
+  const std::string node_name = GenerateNodeName(transpose.label);
   const std::string input = GetOperandNameById(transpose.input_operand_id);
   const std::string output = GetOperandNameById(transpose.output_operand_id);
 
@@ -772,7 +772,8 @@ void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
   std::array<ScopedOrtOpAttr, 1> attributes = {
       model_editor_.CreateAttribute(kAttrPerm, perm_value)};
 
-  model_editor_.AddNode(kOpTypeTranspose, node, inputs, outputs, attributes);
+  model_editor_.AddNode(kOpTypeTranspose, node_name, inputs, outputs,
+                        attributes);
 }
 
 [[nodiscard]] base::expected<std::unique_ptr<ModelEditor::ModelInfo>,

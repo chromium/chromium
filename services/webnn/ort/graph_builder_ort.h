@@ -89,10 +89,9 @@ class GraphBuilderOrt {
   // "inserted" and `next_operand_id_`, and then increase `next_operand_id_`.
   std::string GenerateOperandName();
 
-  // Generate a unique name for a newly created operation by combining
-  // `label` and `next_operation_id_`. ORT model doesn't allow duplicate
-  // names.
-  std::string GenerateOperationName(std::string_view label);
+  // Generate a unique name for a newly created node by combining `label` and
+  // `next_operation_id_`. ORT model doesn't allow duplicate names.
+  std::string GenerateNodeName(std::string_view label);
 
   // Create a new initializer for the graph with the given shape and data,
   // returning the name of the initializer.
