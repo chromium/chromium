@@ -197,6 +197,15 @@ message AutofillAiKeyMetrics {
 
   // The registered domain of the page that the form is on.
   string domain = 7 [features = { field_presence: IMPLICIT }];
+
+  // The number of fields that were filled by Autofill at form submission. This
+  // will include fields that are autofilled by any source except Autocomplete,
+  // including AutofillAi.
+  int32 autofill_filled_field_count = 8 [features = { field_presence: IMPLICIT }];
+
+  // The number of fields that were filled by Autofill AI at form submission
+  // specifically, all fields autofilled by other sources will be excluded.
+  int32 autofill_ai_filled_field_count = 9 [features = { field_presence: IMPLICIT }];
 }
 
 enum AutofillAiFieldEventType {

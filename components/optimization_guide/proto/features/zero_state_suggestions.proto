@@ -31,7 +31,7 @@ message ZeroStateSuggestionsLoggingData {
   ModelExecutionInfo model_execution_info = 3 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 5
+// Next ID: 6
 message ZeroStateSuggestionsRequest {
   oneof request {
     // The context of the page to generate suggestions for. This is used when
@@ -48,6 +48,13 @@ message ZeroStateSuggestionsRequest {
 
   // The tools that are supported by Glic for this client.
   repeated string supported_tools = 4;
+
+  // The locale to associate with this request.
+  //
+  // It is the IETF language tag, defined in BCP 47. The region subtag is not
+  // included when it adds no distinguishing information to the language tag
+  // (e.g. both "en-US" and "fr" are correct here).
+  string locale = 5 [features = { field_presence: EXPLICIT }];
 }
 
 message ZeroStatePageContextList {
