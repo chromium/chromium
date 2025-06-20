@@ -13,6 +13,7 @@ import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.R;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.ui.BatchUploadDialogCoordinator;
+import org.chromium.chrome.browser.sync.ui.batch_upload_card.BatchUploadCardCoordinator.EntryPoint;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -60,9 +62,10 @@ class BatchUploadCardMediator
     private final Profile mProfile;
     private final PropertyModel mModel;
     private final ModalDialogManager mDialogManager;
-    private final SnackbarManager mSnackbarManager;
+    private final OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private final ReauthenticatorBridge mReauthenticatorBridge;
     private final Runnable mBatchUploadCardChangeAction;
+    private final @EntryPoint int mEntryPoint;
 
     private final @Nullable SyncService mSyncService;
     private @MonotonicNonNull HashMap<Integer, LocalDataDescription> mLocalDataDescriptionsMap;
@@ -84,13 +87,15 @@ class BatchUploadCardMediator
             ModalDialogManager modalDialogManager,
             Profile profile,
             PropertyModel model,
-            SnackbarManager snackbarManager,
-            Runnable batchUploadCardChangeAction) {
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier,
+            Runnable batchUploadCardChangeAction,
+            @EntryPoint int entryPoint) {
         mContext = activity;
         mProfile = profile;
         mModel = model;
-        mSnackbarManager = snackbarManager;
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
         mBatchUploadCardChangeAction = batchUploadCardChangeAction;
+        mEntryPoint = entryPoint;
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
         if (mSyncService != null) {
             mSyncService.addSyncStateChangedListener(this);
@@ -98,7 +103,11 @@ class BatchUploadCardMediator
 
         mReauthenticatorBridge =
                 ReauthenticatorBridge.create(
-                        activity, mProfile, DeviceAuthSource.BOOKMARK_BATCH_UPLOAD);
+                        activity,
+                        mProfile,
+                        entryPoint == EntryPoint.BOOKMARK_MANAGER
+                                ? DeviceAuthSource.BOOKMARK_BATCH_UPLOAD
+                                : DeviceAuthSource.SETTINGS_BATCH_UPLOAD);
         mDialogManager = modalDialogManager;
 
         lifecycleOwner.getLifecycle().addObserver(mLifeCycleObserver);
@@ -168,13 +177,17 @@ class BatchUploadCardMediator
                                 R.plurals.batch_upload_saved_snackbar_message,
                                 itemsCount,
                                 coreAccountInfo.getEmail());
-        mSnackbarManager.showSnackbar(
-                Snackbar.make(
-                                snackbarMessage,
-                                /* controller= */ null,
-                                Snackbar.TYPE_ACTION,
-                                Snackbar.UMA_BOOKMARK_BATCH_UPLOAD)
-                        .setSingleLine(false));
+        mSnackbarManagerSupplier
+                .get()
+                .showSnackbar(
+                        Snackbar.make(
+                                        snackbarMessage,
+                                        /* controller= */ null,
+                                        Snackbar.TYPE_ACTION,
+                                        mEntryPoint == EntryPoint.BOOKMARK_MANAGER
+                                                ? Snackbar.UMA_BOOKMARK_BATCH_UPLOAD
+                                                : Snackbar.UMA_SETTINGS_BATCH_UPLOAD)
+                                .setSingleLine(false));
         immediatelyHideBatchUploadCardAndUpdateItsVisibility();
     }
 
@@ -182,8 +195,7 @@ class BatchUploadCardMediator
         // Calling getLocalDataDescriptions() API when sync is in configuring state should be
         // avoided. Since it will return an empty map, which could be inconsistent with the actual
         // local data. Also updateBatchUploadCard() will be triggered again after the state changes
-        // from
-        // CONFIGURING to ACTIVE.
+        // from CONFIGURING to ACTIVE.
         if (mSyncService == null
                 || mSyncService.getTransportState() == TransportState.CONFIGURING) {
             return;
@@ -196,9 +208,14 @@ class BatchUploadCardMediator
                         : Set.of(DataType.BOOKMARKS, DataType.READING_LIST, DataType.PASSWORDS),
                 localDataDescriptionsMap -> {
                     mLocalDataDescriptionsMap = localDataDescriptionsMap;
-                    // There should be at lease one bookmark or reading list item to show the batch
-                    // upload card.
-                    mShouldBeVisible = countItemsNotOfType(DataType.PASSWORDS) > 0;
+                    // EntryPoint.BOOKMARK_MANAGER: There should be at least one bookmark or reading
+                    // list item to show the batch upload card.
+                    mShouldBeVisible =
+                            countItemsNotOfType(
+                                            mEntryPoint == EntryPoint.BOOKMARK_MANAGER
+                                                    ? DataType.PASSWORDS
+                                                    : DataType.UNSPECIFIED)
+                                    > 0;
                     if (mShouldBeVisible) {
                         setupBatchUploadCardPropertyModel();
                     }
@@ -224,8 +241,7 @@ class BatchUploadCardMediator
         assumeNonNull(identityManager);
         CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         // setupBatchUploadCardView() is called asynchronously through updateBatchUploadCard(), so
-        // it could be
-        // called while there is no primary account.
+        // it could be called while there is no primary account.
         if (accountInfo == null) {
             return;
         }
@@ -238,41 +254,52 @@ class BatchUploadCardMediator
                             mContext, mLocalDataDescriptionsMap, mDialogManager, this);
                 });
 
-        int localBookmarksCount = 0;
-        LocalDataDescription bookmarksLocalDataDescription =
-                mLocalDataDescriptionsMap.get(DataType.BOOKMARKS);
-        if (bookmarksLocalDataDescription != null) {
-            localBookmarksCount = bookmarksLocalDataDescription.itemCount();
+        int entryPointDataType =
+                mEntryPoint == EntryPoint.BOOKMARK_MANAGER
+                        ? DataType.BOOKMARKS
+                        : DataType.PASSWORDS;
+
+        int localDataTypeItemsCount = 0;
+        LocalDataDescription dataTypeLocalDataDescription =
+                mLocalDataDescriptionsMap.get(entryPointDataType);
+        if (dataTypeLocalDataDescription != null) {
+            localDataTypeItemsCount = dataTypeLocalDataDescription.itemCount();
         }
 
-        int localItemsCountExcludingBookmarks = countItemsNotOfType(DataType.BOOKMARKS);
+        int localItemsCountExcludingEntryPointDataType = countItemsNotOfType(entryPointDataType);
 
-        if (localItemsCountExcludingBookmarks == 0) {
+        if (localItemsCountExcludingEntryPointDataType == 0) {
             mModel.set(
                     BatchUploadCardProperties.DESCRIPTION_TEXT,
                     mContext.getResources()
                             .getQuantityString(
-                                    R.plurals.batch_upload_card_description_bookmark,
-                                    localBookmarksCount,
-                                    localBookmarksCount,
+                                    mEntryPoint == EntryPoint.BOOKMARK_MANAGER
+                                            ? R.plurals.batch_upload_card_description_bookmark
+                                            : R.plurals.batch_upload_card_description_password,
+                                    localDataTypeItemsCount,
+                                    localDataTypeItemsCount,
                                     accountInfo.getEmail()));
-        } else if (localBookmarksCount == 0) {
+        } else if (localDataTypeItemsCount == 0) {
             mModel.set(
                     BatchUploadCardProperties.DESCRIPTION_TEXT,
                     mContext.getResources()
                             .getQuantityString(
                                     R.plurals.batch_upload_card_description_other,
-                                    localItemsCountExcludingBookmarks,
-                                    localItemsCountExcludingBookmarks,
+                                    localItemsCountExcludingEntryPointDataType,
+                                    localItemsCountExcludingEntryPointDataType,
                                     accountInfo.getEmail()));
         } else {
             mModel.set(
                     BatchUploadCardProperties.DESCRIPTION_TEXT,
                     mContext.getResources()
                             .getQuantityString(
-                                    R.plurals.batch_upload_card_description_bookmark_and_other,
-                                    localBookmarksCount,
-                                    localBookmarksCount,
+                                    mEntryPoint == EntryPoint.BOOKMARK_MANAGER
+                                            ? R.plurals
+                                                    .batch_upload_card_description_bookmark_and_other
+                                            : R.plurals
+                                                    .batch_upload_card_description_password_and_other,
+                                    localDataTypeItemsCount,
+                                    localDataTypeItemsCount,
                                     accountInfo.getEmail()));
         }
     }

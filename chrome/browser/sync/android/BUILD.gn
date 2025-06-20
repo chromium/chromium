@@ -31,6 +31,7 @@ android_library("ui_java") {
   ]
   deps = [
     "//base:callback_java",
+    "//base:supplier_java",
     "//base:tasks_java",
     "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/profiles/android:java",
@@ -59,6 +60,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:callback_java",
+    "//base:supplier_java",
     "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",

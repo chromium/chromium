@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.sync.ui.batch_upload_card;
 import android.app.Activity;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.lifecycle.LifecycleOwner;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -19,6 +21,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 @NullMarked
 public class BatchUploadCardCoordinator {
     private final BatchUploadCardMediator mMediator;
@@ -26,13 +31,21 @@ public class BatchUploadCardCoordinator {
 
     private @Nullable PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
+    @IntDef({EntryPoint.SETTINGS, EntryPoint.BOOKMARK_MANAGER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface EntryPoint {
+        int SETTINGS = 0;
+        int BOOKMARK_MANAGER = 1;
+    }
+
     public BatchUploadCardCoordinator(
             Activity activity,
             LifecycleOwner lifecycleOwner,
             ModalDialogManager modalDialogManager,
             Profile profile,
-            SnackbarManager snackbarManager,
-            Runnable batchUploadCardChangeAction) {
+            OneshotSupplier<SnackbarManager> snackbarManagerSupplier,
+            Runnable batchUploadCardChangeAction,
+            @EntryPoint int entryPoint) {
 
         mModel =
                 new PropertyModel.Builder(BatchUploadCardProperties.ALL_KEYS)
@@ -54,8 +67,9 @@ public class BatchUploadCardCoordinator {
                         modalDialogManager,
                         profile,
                         mModel,
-                        snackbarManager,
-                        batchUploadCardChangeAction);
+                        snackbarManagerSupplier,
+                        batchUploadCardChangeAction,
+                        entryPoint);
     }
 
     public void destroy() {

@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.ui.batch_upload_card.BatchUploadCardCoordinator.EntryPoint;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
@@ -56,7 +58,7 @@ public class BatchUploadCardMediatorTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Profile mProfile;
     @Mock private PropertyModel mModel;
-    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private OneshotSupplierImpl<SnackbarManager> mSnackbarManager;
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
     @Mock private SyncService mSyncService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
@@ -76,7 +78,7 @@ public class BatchUploadCardMediatorTest {
     }
 
     @Test
-    public void testBatchUploadCardDoesNotPresentWhenLocalBookmarksExist() {
+    public void testBookmarkBatchUploadCardDoesNotPresentWhenNoLocalDataExist() {
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -110,13 +112,55 @@ public class BatchUploadCardMediatorTest {
                                             mProfile,
                                             mModel,
                                             mSnackbarManager,
-                                            () -> {});
+                                            () -> {},
+                                            EntryPoint.BOOKMARK_MANAGER);
                         });
         Assert.assertFalse(mMediator.shouldBeVisible());
     }
 
     @Test
-    public void testBatchUploadCardPresentWhenLocalBookmarksExist() {
+    public void testBookmarkBatchUploadCardDoesNotPresentWhenOnlyLocalPasswordsExist() {
+        doAnswer(
+                        args -> {
+                            HashMap<Integer, LocalDataDescription> localDataDescription =
+                                    new HashMap<>();
+                            localDataDescription.put(
+                                    DataType.PASSWORDS,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            localDataDescription.put(
+                                    DataType.BOOKMARKS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    DataType.READING_LIST,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
+                        any(Callback.class));
+
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        (activity) -> {
+                            mMediator =
+                                    new BatchUploadCardMediator(
+                                            activity,
+                                            (LifecycleOwner) activity,
+                                            mModalDialogManager,
+                                            mProfile,
+                                            mModel,
+                                            mSnackbarManager,
+                                            () -> {},
+                                            EntryPoint.BOOKMARK_MANAGER);
+                        });
+        Assert.assertFalse(mMediator.shouldBeVisible());
+    }
+
+    @Test
+    public void testBookmarkBatchUploadCardPresentWhenOnlyLocalBookmarksExist() {
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -150,13 +194,14 @@ public class BatchUploadCardMediatorTest {
                                             mProfile,
                                             mModel,
                                             mSnackbarManager,
-                                            () -> {});
+                                            () -> {},
+                                            EntryPoint.BOOKMARK_MANAGER);
                         });
         Assert.assertTrue(mMediator.shouldBeVisible());
     }
 
     @Test
-    public void testBatchUploadCardPresentWhenLocalReadingListEntriesExist() {
+    public void testBookmarkBatchUploadCardPresentWhenOnlyLocalReadingListEntriesExist() {
         doAnswer(
                         args -> {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -190,7 +235,172 @@ public class BatchUploadCardMediatorTest {
                                             mProfile,
                                             mModel,
                                             mSnackbarManager,
-                                            () -> {});
+                                            () -> {},
+                                            EntryPoint.BOOKMARK_MANAGER);
+                        });
+        Assert.assertTrue(mMediator.shouldBeVisible());
+    }
+
+    @Test
+    public void testSettingsBatchUploadCardDoesNotPresentWhenNoLocalDataExist() {
+        doAnswer(
+                        args -> {
+                            HashMap<Integer, LocalDataDescription> localDataDescription =
+                                    new HashMap<>();
+                            localDataDescription.put(
+                                    DataType.PASSWORDS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    DataType.BOOKMARKS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    DataType.READING_LIST,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
+                        any(Callback.class));
+
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        (activity) -> {
+                            mMediator =
+                                    new BatchUploadCardMediator(
+                                            activity,
+                                            (LifecycleOwner) activity,
+                                            mModalDialogManager,
+                                            mProfile,
+                                            mModel,
+                                            mSnackbarManager,
+                                            () -> {},
+                                            EntryPoint.SETTINGS);
+                        });
+        Assert.assertFalse(mMediator.shouldBeVisible());
+    }
+
+    @Test
+    public void testSettingsBatchUploadCardPresentWhenOnlyLocalPasswordsExists() {
+        doAnswer(
+                        args -> {
+                            HashMap<Integer, LocalDataDescription> localDataDescription =
+                                    new HashMap<>();
+                            localDataDescription.put(
+                                    DataType.PASSWORDS,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            localDataDescription.put(
+                                    DataType.BOOKMARKS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    DataType.READING_LIST,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
+                        any(Callback.class));
+
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        (activity) -> {
+                            mMediator =
+                                    new BatchUploadCardMediator(
+                                            activity,
+                                            (LifecycleOwner) activity,
+                                            mModalDialogManager,
+                                            mProfile,
+                                            mModel,
+                                            mSnackbarManager,
+                                            () -> {},
+                                            EntryPoint.SETTINGS);
+                        });
+        Assert.assertTrue(mMediator.shouldBeVisible());
+    }
+
+    @Test
+    public void testSettingsBatchUploadCardPresentWhenOnlyLocalBookmarksExist() {
+        doAnswer(
+                        args -> {
+                            HashMap<Integer, LocalDataDescription> localDataDescription =
+                                    new HashMap<>();
+                            localDataDescription.put(
+                                    DataType.PASSWORDS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    DataType.BOOKMARKS,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            localDataDescription.put(
+                                    DataType.READING_LIST,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
+                        any(Callback.class));
+
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        (activity) -> {
+                            mMediator =
+                                    new BatchUploadCardMediator(
+                                            activity,
+                                            (LifecycleOwner) activity,
+                                            mModalDialogManager,
+                                            mProfile,
+                                            mModel,
+                                            mSnackbarManager,
+                                            () -> {},
+                                            EntryPoint.SETTINGS);
+                        });
+        Assert.assertTrue(mMediator.shouldBeVisible());
+    }
+
+    @Test
+    public void testSettingsBatchUploadCardPresentWhenOnlyLocalReadingListEntriesExist() {
+        doAnswer(
+                        args -> {
+                            HashMap<Integer, LocalDataDescription> localDataDescription =
+                                    new HashMap<>();
+                            localDataDescription.put(
+                                    DataType.PASSWORDS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    DataType.BOOKMARKS,
+                                    new LocalDataDescription(0, new String[] {}, 0));
+                            localDataDescription.put(
+                                    DataType.READING_LIST,
+                                    new LocalDataDescription(1, new String[] {"example.com"}, 1));
+                            args.getArgument(1, Callback.class).onResult(localDataDescription);
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
+                        any(Callback.class));
+
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        (activity) -> {
+                            mMediator =
+                                    new BatchUploadCardMediator(
+                                            activity,
+                                            (LifecycleOwner) activity,
+                                            mModalDialogManager,
+                                            mProfile,
+                                            mModel,
+                                            mSnackbarManager,
+                                            () -> {},
+                                            EntryPoint.SETTINGS);
                         });
         Assert.assertTrue(mMediator.shouldBeVisible());
     }

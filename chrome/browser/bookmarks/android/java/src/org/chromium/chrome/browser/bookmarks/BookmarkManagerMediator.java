@@ -23,6 +23,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -457,14 +458,18 @@ class BookmarkManagerMediator
         mSnackbarManager = snackbarManager;
         mCanShowSigninPromo = canShowSigninPromo;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            OneshotSupplierImpl<SnackbarManager> snackbarManagerSupplierImpl =
+                    new OneshotSupplierImpl<>();
+            snackbarManagerSupplierImpl.set(mSnackbarManager);
             mBatchUploadCardCoordinator =
                     new BatchUploadCardCoordinator(
                             activity,
                             lifecycleOwner,
                             modalDialogManager,
                             mProfile.getOriginalProfile(),
-                            mSnackbarManager,
-                            this::updateBatchUploadCard);
+                            snackbarManagerSupplierImpl,
+                            this::updateBatchUploadCard,
+                            BatchUploadCardCoordinator.EntryPoint.BOOKMARK_MANAGER);
             mPromoHeaderManager = null;
         } else {
             mPromoHeaderManager =
