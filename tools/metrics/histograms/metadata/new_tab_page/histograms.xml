@@ -584,7 +584,9 @@ chromium-metrics-reviews@google.com.
   <owner>xinyiji@chromium.org</owner>
   <summary>
     Record the total number of impressions of the fake search box on the New Tab
-    Page. The histogram is logged on New tab page and is Android-only.
+    Page. This logs a baseline impression count for the button in the fake
+    search box. The event is triggered each time the New Tab Page is shown or
+    the button's visibility is updated.The histogram is Android-only.
   </summary>
 </histogram>
 

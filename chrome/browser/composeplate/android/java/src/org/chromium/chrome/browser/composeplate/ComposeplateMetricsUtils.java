@@ -41,7 +41,11 @@ public class ComposeplateMetricsUtils {
         BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.COMPOSEPLATE_BUTTON);
     }
 
-    /** Records an impression of the fake search box on the New Tab Page. */
+    /**
+     * Records an impression of the fake search box on the New Tab Page. This logs a baseline
+     * impression count for the button in the fake search box. The event is triggered each time the
+     * New Tab Page is shown or the button's visibility is updated.
+     */
     public static void recordFakeSearchBoxImpression() {
         RecordHistogram.recordCount100Histogram(HISTOGRAM_NTP_OMNIBOX_IMPRESSION, 1);
     }

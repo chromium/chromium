@@ -968,6 +968,7 @@ public class NewTabPageLayout extends LinearLayout
             boolean isLensButtonVisible,
             boolean isComposeplateButtonVisible) {
         if (!mManager.isCurrentPage()
+                || (mSearchBoxCoordinator.getView().getVisibility() != View.VISIBLE)
                 || (mPreviousVoiceSearchButtonVisible != null
                         && isVoiceSearchButtonVisible == mPreviousVoiceSearchButtonVisible
                         && mPreviousLensButtonVisible != null
