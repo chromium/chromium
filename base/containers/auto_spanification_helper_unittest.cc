@@ -9,7 +9,105 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace base {
+namespace {
+
+TEST(AutoSpanificationIncrementTest, PreIncrementSpan) {
+  std::vector<int> data = {1, 2, 3, 4, 5};
+  span<int> s(data);
+
+  span<int> result = PreIncrementSpan(s);
+  EXPECT_THAT(s, testing::ElementsAre(2, 3, 4, 5));
+
+  EXPECT_EQ(result.data(), s.data());
+  EXPECT_EQ(result.size(), s.size());
+}
+
+TEST(AutoSpanificationIncrementTest, PreIncrementSingleElementSpan) {
+  std::vector<int> single_element_data = {42};
+  span<int> s(single_element_data);
+
+  span<int> result = PreIncrementSpan(s);
+
+  EXPECT_TRUE(s.empty());
+  EXPECT_EQ(s.size(), 0u);
+
+  EXPECT_TRUE(result.empty());
+  EXPECT_EQ(result.size(), 0u);
+}
+
+TEST(AutoSpanificationIncrementTest, PreIncrementEmptySpan) {
+  std::vector<int> empty_data;
+  span<int> s(empty_data);
+
+  // An iterator that is at the end is expressed as an empty span and it shall
+  // not be incremented. Expect a CHECK failure when trying to pre-increment an
+  // empty span.
+  ASSERT_DEATH_IF_SUPPORTED({ PreIncrementSpan(s); }, "");
+}
+
+TEST(AutoSpanificationIncrementTest, PreIncrementConstSpan) {
+  const std::vector<int> data = {1, 2, 3, 4, 5};
+  span<const int> s(data);
+
+  span<const int> result = PreIncrementSpan(s);
+
+  EXPECT_THAT(s, testing::ElementsAre(2, 3, 4, 5));
+
+  EXPECT_EQ(result.data(), s.data());
+  EXPECT_EQ(result.size(), s.size());
+}
+
+TEST(AutoSpanificationIncrementTest, PostIncrementSpan) {
+  std::vector<int> data = {1, 2, 3, 4, 5};
+  span<int> s(data);
+
+  span<int> result = PostIncrementSpan(s);
+
+  EXPECT_THAT(result, testing::ElementsAre(1, 2, 3, 4, 5));
+  EXPECT_THAT(s, testing::ElementsAre(2, 3, 4, 5));
+}
+
+TEST(AutoSpanificationIncrementTest, PostIncrementSingleElementSpan) {
+  std::vector<int> single_element_data = {42};
+  span<int> s(single_element_data);
+
+  span<int> result = PostIncrementSpan(s);
+
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(result[0], 42);
+
+  EXPECT_TRUE(s.empty());
+  EXPECT_EQ(s.size(), 0u);
+}
+
+TEST(AutoSpanificationIncrementTest, PostIncrementEmptySpan) {
+  std::vector<int> empty_data;
+  span<int> s(empty_data);
+
+  // An iterator that is at the end is expressed as an empty span and it shall
+  // not be incremented. Expect a CHECK failure when trying to post-increment an
+  // empty span.
+  ASSERT_DEATH_IF_SUPPORTED({ PostIncrementSpan(s); }, "");
+}
+
+TEST(AutoSpanificationIncrementTest, PostIncrementConstSpan) {
+  const std::vector<int> data = {1, 2, 3, 4, 5};
+  span<const int> s(data);
+
+  span<const int> result = PostIncrementSpan(s);
+
+  EXPECT_THAT(result, testing::ElementsAre(1, 2, 3, 4, 5));
+
+  EXPECT_EQ(s.size(), 4u);
+  EXPECT_THAT(s, testing::ElementsAre(2, 3, 4, 5));
+}
+
+}  // namespace
+}  // namespace base
 
 namespace base::internal::spanification {
 

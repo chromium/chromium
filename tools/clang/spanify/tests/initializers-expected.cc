@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include <vector>
 
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
@@ -14,8 +15,8 @@ class A {
   A(base::span<int> ptr) : member(ptr) {}
 
   // Expecte rewrite:
-  // int* advanceAndGet() { return member++.data(); }
-  int* advanceAndGet() { return member++.data(); }
+  // int* advanceAndGet() { return base::postIncrementSpan(member).data(); }
+  int* advanceAndGet() { return base::postIncrementSpan(member).data(); }
 
   // Expected rewrite:
   // int* get() { return member.data(); }

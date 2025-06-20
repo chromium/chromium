@@ -79,7 +79,7 @@ struct S2 {
 
   int* get_and_advance() {
     // Expected rewrite:
-    // return ptr_++.data();
+    // return base::postIncrementSpan(ptr_).data();
     return ptr_++;
   }
 

@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
@@ -51,13 +52,17 @@ void fct() {
   // base::span<int> e = d;
   base::span<int> e = d;
 
-  e++;  // Buffer usage, leads e to be rewritten.
+  // Expected rewrite:
+  // base::postIncrementSpan(e);
+  base::postIncrementSpan(e);  // Buffer usage, leads e to be rewritten.
 
   // Expected rewrite:
   // base::span<int> f = get<int>();
   base::span<int> f = get<int>();
 
-  ++f;  // Leads to f being rewritten.
+  // Expected rewrite:
+  // base::preIncrementSpan(f);
+  base::preIncrementSpan(f);  // Leads to f being rewritten.
 
   // Exptected rewrite:
   // base::span<int> g = (condition) ? ctn1 : ctn2;
@@ -112,6 +117,7 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::span<char> buf2 = new char[5];
+  // buf2 = buf2.subspan(1);
   base::span<char> buf2 = new char[5];
   // Expected rewrite:
   // buf2 = buf2.subspan(1u);
@@ -119,6 +125,7 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::raw_span<char> buf3 = buf2;
+  // buf3 = buf3.subspan(1);
   base::raw_span<char> buf3 = buf2;
   // Expected rewrite:
   // buf3 = buf3.subspan(1u);
@@ -126,11 +133,13 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::raw_span<char> buf4 = buf3;
+  // base::postIncrementSpan(buf4);
   base::base::raw_span<char> buf4 = buf3;
-  buf4++;
+  base::postIncrementSpan(buf4);
 
   // Expected rewrite:
   // base::raw_span<char> buf5 = buf4;
+  // buf5 = buf5.subspan(1);
   base::raw_span<char> buf5 = buf4;
   // Expected rewrite:
   // buf5 = buf5.subspan(1u);
@@ -138,8 +147,9 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::raw_span<char> buf6 = buf5;
+  // base::preIncrementSpan(buf6);
   base::raw_span<char> buf6 = buf5;
-  ++buf6;
+  base::preIncrementSpan(buf6);
 
   // Expected rewrite:
   // buf6[0] = 'c';

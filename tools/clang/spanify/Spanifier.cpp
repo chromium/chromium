@@ -84,6 +84,7 @@ enum Precedence {
   kAdaptBinaryOperationPrecedence,
   kEmitSingleVariableSpanPrecedence,
   kAdaptBinaryPlusEqOperationPrecedence,
+  kRewriteUnaryOperationPrecedence,
   // Higher priority (stronger ties to the target)
 };
 
@@ -1502,6 +1503,97 @@ static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
   EmitReplacement(key, GetIncludeDirective(replacement_range, source_manager));
   EmitSink(key);
   return key;
+}
+
+// Rewrite:
+//   `ptr++` or `++ptr`
+// Into:
+//   `base::PreIncrementSpan(span)` or `base::PostIncrementSpan(span)`.
+void RewriteUnaryOperation(const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const auto& lang_opts = result.Context->getLangOpts();
+
+  const clang::Expr* operand = nullptr;
+  bool is_prefix = false;
+  clang::SourceLocation operator_loc;
+
+  if (const auto* unary_op =
+          result.Nodes.getNodeAs<clang::UnaryOperator>("unaryOperator")) {
+    operand = unary_op->getSubExpr();
+    is_prefix = unary_op->isPrefix();
+    operator_loc = unary_op->getOperatorLoc();
+  } else if (const auto* cxx_op_call =
+                 result.Nodes.getNodeAs<clang::CXXOperatorCallExpr>(
+                     "raw_ptr_operator++")) {
+    operand = cxx_op_call->getArg(0);
+    const auto* method_decl =
+        clang::dyn_cast<clang::CXXMethodDecl>(cxx_op_call->getCalleeDecl());
+    assert(method_decl);
+    // For CXXOperatorCallExpr, prefix increment has 0 parameters (e.g.,
+    // operator++()) postfix increment has 1 parameter (e.g., operator++(int)).
+    is_prefix = (method_decl->getNumParams() == 0);
+    operator_loc = cxx_op_call->getOperatorLoc();
+  }
+
+  if (!operand) {
+    // This block should ideally not be reached if matchers are well-defined.
+    llvm::errs()
+        << "\n"
+        << "Error: RewriteUnaryOperation() encountered an unexpected match.\n"
+        << "Expected a unaryOperator or raw_ptr_operator++ to be bound.\n";
+    DumpMatchResult(result);
+    assert(false && "Unexpected match in RewriteUnaryOperation()");
+    return;
+  }
+
+  assert(operator_loc.isValid());
+
+  // Get the source range of the operand (the 'ptr' part).
+  clang::SourceRange operand_range =
+      getExprRange(operand->IgnoreParenImpCasts(), source_manager, lang_opts);
+  assert(operand_range.isValid());
+
+  clang::SourceLocation operator_end_loc = clang::Lexer::getLocForEndOfToken(
+      operator_loc, 0, source_manager, lang_opts);
+  assert(operator_end_loc.isValid());
+  clang::SourceRange op_token_range(operator_loc, operator_end_loc);
+
+  std::string begin_insert_text;
+  clang::SourceRange begin_replacement_range;
+  clang::SourceRange end_replacement_range;
+
+  if (is_prefix) {
+    begin_insert_text = "base::preIncrementSpan(";
+    // Replace the '++' with "base::preIncrementSpan(".
+    begin_replacement_range = op_token_range;
+    // Insert ")" at the end of the operand.
+    end_replacement_range =
+        clang::SourceRange(operand_range.getEnd(), operand_range.getEnd());
+  } else {
+    begin_insert_text = "base::postIncrementSpan(";
+    // Insert "base::postIncrementSpan(" at the beginning of the operand.
+    begin_replacement_range =
+        clang::SourceRange(operand_range.getBegin(), operand_range.getBegin());
+    // Replace "++"" with ")".
+    end_replacement_range = op_token_range;
+  }
+
+  assert(begin_replacement_range.isValid());
+  assert(end_replacement_range.isValid());
+
+  const std::string key = GetRHS(result);
+
+  EmitReplacement(key, GetReplacementDirective(
+                           begin_replacement_range, begin_insert_text,
+                           source_manager, kRewriteUnaryOperationPrecedence));
+
+  EmitReplacement(
+      key, GetReplacementDirective(end_replacement_range, ")", source_manager,
+                                   -kRewriteUnaryOperationPrecedence));
+
+  EmitReplacement(key,
+                  GetIncludeDirective(operand_range, source_manager,
+                                      kBaseAutoSpanificationHelperIncludePath));
 }
 
 // Rewrite:
@@ -2975,6 +3067,19 @@ class Spanifier {
                 forEachArgumentWithParam(expr(rhs_exprs_without_size_nodes),
                                          parmVarDecl())))));
     Match(buffer_to_external_func, AppendDataCall);
+
+    // Handles unary arithmetic operations (pre/post increment)
+    auto unary_op = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        expr(ignoringParenCasts(anyOf(
+                 unaryOperator(hasOperatorName("++"), hasUnaryOperand(rhs_expr))
+                     .bind("unaryOperator"),
+                 cxxOperatorCallExpr(
+                     callee(cxxMethodDecl(ofClass(hasName("raw_ptr")))),
+                     hasOperatorName("++"), hasArgument(0, rhs_expr))
+                     .bind("raw_ptr_operator++"))))
+            .bind("unary_op"));
+    Match(unary_op, RewriteUnaryOperation);
 
     // Handles expressions of the form:
     // a + m, a + n + m, ...

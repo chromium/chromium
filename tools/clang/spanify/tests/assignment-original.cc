@@ -59,6 +59,8 @@ void fct() {
   // ee = dd;
   ee = dd.get();
 
+  // Expected rewrite:
+  // base::postIncrementSpan(ee);
   ee++;  // Buffer usage, leads e to be rewritten.
 
   // Expected rewrite:
@@ -67,6 +69,8 @@ void fct() {
 
   ff = get<int>();
 
+  // Expected rewrite:
+  // base::preIncrementSpan(ff);
   ++ff;  // Leads to ff being rewritten.
 
   // Exptected rewrite:

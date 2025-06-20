@@ -47,12 +47,16 @@ void fct() {
   // base::span<int> e = d;
   int* e = d.get();
 
+  // Expected rewrite:
+  // base::postIncrementSpan(e);
   e++;  // Buffer usage, leads e to be rewritten.
 
   // Expected rewrite:
   // base::span<int> f = get<int>();
   int* f = get<int>();
 
+  // Expected rewrite:
+  // base::preIncrementSpan(f);
   ++f;  // Leads to f being rewritten.
 
   // Exptected rewrite:
@@ -108,6 +112,7 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::span<char> buf2 = new char[5];
+  // buf2 = buf2.subspan(1);
   char* buf2 = new char[5];
   // Expected rewrite:
   // buf2 = buf2.subspan(1u);
@@ -115,6 +120,7 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::raw_span<char> buf3 = buf2;
+  // buf3 = buf3.subspan(1);
   raw_ptr<char> buf3 = buf2;
   // Expected rewrite:
   // buf3 = buf3.subspan(1u);
@@ -122,11 +128,13 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::raw_span<char> buf4 = buf3;
+  // base::postIncrementSpan(buf4);
   base::raw_ptr<char> buf4 = buf3;
   buf4++;
 
   // Expected rewrite:
   // base::raw_span<char> buf5 = buf4;
+  // buf5 = buf5.subspan(1);
   raw_ptr<char> buf5 = buf4;
   // Expected rewrite:
   // buf5 = buf5.subspan(1u);
@@ -134,6 +142,7 @@ void raw_ptr_variables() {
 
   // Expected rewrite:
   // base::raw_span<char> buf6 = buf5;
+  // base::preIncrementSpan(buf6);
   raw_ptr<char> buf6 = buf5;
   ++buf6;
 
