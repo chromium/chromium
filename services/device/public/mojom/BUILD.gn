@@ -59,11 +59,8 @@ mojom("mojom") {
     ]
   }
 
-  if (is_ios) {
-    enabled_features = []
-    if (is_ios && target_platform == "iphoneos") {
-      enabled_features += [ "is_ios_iphoneos" ]
-    }
+  if (is_ios && target_platform == "iphoneos") {
+    enabled_features = [ "is_ios_iphoneos" ]
   }
 
   cpp_typemaps = [
