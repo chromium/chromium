@@ -478,7 +478,10 @@ public class InstanceSwitcherCoordinatorTest {
         String activeMaxInfoText =
                 mActivityTestRule
                         .getActivity()
-                        .getString(R.string.max_number_of_windows_instance_switcher_v2, 5, 2);
+                        .getString(
+                                R.string.max_number_of_windows_instance_switcher_v2_active_tab,
+                                5,
+                                4);
         onView(withText(activeMaxInfoText)).inRoot(isDialog()).check(matches(isDisplayed()));
 
         // Verify + new window command is not added to the dialog.
@@ -487,11 +490,12 @@ public class InstanceSwitcherCoordinatorTest {
         // Switch to the inactive instance tab, verify we show max instance info message in inactive
         // list and close the inactive instance.
         String inactiveMaxInfoText =
-                activeMaxInfoText
-                        + " "
-                        + mActivityTestRule
-                                .getActivity()
-                                .getString(R.string.persisted_instance_deletion_message);
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.max_number_of_windows_instance_switcher_v2_inactive_tab,
+                                5,
+                                4);
         onView(allOf(withText("Inactive (1)"), isDescendantOfA(withId(R.id.tabs))))
                 .perform(click());
         onView(withText(inactiveMaxInfoText)).inRoot(isDialog()).check(matches(isDisplayed()));
@@ -502,7 +506,10 @@ public class InstanceSwitcherCoordinatorTest {
         activeMaxInfoText =
                 mActivityTestRule
                         .getActivity()
-                        .getString(R.string.max_number_of_windows_instance_switcher_v2, 5, 1);
+                        .getString(
+                                R.string.max_number_of_windows_instance_switcher_v2_active_tab,
+                                5,
+                                4);
         onView(withText(activeMaxInfoText)).inRoot(isDialog()).check(matches(isDisplayed()));
 
         // Close an active instance.

@@ -505,23 +505,14 @@ public class InstanceSwitcherCoordinator {
         }
         if (mNewWindowEnabled) {
             mMaxInfoView.setVisibility(View.GONE);
-            return;
         } else {
-            int overLimitCount = getTotalInstanceCount() - mMaxInstanceCount + 1;
-            StringBuilder msgBuilder = new StringBuilder();
-            msgBuilder.append(
-                    mContext.getString(
-                            R.string.max_number_of_windows_instance_switcher_v2,
-                            mMaxInstanceCount,
-                            overLimitCount));
-
-            // Append additional text for inactive list.
-            if (mIsInactiveListShowing) {
-                msgBuilder
-                        .append(" ")
-                        .append(mContext.getString(R.string.persisted_instance_deletion_message));
-            }
-            mMaxInfoView.setText(msgBuilder.toString());
+            @StringRes
+            int textRes =
+                    mIsInactiveListShowing
+                            ? R.string.max_number_of_windows_instance_switcher_v2_inactive_tab
+                            : R.string.max_number_of_windows_instance_switcher_v2_active_tab;
+            String text = mContext.getString(textRes, mMaxInstanceCount, mMaxInstanceCount - 1);
+            mMaxInfoView.setText(text);
             mMaxInfoView.setVisibility(View.VISIBLE);
         }
     }
