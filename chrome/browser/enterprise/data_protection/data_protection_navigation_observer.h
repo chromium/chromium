@@ -78,8 +78,8 @@ class DataProtectionNavigationObserver : public content::WebContentsObserver {
   // monitor the whole navigation.
   //
   // The created DataProtectionNavigationObserver will delete itself when the
-  // navigation completes, by calling Cleanup() when DidFinishNavigation() goes
-  // out of scope.
+  // navigation completes, by calling MaybeCleanup() when DidFinishNavigation()
+  // goes out of scope.
   static std::unique_ptr<DataProtectionNavigationObserver>
   CreateForNavigationIfNeeded(DataProtectionNavigationDelegate* delegate,
                               Profile* profile,
@@ -114,7 +114,7 @@ class DataProtectionNavigationObserver : public content::WebContentsObserver {
   void OnLookupComplete(
       std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response);
 
-  void Cleanup(int64_t navigation_id);
+  void MaybeCleanup();
 
   // Returns true when the "EnterpriseRealTimeUrlCheckMode" policy is enabled
   // for `browser_context`, and when a `lookup_service_` is available to make
@@ -129,6 +129,12 @@ class DataProtectionNavigationObserver : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
 
   bool is_from_cache_ = false;
+
+  bool is_navigation_finished_ = false;
+
+  bool is_verdict_received_ = false;
+
+  int64_t navigation_id_;
 
   // Screenshots are allowed unless explicitly blocked.
   bool allow_screenshot_ = true;

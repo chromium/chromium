@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -278,58 +279,6 @@ class FakeDataProtectionNavigationController
   DataProtectionNavigationObserver::Callback callback_;
   DataProtectionNavigationObserver::NavigationObservers navigation_observers_;
 };
-
-TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
-  chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
-  expected_event.set_url("https://test/");
-  expected_event.set_event_result(
-      chrome::cros::reporting::proto::EVENT_RESULT_ALLOWED);
-  expected_event.set_profile_user_name("test-user@chromium.org");
-  expected_event.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
-  *expected_event.add_triggered_rule_info() =
-      MakeTriggeredRuleInfo(/*has_watermark=*/true);
-
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectURLFilteringInterstitialEvent(expected_event);
-
-  base::test::TestFuture<const UrlSettings&> future;
-  FakeDataProtectionNavigationController controller(
-      web_contents(), &lookup_service_, future.GetCallback());
-
-  base::test::TestFuture<void> future_lookup_complete;
-  lookup_service_.set_on_start_lookup_complete(
-      future_lookup_complete.GetCallback());
-
-  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-      GURL("https://test"), web_contents()->GetPrimaryMainFrame());
-
-  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
-  // this is called by DataProtectionNavigationController. So we simply call
-  // Start() and manually construct the class using the navigation handle that
-  // is provided once Start() is called.
-  simulator->Start();
-  EXPECT_TRUE(future_lookup_complete.Wait());
-
-  // Call DidFinishNavigation() navigation, which should invoke our callback.
-  simulator->Commit();
-
-  std::string watermark_text = future.Get().watermark_text;
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  auto* connectors_service =
-      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-          profile);
-  EXPECT_EQ(watermark_text,
-            "custom_message\n" +
-                connectors_service->GetRealTimeUrlCheckIdentifier() +
-                "\n2024-02-29T04:36:04.000Z");
-
-  // Value should be cached.
-  auto* user_data = DataProtectionPageUserData::GetForPage(
-      GetPageFromWebContents(web_contents()));
-  ASSERT_TRUE(user_data);
-  EXPECT_NE(user_data->settings().watermark_text.find("custom_message"),
-            std::string::npos);
-}
 
 TEST_F(DataProtectionNavigationObserverTest, MatchedAuditRuleHasEvent) {
   chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
@@ -979,6 +928,72 @@ TEST_P(SinglePageAppWatermarkTest,
 
 INSTANTIATE_TEST_SUITE_P(SinglePageAppWatermarkTest,
                          SinglePageAppWatermarkTest,
+                         testing::Bool());
+
+class OrderedDataProtectionNavigationObserverTest
+    : public DataProtectionNavigationObserverTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool IsNavigationFinishedAfterVerdictReceived() const { return GetParam(); }
+};
+
+TEST_P(OrderedDataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
+  chrome::cros::reporting::proto::UrlFilteringInterstitialEvent expected_event;
+  expected_event.set_url("https://test/");
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EVENT_RESULT_ALLOWED);
+  expected_event.set_profile_user_name("test-user@chromium.org");
+  expected_event.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
+  *expected_event.add_triggered_rule_info() =
+      MakeTriggeredRuleInfo(/*has_watermark=*/true);
+
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectURLFilteringInterstitialEvent(expected_event);
+
+  base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
+
+  base::test::TestFuture<void> future_lookup_complete;
+  lookup_service_.set_on_start_lookup_complete(
+      future_lookup_complete.GetCallback());
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://test"), web_contents()->GetPrimaryMainFrame());
+
+  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
+  // this is called by DataProtectionNavigationController. So we simply call
+  // Start() and manually construct the class using the navigation handle that
+  // is provided once Start() is called.
+  simulator->Start();
+  if (IsNavigationFinishedAfterVerdictReceived()) {
+    EXPECT_TRUE(future_lookup_complete.Wait());
+    simulator->Commit();
+  } else {
+    simulator->Commit();
+    EXPECT_TRUE(future_lookup_complete.Wait());
+  }
+
+  std::string watermark_text = future.Get().watermark_text;
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  auto* connectors_service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          profile);
+  EXPECT_EQ(watermark_text,
+            "custom_message\n" +
+                connectors_service->GetRealTimeUrlCheckIdentifier() +
+                "\n2024-02-29T04:36:04.000Z");
+
+  // Value should be cached.
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_NE(user_data->settings().watermark_text.find("custom_message"),
+            std::string::npos);
+}
+
+INSTANTIATE_TEST_SUITE_P(OrderedDataProtectionNavigationObserverTest,
+                         OrderedDataProtectionNavigationObserverTest,
                          testing::Bool());
 
 }  // namespace enterprise_data_protection
