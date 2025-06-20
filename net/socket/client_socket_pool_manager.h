@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 //
 // ClientSocketPoolManager manages access to all ClientSocketPools.  It's a
-// simple container for all of them.  Most importantly, it handles the lifetime
+// simple container for all of them. Most importantly, it handles the lifetime
 // and destruction order properly.
 
 #ifndef NET_SOCKET_CLIENT_SOCKET_POOL_MANAGER_H_
@@ -76,9 +76,7 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManager {
 // A helper method that uses the passed in proxy information to initialize a
 // ClientSocketHandle with the relevant socket pool. Use this method for
 // HTTP/HTTPS requests. `allowed_bad_certs` is only used if the request
-// uses SSL. `resolution_callback` will be invoked after the the hostname is
-// resolved. If `resolution_callback` does not return OK, then the connection
-// will be aborted with that value.
+// uses SSL.
 int InitSocketHandleForHttpRequest(
     url::SchemeHostPort endpoint,
     int request_load_flags,
@@ -98,11 +96,8 @@ int InitSocketHandleForHttpRequest(
 
 // A helper method that uses the passed in proxy information to initialize a
 // ClientSocketHandle with the relevant socket pool. Use this method for
-// HTTP/HTTPS requests for WebSocket handshake.
-// `ssl_config_for_origin` is only used if the request uses SSL.
-// `resolution_callback` will be invoked after the the hostname is resolved. If
-// `resolution_callback` does not return OK, then the connection will be aborted
-// with that value. This function uses WEBSOCKET_SOCKET_POOL socket pools.
+// HTTP/HTTPS requests for WebSocket handshake. This function uses
+// WEBSOCKET_SOCKET_POOL socket pools.
 int InitSocketHandleForWebSocketRequest(
     url::SchemeHostPort endpoint,
     int request_load_flags,
