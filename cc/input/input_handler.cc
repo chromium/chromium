@@ -2047,8 +2047,19 @@ ScrollNode* InputHandler::FindNodeToLatch(ScrollState* scroll_state,
       break;
     }
 
+    // A scroll container allows chaining ​if​ overscroll-behavior is set to
+    // auto on both axes, ​or if​ the Feature Flag is disabled. When the
+    // scroll container does not allow chaining, we should not skip it, as we
+    // may need to latch to it.
+    bool scroll_container_allows_chaining =
+        !base::FeatureList::IsEnabled(
+            ::features::kOverscrollBehaviorRespectedOnAllScrollContainers) ||
+        (cur_node->overscroll_behavior.x == OverscrollBehavior::Type::kAuto &&
+         cur_node->overscroll_behavior.y == OverscrollBehavior::Type::kAuto);
+
     if (!cur_node->user_scrollable_horizontal &&
-        !cur_node->user_scrollable_vertical) {
+        !cur_node->user_scrollable_vertical &&
+        scroll_container_allows_chaining) {
       continue;
     }
 

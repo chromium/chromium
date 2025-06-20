@@ -2339,6 +2339,27 @@
     ]
   },
   {
+    "prefix": "overscroll-behavior-all-scroll-containers",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/css/css-overscroll-behavior/overscroll-behavior-without-overflow.html",
+      "fast/scroll-behavior/overscroll-behavior.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=OverscrollBehaviorRespectedOnAllScrollContainers"
+    ],
+    "owners": [
+      "perryuwang@gmail.com",
+      "flackr@chromium.org"
+    ],
+    "expires": "Jan 1, 2026"
+  },
+  {
     "prefix": "parakeet",
     "owners": [
       "brandm@microsoft.com"

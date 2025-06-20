@@ -300,7 +300,8 @@ CompositorElementId HitTestResult::GetScrollableContainer() const {
   while (cur_box) {
     if (cur_box->IsGlobalRootScroller() ||
         (cur_box->IsScrollContainer() &&
-         cur_box->GetScrollableArea()->ScrollsOverflow())) {
+         (cur_box->GetScrollableArea()->ScrollsOverflow() ||
+          !cur_box->GetScrollableArea()->CanPropagateScroll()))) {
       return cur_box->GetScrollableArea()->GetScrollElementId();
     }
 

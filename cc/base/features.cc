@@ -273,4 +273,7 @@ BASE_FEATURE(kSlimDirectReceiverIpc,
              "SlimDirectReceiverIpc",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOverscrollBehaviorRespectedOnAllScrollContainers,
+             "OverscrollBehaviorRespectedOnAllScrollContainers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

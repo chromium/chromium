@@ -4902,6 +4902,7 @@ enum WebFeature {
   kV8URLPattern_Generate_Method = 5593,
   kSelectMultipleSizeOne = 5594,
   kWebGPUFeatureLevelCompatibility = 5595,
+  kOverscrollBehaviorOnNonScrollableScrollContainer = 5596,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

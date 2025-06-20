@@ -555,6 +555,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool HasHorizontalOverflow() const;
   bool HasVerticalOverflow() const;
 
+  bool CanPropagateScroll() const;
+
   void Trace(Visitor*) const override;
 
   gfx::Rect ScrollingBackgroundVisualRect(

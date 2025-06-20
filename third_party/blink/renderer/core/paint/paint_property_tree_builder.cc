@@ -463,6 +463,9 @@ static bool NeedsScrollAndScrollTranslation(
       !scrollable_area->GetScrollOffset().IsZero()) {
     return true;
   }
+  if (!scrollable_area->CanPropagateScroll()) {
+    return true;
+  }
   return false;
 }
 

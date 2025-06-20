@@ -1228,6 +1228,65 @@ TEST_P(PaintLayerScrollableAreaTest, StickyPositionUseCounter) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kPositionSticky));
 }
 
+// Test when the observed behavior will change as a result of enabling
+// OverscrollBehaviorRespectedOnAllScrollContainers.
+TEST_P(PaintLayerScrollableAreaTest,
+       OverscrollBehaviorOnNonScrollableScrollContainerUseCounter) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=scroller style="overflow: auto; width: 300px; height: 300px;">
+      <div id=content style="width: 200px; height: 200px;"></div>
+    </div>
+  )HTML");
+
+  mojom::WebFeature feature =
+      WebFeature::kOverscrollBehaviorOnNonScrollableScrollContainer;
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature));
+
+  auto* scroller = GetElementById("scroller");
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverscrollBehaviorY,
+                                   CSSValueID::kNone);
+  UpdateAllLifecyclePhasesForTest();
+  // If we have non-auto overscroll behavior on a non-scrollable scroll
+  // container, the behavior will be respected with the feature enabled.
+  EXPECT_TRUE(GetDocument().IsUseCounted(feature));
+  EXPECT_EQ(scroller->ComputedStyleRef().OverscrollBehaviorX(),
+            EOverscrollBehavior::kAuto);
+  EXPECT_EQ(scroller->ComputedStyleRef().OverscrollBehaviorY(),
+            EOverscrollBehavior::kNone);
+
+  GetDocument().ClearUseCounterForTesting(feature);
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature));
+
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverflow,
+                                   CSSValueID::kHidden);
+  UpdateAllLifecyclePhasesForTest();
+  // If we have non-auto overscroll behavior on a overflow: hidden scroll
+  // container, the behavior will be respected with the feature enabled.
+  EXPECT_TRUE(GetDocument().IsUseCounted(feature));
+  EXPECT_EQ(scroller->ComputedStyleRef().OverflowX(), EOverflow::kHidden);
+  EXPECT_EQ(scroller->ComputedStyleRef().OverflowY(), EOverflow::kHidden);
+
+  GetDocument().ClearUseCounterForTesting(feature);
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature));
+
+  auto* content = GetElementById("content");
+  content->SetInlineStyleProperty(CSSPropertyID::kWidth, "400px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(feature));
+
+  GetDocument().ClearUseCounterForTesting(feature);
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature));
+
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverscrollBehaviorY,
+                                   CSSValueID::kAuto);
+  UpdateAllLifecyclePhasesForTest();
+  // If we have auto overscroll behavior on a scroll container, the behavior
+  // will not be affected with the feature enabled.
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature));
+  EXPECT_EQ(scroller->ComputedStyleRef().OverscrollBehaviorY(),
+            EOverscrollBehavior::kAuto);
+}
+
 // Delayed scroll offset clamping should not crash. https://crbug.com/842495
 TEST_P(PaintLayerScrollableAreaTest, IgnoreDelayedScrollOnDestroyedLayer) {
   SetBodyInnerHTML(R"HTML(

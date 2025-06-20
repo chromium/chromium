@@ -145,9 +145,24 @@ async function test_boundary_allows_inner(scrollGesture) {
   assert_equals(container.scrollLeft, 0);
 }
 
-async function test_boundary_on_nonscrollable_allows_propagation(scrollGesture)
-{
+async function test_boundary_on_nonscrollable_prevents_x(scrollGesture) {
   non_scrollable.style.overscrollBehaviorX = 'none';
+  non_scrollable.style.overscrollBehaviorY = 'auto';
+  await waitForCompositorCommit;
+  await waitForScrollReset(document.scrollingElement);
+
+  await scrollGesture(non_scrollable, startPositionBottom, scrollRight);
+  assert_equals(window.scrollX, 0);
+
+  await raf();
+
+  await scrollGesture(non_scrollable, startPositionBottom, scrollDown,
+                      document);
+  assert_greater_than(window.scrollY, 100);
+}
+
+async function test_boundary_on_nonscrollable_prevents_y(scrollGesture) {
+  non_scrollable.style.overscrollBehaviorX = 'auto';
   non_scrollable.style.overscrollBehaviorY = 'none';
   await waitForCompositorCommit;
   await waitForScrollReset(document.scrollingElement);
@@ -158,9 +173,8 @@ async function test_boundary_on_nonscrollable_allows_propagation(scrollGesture)
 
   await raf();
 
-  await scrollGesture(non_scrollable, startPositionBottom, scrollDown,
-                      document);
-  assert_greater_than(window.scrollY, 100);
+  await scrollGesture(non_scrollable, startPositionBottom, scrollDown);
+  assert_equals(window.scrollY, 0);
 }
 
 promise_test(t => {
@@ -176,9 +190,13 @@ promise_test(t => {
 }, 'overscroll-behavior should not affect scrolling inside the applied ' +
    'container with: wheel.');
 promise_test(t => {
-  return test_boundary_on_nonscrollable_allows_propagation(performWheelScroll);
-}, 'overscroll-behavior on non-scrollable area should not affect scroll ' +
-   'propagation with: wheel.');
+  return test_boundary_on_nonscrollable_prevents_x(performWheelScroll);
+}, 'overscroll-behavior-x: none on non-scrollable area should only prevent ' +
+   'scroll propagation on x axis with: wheel.');
+promise_test(t => {
+  return test_boundary_on_nonscrollable_prevents_y(performWheelScroll);
+}, 'overscroll-behavior-y: none on non-scrollable area should only prevent ' +
+   'scroll propagation on y axis with: wheel.');
 
 const IS_MAC = navigator.platform.indexOf('Mac') == 0;
 if (!IS_MAC) {
@@ -191,9 +209,12 @@ if (!IS_MAC) {
   }, 'overscroll-behavior-x: none should only prevent scroll propagation on ' +
      'x axis with: touch.');
   promise_test(t => {
-      return test_boundary_on_nonscrollable_allows_propagation(
-                 performTouchDrag);
-    }, 'overscroll-behavior on non-scrollable area should not affect scroll ' +
-       'propagation with: touch.');
+    return test_boundary_on_nonscrollable_prevents_x(performTouchDrag);
+  }, 'overscroll-behavior-x: none on non-scrollable area should only ' +
+    'prevent scroll propagation on x axis with: touch.');
+  promise_test(t => {
+    return test_boundary_on_nonscrollable_prevents_y(performTouchDrag);
+  }, 'overscroll-behavior-y: none on non-scrollable area should only ' +
+    'prevent scroll propagation on y axis with: touch.');
 }
 </script>
