@@ -445,15 +445,15 @@ scoped_refptr<StringImpl> AtomicStringTable::AddUTF8(
   bool seen_non_ascii = false;
   bool seen_non_latin1 = false;
 
-  unsigned utf16_length = unicode::CalculateStringLengthFromUTF8(
+  unsigned utf16_length = blink::unicode::CalculateStringLengthFromUtf8(
       characters_span, seen_non_ascii, seen_non_latin1);
   if (!seen_non_ascii) {
     return Add(characters_span.data(), utf16_length);
   }
 
   auto utf16_buf = base::HeapArray<UChar>::Uninit(utf16_length);
-  if (unicode::ConvertUTF8ToUTF16(characters_span, utf16_buf).status !=
-      unicode::kConversionOK) {
+  if (blink::unicode::ConvertUtf8ToUtf16(characters_span, utf16_buf).status !=
+      blink::unicode::kConversionOK) {
     NOTREACHED();
   }
 

@@ -30,8 +30,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
-namespace unicode {
+namespace blink::unicode {
 
 typedef enum {
   kConversionOK,     // conversion successful
@@ -66,27 +65,26 @@ struct ConversionResult {
 // 0x10FFFF; in UTF-8, the 4-byte form is similarly unable to encode codepoints
 // higher than 0x10FFFF.
 
-WTF_EXPORT ConversionResult<UChar> ConvertUTF8ToUTF16(
+WTF_EXPORT ConversionResult<UChar> ConvertUtf8ToUtf16(
     base::span<const uint8_t> source,
     base::span<UChar> target,
     bool strict = true);
 
-WTF_EXPORT ConversionResult<uint8_t> ConvertLatin1ToUTF8(
+WTF_EXPORT ConversionResult<uint8_t> ConvertLatin1ToUtf8(
     base::span<const LChar> source,
     base::span<uint8_t> target);
 
-WTF_EXPORT ConversionResult<uint8_t> ConvertUTF16ToUTF8(
+WTF_EXPORT ConversionResult<uint8_t> ConvertUtf16ToUtf8(
     base::span<const UChar> source,
     base::span<uint8_t> target,
     bool strict = true);
 
 // Returns the number of UTF-16 code points.
-WTF_EXPORT unsigned CalculateStringLengthFromUTF8(
+WTF_EXPORT unsigned CalculateStringLengthFromUtf8(
     base::span<const uint8_t> data,
     bool& seen_non_ascii,
     bool& seen_non_latin1);
 
-}  // namespace unicode
-}  // namespace WTF
+}  // namespace blink::unicode
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_UTF8_H_

@@ -474,9 +474,9 @@ String String::FromUTF8(base::span<const uint8_t> bytes) {
 
   Vector<UChar, 1024> buffer(length);
 
-  unicode::ConversionResult result =
-      unicode::ConvertUTF8ToUTF16(bytes, base::span(buffer));
-  if (result.status != unicode::kConversionOK) {
+  blink::unicode::ConversionResult result =
+      blink::unicode::ConvertUtf8ToUtf16(bytes, base::span(buffer));
+  if (result.status != blink::unicode::kConversionOK) {
     return String();
   }
 

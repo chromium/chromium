@@ -1491,9 +1491,9 @@ static base::span<const char> ConvertUTF16EntityToUTF8(
   auto utf16_entity = base::span(entity.data).first(entity.length);
   auto entity_buffer =
       base::as_writable_bytes(base::span(g_shared_xhtml_entity_result));
-  WTF::unicode::ConversionResult conversion_result =
-      WTF::unicode::ConvertUTF16ToUTF8(utf16_entity, entity_buffer);
-  if (conversion_result.status != WTF::unicode::kConversionOK) {
+  unicode::ConversionResult conversion_result =
+      unicode::ConvertUtf16ToUtf8(utf16_entity, entity_buffer);
+  if (conversion_result.status != unicode::kConversionOK) {
     return {};
   }
 

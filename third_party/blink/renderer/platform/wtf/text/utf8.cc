@@ -34,12 +34,11 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
-namespace WTF {
-namespace unicode {
+namespace blink::unicode {
 
 namespace {
 
-inline size_t InlineUTF8SequenceLengthNonASCII(uint8_t b0) {
+inline size_t InlineUtf8SequenceLengthNonAscii(uint8_t b0) {
   if ((b0 & 0xC0) != 0xC0)
     return 0;
   if ((b0 & 0xE0) == 0xC0)
@@ -51,8 +50,8 @@ inline size_t InlineUTF8SequenceLengthNonASCII(uint8_t b0) {
   return 0;
 }
 
-inline size_t InlineUTF8SequenceLength(uint8_t b0) {
-  return IsASCII(b0) ? 1 : InlineUTF8SequenceLengthNonASCII(b0);
+inline size_t InlineUtf8SequenceLength(uint8_t b0) {
+  return IsASCII(b0) ? 1 : InlineUtf8SequenceLengthNonAscii(b0);
 }
 
 // Once the bits are split out into bytes of UTF-8, this is a mask OR-ed
@@ -63,7 +62,7 @@ inline size_t InlineUTF8SequenceLength(uint8_t b0) {
 static constexpr std::array<uint8_t, 7> kFirstByteMark = {
     0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
 
-ConversionStatus ConvertLatin1ToUTF8Internal(base::span<const LChar>& source,
+ConversionStatus ConvertLatin1ToUtf8Internal(base::span<const LChar>& source,
                                              base::span<uint8_t>& target) {
   ConversionStatus status = kConversionOK;
   size_t source_cursor = 0;
@@ -109,7 +108,7 @@ ConversionStatus ConvertLatin1ToUTF8Internal(base::span<const LChar>& source,
   return status;
 }
 
-ConversionStatus ConvertUTF16ToUTF8Internal(base::span<const UChar>& source,
+ConversionStatus ConvertUtf16ToUtf8Internal(base::span<const UChar>& source,
                                             base::span<uint8_t>& target,
                                             bool strict) {
   ConversionStatus status = kConversionOK;
@@ -204,7 +203,7 @@ ConversionStatus ConvertUTF16ToUTF8Internal(base::span<const UChar>& source,
 // This must be called with the length pre-determined by the first byte.
 // If presented with a length > 4, this returns false.  The Unicode
 // definition of UTF-8 goes up to 4-byte sequences.
-bool IsLegalUTF8(const base::span<const uint8_t> source) {
+bool IsLegalUtf8(const base::span<const uint8_t> source) {
   uint8_t a;
   size_t src_cursor = source.size();
   switch (source.size()) {
@@ -263,7 +262,7 @@ bool IsLegalUTF8(const base::span<const uint8_t> source) {
 // Magic values subtracted from a buffer value during UTF8 conversion.
 // This table contains as many values as there might be trailing bytes
 // in a UTF-8 sequence.
-static constexpr std::array<UChar32, 6> kOffsetsFromUTF8 = {
+static constexpr std::array<UChar32, 6> kOffsetsFromUtf8 = {
     0x00000000UL,
     0x00003080UL,
     0x000E2080UL,
@@ -271,7 +270,7 @@ static constexpr std::array<UChar32, 6> kOffsetsFromUTF8 = {
     static_cast<UChar32>(0xFA082080UL),
     static_cast<UChar32>(0x82082080UL)};
 
-inline UChar32 ReadUTF8Sequence(base::span<const uint8_t> source,
+inline UChar32 ReadUtf8Sequence(base::span<const uint8_t> source,
                                 size_t length) {
   UChar32 character = 0;
   size_t sequence_cursor = 0;
@@ -301,10 +300,10 @@ inline UChar32 ReadUTF8Sequence(base::span<const uint8_t> source,
       character += source[sequence_cursor++];
   }
 
-  return character - kOffsetsFromUTF8[length - 1];
+  return character - kOffsetsFromUtf8[length - 1];
 }
 
-ConversionStatus ConvertUTF8ToUTF16Internal(base::span<const uint8_t>& source,
+ConversionStatus ConvertUtf8ToUtf16Internal(base::span<const uint8_t>& source,
                                             base::span<UChar>& target,
                                             bool strict) {
   ConversionStatus status = kConversionOK;
@@ -312,19 +311,19 @@ ConversionStatus ConvertUTF8ToUTF16Internal(base::span<const uint8_t>& source,
   size_t target_end = target.size();
 
   while (!source.empty()) {
-    size_t utf8_sequence_length = InlineUTF8SequenceLength(source[0]);
+    size_t utf8_sequence_length = InlineUtf8SequenceLength(source[0]);
     if (source.size() < utf8_sequence_length) {
       status = kSourceExhausted;
       break;
     }
     // Do this check whether lenient or strict
-    if (!IsLegalUTF8(source.first(utf8_sequence_length))) {
+    if (!IsLegalUtf8(source.first(utf8_sequence_length))) {
       status = kSourceIllegal;
       break;
     }
 
     auto original_source = source;
-    UChar32 character = ReadUTF8Sequence(source, utf8_sequence_length);
+    UChar32 character = ReadUtf8Sequence(source, utf8_sequence_length);
     source = source.subspan(utf8_sequence_length);
 
     if (target_cursor >= target_end) {
@@ -368,11 +367,11 @@ ConversionStatus ConvertUTF8ToUTF16Internal(base::span<const uint8_t>& source,
 
 }  // namespace
 
-ConversionResult<uint8_t> ConvertLatin1ToUTF8(base::span<const LChar> source,
+ConversionResult<uint8_t> ConvertLatin1ToUtf8(base::span<const LChar> source,
                                               base::span<uint8_t> target) {
   auto original_source = source;
   auto original_target = target;
-  auto status = ConvertLatin1ToUTF8Internal(source, target);
+  auto status = ConvertLatin1ToUtf8Internal(source, target);
   return {
       original_target.first(original_target.size() - target.size()),
       original_source.size() - source.size(),
@@ -380,12 +379,12 @@ ConversionResult<uint8_t> ConvertLatin1ToUTF8(base::span<const LChar> source,
   };
 }
 
-ConversionResult<uint8_t> ConvertUTF16ToUTF8(base::span<const UChar> source,
+ConversionResult<uint8_t> ConvertUtf16ToUtf8(base::span<const UChar> source,
                                              base::span<uint8_t> target,
                                              bool strict) {
   auto original_source = source;
   auto original_target = target;
-  auto status = ConvertUTF16ToUTF8Internal(source, target, strict);
+  auto status = ConvertUtf16ToUtf8Internal(source, target, strict);
   return {
       original_target.first(original_target.size() - target.size()),
       original_source.size() - source.size(),
@@ -393,12 +392,12 @@ ConversionResult<uint8_t> ConvertUTF16ToUTF8(base::span<const UChar> source,
   };
 }
 
-ConversionResult<UChar> ConvertUTF8ToUTF16(base::span<const uint8_t> source,
+ConversionResult<UChar> ConvertUtf8ToUtf16(base::span<const uint8_t> source,
                                            base::span<UChar> target,
                                            bool strict) {
   auto original_source = source;
   auto original_target = target;
-  auto status = ConvertUTF8ToUTF16Internal(source, target, strict);
+  auto status = ConvertUtf8ToUtf16Internal(source, target, strict);
   return {
       original_target.first(original_target.size() - target.size()),
       original_source.size() - source.size(),
@@ -406,7 +405,7 @@ ConversionResult<UChar> ConvertUTF8ToUTF16(base::span<const uint8_t> source,
   };
 }
 
-unsigned CalculateStringLengthFromUTF8(base::span<const uint8_t> data,
+unsigned CalculateStringLengthFromUtf8(base::span<const uint8_t> data,
                                        bool& seen_non_ascii,
                                        bool& seen_non_latin1) {
   seen_non_ascii = false;
@@ -429,18 +428,18 @@ unsigned CalculateStringLengthFromUTF8(base::span<const uint8_t> data,
 
     seen_non_ascii = true;
     size_t utf8_sequence_length =
-        InlineUTF8SequenceLengthNonASCII(data[data_cursor]);
+        InlineUtf8SequenceLengthNonAscii(data[data_cursor]);
 
     if (data_end - data_cursor < utf8_sequence_length) {
       return 0;
     }
 
-    if (!IsLegalUTF8(data.subspan(data_cursor, utf8_sequence_length))) {
+    if (!IsLegalUtf8(data.subspan(data_cursor, utf8_sequence_length))) {
       return 0;
     }
 
     UChar32 character =
-        ReadUTF8Sequence(data.subspan(data_cursor), utf8_sequence_length);
+        ReadUtf8Sequence(data.subspan(data_cursor), utf8_sequence_length);
     DCHECK(!IsASCII(character));
     data_cursor += utf8_sequence_length;
 
@@ -464,5 +463,4 @@ unsigned CalculateStringLengthFromUTF8(base::span<const uint8_t> data,
   return utf16_length;
 }
 
-}  // namespace unicode
-}  // namespace WTF
+}  // namespace blink::unicode

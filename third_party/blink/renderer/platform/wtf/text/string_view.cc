@@ -65,6 +65,8 @@ static inline void PutUTF8Triple(base::span<uint8_t, 3u> buffer, UChar ch) {
 }
 
 std::string StringView::Utf8(Utf8ConversionMode mode) const {
+  using blink::unicode::ConversionResult;
+  using blink::unicode::ConversionStatus;
   unsigned length = this->length();
 
   if (!length)
@@ -86,10 +88,10 @@ std::string StringView::Utf8(Utf8ConversionMode mode) const {
   size_t buffer_written = 0;
 
   if (Is8Bit()) {
-    unicode::ConversionResult result = unicode::ConvertLatin1ToUTF8(
+    ConversionResult result = blink::unicode::ConvertLatin1ToUtf8(
         Span8(), base::as_writable_byte_span(buffer_vector));
     // (length * 3) should be sufficient for any conversion
-    DCHECK_NE(result.status, unicode::kTargetExhausted);
+    DCHECK_NE(result.status, ConversionStatus::kTargetExhausted);
     buffer_written = result.converted.size();
   } else {
     base::span<const UChar> characters = Span16();
@@ -98,14 +100,14 @@ std::string StringView::Utf8(Utf8ConversionMode mode) const {
     if (mode == Utf8ConversionMode::kStrictReplacingErrors) {
       while (!characters.empty()) {
         // Use strict conversion to detect unpaired surrogates.
-        unicode::ConversionResult result =
-            unicode::ConvertUTF16ToUTF8(characters, buffer, true);
-        DCHECK_NE(result.status, unicode::kTargetExhausted);
+        ConversionResult result =
+            blink::unicode::ConvertUtf16ToUtf8(characters, buffer, true);
+        DCHECK_NE(result.status, ConversionStatus::kTargetExhausted);
         buffer = buffer.subspan(result.converted.size());
         // Conversion fails when there is an unpaired surrogate.  Put
         // replacement character (U+FFFD) instead of the unpaired
         // surrogate.
-        if (result.status != unicode::kConversionOK) {
+        if (result.status != ConversionStatus::kConversionOK) {
           DCHECK_LE(0xD800, characters[result.consumed]);
           DCHECK_LE(characters[result.consumed], 0xDFFF);
           // There should be room left, since one UChar hasn't been
@@ -122,19 +124,19 @@ std::string StringView::Utf8(Utf8ConversionMode mode) const {
     } else {
       const bool strict = mode == Utf8ConversionMode::kStrict;
 
-      unicode::ConversionResult result =
-          unicode::ConvertUTF16ToUTF8(characters, buffer, strict);
+      ConversionResult result =
+          blink::unicode::ConvertUtf16ToUtf8(characters, buffer, strict);
       // (length * 3) should be sufficient for any conversion
-      DCHECK_NE(result.status, unicode::kTargetExhausted);
+      DCHECK_NE(result.status, ConversionStatus::kTargetExhausted);
 
       // Only produced from strict conversion.
-      if (result.status == unicode::kSourceIllegal) {
+      if (result.status == ConversionStatus::kSourceIllegal) {
         DCHECK(strict);
         return std::string();
       }
 
       // Check for an unconverted high surrogate.
-      if (result.status == unicode::kSourceExhausted) {
+      if (result.status == ConversionStatus::kSourceExhausted) {
         if (strict)
           return std::string();
         buffer = buffer.subspan(result.converted.size());

@@ -813,11 +813,10 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
           return Vector<uint8_t>();
         Vector<uint8_t> buffer_vector(length * 3);
 
-        WTF::unicode::ConversionResult result =
-            WTF::unicode::ConvertLatin1ToUTF8(input.Span8(),
-                                              base::span(buffer_vector));
+        unicode::ConversionResult result = unicode::ConvertLatin1ToUtf8(
+            input.Span8(), base::span(buffer_vector));
         // (length * 3) should be sufficient for any conversion
-        DCHECK_NE(result.status, WTF::unicode::kTargetExhausted);
+        DCHECK_NE(result.status, unicode::kTargetExhausted);
         buffer_vector.Shrink(static_cast<wtf_size_t>(result.converted.size()));
         return buffer_vector;
       }
