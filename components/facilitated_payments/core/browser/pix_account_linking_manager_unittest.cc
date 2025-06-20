@@ -8,6 +8,7 @@
 
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
+#include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/facilitated_payments/core/browser/mock_device_delegate.h"
@@ -40,6 +41,8 @@ class PixAccountLinkingManagerTest : public testing::Test {
         std::make_unique<autofill::TestPaymentsDataManager>();
     payments_data_manager_->SetPrefService(pref_service_.get());
     payments_data_manager_->SetSyncServiceForTest(&sync_service_);
+    payments_data_manager_->SetPaymentsCustomerData(
+        std::make_unique<autofill::PaymentsCustomerData>("123456"));
     ON_CALL(client_, GetPaymentsDataManager)
         .WillByDefault(testing::Return(payments_data_manager_.get()));
     mock_device_delegate_ = std::make_unique<MockDeviceDelegate>();
@@ -74,13 +77,13 @@ class PixAccountLinkingManagerTest : public testing::Test {
   }
 
   std::unique_ptr<PrefService> pref_service_;
+  std::unique_ptr<autofill::TestPaymentsDataManager> payments_data_manager_;
 
  private:
   // Order matters here because `manager_` keeps a reference to `client_`.
   MockFacilitatedPaymentsClient client_;
   std::unique_ptr<PixAccountLinkingManager> manager_;
   syncer::TestSyncService sync_service_;
-  std::unique_ptr<autofill::TestPaymentsDataManager> payments_data_manager_;
   std::unique_ptr<MockMultipleRequestFacilitatedPaymentsNetworkInterface>
       multiple_request_payments_network_interface_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -165,6 +168,24 @@ TEST_F(
     PixAccountLinkingManagerTest,
     GetDetailsForCreatePaymentInstrumentResponseNotReceived_EligibilityNotSet) {
   EXPECT_EQ(test_api().is_eligible_for_pix_account_linking(), std::nullopt);
+}
+
+TEST_F(
+    PixAccountLinkingManagerTest,
+    NoPaymentsCustomerData_GetDetailsForCreatePaymentInstrumentNotCalled_AccountLinkingEligible) {
+  payments_data_manager_->ClearPaymentsCustomerData();
+  // Backend call for GetDetailsForPaymentInstrument should not be called if
+  // user is not a payments customer.
+  EXPECT_CALL(
+      *multiple_request_payments_network_interface(),
+      GetDetailsForCreatePaymentInstrument(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  manager()->MaybeShowPixAccountLinkingPrompt();
+
+  // If a user is not a payments customer, they are eligible for account linking
+  // by default.
+  EXPECT_TRUE(test_api().is_eligible_for_pix_account_linking().value());
 }
 
 }  // namespace payments::facilitated

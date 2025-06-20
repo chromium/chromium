@@ -128,6 +128,8 @@ class TestPaymentsDataManager : public PaymentsDataManager {
     payments_customer_data_ = std::move(customer_data);
   }
 
+  void ClearPaymentsCustomerData() { payments_customer_data_ = nullptr; }
+
   void SetAccountInfoForPayments(const CoreAccountInfo& account_info) {
     account_info_ = account_info;
   }

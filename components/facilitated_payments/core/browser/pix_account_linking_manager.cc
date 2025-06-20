@@ -30,15 +30,24 @@ void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
   }
   // Make a request to payments backend to check if user is eligible for pix
   // account linking.
-  client_->GetMultipleRequestFacilitatedPaymentsNetworkInterface()
-      ->GetDetailsForCreatePaymentInstrument(
-          autofill::payments::GetBillingCustomerId(
-              CHECK_DEREF(client_->GetPaymentsDataManager())),
-          base::BindOnce(
-              &PixAccountLinkingManager::
-                  OnGetDetailsForCreatePaymentInstrumentResponseReceived,
-              weak_ptr_factory_.GetWeakPtr()),
-          client_->GetPaymentsDataManager()->app_locale());
+  auto billing_customer_id = autofill::payments::GetBillingCustomerId(
+      CHECK_DEREF(client_->GetPaymentsDataManager()));
+  if (billing_customer_id == 0) {
+    // If the user is not a payments customer and has copied a Pix code, we
+    // automatically assume that they are eligible for account linking.
+    is_eligible_for_pix_account_linking_ = true;
+  } else {
+    // The user is an existing payments customer. Make a backend call to check
+    // eligibility for Pix account linking.
+    client_->GetMultipleRequestFacilitatedPaymentsNetworkInterface()
+        ->GetDetailsForCreatePaymentInstrument(
+            billing_customer_id,
+            base::BindOnce(
+                &PixAccountLinkingManager::
+                    OnGetDetailsForCreatePaymentInstrumentResponseReceived,
+                weak_ptr_factory_.GetWeakPtr()),
+            client_->GetPaymentsDataManager()->app_locale());
+  }
   // TODO(crbug.com/417330610): Move this to after the user comes back to Chrome
   // and GetDetailsForCreatePaymentInstrument is completed.
   ShowPixAccountLinkingPrompt();
