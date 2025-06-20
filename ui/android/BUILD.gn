@@ -268,7 +268,6 @@ android_resources("ui_java_resources") {
     "java/res/drawable/transition_expand_less_expand_more_black_24dp.xml",
     "java/res/drawable/transition_expand_more_expand_less_black_24dp.xml",
     "java/res/font/accent_font.xml",
-    "java/res/layout-v28/list_section_divider.xml",
     "java/res/layout/custom_toast_layout.xml",
     "java/res/layout/dropdown_item.xml",
     "java/res/layout/horizontal_divider.xml",

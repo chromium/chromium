@@ -10,6 +10,7 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/list_section_divider_padding"
     android:paddingBottom="@dimen/list_section_divider_padding"
-    android:importantForAccessibility="no" >
+    android:focusable="false"
+    android:screenReaderFocusable="false">
     <include layout="@layout/horizontal_divider" />
 </FrameLayout>
