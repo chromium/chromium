@@ -546,6 +546,7 @@ void BrowserDesktopWindowTreeHostWin::ClientDestroyedWidget() {
   browser_window_property_manager_.reset();
   browser_frame_ = nullptr;
   browser_view_ = nullptr;
+  DesktopWindowTreeHostWin::ClientDestroyedWidget();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

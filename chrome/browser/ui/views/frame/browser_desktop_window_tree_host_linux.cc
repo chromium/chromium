@@ -297,6 +297,7 @@ void BrowserDesktopWindowTreeHostLinux::ClientDestroyedWidget() {
 #endif
   browser_frame_ = nullptr;
   browser_view_ = nullptr;
+  DesktopWindowTreeHostLinux::ClientDestroyedWidget();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
