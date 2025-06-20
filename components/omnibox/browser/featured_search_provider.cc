@@ -231,32 +231,42 @@ FeaturedSearchProvider::~FeaturedSearchProvider() = default;
 
 void FeaturedSearchProvider::AddFeaturedKeywordMatches(
     const AutocompleteInput& input) {
-  size_t enterprise_count = 0;
-  if (input.GetFeaturedKeywordMode() !=
+  // Don't add featured keywords if input doesn't start with '@'.
+  if (input.GetFeaturedKeywordMode() ==
       AutocompleteInput::FeaturedKeywordMode::kFalse) {
-    TemplateURLService::TemplateURLVector turls;
-    template_url_service_->AddMatchingKeywords(input.text(), false, &turls);
-    for (TemplateURL* turl : turls) {
-      if (turl->starter_pack_id() > 0 &&
-          turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {
-        // Don't add the expanded set of starter pack engines unless the feature
-        // is enabled.
-        if ((turl->starter_pack_id() == TemplateURLStarterPackData::kGemini &&
-             !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
-            (turl->starter_pack_id() == TemplateURLStarterPackData::kPage &&
-             !omnibox_feature_configs::ContextualSearch::Get()
-                  .starter_pack_page)) {
-          continue;
-        }
-        AddStarterPackMatch(*turl, input);
-        // Don't add enterprise search aggregator engines in incognito mode.
-      } else if (turl->featured_by_policy() &&
-                 IsEnterpriseSearchAggregatorTemplateURLEnabled(
-                     *turl, client_->IsOffTheRecord()) &&
-                 enterprise_count < kMaxEnterpriseSuggestions) {
-        AddFeaturedEnterpriseSearchMatch(*turl, input);
-        enterprise_count++;
+    return;
+  }
+
+  size_t enterprise_count = 0;
+  TemplateURLService::TemplateURLVector turls;
+  template_url_service_->AddMatchingKeywords(input.text(), false, &turls);
+  for (TemplateURL* turl : turls) {
+    if (turl->starter_pack_id() > 0 &&
+        turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {
+      // Don't add the expanded set of starter pack engines unless the feature
+      // is enabled.
+      if ((turl->starter_pack_id() == TemplateURLStarterPackData::kGemini &&
+           !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
+          (turl->starter_pack_id() == TemplateURLStarterPackData::kPage &&
+           !omnibox_feature_configs::ContextualSearch::Get()
+                .starter_pack_page)) {
+        continue;
       }
+      // The history starter pack engine is disabled in incognito mode.
+      if (client_->IsOffTheRecord() &&
+          turl->starter_pack_id() == TemplateURLStarterPackData::kHistory) {
+        continue;
+      }
+      AddStarterPackMatch(*turl, input);
+      // Don't add enterprise search aggregator engines in incognito mode.
+    } else if (turl->featured_by_policy() &&
+               IsEnterpriseSearchAggregatorTemplateURLEnabled(
+                   *turl, client_->IsOffTheRecord()) &&
+               enterprise_count < kMaxEnterpriseSuggestions &&
+               input.current_page_classification() !=
+                   metrics::OmniboxEventProto::NTP_REALBOX) {
+      AddFeaturedEnterpriseSearchMatch(*turl, input);
+      enterprise_count++;
     }
   }
 }
@@ -264,12 +274,6 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
 void FeaturedSearchProvider::AddStarterPackMatch(
     const TemplateURL& template_url,
     const AutocompleteInput& input) {
-  // The history starter pack engine is disabled in incognito mode.
-  if (client_->IsOffTheRecord() &&
-      template_url.starter_pack_id() == TemplateURLStarterPackData::kHistory) {
-    return;
-  }
-
   // The starter pack relevance score is currently ranked above
   // search-what-you-typed suggestion to avoid the keyword mode chip attaching
   // to the search suggestion instead of Builtin suggestions.
@@ -379,15 +383,6 @@ void FeaturedSearchProvider::AddIPHMatch(IphType iph_type,
 void FeaturedSearchProvider::AddFeaturedEnterpriseSearchMatch(
     const TemplateURL& template_url,
     const AutocompleteInput& input) {
-  if (input.current_page_classification() ==
-      metrics::OmniboxEventProto::NTP_REALBOX) {
-    return;
-  }
-  if (!IsEnterpriseSearchAggregatorTemplateURLEnabled(
-          template_url, client_->IsOffTheRecord())) {
-    return;
-  }
-
   AutocompleteMatch match(this, kFeaturedEnterpriseSearchRelevance, false,
                           AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH);
 
