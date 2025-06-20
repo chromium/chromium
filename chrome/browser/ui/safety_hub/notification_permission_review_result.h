@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_PERMISSION_REVIEW_RESULT_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_PERMISSION_REVIEW_RESULT_H_
 
+#include <set>
+
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 
