@@ -146,6 +146,7 @@ aom_av1_common_sources = [
   "//third_party/libaom/source/libaom/av1/common/scan.h",
   "//third_party/libaom/source/libaom/av1/common/seg_common.c",
   "//third_party/libaom/source/libaom/av1/common/seg_common.h",
+  "//third_party/libaom/source/libaom/av1/common/selfguided_hwy.h",
   "//third_party/libaom/source/libaom/av1/common/thread_common.c",
   "//third_party/libaom/source/libaom/av1/common/thread_common.h",
   "//third_party/libaom/source/libaom/av1/common/tile_common.c",
