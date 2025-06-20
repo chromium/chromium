@@ -4,6 +4,7 @@
 
 import SwiftUI
 
+@MainActor
 struct OverflowMenuView: View {
   @ObservedObject var model: OverflowMenuModel
 
@@ -45,9 +46,11 @@ struct OverflowMenuView: View {
       }
       .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
       .onPreferenceChange(OverflowMenuDestinationList.HighlightedDestinationBounds.self) { pref in
-        highlightedDestinationBounds = pref
+        Task { @MainActor in
+          highlightedDestinationBounds = pref
+        }
       }
-      .onGeometryChange(for: CGRect?.self) { proxy in
+      .onGeometryChange(for: CGRect?.self) { [highlightedDestinationBounds] proxy in
         if let highlightedDestinationBounds = highlightedDestinationBounds {
           return proxy[highlightedDestinationBounds]
         }

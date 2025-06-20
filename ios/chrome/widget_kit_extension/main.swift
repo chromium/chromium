@@ -10,7 +10,9 @@ import WidgetKit
 struct ChromeWidgetsMain {
 
   // Bool telling if widgets for multiprofile is enabled.
-  static var WidgetForMIMAvailable: Bool = false
+  // Use an external synchronization mechanism to modify the value because `nonisolated(unsafe)`
+  // opts out of concurrency checking.
+  nonisolated(unsafe) static var WidgetForMIMAvailable: Bool = false
 
   static func main() {
     CrashHelper.configure()

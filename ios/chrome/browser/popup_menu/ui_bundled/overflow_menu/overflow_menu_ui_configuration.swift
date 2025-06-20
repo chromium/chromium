@@ -5,6 +5,7 @@
 import SwiftUI
 
 /// Holds UI data necessary to display the overflow menu.
+@MainActor
 @objcMembers public class OverflowMenuUIConfiguration: NSObject, ObservableObject {
   @Published public var presentingViewControllerHorizontalSizeClass: UserInterfaceSizeClass
   @Published public var presentingViewControllerVerticalSizeClass: UserInterfaceSizeClass

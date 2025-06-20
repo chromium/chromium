@@ -43,8 +43,8 @@ struct AccountDetail: AppEntity {
   let id: String
   let gaia: String
 
-  static var typeDisplayRepresentation: TypeDisplayRepresentation = "Account"
-  static var defaultQuery = AccountQuery()
+  static let typeDisplayRepresentation: TypeDisplayRepresentation = "Account"
+  static let defaultQuery = AccountQuery()
 
   var displayRepresentation: DisplayRepresentation {
     DisplayRepresentation(title: "\(id)")
@@ -75,8 +75,9 @@ struct AccountDetail: AppEntity {
 
 @available(iOS 17, *)
 struct SelectAccountIntent: WidgetConfigurationIntent {
-  static var title: LocalizedStringResource = "Select Account"
-  static var description = IntentDescription("Selects the account to display shortcuts for.")
+  static let title: LocalizedStringResource = "Select Account"
+  static let description = IntentDescription(
+    "Selects the account to display shortcuts for.")
 
   @Parameter(title: "IDS_IOS_WIDGET_KIT_EXTENSION_SELECT_ACCOUNT_LABEL")
   var account: AccountDetail?

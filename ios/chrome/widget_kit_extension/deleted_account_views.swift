@@ -17,6 +17,7 @@ func CollectMetricsInfo() {
   sharedDefaults.set(true, forKey: "DeletedAccountUiDisplayed")
 }
 
+@MainActor
 func SmallWidgetDeletedAccountView() -> some View {
   VStack {
     ZStack {
@@ -39,6 +40,7 @@ func SmallWidgetDeletedAccountView() -> some View {
   }
 }
 
+@MainActor
 func MediumWidgetDeletedAccountView() -> some View {
   VStack {
     ZStack {

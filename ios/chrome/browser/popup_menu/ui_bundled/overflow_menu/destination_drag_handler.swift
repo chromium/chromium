@@ -6,6 +6,7 @@ import SwiftUI
 
 /// Class to handle destination drag interactions in the overflow menu
 /// customization flow.
+@MainActor
 class DestinationDragHandler: ObservableObject {
   /// Collection of data for the current drag interaction.
   struct CurrentDragData {
@@ -161,9 +162,9 @@ class DestinationDragHandler: ObservableObject {
 }
 
 extension DestinationDragHandler: DidEndItemProviderDelegate {
-  func didEndItemProviderDidEnd(_ provider: DidEndItemProvider) {
+  func didEndItemProviderDidEnd(_ providerID: UUID) {
     providers = providers.filter { container in
-      container.provider != nil && container.provider != provider
+      container.provider != nil && container.providerID() != providerID
     }
     if providers.isEmpty {
       endDrag()
@@ -171,17 +172,21 @@ extension DestinationDragHandler: DidEndItemProviderDelegate {
   }
 }
 
-protocol DidEndItemProviderDelegate: AnyObject {
+@MainActor
+protocol DidEndItemProviderDelegate: AnyObject, Sendable {
   /// Alerts the delegate when the item provider is being deinitialized.
-  func didEndItemProviderDidEnd(_ provider: DidEndItemProvider)
+  func didEndItemProviderDidEnd(_ providerID: UUID)
 }
 
 /// A custom item provider class that alerts its delegate when it is about to
 /// be de-initialized.
 class DidEndItemProvider: NSItemProvider {
+  let id: UUID = UUID.init()
   weak var delegate: DidEndItemProviderDelegate?
   deinit {
-    delegate?.didEndItemProviderDidEnd(self)
+    Task { @MainActor[weak delegate, id] in
+      delegate?.didEndItemProviderDidEnd(id)
+    }
   }
 }
 
@@ -191,5 +196,8 @@ class WeakItemProviderContainer {
   weak var provider: DidEndItemProvider?
   init(provider: DidEndItemProvider?) {
     self.provider = provider
+  }
+  func providerID() -> UUID? {
+    self.provider?.id
   }
 }

@@ -63,6 +63,7 @@ import WidgetKit
       }
     }
 
+    @MainActor
     func lockScreenWidgetBackground() -> some View {
       if #available(iOS 16.0, *) {
         return AccessoryWidgetBackground()
@@ -90,6 +91,7 @@ import WidgetKit
       }
     }
 
+    @MainActor
     func lockscreenLauncherWidgetConfiguration(
       ofKind kind: String, forType type: LockscreenLauncherWidgetType
     ) -> some WidgetConfiguration {

@@ -62,7 +62,7 @@ struct OverflowMenuDestinationList: View {
 
   /// `PreferenceKey` to track the leading offset of the scroll view.
   struct ScrollViewLeadingOffset: PreferenceKey {
-    static var defaultValue: CGFloat = .greatestFiniteMagnitude
+    static let defaultValue: CGFloat = .greatestFiniteMagnitude
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
       value = min(value, nextValue())
     }
@@ -72,7 +72,7 @@ struct OverflowMenuDestinationList: View {
   /// can be transformed to other coordinate space by geometry reader.
   struct HighlightedDestinationBounds: PreferenceKey {
     typealias Value = Anchor<CGRect>?
-    static var defaultValue: Value = nil
+    static let defaultValue: Value = nil
     static func reduce(value: inout Value, nextValue: () -> Value) {
       // AnchorPreference might be nil in the middle of layout.
       if let next = nextValue() {
@@ -140,16 +140,18 @@ struct OverflowMenuDestinationList: View {
       )
       .onPreferenceChange(ScrollViewLeadingOffset.self) { newOffset in
         // Only alert the handler if scroll tracking has started.
-        if let listOffset = listOffset,
-          newOffset != listOffset
-        {
-          metricsHandler?.popupMenuScrolledHorizontally()
-        }
-        // Only update the offset if scroll tracking has started or the newOffset
-        // is approximately 0 (this starts scroll tracking). In RTL mode, the
-        // offset is not exactly 0, so a strict comparison won't work.
-        if listOffset != nil || (listOffset == nil && abs(newOffset) < 1e-9) {
-          listOffset = newOffset
+        Task { @MainActor in
+          if let listOffset = listOffset,
+            newOffset != listOffset
+          {
+            metricsHandler?.popupMenuScrolledHorizontally()
+          }
+          // Only update the offset if scroll tracking has started or the newOffset
+          // is approximately 0 (this starts scroll tracking). In RTL mode, the
+          // offset is not exactly 0, so a strict comparison won't work.
+          if listOffset != nil || (listOffset == nil && abs(newOffset) < 1e-9) {
+            listOffset = newOffset
+          }
         }
       }
   }

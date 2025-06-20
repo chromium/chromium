@@ -17,18 +17,21 @@ public final class WidgetsMetricLogger: NSObject {
   /// information about which widget was installed.
   ///
   /// This property must be set before the `logInstalledWidgets` method is called.
+  @MainActor
   @objc public static var widgetInstalledCallback: ((String) -> Void)? = nil
 
   /// A callback to be called when a widget uninstall is detected. This callback is passed the
   /// kind about which widget was uninstalled.
   ///
   /// This property must be set before the `logInstalledWidgets` method is called.
+  @MainActor
   @objc public static var widgetUninstalledCallback: ((String) -> Void)? = nil
 
   /// A callback to be called when a widget in use is detected. This callback is passed the
   /// kind about which widget is in use.
   ///
   /// This property must be set before the `logInstalledWidgets` method is called.
+  @MainActor
   @objc public static var widgetCurrentCallback: ((String) -> Void)? = nil
 
   /// Logs metrics if the user has installed or uninstalled a widget since the last check.
@@ -57,8 +60,10 @@ public final class WidgetsMetricLogger: NSObject {
       }
 
       // Log current widgets.
-      for widget in currentWidgets {
-        widgetCurrentCallback?(widget)
+      Task { @MainActor in
+        for widget in currentWidgets {
+          widgetCurrentCallback?(widget)
+        }
       }
 
       guard let storedWidgets = try? store.retrieveStoredWidgetInfo().get() else {
@@ -81,8 +86,10 @@ public final class WidgetsMetricLogger: NSObject {
           installedWidgets.remove(at: index)
         }
       }
-      for installedWidget in installedWidgets {
-        widgetInstalledCallback?(installedWidget)
+      Task { @MainActor in
+        for installedWidget in installedWidgets {
+          widgetInstalledCallback?(installedWidget)
+        }
       }
 
       // Stored widgets minus current widgets are uninstallations.
@@ -92,8 +99,10 @@ public final class WidgetsMetricLogger: NSObject {
           uninstalledWidgets.remove(at: index)
         }
       }
-      for uninstalledWidget in uninstalledWidgets {
-        widgetUninstalledCallback?(uninstalledWidget)
+      Task { @MainActor in
+        for uninstalledWidget in uninstalledWidgets {
+          widgetUninstalledCallback?(uninstalledWidget)
+        }
       }
     }
   }

@@ -29,7 +29,7 @@ struct IsPressedStyle: ButtonStyle {
 
 /// `PreferenceKey` holding the frame of the icon in the destination view.
 struct IconFramePreferenceKey: PreferenceKey {
-  static var defaultValue: CGRect = .null
+  static let defaultValue: CGRect = .null
   static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
     value = CGRectUnion(value, nextValue())
   }
@@ -162,7 +162,9 @@ struct OverflowMenuDestinationView: View {
         ) { $0 }
       }
       .onPreferenceChange(IconFramePreferenceKey.self) { newFrame in
-        iconFrame = newFrame
+        Task { @MainActor in
+          iconFrame = newFrame
+        }
       }
   }
 
