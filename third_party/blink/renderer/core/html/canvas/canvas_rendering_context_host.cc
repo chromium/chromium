@@ -167,7 +167,9 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGL() {
   auto* provider = GetResourceProviderForWebGL();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (IsValidImageSize()) {
-      CreateCanvasResourceProviderWebGL();
+      resource_provider_for_webgl_ =
+          RenderingContext()->CreateCanvasResourceProvider();
+      UpdateMemoryUsage();
       provider = GetResourceProviderForWebGL();
     }
     if (!provider) {
@@ -213,85 +215,6 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
             GetRenderingContextColorSpace(), gpu::SharedImageUsageSet(), this);
     UpdateMemoryUsage();
   }
-}
-
-void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
-  CHECK(!GetResourceProviderForWebGL());
-
-  base::WeakPtr<CanvasResourceDispatcher> dispatcher =
-      GetOrCreateResourceDispatcher()
-          ? GetOrCreateResourceDispatcher()->GetWeakPtr()
-          : nullptr;
-
-  std::unique_ptr<CanvasResourceProvider> provider;
-  const SkAlphaType alpha_type = GetRenderingContextAlphaType();
-  const viz::SharedImageFormat format = GetRenderingContextFormat();
-  const gfx::ColorSpace color_space = GetRenderingContextColorSpace();
-  // Do not initialize the CRP using Skia. The CRP can have bottom left origin
-  // in which case Skia Graphite won't be able to render into it, and WebGL is
-  // responsible for clearing the CRP when it renders anyway and we have clear
-  // rect tracking in the shared image system to enforce this.
-  constexpr auto kShouldInitialize =
-      CanvasResourceProvider::ShouldInitialize::kNo;
-  if (SharedGpuContext::IsGpuCompositingEnabled() && LowLatencyEnabled()) {
-    // If LowLatency is enabled, we need a resource that is able to perform well
-    // in such mode. It will first try a PassThrough provider and, if that is
-    // not possible, it will try a SharedImage with the appropriate flags.
-    bool using_swapchain =
-        RenderingContext() && RenderingContext()->UsingSwapChain();
-    bool using_webgl_image_chromium =
-        SharedGpuContext::MaySupportImageChromium() &&
-        (RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
-         base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium));
-    if (using_swapchain || using_webgl_image_chromium) {
-      // If either SwapChain is enabled or WebGLImage mode is enabled, we can
-      // try a passthrough provider.
-      DCHECK(LowLatencyEnabled());
-      provider = CanvasResourceProvider::CreatePassThroughProvider(
-          Size(), format, alpha_type, color_space,
-          SharedGpuContext::ContextProviderWrapper(), this);
-    }
-    if (!provider) {
-      // If PassThrough failed, try a SharedImage with usage display enabled.
-      gpu::SharedImageUsageSet shared_image_usage_flags =
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-      provider = CanvasResourceProvider::CreateSharedImageProvider(
-          Size(), format, alpha_type, color_space, kShouldInitialize,
-          SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          shared_image_usage_flags, this);
-    }
-  } else if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    // If there is no LowLatency mode, and GPU is enabled, will try a GPU
-    // SharedImage that should support Usage Display and probably Usage Scanout
-    // if WebGLImageChromium is enabled.
-    gpu::SharedImageUsageSet shared_image_usage_flags =
-        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-    if (SharedGpuContext::MaySupportImageChromium() &&
-        RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
-      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-    }
-    provider = CanvasResourceProvider::CreateSharedImageProvider(
-        Size(), format, alpha_type, color_space, kShouldInitialize,
-        SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-        shared_image_usage_flags, this);
-  }
-
-  // If either of the other modes failed and / or it was not possible to do, we
-  // will backup with a software SharedImage, and if that was not possible with
-  // a Bitmap provider.
-  if (!provider && !SharedGpuContext::IsGpuCompositingEnabled()) {
-    provider =
-        CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
-            Size(), format, alpha_type, color_space, kShouldInitialize,
-            SharedGpuContext::SharedImageInterfaceProvider(), this);
-  }
-  if (!provider) {
-    provider = CanvasResourceProvider::CreateBitmapProvider(
-        Size(), format, alpha_type, color_space, kShouldInitialize, this);
-  }
-
-  resource_provider_for_webgl_ = std::move(provider);
-  UpdateMemoryUsage();
 }
 
 void CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {

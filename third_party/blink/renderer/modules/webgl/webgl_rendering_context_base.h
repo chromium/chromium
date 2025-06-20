@@ -714,6 +714,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
   bool IsAccelerated() const override;
   bool UsingSwapChain() const override;
   void PageVisibilityChanged() override;
+  std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider()
+      override;
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;

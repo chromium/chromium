@@ -1908,6 +1908,84 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
   return nullptr;
 }
 
+std::unique_ptr<CanvasResourceProvider>
+WebGLRenderingContextBase::CreateCanvasResourceProvider() {
+  base::WeakPtr<CanvasResourceDispatcher> dispatcher =
+      Host()->GetOrCreateResourceDispatcher()
+          ? Host()->GetOrCreateResourceDispatcher()->GetWeakPtr()
+          : nullptr;
+
+  std::unique_ptr<CanvasResourceProvider> provider;
+  const SkAlphaType alpha_type = GetAlphaType();
+  const viz::SharedImageFormat format = GetSharedImageFormat();
+  const gfx::ColorSpace color_space = GetColorSpace();
+  // Do not initialize the CRP using Skia. The CRP can have bottom left origin
+  // in which case Skia Graphite won't be able to render into it, and WebGL is
+  // responsible for clearing the CRP when it renders anyway and we have clear
+  // rect tracking in the shared image system to enforce this.
+  constexpr auto kShouldInitialize =
+      CanvasResourceProvider::ShouldInitialize::kNo;
+  if (SharedGpuContext::IsGpuCompositingEnabled() &&
+      Host()->LowLatencyEnabled()) {
+    // If LowLatency is enabled, we need a resource that is able to perform well
+    // in such mode. It will first try a PassThrough provider and, if that is
+    // not possible, it will try a SharedImage with the appropriate flags.
+    bool using_swapchain = UsingSwapChain();
+    bool using_webgl_image_chromium =
+        SharedGpuContext::MaySupportImageChromium() &&
+        (RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
+         base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium));
+    if (using_swapchain || using_webgl_image_chromium) {
+      // If either SwapChain is enabled or WebGLImage mode is enabled, we can
+      // try a passthrough provider.
+      DCHECK(Host()->LowLatencyEnabled());
+      provider = CanvasResourceProvider::CreatePassThroughProvider(
+          Host()->Size(), format, alpha_type, color_space,
+          SharedGpuContext::ContextProviderWrapper(), Host());
+    }
+    if (!provider) {
+      // If PassThrough failed, try a SharedImage with usage display enabled.
+      gpu::SharedImageUsageSet shared_image_usage_flags =
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+      provider = CanvasResourceProvider::CreateSharedImageProvider(
+          Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
+          SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+          shared_image_usage_flags, Host());
+    }
+  } else if (SharedGpuContext::IsGpuCompositingEnabled()) {
+    // If there is no LowLatency mode, and GPU is enabled, will try a GPU
+    // SharedImage that should support Usage Display and probably Usage Scanout
+    // if WebGLImageChromium is enabled.
+    gpu::SharedImageUsageSet shared_image_usage_flags =
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    if (SharedGpuContext::MaySupportImageChromium() &&
+        RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
+      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    }
+    provider = CanvasResourceProvider::CreateSharedImageProvider(
+        Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+        shared_image_usage_flags, Host());
+  }
+
+  // If either of the other modes failed and / or it was not possible to do, we
+  // will backup with a software SharedImage, and if that was not possible with
+  // a Bitmap provider.
+  if (!provider && !SharedGpuContext::IsGpuCompositingEnabled()) {
+    provider =
+        CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
+            Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
+            SharedGpuContext::SharedImageInterfaceProvider(), Host());
+  }
+  if (!provider) {
+    provider = CanvasResourceProvider::CreateBitmapProvider(
+        Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        Host());
+  }
+
+  return provider;
+}
+
 CanvasResourceProvider*
 WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer,

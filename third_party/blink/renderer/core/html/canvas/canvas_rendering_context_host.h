@@ -203,7 +203,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
  private:
   void CreateCanvasResourceProvider2D();
-  void CreateCanvasResourceProviderWebGL();
   void CreateCanvasResourceProviderWebGPU();
 
   std::unique_ptr<CanvasResourceProvider> resource_provider_for_canvas2d_;

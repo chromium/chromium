@@ -70,6 +70,7 @@ class VideoFrame;
 
 namespace blink {
 
+class CanvasResourceProvider;
 class CanvasElementHitTestRegion;
 class ComputedStyle;
 class Document;
@@ -205,6 +206,11 @@ class CORE_EXPORT CanvasRenderingContext
                    draw_type);
   }
   void DidDraw(const SkIRect& dirty_rect, CanvasPerformanceMonitor::DrawType);
+
+  virtual std::unique_ptr<CanvasResourceProvider>
+  CreateCanvasResourceProvider() {
+    NOTREACHED();
+  }
 
   // Returns a StaticBitmapImage containing the current content, or nullptr if
   // it was not possible to obtain that content.
