@@ -258,6 +258,8 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/web_applications",
+    "//chrome/browser/ui/webui/ash/diagnostics_dialog",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:constants",

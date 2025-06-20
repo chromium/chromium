@@ -4,11 +4,15 @@
 
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "ash/wm/window_pin_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -37,6 +41,11 @@ const size_t kUsedWithSuccess = 2;
 class DiagnosticsAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
   DiagnosticsAppIntegrationTest() = default;
+
+  static bool IsDiagnosticsDialogVisible() {
+    return ash::SystemWebDialogDelegate::HasInstance(
+        GURL("chrome://diagnostics"));
+  }
 
  protected:
   base::HistogramTester histogram_tester_;
@@ -208,6 +217,17 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
                    .ExtractBool());
   EXPECT_TRUE(content::EvalJs(app_web_contents, kFindDiagnosticsAppScript)
                   .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
+                       DiagnosticsDialogClosesForLockedFullscreen) {
+  ash::DiagnosticsDialog::ShowDialog();
+  EXPECT_TRUE(IsDiagnosticsDialogVisible());
+
+  // Enter locked fullscreen.
+  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !IsDiagnosticsDialogVisible(); }));
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

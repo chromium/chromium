@@ -58,6 +58,7 @@ include_rules = [
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h",
   "+chrome/browser/ui/views/frame",
   "+chrome/browser/ui/views/tabs",
+  "+chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h",
   "+chrome/browser/ui/webui/tab_strip",
   "+chrome/browser/web_applications",
   "+chrome/common",

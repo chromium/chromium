@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -384,6 +385,15 @@ void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(
   if (assistant::IsAssistantAllowedForProfile(profile) ==
       ash::assistant::AssistantAllowedState::ALLOWED) {
     ash::AssistantState::Get()->NotifyLockedFullScreenStateChanged(locked);
+  }
+
+  // If a window is entering locked fullscreen, then we should close any
+  // diagnostics dialog that may be open, since it would show on top of the
+  // fullscreen window. There is no need to close it when leaving locked
+  // fullscreen, since it is OK for the dialog to be open after exiting locked
+  // fullscreen in case the dialog was somehow opened during locked fullscreen.
+  if (locked) {
+    ash::DiagnosticsDialog::MaybeCloseExistingDialog();
   }
 }
 
