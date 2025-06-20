@@ -72,7 +72,8 @@ class AutofillAiLogger {
 
   void RecordFunnelMetrics(const FunnelState& funnel_state,
                            bool submission_state) const;
-  void RecordKeyMetrics(const FunnelState& funnel_state) const;
+  void RecordKeyMetrics(const FormStructure& form,
+                        const FunnelState& funnel_state) const;
 
   // Records the funnel state of each form. See the documentation of
   // `FunnelState` for more information about what is recorded.

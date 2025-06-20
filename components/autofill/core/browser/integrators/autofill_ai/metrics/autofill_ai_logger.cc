@@ -4,11 +4,16 @@
 
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 
+#include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -32,10 +37,17 @@ void LogFunnelMetric(std::string_view funnel_metric_name,
   base::UmaHistogramBoolean(aggregate_histogram_name, metric_value);
 }
 
-void LogKeyMetric(std::string_view key_metric_name, bool metric_value) {
+void LogKeyMetric(std::string_view key_metric_name,
+                  std::string_view entity_type,
+                  bool metric_value) {
   const std::string generic_histogram_name =
       base::StrCat({key_metric_histogram_prefix, key_metric_name});
   base::UmaHistogramBoolean(generic_histogram_name, metric_value);
+  if (!entity_type.empty()) {
+    const std::string entity_specific_histogram =
+        base::StrCat({generic_histogram_name, ".", entity_type});
+    base::UmaHistogramBoolean(entity_specific_histogram, metric_value);
+  }
 }
 
 }  // namespace
@@ -99,7 +111,7 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
         /*edited_autofilled_field=*/state.edited_autofilled_field,
         /*opt_in_status=*/opt_in_status);
     if (opt_in_status) {
-      RecordKeyMetrics(state);
+      RecordKeyMetrics(form, state);
     }
   }
   RecordFunnelMetrics(state, submission_state);
@@ -125,14 +137,35 @@ void AutofillAiLogger::RecordFunnelMetrics(const FunnelState& funnel_state,
                   funnel_state.edited_autofilled_field);
 }
 
-void AutofillAiLogger::RecordKeyMetrics(const FunnelState& funnel_state) const {
-  LogKeyMetric("FillingReadiness", funnel_state.has_data_to_fill);
-  LogKeyMetric("FillingAssistance", funnel_state.did_fill_suggestions);
+void AutofillAiLogger::RecordKeyMetrics(const FormStructure& form,
+                                        const FunnelState& funnel_state) const {
+  const std::string_view entity_type = [&] {
+    for (const std::unique_ptr<AutofillField>& field : form) {
+      if (std::optional<FieldType> ai_type =
+              field->GetAutofillAiServerTypePredictions()) {
+        switch (AttributeType::FromFieldType(*ai_type)->entity_type().name()) {
+          case EntityTypeName::kPassport:
+            return "Passport";
+          case EntityTypeName::kDriversLicense:
+            return "DriversLicense";
+          case EntityTypeName::kVehicle:
+            return "Vehicle";
+        }
+      }
+    }
+    return "";
+  }();
+
+  LogKeyMetric("FillingReadiness", entity_type, funnel_state.has_data_to_fill);
+  LogKeyMetric("FillingAssistance", entity_type,
+               funnel_state.did_fill_suggestions);
   if (funnel_state.suggestions_shown) {
-    LogKeyMetric("FillingAcceptance", funnel_state.did_fill_suggestions);
+    LogKeyMetric("FillingAcceptance", entity_type,
+                 funnel_state.did_fill_suggestions);
   }
   if (funnel_state.did_fill_suggestions) {
-    LogKeyMetric("FillingCorrectness", !funnel_state.edited_autofilled_field);
+    LogKeyMetric("FillingCorrectness", entity_type,
+                 !funnel_state.edited_autofilled_field);
   }
 }
 

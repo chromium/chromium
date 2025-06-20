@@ -379,6 +379,8 @@ TEST_F(AutofillAiKeyMetricsTest, FillingReadiness) {
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingReadiness", 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.KeyMetrics.FillingReadiness.Passport", 0, 1);
   }
   EntityInstance passport = test::GetPassportEntityInstance();
   AddOrUpdateEntityInstance(passport);
@@ -389,6 +391,8 @@ TEST_F(AutofillAiKeyMetricsTest, FillingReadiness) {
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingReadiness", 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.KeyMetrics.FillingReadiness.Passport", 1, 1);
   }
 }
 
@@ -401,6 +405,8 @@ TEST_F(AutofillAiKeyMetricsTest, FillingAssistance) {
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingAssistance", 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.KeyMetrics.FillingAssistance.Vehicle", 0, 1);
   }
   {
     manager().OnSuggestionsShown(*vehicle_form, *vehicle_form->field(0),
@@ -413,6 +419,8 @@ TEST_F(AutofillAiKeyMetricsTest, FillingAssistance) {
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingAssistance", 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.KeyMetrics.FillingAssistance.Vehicle", 1, 1);
   }
 }
 
@@ -429,6 +437,8 @@ TEST_F(AutofillAiKeyMetricsTest, FillingAcceptance) {
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingAcceptance", 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.KeyMetrics.FillingAcceptance.DriversLicense", 0, 1);
   }
   {
     manager().OnDidFillSuggestion(/*guid=*/{}, *drivers_license_form,
@@ -440,6 +450,8 @@ TEST_F(AutofillAiKeyMetricsTest, FillingAcceptance) {
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingAcceptance", 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.KeyMetrics.FillingAcceptance.DriversLicense", 1, 1);
   }
 }
 
@@ -457,6 +469,8 @@ TEST_F(AutofillAiKeyMetricsTest, FillingCorrectness) {
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingCorrectness", 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.KeyMetrics.FillingCorrectness.Passport", 1, 1);
   }
   {
     manager().OnEditedAutofilledField(*passport_form, *passport_form->field(0),
@@ -466,6 +480,8 @@ TEST_F(AutofillAiKeyMetricsTest, FillingCorrectness) {
 
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingCorrectness", 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Ai.KeyMetrics.FillingCorrectness.Passport", 0, 1);
   }
 }
 
