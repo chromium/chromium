@@ -20,7 +20,7 @@
   font-size: inherit;
   border: none;
   position: relative;
-  gap: 2px;
+  gap: 3px;
 }
 
 .compose-container {
@@ -33,6 +33,10 @@
 .compose-icon {
   filter: invert(1);
   vertical-align: text-bottom;
+  height: 18px;
+  width: 18px;
+  padding-top: 2px;
+  padding-left: 1px;
 }
 
 #glowAnimationWrapper {
