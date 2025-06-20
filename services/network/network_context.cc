@@ -2111,8 +2111,9 @@ void NetworkContext::Verify2QwacCertBinding(
                                   : url_request_context_->cert_verifier();
   cert_verifier->Verify2QwacBinding(
       binding, hostname, tls_certificate, std::move(callback),
-      net::NetLogWithSource::Make(url_request_context_->net_log(),
-                                  net::NetLogSourceType::CERT_VERIFIER_JOB));
+      net::NetLogWithSource::Make(
+          url_request_context_->net_log(),
+          net::NetLogSourceType::CERT_VERIFIER_2QWAC_JOB));
 }
 
 void NetworkContext::NotifyExternalCacheHit(const GURL& url,
