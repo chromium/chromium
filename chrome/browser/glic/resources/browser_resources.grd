@@ -254,17 +254,26 @@ found in the LICENSE file.
       <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'enable location sharing' setting.">
         Use your location to allow enhanced accuracy
       </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL_DATA_PROTECTED" translateable="false" desc="Sublabel describing the 'enable location sharing' setting (data protected).">
+        Use your location to allow enhanced accuracy but not for model improvement
+      </message>
       <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE" translateable="false" desc="Name of the 'enable microphone' setting.">
         Microphone
       </message>
       <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'enable microphone' setting.">
         Enable use of your microphone
       </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL_DATA_PROTECTED" translateable="false" desc="Sublabel describing the 'enable microphone' setting (data protected).">
+        Enable use of your microphone but not for model improvement
+      </message>
       <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE" translateable="false" desc="Name of the 'enable tab access' setting.">
         Current tab access
       </message>
       <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'tab access' setting.">
         Allow feature
+      </message>
+      <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" translateable="false" desc="Sublabel describing the 'tab access' setting (data protected).">
+        Allow feature but not for model improvement
       </message>
       <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON" translateable="false" desc="Name of the 'activity' button.">
         Activity
