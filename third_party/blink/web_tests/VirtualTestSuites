@@ -2613,6 +2613,32 @@
       "almaher@microsoft.com"
     ]
   },
+  "These tests involve requiring a prefetch proxy, but since WPT origins are ",
+  "not allowed to use the proxy in Chromium, we pass an argument telling ",
+  "Chromium to bypass the proxy and pretend it was used instead. See also",
+  "external/wpt/speculation-rules/prefetch/resources/utils.sub.js.",
+  "These tests are skipped in other configurations via text expectations.",
+  {
+    "prefix": "prefetch-proxy",
+    "owners": [
+      "domenic@chromium.org",
+      "nhiroki@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/speculation-rules/prefetch/anonymous-client.https.html",
+      "external/wpt/speculation-rules/prefetch/cross-origin-cookies-anonymous-client-ip-duplicate.https.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--bypass-prefetch-proxy-for-host=not-web-platform.test"
+    ],
+    "expires": "never"
+  },
   "These tests require the experimental speculative prefetch feature, and",
   "requires extra switches to enable content implementation of speculation",
   "rules prefetch.",
@@ -2633,8 +2659,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--disable-features=PrefetchServiceWorker",
-      "--bypass-prefetch-proxy-for-host=not-web-platform.test"
+      "--disable-features=PrefetchServiceWorker"
     ],
     "expires": "Oct 1, 2025"
   },
@@ -2654,8 +2679,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=Prerender2FallbackPrefetchSpecRules,PrefetchServiceWorker",
-      "--bypass-prefetch-proxy-for-host=not-web-platform.test"
+      "--enable-features=Prerender2FallbackPrefetchSpecRules,PrefetchServiceWorker"
     ],
     "expires": "Oct 1, 2025"
   },
@@ -2734,7 +2758,6 @@
     "args": [
       "--enable-features=Prerender2FallbackPrefetchSpecRules",
       "--disable-features=PrefetchServiceWorker",
-      "--bypass-prefetch-proxy-for-host=not-web-platform.test",
       "--disable-threaded-compositing",
       "--disable-threaded-animation"
     ],
