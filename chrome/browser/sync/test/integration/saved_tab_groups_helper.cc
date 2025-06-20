@@ -139,6 +139,52 @@ void SavedTabOrGroupDoesNotExistChecker::OnTabGroupRemoved(
   CheckExitCondition();
 }
 
+// ==========================================
+// --- SavedTabGroupCountMatchesChecker ---
+// ==========================================
+SavedTabGroupCountMatchesChecker::SavedTabGroupCountMatchesChecker(
+    TabGroupSyncService* service,
+    size_t expected_tab_group_count,
+    bool count_shared_only)
+    : service_(service),
+      expected_tab_group_count_(expected_tab_group_count),
+      count_shared_only_(count_shared_only) {
+  CHECK(service_);
+  service_->AddObserver(this);
+}
+
+SavedTabGroupCountMatchesChecker::~SavedTabGroupCountMatchesChecker() {
+  service_->RemoveObserver(this);
+}
+
+bool SavedTabGroupCountMatchesChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  size_t tab_group_count = 0;
+  for (const SavedTabGroup& group : service_->GetAllGroups()) {
+    if (count_shared_only_ && !group.collaboration_id()) {
+      continue;
+    }
+    tab_group_count++;
+  }
+
+  *os << "Waiting for tab group count: expected = " << expected_tab_group_count_
+      << ", actual = " << tab_group_count
+      << ", count_shared_only = " << count_shared_only_;
+  return expected_tab_group_count_ == tab_group_count;
+}
+
+void SavedTabGroupCountMatchesChecker::OnTabGroupAdded(
+    const SavedTabGroup& group,
+    TriggerSource source) {
+  CheckExitCondition();
+}
+
+void SavedTabGroupCountMatchesChecker::OnTabGroupRemoved(
+    const base::Uuid& sync_id,
+    TriggerSource source) {
+  CheckExitCondition();
+}
+
 // ===================================
 // --- SavedTabGroupMatchesChecker ---
 // ===================================

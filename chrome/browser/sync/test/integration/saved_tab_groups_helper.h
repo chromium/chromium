@@ -95,6 +95,36 @@ class SavedTabOrGroupDoesNotExistChecker
   raw_ptr<TabGroupSyncService> const service_;
 };
 
+// Checks that the number of expected saved tab groups matches with the service.
+class SavedTabGroupCountMatchesChecker : public StatusChangeChecker,
+                                         public TabGroupSyncService::Observer {
+ public:
+  // The caller must ensure that `service` is not null and will outlive this
+  // object.
+  SavedTabGroupCountMatchesChecker(TabGroupSyncService* service,
+                                   size_t expected_tab_group_count,
+                                   bool count_shared_only);
+  SavedTabGroupCountMatchesChecker(const SavedTabGroupCountMatchesChecker&) =
+      delete;
+  SavedTabGroupCountMatchesChecker& operator=(
+      const SavedTabGroupCountMatchesChecker&) = delete;
+  ~SavedTabGroupCountMatchesChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+  // TabGroupSyncService::Observer.
+  void OnTabGroupAdded(const SavedTabGroup& group,
+                       TriggerSource source) override;
+  void OnTabGroupRemoved(const base::Uuid& sync_id,
+                         TriggerSource source) override;
+
+ private:
+  raw_ptr<TabGroupSyncService> const service_;
+  const size_t expected_tab_group_count_;
+  const bool count_shared_only_;
+};
+
 // Checks that a matching group exists in the service.
 class SavedTabGroupMatchesChecker : public StatusChangeChecker,
                                     public TabGroupSyncService::Observer {

@@ -25,6 +25,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/public/utils.h"
+#include "components/saved_tab_groups/public/versioning_message_controller.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -170,15 +171,14 @@ class SharedTabGroupDataErrorChecker : public SingleClientStatusChangeChecker {
 
 class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
  public:
-  SingleClientSharedTabGroupDataSyncTest() : SyncTest(SINGLE_CLIENT) {
+  SingleClientSharedTabGroupDataSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  ~SingleClientSharedTabGroupDataSyncTest() override = default;
+
+  void SetUp() override {
     feature_overrides_.InitWithFeatures(
         {data_sharing::features::kDataSharingFeature,
          tab_groups::kTabGroupSyncServiceDesktopMigration},
         {});
-  }
-  ~SingleClientSharedTabGroupDataSyncTest() override = default;
-
-  void SetUp() override {
 #if BUILDFLAG(IS_ANDROID)
     if (base::android::BuildInfo::GetInstance()->is_automotive()) {
       // TODO(crbug.com/399444939): Re-enable once automotive is supported.
@@ -306,7 +306,7 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
     SyncTest::SetUpOnMainThread();
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList feature_overrides_;
 };
 
@@ -821,6 +821,216 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
       UnorderedElementsAre(HasTabMetadata("tab 1", "http://google.com/1"),
                            HasTabMetadata("tab 2", "http://google.com/2")));
 }
+
+class SingleClientSharedTabGroupVersioningSyncTest
+    : public SingleClientSharedTabGroupDataSyncTest {
+ public:
+  SingleClientSharedTabGroupVersioningSyncTest() = default;
+  ~SingleClientSharedTabGroupVersioningSyncTest() override = default;
+
+  void SetUp() override {
+    SetupFeatures();
+    SyncTest::SetUp();
+  }
+
+  void SetupFeatures() {
+    // The test is consists of 4 sessions.
+    // Session 1: Version up-to-date.
+    // Session 2: Version out of date.
+    // Session 3: Version out of date.
+    // Session 4: Version updated.
+    // Setting the update chrome feature accordingly.
+    bool version_out_of_date =
+        IsSpecificTest(
+            "PRE_PRE_"
+            "ShouldShowVersioningMessagesAfterRestart") ||
+        IsSpecificTest(
+            "PRE_"
+            "ShouldShowVersioningMessagesAfterRestart");
+    if (version_out_of_date) {
+      feature_overrides_.InitWithFeatures(
+          {data_sharing::features::kDataSharingFeature,
+           tab_groups::kTabGroupSyncServiceDesktopMigration,
+           data_sharing::features::kDataSharingEnableUpdateChromeUI},
+          {data_sharing::features::kSharedDataTypesKillSwitch});
+    } else {
+      feature_overrides_.InitWithFeatures(
+          {data_sharing::features::kDataSharingFeature,
+           tab_groups::kTabGroupSyncServiceDesktopMigration,
+           data_sharing::features::kSharedDataTypesKillSwitch},
+          {data_sharing::features::kDataSharingEnableUpdateChromeUI});
+    }
+  }
+
+  bool IsSpecificTest(const std::string& target_test_name) {
+    std::string current_test_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
+    return current_test_name == target_test_name;
+  }
+
+  bool ExpectMessageUiShouldBeShown(
+      VersioningMessageController* versioning_message_controller,
+      VersioningMessageController::MessageType message_type) {
+    base::RunLoop run_loop;
+    bool actual_value = false;
+    versioning_message_controller->ShouldShowMessageUiAsync(
+        message_type, base::BindOnce(
+                          [](base::RunLoop* run_loop, bool* actual_value_ptr,
+                             bool actual_value_from_callback) {
+                            *actual_value_ptr = actual_value_from_callback;
+                            run_loop->Quit();
+                          },
+                          &run_loop, &actual_value));
+    run_loop.Run();
+    return actual_value;
+  }
+};
+
+// Versioning test with version up-to-date.
+IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupVersioningSyncTest,
+                       PRE_PRE_PRE_ShouldShowVersioningMessagesAfterRestart) {
+  const base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+  const syncer::CollaborationId kCollaborationId("collaboration");
+
+  // SetupClients() must be called to get access to IdentityManager before
+  // injecting entities to the fake server.
+  ASSERT_TRUE(SetupClients());
+
+  AddSpecificsToFakeServer(
+      MakeSharedTabGroupSpecifics(
+          group_guid,
+          /*originating_saved_group_guid=*/base::Uuid::GenerateRandomV4(),
+          "title", sync_pb::SharedTabGroup_Color_CYAN),
+      kCollaborationId);
+  AddSpecificsToFakeServer(
+      MakeSharedTabGroupTabSpecifics(base::Uuid::GenerateRandomV4(), group_guid,
+                                     "tab 1", GURL("http://google.com/1")),
+      kCollaborationId);
+  AddSpecificsToFakeServer(
+      MakeSharedTabGroupTabSpecifics(base::Uuid::GenerateRandomV4(), group_guid,
+                                     "tab 2", GURL("http://google.com/2")),
+      kCollaborationId);
+
+  ASSERT_TRUE(SetupSync());
+  RegisterCollaboration(kCollaborationId);
+
+  ASSERT_THAT(GetAllTabGroups(), SizeIs(1));
+
+  // Verify that the no versioning messages are available.
+  VersioningMessageController* versioning_message_controller =
+      GetTabGroupSyncService()->GetVersioningMessageController();
+  EXPECT_FALSE(
+      ExpectMessageUiShouldBeShown(versioning_message_controller,
+                                   VersioningMessageController::MessageType::
+                                       VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE));
+  EXPECT_FALSE(ExpectMessageUiShouldBeShown(
+      versioning_message_controller,
+      VersioningMessageController::MessageType::VERSION_UPDATED_MESSAGE));
+}
+
+// Versioning test with version out-of-date after restart.
+IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupVersioningSyncTest,
+                       PRE_PRE_ShouldShowVersioningMessagesAfterRestart) {
+  // Restart chrome with chrome version out-of-date.
+  const syncer::CollaborationId kCollaborationId("collaboration");
+  ASSERT_TRUE(SetupClients());
+  GetFakeServer()->AddCollaboration(kCollaborationId);
+  RegisterCollaboration(kCollaborationId);
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  ASSERT_TRUE(
+      SavedTabGroupCountMatchesChecker(GetTabGroupSyncService(), 0, true)
+          .Wait());
+  ASSERT_THAT(GetAllTabGroups(), SizeIs(0));
+
+  // Verify that the appropriate versioning messages are available.
+  VersioningMessageController* versioning_message_controller =
+      GetTabGroupSyncService()->GetVersioningMessageController();
+  EXPECT_TRUE(
+      ExpectMessageUiShouldBeShown(versioning_message_controller,
+                                   VersioningMessageController::MessageType::
+                                       VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE));
+  EXPECT_FALSE(ExpectMessageUiShouldBeShown(
+      versioning_message_controller,
+      VersioningMessageController::MessageType::VERSION_UPDATED_MESSAGE));
+
+  // Mimic persistent message shown in the UI.
+  versioning_message_controller->OnMessageUiShown(
+      VersioningMessageController::MessageType::
+          VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE);
+}
+
+// Versioning test: Restart again with version out-of-date.
+IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupVersioningSyncTest,
+                       PRE_ShouldShowVersioningMessagesAfterRestart) {
+  // Restart chrome with chrome version out-of-date.
+  const syncer::CollaborationId kCollaborationId("collaboration");
+  ASSERT_TRUE(SetupClients());
+  GetFakeServer()->AddCollaboration(kCollaborationId);
+  RegisterCollaboration(kCollaborationId);
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  ASSERT_TRUE(
+      SavedTabGroupCountMatchesChecker(GetTabGroupSyncService(), 0, true)
+          .Wait());
+  ASSERT_THAT(GetAllTabGroups(), SizeIs(0));
+
+  // Verify that the appropriate versioning messages are available.
+  VersioningMessageController* versioning_message_controller =
+      GetTabGroupSyncService()->GetVersioningMessageController();
+  EXPECT_TRUE(
+      ExpectMessageUiShouldBeShown(versioning_message_controller,
+                                   VersioningMessageController::MessageType::
+                                       VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE));
+  EXPECT_FALSE(ExpectMessageUiShouldBeShown(
+      versioning_message_controller,
+      VersioningMessageController::MessageType::VERSION_UPDATED_MESSAGE));
+
+  // Mimic persistent message shown in the UI.
+  versioning_message_controller->OnMessageUiShown(
+      VersioningMessageController::MessageType::
+          VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE);
+}
+
+// Versioning test with version updated just now.
+IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupVersioningSyncTest,
+                       ShouldShowVersioningMessagesAfterRestart) {
+  // Restart chrome with version updated.
+  const base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+  const syncer::CollaborationId kCollaborationId("collaboration");
+  ASSERT_TRUE(SetupClients());
+
+  AddSpecificsToFakeServer(
+      MakeSharedTabGroupSpecifics(
+          group_guid,
+          /*originating_saved_group_guid=*/base::Uuid::GenerateRandomV4(),
+          "title", sync_pb::SharedTabGroup_Color_CYAN),
+      kCollaborationId);
+  AddSpecificsToFakeServer(
+      MakeSharedTabGroupTabSpecifics(base::Uuid::GenerateRandomV4(), group_guid,
+                                     "tab 1", GURL("http://google.com/1")),
+      kCollaborationId);
+  AddSpecificsToFakeServer(
+      MakeSharedTabGroupTabSpecifics(base::Uuid::GenerateRandomV4(), group_guid,
+                                     "tab 2", GURL("http://google.com/2")),
+      kCollaborationId);
+
+  ASSERT_TRUE(SetupSync());
+  RegisterCollaboration(kCollaborationId);
+
+  ASSERT_THAT(GetAllTabGroups(), SizeIs(1));
+
+  VersioningMessageController* versioning_message_controller =
+      GetTabGroupSyncService()->GetVersioningMessageController();
+  EXPECT_FALSE(
+      ExpectMessageUiShouldBeShown(versioning_message_controller,
+                                   VersioningMessageController::MessageType::
+                                       VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE));
+  EXPECT_TRUE(ExpectMessageUiShouldBeShown(
+      versioning_message_controller,
+      VersioningMessageController::MessageType::VERSION_UPDATED_MESSAGE));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
