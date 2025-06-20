@@ -16,7 +16,7 @@ declare_args() {
   # pass the "--translate-genders" flag into GRIT to generate 4 translation
   # files per locale ("", "_FEMININE", "_MASCULINE", "_NEUTER") instead of
   # one.
-  translate_genders = is_android
+  translate_genders = false
 }
 
 # The following additional platform specific lists are created:
