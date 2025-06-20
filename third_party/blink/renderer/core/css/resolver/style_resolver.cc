@@ -1403,10 +1403,14 @@ const ComputedStyle* StyleResolver::ResolveStyle(
 
   IncrementResolvedStyleCounters(style_request, GetDocument());
   if (InvalidationTracingFlag::IsEnabled()) [[unlikely]] {
+    Element* styled_element = state.GetStyledElement();
+    if (styled_element == nullptr) {
+      styled_element = element;
+    }
     DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
         TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
         "StyleResolver::ResolveStyle",
-        inspector_style_resolver_resolve_style_event::Data, element,
+        inspector_style_resolver_resolve_style_event::Data, styled_element,
         style_request.pseudo_id);
   }
 
