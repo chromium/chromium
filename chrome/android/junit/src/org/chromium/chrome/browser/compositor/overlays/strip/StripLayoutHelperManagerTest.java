@@ -311,11 +311,7 @@ public class StripLayoutHelperManagerTest {
         var appHeaderState = Mockito.mock(AppHeaderState.class);
         doReturn(true).when(appHeaderState).isInDesktopWindow();
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
-        @ColorInt
-        int focusedColor =
-                isNightMode
-                        ? SemanticColorUtils.getColorSurfaceContainer(mActivity)
-                        : SemanticColorUtils.getColorSurfaceContainerHigh(mActivity);
+        @ColorInt int focusedColor = SemanticColorUtils.getColorSurfaceContainerHigh(mActivity);
         @ColorInt
         int unfocusedColor =
                 isNightMode

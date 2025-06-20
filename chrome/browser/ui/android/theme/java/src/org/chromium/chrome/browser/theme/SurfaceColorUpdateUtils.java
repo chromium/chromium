@@ -85,9 +85,7 @@ public class SurfaceColorUpdateUtils {
         if (useNewToolbarSurfaceColor()) {
             return SemanticColorUtils.getColorSurfaceDim(context);
         }
-        @ColorInt int darkThemeColor = SemanticColorUtils.getColorSurfaceContainer(context);
-        @ColorInt int lightThemeColor = SemanticColorUtils.getColorSurfaceContainerHigh(context);
-        return ColorUtils.inNightMode(context) ? darkThemeColor : lightThemeColor;
+        return SemanticColorUtils.getColorSurfaceContainerHigh(context);
     }
 
     /**
