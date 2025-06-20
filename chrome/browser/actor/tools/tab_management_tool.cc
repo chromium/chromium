@@ -22,14 +22,20 @@ namespace actor {
 
 using ::tabs::TabHandle;
 
-TabManagementTool::TabManagementTool(int32_t window_id,
+TabManagementTool::TabManagementTool(TaskId task_id,
+                                     AggregatedJournal& journal,
+                                     int32_t window_id,
                                      WindowOpenDisposition create_disposition)
-    : action_(Action::kCreate),
+    : Tool(task_id, journal),
+      action_(Action::kCreate),
       create_disposition_(create_disposition),
       window_id_(window_id) {}
 
-TabManagementTool::TabManagementTool(Action action, TabHandle tab_handle)
-    : action_(action), target_tab_(tab_handle) {}
+TabManagementTool::TabManagementTool(TaskId task_id,
+                                     AggregatedJournal& journal,
+                                     Action action,
+                                     TabHandle tab_handle)
+    : Tool(task_id, journal), action_(action), target_tab_(tab_handle) {}
 
 TabManagementTool::~TabManagementTool() = default;
 

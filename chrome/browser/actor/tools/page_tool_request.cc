@@ -44,13 +44,14 @@ PageToolRequest::~PageToolRequest() = default;
 PageToolRequest::PageToolRequest(const PageToolRequest& other) = default;
 
 ToolRequest::CreateToolResult PageToolRequest::CreateTool(
+    TaskId task_id,
     AggregatedJournal& journal) const {
   if (!GetTabHandle().Get()) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          "The tab is no longer present.")};
   }
 
-  return {std::make_unique<PageTool>(*this, journal), MakeOkResult()};
+  return {std::make_unique<PageTool>(task_id, journal, *this), MakeOkResult()};
 }
 
 const std::optional<std::string>& PageToolRequest::DocumentIdentifier() const {

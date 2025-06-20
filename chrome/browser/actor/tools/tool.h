@@ -9,7 +9,8 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/actor/aggregated_journal.h"
+#include "base/memory/safe_ref.h"
+#include "chrome/browser/actor/task_id.h"
 #include "chrome/common/actor.mojom.h"
 #include "url/gurl.h"
 
@@ -19,6 +20,7 @@ class AnnotatedPageContent;
 
 namespace actor {
 
+class AggregatedJournal;
 class ObservationDelayController;
 
 // Interface all actor tools implement. A tool is held by the ToolController and
@@ -30,8 +32,12 @@ class Tool {
   // eliminate the other redundant definitions.
   using ValidateCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
   using InvokeCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
-  Tool() = default;
-  virtual ~Tool() = default;
+  Tool(TaskId task_id, AggregatedJournal& journal);
+  virtual ~Tool();
+
+  // Not copyable or movable.
+  Tool(const Tool& other) = delete;
+  Tool(Tool&& other) = delete;
 
   // Perform any browser-side validation on the tool. The given callback must be
   // invoked by the tool when validation is completed. If the result given to
@@ -46,8 +52,7 @@ class Tool {
   // further opportunities for changes to the live browser state before invoking
   // the tool.
   virtual mojom::ActionResultPtr TimeOfUseValidation(
-      const optimization_guide::proto::AnnotatedPageContent* last_observation)
-      const;
+      const optimization_guide::proto::AnnotatedPageContent* last_observation);
 
   // Perform the action of the tool. The given callback must be invoked when the
   // tool has finished its actions.
@@ -70,6 +75,14 @@ class Tool {
   // loading navigation to settle.
   virtual std::unique_ptr<ObservationDelayController> GetObservationDelayer()
       const = 0;
+
+ protected:
+  TaskId task_id() const { return task_id_; }
+  AggregatedJournal& journal() { return *journal_; }
+
+ private:
+  TaskId task_id_;
+  base::SafeRef<AggregatedJournal> journal_;
 };
 
 }  // namespace actor

@@ -20,7 +20,8 @@ class CreateTabToolRequest : public ToolRequest {
   CreateTabToolRequest(int32_t window_id, WindowOpenDisposition disposition);
   ~CreateTabToolRequest() override;
 
-  CreateToolResult CreateTool(AggregatedJournal& journal) const override;
+  CreateToolResult CreateTool(TaskId task_id,
+                              AggregatedJournal& journal) const override;
   std::string JournalEvent() const override;
 
  private:
@@ -33,7 +34,8 @@ class ActivateTabToolRequest : public TabToolRequest {
  public:
   explicit ActivateTabToolRequest(tabs::TabHandle tab);
   ~ActivateTabToolRequest() override;
-  CreateToolResult CreateTool(AggregatedJournal& journal) const override;
+  CreateToolResult CreateTool(TaskId task_id,
+                              AggregatedJournal& journal) const override;
   std::string JournalEvent() const override;
 };
 
@@ -42,7 +44,8 @@ class CloseTabToolRequest : public TabToolRequest {
  public:
   explicit CloseTabToolRequest(tabs::TabHandle tab);
   ~CloseTabToolRequest() override;
-  CreateToolResult CreateTool(AggregatedJournal& journal) const override;
+  CreateToolResult CreateTool(TaskId task_id,
+                              AggregatedJournal& journal) const override;
   std::string JournalEvent() const override;
 };
 

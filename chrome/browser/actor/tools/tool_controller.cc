@@ -46,7 +46,8 @@ ToolController::~ToolController() = default;
 void ToolController::Invoke(const ToolRequest& request,
                             const AnnotatedPageContent* last_observation,
                             ResultCallback result_callback) {
-  ToolRequest::CreateToolResult create_result = request.CreateTool(*journal_);
+  ToolRequest::CreateToolResult create_result =
+      request.CreateTool(task_id_, *journal_);
 
   if (!IsOk(*create_result.result)) {
     CHECK(!create_result.tool);

@@ -15,7 +15,9 @@ namespace actor {
 // Waits for a page to settle before continuing with other tools.
 class WaitTool : public Tool {
  public:
-  explicit WaitTool(base::TimeDelta wait_duration);
+  explicit WaitTool(TaskId task_id,
+                    AggregatedJournal& journal,
+                    base::TimeDelta wait_duration);
   ~WaitTool() override;
 
   // actor::Tool

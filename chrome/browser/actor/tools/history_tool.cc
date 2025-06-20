@@ -33,9 +33,13 @@ using ::content::WebContents;
 using ::tabs::TabHandle;
 using ::tabs::TabInterface;
 
-HistoryTool::HistoryTool(WebContents& web_contents,
+HistoryTool::HistoryTool(TaskId task_id,
+                         AggregatedJournal& journal,
+                         WebContents& web_contents,
                          HistoryToolRequest::Direction direction)
-    : WebContentsObserver(&web_contents), direction_(direction) {}
+    : Tool(task_id, journal),
+      WebContentsObserver(&web_contents),
+      direction_(direction) {}
 
 HistoryTool::~HistoryTool() = default;
 

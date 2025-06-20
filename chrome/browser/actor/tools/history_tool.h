@@ -29,7 +29,9 @@ namespace actor {
 // Performs a history navigation in a WebContents.
 class HistoryTool : public Tool, content::WebContentsObserver {
  public:
-  HistoryTool(content::WebContents& web_contents,
+  HistoryTool(TaskId task_id,
+              AggregatedJournal& journal,
+              content::WebContents& web_contents,
               HistoryToolRequest::Direction direction);
   ~HistoryTool() override;
 

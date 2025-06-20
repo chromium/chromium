@@ -16,8 +16,10 @@ namespace actor {
 
 bool WaitTool::no_delay_for_testing_ = false;
 
-WaitTool::WaitTool(base::TimeDelta wait_duration)
-    : wait_duration_(wait_duration) {}
+WaitTool::WaitTool(TaskId task_id,
+                   AggregatedJournal& journal,
+                   base::TimeDelta wait_duration)
+    : Tool(task_id, journal), wait_duration_(wait_duration) {}
 
 WaitTool::~WaitTool() = default;
 

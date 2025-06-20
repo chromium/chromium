@@ -19,6 +19,7 @@ NavigateToolRequest::NavigateToolRequest(TabHandle tab_handle, GURL url)
 NavigateToolRequest::~NavigateToolRequest() = default;
 
 ToolRequest::CreateToolResult NavigateToolRequest::CreateTool(
+    TaskId task_id,
     AggregatedJournal& journal) const {
   TabInterface* tab = GetTabHandle().Get();
   if (!tab) {
@@ -26,7 +27,8 @@ ToolRequest::CreateToolResult NavigateToolRequest::CreateTool(
                                          "The tab is no longer present.")};
   }
 
-  return {std::make_unique<NavigateTool>(*tab->GetContents(), url_),
+  return {std::make_unique<NavigateTool>(task_id, journal, *tab->GetContents(),
+                                         url_),
           MakeOkResult()};
 }
 

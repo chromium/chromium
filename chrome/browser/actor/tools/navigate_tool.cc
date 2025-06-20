@@ -20,8 +20,11 @@ using content::WebContents;
 
 namespace actor {
 
-NavigateTool::NavigateTool(WebContents& web_contents, const GURL& url)
-    : WebContentsObserver(&web_contents), url_(url) {}
+NavigateTool::NavigateTool(TaskId task_id,
+                           AggregatedJournal& journal,
+                           WebContents& web_contents,
+                           const GURL& url)
+    : Tool(task_id, journal), WebContentsObserver(&web_contents), url_(url) {}
 
 NavigateTool::~NavigateTool() = default;
 

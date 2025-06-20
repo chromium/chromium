@@ -15,8 +15,10 @@ WaitToolRequest::WaitToolRequest(base::TimeDelta wait_duration)
 WaitToolRequest::~WaitToolRequest() = default;
 
 ToolRequest::CreateToolResult WaitToolRequest::CreateTool(
+    TaskId task_id,
     AggregatedJournal& journal) const {
-  return {std::make_unique<WaitTool>(wait_duration_), MakeOkResult()};
+  return {std::make_unique<WaitTool>(task_id, journal, wait_duration_),
+          MakeOkResult()};
 }
 
 std::string WaitToolRequest::JournalEvent() const {

@@ -48,7 +48,8 @@ class PageToolRequest : public TabToolRequest {
   virtual std::unique_ptr<PageToolRequest> Clone() const = 0;
 
   // ToolRequest
-  CreateToolResult CreateTool(AggregatedJournal& journal) const override;
+  CreateToolResult CreateTool(TaskId task_id,
+                              AggregatedJournal& journal) const override;
 
   // The provided document identifier in which this request should act. nullopt
   // if using coordinates in which case the target document must be hit tested

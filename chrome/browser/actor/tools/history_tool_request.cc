@@ -18,6 +18,7 @@ HistoryToolRequest::HistoryToolRequest(tabs::TabHandle tab, Direction direction)
 HistoryToolRequest::~HistoryToolRequest() = default;
 
 ToolRequest::CreateToolResult HistoryToolRequest::CreateTool(
+    TaskId task_id,
     AggregatedJournal& journal) const {
   TabInterface* tab = GetTabHandle().Get();
 
@@ -27,7 +28,8 @@ ToolRequest::CreateToolResult HistoryToolRequest::CreateTool(
   }
 
   CHECK(tab->GetContents());
-  return {std::make_unique<HistoryTool>(*tab->GetContents(), direction_),
+  return {std::make_unique<HistoryTool>(task_id, journal, *tab->GetContents(),
+                                        direction_),
           MakeOkResult()};
 }
 

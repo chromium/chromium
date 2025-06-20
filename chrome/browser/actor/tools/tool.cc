@@ -4,13 +4,17 @@
 
 #include "chrome/browser/actor/tools/tool.h"
 
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/common/actor/action_result.h"
 
 namespace actor {
 
+Tool::Tool(TaskId task_id, AggregatedJournal& journal)
+    : task_id_(task_id), journal_(journal.GetSafeRef()) {}
+Tool::~Tool() = default;
+
 mojom::ActionResultPtr Tool::TimeOfUseValidation(
-    const optimization_guide::proto::AnnotatedPageContent* last_observation)
-    const {
+    const optimization_guide::proto::AnnotatedPageContent* last_observation) {
   // TODO(crbug.com/411462297): This should be made pure-virtual.
   return MakeOkResult();
 }

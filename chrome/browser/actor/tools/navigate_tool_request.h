@@ -21,7 +21,8 @@ class NavigateToolRequest : public TabToolRequest {
   ~NavigateToolRequest() override;
 
   // ToolRequest
-  CreateToolResult CreateTool(AggregatedJournal& journal) const override;
+  CreateToolResult CreateTool(TaskId task_id,
+                              AggregatedJournal& journal) const override;
   std::string JournalEvent() const override;
 
  private:

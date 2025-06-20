@@ -21,11 +21,16 @@ class TabManagementTool : public Tool {
  public:
   enum Action { kCreate, kActivate, kClose };
 
-  // Public for std::make_unique, use For* static methods above.
   // Create constructor
-  TabManagementTool(int32_t window, WindowOpenDisposition create_disposition);
+  TabManagementTool(TaskId task_id,
+                    AggregatedJournal& journal,
+                    int32_t window,
+                    WindowOpenDisposition create_disposition);
   // Activate|Close constructor.
-  TabManagementTool(Action action, tabs::TabHandle target_tab);
+  TabManagementTool(TaskId task_id,
+                    AggregatedJournal& journal,
+                    Action action,
+                    tabs::TabHandle target_tab);
 
   ~TabManagementTool() override;
 

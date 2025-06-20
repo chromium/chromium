@@ -35,8 +35,7 @@ using ::content::RenderWidgetHost;
 using ::content::WebContents;
 using ::content::WebContentsObserver;
 using ::optimization_guide::DocumentIdentifierUserData;
-using optimization_guide::proto::ActionTarget;
-using optimization_guide::proto::AnnotatedPageContent;
+using ::optimization_guide::proto::AnnotatedPageContent;
 using ::tabs::TabHandle;
 using ::tabs::TabInterface;
 
@@ -205,18 +204,10 @@ class RenderFrameChangeObserver : public WebContentsObserver {
   base::OnceClosure callback_;
 };
 
-PageTool::PageTool(const PageToolRequest& request, AggregatedJournal& journal)
-    : request_(request.Clone()) {
-  // TODO(crbug.com/411462297): We shouldn't assume we have a frame until TOCTOU
-  // checks are done - a frame should only be resolved at that time. Same for
-  // tab.
-  RenderFrameHost* frame = FindTargetLocalRootFrame(
-      request.GetTabHandle(), request.DocumentIdentifier(),
-      request.GetTarget());
-  if (frame) {
-    journal.EnsureJournalBound(*frame);
-  }
-}
+PageTool::PageTool(TaskId task_id,
+                   AggregatedJournal& journal,
+                   const PageToolRequest& request)
+    : Tool(task_id, journal), request_(request.Clone()) {}
 
 PageTool::~PageTool() = default;
 
@@ -227,17 +218,18 @@ void PageTool::Validate(ValidateCallback callback) {
 }
 
 mojom::ActionResultPtr PageTool::TimeOfUseValidation(
-    const AnnotatedPageContent* last_observation) const {
+    const AnnotatedPageContent* last_observation) {
+  TabInterface* tab = request_->GetTabHandle().Get();
+  if (!tab) {
+    return MakeResult(mojom::ActionResultCode::kTabWentAway);
+  }
+
   RenderFrameHost* frame = FindTargetLocalRootFrame(
       request_->GetTabHandle(), request_->DocumentIdentifier(),
       request_->GetTarget());
   if (!frame) {
     return MakeResult(mojom::ActionResultCode::kFrameWentAway);
   }
-
-  TabInterface* tab = request_->GetTabHandle().Get();
-  // If the frame still exists the tab must as well.
-  CHECK(tab);
 
   // Perform validation for coordinate based target only.
   if (std::holds_alternative<PageToolRequest::CoordinateTarget>(
@@ -249,17 +241,20 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
     }
   }
 
+  has_completed_time_of_use_ = true;
+  target_document_ = frame->GetWeakDocumentPtr();
+
   return MakeOkResult();
 }
 
 void PageTool::Invoke(InvokeCallback callback) {
-  invoke_callback_ = std::move(callback);
-
   // Frame was validated in TimeOfUseValidation.
-  RenderFrameHost* frame = FindTargetLocalRootFrame(
-      request_->GetTabHandle(), request_->DocumentIdentifier(),
-      request_->GetTarget());
-  CHECK(frame);
+  CHECK(GetFrame());
+  RenderFrameHost& frame = *GetFrame();
+
+  journal().EnsureJournalBound(frame);
+
+  invoke_callback_ = std::move(callback);
 
   auto request = actor::mojom::ToolInvocation::New();
   request->action = request_->ToMojoToolAction();
@@ -267,7 +262,7 @@ void PageTool::Invoke(InvokeCallback callback) {
   // ToolRequest params are checked for validity at creation.
   CHECK(request->action);
 
-  frame->GetRemoteAssociatedInterfaces()->GetInterface(&chrome_render_frame_);
+  frame.GetRemoteAssociatedInterfaces()->GetInterface(&chrome_render_frame_);
 
   // Watch for the RenderFrameHost being swapped out by a navigation (e.g. after
   // clicking on a link). In that case, finish the invocation successfully as
@@ -285,8 +280,8 @@ void PageTool::Invoke(InvokeCallback callback) {
   // `this` Unretained because the observer is owned by this class and thus
   // removed on destruction.
   frame_change_observer_ = std::make_unique<RenderFrameChangeObserver>(
-      *frame, base::BindOnce(&PageTool::FinishInvoke, base::Unretained(this),
-                             MakeOkResult()));
+      frame, base::BindOnce(&PageTool::FinishInvoke, base::Unretained(this),
+                            MakeOkResult()));
 
   // `this` Unretained because this class owns the mojo pipe that invokes the
   // callbacks.
@@ -308,6 +303,13 @@ std::string PageTool::DebugString() const {
 }
 
 GURL PageTool::JournalURL() const {
+  if (has_completed_time_of_use_) {
+    if (RenderFrameHost* frame = GetFrame()) {
+      return frame->GetLastCommittedURL();
+    } else {
+      return GURL();
+    }
+  }
   return request_->GetURLForJournal();
 }
 
@@ -317,12 +319,14 @@ std::string PageTool::JournalEvent() const {
 
 std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer()
     const {
-  RenderFrameHost* frame = FindTargetLocalRootFrame(
-      request_->GetTabHandle(), request_->DocumentIdentifier(),
-      request_->GetTarget());
+  CHECK(has_completed_time_of_use_);
+
+  RenderFrameHost* frame = GetFrame();
+
   // It's the caller's responsibility to ensure a frame is still live if calling
   // this method.
   CHECK(frame);
+
   return std::make_unique<ObservationDelayController>(*frame);
 }
 
@@ -344,6 +348,11 @@ void PageTool::PostFinishInvoke(mojom::ActionResultCode result_code) {
       FROM_HERE,
       base::BindOnce(&PageTool::FinishInvoke, weak_ptr_factory_.GetWeakPtr(),
                      MakeResult(result_code)));
+}
+
+content::RenderFrameHost* PageTool::GetFrame() const {
+  CHECK(has_completed_time_of_use_);
+  return target_document_.AsRenderFrameHostIfValid();
 }
 
 }  // namespace actor

@@ -47,7 +47,8 @@ class ToolRequest {
   };
 
   // Instantiates the tool requested by this object.
-  virtual CreateToolResult CreateTool(AggregatedJournal& journal) const = 0;
+  virtual CreateToolResult CreateTool(TaskId task_id,
+                                      AggregatedJournal& journal) const = 0;
 };
 
 // Tool requests targeting a specific, existing tab should inherit from this

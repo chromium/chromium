@@ -20,8 +20,10 @@ CreateTabToolRequest::CreateTabToolRequest(int32_t window_id,
 CreateTabToolRequest::~CreateTabToolRequest() = default;
 
 ToolRequest::CreateToolResult CreateTabToolRequest::CreateTool(
+    TaskId task_id,
     AggregatedJournal& journal) const {
-  return {std::make_unique<TabManagementTool>(window_id_, disposition_),
+  return {std::make_unique<TabManagementTool>(task_id, journal, window_id_,
+                                              disposition_),
           MakeOkResult()};
 }
 
@@ -35,14 +37,15 @@ ActivateTabToolRequest::ActivateTabToolRequest(tabs::TabHandle tab_handle)
 ActivateTabToolRequest::~ActivateTabToolRequest() = default;
 
 ToolRequest::CreateToolResult ActivateTabToolRequest::CreateTool(
+    TaskId task_id,
     AggregatedJournal& journal) const {
   TabInterface* tab = GetTabHandle().Get();
   if (!tab) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          "The tab is no longer present.")};
   }
-  return {std::make_unique<TabManagementTool>(TabManagementTool::kActivate,
-                                              GetTabHandle()),
+  return {std::make_unique<TabManagementTool>(
+              task_id, journal, TabManagementTool::kActivate, GetTabHandle()),
           MakeOkResult()};
 }
 
@@ -56,14 +59,15 @@ CloseTabToolRequest::CloseTabToolRequest(tabs::TabHandle tab_handle)
 CloseTabToolRequest::~CloseTabToolRequest() = default;
 
 ToolRequest::CreateToolResult CloseTabToolRequest::CreateTool(
+    TaskId task_id,
     AggregatedJournal& journal) const {
   TabInterface* tab = GetTabHandle().Get();
   if (!tab) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          "The tab is no longer present.")};
   }
-  return {std::make_unique<TabManagementTool>(TabManagementTool::kClose,
-                                              GetTabHandle()),
+  return {std::make_unique<TabManagementTool>(
+              task_id, journal, TabManagementTool::kClose, GetTabHandle()),
           MakeOkResult()};
 }
 
