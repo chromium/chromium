@@ -836,8 +836,10 @@ TEST_P(VulkanOverlayAdaptorTest, Correctness) {
   // raw, packed image data.
   auto packed_in_frame = VideoFrame::WrapExternalData(
       VideoPixelFormat::PIXEL_FORMAT_NV12, in_frame->coded_size(),
-      in_frame->visible_rect(), in_frame->coded_size(), image.Data(),
-      in_frame->coded_size().GetArea() * 3 / 2, base::TimeDelta());
+      in_frame->visible_rect(), in_frame->coded_size(),
+      base::span(image.Data(),
+                 static_cast<size_t>(in_frame->coded_size().GetArea() * 3 / 2)),
+      base::TimeDelta());
 
   auto libyuv_out_frame =
       ProcessFrameLibyuv(packed_in_frame, in_fourcc, image.Size(), out_fourcc,
