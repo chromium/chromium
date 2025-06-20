@@ -47,6 +47,10 @@ namespace cachetool {
 crypto::obsolete::Md5 MakeMd5HasherForCachetools();
 }
 
+namespace trusted_vault {
+std::string MD5StringForTrustedVault(const std::string& local_trusted_value);
+}
+
 namespace crypto::obsolete {
 
 // This class is used for computing MD5 hashes, either one-shot via Md5::Hash(),
@@ -95,6 +99,10 @@ class CRYPTO_EXPORT Md5 {
 
   // TODO(https://crbug.com/416304903): get rid of this.
   friend Md5 web_app::internals::MakeMd5HasherForWebAppShortcutIcon();
+
+  // TODO(https://crbug.com/425990763): get rid of this
+  friend std::string trusted_vault::MD5StringForTrustedVault(
+      const std::string& local_trusted_value);
 
   Md5();
   static std::array<uint8_t, kSize> Hash(std::string_view data);

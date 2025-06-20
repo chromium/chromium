@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/hash/md5.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
@@ -20,6 +20,7 @@
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "crypto/obsolete/md5.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +51,7 @@ bool WriteLocalTrustedVaultFile(
   trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
   file_proto.set_serialized_local_trusted_vault(proto.SerializeAsString());
   file_proto.set_md5_digest_hex_string(
-      base::MD5String(file_proto.serialized_local_trusted_vault()));
+      MD5StringForTrustedVault(file_proto.serialized_local_trusted_vault()));
   return base::WriteFile(path, file_proto.SerializeAsString());
 }
 
@@ -66,7 +67,7 @@ trusted_vault_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
     return data_proto;
   }
 
-  if (base::MD5String(file_proto.serialized_local_trusted_vault()) !=
+  if (MD5StringForTrustedVault(file_proto.serialized_local_trusted_vault()) !=
       file_proto.md5_digest_hex_string()) {
     return data_proto;
   }
@@ -152,7 +153,7 @@ TEST_F(StandaloneTrustedVaultStorageTest,
   trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
   file_proto.set_serialized_local_trusted_vault(kCorruptedSerializedDataProto);
   file_proto.set_md5_digest_hex_string(
-      base::MD5String(kCorruptedSerializedDataProto));
+      MD5StringForTrustedVault(kCorruptedSerializedDataProto));
   ASSERT_TRUE(base::WriteFile(file_path(), file_proto.SerializeAsString()));
 
   base::HistogramTester histogram_tester;

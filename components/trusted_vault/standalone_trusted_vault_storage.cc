@@ -8,16 +8,24 @@
 
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "crypto/obsolete/md5.h"
 
 namespace trusted_vault {
+
+// This is a separate function and not in `namespace {}` so it can be friended
+// by crypto/obsolete/md5, as required for using that class.
+std::string MD5StringForTrustedVault(const std::string& local_trusted_value) {
+  return base::ToLowerASCII(
+      base::HexEncode(crypto::obsolete::Md5::Hash(local_trusted_value)));
+}
 
 namespace {
 
@@ -63,7 +71,7 @@ trusted_vault_pb::LocalTrustedVault ReadDataFromDiskImpl(
     return data_proto;
   }
 
-  if (base::MD5String(file_proto.serialized_local_trusted_vault()) !=
+  if (MD5StringForTrustedVault(file_proto.serialized_local_trusted_vault()) !=
       file_proto.md5_digest_hex_string()) {
     RecordTrustedVaultFileReadStatus(
         security_domain_id,
@@ -171,7 +179,7 @@ void WriteDataToDiskImpl(const trusted_vault_pb::LocalTrustedVault& data,
   trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
   file_proto.set_serialized_local_trusted_vault(data.SerializeAsString());
   file_proto.set_md5_digest_hex_string(
-      base::MD5String(file_proto.serialized_local_trusted_vault()));
+      MD5StringForTrustedVault(file_proto.serialized_local_trusted_vault()));
   bool success = base::ImportantFileWriter::WriteFileAtomically(
       file_path, file_proto.SerializeAsString(), "TrustedVault");
   if (!success) {
