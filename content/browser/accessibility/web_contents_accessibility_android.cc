@@ -779,6 +779,17 @@ void WebContentsAccessibilityAndroid::SetAllowImageDescriptions(
   allow_image_descriptions_ = allow_image_descriptions;
 }
 
+BrowserAccessibilityAndroid*
+WebContentsAccessibilityAndroid::GetAccessibilityFocus() const {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return nullptr;
+  }
+  jint id = Java_WebContentsAccessibilityImpl_getAccessibilityFocusId(env, obj);
+  return GetAXFromUniqueID(id);
+}
+
 void WebContentsAccessibilityAndroid::HandleContentChanged(int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
@@ -1332,29 +1343,40 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
 
   bool is_link = ui::IsLink(node->GetRole());
   if (::features::IsAccessibilityTextFormattingEnabled()) {
-    // TODO: aluh - Limit to accessibility focus.
-    AXStyleData style_data;
-    std::u16string text =
-        node->GetSubstringTextContentUTF16(std::nullopt, &style_data);
+    std::unique_ptr<AXStyleData> style_data;
+    if (auto* manager = GetRootBrowserAccessibilityManager()) {
+      if (auto* focus = static_cast<BrowserAccessibilityAndroid*>(
+              manager->GetAccessibilityFocus());
+          focus == node) {
+        style_data = std::make_unique<AXStyleData>();
+      }
+    }
 
-    ScopedJavaLocalRef<jobject> java_suggestions =
-        ToJavaStringRangesMap(env, style_data.suggestions);
-    ScopedJavaLocalRef<jobject> java_links =
-        ToJavaStringRangesMap(env, style_data.links);
-    ScopedJavaLocalRef<jobject> java_text_sizes =
-        ToJavaFloatRangesMap(env, style_data.text_sizes);
-    ScopedJavaLocalRef<jobject> java_text_styles =
-        ToJavaIntRangesMap(env, style_data.text_styles);
-    ScopedJavaLocalRef<jobject> java_text_positions =
-        ToJavaIntRangesMap(env, style_data.text_positions);
-    ScopedJavaLocalRef<jobject> java_foreground_colors =
-        ToJavaIntRangesMap(env, style_data.foreground_colors);
-    ScopedJavaLocalRef<jobject> java_background_colors =
-        ToJavaIntRangesMap(env, style_data.background_colors);
-    ScopedJavaLocalRef<jobject> java_font_families =
-        ToJavaCanonicalStringRangesMap(env, style_data.font_families);
-    ScopedJavaLocalRef<jobject> java_locales =
-        ToJavaCanonicalStringRangesMap(env, style_data.locales);
+    std::u16string text = node->GetSubstringTextContentUTF16(
+        /*min_length=*/std::nullopt, style_data.get());
+
+    ScopedJavaLocalRef<jobject> java_suggestions;
+    ScopedJavaLocalRef<jobject> java_links;
+    ScopedJavaLocalRef<jobject> java_text_sizes;
+    ScopedJavaLocalRef<jobject> java_text_styles;
+    ScopedJavaLocalRef<jobject> java_text_positions;
+    ScopedJavaLocalRef<jobject> java_fg_colors;
+    ScopedJavaLocalRef<jobject> java_bg_colors;
+    ScopedJavaLocalRef<jobject> java_font_families;
+    ScopedJavaLocalRef<jobject> java_locales;
+
+    if (style_data) {
+      java_suggestions = ToJavaStringRangesMap(env, style_data->suggestions);
+      java_links = ToJavaStringRangesMap(env, style_data->links);
+      java_text_sizes = ToJavaFloatRangesMap(env, style_data->text_sizes);
+      java_text_styles = ToJavaIntRangesMap(env, style_data->text_styles);
+      java_text_positions = ToJavaIntRangesMap(env, style_data->text_positions);
+      java_fg_colors = ToJavaIntRangesMap(env, style_data->foreground_colors);
+      java_bg_colors = ToJavaIntRangesMap(env, style_data->background_colors);
+      java_font_families =
+          ToJavaCanonicalStringRangesMap(env, style_data->font_families);
+      java_locales = ToJavaCanonicalStringRangesMap(env, style_data->locales);
+    }
 
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
         env, obj, info, base::android::ConvertUTF16ToJavaString(env, text),
@@ -1367,8 +1389,8 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         base::android::ConvertUTF16ToJavaString(
             env, node->GetSupplementalDescription()),
         java_suggestions, java_links, java_text_sizes, java_text_styles,
-        java_text_positions, java_foreground_colors, java_background_colors,
-        java_font_families, java_locales);
+        java_text_positions, java_fg_colors, java_bg_colors, java_font_families,
+        java_locales);
   } else {
     ScopedJavaLocalRef<jintArray> java_suggestion_starts;
     ScopedJavaLocalRef<jintArray> java_suggestion_ends;
@@ -2151,7 +2173,7 @@ jboolean WebContentsAccessibilityAndroid::GetImageData(
 }
 
 BrowserAccessibilityManagerAndroid*
-WebContentsAccessibilityAndroid::GetRootBrowserAccessibilityManager() {
+WebContentsAccessibilityAndroid::GetRootBrowserAccessibilityManager() const {
   if (snapshot_root_manager_) {
     return snapshot_root_manager_.get();
   }
@@ -2161,7 +2183,7 @@ WebContentsAccessibilityAndroid::GetRootBrowserAccessibilityManager() {
 }
 
 BrowserAccessibilityAndroid* WebContentsAccessibilityAndroid::GetAXFromUniqueID(
-    int32_t unique_id) {
+    int32_t unique_id) const {
   return BrowserAccessibilityAndroid::GetFromUniqueId(unique_id);
 }
 

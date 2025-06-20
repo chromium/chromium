@@ -104,6 +104,14 @@ ui::BrowserAccessibility* BrowserAccessibilityManagerAndroid::GetFocus() const {
   return ui::BrowserAccessibilityManager::GetFocus();
 }
 
+ui::BrowserAccessibility*
+BrowserAccessibilityManagerAndroid::GetAccessibilityFocus() const {
+  if (auto* wcax = GetWebContentsAXFromRootManager()) {
+    return wcax->GetAccessibilityFocus();
+  }
+  return nullptr;
+}
+
 ui::AXNode* BrowserAccessibilityManagerAndroid::RetargetForEvents(
     ui::AXNode* node,
     RetargetEventType type) const {
@@ -728,7 +736,7 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
 }
 
 WebContentsAccessibilityAndroid*
-BrowserAccessibilityManagerAndroid::GetWebContentsAXFromRootManager() {
+BrowserAccessibilityManagerAndroid::GetWebContentsAXFromRootManager() const {
   ui::BrowserAccessibility* parent_node =
       GetParentNodeFromParentTreeAsBrowserAccessibility();
   if (!parent_node) {

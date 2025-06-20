@@ -111,6 +111,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   // BrowserAccessibilityManager overrides.
   ui::BrowserAccessibility* GetFocus() const override;
+  ui::BrowserAccessibility* GetAccessibilityFocus() const override;
   void SendLocationChangeEvents(
       const std::vector<ui::AXLocationChange>& changes) override;
   ui::AXNode* RetargetForEvents(ui::AXNode* node,
@@ -169,7 +170,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
       bool root_changed,
       const std::vector<ui::AXTreeObserver::Change>& changes) override;
 
-  WebContentsAccessibilityAndroid* GetWebContentsAXFromRootManager();
+  WebContentsAccessibilityAndroid* GetWebContentsAXFromRootManager() const;
 
   // This gives BrowserAccessibilityManager::Create access to the class
   // constructor.

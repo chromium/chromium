@@ -504,7 +504,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   AXPlatformNodeId GetNodeUniqueId(const BrowserAccessibility* node);
 
   // Returns the global accessibility focus. Only relevant on a root manager.
-  BrowserAccessibility* GetAccessibilityFocus();
+  virtual BrowserAccessibility* GetAccessibilityFocus() const;
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(content::BrowserAccessibilityManagerTest,

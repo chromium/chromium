@@ -2008,7 +2008,8 @@ AXPlatformNodeId BrowserAccessibilityManager::GetNodeUniqueId(
   return node_id_delegate_->GetOrCreateAXNodeUniqueId(node->node()->id());
 }
 
-BrowserAccessibility* BrowserAccessibilityManager::GetAccessibilityFocus() {
+BrowserAccessibility* BrowserAccessibilityManager::GetAccessibilityFocus()
+    const {
   if (accessibility_focus_tree_id_ == AXTreeIDUnknown() ||
       accessibility_focus_node_id_ == AXNodeData::kInvalidAXID) {
     return nullptr;

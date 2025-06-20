@@ -383,6 +383,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
     return allow_image_descriptions_;
   }
 
+  BrowserAccessibilityAndroid* GetAccessibilityFocus() const;
+
   void HandlePageLoaded(int32_t unique_id);
   void HandleContentChanged(int32_t unique_id);
   void HandleFocusChanged(int32_t unique_id);
@@ -414,9 +416,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   WebContentsAccessibilityAndroid();
 
-  BrowserAccessibilityManagerAndroid* GetRootBrowserAccessibilityManager();
+  BrowserAccessibilityManagerAndroid* GetRootBrowserAccessibilityManager()
+      const;
 
-  BrowserAccessibilityAndroid* GetAXFromUniqueID(int32_t unique_id);
+  BrowserAccessibilityAndroid* GetAXFromUniqueID(int32_t unique_id) const;
 
   void UpdateAccessibilityNodeInfoBoundsRect(
       JNIEnv* env,

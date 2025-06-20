@@ -1745,6 +1745,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         WebContentsAccessibilityImplJni.get()
                 .moveAccessibilityFocus(mNativeObj, mAccessibilityFocusId, newAccessibilityFocusId);
 
+        // Some properties like text formatting spans are populated depending on accessibility
+        // focus, so we clear the cache to have them repopulated.
+        clearNodeInfoCacheForGivenId(newAccessibilityFocusId);
+
         mAccessibilityFocusId = newAccessibilityFocusId;
         // Used to store the node (edit text field) that has input focus but not a11y focus.
         // Usually while the user is typing in an edit text field, a11y is on the IME and input
@@ -1775,9 +1779,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         return true;
     }
 
+    /** Gets the ID of the current accessibility focused node. */
+    @CalledByNative
+    private int getAccessibilityFocusId() {
+        return mAccessibilityFocusId;
+    }
+
     /**
-     * Send a WINDOW_CONTENT_CHANGED event after a short delay. This helps throttle such
-     * events from firing too quickly during animations, for example.
+     * Send a WINDOW_CONTENT_CHANGED event after a short delay. This helps throttle such events from
+     * firing too quickly during animations, for example.
      */
     @CalledByNative
     private void sendDelayedWindowContentChangedEvent() {
