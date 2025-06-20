@@ -83,11 +83,14 @@ WeakReferenceOwner::WeakReferenceOwner()
     : flag_(MakeRefCounted<WeakReference::Flag>()) {}
 
 WeakReferenceOwner::~WeakReferenceOwner() {
-  flag_->Invalidate();
+  if (flag_) {
+    flag_->Invalidate();
+  }
 }
 
 WeakReference WeakReferenceOwner::GetRef() const {
 #if DCHECK_IS_ON()
+  DCHECK(flag_);
   // If we hold the last reference to the Flag then detach the SequenceChecker.
   if (!HasRefs()) {
     flag_->DetachFromSequence();
@@ -98,12 +101,20 @@ WeakReference WeakReferenceOwner::GetRef() const {
 }
 
 void WeakReferenceOwner::Invalidate() {
+  DCHECK(flag_);
   flag_->Invalidate();
   flag_ = MakeRefCounted<WeakReference::Flag>();
 }
 
+void WeakReferenceOwner::InvalidateAndDoom() {
+  DCHECK(flag_);
+  flag_->Invalidate();
+  flag_.reset();
+}
+
 void WeakReferenceOwner::BindToCurrentSequence() {
 #if DCHECK_IS_ON()
+  DCHECK(flag_);
   flag_->BindToCurrentSequence();
 #endif
 }

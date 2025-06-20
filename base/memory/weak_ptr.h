@@ -163,6 +163,7 @@ class BASE_EXPORT WeakReferenceOwner {
   bool HasRefs() const { return !flag_->HasOneRef(); }
 
   void Invalidate();
+  void InvalidateAndDoom();
   void BindToCurrentSequence();
 
  private:
@@ -402,17 +403,23 @@ class WeakPtrFactory : public internal::WeakPtrFactoryBase {
         weak_reference_owner_.GetRef(), reinterpret_cast<T*>(ptr_));
   }
 
-  // Call this method to invalidate all existing weak pointers.
+  // Invalidates all existing weak pointers.
   void InvalidateWeakPtrs() {
     DCHECK(ptr_);
     weak_reference_owner_.Invalidate();
   }
 
-  // Call this method to determine if any weak pointers exist.
-  bool HasWeakPtrs() const {
+  // Invalidates all existing weak pointers, and makes the factory unusable
+  // (cannot call GetWeakPtr after this). This is more efficient than
+  // InvalidateWeakPtrs().
+  void InvalidateWeakPtrsAndDoom() {
     DCHECK(ptr_);
-    return weak_reference_owner_.HasRefs();
+    weak_reference_owner_.InvalidateAndDoom();
+    ptr_ = 0;
   }
+
+  // Call this method to determine if any weak pointers exist.
+  bool HasWeakPtrs() const { return ptr_ && weak_reference_owner_.HasRefs(); }
 
   // Rebind the factory to the current sequence. This allows creating an object
   // and associated weak pointers on a different thread from the one they are

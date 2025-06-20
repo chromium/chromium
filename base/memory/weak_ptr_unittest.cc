@@ -424,6 +424,22 @@ TEST(WeakPtrTest, InvalidateWeakPtrs) {
   EXPECT_FALSE(factory.HasWeakPtrs());
 }
 
+TEST(WeakPtrTest, InvalidateWeakPtrsAndDoom) {
+  int data;
+  WeakPtrFactory<int> factory(&data);
+  WeakPtr<int> ptr = factory.GetWeakPtr();
+  EXPECT_EQ(&data, ptr.get());
+  EXPECT_TRUE(factory.HasWeakPtrs());
+  factory.InvalidateWeakPtrsAndDoom();
+  EXPECT_EQ(nullptr, ptr.get());
+  EXPECT_FALSE(factory.HasWeakPtrs());
+
+  EXPECT_DCHECK_DEATH({
+    // Cannot get a WeakPtr from a doomed factory.
+    WeakPtr<int> other_ptr = factory.GetWeakPtr();
+  });
+}
+
 // Tests that WasInvalidated() is true only for invalidated WeakPtrs (not
 // nullptr) and doesn't DCHECK (e.g. because of a dereference attempt).
 TEST(WeakPtrTest, WasInvalidatedByFactoryDestruction) {
