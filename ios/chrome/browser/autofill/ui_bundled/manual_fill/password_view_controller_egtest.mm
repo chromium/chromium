@@ -1336,6 +1336,11 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that tapping the "Autofill Form" button in the all password list fills
 // the password form with the right data.
 - (void)testAutofillFormButtonInAllPasswordListFillsForm {
+  // TODO(crbug.com/426435086): Test consistently fails on ipad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
+  }
+
   if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
                             @"Accessory Upgrade feature is disabled.")
