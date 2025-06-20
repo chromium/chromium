@@ -13,6 +13,16 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
 
+namespace {
+void LogGetCredentialsMetrics(
+    credential_management::ContentCredentialManager::GetCallback callback,
+    password_manager::CredentialManagerError error,
+    const std::optional<password_manager::CredentialInfo>& info) {
+  password_manager::metrics_util::LogCumulativeGetCredentialsMetrics(error);
+  std::move(callback).Run(error, info);
+}
+}  // namespace
+
 namespace credential_management {
 
 // ContentCredentialManager -------------------------------------------------
@@ -102,8 +112,9 @@ void ContentCredentialManager::Get(
     bool include_passwords,
     const std::vector<GURL>& federations,
     GetCallback callback) {
-  credential_manager_->Get(mediation, include_passwords, federations,
-                           std::move(callback));
+  credential_manager_->Get(
+      mediation, include_passwords, federations,
+      base::BindOnce(&LogGetCredentialsMetrics, std::move(callback)));
 }
 
 }  // namespace credential_management

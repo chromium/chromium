@@ -881,6 +881,11 @@ void LogPasswordDropdownHidden();
 // match filling was available to the user.
 void LogFillSuggestionGroupedMatchAccepted(bool grouped_match_accepted);
 
+// Logs the result of a navigator.credentials.get() call into an aggregated
+// histogram for both Chrome and third party requests.
+void LogCumulativeGetCredentialsMetrics(
+    password_manager::CredentialManagerError error);
+
 }  // namespace password_manager::metrics_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_METRICS_UTIL_H_

@@ -1386,6 +1386,20 @@ chromium-metrics-reviews@google.com.
   <token key="ProfileType" variants="ProfileType"/>
 </histogram>
 
+<histogram name="PasswordManager.CredentialRequest.Get.Success"
+    enum="BooleanSuccess" expires_after="2025-12-20">
+  <owner>izuzic@google.com</owner>
+  <owner>anki-team@google.com</owner>
+  <summary>
+    Log the result of the call to the Credential Manager API when getting a
+    credential. This is an aggregated histogram for first and third party calls.
+    Success means that all works as intended and not necessarily that the
+    password store or Android API was queried. We sometimes immediately return
+    an empty credential, for example in incognito mode, so the success rate
+    could be higher than the actual usage of the password store or the API.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.CredentialRequest.ThirdParty.Get"
     enum="CredentialManagerAndroidGetResult" expires_after="2025-12-11">
   <owner>izuzic@google.com</owner>

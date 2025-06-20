@@ -432,6 +432,50 @@ INSTANTIATE_TEST_SUITE_P(
          {PasswordDropdownDuplicateCredentialsType::kDuplicatePasswords}},
     }));
 
+struct CredentialManagerMetricsTestCase {
+  password_manager::CredentialManagerError error;
+  bool success;
+};
+
+class CredentialManagerMetricsTest
+    : public ::testing::TestWithParam<CredentialManagerMetricsTestCase> {};
+
+TEST_P(CredentialManagerMetricsTest, LogCumulativeGetMetrics) {
+  base::HistogramTester histogram_tester;
+  const CredentialManagerMetricsTestCase& test_case = GetParam();
+
+  LogCumulativeGetCredentialsMetrics(/*error=*/test_case.error);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.CredentialRequest.Get.Success", test_case.success, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CredentialManagerMetricsTest,
+    ::testing::ValuesIn(std::vector<CredentialManagerMetricsTestCase>{
+        // Success, the expected behaviour
+        {
+            /*error=*/password_manager::CredentialManagerError::SUCCESS,
+            /*success=*/true,
+        },
+        // Pending request, only applicable to 1sr party requests
+        {
+            /*error=*/password_manager::CredentialManagerError::PENDING_REQUEST,
+            /*success=*/false,
+        },
+        // Password store unavailable, only applicable to 1sr party requests
+        {
+            /*error=*/password_manager::CredentialManagerError::
+                PASSWORDSTOREUNAVAILABLE,
+            /*success=*/false,
+        },
+        // Unknown error
+        {
+            /*error=*/password_manager::CredentialManagerError::UNKNOWN,
+            /*success=*/false,
+        },
+    }));
 }  // namespace
 
 }  // namespace password_manager::metrics_util

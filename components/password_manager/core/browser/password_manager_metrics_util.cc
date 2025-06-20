@@ -659,4 +659,11 @@ void LogDuplicateCredentialsMetrics(
   }
 }
 
+void LogCumulativeGetCredentialsMetrics(
+    password_manager::CredentialManagerError error) {
+  base::UmaHistogramBoolean(
+      "PasswordManager.CredentialRequest.Get.Success",
+      error == password_manager::CredentialManagerError::SUCCESS);
+}
+
 }  // namespace password_manager::metrics_util
