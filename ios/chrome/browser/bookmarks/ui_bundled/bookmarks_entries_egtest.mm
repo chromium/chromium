@@ -368,8 +368,9 @@ id<GREYMatcher> AddBookmarkButton() {
       performAction:grey_tap()];
 
   // Select Copy URL.
-  [[EarlGrey selectElementWithMatcher:ContextMenuCopyButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_CONTENT_CONTEXT_COPY)] performAction:grey_tap()];
 
   // Verify general pasteboard has the URL copied.
   [ChromeEarlGrey verifyStringCopied:@"www.a.fr"];
@@ -385,7 +386,7 @@ id<GREYMatcher> AddBookmarkButton() {
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
-  // Change to edit mode
+  // Change to edit mode.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kBookmarksHomeTrailingButtonIdentifier)]
@@ -411,12 +412,13 @@ id<GREYMatcher> AddBookmarkButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Verify options on context menu.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabelId(
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
                      IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN_INCOGNITO)]
       assertWithMatcher:grey_sufficientlyVisible()];
 

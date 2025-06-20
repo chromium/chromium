@@ -606,8 +606,8 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
   ExpectBatchUploadAlert(1);
 
   [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::AlertAction(l10n_util::GetNSString(
-                     IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON))]
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -678,8 +678,8 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
   ExpectBatchUploadAlert(1);
 
   [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::AlertAction(l10n_util::GetNSString(
-                     IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON))]
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
