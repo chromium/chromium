@@ -109,6 +109,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
+#include "components/browsing_data/core/features.h"
 #include "components/client_hints/common/client_hints.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -4286,19 +4287,66 @@ class
         }));
   }
 
+  void ExpectNoCallsToClearSecurePaymentConfirmationCredentials() {
+    EXPECT_CALL(*service_.get(), ClearSecurePaymentConfirmationCredentials)
+        .Times(0);
+  }
+
  private:
   scoped_refptr<MockService> service_ = base::MakeRefCounted<MockService>();
 };
 
-// Verify that clearing secure payment confirmation credentials data works.
+// Verify that clearing secure payment confirmation credentials data works when
+// deleting passwords.
 TEST_F(
     ChromeBrowsingDataRemoverDelegateTest_RemoveSecurePaymentConfirmationCredentials,
-    RemoveSecurePaymentConfirmationCredentials) {
+    RemoveSecurePaymentConfirmationCredentials_DeletePasswords) {
   ExpectCallClearSecurePaymentConfirmationCredentials(1);
 
   BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
                                 constants::DATA_TYPE_PASSWORDS, false);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Verify that clearing secure payment confirmation credentials data works when
+// deleting forms data.
+TEST_F(
+    ChromeBrowsingDataRemoverDelegateTest_RemoveSecurePaymentConfirmationCredentials,
+    RemoveSecurePaymentConfirmationCredentials_DeleteFormData_DbdRevampEnabled) {
+  base::test::ScopedFeatureList feature(
+      browsing_data::features::kDbdRevampDesktop);
+  ExpectCallClearSecurePaymentConfirmationCredentials(1);
+
+  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
+                                constants::DATA_TYPE_FORM_DATA, false);
+}
+
+// Verify that secure payment confirmation credentials data are not deleted when
+// deleting forms data when kDbdRevampDesktop is disabled.
+// TODO(crbug.com/397187800): Remove once kDbdRevampDesktop is launched.
+TEST_F(
+    ChromeBrowsingDataRemoverDelegateTest_RemoveSecurePaymentConfirmationCredentials,
+    SecurePaymentConfirmationCredentialsNotRemoved_DeleteFormData_DbdRevampDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      browsing_data::features::kDbdRevampDesktop);
+  ExpectNoCallsToClearSecurePaymentConfirmationCredentials();
+
+  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
+                                constants::DATA_TYPE_FORM_DATA, false);
+}
+#else   // !BUILDFLAG(IS_ANDROID)
+// Verify that secure payment confirmation credentials data are not deleted when
+// deleting forms data on Android.
+TEST_F(
+    ChromeBrowsingDataRemoverDelegateTest_RemoveSecurePaymentConfirmationCredentials,
+    SecurePaymentConfirmationCredentialsNotRemoved_DeleteFormData_Android) {
+  ExpectNoCallsToClearSecurePaymentConfirmationCredentials();
+
+  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
+                                constants::DATA_TYPE_FORM_DATA, false);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verify that clearing cookies will also clear page load tokens.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,

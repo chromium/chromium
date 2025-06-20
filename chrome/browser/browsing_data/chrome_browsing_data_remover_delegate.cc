@@ -97,6 +97,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
+#include "components/browsing_data/core/features.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -764,6 +765,21 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       browser_bound_key_deleter->RemoveInvalidBBKs();
     }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(
+            browsing_data::features::kDbdRevampDesktop) &&
+        ash::SystemProxyManager::Get()) {
+      // Sends a request to the System-proxy daemon to clear the proxy user
+      // credentials. System-proxy retrieves proxy username and password from
+      // the NetworkService, but not the creation time of the credentials. The
+      // |ClearUserCredentials| request will remove all the cached proxy
+      // credentials. If credentials prior to |delete_begin_| are removed from
+      // System-proxy, the daemon will send a D-Bus request to Chrome to fetch
+      // them from the NetworkService when needed.
+      ash::SystemProxyManager::Get()->ClearUserCredentials();
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -1120,6 +1136,23 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           FROM_HERE, base::DoNothing(),
           CreateTaskCompletionClosure(TracingDataType::kAutofillData));
     }
+
+#if !BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            browsing_data::features::kDbdRevampDesktop)) {
+      scoped_refptr<payments::PaymentManifestWebDataService>
+          payment_web_data_service =
+              webdata_services::WebDataServiceWrapperFactory::
+                  GetPaymentManifestWebDataServiceForBrowserContext(
+                      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+      if (payment_web_data_service) {
+        payment_web_data_service->ClearSecurePaymentConfirmationCredentials(
+            delete_begin_, delete_end_,
+            CreateTaskCompletionClosure(
+                TracingDataType::kSecurePaymentConfirmationCredentials));
+      }
+    }
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   //////////////////////////////////////////////////////////////////////////////

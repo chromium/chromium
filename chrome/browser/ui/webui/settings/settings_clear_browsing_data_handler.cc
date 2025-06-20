@@ -213,6 +213,8 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
             content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
         break;
       case BrowsingDataType::PASSWORDS:
+        CHECK(!base::FeatureList::IsEnabled(
+            browsing_data::features::kDbdRevampDesktop));
         remove_mask |= chrome_browsing_data_remover::DATA_TYPE_PASSWORDS;
         remove_mask |=
             chrome_browsing_data_remover::DATA_TYPE_ACCOUNT_PASSWORDS;
