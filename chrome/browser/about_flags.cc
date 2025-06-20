@@ -2551,10 +2551,6 @@ const FeatureEntry::FeatureVariation
 };
 
 const FeatureEntry::FeatureParam
-    kResamplingScrollEventsPredictionTimeBasedEnabled[] = {
-        {"mode", features::kPredictionTypeTimeBased},
-        {"latency", features::kPredictionTypeDefaultTime}};
-const FeatureEntry::FeatureParam
     kResamplingScrollEventsPredictionFramesBasedEnabledV1[] = {
         {"mode", features::kPredictionTypeFramesBased},
         {"latency", features::kPredictionTypeDefaultFramesVariation1}};
@@ -2568,9 +2564,6 @@ const FeatureEntry::FeatureParam
         {"latency", features::kPredictionTypeDefaultFramesVariation3}};
 const FeatureEntry::FeatureVariation
     kResamplingScrollEventsExperimentalPredictionVariations[] = {
-        {features::kPredictionTypeTimeBased,
-         kResamplingScrollEventsPredictionTimeBasedEnabled,
-         std::size(kResamplingScrollEventsPredictionTimeBasedEnabled), nullptr},
         {"frames 0.25", kResamplingScrollEventsPredictionFramesBasedEnabledV1,
          std::size(kResamplingScrollEventsPredictionFramesBasedEnabledV1),
          nullptr},

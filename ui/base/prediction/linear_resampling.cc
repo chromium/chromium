@@ -27,11 +27,6 @@ constexpr auto kResampleMaxPrediction = base::Milliseconds(8);
 // so that resampled result is more accurate and has less noise. This adds some
 // latency during resampling but a few ms should be fine.
 constexpr auto kResampleLatency = base::Milliseconds(-5);
-// The optimal prediction anticipation from experimentation: In the study
-// https://bit.ly/3iyQf8V we found that, on a machine with VSync at 60Hz, adding
-// 1/2 * frame_interval (on top of kResampleLatency) minimizes the Lag on touch
-// scrolling. + 1/2 * (1/60) - 5ms = 3.3ms.
-constexpr auto kResampleLatencyExperimental = base::Milliseconds(3.3);
 
 // Get position at |sample_time| by linear interpolate/extrapolate a and b.
 inline gfx::PointF lerp(const InputPredictor::InputData& a,
@@ -126,26 +121,23 @@ base::TimeDelta LinearResampling::LatencyCalculator::CalculateLatency() {
   std::string prediction_type = GetFieldTrialParamValueByFeature(
       ::features::kResamplingScrollEventsExperimentalPrediction, "mode");
 
-  std::string latency_value = GetFieldTrialParamValueByFeature(
-      ::features::kResamplingScrollEventsExperimentalPrediction, "latency");
-
-  TRACE_EVENT2("ui", "LatencyCalculator::CalculateLatency", "prediction_type",
-               prediction_type, "latency_value", latency_value);
-
-  if (prediction_type != ::features::kPredictionTypeTimeBased &&
-      prediction_type != ::features::kPredictionTypeFramesBased)
+  if (prediction_type != ::features::kPredictionTypeFramesBased) {
+    TRACE_EVENT1("ui", "LatencyCalculator::CalculateLatency", "prediction_type",
+                 "default");
     return kResampleLatency;
-
-  double latency;
-  if (base::StringToDouble(latency_value, &latency)) {
-    return prediction_type == ::features::kPredictionTypeTimeBased
-               ? base::Milliseconds(latency)
-               : latency * frame_interval_ + kResampleLatency;
   }
 
-  return prediction_type == ::features::kPredictionTypeTimeBased
-             ? kResampleLatencyExperimental
-             : 0.5 * frame_interval_ + kResampleLatency;
+  double latency = 0;
+  if (!base::StringToDouble(
+          GetFieldTrialParamValueByFeature(
+              ::features::kResamplingScrollEventsExperimentalPrediction,
+              "latency"),
+          &latency)) {
+    latency = 0.5;
+  }
+  TRACE_EVENT2("ui", "LatencyCalculator::CalculateLatency", "prediction_type",
+               prediction_type, "latency", latency);
+  return latency * frame_interval_ + kResampleLatency;
 }
 
 }  // namespace ui

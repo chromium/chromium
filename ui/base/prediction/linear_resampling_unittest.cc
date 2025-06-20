@@ -164,50 +164,6 @@ TEST_F(LinearResamplingTest, TimeInterval) {
   EXPECT_EQ(predictor_->TimeInterval(), base::Milliseconds(t[1] - t[0]));
 }
 
-// Tests resampling with the experimental latency if +3.3ms instead of
-// the default -5ms.
-TEST_F(LinearResamplingTest, ResamplingValueWithExperimentalLatencyTimeBased) {
-  base::FieldTrialParams params;
-  params["mode"] = ::features::kPredictionTypeTimeBased;
-  feature_list.Reset();
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kResamplingScrollEventsExperimentalPrediction, params);
-
-  std::vector<double> x = {10, 20, 30};
-  std::vector<double> y = {5, 25, 35};
-  std::vector<double> t = {15, 24, 32};
-
-  // Resample at `frame_time` = 24.7 ms, `sample_time` = 24.7+3.3 = 28ms.
-  // Resample at `frame_time` = 32.7 ms, `sample_time` = 32.7+3.3 = 36ms.
-  std::vector<double> pred_ts = {24.7, 32.7};
-  std::vector<double> pred_x = {24.44, 35};
-  std::vector<double> pred_y = {33.89, 40};
-  ValidatePredictor(x, y, t, pred_ts, pred_x, pred_y);
-}
-
-// Tests resampling with the experimental latency if +1ms (using switch) instead
-// of the default -5ms.
-TEST_F(LinearResamplingTest,
-       ResamplingValueWithExperimentalLatencyTimeBasedSwitch) {
-  base::FieldTrialParams params;
-  params["mode"] = ::features::kPredictionTypeTimeBased;
-  params["latency"] = "1.0";
-  feature_list.Reset();
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kResamplingScrollEventsExperimentalPrediction, params);
-
-  std::vector<double> x = {10, 20, 30};
-  std::vector<double> y = {5, 25, 35};
-  std::vector<double> t = {15, 24, 32};
-
-  // Resample at `frame_time` = 27 ms, `sample_time` = 27+1 = 28ms.
-  // Resample at `frame_time` = 35 ms, `sample_time` = 35+1 = 36ms.
-  std::vector<double> pred_ts = {27, 35};
-  std::vector<double> pred_x = {24.44, 35};
-  std::vector<double> pred_y = {33.89, 40};
-  ValidatePredictor(x, y, t, pred_ts, pred_x, pred_y);
-}
-
 // Tests resampling with the experimental latency if +0.5*`frame_interval`
 // instead of the default -5ms.
 TEST_F(LinearResamplingTest, ResamplingValueWithExperimentalLatencyFrameBased) {

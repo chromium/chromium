@@ -370,9 +370,7 @@ const char kPredictorNameEmpty[] = "empty";
 const char kFilterNameEmpty[] = "empty_filter";
 const char kFilterNameOneEuro[] = "one_euro_filter";
 
-const char kPredictionTypeTimeBased[] = "time";
 const char kPredictionTypeFramesBased[] = "frames";
-const char kPredictionTypeDefaultTime[] = "3.3";
 const char kPredictionTypeDefaultFramesVariation1[] = "0.25";
 const char kPredictionTypeDefaultFramesVariation2[] = "0.375";
 const char kPredictionTypeDefaultFramesVariation3[] = "0.5";

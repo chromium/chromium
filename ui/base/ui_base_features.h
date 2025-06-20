@@ -163,15 +163,10 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kPredictorNameEmpty[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kResamplingScrollEventsExperimentalPrediction);
 
-// The type of prediction used. TimeBased uses a fixed timing, FramesBased uses
-// a ratio of the vsync refresh rate. The timing/ratio can be changed on the
-// command line through a `latency` param.
-COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kPredictionTypeTimeBased[];
+// Uses a ratio of the vsync refresh rate. The timing/ratio can be changed on
+// the command line through a `latency` param.
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const char kPredictionTypeFramesBased[];
-// The default values for `latency`
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kPredictionTypeDefaultTime[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const char kPredictionTypeDefaultFramesVariation1[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
