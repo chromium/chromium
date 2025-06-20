@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "media/base/mac/video_frame_mac.h"

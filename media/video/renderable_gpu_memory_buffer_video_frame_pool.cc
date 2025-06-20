@@ -26,6 +26,7 @@
 #include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 

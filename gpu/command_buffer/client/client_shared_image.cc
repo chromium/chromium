@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
 
@@ -424,6 +425,25 @@ ClientSharedImage::~ClientSharedImage() {
   }
 }
 
+size_t ClientSharedImage::GetStrideForVideoFrame(uint32_t plane_index) const {
+  CHECK(gpu_memory_buffer_);
+  return gpu_memory_buffer_->stride(plane_index);
+}
+
+// Returns whether the underlying resource is shared memory without needing to
+// Map() the shared image. This method is supposed to be used by VideoFrame
+// temporarily as mentioned above in ::GetStrideForVideoFrame().
+bool ClientSharedImage::IsSharedMemoryForVideoFrame() const {
+  CHECK(gpu_memory_buffer_);
+  return gpu_memory_buffer_->GetType() ==
+         gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
+}
+
+bool ClientSharedImage::AsyncMappingIsNonBlocking() const {
+  CHECK(gpu_memory_buffer_);
+  return gpu_memory_buffer_->AsyncMappingIsNonBlocking();
+}
+
 std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
   std::unique_ptr<ClientSharedImage::ScopedMapping> scoped_mapping;
   if (shared_memory_mapping_.IsValid()) {
@@ -443,6 +463,12 @@ void ClientSharedImage::MapAsync(
     base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb) {
   ScopedMapping::StartCreateAsync(gpu_memory_buffer_.get(),
                                   std::move(result_cb));
+}
+
+gfx::GpuMemoryBufferHandle ClientSharedImage::CloneGpuMemoryBufferHandle()
+    const {
+  CHECK(gpu_memory_buffer_);
+  return gpu_memory_buffer_->CloneHandle();
 }
 
 #if BUILDFLAG(IS_APPLE)
@@ -626,6 +652,22 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
   return ImportUnowned(ExportedSharedImage(
       Mailbox::Generate(), metadata, SyncToken(), "CSICreateForTesting",
       std::nullopt, std::nullopt, texture_target));
+}
+
+// static
+scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
+    const Mailbox& mailbox,
+    const SharedImageMetadata& metadata,
+    const SyncToken& sync_token,
+    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+    gfx::BufferUsage buffer_usage,
+    scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
+  SharedImageInfo info(metadata, "CSICreateForTesting");
+  auto client_si = base::MakeRefCounted<ClientSharedImage>(
+      mailbox, info, sync_token, sii_holder, gpu_memory_buffer->GetType());
+  client_si->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
+  client_si->buffer_usage_ = buffer_usage;
+  return client_si;
 }
 
 ClientSharedImage::HelperGpuMemoryBufferManager::HelperGpuMemoryBufferManager(

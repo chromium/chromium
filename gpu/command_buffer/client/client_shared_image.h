@@ -24,8 +24,18 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
+
+namespace base {
+namespace trace_event {
+class ProcessMemoryDump;
+class MemoryAllocatorDumpGuid;
+}  // namespace trace_event
+}  // namespace base
+
+namespace gfx {
+class GpuMemoryBuffer;
+}
 
 namespace media {
 class VideoFrame;
@@ -133,10 +143,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   // Returns a clone of the GpuMemoryBufferHandle associated with this ClientSI.
   // Valid to call only if this instance was created with a non-null
   // GpuMemoryBuffer.
-  gfx::GpuMemoryBufferHandle CloneGpuMemoryBufferHandle() const {
-    CHECK(gpu_memory_buffer_);
-    return gpu_memory_buffer_->CloneHandle();
-  }
+  gfx::GpuMemoryBufferHandle CloneGpuMemoryBufferHandle() const;
 
 #if BUILDFLAG(IS_APPLE)
   // Sets the color space in which the native buffer backing this SharedImage
@@ -217,14 +224,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       const SyncToken& sync_token,
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       gfx::BufferUsage buffer_usage,
-      scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
-    SharedImageInfo info(metadata, "CSICreateForTesting");
-    auto client_si = base::MakeRefCounted<ClientSharedImage>(
-        mailbox, info, sync_token, sii_holder, gpu_memory_buffer->GetType());
-    client_si->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
-    client_si->buffer_usage_ = buffer_usage;
-    return client_si;
-  }
+      scoped_refptr<SharedImageInterfaceHolder> sii_holder);
 
   const SyncToken& creation_sync_token() const { return creation_sync_token_; }
 
@@ -341,24 +341,14 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   // VF can be refactored to behave like OPAQUE storage which does not need
   // layout info and hence stride. This method will then no longer needed and
   // can be removed.
-  size_t GetStrideForVideoFrame(uint32_t plane_index) const {
-    CHECK(gpu_memory_buffer_);
-    return gpu_memory_buffer_->stride(plane_index);
-  }
+  size_t GetStrideForVideoFrame(uint32_t plane_index) const;
 
   // Returns whether the underlying resource is shared memory without needing to
   // Map() the shared image. This method is supposed to be used by VideoFrame
   // temporarily as mentioned above in ::GetStrideForVideoFrame().
-  bool IsSharedMemoryForVideoFrame() const {
-    CHECK(gpu_memory_buffer_);
-    return gpu_memory_buffer_->GetType() ==
-           gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
-  }
+  bool IsSharedMemoryForVideoFrame() const;
 
-  bool AsyncMappingIsNonBlocking() const {
-    CHECK(gpu_memory_buffer_);
-    return gpu_memory_buffer_->AsyncMappingIsNonBlocking();
-  }
+  bool AsyncMappingIsNonBlocking() const;
 
   // This pair of functions are used by SharedImageTexture to notify
   // ClientSharedImage of the beginning and the end of a scoped access.

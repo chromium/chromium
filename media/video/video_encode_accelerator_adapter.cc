@@ -37,6 +37,7 @@
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_encoder_info.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
