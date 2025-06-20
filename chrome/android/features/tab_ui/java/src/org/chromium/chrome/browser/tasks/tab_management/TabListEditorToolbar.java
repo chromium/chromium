@@ -98,6 +98,7 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
         final @ColorInt int lightIconColor =
                 SemanticColorUtils.getDefaultIconColorInverse(getContext());
         navigationIconDrawable.setTint(lightIconColor);
+        navigationIconDrawable.setAutoMirrored(true);
 
         setNavigationIcon(navigationIconDrawable);
         setNavigationContentDescription(mBackButtonAccessibilityString);

@@ -86,6 +86,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_group_sync.TriggerSource;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -635,8 +636,11 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
         mDialogView.post(
                 () -> {
+                    int dialogViewWidth = mDialogView.getWidth();
+                    int translationFactor =
+                            LocalizationUtils.isLayoutRtl() ? -dialogViewWidth : dialogViewWidth;
                     mDialogView.setVisibility(View.VISIBLE);
-                    mDialogView.setTranslationX(mDialogView.getWidth());
+                    mDialogView.setTranslationX(translationFactor);
 
                     AnimatorSet animatorSet = new AnimatorSet();
                     animatorSet.setDuration(duration);
@@ -648,14 +652,15 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     }
 
     private List<Animator> getAnimateInAnimators() {
+        int tabSwitcherViewWidth = mTabSwitcherView.getWidth();
+        int translationFactor =
+                LocalizationUtils.isLayoutRtl() ? tabSwitcherViewWidth : -tabSwitcherViewWidth;
         List<Animator> animators = new ArrayList<>(2);
         ObjectAnimator animator = ObjectAnimator.ofFloat(mDialogView, View.TRANSLATION_X, 0f);
         animator.setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR);
         animators.add(animator);
 
-        animator =
-                ObjectAnimator.ofFloat(
-                        mTabSwitcherView, View.TRANSLATION_X, -mTabSwitcherView.getWidth());
+        animator = ObjectAnimator.ofFloat(mTabSwitcherView, View.TRANSLATION_X, translationFactor);
         animator.setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR);
         animators.add(animator);
 
@@ -682,9 +687,12 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     }
 
     private List<Animator> getAnimateOutAnimators() {
+        int dialogViewWidth = mDialogView.getWidth();
+        int translationFactor =
+                LocalizationUtils.isLayoutRtl() ? -dialogViewWidth : dialogViewWidth;
         List<Animator> animators = new ArrayList<>(2);
         ObjectAnimator animator =
-                ObjectAnimator.ofFloat(mDialogView, View.TRANSLATION_X, mDialogView.getWidth());
+                ObjectAnimator.ofFloat(mDialogView, View.TRANSLATION_X, translationFactor);
         animator.setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR);
         animators.add(animator);
 
