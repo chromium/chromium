@@ -58,7 +58,9 @@ struct EncoderStatusTraits {
     kEncoderAccelerationSupportMissing = 20,
     // The system ran out of platform encoders.
     kOutOfPlatformEncoders = 21,
-    kMaxValue = kOutOfPlatformEncoders,
+    // The client provided a non-existing reference buffer.
+    kBadReferenceBuffer = 22,
+    kMaxValue = kBadReferenceBuffer,
   };
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
 };

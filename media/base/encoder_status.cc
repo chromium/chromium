@@ -52,6 +52,8 @@ const char* EncoderStatusCodeToString(const EncoderStatus& error_status) {
       return "No hardware encoder is available.";
     case EncoderStatus::Codes::kOutOfPlatformEncoders:
       return "The system ran out of platform encoders.";
+    case EncoderStatus::Codes::kBadReferenceBuffer:
+      return "Invalid reference buffer index is specified.";
     case EncoderStatus::Codes::kOk:
       NOTREACHED();
   }

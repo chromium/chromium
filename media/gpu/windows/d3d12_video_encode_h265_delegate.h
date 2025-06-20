@@ -25,13 +25,20 @@
 
 namespace media {
 
-class D3D12VideoEncodeH265ReferenceFrameManager
+class MEDIA_GPU_EXPORT D3D12VideoEncodeH265ReferenceFrameManager
     : public D3D12VideoEncodeDecodedPictureBuffers<kMaxDpbSize> {
  public:
   D3D12VideoEncodeH265ReferenceFrameManager();
   ~D3D12VideoEncodeH265ReferenceFrameManager() override;
 
-  void EndFrame(uint32_t pic_order_count, uint32_t temporal_layer_id);
+  // Get the index in the descriptors of the frame with |picture_order_count|.
+  std::optional<uint32_t> GetReferenceFrameId(uint8_t buffer_id) const;
+
+  void MarkCurrentFrameReferenced(uint32_t pic_order_count,
+                                  uint8_t buffer_id,
+                                  bool long_term_reference);
+
+  void MarkFrameUnreferenced(uint8_t buffer_id);
 
   // Write the reference picture descriptors to |pic_params| according to the
   // ListxReferenceFrames variables.
@@ -46,6 +53,7 @@ class D3D12VideoEncodeH265ReferenceFrameManager
   absl::InlinedVector<D3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_HEVC,
                       kMaxDpbSize>
       descriptors_;
+  absl::InlinedVector<uint8_t, kMaxDpbSize> buffer_ids_;
 };
 
 class MEDIA_GPU_EXPORT D3D12VideoEncodeH265Delegate

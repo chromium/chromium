@@ -26,26 +26,37 @@
 
 namespace media {
 
-class D3D12VideoEncodeH264ReferenceFrameManager
+class MEDIA_GPU_EXPORT D3D12VideoEncodeH264ReferenceFrameManager
     : public D3D12VideoEncodeDecodedPictureBuffers<H264DPB::kDPBMaxSize> {
  public:
   D3D12VideoEncodeH264ReferenceFrameManager();
   ~D3D12VideoEncodeH264ReferenceFrameManager() override;
 
-  void EndFrame(uint32_t frame_num,
-                uint32_t pic_order_cnt,
-                uint32_t temporal_layer_id);
+  uint32_t GetMaxLongTermFrameIndexPlus1() const;
+
+  // Get the index in the descriptors and picture buffers of the frame with
+  // |long_term_frame_index|.
+  std::optional<uint32_t> GetLongTermReferenceFrameResourceId(
+      uint32_t long_term_frame_index) const;
 
   base::span<D3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_H264>
   ToReferencePictureDescriptors();
+
+  void ProcessMemoryManagementControlOperation(
+      const D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264& pic_params);
 
  private:
   using D3D12VideoEncodeDecodedPictureBuffers::InsertCurrentFrame;
   using D3D12VideoEncodeDecodedPictureBuffers::ReplaceWithCurrentFrame;
 
+  void SetCurrentFrameLongTermReference(uint32_t frame_num,
+                                        uint32_t pic_order_cnt,
+                                        uint32_t long_term_frame_index);
+
   absl::InlinedVector<D3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_H264,
                       H264DPB::kDPBMaxSize>
       descriptors_;
+  uint32_t max_long_term_frame_index_plus1_ = 0;
 };
 
 class MEDIA_GPU_EXPORT D3D12VideoEncodeH264Delegate

@@ -60,20 +60,52 @@ D3D12VideoEncodeH265ReferenceFrameManager::
 D3D12VideoEncodeH265ReferenceFrameManager::
     ~D3D12VideoEncodeH265ReferenceFrameManager() = default;
 
-void D3D12VideoEncodeH265ReferenceFrameManager::EndFrame(
-    uint32_t pic_order_count,
-    uint32_t temporal_layer_id) {
-  InsertCurrentFrame(0);
-  if (descriptors_.size() == size()) {
-    descriptors_.pop_back();
+std::optional<uint32_t>
+D3D12VideoEncodeH265ReferenceFrameManager::GetReferenceFrameId(
+    uint8_t buffer_id) const {
+  for (size_t i = 0; i < buffer_ids_.size(); i++) {
+    if (buffer_ids_[i] == buffer_id) {
+      return i;
+    }
   }
-  descriptors_.insert(descriptors_.begin(),
-                      {
-                          .PictureOrderCountNumber = pic_order_count,
-                          .TemporalLayerIndex = temporal_layer_id,
-                      });
+  return std::nullopt;
+}
+
+void D3D12VideoEncodeH265ReferenceFrameManager::MarkCurrentFrameReferenced(
+    uint32_t pic_order_count,
+    uint8_t buffer_id,
+    bool long_term_reference) {
+  CHECK_LT(buffer_id, size());
   for (size_t i = 0; i < descriptors_.size(); i++) {
-    descriptors_[i].ReconstructedPictureResourceIndex = i;
+    if (buffer_ids_[i] == buffer_id) {
+      ReplaceWithCurrentFrame(
+          descriptors_[i].ReconstructedPictureResourceIndex);
+      descriptors_[i].PictureOrderCountNumber = pic_order_count;
+      descriptors_[i].IsLongTermReference = long_term_reference;
+      return;
+    }
+  }
+
+  CHECK_LT(descriptors_.size(), size());
+  InsertCurrentFrame(descriptors_.size());
+  descriptors_.push_back({
+      .ReconstructedPictureResourceIndex =
+          static_cast<UINT>(descriptors_.size()),
+      .IsLongTermReference = long_term_reference,
+      .PictureOrderCountNumber = pic_order_count,
+  });
+  buffer_ids_.push_back(buffer_id);
+}
+
+void D3D12VideoEncodeH265ReferenceFrameManager::MarkFrameUnreferenced(
+    uint8_t buffer_id) {
+  for (size_t i = 0; i < descriptors_.size(); i++) {
+    if (buffer_ids_[i] == buffer_id) {
+      EraseFrame(descriptors_[i].ReconstructedPictureResourceIndex);
+      descriptors_.erase(std::next(descriptors_.begin(), i));
+      buffer_ids_.erase(std::next(buffer_ids_.begin(), i));
+      return;
+    }
   }
 }
 
@@ -211,11 +243,32 @@ D3D12VideoEncodeH265Delegate::EncodeImpl(
   // Filling the |input_arguments_| according to
   // https://github.com/microsoft/DirectX-Specs/blob/master/d3d/D3D12VideoEncoding.md#6120-struct-d3d12_video_encoder_input_arguments
 
-  if (++pic_params_.PictureOrderCountNumber == gop_structure_.GOPLength) {
+  if (++pic_params_.PictureOrderCountNumber == gop_structure_.GOPLength ||
+      options.key_frame) {
     pic_params_.PictureOrderCountNumber = 0;
   }
-  bool is_keyframe =
-      pic_params_.PictureOrderCountNumber == 0 || options.key_frame;
+  bool is_keyframe = pic_params_.PictureOrderCountNumber == 0;
+
+  absl::InlinedVector<uint8_t, 4> reference_buffers;
+  std::optional<uint8_t> update_buffer;
+  std::optional<uint8_t> destroy_buffer;
+  if (!is_keyframe) {
+    reference_buffers.push_back(0);
+  }
+  update_buffer = 0;
+  if (update_buffer.has_value() &&
+      update_buffer.value() >= max_num_ref_frames_) {
+    return {EncoderStatus::Codes::kBadReferenceBuffer,
+            base::StringPrintf("Update buffer index %d is out of range [0, %d)",
+                               update_buffer.value(), max_num_ref_frames_)};
+  }
+  if (destroy_buffer.has_value() &&
+      !reference_frame_manager_.GetReferenceFrameId(destroy_buffer.value())) {
+    return {EncoderStatus::Codes::kBadReferenceBuffer,
+            base::StringPrintf("Destroy buffer index %d is not found",
+                               destroy_buffer.value())};
+  }
+
   if (is_keyframe) {
     H265VPS vps = ToVPS();
     H265SPS sps = ToSPS(vps);
@@ -227,19 +280,29 @@ D3D12VideoEncodeH265Delegate::EncodeImpl(
 
     input_arguments_.PictureControlDesc.ReferenceFrames = {};
     pic_params_.FrameType = D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC_IDR_FRAME;
-    pic_params_.PictureOrderCountNumber = 0;
     pic_params_.ReferenceFramesReconPictureDescriptorsCount = 0;
     pic_params_.pReferenceFramesReconPictureDescriptors = nullptr;
     pic_params_.List0ReferenceFramesCount = 0;
     pic_params_.pList0ReferenceFrames = nullptr;
   } else {
     pic_params_.FrameType = D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC_P_FRAME;
-    list0_reference_frames_[0] = 0;
-    pic_params_.List0ReferenceFramesCount = 1;
+    CHECK_LE(reference_buffers.size(), list0_reference_frames_.size());
+    for (size_t i = 0; i < reference_buffers.size(); i++) {
+      std::optional<uint32_t> descriptor_index =
+          reference_frame_manager_.GetReferenceFrameId(reference_buffers[i]);
+      if (!descriptor_index.has_value()) {
+        return {EncoderStatus::Codes::kBadReferenceBuffer,
+                base::StringPrintf("Reference buffer #%d is never updated",
+                                   reference_buffers[i])};
+      }
+      list0_reference_frames_[i] = descriptor_index.value();
+    }
+    pic_params_.List0ReferenceFramesCount = reference_buffers.size();
     pic_params_.pList0ReferenceFrames = list0_reference_frames_.data();
     reference_frame_manager_
         .WriteReferencePictureDescriptorsToPictureParameters(
-            &pic_params_, base::span(list0_reference_frames_).first(1u));
+            &pic_params_, base::span(list0_reference_frames_)
+                              .first(reference_buffers.size()));
     input_arguments_.PictureControlDesc.ReferenceFrames =
         reference_frame_manager_.ToD3D12VideoEncodeReferenceFrames();
     input_arguments_.PictureControlDesc.ReferenceFrames.NumTexture2Ds =
@@ -280,24 +343,35 @@ D3D12VideoEncodeH265Delegate::EncodeImpl(
         current_rate_control_.GetD3D12VideoEncoderRateControl();
   }
 
-  input_arguments_.PictureControlDesc.Flags =
-      D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_USED_AS_REFERENCE_PICTURE;
   input_arguments_.pInputFrame = input_frame;
   input_arguments_.InputFrameSubresource = input_frame_subresource;
-  D3D12PictureBuffer reconstructed_picture =
-      reference_frame_manager_.GetCurrentFrame();
-  EncoderStatus result = video_encoder_wrapper_->Encode(
-      input_arguments_,
-      {
-          .pReconstructedPicture = reconstructed_picture.resource_,
-          .ReconstructedPictureSubresource = reconstructed_picture.subresource_,
-      });
+  D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE output_arguments{};
+  if (update_buffer) {
+    input_arguments_.PictureControlDesc.Flags =
+        D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_USED_AS_REFERENCE_PICTURE;
+    D3D12PictureBuffer reconstructed_picture =
+        reference_frame_manager_.GetCurrentFrame();
+    output_arguments.pReconstructedPicture = reconstructed_picture.resource_;
+    output_arguments.ReconstructedPictureSubresource =
+        reconstructed_picture.subresource_;
+  } else {
+    input_arguments_.PictureControlDesc.Flags =
+        D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_NONE;
+  }
+
+  EncoderStatus result =
+      video_encoder_wrapper_->Encode(input_arguments_, output_arguments);
   if (!result.is_ok()) {
     return result;
   }
 
-  reference_frame_manager_.EndFrame(pic_params_.PictureOrderCountNumber,
-                                    pic_params_.TemporalLayerIndex);
+  if (destroy_buffer.has_value()) {
+    reference_frame_manager_.MarkFrameUnreferenced(destroy_buffer.value());
+  }
+  if (update_buffer.has_value()) {
+    reference_frame_manager_.MarkCurrentFrameReferenced(
+        pic_params_.PictureOrderCountNumber, update_buffer.value(), false);
+  }
 
   metadata_.key_frame = is_keyframe;
   metadata_.qp = qp;
@@ -369,6 +443,7 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
   }
   codec_config_hevc_ = {
       .ConfigurationFlags =
+          D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_ENABLE_LONG_TERM_REFERENCES |
           (codec_config_support_hevc.SupportFlags &
                    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_SAO_FILTER_SUPPORT
                ? D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_ENABLE_SAO_FILTER
@@ -415,7 +490,7 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
           D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE_FULL_FRAME,
       .ResolutionsListCount = 1,
       .pResolutionList = &input_size_,
-      .MaxReferenceFramesInDPB = static_cast<UINT>(max_num_ref_frames_),
+      .MaxReferenceFramesInDPB = max_num_ref_frames_,
       .SuggestedProfile = {.DataSize = sizeof(suggested_profile),
                            .pHEVCProfile = &suggested_profile},
       .SuggestedLevel = {.DataSize = sizeof(suggested_level),

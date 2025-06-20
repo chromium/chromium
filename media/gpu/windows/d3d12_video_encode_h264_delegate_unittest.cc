@@ -19,6 +19,13 @@ using testing::Return;
 
 namespace media {
 
+class D3D12VideoEncodeH264ReferenceFrameManagerTest : public ::testing::Test {
+ protected:
+  void SetUp() override { device_ = MakeComPtr<NiceMock<D3D12DeviceMock>>(); }
+
+  Microsoft::WRL::ComPtr<D3D12DeviceMock> device_;
+};
+
 class D3D12VideoEncodeH264DelegateTest
     : public D3D12VideoEncodeDelegateTestBase {
  protected:
@@ -153,6 +160,118 @@ class D3D12VideoEncodeH264DelegateTest
   Microsoft::WRL::ComPtr<D3D12DeviceMock> device_;
   Microsoft::WRL::ComPtr<D3D12VideoDevice3Mock> video_device3_;
 };
+
+TEST_F(D3D12VideoEncodeH264ReferenceFrameManagerTest,
+       ProcessMemoryManagementControlOperation) {
+  // Initialization
+  D3D12VideoEncodeH264ReferenceFrameManager reference_manager;
+  ASSERT_TRUE(reference_manager.InitializeTextureArray(
+      device_.Get(), {1280, 720}, DXGI_FORMAT_NV12, 4));
+  EXPECT_EQ(reference_manager.GetMaxLongTermFrameIndexPlus1(), 0u);
+  EXPECT_EQ(reference_manager.GetLongTermReferenceFrameResourceId(0),
+            std::nullopt);
+  EXPECT_EQ(reference_manager.ToReferencePictureDescriptors().size(), 0u);
+
+  // IDR frame #0 with adaptive_ref_pic_marking_mode_flag = true
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264 pic_params0{
+      .FrameType = D3D12_VIDEO_ENCODER_FRAME_TYPE_H264_IDR_FRAME,
+      .PictureOrderCountNumber = 0,
+      .FrameDecodingOrderNumber = 0,
+      .adaptive_ref_pic_marking_mode_flag = true,
+  };
+  reference_manager.ProcessMemoryManagementControlOperation(pic_params0);
+  EXPECT_EQ(reference_manager.GetMaxLongTermFrameIndexPlus1(), 1u);
+  EXPECT_NE(reference_manager.GetLongTermReferenceFrameResourceId(0),
+            std::nullopt);
+  base::span<D3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_H264>
+      descriptors = reference_manager.ToReferencePictureDescriptors();
+  ASSERT_EQ(descriptors.size(), 1u);
+  EXPECT_TRUE(descriptors[0].IsLongTermReference);
+  EXPECT_EQ(descriptors[0].LongTermPictureIdx, 0u);
+  EXPECT_EQ(descriptors[0].ReconstructedPictureResourceIndex, 0u);
+  EXPECT_EQ(descriptors[0].PictureOrderCountNumber,
+            pic_params0.PictureOrderCountNumber);
+  EXPECT_EQ(descriptors[0].FrameDecodingOrderNumber,
+            pic_params0.FrameDecodingOrderNumber);
+
+  // P frame #1 with mmco 4 and 6
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_REFERENCE_PICTURE_MARKING_OPERATION
+  mmco1[] = {
+      {.memory_management_control_operation = 4,
+       .max_long_term_frame_idx_plus1 = 2},
+      {.memory_management_control_operation = 6, .long_term_frame_idx = 1},
+      {.memory_management_control_operation = 0},
+  };
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264 pic_params1{
+      .FrameType = D3D12_VIDEO_ENCODER_FRAME_TYPE_H264_P_FRAME,
+      .PictureOrderCountNumber = 2,
+      .FrameDecodingOrderNumber = 1,
+      .adaptive_ref_pic_marking_mode_flag = true,
+      .RefPicMarkingOperationsCommandsCount = std::size(mmco1),
+      .pRefPicMarkingOperationsCommands = mmco1,
+  };
+  reference_manager.ProcessMemoryManagementControlOperation(pic_params1);
+  EXPECT_EQ(reference_manager.GetMaxLongTermFrameIndexPlus1(), 2u);
+  EXPECT_NE(reference_manager.GetLongTermReferenceFrameResourceId(1),
+            std::nullopt);
+  descriptors = reference_manager.ToReferencePictureDescriptors();
+  ASSERT_EQ(descriptors.size(), 2u);
+  EXPECT_TRUE(descriptors[1].IsLongTermReference);
+  EXPECT_EQ(descriptors[1].LongTermPictureIdx, 1u);
+  EXPECT_EQ(descriptors[1].ReconstructedPictureResourceIndex, 1u);
+  EXPECT_EQ(descriptors[1].PictureOrderCountNumber,
+            pic_params1.PictureOrderCountNumber);
+  EXPECT_EQ(descriptors[1].FrameDecodingOrderNumber,
+            pic_params1.FrameDecodingOrderNumber);
+
+  // P frame #2 with mmco 2
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_REFERENCE_PICTURE_MARKING_OPERATION
+  mmco2[] = {
+      {.memory_management_control_operation = 2, .long_term_pic_num = 0},
+      {.memory_management_control_operation = 0},
+  };
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264 pic_params2{
+      .FrameType = D3D12_VIDEO_ENCODER_FRAME_TYPE_H264_P_FRAME,
+      .PictureOrderCountNumber = 4,
+      .FrameDecodingOrderNumber = 2,
+      .adaptive_ref_pic_marking_mode_flag = true,
+      .RefPicMarkingOperationsCommandsCount = std::size(mmco2),
+      .pRefPicMarkingOperationsCommands = mmco2,
+  };
+  reference_manager.ProcessMemoryManagementControlOperation(pic_params2);
+  EXPECT_EQ(reference_manager.GetMaxLongTermFrameIndexPlus1(), 2u);
+  EXPECT_EQ(reference_manager.GetLongTermReferenceFrameResourceId(0),
+            std::nullopt);
+  descriptors = reference_manager.ToReferencePictureDescriptors();
+  ASSERT_EQ(descriptors.size(), 1u);
+  EXPECT_EQ(descriptors[0].LongTermPictureIdx, 1u);
+  EXPECT_EQ(descriptors[0].ReconstructedPictureResourceIndex, 0u);
+  EXPECT_EQ(descriptors[0].PictureOrderCountNumber,
+            pic_params1.PictureOrderCountNumber);
+  EXPECT_EQ(descriptors[0].FrameDecodingOrderNumber,
+            pic_params1.FrameDecodingOrderNumber);
+
+  // P frame #3 with mmco 5
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_REFERENCE_PICTURE_MARKING_OPERATION
+  mmco3[] = {
+      {.memory_management_control_operation = 5},
+      {.memory_management_control_operation = 0},
+  };
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264 pic_params3{
+      .FrameType = D3D12_VIDEO_ENCODER_FRAME_TYPE_H264_P_FRAME,
+      .PictureOrderCountNumber = 6,
+      .FrameDecodingOrderNumber = 3,
+      .adaptive_ref_pic_marking_mode_flag = true,
+      .RefPicMarkingOperationsCommandsCount = std::size(mmco3),
+      .pRefPicMarkingOperationsCommands = mmco3,
+  };
+  reference_manager.ProcessMemoryManagementControlOperation(pic_params3);
+  EXPECT_EQ(reference_manager.GetMaxLongTermFrameIndexPlus1(), 0u);
+  EXPECT_EQ(reference_manager.GetLongTermReferenceFrameResourceId(1),
+            std::nullopt);
+  descriptors = reference_manager.ToReferencePictureDescriptors();
+  EXPECT_EQ(descriptors.size(), 0u);
+}
 
 TEST_F(D3D12VideoEncodeH264DelegateTest, UnsupportedCodec) {
   ON_CALL(*video_device3_.Get(),

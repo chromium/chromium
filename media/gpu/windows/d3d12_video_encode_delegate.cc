@@ -509,6 +509,19 @@ void D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::ReplaceWithCurrentFrame(
 }
 
 template <size_t maxDpbSize>
+void D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::EraseFrame(
+    size_t position) {
+  CHECK_LT(position, size());
+  base::span raw_resources_span =
+      base::span(raw_resources_).first(size()).subspan(position);
+  std::ranges::rotate(raw_resources_span,
+                      std::next(raw_resources_span.begin()));
+  base::span subresources_span =
+      base::span(subresources_).first(size()).subspan(position);
+  std::ranges::rotate(subresources_span, std::next(subresources_span.begin()));
+}
+
+template <size_t maxDpbSize>
 D3D12_VIDEO_ENCODE_REFERENCE_FRAMES D3D12VideoEncodeDecodedPictureBuffers<
     maxDpbSize>::ToD3D12VideoEncodeReferenceFrames() {
   return {
