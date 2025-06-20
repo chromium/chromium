@@ -157,6 +157,8 @@ public class NewTabPageLayout extends LinearLayout
     // Previous visibility states for metrics.
     private Boolean mPreviousVoiceSearchButtonVisible;
     private Boolean mPreviousLensButtonVisible;
+    private @Nullable ImageView mDseIconView;
+    private ViewGroup mFakeSearchBox;
 
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
@@ -270,24 +272,11 @@ public class NewTabPageLayout extends LinearLayout
                                 .getDimensionPixelSize(R.dimen.ntp_search_box_transition_end_offset)
                         : 0;
 
-        if (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
-            var fakeboxView = findViewById(R.id.search_box);
-            var dseIconView = (ImageView) fakeboxView.findViewById(R.id.search_box_engine_icon);
-            dseIconView.setVisibility(VISIBLE);
-            ImageViewCompat.setImageTintList(dseIconView, null);
-            fakeboxView.setPaddingRelative(
-                    getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.fake_search_box_start_padding_with_dse_logo),
-                    fakeboxView.getPaddingTop(),
-                    fakeboxView.getPaddingEnd(),
-                    fakeboxView.getPaddingBottom());
-        }
-
         updateSearchBoxWidth();
         initializeLogoCoordinator(searchProviderHasLogo, searchProviderIsGoogle);
         initializeMostVisitedTilesCoordinator(
                 mProfile, lifecycleDispatcher, tileGroupDelegate, touchEnabledDelegate);
+        initializeDseIconView(searchProviderIsGoogle);
         initializeSearchBoxTextView();
         initializeVoiceSearchButton();
         initializeLensButton();
@@ -351,6 +340,41 @@ public class NewTabPageLayout extends LinearLayout
                     }
                 });
         TraceEvent.end(TAG + ".initializeSearchBoxTextView()");
+    }
+
+    private void initializeDseIconView(boolean shouldShowDesIconView) {
+        if (!OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) return;
+
+        mFakeSearchBox = findViewById(R.id.search_box);
+        mDseIconView = mFakeSearchBox.findViewById(R.id.search_box_engine_icon);
+        ImageViewCompat.setImageTintList(mDseIconView, null);
+
+        setDseIconViewVisibility(shouldShowDesIconView);
+    }
+
+    private void setDseIconViewVisibility(boolean isVisible) {
+        if (mDseIconView == null) return;
+
+        int visibility = isVisible ? VISIBLE : GONE;
+        if (mDseIconView.getVisibility() == visibility) return;
+
+        mDseIconView.setVisibility(visibility);
+
+        if (isVisible) {
+            mFakeSearchBox.setPaddingRelative(
+                    getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.fake_search_box_start_padding_with_dse_logo),
+                    mFakeSearchBox.getPaddingTop(),
+                    mFakeSearchBox.getPaddingEnd(),
+                    mFakeSearchBox.getPaddingBottom());
+        } else {
+            mFakeSearchBox.setPaddingRelative(
+                    getResources().getDimensionPixelSize(R.dimen.fake_search_box_start_padding),
+                    mFakeSearchBox.getPaddingTop(),
+                    mFakeSearchBox.getPaddingEnd(),
+                    mFakeSearchBox.getPaddingBottom());
+        }
     }
 
     private void initializeVoiceSearchButton() {
@@ -684,6 +708,9 @@ public class NewTabPageLayout extends LinearLayout
         // Hide or show the views above the most visited tiles as needed, including search box, and
         // spacers. The visibility of Logo is handled by LogoCoordinator.
         mSearchBoxCoordinator.setVisibility(mSearchProviderHasLogo);
+        if (mDseIconView != null) {
+            setDseIconViewVisibility(mSearchProviderIsGoogle);
+        }
         if (mIsComposeplateEnabled) {
             updateActionButtonVisibility();
         }
