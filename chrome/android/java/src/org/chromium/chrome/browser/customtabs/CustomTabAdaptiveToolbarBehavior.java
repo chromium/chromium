@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT;
+import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF;
 import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_OFF;
 
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.SHARE;
+import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.UNKNOWN;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -169,14 +170,14 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
 
     @Override
     public @AdaptiveToolbarButtonVariant int getSegmentationDefault() {
-        return ChromeFeatureList.sCctAdaptiveButtonDefaultVariant.getValue();
+        var defVariant = ChromeFeatureList.sCctAdaptiveButtonDefaultVariant.getValue();
+        return isButtonDuplicated(defVariant) ? UNKNOWN : defVariant;
     }
 
     @ExperimentalOpenInBrowser
     private boolean isOpenInBrowserButtonEnabled() {
         return ChromeFeatureList.sCctAdaptiveButtonEnableOpenInBrowser.getValue()
-                && mIntentDataProvider.getOpenInBrowserButtonState()
-                        == OPEN_IN_BROWSER_STATE_DEFAULT;
+                && mIntentDataProvider.getOpenInBrowserButtonState() != OPEN_IN_BROWSER_STATE_OFF;
     }
 
     private boolean isShareButtonEnabled() {

@@ -118,7 +118,7 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
     }
 
     @Test
-    public void registerPerSurfaceButtons_DoesNotAddOpenInBrowser_WhenOpenInBrowserButtonEnabled() {
+    public void registerPerSurfaceButtons_OpenInBrowser_WhenOpenInBrowserButtonOn() {
         AdaptiveToolbarButtonController controller =
                 Mockito.mock(AdaptiveToolbarButtonController.class);
         Supplier<Tracker> trackerSupplier = Mockito.mock(Supplier.class);
@@ -129,7 +129,7 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
         when(mIntentDataProvider.getOpenInBrowserButtonState())
                 .thenReturn(OPEN_IN_BROWSER_STATE_ON);
         mBehavior.registerPerSurfaceButtons(controller, trackerSupplier);
-        verify(controller, never())
+        verify(controller)
                 .addButtonVariant(eq(AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER), any());
     }
 
@@ -179,13 +179,14 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
 
     @Test
     @EnableFeatures(
-            ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":open_in_browser/true/contextual_only/true")
+            ChromeFeatureList.CCT_ADAPTIVE_BUTTON
+                    + ":open_in_browser/true/contextual_only/true/default_variant/15")
     public void resultFilter_skipStaticActionOpenInBrowserCpaMode() {
         List<Integer> segmentationResults = List.of(OPEN_IN_BROWSER, TRANSLATE);
 
         when(mIntentDataProvider.getOpenInBrowserButtonState())
                 .thenReturn(OPEN_IN_BROWSER_STATE_ON);
-        assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
+        assertEquals(OPEN_IN_BROWSER, mBehavior.resultFilter(segmentationResults));
 
         when(mIntentDataProvider.getOpenInBrowserButtonState())
                 .thenReturn(OPEN_IN_BROWSER_STATE_OFF);
@@ -231,5 +232,25 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
         initBehavior(List.of());
         when(mIntentDataProvider.getShareButtonState()).thenReturn(SHARE_STATE_OFF);
         assertFalse(mBehavior.canShowManualOverride(SHARE));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":open_in_browser/true/default_variant/15")
+    public void hideDefaultVariant() {
+        // Initialize custom action button types.
+        CustomButtonParams openInBrowser = Mockito.mock(CustomButtonParams.class);
+        when(openInBrowser.getType()).thenReturn(ButtonType.CCT_OPEN_IN_BROWSER_BUTTON);
+
+        assertEquals(
+                "The default should be OPEN_IN_BROWSER",
+                OPEN_IN_BROWSER,
+                mBehavior.getSegmentationDefault());
+
+        initBehavior(List.of(openInBrowser));
+        assertEquals(
+                "The default should be UNKNOWN after dedup",
+                UNKNOWN,
+                mBehavior.getSegmentationDefault());
     }
 }

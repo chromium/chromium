@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CustomTabsF
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareUtils;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
@@ -937,7 +938,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 mShowShareItemInMenu = true;
             }
         } else if (mShareState == CustomTabsIntent.SHARE_STATE_ON) {
-            if (mToolbarButtons.isEmpty()) {
+            if (mToolbarButtons.isEmpty() || isCpaOnlyOpenInBrowserDefault()) {
                 mToolbarButtons.add(
                         CustomButtonParamsImpl.createShareButton(
                                 context, getColorProvider().getToolbarColor()));
@@ -981,7 +982,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
 
         if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_ON) {
-            if (mToolbarButtons.isEmpty()) {
+            if (mToolbarButtons.isEmpty() || isCpaOnlyOpenInBrowserDefault()) {
                 mToolbarButtons.add(
                         CustomButtonParamsImpl.createOpenInBrowserButton(
                                 context, getColorProvider().getToolbarColor()));
@@ -1761,5 +1762,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int value =
                 IntentUtils.safeGetIntExtra(getIntent(), EXTRA_ANDROID_BROWSER_HELPER_VERSION, 0);
         return value != 0 ? Integer.valueOf(value) : null;
+    }
+
+    private boolean isCpaOnlyOpenInBrowserDefault() {
+        return ChromeFeatureList.sCctAdaptiveButtonContextualOnly.getValue()
+                && ChromeFeatureList.sCctAdaptiveButtonEnableOpenInBrowser.getValue()
+                && ChromeFeatureList.sCctAdaptiveButtonDefaultVariant.getValue()
+                        == AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER;
     }
 }

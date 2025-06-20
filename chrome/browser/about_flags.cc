@@ -601,6 +601,7 @@ const FeatureEntry::FeatureParam kCCTAdaptiveButtonCPAOnly[] = {
     {"contextual_only", "true"}};
 const FeatureEntry::FeatureParam kCCTAdaptiveButtonOpenInBrowserCPA[] = {
     {"open_in_browser", "true"},
+    {"default_variant", "15"},  // 15 == Open In Browser
     {"contextual_only", "true"}};
 const FeatureEntry::FeatureParam kCCTAdaptiveButtonMenuOpenInBrowserTop[] = {
     {"open_in_browser", "true"},
