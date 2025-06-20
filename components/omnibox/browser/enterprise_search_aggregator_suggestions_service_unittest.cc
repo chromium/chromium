@@ -5,7 +5,6 @@
 #include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
 
 #include "base/functional/bind.h"
-#include "base/json/json_parser.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
