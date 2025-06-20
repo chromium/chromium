@@ -85,14 +85,16 @@ def parse_args(argv):
   parser.add_argument(
       "--nacl",
       action="store_true",
-      help="Enable installation of prerequisites for building NaCl",
-  )
+      # Deprecated flag retained as functional for backward compatibility:
+      # Enable installation of nacl dependencies
+      help=argparse.SUPPRESS)
   parser.add_argument(
       "--no-nacl",
       action="store_false",
       dest="nacl",
-      help="Disable installation of prerequisites for building NaCl",
-  )
+      # Deprecated flag retained as functional for backward compatibility:
+      # Enable installation of nacl dependencies
+      help=argparse.SUPPRESS)
   parser.add_argument(
       "--backwards-compatible",
       action="store_true",
@@ -202,7 +204,7 @@ def check_root():
 
 
 def apt_update(options):
-  if options.lib32 or options.nacl:
+  if options.lib32 or options.backwards_compatible:
     subprocess.check_call(["sudo", "dpkg", "--add-architecture", "i386"])
   subprocess.check_call(["sudo", "apt-get", "update"])
 
@@ -327,7 +329,8 @@ def dev_list():
     packages.append("binutils-mips64el-linux-gnuabi64")
 
   # 64-bit systems need a minimum set of 32-bit compat packages for the
-  # pre-built NaCl binaries.
+  # pre-built NaCl binaries or Android SDK
+  # See https://developer.android.com/sdk/installing/index.html?pkg=tools
   if "ELF 64-bit" in subprocess.check_output(["file", "-L",
                                               "/sbin/init"]).decode():
     # ARM64 may not support these.
@@ -588,6 +591,45 @@ def backwards_compatible_list(options):
       "ttf-kochi-mincho",
       "ttf-mscorefonts-installer",
       "xfonts-mathml",
+
+      # for NaCl
+      "g++-mingw-w64-i686",
+      "lib32z1-dev",
+      "libasound2:i386",
+      "libcap2:i386",
+      "libelf-dev:i386",
+      "libfontconfig1:i386",
+      "libglib2.0-0:i386",
+      "libgpm2:i386",
+      "libncurses5:i386",
+      "libnss3:i386",
+      "libpango-1.0-0:i386",
+      "libssl-dev:i386",
+      "libtinfo-dev",
+      "libtinfo-dev:i386",
+      "libtool",
+      "libudev1:i386",
+      "libuuid1:i386",
+      "libxcomposite1:i386",
+      "libxcursor1:i386",
+      "libxdamage1:i386",
+      "libxi6:i386",
+      "libxrandr2:i386",
+      "libxss1:i386",
+      "libxtst6:i386",
+      "texinfo",
+      "xvfb",
+
+      # Packages to build NaCl, its toolchains, and its ports.
+      "ant",
+      "autoconf",
+      "bison",
+      "cmake",
+      "gawk",
+      "intltool",
+      "libtinfo5",
+      "xutils-dev",
+      "xsltproc",
   ]
 
   if package_exists("python-is-python2"):
@@ -614,6 +656,15 @@ def backwards_compatible_list(options):
     packages.append("apache2.2-bin")
   else:
     packages.append("apache2-bin")
+
+  # for NaCl.
+  # Prefer lib32ncurses5-dev to match libncurses5:i386 if it exists.
+  # In some Ubuntu releases, lib32ncurses5-dev is a transition package to
+  # lib32ncurses-dev, so use that as a fallback.
+  if package_exists("lib32ncurses5-dev"):
+    packages.append("lib32ncurses5-dev")
+  else:
+    packages.append("lib32ncurses-dev")
 
   php_versions = [
       ("php8.1-cgi", "libapache2-mod-php8.1"),
@@ -661,72 +712,6 @@ def arm_list(options):
         "g++-11-arm-linux-gnueabihf",
         "gcc-11-arm-linux-gnueabihf",
     ])
-
-  return packages
-
-
-def nacl_list(options):
-  if not options.nacl:
-    print("Skipping NaCl, NaCl toolchain, NaCl ports dependencies.",
-          file=sys.stderr)
-    return []
-
-  packages = [
-      "g++-mingw-w64-i686",
-      "lib32z1-dev",
-      "libasound2:i386",
-      "libcap2:i386",
-      "libelf-dev:i386",
-      "libfontconfig1:i386",
-      "libglib2.0-0:i386",
-      "libgpm2:i386",
-      "libncurses5:i386",
-      "libnss3:i386",
-      "libpango-1.0-0:i386",
-      "libssl-dev:i386",
-      "libtinfo-dev",
-      "libtinfo-dev:i386",
-      "libtool",
-      "libudev1:i386",
-      "libuuid1:i386",
-      "libxcomposite1:i386",
-      "libxcursor1:i386",
-      "libxdamage1:i386",
-      "libxi6:i386",
-      "libxrandr2:i386",
-      "libxss1:i386",
-      "libxtst6:i386",
-      "texinfo",
-      "xvfb",
-      # Packages to build NaCl, its toolchains, and its ports.
-      "ant",
-      "autoconf",
-      "bison",
-      "cmake",
-      "gawk",
-      "intltool",
-      "libtinfo5",
-      "xutils-dev",
-      "xsltproc",
-  ]
-
-  for package in packages:
-    if not package_exists(package):
-      print("Skipping NaCl, NaCl toolchain, NaCl ports dependencies because %s "
-            "is not available" % package,
-            file=sys.stderr)
-      return []
-
-  print("Including NaCl, NaCl toolchain, NaCl ports dependencies.",
-        file=sys.stderr)
-
-  # Prefer lib32ncurses5-dev to match libncurses5:i386 if it exists.
-  # In some Ubuntu releases, lib32ncurses5-dev is a transition package to
-  # lib32ncurses-dev, so use that as a fallback.
-  if package_exists("lib32ncurses5-dev"):
-    packages.append("lib32ncurses5-dev")
-  else:
-    packages.append("lib32ncurses-dev")
 
   return packages
 
@@ -781,7 +766,7 @@ def dbg_list(options):
 
 def package_list(options):
   packages = (dev_list() + lib_list() + dbg_list(options) +
-              lib32_list(options) + arm_list(options) + nacl_list(options) +
+              lib32_list(options) + arm_list(options) +
               backwards_compatible_list(options))
   packages = [maybe_append_t64(package) for package in set(packages)]
 
