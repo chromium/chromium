@@ -105,7 +105,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
       override;
   void PageVisibilityChanged() override;
 
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderForWebGL();
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderForWebGPU();
 
   bool IsWebGL() const;
@@ -141,6 +140,14 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   bool IsContextLost() const override;
 
+  // `resource_provider_` must be null.
+  void SetResourceProviderForWebGL(
+      std::unique_ptr<CanvasResourceProvider> resource_provider) {
+    CHECK(IsWebGL());
+    CHECK(!resource_provider_for_webgl_);
+    resource_provider_for_webgl_ = std::move(resource_provider);
+    UpdateMemoryUsage();
+  }
   CanvasResourceProvider* GetResourceProviderForWebGL() const {
     CHECK(IsWebGL());
     return resource_provider_for_webgl_.get();

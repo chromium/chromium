@@ -714,6 +714,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   bool IsAccelerated() const override;
   bool UsingSwapChain() const override;
   void PageVisibilityChanged() override;
+  void SizeChanged() override;
   std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider()
       override;
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
@@ -1960,6 +1961,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
                                 Platform::ContextType context_type,
                                 Platform::GraphicsInfo* graphics_info);
 
+  CanvasResourceProvider* GetOrCreateCanvasResourceProvider();
   CanvasResourceProvider* PaintRenderingResultsToCanvas(
       SourceDrawingBuffer source_buffer,
       bool* resource_provider_was_updated = nullptr);
@@ -2010,6 +2012,10 @@ class MODULES_EXPORT WebGLRenderingContextBase
   bool checkProgramCompletionQueryAvailable(WebGLProgram* program,
                                             bool* completed);
   static constexpr unsigned int kMaxProgramCompletionQueries = 128u;
+
+  // `did_fail_to_create_resource_provider_` prevents repeated attempts in
+  // allocating resources after the first attempt failed.
+  bool did_fail_to_create_resource_provider_ = false;
 
   // Support for KHR_parallel_shader_compile.
   //

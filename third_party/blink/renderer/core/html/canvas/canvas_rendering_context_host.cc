@@ -162,29 +162,6 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForCanvas2D() {
 }
 
 CanvasResourceProvider*
-CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGL() {
-  CHECK(IsWebGL());
-  auto* provider = GetResourceProviderForWebGL();
-  if (!provider && !did_fail_to_create_resource_provider_) {
-    if (IsValidImageSize()) {
-      resource_provider_for_webgl_ =
-          RenderingContext()->CreateCanvasResourceProvider();
-      UpdateMemoryUsage();
-      provider = GetResourceProviderForWebGL();
-    }
-    if (!provider) {
-      did_fail_to_create_resource_provider_ = true;
-    } else if (provider->IsValid()) {
-      base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                                provider->IsAccelerated());
-      base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                    provider->GetType());
-    }
-  }
-  return provider;
-}
-
-CanvasResourceProvider*
 CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderForWebGPU() {
   CHECK(IsWebGPU());
   auto* provider = GetResourceProviderForWebGPU();

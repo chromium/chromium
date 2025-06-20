@@ -33,6 +33,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
@@ -1881,6 +1882,10 @@ void WebGLRenderingContextBase::PageVisibilityChanged() {
     GetDrawingBuffer()->SetIsInHiddenPage(!Host()->IsPageVisible());
 }
 
+void WebGLRenderingContextBase::SizeChanged() {
+  did_fail_to_create_resource_provider_ = false;
+}
+
 scoped_refptr<StaticBitmapImage>
 WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer,
@@ -1898,11 +1903,10 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
   if (was_dirty) {
-    Host()->GetOrCreateCanvasResourceProviderForWebGL();
+    GetOrCreateCanvasResourceProvider();
   }
   PaintRenderingResultsToCanvas(source_buffer);
-  if (has_dispatcher && was_dirty &&
-      Host()->GetOrCreateCanvasResourceProviderForWebGL()) {
+  if (has_dispatcher && was_dirty && GetOrCreateCanvasResourceProvider()) {
     return Host()->GetResourceProviderForWebGL()->ProduceCanvasResource(reason);
   }
   return nullptr;
@@ -1987,6 +1991,26 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
 }
 
 CanvasResourceProvider*
+WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
+  auto* provider = Host()->GetResourceProviderForWebGL();
+  if (!provider && !did_fail_to_create_resource_provider_) {
+    if (Host()->IsValidImageSize()) {
+      Host()->SetResourceProviderForWebGL(CreateCanvasResourceProvider());
+      provider = Host()->GetResourceProviderForWebGL();
+    }
+    if (!provider) {
+      did_fail_to_create_resource_provider_ = true;
+    } else if (provider->IsValid()) {
+      base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                                provider->IsAccelerated());
+      base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                    provider->GetType());
+    }
+  }
+  return provider;
+}
+
+CanvasResourceProvider*
 WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer,
     bool* resource_provider_was_updated /*=nullptr*/) {
@@ -2019,7 +2043,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   must_paint_to_canvas_ = false;
 
   CanvasResourceProvider* resource_provider =
-      Host()->GetOrCreateCanvasResourceProviderForWebGL();
+      GetOrCreateCanvasResourceProvider();
   if (!resource_provider)
     return nullptr;
 
