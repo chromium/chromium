@@ -78,7 +78,7 @@ CGFloat const kSheetCornerRadius = 30;
 
 - (void)start {
   image_fetcher::ImageFetcherService* imageFetcherService =
-      ImageFetcherServiceFactory::GetForProfile(self.browser->GetProfile());
+      ImageFetcherServiceFactory::GetForProfile(self.profile);
 
   _mediator = [[HomeCustomizationMediator alloc]
                      initWithPrefService:self.profile->GetPrefs()
