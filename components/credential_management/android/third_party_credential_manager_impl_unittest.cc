@@ -7,6 +7,7 @@
 #include "base/test/mock_callback.h"
 #include "components/credential_management/android/third_party_credential_manager_bridge.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,7 +18,7 @@ using testing::_;
 namespace {
 const std::u16string kTestUsername = u"username";
 const std::u16string kTestPassword = u"password";
-const std::string kTestOrigin = "https://origin.com";
+const char kTestOrigin[] = "https://origin.com";
 }  // namespace
 
 namespace credential_management {
@@ -69,14 +70,18 @@ class ThirdPartyCredentialManagerImplTest
   }
   MockThirdPartyCredentialManagerBridge* mock_bridge() { return mock_bridge_; }
 
+  void NavigateToTestOrigin() {
+    content::WebContentsTester::For(web_contents())
+        ->NavigateAndCommit(GURL(kTestOrigin));
+  }
+
  private:
   raw_ptr<MockThirdPartyCredentialManagerBridge> mock_bridge_;
   std::unique_ptr<ThirdPartyCredentialManagerImpl> credential_manager_;
 };
 
 TEST_F(ThirdPartyCredentialManagerImplTest, TestStore) {
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL(kTestOrigin));
+  NavigateToTestOrigin();
 
   EXPECT_CALL(*mock_bridge(),
               Store(kTestUsername, kTestPassword, kTestOrigin, _));
@@ -92,11 +97,10 @@ TEST_F(ThirdPartyCredentialManagerImplTest, TestStore) {
 }
 
 TEST_F(ThirdPartyCredentialManagerImplTest, TestGetWithOptionalMediation) {
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL(kTestOrigin));
+  NavigateToTestOrigin();
 
   EXPECT_CALL(*mock_bridge(),
-              Get(/*mediation=*/true, /*include_passwords=*/true,
+              Get(/*is_auto_select_allowed=*/true, /*include_passwords=*/true,
                   /*federations=*/std::vector<GURL>(), kTestOrigin, _));
 
   credential_manager()->Get(
@@ -106,11 +110,10 @@ TEST_F(ThirdPartyCredentialManagerImplTest, TestGetWithOptionalMediation) {
 }
 
 TEST_F(ThirdPartyCredentialManagerImplTest, TestGetWithRequiredMediation) {
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL(kTestOrigin));
+  NavigateToTestOrigin();
 
   EXPECT_CALL(*mock_bridge(),
-              Get(/*mediation=*/false, /*include_passwords=*/true,
+              Get(/*is_auto_select_allowed=*/false, /*include_passwords=*/true,
                   /*federations=*/std::vector<GURL>(), kTestOrigin, _));
 
   credential_manager()->Get(
@@ -121,12 +124,11 @@ TEST_F(ThirdPartyCredentialManagerImplTest, TestGetWithRequiredMediation) {
 
 TEST_F(ThirdPartyCredentialManagerImplTest, TestGetWithSilentMediation) {
   base::MockCallback<GetCallback> mock_get_callback;
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL(kTestOrigin));
+  NavigateToTestOrigin();
 
   EXPECT_CALL(mock_get_callback,
-              Run(password_manager::CredentialManagerError::UNKNOWN,
-                  testing::Eq(std::nullopt)));
+              Run(password_manager::CredentialManagerError::SUCCESS,
+                  testing::Eq(password_manager::CredentialInfo())));
 
   credential_manager()->Get(
       /*mediation=*/password_manager::CredentialMediationRequirement::kSilent,
@@ -136,16 +138,41 @@ TEST_F(ThirdPartyCredentialManagerImplTest, TestGetWithSilentMediation) {
 
 TEST_F(ThirdPartyCredentialManagerImplTest, TestGetWithConditionalMediation) {
   base::MockCallback<GetCallback> mock_get_callback;
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL(kTestOrigin));
+  NavigateToTestOrigin();
 
   EXPECT_CALL(mock_get_callback,
-              Run(password_manager::CredentialManagerError::UNKNOWN,
-                  testing::Eq(std::nullopt)));
+              Run(password_manager::CredentialManagerError::SUCCESS,
+                  testing::Eq(password_manager::CredentialInfo())));
 
   credential_manager()->Get(
       /*mediation=*/password_manager::CredentialMediationRequirement::
           kConditional,
+      /*include_passwords=*/true,
+      /*federations=*/std::vector<GURL>(), mock_get_callback.Get());
+}
+
+class ThirdPartyCredentialManagerImplIncognitoModeTest
+    : public ThirdPartyCredentialManagerImplTest {
+ public:
+  std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
+    auto browser_context = std::make_unique<content::TestBrowserContext>();
+    browser_context->set_is_off_the_record(true);
+    return std::move(browser_context);
+  }
+};
+
+TEST_F(ThirdPartyCredentialManagerImplIncognitoModeTest,
+       TestGetWithIncognitoMode) {
+  base::MockCallback<GetCallback> mock_get_callback;
+  NavigateToTestOrigin();
+
+  // In incognito mode, Get should return immediately with an empty credential.
+  EXPECT_CALL(mock_get_callback,
+              Run(password_manager::CredentialManagerError::SUCCESS,
+                  testing::Eq(password_manager::CredentialInfo())));
+
+  credential_manager()->Get(
+      /*mediation=*/password_manager::CredentialMediationRequirement::kRequired,
       /*include_passwords=*/true,
       /*federations=*/std::vector<GURL>(), mock_get_callback.Get());
 }

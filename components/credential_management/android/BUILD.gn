@@ -57,6 +57,7 @@ static_library("browser_sources") {
     ":jni_headers",
     "//content/public/browser",
     "//content/public/common",
+    "//net",
   ]
 
   if (is_android) {
