@@ -19,7 +19,7 @@ FakeTileManagerClient::BuildRasterQueue(TreePriority tree_priority,
 }
 
 std::unique_ptr<EvictionTilePriorityQueue>
-FakeTileManagerClient::BuildEvictionQueue(TreePriority tree_priority) {
+FakeTileManagerClient::BuildEvictionQueue() {
   return nullptr;
 }
 

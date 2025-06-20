@@ -54,8 +54,7 @@ class CC_EXPORT TileManagerClient {
   // Given an empty eviction tile priority queue, this will build a priority
   // queue that will return tiles in the order in which they should be evicted.
   // Note if the queue was previously built, Reset must be called on it.
-  virtual std::unique_ptr<EvictionTilePriorityQueue> BuildEvictionQueue(
-      TreePriority tree_priority) = 0;
+  virtual std::unique_ptr<EvictionTilePriorityQueue> BuildEvictionQueue() = 0;
 
   // Returns an iterator over all the tiles that have a resource.
   virtual std::unique_ptr<TilesWithResourceIterator>

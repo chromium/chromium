@@ -1960,7 +1960,7 @@ std::unique_ptr<RasterTilePriorityQueue> LayerTreeHostImpl::BuildRasterQueue(
 }
 
 std::unique_ptr<EvictionTilePriorityQueue>
-LayerTreeHostImpl::BuildEvictionQueue(TreePriority tree_priority) {
+LayerTreeHostImpl::BuildEvictionQueue() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "LayerTreeHostImpl::BuildEvictionQueue");
 

@@ -741,7 +741,7 @@ TEST_F(TileManagerTilePriorityQueueTest, EvictionTilePriorityQueue) {
   ASSERT_TRUE(pending_layer()->HighResTiling());
 
   std::unique_ptr<EvictionTilePriorityQueue> empty_queue(
-      host_impl()->BuildEvictionQueue(SAME_PRIORITY_FOR_BOTH_TREES));
+      host_impl()->BuildEvictionQueue());
   EXPECT_TRUE(empty_queue->IsEmpty());
   std::set<Tile*> all_tiles;
   size_t tile_count = 0;
@@ -763,7 +763,7 @@ TEST_F(TileManagerTilePriorityQueueTest, EvictionTilePriorityQueue) {
       std::vector<Tile*>(all_tiles.begin(), all_tiles.end()));
 
   std::unique_ptr<EvictionTilePriorityQueue> queue(
-      host_impl()->BuildEvictionQueue(SMOOTHNESS_TAKES_PRIORITY));
+      host_impl()->BuildEvictionQueue());
   EXPECT_FALSE(queue->IsEmpty());
 
   // Sanity check, all tiles should be visible.
@@ -814,7 +814,7 @@ TEST_F(TileManagerTilePriorityQueueTest, EvictionTilePriorityQueue) {
   smoothness_tiles.clear();
   tile_count = 0;
   // Here we expect to get increasing combined priority_bin.
-  queue = host_impl()->BuildEvictionQueue(SMOOTHNESS_TAKES_PRIORITY);
+  queue = host_impl()->BuildEvictionQueue();
   int distance_increasing = 0;
   int distance_decreasing = 0;
   while (!queue->IsEmpty()) {
@@ -857,7 +857,7 @@ TEST_F(TileManagerTilePriorityQueueTest, EvictionTilePriorityQueue) {
   std::set<Tile*> new_content_tiles;
   last_tile = PrioritizedTile();
   // Again, we expect to get increasing combined priority_bin.
-  queue = host_impl()->BuildEvictionQueue(NEW_CONTENT_TAKES_PRIORITY);
+  queue = host_impl()->BuildEvictionQueue();
   distance_decreasing = 0;
   distance_increasing = 0;
   while (!queue->IsEmpty()) {
@@ -1013,11 +1013,10 @@ TEST_F(TileManagerTilePriorityQueueTest,
       std::vector<Tile*>(all_tiles.begin(), all_tiles.end()));
 
   // Verify occlusion is considered by EvictionTilePriorityQueue.
-  TreePriority tree_priority = NEW_CONTENT_TAKES_PRIORITY;
   size_t occluded_count = 0u;
   PrioritizedTile last_tile;
   std::unique_ptr<EvictionTilePriorityQueue> queue(
-      host_impl()->BuildEvictionQueue(tree_priority));
+      host_impl()->BuildEvictionQueue());
   while (!queue->IsEmpty()) {
     PrioritizedTile prioritized_tile = queue->Top();
     if (!last_tile.tile())
@@ -1118,11 +1117,10 @@ TEST_F(TileManagerTilePriorityQueueTest,
   // Verify that eviction queue returns tiles also from layers without valid
   // tile priorities and that the tile priority bin of those tiles is (at most)
   // EVENTUALLY.
-  TreePriority tree_priority = NEW_CONTENT_TAKES_PRIORITY;
   std::set<Tile*> new_content_tiles;
   size_t tile_count = 0;
   std::unique_ptr<EvictionTilePriorityQueue> queue(
-      host_impl()->BuildEvictionQueue(tree_priority));
+      host_impl()->BuildEvictionQueue());
   while (!queue->IsEmpty()) {
     PrioritizedTile prioritized_tile = queue->Top();
     Tile* tile = prioritized_tile.tile();
@@ -1220,7 +1218,7 @@ TEST_F(TileManagerTilePriorityQueueTest, EvictionTilePriorityQueueEmptyLayers) {
   }
 
   std::unique_ptr<EvictionTilePriorityQueue> queue(
-      host_impl()->BuildEvictionQueue(SAME_PRIORITY_FOR_BOTH_TREES));
+      host_impl()->BuildEvictionQueue());
   EXPECT_FALSE(queue->IsEmpty());
 
   tile_count = 0;
@@ -4036,8 +4034,7 @@ TEST_F(TileManagerTileReclaimTest, ReclaimOldPrepainTilesSimple) {
   host_impl()->active_tree()->SetDeviceViewportRect(viewport);
   MakeFrame(global_tile_state);
 
-  auto eviction_queue = host_impl()->BuildEvictionQueue(
-      host_impl()->global_tile_state().tree_priority);
+  auto eviction_queue = host_impl()->BuildEvictionQueue();
   bool has_eventually_tiles = false;
   size_t tiles_count_before = 0;
   for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
@@ -4054,8 +4051,7 @@ TEST_F(TileManagerTileReclaimTest, ReclaimOldPrepainTilesSimple) {
   task_runner()->FastForwardBy(TileManager::GetTrimPrepaintTilesDelay());
 
   // Since the policy is still ALLOW_ANYTHING, no changes.
-  eviction_queue = host_impl()->BuildEvictionQueue(
-      host_impl()->global_tile_state().tree_priority);
+  eviction_queue = host_impl()->BuildEvictionQueue();
   size_t tiles_count_after = 0;
   for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
     const auto& tile = eviction_queue->Top();
@@ -4080,8 +4076,7 @@ TEST_F(TileManagerTileReclaimTest, ReclaimOldPrepainTilesSimple) {
   task_runner()->FastForwardBy(TileManager::GetTrimPrepaintTilesDelay());
 
   tiles_count_after = 0;
-  eviction_queue = host_impl()->BuildEvictionQueue(
-      host_impl()->global_tile_state().tree_priority);
+  eviction_queue = host_impl()->BuildEvictionQueue();
   for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
     const auto& tile = eviction_queue->Top();
     if (tile.priority().priority_bin == TilePriority::EVENTUALLY) {
@@ -4099,8 +4094,7 @@ TEST_F(TileManagerTileReclaimTest, ReclaimOldPrepainTilesSimple) {
 
   // All the EVENTUALLY tiles are gone.
   tiles_count_after = 0;
-  eviction_queue = host_impl()->BuildEvictionQueue(
-      host_impl()->global_tile_state().tree_priority);
+  eviction_queue = host_impl()->BuildEvictionQueue();
   for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
     const auto& tile = eviction_queue->Top();
     EXPECT_NE(tile.priority().priority_bin, TilePriority::EVENTUALLY);
@@ -4124,8 +4118,7 @@ TEST_F(TileManagerTileReclaimTest, ReclaimOldPrepainTilesOldYoungTiles) {
   host_impl()->active_tree()->SetDeviceViewportRect(viewport);
   MakeFrame(global_tile_state);
 
-  auto eviction_queue = host_impl()->BuildEvictionQueue(
-      host_impl()->global_tile_state().tree_priority);
+  auto eviction_queue = host_impl()->BuildEvictionQueue();
   bool has_eventually_tiles = false;
   size_t tiles_count_before = 0;
   for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
@@ -4149,8 +4142,7 @@ TEST_F(TileManagerTileReclaimTest, ReclaimOldPrepainTilesOldYoungTiles) {
 
   size_t tiles_count_after = 0;
   Tile* first_eventually_tile = nullptr;
-  eviction_queue = host_impl()->BuildEvictionQueue(
-      host_impl()->global_tile_state().tree_priority);
+  eviction_queue = host_impl()->BuildEvictionQueue();
   for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
     const auto& tile = eviction_queue->Top();
     if (tile.priority().priority_bin == TilePriority::EVENTUALLY) {
@@ -4175,8 +4167,7 @@ TEST_F(TileManagerTileReclaimTest, ReclaimOldPrepainTilesOldYoungTiles) {
   // The tile is there, it's the only remaining EVENTUALLY one.
   tiles_count_after = 0;
   bool has_found_tile = false;
-  eviction_queue = host_impl()->BuildEvictionQueue(
-      host_impl()->global_tile_state().tree_priority);
+  eviction_queue = host_impl()->BuildEvictionQueue();
   for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
     const auto& tile = eviction_queue->Top();
     EXPECT_TRUE(tile.priority().priority_bin != TilePriority::EVENTUALLY ||
@@ -4193,8 +4184,7 @@ TEST_F(TileManagerTileReclaimTest, ReclaimOldPrepainTilesOldYoungTiles) {
   task_runner()->FastForwardBy(TileManager::GetTrimPrepaintTilesDelay());
 
   // The tile is not there anymore.
-  eviction_queue = host_impl()->BuildEvictionQueue(
-      host_impl()->global_tile_state().tree_priority);
+  eviction_queue = host_impl()->BuildEvictionQueue();
   for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
     const auto& tile = eviction_queue->Top();
     EXPECT_NE(tile.tile(), first_eventually_tile);

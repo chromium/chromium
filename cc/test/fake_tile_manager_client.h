@@ -25,8 +25,7 @@ class FakeTileManagerClient : public TileManagerClient {
   std::unique_ptr<RasterTilePriorityQueue> BuildRasterQueue(
       TreePriority tree_priority,
       RasterTilePriorityQueue::Type type) override;
-  std::unique_ptr<EvictionTilePriorityQueue> BuildEvictionQueue(
-      TreePriority tree_priority) override;
+  std::unique_ptr<EvictionTilePriorityQueue> BuildEvictionQueue() override;
   std::unique_ptr<TilesWithResourceIterator> CreateTilesWithResourceIterator()
       override;
   void SetIsLikelyToRequireADraw(bool is_likely_to_require_a_draw) override {}

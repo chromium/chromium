@@ -140,13 +140,6 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
 
   void RunEvictionQueueConstructTest(const std::string& test_name,
                                      int layer_count) {
-    auto priorities = std::to_array<TreePriority>({
-        SAME_PRIORITY_FOR_BOTH_TREES,
-        SMOOTHNESS_TAKES_PRIORITY,
-        NEW_CONTENT_TAKES_PRIORITY,
-    });
-    int priority_count = 0;
-
     std::vector<FakePictureLayerImpl*> layers = CreateLayers(layer_count, 10);
     for (auto* layer : layers) {
       layer->UpdateTiles();
@@ -159,8 +152,7 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
     timer_.Reset();
     do {
       std::unique_ptr<EvictionTilePriorityQueue> queue(
-          host_impl()->BuildEvictionQueue(priorities[priority_count]));
-      priority_count = (priority_count + 1) % std::size(priorities);
+          host_impl()->BuildEvictionQueue());
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -172,13 +164,6 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
   void RunEvictionQueueConstructAndIterateTest(const std::string& test_name,
                                                int layer_count,
                                                int tile_count) {
-    auto priorities = std::to_array<TreePriority>({
-        SAME_PRIORITY_FOR_BOTH_TREES,
-        SMOOTHNESS_TAKES_PRIORITY,
-        NEW_CONTENT_TAKES_PRIORITY,
-    });
-    int priority_count = 0;
-
     std::vector<FakePictureLayerImpl*> layers =
         CreateLayers(layer_count, tile_count);
     for (auto* layer : layers) {
@@ -193,13 +178,12 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
     do {
       int count = tile_count;
       std::unique_ptr<EvictionTilePriorityQueue> queue(
-          host_impl()->BuildEvictionQueue(priorities[priority_count]));
+          host_impl()->BuildEvictionQueue());
       while (count--) {
         ASSERT_FALSE(queue->IsEmpty());
         ASSERT_TRUE(queue->Top().tile());
         queue->Pop();
       }
-      priority_count = (priority_count + 1) % std::size(priorities);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 

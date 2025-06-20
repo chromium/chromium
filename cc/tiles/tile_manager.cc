@@ -502,7 +502,7 @@ void TileManager::TrimPrepaintTiles() {
   has_pending_tile_trimming_task_ = false;
 
   std::unique_ptr<EvictionTilePriorityQueue> eviction_priority_queue =
-      client_->BuildEvictionQueue(global_state_.tree_priority);
+      client_->BuildEvictionQueue();
   bool has_eligible_used_tiles = false;
   for (; !eviction_priority_queue->IsEmpty(); eviction_priority_queue->Pop()) {
     const auto& prioritized_tile = eviction_priority_queue->Top();
@@ -811,8 +811,7 @@ TileManager::FreeTileResourcesUntilUsageIsWithinLimit(
     MemoryUsage* usage) {
   while (usage->Exceeds(limit)) {
     if (!eviction_priority_queue) {
-      eviction_priority_queue =
-          client_->BuildEvictionQueue(global_state_.tree_priority);
+      eviction_priority_queue = client_->BuildEvictionQueue();
     }
     if (eviction_priority_queue->IsEmpty())
       break;
@@ -833,8 +832,7 @@ TileManager::FreeTileResourcesWithLowerPriorityUntilUsageIsWithinLimit(
     MemoryUsage* usage) {
   while (usage->Exceeds(limit)) {
     if (!eviction_priority_queue) {
-      eviction_priority_queue =
-          client_->BuildEvictionQueue(global_state_.tree_priority);
+      eviction_priority_queue = client_->BuildEvictionQueue();
     }
     if (eviction_priority_queue->IsEmpty())
       break;
@@ -2209,7 +2207,7 @@ bool TileManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                   global_state_.num_resources_limit);
 
   std::unique_ptr<EvictionTilePriorityQueue> eviction_priority_queue(
-      client_->BuildEvictionQueue(global_state_.tree_priority));
+      client_->BuildEvictionQueue());
   std::set<Tile*> tiles_to_evict;
   while (!eviction_priority_queue->IsEmpty()) {
     const PrioritizedTile& tile = eviction_priority_queue->Top();
