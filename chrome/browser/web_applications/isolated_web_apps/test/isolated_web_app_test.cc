@@ -14,6 +14,7 @@
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/common/chrome_features.h"
 #include "components/nacl/common/buildflags.h"
+#include "components/webapps/isolated_web_apps/features.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
@@ -185,6 +186,11 @@ void IsolatedWebAppTest::SetUp() {
   component_wrapper_->InstallComponentAsync(GetIwaComponentVersion(),
                                             GetIwaComponentData(),
                                             IsIwaComponentPreloaded());
+
+  // Do not require allowlisting app to install/update in normal tests.
+  // Do not skip checks only when interaction with allowlist is tested.
+  IwaKeyDistributionInfoProvider::GetInstance()
+      .SkipManagedAllowlistChecksForTesting(true);
 }
 
 void IsolatedWebAppTest::TearDown() {
@@ -228,6 +234,7 @@ IsolatedWebAppTest::IsolatedWebAppTest(
     bool dev_mode)
     : env_(std::move(env)) {
   std::vector<base::test::FeatureRef> enabled_features = {
+      features::kIsolatedWebAppManagedAllowlist,
 #if !BUILDFLAG(IS_CHROMEOS)
       features::kIsolatedWebApps,
 #endif  // !BUILDFLAG(IS_CHROMEOS)

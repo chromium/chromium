@@ -119,13 +119,13 @@ base::expected<void, IwaComponentUpdateError> UpdateKeyDistributionInfo(
 base::expected<void, IwaComponentUpdateError>
 UpdateKeyDistributionInfoWithAllowlist(
     const base::Version& version,
-    const std::vector<std::string>& managed_allowlist) {
+    const std::vector<web_package::SignedWebBundleId>& managed_allowlist) {
   IwaKeyDistribution key_distribution;
   for (const auto& bundle_id : managed_allowlist) {
     auto& managed_allowlist_proto =
         *key_distribution.mutable_iwa_access_control()
              ->mutable_managed_allowlist();
-    managed_allowlist_proto[bundle_id] = {};
+    managed_allowlist_proto[bundle_id.id()] = {};
   }
   return UpdateKeyDistributionInfo(version, key_distribution);
 }

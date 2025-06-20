@@ -54,6 +54,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/update_channel.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
@@ -605,6 +606,13 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
   if (!update_options) {
     // The app is no longer part of the policy (and thus should soon be
     // uninstalled), so no need to check for updates.
+    return false;
+  }
+
+  if (!IwaKeyDistributionInfoProvider::GetInstance().IsManagedUpdatePermitted(
+          url_info.web_bundle_id().id())) {
+    LOG(WARNING) << "The app " << url_info.app_id()
+                 << " cannot be updated because it's not allowlisted.";
     return false;
   }
 

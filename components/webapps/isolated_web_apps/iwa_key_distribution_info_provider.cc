@@ -197,7 +197,23 @@ bool IwaKeyDistributionInfoProvider::IsManagedInstallPermitted(
   if (!IsIsolatedWebAppManagedAllowlistEnabled()) {
     return true;
   }
+  if (skip_managed_checks_for_testing_) {
+    CHECK_IS_TEST();
+    return true;
+  }
   return data_ && data_->managed_allowlist.contains(web_bundle_id);
+}
+
+bool IwaKeyDistributionInfoProvider::IsManagedUpdatePermitted(
+    std::string_view web_bundle_id) const {
+  // Both installs and updates are allowed only for allowlisted apps.
+  return IsManagedInstallPermitted(web_bundle_id);
+}
+
+void IwaKeyDistributionInfoProvider::SkipManagedAllowlistChecksForTesting(
+    bool skip_managed_checks) {
+  CHECK_IS_TEST();
+  skip_managed_checks_for_testing_ = skip_managed_checks;
 }
 
 void IwaKeyDistributionInfoProvider::SetUp(

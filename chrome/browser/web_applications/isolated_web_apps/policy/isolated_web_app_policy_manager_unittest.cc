@@ -427,9 +427,11 @@ class IsolatedWebAppManagedAllowlistTest
     // For these tests we are fine with regular command scheduler.
   }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kIsolatedWebAppManagedAllowlist};
+  void SetUp() override {
+    IsolatedWebAppPolicyManagerTestBase::SetUp();
+    IwaKeyDistributionInfoProvider::GetInstance()
+        .SkipManagedAllowlistChecksForTesting(false);
+  }
 };
 using base::test::HasValue;
 
@@ -448,7 +450,7 @@ TEST_F(IsolatedWebAppManagedAllowlistTest, AllowedAppInstalled) {
   // Update allowlist
   EXPECT_THAT(test::UpdateKeyDistributionInfoWithAllowlist(
                   base::Version("1.0.1"),
-                  /*managed_allowlist=*/{web_bundle_id_1().id()}),
+                  /*managed_allowlist=*/{web_bundle_id_1()}),
               HasValue());
 
   EXPECT_TRUE(

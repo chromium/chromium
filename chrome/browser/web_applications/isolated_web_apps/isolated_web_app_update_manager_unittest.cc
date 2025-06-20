@@ -45,7 +45,9 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
@@ -76,6 +78,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/update_channel.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_status_code.h"
@@ -223,12 +226,23 @@ class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
 
     test_update_server().AddBundle(std::move(app));
 
+    WebAppTestInstallObserver install_observer(profile());
+    install_observer.BeginListening({GetAppId(bundle_id)});
+
+    base::test::TestFuture<web_package::SignedWebBundleId, IwaInstallerResult>
+        future;
+    IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
+        future.GetRepeatingCallback());
+
     test::AddForceInstalledIwaToPolicy(
         profile()->GetPrefs(),
         test_update_server().CreateForceInstallPolicyEntry(bundle_id));
 
-    web_app::WebAppTestInstallObserver(profile()).BeginListeningAndWait(
-        {GetAppId(bundle_id)});
+    auto [web_bundle_id, result] = future.Take();
+    ASSERT_EQ(web_bundle_id, bundle_id);
+    ASSERT_EQ(result.type(), IwaInstallerResultType::kSuccess);
+
+    ASSERT_EQ(install_observer.Wait(), GetAppId(bundle_id));
 
     AssertAppInstalledAtVersion(bundle_id, version);
   }
@@ -877,6 +891,49 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.1.0"));
 
   AssertAppInstalledAtVersion(GetIwa2WebBundleId(), base::Version("2.2.0"));
+}
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
+       SkipsUpdateDiscoveryTaskForNotAllowlistedIwa) {
+  // Turn off default skipping of allowlist for IWA tests
+  IwaKeyDistributionInfoProvider::GetInstance()
+      .SkipManagedAllowlistChecksForTesting(false);
+
+  // Add both app to allowlist for installing them
+  EXPECT_THAT(
+      test::UpdateKeyDistributionInfoWithAllowlist(
+          base::Version("1.0.1"),
+          /*managed_allowlist=*/{GetIwa1WebBundleId(), GetIwa2WebBundleId()}),
+      base::test::HasValue());
+
+  InitialIwaBundleForceInstall(CreateIwa1Bundle("2.0.0"));
+  InitialIwaBundleForceInstall(CreateIwa2Bundle("3.0.0"));
+
+  // Remove the first app from the allowlist
+  EXPECT_THAT(test::UpdateKeyDistributionInfoWithAllowlist(
+                  base::Version("1.0.2"),
+                  /*managed_allowlist=*/{GetIwa2WebBundleId()}),
+              base::test::HasValue());
+
+  EXPECT_FALSE(
+      IwaKeyDistributionInfoProvider::GetInstance().IsManagedUpdatePermitted(
+          GetIwa1WebBundleId().id()));
+  EXPECT_TRUE(
+      IwaKeyDistributionInfoProvider::GetInstance().IsManagedUpdatePermitted(
+          GetIwa2WebBundleId().id()));
+
+  test_update_server().AddBundle(CreateIwa1Bundle("2.1.0"));
+  test_update_server().AddBundle(CreateIwa2Bundle("3.1.0"));
+
+  EXPECT_THAT(update_manager().DiscoverUpdatesNow(), Eq(1ul));
+
+  WebAppTestManifestUpdatedObserver manifest_updated_observer(
+      &provider().install_manager());
+  manifest_updated_observer.BeginListeningAndWait(
+      {GetAppId(GetIwa2WebBundleId())});
+
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("2.0.0"));
+  AssertAppInstalledAtVersion(GetIwa2WebBundleId(), base::Version("3.1.0"));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
