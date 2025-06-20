@@ -343,6 +343,9 @@ HEADLESS_MODE_PROTOCOL_TEST(CreateTargetPosition,
 HEADLESS_MODE_PROTOCOL_TEST(CreateTargetWindowState,
                             "sanity/create-target-window-state.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(DocumentVisibilityState,
+                            "sanity/document-visibility-state.js")
+
 // Headless Mode uses Ozone only when running on Linux.
 #if BUILDFLAG(IS_LINUX)
 HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
