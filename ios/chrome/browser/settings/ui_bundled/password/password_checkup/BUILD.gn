@@ -57,6 +57,7 @@ source_set("password_checkup_ui") {
   deps = [
     ":password_checkup_constants",
     "//base",
+    "//components/application_locale_storage",
     "//components/google/core/common",
     "//components/strings",
     "//ios/chrome/app/strings",

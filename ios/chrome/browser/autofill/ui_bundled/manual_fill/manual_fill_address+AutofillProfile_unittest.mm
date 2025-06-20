@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address+AutofillProfile.h"
@@ -22,7 +23,7 @@ void SetProfileFieldTypeValue(AutofillProfile* profile,
                               NSString* value) {
   const std::u16string v = base::SysNSStringToUTF16(value);
   const std::string& app_locale =
-      GetApplicationContext()->GetApplicationLocale();
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
   profile->SetInfo(fieldType, v, app_locale);
 }
 

@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/no_destructor.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/language/core/browser/language_model.h"
 #import "components/language/core/browser/language_model_manager.h"
 #import "components/language/core/browser/pref_names.h"
@@ -56,7 +57,8 @@ LanguageModelManagerFactory::BuildServiceInstanceFor(
   ProfileIOS* const profile = ProfileIOS::FromBrowserState(state);
   std::unique_ptr<language::LanguageModelManager> manager =
       std::make_unique<language::LanguageModelManager>(
-          profile->GetPrefs(), GetApplicationContext()->GetApplicationLocale());
+          profile->GetPrefs(),
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   PrepareLanguageModels(profile, manager.get());
   return manager;
 }

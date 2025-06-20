@@ -11,6 +11,7 @@ source_set("model") {
   ]
   deps = [
     ":shopping_service",
+    "//components/application_locale_storage",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/optimization_guide/core",
@@ -38,6 +39,7 @@ source_set("shopping_service") {
   deps = [
     ":session_proto_db",
     "//base",
+    "//components/application_locale_storage",
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:parcel_tracking_db_content_proto",

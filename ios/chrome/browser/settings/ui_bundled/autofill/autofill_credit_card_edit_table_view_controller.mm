@@ -10,6 +10,7 @@
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -163,7 +164,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
             autofill::AutofillType(AutofillTypeFromAutofillUITypeForCard(
                 item.autofillCreditCardUIType)),
             base::SysNSStringToUTF16(item.textFieldValue),
-            GetApplicationContext()->GetApplicationLocale());
+            GetApplicationContext()->GetApplicationLocaleStorage()->Get());
       }
     }
 
@@ -259,7 +260,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         tableViewTextEditItem.hasValidText = [AutofillCreditCardUtil
             isValidCreditCardNumber:item.textFieldValue
                            appLocal:GetApplicationContext()
-                                        ->GetApplicationLocale()];
+                                        ->GetApplicationLocaleStorage()
+                                        ->Get()];
         break;
       case ItemTypeExpirationMonth:
         tableViewTextEditItem.hasValidText = [AutofillCreditCardUtil
@@ -269,7 +271,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         tableViewTextEditItem.hasValidText = [AutofillCreditCardUtil
             isValidCreditCardExpirationYear:item.textFieldValue
                                    appLocal:GetApplicationContext()
-                                                ->GetApplicationLocale()];
+                                                ->GetApplicationLocaleStorage()
+                                                ->Get()];
         break;
       case ItemTypeNickname:
         tableViewTextEditItem.hasValidText =
@@ -386,7 +389,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   cardholderNameItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_CARDHOLDER);
   cardholderNameItem.textFieldValue = autofill::GetCreditCardName(
-      _creditCard, GetApplicationContext()->GetApplicationLocale());
+      _creditCard,
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   cardholderNameItem.textFieldEnabled = isEditing;
   cardholderNameItem.autofillCreditCardUIType =
       AutofillCreditCardUIType::kFullName;
@@ -480,7 +484,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
         expirationMonth:expirationMonth
          expirationYear:expirationYear
            cardNickname:nickname
-               appLocal:GetApplicationContext()->GetApplicationLocale()];
+               appLocal:GetApplicationContext()
+                            ->GetApplicationLocaleStorage()
+                            ->Get()];
 }
 
 // Returns the value in the field corresponding to the `itemType`.

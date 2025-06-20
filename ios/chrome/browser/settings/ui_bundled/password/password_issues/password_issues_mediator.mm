@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
 #import "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -343,7 +344,8 @@ NSInteger GetDismissedWarningsCount(
           ? [[CrURL alloc] initWithGURL:google_util::AppendGoogleLocaleParam(
                                             headerURL.value(),
                                             GetApplicationContext()
-                                                ->GetApplicationLocale())]
+                                                ->GetApplicationLocaleStorage()
+                                                ->Get())]
           : nil;
 
   [self.consumer setHeader:headerText URL:localizedHeaderURL];

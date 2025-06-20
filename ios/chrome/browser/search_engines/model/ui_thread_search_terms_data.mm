@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/strings/escape.h"
 #import "base/strings/strcat.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/version_info/version_info.h"
@@ -46,7 +47,7 @@ std::string UIThreadSearchTermsData::GoogleBaseURLValue() const {
 
 std::string UIThreadSearchTermsData::GetApplicationLocale() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetApplicationContext()->GetApplicationLocale();
+  return GetApplicationContext()->GetApplicationLocaleStorage()->Get();
 }
 
 std::u16string UIThreadSearchTermsData::GetRlzParameterValue(

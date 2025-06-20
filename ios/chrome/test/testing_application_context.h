@@ -75,7 +75,6 @@ class TestingApplicationContext : public ApplicationContext {
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
-  const std::string& GetApplicationLocale() override;
   ApplicationLocaleStorage* GetApplicationLocaleStorage() override;
   const std::string& GetApplicationCountry() override;
   ProfileManagerIOS* GetProfileManager() override;
@@ -113,7 +112,6 @@ class TestingApplicationContext : public ApplicationContext {
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
-  std::string application_locale_;
   std::string application_country_;
   raw_ptr<PrefService> local_state_;
 

@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address+AutofillProfile.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -15,9 +16,9 @@ namespace {
 // corresponding field value.
 NSString* FieldValueOfTypeOnProfile(const autofill::AutofillProfile& profile,
                                     autofill::FieldType fieldType) {
-  return base::SysUTF16ToNSString(
-      profile.GetInfo(autofill::AutofillType(fieldType),
-                      GetApplicationContext()->GetApplicationLocale()));
+  return base::SysUTF16ToNSString(profile.GetInfo(
+      autofill::AutofillType(fieldType),
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
 }
 
 }  // namespace

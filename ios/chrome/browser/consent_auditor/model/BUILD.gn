@@ -9,6 +9,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/consent_auditor",
     "//components/pref_registry",
     "//components/sync/model",

@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/browsing_data/core/history_notice_utils.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -563,12 +564,16 @@ BOOL UIIsBlocking(Browser* browser) {
         [[CrURL alloc]
             initWithGURL:google_util::AppendGoogleLocaleParam(
                              GURL(kClearBrowsingDataDSESearchUrlInFooterURL),
-                             GetApplicationContext()->GetApplicationLocale())],
+                             GetApplicationContext()
+                                 ->GetApplicationLocaleStorage()
+                                 ->Get())],
         [[CrURL alloc]
             initWithGURL:google_util::AppendGoogleLocaleParam(
                              GURL(
                                  kClearBrowsingDataDSEMyActivityUrlInFooterURL),
-                             GetApplicationContext()->GetApplicationLocale())]
+                             GetApplicationContext()
+                                 ->GetApplicationLocaleStorage()
+                                 ->Get())]
       ];
     } else if (defaultSearchEngine->prepopulate_id() > 0) {
       footerItem.text = l10n_util::GetNSStringF(
@@ -577,14 +582,18 @@ BOOL UIIsBlocking(Browser* browser) {
       footerItem.urls = @[ [[CrURL alloc]
           initWithGURL:google_util::AppendGoogleLocaleParam(
                            GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL),
-                           GetApplicationContext()->GetApplicationLocale())] ];
+                           GetApplicationContext()
+                               ->GetApplicationLocaleStorage()
+                               ->Get())] ];
     } else {
       footerItem.text = l10n_util::GetNSString(
           IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_UNKOWN_DSE_SIGNED_IN);
       footerItem.urls = @[ [[CrURL alloc]
           initWithGURL:google_util::AppendGoogleLocaleParam(
                            GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL),
-                           GetApplicationContext()->GetApplicationLocale())] ];
+                           GetApplicationContext()
+                               ->GetApplicationLocaleStorage()
+                               ->Get())] ];
     }
   } else {
     // Logged Out with Google DSE is handled in calling function since there
@@ -632,7 +641,7 @@ BOOL UIIsBlocking(Browser* browser) {
   GURL gurl = GURL(URL);
   if (appendLocaleToURL) {
     gurl = google_util::AppendGoogleLocaleParam(
-        gurl, GetApplicationContext()->GetApplicationLocale());
+        gurl, GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   }
   footerItem.urls = @[ [[CrURL alloc] initWithGURL:gurl] ];
   return footerItem;

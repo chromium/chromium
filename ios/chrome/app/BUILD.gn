@@ -412,6 +412,7 @@ source_set("app_internal") {
     ":variations_app_state_agent",
     "//base",
     "//build:branding_buildflags",
+    "//components/application_locale_storage",
     "//components/bookmarks/browser",
     "//components/breadcrumbs/core",
     "//components/breadcrumbs/core:status",

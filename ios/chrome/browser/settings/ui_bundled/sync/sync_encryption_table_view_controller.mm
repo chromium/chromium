@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/command_line_switches.h"
@@ -140,10 +141,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
   footerItem.text =
       l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_HINT_UNO);
-  footerItem.urls = @[ [[CrURL alloc]
-      initWithGURL:google_util::AppendGoogleLocaleParam(
-                       GURL(kSyncGoogleDashboardURL),
-                       GetApplicationContext()->GetApplicationLocale())] ];
+  footerItem.urls =
+      @[ [[CrURL alloc] initWithGURL:google_util::AppendGoogleLocaleParam(
+                                         GURL(kSyncGoogleDashboardURL),
+                                         GetApplicationContext()
+                                             ->GetApplicationLocaleStorage()
+                                             ->Get())] ];
   return footerItem;
 }
 

@@ -9,6 +9,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/optimization_guide/core",
     "//components/page_content_annotations/core",
     "//components/variations/service",

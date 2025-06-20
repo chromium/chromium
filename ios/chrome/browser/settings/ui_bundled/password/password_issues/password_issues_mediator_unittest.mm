@@ -8,6 +8,7 @@
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -71,7 +72,7 @@ NSString* GetUsername2() {
 // Returns a URL with localized according to the Application Locale.
 GURL GetLocalizedURL(const GURL& original) {
   return google_util::AppendGoogleLocaleParam(
-      original, GetApplicationContext()->GetApplicationLocale());
+      original, GetApplicationContext()->GetApplicationLocaleStorage()->Get());
 }
 
 }  // namespace

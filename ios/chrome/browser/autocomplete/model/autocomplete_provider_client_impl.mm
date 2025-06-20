@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/browser/top_sites.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -83,7 +84,7 @@ PrefService* AutocompleteProviderClientImpl::GetLocalState() {
 }
 
 std::string AutocompleteProviderClientImpl::GetApplicationLocale() const {
-  return GetApplicationContext()->GetApplicationLocale();
+  return GetApplicationContext()->GetApplicationLocaleStorage()->Get();
 }
 
 const AutocompleteSchemeClassifier&

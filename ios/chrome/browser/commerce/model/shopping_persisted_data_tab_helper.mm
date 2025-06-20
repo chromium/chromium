@@ -9,6 +9,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/optimization_guide/core/hints/optimization_metadata.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -261,9 +262,9 @@ void ShoppingPersistedDataTabHelper::ParseProto(
 
   // TODO(crbug.com/40794608) Filter out non-qualifying price drops (< 10% or
   // < 2 units).
-  payments::CurrencyFormatter* currencyFormatter =
-      GetCurrencyFormatter(product_update.old_price().currency_code(),
-                           GetApplicationContext()->GetApplicationLocale());
+  payments::CurrencyFormatter* currencyFormatter = GetCurrencyFormatter(
+      product_update.old_price().currency_code(),
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   price_drop_->current_price = base::SysUTF16ToNSString(FormatPrice(
       currencyFormatter, product_update.new_price().amount_micros()));
   price_drop_->previous_price = base::SysUTF16ToNSString(FormatPrice(

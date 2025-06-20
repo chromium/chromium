@@ -13,6 +13,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/error_page/common/error.h"
 #import "components/error_page/common/localized_error.h"
 #import "components/grit/components_resources.h"
@@ -54,7 +55,7 @@ NSString* GetErrorPage(const GURL& url,
           /*can_show_network_diagnostics_dialog=*/false, is_off_the_record,
           /*auto_fetch_feature_enabled=*/false,
           /*is_kiosk_mode=*/false,
-          GetApplicationContext()->GetApplicationLocale(),
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
           /*is_blocked_by_extension=*/false,
           /*error_page_params=*/nullptr);
 

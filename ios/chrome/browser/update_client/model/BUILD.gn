@@ -9,6 +9,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/update_client",
     "//components/version_info",
     "//ios/chrome/browser/shared/model/application_context",

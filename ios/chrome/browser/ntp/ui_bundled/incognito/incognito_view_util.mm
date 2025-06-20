@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view_util.h"
 
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
@@ -15,7 +16,8 @@ const char kLearnMoreIncognitoUrl[] =
     "https://support.google.com/chrome/?p=incognito";
 
 GURL GetUrlWithLang(const GURL& url) {
-  std::string locale = GetApplicationContext()->GetApplicationLocale();
+  std::string locale =
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
   return google_util::AppendGoogleLocaleParam(url, locale);
 }
 

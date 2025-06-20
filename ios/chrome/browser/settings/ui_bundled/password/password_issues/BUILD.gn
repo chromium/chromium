@@ -12,6 +12,7 @@ source_set("password_issues") {
   deps = [
     ":password_issues_ui",
     "//base",
+    "//components/application_locale_storage",
     "//components/google/core/common",
     "//components/password_manager/core/browser",
     "//components/sync/service",
@@ -85,6 +86,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
+    "//components/application_locale_storage",
     "//components/google/core/common",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",

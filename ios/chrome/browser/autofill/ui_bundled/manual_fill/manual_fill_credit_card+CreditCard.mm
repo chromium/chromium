@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #import "components/autofill/core/browser/data_quality/validation.h"
@@ -23,7 +24,8 @@
   NSString* bankName =
       base::SysUTF16ToNSString(base::ASCIIToUTF16(creditCard.bank_name()));
   NSString* cardHolder = autofill::GetCreditCardName(
-      creditCard, GetApplicationContext()->GetApplicationLocale());
+      creditCard,
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   NSString* number = nil;
   if (creditCard.record_type() !=
       autofill::CreditCard::RecordType::kMaskedServerCard) {

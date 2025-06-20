@@ -17,6 +17,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/commerce/core/commerce_constants.h"
@@ -226,7 +227,7 @@ void ConfigureTabResumptionItemForShopCard(
     std::unique_ptr<payments::CurrencyFormatter> formatter =
         std::make_unique<payments::CurrencyFormatter>(
             price_tracking_data->product_update().new_price().currency_code(),
-            GetApplicationContext()->GetApplicationLocale());
+            GetApplicationContext()->GetApplicationLocaleStorage()->Get());
     item.shopCardData.priceDrop = GetPriceDrop(
         formatter.get(),
         price_tracking_data->product_update().new_price().amount_micros(),
@@ -259,7 +260,7 @@ void ConfigureTabResumptionItemForShopCard(
               price_tracking_data->buyable_product()
                   .current_price()
                   .currency_code(),
-              GetApplicationContext()->GetApplicationLocale());
+              GetApplicationContext()->GetApplicationLocaleStorage()->Get());
       item.shopCardData.currentPrice = GetFormattedPrice(
           formatter.get(), price_tracking_data->buyable_product()
                                .current_price()

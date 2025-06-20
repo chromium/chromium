@@ -8,6 +8,7 @@
 #import "base/check_op.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/time/time.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/grit/dev_ui_components_resources.h"
 #import "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
@@ -122,7 +123,7 @@ CreateSslBlockingPage(web::WebState* web_state, const GURL& url) {
           std::make_unique<
               security_interstitials::IOSBlockingPageMetricsHelper>(
               web_state, request_url, reporting_info),
-          GetApplicationContext()->GetApplicationLocale()));
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
 }
 
 std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
@@ -140,7 +141,7 @@ CreateCaptivePortalBlockingPage(web::WebState* web_state) {
           std::make_unique<
               security_interstitials::IOSBlockingPageMetricsHelper>(
               web_state, request_url, reporting_info),
-          GetApplicationContext()->GetApplicationLocale()));
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
 }
 
 std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>

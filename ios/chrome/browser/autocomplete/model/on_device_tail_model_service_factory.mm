@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/omnibox/browser/on_device_tail_model_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -40,7 +41,8 @@ OnDeviceTailModelServiceFactory::~OnDeviceTailModelServiceFactory() = default;
 std::unique_ptr<KeyedService>
 OnDeviceTailModelServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  const std::string locale = GetApplicationContext()->GetApplicationLocale();
+  const std::string locale =
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
   if (!OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled(locale)) {
     return nullptr;
   }

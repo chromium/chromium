@@ -13,6 +13,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/no_destructor.h"
 #import "base/time/default_clock.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/consent_auditor/consent_auditor_impl.h"
 #import "components/consent_auditor/consent_sync_bridge.h"
 #import "components/consent_auditor/consent_sync_bridge_impl.h"
@@ -66,6 +67,6 @@ std::unique_ptr<KeyedService> ConsentAuditorFactory::BuildServiceInstanceFor(
   // The locale doesn't change at runtime, so we can pass it directly.
   return std::make_unique<consent_auditor::ConsentAuditorImpl>(
       std::move(consent_sync_bridge),
-      GetApplicationContext()->GetApplicationLocale(),
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
       base::DefaultClock::GetInstance());
 }

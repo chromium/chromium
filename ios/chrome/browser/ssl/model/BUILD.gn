@@ -18,6 +18,7 @@ source_set("model") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/application_locale_storage",
     "//components/captive_portal/core",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/security_interstitials/core",

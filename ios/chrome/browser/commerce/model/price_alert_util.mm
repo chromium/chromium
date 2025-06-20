@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 
 #import "base/metrics/field_trial_params.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -21,7 +22,8 @@ bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
   }
 
   // Price drop annotations are only enabled for en-US.
-  if (GetApplicationContext()->GetApplicationLocale() != "en-US") {
+  if (GetApplicationContext()->GetApplicationLocaleStorage()->Get() !=
+      "en-US") {
     return false;
   }
 

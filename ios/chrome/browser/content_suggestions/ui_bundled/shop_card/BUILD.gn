@@ -18,6 +18,7 @@ source_set("shop_card") {
     ":shop_card_data",
     "//base",
     "//base",
+    "//components/application_locale_storage",
     "//components/bookmarks/browser",
     "//components/commerce/core:commerce_constants",
     "//components/commerce/core:feature_list",

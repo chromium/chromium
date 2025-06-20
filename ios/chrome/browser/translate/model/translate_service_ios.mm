@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/notreached.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/language/core/browser/language_model.h"
 #import "components/prefs/pref_service.h"
 #import "components/translate/core/browser/translate_download_manager.h"
@@ -46,7 +47,7 @@ void TranslateServiceIOS::Initialize() {
   download_manager->set_url_loader_factory(
       GetApplicationContext()->GetSharedURLLoaderFactory());
   download_manager->set_application_locale(
-      GetApplicationContext()->GetApplicationLocale());
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
 }
 
 // static

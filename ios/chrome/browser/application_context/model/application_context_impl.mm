@@ -106,12 +106,14 @@ ApplicationContextImpl::ApplicationContextImpl(
   DCHECK(!GetApplicationContext());
   SetApplicationContext(this);
 
-  SetApplicationLocale(locale);
   application_locale_storage_->Set(locale);
   application_country_ = country;
 
   update_client::UpdateQueryParams::SetDelegate(
       IOSChromeUpdateQueryParamsDelegate::GetInstance());
+
+  translate::TranslateDownloadManager::GetInstance()->set_application_locale(
+      locale);
 }
 
 ApplicationContextImpl::~ApplicationContextImpl() {
@@ -302,12 +304,6 @@ network::mojom::NetworkContext*
 ApplicationContextImpl::GetSystemNetworkContext() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ios_chrome_io_thread_->GetSystemNetworkContext();
-}
-
-const std::string& ApplicationContextImpl::GetApplicationLocale() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!application_locale_.empty());
-  return application_locale_;
 }
 
 ApplicationLocaleStorage*
@@ -692,13 +688,6 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
 
   // Persisting to disk is protected by a critical task, so no other special
   // handling is necessary on iOS.
-}
-
-void ApplicationContextImpl::SetApplicationLocale(const std::string& locale) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  application_locale_ = locale;
-  translate::TranslateDownloadManager::GetInstance()->set_application_locale(
-      application_locale_);
 }
 
 void ApplicationContextImpl::CreateLocalState() {

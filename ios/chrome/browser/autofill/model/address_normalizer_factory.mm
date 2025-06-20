@@ -6,6 +6,7 @@
 
 #import "base/memory/ptr_util.h"
 #import "base/no_destructor.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "ios/chrome/browser/autofill/model/validation_rules_storage_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -35,9 +36,10 @@ AddressNormalizer* AddressNormalizerFactory::GetInstance() {
 }
 
 AddressNormalizerFactory::AddressNormalizerFactory()
-    : address_normalizer_(GetAddressInputSource(),
-                          GetAddressInputStorage(),
-                          GetApplicationContext()->GetApplicationLocale()) {}
+    : address_normalizer_(
+          GetAddressInputSource(),
+          GetAddressInputStorage(),
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get()) {}
 
 AddressNormalizerFactory::~AddressNormalizerFactory() {}
 

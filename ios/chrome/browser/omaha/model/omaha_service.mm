@@ -26,6 +26,7 @@
 #import "base/time/time.h"
 #import "base/values.h"
 #import "build/branding_buildflags.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/version_info/version_info.h"
@@ -395,7 +396,8 @@ void OmahaService::Start(std::unique_ptr<network::PendingSharedURLLoaderFactory>
   DCHECK(!service->pending_url_loader_factory_ ||
          !service->url_loader_factory_);
   service->pending_url_loader_factory_ = std::move(pending_url_loader_factory);
-  service->locale_lang_ = GetApplicationContext()->GetApplicationLocale();
+  service->locale_lang_ =
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&OmahaService::SendOrScheduleNextPing,
                                 base::Unretained(service)));

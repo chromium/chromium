@@ -15,6 +15,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -1540,7 +1541,9 @@ TEST_F(PasswordManagerViewControllerTest, ManageAccountHeaderIsBeingUpdated) {
   CrURL* expectedHeaderUrl = [[CrURL alloc]
       initWithGURL:google_util::AppendGoogleLocaleParam(
                        GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
-                       GetApplicationContext()->GetApplicationLocale())];
+                       GetApplicationContext()
+                           ->GetApplicationLocaleStorage()
+                           ->Get())];
   EXPECT_NSEQ(header.urls[0].nsurl, expectedHeaderUrl.nsurl);
 
   [GetPasswordManagerViewController() settingsWillBeDismissed];

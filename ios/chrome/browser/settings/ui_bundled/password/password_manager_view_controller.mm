@@ -18,6 +18,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
@@ -1256,7 +1257,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
         initWithGURL:
             google_util::AppendGoogleLocaleParam(
                 GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
-                GetApplicationContext()->GetApplicationLocale())] ];
+                GetApplicationContext()
+                    ->GetApplicationLocaleStorage()
+                    ->Get())] ];
   } else {
     _manageAccountLinkItem.text =
         l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_HEADER_NOT_SYNCING);
@@ -1911,7 +1914,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
           [TableViewIllustratedEmptyView defaultTextAttributesForSubtitle];
       NSURL* linkURL = net::NSURLWithGURL(google_util::AppendGoogleLocaleParam(
           GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
-          GetApplicationContext()->GetApplicationLocale()));
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
       NSDictionary* linkAttributes = @{
         NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
         NSLinkAttributeName : linkURL,

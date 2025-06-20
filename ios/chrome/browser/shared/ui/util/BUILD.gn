@@ -116,6 +116,7 @@ source_set("terms_util") {
   ]
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/resources:terms_resources",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/application_context",

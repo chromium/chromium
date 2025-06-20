@@ -39,6 +39,7 @@ source_set("interstitials") {
   ]
 
   deps = [
+    "//components/application_locale_storage",
     "//components/enterprise/connectors/core",
     "//components/resources:components_resources_grit",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",

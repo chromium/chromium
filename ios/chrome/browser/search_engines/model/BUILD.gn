@@ -34,6 +34,7 @@ source_set("model") {
   deps = [
     ":search_engine_js",
     "//base",
+    "//components/application_locale_storage",
     "//components/country_codes",
     "//components/favicon/ios",
     "//components/google/core/common",

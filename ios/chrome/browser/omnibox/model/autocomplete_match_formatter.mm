@@ -13,6 +13,7 @@
 #import "base/metrics/field_trial_params.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
@@ -68,7 +69,8 @@ UIColor* DimColorIncognito() {
   if (self) {
     _match = AutocompleteMatch(match);
     _isReverseColorLogic = base::Contains(
-        kReverseColorLocales, GetApplicationContext()->GetApplicationLocale());
+        kReverseColorLocales,
+        GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   }
   return self;
 }

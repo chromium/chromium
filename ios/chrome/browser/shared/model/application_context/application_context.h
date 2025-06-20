@@ -144,10 +144,6 @@ class ApplicationContext {
   // GetSystemURLRequestContext().
   virtual network::mojom::NetworkContext* GetSystemNetworkContext() = 0;
 
-  // TODO(crbug.com/414379493): Replace existing usage with
-  // GetApplicationLocaleStorage(). Gets the locale used by the application.
-  virtual const std::string& GetApplicationLocale() = 0;
-
   // Gets the ApplicationLocaleStorage associated with this application.
   virtual ApplicationLocaleStorage* GetApplicationLocaleStorage() = 0;
 

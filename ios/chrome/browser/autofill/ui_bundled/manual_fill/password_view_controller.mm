@@ -9,6 +9,7 @@
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/plus_addresses/features.h"
@@ -330,7 +331,9 @@ enum ManualFallbackItemType : NSInteger {
   headerItem.urls = @[ [[CrURL alloc]
       initWithGURL:google_util::AppendGoogleLocaleParam(
                        GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
-                       GetApplicationContext()->GetApplicationLocale())] ];
+                       GetApplicationContext()
+                           ->GetApplicationLocaleStorage()
+                           ->Get())] ];
 
   [self presentHeaderItem:headerItem];
 }

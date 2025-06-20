@@ -47,6 +47,7 @@ source_set("manual_fill") {
     ":manual_fill_constants",
     ":requesters",
     "//base",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/core/common:credit_card_number_validation",
@@ -161,6 +162,7 @@ source_set("manual_fill_ui") {
   deps = [
     ":manual_fill_constants",
     "//base",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
     "//components/google/core/common",
@@ -232,6 +234,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",

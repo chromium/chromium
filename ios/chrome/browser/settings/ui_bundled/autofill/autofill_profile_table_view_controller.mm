@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
@@ -285,12 +286,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (TableViewItem*)itemForProfile:
     (const autofill::AutofillProfile&)autofillProfile {
   std::string guid(autofillProfile.guid());
-  NSString* title = base::SysUTF16ToNSString(
-      autofillProfile.GetInfo(autofill::AutofillType(autofill::NAME_FULL),
-                              GetApplicationContext()->GetApplicationLocale()));
+  NSString* title = base::SysUTF16ToNSString(autofillProfile.GetInfo(
+      autofill::AutofillType(autofill::NAME_FULL),
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
   NSString* subTitle = base::SysUTF16ToNSString(autofillProfile.GetInfo(
       autofill::AutofillType(autofill::ADDRESS_HOME_LINE1),
-      GetApplicationContext()->GetApplicationLocale()));
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
 
   AutofillProfileItem* item =
       [[AutofillProfileItem alloc] initWithType:ItemTypeAddress];

@@ -14,6 +14,7 @@ source_set("model") {
   deps = [
     "//base:i18n",
     "//build:branding_buildflags",
+    "//components/application_locale_storage",
     "//components/metrics",
     "//components/prefs",
     "//components/profile_metrics",

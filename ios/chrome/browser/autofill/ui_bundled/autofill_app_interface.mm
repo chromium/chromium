@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -439,9 +440,9 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 
 + (NSString*)exampleProfileName {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  std::u16string name =
-      profile.GetInfo(autofill::AutofillType(autofill::NAME_FULL),
-                      GetApplicationContext()->GetApplicationLocale());
+  std::u16string name = profile.GetInfo(
+      autofill::AutofillType(autofill::NAME_FULL),
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   return base::SysUTF16ToNSString(name);
 }
 

@@ -10,6 +10,7 @@
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -143,8 +144,10 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
     std::vector<std::pair<autofill::FieldType, std::u16string>> expected_values;
     for (const auto& type : fieldTypes) {
       expected_values.push_back(
-          {type, profile_->GetInfo(
-                     type, GetApplicationContext()->GetApplicationLocale())});
+          {type,
+           profile_->GetInfo(
+               type,
+               GetApplicationContext()->GetApplicationLocaleStorage()->Get())});
     }
 
     size_t totalItems = (size_t)[model numberOfItemsInSection:0] +

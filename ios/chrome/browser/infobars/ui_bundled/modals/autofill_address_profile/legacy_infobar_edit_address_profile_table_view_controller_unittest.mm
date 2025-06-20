@@ -10,6 +10,7 @@
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -102,8 +103,9 @@ class LegacyInfobarEditAddressProfileTableViewControllerTest
 
       expected_values.push_back(
           {field.autofillType,
-           profile_->GetInfo(field.autofillType,
-                             GetApplicationContext()->GetApplicationLocale())});
+           profile_->GetInfo(
+               field.autofillType,
+               GetApplicationContext()->GetApplicationLocaleStorage()->Get())});
     }
 
     EXPECT_EQ(1, [model numberOfSections]);

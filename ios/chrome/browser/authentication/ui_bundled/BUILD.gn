@@ -199,6 +199,7 @@ source_set("eg_app_support+eg2") {
     ":account_settings_presenter",
     ":signin_presenter",
     ":ui_bundled",
+    "//components/application_locale_storage",
     "//components/bookmarks/browser",
     "//components/policy/core/browser",
     "//components/prefs",

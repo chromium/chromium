@@ -11,6 +11,7 @@ source_set("model") {
   ]
 
   deps = [
+    "//components/application_locale_storage",
     "//components/optimization_guide/core",
     "//components/page_info/core",
     "//components/page_info/core:proto",

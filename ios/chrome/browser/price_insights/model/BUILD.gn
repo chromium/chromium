@@ -60,6 +60,7 @@ source_set("feature") {
   ]
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
     "//components/variations/service",

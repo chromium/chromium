@@ -138,6 +138,7 @@ include_rules = [
   "+components/webp_transcode",
   "+components/webui/flags",
   "+components/webui/version",
+  "+components/application_locale_storage",
   "+crypto",
   "+google_apis",
   "+ios/chrome/app",

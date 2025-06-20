@@ -12,6 +12,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/strings",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",

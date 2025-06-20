@@ -9,6 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/plus_addresses/webdata/plus_address_webdata_service.h"
@@ -28,7 +29,7 @@ std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
   const base::FilePath& state_path = context->GetStatePath();
   // On iOS (and Android), the account storage is persisted on disk.
   return std::make_unique<WebDataServiceWrapper>(
-      state_path, GetApplicationContext()->GetApplicationLocale(),
+      state_path, GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
       web::GetUIThreadTaskRunner({}), base::DoNothing(),
       GetApplicationContext()->GetOSCryptAsync(),
       /*use_in_memory_autofill_account_database=*/false);

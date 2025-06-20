@@ -9,6 +9,7 @@
 #import <optional>
 
 #import "base/functional/bind.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -78,7 +79,7 @@
   tabHelper->SetDelegate(self);
 
   GURL parentAccessURL = supervised_user::GetParentAccessURLForIOS(
-      GetApplicationContext()->GetApplicationLocale(), _targetURL,
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get(), _targetURL,
       _filteringBehaviorReason);
   _mediator = [[ParentAccessMediator alloc] initWithWebState:std::move(webState)
                                              parentAccessURL:parentAccessURL];

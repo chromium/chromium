@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/webui/ui_bundled/autofill_and_password_manager_internals/internals_ui_handler.h"
 
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/grit/autofill_and_password_manager_internals_resources.h"
 #import "components/grit/autofill_and_password_manager_internals_resources_map.h"
@@ -43,8 +44,9 @@ web::WebUIIOSDataSource* CreateInternalsHTMLSource(
                     std::string(version_info::GetLastChange()));
   source->AddString(version_ui::kUserAgent, web::GetWebClient()->GetUserAgent(
                                                 web::UserAgentType::MOBILE));
-  source->AddString("app_locale",
-                    GetApplicationContext()->GetApplicationLocale());
+  source->AddString(
+      "app_locale",
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   return source;
 }
 

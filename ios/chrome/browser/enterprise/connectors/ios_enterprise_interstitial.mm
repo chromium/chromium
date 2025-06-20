@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/enterprise/connectors/ios_enterprise_interstitial.h"
 
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/grit/components_resources.h"
 #import "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
@@ -175,7 +176,7 @@ IOSEnterpriseInterstitial::EnterprisePageControllerClient::
     : IOSBlockingPageControllerClient(
           resource.weak_web_state.get(),
           CreateMetricsHelper(resource),
-          GetApplicationContext()->GetApplicationLocale()),
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get()),
       request_url_(resource.url),
       threat_type_(resource.threat_type),
       threat_source_(resource.threat_source) {}

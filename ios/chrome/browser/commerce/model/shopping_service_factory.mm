@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #import "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
@@ -70,7 +71,7 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
 
   return std::make_unique<ShoppingService>(
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
-      GetApplicationContext()->GetApplicationLocale(),
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
       ios::BookmarkModelFactory::GetForProfile(profile),
       OptimizationGuideServiceFactory::GetForProfile(profile), pref_service,
       IdentityManagerFactory::GetForProfile(profile),

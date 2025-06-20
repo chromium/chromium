@@ -9,6 +9,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "components/page_content_annotations/core/page_content_annotations_service.h"
@@ -53,7 +54,7 @@ std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
 
   return std::make_unique<
       page_content_annotations::PageContentAnnotationsService>(
-      GetApplicationContext()->GetApplicationLocale(),
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
       optimization_guide_keyed_service, history_service,
       ios::TemplateURLServiceFactory::GetForProfile(profile),

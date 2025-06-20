@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -47,7 +48,8 @@
                     expirationMonth:(NSString*)expirationMonth
                      expirationYear:(NSString*)expirationYear
                        cardNickname:(NSString*)cardNickname {
-  const std::string& appLocal = GetApplicationContext()->GetApplicationLocale();
+  const std::string& appLocal =
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
   autofill::CreditCard creditCard =
       [AutofillCreditCardUtil creditCardWithHolderName:cardHolderName
                                             cardNumber:cardNumber
@@ -124,7 +126,9 @@
             isValidCreditCardNumber:(NSString*)cardNumber {
   return [AutofillCreditCardUtil
       isValidCreditCardNumber:cardNumber
-                     appLocal:GetApplicationContext()->GetApplicationLocale()];
+                     appLocal:GetApplicationContext()
+                                  ->GetApplicationLocaleStorage()
+                                  ->Get()];
 }
 
 - (bool)addCreditCardViewController:
@@ -140,7 +144,8 @@
   return [AutofillCreditCardUtil
       isValidCreditCardExpirationYear:expirationYear
                              appLocal:GetApplicationContext()
-                                          ->GetApplicationLocale()];
+                                          ->GetApplicationLocaleStorage()
+                                          ->Get()];
 }
 
 - (bool)addCreditCardViewController:
@@ -155,7 +160,8 @@
                     expirationMonth:(NSString*)expirationMonth
                      expirationYear:(NSString*)expirationYear
                        cardNickname:(NSString*)cardNickname {
-  const std::string& appLocal = GetApplicationContext()->GetApplicationLocale();
+  const std::string& appLocal =
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
   return ([AutofillCreditCardUtil isValidCreditCardNumber:cardNumber
                                                  appLocal:appLocal] &&
           [AutofillCreditCardUtil

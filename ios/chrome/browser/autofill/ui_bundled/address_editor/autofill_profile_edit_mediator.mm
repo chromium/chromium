@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -118,7 +119,8 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
     _requiredFieldsWithEmptyValue = [[NSMutableSet<NSString*> alloc] init];
     _selectedCountryCode =
         base::SysUTF8ToNSString(autofill::data_util::GetCountryCodeWithFallback(
-            *autofillProfile, GetApplicationContext()->GetApplicationLocale()));
+            *autofillProfile,
+            GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
     _dynamicallyLoadInputFieldsEnabled = base::FeatureList::IsEnabled(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
     _editedFields = [[NSMutableSet<NSString*> alloc] init];
@@ -243,7 +245,7 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
     _autofillProfile->SetInfoWithVerificationStatus(
         autofill::AutofillType(serverFieldType),
         base::SysNSStringToUTF16(value),
-        GetApplicationContext()->GetApplicationLocale(),
+        GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
         autofill::VerificationStatus::kUserVerified);
   } else {
     _autofillProfile->SetRawInfoWithVerificationStatus(
@@ -349,7 +351,8 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
       [self typeNameToFieldType:editedFieldType];
   NSString* fieldOriginalValue =
       base::SysUTF16ToNSString(_autofillProfile->GetInfo(
-          serverFieldType, GetApplicationContext()->GetApplicationLocale()));
+          serverFieldType,
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
   if (contains && [fieldOriginalValue isEqualToString:value]) {
     [_editedFields removeObject:editedFieldType];
   } else if (!contains && ![fieldOriginalValue isEqualToString:value]) {
@@ -383,7 +386,7 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
       [self typeNameToFieldType:autofillFieldType];
   return _autofillProfile
       ->GetInfo(serverFieldType,
-                GetApplicationContext()->GetApplicationLocale())
+                GetApplicationContext()->GetApplicationLocaleStorage()->Get())
       .empty();
 }
 
@@ -396,7 +399,7 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
       GeoIpCountryCode(variations_service
                            ? variations_service->GetLatestCountry()
                            : std::string()),
-      GetApplicationContext()->GetApplicationLocale());
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   const autofill::CountryComboboxModel::CountryVector& countriesVector =
       countryModel.countries();
 
@@ -432,7 +435,7 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
 
   autofill::AutofillCountry country(
       base::SysNSStringToUTF8(_selectedCountryCode),
-      GetApplicationContext()->GetApplicationLocale());
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   _line1Required = country.requires_line1();
   _cityRequired = country.requires_city();
   _stateRequired = country.requires_state();
@@ -455,9 +458,10 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
     autofill::AutofillCountry country(country_code);
     std::vector<autofill::AutofillAddressUIComponent> ui_components =
         ConvertAddressUiComponents(
-            BuildComponents(country_code, localization,
-                            GetApplicationContext()->GetApplicationLocale(),
-                            &best_language_tag_unused),
+            BuildComponents(
+                country_code, localization,
+                GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+                &best_language_tag_unused),
             country);
     ExtendAddressComponents(ui_components, country, localization,
                             /*include_literals=*/false);
@@ -524,19 +528,20 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
   for (AutofillEditProfileField* field in self.inputNonAddressFields) {
     NSString* fieldValue = base::SysUTF16ToNSString(_autofillProfile->GetInfo(
         [self typeNameToFieldType:field.fieldType],
-        GetApplicationContext() -> GetApplicationLocale()));
+        GetApplicationContext() -> GetApplicationLocaleStorage() -> Get()));
     fieldValuesMap[field.fieldType] = fieldValue;
   }
   for (AutofillEditProfileField* field in self.inputAddressFields) {
     NSString* fieldValue = base::SysUTF16ToNSString(_autofillProfile->GetInfo(
         [self typeNameToFieldType:field.fieldType],
-        GetApplicationContext() -> GetApplicationLocale()));
+        GetApplicationContext() -> GetApplicationLocaleStorage() -> Get()));
     fieldValuesMap[field.fieldType] = fieldValue;
   }
 
   for (const auto& field_type : kStaticFieldsTypes) {
     NSString* fieldValue = base::SysUTF16ToNSString(_autofillProfile->GetInfo(
-        field_type, GetApplicationContext()->GetApplicationLocale()));
+        field_type,
+        GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
     fieldValuesMap[[self fieldTypeToTypeName:field_type]] = fieldValue;
   }
 

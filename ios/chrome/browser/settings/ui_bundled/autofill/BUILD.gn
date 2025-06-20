@@ -29,6 +29,7 @@ source_set("autofill") {
   deps = [
     ":constants",
     ":shared_ui",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/core/common:credit_card_number_validation",
@@ -106,6 +107,7 @@ source_set("unit_tests") {
   deps = [
     ":autofill",
     "//base/test:test_support",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/plus_addresses:features",

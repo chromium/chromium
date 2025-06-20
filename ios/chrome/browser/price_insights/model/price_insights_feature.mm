@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
 
 #import "base/metrics/field_trial_params.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/feature_utils.h"
 #import "components/commerce/core/shopping_service.h"
@@ -26,7 +27,7 @@ bool IsPriceInsightsRegionEnabled() {
   return commerce::IsRegionLockedFeatureEnabled(
       commerce::kPriceInsights, commerce::kPriceInsightsRegionLaunched,
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
-      GetApplicationContext()->GetApplicationLocale());
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
 }
 
 bool IsPriceInsightsEnabled(ProfileIOS* profile) {

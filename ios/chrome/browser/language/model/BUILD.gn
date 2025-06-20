@@ -13,6 +13,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/keyed_service/core",
     "//components/language/core/browser",
     "//components/language/core/common",

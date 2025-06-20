@@ -97,6 +97,7 @@ source_set("model") {
     ":omnibox_pedal_swift",
     ":swift_dependencies",
     "//base",
+    "//components/application_locale_storage",
     "//components/bookmarks/browser",
     "//components/dom_distiller/core",
     "//components/favicon/ios",

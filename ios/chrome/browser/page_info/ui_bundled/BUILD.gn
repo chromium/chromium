@@ -222,6 +222,7 @@ source_set("features") {
   ]
   public_deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/page_info/core",
     "//ios/chrome/browser/shared/model/application_context",
   ]

@@ -111,6 +111,7 @@ source_set("model") {
     ":constants",
     ":demographics_client",
     "//base",
+    "//components/application_locale_storage",
     "//components/browser_sync",
     "//components/crash/core/common",
     "//components/feed/core/shared_prefs:feed_shared_prefs",

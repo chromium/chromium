@@ -9,6 +9,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/component_updater",
     "//components/services/patch:in_process",
     "//components/services/patch/public/mojom",

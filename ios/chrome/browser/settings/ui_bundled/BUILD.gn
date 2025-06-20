@@ -88,6 +88,7 @@ source_set("ui_bundled") {
     "//base",
     "//base:i18n",
     "//build:branding_buildflags",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/browsing_data/core",

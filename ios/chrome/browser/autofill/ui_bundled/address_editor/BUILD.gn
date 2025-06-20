@@ -28,6 +28,7 @@ source_set("autofill_shared_ui") {
   deps = [
     ":constants",
     "//base",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/common:features",
     "//components/autofill/ios/common",
@@ -63,6 +64,7 @@ source_set("unit_tests") {
     ":constants",
     "//base",
     "//base/test:test_support",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common:features",

@@ -30,6 +30,7 @@
 #import "base/strings/safe_sprintf.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/platform_thread.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/crash/core/common/crash_key.h"
 #import "components/crash/core/common/crash_keys.h"
 #import "components/history/core/browser/history_service.h"
@@ -213,7 +214,7 @@ int32_t IOSChromeMetricsServiceClient::GetProduct() {
 }
 
 std::string IOSChromeMetricsServiceClient::GetApplicationLocale() {
-  return GetApplicationContext()->GetApplicationLocale();
+  return GetApplicationContext()->GetApplicationLocaleStorage()->Get();
 }
 
 const network_time::NetworkTimeTracker*

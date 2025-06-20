@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/string_number_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -434,7 +435,7 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
           google_util::AppendGoogleLocaleParam(
               GURL(password_manager::
                        kPasswordManagerHelpCenterChangeUnsafePasswordsURL),
-              GetApplicationContext()->GetApplicationLocale())];
+              GetApplicationContext()->GetApplicationLocaleStorage()->Get())];
   footerItem.urls = @[ footerURL ];
   return footerItem;
 }

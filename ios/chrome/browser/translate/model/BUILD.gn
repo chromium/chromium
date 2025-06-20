@@ -29,6 +29,7 @@ source_set("model") {
   deps = [
     ":public",
     "//base",
+    "//components/application_locale_storage",
     "//components/infobars/core",
     "//components/language/core/browser",
     "//components/language_detection/core/browser:language_detection_model_service",

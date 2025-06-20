@@ -57,6 +57,7 @@ source_set("coordinator") {
     "//base:i18n",
     "//build:branding_buildflags",
     "//components/account_id",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/commerce/core:commerce_constants",
     "//components/crash/core/browser",

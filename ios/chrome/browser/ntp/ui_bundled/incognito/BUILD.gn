@@ -34,6 +34,7 @@ source_set("util") {
     "incognito_view_util.mm",
   ]
   deps = [
+    "//components/application_locale_storage",
     "//components/google/core/common",
     "//ios/chrome/browser/shared/model/application_context",
   ]

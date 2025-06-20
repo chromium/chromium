@@ -46,6 +46,7 @@ source_set("unit_tests") {
   deps = [
     ":modals",
     "//base/test:test_support",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common:features",
     "//components/strings",

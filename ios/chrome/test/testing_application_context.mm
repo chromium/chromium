@@ -31,8 +31,7 @@
 #import "services/network/test/test_network_connection_tracker.h"
 #import "services/network/test/test_url_loader_factory.h"
 TestingApplicationContext::TestingApplicationContext()
-    : application_locale_("en-US"),
-      application_country_("us"),
+    : application_country_("us"),
       local_state_(nullptr),
       profile_manager_(nullptr),
       was_last_shutdown_clean_(false),
@@ -154,12 +153,6 @@ network::mojom::NetworkContext*
 TestingApplicationContext::GetSystemNetworkContext() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTREACHED();
-}
-
-const std::string& TestingApplicationContext::GetApplicationLocale() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!application_locale_.empty());
-  return application_locale_;
 }
 
 ApplicationLocaleStorage*

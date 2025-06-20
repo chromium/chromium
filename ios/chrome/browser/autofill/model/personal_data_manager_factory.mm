@@ -9,6 +9,7 @@
 #import "base/feature_list.h"
 #import "base/no_destructor.h"
 #import "base/strings/string_util.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -90,7 +91,7 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForProfile(profile), history_service,
       sync_service, strike_database, autofill_image_fetcher,
       /*shared_storage_handler=*/nullptr,
-      GetApplicationContext()->GetApplicationLocale(),
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
       GetCountryCodeFromVariations());
 }
 

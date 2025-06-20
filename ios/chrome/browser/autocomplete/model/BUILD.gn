@@ -32,6 +32,7 @@ source_set("model") {
 
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/browser_sync",
     "//components/history/core/browser",
     "//components/language/core/browser",

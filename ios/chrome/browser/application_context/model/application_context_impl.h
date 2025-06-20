@@ -70,7 +70,6 @@ class ApplicationContextImpl : public ApplicationContext {
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
-  const std::string& GetApplicationLocale() override;
   ApplicationLocaleStorage* GetApplicationLocaleStorage() override;
   const std::string& GetApplicationCountry() override;
   ProfileManagerIOS* GetProfileManager() override;
@@ -172,7 +171,6 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
 
   std::unique_ptr<ProfileManagerIOS> profile_manager_;
-  std::string application_locale_;
   std::string application_country_;
 
   // Sequenced task runner for local state related I/O tasks.

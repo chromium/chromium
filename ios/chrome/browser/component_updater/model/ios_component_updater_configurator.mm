@@ -16,6 +16,7 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/path_service.h"
 #import "base/version.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/component_updater/component_updater_command_line_config_policy.h"
 #import "components/component_updater/configurator_impl.h"
 #import "components/services/patch/in_process_file_patcher.h"
@@ -146,7 +147,7 @@ std::string IOSConfigurator::GetChannel() const {
 }
 
 std::string IOSConfigurator::GetLang() const {
-  return GetApplicationContext()->GetApplicationLocale();
+  return GetApplicationContext()->GetApplicationLocaleStorage()->Get();
 }
 
 std::string IOSConfigurator::GetOSLongName() const {

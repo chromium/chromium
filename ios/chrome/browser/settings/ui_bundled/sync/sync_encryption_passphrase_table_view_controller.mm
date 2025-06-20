@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
@@ -262,10 +263,12 @@ const CGFloat kSpinnerButtonPadding = 18;
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
   footerItem.text = self.footerMessage;
-  footerItem.urls = @[ [[CrURL alloc]
-      initWithGURL:google_util::AppendGoogleLocaleParam(
-                       GURL(kSyncGoogleDashboardURL),
-                       GetApplicationContext()->GetApplicationLocale())] ];
+  footerItem.urls =
+      @[ [[CrURL alloc] initWithGURL:google_util::AppendGoogleLocaleParam(
+                                         GURL(kSyncGoogleDashboardURL),
+                                         GetApplicationContext()
+                                             ->GetApplicationLocaleStorage()
+                                             ->Get())] ];
   return footerItem;
 }
 
