@@ -122,7 +122,7 @@ public class PlayerCoordinator implements Player {
     public void playTabRequested(PlaybackMode playbackMode) {
         mMediator.setPlayback(null);
         mMediator.setRequestedPlaybackMode(playbackMode);
-        mMediator.setPlaybackState(PlaybackListener.State.BUFFERING);
+        mMediator.setPlaybackState(PlaybackListener.State.PLAYBACK_CREATION);
         if (!mExpandedPlayer.anySheetShowing()) {
             mMiniPlayer.show(/* animate= */ true);
         }

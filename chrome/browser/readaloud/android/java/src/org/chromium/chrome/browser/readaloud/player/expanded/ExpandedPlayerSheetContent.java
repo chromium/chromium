@@ -193,7 +193,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         case PlaybackListener.State.ERROR:
           showErrorLayout();
           break;
-         case PlaybackListener.State.BUFFERING:
+         case PlaybackListener.State.PLAYBACK_CREATION:
            showLoadingLayout();
            break;
         default:

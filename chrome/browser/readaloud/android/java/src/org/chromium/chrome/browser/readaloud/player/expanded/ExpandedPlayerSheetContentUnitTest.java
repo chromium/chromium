@@ -79,6 +79,7 @@ public class ExpandedPlayerSheetContentUnitTest {
     private Activity mActivity;
     private LinearLayout mNormalLayout;
     private LinearLayout mErrorLayout;
+    private LinearLayout mLoadingLayout;
     private ImageView mThumbUp;
     private ImageView mThumbDown;
     private ImageView mMoreOptions;
@@ -108,6 +109,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         mSeekbar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
         mNormalLayout = (LinearLayout) mContentView.findViewById(R.id.normal_layout);
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
+        mLoadingLayout = (LinearLayout) mContentView.findViewById(R.id.readaloud_loading_overlay);
         mThumbUp = (ImageView) mContentView.findViewById(R.id.readaloud_thumb_up_button);
         mThumbDown = (ImageView) mContentView.findViewById(R.id.readaloud_thumb_down_button);
         mMoreOptions = (ImageView) mContentView.findViewById(R.id.readaloud_more_button);
@@ -334,6 +336,14 @@ public class ExpandedPlayerSheetContentUnitTest {
 
       mContent.setRequestedPlaybackMode(PlaybackMode.CLASSIC);
       assertEquals(loadingText.getText(), mContext.getString(R.string.readaloud_playback_loading));
+    }
+
+    @Test
+    public void testLoadingLayoutIsShownInPlaybackCreation() {
+      mContent.onPlaybackStateChanged(PlaybackListener.State.PLAYBACK_CREATION);
+
+      assertTrue(mErrorLayout.getVisibility() == View.GONE);
+      assertTrue(mLoadingLayout.getVisibility() == View.VISIBLE);
     }
 
 

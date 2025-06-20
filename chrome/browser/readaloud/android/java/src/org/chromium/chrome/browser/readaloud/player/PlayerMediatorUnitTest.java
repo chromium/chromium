@@ -22,6 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.BUFFERING;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.ERROR;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYBACK_CREATION;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.UNKNOWN;
@@ -808,6 +809,25 @@ public class PlayerMediatorUnitTest {
         mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
 
         assertEquals(ERROR, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+
+        // Clear playback.
+        mMediator.setPlayback(null);
+
+        // The mini player should restore.
+        mMediator.onShouldRestoreMiniPlayer();
+        verify(mPlayerCoordinator).restoreMiniPlayer();
+    }
+
+    @Test
+    public void testShouldRestoreMiniPlayer_playbackCreation() {
+        // Set playback state through playback update, as if the error happened during playback.
+        mMediator.setPlayback(mPlayback);
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+
+        mPlaybackData.mState = PLAYBACK_CREATION;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+
+        assertEquals(PLAYBACK_CREATION, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
 
         // Clear playback.
         mMediator.setPlayback(null);

@@ -8,6 +8,7 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.BUFFE
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.ERROR;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYBACK_CREATION;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.UNKNOWN;
 
@@ -236,6 +237,7 @@ public class MiniPlayerLayout extends LinearLayout {
     void onPlaybackStateChanged(@PlaybackListener.State int state) {
         switch (state) {
                 // UNKNOWN is currently the "reset" state and can be treated same as buffering.
+            case PLAYBACK_CREATION:
             case BUFFERING:
             case UNKNOWN:
                 showBufferingLayout();
