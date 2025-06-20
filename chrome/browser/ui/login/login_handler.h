@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"

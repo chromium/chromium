@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_UTILS_H_
 
 #include <unordered_set>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/uuid.h"

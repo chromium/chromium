@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_AI_AI_TEST_UTILS_H_
 #define CHROME_BROWSER_AI_AI_TEST_UTILS_H_
 
+#include <vector>
+
 #include "base/supports_user_data.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"

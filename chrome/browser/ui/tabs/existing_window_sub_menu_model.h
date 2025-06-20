@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <vector>
+
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
 
