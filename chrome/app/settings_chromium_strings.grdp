@@ -121,12 +121,8 @@
   </if>
 
   <!-- Delete Browsing Data -->
-  <!-- TODO(crbug.com/397187800): Make DBDv2 strings translatable. -->
-  <message name="IDS_SETTINGS_MANAGE_PASSWORDS_SUB_LABEL" desc="Sub-label for the 'Manage other Data' row in the 'Delete Browsing Data' dialog, explaining to the user that passwords can only be deleted outside of Chromium." translateable="false">
+  <message name="IDS_SETTINGS_MANAGE_PASSWORDS_SUB_LABEL" desc="Sub-label for the 'Manage other Data' subpage entrypoint in the 'Delete Browsing Data' dialog, explaining to the user that passwords can only be deleted outside of Chromium.">
     Passwords can only be deleted outside Chromium
-  </message>
-  <message name="IDS_SETTINGS_OTHER_DATA_DESCRIPTION" desc="Description text at the top of the 'Other data' subpage." translateable="false">
-    This data is managed outside Chromium. To delete it, go to its management settings.
   </message>
 
   <!-- Preloading Page-->

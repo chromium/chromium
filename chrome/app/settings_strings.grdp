@@ -798,6 +798,12 @@
   <message name="IDS_SETTINGS_CLEAR_HOSTED_APP_DATA" desc="Checkbox for deleting data of hosted apps">
     Hosted app data
   </message>
+  <message name="IDS_SETTINGS_CLEAR_PERIOD_15_MIN" desc="The option in the 'Delete browsing data' settings page time picker to delete browsing data from the last 15 minutes. The 'minutes' is shortened to 'min' to allow the time options in the time picker to fit in the screen.">
+    Last 15 min
+  </message>
+  <message name="IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES" desc="The option to delete browsing data from the last 15 minutes.">
+    Last 15 minutes
+  </message>
   <message name="IDS_SETTINGS_CLEAR_PERIOD_HOUR" desc="The option to delete browsing data from the last hour.">
     Last hour
   </message>
@@ -816,57 +822,53 @@
   <message name="IDS_SETTINGS_NOTIFICATION_WARNING" desc="A warning that notifications will be disabled by deleting cookies for this site.">
     Notifications will be disabled
   </message>
-  <!-- TODO(crbug.com/397187800): Make DBDv2 strings translatable. -->
-  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_SHOW_MORE" translateable="false">
+  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_SHOW_MORE" desc="Label of the 'Show more' button below the checkbox container in the 'Delete browsing data' dialog. Clicking on this button expands the checkbox container to show more checkbox data options.">
     Show more
   </message>
-  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_MORE" translateable="false">
+  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_MORE" desc="Label of the 'More' chip in the time picker in the 'Delete browsing data' dialog. Clicking on this chip will show a menu with more time period options for deleting browsing data.">
     More
   </message>
-  <message name="IDS_SETTINGS_CLEAR_PERIOD_15_MIN" desc="The option in the 'Delete browsing data' settings page time picker to delete browsing data from the last 15 minutes. The 'minutes' is shortened to 'min' to allow the time options in the time picker to fit in the screen." translateable="false">
-    Last 15 min
-  </message>
-  <message name="IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES" desc="The option to delete browsing data from the last 15 minutes." translateable="false">
-    Last 15 minutes
-  </message>
-  <message name="IDS_SETTINGS_MANAGE_IN_GOOGLE_PASSWORD_MANAGER" desc="Description for the 'Passwords and Passkeys' option in 'Other Google Data' page." translateable="false">
+  <message name="IDS_SETTINGS_MANAGE_IN_GOOGLE_PASSWORD_MANAGER" desc="Description for the 'Passwords and Passkeys' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog. This lets users know that passwords and passkeys can be managed and deleted in Google password manager.">
     Manage in Google Password Manager
   </message>
-  <message name="IDS_SETTINGS_MANAGE_IN_YOUR_GOOGLE_ACCOUNT" desc="Description for a feature that can be managed in the user's Google account." translateable="false">
+  <message name="IDS_SETTINGS_MANAGE_IN_YOUR_GOOGLE_ACCOUNT" desc="Description for the MyActivity and Search History linkouts in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog. This lets users know that this data can be managed and deleted in their Google account.">
     Manage in your Google Account
   </message>
-  <message name="IDS_SETTINGS_PASSWORDS_AND_PASSKEYS" desc="Label for the 'Passwords and Passkeys' option in 'Other Google Data' page." translateable="false">
+  <message name="IDS_SETTINGS_PASSWORDS_AND_PASSKEYS" desc="Label for the 'Passwords and Passkeys' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This linkout is specifically for passwords and passkeys stored in Google password manager.">
     Passwords and passkeys
   </message>
-  <message name="IDS_SETTINGS_SEARCH_HISTORY" desc="Label for the 'Search history' option in 'Other Google Data' page." translateable="false">
+  <message name="IDS_SETTINGS_SEARCH_HISTORY" desc="Label for the 'Search history' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This linkout is specifically for search history stored in the user's default search engine account.">
     Search history
   </message>
-  <message name="IDS_SETTINGS_OTHER_DATA_TITLE" desc="Title for the 'Other data' subpage that is linked from the clear Browse data dialog." translateable="false">
-    Other data
-  </message>
-  <message name="IDS_SETTINGS_OTHER_GOOGLE_DATA_TITLE" desc="Title for the 'Other Google data' subpage that is linked from the clear Browse data dialog. This title is shown when Google is set as the default search engine on Chrome." translateable="false">
-    Other Google data
-  </message>
-  <message name="IDS_SETTINGS_MY_ACTIVITY" desc="Label for the 'My Activity' option in 'Other Google Data' page." translateable="false">
+  <message name="IDS_SETTINGS_MY_ACTIVITY" desc="Label for the 'My Activity' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This linkout is specifically for activity data stored in the user's Google account.">
     My Activity
   </message>
-  <message name="IDS_SETTINGS_DELETE_DATA_FROM_DEVICE" translateable="false">
+  <message name="IDS_SETTINGS_OTHER_DATA_TITLE" desc="Title for the 'Other Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This is the title shown when the user did not set Google as their default search engine, indicating that they may have data stored outside of Google.">
+    Other data
+  </message>
+  <message name="IDS_SETTINGS_OTHER_GOOGLE_DATA_TITLE" desc="Title for the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This is the title shown when the user set Google as their default search engine, indicating that all data linked in this subpage is stored within Google.">
+    Other Google data
+  </message>
+  <message name="IDS_SETTINGS_DELETE_DATA_FROM_DEVICE" desc="This is the label for the primary button on the 'Delete browsing data' dialog. Clicking on this will trigger the deletion. This is the label shown when account data cannot be cleared, for example: the user is signed out. It indicates that the deletion will only affect data stored on this device and will not affect synced data.">
     Delete from this device
   </message>
-  <message name="IDS_SETTINGS_DELETION_CONFIRMATION_TOAST_LABEL" translateable="false">
+  <message name="IDS_SETTINGS_DELETION_CONFIRMATION_TOAST_LABEL" desc="This is the label for the confirmation toast shown on the 'Privacy and security' page after the deletion is completed in the 'Delete browsing data' dialog and the dialog was closed. It takes in another string for the the user-selected time period that the data was deleted within.">
     <ph name="TIME_PERIOD">$1<ex>Last 15 minutes</ex></ph> deleted
   </message>
-  <message name="IDS_SETTINGS_DELETION_CONFIRMATION_ALL_TIME_TOAST_LABEL" translateable="false">
+  <message name="IDS_SETTINGS_DELETION_CONFIRMATION_ALL_TIME_TOAST_LABEL" desc="This is the label for the confirmation toast shown on the 'Privacy and security' page after the deletion is completed in the 'Delete browsing data' dialog and the dialog was closed. This is the label shown when the user selected the data to be deleted for all time.">
     Deleted
   </message>
-  <message name="IDS_SETTINGS_MANAGE_OTHER_GOOGLE_DATA_LABEL" desc="Label for the 'Manage other Google data' subpage entry-point in the 'Delete Browsing Data' dialog where the user can find link-outs to manage their data outside of Chrome. This is the label shown when the user has Google as their default search engine." translateable="false">
+  <message name="IDS_SETTINGS_MANAGE_OTHER_GOOGLE_DATA_LABEL" desc="Label for the 'Manage other Google data' subpage entry-point in the 'Delete Browsing Data' dialog where the user can find link-outs to manage their data outside of Chrome. This is the label shown when the user has Google as their default search engine.">
     Manage other Google data
   </message>
-  <message name="IDS_SETTINGS_MANAGE_OTHER_DATA_LABEL" desc="Label for the 'Manage other data' subpage entry-point in the 'Delete Browsing Data' dialog where the user can find link-outs to manage their data outside of Chrome. This is the label shown when the user does not have Google as their default search engine." translateable="false">
+  <message name="IDS_SETTINGS_MANAGE_OTHER_DATA_LABEL" desc="Label for the 'Manage other data' subpage entry-point in the 'Delete Browsing Data' dialog where the user can find link-outs to manage their data outside of Chrome. This is the label shown when the user does not have Google as their default search engine.">
     Manage other data
   </message>
-  <message name="IDS_SETTINGS_MANAGE_OTHER_DATA_SUB_LABEL" desc="Sub-label for the 'Manage other Google Data' option in the 'Delete Browsing Data' dialog, explaining to the user that search history and passwords can only be deleted outside of Chromium." translateable="false">
+  <message name="IDS_SETTINGS_MANAGE_OTHER_DATA_SUB_LABEL" desc="Sub-label for the 'Manage other Google Data' option in the 'Delete Browsing Data' dialog, explaining to the user that search history and passwords can be deleted outside of Chrome in their respective management settings.">
     Search history and passwords can be deleted in their management settings
+  </message>
+  <message name="IDS_SETTINGS_OTHER_DATA_DESCRIPTION" desc="Description text at the top of the 'Other Google data' subpage in the 'Delete browsing data' settings dialog. It informs users that data linked in this page are not managed or deleted in Chrome.">
+    To delete this data, go to its management settings
   </message>
 
   <!-- Downloads Page -->
