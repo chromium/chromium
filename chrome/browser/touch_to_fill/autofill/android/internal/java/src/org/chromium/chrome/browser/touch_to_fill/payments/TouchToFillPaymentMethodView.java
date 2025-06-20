@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.touch_to_fill.common.ItemDividerBase;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillViewBase;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType;
@@ -23,9 +26,10 @@ import java.util.Set;
 
 /**
  * This class is responsible for rendering the bottom sheet which displays the
- * TouchToFillPaymentMethod. It is a View in this Model-View-Controller component and doesn't inherit
- * but holds Android Views.
+ * TouchToFillPaymentMethod. It is a View in this Model-View-Controller component and doesn't
+ * inherit but holds Android Views.
  */
+@NullMarked
 class TouchToFillPaymentMethodView extends TouchToFillViewBase {
     private static class HorizontalDividerItemDecoration extends ItemDividerBase {
         HorizontalDividerItemDecoration(Context context) {
@@ -59,7 +63,7 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
 
         @Override
         protected boolean containsFillButton(RecyclerView parent) {
-            int itemCount = parent.getAdapter().getItemCount();
+            int itemCount = assumeNonNull(parent.getAdapter()).getItemCount();
             // The button will be above the footer if it's present.
             return itemCount > 1
                     && parent.getAdapter().getItemViewType(itemCount - 2) == ItemType.FILL_BUTTON;
