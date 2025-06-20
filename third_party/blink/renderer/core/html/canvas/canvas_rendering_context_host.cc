@@ -35,10 +35,6 @@
 
 namespace blink {
 
-BASE_FEATURE(kUseSharedBitmapProviderForSoftwareCompositing,
-             "UseSharedBitmapProviderForSoftwareCompositing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type,
                                                        const gfx::Size& size)
     : CanvasResourceHost(size), host_type_(host_type) {}
@@ -283,13 +279,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   // If either of the other modes failed and / or it was not possible to do, we
   // will backup with a software SharedImage, and if that was not possible with
   // a Bitmap provider.
-  bool use_software_shared_image_provider =
-      base::FeatureList::IsEnabled(
-          kUseSharedBitmapProviderForSoftwareCompositing)
-          ? !SharedGpuContext::IsGpuCompositingEnabled()
-          : !!dispatcher;
-
-  if (!provider && use_software_shared_image_provider) {
+  if (!provider && !SharedGpuContext::IsGpuCompositingEnabled()) {
     provider =
         CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
             Size(), format, alpha_type, color_space, kShouldInitialize,
@@ -377,13 +367,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
   // If either of the other modes failed and / or it was not possible to do, we
   // will backup with a software SharedImage, and if that was not possible with
   // a Bitmap provider.
-  bool use_software_shared_image_provider =
-      base::FeatureList::IsEnabled(
-          kUseSharedBitmapProviderForSoftwareCompositing)
-          ? !SharedGpuContext::IsGpuCompositingEnabled()
-          : !!dispatcher;
-
-  if (!provider && use_software_shared_image_provider) {
+  if (!provider && !SharedGpuContext::IsGpuCompositingEnabled()) {
     // In this case, we are using CPU raster and CPU compositing. Create a
     // CanvasResourceProvider that uses a SharedImage backed by a shared-memory
     // buffer that can be written by canvas raster and read by the compositor.
