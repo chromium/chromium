@@ -27,6 +27,7 @@
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/views/widget/native_widget.h"

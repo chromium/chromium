@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "content/public/browser/web_contents.h"
 
 TabStripModelStatsRecorder::TabStripModelStatsRecorder()
     : browser_tab_strip_tracker_(

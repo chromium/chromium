@@ -20,6 +20,7 @@
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/unpinned_tab_collection.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
