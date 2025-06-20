@@ -25,7 +25,6 @@ TilingSetRasterQueueAll::IterationStage::IterationStage(
 // static
 std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
     PictureLayerTilingSet* tiling_set,
-    bool prioritize_low_res,
     bool is_drawing_layer) {
   DCHECK(tiling_set);
 

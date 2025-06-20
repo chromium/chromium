@@ -1274,7 +1274,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
   //    marked as ready to draw.
   for (int i = 0; i < 3; ++i) {
     std::unique_ptr<TilingSetRasterQueueAll> queue =
-        TilingSetRasterQueueAll::Create(tiling_set.get(), false, false);
+        TilingSetRasterQueueAll::Create(tiling_set.get(), false);
     EXPECT_TRUE(queue);
 
     // There are 3 bins in TilePriority.
@@ -1387,7 +1387,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
   int eventually_bin_order_correct_count = 0;
   int eventually_bin_order_incorrect_count = 0;
   std::unique_ptr<TilingSetRasterQueueAll> queue =
-      TilingSetRasterQueueAll::Create(tiling_set.get(), false, false);
+      TilingSetRasterQueueAll::Create(tiling_set.get(), false);
   EXPECT_TRUE(queue);
   for (; !queue->IsEmpty(); queue->Pop()) {
     if (!last_tile.tile())
@@ -1549,7 +1549,7 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterQueueAllUsesCorrectTileBounds) {
         intersecting_rect,      // Soon rect.
         intersecting_rect);     // Eventually rect.
     std::unique_ptr<TilingSetRasterQueueAll> queue =
-        TilingSetRasterQueueAll::Create(tiling_set.get(), false, false);
+        TilingSetRasterQueueAll::Create(tiling_set.get(), false);
     if (features::IsCCSlimmingEnabled()) {
       EXPECT_FALSE(queue);
     } else {
@@ -1570,7 +1570,7 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterQueueAllUsesCorrectTileBounds) {
         intersecting_rect,      // Soon rect.
         intersecting_rect);     // Eventually rect.
     std::unique_ptr<TilingSetRasterQueueAll> queue =
-        TilingSetRasterQueueAll::Create(tiling_set.get(), false, false);
+        TilingSetRasterQueueAll::Create(tiling_set.get(), false);
     EXPECT_TRUE(queue);
     EXPECT_FALSE(queue->IsEmpty());
   }
@@ -1582,7 +1582,7 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterQueueAllUsesCorrectTileBounds) {
         intersecting_rect,      // Soon rect.
         intersecting_rect);     // Eventually rect.
     std::unique_ptr<TilingSetRasterQueueAll> queue =
-        TilingSetRasterQueueAll::Create(tiling_set.get(), false, false);
+        TilingSetRasterQueueAll::Create(tiling_set.get(), false);
     EXPECT_TRUE(queue);
     EXPECT_FALSE(queue->IsEmpty());
   }
@@ -1593,7 +1593,7 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterQueueAllUsesCorrectTileBounds) {
         non_intersecting_rect,  // Soon rect.
         intersecting_rect);     // Eventually rect.
     std::unique_ptr<TilingSetRasterQueueAll> queue =
-        TilingSetRasterQueueAll::Create(tiling_set.get(), false, false);
+        TilingSetRasterQueueAll::Create(tiling_set.get(), false);
     EXPECT_TRUE(queue);
     EXPECT_FALSE(queue->IsEmpty());
   }

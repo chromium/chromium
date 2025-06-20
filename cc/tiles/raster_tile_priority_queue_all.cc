@@ -49,7 +49,6 @@ class RasterOrderComparator {
 
 void CreateTilingSetRasterQueues(
     const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>& layers,
-    TreePriority tree_priority,
     std::vector<std::unique_ptr<TilingSetRasterQueueAll>>* queues) {
   DCHECK(queues->empty());
 
@@ -62,11 +61,9 @@ void CreateTilingSetRasterQueues(
     if (cc_slimming_enabled && tiling_set->all_tiles_done()) {
       continue;
     }
-    bool prioritize_low_res = tree_priority == SMOOTHNESS_TAKES_PRIORITY;
     std::unique_ptr<TilingSetRasterQueueAll> tiling_set_queue =
         TilingSetRasterQueueAll::Create(
-            tiling_set, prioritize_low_res,
-            layer->contributes_to_drawn_render_surface());
+            tiling_set, layer->contributes_to_drawn_render_surface());
     // Queues will only contain non empty tiling sets.
     if (tiling_set_queue && !tiling_set_queue->IsEmpty()) {
       queues->push_back(std::move(tiling_set_queue));
@@ -88,8 +85,8 @@ void RasterTilePriorityQueueAll::Build(
     TreePriority tree_priority) {
   tree_priority_ = tree_priority;
 
-  CreateTilingSetRasterQueues(active_layers, tree_priority_, &active_queues_);
-  CreateTilingSetRasterQueues(pending_layers, tree_priority_, &pending_queues_);
+  CreateTilingSetRasterQueues(active_layers, &active_queues_);
+  CreateTilingSetRasterQueues(pending_layers, &pending_queues_);
 }
 
 bool RasterTilePriorityQueueAll::IsEmpty() const {

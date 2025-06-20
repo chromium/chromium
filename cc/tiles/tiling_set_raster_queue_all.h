@@ -28,7 +28,6 @@ class CC_EXPORT TilingSetRasterQueueAll {
  public:
   static std::unique_ptr<TilingSetRasterQueueAll> Create(
       PictureLayerTilingSet* tiling_set,
-      bool prioritize_low_res,
       bool is_drawing_layer);
 
   TilingSetRasterQueueAll(const TilingSetRasterQueueAll&) = delete;

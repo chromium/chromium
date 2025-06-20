@@ -77,7 +77,7 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
     do {
       std::unique_ptr<TilingSetRasterQueueAll> queue =
           TilingSetRasterQueueAll::Create(
-              pending_layer_->picture_layer_tiling_set(), false, true);
+              pending_layer_->picture_layer_tiling_set(), true);
       ASSERT_TRUE(queue);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
@@ -103,7 +103,7 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
     do {
       std::unique_ptr<TilingSetRasterQueueAll> queue =
           TilingSetRasterQueueAll::Create(
-              pending_layer_->picture_layer_tiling_set(), false, true);
+              pending_layer_->picture_layer_tiling_set(), true);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
