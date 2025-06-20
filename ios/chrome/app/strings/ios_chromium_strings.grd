@@ -879,6 +879,12 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       <message name="IDS_IOS_REMOVE_ACCOUNT_CONFIRMATION_MESSAGE" desc="Dialog message to emphasize the effects of removing an account.">
         This account and any unsaved data will be removed from Chromium.
       </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_PRIMARY_ACTION" desc="Safari import entry point screen - Button text to start the workflow to import data from Safari to Chromium. [iOS only]" meaning="mport data from other browser to be used on Chromium">
+        Import to Chromium
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_ENTRY_POINT_SUBTITLE" desc="Safari import entry point screen - Subtitle. [iOS only]">
+        Import your data to use your passwords, history, bookmarks and credit cards on Chromium
+      </message>
       <message name="IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_UPDATE_CHROME" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Update Chrome check finds an issue. [iOS only]">
         Your Chromium is out of date.
       </message>
