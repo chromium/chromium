@@ -1499,14 +1499,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             View background = optionalButton.findViewById(R.id.swappable_icon_secondary_background);
             background.setPaddingRelative(paddingStart, paddingVert, paddingEnd, paddingVert);
 
-            // Update dev button spacing if present.
-            View firstButton = mCustomActionButtons.getChildAt(0);
-            if (firstButton != optionalButton) {
-                // Give 24dp/0dp padding to the first button to have even 16dp spacing.
-                paddingStart = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_24);
-                firstButton.setPaddingRelative(
-                        paddingStart, /* top= */ 0, /* end= */ 0, /* bottom= */ 0);
-            }
             mOptionalButtonCoordinator =
                     new OptionalButtonCoordinator(
                             optionalButton,
@@ -1541,6 +1533,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     optionalButtonContainer,
                     true,
                     mOptionalButtonCoordinator::setCanChangeVisibility);
+
+            // Update the spacing between dev button and the menu icon if present.
+            View firstButton = mCustomActionButtons.getChildAt(0);
+            if (firstButton != optionalButton
+                    && !mButtonVisibilityRule.isSuppressed(ButtonId.MTB)) {
+                // Give 24dp/0dp padding to the first button to have even 16dp spacing.
+                paddingStart = getDimensionPx(R.dimen.custom_tabs_toolbar_button_spacer_24);
+                firstButton.setPaddingRelative(
+                        paddingStart, /* top= */ 0, /* end= */ 0, /* bottom= */ 0);
+            }
             return true;
         }
 
