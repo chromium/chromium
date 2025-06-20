@@ -41,6 +41,7 @@ enum DesktopEnvironment {
   DESKTOP_ENVIRONMENT_UNITY = 9,
   DESKTOP_ENVIRONMENT_XFCE = 10,
   DESKTOP_ENVIRONMENT_LXQT = 11,
+  DESKTOP_ENVIRONMENT_COSMIC = 13,
 };
 
 // Values based on valid types indicated in:

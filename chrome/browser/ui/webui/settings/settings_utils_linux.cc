@@ -49,6 +49,8 @@ const char* const kKDE6ProxyConfigCommand[] = {"kcmshell6", "kcm_proxy"};
 const char* const kDeepinProxyConfigCommand[] = {"dde-control-center", "-m",
                                                  "network"};
 
+const char* const kCosmicProxyConfigCommand[] = {"cosmic-settings", "network"};
+
 // The URL for Linux proxy configuration help when not running under a
 // supported desktop environment.
 constexpr char kLinuxProxyConfigUrl[] = "chrome://linux-proxy-config";
@@ -147,6 +149,10 @@ bool DetectAndStartProxyConfigUtil() {
 
     case base::nix::DESKTOP_ENVIRONMENT_KDE6:
       launched = StartProxyConfigUtil(kKDE6ProxyConfigCommand);
+      break;
+
+    case base::nix::DESKTOP_ENVIRONMENT_COSMIC:
+      launched = StartProxyConfigUtil(kCosmicProxyConfigCommand);
       break;
 
     case base::nix::DESKTOP_ENVIRONMENT_XFCE:

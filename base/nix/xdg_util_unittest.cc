@@ -53,6 +53,7 @@ const char* const kXdgDesktopUKUI = "UKUI";
 const char* const kXdgDesktopUnity = "Unity";
 const char* const kXdgDesktopUnity7 = "Unity:Unity7";
 const char* const kXdgDesktopUnity8 = "Unity:Unity8";
+const char* const kXdgDesktopCosmic = "COSMIC";
 const char* const kKDESessionKDE5 = "5";
 const char* const kKDESessionKDE6 = "6";
 
@@ -331,6 +332,15 @@ TEST(XDGUtilTest, GetXdgDesktopUnity8) {
       .WillOnce(Return(kXdgDesktopUnity8));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_UNITY, GetDesktopEnvironment(&getter));
+}
+
+TEST(XDGUtilTest, GetXdgDesktopCosmic) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(_)).WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(getter, GetVar(StrEq(kXdgCurrentDesktopEnvVar)))
+      .WillOnce(Return(kXdgDesktopCosmic));
+
+  EXPECT_EQ(DESKTOP_ENVIRONMENT_COSMIC, GetDesktopEnvironment(&getter));
 }
 
 TEST(XDGUtilTest, GetXdgSessiontypeUnset) {

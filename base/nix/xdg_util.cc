@@ -143,6 +143,9 @@ DesktopEnvironment GetDesktopEnvironment(Environment* env) {
       if (value == "LXQt") {
         return DESKTOP_ENVIRONMENT_LXQT;
       }
+      if (value == "COSMIC") {
+        return DESKTOP_ENVIRONMENT_COSMIC;
+      }
     }
   }
 
@@ -215,6 +218,8 @@ const char* GetDesktopEnvironmentName(DesktopEnvironment env) {
       return "UKUI";
     case DESKTOP_ENVIRONMENT_LXQT:
       return "LXQT";
+    case DESKTOP_ENVIRONMENT_COSMIC:
+      return "COSMIC";
   }
   return nullptr;
 }

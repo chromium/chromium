@@ -203,6 +203,8 @@ metrics::SystemProfileProto::OS::XdgCurrentDesktop ToProtoCurrentDesktop(
       return metrics::SystemProfileProto::OS::XFCE;
     case base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_LXQT:
       return metrics::SystemProfileProto::OS::LXQT;
+    case base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_COSMIC:
+      return metrics::SystemProfileProto::OS::COSMIC;
   }
 
   NOTREACHED();

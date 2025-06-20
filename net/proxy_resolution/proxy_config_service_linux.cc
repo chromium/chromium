@@ -1243,6 +1243,7 @@ ProxyConfigServiceLinux::Delegate::Delegate(
     case base::nix::DESKTOP_ENVIRONMENT_PANTHEON:
     case base::nix::DESKTOP_ENVIRONMENT_UKUI:
     case base::nix::DESKTOP_ENVIRONMENT_UNITY:
+    case base::nix::DESKTOP_ENVIRONMENT_COSMIC:
 #if defined(USE_GIO)
     {
       auto gs_getter = std::make_unique<SettingGetterImplGSettings>();

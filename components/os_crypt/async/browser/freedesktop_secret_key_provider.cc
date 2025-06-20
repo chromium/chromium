@@ -330,6 +330,7 @@ void FreedesktopSecretKeyProvider::GetKey(KeyCallback callback) {
       case base::nix::DESKTOP_ENVIRONMENT_UNITY:
       case base::nix::DESKTOP_ENVIRONMENT_XFCE:
       case base::nix::DESKTOP_ENVIRONMENT_LXQT:
+      case base::nix::DESKTOP_ENVIRONMENT_COSMIC:
         InitializeFreedesktopSecretService();
         break;
     }
