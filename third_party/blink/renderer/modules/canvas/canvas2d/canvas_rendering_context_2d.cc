@@ -778,9 +778,10 @@ void CanvasRenderingContext2D::DrawElementInternal(
 
   // TODO(crbug.com/421834883): This code is based on image drawing. Maybe we
   // need a distinct paint_type: kImagePaintType seems to do the right thing
-  // but maybe its treatment of anti-aliasing is incorrect. The kNoImage type
-  // controls drop shadow painting under transforms. It's not clear if we
-  // should behave like an opaque image here.
+  // but maybe its treatment of anti-aliasing is incorrect. The kNonOpaqueImage
+  // type controls drop shadow painting under transforms. It's not clear if we
+  // should behave like a non-opaque image here, but the element may not be
+  // opaque so going with that for now.
   Draw<OverdrawOp::kNone>(
       [paint_record, x, y, dwidth, dheight, box_rect](
           cc::PaintCanvas* c, const cc::PaintFlags* flags) {
@@ -845,7 +846,7 @@ void CanvasRenderingContext2D::DrawElementInternal(
       [](const SkIRect& rect) { return false; },  // overdraw test lambda
       gfx::RectF(box_rect.width(), box_rect.height()),
       CanvasRenderingContext2DState::kImagePaintType,
-      CanvasRenderingContext2DState::kNoImage,
+      CanvasRenderingContext2DState::kNonOpaqueImage,
       CanvasPerformanceMonitor::DrawType::kElement);
 }
 
