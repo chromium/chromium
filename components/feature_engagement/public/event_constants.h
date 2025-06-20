@@ -335,6 +335,9 @@ extern const char kIOSPageActionMenuIPHUsed[];
 // The entry point of the import Safari data workflow has been displayed.
 extern const char kIOSSafariImportRemindMeLater[];
 
+// Event fired when the First Run Experience (FRE) is completed on iOS.
+extern const char kIOSFirstRunComplete[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

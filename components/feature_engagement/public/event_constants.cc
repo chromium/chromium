@@ -173,6 +173,7 @@ const char kIOSSafariImportRemindMeLater[] =
     "ios_safari_import_entry_point_remind_me_later";
 const char kIOSPageActionMenuIPHTrigger[] = "page_action_menu_iph_trigger";
 const char kIOSPageActionMenuIPHUsed[] = "page_action_menu_iph_used";
+const char kIOSFirstRunComplete[] = "ios_first_run_complete";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

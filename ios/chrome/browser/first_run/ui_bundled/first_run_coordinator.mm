@@ -11,6 +11,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
@@ -19,6 +21,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/animated_lens/coordinator/animated_lens_promo_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_coordinator.h"
@@ -143,6 +146,14 @@ class FirstRunCoordinatorMetricsHelper final {
     // The user went through all screens of the FRE.
     base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   first_run::kComplete);
+
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForProfile(self.profile);
+
+    if (tracker) {
+      tracker->NotifyEvent(feature_engagement::events::kIOSFirstRunComplete);
+    }
+
     WriteFirstRunSentinel();
     [self.delegate didFinishFirstRun];
 
