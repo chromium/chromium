@@ -9,7 +9,6 @@ import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
@@ -429,8 +428,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
         Preference usageStatsPref = findPreference(PREF_USAGE_STATS);
         if (usageStatsPref != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                    && UserPrefs.get(getProfile()).getBoolean(Pref.USAGE_STATS_ENABLED)) {
+            if (UserPrefs.get(getProfile()).getBoolean(Pref.USAGE_STATS_ENABLED)) {
                 usageStatsPref.setOnPreferenceClickListener(
                         preference -> {
                             UsageStatsConsentDialog.create(

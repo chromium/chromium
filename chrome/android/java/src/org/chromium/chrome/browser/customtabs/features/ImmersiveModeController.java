@@ -89,12 +89,10 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
         decor.setOnSystemUiVisibilityChangeListener(
                 newFlags -> postSetImmersiveFlags(RESTORE_IMMERSIVE_MODE_DELAY_MILLIS));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            // In order to avoid a flicker during launch, set the display cutout mode now (vs
-            // waiting for DisplayCutoutController to set the mode).
-            window.getAttributes().layoutInDisplayCutoutMode = layoutInDisplayCutoutMode;
-            mCutoutSupplier.set(layoutInDisplayCutoutMode);
-        }
+        // In order to avoid a flicker during launch, set the display cutout mode now (vs
+        // waiting for DisplayCutoutController to set the mode).
+        window.getAttributes().layoutInDisplayCutoutMode = layoutInDisplayCutoutMode;
+        mCutoutSupplier.set(layoutInDisplayCutoutMode);
 
         postSetImmersiveFlags(0);
     }

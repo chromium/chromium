@@ -12,8 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -204,10 +202,7 @@ public class AndroidTaskUtils {
         for (var appTask : am.getAppTasks()) {
             var taskInfo = appTask.getTaskInfo();
             if (taskInfo == null) continue;
-            int taskInfoId = taskInfo.id;
-            if (VERSION.SDK_INT >= VERSION_CODES.Q) {
-                taskInfoId = taskInfo.taskId;
-            }
+            int taskInfoId = taskInfo.taskId;
             if (taskInfoId == taskId) {
                 return appTask;
             }

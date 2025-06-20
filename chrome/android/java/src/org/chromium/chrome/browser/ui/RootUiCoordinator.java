@@ -490,12 +490,8 @@ public class RootUiCoordinator
                 mActivityLifecycleDispatcher,
                 mActivityTabProvider,
                 mTabObscuringHandlerSupplier.get());
-        // While Autofill is supported on Android O, meaningful Autofill interactions in Chrome
-        // require the compatibility mode introduced in Android P.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            new AutofillSessionLifetimeController(
-                    activity, mActivityLifecycleDispatcher, mActivityTabProvider);
-        }
+        new AutofillSessionLifetimeController(
+                activity, mActivityLifecycleDispatcher, mActivityTabProvider);
         mProfileSupplier = profileSupplier;
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;

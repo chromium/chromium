@@ -15,7 +15,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
@@ -108,10 +107,10 @@ import java.util.Collection;
 
     /**
      * Makes sure that the color of the icons in the status bar makes the icons visible.
+     *
      * @param window The window whose status bar icon color is being set.
      */
     /* package */ static void setVisibleStatusBarIconColor(Window window) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         UiUtils.setStatusBarIconColor(
                 window.getDecorView().getRootView(),
                 !ColorUtils.shouldUseLightForegroundOnBackground(window.getStatusBarColor()));

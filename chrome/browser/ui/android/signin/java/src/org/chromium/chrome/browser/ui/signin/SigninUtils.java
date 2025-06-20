@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
@@ -16,32 +15,23 @@ import android.view.View;
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.components.signin.AccountUtils;
 
 /** Helper functions for sign-in and accounts. */
 @NullMarked
 public final class SigninUtils {
-    private static final String ACCOUNT_SETTINGS_ACTION = "android.settings.ACCOUNT_SYNC_SETTINGS";
-    private static final String ACCOUNT_SETTINGS_ACCOUNT_KEY = "account";
     private static final int DUAL_PANES_HORIZONTAL_LAYOUT_MIN_WIDTH = 600;
 
     private SigninUtils() {}
 
     /**
      * Opens a Settings page to configure settings for a single account.
+     *
      * @param activity Activity to use when starting the Activity.
      * @param accountEmail The account email for which the Settings page should be opened.
      * @return Whether or not Android accepted the Intent.
      */
     public static boolean openSettingsForAccount(Activity activity, String accountEmail) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // ACCOUNT_SETTINGS_ACTION no longer works on Android O+, always open all accounts page.
-            return openSettingsForAllAccounts(activity);
-        }
-        Intent intent = new Intent(ACCOUNT_SETTINGS_ACTION);
-        intent.putExtra(
-                ACCOUNT_SETTINGS_ACCOUNT_KEY, AccountUtils.createAccountFromEmail(accountEmail));
-        return IntentUtils.safeStartActivity(activity, intent);
+        return openSettingsForAllAccounts(activity);
     }
 
     /**

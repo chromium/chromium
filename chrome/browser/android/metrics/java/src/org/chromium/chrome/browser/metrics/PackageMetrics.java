@@ -7,7 +7,6 @@ import android.app.usage.StorageStats;
 import android.app.usage.StorageStatsManager;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Build;
 import android.os.Environment;
 import android.os.Process;
 import android.os.storage.StorageManager;
@@ -78,12 +77,10 @@ public class PackageMetrics {
     }
 
     /**
-     * Records UMA about the size of data, cache, and code size on disk for Android.
-     * Should be called on background thread since some of the API calls can be slow.
+     * Records UMA about the size of data, cache, and code size on disk for Android. Should be
+     * called on background thread since some of the API calls can be slow.
      */
     public static void recordPackageStats() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
-
         PackageMetricsData data = getPackageStatsForAndroidO();
         if (data != null) {
             RecordHistogram.recordCustomCountHistogram(

@@ -9,8 +9,6 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RotateDrawable;
-import android.os.Build;
-import android.os.Build.VERSION;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.TouchDelegate;
@@ -657,11 +655,9 @@ public class StatusView extends LinearLayout {
                 && mIconView.getAlpha() != 0;
     }
 
-    /** Set tooltip text on StatusView for API >= 26. */
+    /** Set tooltip text on StatusView. */
     private void setTooltipText(@Nullable String tooltip) {
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            TooltipCompat.setTooltipText((View) this, tooltip);
-        }
+        TooltipCompat.setTooltipText((View) this, tooltip);
     }
 
     private void keepControlsShownForAnimation() {

@@ -9,7 +9,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
 
@@ -214,10 +213,7 @@ public class SplitCompatApplication extends Application {
             TraceEvent.begin(ATTACH_BASE_CONTEXT_EVENT);
         } else {
             checkAppBeingReplaced();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Fixes are never required before O (where "cmd package compile" does not exist).
-                DexFixer.scheduleDexFix();
-            }
+            DexFixer.scheduleDexFix();
 
             PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
             // Renderer and GPU processes have command line passed to them via IPC

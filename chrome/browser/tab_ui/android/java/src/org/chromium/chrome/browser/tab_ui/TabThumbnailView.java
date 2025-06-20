@@ -20,7 +20,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Icon;
 import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
@@ -44,9 +43,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
  */
 @NullMarked
 public class TabThumbnailView extends ImageView {
-    private static final boolean SUPPORTS_ANTI_ALIAS_CLIP =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
-
     /** Placeholder drawable constants. */
     private static final float SIZE_PERCENTAGE = 0.42f;
 
@@ -171,11 +167,6 @@ public class TabThumbnailView extends ImageView {
         canvas.clipPath(mPath);
         super.onDraw(canvas);
         canvas.restore();
-        // clipPath did not anti-alias or have a method to do so until Android P. For earlier
-        // versions draw a very thin stroke of the background color to anti-alias the edges.
-        if (!SUPPORTS_ANTI_ALIAS_CLIP) {
-            canvas.drawPath(mPath, mPaint);
-        }
     }
 
     private void updateImage() {
@@ -234,7 +225,6 @@ public class TabThumbnailView extends ImageView {
         mBackgroundDrawable.setColor(
                 TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
                         getContext(), isIncognito, isSelected, colorId));
-        final int oldColor = mPaint.getColor();
         final int newColor =
                 TabCardThemeUtil.getCardViewBackgroundColor(
                         getContext(), isIncognito, isSelected, colorId);
@@ -246,11 +236,6 @@ public class TabThumbnailView extends ImageView {
         mIconColor = newColor;
         if (mIconDrawable != null) {
             setColorFilter(mIconColor, PorterDuff.Mode.SRC_IN);
-        }
-
-        // Step 3: Invalidate for versions earlier than Android P.
-        if (!SUPPORTS_ANTI_ALIAS_CLIP && !isPlaceholder() && oldColor != newColor) {
-            invalidate();
         }
     }
 

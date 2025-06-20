@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.role.RoleManager;
 import android.content.Context;
-import android.os.Build;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
@@ -187,9 +186,6 @@ public class DefaultBrowserPromoUtils {
 
     @SuppressLint("NewApi")
     private boolean isRoleAvailableButNotHeld(Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return false;
-        }
         RoleManager roleManager = (RoleManager) context.getSystemService(Context.ROLE_SERVICE);
         if (roleManager == null) return false;
         boolean isRoleAvailable = roleManager.isRoleAvailable(RoleManager.ROLE_BROWSER);

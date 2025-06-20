@@ -102,11 +102,9 @@ public class NotificationServiceImpl extends NotificationService.Impl {
             if (isExpedited) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     jobBuilder.setExpedited(true);
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                } else {
                     jobBuilder.setImportantWhileForeground(true);
                     jobBuilder.setOverrideDeadline(0);
-                } else {
-                    assert false; // Not reached, PRE_UNSUBSCRIBE is not supported before Pie.
                 }
             } else {
                 jobBuilder.setOverrideDeadline(0);

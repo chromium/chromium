@@ -47,19 +47,6 @@ public class FullscreenVideoPictureInPictureController {
 
     // Metrics
 
-    private @interface MetricsAttemptResult {
-        static final int SUCCESS = 0;
-        static final int NO_SYSTEM_SUPPORT = 1;
-        static final int NO_FEATURE = 2;
-        // Obsolete: static final int NO_ACTIVITY_SUPPORT = 3;
-        static final int ALREADY_RUNNING = 4;
-        static final int RESTARTING = 5;
-        static final int FINISHING = 6;
-        static final int NO_WEB_CONTENTS = 7;
-        static final int NO_VIDEO = 8;
-        static final int APP_TASKS = 9;
-    }
-
     private @interface MetricsEndReason {
         static final int RESUME = 0;
         // Obsolete: NAVIGATION = 1;
@@ -153,21 +140,16 @@ public class FullscreenVideoPictureInPictureController {
         return tab.getWebContents();
     }
 
-    private static void recordAttemptResult(@MetricsAttemptResult int result) {
-        // Silently ignore NO_VIDEO, since it's spammy.
-        if (result == MetricsAttemptResult.NO_VIDEO) return;
-    }
-
     /**
-     * Return a `MetricsAttemptResult` for whether Picture in Picture is okay or not.
+     * Return whether Picture in Picture is okay or not.
      *
      * @param checkCurrentMode should be true if and only if "already in PiP mode" is sufficient to
      *     cause this to return failure.
      */
-    private @MetricsAttemptResult int getAttemptResult(boolean checkCurrentMode) {
+    private boolean canDoPictureInPicture(boolean checkCurrentMode) {
         WebContents webContents = getWebContents();
         if (webContents == null) {
-            return MetricsAttemptResult.NO_WEB_CONTENTS;
+            return false;
         }
 
         assertLibraryLoaderIsInitialized();
@@ -175,45 +157,41 @@ public class FullscreenVideoPictureInPictureController {
         // Only auto-PiP if there is a playing fullscreen video that allows PiP.
         if (!webContents.hasActiveEffectivelyFullscreenVideo()
                 || !webContents.isPictureInPictureAllowedForFullscreenVideo()) {
-            return MetricsAttemptResult.NO_VIDEO;
-        }
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return MetricsAttemptResult.NO_SYSTEM_SUPPORT;
+            return false;
         }
 
         if (!mActivity
                 .getPackageManager()
                 .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
             Log.d(TAG, "Activity does not have PiP feature.");
-            return MetricsAttemptResult.NO_FEATURE;
+            return false;
         }
 
         // Don't PiP if we are already in PiP.
         if (checkCurrentMode && mActivity.isInPictureInPictureMode()) {
             Log.d(TAG, "Activity is already in PiP.");
-            return MetricsAttemptResult.ALREADY_RUNNING;
+            return false;
         }
 
         // This means the activity is going to be restarted, so don't PiP.
         if (mActivity.isChangingConfigurations()) {
             Log.d(TAG, "Activity is being restarted.");
-            return MetricsAttemptResult.RESTARTING;
+            return false;
         }
 
         // Don't PiP if the activity is finishing.
         if (mActivity.isFinishing()) {
             Log.d(TAG, "Activity is finishing.");
-            return MetricsAttemptResult.FINISHING;
+            return false;
         }
 
         // Don't trigger pip mode for certain types of usage, like notification click.
         if (!canStartPipBasedOnRecentTasks()) {
             Log.d(TAG, "Block pip due to recent app tasks.");
-            return MetricsAttemptResult.APP_TASKS;
+            return false;
         }
 
-        return MetricsAttemptResult.SUCCESS;
+        return true;
     }
 
     private boolean canStartPipBasedOnRecentTasks() {
@@ -223,25 +201,26 @@ public class FullscreenVideoPictureInPictureController {
     }
 
     /**
-     * Return a `MetricsAttemptResult` for whether Picture in Picture is okay or not. Considers that
-     * "already in PiP mode" is a reason to say no.
+     * Return whether Picture in Picture is okay or not. Considers that "already in PiP mode" is a
+     * reason to say no.
      */
-    private @MetricsAttemptResult int getAttemptResult() {
-        return getAttemptResult(true);
+    private boolean canDoPictureInPicture() {
+        return canDoPictureInPicture(true);
     }
 
     /**
-     * Attempt to enter Picture in Picture mode if there is fullscreen video.  If Picture in Picture
-     * is not applicable, then do nothing.  It is still the caller's responsibility to notify us if
+     * Attempt to enter Picture in Picture mode if there is fullscreen video. If Picture in Picture
+     * is not applicable, then do nothing. It is still the caller's responsibility to notify us if
      * Picture in Picture mode is started; at most, we will request it from the framework.
      */
     public void attemptPictureInPicture() {
         // If there are already callbacks registered, then do nothing.
-        final @MetricsAttemptResult int result = getAttemptResult();
-        Log.i(TAG, "Attempted picture-in-picture with result: " + result);
+        final boolean allowed = canDoPictureInPicture();
+        Log.i(
+                TAG,
+                "Attempted picture-in-picture with result: " + (allowed ? "success" : "failure"));
 
-        recordAttemptResult(result);
-        if (result != MetricsAttemptResult.SUCCESS) return;
+        if (!allowed) return;
 
         final WebContents webContents = getWebContents();
         assert webContents != null;
@@ -506,7 +485,7 @@ public class FullscreenVideoPictureInPictureController {
 
         // Do not check if we're in PiP mode or not, since we're called during transitions into and
         // out of it.  The framework won't try to auto-enter if we're already there anyway.
-        final boolean allowed = (getAttemptResult(false) == MetricsAttemptResult.SUCCESS);
+        final boolean allowed = canDoPictureInPicture(false);
         if (!allowed && !mIsAutoEnterAllowed) {
             // Don't notify the framework if we were not and continue to be not allowed.  In the
             // case where we're allowed, the bounds for the source rect can change even if we were

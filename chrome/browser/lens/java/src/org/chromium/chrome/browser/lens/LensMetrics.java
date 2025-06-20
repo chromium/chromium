@@ -29,7 +29,6 @@ public class LensMetrics {
         LensSupportStatus.ACTIVITY_NOT_ACCESSIBLE,
         LensSupportStatus.OUT_OF_DATE,
         LensSupportStatus.SEARCH_BY_IMAGE_UNAVAILABLE,
-        LensSupportStatus.LEGACY_OS,
         LensSupportStatus.INVALID_PACKAGE,
         LensSupportStatus.LENS_SHOP_SUPPORTED,
         LensSupportStatus.LENS_SHOP_AND_SEARCH_SUPPORTED,
@@ -47,7 +46,7 @@ public class LensMetrics {
         int ACTIVITY_NOT_ACCESSIBLE = 2;
         int OUT_OF_DATE = 3;
         int SEARCH_BY_IMAGE_UNAVAILABLE = 4;
-        int LEGACY_OS = 5;
+        // Deprecated: int LEGACY_OS = 5;
         int INVALID_PACKAGE = 6;
         int LENS_SHOP_SUPPORTED = 7;
         int LENS_SHOP_AND_SEARCH_SUPPORTED = 8;

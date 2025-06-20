@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share;
 
 import android.content.Context;
-import android.os.Build;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.IntentHandler;
@@ -69,21 +68,6 @@ public class LensUtils {
      */
     public static String getMinimumAgsaVersionForLensSupport() {
         return MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE;
-    }
-
-    /**
-     * Checks whether the device is below Android O. We restrict to these versions
-     * to limit to OS"s where image processing vulnerabilities can be retroactively
-     * fixed if they are discovered in the future.
-     *
-     * @return Whether the device is below Android O.
-     */
-    public static boolean isDeviceOsBelowMinimum() {
-        if (sFakePassableLensEnvironmentForTesting) {
-            return false;
-        }
-
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
     }
 
     /**

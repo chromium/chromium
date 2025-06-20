@@ -918,8 +918,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     @Override
     protected boolean shouldDrawDividerLine() {
-        // Elevation shadows are only rendered properly on devices >= Android Q
-        return SysUtils.isLowEndDevice() || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q;
+        return SysUtils.isLowEndDevice();
     }
 
     // Restore the window upon exiting fullscreen.

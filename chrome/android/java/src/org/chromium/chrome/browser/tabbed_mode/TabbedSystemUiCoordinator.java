@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
-import android.os.Build;
 import android.view.Window;
 
 import androidx.annotation.NonNull;
@@ -37,7 +36,7 @@ import java.util.Optional;
  * StatusBarColorController, and have this class extend that one.
  */
 public class TabbedSystemUiCoordinator {
-    private @Nullable TabbedNavigationBarColorController mNavigationBarColorController;
+    private final TabbedNavigationBarColorController mNavigationBarColorController;
 
     /**
      * Construct a new {@link TabbedSystemUiCoordinator}.
@@ -81,32 +80,27 @@ public class TabbedSystemUiCoordinator {
             @NonNull ObservableSupplier<Integer> overviewColorSupplier,
             InsetObserver insetObserver,
             @NonNull EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            assert layoutManagerSupplier != null;
-            mNavigationBarColorController =
-                    new TabbedNavigationBarColorController(
-                            window.getContext(),
-                            tabModelSelector,
-                            layoutManagerSupplier,
-                            fullscreenManager,
-                            edgeToEdgeControllerSupplier,
-                            bottomControlsStacker,
-                            browserControlsStateProvider,
-                            snackbarManagerSupplier,
-                            contextualSearchManagerSupplier,
-                            bottomSheetController,
-                            omniboxSuggestionsVisualState,
-                            manualFillingComponentSupplier,
-                            overviewColorSupplier,
-                            insetObserver,
-                            edgeToEdgeSystemBarColorHelper);
-        }
+        assert layoutManagerSupplier != null;
+        mNavigationBarColorController =
+                new TabbedNavigationBarColorController(
+                        window.getContext(),
+                        tabModelSelector,
+                        layoutManagerSupplier,
+                        fullscreenManager,
+                        edgeToEdgeControllerSupplier,
+                        bottomControlsStacker,
+                        browserControlsStateProvider,
+                        snackbarManagerSupplier,
+                        contextualSearchManagerSupplier,
+                        bottomSheetController,
+                        omniboxSuggestionsVisualState,
+                        manualFillingComponentSupplier,
+                        overviewColorSupplier,
+                        insetObserver,
+                        edgeToEdgeSystemBarColorHelper);
     }
 
-    /**
-     * Gets the {@link TabbedNavigationBarColorController}. Note that this returns null for version
-     * lower than {@link Build.VERSION_CODES#O_MR1}.
-     */
+    /** Gets the {@link TabbedNavigationBarColorController}. */
     @Nullable
     TabbedNavigationBarColorController getNavigationBarColorController() {
         return mNavigationBarColorController;

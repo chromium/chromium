@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
-import android.os.Build;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
@@ -148,10 +147,8 @@ public class HistoryNavigationCoordinator
             mEnabled = isFeatureEnabled();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            mInsetObserver = insetObserver;
-            insetObserver.addObserver(this);
-        }
+        mInsetObserver = insetObserver;
+        insetObserver.addObserver(this);
         if (BuildInfo.getInstance().isAutomotive) {
             mFullscreenObserver =
                     new FullscreenManager.Observer() {
@@ -204,15 +201,11 @@ public class HistoryNavigationCoordinator
             return false;
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return true;
-        } else {
-            // Preserve the previous enabled status if queried when there is no Window.
-            if (mWindow.getWindow() == null) {
-                return mEnabled;
-            }
-            return !UiUtils.isGestureNavigationMode(mWindow.getWindow());
+        // Preserve the previous enabled status if queried when there is no Window.
+        if (mWindow.getWindow() == null) {
+            return mEnabled;
         }
+        return !UiUtils.isGestureNavigationMode(mWindow.getWindow());
     }
 
     @Override

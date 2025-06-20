@@ -112,7 +112,6 @@ public final class ServicificationDownloadTest {
                 () -> {
                     DownloadManagerService downloadManagerService =
                             DownloadManagerService.getDownloadManagerService();
-                    downloadManagerService.disableAddCompletedDownloadToDownloadManager();
                     ((SystemDownloadNotifier) downloadManagerService.getDownloadNotifier())
                             .setDownloadNotificationService(mNotificationService);
                     downloadManagerService.createInterruptedDownloadForTest(

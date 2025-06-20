@@ -10,7 +10,6 @@ import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDe
 import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.WEBAPPS_QUIET;
 
 import android.app.NotificationChannel;
-import android.os.Build;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
@@ -83,10 +82,6 @@ public class DisclosureUiPicker implements NativeInitObserver {
     private void areHeadsUpNotificationsEnabled(Callback<Boolean> callback) {
         if (!NotificationProxyUtils.areNotificationsEnabled()) {
             callback.onResult(false);
-            return;
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            callback.onResult(true);
             return;
         }
         // Android Automotive doesn't currently allow heads-up notifications.

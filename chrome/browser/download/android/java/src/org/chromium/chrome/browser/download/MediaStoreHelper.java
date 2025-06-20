@@ -6,17 +6,12 @@ package org.chromium.chrome.browser.download;
 
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Build;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
-
-import java.io.File;
-import java.io.FileNotFoundException;
 
 /** Includes helper methods to interact with Android media store. */
 @NullMarked
@@ -67,33 +62,18 @@ public class MediaStoreHelper {
         new AsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
-                try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        MediaScannerConnection.scanFile(
-                                ContextUtils.getApplicationContext(),
-                                new String[] {filePath},
-                                new String[] {mimeType},
-                                new MediaScannerConnection.OnScanCompletedListener() {
-                                    @Override
-                                    public void onScanCompleted(final String path, final Uri uri) {
-                                        if (uri == null) {
-                                            Log.v(TAG, "Media scan failed");
-                                        }
-                                    }
-                                });
-                    } else {
-                        // The media store will decode the image to bitmap, compress, and maintain a
-                        // copy on disk.
-                        File file = new File(filePath);
-                        MediaStore.Images.Media.insertImage(
-                                ContextUtils.getApplicationContext().getContentResolver(),
-                                filePath,
-                                file.getName(),
-                                null);
-                    }
-                } catch (FileNotFoundException e) {
-                    Log.e(TAG, "Cannot find image file to add to gallery.", e);
-                }
+                MediaScannerConnection.scanFile(
+                        ContextUtils.getApplicationContext(),
+                        new String[] {filePath},
+                        new String[] {mimeType},
+                        new MediaScannerConnection.OnScanCompletedListener() {
+                            @Override
+                            public void onScanCompleted(final String path, final Uri uri) {
+                                if (uri == null) {
+                                    Log.v(TAG, "Media scan failed");
+                                }
+                            }
+                        });
                 return null;
             }
 

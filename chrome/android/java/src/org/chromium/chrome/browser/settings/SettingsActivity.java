@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
-import android.os.Build;
-import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -504,9 +502,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     /** Set device status bar to match the activity background color, if supported. */
     private void setStatusBarColor() {
-        // On P+, the status bar color is set via the XML theme.
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.P
-                && !BuildInfo.getInstance().isAutomotive
+        if (!BuildInfo.getInstance().isAutomotive
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
             return;
         }

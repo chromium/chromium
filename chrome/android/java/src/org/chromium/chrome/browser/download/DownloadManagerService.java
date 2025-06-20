@@ -13,11 +13,9 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.provider.MediaStore.MediaColumns;
 import android.text.TextUtils;
-import android.util.Pair;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -136,9 +134,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     // Whether any ChromeActivity is launched.
     private boolean mActivityLaunched;
-
-    // Disabling call to DownloadManager.addCompletedDownload() for test.
-    private boolean mDisableAddCompletedDownloadForTesting;
 
     /**
      * Interface to intercept download request to Android DownloadManager. This is implemented by
@@ -406,42 +401,23 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         final boolean isSupportedMimeType = progress.mIsSupportedMimeType;
         final DownloadItem item = progress.mDownloadItem;
 
-        AsyncTask<Pair<Boolean, Boolean>> task =
+        AsyncTask<Boolean> task =
                 new AsyncTask<>() {
                     @Override
-                    public Pair<Boolean, Boolean> doInBackground() {
-                        boolean success =
-                                mDisableAddCompletedDownloadForTesting
-                                        || ContentUriUtils.isContentUri(
-                                                item.getDownloadInfo().getFilePath())
-                                        || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q);
+                    public Boolean doInBackground() {
                         boolean canResolve =
-                                success
-                                        && (MimeUtils.isOMADownloadDescription(
-                                                        item.getDownloadInfo().getMimeType())
-                                                || canResolveDownloadItem(
-                                                        item, isSupportedMimeType));
-                        return Pair.create(success, canResolve);
+                                MimeUtils.isOMADownloadDescription(
+                                                item.getDownloadInfo().getMimeType())
+                                        || canResolveDownloadItem(item, isSupportedMimeType);
+                        return canResolve;
                     }
 
                     @Override
-                    protected void onPostExecute(Pair<Boolean, Boolean> result) {
+                    protected void onPostExecute(Boolean result) {
                         DownloadInfo info = item.getDownloadInfo();
-                        if (result.first) {
-                            mDownloadNotifier.notifyDownloadSuccessful(
-                                    info,
-                                    item.getSystemDownloadId(),
-                                    result.second,
-                                    isSupportedMimeType);
-                            broadcastDownloadSuccessful(info);
-                        } else {
-                            info =
-                                    DownloadInfo.Builder.fromDownloadInfo(info)
-                                            .setFailState(FailState.CANNOT_DOWNLOAD)
-                                            .build();
-                            mDownloadNotifier.notifyDownloadFailed(info);
-                            // TODO(qinmin): get the failure message from native.
-                        }
+                        mDownloadNotifier.notifyDownloadSuccessful(
+                                info, item.getSystemDownloadId(), result, isSupportedMimeType);
+                        broadcastDownloadSuccessful(info);
                     }
                 };
         try {
@@ -1572,10 +1548,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                         url,
                         guid,
                         targetPath);
-    }
-
-    void disableAddCompletedDownloadToDownloadManager() {
-        mDisableAddCompletedDownloadForTesting = true;
     }
 
     /**
