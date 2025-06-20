@@ -171,6 +171,7 @@ class BatchUploadCardMediator
         CoreAccountInfo coreAccountInfo =
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         assumeNonNull(coreAccountInfo);
+        // TODO(crbug.com/354922852): Handle accounts with non-displayable email address.
         String snackbarMessage =
                 mContext.getResources()
                         .getQuantityString(
@@ -235,7 +236,6 @@ class BatchUploadCardMediator
     }
 
     private void setupBatchUploadCardPropertyModel() {
-        // TODO(crbug.com/354922852): Handle accounts with non-displayable email address.
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         assumeNonNull(identityManager);
@@ -251,7 +251,7 @@ class BatchUploadCardMediator
                 BatchUploadCardProperties.ON_CLICK_LISTENER,
                 v -> {
                     BatchUploadDialogCoordinator.show(
-                            mContext, mLocalDataDescriptionsMap, mDialogManager, this);
+                            mContext, mLocalDataDescriptionsMap, mDialogManager, accountInfo, this);
                 });
 
         int entryPointDataType =
@@ -277,8 +277,7 @@ class BatchUploadCardMediator
                                             ? R.plurals.batch_upload_card_description_bookmark
                                             : R.plurals.batch_upload_card_description_password,
                                     localDataTypeItemsCount,
-                                    localDataTypeItemsCount,
-                                    accountInfo.getEmail()));
+                                    localDataTypeItemsCount));
         } else if (localDataTypeItemsCount == 0) {
             mModel.set(
                     BatchUploadCardProperties.DESCRIPTION_TEXT,
@@ -286,8 +285,7 @@ class BatchUploadCardMediator
                             .getQuantityString(
                                     R.plurals.batch_upload_card_description_other,
                                     localItemsCountExcludingEntryPointDataType,
-                                    localItemsCountExcludingEntryPointDataType,
-                                    accountInfo.getEmail()));
+                                    localItemsCountExcludingEntryPointDataType));
         } else {
             mModel.set(
                     BatchUploadCardProperties.DESCRIPTION_TEXT,
@@ -299,8 +297,7 @@ class BatchUploadCardMediator
                                             : R.plurals
                                                     .batch_upload_card_description_password_and_other,
                                     localDataTypeItemsCount,
-                                    localDataTypeItemsCount,
-                                    accountInfo.getEmail()));
+                                    localDataTypeItemsCount));
         }
     }
 }

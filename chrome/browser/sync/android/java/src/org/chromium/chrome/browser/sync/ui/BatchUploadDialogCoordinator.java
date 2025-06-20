@@ -20,6 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.sync.R;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithTitleAndSummary;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -58,10 +59,11 @@ public final class BatchUploadDialogCoordinator {
             Context context,
             HashMap<Integer, LocalDataDescription> localDataDescriptionsMap,
             ModalDialogManager dialogManager,
+            CoreAccountInfo accountInfo,
             Listener listener) {
         ThreadUtils.assertOnUiThread();
         new BatchUploadDialogCoordinator(
-                context, localDataDescriptionsMap, dialogManager, listener);
+                context, localDataDescriptionsMap, dialogManager, accountInfo, listener);
     }
 
     @VisibleForTesting
@@ -70,6 +72,7 @@ public final class BatchUploadDialogCoordinator {
             Context context,
             HashMap<Integer, LocalDataDescription> localDataDescriptionsMap,
             ModalDialogManager dialogManager,
+            CoreAccountInfo accountInfo,
             Listener listener) {
         mContext = context;
         mDialogManager = dialogManager;
@@ -81,6 +84,13 @@ public final class BatchUploadDialogCoordinator {
                         .with(
                                 ModalDialogProperties.TITLE,
                                 mContext.getString(R.string.batch_upload_dialog_title))
+                        // TODO(crbug.com/354922852): Handle accounts with non-displayable email
+                        // address.
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                mContext.getString(
+                                        R.string.batch_upload_dialog_description,
+                                        accountInfo.getEmail()))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 mContext.getString(R.string.batch_upload_dialog_save_button))

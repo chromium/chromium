@@ -17,14 +17,6 @@ found in the LICENSE file.
         android:orientation="vertical"
         android:id="@+id/batch_upload_dialog">
 
-        <TextView
-            android:id="@android:id/message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="@string/batch_upload_dialog_description"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
-
         <org.chromium.components.browser_ui.widget.MaterialSwitchWithTitleAndSummary
             android:id="@+id/batch_upload_dialog_bookmarks"
             android:layout_width="match_parent"

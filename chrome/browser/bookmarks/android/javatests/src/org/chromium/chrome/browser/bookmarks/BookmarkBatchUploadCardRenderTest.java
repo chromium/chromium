@@ -44,7 +44,7 @@ import org.chromium.url.GURL;
 @DoNotBatch(reason = "SyncTestRule doesn't support batching.")
 @EnableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
 public class BookmarkBatchUploadCardRenderTest {
-    private static final int RENDER_TEST_REVISION = 1;
+    private static final int RENDER_TEST_REVISION = 2;
 
     @Rule public final SyncTestRule mSyncTestRule = new SyncTestRule();
     @Rule public final BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
