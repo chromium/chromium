@@ -22,9 +22,8 @@ TEST_F(TileDisplayLayerImplTest, NoQuadAppendedByDefault) {
 
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
-  layer.AppendQuads(
-      AppendQuadsContext{DRAW_MODE_RESOURCELESS_SOFTWARE, {}, false},
-      render_pass.get(), &data);
+  layer.AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                    render_pass.get(), &data);
 
   EXPECT_EQ(render_pass->quad_list.size(), 0u);
 }
@@ -52,9 +51,8 @@ TEST_F(TileDisplayLayerImplTest, SettingSolidColorResultsInSolidColorQuad) {
 
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
-  raw_layer->AppendQuads(
-      AppendQuadsContext{DRAW_MODE_RESOURCELESS_SOFTWARE, {}, false},
-      render_pass.get(), &data);
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
 
   EXPECT_EQ(render_pass->quad_list.size(), 1u);
   EXPECT_EQ(render_pass->quad_list.front()->rect, kLayerRect);
@@ -103,9 +101,8 @@ TEST_F(TileDisplayLayerImplTest, NonEmptyTilingResultsInPictureQuad) {
 
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
-  raw_layer->AppendQuads(
-      AppendQuadsContext{DRAW_MODE_RESOURCELESS_SOFTWARE, {}, false},
-      render_pass.get(), &data);
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
 
   EXPECT_EQ(render_pass->quad_list.size(), 1u);
   EXPECT_EQ(render_pass->quad_list.front()->rect, kLayerRect);
@@ -163,9 +160,8 @@ TEST_F(TileDisplayLayerImplWithEdgeAADisabledTest,
 
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
-  raw_layer->AppendQuads(
-      AppendQuadsContext{DRAW_MODE_RESOURCELESS_SOFTWARE, {}, false},
-      render_pass.get(), &data);
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
 
   EXPECT_EQ(render_pass->quad_list.size(), 1u);
   EXPECT_EQ(viz::TileDrawQuad::MaterialCast(render_pass->quad_list.front())
