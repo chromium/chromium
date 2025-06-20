@@ -1744,8 +1744,8 @@ void BrowserAutofillManager::FillOrPreviewField(
   if (type == SuggestionType::kAddressFieldByFieldFilling) {
     metrics_->address_form_event_logger.OnFilledByFieldByFieldFilling(type);
   }
-  if (autofill_field->Type().GetStorableType() ==
-      EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
+  if (autofill_field && autofill_field->Type().GetStorableType() ==
+                            EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
     if (field_type_used == LOYALTY_MEMBERSHIP_ID) {
       LogEmailOrLoyaltyCardSuggestionAccepted(
           autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
