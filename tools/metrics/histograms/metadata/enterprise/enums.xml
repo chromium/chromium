@@ -1889,7 +1889,7 @@ chromium-metrics-reviews@google.com.
   <int value="1009" label="BatterySaverModeAvailability"/>
   <int value="1010" label="TabDiscardingExceptions"/>
   <int value="1011" label="AssistantWebEnabled"/>
-  <int value="1012" label="(Obsolete) LacrosDataBackwardMigrationMode"/>
+  <int value="1012" label="LacrosDataBackwardMigrationMode"/>
   <int value="1013" label="StrictMimetypeCheckForWorkerScriptsEnabled"/>
   <int value="1014" label="RecoveryFactorBehavior"/>
   <int value="1015" label="CalendarIntegrationEnabled"/>
@@ -2224,10 +2224,10 @@ chromium-metrics-reviews@google.com.
   <int value="1353" label="EnterpriseLogoUrlForBrowser"/>
   <int value="1354" label="EnterpriseCustomLabelForBrowser"/>
   <int value="1355" label="DefaultSmartCardConnectSetting"/>
-  <int value="1356" label="DeviceUserInitiatedFirmwareUpdate"/>
+  <int value="1356" label="DeviceUserInitiatedFirmwareUpdatesEnabled"/>
   <int value="1357" label="BuiltInAIAPIsEnabled"/>
   <int value="1358" label="TabGroupSharingSettings"/>
-  <int value="1359" label="NTPFootermanagementNoticeEnabled"/>
+  <int value="1359" label="NTPFooterManagementNoticeEnabled"/>
   <int value="1360" label="NTPFooterExtensionAttributionEnabled"/>
   <int value="1361" label="ClearWindowNameForNewBrowsingContextGroup"/>
   <int value="1362" label="PasswordManagerBlocklist"/>
