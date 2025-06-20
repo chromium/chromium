@@ -12,7 +12,9 @@ desc: |-
 
   Site search entries configured as featured are displayed in the address bar when the user types "@". Up to three entries can be selected as featured.
 
-  Users cannot edit or disable site search entries set by policy, but they can add new shortcuts for the same URL. In addition, users cannot create new site search entries with a shortcut previously created via this policy.
+  For a site search entry where <ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD">allow_user_override</ph> is true, users have the ability to edit or disable that entry. However, featured engines (beginning with "@") can only be disabled. If a user modifies an entry that was initially created by this policy, it will no longer be managed by policy and will be treated like a user-created shortcut. When <ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD">allow_user_override</ph> is false or unspecified for a site search entry, users cannot edit or disable that entry. The setting to allow user override is only supported on M139 and later; earlier versions will default to disabling user override.
+
+  Users cannot create new site search entries with a shortcut previously created via this policy unless <ph name="ALLOW_USER_OVERRIDE_SITE_SEARCH_SETTINGS_FIELD">allow_user_override</ph> is set to true for the site search entry.
 
   In case of a conflict with a shortcut previously created by the user, the user setting takes precedence. However, users can still trigger the option created by the policy by typing "@" in the search bar. For example, if the user already defined "work" as a shortcut to URL1 and the policy defines "work" as a shortcut to URL2, then typing "work" in the search bar will trigger a search to URL1, but typing "@work" in the search bar will trigger a search to URL2.
 
@@ -28,6 +30,10 @@ example_value:
 - name: YouTube
   shortcut: youtube
   url: https://www.youtube.com/results?search_query=%s
+- name: Google Drive
+  shortcut: drive
+  url: https://drive.google.com/?q=%s
+  allow_user_override: true
 features:
   dynamic_refresh: true
   per_profile: true
@@ -47,6 +53,8 @@ schema:
         type: string
       url:
         type: string
+      allow_user_override:
+        type: boolean
     required:
     - shortcut
     - name

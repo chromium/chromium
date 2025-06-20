@@ -449,7 +449,7 @@ TEST(SiteSearchPolicyHandlerTest,
                base::Value(std::move(policy_value)), nullptr);
 
   ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
-  EXPECT_TRUE(errors.HasError(key::kSiteSearchSettings));
+  ASSERT_FALSE(errors.HasError(key::kSiteSearchSettings));
 
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
@@ -491,10 +491,8 @@ TEST(SiteSearchPolicyHandlerTest,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(std::move(policy_value)), nullptr);
 
-  // TODO(crbug.com/417479042): Remove error expectation once policy YAML
-  // includes new `allow_user_override` field.
   ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
-  EXPECT_TRUE(errors.HasError(key::kSiteSearchSettings));
+  ASSERT_FALSE(errors.HasError(key::kSiteSearchSettings));
 
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
