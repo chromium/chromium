@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/win/scoped_variant.h"
@@ -19,11 +20,11 @@
 namespace {
 
 // Switch used to install platform_experience_helper
-const char kPlatformExperienceHelperForceInstallSwitch[] = "force-install";
+constexpr char kPlatformExperienceHelperForceInstallSwitch[] = "force-install";
 // Directory under which platform_experience_helper is installed
-const wchar_t kPlatformExperienceHelperDir[] = L"PlatformExperienceHelper";
+constexpr wchar_t kPlatformExperienceHelperDir[] = L"PlatformExperienceHelper";
 // Name of the platform_experience_helper executable
-const wchar_t kPlatformExperienceHelperExe[] =
+constexpr wchar_t kPlatformExperienceHelperExe[] =
     L"platform_experience_helper.exe";
 
 // This function might block.
@@ -41,6 +42,43 @@ bool PlatformExperienceHelperMightBeInstalled() {
   return base::PathExists(peh_exe_path);
 }
 
+// Enum for tracking the launch status of the platform experience helper
+// installer for system installs.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SystemInstallerLaunchStatus)
+enum class SystemInstallerLaunchStatus {
+  kSuccess = 0,
+  kAppCommandNotFound = 1,
+  kAppCommandExecutionFailed = 2,
+  kMaxValue = kAppCommandExecutionFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/windows/enums.xml:SystemInstallerLaunchStatus)
+
+// Enum for tracking the launch status of the platform experience helper
+// installer for user installs.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(UserInstallerLaunchStatus)
+enum class UserInstallerLaunchStatus {
+  kSuccess = 0,
+  kFileNotFound = 1,
+  kAccessDenied = 2,
+  kOtherFailure = 3,
+  kMaxValue = kOtherFailure,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/windows/enums.xml:UserInstallerLaunchStatus)
+
+void ReportSystemInstallerLaunchStatus(SystemInstallerLaunchStatus status) {
+  base::UmaHistogramEnumeration(
+      "Windows.PlatformExperienceHelper.InstallerLaunchStatus.System", status);
+}
+
+void ReportUserInstallLaunchStatusMetric(UserInstallerLaunchStatus status) {
+  base::UmaHistogramEnumeration(
+      "Windows.PlatformExperienceHelper.InstallerLaunchStatus.User", status);
+}
+
 }  // namespace
 
 namespace platform_experience {
@@ -50,16 +88,22 @@ void MaybeInstallPlatformExperienceHelper() {
     return;
   }
 
-  // TODO(crbug.com/422447800): Report metrics for number of installer launch
-  // attempts (success vs. failure), split by user vs system installs.
   if (install_static::IsSystemInstall()) {
     auto command = GetUpdaterAppCommand(installer::kCmdInstallPEH);
     if (!command.has_value()) {
+      ReportSystemInstallerLaunchStatus(
+          SystemInstallerLaunchStatus::kAppCommandNotFound);
       return;
     }
 
     const VARIANT& var = base::win::ScopedVariant::kEmptyVariant;
-    (*command)->execute(var, var, var, var, var, var, var, var, var);
+    if (FAILED(
+            (*command)->execute(var, var, var, var, var, var, var, var, var))) {
+      ReportSystemInstallerLaunchStatus(
+          SystemInstallerLaunchStatus::kAppCommandExecutionFailed);
+    } else {
+      ReportSystemInstallerLaunchStatus(SystemInstallerLaunchStatus::kSuccess);
+    }
     return;
   }
 
@@ -75,10 +119,21 @@ void MaybeInstallPlatformExperienceHelper() {
   launch_options.force_breakaway_from_job_ = true;
   ::SetLastError(ERROR_SUCCESS);
   base::Process process = base::LaunchProcess(install_cmd, launch_options);
+  UserInstallerLaunchStatus status = UserInstallerLaunchStatus::kSuccess;
   if (!process.IsValid()) {
-    PLOG(ERROR) << "Failed to launch \"" << install_cmd.GetCommandLineString()
-                << "\"";
+    switch (::GetLastError()) {
+      case ERROR_FILE_NOT_FOUND:
+        status = UserInstallerLaunchStatus::kFileNotFound;
+        break;
+      case ERROR_ACCESS_DENIED:
+        status = UserInstallerLaunchStatus::kAccessDenied;
+        break;
+      default:
+        status = UserInstallerLaunchStatus::kOtherFailure;
+        break;
+    }
   }
+  ReportUserInstallLaunchStatusMetric(status);
 }
 
 }  // namespace platform_experience

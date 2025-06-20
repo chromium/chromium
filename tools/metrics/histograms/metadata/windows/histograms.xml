@@ -320,6 +320,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.PlatformExperienceHelper.InstallerLaunchStatus.System"
+    enum="SystemInstallerLaunchStatus" expires_after="2025-12-01">
+  <owner>alsan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records the outcome of attempting to launch the platform experience helper
+    installer via Google Update for system installs.
+  </summary>
+</histogram>
+
+<histogram name="Windows.PlatformExperienceHelper.InstallerLaunchStatus.User"
+    enum="UserInstallerLaunchStatus" expires_after="2025-12-01">
+  <owner>alsan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records the outcome of attempting to launch the platform experience helper
+    installer executable directly for user installs.
+  </summary>
+</histogram>
+
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
     expires_after="2025-12-14">
   <owner>rkc@chromium.org</owner>
