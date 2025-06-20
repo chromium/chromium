@@ -8,18 +8,20 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/sequence_checker.h"
 #include "remoting/protocol/frame_consumer.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace webrtc {
 class DesktopFrame;
 }
 
 namespace ash::boca {
-// Consumes the frame data from a CRD client session.
+// Allocates and receives frames from a CRD client session.
 class SpotlightFrameConsumer : public remoting::protocol::FrameConsumer {
  public:
-  using FrameReceivedCallback =
-      base::RepeatingCallback<void(const std::string&)>;
+  using FrameReceivedCallback = base::RepeatingCallback<
+      void(SkBitmap, std::unique_ptr<webrtc::DesktopFrame> frame)>;
 
   explicit SpotlightFrameConsumer(FrameReceivedCallback callback);
 
@@ -36,6 +38,7 @@ class SpotlightFrameConsumer : public remoting::protocol::FrameConsumer {
   PixelFormat GetPixelFormat() override;
 
  private:
+  SEQUENCE_CHECKER(sequence_checker_);
   FrameReceivedCallback callback_;
 };
 

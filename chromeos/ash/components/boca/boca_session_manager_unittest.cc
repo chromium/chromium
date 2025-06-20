@@ -28,7 +28,6 @@
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/student_heartbeat_request.h"
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
-#include "chromeos/ash/components/boca/spotlight/fake_spotlight_oauth_token_fetcher.h"
 #include "chromeos/ash/components/network/network_ui_data.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/fake_cros_settings_provider.h"
@@ -1601,16 +1600,6 @@ TEST_F(BocaSessionManagerTest,
   EXPECT_CALL(*observer(), OnSessionCaptionClosed).Times(0);
   EXPECT_CALL(*observer(), OnLocalCaptionClosed).Times(0);
   device_session_manger_.SetSessionState(session_manager::SessionState::ACTIVE);
-}
-
-TEST_F(BocaSessionManagerTest, SetsSpotlightOAuthTokenRequester) {
-  ASSERT_FALSE(boca_session_manager()->HasSpotlightTokenFetcher());
-
-  std::unique_ptr<FakeSpotlightOAuthTokenFetcher> token_manager =
-      std::make_unique<FakeSpotlightOAuthTokenFetcher>("token", "robot_email");
-  boca_session_manager()->set_spotlight_token_fetcher(token_manager.get());
-  ASSERT_TRUE(boca_session_manager()->HasSpotlightTokenFetcher());
-  boca_session_manager()->Reset();
 }
 
 class BocaSessionManagerSodaTest : public BocaSessionManagerTestBase {

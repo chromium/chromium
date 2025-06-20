@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/oauth_token_info.h"
 #include "remoting/protocol/client_stub.h"
@@ -30,6 +31,7 @@ class HostInfo;
 
 class DirectoryServiceClient;
 class OAuthTokenGetter;
+class ClientStatusObserver;
 
 namespace protocol {
 class ConnectionToHost;
@@ -57,6 +59,9 @@ class RemotingClient : public SignalStrategy::Listener,
                     OAuthTokenInfo oauth_token_info);
 
   void StopSession();
+
+  void AddObserver(ClientStatusObserver* observer);
+  void RemoveObserver(ClientStatusObserver* observer);
 
  private:
   // ClientStub implementation.
@@ -94,6 +99,7 @@ class RemotingClient : public SignalStrategy::Listener,
   std::string host_secret_;
   OAuthTokenInfo oauth_token_info_;
   base::OnceClosure quit_closure_;
+  base::ObserverList<ClientStatusObserver> observers_;
 
   // Used to provide an OAuth access token for service requests. Since a raw *
   // is passed around, this field should be destroyed after the service clients.

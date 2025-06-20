@@ -15,7 +15,9 @@ include_rules = [
   "+components/session_manager/core",
   "+components/sessions/core/session_id.h",
   "+components/signin/public/identity_manager",
-  "+components/signin/public/base"
+  "+components/signin/public/base",
+  "+third_party/skia/include/core/SkBitmap.h",
+  "+third_party/webrtc/modules/desktop_capture/desktop_frame.h",
 ]
 
 specific_include_rules = {
