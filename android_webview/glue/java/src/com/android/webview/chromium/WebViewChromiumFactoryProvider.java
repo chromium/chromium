@@ -883,6 +883,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     }
 
     void startYourEngines(boolean onMainThread) {
+        if (isChromiumInitialized()) {
+            return;
+        }
         try (ScopedSysTraceEvent e1 =
                 ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.startYourEngines")) {
             mAwInit.startYourEngines(onMainThread);
