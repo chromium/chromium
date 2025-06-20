@@ -328,8 +328,6 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
         toSectionWithIdentifier:SectionIdentifierImportPasswordsButton];
   }
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kIOSEnableDeleteAllSavedCredentials)) {
     // Delete credentials button.
     [model addSectionWithIdentifier:SectionIdentifierDeleteCredentialsButton];
     _deleteCredentialsItem = [self createDeleteCredentialsItem];
@@ -341,7 +339,6 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
     // Add footer for the delete credential section.
     [model setFooter:_deleteCredentialsFooterItem
         forSectionWithIdentifier:SectionIdentifierDeleteCredentialsButton];
-  }
 
   if (_canBulkMoveLocalPasswordsToAccount) {
     [self updateBulkMovePasswordsToAccountSection];
@@ -1309,9 +1306,7 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 }
 
 - (void)updateDeleteAllCredentialsSection {
-  if (_modelLoadStatus == ModelNotLoaded ||
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kIOSEnableDeleteAllSavedCredentials)) {
+  if (_modelLoadStatus == ModelNotLoaded) {
     return;
   }
 

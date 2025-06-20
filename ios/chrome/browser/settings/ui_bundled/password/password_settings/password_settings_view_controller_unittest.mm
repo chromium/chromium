@@ -424,10 +424,6 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        DeleteAllDataDisabledWhenUserNotEligible) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSEnableDeleteAllSavedCredentials);
-
   // Re-create the controller so that the enabled flag is picked up.
   CreateController();
   [controller() setCanDeleteAllCredentials:NO];
@@ -439,10 +435,6 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        DeleteAllDataButtonEnabledWhenUserEligible) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSEnableDeleteAllSavedCredentials);
-
   // Re-create the controller so that the enabled flag is picked up.
   CreateController();
   [controller() setCanDeleteAllCredentials:YES];

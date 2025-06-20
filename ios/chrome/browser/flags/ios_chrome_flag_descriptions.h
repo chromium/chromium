@@ -367,9 +367,6 @@ extern const char kIOSBrowserEditMenuMetricsDescription[];
 extern const char kIOSDockingPromoName[];
 extern const char kIOSDockingPromoDescription[];
 
-extern const char kIOSEnableDeleteAllSavedCredentialsName[];
-extern const char kIOSEnableDeleteAllSavedCredentialsDescription[];
-
 extern const char kIOSEnablePasswordManagerTrustedVaultWidgetName[];
 extern const char kIOSEnablePasswordManagerTrustedVaultWidgetDescription[];
 

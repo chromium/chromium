@@ -16,10 +16,6 @@ namespace password_manager::features {
 // without a passcode set.
 BASE_DECLARE_FEATURE(kIOSEnablePasscodeSettings);
 
-// Feature switch for the logic that allows the user to delete all saved
-// credentials in PWM.
-BASE_DECLARE_FEATURE(kIOSEnableDeleteAllSavedCredentials);
-
 // Feature switch for adding or not Suggest Strong Password field in the add
 // password page.
 BASE_DECLARE_FEATURE(kSuggestStrongPasswordInAddPassword);

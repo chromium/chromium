@@ -639,11 +639,6 @@ const char kIOSDockingPromoDescription[] =
     "When enabled, the user will be presented an animated, instructional "
     "promo showing how to move Chrome to their native iOS dock.";
 
-extern const char kIOSEnableDeleteAllSavedCredentialsName[] =
-    "Enable delete all saved credentials in PWM";
-extern const char kIOSEnableDeleteAllSavedCredentialsDescription[] =
-    "When enabled, the delete all data button in PWM will be presented.";
-
 const char kIOSEnablePasswordManagerTrustedVaultWidgetName[] =
     "Enable password settings encryption error widget";
 const char kIOSEnablePasswordManagerTrustedVaultWidgetDescription[] =

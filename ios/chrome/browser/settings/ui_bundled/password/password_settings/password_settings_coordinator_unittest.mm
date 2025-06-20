@@ -227,9 +227,6 @@ TEST_F(PasswordSettingsCoordinatorTest, PasswordSettingsVisitRecordedOnlyOnce) {
 // triggered.
 TEST_F(PasswordSettingsCoordinatorTest,
        PasswordSettingsDeleteAllDataRecordedOnce) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSEnableDeleteAllSavedCredentials);
   StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/NO);
 
   EXPECT_EQ(user_action_tester.GetActionCount(
