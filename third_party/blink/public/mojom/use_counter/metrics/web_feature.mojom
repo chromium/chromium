@@ -10,7 +10,8 @@ module blink.mojom;
 // https://chromium.googlesource.com/chromium/src.git/+/HEAD/docs/use_counter_wiki.md
 //
 // Do not change assigned numbers of existing items: add new features
-// to the end of the list.
+// to the end of the list. It's OK to rename an existing feature without
+// changing its numerical value.
 //
 // If you want to mark an item as no-longer-used, simply rename it, prefixing
 // "kOBSOLETE_" before the existing name.
