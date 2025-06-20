@@ -284,6 +284,7 @@ UIViewController* TopPresentedViewController() {
   }
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
+  config.features_enabled.push_back(kContainedTabGroup);
   return config;
 }
 
@@ -2000,6 +2001,77 @@ UIViewController* TopPresentedViewController() {
   [[EarlGrey
       selectElementWithMatcher:GetMatcherForPinnedCellWithTitle(@"PinnedTab0")]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that swiping on the toolbar to dismiss the TabGroup view works.
+- (void)testSwipeToDismissOnToolbar {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Open the group view.
+  OpenTabGroupAtIndex(0);
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that swiping to dismiss the TabGroup view works.
+- (void)testSwipeToDismissOnScreen {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Open the group view.
+  OpenTabGroupAtIndex(0);
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that tapping on the background blur dismisses the TabGroup view.
+- (void)testTapOnBlur {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Open the group view.
+  OpenTabGroupAtIndex(0);
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
+      performAction:grey_tapAtPoint(CGPointMake(0.01, 0.5))];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end
