@@ -64,7 +64,7 @@ enum class ActivationError {
 };
 
 // Set on startup before the local passwords migration starts.
-bool last_migration_attempt_failed = false;
+bool g_last_migration_attempt_failed = false;
 
 bool HasMinGmsVersionForFullUpmSupport() {
   std::string gms_version_str =
@@ -539,7 +539,7 @@ void SetUsesSplitStoresAndUPMForLocal(
 
   UseUpmLocalAndSeparateStoresState split_stores_and_local_upm =
       GetSplitStoresAndLocalUpmPrefValue(pref_service);
-  last_migration_attempt_failed =
+  g_last_migration_attempt_failed =
       split_stores_and_local_upm == kOffAndMigrationPending ? true : false;
   if (split_stores_and_local_upm != kOff) {
     MaybeDeactivateSplitStoresAndLocalUpm(pref_service, login_db_directory);
@@ -579,7 +579,7 @@ GmsVersionCohort GetGmsVersionCohort() {
 }
 
 bool LastMigrationAttemptToUpmLocalFailed() {
-  return last_migration_attempt_failed;
+  return g_last_migration_attempt_failed;
 }
 
 PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
@@ -596,7 +596,7 @@ PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
       // manual export/import flow should be done. Checking the
       // `SplitStoresAndLocalUpmState` again here because the migration might
       // have succeeded in this run.
-      if (last_migration_attempt_failed &&
+      if (g_last_migration_attempt_failed &&
           GetSplitStoresAndLocalUpmPrefValue(pref_service) ==
               kOffAndMigrationPending) {
         return PasswordAccessLossWarningType::kNewGmsCoreMigrationFailed;

@@ -1774,6 +1774,13 @@ class GetPasswordAccessLossWarningTypeTest
 };
 
 TEST_P(GetPasswordAccessLossWarningTypeTest, GetPasswordAccessLossWarningType) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid) &&
+      GetParam().local_passwords_migration_failed) {
+    // When the deprecation is enabled, the migration doesn't happen anymore
+    // and this test is not applicable.
+    GTEST_SKIP();
+  }
   if (base::android::BuildInfo::GetInstance()->is_automotive() !=
       GetParam().is_auto) {
     GTEST_SKIP() << "Automotive tests don't need to run on non-auto devices "
