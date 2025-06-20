@@ -15,11 +15,13 @@
 
 class GURL;
 class HomeBackgroundCustomizationServiceObserver;
+class PrefRegistrySimple;
+class PrefService;
 
 // Service for allowing customization of the Home surface background.
 class HomeBackgroundCustomizationService : public KeyedService {
  public:
-  explicit HomeBackgroundCustomizationService();
+  explicit HomeBackgroundCustomizationService(PrefService* pref_service);
 
   HomeBackgroundCustomizationService(
       const HomeBackgroundCustomizationService&) = delete;
@@ -63,11 +65,23 @@ class HomeBackgroundCustomizationService : public KeyedService {
   void AddObserver(HomeBackgroundCustomizationServiceObserver* observer);
   void RemoveObserver(HomeBackgroundCustomizationServiceObserver* observer);
 
+  // Registers the profile prefs associated with this service.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
  private:
   // Alerts observers when the background changes.
   void NotifyObserversOfBackgroundChange();
 
+  // Stores the current theme to disk.
+  void StoreCurrentTheme();
+
+  // Loads the theme data from disk.
+  void LoadCurrentTheme();
+
   sync_pb::ThemeSpecificsIos current_theme_;
+
+  // The PrefService associated with the Profile.
+  raw_ptr<PrefService> pref_service_;
 
   base::ObserverList<HomeBackgroundCustomizationServiceObserver> observers_;
 };

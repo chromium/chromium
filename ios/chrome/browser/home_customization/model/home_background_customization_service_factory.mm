@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 
 #import "base/no_destructor.h"
+#import "components/pref_registry/pref_registry_syncable.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -33,5 +34,12 @@ HomeBackgroundCustomizationServiceFactory::
 std::unique_ptr<KeyedService>
 HomeBackgroundCustomizationServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  return std::make_unique<HomeBackgroundCustomizationService>();
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  return std::make_unique<HomeBackgroundCustomizationService>(
+      profile->GetPrefs());
+}
+
+void HomeBackgroundCustomizationServiceFactory::RegisterBrowserStatePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  HomeBackgroundCustomizationService::RegisterProfilePrefs(registry);
 }

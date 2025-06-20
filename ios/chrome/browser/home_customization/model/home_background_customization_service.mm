@@ -4,16 +4,31 @@
 
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 
+#import "base/base64.h"
+#import "base/logging.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync/protocol/theme_types.pb.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "third_party/skia/include/core/SkColor.h"
 #import "url/gurl.h"
 
-HomeBackgroundCustomizationService::HomeBackgroundCustomizationService() {}
+HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
+    PrefService* pref_service)
+    : pref_service_(pref_service) {
+  LoadCurrentTheme();
+}
 
 HomeBackgroundCustomizationService::~HomeBackgroundCustomizationService() {}
 
 void HomeBackgroundCustomizationService::Shutdown() {}
+
+void HomeBackgroundCustomizationService::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(prefs::kIosSavedThemeSpecificsIos,
+                               std::string());
+}
 
 std::optional<sync_pb::NtpCustomBackground>
 HomeBackgroundCustomizationService::GetCurrentCustomBackground() {
@@ -49,6 +64,7 @@ void HomeBackgroundCustomizationService::SetCurrentBackground(
   *current_theme_.mutable_ntp_background() = new_background;
   current_theme_.clear_user_color_theme();
 
+  StoreCurrentTheme();
   NotifyObserversOfBackgroundChange();
 }
 
@@ -62,7 +78,24 @@ void HomeBackgroundCustomizationService::SetBackgroundColor(
   *current_theme_.mutable_user_color_theme() = new_color_theme;
   current_theme_.clear_ntp_background();
 
+  StoreCurrentTheme();
   NotifyObserversOfBackgroundChange();
+}
+
+void HomeBackgroundCustomizationService::StoreCurrentTheme() {
+  std::string serialized = current_theme_.SerializeAsString();
+  // Encode bytestring so it can be stored in a pref.
+  std::string encoded = base::Base64Encode(serialized);
+  pref_service_->SetString(prefs::kIosSavedThemeSpecificsIos, encoded);
+}
+
+void HomeBackgroundCustomizationService::LoadCurrentTheme() {
+  std::string encoded =
+      pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos);
+  // This pref is base64 encoded, so decode it first.
+  std::string serialized;
+  base::Base64Decode(encoded, &serialized);
+  current_theme_.ParseFromString(serialized);
 }
 
 void HomeBackgroundCustomizationService::AddObserver(

@@ -388,6 +388,11 @@ inline constexpr char kIosSaveToDriveDownloadManagerPolicySettings[] =
 inline constexpr char kIosChooseFromDriveFilePickerPolicySettings[] =
     "ios.choose_from_drive.file_picker_policy";
 
+// Preference to store the current ThemeSpecificsIos for the user's background
+// choices.
+inline constexpr char kIosSavedThemeSpecificsIos[] =
+    "ios.saved_theme_specifics_ios";
+
 // String preference containing the default account to use for saving images to
 // Google Photos.
 inline constexpr char kIosSaveToPhotosDefaultGaiaId[] =
