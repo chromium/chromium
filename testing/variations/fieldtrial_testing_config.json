@@ -10379,6 +10379,21 @@
             ]
         }
     ],
+    "ForceOffTextAutosizing": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ForceOffTextAutosizing"
+                    ]
+                }
+            ]
+        }
+    ],
     "ForestFeature": [
         {
             "platforms": [
