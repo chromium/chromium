@@ -86,7 +86,6 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::mojom::Sandbox::kIme ||
       sandbox_type_ == sandbox::mojom::Sandbox::kTts ||
       sandbox_type_ == sandbox::mojom::Sandbox::kNearby ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kShapeDetection ||
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
       sandbox_type_ == sandbox::mojom::Sandbox::kLibassistant ||
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -154,7 +153,6 @@ ZygoteCommunication* UtilitySandboxedProcessLauncherDelegate::GetZygote() {
       sandbox_type_ == sandbox::mojom::Sandbox::kIme ||
       sandbox_type_ == sandbox::mojom::Sandbox::kTts ||
       sandbox_type_ == sandbox::mojom::Sandbox::kNearby ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kShapeDetection ||
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
       sandbox_type_ == sandbox::mojom::Sandbox::kLibassistant ||
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)

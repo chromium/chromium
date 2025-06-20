@@ -10,11 +10,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom-shared.h"
-#include "services/shape_detection/shape_detection_library_holder.h"
+#include "third_party/barhopper/barhopper/barcode.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -23,7 +22,7 @@ namespace shape_detection {
 namespace {
 
 gfx::RectF CornerPointsToBoundingBox(
-    base::span<const ChromePointF>& corner_points) {
+    std::vector<barhopper::Point>& corner_points) {
   float xmin = std::numeric_limits<float>::infinity();
   float ymin = std::numeric_limits<float>::infinity();
   float xmax = -std::numeric_limits<float>::infinity();
@@ -37,115 +36,116 @@ gfx::RectF CornerPointsToBoundingBox(
   return gfx::RectF(xmin, ymin, (xmax - xmin), (ymax - ymin));
 }
 
-mojom::BarcodeFormat BarcodeFormatToMojo(ChromeBarcodeFormat format) {
+mojom::BarcodeFormat BarhopperFormatToMojo(barhopper::BarcodeFormat format) {
   switch (format) {
-    case CHROME_BARCODE_FORMAT_UNKNOWN:
-      return mojom::BarcodeFormat::UNKNOWN;
-    case CHROME_BARCODE_FORMAT_AZTEC:
+    case barhopper::BarcodeFormat::AZTEC:
       return mojom::BarcodeFormat::AZTEC;
-    case CHROME_BARCODE_FORMAT_CODE_128:
+    case barhopper::BarcodeFormat::CODE_128:
       return mojom::BarcodeFormat::CODE_128;
-    case CHROME_BARCODE_FORMAT_CODE_39:
+    case barhopper::BarcodeFormat::CODE_39:
       return mojom::BarcodeFormat::CODE_39;
-    case CHROME_BARCODE_FORMAT_CODE_93:
+    case barhopper::BarcodeFormat::CODE_93:
       return mojom::BarcodeFormat::CODE_93;
-    case CHROME_BARCODE_FORMAT_CODABAR:
+    case barhopper::BarcodeFormat::CODABAR:
       return mojom::BarcodeFormat::CODABAR;
-    case CHROME_BARCODE_FORMAT_DATA_MATRIX:
+    case barhopper::BarcodeFormat::DATA_MATRIX:
       return mojom::BarcodeFormat::DATA_MATRIX;
-    case CHROME_BARCODE_FORMAT_EAN_13:
+    case barhopper::BarcodeFormat::EAN_13:
       return mojom::BarcodeFormat::EAN_13;
-    case CHROME_BARCODE_FORMAT_EAN_8:
+    case barhopper::BarcodeFormat::EAN_8:
       return mojom::BarcodeFormat::EAN_8;
-    case CHROME_BARCODE_FORMAT_ITF:
+    case barhopper::BarcodeFormat::ITF:
       return mojom::BarcodeFormat::ITF;
-    case CHROME_BARCODE_FORMAT_PDF417:
+    case barhopper::BarcodeFormat::PDF417:
       return mojom::BarcodeFormat::PDF417;
-    case CHROME_BARCODE_FORMAT_QR_CODE:
+    case barhopper::BarcodeFormat::QR_CODE:
       return mojom::BarcodeFormat::QR_CODE;
-    case CHROME_BARCODE_FORMAT_UPC_A:
+    case barhopper::BarcodeFormat::UPC_A:
       return mojom::BarcodeFormat::UPC_A;
-    case CHROME_BARCODE_FORMAT_UPC_E:
+    case barhopper::BarcodeFormat::UPC_E:
       return mojom::BarcodeFormat::UPC_E;
+    case barhopper::BarcodeFormat::UNRECOGNIZED:
+      return mojom::BarcodeFormat::UNKNOWN;
     default:
       NOTREACHED() << "Invalid barcode format";
   }
 }
 
-ChromeBarcodeFormat GetExpectedFormats(
+barhopper::RecognitionOptions GetRecognitionOptions(
     const shape_detection::mojom::BarcodeDetectorOptionsPtr& options) {
-  ChromeBarcodeFormat expected_formats = CHROME_BARCODE_FORMAT_UNKNOWN;
+  barhopper::RecognitionOptions recognition_options;
   if (options->formats.empty()) {
-    expected_formats =
-        CHROME_BARCODE_FORMAT_AZTEC | CHROME_BARCODE_FORMAT_CODE_128 |
-        CHROME_BARCODE_FORMAT_CODE_39 | CHROME_BARCODE_FORMAT_CODE_93 |
-        CHROME_BARCODE_FORMAT_CODABAR | CHROME_BARCODE_FORMAT_DATA_MATRIX |
-        CHROME_BARCODE_FORMAT_EAN_13 | CHROME_BARCODE_FORMAT_EAN_8 |
-        CHROME_BARCODE_FORMAT_ITF | CHROME_BARCODE_FORMAT_PDF417 |
-        CHROME_BARCODE_FORMAT_QR_CODE | CHROME_BARCODE_FORMAT_UPC_A |
-        CHROME_BARCODE_FORMAT_UPC_E;
-    return expected_formats;
+    recognition_options.barcode_formats =
+        barhopper::BarcodeFormat::AZTEC | barhopper::BarcodeFormat::CODE_128 |
+        barhopper::BarcodeFormat::CODE_39 | barhopper::BarcodeFormat::CODE_93 |
+        barhopper::BarcodeFormat::CODABAR |
+        barhopper::BarcodeFormat::DATA_MATRIX |
+        barhopper::BarcodeFormat::EAN_13 | barhopper::BarcodeFormat::EAN_8 |
+        barhopper::BarcodeFormat::ITF | barhopper::BarcodeFormat::PDF417 |
+        barhopper::BarcodeFormat::QR_CODE | barhopper::BarcodeFormat::UPC_A |
+        barhopper::BarcodeFormat::UPC_E;
+    return recognition_options;
   }
 
+  int recognition_formats = 0;
   for (const auto& format : options->formats) {
     switch (format) {
       case mojom::BarcodeFormat::AZTEC:
-        expected_formats |= CHROME_BARCODE_FORMAT_AZTEC;
+        recognition_formats |= barhopper::BarcodeFormat::AZTEC;
         break;
       case mojom::BarcodeFormat::CODE_128:
-        expected_formats |= CHROME_BARCODE_FORMAT_CODE_128;
+        recognition_formats |= barhopper::BarcodeFormat::CODE_128;
         break;
       case mojom::BarcodeFormat::CODE_39:
-        expected_formats |= CHROME_BARCODE_FORMAT_CODE_39;
+        recognition_formats |= barhopper::BarcodeFormat::CODE_39;
         break;
       case mojom::BarcodeFormat::CODE_93:
-        expected_formats |= CHROME_BARCODE_FORMAT_CODE_93;
+        recognition_formats |= barhopper::BarcodeFormat::CODE_93;
         break;
       case mojom::BarcodeFormat::CODABAR:
-        expected_formats |= CHROME_BARCODE_FORMAT_CODABAR;
+        recognition_formats |= barhopper::BarcodeFormat::CODABAR;
         break;
       case mojom::BarcodeFormat::DATA_MATRIX:
-        expected_formats |= CHROME_BARCODE_FORMAT_DATA_MATRIX;
+        recognition_formats |= barhopper::BarcodeFormat::DATA_MATRIX;
         break;
       case mojom::BarcodeFormat::EAN_13:
-        expected_formats |= CHROME_BARCODE_FORMAT_EAN_13;
+        recognition_formats |= barhopper::BarcodeFormat::EAN_13;
         break;
       case mojom::BarcodeFormat::EAN_8:
-        expected_formats |= CHROME_BARCODE_FORMAT_EAN_8;
+        recognition_formats |= barhopper::BarcodeFormat::EAN_8;
         break;
       case mojom::BarcodeFormat::ITF:
-        expected_formats |= CHROME_BARCODE_FORMAT_ITF;
+        recognition_formats |= barhopper::BarcodeFormat::ITF;
         break;
       case mojom::BarcodeFormat::PDF417:
-        expected_formats |= CHROME_BARCODE_FORMAT_PDF417;
+        recognition_formats |= barhopper::BarcodeFormat::PDF417;
         break;
       case mojom::BarcodeFormat::QR_CODE:
-        expected_formats |= CHROME_BARCODE_FORMAT_QR_CODE;
+        recognition_formats |= barhopper::BarcodeFormat::QR_CODE;
         break;
       case mojom::BarcodeFormat::UPC_E:
-        expected_formats |= CHROME_BARCODE_FORMAT_UPC_E;
+        recognition_formats |= barhopper::BarcodeFormat::UPC_E;
         break;
       case mojom::BarcodeFormat::UPC_A:
-        expected_formats |= CHROME_BARCODE_FORMAT_UPC_A;
+        recognition_formats |= barhopper::BarcodeFormat::UPC_A;
         break;
       case mojom::BarcodeFormat::UNKNOWN:
-        expected_formats |= CHROME_BARCODE_FORMAT_UNKNOWN;
+        recognition_formats |= barhopper::BarcodeFormat::UNRECOGNIZED;
         break;
     }
   }
-
-  return expected_formats;
+  recognition_options.barcode_formats = recognition_formats;
+  return recognition_options;
 }
 
 }  // namespace
 
 BarcodeDetectionImplChrome::BarcodeDetectionImplChrome(
     mojom::BarcodeDetectorOptionsPtr options)
-    : expected_formats_(GetExpectedFormats(options)) {}
+    : recognition_options_(GetRecognitionOptions(options)) {}
 
 BarcodeDetectionImplChrome::~BarcodeDetectionImplChrome() = default;
 
-DISABLE_CFI_DLSYM
 void BarcodeDetectionImplChrome::Detect(
     const SkBitmap& bitmap,
     shape_detection::mojom::BarcodeDetection::DetectCallback callback) {
@@ -162,40 +162,21 @@ void BarcodeDetectionImplChrome::Detect(
       luminances[y * width + x] = luminance / 8;
     }
   }
+  std::vector<barhopper::Barcode> barcodes;
+  barhopper::Barhopper::Recognize(width, height, luminances.data(),
+                                  recognition_options_, &barcodes);
 
-  ChromeBarcodeDetectionResult* detection_results;
-  size_t num_results;
-  const auto* holder = ShapeDetectionLibraryHolder::GetInstance();
-  // Holder should be valid if it passed pre-sandbox initialization.
-  CHECK(holder);
-  holder->api().DetectBarcodes(width, height, luminances.data(),
-                               expected_formats_, &detection_results,
-                               &num_results);
-
-  // SAFTY: `detection_results` was allocated with `num_results` by
-  // ChromeShapeDetectionAPI.
-  UNSAFE_BUFFERS(
-      base::span<ChromeBarcodeDetectionResult> detection_results_span(
-          detection_results, num_results);)
   std::vector<mojom::BarcodeDetectionResultPtr> results;
-  for (const auto& barcode : detection_results_span) {
+  for (auto& barcode : barcodes) {
     auto result = shape_detection::mojom::BarcodeDetectionResult::New();
-
-    // SAFTY: `barcode.corner_points` was allocated with `barcode.
-    // corner_points_size` by ChromeShapeDetectionAPI.
-    UNSAFE_BUFFERS(base::span<const ChromePointF> corner_points_span(
-        barcode.corner_points, barcode.corner_points_size));
-    result->bounding_box = CornerPointsToBoundingBox(corner_points_span);
-    for (auto& corner_point : corner_points_span) {
+    result->bounding_box = CornerPointsToBoundingBox(barcode.corner_point);
+    for (auto& corner_point : barcode.corner_point) {
       result->corner_points.emplace_back(corner_point.x, corner_point.y);
     }
-    result->raw_value = std::string(
-        reinterpret_cast<const char*>(barcode.value), barcode.value_size);
-    result->format = BarcodeFormatToMojo(barcode.format);
+    result->raw_value = barcode.raw_value;
+    result->format = BarhopperFormatToMojo(barcode.format);
     results.push_back(std::move(result));
   }
-
-  holder->api().DestroyDetectionResults(detection_results, num_results);
   std::move(callback).Run(std::move(results));
 }
 

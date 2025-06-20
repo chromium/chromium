@@ -10,8 +10,7 @@ import "services/shape_detection/public/mojom/facedetection_provider.mojom";
 import "services/shape_detection/public/mojom/textdetection.mojom";
 
 [EnableIf=has_shape_detection_utility]
-const sandbox.mojom.Sandbox kShapeDetectionSandbox
-    = sandbox.mojom.Sandbox.kShapeDetection;
+const sandbox.mojom.Sandbox kShapeDetectionSandbox = sandbox.mojom.Sandbox.kUtility;
 [EnableIfNot=has_shape_detection_utility]
 const sandbox.mojom.Sandbox kShapeDetectionSandbox = sandbox.mojom.Sandbox.kGpu;
 

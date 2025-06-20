@@ -1,3 +1,1 @@
 file://third_party/blink/renderer/modules/shapedetection/OWNERS
-
-per-file shape_detection_sandbox_hook.*=file://sandbox/linux/OWNERS

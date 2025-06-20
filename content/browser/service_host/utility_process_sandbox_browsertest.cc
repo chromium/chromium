@@ -129,7 +129,6 @@ class UtilityProcessSandboxBrowserTest
       case Sandbox::kIme:
       case Sandbox::kTts:
       case Sandbox::kNearby:
-      case Sandbox::kShapeDetection:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
       case Sandbox::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
