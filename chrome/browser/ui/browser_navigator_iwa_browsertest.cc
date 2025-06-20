@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_browsertest.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "content/public/common/content_features.h"
@@ -98,7 +101,6 @@ class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
 
   void SetUpOnMainThread() override {
     BrowserNavigatorTest::SetUpOnMainThread();
-
     web_app::test::WaitUntilReady(
         web_app::WebAppProvider::GetForTest(profile()));
   }
@@ -107,10 +109,12 @@ class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
 
  protected:
   void InstallBundles() {
-    app1_ =
-        web_app::IsolatedWebAppBuilder(
-            web_app::ManifestBuilder().SetName("app-1.0.0").SetVersion("1.0.0"))
-            .BuildBundle();
+    app1_ = web_app::IsolatedWebAppBuilder(
+                web_app::ManifestBuilder()
+                    .SetName("app-1.0.0")
+                    .SetVersion("1.0.0")
+                    .AddProtocolHandler("web+meow", "/index.html?params=%s"))
+                .BuildBundle();
 
     url_info1_ = std::make_unique<web_app::IsolatedWebAppUrlInfo>(
         *app1_->Install(profile()));
@@ -248,6 +252,45 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   EXPECT_TRUE(protocol_handler_delegate->future.Wait());
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, WindowOpenProtocol) {
+  ASSERT_NO_FATAL_FAILURE(InstallBundles());
+
+  {
+    // Eliminate all prompts/guards along the way.
+    ExternalProtocolHandler::PermitLaunchUrl();
+    ExternalProtocolHandler::SetBlockState("web+meow", url_info2_->origin(),
+                                           ExternalProtocolHandler::DONT_BLOCK,
+                                           profile());
+    base::test::TestFuture<void> future;
+    web_app::WebAppProvider::GetForWebApps(profile())
+        ->scheduler()
+        .UpdateProtocolHandlerUserApproval(url_info1_->app_id(), "web+meow",
+                                           web_app::ApiApprovalState::kAllowed,
+                                           future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  // Open a protocol url from an app frame of IWA2.
+  auto* rfh = web_app::OpenIsolatedWebApp(profile(), url_info2_->app_id());
+
+  GURL remapped_url =
+      custom_handlers::ProtocolHandler::CreateProtocolHandler(
+          "web+meow",
+          url_info1_->origin().GetURL().Resolve("/index.html?params=%s"))
+          .TranslateUrl(GURL("web+meow://hru"));
+
+  ui_test_utils::UrlLoadObserver observer(remapped_url);
+  ASSERT_THAT(content::EvalJs(rfh, "window.open('web+meow://hru')"),
+              content::EvalJsResult::IsOk());
+  observer.Wait();
+
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(
+      chrome::FindBrowserWithTab(observer.web_contents()),
+      url_info1_->app_id()));
+}
+#endif
 
 class BrowserNavigatorIwaNewTabTest
     : public BrowserNavigatorIwaTest,

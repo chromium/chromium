@@ -413,6 +413,22 @@ apps::IntentFilters CreateIntentFiltersFromScopeExtensionInfo(
   return filters;
 }
 
+apps::IntentFilters CreateIntentFiltersFromProtocolHandlers(
+    const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers) {
+  apps::IntentFilters filters;
+  for (const auto& handler : protocol_handlers) {
+    auto intent_filter = std::make_unique<apps::IntentFilter>();
+    intent_filter->AddSingleValueCondition(apps::ConditionType::kAction,
+                                           apps_util::kIntentActionView,
+                                           apps::PatternMatchType::kLiteral);
+    intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme,
+                                           handler.protocol,
+                                           apps::PatternMatchType::kLiteral);
+    filters.push_back(std::move(intent_filter));
+  }
+  return filters;
+}
+
 apps::IntentFilters CreateShareIntentFiltersFromShareTarget(
     const apps::ShareTarget& share_target) {
   apps::IntentFilters filters;
@@ -645,6 +661,9 @@ apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
     base::Extend(filters,
                  CreateShareIntentFiltersFromShareTarget(*app.share_target()));
   }
+
+  base::Extend(filters, CreateIntentFiltersFromProtocolHandlers(
+                            app.protocol_handlers()));
 
   const apps::FileHandlers* enabled_file_handlers =
       provider.os_integration_manager().GetEnabledFileHandlers(app.app_id());

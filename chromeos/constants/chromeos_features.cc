@@ -392,6 +392,11 @@ BASE_FEATURE(kNotebookLmAppShelfPinReset,
              "NotebookLmAppShelfPinReset",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables support for protocols handlers registered via web app manifest.
+BASE_FEATURE(kWebAppManifestProtocolHandlerSupport,
+             "WebAppManifestProtocolHandlerSupport",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const char kRoundedWindowsRadius[] = "window_radius";
 
 bool IsApnPoliciesEnabled() {
@@ -600,6 +605,10 @@ int RoundedWindowsRadius() {
   return base::GetFieldTrialParamByFeatureAsInt(kRoundedWindows,
                                                 kRoundedWindowsRadius,
                                                 /*default_value=*/12);
+}
+
+bool IsWebAppManifestProtocolHandlerSupportEnabled() {
+  return base::FeatureList::IsEnabled(kWebAppManifestProtocolHandlerSupport);
 }
 
 }  // namespace chromeos::features

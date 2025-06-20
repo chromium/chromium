@@ -10,6 +10,8 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -35,5 +37,21 @@ bool IsAppServiceShortcut(const webapps::AppId& web_app_id,
                           const WebAppProvider& provider) {
   return false;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+std::vector<std::string> GetWebAppIdsForProtocolUrl(Profile* profile,
+                                                    const GURL& protocol_url) {
+  if (!chromeos::features::IsWebAppManifestProtocolHandlerSupportEnabled() ||
+      !apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return {};
+  }
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  std::vector<std::string> app_ids = proxy->GetAppIdsForUrl(protocol_url);
+  std::erase_if(app_ids, [&](const auto& app_id) {
+    return proxy->AppRegistryCache().GetAppType(app_id) != apps::AppType::kWeb;
+  });
+  return app_ids;
+}
+#endif
 
 }  // namespace web_app

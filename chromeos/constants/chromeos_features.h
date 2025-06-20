@@ -127,6 +127,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotebookLmAppShelfPin);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotebookLmAppShelfPinReset);
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+BASE_DECLARE_FEATURE(kWebAppManifestProtocolHandlerSupport);
 
 // Keep alphabetized.
 
@@ -205,6 +207,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsFeatureManagementHistoryEmbeddingEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+bool IsWebAppManifestProtocolHandlerSupportEnabled();
 
 }  // namespace features
 }  // namespace chromeos

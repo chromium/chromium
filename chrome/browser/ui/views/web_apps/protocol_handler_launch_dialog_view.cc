@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/layout_provider.h"
@@ -79,10 +80,16 @@ void ShowWebAppProtocolLaunchDialog(
   auto view = std::make_unique<web_app::ProtocolHandlerLaunchDialogView>(
       url, profile, app_id, std::move(close_callback));
   view->Init();
-  views::DialogDelegate::CreateDialogWidget(std::move(view),
-                                            /*context=*/gfx::NativeWindow(),
-                                            /*parent=*/gfx::NativeView())
-      ->Show();
+  auto* widget =
+      views::DialogDelegate::CreateDialogWidget(std::move(view),
+                                                /*context=*/gfx::NativeWindow(),
+                                                /*parent=*/gfx::NativeView());
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS this dialog will be hidden underneath an existing Chrome
+  // instance unless kFloatingWindow is specified.
+  widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+#endif
+  widget->Show();
 }
 
 }  // namespace web_app

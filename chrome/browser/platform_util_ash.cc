@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "ash/wm/window_pin_util.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/platform_util.h"
@@ -13,6 +16,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
+#include "chrome/browser/web_applications/app_service/publisher_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/aura/window.h"
@@ -62,6 +67,23 @@ void ShowWarningOnOpenOperationResult(Profile* profile,
       path.BaseName().AsUTF16Unsafe(), l10n_util::GetStringUTF16(message_id));
 }
 
+void HandleWebAppManifestProtocolHandler(
+    Profile* profile,
+    const GURL& url,
+    const std::vector<std::string>& app_ids) {
+  CHECK(!app_ids.empty());
+  // TODO(crbug.com/422422887): Figure out how to disambiguate conflicting
+  // protocol handlers; for now, pick the first one in the list.
+  const auto& app_id = app_ids[0];
+  apps::AppLaunchParams params(app_id,
+                               apps::LaunchContainer::kLaunchContainerWindow,
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               apps::LaunchSource::kFromProtocolHandler);
+  params.protocol_handler_launch_url = url;
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
+      std::move(params));
+}
+
 }  // namespace
 
 namespace internal {
@@ -101,6 +123,13 @@ void OpenExternal(Profile* profile, const GURL& url) {
   // previously been accepted with "Always allow ..." and this is called from
   // ChromeContentBrowserClient::HandleExternalProtocol.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (std::vector<std::string> app_ids =
+          web_app::GetWebAppIdsForProtocolUrl(profile, url);
+      !app_ids.empty()) {
+    HandleWebAppManifestProtocolHandler(profile, url, app_ids);
+    return;
+  }
 
   std::optional<guest_os::GuestOsUrlHandler> handler =
       guest_os::GuestOsUrlHandler::GetForUrl(profile, url);
