@@ -76,6 +76,11 @@ public class NtpCardsMediator {
             public @Nullable Integer getTrailingIcon(int type) {
                 return null;
             }
+
+            @Override
+            public @Nullable Integer getTrailingIconDescriptionResId(int type) {
+                return null;
+            }
         };
     }
 

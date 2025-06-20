@@ -21,10 +21,11 @@ import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
 import java.util.List;
 
-/** The view holding {@link NtpCardsListItemView} in the "New tab page cards" bottom sheet. */
+/** The view which holds a list of items in the "New tab page cards" bottom sheet. */
 @NullMarked
 public class NtpCardsListContainerView extends BottomSheetListContainerView {
     public NtpCardsListContainerView(Context context, @Nullable AttributeSet attrs) {
@@ -43,9 +44,9 @@ public class NtpCardsListContainerView extends BottomSheetListContainerView {
 
         for (int i = 0; i < types.size(); i++) {
             Integer type = types.get(i);
-            NtpCardsListItemView listItemView = (NtpCardsListItemView) createListItemView();
+            MaterialSwitchWithText listItemView = (MaterialSwitchWithText) createListItemView();
 
-            listItemView.setTitle(delegate.getListItemTitle(type, mContext));
+            listItemView.setText(delegate.getListItemTitle(type, mContext));
             listItemView.setBackground(
                     AppCompatResources.getDrawable(
                             getContext(), NtpCustomizationUtils.getBackground(types.size(), i)));
@@ -55,12 +56,12 @@ public class NtpCardsListContainerView extends BottomSheetListContainerView {
         }
     }
 
-    /** Returns a {@link NtpCardsListItemView}. */
+    /** Returns a view representing a single list item in this container. */
     @Override
     @VisibleForTesting
     protected View createListItemView() {
-        return LayoutInflater.from(getContext())
-                .inflate(R.layout.ntp_customization_ntp_cards_list_item, this, false);
+        return LayoutInflater.from(mContext)
+                .inflate(R.layout.ntp_customization_ntp_cards_list_item_layout, this, false);
     }
 
     /**
@@ -77,7 +78,7 @@ public class NtpCardsListContainerView extends BottomSheetListContainerView {
     @VisibleForTesting
     void setUpSwitch(
             HomeModulesConfigManager homeModulesConfigManager,
-            NtpCardsListItemView listItemView,
+            MaterialSwitchWithText listItemView,
             int type) {
         listItemView.setChecked(homeModulesConfigManager.getPrefModuleTypeEnabled(type));
         listItemView.setOnCheckedChangeListener(
@@ -94,7 +95,7 @@ public class NtpCardsListContainerView extends BottomSheetListContainerView {
     @Override
     protected void destroy() {
         for (int i = 0; i < getChildCount(); i++) {
-            NtpCardsListItemView child = (NtpCardsListItemView) getChildAt(i);
+            MaterialSwitchWithText child = (MaterialSwitchWithText) getChildAt(i);
             child.setOnCheckedChangeListener(null);
         }
     }

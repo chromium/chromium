@@ -195,6 +195,11 @@ public class NtpCustomizationMediator {
             public @Nullable Integer getTrailingIcon(int type) {
                 return R.drawable.forward_arrow_icon;
             }
+
+            @Override
+            public @Nullable Integer getTrailingIconDescriptionResId(int type) {
+                return R.string.ntp_customization_show_more;
+            }
         };
     }
 

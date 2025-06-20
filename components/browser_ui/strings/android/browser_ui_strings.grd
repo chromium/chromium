@@ -1332,6 +1332,12 @@
       <message name="IDS_NTP_CUSTOMIZATION_FEED_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the feed bottom sheet.">
         Discover feed bottom sheet
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_TURN_ON_FEED_SETTINGS" desc="Accessibility string to announce the currently selected item is a toggle to control the visibility of the discover feed section." is_accessibility_with_no_ui="true">
+        Turn on discover feed
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_SHOW_MORE" desc="Accessibility string that describes clicking on the currently selected item will show more details about it." is_accessibility_with_no_ui="true">
+        Show More
+      </message>
 
       <!-- Time Last Accessed strings -->
       <message name="IDS_TIME_LAST_ACCESSED_TODAY" desc="A subtitle explaining that a given component was last accessed today.">

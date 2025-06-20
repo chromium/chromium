@@ -57,24 +57,18 @@ found in the LICENSE file.
         app:layout_constraintStart_toEndOf="@id/bottom_sheet_title"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/feed_switch_button_container"
+    <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
+        android:id="@+id/feed_switch_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
         android:layout_marginHorizontal="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:paddingHorizontal="@dimen/ntp_customization_edit_icon_margin"
+        tools:baselinealigned="false"
         app:layout_constraintTop_toBottomOf="@id/bottom_sheet_title"
         app:layout_constraintStart_toStartOf="parent"
-        android:background="@drawable/ntp_customization_bottom_sheet_list_item_background_single">
-
-        <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
-            android:id="@+id/feed_switch_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/ntp_customization_edit_icon_margin"
-            tools:baselinealigned="false"
-            android:text="@string/text_on" />
-    </LinearLayout>
+        android:background="@drawable/ntp_customization_bottom_sheet_list_item_background_single"
+        android:text="@string/text_on" />
 
     <TextView
         android:id="@+id/feed_list_items_title"
@@ -85,7 +79,7 @@ found in the LICENSE file.
         android:layout_marginTop="@dimen/ntp_customization_feed_list_items_title_margin_top"
         android:layout_marginStart="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
         android:layout_marginEnd="@dimen/ntp_customization_edit_icon_margin"
-        app:layout_constraintTop_toBottomOf="@id/feed_switch_button_container"
+        app:layout_constraintTop_toBottomOf="@id/feed_switch_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:text="@string/ntp_customization_feed_list_items_title"/>

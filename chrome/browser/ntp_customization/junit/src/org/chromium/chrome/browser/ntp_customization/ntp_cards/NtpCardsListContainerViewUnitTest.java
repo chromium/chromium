@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class NtpCardsListContainerViewUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock ListContainerViewDelegate mDelegate;
-    @Mock NtpCardsListItemView mListItemView;
+    @Mock MaterialSwitchWithText mListItemView;
 
     @Captor
     private ArgumentCaptor<CompoundButton.OnCheckedChangeListener> mOnCheckedChangeListenerCaptor;
@@ -99,12 +100,12 @@ public class NtpCardsListContainerViewUnitTest {
 
         // Verifies the title, background, and switch are set.
         int itemListSize = mListContent.size();
-        verify(mListItemView, times(itemListSize)).setTitle(any());
+        verify(mListItemView, times(itemListSize)).setText(any());
         verify(mListItemView, times(itemListSize)).setBackground(any());
         verify(mContainerView, times(itemListSize))
                 .setUpSwitch(
                         any(HomeModulesConfigManager.class),
-                        any(NtpCardsListItemView.class),
+                        any(MaterialSwitchWithText.class),
                         anyInt());
     }
 
@@ -112,7 +113,7 @@ public class NtpCardsListContainerViewUnitTest {
     @SmallTest
     public void testSetUpSwitch() {
         HomeModulesConfigManager manager = mock(HomeModulesConfigManager.class);
-        NtpCardsListItemView listItemView = mock(NtpCardsListItemView.class);
+        MaterialSwitchWithText listItemView = mock(MaterialSwitchWithText.class);
         String histogramTurnOnName = "NewTabPage.Customization.TurnOnModule";
         String histogramTurnOffName = "NewTabPage.Customization.TurnOffModule";
 

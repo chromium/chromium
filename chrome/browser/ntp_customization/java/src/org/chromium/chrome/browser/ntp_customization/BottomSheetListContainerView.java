@@ -42,6 +42,10 @@ public class BottomSheetListContainerView extends LinearLayout {
             listItemView.setBackground(NtpCustomizationUtils.getBackground(types.size(), i));
             listItemView.setTrailingIcon(delegate.getTrailingIcon(type));
             listItemView.setOnClickListener(delegate.getListener(type));
+            Integer descriptionResId = delegate.getTrailingIconDescriptionResId(type);
+            if (descriptionResId != null) {
+                listItemView.setTrailingIconContentDescriptionResId(descriptionResId);
+            }
 
             addView(listItemView);
         }

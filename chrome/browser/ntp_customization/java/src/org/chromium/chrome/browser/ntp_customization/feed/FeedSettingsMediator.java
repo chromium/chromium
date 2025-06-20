@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_SWITCH_CHECKED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.SET_FEED_SWITCH_CONTENT_DESCRIPTION_RES_ID;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.ACTIVITY;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.FOLLOWING;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.HIDDEN;
@@ -106,6 +107,9 @@ public class FeedSettingsMediator {
                 FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER,
                 (compoundButton, isChecked) -> onFeedSwitchToggled(isChecked));
         mFeedSettingsPropertyModel.set(
+                SET_FEED_SWITCH_CONTENT_DESCRIPTION_RES_ID,
+                R.string.ntp_customization_turn_on_feed_settings);
+        mFeedSettingsPropertyModel.set(
                 LEARN_MORE_BUTTON_CLICK_LISTENER, FeedSettingsMediator::handleLearnMoreClick);
 
         if (sPrefChangeRegistarForTest != null) {
@@ -175,6 +179,11 @@ public class FeedSettingsMediator {
 
             @Override
             public @Nullable Integer getTrailingIcon(int type) {
+                return null;
+            }
+
+            @Override
+            public @Nullable Integer getTrailingIconDescriptionResId(int type) {
                 return null;
             }
         };

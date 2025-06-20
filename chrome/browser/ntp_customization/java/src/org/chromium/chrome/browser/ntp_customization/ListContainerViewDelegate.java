@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization;
 
 import android.content.Context;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.StringRes;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -63,4 +64,14 @@ public interface ListContainerViewDelegate {
     @Nullable
     @DrawableRes
     Integer getTrailingIcon(int type);
+
+    /**
+     * Returns the resource id for the content description of the list item's trailing icon for the
+     * given type.
+     *
+     * @param type The type of the list item.
+     */
+    @Nullable
+    @StringRes
+    Integer getTrailingIconDescriptionResId(int type);
 }
