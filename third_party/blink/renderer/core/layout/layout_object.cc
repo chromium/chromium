@@ -2708,7 +2708,7 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
   // style.
 
   // Images are special and must inherit the pseudoStyle so the width and height
-  // of the pseudo element doesn't change the size of the image. In all other
+  // of the pseudo-element doesn't change the size of the image. In all other
   // cases we can just share the style.
   //
   // Quotes are also LayoutInline, so we need to create an inherited style to

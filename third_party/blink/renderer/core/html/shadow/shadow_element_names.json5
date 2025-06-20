@@ -96,7 +96,7 @@
 
     //
     // Pseudo names for UA shadow elements.
-    // These are web-exposed as pseudo element selectors.
+    // These are web-exposed as pseudo-element selectors.
     //
     {
       name: "picker(select)",

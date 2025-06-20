@@ -2690,7 +2690,7 @@ void InspectorDOMAgent::PseudoElementDestroyed(PseudoElement* pseudo_element) {
   Element* parent = pseudo_element->ParentOrShadowHostElement();
   DCHECK(parent);
   int parent_id = BoundNodeId(parent);
-  // Since the pseudo element tree created for a view transition is destroyed
+  // Since the pseudo-element tree created for a view transition is destroyed
   // with in-order traversal, the parent node (::view-transition) are destroyed
   // before its children
   // (::view-transition-group).

@@ -57,7 +57,7 @@ class StyleRequest {
   Element* styled_element{nullptr};
   RuleMatchingBehavior matching_behavior{kMatchAllRules};
 
-  // pseudo_id is used only for pseudo elements that are not PseudoElement,
+  // pseudo_id is used only for pseudo-elements that are not PseudoElement,
   // since for real PseudoElement style requests, PseudoElement would be
   // ElementResolveContext::element_ for matching with pseudo_id set to none
   // here.

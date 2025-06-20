@@ -144,10 +144,10 @@ class CORE_EXPORT SelectorChecker {
               element_context.GetPseudoElementAncestors()) {}
 
     // If matching for real element, returns that element;
-    // Otherwise, matching is for pseudo element, returns
-    // pseudo element ancestor at `index`, or the last pseudo element ancestor,
+    // Otherwise, matching is for pseudo-element, returns
+    // pseudo-element ancestor at `index`, or the last pseudo-element ancestor,
     // if `index` is greater than the size of ancestors array (to collect
-    // pseudo elements styles).
+    // pseudo-elements styles).
     // Note: `index` == kNotFound means matching is yet being done for real
     // element.
     Element& GetElementForMatching(wtf_size_t index) const;
@@ -223,11 +223,11 @@ class CORE_EXPORT SelectorChecker {
     ContainerNode* relative_anchor_element = nullptr;
 
     AtomicString* pseudo_argument = nullptr;
-    // The pseudo element type of pseudo element we are matching styles for.
+    // The pseudo-element type of pseudo-element we are matching styles for.
     PseudoId pseudo_id = kPseudoIdNone;
-    // The last pseudo element selector we saw. This is not necessarily the
-    // pseudo_id above since we may have nested pseudo elements. Also, this may
-    // be the pseudo element selector we are looking at while matching styles
+    // The last pseudo-element selector we saw. This is not necessarily the
+    // pseudo_id above since we may have nested pseudo-elements. Also, this may
+    // be the pseudo-element selector we are looking at while matching styles
     // for the originating element.
     PseudoId previously_matched_pseudo_element = kPseudoIdNone;
     Impact impact = Impact::kSubject;
@@ -255,9 +255,9 @@ class CORE_EXPORT SelectorChecker {
     // saved on `pseudo_element`.
     // Is null if matching is for real element.
     Element* pseudo_element = nullptr;
-    // Pseudo element ancestors array for PseudoElement rule matching (including
+    // Pseudo-element ancestors array for PseudoElement rule matching (including
     // the nested ones), read more in ElementResolveContext.
-    // Includes the pseudo_element as last entry and all originating pseudo
+    // Includes the pseudo_element as last entry and all originating pseudo-
     // elements up the tree (doesn't include real originating element, which
     // would be `element`). Is empty if matching is for real element.
     base::span<Element* const> pseudo_element_ancestors;
@@ -274,7 +274,7 @@ class CORE_EXPORT SelectorChecker {
 
     PseudoId dynamic_pseudo{kPseudoIdNone};
 
-    // Index of the current pseudo element ancestor, used for PseudoElement
+    // Index of the current pseudo-element ancestor, used for PseudoElement
     // matching. See comments above for pseudo_element_ancestors.
     // kNotFound means matching is yet being done for real element.
     // When matching for e.g. div::column::scroll-marker, ::column is index 0
@@ -333,7 +333,7 @@ class CORE_EXPORT SelectorChecker {
     // correctly, MatchResult returns the elements that match the leftmost
     // compound of the :has() argument selector.
     //
-    // This field is only for checking :has() pseudo class. To avoid the
+    // This field is only for checking :has() pseudo-class. To avoid the
     // MatchResult instance allocation overhead on checking the other selectors,
     // MatchResult has a pointer field to hold the reference of the vector
     // instance instead of having the vector instance field.

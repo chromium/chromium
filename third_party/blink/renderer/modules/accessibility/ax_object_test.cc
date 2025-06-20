@@ -53,7 +53,7 @@ TEST_F(AccessibilityTest, GetClosestElementSearchesAmongAncestors) {
   AXObject* button = GetAXObjectByElementId("button");
   button->LoadInlineTextBoxes();
   // Guaranteed to have no element since this should be the AX node created from
-  // pseudo element content
+  // pseudo-element content
   const AXObject* nodeWithNoElement =
       button->DeepestFirstChildIncludingIgnored()->ParentObject();
   ASSERT_EQ(nullptr, nodeWithNoElement->GetElement());

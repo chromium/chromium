@@ -477,7 +477,7 @@ const char inspector_style_invalidator_invalidate_event::
         "Element has pending invalidation list";
 const char
     inspector_style_invalidator_invalidate_event::kInvalidateCustomPseudo[] =
-        "Invalidate custom pseudo element";
+        "Invalidate custom pseudo-element";
 const char inspector_style_invalidator_invalidate_event::
     kInvalidationSetInvalidatesSelf[] = "Invalidation set invalidates self";
 const char inspector_style_invalidator_invalidate_event::

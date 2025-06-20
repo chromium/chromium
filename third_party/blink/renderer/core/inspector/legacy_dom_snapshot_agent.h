@@ -72,7 +72,7 @@ class CORE_EXPORT LegacyDOMSnapshotAgent {
 
   // Adds a LayoutTreeNode for the LayoutObject to |layout_tree_nodes_| and
   // returns its index. Returns -1 if the Node has no associated LayoutObject.
-  // Associates LayoutObjects under a pseudo element with the element.
+  // Associates LayoutObjects under a pseudo-element with the element.
   int VisitLayoutTreeNode(LayoutObject*, Node*, int node_index);
   int BuildLayoutTreeNode(LayoutObject*, Node*, int node_index);
 

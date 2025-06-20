@@ -1396,7 +1396,7 @@
       status: "stable",
     },
     {
-      // For ::column pseudo element for fragment styling.
+      // For ::column pseudo-element for fragment styling.
       // https://github.com/flackr/carousel/blob/main/fragmentation/README.md
       name: "CSSPseudoColumn",
       status: "stable",
@@ -1421,14 +1421,14 @@
       status: "test",
     },
     {
-      // For ::scroll-up-button and ::scroll-down-button pseudo elements for Carousel.
+      // For ::scroll-up-button and ::scroll-down-button pseudo-elements for Carousel.
       // https://github.com/flackr/carousel/tree/main/scroll-button
       name: "CSSPseudoScrollButtons",
       status: "stable",
       depends_on: ["PseudoElementsFocusable"],
     },
     {
-      // For ::scroll-marker and ::scroll-marker-group pseudo elements for Carousel.
+      // For ::scroll-marker and ::scroll-marker-group pseudo-elements for Carousel.
       // https://github.com/flackr/carousel/tree/main/scroll-marker
       name: "CSSPseudoScrollMarkers",
       status: "stable",
@@ -3711,7 +3711,7 @@
       public: true,
     },
     // Adds a web setting to disable CSS ScrollbarColor, ScrollbarWidth, and
-    // legacy ::-webkit-scrollbar* pseudo element styling.
+    // legacy ::-webkit-scrollbar* pseudo-element styling.
     {
       name: "PreferDefaultScrollbarStyles",
     },
@@ -3859,7 +3859,7 @@
       is_protected_feature: "true",
     },
     {
-      // Allowing pseudo elements to have focus.
+      // Allowing pseudo-elements to have focus.
       name: "PseudoElementsFocusable",
       status: "stable",
     },

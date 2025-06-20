@@ -1291,7 +1291,7 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
     return false;
 
   // ::before, ::after, ::marker, ::scroll-marker, ::scroll-*-buttons and
-  // ::scroll-marker-group are relevant. Allowing these pseudo elements ensures
+  // ::scroll-marker-group are relevant. Allowing these pseudo-elements ensures
   // that all visible descendant pseudo content will be reached, despite only
   // being able to walk layout inside of pseudo content. However, AXObjects
   // aren't created for
@@ -1309,7 +1309,7 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
     if (node.IsCheckPseudoElement()) {
       return false;
     }
-    // Scroll control pseudo elements are always relevant when they have a
+    // Scroll control pseudo-elements are always relevant when they have a
     // layout object (which is checked above).
     if (node.IsScrollControlPseudoElement()) {
       return true;
@@ -1335,11 +1335,11 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
              .ContainsOnlyWhitespaceOrEmpty()) {
       return true;  // Not whitespace: not a clearfix hack.
     }
-    return false;  // Is the clearfix hack: ignore pseudo element.
+    return false;  // Is the clearfix hack: ignore pseudo-element.
   }
 
   // ::first-letter is relevant if and only if its parent layout object is a
-  // relevant pseudo element. If it's not a pseudo element, then this the
+  // relevant pseudo-element. If it's not a pseudo-element, then this the
   // ::first-letter text would end up being repeated in the AX Tree.
   if (node.IsFirstLetterPseudoElement()) {
     LayoutObject* layout_parent = node.GetLayoutObject()->Parent();
@@ -1349,15 +1349,15 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
            IsRelevantPseudoElement(*layout_parent_node);
   }
 
-  // The remaining possible pseudo element types are not relevant.
+  // The remaining possible pseudo-element types are not relevant.
   if (node.IsBackdropPseudoElement() || node.IsViewTransitionPseudoElement()) {
     return false;
   }
 
-  // If this is reached, then a new pseudo element type was added and is not
+  // If this is reached, then a new pseudo-element type was added and is not
   // yet handled by accessibility. See  PseudoElementTagName() in
   // pseudo_element.cc for all possible types.
-  SANITIZER_NOTREACHED() << "Unhandled type of pseudo element on: " << node;
+  SANITIZER_NOTREACHED() << "Unhandled type of pseudo-element on: " << node;
   return false;
 }
 
@@ -1816,7 +1816,7 @@ void AXObjectCacheImpl::Remove(LayoutObject* layout_object,
   // If a DOM node is present, it will have been used to back the AXObject, in
   // which case we need to call Remove(node) instead.
   if (Node* node = layout_object->GetNode()) {
-    // Pseudo elements are a special case. The entire subtree needs to be marked
+    // Pseudo-elements are a special case. The entire subtree needs to be marked
     // dirty so that it is recomputed (it is disappearing or changing).
     if (node->IsPseudoElement()) {
       MarkSubtreeDirty(node);
@@ -2406,7 +2406,7 @@ void AXObjectCacheImpl::TextChanged(const LayoutObject* layout_object) {
   // when it has a block sibling.
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node) {
-    // If the text changed in a pseudo element, rebuild the entire subtree.
+    // If the text changed in a pseudo-element, rebuild the entire subtree.
     if (node->IsPseudoElement()) {
       RemoveAXObjectsInLayoutSubtree(node->GetLayoutObject());
     } else if (AXID node_id = static_cast<AXID>(node->GetDomNodeId())) {
@@ -2610,9 +2610,9 @@ bool AXObjectCacheImpl::IsReadyToProcessTreeUpdatesForNode(const Node* node) {
     return false;
   }
 
-  // If the node following a whitespace node is a pseudo element, we won't have
+  // If the node following a whitespace node is a pseudo-element, we won't have
   // its contents at the time the node is connected. Those contents can impact
-  // the relevance of the whitespace node. So remain paused if node is a pseudo
+  // the relevance of the whitespace node. So remain paused if node is a pseudo-
   // element, without resetting the maximum number of allowed pauses.
   if (node->IsPseudoElement()) {
     return false;

@@ -149,7 +149,7 @@ class RuleInvalidationDataVisitor {
     unsigned max_direct_adjacent_selectors = 0;
 
     // descendant_features_depth is used while adding features for logical
-    // combinations inside :has() pseudo class to determine whether the current
+    // combinations inside :has() pseudo-class to determine whether the current
     // compound selector is in subject position or not.
     //
     // This field stores the number of child and descendant combinators
@@ -222,7 +222,7 @@ class RuleInvalidationDataVisitor {
   //
   // For .b in case 1, we need to use descendant_features as sibling_features.
   // But for .b in case 2, we need to extract sibling features from the compound
-  // selector containing the :has() pseudo class.
+  // selector containing the :has() pseudo-class.
   //
   // By maintaining a descendant depth information to descendant_features
   // object, we can determine whether the current compound is in subject

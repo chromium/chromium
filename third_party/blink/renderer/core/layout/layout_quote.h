@@ -42,7 +42,7 @@ class LayoutQuote final : public LayoutInline {
   ~LayoutQuote() override;
   void Trace(Visitor*) const override;
 
-  // Will return nullptr, if this doesn't originate from a pseudo element, but
+  // Will return nullptr, if this doesn't originate from a pseudo-element, but
   // rather an @page margin box.
   PseudoElement* GetOwningPseudo() const {
     NOT_DESTROYED();

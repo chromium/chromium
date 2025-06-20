@@ -856,7 +856,7 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
     EXPECT_FALSE(li_style->HasAnyPseudoElementStyles());
     // Check that UA's ::before::marker rule doesn't set HasPseudoElementStyle.
     // For performance reason we do not SetHasPseudoElementStyle() for ::marker
-    // pseudo element selectors from UA stylesheets for now.
+    // pseudo-element selectors from UA stylesheets for now.
     const ComputedStyle* before_style = before->GetComputedStyle();
     EXPECT_FALSE(before_style->HasPseudoElementStyle(kPseudoIdMarker));
     EXPECT_FALSE(before_style->HasAnyPseudoElementStyles());
@@ -950,7 +950,7 @@ TEST_F(StyleResolverTest, NestedPseudoElement) {
     </style>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  // Don't crash when calculating style for nested pseudo elements.
+  // Don't crash when calculating style for nested pseudo-elements.
 }
 
 TEST_F(StyleResolverTest, CascadedValuesForElement) {
@@ -3609,7 +3609,7 @@ TEST_F(StyleResolverTest,
 
   // Element::RecalcOwnStyle should detect that the style change on the
   // "target" ancestor node requires re-computing the base style for the
-  // pseudo element and skip the optimization for animation style change.
+  // pseudo-element and skip the optimization for animation style change.
   UpdateAllLifecyclePhasesForTest();
 }
 

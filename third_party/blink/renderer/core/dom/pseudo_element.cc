@@ -88,7 +88,7 @@ PseudoElement* PseudoElement::Create(Element* parent,
           RuntimeEnabledFeatures::MenuElementsEnabled());
 
     if (!IsA<HTMLOptionElement>(parent) && !IsA<HTMLMenuItemElement>(parent)) {
-      // The `::checkmark` pseudo element should only be created for option and
+      // The `::checkmark` pseudo-element should only be created for option and
       // menuitem elements.
       return nullptr;
     }
@@ -98,7 +98,7 @@ PseudoElement* PseudoElement::Create(Element* parent,
     CHECK(HTMLSelectElement::CustomizableSelectEnabled(parent));
 
     if (!IsA<HTMLSelectElement>(parent)) {
-      // The `::picker-icon` pseudo element should only be created for select
+      // The `::picker-icon` pseudo-element should only be created for select
       // elements.
       return nullptr;
     }
@@ -356,7 +356,7 @@ const ComputedStyle* PseudoElement::AdjustedLayoutStyle(
     const ComputedStyle& layout_parent_style) {
   if (style.Display() == EDisplay::kContents) {
     // For display:contents we should not generate a box, but we generate a non-
-    // observable inline box for pseudo elements to be able to locate the
+    // observable inline box for pseudo-elements to be able to locate the
     // anonymous layout objects for generated content during DetachLayoutTree().
     ComputedStyleBuilder builder =
         GetDocument()
@@ -460,7 +460,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
 
   // This is to ensure that bypassing the CanHaveGeneratedChildren() check in
   // LayoutTreeBuilderForElement::CreateLayoutObject() does not result in
-  // the backdrop pseudo element's layout object becoming the child of a layout
+  // the backdrop pseudo-element's layout object becoming the child of a layout
   // object that doesn't allow children.
   DCHECK(layout_object->Parent());
   DCHECK(CanHaveGeneratedChildren(*layout_object->Parent()));
@@ -602,15 +602,15 @@ Node* PseudoElement::InnerNodeForHitTesting() {
 
 void PseudoElement::AccessKeyAction(
     SimulatedClickCreationScope creation_scope) {
-  // If this is a pseudo element with activation behavior such as a
+  // If this is a pseudo-element with activation behavior such as a
   // ::scroll-marker or ::scroll-button, we should invoke it.
   if (HasActivationBehavior()) {
     DispatchSimulatedClick(nullptr, creation_scope);
     return;
   }
 
-  // Even though regular pseudo elements can't use the accesskey attribute,
-  // assistive tech can still attempt to interact with pseudo elements if
+  // Even though regular pseudo-elements can't use the accesskey attribute,
+  // assistive tech can still attempt to interact with pseudo-elements if
   // they are in the AX tree (usually due to their text/image content).
   // Just pass this request to the originating element.
   UltimateOriginatingElement().AccessKeyAction(creation_scope);
@@ -622,7 +622,7 @@ Element& PseudoElement::UltimateOriginatingElement() const {
   while (parent && parent->IsPseudoElement())
     parent = parent->parentElement();
 
-  // Should not invoke this method on disposed pseudo elements.
+  // Should not invoke this method on disposed pseudo-elements.
   CHECK(parent);
   return *parent;
 }

@@ -981,7 +981,7 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
     return nullptr;
   }
 
-  // Descendants of pseudo elements must only be created by walking the tree via
+  // Descendants of pseudo-elements must only be created by walking the tree via
   // AXNodeObject::AddChildren(), which already knows the parent. Therefore, the
   // parent must not be computed. This helps avoid situations with certain
   // elements where there is asymmetry between what considers this a child vs
@@ -4484,16 +4484,16 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
 
   Element* element = GetElement();
 
-  // Include all pseudo element content. Any anonymous subtree is included
+  // Include all pseudo-element content. Any anonymous subtree is included
   // from above, in the condition where there is no node.
   if (element && element->IsPseudoElement()) {
     return true;
   }
 
   // Include all parents of ::before/::after/::marker/::scroll-marker-group
-  // pseudo elements to help ClearChildren() find all children, and assist
+  // pseudo-elements to help ClearChildren() find all children, and assist
   // naming computation. It is unnecessary to include a rule for other types of
-  // pseudo elements: Specifically, ::first-letter/::backdrop are not visited by
+  // pseudo-elements: Specifically, ::first-letter/::backdrop are not visited by
   // LayoutTreeBuilderTraversal, and cannot be in the tree, therefore do not add
   // a special rule to include their parents.
   if (element && (element->GetPseudoElement(kPseudoIdBefore) ||
@@ -6648,7 +6648,7 @@ Element* AXObject::GetClosestElement() const {
     for (AXObject* parent = ParentObject(); parent;
          parent = parent->ParentObject()) {
       // It's possible to have a parent without a node here if the parent is a
-      // pseudo element descendant. Since we're looking for the nearest element,
+      // pseudo-element descendant. Since we're looking for the nearest element,
       // keep going up the ancestor chain until we find a parent that has one.
       element = parent->GetElement();
       if (element) {
@@ -6688,18 +6688,18 @@ AXObject* AXObject::ContainerListMarkerIncludingIgnored() const {
 bool AXObject::ShouldUseLayoutObjectTraversalForChildren() const {
   // There are two types of traversal used to find AXObjects:
   // 1. LayoutTreeBuilderTraversal, which takes FlatTreeTraversal and adds
-  // pseudo elements on top of that. This is the usual case. However, while this
-  // can add pseudo elements it cannot add important content descendants such as
+  // pseudo-elements on top of that. This is the usual case. However, while this
+  // can add pseudo-elements it cannot add important content descendants such as
   // text and images. For this, LayoutObject traversal (#2) is required.
   // 2. LayoutObject traversal, which just uses the children of a LayoutObject.
 
-  // Therefore, if the object is a pseudo element or pseudo element descendant,
+  // Therefore, if the object is a pseudo-element or pseudo-element descendant,
   // use LayoutObject traversal (#2) to find the children.
   if (GetNode() && GetNode()->IsPseudoElement())
     return true;
 
   // If no node, this is an anonymous layout object. The only way this can be
-  // reached is inside a pseudo element subtree.
+  // reached is inside a pseudo-element subtree.
   if (!GetNode() && GetLayoutObject()) {
     DCHECK(GetLayoutObject()->IsAnonymous());
     DCHECK(AXObjectCacheImpl::IsRelevantPseudoElementDescendant(
@@ -6834,7 +6834,7 @@ void AXObject::DetachFromParent() {
     if (GetNode()) {
       AXObjectCache().RemoveSubtree(GetNode());
     } else {
-      // This is rare, but technically a pseudo element descendant can have a
+      // This is rare, but technically a pseudo-element descendant can have a
       // subtree, and they do not have nodes.
       AXObjectCache().RemoveIncludedSubtree(this, /* remove_root */ true);
     }

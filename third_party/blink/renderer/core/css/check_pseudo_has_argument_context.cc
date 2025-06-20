@@ -14,7 +14,7 @@ namespace blink {
 namespace {
 
 // Iterator class for the compound selectors in the :has() argument selector.
-// During iteration, this class collects :has() pseudo class argument
+// During iteration, this class collects :has() pseudo-class argument
 // hashes for fast rejection and provides current compound information.
 class CheckPseudoHasArgumentCompoundIterator {
   STACK_ALLOCATED();
@@ -62,7 +62,7 @@ class CheckPseudoHasArgumentCompoundIterator {
   // In most cases, a compound selector doesn't have any sibling relationships
   // in it. (.e.g. 'div.item:hover')
   // But it can have implicit sibling relationships when it has a child indexed
-  // pseudo class or a logical combination pseudo class containing a complex
+  // pseudo-class or a logical combination pseudo-class containing a complex
   // selector.
   // - .a:nth-child(3) : An element that matches this compound selector has
   //                     relationships with its siblings since 'nth-child(3)'
@@ -133,7 +133,7 @@ CheckPseudoHasArgumentCompoundIterator::CheckPseudoHasArgumentCompoundIterator(
 // In most cases, a simple selector doesn't have any sibling relationships
 // in it. (.e.g. 'div', '.item', ':hover')
 // But it can have implicit sibling relationships if it is a child indexed
-// pseudo class or a logical combination pseudo class containing a complex
+// pseudo-class or a logical combination pseudo-class containing a complex
 // selector.
 // - :nth-child(3) : An element that matches this selector has relationships
 //                   with its siblings since the match result can be affected
@@ -158,7 +158,7 @@ void CheckPseudoHasArgumentCompoundIterator::
     return;
   }
 
-  // In case of a logical combination pseudo class (e.g. :is(), :where()), the
+  // In case of a logical combination pseudo-class (e.g. :is(), :where()), the
   // relationship within the logical combination can be collected by checking
   // the simple selectors or the combinators in its sub selectors.
   //
@@ -166,22 +166,22 @@ void CheckPseudoHasArgumentCompoundIterator::
   // order (from rightmost to left), if the sibling relationship is collected,
   // we need to differentiate the sibling relationship by checking whether the
   // child or descendant combinator has already been found or not since the
-  // collected sibling relationship make the logical combination pseudo class
+  // collected sibling relationship make the logical combination pseudo-class
   // containing sibling relationship or ancestor sibling relationship.
   //
   // We can see this with the following nested ':is()' case:
   // - ':is(:is(.ancestor_sibling ~ .ancestor) .target)'
   //
-  // The inner ':is()' pseudo class contains the 'sibling relationship'
+  // The inner ':is()' pseudo-class contains the 'sibling relationship'
   // because there is one adjacent combinator in the sub selector of the
-  // pseudo class and there is no child or descendant combinator to the
+  // pseudo-class and there is no child or descendant combinator to the
   // right of the adjacent combinator:
   // - ':is(.ancestor_sibling ~ .ancestor)'
   //
-  // The 'sibling relationship' within the inner 'is()' pseudo class makes
-  // the outer ':is()' pseudo class containing the 'ancestor sibling
+  // The 'sibling relationship' within the inner 'is()' pseudo-class makes
+  // the outer ':is()' pseudo-class containing the 'ancestor sibling
   // relationship' because there is a descendant combinator to the right of
-  // the inner ':is()' pseudo class:
+  // the inner ':is()' pseudo-class:
   // - ':is(:is(...) .target)'
   const CSSSelector* sub_selector = simple_selector->SelectorListOrParent();
   for (; sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
@@ -258,7 +258,7 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
                                                   pseudo_has_argument_hashes_);
   for (; !iterator.AtEnd(); ++iterator) {
     // If the compound contains an :nth-child() or another child-indexed
-    // selector, or the compound contains a logical combination pseudo class
+    // selector, or the compound contains a logical combination pseudo-class
     // containing a sibling relationship in its sub-selector, we need to do the
     // same invalidation as for an indirect adjacent combinator since inserting
     // or removing a sibling at any place may change matching of a :has()

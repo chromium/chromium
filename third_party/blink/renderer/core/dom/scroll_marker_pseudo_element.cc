@@ -190,7 +190,7 @@ void ScrollMarkerPseudoElement::AttachLayoutTree(AttachContext& context) {
     }
   }
 
-  // The layout box for these pseudo elements are attached to the
+  // The layout box for these pseudo-elements are attached to the
   // ::scroll-marker-group box during layout above. Make sure we walk any
   // ::scroll-marker child and clear dirty bits for the RebuildLayoutTree()
   // pass.

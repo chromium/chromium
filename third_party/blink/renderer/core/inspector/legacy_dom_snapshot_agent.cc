@@ -381,7 +381,7 @@ int LegacyDOMSnapshotAgent::VisitLayoutTreeNode(LayoutObject* layout_object,
     return -1;
 
   if (node->IsPseudoElement()) {
-    // For pseudo elements, visit the children of the layout object.
+    // For pseudo-elements, visit the children of the layout object.
     for (LayoutObject* child = layout_object->SlowFirstChild(); child;
          child = child->NextSibling()) {
       if (child->IsAnonymous())

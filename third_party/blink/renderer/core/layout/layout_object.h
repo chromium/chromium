@@ -1682,8 +1682,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Returns true if this object is a proper descendant of any list marker.
   bool IsInListMarker() const;
 
-  // The pseudo element style can be cached or uncached. Use the cached method
-  // if the pseudo element doesn't respect any pseudo classes (and therefore
+  // The pseudo-element style can be cached or uncached. Use the cached method
+  // if the pseudo-element doesn't respect any pseudo-classes (and therefore
   // has no concept of changing state). The cached pseudo style always inherits
   // from the originating element's style (because we can cache only one
   // version), while the uncached pseudo style can inherit from any style.
@@ -1723,7 +1723,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Returns the styled node that caused the generation of this layoutObject.
   // This is the same as node() except for layoutObjects of :before, :after and
-  // :first-letter pseudo elements for which their parent node is returned.
+  // :first-letter pseudo-elements for which their parent node is returned.
   Node* GeneratingNode() const {
     NOT_DESTROYED();
     return IsPseudoElement() ? GetNode()->ParentOrShadowHostNode() : GetNode();

@@ -63,12 +63,12 @@ void LayoutTreeRebuildRoot::SubtreeModified(ContainerNode& parent) {
   // during style recalc. We do not allow DOM modifications during style recalc
   // or the layout tree rebuild that happens right after. The only time we
   // should end up here is when we find out that we need to remove generated
-  // pseudo elements like ::first-letter or ::marker during layout tree rebuild.
+  // pseudo-elements like ::first-letter or ::marker during layout tree rebuild.
   DCHECK(parent.isConnected());
   DCHECK(GetRootNode()->IsPseudoElement());
   Element* ancestor = DynamicTo<Element>(parent);
   if (!ancestor) {
-    // The parent should be the pseudo element's originating element.
+    // The parent should be the pseudo-element's originating element.
     NOTREACHED();
   }
   for (; ancestor; ancestor = ancestor->GetReattachParent()) {

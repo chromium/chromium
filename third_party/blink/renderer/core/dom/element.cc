@@ -654,7 +654,7 @@ const HeapVector<Member<Node>> Element::ReadingFlowChildren() const {
     }
   }
   // Add all non-reading flow items at the end of the reading flow.
-  // We use LayoutTreeBuilder traversal to make sure all pseudo elements
+  // We use LayoutTreeBuilder traversal to make sure all pseudo-elements
   // (including scroll markers) are accounted for.
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*this); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
@@ -3999,7 +3999,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
 void Element::DetachLayoutTree(bool performing_reattach) {
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
 
-  // Pseudo elements that may have child pseudo elements (such as ::column) must
+  // Pseudo-elements that may have child pseudo-elements (such as ::column) must
   // be cleared before clearing the rare data vector below.
   ClearColumnPseudoElements();
 
@@ -4224,7 +4224,7 @@ bool Element::SkipStyleRecalcForContainer(
   }
 
   if (!child_change.TraversePseudoElements(*this)) {
-    // If none of the children or pseudo elements need to be traversed for style
+    // If none of the children or pseudo-elements need to be traversed for style
     // recalc, there is no point in marking the subtree as skipped.
     DCHECK(!child_change.TraverseChildren(*this));
     return false;
@@ -4267,7 +4267,7 @@ bool Element::SkipStyleRecalcForContainer(
 
   // ::scroll-marker-group and ::scroll-button() boxes are created outside their
   // originating element's box and cannot be skipped if the originating element
-  // is a size container because the pseudo element and its box need to be
+  // is a size container because the pseudo-element and its box need to be
   // created before layout.
   if (!style.ScrollMarkerGroupNone() ||
       CanGeneratePseudoElement(kPseudoIdScrollButton) ||
@@ -5751,10 +5751,10 @@ struct Element::AffectedByPseudoStateChange {
             element.AncestorsOrSiblingsAffectedByActiveInHas();
         break;
       default:
-        // Activate :has() invalidation for all allowed pseudo classes.
+        // Activate :has() invalidation for all allowed pseudo-classes.
         //
         // IsPseudoClassValidWithinHasArgument() in css_selector_parser.cc
-        // maintains the disallowed pseudo classes inside :has().
+        // maintains the disallowed pseudo-classes inside :has().
         // If a :has() argument contains any of the disallowed pseudo,
         // CSSSelectorParser will drop the argument. If the argument is
         // dropped, RuleFeatureSet will not maintain the pseudo type for
@@ -8683,7 +8683,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
     const StyleRecalcContext& style_recalc_context,
     PseudoId pseudo_element_specifier,
     const AtomicString& pseudo_argument) {
-  // FIXME: Find and use the layoutObject from the pseudo element instead of the
+  // FIXME: Find and use the layoutObject from the pseudo-element instead of the
   // actual element so that the 'length' properties, which are only known by the
   // layoutObject because it did the layout, will be correct and so that the
   // values returned for the ":selection" pseudo-element will be correct.
@@ -8966,7 +8966,7 @@ void Element::UpdateFirstLetterPseudoElement(StyleUpdatePhase phase) {
 void Element::UpdateFirstLetterPseudoElement(
     StyleUpdatePhase phase,
     const StyleRecalcContext& style_recalc_context) {
-  // Update the ::first-letter pseudo elements presence and its style. This
+  // Update the ::first-letter pseudo-elements presence and its style. This
   // method may be called from style recalc or layout tree rebuilding/
   // reattachment. In order to know if an element generates a ::first-letter
   // element, we need to know if:
@@ -9002,7 +9002,7 @@ void Element::UpdateFirstLetterPseudoElement(
         CreatePseudoElementIfNeeded(kPseudoIdFirstLetter, style_recalc_context);
     // If we are in Element::AttachLayoutTree, don't mess up the ancestor flags
     // for layout tree attachment/rebuilding. We will unconditionally call
-    // AttachLayoutTree for the created pseudo element immediately after this
+    // AttachLayoutTree for the created pseudo-element immediately after this
     // call.
     if (element && phase != StyleUpdatePhase::kAttachLayoutTree) {
       element->SetNeedsReattachLayoutTree();
@@ -9051,7 +9051,7 @@ void Element::UpdateFirstLetterPseudoElement(
   }
 
   StyleRecalcChange change(StyleRecalcChange::kRecalcDescendants);
-  // Remaining text part should be next to first-letter pseudo element.
+  // Remaining text part should be next to first-letter pseudo-element.
   // See http://crbug.com/984389 for details.
   if (text_node_changed || remaining_text_layout_object->PreviousSibling() !=
                                element->GetLayoutObject()) {
@@ -9158,7 +9158,7 @@ PseudoElement* Element::UpdatePseudoElement(
               pseudo_id, element->GetComputedStyle(), this)) {
         generate_pseudo = false;
         // If the content property is relying on attr() we should add the
-        // originating element's ComputedStyle to the pseudo element style
+        // originating element's ComputedStyle to the pseudo-element style
         // cache, so that when attribute value changes it will force style
         // invalidation.
         if (element->GetComputedStyle() &&
@@ -9216,7 +9216,7 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
     GetElementRareData()->SetPseudoElement(pseudo_id, nullptr,
                                            view_transition_name);
     // If the content property is relying on attr() we should add the
-    // originating element's ComputedStyle to the pseudo element style cache, so
+    // originating element's ComputedStyle to the pseudo-element style cache, so
     // that when attribute value changes it will force style invalidation.
     if (pseudo_style && pseudo_style->HasAttrFunction() &&
         !GetComputedStyle()->GetCachedPseudoElementStyle(pseudo_id,
@@ -9301,10 +9301,10 @@ Element* Element::GetStyledPseudoElement(
     }
   }
 
-  // This traverses the pseudo element hierarchy generated in
+  // This traverses the pseudo-element hierarchy generated in
   // RecalcTransitionPseudoTreeStyle to query nested ::view-transition-group
   // ::view-transition-image-pair and
-  // ::view-transition-{old,new} pseudo elements.
+  // ::view-transition-{old,new} pseudo-elements.
   auto* transition_pseudo = GetPseudoElement(kPseudoIdViewTransition);
   if (!transition_pseudo || pseudo_id == kPseudoIdViewTransition) {
     return transition_pseudo;
@@ -9407,9 +9407,9 @@ bool Element::PseudoElementStylesDependOnFunc(Functor& func) const {
     return false;
   }
 
-  // Note that |HasAnyPseudoElementStyles()| counts public pseudo elements only.
+  // Note that |HasAnyPseudoElementStyles()| counts public pseudo-elements only.
   // ::-webkit-scrollbar-*  are internal, and hence are not counted. So we must
-  // perform this check after checking scrollbar pseudo element styles.
+  // perform this check after checking scrollbar pseudo-element styles.
   if (!style->HasAnyPseudoElementStyles()) {
     return false;
   }
@@ -9612,7 +9612,7 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
     if (IsDocumentElement()) {
       // The root element is never a scroll container, but is scrolled by the
       // viewport, which is always (programmatically) scrollable.
-      // ::scroll-marker-group pseudo element boxes are generated as children of
+      // ::scroll-marker-group pseudo-element boxes are generated as children of
       // the root element box, and not as siblings which is the case for other
       // elements.
       if (pseudo_id == kPseudoIdScrollMarkerGroupBefore) {
@@ -11387,7 +11387,7 @@ void Element::RecalcTransitionPseudoTreeStyle(
       continue;
     }
 
-    // Nested pseudo elements don't keep pointers to their children, only their
+    // Nested pseudo-elements don't keep pointers to their children, only their
     // parents (i.e. firstChild() in a  ::view-transition is nullptr but
     // parentNode of ::view-transition-group is ::view-transition). However,
     // the layout tree is reattached by descending the DOM tree by child

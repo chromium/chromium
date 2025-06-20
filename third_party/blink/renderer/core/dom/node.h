@@ -429,7 +429,7 @@ class CORE_EXPORT Node : public EventTarget {
   virtual bool IsMediaRemotingInterstitial() const { return false; }
   virtual bool IsPictureInPictureInterstitial() const { return false; }
 
-  // Either ::scroll-marker or ::scroll-*-button pseudo element.
+  // Either ::scroll-marker or ::scroll-*-button pseudo-element.
   bool IsScrollControlPseudoElement() const {
     return IsScrollMarkerPseudoElement() || IsScrollButtonPseudoElement();
   }
@@ -586,7 +586,7 @@ class CORE_EXPORT Node : public EventTarget {
   // Propagates a dirty bit breadcrumb for this element up the ancestor chain.
   void MarkAncestorsWithChildNeedsStyleRecalc();
 
-  // Traverses subtree (include pseudo elements and shadow trees) and
+  // Traverses subtree (include pseudo-elements and shadow trees) and
   // invalidates nodes whose styles depend on font metrics (e.g., 'ex' unit).
   void MarkSubtreeNeedsStyleRecalcForFontUpdates();
 

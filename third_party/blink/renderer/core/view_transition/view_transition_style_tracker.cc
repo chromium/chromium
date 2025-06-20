@@ -807,7 +807,7 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
     VectorOf<Element>& elements,
     VectorOf<AtomicString>& transition_names) {
   // Fail if the document element does not exist, since that's the place where
-  // we attach pseudo elements, and if it's not there, we can't do a transition.
+  // we attach pseudo-elements, and if it's not there, we can't do a transition.
   if (!document_->documentElement()) {
     return false;
   }
@@ -992,7 +992,7 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
 
   view_transition_names_ = std::move(transition_names);
 
-  // We need a style invalidation to generate the pseudo element tree.
+  // We need a style invalidation to generate the pseudo-element tree.
   InvalidateStyleAndCompositing();
 
   set_element_sequence_id_ = 0;
@@ -1229,7 +1229,7 @@ bool ViewTransitionStyleTracker::Start() {
   DCHECK_GE(document_->Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
 
-  // We need a style invalidation to generate new content pseudo elements for
+  // We need a style invalidation to generate new content pseudo-elements for
   // new elements in the DOM.
   InvalidateStyleAndCompositing();
 
@@ -1263,7 +1263,7 @@ void ViewTransitionStyleTracker::EndTransition() {
   state_ = State::kFinished;
   InvalidateHitTestingCache();
 
-  // We need a style invalidation to remove the pseudo element tree. This needs
+  // We need a style invalidation to remove the pseudo-element tree. This needs
   // to be done before we clear the data, since we need to invalidate the
   // transition elements stored in `element_data_map_`.
   InvalidateStyleAndCompositing();
@@ -1344,7 +1344,7 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
           element_data_map_.find(view_transition_name)->value;
 
       // If live data is tracking new elements then use the cached data for
-      // the pseudo element displaying snapshot of old element.
+      // the pseudo-element displaying snapshot of old element.
       bool use_cached_data = HasLiveNewContent();
       auto captured_rect = element_data->GetCapturedSubrect(use_cached_data);
       auto reference_rect_in_enclosing_layer_space =
@@ -1579,7 +1579,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
   DCHECK(scope);
   if (auto* pseudo_element =
           scope->GetStyledPseudoElement(live_content_element, name)) {
-    // A pseudo element of type |tansition*content| must be created using
+    // A pseudo-element of type |tansition*content| must be created using
     // ViewTransitionContentElement.
     bool use_cached_data = false;
     auto captured_rect = element_data->GetCapturedSubrect(use_cached_data);
@@ -2182,9 +2182,9 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
 
   // If we started the animation then we always create the full dynamic style
   // sheet. However, before the animation phase, the dynamic sheet should only
-  // be created for the internal non-exposed pseudo elements. Specifically, if
+  // be created for the internal non-exposed pseudo-elements. Specifically, if
   // we're `in_get_computed_style_scope_` they should *not* be added, and only
-  // static UA style sheet is meant to be used because the pseudo elements are
+  // static UA style sheet is meant to be used because the pseudo-elements are
   // not yet exposed. See steps in
   // https://www.w3.org/TR/css-view-transitions-1/#lifecycle for details.
   if (in_start_phase || !in_get_computed_style_scope_) {
@@ -2292,7 +2292,7 @@ void ViewTransitionStyleTracker::InvalidateHitTestingCache() {
   // version is incremented any time there is a DOM modification or an attribute
   // change to some element (which can result in a new style). However, with
   // view transitions, we dynamically create and destroy hit-testable
-  // pseudo elements based on the current state. This means that we have to
+  // pseudo-elements based on the current state. This means that we have to
   // manually modify the DOM tree version since there is no other mechanism that
   // will do it.
   document_->IncDOMTreeVersion();

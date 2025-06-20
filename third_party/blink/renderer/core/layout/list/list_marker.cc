@@ -239,7 +239,7 @@ String ListMarker::TextAlternative(const LayoutObject& marker) const {
       return text;
     }
 
-    // Pseudo element list markers may return empty text as their text
+    // Pseudo-element list markers may return empty text as their text
     // alternative, so obtain the text from its child as a fallback mechanism.
     auto* text_child = GetContentChild(marker);
     if (text_child && !text_child->NextSibling() &&

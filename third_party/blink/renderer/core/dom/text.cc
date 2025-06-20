@@ -449,7 +449,7 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
     // Changes of |text_node| may change first letter part, so we should
     // reattach. Note: When |text_node| is empty or holds collapsed whitespaces
     // |text_fragment_layout_object| represents first-letter part but it isn't
-    // inside first-letter-pseudo element. See http://crbug.com/978947
+    // inside first-letter-pseudo-element. See http://crbug.com/978947
     const auto& text_fragment_layout_object =
         *To<LayoutTextFragment>(text_layout_object);
     return text_fragment_layout_object.GetFirstLetterPseudoElement() ||

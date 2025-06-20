@@ -116,7 +116,7 @@ void LayoutTextFragment::TextDidChange() {
   fragment_length_ = TransformedTextLength();
 
   // If we're the remaining text from a first letter then we have to tell the
-  // first letter pseudo element to reattach itself so it can re-calculate the
+  // first letter pseudo-element to reattach itself so it can re-calculate the
   // correct first-letter settings.
   if (IsRemainingTextLayoutObject()) {
     DCHECK(GetFirstLetterPseudoElement());
@@ -171,9 +171,9 @@ Text* LayoutTextFragment::AssociatedTextNode() const {
   NOT_DESTROYED();
   Node* node = GetFirstLetterPseudoElement();
   if (is_remaining_text_layout_object_ || !node) {
-    // If we don't have a node, then we aren't part of a first-letter pseudo
+    // If we don't have a node, then we aren't part of a first-letter pseudo-
     // element, so use the actual node. Likewise, if we have a node, but
-    // we're the remainingTextLayoutObject for a pseudo element use the real
+    // we're the remainingTextLayoutObject for a pseudo-element use the real
     // text node.
     node = GetNode();
   }

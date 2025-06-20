@@ -499,7 +499,7 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // crbug.com/657237 for details.
   if (element &&
       frame_->Selection().ComputeVisibleSelectionInDOMTree().IsRange()) {
-    // Don't check for scroll controls pseudo elements, since they can't
+    // Don't check for scroll controls pseudo-elements, since they can't
     // be in selection, until we support selecting their content.
     // Just clear the selection, since it won't be cleared otherwise.
     if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled() &&

@@ -104,7 +104,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
 
   Member<TransitionPseudoElementData> transition_data_;
 
-  // Column pseudo elements are created once per column (fragmentainer)
+  // Column pseudo-elements are created once per column (fragmentainer)
   // with style specified with ::column. They live here as array, since there is
   // no Element for column (fragmentainer), and they should appear somewhere for
   // focus and a11y.

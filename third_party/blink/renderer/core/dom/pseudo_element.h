@@ -37,9 +37,9 @@ class ComputedStyle;
 
 class CORE_EXPORT PseudoElement : public Element {
  public:
-  // |view_transition_name| is used to uniquely identify a pseudo element
-  // from a set of pseudo elements which share the same |pseudo_id|. The current
-  // usage of this ID is limited to pseudo elements generated for a
+  // |view_transition_name| is used to uniquely identify a pseudo-element
+  // from a set of pseudo-elements which share the same |pseudo_id|. The current
+  // usage of this ID is limited to pseudo-elements generated for a
   // ViewTransition. See
   // third_party/blink/renderer/core/view_transition/README.md
   static PseudoElement* Create(
@@ -77,7 +77,7 @@ class CORE_EXPORT PseudoElement : public Element {
 
   // Return the adjusted style needed by layout. In some cases computed style
   // cannot be used as-is by layout. display:contents needs to be adjusted to
-  // display:inline. Scroll marker pseudo elements may need to blockify the
+  // display:inline. Scroll marker pseudo-elements may need to blockify the
   // display type (depending on the parent). Returns nullptr if no adjustment is
   // necessary.
   const ComputedStyle* AdjustedLayoutStyle(
@@ -87,15 +87,15 @@ class CORE_EXPORT PseudoElement : public Element {
   static AtomicString PseudoElementNameForEvents(Element*);
   static bool IsWebExposed(PseudoId, const Node*);
 
-  // Pseudo elements are not allowed to be the inner node for hit testing.
+  // Pseudo-elements are not allowed to be the inner node for hit testing.
   // Find the closest ancestor which is a real dom node.
   virtual Node* InnerNodeForHitTesting();
 
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
 
-  // Returns the DOM element that this pseudo element originates from. If the
-  // pseudo element is nested inside another pseudo element, this returns the
-  // DOM element which the pseudo element tree originates from.
+  // Returns the DOM element that this pseudo-element originates from. If the
+  // pseudo-element is nested inside another pseudo-element, this returns the
+  // DOM element which the pseudo-element tree originates from.
   // This is different from |parentElement()| which returns the element's direct
   // ancestor.
   Element& UltimateOriginatingElement() const;

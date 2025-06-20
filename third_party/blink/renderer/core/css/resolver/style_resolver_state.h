@@ -70,9 +70,9 @@ class CORE_EXPORT StyleResolverState {
   // separately.
   Document& GetDocument() const { return *document_; }
   // Returns the element we are computing style for. This returns the same as
-  // GetElement() unless this is a pseudo element request or we are resolving
+  // GetElement() unless this is a pseudo-element request or we are resolving
   // style for an SVG element instantiated in a <use> shadow tree. This method
-  // may return nullptr if it is a pseudo element request with no actual
+  // may return nullptr if it is a pseudo-element request with no actual
   // PseudoElement present.
   Element* GetStyledElement() const { return styled_element_; }
   // These are all just pass-through methods to ElementResolveContext.
@@ -147,7 +147,7 @@ class CORE_EXPORT StyleResolverState {
 
   Element* GetAnimatingElement() const;
 
-  // Returns the pseudo element if the style resolution is targeting a pseudo
+  // Returns the pseudo-element if the style resolution is targeting a pseudo-
   // element, null otherwise.
   PseudoElement* GetPseudoElement() const;
 
@@ -314,7 +314,7 @@ class CORE_EXPORT StyleResolverState {
 
   FontBuilder font_builder_;
 
-  // May be different than GetElement() if the element being styled is a pseudo
+  // May be different than GetElement() if the element being styled is a pseudo-
   // element or an instantiation via an SVG <use> element. In those cases,
   // GetElement() returns the originating element, or the element instatiated
   // from respectively.

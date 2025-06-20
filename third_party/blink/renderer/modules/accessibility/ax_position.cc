@@ -790,7 +790,7 @@ const AXPosition AXPosition::AsValidDOMPosition(
     return {};
   }
 
-  // At this point, if a non-pseudo element DOM node is associated with our
+  // At this point, if a non-pseudo-element DOM node is associated with our
   // container, then the corresponding DOM position should be valid.
   const Node* container_node = container->GetClosestNode();
   if (container_node->IsPseudoElement()) {

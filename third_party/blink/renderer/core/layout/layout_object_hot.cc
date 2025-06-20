@@ -147,19 +147,19 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
   if (pseudo_id == kPseudoIdMarker && StyleRef().ContentBehavesAsNormal())
     return;
 
-  // Propagate style from pseudo elements to generated content. We skip children
-  // with pseudo element StyleType() in the for-loop above and skip over
+  // Propagate style from pseudo-elements to generated content. We skip children
+  // with pseudo-element StyleType() in the for-loop above and skip over
   // descendants which are not generated content in this subtree traversal.
   //
-  // TODO(futhark): It's possible we could propagate anonymous style from pseudo
-  // elements through anonymous table layout objects in the recursive
+  // TODO(futhark): It's possible we could propagate anonymous style from
+  // pseudo- elements through anonymous table layout objects in the recursive
   // implementation above, but it would require propagating the StyleType()
   // somehow because there is code relying on generated content having a certain
   // StyleType().
   LayoutObject* child = NextInPreOrder(this);
   while (child) {
     if (!child->IsAnonymous()) {
-      // Don't propagate into non-anonymous descendants of pseudo elements. This
+      // Don't propagate into non-anonymous descendants of pseudo-elements. This
       // can typically happen for ::first-letter inside ::before. The
       // ::first-letter will propagate to its anonymous children separately.
       child = child->NextInPreOrderAfterChildren(this);

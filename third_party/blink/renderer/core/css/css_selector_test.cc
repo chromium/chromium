@@ -57,7 +57,7 @@ TEST(CSSSelector, Representations) {
       "div::first-line { }"
       ".a.b.c { }"
       "div:not(.a) { }"        // without class a
-      "div:not(:visited) { }"  // without the visited pseudo class
+      "div:not(:visited) { }"  // without the visited pseudo-class
 
       "[attr=\"value\"] { }"   // Exact equality
       "[attr~=\"value\"] { }"  // One of a space-separated list

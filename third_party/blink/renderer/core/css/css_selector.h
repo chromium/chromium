@@ -197,10 +197,10 @@ class CORE_EXPORT CSSSelector {
     // ~ combinator
     kIndirectAdjacent,
     // The relation types below are implicit combinators inserted at parse time
-    // before pseudo elements which match another flat tree element than the
+    // before pseudo-elements which match another flat tree element than the
     // rest of the compound.
     //
-    // Implicit combinator inserted before pseudo elements matching an element
+    // Implicit combinator inserted before pseudo-elements matching an element
     // inside a UA shadow tree. This combinator allows the selector matching to
     // cross a shadow root.
     //
@@ -343,11 +343,11 @@ class CORE_EXPORT CSSSelector {
     kPseudoPictureInPicture,
     kPseudoPlaying,
     kPseudoXrOverlay,
-    // Pseudo elements in UA ShadowRoots. Available in any stylesheets.
+    // Pseudo-elements in UA ShadowRoots. Available in any stylesheets.
     kPseudoWebKitCustomElement,
-    // Pseudo elements in UA ShadowRoots. Available only in UA stylesheets.
+    // Pseudo-elements in UA ShadowRoots. Available only in UA stylesheets.
     kPseudoBlinkInternalElement,
-    // Pseudo element for fragment styling
+    // Pseudo-element for fragment styling
     kPseudoColumn,
     kPseudoCue,
     kPseudoDefined,
@@ -379,7 +379,7 @@ class CORE_EXPORT CSSSelector {
     // https://drafts.csswg.org/css-overflow-5/#active-scroll-marker
     kPseudoTargetCurrent,
 
-    // The following selectors are used to target pseudo elements created for
+    // The following selectors are used to target pseudo-elements created for
     // ViewTransition.
     // See https://drafts.csswg.org/css-view-transitions-1/#pseudo
     // and https://drafts.csswg.org/css-view-transitions-2
@@ -792,7 +792,7 @@ class CORE_EXPORT CSSSelector {
     explicit DataUnion(ConstructEmptyValueTag) : value_() {}
 
     // A string `value` is used by many different selectors to store the string
-    // part of the selector. For example the name of a pseudo class (without
+    // part of the selector. For example the name of a pseudo-class (without
     // the colon), the class name of a class selector (without the dot),
     // the attribute of an attribute selector (without the brackets), etc.
     explicit DataUnion(const AtomicString& value) : value_(value) {}

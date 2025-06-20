@@ -54,7 +54,7 @@ TEST(CSSPageRule, selectorText) {
   page_rule->setSelectorText(context, "right { bla");
   EXPECT_EQ(":left", page_rule->selectorText());
 
-  // set page pseudo class selector.
+  // set page pseudo-class selector.
   page_rule->setSelectorText(context, ":right");
   EXPECT_EQ(":right", page_rule->selectorText());
 

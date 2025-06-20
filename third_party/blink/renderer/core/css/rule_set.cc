@@ -280,8 +280,8 @@ void RuleSet::AddToRuleSet(HeapVector<RuleData>& rules,
 
 namespace {
 
-// Pseudo elements that should stop extracting bucketing information
-// from selector after themselves, as they allow some pseudo classes after them
+// Pseudo-elements that should stop extracting bucketing information
+// from selector after themselves, as they allow some pseudo-classes after them
 // in selector, which can confuse bucketing (for now, if you have to add a new
 // PseudoType here, the rule is: if it creates a PseudoElement object - return
 // true, otherwise - return false).
@@ -333,7 +333,7 @@ bool ShouldStopExtractingAtPseudoElement(
       return false;
     default:
       NOTREACHED()
-          << "Don't forget to add new pseudo element type in this switch "
+          << "Don't forget to add new pseudo-element type in this switch "
           << static_cast<wtf_size_t>(pseudo_type);
   }
 }
@@ -341,7 +341,7 @@ bool ShouldStopExtractingAtPseudoElement(
 }  // namespace
 
 // The return value indicates if extracting can continue
-// or should be stopped due to reaching some pseudo element
+// or should be stopped due to reaching some pseudo-element
 // that doesn't allow extracting bucketing rules after itself
 // in selector.
 static bool ExtractSelectorValues(const CSSSelector* selector,
@@ -367,8 +367,8 @@ static bool ExtractSelectorValues(const CSSSelector* selector,
       tag_name = selector->TagQName().LocalName();
       break;
     case CSSSelector::kPseudoElement:
-      // TODO(403505399): We shouldn't allow bucketing of pseudo classes
-      // after pseudo elements for now, as it confuses bucketing.
+      // TODO(403505399): We shouldn't allow bucketing of pseudo-classes
+      // after pseudo-elements for now, as it confuses bucketing.
       if (ShouldStopExtractingAtPseudoElement(selector->GetPseudoType())) {
         return false;
       }

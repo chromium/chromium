@@ -1330,8 +1330,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     container_builder_.AddChild(column, result_with_offset.offset);
     PropagateBaselineFromChild(column, result_with_offset.offset.block_offset);
 
-    // Create a ::column pseudo element, and, if needed, also a
-    // ::column::scroll-marker pseudo element child of ::column.
+    // Create a ::column pseudo-element, and, if needed, also a
+    // ::column::scroll-marker pseudo-element child of ::column.
     LogicalRect column_logical_rect(result_with_offset.offset, column_size);
     const WritingModeConverter converter(
         GetConstraintSpace().GetWritingDirection(),

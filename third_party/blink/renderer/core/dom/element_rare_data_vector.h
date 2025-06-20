@@ -445,9 +445,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     unsigned has_undo_stack : 1 = false;
     unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics : 1 = false;
     // This never gets reset, since we would have to keep track for
-    // every pseudo element whether it has counter style or not.
+    // every pseudo-element whether it has counter style or not.
     // But since situations when counter style if removed from
-    // pseudo element are rare, we are fine with it, since
+    // pseudo-element are rare, we are fine with it, since
     // it doesn't hurt performance much.
     unsigned has_counters_styles : 1 = false;
     unsigned has_been_explicitly_scrolled : 1 = false;

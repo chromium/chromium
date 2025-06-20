@@ -467,7 +467,7 @@ class CORE_EXPORT LocalFrameView final
   void DestroyPaginationLayout();
 
   // Updates the fragment anchor element based on URL's fragment identifier.
-  // Updates corresponding ':target' CSS pseudo class on the anchor element.
+  // Updates corresponding ':target' CSS pseudo-class on the anchor element.
   // If |should_scroll| is passed it can be used to prevent scrolling/focusing
   // while still performing all related side-effects like setting :target (used
   // for e.g. in history restoration to override the scroll offset). The scroll

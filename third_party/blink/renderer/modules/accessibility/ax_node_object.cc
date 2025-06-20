@@ -520,11 +520,11 @@ bool ElementHasAnyAriaRelation(Element& element) {
 
 bool IsAddedOnlyViaSpecialTraversal(const Node* node) {
   // Terminology:
-  // * Scroll button pseudo element: these are the left/right buttons
+  // * Scroll button pseudo-element: these are the left/right buttons
   // automatically added for CSS carousels,
-  // * Scroll marker group pseudo element: this is a group of navigation
+  // * Scroll marker group pseudo-element: this is a group of navigation
   // buttons (often dots) for controlling the CSS carousel.
-  // * Scroll marker pseudo element: this is an individual navigation button.
+  // * Scroll marker pseudo-element: this is an individual navigation button.
   //
   // ::scroll-markers have their layout object nested under
   // ::scroll-marker-group, which isn't related to its node traversal. So we
@@ -557,7 +557,7 @@ bool IsAddedOnlyViaSpecialTraversal(const Node* node) {
 
 VectorOf<Node> UnpackScrollerWithSiblingControls(Element* element) {
   CHECK(element->HasScrollButtonOrMarkerGroupPseudos());
-  // This is the order of how the pseudo elements should appear according to
+  // This is the order of how the pseudo-elements should appear according to
   // https://drafts.csswg.org/css-overflow-5/
   PseudoId ordered_pseudos[] = {
       kPseudoIdScrollMarkerGroupBefore, kPseudoIdScrollButtonBlockStart,
@@ -837,7 +837,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
 
   Node* node = GetNode();
   if (!node) {
-    // Nodeless pseudo element images are included, even if they don't have CSS
+    // Nodeless pseudo-element images are included, even if they don't have CSS
     // alt text. This can allow auto alt to be applied to them.
     if (IsImage())
       return kIncludeObject;
@@ -1416,7 +1416,7 @@ std::optional<String> AXNodeObject::GetCSSAltText(const Element* element) {
     return std::nullopt;
   }
 
-  // If the content property is used on a non-pseudo element, match the
+  // If the content property is used on a non-pseudo-element, match the
   // behaviour of LayoutObject::CreateObject and only honour the style if
   // there is exactly one piece of content, which is an image.
   const ContentData* content_data = style->GetContentData();
@@ -2089,7 +2089,7 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
   // the screen reader determine what to do for CSS tables. If this line
   // is reached, then it is not an HTML table, and therefore will only be
   // considered a data table if ARIA markup indicates it is a table.
-  // Additionally, as pseudo elements don't have any structure it doesn't make
+  // Additionally, as pseudo-elements don't have any structure it doesn't make
   // sense to report their table-related layout roles that could be set via the
   // display property.
   if (node && !node->IsPseudoElement()) {
@@ -2220,7 +2220,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
       // TODO(accessibility) Is it possible to use CSS alt text on an HTML tag
       // with strong semantics? If so, why are we overriding the role here?
       // We only need to ensure the accessible name gets the CSS alt text.
-      // Note: by doing this, we are often hiding child pseudo element content
+      // Note: by doing this, we are often hiding child pseudo-element content
       // because IsRelevantPseudoElementDescendant() returns false when an
       // ancestor has CSS alt text.
       if (content_data->IsImage()) {
@@ -2672,7 +2672,7 @@ void AXNodeObject::Init(AXObject* parent) {
   DCHECK(node_ || (GetLayoutObject() &&
                    AXObjectCacheImpl::IsRelevantPseudoElementDescendant(
                        *GetLayoutObject())))
-      << "Nodeless AXNodeObject can only exist inside a pseudo element: "
+      << "Nodeless AXNodeObject can only exist inside a pseudo-element: "
       << GetLayoutObject();
 }
 
@@ -2723,7 +2723,7 @@ bool AXNodeObject::IsDefault() const {
     return false;
   }
 
-  // Will only match :default pseudo class if it's the first default button in
+  // Will only match :default pseudo-class if it's the first default button in
   // a form.
   return GetElement()->MatchesDefaultPseudoClass();
 }
@@ -4863,7 +4863,7 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
       return StrCat({name, " ", input_name});
   }
 
-  // Handle ::scroll-button(*) pseudo element names.
+  // Handle ::scroll-button(*) pseudo-element names.
   const Element* element = GetElement();
   if (element && element->IsScrollButtonPseudoElement()) {
     // Prioritize alt text if available.
@@ -5862,11 +5862,11 @@ void AXNodeObject::AddPseudoElementChildrenFromLayoutTree() {
   if (!IsVisible() || !GetLayoutObject()) {
     DCHECK(GetNode());
     DCHECK(GetNode()->IsPseudoElement());
-    return;  // Can't add children for hidden or display-locked pseudo elements.
+    return;  // Can't add children for hidden or display-locked pseudo-elements.
   }
   LayoutObject* child = GetLayoutObject()->SlowFirstChild();
   while (child) {
-    // All added pseudo element descendants are included in the tree.
+    // All added pseudo-element descendants are included in the tree.
     if (AXObject* ax_child = AXObjectCache().GetOrCreate(child, this)) {
       DCHECK(AXObjectCacheImpl::IsRelevantPseudoElementDescendant(*child));
       AddChildAndCheckIncluded(ax_child);
@@ -6016,7 +6016,7 @@ void AXNodeObject::AddScrollMarkerGroupChildren() {
   if (!IsVisible() || !GetLayoutObject()) {
     DCHECK(GetNode());
     DCHECK(GetNode()->IsPseudoElement());
-    // Can't add children for hidden or display-locked pseudo elements.
+    // Can't add children for hidden or display-locked pseudo-elements.
     return;
   }
 
@@ -6328,7 +6328,7 @@ Element* AXNodeObject::ActionElement() const {
     return nullptr;  // Do not expose action element for document.
 
   // In general, we look an action element up only for AXObjects that have a
-  // backing Element. We make an exception for text nodes and pseudo elements
+  // backing Element. We make an exception for text nodes and pseudo-elements
   // because we also want these to expose a default action when any of their
   // ancestors is clickable. We have found Windows ATs relying on this behavior
   // (see https://crbug.com/1382034).
@@ -8140,10 +8140,10 @@ AXObject* AXNodeObject::GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
   }
 
   // Have reached the end of LayoutTreeBuilderTraversal. From here on, traverse
-  // AXObjects to get deepest descendant of pseudo element or static text,
+  // AXObjects to get deepest descendant of pseudo-element or static text,
   // such as an AXInlineTextBox.
 
-  // Relevant static text or pseudo element is always included.
+  // Relevant static text or pseudo-element is always included.
   if (!result->IsIncludedInTree()) {
     return nullptr;
   }

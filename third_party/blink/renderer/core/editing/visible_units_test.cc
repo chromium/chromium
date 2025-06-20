@@ -446,7 +446,7 @@ TEST_F(VisibleUnitsTest, mostBackwardCaretPositionAfterAnchor) {
 }
 
 TEST_F(VisibleUnitsTest, mostBackwardCaretPositionFirstLetter) {
-  // Note: first-letter pseudo element contains letter and punctuations.
+  // Note: first-letter pseudo-element contains letter and punctuations.
   const char* body_content =
       "<style>p:first-letter {color:red;}</style><p id=sample> (2)45 </p>";
   SetBodyContent(body_content);
@@ -552,7 +552,7 @@ TEST_F(VisibleUnitsTest, MostForwardCaretPositionBeforeSvg) {
 }
 
 TEST_F(VisibleUnitsTest, mostForwardCaretPositionFirstLetter) {
-  // Note: first-letter pseudo element contains letter and punctuations.
+  // Note: first-letter pseudo-element contains letter and punctuations.
   const char* body_content =
       "<style>p:first-letter {color:red;}</style><p id=sample> (2)45 </p>";
   SetBodyContent(body_content);

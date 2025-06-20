@@ -596,7 +596,7 @@ TEST_P(ViewTransitionTest, ScopedElementRemoved) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(GetState(transition), State::kAnimating);
   // Removal of the element forcefully halts the view transition, as the
-  // pseudo elements are removed and the view transition was only being kept
+  // pseudo-elements are removed and the view transition was only being kept
   // alive by a weak reference to the associated element.
   scope_element->remove();
   // Forcing garbage collection, triggers a call to ~ViewTransitionStyleTracker
@@ -609,8 +609,8 @@ TEST_P(ViewTransitionTest, ScopedElementRemoved) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
-// Checks that the pseudo element tree is correctly build for ::transition*
-// pseudo elements.
+// Checks that the pseudo-element tree is correctly build for ::transition*
+// pseudo-elements.
 TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   SetHtmlInnerHTML(R"HTML(
     <style>
@@ -683,12 +683,12 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
   test::RunPendingTasks();
   EXPECT_EQ(GetState(transition), State::kAnimating);
 
-  // The start phase should generate pseudo elements for rendering new live
+  // The start phase should generate pseudo-elements for rendering new live
   // content.
   UpdateAllLifecyclePhasesAndFinishDirectives();
   ValidatePseudoElementTree(root_element, view_transition_names, true);
 
-  // Finish the animations which should remove the pseudo element tree.
+  // Finish the animations which should remove the pseudo-element tree.
   FinishTransition();
   UpdateAllLifecyclePhasesAndFinishDirectives();
   EXPECT_FALSE(GetDocument().documentElement()->GetPseudoElement(
@@ -788,13 +788,13 @@ TEST_P(ViewTransitionTest, ViewTransitionElementInvalidation) {
   test::RunPendingTasks();
   EXPECT_EQ(GetState(transition), State::kAnimating);
 
-  // The start phase should generate pseudo elements for rendering new live
+  // The start phase should generate pseudo-elements for rendering new live
   // content.
   UpdateAllLifecyclePhasesAndFinishDirectives();
 
   EXPECT_FALSE(element->GetLayoutObject()->NeedsPaintPropertyUpdate());
 
-  // Finish the animations which should remove the pseudo element tree.
+  // Finish the animations which should remove the pseudo-element tree.
   FinishTransition();
 
   EXPECT_TRUE(element->GetLayoutObject()->NeedsPaintPropertyUpdate());
@@ -905,7 +905,7 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     }
 
     ASSERT_TRUE(matched_rules_for_pseudo);
-    // Pseudo elements which are generated for each tag should include the root
+    // Pseudo-elements which are generated for each tag should include the root
     // by default.
     EXPECT_EQ(found_rule_for_root, test_case.uses_tags);
     EXPECT_EQ(matched_rules_for_pseudo->view_transition_name,
@@ -1001,11 +1001,11 @@ TEST_P(ViewTransitionTest, VirtualKeyboardDoesntAffectSnapshotSize) {
   EXPECT_EQ(transition->GetViewTransitionForTest()->GetSnapshotRootSize(),
             original_size);
 
-  // The start phase should generate pseudo elements for rendering new live
+  // The start phase should generate pseudo-elements for rendering new live
   // content.
   UpdateAllLifecyclePhasesAndFinishDirectives();
 
-  // Finish the animations which should remove the pseudo element tree.
+  // Finish the animations which should remove the pseudo-element tree.
   FinishTransition();
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
@@ -1333,7 +1333,7 @@ TEST_P(ViewTransitionTest, IncludingPseudoTraversal) {
 // This test was added because of a crash in getAnimations. The crash would
 // occur because getAnimations attempts to sort the animations into compositing
 // order. The comparator used uses tree order in some situations which requires
-// pseudo elements to implement tree traversal methods. The crash occurred only
+// pseudo-elements to implement tree traversal methods. The crash occurred only
 // on Android, probably due to differences in the std::sort implementation.
 TEST_P(ViewTransitionTest, GetAnimationsCrashTest) {
   SetHtmlInnerHTML(R"HTML(

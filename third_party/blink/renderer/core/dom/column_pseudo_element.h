@@ -10,7 +10,7 @@
 
 namespace blink {
 
-// A ::column pseudo element. When needed, each column in a multicol container
+// A ::column pseudo-element. When needed, each column in a multicol container
 // will create one of these, during layout.
 class ColumnPseudoElement : public PseudoElement {
  public:

@@ -1443,7 +1443,7 @@
 "z-index"
 "zoom"
 
-# pseudo elements and classes
+# pseudo-elements and classes
 ":hover"
 ":visited"
 ":before"

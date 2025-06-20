@@ -12,8 +12,8 @@
 
 namespace blink {
 
-// Represents ::scroll-marker-group pseudo element and manages
-// implicit focus group, formed by ::scroll-marker pseudo elements.
+// Represents ::scroll-marker-group pseudo-element and manages
+// implicit focus group, formed by ::scroll-marker pseudo-elements.
 // This focus group is needed to cycle through its element with
 // arrow keys.
 class ScrollMarkerGroupPseudoElement : public PseudoElement {

@@ -43,15 +43,15 @@ InspectorStyleResolver::InspectorStyleResolver(
       element_, element_pseudo_id, view_transition_name,
       StyleResolver::kAllCSSRules);
 
-  // At this point, the pseudo element id for scroll marker groups has been
-  // translated to the external id, but the pseudo element ids for scroll
+  // At this point, the pseudo-element id for scroll marker groups has been
+  // translated to the external id, but the pseudo-element ids for scroll
   // buttons are still one of the internal ids, so we don't account for these
   // ids in the following if statement.
   DCHECK(element_pseudo_id != kPseudoIdScrollButton);
   DCHECK(element_pseudo_id != kPseudoIdScrollMarkerGroupBefore &&
          element_pseudo_id != kPseudoIdScrollMarkerGroupAfter);
 
-  // Skip only if the pseudo element is not tree-abiding.
+  // Skip only if the pseudo-element is not tree-abiding.
   // ::placeholder and ::file-selector-button are treated as regular elements
   // and hence don't need to be included here.
   if (element_pseudo_id &&

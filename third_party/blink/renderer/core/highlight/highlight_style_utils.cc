@@ -233,7 +233,7 @@ const ComputedStyle* HighlightPseudoStyleWithOriginatingInheritance(
   }
 
   // If we request highlight style for LayoutText, query highlight style on the
-  // parent element instead, as that is the node for which the highligh pseudo
+  // parent element instead, as that is the node for which the highlight pseudo
   // matches. This should most likely have used FlatTreeTraversal, but since we
   // don't implement inheritance of highlight styles, it would probably break
   // cases where you style a shadow host with a highlight pseudo and expect

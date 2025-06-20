@@ -57,7 +57,7 @@ LayoutObject* LayoutTreeBuilderForElement::NextLayoutObject() const {
   if (node_->IsFirstLetterPseudoElement()) {
     return context_.next_sibling;
   }
-  // ::scroll-marker pseudo elements are always attached one after another.
+  // ::scroll-marker pseudo-elements are always attached one after another.
   if (node_->IsScrollMarkerPseudoElement()) {
     return nullptr;
   }

@@ -388,7 +388,7 @@ void AttachScrollMarkers(LayoutObject& parent,
   }
 
   const LayoutBox* parent_box = DynamicTo<LayoutBox>(&parent);
-  // If this is a multicol container, look for ::column::scroll-marker pseudo
+  // If this is a multicol container, look for ::column::scroll-marker pseudo-
   // elements, and attach them.
   if (parent_box && parent_box->IsFragmentationContextRoot()) {
     if (const ColumnPseudoElementsVector* column_pseudos =

@@ -221,7 +221,7 @@ bool RequiresSubtreeInvalidation(const CSSSelector& selector) {
   switch (selector.GetPseudoType()) {
     case CSSSelector::kPseudoFirstLine:
     case CSSSelector::kPseudoFirstLetter:
-    // FIXME: Most pseudo classes/elements above can be supported and moved
+    // FIXME: Most pseudo-classes/elements above can be supported and moved
     // to assertSupportedPseudo(). Move on a case-by-case basis. If they
     // require subtree invalidation, document why.
     case CSSSelector::kPseudoHostContext:
@@ -727,7 +727,7 @@ const CSSSelector* RuleInvalidationDataVisitor<VisitorType>::
     // While adding features to invalidation sets for logical combinations
     // inside :has(), ExtractInvalidationSetFeaturesFromCompound() can be
     // called again to extract features from the compound selector containing
-    // the :has() pseudo class. (e.g. '.a:has(:is(.b ~ .c)) .d')
+    // the :has() pseudo-class. (e.g. '.a:has(:is(.b ~ .c)) .d')
     // To avoid infinite recursive call, skip adding features for :has() if
     // ExtractInvalidationSetFeaturesFromCompound() is invoked for the logical
     // combinations inside :has().
@@ -761,7 +761,7 @@ void RuleInvalidationDataVisitor<VisitorType>::
   }
   CSSSelector::PseudoType pseudo_type = simple_selector.GetPseudoType();
 
-  // For the :has pseudo class, we should not extract invalidation set features
+  // For the :has pseudo-class, we should not extract invalidation set features
   // here because the :has invalidation direction is different with others.
   // (preceding-sibling/ancestors/preceding-sibling-of-ancestors)
   if (pseudo_type == CSSSelector::kPseudoHas) {
@@ -800,7 +800,7 @@ void RuleInvalidationDataVisitor<VisitorType>::
   // Don't add any features if one of the sub-selectors of does not contain
   // any invalidation set features. E.g. :-webkit-any(*, span).
   //
-  // For the :not() pseudo class, we should not use the inner features for
+  // For the :not() pseudo-class, we should not use the inner features for
   // invalidation because we should invalidate elements _without_ that
   // feature. On the other hand, we should still have invalidation sets
   // for the features since we are able to detect when they change.
@@ -947,7 +947,7 @@ void RuleInvalidationDataVisitor<VisitorType>::
     return;
   }
 
-  // For the :has pseudo class, we should not extract invalidation set features
+  // For the :has pseudo-class, we should not extract invalidation set features
   // here because the :has invalidation direction is different with others.
   // (preceding-sibling/ancestors/preceding-sibling-of-ancestors)
   if (pseudo_type == CSSSelector::kPseudoHas) {
@@ -1191,7 +1191,7 @@ void RuleInvalidationDataVisitor<VisitorType>::
     }
   }
 
-  // Add features to invalidation sets only when the :has() pseudo class
+  // Add features to invalidation sets only when the :has() pseudo-class
   // contains logical combinations containing a complex selector as argument.
   if (!pseudo_has.ContainsComplexLogicalCombinationsInsideHasPseudoClass()) {
     return;
@@ -1204,7 +1204,7 @@ void RuleInvalidationDataVisitor<VisitorType>::
     descendant_features.invalidation_flags.SetWholeSubtreeInvalid(true);
   }
 
-  // Use descendant features as sibling features if the :has() pseudo class is
+  // Use descendant features as sibling features if the :has() pseudo-class is
   // in subject position.
   if (!sibling_features && descendant_features.descendant_features_depth == 0) {
     sibling_features = &descendant_features;
@@ -1418,8 +1418,8 @@ void RuleInvalidationDataVisitor<VisitorType>::
       combinator = CSSSelector::kIndirectAdjacent;
       break;
     default:
-      // Implicit combinators for pseudo elements (kUAShadow, kShadowSlot,
-      // kShadowPart) cannot be inside :has() because pseudo elements are
+      // Implicit combinators for pseudo-elements (kUAShadow, kShadowSlot,
+      // kShadowPart) cannot be inside :has() because pseudo-elements are
       // not allowed inside :has().
       // Combinators for relative relations (kRelativeDescendant,
       // kRelativeChild, kRelativeDirectAdjacent, kRelativeIndirectAdjacent)

@@ -251,8 +251,8 @@ class CORE_EXPORT CSSSelectorParser {
 
   bool failed_parsing_ = false;
   bool disallow_pseudo_elements_ = false;
-  // If we're inside a pseudo class that only accepts compound selectors,
-  // for example :host, inner :is()/:where() pseudo classes are also only
+  // If we're inside a pseudo-class that only accepts compound selectors,
+  // for example :host, inner :is()/:where() pseudo-classes are also only
   // allowed to contain compound selectors.
   bool inside_compound_pseudo_ = false;
   // When parsing a compound which includes a pseudo-element, the simple

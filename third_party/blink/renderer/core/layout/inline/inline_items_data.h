@@ -18,7 +18,7 @@ class InlineItemSegments;
 class OffsetMapping;
 
 // Represents a text content with a list of InlineItem. A node may have an
-// additional InlineItemsData for ::first-line pseudo element.
+// additional InlineItemsData for ::first-line pseudo-element.
 struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
  public:
   virtual ~InlineItemsData() = default;

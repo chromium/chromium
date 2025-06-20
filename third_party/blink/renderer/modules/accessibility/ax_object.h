@@ -1299,10 +1299,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // There are two types of traversal for obtaining children:
   // 1. LayoutTreeBuilderTraversal. Despite the name, this traverses a flattened
-  // DOM tree that includes pseudo element children such as ::before, and where
+  // DOM tree that includes pseudo-element children such as ::before, and where
   // shadow DOM slotting has been run.
   // 2. LayoutObject traversal. This is necessary if there is no parent node,
-  // or in a pseudo element subtree.
+  // or in a pseudo-element subtree.
   bool ShouldUseLayoutObjectTraversalForChildren() const;
   // Is this a safe time to use FlatTreeTraversal in this document? Also covers
   // use of LayoutTreeBuilderTraversal, which is used often in the accessibility

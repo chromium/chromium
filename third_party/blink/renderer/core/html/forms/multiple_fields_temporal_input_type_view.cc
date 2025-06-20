@@ -194,7 +194,7 @@ void MultipleFieldsTemporalInputTypeView::DidBlurFromControl(
   if (ContainsFocusedShadowElement())
     return;
   EventQueueScope scope;
-  // Remove focus ring by CSS "focus" pseudo class.
+  // Remove focus ring by CSS "focus" pseudo-class.
   GetElement().SetFocused(false, focus_type);
   if (SpinButtonElement* spin_button = GetSpinButtonElement())
     spin_button->ReleaseCapture();
@@ -207,7 +207,7 @@ void MultipleFieldsTemporalInputTypeView::DidFocusOnControl(
 
   if (!ContainsFocusedShadowElement())
     return;
-  // Add focus ring by CSS "focus" pseudo class.
+  // Add focus ring by CSS "focus" pseudo-class.
   // FIXME: Setting the focus flag to non-focused element is too tricky.
   GetElement().SetFocused(true, focus_type);
 }

@@ -109,7 +109,7 @@ class CORE_EXPORT SelectorQuery : public GarbageCollected<SelectorQuery> {
   Member<CSSSelectorList> selector_list_;
   // Contains the start of each complex selector (relative to the first selector
   // in selector_list_; we cannot store pointers due to Oilpan restrictions),
-  // but without ones that could never match like pseudo elements, div::before.
+  // but without ones that could never match like pseudo-elements, div::before.
   // This can be empty, while |selector_list_| will never be empty, as
   // SelectorQueryCache::add would have thrown an exception.
   Vector<unsigned, 4> selector_start_offsets_;

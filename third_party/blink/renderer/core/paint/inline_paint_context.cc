@@ -130,7 +130,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
           }
 
           // There are some edge cases where a style doesn't propagate
-          // decorations from its parent. One known such case is a pseudo
+          // decorations from its parent. One known such case is a pseudo-
           // element in a parent with a first-line style, but there can be more.
           // If this happens, consider it stopped the propagation.
           const AppliedTextDecorationVector* base_decorations =

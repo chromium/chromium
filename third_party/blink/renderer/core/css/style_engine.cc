@@ -810,7 +810,7 @@ namespace {
 
 // Recursively look for potential LayoutCounters to update,
 // since in case of ::marker they can be deep child of original
-// pseudo element's layout object.
+// pseudo-element's layout object.
 void UpdateLayoutCounters(const LayoutObject& layout_object,
                           CountersAttachmentContext& context) {
   // Check out the parameter list ^^^
@@ -3569,7 +3569,7 @@ bool ContainerStyleChangesAllowed(Element& container,
                                   const ComputedStyle* old_element_style,
                                   const ComputedStyle* old_layout_style) {
   // Generally, the size container element style is not allowed to change during
-  // layout, but for highlight pseudo elements depending on queries against
+  // layout, but for highlight pseudo-elements depending on queries against
   // their originating element, we need to update the style during layout since
   // the highlight styles hangs off the originating element's ComputedStyle.
   const ComputedStyle* new_element_style = container.GetComputedStyle();
@@ -3936,8 +3936,8 @@ void StyleEngine::RecalcPositionTryStyleForPseudoElement(
 
 void StyleEngine::RecalcTransitionPseudoStyle() {
   // TODO(khushalsagar) : This forces a style recalc and layout tree rebuild
-  // for the pseudo element tree each time we do a style recalc phase. See if
-  // we can optimize this to only when the pseudo element tree is dirtied.
+  // for the pseudo-element tree each time we do a style recalc phase. See if
+  // we can optimize this to only when the pseudo-element tree is dirtied.
   SelectorFilterParentScope filter_scope(
       nullptr, SelectorFilterParentScope::ScopeType::kRoot);
 

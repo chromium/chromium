@@ -95,7 +95,7 @@ class DraggedNodeImageBuilder {
 #if DCHECK_IS_ON()
     DCHECK_EQ(dom_tree_version_, node_->GetDocument().DomTreeVersion());
 #endif
-    // Construct layout object for |node_| with pseudo class "-webkit-drag"
+    // Construct layout object for |node_| with pseudo-class "-webkit-drag"
     local_frame_->View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kDragImage);
     LayoutObject* const dragged_layout_object = node_->GetLayoutObject();

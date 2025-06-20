@@ -167,10 +167,10 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   // inside a size query container, or doing multiple style resolutions for
   // position-try-fallbacks.
   //
-  // For anchored elements that generate pseudo elements, we also need to store
-  // the old style for animating pseudo elements because style recalc for the
-  // originating anchored elements will always update its pseudo elements,
-  // causing the pseudo element styling to also have multiple passes.
+  // For anchored elements that generate pseudo-elements, we also need to store
+  // the old style for animating pseudo-elements because style recalc for the
+  // originating anchored elements will always update its pseudo-elements,
+  // causing the pseudo-element styling to also have multiple passes.
   //
   // If we are not inside a size query container or an element with
   // position-try-fallbacks, we can fall back to the default behavior (in
@@ -669,7 +669,7 @@ struct UAShadowPseudoResult {
 };
 
 inline UAShadowPseudoResult UAShadowPseudoCascading(const Element& element) {
-  // Rules for ::cue and custom pseudo elements like
+  // Rules for ::cue and custom pseudo-elements like
   // ::-webkit-meter-bar pierce through a single shadow dom boundary and apply
   // to elements in sub-scopes.
   TreeScope* tree_scope = element.GetTreeScope().ParentTreeScope();
@@ -689,7 +689,7 @@ inline UAShadowPseudoResult UAShadowPseudoCascading(const Element& element) {
   // pseudo-elements, we expect styles specified by the author using the
   // pseudo-element to override styles specified in style attributes in
   // the user agent shadow DOM.  However, since we have a substantial
-  // number of existing uses with :-webkit-* and :-internal-* pseudo
+  // number of existing uses with :-webkit-* and :-internal-* pseudo-
   // elements that do not override the style attribute, we do not apply
   // this (developer-expected) behavior to those existing
   // pseudo-elements.  (It's possible that we could, but it would
@@ -732,8 +732,8 @@ void MatchSlottedRulesForUAHost(const Element& element,
     return;
   }
 
-  // We allow ::placeholder pseudo element after ::slotted(). Since we are
-  // matching such pseudo elements starting from inside the UA shadow DOM of
+  // We allow ::placeholder pseudo-element after ::slotted(). Since we are
+  // matching such pseudo-elements starting from inside the UA shadow DOM of
   // the element having the placeholder, we need to match ::slotted rules from
   // the scopes to which the placeholder's host element may be slotted.
   //
@@ -2520,9 +2520,9 @@ bool StyleResolver::ApplyAnimatedStyle(
     const StyleRecalcContext& style_recalc_context) {
   Element& element = state.GetUltimateOriginatingElementOrSelf();
 
-  // The animating element may be this element, the pseudo element we are
-  // resolving style for, or null if we are resolving style for a pseudo
-  // element which is not represented by a PseudoElement like scrollbar pseudo
+  // The animating element may be this element, the pseudo-element we are
+  // resolving style for, or null if we are resolving style for a pseudo-
+  // element which is not represented by a PseudoElement like scrollbar pseudo-
   // elements.
   Element* animating_element = state.GetAnimatingElement();
 
@@ -2540,7 +2540,7 @@ bool StyleResolver::ApplyAnimatedStyle(
   }
 
   // TODO(crbug.com/1276575) : This assert is currently hit for nested ::marker
-  // pseudo elements.
+  // pseudo-elements.
   DCHECK(
       animating_element == &element ||
       (animating_element->IsSVGElement() &&
@@ -2572,9 +2572,9 @@ bool StyleResolver::ApplyAnimatedStyle(
     cascade.AddInterpolations(&animations, CascadeOrigin::kAnimation);
     cascade.AddInterpolations(&transitions, CascadeOrigin::kTransition);
 
-    // Note: this applies the same filter to pseudo elements as its originating
+    // Note: this applies the same filter to pseudo-elements as its originating
     // element since state.GetElement() returns the originating element when
-    // resolving style for pseudo elements.
+    // resolving style for pseudo-elements.
     CascadeFilter filter =
         UltimateOriginatingElementOrSelf(state.GetElement()).GetCascadeFilter();
     if (state.StyleBuilder().StyleType() == kPseudoIdMarker) {
@@ -3038,9 +3038,9 @@ void StyleResolver::ApplyPropertiesFromCascade(StyleResolverState& state,
     old_style = state.StyleBuilder().CloneStyle();
   }
 
-  // Note: this applies the same filter to pseudo elements as its originating
+  // Note: this applies the same filter to pseudo-elements as its originating
   // element since state.GetElement() returns the originating element when
-  // resolving style for pseudo elements.
+  // resolving style for pseudo-elements.
   CascadeFilter filter = state.GetElement().GetCascadeFilter();
 
   // In order to use-count whether or not legacy overlapping properties
@@ -3492,7 +3492,6 @@ void StyleResolver::PropagateStyleToViewport() {
       if (overflow_anchor == EOverflowAnchor::kVisible) {
         overflow_anchor = EOverflowAnchor::kAuto;
       }
-
 
       if (overflow_style->HasCustomScrollbarStyle(document_element)) {
         update_scrollbar_style = true;

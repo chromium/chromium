@@ -643,7 +643,7 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       if (!match) {
         continue;
       }
-      // If matching was for pseudo element with ancestors vector,
+      // If matching was for pseudo-element with ancestors vector,
       // check that we really reached the end of it.
       // E.g. for div::column::scroll-marker, matching for column pseudo,
       // vector would be just [column], index would be 1 (meaning matching
@@ -671,12 +671,12 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     const ContainerQuery* container_query =
         container_query_seeker.Seek(rule_data.GetPosition());
     if (container_query) {
-      // If we are matching pseudo elements like a ::before rule when computing
+      // If we are matching pseudo-elements like a ::before rule when computing
       // the styles of the originating element, we don't know whether the
       // container will be the originating element or not. There is not enough
       // information to evaluate the container query for the existence of the
-      // pseudo element, so skip the evaluation and have false positives for
-      // HasPseudoElementStyles() instead to make sure we create such pseudo
+      // pseudo-element, so skip the evaluation and have false positives for
+      // HasPseudoElementStyles() instead to make sure we create such pseudo-
       // elements when they depend on the originating element.
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone ||
           result.dynamic_pseudo == kPseudoIdNone) {
@@ -690,10 +690,10 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
           continue;
         }
       } else {
-        // We are skipping container query matching for pseudo element selectors
-        // when not actually matching style for the pseudo element itself. Still
+        // We are skipping container query matching for pseudo-element selectors
+        // when not actually matching style for the pseudo-element itself. Still
         // we need to keep track of size/style query dependencies since query
-        // changes may cause pseudo elements to start being generated.
+        // changes may cause pseudo-elements to start being generated.
         for (const ContainerQuery* current = container_query; current;
              current = current->Parent()) {
           ContainerQueryEvaluator::SetDependencyFlags(*current, result_);

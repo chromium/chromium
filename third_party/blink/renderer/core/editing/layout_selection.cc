@@ -1008,7 +1008,7 @@ void LayoutSelection::InvalidateStyleAndPaintForSelection() {
         return;
       }
 
-      // Invalidate style to force an update to ::selection pseudo
+      // Invalidate style to force an update to ::selection pseudo-
       // elements so that ::selection::inactive-window style is applied
       // (or removed).
       if (auto* this_element = DynamicTo<Element>(node)) {

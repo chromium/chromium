@@ -45,7 +45,7 @@ class InvalidationFlags {
   }
 
  private:
-  // If true, all descendants which are custom pseudo elements must be
+  // If true, all descendants which are custom pseudo-elements must be
   // invalidated.
   bool invalidate_custom_pseudo_ : 1 = false;
   // If true, all descendants might be invalidated, so a full subtree recalc is

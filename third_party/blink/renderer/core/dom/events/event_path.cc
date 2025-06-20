@@ -69,7 +69,7 @@ void EventPath::InitializeWith(Node& node, Event* event) {
 }
 
 static inline bool EventPathShouldBeEmptyFor(Node& node) {
-  // Event path should be empty for orphaned pseudo elements, and nodes
+  // Event path should be empty for orphaned pseudo-elements, and nodes
   // whose document is stopped. In corner cases (crbug.com/1210480), the node
   // document can get detached before we can remove event listeners.
   if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled() &&

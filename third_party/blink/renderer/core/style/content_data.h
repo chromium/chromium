@@ -61,7 +61,7 @@ class ContentData : public GarbageCollected<ContentData> {
       const ContentData& first_alt_data);
 
   // Create a layout object for this piece of content. `owner` is the layout
-  // object that has the content property, e.g. a pseudo element, or an @page
+  // object that has the content property, e.g. a pseudo-element, or an @page
   // margin box.
   virtual LayoutObject* CreateLayoutObject(LayoutObject& owner) const = 0;
 

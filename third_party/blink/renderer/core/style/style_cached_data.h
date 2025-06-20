@@ -28,15 +28,15 @@ class CORE_EXPORT StyleCachedData final
   friend class ComputedStyle;
   friend class ComputedStyleBuilder;
 
-  // This cache stores ComputedStyles for pseudo elements originating from this
-  // ComputedStyle's element. Pseudo elements which are represented by
+  // This cache stores ComputedStyles for pseudo-elements originating from this
+  // ComputedStyle's element. Pseudo-elements which are represented by
   // PseudoElement in DOM store the ComputedStyle on those elements, so this
   // cache is for:
   //
-  // 1. Pseudo elements which do not generate a PseudoElement internally like
+  // 1. Pseudo-elements which do not generate a PseudoElement internally like
   //    ::first-line and ::selection.
   //
-  // 2. Pseudo element style requested from getComputedStyle() where the element
+  // 2. Pseudo-element style requested from getComputedStyle() where the element
   //    currently doesn't generate a PseudoElement. E.g.:
   //
   //    <style>

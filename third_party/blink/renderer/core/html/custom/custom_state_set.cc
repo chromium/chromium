@@ -99,9 +99,9 @@ CustomStateSet::IterationSource* CustomStateSet::CreateIterationSource(
 
 void CustomStateSet::InvalidateStyle() const {
   // TOOD(tkent): The following line invalidates all of rulesets with any
-  // custom state pseudo classes though we should invalidate only rulesets
+  // custom state pseudo-classes though we should invalidate only rulesets
   // with the updated state ideally. We can improve style resolution
-  // performance in documents with various custom state pseudo classes by
+  // performance in documents with various custom state pseudo-classes by
   // having blink::InvalidationSet for each of states.
   element_->PseudoStateChanged(CSSSelector::kPseudoState);
 }

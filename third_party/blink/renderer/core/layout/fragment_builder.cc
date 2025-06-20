@@ -147,7 +147,7 @@ GCedHeapVector<Member<Element>>& FragmentBuilder::EnsureSnapAreas() {
 void FragmentBuilder::PropagateSnapAreas(const PhysicalFragment& child) {
   auto get_insertion_pos = [&](Element* snap_area) {
     auto& snap_areas = EnsureSnapAreas();
-    // TODO(crbug.com/365680822): ::column pseudo elements don't have layout
+    // TODO(crbug.com/365680822): ::column pseudo-elements don't have layout
     // objects, and how snap areas established by them should be sorted,
     // relatively to real elements, is undefined.
     const LayoutBox* new_box = snap_area->GetLayoutBox();

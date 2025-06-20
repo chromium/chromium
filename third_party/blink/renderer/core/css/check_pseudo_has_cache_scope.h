@@ -17,22 +17,22 @@ class CSSSelector;
 class Document;
 class CheckPseudoHasArgumentContext;
 
-// To determine whether a :has() pseudo class matches an element or not, we need
+// To determine whether a :has() pseudo-class matches an element or not, we need
 // to check the :has() argument selector on the descendants, next siblings or
 // next sibling descendants. While checking the :has() argument selector in
-// reversed DOM tree traversal order, we can get the :has() pseudo class
+// reversed DOM tree traversal order, we can get the :has() pseudo-class
 // checking result on the elements in the subtree. By caching these results, we
-// can prevent unnecessary :has() pseudo class checking operations. (Please
+// can prevent unnecessary :has() pseudo-class checking operations. (Please
 // refer the comments of CheckPseudoHasArgumentTraversalIterator)
 //
 // Caching the results on all elements in the subtree is a very memory consuming
 // approach. To prevent the large and inefficient cache memory consumption,
 // ElementCheckPseudoHasResultMap stores following flags for an element.
 //
-// - flag1 (Checked) : Indicates that the :has() pseudo class was already
+// - flag1 (Checked) : Indicates that the :has() pseudo-class was already
 //     checked on the element.
 //
-// - flag2 (Matched) : Indicates that the :has() pseudo class was already
+// - flag2 (Matched) : Indicates that the :has() pseudo-class was already
 //     checked on the element and it matched.
 //
 // - flag3 (AllDescendantsOrNextSiblingsChecked) : Indicates that all the
@@ -127,16 +127,16 @@ constexpr CheckPseudoHasResult
 constexpr CheckPseudoHasResult kCheckPseudoHasResultSomeChildrenChecked = 1
                                                                           << 3;
 
-// The :has() result cache keeps the :has() pseudo class checking result
-// regardless of the :has() pseudo class location (whether it is for subject or
+// The :has() result cache keeps the :has() pseudo-class checking result
+// regardless of the :has() pseudo-class location (whether it is for subject or
 // not).
 // (e.g. '.a:has(.b) .c', '.a .b:has(.c)', ':is(.a:has(.b) .c) .d', ...)
 //
-// It stores the checking result of a :has() pseudo class. For example, when we
+// It stores the checking result of a :has() pseudo-class. For example, when we
 // have the selector '.a:has(.b) .c', during the selector checking sequence,
 // checking result for ':has(.b)' will be inserted into the cache.
 //
-// To differentiate multiple :has() pseudo classes, the argument selector
+// To differentiate multiple :has() pseudo-classes, the argument selector
 // text is selected as a cache key. For example, if we already have the result
 // of ':has(.a)' in the cache with cache key '.a', and we have the selectors
 // '.b:has(.a) .c' and '.b .c:has(a)' to be checked, then the selector checking
@@ -183,7 +183,7 @@ using CheckPseudoHasFastRejectFilterCache =
                 Member<ElementCheckPseudoHasFastRejectFilterMap>>;
 
 // CheckPseudoHasCacheScope is the stack-allocated scoping class for :has()
-// pseudo class checking result cache and :has() pseudo class checking fast
+// pseudo-class checking result cache and :has() pseudo-class checking fast
 // reject filter cache. It also manages checking for recursive :has().
 //
 // This class has hashmap to hold the checking result and filter, so the
@@ -235,8 +235,8 @@ class CORE_EXPORT CheckPseudoHasCacheScope {
   ~CheckPseudoHasCacheScope();
 
   // Context provides getter and setter of the following cache items.
-  // - :has() pseudo class checking result in ElementCheckPseudoHasResultMap
-  // - :has() pseudo class checking fast reject filter in
+  // - :has() pseudo-class checking result in ElementCheckPseudoHasResultMap
+  // - :has() pseudo-class checking fast reject filter in
   //   ElementCheckPseudoHasFastRejectFilterMap.
   class CORE_EXPORT Context {
     STACK_ALLOCATED();

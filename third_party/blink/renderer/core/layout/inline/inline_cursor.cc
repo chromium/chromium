@@ -92,7 +92,7 @@ bool ShouldIgnoreForPositionForPoint(const FragmentItem& item) {
           // "label-contains-other-interactive-content.html" reaches here.
           return false;
         }
-        // Skip pseudo element ::before/::after
+        // Skip pseudo-element ::before/::after
         // All/LayoutViewHitTestTest.PseudoElementAfter* needs this.
         return !item.GetLayoutObject()->NonPseudoNode();
       }

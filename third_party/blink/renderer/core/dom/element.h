@@ -1277,10 +1277,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void BeginParsingChildren() { SetIsFinishedParsingChildren(false); }
 
-  // Returns the pseudo element for the given PseudoId type.
-  // |view_transition_name| is used to uniquely identify a pseudo element
-  // from a set of pseudo elements which share the same |pseudo_id|. The current
-  // usage of this ID is limited to pseudo elements generated for a
+  // Returns the pseudo-element for the given PseudoId type.
+  // |view_transition_name| is used to uniquely identify a pseudo-element
+  // from a set of pseudo-elements which share the same |pseudo_id|. The current
+  // usage of this ID is limited to pseudo-elements generated for a
   // ViewTransition. See
   // third_party/blink/renderer/core/view_transition/README.md
   //
@@ -1302,7 +1302,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Retrieve the ComputedStyle (if any) corresponding to the provided
   // PseudoId from cache, calculating the ComputedStyle on-demand if it's
   // missing from the cache. The |pseudo_argument| is also used to match the
-  // ComputedStyle in cases where the PseudoId corresponds to a pseudo element
+  // ComputedStyle in cases where the PseudoId corresponds to a pseudo-element
   // that takes arguments (e.g. ::highlight()).
   const ComputedStyle* CachedStyleForPseudoElement(
       PseudoId,
@@ -1619,9 +1619,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // returned element may be a PseudoElement, or (for element-backed
   // pseudo-elements) an Element.
   //
-  // The returned pseudo element may be directly associated with this
+  // The returned pseudo-element may be directly associated with this
   // element or (as with view transition pseudo-elements) nested inside
-  // a hierarchy of pseudo elements.
+  // a hierarchy of pseudo-elements.
   //
   // Callers that need to deal with all CSS pseudo-elements should use
   // this rather than GetPseudoElement().
@@ -1853,7 +1853,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // enabled.
   bool HasSpatialNavigationFocusHeuristics() const;
 
-  // Returns true if this element has generate a pseudo element whose box is a
+  // Returns true if this element has generate a pseudo-element whose box is a
   // sibling box of its originating element's box. In this case we cannot skip
   // style recalc for size containers because that would break necessary layout
   // containment by modifying the box tree outside the container during layout.
@@ -1992,7 +1992,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const StyleRecalcContext&,
       const AtomicString& view_transition_name = g_null_atom);
 
-  // For document element scroll control pseudo elements become not layout
+  // For document element scroll control pseudo-elements become not layout
   // siblings, but layout children.
   void AttachDocumentElementPrecedingPseudoElements(AttachContext& context) {
     if (!IsDocumentElement()) {
@@ -2020,7 +2020,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     AttachPseudoElement(kPseudoIdBefore, context);
   }
 
-  // For document element scroll control pseudo elements become not layout
+  // For document element scroll control pseudo-elements become not layout
   // siblings, but layout children.
   void AttachDocumentElementSucceedingPseudoElements(AttachContext& context) {
     if (!IsDocumentElement()) {

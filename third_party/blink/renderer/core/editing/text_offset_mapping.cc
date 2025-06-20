@@ -20,7 +20,7 @@ namespace blink {
 namespace {
 
 // TODO(editing-dev): We may not need to do full-subtree traversal, but we're
-// not sure, e.g. ::first-line. See |enum PseudoId| for list of pseudo elements
+// not sure, e.g. ::first-line. See |enum PseudoId| for list of pseudo-elements
 // used in Blink.
 bool HasNonPsuedoNode(const LayoutObject& parent) {
   if (parent.NonPseudoNode())
@@ -163,7 +163,7 @@ const LayoutBlockFlow* ComputeInlineContentsAsBlockFlow(
     const LayoutBlockFlow& root_block_flow =
         RootInlineContentsContainerOf(*block_flow);
     // Skip |root_block_flow| if it's an anonymous wrapper created for
-    // pseudo elements. See test AnonymousBlockFlowWrapperForFloatPseudo.
+    // pseudo-elements. See test AnonymousBlockFlowWrapperForFloatPseudo.
     if (!CanBeInlineContentsContainer(root_block_flow))
       return nullptr;
     return &root_block_flow;

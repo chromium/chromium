@@ -110,7 +110,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // GC functionality.
   void Trace(Visitor* visitor) const override;
 
-  // Returns true if the pseudo element corresponding to the given id and name
+  // Returns true if the pseudo-element corresponding to the given id and name
   // is the only child.
   bool MatchForOnlyChild(PseudoId pseudo_id,
                          const AtomicString& view_transition_name) const;
@@ -134,7 +134,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // painting in the snapshot.
   bool NeedsViewTransitionClipNode(const LayoutObject& object) const;
 
-  // Returns true if this object is painted via pseudo elements. Note that this
+  // Returns true if this object is painted via pseudo-elements. Note that this
   // is different from NeedsViewTransitionEffectNode() since the root may not
   // be a transitioning element, but require an effect node.
   bool IsRepresentedViaPseudoElements(const LayoutObject& object) const;
@@ -182,12 +182,12 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // content-visibility locks.
   bool NeedsUpToDateTags() const;
 
-  // Creates a pseudo element for the given |pseudo_id|.
+  // Creates a pseudo-element for the given |pseudo_id|.
   PseudoElement* CreatePseudoElement(Element* parent,
                                      PseudoId pseudo_id,
                                      const AtomicString& view_transition_name);
 
-  // Returns the UA style sheet for the pseudo element tree generated during a
+  // Returns the UA style sheet for the pseudo-element tree generated during a
   // transition.
   CSSStyleSheet* UAStyleSheet() const;
 
@@ -287,7 +287,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   void WillExitGetComputedStyleScope();
 
   // If this transition is in a phase that has non-web exposed view transition
-  // pseudo elements, then this invalidates the style for those pseudo elements.
+  // pseudo-elements, then this invalidates the style for those pseudo-elements.
   void InvalidateInternalPseudoStyle();
 
  private:

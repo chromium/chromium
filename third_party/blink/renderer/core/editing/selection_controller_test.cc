@@ -172,7 +172,7 @@ TEST_F(SelectionControllerTest, setCaretAtHitTestResultWithNullPosition) {
       "<div id=sample></div>");
   UpdateAllLifecyclePhasesForTest();
 
-  // Hit "&nbsp;" in before pseudo element of "sample".
+  // Hit "&nbsp;" in before pseudo-element of "sample".
   HitTestLocation location((gfx::Point(10, 10)));
   SetCaretAtHitTestResult(
       GetFrame().GetEventHandler().HitTestResultAtLocation(location));

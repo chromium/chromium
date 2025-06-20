@@ -840,7 +840,7 @@ bool Animation::HasLowerCompositeOrdering(
     // performance. We only do it when it comes to getAnimation.
     if (originating_element1 != originating_element2) {
       if (compare_animation_type == CompareAnimationsOrdering::kTreeOrder) {
-        // Since pseudo elements are compared by their originating element,
+        // Since pseudo-elements are compared by their originating element,
         // they sort before their children.
         return originating_element1->compareDocumentPosition(
                    originating_element2) &

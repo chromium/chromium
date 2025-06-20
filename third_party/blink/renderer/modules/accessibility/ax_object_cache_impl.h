@@ -79,7 +79,7 @@ class HTMLAreaElement;
 class WebLocalFrameClient;
 
 // Describes a decision on whether to create an AXNodeObject with or without a
-// LayoutObject, or to prune the AX subtree at that point. Only pseudo element
+// LayoutObject, or to prune the AX subtree at that point. Only pseudo-element
 // descendants are missing DOM nodes.
 enum AXObjectType { kPruneSubtree = 0, kCreateFromNode, kCreateFromLayout };
 

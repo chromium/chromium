@@ -1285,7 +1285,7 @@ TEST_F(ElementTest, TheCheckMarkPseudoElement) {
     return e->GetPseudoElement(kPseudoIdCheckMark);
   };
 
-  // The `::checkmark` pseudo element should only be created for option
+  // The `::checkmark` pseudo-element should only be created for option
   // elements in an appearance:base-select.
   EXPECT_EQ(nullptr, checkmark_pseudo_for("a-div"));
   EXPECT_EQ(nullptr, checkmark_pseudo_for("not-base-option"));
@@ -1329,7 +1329,7 @@ TEST_F(ElementTest, ThePickerIconPseudoElement) {
   Element* div = GetElementById("a-div");
   EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdPickerIcon));
 
-  // The `::picker-icon` pseudo element should only be created for select
+  // The `::picker-icon` pseudo-element should only be created for select
   // elements.
   Element* target = GetElementById("target");
   EXPECT_NE(nullptr, target->GetPseudoElement(kPseudoIdPickerIcon));

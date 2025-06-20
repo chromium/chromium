@@ -222,8 +222,8 @@ KeyframeEffect::KeyframeEffect(Element* target,
   // fix target for css animations and transitions
   if (target && target->IsPseudoElement()) {
     // The |target_element_| is used to target events in script when
-    // animating pseudo elements. This requires using the DOM element that the
-    // pseudo element originates from.
+    // animating pseudo-elements. This requires using the DOM element that the
+    // pseudo-element originates from.
     target_element_ =
         &DynamicTo<PseudoElement>(target)->UltimateOriginatingElement();
     DCHECK(!target_element_->IsPseudoElement());

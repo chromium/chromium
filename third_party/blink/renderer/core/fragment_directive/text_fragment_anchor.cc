@@ -424,7 +424,7 @@ void TextFragmentAnchor::ApplyEffectsToFirstMatch() {
 
   const RangeInFlatTree& range = first_match_->GetAttachedRange();
 
-  // Apply :target pseudo class.
+  // Apply :target pseudo-class.
   ApplyTargetToCommonAncestor(range.ToEphemeralRange());
   frame_->GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kFindInPage);

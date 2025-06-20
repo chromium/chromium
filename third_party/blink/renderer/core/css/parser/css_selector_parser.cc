@@ -53,7 +53,7 @@ bool IsHostPseudoSelector(const CSSSelector& selector) {
          selector.GetPseudoType() == CSSSelector::kPseudoHostContext;
 }
 
-// Some pseudo elements behave as if they have an implicit combinator to their
+// Some pseudo-elements behave as if they have an implicit combinator to their
 // left even though they are written without one. This method returns the
 // correct implicit combinator. If no new combinator should be used,
 // it returns RelationType::kSubSelector.
@@ -548,7 +548,7 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
   }
 
   // :has() is not allowed in the pseudos accepting only compound selectors, or
-  // not allowed after pseudo elements.
+  // not allowed after pseudo-elements.
   // (e.g. '::slotted(:has(.a))', '::part(foo):has(:hover)')
   if (inside_compound_pseudo_ ||
       restricting_pseudo_element_ != CSSSelector::kPseudoUnknown ||
@@ -581,7 +581,7 @@ CSSSelectorList* CSSSelectorParser::ConsumeRelativeSelectorList(
   }
 
   // :has() is not allowed in the pseudos accepting only compound selectors, or
-  // not allowed after pseudo elements.
+  // not allowed after pseudo-elements.
   // (e.g. '::slotted(:has(.a))', '::part(foo):has(:hover)')
   if (inside_compound_pseudo_ ||
       restricting_pseudo_element_ != CSSSelector::kPseudoUnknown ||
@@ -603,7 +603,7 @@ unsigned ExtractCompoundFlags(const CSSSelector& simple_selector,
   if (simple_selector.Match() != CSSSelector::kPseudoElement) {
     return 0;
   }
-  // We don't restrict what follows custom ::-webkit-* pseudo elements in UA
+  // We don't restrict what follows custom ::-webkit-* pseudo-elements in UA
   // sheets. We currently use selectors in mediaControls.css like this:
   //
   // video::-webkit-media-text-track-region-container.scrolling
@@ -773,7 +773,7 @@ static std::optional<CSSSelector> MaybeCreateImplicitDescendantAnchor(
 // ConsumeRelativeSelector() (but we don't use the kRelative* relations,
 // as they have different matching semantics). There's an implicit anchor
 // compound in front, which for CSSNestingType::kNesting is the nesting
-// selector (&) and for CSSNestingType::kScope is the :scope pseudo class.
+// selector (&) and for CSSNestingType::kScope is the :scope pseudo-class.
 // E.g. given CSSNestingType::kNesting, “> .a” is parsed as “& > .a” ().
 base::span<CSSSelector> CSSSelectorParser::ConsumeNestedRelativeSelector(
     CSSParserTokenStream& stream,
@@ -1204,7 +1204,7 @@ bool IsUserActionPseudoClassAllowedAfterPseudoElement(
       return true;
     default:
       // TODO(crbug.com/40824273): User action pseudos should be allowed more
-      // generally after pseudo elements.
+      // generally after pseudo-elements.
       return false;
   }
 }
@@ -2004,7 +2004,7 @@ bool CSSSelectorParser::ConsumeNestingParent(CSSParserTokenStream& stream,
       CSSSelector(parent_rule_for_nesting_, /*is_implicit=*/false));
 
   result_flags |= kContainsScopeOrParent;
-  // In case that a nesting parent selector is inside a :has() pseudo class,
+  // In case that a nesting parent selector is inside a :has() pseudo-class,
   // mark the :has() containing a pseudo selector and a complex selector
   // so that the StyleEngine can invalidate the anchor element of the :has()
   // for a pseudo state change (crbug.com/1517866) or a complex selector
@@ -2292,10 +2292,10 @@ void CSSSelectorParser::PrependTypeSelectorIfNeeded(
   // otherwise we can't tell the difference between *:host and just :host.
   //
   // Also, selectors where we use a ShadowPseudo combinator between the
-  // element and the pseudo element for matching (custom pseudo elements,
+  // element and the pseudo-element for matching (custom pseudo-elements,
   // ::cue, ::shadow), we need a universal selector to set the combinator
   // (relation) on in the cases where there are no simple selectors preceding
-  // the pseudo element.
+  // the pseudo-element.
   bool is_host_pseudo = IsHostPseudoSelector(compound_selector);
   if (is_host_pseudo && !has_q_name && namespace_prefix.IsNull()) {
     return;
@@ -2331,7 +2331,7 @@ void CSSSelectorParser::SplitCompoundAtImplicitShadowCrossingCombinator(
   // ".a.b > div#id" is stored as [div, #id, .a, .b], each element in the list
   // stored with an associated relation (combinator or SubSelector).
   //
-  // ::cue, ::shadow, and custom pseudo elements have an implicit ShadowPseudo
+  // ::cue, ::shadow, and custom pseudo-elements have an implicit ShadowPseudo
   // combinator to their left, which really makes for a new compound selector,
   // yet it's consumed by the selector parser as a single compound selector.
   //
@@ -2339,7 +2339,7 @@ void CSSSelectorParser::SplitCompoundAtImplicitShadowCrossingCombinator(
   //
   // input#x::-webkit-clear-button -> [ ::-webkit-clear-button, input, #x ]
   //
-  // Likewise, ::slotted() pseudo element has an implicit ShadowSlot combinator
+  // Likewise, ::slotted() pseudo-element has an implicit ShadowSlot combinator
   // to its left for finding matching slot element in other TreeScope.
   //
   // ::part has a implicit ShadowPart combinator to its left finding the host

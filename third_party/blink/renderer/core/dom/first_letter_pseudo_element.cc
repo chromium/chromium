@@ -219,7 +219,7 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
   LayoutObject* parent_layout_object = nullptr;
 
   if (element.IsFirstLetterPseudoElement()) {
-    // If the passed-in element is a ::first-letter pseudo element we need to
+    // If the passed-in element is a ::first-letter pseudo-element we need to
     // start from the originating element.
     parent_layout_object =
         element.ParentOrShadowHostElement()->GetLayoutObject();
@@ -555,7 +555,7 @@ Node* FirstLetterPseudoElement::InnerNodeForHitTesting() {
     return FlatTreeTraversal::Parent(*node);
   }
   if (node->IsPseudoElement()) {
-    // ::first-letter in generated content for ::before/::after. Use pseudo
+    // ::first-letter in generated content for ::before/::after. Use pseudo-
     // element parent.
     return node->ParentOrShadowHostNode();
   }

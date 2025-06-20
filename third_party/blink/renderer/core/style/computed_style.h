@@ -168,7 +168,7 @@ class WebkitTextStrokeColor;
 //
 // In addition to storing the computed value of every CSS property,
 // ComputedStyle also contains various internal style information. Examples
-// include cached_pseudo_element_styles_ (for storing pseudo element styles) and
+// include cached_pseudo_element_styles_ (for storing pseudo-element styles) and
 // has_simple_underline_ (cached indicator flag of text-decoration). These are
 // stored on ComputedStyle for two reasons:
 //
@@ -360,7 +360,7 @@ class ComputedStyle final : public ComputedStyleBase {
   // Find out how two ComputedStyles differ. Used for figuring out if style
   // recalc needs to propagate style changes down the tree. The constants are
   // listed in increasing severity. E.g. kInherited also means we need to update
-  // pseudo elements (kPseudoElementStyle).
+  // pseudo-elements (kPseudoElementStyle).
   enum class Difference {
     // The ComputedStyle objects have the same computed style. The might have
     // some different extra flags which means we still need to replace the old
@@ -369,7 +369,7 @@ class ComputedStyle final : public ComputedStyleBase {
     // Non-inherited properties differ which means we need to apply visual
     // difference changes to the layout tree through LayoutObject::SetStyle().
     kNonInherited,
-    // Pseudo element style is different which means we have to update pseudo
+    // Pseudo-element style is different which means we have to update pseudo-
     // element existence and computed style.
     kPseudoElementStyle,
     // Inherited properties are different which means we need to recalc style
@@ -393,7 +393,7 @@ class ComputedStyle final : public ComputedStyleBase {
     //
     // If scroll-marker-group property changes from/to "none" on scroller, we
     // should
-    // remove all ::scroll-marker pseudo elements from the scroller's subtree.
+    // remove all ::scroll-marker pseudo-elements from the scroller's subtree.
     kDescendantAffecting,
   };
   CORE_EXPORT static Difference ComputeDifference(
@@ -2184,7 +2184,7 @@ class ComputedStyle final : public ComputedStyleBase {
            GetPosition() != EPosition::kStatic;
   }
 
-  // Pseudo element styles.
+  // Pseudo-element styles.
   static bool HasPseudoElementStyle(unsigned pseudo_styles, PseudoId pseudo) {
     DCHECK(pseudo >= kFirstPublicPseudoId);
     DCHECK(pseudo <= kLastTrackedPublicPseudoId);

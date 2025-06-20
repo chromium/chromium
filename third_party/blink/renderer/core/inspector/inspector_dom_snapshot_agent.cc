@@ -706,7 +706,7 @@ int InspectorDOMSnapshotAgent::BuildLayoutTreeNode(
   layout_tree_snapshot->getText()->emplace_back(AddString(text));
 
   if (node->GetPseudoIdForStyling()) {
-    // For pseudo elements, visit the children of the layout object.
+    // For pseudo-elements, visit the children of the layout object.
     // Combinding ::before { content: 'hello' } and ::first-letter would produce
     // two boxes for the ::before node, one for 'hello' and one for 'ello'.
     for (LayoutObject* child = layout_object->SlowFirstChild(); child;

@@ -3385,7 +3385,7 @@ TEST_P(CompositingSimTest, FullCompositingUpdateForJustCreatedChunks) {
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
 
   // A new LayoutObject is "just created" and will not match existing chunks and
-  // needs a full update. A first letter style adds a pseudo element which
+  // needs a full update. A first letter style adds a pseudo-element which
   // results in rebuilding the #target LayoutObject.
   auto* target = GetElementById("target");
   target->setAttribute(html_names::kClassAttr,

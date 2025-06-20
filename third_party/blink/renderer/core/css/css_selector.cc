@@ -897,7 +897,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
         bits_.set<MatchField>(kPseudoElement);
       }
       [[fallthrough]];
-    // For pseudo elements
+    // For pseudo-elements
     case kPseudoPickerIcon:
     case kPseudoCheckMark:
     case kPseudoBackdrop:
@@ -960,7 +960,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
         break;
       }
       [[fallthrough]];
-    // For pseudo classes
+    // For pseudo-classes
     case kPseudoActive:
     case kPseudoActiveViewTransition:
     case kPseudoActiveViewTransitionType:

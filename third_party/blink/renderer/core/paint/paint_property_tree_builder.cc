@@ -1695,7 +1695,7 @@ FragmentPaintPropertyTreeBuilder::ParentForViewTransitionPseudoEffect() const {
 
   Element& scope = pseudo->UltimateOriginatingElement();
   if (scope.IsDocumentElement()) {
-    // The transition pseudo element doesn't draw into the LayoutView's
+    // The transition pseudo-element doesn't draw into the LayoutView's
     // effect, but rather as its sibling. So this re-parents the effect to
     // whatever the grand-parent effect was. Note that it doesn't matter
     // whether the grand-parent is the root stacking context or something
@@ -1721,7 +1721,7 @@ FragmentPaintPropertyTreeBuilder::ParentForViewTransitionPseudoEffect() const {
     return context_.current_effect;
   }
 
-  // Make the effect node for the ::view-transition pseudo element a sibling of
+  // Make the effect node for the ::view-transition pseudo-element a sibling of
   // the ViewTransitionEffect for the scope element. The ViewTransitionEffect is
   // guaranteed to exist (see ViewTransition::NeedsViewTransitionEffectNode).
   auto* scope_vt_effect = scope_properties->ViewTransitionEffect();

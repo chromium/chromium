@@ -66,7 +66,7 @@ std::optional<double> ScrollMarkerChooser::GetScrollTargetPosition(
   // rectangle to scroll into view, as we are not scrolling the scroll marker
   // into view, but its target.
   // However, AbsoluteBoundingBoxRectForScrollIntoView() expects to be invoked
-  // on the marker instead of the target box for the ::scroll-marker pseudo
+  // on the marker instead of the target box for the ::scroll-marker pseudo-
   // element. That method uses that marker box to e.g. find the correct ::column
   // rectangle to scroll to.
   const LayoutObject* bounding_box_object =

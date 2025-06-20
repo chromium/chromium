@@ -233,7 +233,7 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       DCHECK(pseudo_element);
 
       // Iterate the list of IDs until we hit the entry for |node's| ID. The
-      // sibling is the next ID in the list which generates a pseudo element.
+      // sibling is the next ID in the list which generates a pseudo-element.
       bool found = false;
       for (const auto& view_transition_name :
            parent_pseudo->GetContainedViewTransitionNames()) {
@@ -578,7 +578,7 @@ static inline bool AreBoxTreeOrderSiblings(const Node& current, Node* sibling) {
 // This function correctly performs one move from `node` to next
 // layout sibling. We can't just use NextSibling, as ::scroll-marker-group
 // layout object is either previous or next sibling of its originating element,
-// but still a node child of it, as a pseudo element.
+// but still a node child of it, as a pseudo-element.
 // Layout tree:
 //        (PS) (SMGB) (OE) (SMGA) (NS)
 //                  (B)  (A)

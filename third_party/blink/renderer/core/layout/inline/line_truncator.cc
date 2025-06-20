@@ -217,7 +217,7 @@ LayoutUnit LineTruncator::TruncateLineInTheMiddle(
         break;
       continue;
     }
-    // Skip pseudo elements like ::before.
+    // Skip pseudo-elements like ::before.
     if (!child.GetNode())
       continue;
 

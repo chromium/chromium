@@ -2435,7 +2435,7 @@ static void AssertLayoutTreeUpdated(Node& root,
         node = FlatTreeTraversal::NextSkippingChildren(*node);
         continue;
       }
-      // Check pseudo elements.
+      // Check pseudo-elements.
       AssertLayoutTreeUpdatedForPseudoElements(*element);
     }
 
