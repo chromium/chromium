@@ -8,6 +8,7 @@ assert(is_fuchsia)
 
 import("//build/cipd/cipd.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/util/process_version.gni")
 import("//third_party/fuchsia-gn-sdk/src/build_id_dir.gni")
@@ -263,13 +264,14 @@ action("strip_chromedriver_binary") {
   deps = [ "//chrome/test/chromedriver:chromedriver_server($host_toolchain)" ]
   script = "//build/gn_run_binary.py"
   sources = [
-    "//buildtools/third_party/eu-strip/bin/eu-strip",
+    "${clang_base_path}/bin/llvm-strip",
     prog_name,
   ]
   outputs = [ _stripped_chromedriver_file ]
   args = [
-    rebase_path("//buildtools/third_party/eu-strip/bin/eu-strip",
-                root_build_dir),
+    rebase_path("${clang_base_path}/bin/llvm-strip", root_build_dir),
+    "--strip-debug",
+    "--strip-unneeded",
     "-o",
     rebase_path(_stripped_chromedriver_file, root_build_dir),
     rebase_path(prog_name, root_build_dir),
