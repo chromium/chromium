@@ -21,6 +21,8 @@ enum class LensOverlayEntrypoint {
   kLVFImagePicker,
   // The AI hub menu.
   kAIHub,
+  // The Interactive Lens screen in the First Run Experience.
+  kFREPromo,
 };
 
 namespace lens {

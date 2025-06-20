@@ -58,7 +58,11 @@ enum class LensOverlayInvocationSource {
   // The Lens entry point in the AI hub menu.
   kAIHub = 12,
 
-  kMaxValue = kAIHub
+  // The Lens entry point in the Interactive Lens screen in the First Run
+  // Experience.
+  kFREPromo = 13,
+
+  kMaxValue = kFREPromo
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayInvocationSource)
 // When adding a value here, also update:

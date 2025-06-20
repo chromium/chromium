@@ -30,6 +30,8 @@ LensOverlayInvocationSource InvocationSourceFromEntrypoint(
       return LensOverlayInvocationSource::kLVFShutterButton;
     case LensOverlayEntrypoint::kAIHub:
       return LensOverlayInvocationSource::kAIHub;
+    case LensOverlayEntrypoint::kFREPromo:
+      return LensOverlayInvocationSource::kFREPromo;
   }
 }
 
