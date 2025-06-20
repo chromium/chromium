@@ -26,7 +26,6 @@
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/session_storage_area_impl.h"
-#include "components/services/storage/storage_service_impl.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -95,14 +94,14 @@ void SessionStorageErrorResponse(base::OnceClosure callback,
 }  // namespace
 
 SessionStorageImpl::SessionStorageImpl(
-    StorageServiceImpl& service,
     const base::FilePath& partition_directory,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     scoped_refptr<base::SequencedTaskRunner> memory_dump_task_runner,
     BackingMode backing_mode,
     std::string database_name,
+    DestructSessionStorageCallback destruct_callback,
     mojo::PendingReceiver<mojom::SessionStorageControl> receiver)
-    : service_(service),
+    : destruct_callback_(std::move(destruct_callback)),
       backing_mode_(backing_mode),
       database_name_(std::move(database_name)),
       partition_directory_(partition_directory),
@@ -1045,8 +1044,7 @@ void SessionStorageImpl::LogDatabaseOpenResult(OpenResult result) {
 }
 
 void SessionStorageImpl::OnReceiverDisconnected() {
-  ShutDown(base::DoNothing());
-  service_->RemoveSessionStorage(this);
+  std::move(destruct_callback_).Run(this);
 }
 
 }  // namespace storage

@@ -41,7 +41,6 @@
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 #include "components/services/storage/public/cpp/constants.h"
-#include "components/services/storage/storage_service_impl.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -336,11 +335,11 @@ class LocalStorageImpl::StorageAreaHolder final
 };
 
 LocalStorageImpl::LocalStorageImpl(
-    StorageServiceImpl& service,
     const base::FilePath& storage_root,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    DestructLocalStorageCallback destruct_callback,
     mojo::PendingReceiver<mojom::LocalStorageControl> receiver)
-    : service_(service),
+    : destruct_callback_(std::move(destruct_callback)),
       directory_(storage_root.empty() ? storage_root
                                       : storage_root.Append(kLocalStoragePath)),
       database_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -1095,8 +1094,7 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
 }
 
 void LocalStorageImpl::OnReceiverDisconnected() {
-  ShutDown(base::DoNothing());
-  service_->RemoveLocalStorage(this);
+  std::move(destruct_callback_).Run(this);
 }
 
 }  // namespace storage

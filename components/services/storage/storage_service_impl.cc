@@ -50,6 +50,27 @@ std::unique_ptr<FilesystemProxy> CreateRestrictedFilesystemProxy(
 }
 #endif
 
+template <typename T>
+base::OnceClosure MakeDeferredDeleter(std::unique_ptr<T> object) {
+  return base::BindOnce(
+      [](scoped_refptr<base::SequencedTaskRunner> task_runner, T* object) {
+        task_runner->DeleteSoon(FROM_HERE, object);
+      },
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      // NOTE: We release `object` immediately. In the case
+      // where this task never runs, we prefer to leak the
+      // object rather than potentially destroying it on the
+      // wrong sequence.
+      object.release());
+}
+
+template <typename T>
+void ShutDown(std::unique_ptr<T> object) {
+  if (T* ptr = object.get()) {
+    ptr->ShutDown(MakeDeferredDeleter(std::move(object)));
+  }
+}
+
 }  // namespace
 
 StorageServiceImpl::StorageServiceImpl(
@@ -59,12 +80,17 @@ StorageServiceImpl::StorageServiceImpl(
       io_task_runner_(std::move(io_task_runner)) {}
 
 StorageServiceImpl::~StorageServiceImpl() {
-  // Shut down storages before we destroy the service.
-  for (const auto& local_storage : local_storages_) {
-    local_storage->ShutDown(base::DoNothing());
+  // ShutDown storages before we destroy the service. We transfer ownership of
+  // the storages to the ShutDown function, which deletes them after ShutDown
+  // completes.
+  while (!local_storages_.empty()) {
+    auto node = local_storages_.extract(local_storages_.begin());
+    ShutDown(std::move(node.value()));
   }
-  for (const auto& session_storage : session_storages_) {
-    session_storage->ShutDown(base::DoNothing());
+
+  while (!session_storages_.empty()) {
+    auto node = session_storages_.extract(session_storages_.begin());
+    ShutDown(std::move(node.value()));
   }
 }
 
@@ -114,8 +140,11 @@ void StorageServiceImpl::BindLocalStorageControl(
   }
 
   auto new_local_storage = std::make_unique<LocalStorageImpl>(
-      *this, path.value_or(base::FilePath()),
-      base::SequencedTaskRunner::GetCurrentDefault(), std::move(receiver));
+      path.value_or(base::FilePath()),
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&StorageServiceImpl::ShutDownAndRemoveLocalStorage,
+                     weak_ptr_factory_.GetWeakPtr()),
+      std::move(receiver));
   if (path.has_value()) {
     persistent_local_storage_map_[*path] = new_local_storage.get();
   }
@@ -138,7 +167,7 @@ void StorageServiceImpl::BindSessionStorageControl(
   }
 
   auto new_session_storage = std::make_unique<SessionStorageImpl>(
-      *this, path.value_or(base::FilePath()),
+      path.value_or(base::FilePath()),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::WithBaseSyncPrimitives(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
@@ -152,7 +181,11 @@ void StorageServiceImpl::BindSessionStorageControl(
       path.has_value() ? SessionStorageImpl::BackingMode::kRestoreDiskState
                        : SessionStorageImpl::BackingMode::kNoDisk,
 #endif
-      std::string(kSessionStorageDirectory), std::move(receiver));
+      std::string(kSessionStorageDirectory),
+      base::OnceCallback<void(SessionStorageImpl*)>(
+          base::BindOnce(&StorageServiceImpl::ShutDownAndRemoveSessionStorage,
+                         weak_ptr_factory_.GetWeakPtr())),
+      std::move(receiver));
   if (path.has_value()) {
     persistent_session_storage_map_[*path] = new_session_storage.get();
   }
@@ -164,25 +197,29 @@ void StorageServiceImpl::BindTestApi(
   GetTestApiBinderForTesting().Run(std::move(test_api_receiver));
 }
 
-void StorageServiceImpl::RemoveSessionStorage(SessionStorageImpl* storage) {
+void StorageServiceImpl::ShutDownAndRemoveSessionStorage(
+    SessionStorageImpl* storage) {
   if (!storage->GetStoragePath().empty()) {
     persistent_session_storage_map_.erase(storage->GetStoragePath());
   }
 
   auto it = session_storages_.find(storage);
   if (it != session_storages_.end()) {
-    session_storages_.erase(it);
+    auto node = session_storages_.extract(it);
+    ShutDown(std::move(node.value()));
   }
 }
 
-void StorageServiceImpl::RemoveLocalStorage(LocalStorageImpl* storage) {
+void StorageServiceImpl::ShutDownAndRemoveLocalStorage(
+    LocalStorageImpl* storage) {
   if (!storage->GetStoragePath().empty()) {
     persistent_local_storage_map_.erase(storage->GetStoragePath());
   }
 
   auto it = local_storages_.find(storage);
   if (it != local_storages_.end()) {
-    local_storages_.erase(it);
+    auto node = local_storages_.extract(it);
+    ShutDown(std::move(node.value()));
   }
 }
 

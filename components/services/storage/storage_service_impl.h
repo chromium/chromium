@@ -56,8 +56,13 @@ class StorageServiceImpl : public mojom::StorageService {
       mojo::PendingReceiver<mojom::SessionStorageControl> receiver) override;
   void BindTestApi(mojo::ScopedMessagePipeHandle test_api_receiver) override;
 
-  void RemoveSessionStorage(SessionStorageImpl* storage);
-  void RemoveLocalStorage(LocalStorageImpl* storage);
+  // These transfer ownership of the storage instance to a DeferredDeleter when
+  // performing ShutDown. This allows the storage instance to be deleted after
+  // ShutDown is complete. This prevents race conditions where a storage
+  // instance for a user data directory is rebound while we wait for the
+  // previous instance to ShutDown.
+  void ShutDownAndRemoveSessionStorage(SessionStorageImpl* storage);
+  void ShutDownAndRemoveLocalStorage(LocalStorageImpl* storage);
 
  private:
 #if !BUILDFLAG(IS_ANDROID)

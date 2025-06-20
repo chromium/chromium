@@ -67,13 +67,15 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
     kRestoreDiskState
   };
 
+  using DestructSessionStorageCallback =
+      base::OnceCallback<void(SessionStorageImpl*)>;
   SessionStorageImpl(
-      StorageServiceImpl& service,
       const base::FilePath& partition_directory,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       scoped_refptr<base::SequencedTaskRunner> memory_dump_task_runner,
       BackingMode backing_option,
       std::string database_name,
+      DestructSessionStorageCallback destruct_callback,
       mojo::PendingReceiver<mojom::SessionStorageControl> receiver);
 
   ~SessionStorageImpl() override;
@@ -243,8 +245,10 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   void OnReceiverDisconnected();
 
-  // The StorageServiceImpl that owns this object.
-  const raw_ref<StorageServiceImpl> service_;
+  // Passed in by the StorageServiceImpl that owns this object. Used to signal
+  // that this SessionStorageImpl can be destructed when the Receiver is
+  // disconnected.
+  DestructSessionStorageCallback destruct_callback_;
   // Since the session storage object hierarchy references iterators owned by
   // the metadata, make sure it is destroyed last on destruction.
   SessionStorageMetadata metadata_;

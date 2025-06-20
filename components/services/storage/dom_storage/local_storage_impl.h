@@ -46,15 +46,17 @@ class StorageServiceImpl;
 class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
                          public mojom::LocalStorageControl {
  public:
+  using DestructLocalStorageCallback =
+      base::OnceCallback<void(LocalStorageImpl*)>;
   // Constructs a Local Storage implementation which will create its root
   // "Local Storage" directory in |storage_root| if non-empty. |task_runner|
   // run tasks on the same sequence as the one which constructs this object.
   // |legacy_task_runner| must support blocking operations and its tasks must
   // be able to block shutdown. If valid, |receiver| will be bound to this
   // object to allow for remote control via the LocalStorageControl interface.
-  LocalStorageImpl(StorageServiceImpl& service,
-                   const base::FilePath& storage_root,
+  LocalStorageImpl(const base::FilePath& storage_root,
                    scoped_refptr<base::SequencedTaskRunner> task_runner,
+                   DestructLocalStorageCallback destruct_callback,
                    mojo::PendingReceiver<mojom::LocalStorageControl> receiver);
   ~LocalStorageImpl() override;
 
@@ -158,8 +160,10 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
       std::vector<DomStorageDatabase::KeyValuePair> data);
   void OnReceiverDisconnected();
 
-  // The StorageServiceImpl that owns this object.
-  const raw_ref<StorageServiceImpl> service_;
+  // Passed in by the StorageServiceImpl that owns this object. Used to signal
+  // that this LocalStorageImpl can be destructed when the Receiver is
+  // disconnected.
+  DestructLocalStorageCallback destruct_callback_;
   const base::FilePath directory_;
 
   enum ConnectionState {
