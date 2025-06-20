@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 20
+version_major: 19
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -381,19 +381,16 @@ trust_anchors {
 # CN=GTS Root R3, O=Google Trust Services LLC, C=US
 trust_anchors {
   sha256_hex: "34d8a73ee208d9bcdb0d956520934b4e40e69482596e8b6f73c8426b010a6f48"
-  trust_anchor_id: "11129.9.3"
 }
 
 # CN=GTS Root R1, O=Google Trust Services LLC, C=US
 trust_anchors {
   sha256_hex: "d947432abde7b7fa90fc2e6b59101b1280e0e1c7e4e40fa3c6887fff57a7f4cf"
-  trust_anchor_id: "11129.9.1"
 }
 
 # CN=GTS Root R4, O=Google Trust Services LLC, C=US
 trust_anchors {
   sha256_hex: "349dfa4058c5e263123b398ae795573c4e1313c83fe68f93556cd5e8031b3c7d"
-  trust_anchor_id: "11129.9.4"
 }
 
 # CN=GlobalSign, O=GlobalSign, OU=GlobalSign ECC Root CA - R4
@@ -404,7 +401,6 @@ trust_anchors {
 # CN=GTS Root R2, O=Google Trust Services LLC, C=US
 trust_anchors {
   sha256_hex: "8d25cd97229dbf70356bda4eb3cc734031e24cf00fafcfd32dc76eb5841c7ea8"
-  trust_anchor_id: "11129.9.2"
 }
 
 # CN=Hongkong Post Root CA 3, O=Hongkong Post, L=Hong Kong, ST=Hong Kong, C=HK
@@ -1474,103 +1470,4 @@ additional_certs {
 additional_certs {
   sha256_hex: "fe95a24e7f94978e58d99350ab7ab789774a987cd25187c128c191d207523bb1"
   eutl: true
-}
-
-# "CN=WR1, O=Google Trust Services, C=US"
-additional_certs {
-  sha256_hex: "b10b6f00e609509e8700f6d34687a2bfce38ea05a8fdf1cdc40c3a2a0d0d0e45"
-  enforce_anchor_constraints: true
-  enforce_anchor_expiry: true
-  tls_trust_anchor: true
-  trust_anchor_id: "11129.9.5"
-}
-
-# "CN=WR2, O=Google Trust Services, C=US"
-additional_certs {
-  sha256_hex: "e6fe22bf45e4f0d3b85c59e02c0f495418e1eb8d3210f788d48cd5e1cb547cd4"
-  enforce_anchor_constraints: true
-  enforce_anchor_expiry: true
-  tls_trust_anchor: true
-  trust_anchor_id: "11129.9.6"
-}
-
-# "CN=WR3, O=Google Trust Services, C=US"
-additional_certs {
-  sha256_hex: "2fe357db13751ff9160e87354975b3407498f41c9bd16a48657866e6e5a9b4c7"
-  enforce_anchor_constraints: true
-  enforce_anchor_expiry: true
-  tls_trust_anchor: true
-  trust_anchor_id: "11129.9.7"
-}
-
-# "CN=WR4, O=Google Trust Services, C=US"
-additional_certs {
-  sha256_hex: "dc9416c2f855126d6de977677538f2f967ff4998e90dfa435a17219be077fc06"
-  enforce_anchor_constraints: true
-  enforce_anchor_expiry: true
-  tls_trust_anchor: true
-  trust_anchor_id: "11129.9.8"
-}
-
-# "CN=WR5, O=Google Trust Services, C=US"
-additional_certs {
-  sha256_hex: "ae0fc852280f1b87cedaf73cfb84cf106efec88e8294253af352ed4034460d7b"
-  enforce_anchor_constraints: true
-  enforce_anchor_expiry: true
-  tls_trust_anchor: true
-  trust_anchor_id: "11129.9.9"
-}
-
-# "CN=WE1, O=Google Trust Services, C=US"
-additional_certs {
-  sha256_hex: "1dfc1605fbad358d8bc844f76d15203fac9ca5c1a79fd4857ffaf2864fbebf96"
-  enforce_anchor_constraints: true
-  enforce_anchor_expiry: true
-  tls_trust_anchor: true
-  trust_anchor_id: "11129.9.10"
-}
-
-# "CN=WE2, O=Google Trust Services, C=US"
-additional_certs {
-  sha256_hex: "9c3f2fd11c57d7c649ad5a0932c0f0d29756f6a0a1c74c43e1e89a62d64cd320"
-  enforce_anchor_constraints: true
-  enforce_anchor_expiry: true
-  tls_trust_anchor: true
-  trust_anchor_id: "11129.9.11"
-}
-
-# "CN=WE3, O=Google Trust Services, C=US"
-additional_certs {
-  sha256_hex: "9f819a4c876e12dc84e6fe0e37c1a69b137094b453fa98449398f4b71f4d0092"
-  enforce_anchor_constraints: true
-  enforce_anchor_expiry: true
-  tls_trust_anchor: true
-  trust_anchor_id: "11129.9.12"
-}
-
-# "CN=WE4, O=Google Trust Services, C=US"
-additional_certs {
-  sha256_hex: "d0c97e56c7b0ba812d944ad771f7799b5d4144a2327a4e416554f7ee2aa0aeae"
-  enforce_anchor_constraints: true
-  enforce_anchor_expiry: true
-  tls_trust_anchor: true
-  trust_anchor_id: "11129.9.13"
-}
-
-# "CN=WE5, O=Google Trust Services, C=US"
-additional_certs {
-  sha256_hex: "847409e63526f162753ac49f75218efaafa7d5c94ade9095ce72e7f6b6e3ac99"
-  enforce_anchor_constraints: true
-  enforce_anchor_expiry: true
-  tls_trust_anchor: true
-  trust_anchor_id: "11129.9.14"
-}
-
-# "CN=AE1, O=Google Trust Services, C=US"
-additional_certs {
-  sha256_hex: "812c212e9e45dc5005c7f47411183f5fb2ff1baee184d3354b2e93d78c280164"
-  enforce_anchor_constraints: true
-  enforce_anchor_expiry: true
-  tls_trust_anchor: true
-  trust_anchor_id: "11129.9.15"
 }
