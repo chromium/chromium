@@ -187,7 +187,7 @@ void SetCurrentTaskAsCallbackParent(
   auto* tracker =
       scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
   if (tracker && script_state->World().IsMainWorld()) {
-    callback->SetParentTask(tracker->RunningTask());
+    callback->SetTaskState(tracker->CurrentTaskState());
   }
 }
 
@@ -993,17 +993,17 @@ void LocalDOMWindow::EnqueueHashchangeEvent(const String& old_url,
 
 void LocalDOMWindow::DispatchPopstateEvent(
     scoped_refptr<SerializedScriptValue> state_object,
-    scheduler::TaskAttributionInfo* parent_task,
+    scheduler::TaskAttributionInfo* task_state,
     bool has_ua_visual_transition) {
   DCHECK(GetFrame());
   std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
-  if (parent_task) {
+  if (task_state) {
     auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate());
     ScriptState* script_state = ToScriptStateForMainWorld(GetFrame());
     if (script_state && tracker) {
       task_attribution_scope = tracker->CreateTaskScope(
-          script_state, parent_task,
+          script_state, task_state,
           scheduler::TaskAttributionTracker::TaskScopeType::kPopState);
     }
   }
@@ -1242,7 +1242,7 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   scheduler::TaskAttributionInfo* task_context = nullptr;
   if (source == this) {
     if (auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate())) {
-      task_context = tracker->RunningTask();
+      task_context = tracker->CurrentTaskState();
     }
   }
 
@@ -1275,7 +1275,7 @@ void LocalDOMWindow::DispatchPostMessage(
     scoped_refptr<const SecurityOrigin> intended_target_origin,
     SourceLocation* location,
     const base::UnguessableToken& source_agent_cluster_id,
-    scheduler::TaskAttributionInfo* parent_task) {
+    scheduler::TaskAttributionInfo* task_state) {
   // Do not report postMessage tasks to the ad tracker. This allows non-ad
   // script to perform operations in response to events created by ad frames.
   probe::AsyncTask async_task(this, event->async_task_context(),
@@ -1296,12 +1296,12 @@ void LocalDOMWindow::DispatchPostMessage(
 
   std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
-  if (parent_task) {
+  if (task_state) {
     if (ScriptState* script_state = ToScriptStateForMainWorld(GetFrame())) {
       auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate());
       CHECK(tracker);
       task_attribution_scope = tracker->CreateTaskScope(
-          script_state, parent_task,
+          script_state, task_state,
           scheduler::TaskAttributionTracker::TaskScopeType::kPostMessage);
     }
   }

@@ -135,22 +135,23 @@ void MessagePort::postMessage(ScriptState* script_state,
   msg.sender_agent_cluster_id = GetExecutionContext()->GetAgentClusterID();
   msg.locked_to_sender_agent_cluster = msg.message->IsLockedToAgentCluster();
 
-  // Only pass the parent task ID if we're in the main world, as isolated world
-  // task tracking is not yet supported. Also, only pass the parent task if the
+  // Only pass the task state ID if we're in the main world, as isolated world
+  // task tracking is not yet supported. Also, only pass the task state if the
   // port is still entangled to its initially entangled port.
   if (auto* tracker =
           scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
       initially_entangled_port_ && tracker &&
       script_state->World().IsMainWorld()) {
-    if (scheduler::TaskAttributionInfo* task = tracker->RunningTask()) {
+    if (scheduler::TaskAttributionInfo* task_state =
+            tracker->CurrentTaskState()) {
       // Since `initially_entangled_port_` is not nullptr, neither should be
       // `post_message_task_container_`.
       CHECK(post_message_task_container_);
-      post_message_task_container_->AddPostMessageTask(task);
-      msg.parent_task_id =
-          std::optional<scheduler::TaskAttributionId>(task->Id());
+      post_message_task_container_->AddPostMessageTask(task_state);
+      msg.task_state_id =
+          std::optional<scheduler::TaskAttributionId>(task_state->Id());
     } else {
-      msg.parent_task_id = std::nullopt;
+      msg.task_state_id = std::nullopt;
     }
   }
 
@@ -380,11 +381,11 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
         // Since `initially_entangled_port_` is not nullptr, neither should be
         // its `post_message_task_container_`.
         CHECK(entangled_port->post_message_task_container_);
-        scheduler::TaskAttributionInfo* parent_task =
+        scheduler::TaskAttributionInfo* task_state =
             entangled_port->post_message_task_container_
-                ->GetAndDecrementPostMessageTask(message.parent_task_id);
+                ->GetAndDecrementPostMessageTask(message.task_state_id);
         task_attribution_scope = tracker->CreateTaskScope(
-            script_state, parent_task,
+            script_state, task_state,
             scheduler::TaskAttributionTracker::TaskScopeType::kPostMessage);
       }
     }

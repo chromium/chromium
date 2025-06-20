@@ -1839,8 +1839,8 @@ void ServiceWorkerVersion::PostMessageToClient(
     return;
   }
   // As we don't track tasks between workers and renderers, we can nullify the
-  // message's parent task ID.
-  message.parent_task_id = std::nullopt;
+  // message's task state ID.
+  message.task_state_id = std::nullopt;
   service_worker_client->container_host()->PostMessageToClient(
       *this, std::move(message));
 }

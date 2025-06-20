@@ -1054,6 +1054,13 @@ _CONFIG = [
         ],
     },
     {
+        'paths':
+        ['third_party/blink/public/common/messaging/transferable_message.h'],
+        'allowed': [
+            'scheduler::TaskAttributionId',
+        ],
+    },
+    {
         'paths': [
             'third_party/blink/renderer/core/exported',
             'third_party/blink/renderer/core/frame',

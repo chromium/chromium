@@ -170,7 +170,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
       TaskAttributionInfo* task_state) = 0;
 
   // Get the `TaskAttributionInfo` for the currently running task.
-  virtual TaskAttributionInfo* RunningTask() const = 0;
+  virtual TaskAttributionInfo* CurrentTaskState() const = 0;
 
   // Registers an observer to be notified when a `TaskScope` has been created.
   // Multiple `Observer`s can be registered, but only the innermost one will

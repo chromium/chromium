@@ -128,12 +128,12 @@ class PLATFORM_EXPORT CallbackFunctionWithTaskAttributionBase
  public:
   ~CallbackFunctionWithTaskAttributionBase() override = default;
 
-  scheduler::TaskAttributionInfo* GetParentTask() const {
-    return parent_task_.Get();
+  scheduler::TaskAttributionInfo* GetTaskState() const {
+    return task_state_.Get();
   }
 
-  void SetParentTask(scheduler::TaskAttributionInfo* task) {
-    parent_task_ = task;
+  void SetTaskState(scheduler::TaskAttributionInfo* task) {
+    task_state_ = task;
   }
 
   void Trace(Visitor* visitor) const override;
@@ -143,7 +143,7 @@ class PLATFORM_EXPORT CallbackFunctionWithTaskAttributionBase
       : CallbackFunctionBase(object) {}
 
  private:
-  Member<scheduler::TaskAttributionInfo> parent_task_;
+  Member<scheduler::TaskAttributionInfo> task_state_;
 };
 
 }  // namespace blink

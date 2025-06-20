@@ -66,7 +66,7 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
     const TextEncoding& encoding,
     ScriptElementBase* element,
     FetchParameters::DeferOption defer,
-    scheduler::TaskAttributionInfo* parent_task) {
+    scheduler::TaskAttributionInfo* task_state) {
   ExecutionContext* context = element_document.GetExecutionContext();
   FetchParameters params(options.CreateFetchParameters(
       url, context->GetSecurityOrigin(), context->GetCurrentWorld(),
@@ -76,7 +76,7 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
       MakeGarbageCollected<ClassicPendingScript>(
           element, TextPosition::MinimumPosition(), KURL(), KURL(), String(),
           ScriptSourceLocationType::kExternalFile, options,
-          /*is_external=*/true, parent_task);
+          /*is_external=*/true, task_state);
 
   // [Intervention]
   // For users on slow connections, we want to avoid blocking the parser in
@@ -121,11 +121,11 @@ ClassicPendingScript* ClassicPendingScript::CreateInline(
     const String& source_text,
     ScriptSourceLocationType source_location_type,
     const ScriptFetchOptions& options,
-    scheduler::TaskAttributionInfo* parent_task) {
+    scheduler::TaskAttributionInfo* task_state) {
   ClassicPendingScript* pending_script =
       MakeGarbageCollected<ClassicPendingScript>(
           element, starting_position, source_url, base_url, source_text,
-          source_location_type, options, /*is_external=*/false, parent_task);
+          source_location_type, options, /*is_external=*/false, task_state);
   pending_script->CheckState();
   return pending_script;
 }
@@ -139,8 +139,8 @@ ClassicPendingScript::ClassicPendingScript(
     ScriptSourceLocationType source_location_type,
     const ScriptFetchOptions& options,
     bool is_external,
-    scheduler::TaskAttributionInfo* parent_task)
-    : PendingScript(element, starting_position, parent_task),
+    scheduler::TaskAttributionInfo* task_state)
+    : PendingScript(element, starting_position, task_state),
       options_(options),
       source_url_for_inline_script_(source_url_for_inline_script),
       base_url_for_inline_script_(base_url_for_inline_script),

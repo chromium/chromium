@@ -105,7 +105,7 @@ void CallbackFunctionBase::EvaluateAsPartOfCallback(
 
 void CallbackFunctionWithTaskAttributionBase::Trace(Visitor* visitor) const {
   CallbackFunctionBase::Trace(visitor);
-  visitor->Trace(parent_task_);
+  visitor->Trace(task_state_);
 }
 
 }  // namespace blink

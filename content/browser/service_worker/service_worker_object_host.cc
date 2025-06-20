@@ -93,8 +93,8 @@ void ServiceWorkerObjectHost::DispatchExtendableMessageEvent(
             url::Origin::Create(container_host_->url_for_access_check()));
 
   // As we don't track tasks between workers and renderers, we can nullify the
-  // message's parent task ID.
-  message.parent_task_id = std::nullopt;
+  // message's task state ID.
+  message.task_state_id = std::nullopt;
 
   container_host_->DispatchExtendableMessageEvent(version_, std::move(message),
                                                   std::move(callback));

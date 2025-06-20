@@ -233,7 +233,8 @@ scheduler::TaskAttributionIdType DOMScheduler::taskId(
   if (auto* tracker =
           scheduler::TaskAttributionTracker::From(script_state->GetIsolate())) {
     // `task_state` is null if there's nothing to propagate.
-    if (scheduler::TaskAttributionInfo* task_state = tracker->RunningTask()) {
+    if (scheduler::TaskAttributionInfo* task_state =
+            tracker->CurrentTaskState()) {
       return task_state->Id().value();
     }
   }

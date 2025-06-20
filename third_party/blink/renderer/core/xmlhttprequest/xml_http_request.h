@@ -294,7 +294,7 @@ class CORE_EXPORT XMLHttpRequest final
   //   so there is no need.
   void ReportMemoryUsageToV8();
 
-  // Creates a task scope used for firing events if the `parent_task_` is set
+  // Creates a task scope used for firing events if the `task_state_` is set
   // and different from the current task.
   std::optional<scheduler::TaskAttributionTracker::TaskScope>
   MaybeCreateTaskAttributionScope();
@@ -364,7 +364,7 @@ class CORE_EXPORT XMLHttpRequest final
   // |m_responseTypeCode| is NOT ResponseTypeBlob.
   Member<BlobLoader> blob_loader_;
 
-  Member<scheduler::TaskAttributionInfo> parent_task_;
+  Member<scheduler::TaskAttributionInfo> task_state_;
 
   bool async_ = true;
 

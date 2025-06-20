@@ -406,7 +406,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       scoped_refptr<const SecurityOrigin> intended_target_origin,
       SourceLocation* location,
       const base::UnguessableToken& source_agent_cluster_id,
-      scheduler::TaskAttributionInfo* parent_task);
+      scheduler::TaskAttributionInfo* task_state);
 
   void DispatchMessageEventWithOriginCheck(
       const SecurityOrigin* intended_target_origin,
@@ -432,7 +432,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void EnqueueNonPersistedPageshowEvent();
   void EnqueueHashchangeEvent(const String& old_url, const String& new_url);
   void DispatchPopstateEvent(scoped_refptr<SerializedScriptValue>,
-                             scheduler::TaskAttributionInfo* parent_task,
+                             scheduler::TaskAttributionInfo* task_state,
                              bool has_ua_visual_transition);
   void DispatchWindowLoadEvent();
   void DocumentWasClosed();

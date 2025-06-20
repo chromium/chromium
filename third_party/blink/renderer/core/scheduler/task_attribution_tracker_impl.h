@@ -39,7 +39,7 @@ class CORE_EXPORT TaskAttributionTrackerImpl : public TaskAttributionTracker {
  public:
   static std::unique_ptr<TaskAttributionTracker> Create(v8::Isolate*);
 
-  TaskAttributionInfo* RunningTask() const override;
+  TaskAttributionInfo* CurrentTaskState() const override;
 
   TaskScope CreateTaskScope(ScriptState* script_state,
                             TaskAttributionInfo* task_state,

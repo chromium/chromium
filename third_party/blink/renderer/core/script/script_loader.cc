@@ -90,13 +90,13 @@ namespace blink {
 
 namespace {
 
-scheduler::TaskAttributionInfo* GetRunningTask(ScriptState* script_state) {
+scheduler::TaskAttributionInfo* GetCurrentTaskState(ScriptState* script_state) {
   auto* tracker =
       scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
   if (!script_state || !script_state->World().IsMainWorld() || !tracker) {
     return nullptr;
   }
-  return tracker->RunningTask();
+  return tracker->CurrentTaskState();
 }
 
 }  // namespace
@@ -890,7 +890,7 @@ PendingScript* ScriptLoader::PrepareScript(
         }
         ClassicPendingScript* pending_script = ClassicPendingScript::Fetch(
             url, element_document, options, cross_origin, encoding, element_,
-            defer, GetRunningTask(script_state));
+            defer, GetCurrentTaskState(script_state));
         prepared_pending_script_ = pending_script;
         Resource* resource = pending_script->GetResource();
         resource_keep_alive_ = resource;
@@ -1061,7 +1061,7 @@ PendingScript* ScriptLoader::PrepareScript(
 
         prepared_pending_script_ = ClassicPendingScript::CreateInline(
             element_, position, source_url, base_url, source_text,
-            script_location_type, options, GetRunningTask(script_state));
+            script_location_type, options, GetCurrentTaskState(script_state));
 
         // <spec step="30.2.A.2">Mark as ready el given script.</spec>
         //
@@ -1132,7 +1132,7 @@ PendingScript* ScriptLoader::PrepareScript(
             network::mojom::RequestDestination::kScript, module_tree_client);
         prepared_pending_script_ = MakeGarbageCollected<ModulePendingScript>(
             element_, module_tree_client, is_external_script_,
-            GetRunningTask(script_state));
+            GetCurrentTaskState(script_state));
         break;
       }
     }
@@ -1343,7 +1343,7 @@ void ScriptLoader::FetchModuleScriptTree(
                        ModuleImportPhase::kEvaluation);
   prepared_pending_script_ = MakeGarbageCollected<ModulePendingScript>(
       element_, module_tree_client, is_external_script_,
-      GetRunningTask(modulator->GetScriptState()));
+      GetCurrentTaskState(modulator->GetScriptState()));
 }
 
 PendingScript* ScriptLoader::TakePendingScript(

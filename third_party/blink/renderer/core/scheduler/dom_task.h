@@ -69,7 +69,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   const base::TimeDelta delay_;
   const uint64_t task_id_for_tracing_;
   ExecutionState execution_state_ = ExecutionState::kNotStarted;
-  Member<scheduler::TaskAttributionInfo> parent_task_;
+  Member<scheduler::TaskAttributionInfo> task_state_;
 };
 
 }  // namespace blink

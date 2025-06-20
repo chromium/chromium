@@ -41,7 +41,7 @@ struct CORE_EXPORT BlinkTransferableMessage : BlinkCloneableMessage {
   mojom::blink::DelegatedCapability delegated_capability =
       mojom::blink::DelegatedCapability::kNone;
 
-  std::optional<scheduler::TaskAttributionId> parent_task_id;
+  std::optional<scheduler::TaskAttributionId> task_state_id;
 };
 
 CORE_EXPORT scoped_refptr<blink::StaticBitmapImage> ToStaticBitmapImage(

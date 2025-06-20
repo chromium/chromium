@@ -37,6 +37,6 @@ struct TransferableMessage {
   UserActivationSnapshot? user_activation;
   // What capability, if any, is delegated to the destination frame.
   DelegatedCapability delegated_capability = kNone;
-  // The ID of the task initiating the message.
-  TaskAttributionId? parent_task_id;
+  // The TaskAttributionId of the task initiating the message, if any.
+  TaskAttributionId? task_state_id;
 };

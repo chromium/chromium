@@ -47,8 +47,8 @@ struct BLINK_COMMON_EXPORT TransferableMessage : public CloneableMessage {
   mojom::DelegatedCapability delegated_capability =
       mojom::DelegatedCapability::kNone;
 
-  // The transferable message's parent task ID.
-  std::optional<scheduler::TaskAttributionId> parent_task_id;
+  // The transferable message's task state ID.
+  std::optional<scheduler::TaskAttributionId> task_state_id;
 };
 
 }  // namespace blink

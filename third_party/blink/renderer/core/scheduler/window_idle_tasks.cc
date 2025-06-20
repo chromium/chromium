@@ -42,7 +42,7 @@ class V8IdleTask : public IdleTask {
     auto* tracker =
         scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
     if (tracker && script_state->World().IsMainWorld()) {
-      parent_task_ = tracker->RunningTask();
+      task_state_ = tracker->CurrentTaskState();
     }
     auto* signal =
         DOMScheduler::scheduler(*scheduling_context)
@@ -61,7 +61,7 @@ class V8IdleTask : public IdleTask {
     if (auto* tracker = scheduler::TaskAttributionTracker::From(
             script_state->GetIsolate())) {
       task_attribution_scope =
-          tracker->CreateTaskScope(script_state, parent_task_,
+          tracker->CreateTaskScope(script_state, task_state_,
                                    scheduler::TaskAttributionTracker::
                                        TaskScopeType::kRequestIdleCallback,
                                    task_context_);
@@ -71,14 +71,14 @@ class V8IdleTask : public IdleTask {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(callback_);
-    visitor->Trace(parent_task_);
+    visitor->Trace(task_state_);
     visitor->Trace(task_context_);
     IdleTask::Trace(visitor);
   }
 
  private:
   Member<V8IdleRequestCallback> callback_;
-  Member<scheduler::TaskAttributionInfo> parent_task_;
+  Member<scheduler::TaskAttributionInfo> task_state_;
   Member<SchedulerTaskContext> task_context_;
 };
 

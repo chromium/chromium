@@ -21,7 +21,7 @@ bool StructTraits<blink::mojom::TransferableMessage::DataView,
       !data.ReadImageBitmapContentsArray(&out->image_bitmap_contents_array) ||
       !data.ReadPorts(&ports) || !data.ReadStreamChannels(&stream_channels) ||
       !data.ReadUserActivation(&out->user_activation) ||
-      !data.ReadParentTaskId(&out->parent_task_id)) {
+      !data.ReadTaskStateId(&out->task_state_id)) {
     return false;
   }
 

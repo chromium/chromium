@@ -91,7 +91,7 @@ DOMTask::DOMTask(ScriptPromiseResolver<IDLAny>* resolver,
   if (script_state->World().IsMainWorld()) {
     if (auto* tracker = scheduler::TaskAttributionTracker::From(
             script_state->GetIsolate())) {
-      parent_task_ = tracker->RunningTask();
+      task_state_ = tracker->CurrentTaskState();
     }
   }
 
@@ -109,7 +109,7 @@ void DOMTask::Trace(Visitor* visitor) const {
   visitor->Trace(scheduler_task_context_);
   visitor->Trace(abort_handle_);
   visitor->Trace(task_queue_);
-  visitor->Trace(parent_task_);
+  visitor->Trace(task_state_);
 }
 
 void DOMTask::Invoke() {
@@ -175,7 +175,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
       scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
   if (tracker) {
     task_attribution_scope = tracker->CreateTaskScope(
-        script_state, parent_task_,
+        script_state, task_state_,
         scheduler::TaskAttributionTracker::TaskScopeType::kSchedulerPostTask,
         scheduler_task_context_);
   } else {

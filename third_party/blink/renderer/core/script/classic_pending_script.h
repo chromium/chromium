@@ -42,7 +42,7 @@ class CORE_EXPORT ClassicPendingScript final
       const TextEncoding&,
       ScriptElementBase*,
       FetchParameters::DeferOption,
-      scheduler::TaskAttributionInfo* parent_task);
+      scheduler::TaskAttributionInfo* task_state);
 
   // For an inline script.
   static ClassicPendingScript* CreateInline(ScriptElementBase*,
@@ -62,7 +62,7 @@ class CORE_EXPORT ClassicPendingScript final
                        ScriptSourceLocationType,
                        const ScriptFetchOptions&,
                        bool is_external,
-                       scheduler::TaskAttributionInfo* parent_task);
+                       scheduler::TaskAttributionInfo* task_state);
   ~ClassicPendingScript() override;
 
   void Trace(Visitor*) const override;

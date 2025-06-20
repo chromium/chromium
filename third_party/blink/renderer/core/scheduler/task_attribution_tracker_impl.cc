@@ -64,7 +64,7 @@ TaskAttributionTrackerImpl::TaskAttributionTrackerImpl(v8::Isolate* isolate)
   CHECK(isolate_);
 }
 
-scheduler::TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask()
+scheduler::TaskAttributionInfo* TaskAttributionTrackerImpl::CurrentTaskState()
     const {
   if (ScriptWrappableTaskStateBase* task_state =
           ScriptWrappableTaskState::GetCurrent(isolate_)) {
@@ -129,8 +129,8 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
           ? previous_unwrapped_task_state->GetTaskAttributionInfo()
           : nullptr;
 
-  // Fire observer callbacks after updating the CPED to keep `RunningTask()` in
-  // sync with what is passed to the observer.
+  // Fire observer callbacks after updating the CPED to keep
+  // `CurrentTaskState()` in sync with what is passed to the observer.
   //
   // TODO(crbug.com/40942324): The purpose of the `Observer` mechanism is so the
   // soft navigation layer can learn if an event ran while the scope is active,
@@ -169,7 +169,7 @@ TaskAttributionTrackerImpl::MaybeCreateTaskScopeForCallback(
   // the `observer_` since it relies on the callback to set up internal state.
   // And the `observer_` might not have been notified previously, e.g. if
   // the outermost `TaskScope` is for propagating soft navigation state.
-  TaskAttributionInfo* current_task_state = RunningTask();
+  TaskAttributionInfo* current_task_state = CurrentTaskState();
   if (observer_ && current_task_state) {
     observer_->OnCreateTaskScope(*current_task_state);
   }

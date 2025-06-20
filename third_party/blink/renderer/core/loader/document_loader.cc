@@ -1164,7 +1164,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
           soft_navigation_heuristics_task_id
               ? tracker->CommitSameDocumentNavigation(
                     soft_navigation_heuristics_task_id.value())
-              : tracker->RunningTask();
+              : tracker->CurrentTaskState();
     }
   }
 

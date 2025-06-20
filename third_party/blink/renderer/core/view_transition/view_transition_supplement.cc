@@ -65,10 +65,10 @@ DOMViewTransition* ViewTransitionSupplement::StartViewTransitionForElement(
   if (callback) {
     auto* tracker =
         scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-    // Set the parent task ID if we're not in an extension task (as extensions
+    // Set the task state if we're not in an extension task (as extensions
     // are not currently supported in TaskAttributionTracker).
     if (tracker && script_state->World().IsMainWorld()) {
-      callback->SetParentTask(tracker->RunningTask());
+      callback->SetTaskState(tracker->CurrentTaskState());
     }
   }
   return supplement->StartTransition(*element, callback, types,

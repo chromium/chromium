@@ -267,7 +267,7 @@ SoftNavigationHeuristics::GetSoftNavigationContextForCurrentTask() const {
   // The `task_attribution_tracker_` must exist if `potential_soft_navigations_`
   // is non-empty. `task_state` can have null `context` in tests.
   CHECK(task_attribution_tracker_);
-  if (auto* task_state = task_attribution_tracker_->RunningTask()) {
+  if (auto* task_state = task_attribution_tracker_->CurrentTaskState()) {
     return EnsureContextForCurrentWindow(
         task_state->GetSoftNavigationContext());
   }
@@ -282,7 +282,7 @@ SoftNavigationHeuristics::AsyncSameDocumentNavigationStarted() {
     return std::nullopt;
   }
   scheduler::TaskAttributionInfo* task_state =
-      task_attribution_tracker_->RunningTask();
+      task_attribution_tracker_->CurrentTaskState();
   if (!task_state) {
     return std::nullopt;
   }
