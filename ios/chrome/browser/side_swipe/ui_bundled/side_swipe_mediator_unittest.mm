@@ -86,9 +86,10 @@ class SideSwipeMediatorTest : public PlatformTest {
     original_web_state->SetBrowserState(profile_.get());
     original_web_state_ = original_web_state.get();
 
-    int web_state_index = browser_->GetWebStateList()->InsertWebState(
+    active_web_state_index_ = browser_->GetWebStateList()->InsertWebState(
         std::move(original_web_state));
-    browser_->GetWebStateList()->ActivateWebStateAt(web_state_index);
+    browser_->GetWebStateList()->ActivateWebStateAt(
+        active_web_state_index_.value());
 
     side_swipe_mediator_ = [[SideSwipeMediator alloc]
         initWithWebStateList:browser_->GetWebStateList()];
@@ -98,6 +99,13 @@ class SideSwipeMediatorTest : public PlatformTest {
   }
 
   ~SideSwipeMediatorTest() override { [side_swipe_mediator_ disconnect]; }
+
+  void CloseActiveWebState() {
+    browser_->GetWebStateList()->CloseWebStateAt(
+        active_web_state_index_.value(),
+        WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+    active_web_state_index_.reset();
+  }
 
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -110,6 +118,7 @@ class SideSwipeMediatorTest : public PlatformTest {
   WKWebView* web_view_ = nil;
   CRWWebViewContentView* content_view_ = nil;
   raw_ptr<web::WebState> original_web_state_ = nil;
+  std::optional<int> active_web_state_index_;
 };
 
 TEST_F(SideSwipeMediatorTest, TestConstructor) {
@@ -218,6 +227,22 @@ TEST_F(SideSwipeMediatorTest, ObserversTriggerStateUpdate) {
 TEST_F(SideSwipeMediatorTest, SnapshotUpdatedWithoutTabHelper) {
   base::RunLoop run_loop;
   int snapshot_updated = 0;
+  [side_swipe_mediator_
+      updateActiveTabSnapshot:base::CallbackToBlock(
+                                  base::BindLambdaForTesting([&]() {
+                                    snapshot_updated++;
+                                    run_loop.Quit();
+                                  }))];
+  run_loop.Run();
+  EXPECT_EQ(1, snapshot_updated);
+}
+
+// Tests that the snapshot update runs the provided callback that updates
+// the snapshot state when the active web state is null.
+TEST_F(SideSwipeMediatorTest, SnapshotUpdatedWithoutActiveWebState) {
+  base::RunLoop run_loop;
+  int snapshot_updated = 0;
+  CloseActiveWebState();
   [side_swipe_mediator_
       updateActiveTabSnapshot:base::CallbackToBlock(
                                   base::BindLambdaForTesting([&]() {

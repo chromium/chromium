@@ -90,6 +90,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
 - (void)disconnect {
   [_tabSideSwipeView disconnect];
+  [self removeHorizontalGestureRecognizers];
   _fullscreenController = nullptr;
   _webStateList = nullptr;
 }
@@ -112,6 +113,18 @@ const CGFloat kIpadTabSwipeDistance = 100;
   [_panGestureRecognizer setSwipeThreshold:kPanGestureRecognizerThreshold];
   [_panGestureRecognizer setDelegate:self];
   [view addGestureRecognizer:_panGestureRecognizer];
+}
+
+- (void)removeHorizontalGestureRecognizers {
+  if (_swipeGestureRecognizer) {
+    [_swipeGestureRecognizer.view
+        removeGestureRecognizer:_swipeGestureRecognizer];
+    _swipeGestureRecognizer = nil;
+  }
+  if (_panGestureRecognizer) {
+    [_panGestureRecognizer.view removeGestureRecognizer:_panGestureRecognizer];
+    _panGestureRecognizer = nil;
+  }
 }
 
 - (void)animateSwipe:(SwipeType)swipeType

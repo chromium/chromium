@@ -226,6 +226,10 @@ constexpr base::TimeDelta kUpdateSnapshotTimeout = base::Milliseconds(100);
 }
 
 - (void)updateActiveTabSnapshot:(ProceduralBlock)callback {
+  if (!self.activeWebState) {
+    [self runSnapshotCallback:callback];
+    return;
+  }
   SnapshotTabHelper* snapshotTabHelper =
       SnapshotTabHelper::FromWebState(self.activeWebState);
   if (!snapshotTabHelper) {
