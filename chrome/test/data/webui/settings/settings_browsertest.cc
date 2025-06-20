@@ -478,6 +478,56 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicPageClosedCaptionsToggleTest,
   RunTest("settings/glic_page_test.js",
           "runMochaSuite('GlicPage ClosedCaptionsToggleEnabled')");
 }
+
+class SettingsGlicPageDataProtectionTest : public SettingsBrowserTest {
+ public:
+  SettingsGlicPageDataProtectionTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicUserStatusCheck, {}},
+         {features::kGlicLearnMoreURLConfig,
+          {
+              {features::kGlicTabAccessToggleLearnMoreURL.name,
+               "https://example.com/tab-access"},
+              {features::kGlicTabAccessToggleLearnMoreURLDataProtected.name,
+               "https://example.com/data-protection"},
+          }}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicPageDataProtectionTest, Strings) {
+  RunTest("settings/glic_page_test.js",
+          "runMochaSuite('GlicPage DataProtection_UserStatusCheckEnabled')");
+}
+
+class SettingsGlicPageDataProtectionTest_UserStatusCheckDisabled
+    : public SettingsBrowserTest {
+ public:
+  SettingsGlicPageDataProtectionTest_UserStatusCheckDisabled() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicLearnMoreURLConfig,
+          {
+              {features::kGlicTabAccessToggleLearnMoreURL.name,
+               "https://example.com/tab-access"},
+              {features::kGlicTabAccessToggleLearnMoreURLDataProtected.name,
+               "https://example.com/data-protection"},
+          }}},
+        {features::kGlicUserStatusCheck});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SettingsGlicPageDataProtectionTest_UserStatusCheckDisabled,
+    Strings) {
+  RunTest("settings/glic_page_test.js",
+          "runMochaSuite('GlicPage DataProtection_UserStatusCheckDisabled')");
+}
 #endif
 
 class PeoplePageSyncPageTest : public SettingsBrowserTest {

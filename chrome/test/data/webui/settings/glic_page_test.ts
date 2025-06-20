@@ -621,4 +621,87 @@ suite('GlicPage', function() {
       await verifyUserAction('Glic.Settings.ClosedCaptions.Disabled');
     });
   });
+
+  suite('DataProtection_UserStatusCheckEnabled', () => {
+    test('DataProtectionStringsShownForEligibleUser', () => {
+      page.setPrefValue(
+          PrefName.USER_STATUS, {isEnterpriseAccountDataProtected: true});
+      const locationToggle =
+          $<SettingsToggleButtonElement>('geolocationToggle')!;
+      assertEquals(
+          page.i18n('glicLocationToggleSublabelDataProtected'),
+          locationToggle.subLabel);
+      assertEquals('', locationToggle.learnMoreUrl);
+      const microphoneToggle =
+          $<SettingsToggleButtonElement>('microphoneToggle')!;
+      assertEquals(
+          page.i18n('glicMicrophoneToggleSublabelDataProtected'),
+          microphoneToggle.subLabel);
+      assertEquals(undefined, microphoneToggle.learnMoreUrl);
+      const tabAccessToggle =
+          $<SettingsToggleButtonElement>('tabAccessToggle')!;
+      assertEquals(
+          page.i18n('glicTabAccessToggleSublabelDataProtected'),
+          tabAccessToggle.subLabel);
+      assertEquals(
+          'https://example.com/data-protection', tabAccessToggle.learnMoreUrl);
+      const learnMoreLabel =
+          $<HTMLAnchorElement>('shortcutTabAccessConsider1LearnMoreLabel')!;
+      assertEquals('https://example.com/data-protection', learnMoreLabel.href);
+    });
+
+    test('DataProtectionStringsNotShownForIneligibleUser', () => {
+      page.setPrefValue(
+          PrefName.USER_STATUS, {isEnterpriseAccountDataProtected: false});
+      const locationToggle =
+          $<SettingsToggleButtonElement>('geolocationToggle')!;
+      assertEquals(
+          page.i18n('glicLocationToggleSublabel'), locationToggle.subLabel);
+      assertEquals(
+          page.i18n('glicLocationToggleLearnMoreUrl'),
+          locationToggle.learnMoreUrl);
+      const microphoneToggle =
+          $<SettingsToggleButtonElement>('microphoneToggle')!;
+      assertEquals(
+          page.i18n('glicMicrophoneToggleSublabel'), microphoneToggle.subLabel);
+      assertEquals(undefined, microphoneToggle.learnMoreUrl);
+      const tabAccessToggle =
+          $<SettingsToggleButtonElement>('tabAccessToggle')!;
+      assertEquals(
+          page.i18n('glicTabAccessToggleSublabel'), tabAccessToggle.subLabel);
+      assertEquals(
+          'https://example.com/tab-access', tabAccessToggle.learnMoreUrl);
+      const learnMoreLabel =
+          $<HTMLAnchorElement>('shortcutTabAccessConsider1LearnMoreLabel')!;
+      assertEquals('https://example.com/tab-access', learnMoreLabel.href);
+    });
+  });
+
+  suite('DataProtection_UserStatusCheckDisabled', () => {
+    test('DataProtectionStringsNotShown', () => {
+      page.setPrefValue(
+          PrefName.USER_STATUS, {isEnterpriseAccountDataProtected: true});
+      const locationToggle =
+          $<SettingsToggleButtonElement>('geolocationToggle')!;
+      assertEquals(
+          page.i18n('glicLocationToggleSublabel'), locationToggle.subLabel);
+      assertEquals(
+          page.i18n('glicLocationToggleLearnMoreUrl'),
+          locationToggle.learnMoreUrl);
+      const microphoneToggle =
+          $<SettingsToggleButtonElement>('microphoneToggle')!;
+      assertEquals(
+          page.i18n('glicMicrophoneToggleSublabel'), microphoneToggle.subLabel);
+      assertEquals(undefined, microphoneToggle.learnMoreUrl);
+      const tabAccessToggle =
+          $<SettingsToggleButtonElement>('tabAccessToggle')!;
+      assertEquals(
+          page.i18n('glicTabAccessToggleSublabel'), tabAccessToggle.subLabel);
+      assertEquals(
+          'https://example.com/tab-access', tabAccessToggle.learnMoreUrl);
+      const learnMoreLabel =
+          $<HTMLAnchorElement>('shortcutTabAccessConsider1LearnMoreLabel')!;
+      assertEquals('https://example.com/tab-access', learnMoreLabel.href);
+    });
+  });
 });

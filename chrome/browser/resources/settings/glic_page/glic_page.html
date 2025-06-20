@@ -163,17 +163,17 @@
           <settings-toggle-button
               id="geolocationToggle" pref="[[fakePref_]]" disabled
               label="$i18n{glicLocationToggle}"
-              sub-label="$i18n{glicLocationToggleSublabel}">
+              sub-label="[[locationSubLabel_]]">
           </settings-toggle-button>
           <settings-toggle-button
               id="microphoneToggle" pref="[[fakePref_]]" disabled
               label="$i18n{glicMicrophoneToggle}"
-              sub-label="$i18n{glicMicrophoneToggleSublabel}">
+              sub-label="[[microphoneSubLabel_]]">
           </settings-toggle-button>
           <settings-toggle-button
               id="tabAccessToggle" pref="[[fakePref_]]" disabled
               label="$i18n{glicTabAccessToggle}"
-              sub-label="$i18n{glicTabAccessToggleSublabel}">
+              sub-label="[[tabAccessSubLabel_]]">
           </settings-toggle-button>
         </template>
 
@@ -182,22 +182,22 @@
           <settings-toggle-button
               id="geolocationToggle" pref="{{prefs.glic.geolocation_enabled}}"
               label="$i18n{glicLocationToggle}"
-              sub-label="$i18n{glicLocationToggleSublabel}"
-              learn-more-url="$i18n{glicLocationToggleLearnMoreUrl}"
+              sub-label="[[locationSubLabel_]]"
+              learn-more-url="[[locationLearnMoreUrl_]]"
               on-learn-more-clicked="onLocationToggleLearnMoreClick_"
               on-settings-boolean-control-change="onGeolocationToggleChange_">
           </settings-toggle-button>
           <settings-toggle-button
               id="microphoneToggle" pref="{{prefs.glic.microphone_enabled}}"
               label="$i18n{glicMicrophoneToggle}"
-              sub-label="$i18n{glicMicrophoneToggleSublabel}"
+              sub-label="[[microphoneSubLabel_]]"
               on-settings-boolean-control-change="onMicrophoneToggleChange_">
           </settings-toggle-button>
           <settings-toggle-button
               id="tabAccessToggle" pref="{{prefs.glic.tab_context_enabled}}"
               label="$i18n{glicTabAccessToggle}"
-              sub-label="$i18n{glicTabAccessToggleSublabel}"
-              learn-more-url="$i18n{glicTabAccessToggleLearnMoreUrl}"
+              sub-label="[[tabAccessSubLabel_]]"
+              learn-more-url="[[tabAccessLearnMoreUrl_]]"
               on-learn-more-clicked="onTabAccessToggleLearnMoreClick_"
               on-settings-boolean-control-change="onTabAccessToggleChange_">
             <div id="tabAccessToggleActions" slot="more-actions">
@@ -252,7 +252,7 @@
                     <div class="secondary">$i18n{glicTabAccessConsider1}
                       <a id="shortcutTabAccessConsider1LearnMoreLabel"
                           class="learn-more-label"
-                          href="$i18n{glicTabAccessToggleLearnMoreUrl}"
+                          href="[[tabAccessLearnMoreUrl_]]"
                           on-click="onTabAccessToggleLearnMoreClick_"
                           aria-label=
                              "$i18n{glicTabAccessConsider1LearnMoreLabel}"
