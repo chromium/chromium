@@ -83,12 +83,13 @@ void ScreenCaptureTrayItemView::Refresh() {
 
 void ScreenCaptureTrayItemView::MultiCaptureStarted(const std::string& label,
                                                     const url::Origin& origin) {
-  if (!base::Contains(web_app::IwaKeyDistributionInfoProvider::GetInstance()
-                          .GetSkipMultiCaptureNotificationBundleIds(),
-                      origin.host())) {
-    requests_.emplace(label, ScreenCaptureTrayItemMetadata());
-    Refresh();
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kMultiCaptureReworkedUsageIndicators)) {
+    return;
   }
+
+  requests_.emplace(label, ScreenCaptureTrayItemMetadata());
+  Refresh();
 }
 
 void ScreenCaptureTrayItemView::MultiCaptureStartedFromApp(

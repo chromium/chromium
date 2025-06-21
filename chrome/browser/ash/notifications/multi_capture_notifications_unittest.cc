@@ -27,6 +27,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -276,6 +277,8 @@ TEST_F(
 
 TEST_F(MultiCaptureNotificationsTest,
        AppOnSkipNotificationAllowlistNoNotification) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::features::kMultiCaptureReworkedUsageIndicators};
   const url::Origin origin_with_allowlisted_exception =
       url::Origin::CreateFromNormalizedTuple(
           /*scheme=*/"isolated-app",

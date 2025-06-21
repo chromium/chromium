@@ -28,6 +28,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -94,6 +95,11 @@ void MaybeShowLoginNotification(bool is_multi_capture_allowed) {
 }
 
 void ShowLoginNotificationIfMultiCaptureAllowed() {
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kMultiCaptureReworkedUsageIndicators)) {
+    return;
+  }
+
   auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
   if (!active_user) {
     return;
@@ -198,9 +204,8 @@ void MultiCaptureNotifications::MultiCaptureStartedInternal(
     const std::string& notification_id,
     const std::string& app_name,
     const url::Origin& app_origin) {
-  if (base::Contains(web_app::IwaKeyDistributionInfoProvider::GetInstance()
-                         .GetSkipMultiCaptureNotificationBundleIds(),
-                     app_origin.host())) {
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kMultiCaptureReworkedUsageIndicators)) {
     return;
   }
 
