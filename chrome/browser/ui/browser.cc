@@ -629,6 +629,17 @@ Browser* Browser::Create(const CreateParams& params) {
   return new Browser(params);
 }
 
+// static
+std::unique_ptr<Browser> Browser::DeprecatedCreateOwnedForTesting(
+    const CreateParams& params) {
+  CHECK_IS_TEST();
+  // If this is failing, a caller is trying to create a browser when creation is
+  // not possible, e.g. using the wrong profile or during shutdown. The caller
+  // should handle this; see e.g. crbug.com/1141608 and crbug.com/1261628.
+  CHECK_EQ(CreationStatus::kOk, GetCreationStatusForProfile(params.profile));
+  return base::WrapUnique(new Browser(params));
+}
+
 Browser::Browser(const CreateParams& params)
     : create_params_(params),
       type_(params.type),

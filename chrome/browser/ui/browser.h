@@ -369,7 +369,8 @@ class Browser : public TabStripModelObserver,
 
   // Constructors, Creation, Showing //////////////////////////////////////////
 
-  // Creates a browser instance with the provided params.
+  // Creates a browser instance with the provided params. Returns an unowned
+  // pointer to the created browser.
   // Crashes if the requested browser creation is not allowed.
   // For example, browser creation will not be allowed for profiles that
   // disallow browsing (like sign-in profile on Chrome OS).
@@ -381,6 +382,14 @@ class Browser : public TabStripModelObserver,
   // If |params.window| or |params.skip_window_init_for_testing| are set, the
   // caller is expected to take the ownership of the created Browser instance.
   static Browser* Create(const CreateParams& params);
+
+  // WARNING: Use of this is DEPRECATED and exists only to support pre-existing
+  // browser unittests. Similar to Create() above, however the created browser
+  // is owned by the caller.
+  // TODO(crbug.com/417766643): Remove this once all use of Browser in unittests
+  // has been eliminated.
+  static std::unique_ptr<Browser> DeprecatedCreateOwnedForTesting(
+      const CreateParams& params);
 
   // Returns whether a browser window can be created for the specified profile.
   static CreationStatus GetCreationStatusForProfile(Profile* profile);

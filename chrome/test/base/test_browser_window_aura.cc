@@ -89,8 +89,9 @@ gfx::Rect TestBrowserWindowAura::GetBounds() const {
 std::unique_ptr<Browser> TestBrowserWindowAura::CreateBrowser(
     Browser::CreateParams* params) {
   params->window = this;
-  browser_ = Browser::Create(*params);
-  return base::WrapUnique(browser_.get());
+  auto browser = Browser::DeprecatedCreateOwnedForTesting(*params);
+  browser_ = browser.get();
+  return browser;
 }
 
 TestBrowserWindowViews::TestBrowserWindowViews(aura::Window* parent)
@@ -137,7 +138,7 @@ std::unique_ptr<Browser> TestBrowserWindowViews::CreateBrowser(
     const Browser::CreateParams& params) {
   Browser::CreateParams params_copy = params;
   params_copy.window = this;
-  std::unique_ptr<Browser> browser(Browser::Create(params_copy));
+  auto browser = Browser::DeprecatedCreateOwnedForTesting(params_copy);
   browser_ = browser.get();
   return browser;
 }
