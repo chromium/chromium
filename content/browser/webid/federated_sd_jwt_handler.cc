@@ -19,8 +19,8 @@
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/jwt_signer.h"
 #include "content/browser/webid/sd_jwt.h"
-#include "crypto/ec_private_key.h"
 #include "crypto/hash.h"
+#include "crypto/keypair.h"
 #include "crypto/sha2.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
@@ -52,7 +52,7 @@ FederatedSdJwtHandler::FederatedSdJwtHandler(
   // The browser selectively discloses the fields that were
   // requested and binds the audience and the nonce to the
   // Key Binding JWT before returning to the verifier.
-  private_key_ = crypto::ECPrivateKey::Create();
+  private_key_ = crypto::keypair::PrivateKey::GenerateEcP256();
 }
 
 FederatedSdJwtHandler::~FederatedSdJwtHandler() {}
@@ -156,7 +156,7 @@ void FederatedSdJwtHandler::OnSdJwtParsed(const sdjwt::Jwt& jwt) {
   auto sdjwtkb = sdjwt::SdJwtKb::Create(
       result, render_frame_host_->GetLastCommittedOrigin().Serialize(), nonce_,
       /*iat=*/base::Time::Now(), base::BindRepeating(Sha256),
-      sdjwt::CreateJwtSigner(std::move(private_key_)));
+      sdjwt::CreateJwtSigner(*std::move(private_key_)));
 
   if (!sdjwtkb) {
     federated_auth_request_impl_->CompleteRequestWithError(

@@ -53,7 +53,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "crypto/ec_private_key.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/url_util.h"
@@ -1940,8 +1939,6 @@ std::vector<uint8_t> TestSha256(std::string_view data) {
 class WebIdDelegationBrowserTest : public WebIdBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    private_key_ = crypto::ECPrivateKey::Create();
-
     std::vector<base::test::FeatureRef> features;
     features.push_back(features::kFedCm);
     features.push_back(features::kFedCmDelegation);
@@ -2014,7 +2011,7 @@ class WebIdDelegationBrowserTest : public WebIdBrowserTest {
           sdjwt::Jwt jwt;
           jwt.header = *header.ToJson();
           jwt.payload = *payload.ToJson();
-          jwt.Sign(sdjwt::CreateJwtSigner(private_key_->Copy()));
+          jwt.Sign(sdjwt::CreateJwtSigner(private_key_));
 
           sdjwt::SdJwt sd_jwt;
           sd_jwt.jwt = jwt;
@@ -2028,7 +2025,8 @@ class WebIdDelegationBrowserTest : public WebIdBrowserTest {
     idp_server()->SetConfigResponseDetails(config_details);
   }
 
-  std::unique_ptr<crypto::ECPrivateKey> private_key_;
+  crypto::keypair::PrivateKey private_key_{
+      crypto::keypair::PrivateKey::GenerateEcP256()};
 };
 
 IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, IssueVCs) {
@@ -2059,7 +2057,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, IssueVCs) {
 
   auto token = EvalJs(shell(), script).ExtractString();
 
-  auto public_key = sdjwt::ExportPublicKey(*private_key_);
+  auto public_key = sdjwt::ExportPublicKey(private_key_);
 
   EXPECT_TRUE(public_key);
 
@@ -2154,7 +2152,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
   modal_loop.Run();
 
   // Verify that the token is correct.
-  auto public_key = sdjwt::ExportPublicKey(*private_key_);
+  auto public_key = sdjwt::ExportPublicKey(private_key_);
   EXPECT_TRUE(public_key);
 
   // Load the key into an object

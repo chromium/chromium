@@ -13,10 +13,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
-
-namespace crypto {
-class ECPrivateKey;
-}
+#include "crypto/keypair.h"
 
 namespace content::sdjwt {
 
@@ -26,9 +23,8 @@ typedef base::OnceCallback<std::optional<std::vector<uint8_t>>(
     Signer;
 
 CONTENT_EXPORT std::optional<Jwk> ExportPublicKey(
-    const crypto::ECPrivateKey& private_key);
-CONTENT_EXPORT Signer
-CreateJwtSigner(std::unique_ptr<crypto::ECPrivateKey> private_key);
+    const crypto::keypair::PrivateKey& private_key);
+CONTENT_EXPORT Signer CreateJwtSigner(crypto::keypair::PrivateKey private_key);
 
 }  // namespace content::sdjwt
 

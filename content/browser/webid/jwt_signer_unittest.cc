@@ -15,10 +15,10 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "content/browser/webid/sd_jwt.h"
-#include "crypto/ec_private_key.h"
-#include "crypto/ec_signature_creator.h"
+#include "crypto/keypair.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,9 +84,8 @@ void Verify(const std::vector<uint8_t>& public_key,
 }
 
 TEST_F(JwtSignerTest, JwtSigner) {
-  auto private_key = crypto::ECPrivateKey::Create();
-  std::vector<uint8_t> public_key;
-  EXPECT_TRUE(private_key->ExportPublicKey(&public_key));
+  auto private_key = crypto::keypair::PrivateKey::GenerateEcP256();
+  std::vector<uint8_t> public_key = private_key.ToSubjectPublicKeyInfo();
 
   const std::string message = "hello wold";
   auto signer = CreateJwtSigner(std::move(private_key));
@@ -96,11 +95,8 @@ TEST_F(JwtSignerTest, JwtSigner) {
 }
 
 TEST_F(JwtSignerTest, CreateJwt) {
-  auto private_key = crypto::ECPrivateKey::Create();
-  EXPECT_TRUE(private_key);
-
-  std::vector<uint8_t> public_key;
-  EXPECT_TRUE(private_key->ExportPublicKey(&public_key));
+  auto private_key = crypto::keypair::PrivateKey::GenerateEcP256();
+  std::vector<uint8_t> public_key = private_key.ToSubjectPublicKeyInfo();
 
   Header header;
   header.typ = "jwt";
@@ -138,10 +134,10 @@ TEST_F(JwtSignerTest, CreateJwt) {
 }
 
 TEST_F(JwtSignerTest, CreateSdJwtKb) {
-  auto holder_private_key = crypto::ECPrivateKey::Create();
-  auto jwk = ExportPublicKey(*holder_private_key);
+  auto holder_private_key = crypto::keypair::PrivateKey::GenerateEcP256();
+  auto jwk = ExportPublicKey(holder_private_key);
 
-  auto issuer_private_key = crypto::ECPrivateKey::Create();
+  auto issuer_private_key = crypto::keypair::PrivateKey::GenerateEcP256();
 
   Header header;
   header.typ = "jwt";
@@ -161,7 +157,7 @@ TEST_F(JwtSignerTest, CreateSdJwtKb) {
   confirmation.jwk = *jwk;
   payload.cnf = confirmation;
 
-  auto issuer_json = ExportPublicKey(*issuer_private_key);
+  auto issuer_json = ExportPublicKey(issuer_private_key);
 
   EXPECT_TRUE(issuer_json);
   EXPECT_TRUE(issuer_json->Serialize());

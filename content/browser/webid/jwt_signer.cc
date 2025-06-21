@@ -16,10 +16,9 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "content/browser/webid/sd_jwt.h"
-#include "crypto/ec_private_key.h"
-#include "crypto/ec_signature_creator.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
+#include "crypto/sign.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -98,28 +97,23 @@ std::vector<uint8_t> UnpackDERSignature(base::span<const uint8_t> der_sig) {
 }
 
 std::optional<std::vector<uint8_t>> SignJwt(
-    std::unique_ptr<crypto::ECPrivateKey> private_key,
+    crypto::keypair::PrivateKey private_key,
     const std::string_view& message) {
   // The signature unpacking step won't work if the key uses a curve other than
   // P-256.
-  if (!IsEcdsaP256(private_key->key())) {
+  if (!IsEcdsaP256(private_key.key())) {
     return std::nullopt;
   }
 
-  base::span<const uint8_t> data(base::as_byte_span(message));
-  auto signer = crypto::ECSignatureCreator::Create(private_key.get());
-
-  std::vector<uint8_t> der;
-  if (!signer->Sign(data, &der)) {
-    return std::nullopt;
-  }
-
-  return UnpackDERSignature(der);
+  const auto sig = crypto::sign::Sign(crypto::sign::SignatureKind::ECDSA_SHA256,
+                                      private_key, base::as_byte_span(message));
+  return UnpackDERSignature(sig);
 }
 
 }  // namespace
 
-std::optional<Jwk> ExportPublicKey(const crypto::ECPrivateKey& private_pkey) {
+std::optional<Jwk> ExportPublicKey(
+    const crypto::keypair::PrivateKey& private_pkey) {
   EC_KEY* ec = EVP_PKEY_get0_EC_KEY(private_pkey.key());
   if (!ec) {
     return std::nullopt;
@@ -160,7 +154,7 @@ std::optional<Jwk> ExportPublicKey(const crypto::ECPrivateKey& private_pkey) {
   return jwk;
 }
 
-Signer CreateJwtSigner(std::unique_ptr<crypto::ECPrivateKey> private_key) {
+Signer CreateJwtSigner(crypto::keypair::PrivateKey private_key) {
   return base::BindOnce(SignJwt, std::move(private_key));
 }
 

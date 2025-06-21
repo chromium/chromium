@@ -10,7 +10,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,10 +36,10 @@ class JwtSignerBrowserTest : public ContentBrowserTest {
 std::pair<SdJwtKb, Jwk> CreateTestSdJwtKb(const std::string aud,
                                           const std::string nonce,
                                           int iat) {
-  auto holder_private_key = crypto::ECPrivateKey::Create();
-  auto jwk = ExportPublicKey(*holder_private_key);
+  auto holder_private_key = crypto::keypair::PrivateKey::GenerateEcP256();
+  auto jwk = ExportPublicKey(holder_private_key);
 
-  auto issuer_private_key = crypto::ECPrivateKey::Create();
+  auto issuer_private_key = crypto::keypair::PrivateKey::GenerateEcP256();
 
   Header header;
   header.typ = "jwt";
@@ -63,7 +63,7 @@ std::pair<SdJwtKb, Jwk> CreateTestSdJwtKb(const std::string aud,
   issued.header = *header.ToJson();
   issued.payload = *payload.ToJson();
 
-  auto issuer_jwk = ExportPublicKey(*issuer_private_key);
+  auto issuer_jwk = ExportPublicKey(issuer_private_key);
 
   issued.Sign(CreateJwtSigner(std::move(issuer_private_key)));
 

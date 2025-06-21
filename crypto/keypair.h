@@ -65,6 +65,7 @@ class CRYPTO_EXPORT PrivateKey {
   std::vector<uint8_t> ToUncompressedForm() const;
 
   EVP_PKEY* key() { return key_.get(); }
+  const EVP_PKEY* key() const { return key_.get(); }
 
   bool IsRsa() const;
   bool IsEc() const;

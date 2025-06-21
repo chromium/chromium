@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webid/sd_jwt.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "url/gurl.h"
@@ -44,7 +44,7 @@ class FederatedSdJwtHandler {
   std::vector<std::pair<std::string, content::sdjwt::JSONString>> disclosures_;
   // A private key that is used to bind the token when the token "format" is
   // "vc+sd-jwt".
-  std::unique_ptr<crypto::ECPrivateKey> private_key_;
+  std::optional<crypto::keypair::PrivateKey> private_key_;
 
   std::optional<std::vector<std::string>> fields_;
   std::string nonce_;
