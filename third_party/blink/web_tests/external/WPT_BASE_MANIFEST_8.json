@@ -431784,10 +431784,6 @@
      "b1924d52b5c979deb7dd26dffdbdedff3297c804",
      []
     ],
-    "TrustedTypePolicy-createXXX-expected.txt": [
-     "45d110dd9d36dcfc54dc4c5c813e5eb827ec1c26",
-     []
-    ],
     "TrustedTypePolicyFactory-getAttributeType-expected.txt": [
      "7be05f45b7e494451a344da30c6b2bf6518f068a",
      []
@@ -739249,7 +739245,7 @@
      ]
     ],
     "TrustedTypePolicy-createXXX.html": [
-     "f51f51d98455ebccdee31a5b0d844a926b27fc0e",
+     "957a691bcd909d71b2b34a4256fe7168cd14930b",
      [
       null,
       {}
