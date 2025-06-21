@@ -390,6 +390,10 @@ void ContextualSearchProvider::AddDefaultVerbatimMatch(
 bool ContextualSearchProvider::MaybeAddToolbeltMatch(
     const AutocompleteInput& input,
     const TemplateURL* input_starter_pack_engine) {
+  if (input.current_page_classification() ==
+      metrics::OmniboxEventProto::NTP_REALBOX) {
+    return false;
+  }
   const auto& config = omnibox_feature_configs::Toolbelt::Get();
   if (!config.enabled ||
       (!config.keep_toolbelt_after_input && !input.IsZeroSuggest())) {
