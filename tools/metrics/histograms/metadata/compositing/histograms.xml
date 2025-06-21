@@ -823,27 +823,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.TileManager.EnoughMemory.{ProcessType}"
-    enum="Boolean" expires_after="2024-06-30">
+<histogram name="Compositing.TileManager.EnoughMemory.Browser" enum="Boolean"
+    expires_after="2026-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-memory@google.com</owner>
   <summary>
     When memory is assigned to tiles, whether there was enough memory for all
-    required tiles.
+    required tiles. This is collected when assigning memory for browser process
+    only.
   </summary>
-  <token key="ProcessType" variants="TileManagerProcessType"/>
 </histogram>
 
-<histogram
-    name="Compositing.TileManager.LimitWhenNotEnoughMemory.{ProcessType}"
-    units="MB" expires_after="2024-06-30">
+<histogram name="Compositing.TileManager.LimitWhenNotEnoughMemory.Browser"
+    units="MB" expires_after="2026-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-memory@google.com</owner>
   <summary>
     When memory is assigned to tiles and there is not enough memory, the memory
-    limit that the tile assignment was breaching.
+    limit that the tile assignment was breaching. This is collected when
+    assigning memory for browser process only.
   </summary>
-  <token key="ProcessType" variants="TileManagerProcessType"/>
+</histogram>
+
+<histogram name="Compositing.TileManager.MemoryUsageWhenEnoughMemory"
+    units="MB" expires_after="2026-04-30">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-gpu-memory@google.com</owner>
+  <summary>
+    When memory is assigned to tiles, whether it succeeded or not, the current
+    total memory usage in MB. This is collected when assigning memory for
+    browser process only.
+  </summary>
 </histogram>
 
 <histogram name="Compositing.TileManager.RasterTasksDuration"

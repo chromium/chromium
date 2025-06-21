@@ -1079,20 +1079,16 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
   did_oom_on_last_assign_ = !had_enough_memory_to_schedule_tiles_needed_now;
   // Since this is recorded once per frame, subsample these metrics.
   if (metrics_sub_sampler_.ShouldSample(metrics_sampling_rate_)) {
-    if (running_on_renderer_process_) {
-      UMA_HISTOGRAM_BOOLEAN("Compositing.TileManager.EnoughMemory.Renderer",
-                            had_enough_memory_to_schedule_tiles_needed_now);
-    } else {
+    if (!running_on_renderer_process_) {
       UMA_HISTOGRAM_BOOLEAN("Compositing.TileManager.EnoughMemory.Browser",
                             had_enough_memory_to_schedule_tiles_needed_now);
-    }
-    if (did_oom_on_last_assign_) {
-      auto memory_limit = hard_memory_limit.memory_bytes() / (1024 * 1024);
-      if (running_on_renderer_process_) {
+      if (had_enough_memory_to_schedule_tiles_needed_now) {
         UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
-            "Compositing.TileManager.LimitWhenNotEnoughMemory.Renderer",
-            memory_limit);
-      } else {
+            "Compositing.TileManager.MemoryUsageWhenEnoughMemory",
+            memory_usage.memory_bytes() / (1024 * 1024));
+      }
+      if (did_oom_on_last_assign_) {
+        auto memory_limit = hard_memory_limit.memory_bytes() / (1024 * 1024);
         UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
             "Compositing.TileManager.LimitWhenNotEnoughMemory.Browser",
             memory_limit);
