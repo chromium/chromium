@@ -73,19 +73,32 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     /**
      * Helper methods for setup of a basic web contents accessibility unit test.
      *
-     * This method replaces the usual setUp() method annotated with @Before because we wish to
-     * load different data with each test, but the process is the same for all tests.
+     * <p>Equivalent to calling {@link #setupTestFromFile(String, boolean)} with true
      *
-     * Leaving a commented @Before annotation on each method as a reminder/context clue.
      */
     /* @Before */
     protected void setupTestFromFile(String file) {
+        // Default behavior: ignore trivial TYPE_WINDOW_CONTENT_CHANGED events.
+        setupTestFromFile(file, /* shouldFilterTrivialEvents= */ true);
+    }
+
+    /**
+     * Helper methods for setup of a basic web contents accessibility unit test.
+     *
+     * <p>This method replaces the usual setUp() method annotated with @Before because we wish to
+     * load different data with each test, but the process is the same for all tests.
+     *
+     * @param file                          Test file URL, including path and name
+     * @param shouldFilterTrivialEvents     Flag to filter out TYPE_WINDOW_CONTENT_CHANGED event
+     */
+    /* @Before */
+    protected void setupTestFromFile(String file, boolean shouldFilterTrivialEvents) {
         // Verify file exists before beginning the test.
         verifyInputFile(file);
 
         launchContentShellWithUrl(UrlUtils.getIsolatedTestFileUrl(file));
         waitForActiveShellToBeDoneLoading();
-        setupTestFramework();
+        setupTestFramework(shouldFilterTrivialEvents);
         setAccessibilityDelegate();
 
         // To prevent flakes, do not disable accessibility mid tests.
@@ -97,9 +110,23 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     /**
      * Helper method to set up our tests. This method replaces the @Before method. Leaving a
      * commented @Before annotation on method as a reminder/context clue.
+     *
+     * <p>Equivalent to calling {@link #setupTestFramework(boolean)} with true
+     *
      */
     /* @Before */
     public void setupTestFramework() {
+        setupTestFramework(/* shouldFilterTrivialEvents= */ true);
+    }
+
+    /**
+     * Helper method to set up our tests. This method replaces the @Before method. Leaving a
+     * commented @Before annotation on method as a reminder/context clue.
+     *
+     * @param shouldFilterTrivialEvents     Flag to filter out TYPE_WINDOW_CONTENT_CHANGED event
+     */
+    /* @Before */
+    public void setupTestFramework(boolean shouldFilterTrivialEvents) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
@@ -110,7 +137,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         mWcax = getWebContentsAccessibility();
         mNodeProvider = getAccessibilityNodeProvider();
 
-        mTracker = new AccessibilityActionAndEventTracker();
+        mTracker = new AccessibilityActionAndEventTracker(shouldFilterTrivialEvents);
         mWcax.setAccessibilityTrackerForTesting(mTracker);
     }
 

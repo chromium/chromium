@@ -45,6 +45,15 @@ public class WebContentsAccessibilityEventsTest {
             new AccessibilityContentShellActivityTestRule();
 
     /**
+     *
+     * <p>Equivalent to calling {@link #performTest(String, String, boolean)} with true
+     *
+     */
+    private void performTest(String inputFile, String expectationFile) {
+        performTest(inputFile, expectationFile, true);
+    }
+
+    /**
      * Perform a single test which will:
      *      1. Open the given HTML file
      *      2. Execute the javascript method "go()"
@@ -52,9 +61,12 @@ public class WebContentsAccessibilityEventsTest {
      *
      * @param inputFile                     HTML test input file
      * @param expectationFile               TXT expectations file
+     * @param shouldFilterTrivialEvents     Flag to filter out TYPE_WINDOW_CONTENT_CHANGED event
      */
-    private void performTest(String inputFile, String expectationFile) {
-        performTestWithJavascriptMethod(inputFile, expectationFile, "go()");
+    private void performTest(
+            String inputFile, String expectationFile, boolean shouldFilterTrivialEvents) {
+        performTestWithJavascriptMethod(
+                inputFile, expectationFile, "go()", shouldFilterTrivialEvents);
     }
 
     /**
@@ -91,11 +103,15 @@ public class WebContentsAccessibilityEventsTest {
      * @param inputFile                     HTML test input file
      * @param expectationFile               TXT expectations file
      * @param javascriptMethod              javascript method (e.g. "expand()" or "go()")
+     * @param shouldFilterTrivialEvents     Flag to filter out TYPE_WINDOW_CONTENT_CHANGED event
      */
     private void performTestWithJavascriptMethod(
-            String inputFile, String expectationFile, String javascriptMethod) {
+            String inputFile,
+            String expectationFile,
+            String javascriptMethod,
+            boolean shouldFilterTrivialEvents) {
         // Build page from given file and enable testing framework, set a tracker.
-        mActivityTestRule.setupTestFromFile(BASE_FILE_PATH + inputFile);
+        mActivityTestRule.setupTestFromFile(BASE_FILE_PATH + inputFile, shouldFilterTrivialEvents);
 
         // Execute given javascript function.
         executeJS(javascriptMethod);

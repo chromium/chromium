@@ -16,16 +16,41 @@ import java.util.LinkedList;
 @NullMarked
 public class AccessibilityActionAndEventTracker {
     private final LinkedList<String> mEvents;
+    private final boolean mShouldFilterTrivialEvents;
     private boolean mTestComplete;
 
     public AccessibilityActionAndEventTracker() {
-        this.mEvents = new LinkedList<String>();
-        this.mTestComplete = false;
+        mEvents = new LinkedList<String>();
+        mTestComplete = false;
+        mShouldFilterTrivialEvents = true;
+    }
+
+    public AccessibilityActionAndEventTracker(boolean shouldFilterTrivialEvents) {
+        // TODO(crbug.com/414363686) this overloaded constructor should be removed after flakiness
+        // of event test with trivial events included is solved. mShouldFilterTrivialEvents should
+        // also be removed after fixing the flakiness.
+        mEvents = new LinkedList<String>();
+        mTestComplete = false;
+        mShouldFilterTrivialEvents = shouldFilterTrivialEvents;
     }
 
     public void addEvent(AccessibilityEvent event) {
         // In rare cases there may be a lingering event, so only add if the test is not complete.
         if (!mTestComplete) {
+            if (mShouldFilterTrivialEvents) {
+                // Convert event type to a human readable String (except TYPE_WINDOW_CONTENT_CHANGED
+                // with no CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag or
+                // CONTENT_CHANGE_TYPE_PANE_TITLE flag)
+                if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+                        && (event.getContentChangeTypes()
+                                        & AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION)
+                                == 0
+                        && (event.getContentChangeTypes()
+                                        & AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE)
+                                == 0) {
+                    return;
+                }
+            }
             mEvents.add(eventToString(event));
         }
     }
@@ -109,19 +134,8 @@ public class AccessibilityActionAndEventTracker {
      * @param event AccessibilityEvent event to get a string for
      * @return String representation of the given event
      */
-    private static @Nullable String eventToString(AccessibilityEvent event) {
-        // Convert event type to a human readable String (except TYPE_WINDOW_CONTENT_CHANGED with no
-        // CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag or CONTENT_CHANGE_TYPE_PANE_TITLE flag)
-        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
-                && (event.getContentChangeTypes()
-                                & AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION)
-                        == 0
-                && (event.getContentChangeTypes()
-                                & AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE)
-                        == 0) {
-            return null;
-        }
-
+    private static String eventToString(AccessibilityEvent event) {
+        // Convert event type to a human readable String
         StringBuilder builder = new StringBuilder();
         builder.append(AccessibilityEvent.eventTypeToString(event.getEventType()));
 
