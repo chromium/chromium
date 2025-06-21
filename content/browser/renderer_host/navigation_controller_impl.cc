@@ -1769,7 +1769,9 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // after a race with an OOPIF (see https://crbug.com/616820).
   FrameNavigationEntry* frame_entry =
       active_entry->GetFrameEntry(rfh->frame_tree_node());
-  if (frame_entry && frame_entry->site_instance()) {
+  if (base::FeatureList::IsEnabled(
+          features::kCheckSiteInstanceOnHistoryNavigation) &&
+      frame_entry && frame_entry->site_instance()) {
     int64_t dsn = navigation_request->frame_entry_document_sequence_number();
     if (dsn != -1 && dsn == frame_entry->document_sequence_number()) {
       // We CHECK that the SiteInstance matches the one stored in the session

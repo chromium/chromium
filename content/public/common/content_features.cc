@@ -196,6 +196,14 @@ BASE_FEATURE(kCapturedSurfaceControlKillswitch,
              "CapturedSurfaceControlKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables a CHECK in RendererDidNavigate to ensure that session
+// history navigations commit in the expected SiteInstance when the
+// document sequence number matches. Helps detect navigation process
+// mismatches and potential security issues.
+BASE_FEATURE(kCheckSiteInstanceOnHistoryNavigation,
+             "CheckSiteInstanceOnHistoryNavigation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Clear the window.name property for the top-level cross-site navigations that
 // swap BrowsingContextGroups(BrowsingInstances).
 BASE_FEATURE(kClearCrossSiteCrossBrowsingContextGroupWindowName,
