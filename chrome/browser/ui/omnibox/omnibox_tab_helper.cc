@@ -23,6 +23,8 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "content/public/browser/render_frame_host.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OmniboxTabHelper);
@@ -153,6 +155,28 @@ void OmniboxTabHelper::PrimaryPageChanged(content::Page& page) {
   logged_current_navigation_timings_ = false;
 
   primary_page_changed_time_ = base::ElapsedTimer();
+
+  AddMetadataObserver(page);
+}
+
+void OmniboxTabHelper::AddMetadataObserver(content::Page& page) {
+  if (!base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver)) {
+    return;
+  }
+
+  frame_metadata_observer_receiver_.reset();
+
+  mojo::Remote<blink::mojom::FrameMetadataObserverRegistry>
+      frame_metadata_observer_registry;
+  auto& render_frame_host = page.GetMainDocument();
+  render_frame_host.GetRemoteInterfaces()->GetInterface(
+      frame_metadata_observer_registry.BindNewPipeAndPassReceiver());
+
+  mojo::PendingRemote<blink::mojom::FrameMetadataObserver> remote;
+  frame_metadata_observer_receiver_.Bind(
+      remote.InitWithNewPipeAndPassReceiver());
+
+  frame_metadata_observer_registry->AddObserver(std::move(remote));
 }
 
 void OmniboxTabHelper::PrimaryMainDocumentElementAvailable() {
@@ -202,6 +226,8 @@ void OmniboxTabHelper::MaybeLogNavigationToPopupShownTimings(
 void OmniboxTabHelper::MaybeLogPaywallSignal() {
   // If the page content service is not observing, then the paywall signal is
   // unavailable to be fetched.
+  // TODO(mercerd): handle the case where the listener exists -- maybe add
+  // `&& !frame_metadata_observer_receiver_`
   if (!page_content_service_observation_.IsObserving()) {
     return;
   }
@@ -209,4 +235,8 @@ void OmniboxTabHelper::MaybeLogPaywallSignal() {
   const auto paywall_signal = ToPaywallSignal(page_has_apc_paywall_signal_);
   base::UmaHistogramEnumeration("Omnibox.OnPopupOpen.PaywallSignal",
                                 paywall_signal);
+}
+
+void OmniboxTabHelper::OnPaidContentMetadataChanged(bool has_paid_content) {
+  // TODO(mercerd): handle has_paid_content;
 }

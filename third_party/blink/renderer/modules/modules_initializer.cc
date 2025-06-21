@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_rendering_context.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
+#include "third_party/blink/renderer/modules/content_extraction/frame_metadata_observer_registry.h"
 #include "third_party/blink/renderer/modules/content_extraction/inner_html_agent.h"
 #include "third_party/blink/renderer/modules/content_extraction/inner_text_agent.h"
 #include "third_party/blink/renderer/modules/context_menu/context_menu.h"
@@ -272,6 +273,12 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
   if (base::FeatureList::IsEnabled(kBlinkEnableInnerHtmlAgent)) {
     frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
         &InnerHtmlAgent::BindReceiver, WrapWeakPersistent(&frame)));
+  }
+
+  if (base::FeatureList::IsEnabled(features::kFrameMetadataObserver)) {
+    frame.GetInterfaceRegistry()->AddInterface(
+        WTF::BindRepeating(&FrameMetadataObserverRegistry::BindReceiver,
+                           WrapWeakPersistent(&frame)));
   }
 }
 

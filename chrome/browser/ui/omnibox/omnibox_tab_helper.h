@@ -15,6 +15,8 @@
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/mojom/content_extraction/frame_metadata_observer_registry.mojom.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace content {
@@ -30,7 +32,8 @@ class Profile;
 class OmniboxTabHelper
     : public content::WebContentsUserData<OmniboxTabHelper>,
       public page_content_annotations::PageContentExtractionService::Observer,
-      public content::WebContentsObserver {
+      public content::WebContentsObserver,
+      public blink::mojom::FrameMetadataObserver {
  public:
   // Observer to listen for updates from OmniboxTabHelper.
   class Observer : public base::CheckedObserver {
@@ -49,6 +52,9 @@ class OmniboxTabHelper
     // Invoked when the omnibox popup visibility changes.
     virtual void OnOmniboxPopupVisibilityChanged(bool popup_is_open) = 0;
   };
+
+  // Invoked when the frame metadata changes.
+  void OnPaidContentMetadataChanged(bool has_paid_content) override;
 
   ~OmniboxTabHelper() override;
 
@@ -96,6 +102,9 @@ class OmniboxTabHelper
   // Logs the paywall signal for the current page.
   void MaybeLogPaywallSignal();
 
+  // Adds the frame metadata observer.
+  void AddMetadataObserver(content::Page& page);
+
   // Whether the current page has a paywall signal in the Annotated Page
   // Content. std::nullopt if the page content wasn't yet extracted and
   // therefore the signal could not be calculated.
@@ -125,6 +134,9 @@ class OmniboxTabHelper
       page_content_service_observation_{this};
 
   base::ObserverList<Observer> observers_;
+
+  mojo::Receiver<blink::mojom::FrameMetadataObserver>
+      frame_metadata_observer_receiver_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_TAB_HELPER_H_

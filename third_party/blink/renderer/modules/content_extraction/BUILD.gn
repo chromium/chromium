@@ -10,6 +10,8 @@ blink_modules_sources("content_extraction") {
     "ai_page_content_agent.h",
     "document_chunker.cc",
     "document_chunker.h",
+    "frame_metadata_observer_registry.cc",
+    "frame_metadata_observer_registry.h",
     "inner_html_agent.cc",
     "inner_html_agent.h",
     "inner_html_builder.cc",

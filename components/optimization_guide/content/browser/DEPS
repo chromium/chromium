@@ -18,6 +18,10 @@ specific_include_rules = {
     "+components/ukm/test_ukm_recorder.h",
     "+services/metrics/public/cpp/ukm_builders.h",
   ],
+  "frame_metadata_observer_browsertest\.cc": [
+    "+content/shell",
+    "+components/network_session_configurator/common/network_switches.h",
+  ],
   "page_content_proto_util_unittest\.cc": [
     "+third_party/blink/renderer/platform/graphics",
   ],

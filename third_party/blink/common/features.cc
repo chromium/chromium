@@ -1108,6 +1108,10 @@ BASE_FEATURE_ENUM_PARAM(ForceDarkImageClassifier,
                         ForceDarkImageClassifier::kUseBlinkSettings,
                         &forcedark_image_classifier_policy_options);
 
+BASE_FEATURE(kFrameMetadataObserver,
+             "FrameMetadataObserver",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the frequency capping for detecting large sticky ads.
 // Large-sticky-ads are those ads that stick to the bottom of the page
 // regardless of a user’s efforts to scroll, and take up more than 30% of the
