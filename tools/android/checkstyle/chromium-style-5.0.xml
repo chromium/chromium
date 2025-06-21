@@ -267,6 +267,13 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Elevation based surface color is being deprecated. Use tonal color roles instead. See crbug.com/348667900."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="AndroidContextMenu"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="import\ android\.view\.ContextMenu"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Android context menu has been proven not compatible well with theme changes. Use Chrome's ListMenu instead. See crbug.com/339864862."/>
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>
