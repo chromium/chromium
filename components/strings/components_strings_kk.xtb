@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">Бағаны қадағалау хабарландырулары</translation>
 <translation id="21613918653299710">Онлайн сурет галереялары</translation>
 <translation id="2161656808144014275">Мәтін</translation>
+<translation id="2162435186600002085">Негізгі жоғарғы деректеме логотипі</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтындағы қазіргі бағасы – <ph name="CURRENT_PRICE" />.</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> қатесіз енгізілгенін тексеріңіз.</translation>
 <translation id="2166049586286450108">Әкімшінің бүкіл дерекке кіру рұқсаты</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">Паспорт қосу</translation>
 <translation id="2400271059665846158">Тұрақты клиент карталарын Google Wallet-те басқарыңыз.</translation>
 <translation id="2400600116338235695">Тізбекті порттарға қосылуға рұқсат сұрайды.</translation>
+<translation id="240450251994300576">Қосымша жоғарғы деректеме логотипі</translation>
 <translation id="2404884497378469141">Файлдарды қайта көшіріп көріңіз</translation>
 <translation id="2413155254802890957">Ескі</translation>
 <translation id="2413528052993050574">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты қайтарып алынған болуы мүмкін. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">PDF-тен мәтін алынып жатыр...</translation>
 <translation id="2628224721443278970">Microsoft OneDrive аккаунтына кіру</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> серверінің IP мекенжайын табу мүмкін емес.</translation>
+<translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> арқылы іздеу үшін @ деп теріңіз.</translation>
 <translation id="2639739919103226564">Күйі:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Мата (жартылай жылтыр)</translation>
@@ -2266,6 +2269,7 @@
 <translation id="4827283332383516812">Картаны жою</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> таңдалды</translation>
 <translation id="4831993743164297314">Сурет теру құралының қағазы</translation>
+<translation id="4832388034239846146">Қойындылар топтарын бөлісу үшін Chrome-ды жаңартыңыз.</translation>
 <translation id="483241715238664915">Хабарландыруларды қосу</translation>
 <translation id="4832961164064927107">Гриль және барбекю</translation>
 <translation id="4834250788637067901">Google Pay қызметіндегі төлеу әдістері, ұсыныстар және мекенжайлар</translation>
@@ -2973,6 +2977,7 @@
 <translation id="6043357981274314628">Дайын!</translation>
 <translation id="6044573915096792553">Өлшемі: 12</translation>
 <translation id="6045164183059402045">Жолақтарды түсіру үлгісі</translation>
+<translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> туралы іздеу немесе сұрау үшін <ph name="SEARCH_AGGREGATOR_KEYWORD" /> деп теріңіз.</translation>
 <translation id="6047927260846328439">Бұл контент бағдарламалық құрал орнату немесе жеке ақпаратыңызды көрсету мақсатында сізді алдауы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 хатқалтасы</translation>
 <translation id="6049488691372270142">Бетті беру</translation>

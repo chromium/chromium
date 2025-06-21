@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">Уведомления об отслеживаемых ценах</translation>
 <translation id="21613918653299710">Веб-галереи изображений</translation>
 <translation id="2161656808144014275">Текст</translation>
+<translation id="2162435186600002085">Логотип основного заголовка</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> на сайте <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Проверьте, нет ли опечаток в имени хоста <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Доступ администратора ко всем данным</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">Добавить паспортные данные</translation>
 <translation id="2400271059665846158">Настроить карты постоянного клиента в Google Кошельке</translation>
 <translation id="2400600116338235695">Разрешено отправлять запрос на подключение к последовательным портам</translation>
+<translation id="240450251994300576">Логотип второстепенного заголовка</translation>
 <translation id="2404884497378469141">Попробуйте скопировать файлы ещё раз.</translation>
 <translation id="2413155254802890957">Старый</translation>
 <translation id="2413528052993050574">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности может быть отозван. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">Текст извлекается из PDF-файла…</translation>
 <translation id="2628224721443278970">Войти в Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Не удалось найти IP-адрес сервера <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Введите @ для поиска в <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Состояние:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Ткань (полуглянцевая)</translation>
@@ -2266,6 +2269,7 @@
 <translation id="4827283332383516812">Удаление карты</translation>
 <translation id="4830443836091007686">Выбрано: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Бумага для фотонаборной машины</translation>
+<translation id="4832388034239846146">Чтобы делиться группами вкладок, обновите Chrome.</translation>
 <translation id="483241715238664915">Включить предупреждения</translation>
 <translation id="4832961164064927107">Барбекю и гриль</translation>
 <translation id="4834250788637067901">Способы оплаты, предложения и адреса из Google Pay</translation>
@@ -2973,6 +2977,7 @@
 <translation id="6043357981274314628">Готово</translation>
 <translation id="6044573915096792553">Размер: 12</translation>
 <translation id="6045164183059402045">Шаблон спуска полос</translation>
+<translation id="6046892054959167494">Введите "<ph name="SEARCH_AGGREGATOR_KEYWORD" />" для поиска или спросите <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Посещение этой страницы может привести к установке вредоносной программы или хищению вашей личной информации. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Конверт B4</translation>
 <translation id="6049488691372270142">Выдача страниц</translation>

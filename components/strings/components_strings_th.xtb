@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">การแจ้งเตือนการติดตามราคา</translation>
 <translation id="21613918653299710">แกลเลอรีภาพออนไลน์</translation>
 <translation id="2161656808144014275">ข้อความ</translation>
+<translation id="2162435186600002085">โลโก้ส่วนหัวหลัก</translation>
 <translation id="2162620598375156287">ตอนนี้ราคา <ph name="CURRENT_PRICE" /> ใน <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">ตรวจสอบว่ามีการพิมพ์ผิดใน <ph name="HOST_NAME" /> ไหม</translation>
 <translation id="2166049586286450108">การเข้าถึงระดับผู้ดูแลระบบโดยสมบูรณ์</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">เพิ่มหนังสือเดินทาง</translation>
 <translation id="2400271059665846158">จัดการบัตรสะสมคะแนนใน Google Wallet</translation>
 <translation id="2400600116338235695">สามารถขอเชื่อมต่อกับพอร์ตอนุกรมได้</translation>
+<translation id="240450251994300576">โลโก้ส่วนหัวรอง</translation>
 <translation id="2404884497378469141">ลองคัดลอกไฟล์อีกครั้ง</translation>
 <translation id="2413155254802890957">เก่า</translation>
 <translation id="2413528052993050574">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะอาจมีการเพิกถอนใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">กำลังดึงข้อความจาก PDF...</translation>
 <translation id="2628224721443278970">ลงชื่อเข้าใช้ Microsoft OneDrive</translation>
 <translation id="2634124572758952069">ไม่พบที่อยู่ IP ของเซิร์ฟเวอร์ <ph name="HOST_NAME" /></translation>
+<translation id="2638567100095052009">พิมพ์ @ เพื่อค้นหาใน <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">สถานะ:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">ผ้า (กึ่งเงา)</translation>
@@ -2266,6 +2269,7 @@
 <translation id="4827283332383516812">ลบบัตร</translation>
 <translation id="4830443836091007686">เลือกไว้ <ph name="ITEMS" /> รายการ</translation>
 <translation id="4831993743164297314">กระดาษสำหรับเครื่องยิงฟิล์ม</translation>
+<translation id="4832388034239846146">หากต้องการแชร์กลุ่มแท็บ ให้อัปเดต Chrome</translation>
 <translation id="483241715238664915">เปิดคำเตือน</translation>
 <translation id="4832961164064927107">ปิ้งย่างและบาร์บีคิว</translation>
 <translation id="4834250788637067901">วิธีการชำระเงิน ข้อเสนอ และที่อยู่จาก Google Pay</translation>
@@ -2973,6 +2977,7 @@
 <translation id="6043357981274314628">เสร็จแล้ว</translation>
 <translation id="6044573915096792553">ขนาด 12</translation>
 <translation id="6045164183059402045">เทมเพลตการจัดเรียงหน้าก่อนพิมพ์</translation>
+<translation id="6046892054959167494">พิมพ์ <ph name="SEARCH_AGGREGATOR_KEYWORD" /> เพื่อค้นหาหรือถาม <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">เนื้อหานี้อาจพยายามหลอกล่อให้คุณติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูลส่วนบุคคล <ph name="BEGIN_LINK" />แสดงเนื้อหา<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">หน้าที่แสดง</translation>

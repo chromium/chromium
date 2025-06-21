@@ -17,6 +17,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> منٹ پہلے تخلیق کیا گیا}other{<ph name="NUM_MINS_MANY" /> منٹ پہلے تخلیق کیا گیا}}</translation>
 <translation id="1499635324672558517">سبھی پوشیدگی ٹیبز بند کریں؟</translation>
 <translation id="1501480321619201731">گروپ حذف کریں</translation>
+<translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> غیر فعال آئٹم}other{<ph name="TABS_COUNT_MANY" /> غیر فعال آئٹمز}}</translation>
 <translation id="1555130319947370107">نیلا</translation>
 <translation id="161042844686301425">سیان</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ٹیبز کا گروپ بن گیا</translation>
@@ -68,6 +69,7 @@
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> نیا ٹیب}other{‫<ph name="MANY_ADDED" /> نئے ٹیبز}}</translation>
 <translation id="3613492231657284463">غیر فعال ٹیبز کا ڈائیلاگ چھپائیں</translation>
 <translation id="3619255692378312441">رسائی کا نظم کریں</translation>
+<translation id="3649471731638882002">{TAB_COUNT,plural, =1{آئٹم بند کریں}other{آئٹمز بند کریں}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">شیٹ پیش منظر شیئر کریں کیلئے تھمب نیل</translation>
 <translation id="3810973564298564668">نظم کریں</translation>
@@ -80,6 +82,7 @@
 <translation id="4159784952369912983">جامنی</translation>
 <translation id="427987768447457592">نیا ٹیب گروپ</translation>
 <translation id="4371591986692297148">غیر فعال ہے</translation>
+<translation id="4429658455677831355">{TAB_COUNT,plural, =1{آئٹم بحال کریں}other{آئٹمز کو بحال کریں؟}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{‫<ph name="NUM_DAYS_ONE" /> دن پہلے اپ ڈیٹ کیا گیا}other{‫<ph name="NUM_DAYS_MANY" /> دن پہلے اپ ڈیٹ کیا گیا}}</translation>
 <translation id="4686942373615810936">ابھی ابھی تخلیق کیا گیا</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 دن کے بعد بند کریں}other{<ph name="DAY_COUNT_MANY" /> دن کے بعد بند کریں}}</translation>
@@ -206,4 +209,5 @@
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو پھیلائیں۔}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو پھیلائیں۔}}</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="992256792861109788">گلابی</translation>
+<translation id="994514002078791059">{TAB_COUNT,plural, =1{‫1 غیر فعال آئٹم کو بند کریں؟}other{‫<ph name="TAB_COUNT_MANY" /> غیر فعال آئٹمز کو بند کریں؟}}</translation>
 </translationbundle>

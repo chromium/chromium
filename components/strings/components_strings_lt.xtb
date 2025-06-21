@@ -693,6 +693,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2157640075051554492">Kainų stebėjimo pranešimai</translation>
 <translation id="21613918653299710">Vaizdų galerijos prisijungus</translation>
 <translation id="2161656808144014275">Tekstas</translation>
+<translation id="2162435186600002085">Pagrindinės antraštės logotipas</translation>
 <translation id="2162620598375156287">Dabar <ph name="CURRENT_PRICE" /> svetainėje <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Patikrinkite, ar pavadinime <ph name="HOST_NAME" /> nėra klaidos.</translation>
 <translation id="2166049586286450108">Visateisė administratoriaus prieiga</translation>
@@ -851,6 +852,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2400263725572336749">Paso pridėjimas</translation>
 <translation id="2400271059665846158">Tvarkykite lojalumo korteles programoje „Google Wallet“</translation>
 <translation id="2400600116338235695">Gali būti prašoma prisijungti prie nuosekliųjų prievadų</translation>
+<translation id="240450251994300576">Antrinės antraštės logotipas</translation>
 <translation id="2404884497378469141">Pabandykite dar kartą nukopijuoti failus</translation>
 <translation id="2413155254802890957">Senas</translation>
 <translation id="2413528052993050574">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas gali būti atšauktas. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
@@ -981,6 +983,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2627847595568876492">Išskiriamas tekstas iš PDF...</translation>
 <translation id="2628224721443278970">Prisijungti prie „Microsoft OneDrive“</translation>
 <translation id="2634124572758952069">Nepavyko rasti <ph name="HOST_NAME" /> serverio IP adreso.</translation>
+<translation id="2638567100095052009">Įveskite @, jei norite ieškoti <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Būsena:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Audinys (pusiau blizgus)</translation>
@@ -2268,6 +2271,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4827283332383516812">Ištrinti kortelę</translation>
 <translation id="4830443836091007686">Pasirinkta: <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Vaizdo nustatymo metodo popierius</translation>
+<translation id="4832388034239846146">Jei norite bendrinti skirtukų grupes, atnaujinkite „Chrome“</translation>
 <translation id="483241715238664915">Įjungti įspėjimus</translation>
 <translation id="4832961164064927107">Kepsniai ir kepimas ant grotelių</translation>
 <translation id="4834250788637067901">Mokėjimo metodai, pasiūlymai ir adresai naudojant „Google Pay“</translation>
@@ -2975,6 +2979,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6043357981274314628">Atlikta!</translation>
 <translation id="6044573915096792553">Dydis: 12</translation>
 <translation id="6045164183059402045">Paskyrimo šablonas</translation>
+<translation id="6046892054959167494">Įveskite <ph name="SEARCH_AGGREGATOR_KEYWORD" />, jei norite ieškoti, arba paklauskite <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Šiuo turiniu gali būti bandoma apgaule priversti jus įdiegti programinę įrangą arba atskleisti asmens informaciją. <ph name="BEGIN_LINK" />Rodyti vis tiek<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 vokas</translation>
 <translation id="6049488691372270142">Puslapių teikimas</translation>

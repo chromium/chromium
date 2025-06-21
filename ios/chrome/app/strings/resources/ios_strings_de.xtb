@@ -211,6 +211,7 @@
 <translation id="1838089197478136166">In Wallet öffnen?</translation>
 <translation id="183878838231635348">Auf dieser Karte werden alle Datenschutz- oder Sicherheitsprobleme angezeigt, die der Sicherheitscheck automatisch erkennt.</translation>
 <translation id="1845230888742614096">Gruppe beibehalten</translation>
+<translation id="1853692000353488670">Neuer Inkognitotab</translation>
 <translation id="1854463785401910334">In geöffneten Tabs suchen</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} von {count} Passwort}other{{position} von {count} Passwörtern}}</translation>
 <translation id="1861262398884155592">Dieser Ordner ist leer</translation>
@@ -1019,7 +1020,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="519530786644929958">Der Download ist fehlgeschlagen und kann nicht wiederholt werden.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Optionen zum Festlegen von Berechtigungen</translation>
-<translation id="5203051773066903947">Eingabetaste</translation>
+<translation id="5203051773066903947">Eingeben</translation>
 <translation id="5206453674369664567">Abmelden und Daten löschen</translation>
 <translation id="5210365745912300556">Schließen</translation>
 <translation id="5211488077761630279">Zulassen, dass „<ph name="SITE_NAME" />“ <ph name="PERMISSION" /> verwendet?</translation>

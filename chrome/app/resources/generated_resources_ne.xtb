@@ -52,6 +52,7 @@
 <translation id="1031362278801463162">पूर्वावलोकन लोड गर्दै</translation>
 <translation id="1032605640136438169">कृपया नयाँ सर्तहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="103279545524624934">Android एप सुरु गर्न डिस्कमा ठाउँ खाली गर्नुहोस्।</translation>
+<translation id="1033060461778467949">ट्याब सारेर स्प्लिट भ्यूमा लैजानुहोस्</translation>
 <translation id="1033780634303702874">आफ्नो धारावाहिक यन्त्रहरू पहुँच गर्नुहोस्</translation>
 <translation id="1034484273907870301">ट्याब्लेट मोडमा उपलब्ध थम्बनेल ट्याब स्ट्रिप</translation>
 <translation id="1035289631433631911">कन्टेन्ट ट्रान्स्फर टुल</translation>
@@ -1911,6 +1912,7 @@
 <translation id="2312219318583366810">पेजको URL</translation>
 <translation id="2314165183524574721">हालको भिजिबिलिटी सेटिङ यस प्रकार छ: लुकाइएको</translation>
 <translation id="2314774579020744484">पृष्ठहरू अनुवाद गर्दा प्रयोग हुने भाषा</translation>
+<translation id="2316090909467242775">यो रिकभरी पासवर्ड प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="2316129865977710310">पर्दैन, धन्यवाद</translation>
 <translation id="2316433409811863464">एप स्ट्रिमिङ</translation>
 <translation id="2316709634732130529">सुझाव दिइएको पासवर्ड प्रयोग गर्नुहोस्</translation>
@@ -3535,6 +3537,7 @@
 <translation id="3462413494201477527">खाता सेटअप रद्द गर्ने हो?</translation>
 <translation id="346298925039590474">यो डिभाइस चलाउने सबै प्रयोगकर्ताहरू यो मोबाइल नेटवर्क प्रयोग गर्न सक्ने छन्</translation>
 <translation id="3464145797867108663">वर्क प्रोफाइल हाल्नुहोस्</translation>
+<translation id="34673353983913587">तपाईंको नयाँ पासवर्ड सेभ गर्नुअघि साइटमा थप प्रमाणीकरण गर्नु पर्ने हुन्छ</translation>
 <translation id="3468298837301810372">लेबल</translation>
 <translation id="3468999815377931311">Android फोन</translation>
 <translation id="3469583217479686109">चयन गर्ने टुल</translation>
@@ -3562,6 +3565,7 @@
 <translation id="3487007233252413104">बेनाम प्रकार्य</translation>
 <translation id="3487649228420469005">स्क्यान गर्ने कार्य पूरा भयो</translation>
 <translation id="3488199663160411179">नाम</translation>
+<translation id="3489457144969823485">जुलाई २०२५ देखि Chrome का एपहरू ChromeOS डिभाइसहरूमा चल्न छाडेका छन्। कुनै वैकल्पिक एप प्रयोग गर्नुहोस्।</translation>
 <translation id="3490695139702884919">डाउनलोड गरिँदै छ... <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">तपाईंले आफ्नो PIN वा पासवर्ड बिर्सनुभयो भने पनि लोकल डेटा रिस्टोर गर्न सकिन्छ</translation>
 <translation id="3491616972057195633">बाउन्स की</translation>
@@ -4029,6 +4033,7 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> वटा एक्स्टेन्सन</translation>
 <translation id="3794792524918736965">Windows Hello अन गर्नुहोस्</translation>
 <translation id="379509625511193653">अफ छ</translation>
+<translation id="3795624560191557077">तपाईंले हालसालै परिवर्तन गर्नुभएको पासवर्ड चोरी भएको डेटाको सार्वजनिक सङ्ग्रहमा भेटिएको छ। कुनै समस्या परेका खण्डमा Google पासवर्ड म्यानेजरले तपाईंलाई साइन इन गर्न मद्दत गर्न सक्छ।</translation>
 <translation id="3796215473395753611">alt + अप एरो</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, भ्वाइस प्रिभ्यू गर्न राइट एरो की प्रयोग गर्नुहोस्</translation>
 <translation id="3796648294839530037">मन पर्ने नेटवर्क:</translation>
@@ -5846,6 +5851,7 @@
 <translation id="5088534251099454936">RSA को साथमा PKCS #1 SHA-512 गुप्तलेखन</translation>
 <translation id="5090637338841444533">तपाईंको क्यामेराको स्थिति ट्र्याक गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="5091636240353511739">PIN देखाउनुहोस्</translation>
+<translation id="5093417502834168387">साइन इन गर्ने क्रममा समस्या आयो? अर्को तरिका अपनाई हेर्नुहोस्</translation>
 <translation id="5093477827231450397">अन्य साइटहरूलाई विज्ञापन सिफारिस गर्न दिन नचाहेका कारण तपाईंले ब्लक गर्नुभएका साइटहरूको सूची</translation>
 <translation id="5093569275467863761">इन्कोग्निटो मोडमा ब्याक/फर्वार्ड क्यास गरिएको सबफ्रेम: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">तपाईं यो एप प्रयोग गरी खोल्न तथा सम्पादन गर्न मिल्ने फाइलहरू Files एप वा अन्य एपमार्फत खोल्न तथा सम्पादन गर्न सक्नुहुन्छ। तपाईं कुन कुन फाइल यो एपमार्फत स्वतः खुल्छ भन्ने कुरा नियन्त्रण गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />डिभाइसमा डिफल्ट एप कसरी तय गर्ने भन्ने कुरा जान्नुहोस्<ph name="END_LINK" />।</translation>
@@ -6783,6 +6789,7 @@
 <translation id="5785583009707899920">Chrome को फाइलका उपयोगिताहरू</translation>
 <translation id="5787146423283493983">प्रमुख सम्झौता</translation>
 <translation id="5787420647064736989">डिभाइसको नाम</translation>
+<translation id="5787582109651427233"><ph name="BEGIN_LINK_LOYALTY_CARDS" />लोयल्टी कार्डहरू<ph name="END_LINK_LOYALTY_CARDS" /> वा Google Pay का <ph name="BEGIN_LINK_PAYMENT_METHODS" />भुक्तानी विधिहरू<ph name="END_LINK_PAYMENT_METHODS" /> हाल्न वा व्यवस्थापन गर्न Google Wallet मा जानुहोस्</translation>
 <translation id="5788367137662787332">माफ गर्नुहोस्, यन्त्रमा कम्तीमा एउटा विभाजन <ph name="DEVICE_LABEL" /> माउन्ट हुन सकेन।</translation>
 <translation id="5789581866075720267">तपाईं यो डिभाइसमा भएको <ph name="BRAND" /> मा पासवर्डहरू इम्पोर्ट गर्न चाहनुहुन्छ भने कुनै CSV फाइल छनौट गर्नुहोस्।</translation>
 <translation id="5790085346892983794">सफलता</translation>
@@ -7267,6 +7274,7 @@
 <translation id="6131511889181741773">स्प्लाटर</translation>
 <translation id="6132251717264923430">बटन पिन गरिएको छ</translation>
 <translation id="6132714462430777655">स्कुलको इमेल ठेगाना हालेर डिभाइस दर्ता गर्ने प्रक्रिया स्किप गर्ने हो?</translation>
+<translation id="6134418895482326458">नयाँ ट्याब पेजमा फुटर लुकाउनुहोस्</translation>
 <translation id="6134428719487602109">प्रयोगकर्ताका सबै खाता हटाउनुहोस् र Chromebook रिसेट गरेर पूरै नयाँ जस्तो बनाउनुहोस्।</translation>
 <translation id="6135826623269483856">तपाईंका सबै डिस्प्लेमा विन्डो व्यवस्थापन गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="6136114942382973861">डाउनलोडहरूको पट्टी बन्द गर्नुहोस्</translation>
@@ -7623,6 +7631,7 @@
 <translation id="6388577073199278153">तपाईंले आफ्नो मोबाइल खाता हेर्न सक्नुभएन</translation>
 <translation id="6390020764191254941">ट्याब नयाँ विन्डोमा सार्नुहोस्</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{कुनैको पनि होइन}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> र थप एउटा डोमेनका}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> र थप {COUNT} वटा डोमेनका}}</translation>
+<translation id="6390533465682072118">रिकभरी</translation>
 <translation id="6391131092053186625">तपाईंको डिभाइसको IMEI नम्बर <ph name="IMEI_NUMBER" /> हो। यो नम्बर सेवा एक्टिभेट गर्ने प्रयोजनका लागि प्रयोग गर्न सकिन्छ।</translation>
 <translation id="6393156038355142111">भरपर्दो पासवर्ड सिफारिस गर्नुहोस्</translation>
 <translation id="6393550101331051049">असुरक्षित सामग्री देखाउन अनुमति दिइएका साइटहरू</translation>
@@ -7707,6 +7716,7 @@
 <translation id="6455521402703088376">अफ • यो एक्स्टेन्सनको विकासकर्ताले यो एक्स्टेन्सनको प्रकाशन रद्द गरेको हो</translation>
 <translation id="6455894534188563617">&amp;नयाँ फोल्डर</translation>
 <translation id="645705751491738698">जाभास्क्रिप्ट रोक्न जारी राख्नुहोस्</translation>
+<translation id="6457572529564180082"><ph name="APP_NAME" /> सुरु गर्न सकिएन</translation>
 <translation id="6458606150257356946">जे होस् पेस्ट गर्नुहोस्</translation>
 <translation id="6458701200018867744">अपलोड गर्न सकिएन (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
 <translation id="6459488832681039634">पत्ता लगाउन छनोट प्रयोग गर्नुहोस्</translation>
@@ -7999,6 +8009,7 @@
 <translation id="6667187897999649121">तपाईं अहिले पारिवारिक सदस्यहरूसँग पासवर्डहरू मात्र सेयर गर्न सक्नुहुन्छ। बढीमा ६ जना सदस्य समावेश गरेर <ph name="BEGIN_LINK" />पारिवारिक समूह<ph name="END_LINK" /> बनाउनुहोस् र Google का विभिन्न सेवाहरूमा उपलब्ध आफ्ना उत्पादन तथा सदस्यताबाट अझ बढी लाभ उठाउनुहोस्।</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मा खोल्नुहोस्</translation>
 <translation id="6669195257625975787">यो डेटामा पनि तपाईंले हेर्दै गरेको साइटमा लागू गरिएकै सेटिङ लागू गरिन्छ</translation>
+<translation id="6669637573228217624">कुनै फाइल अपलोड गर्नुहोस्</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> अब उपलब्ध छ</translation>
 <translation id="6670767097276846646">केही एक्स्टेन्सनहरूले Chrome मा सर्च इन्जिन थप्न सक्छ</translation>
 <translation id="6670983860904543332">स्वतः अपडेट हुने सुविधाले तपाईंलाई नयाँ सुविधाहरू एक्सेस गर्न दिने छ। हालसालैका अपडेटहरूका हाइलाइट हेर्नुहोस्।</translation>
@@ -8138,6 +8149,7 @@
 <translation id="6771503742377376720">एउटा प्रमाणीकरण अधिकार हो</translation>
 <translation id="6772974422346500939">खोल्नुहोस् र सम्पादन गर्नुहोस्</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
+<translation id="677394079035748956">यो साइटमा एक पटके पासवर्ड हाल्नु पर्ने हुन्छ</translation>
 <translation id="6774710250118040929">नयाँ पासवर्ड हाल्नुहोस्</translation>
 <translation id="6775163072363532304">उपलब्ध डिभाइस यहाँ देखिने छन्।</translation>
 <translation id="6775992990195573904">आफ्ना ट्याबहरू क्रमबद्ध गर्नुहोस्</translation>
@@ -9256,6 +9268,7 @@
 <translation id="7566118625369982896">Play सम्बन्धी एपका लिंकहरू व्यवस्थित गर्नुहोस्</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">कीको संयोजन बनाउनुहोस्</translation>
+<translation id="7567100268516475532">ट्याब सारेर स्प्लिट भ्यूमा लैजानुहोस्</translation>
 <translation id="7568014768212280234">तपाईंको ट्याब समूह भरिएको छ, नयाँ सदस्यहरू ‌लिंक प्रयोग गरी सामेल हुन सक्दैनन्</translation>
 <translation id="7568759527730933493">DNS (डोमेन नेम सिस्टम) मा कुनै साइटको IP एड्रेस खोज्न सुरक्षित कनेक्सन प्रयोग गर्नुहोस्। यसले <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> मा भएको व्यवस्थापन गरिएको सेवा प्रदायक प्रयोग गर्छ। तपाईंका एड्मिनले कन्फिगर गरेका केही डोमेनमा सुरक्षित कनेक्सन प्रयोग गरेका छैनन्।</translation>
 <translation id="756876171895853918">अवतार आफूले चाहे जस्तो बनाउनुहोस्</translation>

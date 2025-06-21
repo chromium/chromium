@@ -480,6 +480,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 wachtwoord en andere items worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account, <ph name="ACCOUNT_EMAIL" />.}other{# wachtwoorden en andere items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Advertentiemeting</translation>
 <translation id="3189635831478931757">Tabbladgroep <ph name="GROUP_TITLE" /></translation>
+<translation id="3200536777393523575">Je huidige venster sluiten?</translation>
 <translation id="3207960819495026254">Toegevoegd aan 'Bookmarks'</translation>
 <translation id="3208584281581115441">Nu checken</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> is verwijderd</translation>
@@ -724,6 +725,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4351244548802238354">Dialoogvenster sluiten</translation>
 <translation id="4352287748243729941">Je wachtwoord van <ph name="PROVIDER" /> gebruiken?</translation>
 <translation id="4355272626458588338">Je kunt teruggaan naar een pagina die belangrijk voor je is door een bookmark toe te voegen</translation>
+<translation id="4356503491090073318">Kaartnummer*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Veiligheid in één oogopslag</translation>
 <translation id="4378154925671717803">Telefoon</translation>
@@ -741,6 +743,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4425140285732600465">Prijs wordt gevolgd. Krijg meldingen bij een prijsdaling op een site.</translation>
 <translation id="4425173294238317796">Bevestigingsblad voor toegangssleutel</translation>
 <translation id="442518031075347249">Je kunt je virtuele kaart niet meer gebruiken met Google Pay. <ph name="BEGIN_LINK1" />Meer informatie over virtuele kaarten<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> en <ph name="TAB_COUNT_ONE" /> ander tabblad worden gesloten}other{<ph name="TAB_TITLE" /> en <ph name="TAB_COUNT_MANY" /> andere tabbladen worden gesloten}}</translation>
 <translation id="4426508677408162512">Alle bookmarks</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> is op dit moment geselecteerd. Kies een account.</translation>
 <translation id="4452411734226507615">Tabblad <ph name="TAB_TITLE" /> sluiten</translation>
@@ -876,6 +879,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4987271110129728827">Kan die pagina niet vinden. Check je spelling of voer een online zoekopdracht uit.</translation>
 <translation id="4988526792673242964">Pagina's</translation>
 <translation id="4991110219272367918">Optie om een gesloten website wel of niet goed te keuren</translation>
+<translation id="4996042648402406470">Ophalen</translation>
 <translation id="4996095658297597226">Voorgesteld wachtwoord gebruiken?</translation>
 <translation id="5001388021414335527">Volg deze site hier</translation>
 <translation id="5004416275253351869">Google-activiteitsopties</translation>
@@ -927,10 +931,12 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5210286577605176222">Naar het vorige tabblad gaan</translation>
 <translation id="5210365745912300556">Tabblad sluiten</translation>
 <translation id="5215957675041756913">Je gegevens en account beheren</translation>
+<translation id="5218324087477576825">Kaartnummer, vereist</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en meer <ph name="SEPARATOR" /> Chrome heeft deze rechten verwijderd omdat je deze site niet recent hebt bezocht</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
 <translation id="5226378907213531272">Je ontgrendelt je scherm elke keer dat je de auto gebruikt</translation>
 <translation id="5227554086496586518">Tik om zoekresultaten te bekijken</translation>
+<translation id="5229736206150093143">Meest recente resultaten</translation>
 <translation id="5233638681132016545">Nieuw tabblad</translation>
 <translation id="5235196193381275927">Er is iets misgegaan bij het inloggen</translation>
 <translation id="5246093389635966745">Snelkoppeling voor werkbalk bewerken</translation>
@@ -1286,6 +1292,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="676305334223455055">Log in om content op basis van je interesses te krijgen</translation>
 <translation id="6764137532716892442">Gedeelde tabbladgroep <ph name="GROUP_TITLE" /> met nieuwe activiteit</translation>
 <translation id="6767294960381293877">De lijst met apparaten om een tabblad mee te delen, is op halve hoogte geopend.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognitotabbladen en <ph name="TAB_COUNT_ONE" /> ander tabblad worden gesloten}other{<ph name="INCOGNITO_TAB_COUNT" /> incognitotabbladen en <ph name="TAB_COUNT_MANY" /> andere tabbladen worden gesloten}}</translation>
 <translation id="6785476624617658922">Aanvullende servicevoorwaarden van Google Chrome en Chrome OS</translation>
 <translation id="6786747875388722282">Extensies</translation>
 <translation id="6795633245022906657">Open snel een nieuw tabblad. Je kunt deze snelkoppeling bewerken via Instellingen.</translation>
@@ -1582,6 +1589,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7965838025086216108">Je kunt opgeslagen wachtwoorden op elk apparaat gebruiken. Ze worden opgeslagen in Google Wachtwoordmanager voor <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Toegevoegd aan leeslijst</translation>
 <translation id="7968982339740310781">Details bekijken</translation>
+<translation id="7969391000881506217">Vervaldatum*</translation>
 <translation id="7971136598759319605">1 dag geleden actief</translation>
 <translation id="7975379999046275268">Pagina bekijken <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Waarschuwt je als je een wachtwoord gebruikt dat is gevonden bij een gegevenslek.</translation>
@@ -1741,6 +1749,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> verwijderen?</translation>
 <translation id="8570677896027847510">Bestand kan niet beveiligd worden gedownload</translation>
 <translation id="8571213806525832805">Afgelopen 4 weken</translation>
+<translation id="8580435650274205305">Vervaldatum, vereist</translation>
 <translation id="8582529315803410153">Hier vind je je tabbladen van andere apparaten</translation>
 <translation id="8585103689515290060">Services voor automatisch invullen</translation>
 <translation id="859046281437143747">Volg de prijs via de knop Meer opties</translation>

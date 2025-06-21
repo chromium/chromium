@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">শেয়ার করা ব্যার্থ হয়েছে কারণ আপনি নেটওয়ার্কের সাথে সংযুক্ত নন৷</translation>
 <translation id="1668001730617725852">নতুন ট্যাব গ্রুপে খুলুন</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> থেকে <ph name="TARGET_LANGUAGE" />-এ</translation>
+<translation id="168389590065701766">আপনি এখন নিজের অ্যাড্রেস বার থেকে Google Lens খুলতে ও যা কিছু দেখছেন তা সার্চ করতে পারবেন</translation>
 <translation id="1689333818294560261">বিশেষ নাম</translation>
 <translation id="169048873465870056">ট্যাব সরিয়ে গ্রুপ মুছে ফেলবেন?</translation>
 <translation id="1698090540708020240">পাসওয়ার্ড ইমপোর্ট করুন…</translation>
@@ -211,6 +212,7 @@
 <translation id="1838089197478136166">Wallet-এ খুলতে চান?</translation>
 <translation id="183878838231635348">আপনার জন্য 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচার অটোমেটিক যেকোনও গোপনীয়তা বা সুরক্ষা সংক্রান্ত সমস্যা শনাক্ত করলে, এই কার্ড তা দেখায়।</translation>
 <translation id="1845230888742614096">গ্রুপ রেখে দিন</translation>
+<translation id="1853692000353488670">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="1854463785401910334">খুলে রাখা ট্যাবে সার্চ করুন</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count}টি পাসওয়ার্ডের মধ্যে {position} নম্বর}one{{count}টি পাসওয়ার্ডের মধ্যে {position} নম্বর}other{{count}টি পাসওয়ার্ডের মধ্যে {position} নম্বর}}</translation>
 <translation id="1861262398884155592">ফোল্ডারটি খালি</translation>
@@ -266,6 +268,7 @@
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> অ্যাকাউন্ট <ph name="HOSTED_DOMAIN" /> দ্বারা ম্যানেজ করা হয়, যেটি কিছু তথ্য দেখতে পেতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">নতুন আইটেম</translation>
 <translation id="2049727122989709386"><ph name="COUNT" />টি অ্যাকাউন্ট একই পাসওয়ার্ড ব্যবহার করছে</translation>
+<translation id="205013082884273671">আপনার স্ক্রিনে যেকোনও কিছু সার্চ করুন</translation>
 <translation id="2054044186557130763"><ph name="NAME" /> <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন, যা আপনার সংস্থা ম্যানেজ করে।</translation>
 <translation id="2059166748188874810">মিউনিসিপ্যালিটি</translation>
 <translation id="2060638295449304809">এই ঠিকানাটি শুধুমাত্র এই ডিভাইসে সেভ আছে। এটি অন্য ডিভাইসে ব্যবহার করার জন্য আপনার Google অ্যাকাউন্টে সেভ করুন, <ph name="USER_EMAIL" /></translation>
@@ -458,6 +461,7 @@
 <translation id="2819667972867209401">চালু করা থাকলে, আপনার Google অ্যাকাউন্টে ডেটা সেভ করা হয়। বন্ধ করা থাকলে, ডেটা শুধু এই ডিভাইসে সেভ করা হয় এবং আপনি সাইন-আউট করলে তা মুছে ফেলা হয়।</translation>
 <translation id="2827760117436553203">ডেটা আলাদা রাখবেন?</translation>
 <translation id="2829172210806130158">আপনার স্ক্রিনে সার্চ করুন</translation>
+<translation id="2831109159746537587">সার্চ করার জন্য ছবিতে সার্কেল বানিয়ে বা ট্যাপ করে দেখুন</translation>
 <translation id="2834399722155632105">৩. পাসওয়ার্ড বিকল্পে ট্যাপ করুন</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">সময়</translation>

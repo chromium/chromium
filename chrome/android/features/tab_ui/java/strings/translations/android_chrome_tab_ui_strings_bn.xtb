@@ -17,6 +17,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> মিনিট আগে তৈরি করা হয়েছে}one{<ph name="NUM_MINS_MANY" /> মিনিট আগে তৈরি করা হয়েছে}other{<ph name="NUM_MINS_MANY" /> মিনিট আগে তৈরি করা হয়েছে}}</translation>
 <translation id="1499635324672558517">সবকটি ছদ্মবেশী ট্যাব বন্ধ করবেন?</translation>
 <translation id="1501480321619201731">আইটেমের গ্রুপ মুছুন</translation>
+<translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ইনঅ্যাক্টিভ আইটেম}one{<ph name="TABS_COUNT_MANY" />টি ইনঅ্যাক্টিভ আইটেম}other{<ph name="TABS_COUNT_MANY" />টি ইনঅ্যাক্টিভ আইটেম}}</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="161042844686301425">নীলাভ</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" />টি ট্যাব, গ্রুপ করা হয়েছে</translation>
@@ -68,6 +69,7 @@
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />টি নতুন ট্যাব}one{<ph name="MANY_ADDED" />টি নতুন ট্যাব}other{<ph name="MANY_ADDED" />টি নতুন ট্যাব}}</translation>
 <translation id="3613492231657284463">অ্যাক্টিভ না থাকা ট্যাবের ডায়ালগ লুকান</translation>
 <translation id="3619255692378312441">অ্যাক্সেস ম্যানেজ করুন</translation>
+<translation id="3649471731638882002">{TAB_COUNT,plural, =1{আইটেম বন্ধ করুন}one{আইটেম বন্ধ করুন}other{আইটেমগুলি বন্ধ করুন}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">শিট শেয়ার করার প্রিভিউয়ের জন্য থাম্বনেল।</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
@@ -80,6 +82,7 @@
 <translation id="4159784952369912983">বেগুনি</translation>
 <translation id="427987768447457592">নতুন ট্যাব গ্রুপ</translation>
 <translation id="4371591986692297148">চালু নেই</translation>
+<translation id="4429658455677831355">{TAB_COUNT,plural, =1{আইটেম ফিরিয়ে আনুন}one{আইটেম ফিরিয়ে আনুন}other{আইটেমগুলি ফিরিয়ে আনুন}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> দিন আগে আপডেট করা হয়েছে}one{<ph name="NUM_DAYS_MANY" /> দিন আগে আপডেট করা হয়েছে}other{<ph name="NUM_DAYS_MANY" /> দিন আগে আপডেট করা হয়েছে}}</translation>
 <translation id="4686942373615810936">এইমাত্র তৈরি করা হয়েছে</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{১ দিন পরে বন্ধ হয়ে যাবে}one{<ph name="DAY_COUNT_MANY" /> দিন পরে বন্ধ হয়ে যাবে}other{<ph name="DAY_COUNT_MANY" /> দিন পরে বন্ধ হয়ে যাবে}}</translation>
@@ -206,4 +209,5 @@
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বড় করুন।}}</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="992256792861109788">গোলাপী</translation>
+<translation id="994514002078791059">{TAB_COUNT,plural, =1{১টি ইনঅ্যাক্টিভ আইটেম বন্ধ করবেন?}one{<ph name="TAB_COUNT_MANY" />টি ইনঅ্যাক্টিভ আইটেম বন্ধ করবেন?}other{<ph name="TAB_COUNT_MANY" />টি ইনঅ্যাক্টিভ আইটেম বন্ধ করবেন?}}</translation>
 </translationbundle>

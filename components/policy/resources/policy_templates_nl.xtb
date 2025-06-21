@@ -6647,6 +6647,9 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="5740636973289452345">Rapportage van extensie- en plug-ingegevens aanzetten</translation>
 <translation id="5740716956489996914">Standaardgedrag gebruiken om te bepalen of websites verzoeken naar lokale netwerkeindpunten kunnen sturen</translation>
 <translation id="5741110260062082926">Orca uitzetten</translation>
+<translation id="5746126833785204233">Als je het beleid toepast, worden logboeken op kiosk-app-niveau verzameld als er een kiosk-app op het apparaat wordt uitgevoerd. Er worden logboeken verzameld voor alle typen kiosk-apps.
+Deze logboeken worden opgeslagen in een afzonderlijk bestand kiosk_apps.log.
+Als je dit beleid niet instelt of niet toepast, worden de logboeken op kiosk-app-niveau niet verzameld.</translation>
 <translation id="5746149754419996562">Hiermee wordt de aanwezigheid van Glanceables-widgets in <ph name="PRODUCT_OS_NAME" /> aangezet. Dit geldt met name voor de widgets die toegankelijk zijn via de datumchip op de plank.
 Als je dit beleid toepast, staan Glanceables aan in <ph name="PRODUCT_OS_NAME" />.
 Als je dit beleid niet toepast of niet instelt, staat Glanceables niet aan in <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -8409,6 +8412,7 @@ Als je het beleid <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NA
 <translation id="6907778402784621686">Niet-beveiligde content op deze sites blokkeren</translation>
 <translation id="6908335885425855120">Out-of-process iframe-pdf-viewer gebruiken</translation>
 <translation id="6908640907898649429">Hiermee wordt de standaard zoekprovider ingesteld. Je kunt de standaard zoekprovider opgeven die de gebruiker gaat gebruiken, of je kunt ervoor kiezen de standaard zoekfunctie uit te zetten.</translation>
+<translation id="6910715067772088598">Logboeken voor kiosk-apps uitzetten</translation>
 <translation id="6913068954484253496"><ph name="PRODUCT_NAME" /> toestaan om verbinding te maken met Cast-apparaten op alle IP-adressen.</translation>
 <translation id="6915493311660114995">Als je dit beleid toepast, staat <ph name="PRODUCT_NAME" /> verzoeken voor webverificatie toe op websites met TLS-certificaten met fouten (dat wil zeggen, websites die niet als beveiligd worden beschouwd).
 
@@ -8482,6 +8486,7 @@ Dit beleid wordt in de toekomst verwijderd nadat de functie voor afdrukstuurprog
       Als je dit beleid niet instelt, zijn er geen apparaatprinters en wordt het andere beleid met betrekking tot <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> genegeerd.</translation>
 <translation id="69525503251220566">Parameter die een functie voor zoeken op afbeelding levert voor de standaardzoekprovider</translation>
 <translation id="6953102253399571439">Afdrukken met pincode standaard aanzetten</translation>
+<translation id="695532899547292238">Logboekverzameling voor kiosk-apps aanzetten</translation>
 <translation id="6956272732789158625">Sites niet toestaan sleutels te genereren</translation>
 <translation id="6960996423652450945">Inlastekenmarkering op het inlogscherm uitzetten</translation>
 <translation id="6961602002757991199">Als je dit beleid instelt op een geldige URL, downloadt <ph name="PRODUCT_NAME" /> de lijst met sites van die URL en worden de regels toegepast alsof ze zijn ingesteld met het <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />-beleid. Met dit beleid wordt voorkomen dat <ph name="PRODUCT_NAME" /> en de alternatieve browser elkaar openen.
@@ -9288,6 +9293,7 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
 <translation id="7586199729147257934">Hiermee wordt de registratie van clientcertificaten voor beheerde browsers aangezet</translation>
 <translation id="7587345076013230465">De gebruiker vragen om het clientcertificaat te selecteren als het beleid voor automatische selectie overeenkomt met meerdere certificaten op het inlogscherm</translation>
 <translation id="7587921466180902617">Dogfood-versie van Screencast aanzetten voor gebruikers van Family Link</translation>
+<translation id="7588140323025689972">Logboeken voor kiosk-apps aanzetten</translation>
 <translation id="7595074040612182185">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van sites die afbeeldingen mogen weergeven.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.

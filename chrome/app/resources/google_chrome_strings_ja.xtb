@@ -267,6 +267,7 @@
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{ブラウザの動作を遅くしているタブを一時停止することをおすすめします}other{ブラウザの動作を遅くしているタブを一時停止することをおすすめします}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev（mDNS-In）</translation>
 <translation id="4329315893554541805">パーソナライズなどの機能を利用するには、Chrome をウェブとアプリのアクティビティと、リンクされた Google サービスに追加します</translation>
+<translation id="4334241893986177674">このスクリーンショットを検索</translation>
 <translation id="4334294535648607276">ダウンロードが完了しました。</translation>
 <translation id="4337324600316876133">今後、Google Chrome のアップデートを受信するには、macOS 12 以降が必要となります。このコンピュータでは macOS 11 が実行されています。</translation>
 <translation id="4343195214584226067">「<ph name="EXTENSION_NAME" />」が Chrome に追加されました</translation>

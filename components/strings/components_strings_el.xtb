@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">Ειδοποιήσεις παρακολούθησης τιμών</translation>
 <translation id="21613918653299710">Συλλογές εικόνων στο διαδίκτυο</translation>
 <translation id="2161656808144014275">Κείμενο</translation>
+<translation id="2162435186600002085">Λογότυπο κύριας κεφαλίδας</translation>
 <translation id="2162620598375156287">Τώρα <ph name="CURRENT_PRICE" /> στο <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Ελέγξτε μήπως υπάρχει κάποιο ορθογραφικό λάθος στη διεύθυνση <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Πλήρης πρόσβαση διαχειριστή</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">Προσθήκη διαβατηρίου</translation>
 <translation id="2400271059665846158">Διαχείριση των καρτών επιβράβευσης αφοσιωμένων πελατών στο Πορτοφόλι Google</translation>
 <translation id="2400600116338235695">Μπορεί να ζητά να συνδεθεί σε σειριακές θύρες.</translation>
+<translation id="240450251994300576">Λογότυπο δευτερεύουσας κεφαλίδας</translation>
 <translation id="2404884497378469141">Δοκιμάστε να αντιγράψετε ξανά τα αρχεία σας</translation>
 <translation id="2413155254802890957">Παλαιά</translation>
 <translation id="2413528052993050574">Ο διακομιστής δεν κατάφερε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του μπορεί να έχει ανακληθεί. Αυτό μπορεί να οφείλεται σε λανθασμένη ρύθμιση ή σε κάποιον τρίτο που επιτίθεται στη σύνδεσή σας.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">Εξαγωγή κειμένου από PDF…</translation>
 <translation id="2628224721443278970">Σύνδεση στο Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Δεν ήταν δυνατή η εύρεση της διεύθυνσης IP διακομιστή του κεντρικού υπολογιστή <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Πληκτρολογήστε @ για αναζήτηση σε <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Κατάσταση:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Ύφασμα (Ημι-γυαλιστερό)</translation>
@@ -2268,6 +2271,7 @@
 <translation id="4827283332383516812">Διαγραφή κάρτας</translation>
 <translation id="4830443836091007686">Επιλέχθηκαν <ph name="ITEMS" /></translation>
 <translation id="4831993743164297314">Χαρτί φωτοστοιχειοθετικής μηχανής</translation>
+<translation id="4832388034239846146">Για να μοιραστείτε ομάδες καρτελών, ενημερώστε το Chrome</translation>
 <translation id="483241715238664915">Ενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4832961164064927107">Μπάρμπεκιου και ψητά</translation>
 <translation id="4834250788637067901">Τρόποι πληρωμής, προσφορές και διευθύνσεις μέσω Google Pay</translation>
@@ -2976,6 +2980,7 @@
 <translation id="6043357981274314628">Τέλος!</translation>
 <translation id="6044573915096792553">Μέγεθος 12</translation>
 <translation id="6045164183059402045">Πρότυπο ένθεσης</translation>
+<translation id="6046892054959167494">Πληκτρολογήστε <ph name="SEARCH_AGGREGATOR_KEYWORD" /> για αναζήτηση ή ρωτήστε το <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Αυτό το περιεχόμενο μπορεί να προσπαθήσει να σας εξαπατήσει έτσι ώστε να εγκαταστήσετε λογισμικό ή να αποκαλύψετε προσωπικά στοιχεία. <ph name="BEGIN_LINK" />Εμφάνιση ούτως ή άλλως<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Φάκελος B4</translation>
 <translation id="6049488691372270142">Παράδοση σελίδας</translation>

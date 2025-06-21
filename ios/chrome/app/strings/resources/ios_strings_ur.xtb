@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">اشتراک ناکام ہوگیا کیونکہ آپ نیٹ ورک سے منسلک نہیں ہیں۔</translation>
 <translation id="1668001730617725852">نئے ٹیب گروپ میں کھولیں</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> سے <ph name="TARGET_LANGUAGE" /> میں</translation>
+<translation id="168389590065701766">‏اب آپ اپنے ایڈریس بار سے Google لینز کھول سکتے ہیں اور جو کچھ بھی دیکھتے ہیں اسے تلاش کر سکتے ہیں</translation>
 <translation id="1689333818294560261">عرفی نام</translation>
 <translation id="169048873465870056">ٹیب کو ہٹائیں اور گروپ کو حذف کریں؟</translation>
 <translation id="1698090540708020240">پاس ورڈز درآمد کریں…</translation>
@@ -211,6 +212,7 @@
 <translation id="1838089197478136166">والٹ میں کھولیں؟</translation>
 <translation id="183878838231635348">اس کارڈ پر رازداری یا سیکیورٹی کا ایسا کوئی بھی مسئلہ دکھائی دیتا ہے جس کا سیفٹی چیک خصوصیت خودکار طور پر آپ کیلئے پتا لگاتی ہے۔</translation>
 <translation id="1845230888742614096">گروپ کو برقرار رکھیں</translation>
+<translation id="1853692000353488670">نیا پوشیدگی ٹیب</translation>
 <translation id="1854463785401910334">کھلے ٹیبز تلاش کریں</translation>
 <translation id="1861067954551502701">{count,plural, =1{‫{count} پاس ورڈ میں سے {position}}other{‫{count} پاس ورڈز میں سے {position}}}</translation>
 <translation id="1861262398884155592">یہ فولڈر خالی ہے</translation>
@@ -266,6 +268,7 @@
 <translation id="2044681667265133332">اکاؤنٹ <ph name="USER_EMAIL" /> کا نظم <ph name="HOSTED_DOMAIN" /> کے ذریعے کیا جاتا ہے جو کچھ معلومات دیکھنے کے قابل ہو سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">نیا آئٹم</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> اکاؤنٹس ایک ہی پاس ورڈ کا استعمال کر رہے ہیں</translation>
+<translation id="205013082884273671">اپنی اسکرین پر کچھ بھی تلاش کریں</translation>
 <translation id="2054044186557130763">بطور <ph name="NAME" /> <ph name="EMAIL" /> سائن ان کریں، جو آپ کی تنظیم کے زیر انتظام ہے۔</translation>
 <translation id="2059166748188874810">میونسپلٹی</translation>
 <translation id="2060638295449304809">‏یہ پتہ صرف اس آلہ میں محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ، <ph name="USER_EMAIL" /> میں محفوظ کریں</translation>
@@ -458,6 +461,7 @@
 <translation id="2819667972867209401">‏آن ہونے پر، ڈیٹا آپ کے Google اکاؤنٹ میں محفوظ ہوتا ہے۔ آف ہونے پر، ڈیٹا صرف اس آلہ میں محفوظ ہوتا ہے اور اگر آپ سائن آؤٹ کرتے ہیں تو اسے حذف کر دیا جاتا ہے۔</translation>
 <translation id="2827760117436553203">ڈیٹا کو الگ رکھیں؟</translation>
 <translation id="2829172210806130158">اپنی اسکرین پر تلاش کریں</translation>
+<translation id="2831109159746537587">تلاش کرنے کے لیے تصویر پر دائرہ بنانے یا تھپتھپانے کی کوشش کریں</translation>
 <translation id="2834399722155632105">3. پاس ورڈ کے اختیارات پر تھپتھپائیں۔</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />، <ph name="STATE" />، <ph name="URL" /></translation>
 <translation id="2841013758207633010">وقت</translation>

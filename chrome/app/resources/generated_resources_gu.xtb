@@ -52,6 +52,7 @@
 <translation id="1031362278801463162">પ્રીવ્યૂ લોડ થાય છે</translation>
 <translation id="1032605640136438169">કૃપા કરીને નવી શરતોને રિવ્યૂ કરો</translation>
 <translation id="103279545524624934">Android ઍપ્લિકેશનો લોંચ કરવા માટે ડિસ્ક સ્થાન ખાલી કરો.</translation>
+<translation id="1033060461778467949">વિભાજિત વ્યૂમાં ટૅબને ખસેડો</translation>
 <translation id="1033780634303702874">તમારા સીરિયલ ઉપકરણોને ઍક્સેસ કરો</translation>
 <translation id="1034484273907870301">ટૅબ્લેટ મોડ માટે ટૅબ સ્ટ્રિપની થંબનેલ</translation>
 <translation id="1035289631433631911">કન્ટેન્ટ ટ્રાન્સફર ટૂલ</translation>
@@ -1912,6 +1913,7 @@
 <translation id="2312219318583366810">પેજનું URL</translation>
 <translation id="2314165183524574721">હાલના સેટિંગ અનુસાર કોઈ જોઈ શકતું નથી</translation>
 <translation id="2314774579020744484">પેજનો અનુવાદ કરતી વખતે ઉપયોગમાં લેવાયેલી ભાષા</translation>
+<translation id="2316090909467242775">આ રિકવરીનો પાસવર્ડ અજમાવી જુઓ</translation>
 <translation id="2316129865977710310">નહીં, આભાર</translation>
 <translation id="2316433409811863464">ઍપ સ્ટ્રીમિંગ</translation>
 <translation id="2316709634732130529">સૂચવેલ પાસવર્ડનો ઉપયોગ કરો</translation>
@@ -3537,6 +3539,7 @@
 <translation id="3462413494201477527">એકાઉન્ટ સેટઅપ રદ કરીએ?</translation>
 <translation id="346298925039590474">આ મોબાઇલ નેટવર્ક, આ ડિવાઇસ પરના બધા વપરાશકર્તાઓ માટે ઉપલબ્ધ રહેશે</translation>
 <translation id="3464145797867108663">ઑફિસની પ્રોફાઇલ ઉમેરો</translation>
+<translation id="34673353983913587">તમારો નવો પાસવર્ડ સાચવતા પહેલાં, સાઇટ માટે વધારાની ચકાસણી આવશ્યક છે</translation>
 <translation id="3468298837301810372">લેબલ</translation>
 <translation id="3468999815377931311">Android ફોન</translation>
 <translation id="3469583217479686109">પસંદગી ટૂલ</translation>
@@ -3564,6 +3567,7 @@
 <translation id="3487007233252413104">અનામી કાર્ય</translation>
 <translation id="3487649228420469005">સ્કૅન થઈ ગયું</translation>
 <translation id="3488199663160411179">નામ</translation>
+<translation id="3489457144969823485">જુલાઈ 2025માં ChromeOS ડિવાઇસ પર Chrome ઍપ ચાલવાની બંધ થઈ ગઈ છે. કોઈ વૈકલ્પિક ઍપનો વિચાર કરો.</translation>
 <translation id="3490695139702884919">ડાઉનલોડ કરી રહ્યાં છીએ... <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">જો તમે તમારો પિન અથવા પાસવર્ડ ભૂલી જાઓ, તો સ્થાનિક ડેટા રિસ્ટોર કરી શકાય છે</translation>
 <translation id="3491616972057195633">બાઉન્સ કી</translation>
@@ -4031,6 +4035,7 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> એક્સ્ટેન્શન</translation>
 <translation id="3794792524918736965">Windows Hello ચાલુ કરો</translation>
 <translation id="379509625511193653">બંધ</translation>
+<translation id="3795624560191557077">તમે તાજેતરમાં બદલાવેલો પાસવર્ડ કોઈ સાર્વજનિક ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. કોઈ સમસ્યા આવે ત્યારે Google Password Manager તમને સાઇન ઇન કરવામાં મદદ કરી શકે છે.</translation>
 <translation id="3796215473395753611">alt + ઉપરની ઍરો કી</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, વૉઇસનો પ્રીવ્યૂ કરવા માટે જમણી ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="3796648294839530037">મનપસંદ નેટવર્ક્સ:</translation>
@@ -5849,6 +5854,7 @@
 <translation id="5088534251099454936">RSA એન્ક્રિપ્શનવાળું PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">તમારા કૅમેરાનું સ્ટેટસ ટ્રૅક કરવાની મંજૂરી નથી</translation>
 <translation id="5091636240353511739">પિન બતાવો</translation>
+<translation id="5093417502834168387">સાઇન ઇન કરવામાં સમસ્યા આવી? બીજી રીત અજમાવી જુઓ</translation>
 <translation id="5093477827231450397">તમે બ્લૉક કરેલી એવી સાઇટની સૂચિ કે જે અન્ય સાઇટને જાહેરાતો સૂચવે એવું તમે ઇચ્છતા નથી</translation>
 <translation id="5093569275467863761">બૅક/ફૉરવર્ડ કૅશ મેમરીમાં સ્ટોર કરેલી છૂપી સબફ્રેમ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">તમે Files ઍપ અથવા અન્ય ઍપમાં, આ ઍપ વડે સપોર્ટેડ ફાઇલો ખોલી શકો છો અને તેમાં ફેરફાર કરી શકો છો. આ ઍપમાં ડિફૉલ્ટ તરીકે ખોલવામાં આવે તેવી ફાઇલોને નિયંત્રિત કરવા માટે, <ph name="BEGIN_LINK" />તમારા ડિવાઇસ પર ડિફૉલ્ટ ઍપને સેટ કરવાની રીત વિશે જાણો<ph name="END_LINK" />.</translation>
@@ -6787,6 +6793,7 @@
 <translation id="5785583009707899920">Chrome ફાઇલ માટેની ઉપયોગીતાઓ</translation>
 <translation id="5787146423283493983">કી એગ્રીમેન્ટ</translation>
 <translation id="5787420647064736989">ડિવાઇસનું નામ</translation>
+<translation id="5787582109651427233"><ph name="BEGIN_LINK_LOYALTY_CARDS" />લૉયલ્ટિ કાર્ડ<ph name="END_LINK_LOYALTY_CARDS" /> કે Google Payની <ph name="BEGIN_LINK_PAYMENT_METHODS" />ચુકવણી પદ્ધતિઓ<ph name="END_LINK_PAYMENT_METHODS" /> ઉમેરવા કે તેને મેનેજ કરવા માટે Google Walletની મુલાકાત લો</translation>
 <translation id="5788367137662787332">માફ કરશો, ઉપકરણ <ph name="DEVICE_LABEL" /> પર ઓછામાં ઓછું એક પાર્ટિશન માઉન્ટ કરી શકાયું નથી.</translation>
 <translation id="5789581866075720267">આ ડિવાઇસ પર <ph name="BRAND" />માં પાસવર્ડ આયાત કરવા માટે, CSV ફાઇલ પસંદ કરો.</translation>
 <translation id="5790085346892983794">સફળતા</translation>
@@ -7273,6 +7280,7 @@ USB ડિવાઇસ</translation>
 <translation id="6131511889181741773">સ્પ્લૅટર</translation>
 <translation id="6132251717264923430">બટન પિન કર્યું</translation>
 <translation id="6132714462430777655">સ્કૂલમાં પ્રવેશની પ્રક્રિયા છોડી દઈએ?</translation>
+<translation id="6134418895482326458">નવા ટૅબ પેજ પરનું ફૂટર છુપાવો</translation>
 <translation id="6134428719487602109">બધા વપરાશકર્તા એકાઉન્ટ કાઢી નાખો અને તમારી Chromebookને એકદમ નવીની જેમ રીસેટ કરો.</translation>
 <translation id="6135826623269483856">તમારા બધા ડિસ્પ્લે પર વિન્ડો મેનેજ કરવાની મંજૂરી નથી</translation>
 <translation id="6136114942382973861">ડાઉનલોડ બાર બંધ કરો</translation>
@@ -7629,6 +7637,7 @@ USB ડિવાઇસ</translation>
 <translation id="6388577073199278153">તમારું મોબાઇલ એકાઉન્ટ ઍક્સેસ કરી શકતા નથી</translation>
 <translation id="6390020764191254941">ટૅબને નવી વિંડોમાં ખસેડો</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{એકપણ નહીં}=1{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> અને વધુ 1 માટે}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> અને વધુ {COUNT} માટે}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> અને વધુ {COUNT} માટે}}</translation>
+<translation id="6390533465682072118">રિકવરી</translation>
 <translation id="6391131092053186625">તમારા ડિવાઇસનું IMEI <ph name="IMEI_NUMBER" /> છે. સેવા સક્રિય કરવામાં સહાય માટે આ નંબરનો ઉપયોગ થઈ શકે છે.</translation>
 <translation id="6393156038355142111">સશક્ત પાસવર્ડ સૂચવો</translation>
 <translation id="6393550101331051049">અસુરક્ષિત કન્ટેન્ટ બતાવવાની મંજૂરી છે</translation>
@@ -7713,6 +7722,7 @@ USB ડિવાઇસ</translation>
 <translation id="6455521402703088376">બંધ • આ એક્સ્ટેન્શન તેના ડેવલપર દ્વારા અનપબ્લિશ કરવામાં આવ્યું હતું</translation>
 <translation id="6455894534188563617">&amp;નવું ફોલ્ડર</translation>
 <translation id="645705751491738698">JavaScript ને અવરોધિત કરવાનું ચાલુ રાખો</translation>
+<translation id="6457572529564180082"><ph name="APP_NAME" /> લૉન્ચ કરી શકાતી નથી</translation>
 <translation id="6458606150257356946">તેમ છતાં પેસ્ટ કરો</translation>
 <translation id="6458701200018867744">અપલોડ નિષ્ફળ થયું (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">શોધવા માટે પસંદગીનો ઉપયોગ કરો</translation>
@@ -8007,6 +8017,7 @@ USB ડિવાઇસ</translation>
 <translation id="6667187897999649121">હાલમાં, તમે કુટુંબના સભ્યો સાથે માત્ર પાસવર્ડ શેર કરી શકશો. વધુમાં વધુ 6 સભ્ય ધરાવતું <ph name="BEGIN_LINK" />એક ફૅમિલી ગ્રૂપ બનાવો<ph name="END_LINK" /> અને સમગ્ર Google પર તમારી પ્રોડક્ટ અને સબ્સ્ક્રિપ્શનથી વધુ લાભ મેળવો.</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> માં ખોલો</translation>
 <translation id="6669195257625975787">ડેટા પર તમે જોઈ રહ્યા હો તે સાઇટને સમાન જ પ્રક્રિયા કરવામાં આવે છે</translation>
+<translation id="6669637573228217624">કોઈ ફાઇલ અપલોડ કરો</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> હવે ઉપલબ્ધ છે</translation>
 <translation id="6670767097276846646">કેટલાક એક્સ્ટેન્શન Chromeમાં શોધ એન્જિન ઉમેરી શકે છે</translation>
 <translation id="6670983860904543332">ઑટોમૅટિક અપડેટ થવાની સુવિધા, તમને નવી સુવિધાઓનો ઍક્સેસ આપે છે. નવી અપડેટની હાઇલાઇટ વિશે શોધખોળ કરો.</translation>
@@ -8146,6 +8157,7 @@ USB ડિવાઇસ</translation>
 <translation id="6771503742377376720">એ એક પ્રમાણન અધિકારી છે</translation>
 <translation id="6772974422346500939">ખોલો અને ફેરફાર કરો</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
+<translation id="677394079035748956">સાઇટને એક-વખત વપરાશના પાસવર્ડની જરૂર છે</translation>
 <translation id="6774710250118040929">નવો પાસવર્ડ ઉમેરો</translation>
 <translation id="6775163072363532304">ઉપલબ્ધ ડિવાઇસ અહીં દેખાશે.</translation>
 <translation id="6775992990195573904">તમારા ટૅબ સૉર્ટ કરાવો</translation>
@@ -9265,6 +9277,7 @@ USB ડિવાઇસ</translation>
 <translation id="7566118625369982896">Play ઍપ લિંક મેનેજ કરો</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">કીનું કૉમ્બિનેશન બનાવો</translation>
+<translation id="7567100268516475532">વિભાજિત વ્યૂમાં ટૅબને ખસેડો</translation>
 <translation id="7568014768212280234">તમારું ટૅબનું ગ્રૂપ ભરાઈ ગયું છે, નવા સભ્યો લિંક વડે જોડાઈ શકતા નથી</translation>
 <translation id="7568759527730933493">DNS (ડોમેન નેમ સિસ્ટમ)માં કોઈ સાઇટનું IP ઍડ્રેસ શોધવા માટે, સુરક્ષિત કનેક્શનનો ઉપયોગ કરો. આ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> પર મેનેજ કરેલા સેવા પ્રદાતાનો ઉપયોગ કરે છે. તમારા ઍડમિનિસ્ટ્રેટર દ્વારા ગોઠવવામાં આવેલા અમુક ડોમેન માટે સુરક્ષિત કનેક્શનનો ઉપયોગ કરવામાં આવતો નથી.</translation>
 <translation id="756876171895853918">અવતારને કસ્ટમાઇઝ કરો</translation>

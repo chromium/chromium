@@ -52,6 +52,7 @@
 <translation id="1031362278801463162">پیش منظر لوڈ کیا جا رہا ہے</translation>
 <translation id="1032605640136438169">براہ کرم نئی شرائط کا جائزہ لیں</translation>
 <translation id="103279545524624934">‏Android ایپس شروع کرنے کیلئے ڈسک اسپیس خالی کریں۔</translation>
+<translation id="1033060461778467949">ٹیب کو اسپلٹ ویو میں منتقل کریں</translation>
 <translation id="1033780634303702874">اپنے سلسلہ وار آلات تک رسائی حاصل کریں</translation>
 <translation id="1034484273907870301">ٹیبلیٹ وضع کے لیے تھمب نیل ٹیب اسٹرپ</translation>
 <translation id="1035289631433631911">مواد کی منتقلی کا ٹول</translation>
@@ -1916,6 +1917,7 @@
 <translation id="2312219318583366810">‏صفحہ کا URL</translation>
 <translation id="2314165183524574721">موجودہ نظر آنے کی ترتیب پوشیدہ ہے</translation>
 <translation id="2314774579020744484">صفحات کا ترجمہ کرتے وقت استعمال کی جانے والی زبان</translation>
+<translation id="2316090909467242775">اس بازیابی پاس ورڈ کو آزمائیں</translation>
 <translation id="2316129865977710310">نہیں، شکریہ</translation>
 <translation id="2316433409811863464">ایپ کی سلسلہ بندی</translation>
 <translation id="2316709634732130529">تجویز کردہ پاس ورڈ استعمال کریں</translation>
@@ -3539,6 +3541,7 @@
 <translation id="3462413494201477527">اکاؤنٹ سیٹ اپ منسوخ کریں؟</translation>
 <translation id="346298925039590474">یہ موبائل نیٹ ورک اس آلہ پر سبھی صارفین کیلئے دستیاب ہوگا</translation>
 <translation id="3464145797867108663">دفتری پروفائل شامل کریں</translation>
+<translation id="34673353983913587">اپنا نیا پاس ورڈ محفوظ کرنے سے پہلے، سائٹ کو اضافی تصدیق کی ضرورت ہے</translation>
 <translation id="3468298837301810372">لیبل</translation>
 <translation id="3468999815377931311">‏Android فون</translation>
 <translation id="3469583217479686109">انتخاب کرنے کا ٹول</translation>
@@ -3566,6 +3569,7 @@
 <translation id="3487007233252413104">گمنام فنکشن</translation>
 <translation id="3487649228420469005">اسکین ہو گیا</translation>
 <translation id="3488199663160411179">نام</translation>
+<translation id="3489457144969823485">‏‫Chrome Apps نے جولائی 2025 میں ChromeOS آلات پر چلنا بند کر دیا۔ ایک متبادل ایپ پر غور کریں۔</translation>
 <translation id="3490695139702884919">ڈاؤن لوڈ ہو رہا ہے… %<ph name="PERCENT" /></translation>
 <translation id="3491171603443463516">‏آپ کا PIN یا پاس ورڈ بھول جانے پر مقامی ڈیٹا کو بحال کیا جا سکتا ہے</translation>
 <translation id="3491616972057195633">باؤنس کلیدیں</translation>
@@ -4033,6 +4037,7 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ایکسٹینشنز</translation>
 <translation id="3794792524918736965">‏Windows Hello کو آن کریں</translation>
 <translation id="379509625511193653">آف</translation>
+<translation id="3795624560191557077">‏آپ نے حال ہی میں عوامی ڈیٹا کی خلاف ورزی میں پایا جانے والا پاس ورڈ تبدیل کیا ہے۔ دشواری کی صورت میں، Google پاس ورڈ مینیجر سائن ان کرنے میں آپ کی مدد کر سکتا ہے۔</translation>
 <translation id="3796215473395753611">‏alt + اوپر تیر کا نشان</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />، پیش منظر آواز کیلئے دائیں تیر کے نشان کی کلید استعمال کریں</translation>
 <translation id="3796648294839530037">پسندیدہ نیٹ ورکس:</translation>
@@ -5850,6 +5855,7 @@
 <translation id="5088534251099454936">‏PKCS #1 SHA-512 مع RSA مرموز کاری</translation>
 <translation id="5090637338841444533">آپ کے کیمرا کی پوزیشن کو ٹریک کرنے کی اجازت نہیں ہے</translation>
 <translation id="5091636240353511739">‏‫PIN دکھائیں</translation>
+<translation id="5093417502834168387">سائن ان کرنے میں پریشانی؟ دوسرا طریقہ آزمائیں</translation>
 <translation id="5093477827231450397">آپ کی مسدود کردہ سائٹس کی فہرست جن سے آپ نہیں چاہتے ہیں کہ وہ دوسری سائٹس پر اشتہارات تجویز کرے</translation>
 <translation id="5093569275467863761">بیک/فارورڈ کیش کردہ پوشیدگی کا سب فریم: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">آپ اس ایپ کے ساتھ فائلز کی ایپس یا دیگر ایپس سے تعاون یافتہ فائلز کو کھول اور ان میں ترمیم کر سکتے ہیں۔ جو فائلز بطور ڈیفالٹ اس ایپ کو کھولتی ہیں انہیں کنٹرول کرنے کے لیے، <ph name="BEGIN_LINK" />جانیں کہ اپنے آلے پر ڈیفالٹ ایپس کیسے سیٹ کریں<ph name="END_LINK" />۔</translation>
@@ -6785,6 +6791,7 @@
 <translation id="5785583009707899920">‏Chrome فائل کی افادیتیں</translation>
 <translation id="5787146423283493983">کلیدی اقرارنامہ</translation>
 <translation id="5787420647064736989">آلہ کا نام</translation>
+<translation id="5787582109651427233">‏<ph name="BEGIN_LINK_LOYALTY_CARDS" />لائلٹی کارڈز<ph name="END_LINK_LOYALTY_CARDS" /> یا Google Pay <ph name="BEGIN_LINK_PAYMENT_METHODS" />ادائیگی کے طریقے<ph name="END_LINK_PAYMENT_METHODS" /> شامل کرنے یا ان کا نظم کرنے کے لیے Google والٹ ملاحظہ کریں</translation>
 <translation id="5788367137662787332">معذرت، کم از کم ایک حصہ آلہ <ph name="DEVICE_LABEL" /> پر ماؤنٹ نہیں کیا جا سکا۔</translation>
 <translation id="5789581866075720267">‏اس آلے پر <ph name="BRAND" /> میں پاس ورڈز درآمد کرنے کے لیے، ایک CSV فائل منتخب کریں۔</translation>
 <translation id="5790085346892983794">کامیاب</translation>
@@ -7270,6 +7277,7 @@
 <translation id="6131511889181741773">اسپلیٹر</translation>
 <translation id="6132251717264923430">بٹن کو پن کیا گیا</translation>
 <translation id="6132714462430777655">اسکول میں اندراج کو نظر انداز کریں؟</translation>
+<translation id="6134418895482326458">نئے ٹیب صفحہ پر فوٹر چھپائیں</translation>
 <translation id="6134428719487602109">‏بالکل نئے کی طرح ہونے کیلئے صارف کے سبھی اکاؤنٹس ہٹائیں اور اپنا Chromebook ری سیٹ کریں۔</translation>
 <translation id="6135826623269483856">آپ کے سبھی ڈسپلیز پر ونڈوز کا نظم کرنے کی اجازت نہیں ہے</translation>
 <translation id="6136114942382973861">ڈاؤن لوڈز بار بند کریں</translation>
@@ -7626,6 +7634,7 @@
 <translation id="6388577073199278153">اپنے موبائل اکاؤنٹ تک رسائی حاصل نہیں کر سکتے</translation>
 <translation id="6390020764191254941">ٹیب کو نئی ونڈو میں منتقل کریں</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{کوئی نہیں}=1{<ph name="EXAMPLE_DOMAIN_1" />، <ph name="EXAMPLE_DOMAIN_2" /> اور 1 مزید کے لیے}other{<ph name="EXAMPLE_DOMAIN_1" />،<ph name="EXAMPLE_DOMAIN_2" /> اور {COUNT} مزید کے لیے}}</translation>
+<translation id="6390533465682072118">بازیابی</translation>
 <translation id="6391131092053186625">‏آپ کے آلے کی IMEI <ph name="IMEI_NUMBER" /> ہے۔ سروس کو فعال کرنے میں مدد کے لیے اس نمبر کا استعمال کیا جا سکتا ہے۔</translation>
 <translation id="6393156038355142111">مضبوط پاس ورڈ تجویز کریں</translation>
 <translation id="6393550101331051049">غیر محفوظ مواد دکھانے کی اجازت ہے</translation>
@@ -7710,6 +7719,7 @@
 <translation id="6455521402703088376">آف ہے • اس ایکسٹینشن کی اشاعت اس کے ڈویلپر نے ختم کی تھی</translation>
 <translation id="6455894534188563617">&amp;نیا فولڈر</translation>
 <translation id="645705751491738698">‏JavaScript کو مسدود کرنا جاری رکھیں</translation>
+<translation id="6457572529564180082"><ph name="APP_NAME" /> کو لانچ نہیں کیا جا سکتا</translation>
 <translation id="6458606150257356946">بہر حال پیسٹ کریں</translation>
 <translation id="6458701200018867744">اپ لوڈ نہیں ہو سکا (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)۔</translation>
 <translation id="6459488832681039634">تلاش کیلئے انتخاب کا استعمال کریں</translation>
@@ -8002,6 +8012,7 @@
 <translation id="6667187897999649121">‏ابھی کے لیے، آپ صرف فیملی ممبرز کے ساتھ پاس ورڈز کا اشتراک کر سکتے ہیں۔ 6 اراکین تک کا <ph name="BEGIN_LINK" />ایک فیملی گروپ بنائیں<ph name="END_LINK" /> اور Google پر اپنے پروڈکٹس اور سبسکرپشنز سے مزید حاصل کریں۔</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> میں کھولیں</translation>
 <translation id="6669195257625975787">ڈیٹا کے ساتھ اس سائٹ کی طرح سلوک کیا جاتا ہے جسے آپ دیکھ رہے ہیں</translation>
+<translation id="6669637573228217624">ایک فائل اپ لوڈ کریں</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> ابھی دستیاب ہے</translation>
 <translation id="6670767097276846646">‏کچھ ایکسٹینشنز سرچ انجنز کو Chrome میں شامل کر سکتی ہیں</translation>
 <translation id="6670983860904543332">خودکار اپ ڈیٹس آپ کو تازہ ترین خصوصیات فراہم کرتی ہیں۔ حالیہ اپ ڈیٹس سے ہائی لائٹس دریافت کریں۔</translation>
@@ -8141,6 +8152,7 @@
 <translation id="6771503742377376720">ایک سرٹیفیکیشن ادارہ ہے</translation>
 <translation id="6772974422346500939">کھولیں اور ترمیم کریں</translation>
 <translation id="6773595613448852535">‏‫Chrome روٹ اسٹور</translation>
+<translation id="677394079035748956">سائٹ کو ون ٹائم پاس ورڈ کی ضرورت ہے</translation>
 <translation id="6774710250118040929">نیا پاس ورڈ شامل کریں</translation>
 <translation id="6775163072363532304">دستیاب آلات یہاں دکھائی دیں گے۔</translation>
 <translation id="6775992990195573904">اپنے ٹیبز کو ترتیب دیں</translation>
@@ -9259,6 +9271,7 @@
 <translation id="7566118625369982896">‏Play ایپ لنکس کا نظم کریں</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">کلید کا جوڑا تخلیق کریں</translation>
+<translation id="7567100268516475532">ٹیب کو اسپلٹ ویو میں منتقل کریں</translation>
 <translation id="7568014768212280234">آپ کا ٹیب گروپ بھرا ہوا ہے، نئے اراکین اس لنک سے شامل نہیں ہو سکتے</translation>
 <translation id="7568759527730933493">‏‫DNS (ڈومین ناموں کا نظام) میں سائٹ کا IP پتہ تلاش کرنے کے لیے محفوظ کنکشن استعمال کریں۔ یہ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> پر نظم کردہ سروس فراہم کنندہ کا استعمال کرتا ہے۔ آپ کے منتظم کے ذریعے کنفیگر کیے گئے کچھ ڈومینز کے لیے محفوظ کنکشنز استعمال نہیں کیے جاتے ہیں۔</translation>
 <translation id="756876171895853918">اوتار کو حسب ضرورت بنائیں</translation>

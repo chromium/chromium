@@ -480,6 +480,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{एउटा पासवर्ड र अन्य सामग्रीहरू यो डिभाइसमा मात्र सेभ गरिएका छन्। ती पासवर्ड र सामग्री आफ्ना अन्य डिभाइसहरूमा प्रयोग गर्न तिनलाई आफ्नो Google खाता (<ph name="ACCOUNT_EMAIL" />) मा सेभ गर्नुहोस्।}other{# वटा पासवर्ड र अन्य सामग्रीहरू यो डिभाइसमा मात्र सेभ गरिएका छन्। ती पासवर्ड र सामग्री आफ्ना अन्य डिभाइसहरूमा प्रयोग गर्न तिनलाई आफ्नो Google खाता (<ph name="ACCOUNT_EMAIL" />) मा सेभ गर्नुहोस्।}}</translation>
 <translation id="3187472288455401631">विज्ञापनको पर्फर्मेन्स मापन</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> नामक ट्याब समूह</translation>
+<translation id="3200536777393523575">आफ्नो हालको विन्डो बन्द गर्ने हो?</translation>
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
 <translation id="3208584281581115441">अहिले नै जाँच्नुहोस्</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> मेटाइयो</translation>
@@ -724,6 +725,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4351244548802238354">सम्बाद बन्द गर्नुहोस्</translation>
 <translation id="4352287748243729941">तपाईंको <ph name="PROVIDER" /> को पासवर्ड प्रयोग गर्ने हो?</translation>
 <translation id="4355272626458588338">कुनै महत्त्वपूर्ण पेजमा सजिलैसँग फर्कन उक्त पेज बुकमार्क गर्नुहोस्</translation>
+<translation id="4356503491090073318">कार्ड नम्बर*</translation>
 <translation id="4357206670025518404">थप <ph name="COUNT_NUMBER" /> वटा</translation>
 <translation id="4359809482106103048">सुरक्षाको छोटो विवरण</translation>
 <translation id="4378154925671717803">फोन</translation>
@@ -741,6 +743,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4425140285732600465">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ। कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्।</translation>
 <translation id="4425173294238317796">पासकी पुष्टि गर्ने पाना</translation>
 <translation id="442518031075347249">तपाईं अबदेखि Google Pay मा आफ्नो भर्चुअल कार्ड प्रयोग गर्न सक्नु हुने छैन। <ph name="BEGIN_LINK1" />भर्चुअल कार्डका बारेमा थप जान्नुहोस्<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> र अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="TAB_TITLE" /> र अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
 <translation id="4426508677408162512">सबै पुस्तक चिन्हहरू</translation>
 <translation id="4430277756566635951">अहिले <ph name="EMAIL" /> चयन गरिएको छ। एउटा खाता चयन गर्नुहोस्।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ट्याब बन्द गर्नुहोस्‌</translation>
@@ -875,6 +878,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4987271110129728827">उक्त पेज भेट्टाउन सकिएन। आफ्नो हिज्जे जाँच्नुहोस् वा वेबमा खोजी हेर्नुहोस्।</translation>
 <translation id="4988526792673242964">पृष्ठहरू</translation>
 <translation id="4991110219272367918">कुनै वेबसाइट अनुमोदन गर्ने वा नगर्ने विकल्प बन्द गरिएको छ</translation>
+<translation id="4996042648402406470">प्राप्त गर्नुहोस्</translation>
 <translation id="4996095658297597226">सिफारिस गरिएको पासवर्ड प्रयोग गर्ने हो?</translation>
 <translation id="5001388021414335527">यहाँ क्लिक गरी यो साइट फलो गर्नुहोस्</translation>
 <translation id="5004416275253351869">Google का क्रियाकलापसम्बन्धी नियन्त्रणहरू</translation>
@@ -926,10 +930,12 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5210286577605176222">अघिल्लो ट्याबमा जानुहोस्</translation>
 <translation id="5210365745912300556">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="5215957675041756913">आफ्नो जानकारी र खाता नियन्त्रण गर्नुहोस्</translation>
+<translation id="5218324087477576825">कार्ड नम्बर, अनिवार्य</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र अन्य <ph name="SEPARATOR" /> तपाईंले हालसालै यो साइट नखोल्नुभएकाले Chrome ले यसलाई दिइएका यी अनुमति रद्द गरेको छ</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5226378907213531272">तपाईंले कार प्रयोग गर्दैपिच्छे आफ्नो स्क्रिन अनलक गर्नु पर्ने हुन्छ</translation>
 <translation id="5227554086496586518">खोज परिणामहरू हेर्न ट्याप गर्नुहोस्</translation>
+<translation id="5229736206150093143">हालसालैका परिणामहरू</translation>
 <translation id="5233638681132016545">नयाँ ट्याब</translation>
 <translation id="5235196193381275927">साइन इन गर्ने क्रममा कुनै समस्या आयो</translation>
 <translation id="5246093389635966745">टुलबारको सर्टकट सम्पादन गर्नुहोस्</translation>
@@ -1285,6 +1291,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="676305334223455055">आफ्ना रुचिहरूका आधारमा सामग्री प्राप्त गर्न साइन इन गर्नुहोस्</translation>
 <translation id="6764137532716892442">नयाँ गतिविधि भएको <ph name="GROUP_TITLE" /> नामक साझा ट्याब समूह</translation>
 <translation id="6767294960381293877">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची आधा उचाइमा खोलिएको छ।</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याब र अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याब र अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
 <translation id="6785476624617658922">Chrome र ChromeOS का सेवाका अतिरिक्त सर्तहरू</translation>
 <translation id="6786747875388722282">विस्तारहरू</translation>
 <translation id="6795633245022906657">तुरुन्तै नयाँ ट्याब खोल्नुहोस्। यो सर्टकट परिवर्तन गर्न सेटिङमा जानुहोस्।</translation>
@@ -1581,6 +1588,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7965838025086216108">तपाईं सेभ गरिएका पासवर्डहरू जुनसुकै डिभाइसमा प्रयोग गर्न सक्नुहुन्छ। ती पासवर्डहरू <ph name="ACCOUNT" /> को Google पासवर्ड म्यानेजरमा सेभ गरिन्छन्।</translation>
 <translation id="7968014550143838305">अध्ययन सूचीमा हालियो</translation>
 <translation id="7968982339740310781">विवरणहरू हेर्नुहोस्</translation>
+<translation id="7969391000881506217">म्याद सकिने मिति*</translation>
 <translation id="7971136598759319605">१ दिनअघि सक्रिय</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> पृष्ठको पूर्वावलोकन गर्नु…</translation>
 <translation id="7977451675950311423">तपाईंले डेटा चोरीको घटनामा अरूले देखेका पासवर्ड प्रयोग गर्नुभयो भने यसले तपाईंलाई चेतावनी दिन्छ।</translation>
@@ -1740,6 +1748,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> हटाउने हो?</translation>
 <translation id="8570677896027847510">यो फाइल सुरक्षित रूपमा डाउनलोड गर्न सकिँदैन</translation>
 <translation id="8571213806525832805">पछिल्ला ४ हप्ता</translation>
+<translation id="8580435650274205305">म्याद सकिने मिति, अनिवार्य</translation>
 <translation id="8582529315803410153">तपाईंका अन्य डिभाइसका ट्याबहरू यहाँ देखिने छन्</translation>
 <translation id="8585103689515290060">अटोफिल सेवाहरू</translation>
 <translation id="859046281437143747">"थप विकल्पहरू" बटनमा क्लिक गरी मूल्य ट्रयाक गर्नुहोस्</translation>

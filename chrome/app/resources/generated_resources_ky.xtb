@@ -1246,6 +1246,7 @@
 <translation id="184862733444771842">Функция кошуу сурамы</translation>
 <translation id="1849016657376805933">HID түзмөгү</translation>
 <translation id="1849022541429818637">Чычкан менен киргизүүнү колдонууга уруксат берилген</translation>
+<translation id="1849252834922144634">Ыкчам баскычтарды кадоо үчүн коё бербей басып туруңуз</translation>
 <translation id="1850145825777333687">Түзмөктүн эсептик дайындары</translation>
 <translation id="1850508293116537636">&amp;Сааттын жебеси боюнча айландыруу</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Катталуудан мурун <ph name="DEVICE_OS" /> түзмөктү ээлей ала тургандай кылып TPM түзмөгүн тазалашыңыз керек.<ph name="END_PARAGRAPH1" />
@@ -2803,6 +2804,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2912247081180973411">Терезелерди жабуу</translation>
 <translation id="2915102088417824677">Аракеттер таржымалын көрүү</translation>
 <translation id="2915873080513663243">Авто-скандоо</translation>
+<translation id="2916067990491711240">Тескелген конок сеанстарынан чыгуу</translation>
 <translation id="2916073183900451334">Веб-беттеги Өтмөктү басканда, шилтемелер жана форма талаалары бөлүнүп көрүнөт.</translation>
 <translation id="2916745397441987255">Кеңейтүүлөрдү издөө</translation>
 <translation id="2918484639460781603">Параметрлерге өтүү</translation>

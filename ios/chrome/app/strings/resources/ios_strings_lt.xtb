@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Bendrinant įvyko klaida, nes nesate prisijungę prie tinklo.</translation>
 <translation id="1668001730617725852">Atidaryti naujoje skirtukų grupėje</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> į <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Dabar galite atidaryti „Google Lens“ adreso juostoje ir ieškoti bet ko, ką matote</translation>
 <translation id="1689333818294560261">Slapyvardis</translation>
 <translation id="169048873465870056">Pašalinti skirtuką ir ištrinti grupę?</translation>
 <translation id="1698090540708020240">Importuoti slaptažodžius…</translation>
@@ -211,6 +212,7 @@
 <translation id="1838089197478136166">Atidaryti sistemoje „Wallet“?</translation>
 <translation id="183878838231635348">Šioje kortelėje rodomos visos privatumo ar saugos problemos, kurias saugos patikra automatiškai aptinka.</translation>
 <translation id="1845230888742614096">Palikti grupę</translation>
+<translation id="1853692000353488670">Naujas inkognito skirtukas</translation>
 <translation id="1854463785401910334">Paieška atidarytuose skirtukuose</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} slaptažodis iš {count}}one{{position} slaptažodis iš {count}}few{{position} slaptažodis iš {count}}many{{position} slaptažodis iš {count}}other{{position} slaptažodis iš {count}}}</translation>
 <translation id="1861262398884155592">Šis aplankas tuščias</translation>
@@ -266,6 +268,7 @@
 <translation id="2044681667265133332">Paskyrą <ph name="USER_EMAIL" /> tvarko svetainė <ph name="HOSTED_DOMAIN" />, kuri gali peržiūrėti tam tikrą informaciją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">naujas elementas</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> pask. naudojamas toks pat slaptažodis</translation>
+<translation id="205013082884273671">Ieškokite bet ko, kas rodoma ekrane</translation>
 <translation id="2054044186557130763">Prisijunkite kaip <ph name="NAME" /> <ph name="EMAIL" />, kurį valdo jūsų organizacija.</translation>
 <translation id="2059166748188874810">Savivaldybė</translation>
 <translation id="2060638295449304809">Šis adresas išsaugotas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje <ph name="USER_EMAIL" /></translation>
@@ -458,6 +461,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2819667972867209401">Įjungus duomenys išsaugomi „Google“ paskyroje. Išjungus šią parinktį, duomenys išsaugomi tik šiame įrenginyje ir ištrinami atsijungus.</translation>
 <translation id="2827760117436553203">Laikyti duomenis atskirai?</translation>
 <translation id="2829172210806130158">Paieška ekrane</translation>
+<translation id="2831109159746537587">Jei norite ieškoti, pabandykite apibrėžti apskritimu arba paliesti nuotrauką</translation>
 <translation id="2834399722155632105">3. Palieskite „Slaptažodžio parinktys“</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Laikas</translation>

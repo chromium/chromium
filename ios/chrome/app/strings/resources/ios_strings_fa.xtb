@@ -211,6 +211,7 @@
 <translation id="1838089197478136166">در «کیف پول» باز شود؟</translation>
 <translation id="183878838231635348">در این کارت، همه مشکلات امنیتی یا حریم خصوصی‌ای که «کنترل ایمنی» به‌طور خودکار شناسایی می‌کند نمایش داده می‌شود.</translation>
 <translation id="1845230888742614096">نگه داشتن گروه</translation>
+<translation id="1853692000353488670">برگه جدید ناشناس</translation>
 <translation id="1854463785401910334">جستجوی برگه‌های باز</translation>
 <translation id="1861067954551502701">{count,plural, =1{‫{position} از {count} گذرواژه}one{‫{position} از {count} گذرواژه}other{‫{position} از {count} گذرواژه}}</translation>
 <translation id="1861262398884155592">این پوشه خالی است</translation>
@@ -1727,7 +1728,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7993619969781047893">ویژگی‌های بعضی از سایت‌ها ممکن است درست کار نکنند</translation>
 <translation id="7996239959906074962">راه‌اندازی کردن…</translation>
 <translation id="800361585186029508">‏نشانی‌های وب وارد‌شده در Google Chrome را باز می‌کند.</translation>
-<translation id="8005666035647241369">‏به «مدیر گذرواژه Google» در این دستگاه</translation>
+<translation id="8005666035647241369">‏در «مدیر گذرواژه Google» در این دستگاه</translation>
 <translation id="8010488806779226127">ویژگی‌هایی را کاوش کنید که می‌تواند به شما در انجام کارهای بیشتر درحین مرور کمک کند</translation>
 <translation id="8011489434346330032">بازرس وب</translation>
 <translation id="8017015647846870183">‏از «مدیر گذرواژه Google»، ازجمله گذرواژه‌ها و گذرکلیدها</translation>

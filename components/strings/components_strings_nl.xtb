@@ -693,6 +693,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2157640075051554492">Meldingen voor prijstracking</translation>
 <translation id="21613918653299710">Online fotogalerijen</translation>
 <translation id="2161656808144014275">Tekst</translation>
+<translation id="2162435186600002085">Primair koptekstlogo</translation>
 <translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> op <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Check of <ph name="HOST_NAME" /> een typfout bevat.</translation>
 <translation id="2166049586286450108">Volledige beheerderstoegang</translation>
@@ -851,6 +852,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2400263725572336749">Paspoort toevoegen</translation>
 <translation id="2400271059665846158">Beheer je klantenkaarten in Google Wallet</translation>
 <translation id="2400600116338235695">Kan vragen of deze site verbinding mag maken met seriële poorten</translation>
+<translation id="240450251994300576">Secundair koptekstlogo</translation>
 <translation id="2404884497378469141">Probeer je bestanden opnieuw te kopiëren</translation>
 <translation id="2413155254802890957">Oud</translation>
 <translation id="2413528052993050574">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is mogelijk ingetrokken. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
@@ -981,6 +983,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2627847595568876492">Tekst uit pdf extraheren…</translation>
 <translation id="2628224721443278970">Inloggen bij Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Het IP-adres van de server van <ph name="HOST_NAME" /> kan niet worden gevonden.</translation>
+<translation id="2638567100095052009">Typ @ om te zoeken in <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Stof (zijdeglans)</translation>
@@ -2261,6 +2264,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4827283332383516812">Kaart verwijderen</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> geselecteerd</translation>
 <translation id="4831993743164297314">Papier voor beeldbelichter</translation>
+<translation id="4832388034239846146">Update Chrome om tabbladgroepen te delen</translation>
 <translation id="483241715238664915">Waarschuwingen aanzetten</translation>
 <translation id="4832961164064927107">Barbecue en grillen</translation>
 <translation id="4834250788637067901">Betaalmethoden, aanbiedingen en adressen via Google Pay</translation>
@@ -2968,6 +2972,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6043357981274314628">Klaar</translation>
 <translation id="6044573915096792553">Grootte 12</translation>
 <translation id="6045164183059402045">Plaatsingstemplate</translation>
+<translation id="6046892054959167494">Typ <ph name="SEARCH_AGGREGATOR_KEYWORD" /> om te zoeken of vraag naar <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Deze content probeert je mogelijk te misleiden om software te installeren of persoonlijke informatie openbaar te maken. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelop B4</translation>
 <translation id="6049488691372270142">Pagina-uitvoer</translation>

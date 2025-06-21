@@ -5450,7 +5450,7 @@
 <translation id="4804827417948292437">أفوكادو</translation>
 <translation id="4806071198808203109">حفظ إط&amp;ار الفيديو باسم...</translation>
 <translation id="4806457879608775995">مراجعة هذه البنود والتحكّم في بياناتك</translation>
-<translation id="4807098396393229769">الاسم كما على البطاقة</translation>
+<translation id="4807098396393229769">الاسم المكتوب على البطاقة</translation>
 <translation id="4807122856660838973">تفعيل ميزة "التصفُّح الآمن"</translation>
 <translation id="4807514039636325497">‏تفاصيل D-Bus</translation>
 <translation id="4808525520374557629">احصل على إشعارات تتضمّن اقتراحات لحلّ مشاكل الأداء التي يتم رصدها. <ph name="BEGIN_LINK" />مزيد من المعلومات حول التنبيهات بشأن مشاكل الأداء<ph name="END_LINK" /></translation>
@@ -8021,7 +8021,7 @@
 <translation id="6670983860904543332">توفّر لك التحديثات التلقائية أحدث الميزات. يمكنك الاطّلاع على أهم التفاصيل حول آخر التحديثات.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{عنوان واحد}zero{# عنوان}two{عنوانان}few{# عناوين}many{# عنوانًا}other{# عنوان}}</translation>
 <translation id="6671497123040790595">جارٍ إعداد الإدارة من قِبل <ph name="MANAGER" /></translation>
-<translation id="6672697278890207089">إدخال عبارة المرور</translation>
+<translation id="6672697278890207089">يُرجى إدخال عبارة المرور</translation>
 <translation id="6672917148207387131">إضافة <ph name="DOMAIN" /></translation>
 <translation id="6673353404516008367">يحمي وضع التصفّح المتخفي على <ph name="BEGIN_LINK" />خصوصية تصفّحك من الأشخاص الآخرين<ph name="END_LINK" /> الذين يستخدمون جهازك.</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
@@ -9767,7 +9767,7 @@
 <translation id="7904526211178107182">‏اجعل منافذ نظام التشغيل Linux متاحة لأجهزة أخرى على الشبكة.</translation>
 <translation id="7906440585529721295">سيتم حذف البيانات المُخزّنة على الجهاز</translation>
 <translation id="7907502219904644296">تغيير إذن الوصول</translation>
-<translation id="7907837847548254634">تحديد سريع للعنصر الذي تم التركيز عليه</translation>
+<translation id="7907837847548254634">تمييز سريع للعنصر الذي يتم التركيز عليه</translation>
 <translation id="7908378463497120834">عذرًا، تعذر تركيب جزء واحد على الأقل من جهاز مساحة التخزين الخارجية.</translation>
 <translation id="7908835530772972485">حذف البيانات عند إغلاق جميع النوافذ</translation>
 <translation id="7909324225945368569">إعادة تسمية ملفك الشخصي</translation>

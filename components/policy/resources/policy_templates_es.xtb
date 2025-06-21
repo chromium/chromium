@@ -6718,6 +6718,9 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 <translation id="5740636973289452345">Habilitar informes de datos sobre extensiones y complementos</translation>
 <translation id="5740716956489996914">Usar el comportamiento predeterminado para definir si los sitios web pueden enviar solicitudes a endpoints de la red local</translation>
 <translation id="5741110260062082926">Inhabilitar Orca</translation>
+<translation id="5746126833785204233">Si se habilita esta política, se recogerán los registros a nivel de la aplicación de kiosco cuando se esté ejecutando una aplicación de kiosco en el dispositivo. Se recogerán registros de todos los tipos de aplicaciones de kiosco.
+Estos registros se almacenarán en un archivo kiosk_apps.log independiente.
+Si no se define esta política o se inhabilita, no se recogerán los registros a nivel de la aplicación de kiosco.</translation>
 <translation id="5746149754419996562">Habilita la presencia de widgets Glanceables en <ph name="PRODUCT_OS_NAME" />. Concretamente, esto afecta a los widgets a los que se puede acceder mediante el chip de fecha de la estantería.
 Si se habilita esta política, se habilitarán los widgets Glanceables en <ph name="PRODUCT_OS_NAME" />.
 Si esta política se inhabilita o no se define, no se habilitarán los widgets Glanceables en <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -8500,6 +8503,7 @@ Si no se define la política <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATIO
 <translation id="6907778402784621686">Permite bloquear el contenido no seguro en estos sitios web</translation>
 <translation id="6908335885425855120">Usar el visor de PDFs de iframe fuera de proceso</translation>
 <translation id="6908640907898649429">Permite configurar el proveedor de búsquedas predeterminadas. Puedes especificar el proveedor de búsquedas predeterminadas que utilizarán los usuarios o inhabilitar las búsquedas predeterminadas.</translation>
+<translation id="6910715067772088598">Inhabilitar registros de la aplicación de kiosco</translation>
 <translation id="6913068954484253496">Permitir que <ph name="PRODUCT_NAME" /> se conecte a dispositivos de transmisión de todas las direcciones IP.</translation>
 <translation id="6915493311660114995">Si se habilita esta política, <ph name="PRODUCT_NAME" /> permitirá las solicitudes de Web Authentication de los sitios web que tengan certificados TLS con errores (por ejemplo, sitios web que no se consideren seguros).
 
@@ -8575,6 +8579,7 @@ Esta política se eliminará en el futuro, cuando se haya lanzado por completo l
       Si no se establece, no habrá impresoras de dispositivo y se ignorarán las otras políticas <ph name="DEVICE_PRINTERS_POLICY_PATTERN" />.</translation>
 <translation id="69525503251220566">Parámetro que proporciona una función de búsqueda por imágenes para el proveedor de búsquedas predeterminado</translation>
 <translation id="6953102253399571439">Habilitar de manera predeterminada la impresión con PIN</translation>
+<translation id="695532899547292238">Habilitar la recogida de registros de la aplicación de kiosco</translation>
 <translation id="6956272732789158625">No permitir que los sitios utilicen la generación de claves</translation>
 <translation id="6960996423652450945">Inhabilitar el resaltado del cursor de texto en la pantalla de inicio de sesión</translation>
 <translation id="6961602002757991199">Si se define esta política como una URL válida, <ph name="PRODUCT_NAME" /> descargará la lista de sitios web de esa URL y aplicará las reglas como si se hubieran configurado con la política <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME" />. Estas políticas evitarán que <ph name="PRODUCT_NAME" /> y el navegador alternativo se abran entre sí.
@@ -9381,6 +9386,7 @@ Si no se define esta política, no se permitirán excepciones de <ph name="FLOAT
 <translation id="7586199729147257934">Habilita el aprovisionamiento de certificados de cliente para navegadores gestionados</translation>
 <translation id="7587345076013230465">Pedir al usuario que seleccione el certificado de cliente cuando la política de selección automática encuentre coincidencias con varios certificados en la pantalla de inicio de sesión</translation>
 <translation id="7587921466180902617">Habilitar dogfood de Grabación de pantalla para usuarios de Family Link</translation>
+<translation id="7588140323025689972">Habilitar registros de la aplicación de kiosco</translation>
 <translation id="7595074040612182185">Si se establece la política, podrás definir una lista de patrones de URL donde se especifique qué sitios podrían mostrar imágenes.
 
       Si no se establece la política, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no, se aplicará la configuración personal del usuario.

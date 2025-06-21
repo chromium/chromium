@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">価格トラッキングの通知</translation>
 <translation id="21613918653299710">オンライン画像集</translation>
 <translation id="2161656808144014275">テキスト</translation>
+<translation id="2162435186600002085">メインヘッダーのロゴ</translation>
 <translation id="2162620598375156287">現在の価格は <ph name="SOURCE_WEBSITE" /> で <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> にタイプミスがないか確認してください。</translation>
 <translation id="2166049586286450108">すべてのデータへの管理者アクセス</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">パスポートの追加</translation>
 <translation id="2400271059665846158">Google ウォレットでポイントカードを管理する</translation>
 <translation id="2400600116338235695">シリアルポートへの接続を要求できる</translation>
+<translation id="240450251994300576">サブヘッダーのロゴ</translation>
 <translation id="2404884497378469141">ファイルをもう一度コピーしてみてください</translation>
 <translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は取り消されている可能性があります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">PDF からテキストを抽出しています...</translation>
 <translation id="2628224721443278970">Microsoft OneDrive にログイン</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> のサーバーの IP アドレスが見つかりませんでした。</translation>
+<translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> で検索するには、@ を入力してください</translation>
 <translation id="2639739919103226564">ステータス:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">布（半光沢）</translation>
@@ -2267,6 +2270,7 @@
 <translation id="4827283332383516812">カードを削除</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> 件を選択中</translation>
 <translation id="4831993743164297314">イメージ セッター用紙</translation>
+<translation id="4832388034239846146">タブグループを共有するには、Chrome を更新してください</translation>
 <translation id="483241715238664915">警告をオンにする</translation>
 <translation id="4832961164064927107">バーベキュー、グリル</translation>
 <translation id="4834250788637067901">Google Pay を使用したお支払方法、クーポン、住所</translation>
@@ -2974,6 +2978,7 @@
 <translation id="6043357981274314628">完了しました。</translation>
 <translation id="6044573915096792553">サイズ 12</translation>
 <translation id="6045164183059402045">面付けテンプレート</translation>
+<translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_KEYWORD" /> を入力して検索するか、<ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> に質問してください</translation>
 <translation id="6047927260846328439">アクセス先のコンテンツは、ユーザーをだましてソフトウェアをインストールさせようとしたり、個人情報を危険にさらしたりする可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 封筒</translation>
 <translation id="6049488691372270142">排紙</translation>

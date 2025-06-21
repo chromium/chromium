@@ -52,6 +52,7 @@
 <translation id="1031362278801463162">Загрузка данных для предварительного просмотра</translation>
 <translation id="1032605640136438169">Просим вас ознакомиться с изменениями.</translation>
 <translation id="103279545524624934">Чтобы запускать Android-приложения, освободите пространство на диске.</translation>
+<translation id="1033060461778467949">Добавить вкладку в режим Split View</translation>
 <translation id="1033780634303702874">Доступ к последовательным устройствам</translation>
 <translation id="1034484273907870301">Панель с уменьшенными изображениями вкладок в режиме планшета</translation>
 <translation id="1035289631433631911">Инструмент "Перенос контента"</translation>
@@ -1916,6 +1917,7 @@
 <translation id="2312219318583366810">URL страницы</translation>
 <translation id="2314165183524574721">Ваше устройство скрыто от других пользователей</translation>
 <translation id="2314774579020744484">Язык, который используется при переводе страниц</translation>
+<translation id="2316090909467242775">Попробуйте этот пароль для восстановления</translation>
 <translation id="2316129865977710310">Нет, спасибо</translation>
 <translation id="2316433409811863464">Стриминг приложений</translation>
 <translation id="2316709634732130529">Использовать предложенный пароль</translation>
@@ -3541,6 +3543,7 @@
 <translation id="3462413494201477527">Отменить создание аккаунта?</translation>
 <translation id="346298925039590474">Эта мобильная сеть будет доступна всем пользователям данного устройства.</translation>
 <translation id="3464145797867108663">Добавить рабочий профиль</translation>
+<translation id="34673353983913587">Прежде чем сохранить новый пароль, требуется пройти дополнительную проверку личности.</translation>
 <translation id="3468298837301810372">Ярлык:</translation>
 <translation id="3468999815377931311">Телефон Android</translation>
 <translation id="3469583217479686109">Инструмент "Выделение"</translation>
@@ -3568,6 +3571,7 @@
 <translation id="3487007233252413104">анонимные функции</translation>
 <translation id="3487649228420469005">Сканирование завершено</translation>
 <translation id="3488199663160411179">имя</translation>
+<translation id="3489457144969823485">Начиная с июля 2025 года приложения Chrome больше нельзя запустить на устройствах с ChromeOS. Используйте другое приложение.</translation>
 <translation id="3490695139702884919">Скачивание… <ph name="PERCENT" /> %</translation>
 <translation id="3491171603443463516">Если вы забудете PIN-код или пароль, локальные данные можно будет восстановить</translation>
 <translation id="3491616972057195633">Контроль повторного нажатия</translation>
@@ -4035,6 +4039,7 @@
 <translation id="3792973596468118484">Расширений: <ph name="NUM_EXTENSIONS" /></translation>
 <translation id="3794792524918736965">Включите Windows Hello</translation>
 <translation id="379509625511193653">Отключено</translation>
+<translation id="3795624560191557077">Недавно вы изменили пароль, оказавшийся в открытом доступе из-за утечки данных. В случае проблем Google Менеджер паролей поможет войти в аккаунт.</translation>
 <translation id="3796215473395753611">Alt + Стрелка вверх</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />, нажмите клавишу со стрелкой вправо, чтобы прослушать голос</translation>
 <translation id="3796648294839530037">Избранные сети:</translation>
@@ -4769,7 +4774,7 @@
 <translation id="4305402730127028764">Копировать на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="4305817255990598646">Переключиться</translation>
 <translation id="4306119971288449206">Приложения должны иметь тип контента "<ph name="CONTENT_TYPE" />"</translation>
-<translation id="4306489587293957491">Ввод</translation>
+<translation id="4306489587293957491">Ввести</translation>
 <translation id="4306810703452026910">Chrome больше не будет отмечать уведомления с этого сайта как спам.</translation>
 <translation id="4307992518367153382">Основные</translation>
 <translation id="4309165024397827958">Предоставьте приложениям и сервисам Android доступ к данным о местоположении устройства. Чтобы повышать точность геолокации и улучшать некоторые сервисы, компания Google может периодически собирать анонимные геоданные пользователей.</translation>
@@ -5852,6 +5857,7 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 с шифрованием RSA</translation>
 <translation id="5090637338841444533">Запретить сайтам отслеживать положение камеры</translation>
 <translation id="5091636240353511739">Показать PIN-код</translation>
+<translation id="5093417502834168387">Не получается войти в аккаунт? Попробуйте другой способ</translation>
 <translation id="5093477827231450397">Список заблокированных сайтов, которым запрещено предлагать рекламу для других сайтов</translation>
 <translation id="5093569275467863761">Субфрейм возвратного кеша в режиме инкогнито: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Вы можете открывать и редактировать поддерживаемые файлы в этом приложении из Google Файлов и других приложений. Указать, какие типы файлов по умолчанию будут открываться в этом приложении, можно в <ph name="BEGIN_LINK" />настройках приложений по умолчанию на устройстве<ph name="END_LINK" />.</translation>
@@ -6789,6 +6795,7 @@
 <translation id="5785583009707899920">Файловые утилиты Chrome</translation>
 <translation id="5787146423283493983">Согласование ключей</translation>
 <translation id="5787420647064736989">Название устройства</translation>
+<translation id="5787582109651427233">Перейдите в Google Кошелек, чтобы добавить <ph name="BEGIN_LINK_LOYALTY_CARDS" />карты постоянного клиента<ph name="END_LINK_LOYALTY_CARDS" /> или <ph name="BEGIN_LINK_PAYMENT_METHODS" />способы оплаты<ph name="END_LINK_PAYMENT_METHODS" /> Google Pay и управлять ими.</translation>
 <translation id="5788367137662787332">Не удалось добавить один или несколько разделов устройства <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5789581866075720267">Чтобы импортировать пароли в <ph name="BRAND" /> на этом устройстве, выберите CSV-файл</translation>
 <translation id="5790085346892983794">Выполнено</translation>
@@ -7274,6 +7281,7 @@
 <translation id="6131511889181741773">Кляксы</translation>
 <translation id="6132251717264923430">Кнопка закреплена</translation>
 <translation id="6132714462430777655">Пропустить регистрацию в учебном заведении?</translation>
+<translation id="6134418895482326458">Скрыть нижний колонтитул страницы быстрого доступа</translation>
 <translation id="6134428719487602109">Удалить все аккаунты пользователей и восстановить на устройстве Chromebook настройки по умолчанию</translation>
 <translation id="6135826623269483856">Сайты, которым запрещено управление окнами на всех ваших экранах</translation>
 <translation id="6136114942382973861">Закрыть панель загрузок</translation>
@@ -7630,6 +7638,7 @@
 <translation id="6388577073199278153">Не удалось войти в аккаунт на мобильном устройстве</translation>
 <translation id="6390020764191254941">Открыть вкладку в новом окне</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{Нет сайтов.}=1{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и ещё одного сайта.}one{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и ещё {COUNT} сайта.}few{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и ещё {COUNT} сайтов.}many{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и ещё {COUNT} сайтов.}other{Для <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> и ещё {COUNT} сайта.}}</translation>
+<translation id="6390533465682072118">Пароль для восстановления</translation>
 <translation id="6391131092053186625">IMEI-код вашего устройства – <ph name="IMEI_NUMBER" />. Его можно использовать для активации сервиса.</translation>
 <translation id="6393156038355142111">Сгенерировать надежный пароль</translation>
 <translation id="6393550101331051049">Разрешить сайтам показывать небезопасный контент</translation>
@@ -7714,6 +7723,7 @@
 <translation id="6455521402703088376">Отключено • Разработчик отменил публикацию этого расширения</translation>
 <translation id="6455894534188563617">&amp;Новая папка</translation>
 <translation id="645705751491738698">Всегда блокировать JavaScript</translation>
+<translation id="6457572529564180082">Не удалось запустить приложение "<ph name="APP_NAME" />"</translation>
 <translation id="6458606150257356946">Все равно вставить</translation>
 <translation id="6458701200018867744">Ошибка загрузки (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Найти выделенное</translation>
@@ -8012,6 +8022,7 @@
 <translation id="6667187897999649121">Сейчас вы можете предоставлять доступ к паролям только участникам семейной группы. <ph name="BEGIN_LINK" />Создайте ее<ph name="END_LINK" /> максимум для шести человек и пользуйтесь дополнительными возможностями продуктов и подписок Google.</translation>
 <translation id="666731172850799929">Открыть в <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">К данным применяются параметры, выбранные для сайта, который вы просматриваете</translation>
+<translation id="6669637573228217624">Загрузить файл</translation>
 <translation id="6670142487971298264">Срок блокировки приложения "<ph name="APP_NAME" />" истек.</translation>
 <translation id="6670767097276846646">Некоторые расширения могут добавлять поисковые системы в Chrome.</translation>
 <translation id="6670983860904543332">Благодаря автоматическому обновлению у вас всегда есть доступ к самым последним функциям. Оцените некоторые из них.</translation>
@@ -8151,6 +8162,7 @@
 <translation id="6771503742377376720">Является центром сертификации</translation>
 <translation id="6772974422346500939">Открыть и редактировать</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
+<translation id="677394079035748956">Необходимо ввести одноразовый код</translation>
 <translation id="6774710250118040929">Добавление пароля</translation>
 <translation id="6775163072363532304">Здесь будут появляться доступные устройства.</translation>
 <translation id="6775992990195573904">Наведите порядок во вкладках</translation>
@@ -9269,6 +9281,7 @@
 <translation id="7566118625369982896">Управление ссылками на приложение в Google Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Создать сочетание клавиш</translation>
+<translation id="7567100268516475532">Добавить вкладку в режим Split View</translation>
 <translation id="7568014768212280234">Ваша группа вкладок заполнена. Новые участники не смогут присоединиться по ссылке.</translation>
 <translation id="7568759527730933493">Поиск IP-адресов сайтов в DNS (системе доменных имен) будет выполняться через защищенное подключение. Для этого используется управляемый поставщик услуг: <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />. Для некоторых доменов, настроенных администратором, защищенные подключения не используются.</translation>
 <translation id="756876171895853918">Настроить аватар</translation>

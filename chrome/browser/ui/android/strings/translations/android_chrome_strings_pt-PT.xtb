@@ -1412,6 +1412,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7224097611345298931">Todas as palavras-passe guardadas apenas neste dispositivo para o Chrome e <ph name="CHROME_CHANNEL" /> foram unidas. Pode preencher automaticamente todas as palavras-passe guardadas em ambas as apps.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 transferência pendente}other{# transferências pendentes}}</translation>
 <translation id="7230064152164845085">Mudar para Navegação anónima</translation>
+<translation id="7230836263524391273">Ocultar modo de leitura</translation>
 <translation id="7237724030342645845">O Gestor de Palavras-passe da Google deixou de funcionar</translation>
 <translation id="72415438529550637">A sugestão de palavra-passe está fechada.</translation>
 <translation id="7248671827512403053">Aplicação</translation>

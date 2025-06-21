@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">मूल्य ट्र्याक गर्ने सुविधासम्बन्धी सूचनाहरू</translation>
 <translation id="21613918653299710">अनलाइन फोटो ग्यालरीहरू</translation>
 <translation id="2161656808144014275">पाठ</translation>
+<translation id="2162435186600002085">मुख्य हेडरको लोगो</translation>
 <translation id="2162620598375156287">अहिले <ph name="SOURCE_WEBSITE" /> मा <ph name="CURRENT_PRICE" /> मा उपलब्ध छ</translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> मा कुनै हिज्जे गलत छ कि छैन भन्ने कुरा जाँच्नुहोस्।</translation>
 <translation id="2166049586286450108">पूर्ण प्रशासक पहुँच</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">राहदानीसम्बन्धी जानकारी हाल्नुहोस्</translation>
 <translation id="2400271059665846158">आफ्ना लोयल्टी कार्डहरू Google Wallet मा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2400600116338235695">सिरियल पोर्टहरूमा कनेक्ट हुने अनुमति माग्न सक्छ</translation>
+<translation id="240450251994300576">सहायक हेडरको लोगो</translation>
 <translation id="2404884497378469141">आफ्ना फाइलहरू फेरि कपी गरी हेर्नुहोस्</translation>
 <translation id="2413155254802890957">पुरानो</translation>
 <translation id="2413528052993050574">यो सर्भरले यो <ph name="DOMAIN" /> को भनि प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई रद्द गरिएको हुन सक्छ। यो कुनै एउटा मिसकन्फिगरेसन वा कुनै आक्रमणकारीले तपाईंको जडानमा गरेको हस्तक्षेपको कारणले गर्दा भएको हुन सक्छ।</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">PDF बाट टेक्स्ट एक्स्ट्रयाक्ट गरिँदै छ...</translation>
 <translation id="2628224721443278970">Microsoft OneDrive मा साइन इन गर्नुहोस्</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> को सर्भरको IP एड्रेस फेला पार्न सकिएन।</translation>
+<translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> मा खोज्न @ टाइप गर्नुहोस्</translation>
 <translation id="2639739919103226564">स्थिति:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">फेब्रिक (सेमी ग्लस)</translation>
@@ -2265,6 +2268,7 @@
 <translation id="4827283332383516812">कार्ड मेटाउनुहोस्</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> वटा सामान चयन गरिए</translation>
 <translation id="4831993743164297314">इमेज सेट्टर पेपर</translation>
+<translation id="4832388034239846146">ट्याब समूहहरू सेयर गर्न Chrome अपडेट गर्नुहोस्</translation>
 <translation id="483241715238664915">चेतावनी देखाउने सुविधा अन गर्नुहोस्</translation>
 <translation id="4832961164064927107">बार्बिक्यू तथा पोलेका परिकार</translation>
 <translation id="4834250788637067901">Google Pay प्रयोग गर्दा इम्पोर्ट गरिने भुक्तानी विधि, अफर र ठेगानाहरू</translation>
@@ -2972,6 +2976,7 @@
 <translation id="6043357981274314628">सम्पन्न भयो!</translation>
 <translation id="6044573915096792553">आकार १२</translation>
 <translation id="6045164183059402045">इम्पोजिसन टेम्प्लेट</translation>
+<translation id="6046892054959167494">स्क्रिनसट खोज्न <ph name="SEARCH_AGGREGATOR_KEYWORD" /> टाइप गर्नुहोस् वा <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> भन्नुहोस्</translation>
 <translation id="6047927260846328439">यो सामग्रीले तपाईंलाई सफ्टवेयर स्थापना गर्न लगाएर वा व्यक्तिगत जानकारी खुलाउन लगाएर झुक्याउन सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्‌<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">पृष्ठको डेलिभरी</translation>

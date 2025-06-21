@@ -693,6 +693,7 @@
 <translation id="2157640075051554492">કિંમત ટ્રૅક કરવા વિશેના નોટિફિકેશન</translation>
 <translation id="21613918653299710">ઑનલાઇન છબીની ગૅલરી</translation>
 <translation id="2161656808144014275">ટેક્સ્ટ</translation>
+<translation id="2162435186600002085">પ્રાથમિક હેડરનો લોગો</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> પર હવે <ph name="CURRENT_PRICE" /> કિંમત છે</translation>
 <translation id="2164510882479075877">ચેક કરો કે <ph name="HOST_NAME" />માં કોઈ ટાઇપિંગ ભૂલ તો નથી ને.</translation>
 <translation id="2166049586286450108">સંપૂર્ણ વ્યવસ્થાપક ઍક્સેસ</translation>
@@ -851,6 +852,7 @@
 <translation id="2400263725572336749">પાસપોર્ટની માહિતી ઉમેરો</translation>
 <translation id="2400271059665846158">Google Walletમાં તમારા લૉયલ્ટિ કાર્ડ મેનેજ કરો</translation>
 <translation id="2400600116338235695">સીરિયલ પોર્ટ સાથે કનેક્ટ થવા માટે પૂછી શકે છે</translation>
+<translation id="240450251994300576">ગૌણ હેડરનો લોગો</translation>
 <translation id="2404884497378469141">તમારી ફાઇલોની ફરીથી કૉપિ કરવાનો પ્રયાસ કરો</translation>
 <translation id="2413155254802890957">જૂનું</translation>
 <translation id="2413528052993050574">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર રદબાતલ થયું હશે. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
@@ -981,6 +983,7 @@
 <translation id="2627847595568876492">PDFમાંથી ટેક્સ્ટ એક્સટ્રેક્ટ કરી રહ્યાં છીએ...</translation>
 <translation id="2628224721443278970">Microsoft OneDriveમાં સાઇન ઇન કરો</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />નું સર્વર IP ઍડ્રેસ ન મળ્યું.</translation>
+<translation id="2638567100095052009">સમગ્ર <ph name="FEATURED_SEARCH_LIST" /> પર શોધવા માટે @ ટાઇપ કરો</translation>
 <translation id="2639739919103226564">સ્થિતિ:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">કાપડ (સેમી-ગ્લોસ)</translation>
@@ -2267,6 +2270,7 @@
 <translation id="4827283332383516812">કાર્ડ ડિલીટ કરો</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> આઇટમ પસંદ કરી</translation>
 <translation id="4831993743164297314">ઇમેજ સેટર પેપર</translation>
+<translation id="4832388034239846146">ટૅબના ગ્રૂપ શેર કરવા માટે, Chrome અપડેટ કરો</translation>
 <translation id="483241715238664915">ચેતવણીઓ ચાલુ કરો</translation>
 <translation id="4832961164064927107">BBQ અને ગ્રિલિંગ</translation>
 <translation id="4834250788637067901">Google Payનો ઉપયોગ કરતી ચુકવણી પદ્ધતિઓ, ઑફરો અને સરનામાં</translation>
@@ -2974,6 +2978,7 @@
 <translation id="6043357981274314628">થઈ ગયું!</translation>
 <translation id="6044573915096792553">કદ 12</translation>
 <translation id="6045164183059402045">લાગુ કરવા માટેનો નમૂનો</translation>
+<translation id="6046892054959167494">શોધવા માટે <ph name="SEARCH_AGGREGATOR_KEYWORD" /> અથવા પૂછવા માટે <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> ટાઇપ કરો</translation>
 <translation id="6047927260846328439">આ કન્ટેન્ટ કદાચ સૉફ્ટવેર ઇન્સ્ટૉલ કરવા માટે અથવા વ્યક્તિગત માહિતી કઢાવવા માટે તમારી સાથે કપટ કરવાનો પ્રયાસ કરી શકે છે. <ph name="BEGIN_LINK" />છતાં પણ બતાવો<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">એન્વલપ B4</translation>
 <translation id="6049488691372270142">પેજની ડિલિવરી</translation>

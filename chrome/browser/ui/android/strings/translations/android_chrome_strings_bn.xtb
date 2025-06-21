@@ -480,6 +480,7 @@
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{১টি পাসওয়ার্ড ও অন্যান্য আইটেম শুধু এই ডিভাইসে সেভ করা হয়েছে। আপনার অন্যান্য ডিভাইসে সেগুলি ব্যবহার করতে হলে, আপনার Google অ্যাকাউন্ট <ph name="ACCOUNT_EMAIL" />-এ সেভ করুন।}one{#টি পাসওয়ার্ড ও অন্যান্য আইটেম শুধু এই ডিভাইসে সেভ করা হয়েছে। আপনার অন্যান্য ডিভাইসে সেগুলি ব্যবহার করতে হলে, আপনার Google অ্যাকাউন্ট <ph name="ACCOUNT_EMAIL" />-এ সেভ করুন।}other{#টি পাসওয়ার্ড ও অন্যান্য আইটেম শুধু এই ডিভাইসে সেভ করা হয়েছে। আপনার অন্যান্য ডিভাইসে সেগুলি ব্যবহার করতে হলে, আপনার Google অ্যাকাউন্ট <ph name="ACCOUNT_EMAIL" />-এ সেভ করুন।}}</translation>
 <translation id="3187472288455401631">বিজ্ঞাপন পরিমাপ</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ট্যাব গ্রুপ</translation>
+<translation id="3200536777393523575">নিজের বর্তমান উইন্ডো বন্ধ করবেন?</translation>
 <translation id="3207960819495026254">বুকমার্ক করা হয়েছে</translation>
 <translation id="3208584281581115441">এখনই চেক করুন</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> মুছে ফেলা হয়েছে</translation>
@@ -724,6 +725,7 @@
 <translation id="4351244548802238354">ডায়ালগ বন্ধ করুন</translation>
 <translation id="4352287748243729941">আপনার <ph name="PROVIDER" /> পাসওয়ার্ড ব্যবহার করবেন?</translation>
 <translation id="4355272626458588338">বুকমার্ক যোগ করলে আপনি গুরুত্বপূর্ণ পৃষ্ঠায় ফিরে যেতে পারবেন</translation>
+<translation id="4356503491090073318">কার্ডের নম্বর*</translation>
 <translation id="4357206670025518404">আরও <ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">সুরক্ষা সম্পর্কিত তথ্য এক ঝলকে</translation>
 <translation id="4378154925671717803">ফোন</translation>
@@ -741,6 +743,7 @@
 <translation id="4425140285732600465">দাম ট্র্যাক করা হচ্ছে। কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান।</translation>
 <translation id="4425173294238317796">পাসকী কনফার্মেশন শিট</translation>
 <translation id="442518031075347249">Google Pay অ্যাপে আপনার ভার্চুয়াল কার্ড আর ব্যবহার করতে পারবেন না। <ph name="BEGIN_LINK1" />ভার্চুয়াল কার্ড সম্পর্কে আরও জানুন<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> ও অন্য <ph name="TAB_COUNT_ONE" />টি ট্যাব বন্ধ হবে}one{<ph name="TAB_TITLE" /> ও অন্য <ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ হবে}other{<ph name="TAB_TITLE" /> ও অন্য <ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ হবে}}</translation>
 <translation id="4426508677408162512">সকল বুকমার্ক</translation>
 <translation id="4430277756566635951">বর্তমানে <ph name="EMAIL" /> আইডি বেছে নেওয়া হয়েছে। একটি অ্যাকাউন্ট বেছে নিন।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ট্যাবটি বন্ধ করুন</translation>
@@ -876,6 +879,7 @@
 <translation id="4987271110129728827">এই পৃষ্ঠাটি খুঁজে পাওয়া যাচ্ছে না। আপনার লেখা বানান চেক করুন বা ওয়েব সার্চ করুন।</translation>
 <translation id="4988526792673242964">পৃষ্ঠাসমূহ</translation>
 <translation id="4991110219272367918">ওয়েবসাইট বন্ধ করা হবে কিনা তা অনুমোদন করা বা না করার বিকল্প</translation>
+<translation id="4996042648402406470">পান</translation>
 <translation id="4996095658297597226">সাজেস্ট করা পাসওয়ার্ড ব্যবহার করতে চান?</translation>
 <translation id="5001388021414335527">এই সাইট এখানে ফলো করুন</translation>
 <translation id="5004416275253351869">Google অ্যাক্টিভিটির নিয়ন্ত্রণ</translation>
@@ -927,10 +931,12 @@
 <translation id="5210286577605176222">পূর্ববর্তী ট্যাবে চলে যান</translation>
 <translation id="5210365745912300556">ট্যাব বন্ধ করুন</translation>
 <translation id="5215957675041756913">আপনার ডেটা ও অ্যাকাউন্ট কন্ট্রোল করুন</translation>
+<translation id="5218324087477576825">কার্ডের নম্বর, প্রয়োজন</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="SEPARATOR" /> Chrome এইসব অনুমতি সরিয়ে দিয়েছে কারণ আপনি সম্প্রতি দেখেননি</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="5226378907213531272">গাড়ি ব্যবহার করতে হলে প্রত্যেকবার স্ক্রিন আনলক করতে হবে</translation>
 <translation id="5227554086496586518">সার্চ ফলাফল দেখতে ট্যাপ করুন</translation>
+<translation id="5229736206150093143">লেটেস্ট ফলাফল</translation>
 <translation id="5233638681132016545">নতুন ট্যাব</translation>
 <translation id="5235196193381275927">সাইন-ইন করার সময় কোনও সমস্যা হয়েছে</translation>
 <translation id="5246093389635966745">টুলবারের শর্টকার্ট এডিট করুন</translation>
@@ -1286,6 +1292,7 @@
 <translation id="676305334223455055">আপনার আগ্রহ অনুসারে কন্টেন্ট পেতে সাইন-ইন করুন</translation>
 <translation id="6764137532716892442">নতুন অ্যাক্টিভিটির সাথে <ph name="GROUP_TITLE" /> ট্যাব গ্রুপ শেয়ার করা হয়েছে</translation>
 <translation id="6767294960381293877">ট্যাব শেয়ার করা যাবে এমন ডিভাইসের সূচি অর্ধেক স্ক্রিন জুড়ে খোলা হয়েছে।</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" />টি ছদ্মবেশী এবং অন্য <ph name="TAB_COUNT_ONE" />টি ট্যাব বন্ধ হবে}one{<ph name="INCOGNITO_TAB_COUNT" />টি ছদ্মবেশী এবং অন্য <ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ হবে}other{<ph name="INCOGNITO_TAB_COUNT" />টি ছদ্মবেশী এবং অন্য <ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ হবে}}</translation>
 <translation id="6785476624617658922">Chrome এবং ChromeOS-এর পরিষেবার অতিরিক্ত শর্তাবলী</translation>
 <translation id="6786747875388722282">এক্সটেনশানসমূহ</translation>
 <translation id="6795633245022906657">দ্রুত নতুন ট্যাব খুলুন। এই শর্টকাট এডিট করতে, সেটিংসে যান।</translation>
@@ -1582,6 +1589,7 @@
 <translation id="7965838025086216108">যেকোনও ডিভাইসে আপনি সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন। এটি <ph name="ACCOUNT" />-এর Google পাসওয়ার্ড ম্যানেজার বিকল্পে সেভ করা আছে।</translation>
 <translation id="7968014550143838305">পড়ার তালিকায় যোগ করা হয়েছে</translation>
 <translation id="7968982339740310781">বিশদ বিবরণ দেখুন</translation>
+<translation id="7969391000881506217">মেয়াদ সমাপ্তির তারিখ*</translation>
 <translation id="7971136598759319605">১ দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> পৃষ্ঠার প্রিভিউ দেখুন</translation>
 <translation id="7977451675950311423">আপনি যদি এমন কোনও পাসওয়ার্ড ব্যবহার করেন যা ডেটার নিরাপত্তা লঙ্ঘনের কারণে সুরক্ষিত নয়, সেক্ষেত্রে এটি আপনাকে সতর্ক করে।</translation>
@@ -1741,6 +1749,7 @@
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> সরাতে চান?</translation>
 <translation id="8570677896027847510">ফাইল নিরাপদে ডাউনলোড করা যাচ্ছে না</translation>
 <translation id="8571213806525832805">গত ৪ সপ্তাহ</translation>
+<translation id="8580435650274205305">মেয়াদ সমাপ্তির তারিখ, প্রয়োজন</translation>
 <translation id="8582529315803410153">অন্যান্য ডিভাইস থেকে আপনার ট্যাবগুলি এখানে দেখতে পাবেন</translation>
 <translation id="8585103689515290060">অটোফিল পরিষেবা</translation>
 <translation id="859046281437143747">'আরও বিকল্প' বোতাম থেকে দাম ট্র্যাক করুন</translation>

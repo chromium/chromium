@@ -112,6 +112,7 @@
 <translation id="5556417849629758491">Veja informações da loja, opção disponível junto à parte superior do ecrã</translation>
 <translation id="5627941783489838464">Nenhuma atualização de separadores</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link do Chrome}other{<ph name="TABS_COUNT_MANY" /> links do Chrome}}</translation>
+<translation id="5746204836956568669">Agrupar <ph name="NUMBER_OF_TABS" /> separadores para trabalhar mais rapidamente?</translation>
 <translation id="58326064309361797">Arraste os separadores para os agrupar.</translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5972844218283131174">Desmarcar tudo</translation>

@@ -694,6 +694,7 @@
 <translation id="2157640075051554492">দাম ট্র্যাক করার বিজ্ঞপ্তি</translation>
 <translation id="21613918653299710">অনলাইন ছবি সংক্রান্ত গ্যালারি</translation>
 <translation id="2161656808144014275">পাঠ্য</translation>
+<translation id="2162435186600002085">প্রাথমিক হেডারের লোগো</translation>
 <translation id="2162620598375156287">এখন <ph name="SOURCE_WEBSITE" />-এ <ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877"><ph name="HOST_NAME" />-এ কোনও বানান ভুল লেখা হয়েছে কিনা তা চেক করে দেখুন।</translation>
 <translation id="2166049586286450108">পূর্ণ প্রশাসক অ্যাক্সেস</translation>
@@ -852,6 +853,7 @@
 <translation id="2400263725572336749">পাসপোর্ট সম্পর্কিত তথ্য যোগ করুন</translation>
 <translation id="2400271059665846158">Google Wallet থেকে আপনার লয়ালটি কার্ড ম্যানেজ করুন</translation>
 <translation id="2400600116338235695">সিরিয়াল পোর্টের সাথে কানেক্ট করতে অনুমতি চাইতে পারে</translation>
+<translation id="240450251994300576">দ্বিতীয় হেডারের লোগো</translation>
 <translation id="2404884497378469141">আপনার ফাইল আবার কপি করার চেষ্টা করে দেখুন</translation>
 <translation id="2413155254802890957">পুরনো</translation>
 <translation id="2413528052993050574">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট প্রত্যাহার করা হতে পারে। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
@@ -982,6 +984,7 @@
 <translation id="2627847595568876492">পিডিএফ থেকে টেক্সট এক্সট্র্যাক্ট করা হচ্ছে...</translation>
 <translation id="2628224721443278970">Microsoft OneDrive-এ সাইন-ইন করুন</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-এর সার্ভার আইপি অ্যাড্রেস পাওয়া যায়নি।</translation>
+<translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> জুড়ে সার্চ করতে @ টাইপ করুন</translation>
 <translation id="2639739919103226564">স্থিতি: </translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">ফ্যাব্রিক (সেমি-গ্লস)</translation>
@@ -2268,6 +2271,7 @@
 <translation id="4827283332383516812">কার্ড মুছে দিন</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" />টি বেছে নেওয়া হয়েছে</translation>
 <translation id="4831993743164297314">ইমেজ সেটার পেপার</translation>
+<translation id="4832388034239846146">ট্যাব গ্রুপ শেয়ার করতে, Chrome আপডেট করুন</translation>
 <translation id="483241715238664915">সতর্কতা চালু করুন</translation>
 <translation id="4832961164064927107">বার্বিকিউ ও গ্রিলিং</translation>
 <translation id="4834250788637067901">Google Pay-এর সাথে যুক্ত পেমেন্ট পদ্ধতি, অফার ও ঠিকানা</translation>
@@ -2975,6 +2979,7 @@
 <translation id="6043357981274314628">হয়ে গেছে!</translation>
 <translation id="6044573915096792553">সাইজ ১২</translation>
 <translation id="6045164183059402045">ইম্পোজিশন টেমপ্লেট</translation>
+<translation id="6046892054959167494"><ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> সার্চ বা এই সম্পর্কে প্রশ্ন করতে <ph name="SEARCH_AGGREGATOR_KEYWORD" /> টাইপ করুন</translation>
 <translation id="6047927260846328439">এই কন্টেন্ট প্রতারণার মাধ্যমে আপনাকে দিয়ে কোনও সফ্টওয়্যার ইনস্টল করাতে অথবা আপনার ব্যক্তিগত তথ্য জেনে নেওয়ার চেষ্টা করতে পারে। <ph name="BEGIN_LINK" />তবুও এটি দেখতে চাই<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">এনভেলপ B4</translation>
 <translation id="6049488691372270142">পৃষ্ঠার ডেলিভারি</translation>

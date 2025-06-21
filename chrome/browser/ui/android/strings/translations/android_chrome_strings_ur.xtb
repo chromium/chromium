@@ -480,6 +480,7 @@
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{‏‫1 پاس ورڈ اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کے لیے، انہیں اپنے Google اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں محفوظ کریں۔}other{‏‫# پاس ورڈز اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کے لیے، انہیں اپنے Google اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> میں محفوظ کریں۔}}</translation>
 <translation id="3187472288455401631">اشتہار کی اثرپذیری کی پیمائش</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ٹیب گروپ</translation>
+<translation id="3200536777393523575">آپ کی موجودہ ونڈو بند کریں؟</translation>
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
 <translation id="3208584281581115441">ابھی چیک کریں</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> کو حذف کر دیا گیا</translation>
@@ -724,6 +725,7 @@
 <translation id="4351244548802238354">ڈائیلاگ بند کریں</translation>
 <translation id="4352287748243729941">اپنا <ph name="PROVIDER" /> پاس ورڈ استعمال کریں؟</translation>
 <translation id="4355272626458588338">بُک مارک شامل کر کے آپ کسی ایسے صفحے پر واپس جا سکتے ہیں جو آپ کیلئے اہم ہے</translation>
+<translation id="4356503491090073318">کارڈ نمبر*</translation>
 <translation id="4357206670025518404"><ph name="COUNT_NUMBER" />+</translation>
 <translation id="4359809482106103048">ایک نظر میں حفاظت</translation>
 <translation id="4378154925671717803">فون</translation>
@@ -741,6 +743,7 @@
 <translation id="4425140285732600465">قیمت ٹریک کی جا رہی ہے۔ کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر الرٹس حاصل کریں۔</translation>
 <translation id="4425173294238317796">پاسکی کی تصدیقی شیٹ</translation>
 <translation id="442518031075347249">‏اب آپ Google Pay کے ساتھ اپنا ورچوئل کارڈ استعمال نہیں کر سکیں گے۔ <ph name="BEGIN_LINK1" />ورچوئل کارڈز کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> اور <ph name="TAB_COUNT_ONE" /> دیگر ٹیب کو بند کر دیا جائے گا}other{<ph name="TAB_TITLE" /> اور <ph name="TAB_COUNT_MANY" /> دیگر ٹیبز کو بند کر دیا جائے گا}}</translation>
 <translation id="4426508677408162512">سبھی بُک مارکس</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> فی الحال منتخب کردہ ہے۔ ایک اکاؤنٹ منتخب کریں۔</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ٹیب بند کریں</translation>
@@ -876,6 +879,7 @@
 <translation id="4987271110129728827">وہ صفحہ نہیں مل سکا۔ اپنا املا چیک کریں یا ویب تلاش کی کوشش کریں۔</translation>
 <translation id="4988526792673242964">صفحات</translation>
 <translation id="4991110219272367918">کسی بند ویب سائٹ کو منظوری دینے یا منظوری نہ دینے کا اختیار</translation>
+<translation id="4996042648402406470">حاصل کریں</translation>
 <translation id="4996095658297597226">تجویز کردہ پاس ورڈ استعمال کریں؟</translation>
 <translation id="5001388021414335527">یہاں اس سائٹ کی پیروی کریں</translation>
 <translation id="5004416275253351869">‏Google سرگرمی کنٹرولز</translation>
@@ -927,10 +931,12 @@
 <translation id="5210286577605176222">پچھلے ٹیب پر جائیں</translation>
 <translation id="5210365745912300556">ٹیب بند کریں</translation>
 <translation id="5215957675041756913">اپنے ڈیٹا اور اکاؤنٹ کو کنٹرول کریں</translation>
+<translation id="5218324087477576825">کارڈ نمبر درکار</translation>
 <translation id="5221437554987713282">‏<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور مزید <ph name="SEPARATOR" />، Chrome نے یہ اجازتیں ہٹا دی ہیں کیوں کہ آپ حال ہی میں ان کا ملاحظہ نہیں کیا ہے</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
 <translation id="5226378907213531272">جب بھی آپ کار استعمال کریں گے آپ اپنی اسکرین کو غیر مقفل کر دیں گے</translation>
 <translation id="5227554086496586518">تلاش کے نتائج دیکھنے کیلئے تھپتھپائیں</translation>
+<translation id="5229736206150093143">تازہ ترین نتائج</translation>
 <translation id="5233638681132016545">نیا ٹیب</translation>
 <translation id="5235196193381275927">سائن ان کرنے کے دوران کچھ غلط ہو گیا</translation>
 <translation id="5246093389635966745">ٹول بار شارٹ کٹ میں ترمیم کریں</translation>
@@ -1286,6 +1292,7 @@
 <translation id="676305334223455055">اپنی دلچسپیوں پر مبنی مواد حاصل کرنے کیلئے سائن ان کریں</translation>
 <translation id="6764137532716892442">نئی سرگرمی کے ساتھ اشتراک کردہ <ph name="GROUP_TITLE" /> ٹیب گروپ</translation>
 <translation id="6767294960381293877">ان آلات کی فہرست جن کے ساتھ ٹیب کا اشتراک کرنا ہے نصف اونچائی پر کھلی ہوئی ہے۔</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> پوشیدگی اور <ph name="TAB_COUNT_ONE" /> دیگر ٹیب کو بند کر دیا جائے گا}other{<ph name="INCOGNITO_TAB_COUNT" /> پوشیدگی اور <ph name="TAB_COUNT_MANY" /> دیگر ٹیبز کو بند کر دیا جائے گا}}</translation>
 <translation id="6785476624617658922">‏Chrome اور ChromeOS کی اضافی سروس کی شرائط</translation>
 <translation id="6786747875388722282">توسیعات</translation>
 <translation id="6795633245022906657">فوری طور پر ایک نیا ٹیب کھولیں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ترتیبات پر جائیں۔</translation>
@@ -1582,6 +1589,7 @@
 <translation id="7965838025086216108">‏آپ کسی بھی آلے پر محفوظ کردہ پاس ورڈز استعمال کر سکتے ہیں۔ وہ <ph name="ACCOUNT" /> کے Google پاس ورڈ مینیجر میں محفوظ ہوتے ہیں۔</translation>
 <translation id="7968014550143838305">پڑھنے کی فہرست میں شامل کیا گیا</translation>
 <translation id="7968982339740310781">تفصیلات دیکھیں</translation>
+<translation id="7969391000881506217">تاریخ اختتام*</translation>
 <translation id="7971136598759319605">1 دن پہلے فعال تھا</translation>
 <translation id="7975379999046275268">صفحے کا پیش منظر دیکھیں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">اگر آپ کوئی ایسا پاس ورڈ استعمال کرتے ہیں جس سے ڈیٹا کی خلاف ورزی میں سمجھوتہ کیا گیا ہو تو آپ کو متنبہ کرتا ہے۔</translation>
@@ -1741,6 +1749,7 @@
 <translation id="8565021320663436446">‫<ph name="MEMBER_FULL_NAME" /> ہٹائیں؟</translation>
 <translation id="8570677896027847510">فائل کو محفوظ طریقے سے ڈاؤن لوڈ نہیں کیا جا سکتا</translation>
 <translation id="8571213806525832805">گزشتہ 4 ہفتے</translation>
+<translation id="8580435650274205305">تاریخ اختتام درکار ہے</translation>
 <translation id="8582529315803410153">آپ کو دوسرے آلات سے اپنے ٹیبز یہاں ملیں گے</translation>
 <translation id="8585103689515290060">آٹو فِل سروسز</translation>
 <translation id="859046281437143747">مزید اختیارات والے بٹن سے قیمت ٹریک کریں</translation>

@@ -3148,6 +3148,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6326947323444967009">Defina o Chrome como o navegador predefinido do sistema nas definições do iOS</translation>
 <translation id="6327065120806001832">acesso à rede local</translation>
 <translation id="6328639280570009161">Tente desativar a previsão de rede</translation>
+<translation id="6334834493885103305">Já pode pagar em prestações com a Affirm, a Zip ou a Klarna</translation>
 <translation id="6335029926534404762">Calçado desportivo</translation>
 <translation id="6336948221660696475">RV não permitida</translation>
 <translation id="6337133576188860026">Liberta menos de <ph name="SIZE" />. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
@@ -4070,6 +4071,7 @@ Detalhes adicionais:
 <translation id="7878562273885520351">A palavra-passe pode estar comprometida</translation>
 <translation id="7881044256965445977">Procurar e fazer ligação a qualquer dispositivo na sua rede local</translation>
 <translation id="7882421473871500483">Castanho</translation>
+<translation id="7885670691503039914">Vai receber alertas por email se o preço descer em qualquer site. Esta página vai ser guardada na pasta de marcadores <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Escolha as categorias amplas de tópicos que podem ser usadas para ajudar a personalizar anúncios</translation>
 <translation id="7887683347370398519">Verifique o Código de Segurança/CVC e tente novamente</translation>
 <translation id="7887885240995164102">Entrar no modo ecrã no ecrã</translation>
@@ -4665,6 +4667,7 @@ Detalhes adicionais:
 <translation id="8926389886865778422">Não voltar a perguntar</translation>
 <translation id="8932102934695377596">O seu relógio está atrasado</translation>
 <translation id="893332455753468063">Adicionar nome</translation>
+<translation id="8938242527120341116">Os filtros de conteúdo do seu dispositivo bloquearam <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">O seu administrador autorizou a app <ph name="APP_NAME" /> a recolher dados de diagnóstico para melhorar a experiência do produto. Veja <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> para obter mais informações.</translation>
 <translation id="8943282376843390568">Lima</translation>
 <translation id="8949410982325929394">Tom</translation>
@@ -4870,6 +4873,7 @@ Detalhes adicionais:
 <translation id="963837307749850257">Todos os utilizadores</translation>
 <translation id="964050462028070434">Gerir palavras-passe e chaves de acesso…</translation>
 <translation id="969892804517981540">Compilação oficial</translation>
+<translation id="97054401902912338">Saber mais sobre os filtros de conteúdo</translation>
 <translation id="973788791897303708">Este grupo de separadores está cheio</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nenhum}=1{1 item}other{# itens}}</translation>
 <translation id="976522784004777030">5 x 8 pol.</translation>

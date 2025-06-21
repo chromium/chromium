@@ -272,6 +272,7 @@
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome გირჩევთ, დააპაუზოთ ჩანართი, რომელიც ანელებს თქვენი ბრაუზერის მუშაობას}other{Chrome გირჩევთ, დააპაუზოთ ჩანართები, რომლებიც ანელებს თქვენი ბრაუზერის მუშაობას}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">პერსონალიზაციის და სხვა ფუნქციებით რომ ისარგებლოთ, დაურთეთ Chrome როგორც ვებსა და აპებში აქტივობას, ისე მიბმულ Google სერვისებს</translation>
+<translation id="4334241893986177674">ეკრანის ამ ანაბეჭდის მოძიება</translation>
 <translation id="4334294535648607276">ჩამოტვირთვა დასრულდა.</translation>
 <translation id="4337324600316876133">მომავალში Google Chrome-ის განახლებების მისაღებად დაგჭირდებათ macOS 12 ან უფრო ახალი ვერსია. ეს კომპიუტერი იყენებს macOS 11-ს.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> დაემატა Chrome-ს</translation>

@@ -1405,6 +1405,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7224097611345298931">Kõik paroolid, mis olid salvestatud Chrome'i ja versiooni <ph name="CHROME_CHANNEL" /> jaoks ainult sellesse seadmesse, liideti. Saate kõik salvestatud paroolid mõlemas rakenduses automaatselt sisestada.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 allalaadimine on ootel}other{# allalaadimist on ootel}}</translation>
 <translation id="7230064152164845085">Lülitu inkognito režiimile</translation>
+<translation id="7230836263524391273">Peida lugemisrežiim</translation>
 <translation id="7237724030342645845">Google'i paroolihaldur lõpetas töötamise</translation>
 <translation id="72415438529550637">Parooli soovitus on suletud.</translation>
 <translation id="7248671827512403053">Rakendus</translation>

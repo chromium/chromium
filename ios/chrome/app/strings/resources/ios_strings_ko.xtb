@@ -211,6 +211,7 @@
 <translation id="1838089197478136166">월렛에서 여시겠습니까?</translation>
 <translation id="183878838231635348">이 카드에는 안전 확인 기능이 자동으로 감지한 개인 정보 보호 또는 보안 문제가 표시됩니다.</translation>
 <translation id="1845230888742614096">그룹 유지</translation>
+<translation id="1853692000353488670">새 시크릿 탭</translation>
 <translation id="1854463785401910334">열린 탭 검색</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count}개의 비밀번호 중 {position}번째}other{{count}개의 비밀번호 중 {position}번째}}</translation>
 <translation id="1861262398884155592">폴더가 비어 있습니다.</translation>

@@ -480,6 +480,7 @@
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 пароль и другие данные доступны только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}one{# пароль и другие данные доступны только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}few{# пароля и другие данные доступны только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}many{# паролей и другие данные доступны только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}other{# пароля и другие данные доступны только на этом устройстве. Сохраните их в своем аккаунте Google (<ph name="ACCOUNT_EMAIL" />), чтобы использовать на других устройствах.}}</translation>
 <translation id="3187472288455401631">Оценка эффективности рекламы</translation>
 <translation id="3189635831478931757">Группа вкладок "<ph name="GROUP_TITLE" />"</translation>
+<translation id="3200536777393523575">Закрыть текущее окно?</translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3208584281581115441">Проверить сейчас</translation>
 <translation id="3211426585530211793">Удалено: <ph name="ITEM_TITLE" /></translation>
@@ -714,7 +715,7 @@
 <translation id="4298388696830689168">Связанные сайты</translation>
 <translation id="4300632303535881174">Перейти на предыдущую страницу</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="4306489587293957491">Ввод</translation>
+<translation id="4306489587293957491">Ввести</translation>
 <translation id="4307992518367153382">Основные</translation>
 <translation id="4311652497846705514">Открыть PDF-файл?</translation>
 <translation id="4320177379694898372">Нет подключения к Интернету</translation>
@@ -724,6 +725,7 @@
 <translation id="4351244548802238354">Закрыть</translation>
 <translation id="4352287748243729941">Использовать пароль (<ph name="PROVIDER" />)?</translation>
 <translation id="4355272626458588338">Добавьте важные для вас страницы в закладки, чтобы легко возвращаться к ним.</translation>
+<translation id="4356503491090073318">Номер карты*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Общие сведения о безопасности</translation>
 <translation id="4378154925671717803">Телефон</translation>
@@ -741,6 +743,7 @@
 <translation id="4425140285732600465">Вы отслеживаете цену на этот товар. Если на одном из сайтов она снизится, вы получите уведомление.</translation>
 <translation id="4425173294238317796">Экран с просьбой подтвердить создание ключа доступа</translation>
 <translation id="442518031075347249">Вы больше не сможете использовать виртуальную карту для оплаты через Google Pay. Подробнее <ph name="BEGIN_LINK1" />о виртуальных картах<ph name="END_LINK1" />…</translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>
 <translation id="4426508677408162512">Все закладки</translation>
 <translation id="4430277756566635951">Выбор аккаунта. Сейчас выбран <ph name="EMAIL" />.</translation>
 <translation id="4452411734226507615">Закрыть вкладку "<ph name="TAB_TITLE" />"</translation>
@@ -876,6 +879,7 @@
 <translation id="4987271110129728827">Не удается найти страницу. Проверьте, правильно ли введен запрос, или выполните поиск в интернете.</translation>
 <translation id="4988526792673242964">Страницы</translation>
 <translation id="4991110219272367918">Нижний экран, с помощью которого можно одобрить или заблокировать сайт, закрыт</translation>
+<translation id="4996042648402406470">Получить</translation>
 <translation id="4996095658297597226">Использовать предложенный пароль?</translation>
 <translation id="5001388021414335527">Подписаться на этот сайт</translation>
 <translation id="5004416275253351869">Отслеживание действий в Google</translation>
@@ -927,10 +931,12 @@
 <translation id="5210286577605176222">Перейти к предыдущей вкладке</translation>
 <translation id="5210365745912300556">Закрыть вкладку</translation>
 <translation id="5215957675041756913">Управление данными и аккаунтом</translation>
+<translation id="5218324087477576825">Номер карты (обязательно)</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и другие <ph name="SEPARATOR" /> Chrome отозвал эти разрешения у сайта, так как вы давно его не посещали</translation>
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="5226378907213531272">Вам нужно будет разблокировать экран при каждом использовании автомобиля.</translation>
 <translation id="5227554086496586518">Нажмите, чтобы увидеть результаты поиска</translation>
+<translation id="5229736206150093143">Последние результаты</translation>
 <translation id="5233638681132016545">Новая вкладка</translation>
 <translation id="5235196193381275927">Не удалось войти в систему.</translation>
 <translation id="5246093389635966745">Изменить кнопку на панели инструментов</translation>
@@ -1286,6 +1292,7 @@
 <translation id="676305334223455055">Войдите в аккаунт, чтобы получать контент на основе своих интересов.</translation>
 <translation id="6764137532716892442">Общая группа вкладок "<ph name="GROUP_TITLE" />" с новыми действиями</translation>
 <translation id="6767294960381293877">Список устройств для отправки вкладки развернут на половину экрана.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>
 <translation id="6785476624617658922">Дополнительные условия использования Chrome и Chrome OS</translation>
 <translation id="6786747875388722282">Расширения</translation>
 <translation id="6795633245022906657">Открыть новую вкладку. Чтобы изменить функцию кнопки, перейдите в настройки.</translation>
@@ -1582,6 +1589,7 @@
 <translation id="7965838025086216108">Вы можете использовать сохраненные пароли на любых устройствах. Они сохраняются в Google Менеджере паролей для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Добавлено в список для чтения.</translation>
 <translation id="7968982339740310781">Просмотреть сведения</translation>
+<translation id="7969391000881506217">Срок действия*</translation>
 <translation id="7971136598759319605">Последние действия: 1 день назад</translation>
 <translation id="7975379999046275268">Просмотреть страницу <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Предупреждает, если вы используете пароль, скомпрометированный в результате утечки данных.</translation>
@@ -1741,6 +1749,7 @@
 <translation id="8565021320663436446">Удалить пользователя <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Невозможно безопасно скачать файл</translation>
 <translation id="8571213806525832805">Последние 4 недели</translation>
+<translation id="8580435650274205305">Срок действия (обязательно)</translation>
 <translation id="8582529315803410153">Здесь вы найдете свои вкладки с других устройств</translation>
 <translation id="8585103689515290060">Сервисы автозаполнения</translation>
 <translation id="859046281437143747">Нажмите кнопку "Ещё" и выберите пункт "Отслеживание цен"</translation>

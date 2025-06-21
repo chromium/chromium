@@ -693,6 +693,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2157640075051554492">Notificaciones de seguimiento de precios</translation>
 <translation id="21613918653299710">Galerías de imágenes online</translation>
 <translation id="2161656808144014275">Texto</translation>
+<translation id="2162435186600002085">Logotipo del encabezado principal</translation>
 <translation id="2162620598375156287">Ahora, por <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Comprueba si hay un error de escritura en <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Acceso de administrador completo</translation>
@@ -851,6 +852,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2400263725572336749">Añadir pasaporte</translation>
 <translation id="2400271059665846158">Gestiona tus tarjetas de fidelización en Google Wallet</translation>
 <translation id="2400600116338235695">Puede solicitar permiso para conectarse a puertos serie</translation>
+<translation id="240450251994300576">Logotipo del encabezado secundario</translation>
 <translation id="2404884497378469141">Prueba a copiar tus archivos de nuevo</translation>
 <translation id="2413155254802890957">Antigua</translation>
 <translation id="2413528052993050574">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" /> y se podría rechazar su certificado de seguridad. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
@@ -981,6 +983,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2627847595568876492">Extrayendo texto del PDF...</translation>
 <translation id="2628224721443278970">Iniciar sesión en Microsoft OneDrive</translation>
 <translation id="2634124572758952069">No se ha podido encontrar la dirección IP del servidor de <ph name="HOST_NAME" />.</translation>
+<translation id="2638567100095052009">Escribe @ para buscar en <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Estado:</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tela (semibrillante)</translation>
@@ -2267,6 +2270,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4827283332383516812">Eliminar tarjeta</translation>
 <translation id="4830443836091007686"><ph name="ITEMS" /> seleccionados</translation>
 <translation id="4831993743164297314">Papel de filmadora</translation>
+<translation id="4832388034239846146">Para compartir grupos de pestañas, actualiza Chrome</translation>
 <translation id="483241715238664915">Activar advertencias</translation>
 <translation id="4832961164064927107">Barbacoas y parrilladas</translation>
 <translation id="4834250788637067901">Métodos de pago, ofertas y direcciones con Google Pay</translation>
@@ -2974,6 +2978,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6043357981274314628">Hecho.</translation>
 <translation id="6044573915096792553">Tamaño 12</translation>
 <translation id="6045164183059402045">Plantilla de imposición</translation>
+<translation id="6046892054959167494">Escribe <ph name="SEARCH_AGGREGATOR_KEYWORD" /> para buscar o preguntar a <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Es posible que este contenido intente engañarte para que instales software o reveles información personal. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Sobre B4</translation>
 <translation id="6049488691372270142">Entrega de página</translation>
@@ -3143,6 +3148,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6326947323444967009">Establece Chrome como navegador predeterminado del sistema en los ajustes de iOS</translation>
 <translation id="6327065120806001832">acceso a la red local</translation>
 <translation id="6328639280570009161">Prueba a inhabilitar la predicción de red</translation>
+<translation id="6334834493885103305">Ahora puedes pagar a plazos con Affirm, Zip o Klarna</translation>
 <translation id="6335029926534404762">Calzado deportivo</translation>
 <translation id="6336948221660696475">Realidad virtual no permitida</translation>
 <translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. Algunos sitios pueden tardar más en cargarse la próxima vez que accedas a ellos.</translation>
@@ -4066,6 +4072,7 @@ Más información:
 <translation id="7878562273885520351">Es posible que tu contraseña se haya vulnerado</translation>
 <translation id="7881044256965445977">Buscar y conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="7882421473871500483">Marrón</translation>
+<translation id="7885670691503039914">Recibirás alertas por correo electrónico si el precio baja en algún sitio. Esta página se guardará en la carpeta de marcadores <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Elige qué categorías amplias de temas se pueden usar para personalizar los anuncios</translation>
 <translation id="7887683347370398519">Comprueba el código CVC y vuelve a intentarlo</translation>
 <translation id="7887885240995164102">Activar el modo imagen en imagen</translation>

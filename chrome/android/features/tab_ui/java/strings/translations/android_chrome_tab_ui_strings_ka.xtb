@@ -17,6 +17,7 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{შეიქმნა <ph name="NUM_MINS_ONE" /> წუთის წინ}other{შეიქმნა <ph name="NUM_MINS_MANY" /> წუთის წინ}}</translation>
 <translation id="1499635324672558517">დაიხუროს ყველა ინკოგნიტო ჩანართი?</translation>
 <translation id="1501480321619201731">ჯგუფის წაშლა</translation>
+<translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არააქტიური ერთეული}other{<ph name="TABS_COUNT_MANY" /> არააქტიური ერთეული}}</translation>
 <translation id="1555130319947370107">ლურჯი</translation>
 <translation id="161042844686301425">ციანი</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ჩანართი დაჯგუფდა</translation>
@@ -68,6 +69,7 @@
 <translation id="358453129938375749">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ახალი ჩანართი}other{<ph name="MANY_ADDED" /> ახალი ჩანართი}}</translation>
 <translation id="3613492231657284463">არააქტიური ჩანართების დიალოგის დამალვა</translation>
 <translation id="3619255692378312441">წვდომის მართვა</translation>
+<translation id="3649471731638882002">{TAB_COUNT,plural, =1{ერთეულის დახურვა}other{ერთეულების დახურვა}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ესკიზი ფურცლის გაზიარების გადახედვისთვის.</translation>
 <translation id="3810973564298564668">მართვა</translation>
@@ -80,6 +82,7 @@
 <translation id="4159784952369912983">მეწამული</translation>
 <translation id="427987768447457592">ჩანართების ახალი ჯგუფი</translation>
 <translation id="4371591986692297148">არააქტიური</translation>
+<translation id="4429658455677831355">{TAB_COUNT,plural, =1{ერთეულის აღდგენა}other{ერთეულების აღდგენა}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{განახლდა <ph name="NUM_DAYS_ONE" /> დღის წინ}other{განახლდა <ph name="NUM_DAYS_MANY" /> დღის წინ}}</translation>
 <translation id="4686942373615810936">შეიქმნა ახლახან</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{დახურვა 1 დღის შემდეგ}other{დახურვა <ph name="DAY_COUNT_MANY" /> დღის შემდეგ}}</translation>
@@ -206,4 +209,5 @@
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}other{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}}</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
 <translation id="992256792861109788">ვარდისფერი</translation>
+<translation id="994514002078791059">{TAB_COUNT,plural, =1{დაიხუროს 1 არააქტიური ერთეული?}other{დაიხუროს <ph name="TAB_COUNT_MANY" /> არააქტიური ერთეული?}}</translation>
 </translationbundle>

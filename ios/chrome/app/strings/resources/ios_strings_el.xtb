@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Η κοινοποίηση απέτυχε επειδή δεν έχετε συνδεθεί στο δίκτυο.</translation>
 <translation id="1668001730617725852">Άνοιγμα σε νέα ομάδα καρτελών</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> προς <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Μπορείτε πλέον να ανοίξετε το Google Lens από τη γραμμή διευθύνσεων και να αναζητήσετε οτιδήποτε βλέπετε</translation>
 <translation id="1689333818294560261">Ψευδώνυμο</translation>
 <translation id="169048873465870056">Κατάργηση καρτέλας και διαγραφή ομάδας;</translation>
 <translation id="1698090540708020240">Εισαγωγή κωδικών πρόσβασης…</translation>
@@ -211,6 +212,7 @@
 <translation id="1838089197478136166">Άνοιγμα στο Πορτοφόλι;</translation>
 <translation id="183878838231635348">Αυτή η κάρτα εμφανίζει τυχόν προβλήματα απορρήτου ή ασφάλειας που εντοπίζει αυτόματα για εσάς ο Έλεγχος ασφαλείας.</translation>
 <translation id="1845230888742614096">Διατήρηση ομάδας</translation>
+<translation id="1853692000353488670">Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="1854463785401910334">Αναζήτηση σε ανοικτές καρτέλες</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} από {count} κωδικό πρόσβασης}other{{position} από {count} κωδικούς πρόσβασης}}</translation>
 <translation id="1861262398884155592">Αυτός ο φάκελος είναι άδειος</translation>
@@ -266,6 +268,7 @@
 <translation id="2044681667265133332">Η διαχείριση του λογαριασμού <ph name="USER_EMAIL" /> γίνεται από τον τομέα <ph name="HOSTED_DOMAIN" />, ο οποίος μπορεί να βλέπει ορισμένες πληροφορίες. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">νέο στοιχείο</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> λογαριασμοί χρησιμοποιούν τον ίδιο κωδικό πρόσβασης</translation>
+<translation id="205013082884273671">Αναζητήστε οτιδήποτε στην οθόνη σας</translation>
 <translation id="2054044186557130763">Συνδεθείτε ως <ph name="NAME" /> <ph name="EMAIL" />, υπό τη διαχείριση του οργανισμού σας.</translation>
 <translation id="2059166748188874810">Δήμος</translation>
 <translation id="2060638295449304809">Αυτή η διεύθυνση αποθηκεύεται μόνο σε αυτή τη συσκευή. Για να τη χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τη στον Λογαριασμό σας Google, <ph name="USER_EMAIL" /></translation>
@@ -458,6 +461,7 @@
 <translation id="2819667972867209401">Όταν είναι ενεργοποιημένη αυτή η ρύθμιση, τα δεδομένα αποθηκεύονται στον Λογαριασμό σας Google. Όταν είναι απενεργοποιημένη, τα δεδομένα αποθηκεύονται μόνο σε αυτή τη συσκευή και διαγράφονται εάν αποσυνδεθείτε.</translation>
 <translation id="2827760117436553203">Διατήρηση δεδομένων ξεχωριστά;</translation>
 <translation id="2829172210806130158">Αναζήτηση στην οθόνη</translation>
+<translation id="2831109159746537587">Δοκιμάστε να κυκλώσετε ή να πατήσετε την εικόνα για αναζήτηση</translation>
 <translation id="2834399722155632105">3. Πατήστε Επιλογές κωδικών πρόσβασης</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Ώρα</translation>

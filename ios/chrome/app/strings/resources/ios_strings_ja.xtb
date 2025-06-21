@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">ネットワークに接続されていないため共有できませんでした。</translation>
 <translation id="1668001730617725852">新しいタブグループで開く</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />から<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">アドレスバーから Google レンズを開いて、画面に表示されているものを何でも検索できるようになりました</translation>
 <translation id="1689333818294560261">ニックネーム</translation>
 <translation id="169048873465870056">タブとグループを削除しますか？</translation>
 <translation id="1698090540708020240">パスワードをインポート…</translation>
@@ -211,6 +212,7 @@
 <translation id="1838089197478136166">ウォレットで開きますか？</translation>
 <translation id="183878838231635348">このカードには、安全チェックで自動検出されたプライバシーやセキュリティの問題が表示されます。</translation>
 <translation id="1845230888742614096">グループを保持</translation>
+<translation id="1853692000353488670">新しいシークレット タブ</translation>
 <translation id="1854463785401910334">開いているタブを検索</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} 件中 {position} 件目のパスワード}other{{count} 件中 {position} 件目のパスワード}}</translation>
 <translation id="1861262398884155592">このフォルダは空です</translation>
@@ -266,6 +268,7 @@
 <translation id="2044681667265133332">アカウント（<ph name="USER_EMAIL" />）は <ph name="HOSTED_DOMAIN" /> によって管理されており、この組織は一部の情報を見ることができます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新しいアイテム</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> 個のアカウントで同じパスワードを使用しています</translation>
+<translation id="205013082884273671">画面に表示されているものを検索</translation>
 <translation id="2054044186557130763"><ph name="NAME" />（<ph name="EMAIL" />）としてログインします、組織によって管理されています。</translation>
 <translation id="2059166748188874810">市区町村</translation>
 <translation id="2060638295449304809">この住所は、このデバイスにのみ保存されます。他のデバイスで使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
@@ -458,6 +461,7 @@
 <translation id="2819667972867209401">オンにすると、データが Google アカウントに保存されます。オフにすると、データはこのデバイスのみに保存され、ログアウトすると削除されます。</translation>
 <translation id="2827760117436553203">データを分けて保存しますか？</translation>
 <translation id="2829172210806130158">画面検索</translation>
+<translation id="2831109159746537587">画像を丸で囲むかタップして検索してみてください</translation>
 <translation id="2834399722155632105">3. [パスワードのオプション] をタップします</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />、<ph name="STATE" />、<ph name="URL" /></translation>
 <translation id="2841013758207633010">時間</translation>

@@ -4907,6 +4907,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4406883609789734330">Reaalajas subtiitrid</translation>
 <translation id="4408599188496843485">A&amp;bi</translation>
 <translation id="4409271659088619928">Teie otsingumootor on <ph name="DSE" />. Vaadake selle juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane.</translation>
+<translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Teie administraator saab rakenduse <ph name="APP0_NAME" /> abil jäädvustada teie ekraani. Teid teavitatakse, kui salvestamine algab.}=2{Teie administraator saab rakenduste <ph name="APP0_NAME" /> ja <ph name="APP1_NAME" /> abil jäädvustada teie ekraani. Teid teavitatakse, kui salvestamine algab.}=3{Teie administraator saab rakenduste <ph name="APP0_NAME" /> ja <ph name="APP1_NAME" /> ning veel 1 rakenduse abil salvestada teie ekraani. Teid teavitatakse, kui salvestamine algab.}other{Teie administraator saab rakenduste <ph name="APP0_NAME" /> ja <ph name="APP1_NAME" /> ning veel # rakenduse abil salvestada teie ekraani. Teid teavitatakse, kui salvestamine algab.}}</translation>
 <translation id="4409697491990005945">Veerised</translation>
 <translation id="4409779593816003679">Paroolid ja &amp;automaattäide</translation>
 <translation id="4410545552906060960">Kasutage seadme avamiseks parooli asemel numbrit (PIN-kood). Hiljem PIN-koodi seadistamiseks avage jaotis Seaded.</translation>
@@ -8228,6 +8229,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6811792477922751991">Käivitajaklahvi kasutamine funktsiooniklahvide käitumise muutmiseks</translation>
 <translation id="6812349420832218321">Toodet <ph name="PRODUCT_NAME" /> ei saa juurkasutajana käitada.</translation>
 <translation id="6812841287760418429">Säilita muudatused</translation>
+<translation id="681360534161436378">{NUM_APPS,plural,offset:2 =1{Teie administraator saab rakenduse <ph name="APP0_NAME" /> abil jäädvustada teie ekraani.}=2{Teie administraator saab rakenduste <ph name="APP0_NAME" /> ja <ph name="APP1_NAME" /> abil jäädvustada teie ekraani.}=3{Teie administraator saab rakenduste <ph name="APP0_NAME" /> ja <ph name="APP1_NAME" /> ning veel 1 rakenduse abil salvestada teie ekraani.}other{Teie administraator saab rakenduste <ph name="APP0_NAME" /> ja <ph name="APP1_NAME" /> ning veel # rakenduse abil salvestada teie ekraani.}}</translation>
 <translation id="6813907279658683733">Kogu ekraan</translation>
 <translation id="6814754908910736855">WiFi Directi klientide teave:</translation>
 <translation id="6815376457351236663">Ava ikka</translation>
@@ -10410,6 +10412,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8339288417038613756">Ekraani ja teksti suurus</translation>
 <translation id="833986336429795709">Valige lingi avamiseks rakendus</translation>
 <translation id="8340547030807793004">Rohkem toiminguid: <ph name="DEVICE" /></translation>
+<translation id="8341804784147620576">Kuva otsingu otseteed</translation>
 <translation id="8342221978608739536">Ei proovinud</translation>
 <translation id="8342861492835240085">Kogu valimine</translation>
 <translation id="8345848587667658367">Saate nüüd vaadata oma telefoni hiljutisi fotosid, meediat, märguandeid ja rakendusi</translation>
@@ -10921,6 +10924,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8702825062053163569">Teie seade <ph name="DEVICE_TYPE" /> lukustati.</translation>
 <translation id="8703346390800944767">Jäta reklaam vahele</translation>
 <translation id="8703372953981978786">See link ei toimi</translation>
+<translation id="8703766890819308134">Kuva otsingu otseteed</translation>
 <translation id="8704662571571150811">Domeenid</translation>
 <translation id="8705331520020532516">Seerianumber</translation>
 <translation id="8705580154597116082">WiFi on telefoni kaudu saadaval</translation>
@@ -11637,6 +11641,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="9182556968660520230">Ära luba saitidel kaitstud sisu esitada</translation>
 <translation id="9183302530794969518">Google'i dokumendid</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Rakendus}other{# rakendust}}</translation>
+<translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Teie administraator saab rakenduse <ph name="APP0_NAME" /> abil jäädvustada teie ekraani. Teid ei teavitata, kui salvestamine algab.}=2{Teie administraator saab rakenduste <ph name="APP0_NAME" /> ja <ph name="APP1_NAME" /> abil jäädvustada teie ekraani. Teid ei teavitata, kui salvestamine algab.}=3{Teie administraator saab rakenduste <ph name="APP0_NAME" /> ja <ph name="APP1_NAME" /> ning veel 1 rakenduse abil salvestada teie ekraani. Teid ei teavitata, kui salvestamine algab.}other{Teie administraator saab rakenduste <ph name="APP0_NAME" /> ja <ph name="APP1_NAME" /> ning veel # rakenduse abil salvestada teie ekraani. Teid ei teavitata, kui salvestamine algab.}}</translation>
 <translation id="9186963452600581158">Logige sisse oma lapse Google'i kontoga</translation>
 <translation id="9187967020623675250">Klahvid ei ühti. Vajutage mis tahes klahvi, et <ph name="RESPONSE" />.</translation>
 <translation id="9192019773545828776">Esitatakse suulist tagasisidet, et saaksite seadet kasutada ilma ekraanikuva vaatamata. Braille'i teel tagasiside on saadaval ühendatud seadme puhul. ChromeVoxi sisse- ja väljalülitamiseks vajutage klahvikombinatsiooni Ctrl + Alt + Z. Navigeerimiseks kasutage klahvikombinatsiooni Otsing + vasaknool või paremnool. Valimiseks (aktiveerimiseks) kasutage klahvikombinatsiooni Otsing + tühik.</translation>

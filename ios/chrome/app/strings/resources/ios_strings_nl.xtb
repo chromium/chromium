@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Delen is mislukt omdat je niet verbonden bent met het netwerk.</translation>
 <translation id="1668001730617725852">Openen in nieuwe tabbladgroep</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> naar <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Je kunt Google Lens nu openen vanuit je adresbalk en zoeken naar alles wat je ziet</translation>
 <translation id="1689333818294560261">Bijnaam</translation>
 <translation id="169048873465870056">Tabblad verwijderen en groep verwijderen?</translation>
 <translation id="1698090540708020240">Wachtwoorden importeren…</translation>
@@ -211,6 +212,7 @@
 <translation id="1838089197478136166">Openen in Wallet?</translation>
 <translation id="183878838231635348">Deze kaart toont eventuele privacy- of beveiligingsproblemen die de Veiligheidscheck automatisch voor je opspoort.</translation>
 <translation id="1845230888742614096">Groep behouden</translation>
+<translation id="1853692000353488670">Nieuw incognitotabblad</translation>
 <translation id="1854463785401910334">Geopende tabbladen doorzoeken</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} van {count} wachtwoord}other{{position} van {count} wachtwoorden}}</translation>
 <translation id="1861262398884155592">Deze map is leeg</translation>
@@ -266,6 +268,7 @@
 <translation id="2044681667265133332">Het account <ph name="USER_EMAIL" /> wordt beheerd door <ph name="HOSTED_DOMAIN" />. Dit domein kan bepaalde informatie bekijken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nieuw item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> accounts gebruiken hetzelfde wachtwoord</translation>
+<translation id="205013082884273671">Zoeken naar alles op je scherm</translation>
 <translation id="2054044186557130763">Log in als <ph name="NAME" />, <ph name="EMAIL" />, beheerd door je organisatie.</translation>
 <translation id="2059166748188874810">Gemeente</translation>
 <translation id="2060638295449304809">Dit adres wordt alleen opgeslagen op dit apparaat. Als je het wilt gebruiken op je andere apparaten, sla je het op in je Google-account, <ph name="USER_EMAIL" />.</translation>
@@ -458,6 +461,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2819667972867209401">Als dit aanstaat, worden gegevens opgeslagen in je Google-account. Staat dit uit? Dan worden gegevens alleen opgeslagen op dit apparaat en worden ze verwijderd als je uitlogt.</translation>
 <translation id="2827760117436553203">Gegevens gescheiden houden?</translation>
 <translation id="2829172210806130158">Zoeken op je scherm</translation>
+<translation id="2831109159746537587">Omcirkel of tik op de afbeelding om te zoeken</translation>
 <translation id="2834399722155632105">3. Tik op Wachtwoordopties.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Tijd</translation>

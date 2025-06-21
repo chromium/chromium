@@ -480,6 +480,7 @@
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{ระบบบันทึกรหัสผ่าน 1 รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google <ph name="ACCOUNT_EMAIL" />}other{ระบบบันทึกรหัสผ่าน # รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google <ph name="ACCOUNT_EMAIL" />}}</translation>
 <translation id="3187472288455401631">การวัดผลโฆษณา</translation>
 <translation id="3189635831478931757">กลุ่มแท็บ <ph name="GROUP_TITLE" /></translation>
+<translation id="3200536777393523575">ปิดหน้าต่างปัจจุบันใช่ไหม</translation>
 <translation id="3207960819495026254">บุ๊กมาร์กแล้ว</translation>
 <translation id="3208584281581115441">ตรวจสอบเลย</translation>
 <translation id="3211426585530211793">ลบ <ph name="ITEM_TITLE" /> แล้ว</translation>
@@ -724,6 +725,7 @@
 <translation id="4351244548802238354">ปิดข้อความโต้ตอบ</translation>
 <translation id="4352287748243729941">ใช้รหัสผ่าน <ph name="PROVIDER" /> ของคุณหรือไม่</translation>
 <translation id="4355272626458588338">คุณกลับไปยังหน้าที่สำคัญสำหรับคุณได้ด้วยการเพิ่มบุ๊กมาร์ก</translation>
+<translation id="4356503491090073318">หมายเลขบัตร*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">ข้อมูลโดยย่อด้านความปลอดภัย</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
@@ -741,6 +743,7 @@
 <translation id="4425140285732600465">กำลังติดตามราคา รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="4425173294238317796">ชีตการยืนยันพาสคีย์</translation>
 <translation id="442518031075347249">คุณจะใช้บัตรเสมือนกับ Google Pay ไม่ได้อีกต่อไป <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับบัตรเสมือน<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{ระบบจะปิดแท็บ <ph name="TAB_TITLE" /> และแท็บอื่นอีก <ph name="TAB_COUNT_ONE" /> แท็บ}other{ระบบจะปิดแท็บ <ph name="TAB_TITLE" /> และแท็บอื่นอีก <ph name="TAB_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="4426508677408162512">บุ๊กมาร์กทั้งหมด</translation>
 <translation id="4430277756566635951">เลือก <ph name="EMAIL" /> อยู่ เลือกบัญชี</translation>
 <translation id="4452411734226507615">ปิดแท็บ <ph name="TAB_TITLE" /></translation>
@@ -876,6 +879,7 @@
 <translation id="4987271110129728827">ไม่พบหน้านั้น โปรดตรวจสอบตัวสะกดหรือลองค้นเว็บ</translation>
 <translation id="4988526792673242964">หน้า</translation>
 <translation id="4991110219272367918">ตัวเลือกในการอนุมัติหรือไม่อนุมัติเว็บไซต์ปิดอยู่</translation>
+<translation id="4996042648402406470">รับ</translation>
 <translation id="4996095658297597226">ใช้รหัสผ่านที่แนะนำใช่ไหม</translation>
 <translation id="5001388021414335527">ติดตามเว็บไซต์นี้ได้ที่นี่</translation>
 <translation id="5004416275253351869">ส่วนควบคุมกิจกรรมของ Google</translation>
@@ -927,10 +931,12 @@
 <translation id="5210286577605176222">ข้ามไปยังแท็บก่อนหน้า</translation>
 <translation id="5210365745912300556">ปิดแท็บ</translation>
 <translation id="5215957675041756913">ควบคุมข้อมูลและบัญชีของคุณ</translation>
+<translation id="5218324087477576825">ต้องระบุหมายเลขบัตร</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอื่นๆ <ph name="SEPARATOR" /> Chrome นำสิทธิ์เหล่านี้ออกเนื่องจากคุณไม่ได้เข้าชมเมื่อเร็วๆ นี้</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="5226378907213531272">คุณจะต้องปลดล็อกหน้าจอทุกครั้งที่ใช้รถ</translation>
 <translation id="5227554086496586518">แตะเพื่อดูผลการค้นหา</translation>
+<translation id="5229736206150093143">ผลลัพธ์ล่าสุด</translation>
 <translation id="5233638681132016545">แท็บใหม่</translation>
 <translation id="5235196193381275927">เกิดข้อผิดพลาดระหว่างการลงชื่อเข้าใช้</translation>
 <translation id="5246093389635966745">แก้ไขทางลัดแถบเครื่องมือ</translation>
@@ -1286,6 +1292,7 @@
 <translation id="676305334223455055">ลงชื่อเข้าใช้เพื่อดูเนื้อหาตามความสนใจของคุณ</translation>
 <translation id="6764137532716892442">กลุ่มแท็บ <ph name="GROUP_TITLE" /> ที่แชร์พร้อมกิจกรรมใหม่</translation>
 <translation id="6767294960381293877">รายการอุปกรณ์ที่จะแชร์แท็บด้วยเปิดอยู่ที่ระดับความสูงครึ่งหนึ่งของหน้าจอ</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{ระบบจะปิดแท็บที่ไม่ระบุตัวตน <ph name="INCOGNITO_TAB_COUNT" /> แท็บและแท็บอื่นอีก <ph name="TAB_COUNT_ONE" /> แท็บ}other{ระบบจะปิดแท็บที่ไม่ระบุตัวตน <ph name="INCOGNITO_TAB_COUNT" /> แท็บและแท็บอื่นอีก <ph name="TAB_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="6785476624617658922">ข้อกำหนดในการให้บริการเพิ่มเติมของ Chrome และ Chrome OS</translation>
 <translation id="6786747875388722282">ส่วนขยาย</translation>
 <translation id="6795633245022906657">เปิดแท็บใหม่อย่างรวดเร็ว ไปที่การตั้งค่าเพื่อแก้ไขทางลัดนี้</translation>
@@ -1582,6 +1589,7 @@
 <translation id="7965838025086216108">คุณสามารถใช้รหัสผ่านที่บันทึกไว้ได้ในทุกอุปกรณ์ เพราะระบบได้บันทึกไว้ในเครื่องมือจัดการรหัสผ่านบน Google แล้วสำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="7968014550143838305">เพิ่มไปยังเรื่องรออ่านแล้ว</translation>
 <translation id="7968982339740310781">ดูรายละเอียด</translation>
+<translation id="7969391000881506217">วันที่หมดอายุ*</translation>
 <translation id="7971136598759319605">ใช้งานเมื่อ 1 วันที่ผ่านมา</translation>
 <translation id="7975379999046275268">พรีวิวหน้า <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">เตือนคุณหากใช้รหัสผ่านที่ถูกละเมิดในการละเมิดข้อมูล</translation>
@@ -1741,6 +1749,7 @@
 <translation id="8565021320663436446">นำ <ph name="MEMBER_FULL_NAME" /> ออกใช่ไหม</translation>
 <translation id="8570677896027847510">ดาวน์โหลดไฟล์อย่างปลอดภัยไม่ได้</translation>
 <translation id="8571213806525832805">4 สัปดาห์ที่ผ่านมา</translation>
+<translation id="8580435650274205305">ต้องระบุวันที่หมดอายุ</translation>
 <translation id="8582529315803410153">คุณจะเห็นแท็บจากอุปกรณ์อื่นๆ ที่นี่</translation>
 <translation id="8585103689515290060">บริการป้อนข้อความอัตโนมัติ</translation>
 <translation id="859046281437143747">ติดตามราคาโดยใช้ปุ่ม "ตัวเลือกเพิ่มเติม"</translation>

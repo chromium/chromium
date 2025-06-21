@@ -480,6 +480,7 @@
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 κωδικός πρόσβασης και κάποια άλλα στοιχεία έχουν αποθηκευτεί μόνο σε αυτή τη συσκευή. Για να τα χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τα στον Λογαριασμό σας Google, <ph name="ACCOUNT_EMAIL" />.}other{# κωδικοί πρόσβασης και κάποια άλλα στοιχεία έχουν αποθηκευτεί μόνο σε αυτή τη συσκευή. Για να τα χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τα στον Λογαριασμό σας Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="3187472288455401631">Μέτρηση διαφημίσεων</translation>
 <translation id="3189635831478931757">Ομάδα καρτελών <ph name="GROUP_TITLE" /></translation>
+<translation id="3200536777393523575">Θέλετε να κλείσετε το τρέχον παράθυρο;</translation>
 <translation id="3207960819495026254">Προστέθηκε στους σελιδοδείκτες</translation>
 <translation id="3208584281581115441">Έλεγχος τώρα</translation>
 <translation id="3211426585530211793">Το <ph name="ITEM_TITLE" /> διαγράφηκε</translation>
@@ -724,6 +725,7 @@
 <translation id="4351244548802238354">Κλείσιμο παραθύρου διαλόγου</translation>
 <translation id="4352287748243729941">Να χρησιμοποιηθεί ο κωδικός πρόσβασης <ph name="PROVIDER" /> που διαθέτετε;</translation>
 <translation id="4355272626458588338">Μπορείτε να επιστρέψετε σε μια σελίδα που είναι σημαντική για εσάς προσθέτοντας έναν σελιδοδείκτη.</translation>
+<translation id="4356503491090073318">Αριθμός κάρτας*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Η ασφάλεια με μια ματιά</translation>
 <translation id="4378154925671717803">Τηλέφωνο</translation>
@@ -741,6 +743,7 @@
 <translation id="4425140285732600465">Παρακολούθηση τιμής. Λάβετε ειδοποιήσεις σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο.</translation>
 <translation id="4425173294238317796">Φύλλο επιβεβαίωσης κλειδιού πρόσβασης</translation>
 <translation id="442518031075347249">Δεν θα μπορείτε πλέον να χρησιμοποιήσετε την εικονική σας κάρτα με το Google Pay. <ph name="BEGIN_LINK1" />Μάθετε περισσότερα σχετικά με τις εικονικές κάρτες<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{Η καρτέλα <ph name="TAB_TITLE" /> και <ph name="TAB_COUNT_ONE" /> ακόμη καρτέλα θα κλείσουν}other{Η καρτέλα <ph name="TAB_TITLE" /> και <ph name="TAB_COUNT_MANY" /> ακόμη καρτέλες θα κλείσουν}}</translation>
 <translation id="4426508677408162512">Όλοι οι σελιδοδείκτες</translation>
 <translation id="4430277756566635951">Τρέχουσα επιλογή: <ph name="EMAIL" />. Επιλέξτε λογαριασμό.</translation>
 <translation id="4452411734226507615">Κλείσιμο καρτέλας <ph name="TAB_TITLE" /></translation>
@@ -876,6 +879,7 @@
 <translation id="4987271110129728827">Δεν είναι δυνατή η εύρεση της σελίδας. Ελέγξτε την ορθογραφία ή δοκιμάστε μια αναζήτηση στον ιστό.</translation>
 <translation id="4988526792673242964">Σελίδες</translation>
 <translation id="4991110219272367918">Κλείσιμο επιλογής για να εγκρίνετε ή να μην εγκρίνετε έναν ιστότοπο</translation>
+<translation id="4996042648402406470">Λήψη</translation>
 <translation id="4996095658297597226">Χρήση του προτεινόμενου κωδικού πρόσβασης;</translation>
 <translation id="5001388021414335527">Ακολουθήστε αυτόν τον ιστότοπο εδώ</translation>
 <translation id="5004416275253351869">Στοιχεία ελέγχου δραστηριότητας Google</translation>
@@ -927,10 +931,12 @@
 <translation id="5210286577605176222">Μετάβαση στην προηγούμενη καρτέλα</translation>
 <translation id="5210365745912300556">Κλείσιμο καρτέλας</translation>
 <translation id="5215957675041756913">Ελέγξτε τα δεδομένα και τον λογαριασμό σας</translation>
+<translation id="5218324087477576825">Απαιτείται αριθμός κάρτας</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και άλλα <ph name="SEPARATOR" /> Το Chrome κατάργησε αυτές τις άδειες, επειδή δεν έχετε επισκεφτεί τον ιστότοπο πρόσφατα</translation>
 <translation id="5222676887888702881">Έξοδος</translation>
 <translation id="5226378907213531272">Η οθόνη θα ξεκλειδώνεται κάθε φορά που χρησιμοποιείτε το αυτοκίνητο</translation>
 <translation id="5227554086496586518">Πατήστε για να δείτε αποτελέσματα αναζήτησης</translation>
+<translation id="5229736206150093143">Τελευταία αποτελέσματα</translation>
 <translation id="5233638681132016545">Νέα καρτέλα</translation>
 <translation id="5235196193381275927">Παρουσιάστηκε κάποιο πρόβλημα κατά τη σύνδεση</translation>
 <translation id="5246093389635966745">Επεξεργασία συντόμευσης γραμμής εργαλείων</translation>
@@ -1286,6 +1292,7 @@
 <translation id="676305334223455055">Συνδεθείτε για να λάβετε περιεχόμενο με βάση τα ενδιαφέροντά σας</translation>
 <translation id="6764137532716892442">Κοινόχρηστη ομάδα καρτελών <ph name="GROUP_TITLE" /> με νέα δραστηριότητα</translation>
 <translation id="6767294960381293877">Άνοιγμα σε μισό ύψος της λίστας συσκευών στις οποίες θα κοινοποιηθεί μια καρτέλα.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> καρτέλα ανώνυμης περιήγησης και <ph name="TAB_COUNT_ONE" /> ακόμη καρτέλα θα κλείσουν}other{<ph name="INCOGNITO_TAB_COUNT" /> καρτέλες ανώνυμης περιήγησης και <ph name="TAB_COUNT_MANY" /> ακόμη καρτέλες θα κλείσουν}}</translation>
 <translation id="6785476624617658922">Πρόσθετοι Όροι Παροχής Υπηρεσιών Chrome και Chrome OS</translation>
 <translation id="6786747875388722282">Επεκτάσεις</translation>
 <translation id="6795633245022906657">Ανοίξτε γρήγορα μια νέα καρτέλα. Για να επεξεργαστείτε αυτήν τη συντόμευση, μεταβείτε στις Ρυθμίσεις.</translation>
@@ -1582,6 +1589,7 @@
 <translation id="7965838025086216108">Μπορείτε να χρησιμοποιείτε τους αποθηκευμένους κωδικούς πρόσβασης σε οποιαδήποτε συσκευή. Αποθηκεύονται στον Διαχειριστή κωδικών πρόσβασης Google για τον λογαριασμό <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Προστέθηκε στη λίστα ανάγνωσης</translation>
 <translation id="7968982339740310781">Προβολή λεπτομερειών</translation>
+<translation id="7969391000881506217">Ημερομηνία λήξης*</translation>
 <translation id="7971136598759319605">Ενεργή 1 ημέρα πριν</translation>
 <translation id="7975379999046275268">Προεπισκόπηση σελίδας <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Σας προειδοποιεί εάν χρησιμοποιήσετε έναν κωδικό πρόσβασης που έχει παραβιαστεί μέσω παραβίασης δεδομένων.</translation>
@@ -1741,6 +1749,7 @@
 <translation id="8565021320663436446">Κατάργηση του χρήστη <ph name="MEMBER_FULL_NAME" />;</translation>
 <translation id="8570677896027847510">Δεν είναι δυνατή η λήψη του αρχείου με ασφάλεια.</translation>
 <translation id="8571213806525832805">Τελευταίες 4 εβδομάδες</translation>
+<translation id="8580435650274205305">Απαιτείται η ημερομηνία λήξης</translation>
 <translation id="8582529315803410153">Εδώ θα βρείτε τις καρτέλες σας από τις άλλες συσκευές</translation>
 <translation id="8585103689515290060">Υπηρεσίες αυτόματης συμπλήρωσης</translation>
 <translation id="859046281437143747">Παρακολούθηση τιμής από το κουμπί Περισσότερες επιλογές</translation>

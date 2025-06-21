@@ -480,6 +480,7 @@
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 პაროლი და სხვა ერთეულები შენახულია მხოლოდ ამ მოწყობილობაზე. თქვენს სხვა მოწყობილობებზე მათ გამოსაყენებლად შეინახეთ ისინი თქვენს Google ანგარიშში (<ph name="ACCOUNT_EMAIL" />).}other{# პაროლი და სხვა ერთეულები შენახულია მხოლოდ ამ მოწყობილობაზე. თქვენს სხვა მოწყობილობებზე მათ გამოსაყენებლად შეინახეთ ისინი თქვენს Google ანგარიშში (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="3187472288455401631">რეკლამის ეფექტურობის გაზომვა</translation>
 <translation id="3189635831478931757">ჩანართების ჯგუფი „<ph name="GROUP_TITLE" />“</translation>
+<translation id="3200536777393523575">დაიხუროს თქვენი მიმდინარე ფანჯარა?</translation>
 <translation id="3207960819495026254">ჩანიშნულია</translation>
 <translation id="3208584281581115441">ახლავე შემოწმება</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> წაშლილია</translation>
@@ -724,6 +725,7 @@
 <translation id="4351244548802238354">დიალოგის დახურვა</translation>
 <translation id="4352287748243729941">გამოიყენებთ <ph name="PROVIDER" /> პაროლს?</translation>
 <translation id="4355272626458588338">თქვენთვის მნიშვნელოვან გვერდზე დაბრუნება შესაძლებელია სანიშნეს დამატებით</translation>
+<translation id="4356503491090073318">ბარათის ნომერი*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">უსაფრთხოების მოკლე მიმოხილვა</translation>
 <translation id="4378154925671717803">ტელეფონი</translation>
@@ -741,6 +743,7 @@
 <translation id="4425140285732600465">მიმდინარეობს ფასისთვის თვალის მიდევნება. თქვენ მიიღებთ გაფრთხილებებს, როცა ფასი დაიკლებს რომელიმე საიტზე.</translation>
 <translation id="4425173294238317796">წვდომის გასაღების დადასტურების ფურცელი</translation>
 <translation id="442518031075347249">Google Pay-ში თქვენს ვირტუალურ ბარათს ვეღარ გამოიყენებთ. <ph name="BEGIN_LINK1" />შეიტყვეთ მეტი ვირტუალური ბარათების შესახებ<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{დაიხურება <ph name="TAB_TITLE" /> და <ph name="TAB_COUNT_ONE" /> სხვა ჩანართი}other{დაიხურება <ph name="TAB_TITLE" /> და <ph name="TAB_COUNT_MANY" /> სხვა ჩანართი}}</translation>
 <translation id="4426508677408162512">ყველა სანიშნე</translation>
 <translation id="4430277756566635951">ამჟამად არჩეულია <ph name="EMAIL" />. აირჩიეთ ანგარიში.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ჩანართის დახურვა</translation>
@@ -876,6 +879,7 @@
 <translation id="4987271110129728827">ამ გვერდის პოვნა ვერ ხერხდება. შეამოწმეთ მართლწერა, ან ცადეთ ვებში მოძიება.</translation>
 <translation id="4988526792673242964">გვერდები</translation>
 <translation id="4991110219272367918">ვებსაიტის დადასტურების ან უარყოფის ვარიანტი დახურულია</translation>
+<translation id="4996042648402406470">მიღება</translation>
 <translation id="4996095658297597226">გსურთ შემოთავაზებული პაროლის გამოყენება?</translation>
 <translation id="5001388021414335527">მიადევნეთ თვალი ამ საიტს აქ</translation>
 <translation id="5004416275253351869">Google აქტივობის მართვის საშუალებები</translation>
@@ -927,10 +931,12 @@
 <translation id="5210286577605176222">წინა ჩანართზე გადასვლა</translation>
 <translation id="5210365745912300556">ჩანართის დახურვა</translation>
 <translation id="5215957675041756913">თქვენი მონაცემებისა და ანგარიშის მართვა</translation>
+<translation id="5218324087477576825">ბარათის ნომერი (სავალდებულოა)</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და კიდევ <ph name="SEPARATOR" /> Chrome-მა ამოშალა ეს ნებართვები, რადგან თქვენ ბოლო დროს ეს საიტი არ მოგინახულებიათ</translation>
 <translation id="5222676887888702881">გამოსვლა</translation>
 <translation id="5226378907213531272">მანქანის ყოველი გამოყენებისას ეკრანი უნდა განბლოკოთ</translation>
 <translation id="5227554086496586518">შეეხეთ ძიების შედეგების სანახავად</translation>
+<translation id="5229736206150093143">უახლესი შედეგები</translation>
 <translation id="5233638681132016545">ახალი ჩანართი</translation>
 <translation id="5235196193381275927">შესვლისას წარმოიქმნა შეფერხება</translation>
 <translation id="5246093389635966745">ხელსაწყოთა ზოლის მალსახმობის რედაქტირება</translation>
@@ -1286,6 +1292,7 @@
 <translation id="676305334223455055">შედით, რათა თქვენს ინტერესებზე მორგებული კონტენტი მიიღოთ</translation>
 <translation id="6764137532716892442">ჩანართების გაზიარებული ჯგუფი „<ph name="GROUP_TITLE" />“ ახალი აქტივობით</translation>
 <translation id="6767294960381293877">მოწყობილობების სია, რომლებთანაც უნდა გაზიარდეს ჩანართი, გახსნილია ნახევარ სიმაღლეზე.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{დაიხურება <ph name="INCOGNITO_TAB_COUNT" /> ინკოგნიტო და <ph name="TAB_COUNT_ONE" /> სხვა ჩანართი}other{დაიხურება <ph name="INCOGNITO_TAB_COUNT" /> ინკოგნიტო და <ph name="TAB_COUNT_MANY" /> სხვა ჩანართი}}</translation>
 <translation id="6785476624617658922">Chrome-ისა და ChromeOS-ის მომსახურების დამატებითი პირობები</translation>
 <translation id="6786747875388722282">გაფართოებები</translation>
 <translation id="6795633245022906657">სწრაფად გახსენით ახალი ჩანართი. ამ მალსახმობის რედაქტირებისთვის გადადით პარამეტრებზე.</translation>
@@ -1582,6 +1589,7 @@
 <translation id="7965838025086216108">შენახული პაროლების გამოყენება შეგიძლიათ ნებისმიერ მოწყობილობაზე. ისინი Google პაროლების მმართველის მიერ <ph name="ACCOUNT" />-ისთვის ინახება.</translation>
 <translation id="7968014550143838305">დაემატა საკითხავ სიას</translation>
 <translation id="7968982339740310781">დეტალების დათვალიერება</translation>
+<translation id="7969391000881506217">მოქმედების ვადა*</translation>
 <translation id="7971136598759319605">აქტიური იყო 1 დღის წინ</translation>
 <translation id="7975379999046275268">გვერდის გადახედვა <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">გაგაფრთხილებთ, თუ იყენებთ პაროლს, რომელიც პერსონალურ მონაცემთა გაჟონვისას გამჟღავნდა.</translation>
@@ -1741,6 +1749,7 @@
 <translation id="8565021320663436446">ამოიშალოს <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">ფაილის დაცულად ჩამოტვირთვა ვერ ხერხდება</translation>
 <translation id="8571213806525832805">ბოლო 4 კვირა</translation>
+<translation id="8580435650274205305">მოქმედების ვადა (სავალდებულოა)</translation>
 <translation id="8582529315803410153">აქ იპოვით ჩანართებს თქვენი სხვა მოწყობილობებიდან</translation>
 <translation id="8585103689515290060">ავტომატური შევსების სერვისები</translation>
 <translation id="859046281437143747">ადევნეთ თვალი ფასს „სხვა ვარიანტების“ ღილაკით</translation>

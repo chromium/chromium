@@ -480,6 +480,7 @@
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 પાસવર્ડ અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં સાચવો.}one{# પાસવર્ડ અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં સાચવો.}other{# પાસવર્ડ અને અન્ય આઇટમને માત્ર આ ડિવાઇસમાં સાચવવામાં આવી છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં સાચવો.}}</translation>
 <translation id="3187472288455401631">જાહેરાતના પરફોર્મન્સનું માપન</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ટૅબનું ગ્રૂપ</translation>
+<translation id="3200536777393523575">તમારી હાલની વિન્ડો બંધ કરીએ?</translation>
 <translation id="3207960819495026254">બુકમાર્ક કરેલ</translation>
 <translation id="3208584281581115441">હમણાં ચેક કરો</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> કાઢી નાખી</translation>
@@ -724,6 +725,7 @@
 <translation id="4351244548802238354">સંવાદ બંધ કરો</translation>
 <translation id="4352287748243729941">તમારા <ph name="PROVIDER" /> પાસવર્ડનો ઉપયોગ કરીએ?</translation>
 <translation id="4355272626458588338">તમે કોઈ બુકમાર્ક ઉમેરીને તમારા માટે મહત્ત્વપૂર્ણ હોય એવા પેજ પર પાછા જઈ શકો છો</translation>
+<translation id="4356503491090073318">કાર્ડ નંબર*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">સલામતી, એક નજરમાં</translation>
 <translation id="4378154925671717803">ફોન</translation>
@@ -741,6 +743,7 @@
 <translation id="4425140285732600465">કિંમત ટ્રૅક કરી રહ્યાં છીએ. જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો અલર્ટ મેળવો.</translation>
 <translation id="4425173294238317796">પાસકી કન્ફર્મેશન શીટ</translation>
 <translation id="442518031075347249">હવેથી તમે Google Pay સાથે તમારા વર્ચ્યુઅલ કાર્ડનો ઉપયોગ કરી શકશો નહીં. <ph name="BEGIN_LINK1" />વર્ચ્યુઅલ કાર્ડ વિશે વધુ જાણો<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> અને <ph name="TAB_COUNT_ONE" /> અન્ય ટૅબ બંધ કરવામાં આવશે}one{<ph name="TAB_TITLE" /> અને <ph name="TAB_COUNT_MANY" /> અન્ય ટૅબ બંધ કરવામાં આવશે}other{<ph name="TAB_TITLE" /> અને <ph name="TAB_COUNT_MANY" /> અન્ય ટૅબ બંધ કરવામાં આવશે}}</translation>
 <translation id="4426508677408162512">બધા બુકમાર્ક્સ</translation>
 <translation id="4430277756566635951">હાલમાં <ph name="EMAIL" /> પસંદ કર્યું છે. એકાઉન્ટ પસંદ કરો.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ટૅબ બંધ કરો</translation>
@@ -876,6 +879,7 @@
 <translation id="4987271110129728827">એ પેજ મળતું નથી. તમારી જોડણી ચેક કરો અથવા વેબ શોધનો પ્રયાસ કરો.</translation>
 <translation id="4988526792673242964">પેજ</translation>
 <translation id="4991110219272367918">કોઈ વેબસાઇટને મંજૂરી આપવાનો અથવા ન આપવાનો વિકલ્પ બંધ કર્યો</translation>
+<translation id="4996042648402406470">મેળવો</translation>
 <translation id="4996095658297597226">શું સૂચવેલા પાસવર્ડનો ઉપયોગ કરીએ?</translation>
 <translation id="5001388021414335527">આ સાઇટને અહીં ફૉલો કરો</translation>
 <translation id="5004416275253351869">Google પ્રવૃત્તિ નિયંત્રણો</translation>
@@ -927,10 +931,12 @@
 <translation id="5210286577605176222">પાછલી ટૅબ પર જાઓ</translation>
 <translation id="5210365745912300556">ટૅબ બંધ કરો</translation>
 <translation id="5215957675041756913">તમારા ડેટા અને એકાઉન્ટનું નિયંત્રણ કરો</translation>
+<translation id="5218324087477576825">કાર્ડ નંબર (આવશ્યક છે)</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને અન્ય <ph name="SEPARATOR" /> Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી કારણ કે તમે તાજેતરમાં મુલાકાત લીધી ન હતી</translation>
 <translation id="5222676887888702881">સાઇન આઉટ</translation>
 <translation id="5226378907213531272">જ્યારે પણ તમે કારનો ઉપયોગ કરશો, તે દરેક વખતે તમારે તમારી સ્ક્રીન અનલૉક કરવાની રહેશે</translation>
 <translation id="5227554086496586518">શોધ પરિણામો જોવા માટે ટૅપ કરો</translation>
+<translation id="5229736206150093143">લેટેસ્ટ પરિણામો</translation>
 <translation id="5233638681132016545">નવું ટૅબ</translation>
 <translation id="5235196193381275927">સાઇન ઇન કરતી વખતે કંઈક ખોટું થયું</translation>
 <translation id="5246093389635966745">ટૂલબારના શૉર્ટકટમાં ફેરફાર કરો</translation>
@@ -1286,6 +1292,7 @@
 <translation id="676305334223455055">તમારી રુચિઓ પર આધારિત કન્ટેન્ટ મેળવવા માટે સાઇન ઇન કરો</translation>
 <translation id="6764137532716892442">નવી ઍક્ટિવિટી સાથે શેર કરેલું <ph name="GROUP_TITLE" /> ટૅબનું ગ્રૂપ</translation>
 <translation id="6767294960381293877">કોઈ ટૅબ સાથે શેર કરવાના ડિવાઇસની સૂચિ અડધી ઊંચાઈએ ખૂલે છે.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> છૂપા અને <ph name="TAB_COUNT_ONE" /> અન્ય ટૅબ બંધ કરવામાં આવશે}one{<ph name="INCOGNITO_TAB_COUNT" /> છૂપા અને <ph name="TAB_COUNT_MANY" /> અન્ય ટૅબ બંધ કરવામાં આવશે}other{<ph name="INCOGNITO_TAB_COUNT" /> છૂપા અને <ph name="TAB_COUNT_MANY" /> અન્ય ટૅબ બંધ કરવામાં આવશે}}</translation>
 <translation id="6785476624617658922">Chrome અને ChromeOSની વધારાની સેવાની શરતો</translation>
 <translation id="6786747875388722282">એક્સ્ટેન્શન</translation>
 <translation id="6795633245022906657">ઝડપથી નવું ટૅબ ખોલો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, સેટિંગ પર જાઓ.</translation>
@@ -1582,6 +1589,7 @@
 <translation id="7965838025086216108">તમે કોઈપણ ડિવાઇસ પર સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો. તેમને <ph name="ACCOUNT" /> માટેના Google Password Managerમાં સાચવવામાં આવે છે.</translation>
 <translation id="7968014550143838305">વાંચન સૂચિમાં ઉમેર્યું</translation>
 <translation id="7968982339740310781">વિગતો જુઓ</translation>
+<translation id="7969391000881506217">સમાપ્તિ તારીખ*</translation>
 <translation id="7971136598759319605">1 દિવસ પહેલાં સક્રિય હતું</translation>
 <translation id="7975379999046275268">પેજને પ્રીવ્યૂ કરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">તમે ઉપયોગમાં લો છો તે પાસવર્ડ સાથે કોઈ ડેટા ઉલ્લંઘન દરમિયાન ચેડાં કરવામાં આવ્યા હોય તો તમને ચેતવણી આપે છે.</translation>
@@ -1741,6 +1749,7 @@
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" />ને કાઢી નાખીએ?</translation>
 <translation id="8570677896027847510">ફાઇલ સુરક્ષિત રીતે ડાઉનલોડ કરી શકાતી નથી</translation>
 <translation id="8571213806525832805">છેલ્લા 4 અઠવાડિયા</translation>
+<translation id="8580435650274205305">સમાપ્તિ તારીખ (આવશ્યક છે)</translation>
 <translation id="8582529315803410153">તમને અન્ય ડિવાઇસમાંની તમારી ટૅબ અહીં મળશે</translation>
 <translation id="8585103689515290060">ઑટોમૅટિક રીતે ભરવાની સુવિધાઓ</translation>
 <translation id="859046281437143747">વધુ વિકલ્પોના બટન પરથી કિંમત ટ્રૅક કરો</translation>

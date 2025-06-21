@@ -52,6 +52,7 @@
 <translation id="1031362278801463162">プレビューを読み込んでいます</translation>
 <translation id="1032605640136438169">新しい利用規約をご確認ください</translation>
 <translation id="103279545524624934">Android アプリを起動できるようにディスク領域を解放します。</translation>
+<translation id="1033060461778467949">タブを分割表示に切り替え</translation>
 <translation id="1033780634303702874">シリアル デバイスへのアクセス</translation>
 <translation id="1034484273907870301">タブレット モードのサムネイル タブバー</translation>
 <translation id="1035289631433631911">コンテンツ移行ツール</translation>
@@ -1909,6 +1910,7 @@
 <translation id="2312219318583366810">ページの URL</translation>
 <translation id="2314165183524574721">現在の公開設定は非表示です</translation>
 <translation id="2314774579020744484">この言語を使用してページを翻訳します</translation>
+<translation id="2316090909467242775">この再設定パスワードをお試しください</translation>
 <translation id="2316129865977710310">今はしない</translation>
 <translation id="2316433409811863464">アプリ ストリーミング</translation>
 <translation id="2316709634732130529">推奨されたパスワードを使用</translation>
@@ -3531,6 +3533,7 @@
 <translation id="3462413494201477527">アカウントの設定をキャンセルしますか？</translation>
 <translation id="346298925039590474">このデバイスのすべてのユーザーがこのモバイル ネットワークを使用できます</translation>
 <translation id="3464145797867108663">仕事用プロファイルを追加</translation>
+<translation id="34673353983913587">新しいパスワードを保存する前に、サイトで追加認証を行う必要があります</translation>
 <translation id="3468298837301810372">ラベル</translation>
 <translation id="3468999815377931311">Android スマートフォン</translation>
 <translation id="3469583217479686109">選択ツール</translation>
@@ -3558,6 +3561,7 @@
 <translation id="3487007233252413104">無名関数</translation>
 <translation id="3487649228420469005">スキャンが完了しました</translation>
 <translation id="3488199663160411179">名前</translation>
+<translation id="3489457144969823485">Chrome アプリは 2025 年 7 月以降 ChromeOS デバイスで使用できなくなりました。別のアプリをご検討ください。</translation>
 <translation id="3490695139702884919">ダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">PIN やパスワードを忘れてもローカルデータを復元できます</translation>
 <translation id="3491616972057195633">バウンスキー</translation>
@@ -4024,6 +4028,7 @@
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> 件の拡張機能</translation>
 <translation id="3794792524918736965">Windows Hello をオンにする</translation>
 <translation id="379509625511193653">オフ</translation>
+<translation id="3795624560191557077">一般に報告されているデータ侵害で検出されたパスワードを最近変更しました。問題が発生した場合は、Google パスワード マネージャーを使用してログインできます。</translation>
 <translation id="3796215473395753611">Alt+上矢印</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />、音声をプレビューするには右矢印キーを使用します</translation>
 <translation id="3796648294839530037">お気に入りのネットワーク:</translation>
@@ -5839,6 +5844,7 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 with RSA 暗号化</translation>
 <translation id="5090637338841444533">カメラ位置の追跡を許可しないサイト</translation>
 <translation id="5091636240353511739">PIN を表示</translation>
+<translation id="5093417502834168387">ログインできない場合は、別の方法を試すことができます</translation>
 <translation id="5093477827231450397">他のサイトに広告を提案しないようブロックしたウェブサイトのリスト</translation>
 <translation id="5093569275467863761">バックフォワード キャッシュのシークレット サブフレーム: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ファイルアプリからこのアプリまたは他のアプリで、サポートされているファイルを開いて編集できます。デフォルトでこのアプリを使用して開くファイルを管理するには、<ph name="BEGIN_LINK" />デバイスでデフォルトのアプリを設定する方法<ph name="END_LINK" />をご確認ください。</translation>
@@ -6772,6 +6778,7 @@
 <translation id="5785583009707899920">Chrome ファイル ユーティリティ</translation>
 <translation id="5787146423283493983">キー合意</translation>
 <translation id="5787420647064736989">デバイス名</translation>
+<translation id="5787582109651427233"><ph name="BEGIN_LINK_LOYALTY_CARDS" />ポイントカード<ph name="END_LINK_LOYALTY_CARDS" />または Google Pay の<ph name="BEGIN_LINK_PAYMENT_METHODS" />お支払い方法<ph name="END_LINK_PAYMENT_METHODS" />を追加または管理するには、Google ウォレットにアクセスしてください</translation>
 <translation id="5788367137662787332">デバイス <ph name="DEVICE_LABEL" /> の少なくとも 1 つのパーティションがマウントできませんでした。</translation>
 <translation id="5789581866075720267">このデバイスの <ph name="BRAND" /> にパスワードをインポートするには、CSV ファイルを選択してください。</translation>
 <translation id="5790085346892983794">完了</translation>
@@ -7257,6 +7264,7 @@
 <translation id="6131511889181741773">スプラッター</translation>
 <translation id="6132251717264923430">ボタンを固定しました</translation>
 <translation id="6132714462430777655">教育機関の登録をスキップしますか？</translation>
+<translation id="6134418895482326458">新しいタブページのフッターを非表示にする</translation>
 <translation id="6134428719487602109">すべてのユーザー アカウントを削除し、Chromebook を初期状態にリセットします。</translation>
 <translation id="6135826623269483856">全ディスプレイのウィンドウ管理が許可されていません</translation>
 <translation id="6136114942382973861">ダウンロード バーを閉じる</translation>
@@ -7613,6 +7621,7 @@
 <translation id="6388577073199278153">モバイル アカウントにアクセスできません</translation>
 <translation id="6390020764191254941">タブを新しいウィンドウに移動</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{なし}=1{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />、他 1 個}other{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />、他 {COUNT} 個}}</translation>
+<translation id="6390533465682072118">再設定</translation>
 <translation id="6391131092053186625">デバイスの IMEI は <ph name="IMEI_NUMBER" /> です。この番号を使用して、サービスを有効にできます。</translation>
 <translation id="6393156038355142111">安全なパスワードを自動生成</translation>
 <translation id="6393550101331051049">安全でないコンテンツの表示を許可するサイト</translation>
@@ -7697,6 +7706,7 @@
 <translation id="6455521402703088376">オフ • この拡張機能はデベロッパーにより非公開にされました</translation>
 <translation id="6455894534188563617">新しいフォルダ(&amp;N)</translation>
 <translation id="645705751491738698">JavaScript を引き続きブロックする</translation>
+<translation id="6457572529564180082"><ph name="APP_NAME" /> を起動できません</translation>
 <translation id="6458606150257356946">このまま貼り付け</translation>
 <translation id="6458701200018867744">アップロードできませんでした（<ph name="WEBRTC_LOG_UPLOAD_TIME" />）。</translation>
 <translation id="6459488832681039634">選択部分を検索に使用</translation>
@@ -7988,6 +7998,7 @@
 <translation id="6667187897999649121">現在のところ、パスワードはファミリー メンバーとのみ共有できます。最大 6 人のメンバーを招待して<ph name="BEGIN_LINK" />ファミリー グループを作成<ph name="END_LINK" />すると、Google のさまざまなサービスやサブスクリプションをさらに活用できます。</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />で開く</translation>
 <translation id="6669195257625975787">データは表示しているサイトと同じように扱われます</translation>
+<translation id="6669637573228217624">ファイルをアップロード</translation>
 <translation id="6670142487971298264">「<ph name="APP_NAME" />」を利用できます</translation>
 <translation id="6670767097276846646">拡張機能によって Chrome に検索エンジンが追加される場合があります</translation>
 <translation id="6670983860904543332">自動更新により最新機能が提供されます。最近の主な更新内容をご確認ください。</translation>
@@ -8127,6 +8138,7 @@
 <translation id="6771503742377376720">認証局である</translation>
 <translation id="6772974422346500939">開いて編集</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
+<translation id="677394079035748956">このサイトではワンタイム パスワードが必要です</translation>
 <translation id="6774710250118040929">新しいパスワードを追加</translation>
 <translation id="6775163072363532304">利用可能なデバイスはここに表示されます。</translation>
 <translation id="6775992990195573904">タブを分類します</translation>
@@ -9245,6 +9257,7 @@
 <translation id="7566118625369982896">Play アプリのリンクを管理する</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">キーの組み合わせを作成</translation>
+<translation id="7567100268516475532">タブを分割表示に切り替え</translation>
 <translation id="7568014768212280234">タブグループのユーザーが上限に達したため、新しいユーザーはリンクを使用して参加できません</translation>
 <translation id="7568759527730933493">安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。これには、<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> のマネージド サービス プロバイダを使用します安全な接続は、管理者が構成した一部のドメインでは使用されません。</translation>
 <translation id="756876171895853918">アバターをカスタマイズ</translation>

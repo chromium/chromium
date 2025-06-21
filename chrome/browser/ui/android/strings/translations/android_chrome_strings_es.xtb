@@ -480,6 +480,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3172472771272043251">{PASSWORDS_COUNT,plural, =1{1 contraseña y otros elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}other{# contraseñas y otros elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3189635831478931757">Grupo de pestañas <ph name="GROUP_TITLE" /></translation>
+<translation id="3200536777393523575">¿Cerrar la ventana actual?</translation>
 <translation id="3207960819495026254">Añadido a marcadores</translation>
 <translation id="3208584281581115441">Comprobar ahora</translation>
 <translation id="3211426585530211793">Se ha eliminado <ph name="ITEM_TITLE" /></translation>
@@ -724,6 +725,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4351244548802238354">Cerrar cuadro de diálogo</translation>
 <translation id="4352287748243729941">¿Usar tu contraseña de <ph name="PROVIDER" />?</translation>
 <translation id="4355272626458588338">Puedes volver a una página que consideres importante añadiendo un marcador</translation>
+<translation id="4356503491090073318">Número de tarjeta*</translation>
 <translation id="4357206670025518404"><ph name="COUNT_NUMBER" />+</translation>
 <translation id="4359809482106103048">Seguridad de un vistazo</translation>
 <translation id="4378154925671717803">Teléfono</translation>
@@ -741,6 +743,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4425140285732600465">Siguiendo precio. Recibe alertas si el precio baja en algún sitio.</translation>
 <translation id="4425173294238317796">Hoja de confirmación de llave de acceso</translation>
 <translation id="442518031075347249">Ya no podrás usar tu tarjeta virtual con Google Play. <ph name="BEGIN_LINK1" />Más información sobre tarjetas virtuales<ph name="END_LINK1" /></translation>
+<translation id="442577985493096785">{TAB_COUNT,plural, =1{Se cerrarán la pestaña <ph name="TAB_TITLE" /> y <ph name="TAB_COUNT_ONE" /> más}other{Se cerrarán la pestaña <ph name="TAB_TITLE" /> y <ph name="TAB_COUNT_MANY" /> más}}</translation>
 <translation id="4426508677408162512">Todos los marcadores</translation>
 <translation id="4430277756566635951">Se ha seleccionado <ph name="EMAIL" />. Elige una cuenta.</translation>
 <translation id="4452411734226507615">Cerrar la pestaña <ph name="TAB_TITLE" /></translation>
@@ -876,6 +879,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4987271110129728827">No se puede encontrar la página. Comprueba que la hayas escrito bien o prueba a hacer una búsqueda web.</translation>
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="4991110219272367918">Opción para aprobar o no un sitio web cerrado</translation>
+<translation id="4996042648402406470">Obtener</translation>
 <translation id="4996095658297597226">¿Usar contraseña sugerida?</translation>
 <translation id="5001388021414335527">Seguir a este sitio aquí</translation>
 <translation id="5004416275253351869">Controles de actividad de Google</translation>
@@ -927,10 +931,12 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5210286577605176222">Te dirige a la pestaña anterior</translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5215957675041756913">Controlar tus datos y tu cuenta</translation>
+<translation id="5218324087477576825">Número de tarjeta, obligatorio</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y más <ph name="SEPARATOR" /> Chrome ha eliminado estos permisos porque no has visitado el sitio recientemente</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="5226378907213531272">Tendrás que desbloquear la pantalla cada vez que uses el coche</translation>
 <translation id="5227554086496586518">Toca para ver los resultados de búsqueda</translation>
+<translation id="5229736206150093143">Últimos resultados</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5235196193381275927">No se ha podido iniciar la sesión</translation>
 <translation id="5246093389635966745">Editar combinación de teclas de la barra de herramientas</translation>
@@ -1286,6 +1292,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="676305334223455055">Inicia sesión para ver contenido basado en tus intereses</translation>
 <translation id="6764137532716892442">Grupo de pestañas <ph name="GROUP_TITLE" /> compartido con actividad nueva</translation>
 <translation id="6767294960381293877">La lista de dispositivos con los que puedes compartir una pestaña está abierta a media altura.</translation>
+<translation id="6783664456110886353">{TAB_COUNT,plural, =1{Se cerrarán <ph name="INCOGNITO_TAB_COUNT" /> pestaña de Incógnito y <ph name="TAB_COUNT_ONE" /> pestaña más}other{Se cerrarán <ph name="INCOGNITO_TAB_COUNT" /> pestaña de Incógnito y <ph name="TAB_COUNT_MANY" /> pestañas más}}</translation>
 <translation id="6785476624617658922">Términos del Servicio Adicionales de Chrome y ChromeOS</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6795633245022906657">Abre una pestaña nueva rápidamente. Para editar esta combinación de teclas, ve a Configuración.</translation>
@@ -1405,6 +1412,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7224097611345298931">Se han combinado todas las contraseñas guardadas solo en este dispositivo para Chrome y <ph name="CHROME_CHANNEL" />. Puedes autocompletar todas tus contraseñas guardadas en ambas aplicaciones.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendiente}other{# descargas pendientes}}</translation>
 <translation id="7230064152164845085">Cambiar a modo Incógnito</translation>
+<translation id="7230836263524391273">Ocultar modo Lectura</translation>
 <translation id="7237724030342645845">El Gestor de contraseñas de Google ha dejado de funcionar</translation>
 <translation id="72415438529550637">La sugerencia de contraseña está cerrada.</translation>
 <translation id="7248671827512403053">Aplicación</translation>
@@ -1582,6 +1590,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7965838025086216108">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Gestor de contraseñas de Google de <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Añadido a la lista de lectura</translation>
 <translation id="7968982339740310781">Ver detalles</translation>
+<translation id="7969391000881506217">Fecha de vencimiento*</translation>
 <translation id="7971136598759319605">Activo hace 1 día</translation>
 <translation id="7975379999046275268">Revisar página <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Te avisa si usas una contraseña vulnerada en una brecha de seguridad de datos.</translation>
@@ -1741,6 +1750,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8565021320663436446">¿Quitar a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">El archivo no se puede descargar de forma segura</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
+<translation id="8580435650274205305">Fecha de vencimiento, obligatorio</translation>
 <translation id="8582529315803410153">Aquí verás tus pestañas de otros dispositivos</translation>
 <translation id="8585103689515290060">Servicios de autocompletado</translation>
 <translation id="859046281437143747">Sigue el precio desde el botón Más opciones</translation>

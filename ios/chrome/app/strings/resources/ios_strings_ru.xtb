@@ -171,6 +171,7 @@
 <translation id="1657011748321897393">Не удалось опубликовать запись из-за ошибки сети.</translation>
 <translation id="1668001730617725852">Открыть в новой группе вкладок</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="168389590065701766">Теперь вы можете открывать Google Объектив из адресной строки и искать всё, что видите.</translation>
 <translation id="1689333818294560261">Название</translation>
 <translation id="169048873465870056">Удалить вкладку и группу?</translation>
 <translation id="1698090540708020240">Импорт паролей</translation>
@@ -211,6 +212,7 @@
 <translation id="1838089197478136166">Открыть в Кошельке?</translation>
 <translation id="183878838231635348">Здесь будут перечислены проблемы с конфиденциальностью и безопасностью, обнаруженные в ходе автоматической проверки.</translation>
 <translation id="1845230888742614096">Оставить</translation>
+<translation id="1853692000353488670">Новая вкладка инкогнито</translation>
 <translation id="1854463785401910334">Поиск по открытым вкладкам</translation>
 <translation id="1861067954551502701">{count,plural, =1{Пароль {position} из {count}}one{Пароль {position} из {count}}few{Пароль {position} из {count}}many{Пароль {position} из {count}}other{Пароль {position} из {count}}}</translation>
 <translation id="1861262398884155592">Папка пуста</translation>
@@ -266,6 +268,7 @@
 <translation id="2044681667265133332">Аккаунтом <ph name="USER_EMAIL" /> управляет <ph name="HOSTED_DOMAIN" />. Некоторая ваша информация может быть видна этой организации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">новый продукт</translation>
 <translation id="2049727122989709386">В нескольких аккаунтах (<ph name="COUNT" />) используется один и тот же пароль.</translation>
+<translation id="205013082884273671">Находите информацию о любом объекте на экране</translation>
 <translation id="2054044186557130763">Войти как <ph name="NAME" />, <ph name="EMAIL" />. Аккаунтом управляет ваша организация.</translation>
 <translation id="2059166748188874810">Муниципалитет</translation>
 <translation id="2060638295449304809">Адрес сохранен только на этом устройстве. Чтобы он синхронизировался с другими устройствами, добавьте его в аккаунт Google (<ph name="USER_EMAIL" />).</translation>
@@ -458,6 +461,7 @@
 <translation id="2819667972867209401">Если параметр включен, данные сохраняются в аккаунте Google. Если нет, данные остаются только на этом устройстве и удаляются при выходе из аккаунта.</translation>
 <translation id="2827760117436553203">Хранить эти данные отдельно?</translation>
 <translation id="2829172210806130158">Поиск по экрану</translation>
+<translation id="2831109159746537587">Обведите изображение или коснитесь его для поиска</translation>
 <translation id="2834399722155632105">3. Выберите "Настройки паролей".</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Время</translation>
@@ -1019,7 +1023,7 @@
 <translation id="519530786644929958">Ошибка скачивания. Повтор действия невозможен.</translation>
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5200894869889836319">Параметры разрешений</translation>
-<translation id="5203051773066903947">Ввод</translation>
+<translation id="5203051773066903947">Ввести</translation>
 <translation id="5206453674369664567">Выйти и удалить данные</translation>
 <translation id="5210365745912300556">Закрыть вкладку</translation>
 <translation id="5211488077761630279">Разрешить сайту <ph name="SITE_NAME" /> использовать разрешения <ph name="PERMISSION" />?</translation>
