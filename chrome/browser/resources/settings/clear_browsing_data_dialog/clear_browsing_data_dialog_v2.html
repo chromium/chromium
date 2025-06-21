@@ -42,6 +42,11 @@
     max-height: var(--dbd-dialog-max-height);
   }
 
+  #deletingDataAlert {
+    clip: rect(0, 0, 0, 0);
+    position: fixed;
+  }
+
   #manageOtherGoogleDataRow {
     border-radius: var(--dbd-container-border-radius);
     color: var(--cr-primary-text-color);
@@ -154,6 +159,11 @@
             isDeletionInProgress_, isNoDatatypeSelected_)]]">
       [[deleteButtonLabel_]]
     </cr-button>
+    <!-- The alert must be inside the dialog for it to be read while the
+         dialog is open. -->
+    <div id="deletingDataAlert" role="alert">
+      [[deletingDataAlertString_]]
+    </div>
   </div>
 </cr-dialog>
 

@@ -59,6 +59,7 @@ export interface SettingsClearBrowsingDataDialogV2Element {
     cancelButton: CrButtonElement,
     deleteButton: CrButtonElement,
     deleteBrowsingDataDialog: CrDialogElement,
+    deletingDataAlert: HTMLElement,
     manageOtherGoogleDataRow: CrLinkRowElement,
     moreOptionsList: HTMLElement,
     showMoreButton: CrButtonElement,
@@ -157,6 +158,11 @@ export class SettingsClearBrowsingDataDialogV2Element extends
         computed: 'computeDeleteButtonLabel_(syncStatus_.signedInState)',
       },
 
+      deletingDataAlertString_: {
+        type: String,
+        value: '',
+      },
+
       isDeletionInProgress_: {
         type: Boolean,
         value: false,
@@ -206,6 +212,7 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
   declare private dataTypesExpanded_: boolean;
   declare private deleteButtonLabel_: string;
+  declare private deletingDataAlertString_: string;
   declare private isDeletionInProgress_: boolean;
   declare private isNoDatatypeSelected_: boolean;
   declare private isGoogleDse_: boolean;
@@ -367,7 +374,7 @@ export class SettingsClearBrowsingDataDialogV2Element extends
    * selected TimePeriod.
    */
   private async onDeleteBrowsingDataClick_() {
-    // TODO(crbug.com/397187800): Trigger the deletion announcements for a11y.
+    this.deletingDataAlertString_ = loadTimeData.getString('clearingData');
     this.isDeletionInProgress_ = true;
 
     const dataTypes = this.getSelectedDataTypes_();

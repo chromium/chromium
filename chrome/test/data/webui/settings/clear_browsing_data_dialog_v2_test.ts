@@ -145,6 +145,7 @@ suite('DeleteBrowsingDataDialog', function() {
     assertTrue(dialog.$.deleteButton.disabled);
     assertFalse(dialog.$.cancelButton.disabled);
     assertFalse(isVisible(dialog.$.spinner));
+    assertEquals('', dialog.$.deletingDataAlert.innerText.trim());
 
     // Verify that checkboxes in the expanded and more lists are initially
     // enabled.
@@ -176,6 +177,9 @@ suite('DeleteBrowsingDataDialog', function() {
     assertTrue(dialog.$.deleteButton.disabled);
     assertTrue(dialog.$.cancelButton.disabled);
     assertTrue(isVisible(dialog.$.spinner));
+    assertEquals(
+        loadTimeData.getString('clearingData'),
+        dialog.$.deletingDataAlert.innerText.trim());
     assertTrue(historyCheckbox.$.checkbox.disabled);
     assertTrue(formDataCheckbox.$.checkbox.disabled);
 
@@ -482,7 +486,7 @@ suite('DeleteBrowsingDataDialog', function() {
     // Clear previous restartCounters calls.
     testClearBrowsingDataBrowserProxy.reset();
 
-    // Set the SyncStatus TimePeriod to signed-in.
+    // Set the SyncStatus to signed-in.
     webUIListenerCallback('sync-status-changed', {
       signedInState: SignedInState.SIGNED_IN,
     });
