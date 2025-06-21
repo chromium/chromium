@@ -416,8 +416,6 @@ Refer to README.md for content description and update process.
  <item id="help_me_write_model_execution" added_in_milestone="121" content_hash_code="069a7ee5" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
  <item id="controlled_frame_content_scripts_download" added_in_milestone="122" content_hash_code="06d098d1" os_list="linux,windows,chromeos" file_path="extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.cc" />
  <item id="essential_search_manager" added_in_milestone="122" content_hash_code="0410c589" os_list="chromeos" file_path="chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.cc" />
- <item id="pepper_tcp_socket" added_in_milestone="123" content_hash_code="01a37664" os_list="chromeos" file_path="content/browser/renderer_host/pepper/pepper_socket_utils.cc" />
- <item id="pepper_udp_socket" added_in_milestone="123" content_hash_code="006ee842" os_list="chromeos" file_path="content/browser/renderer_host/pepper/pepper_socket_utils.cc" />
  <item id="app_install_service_web_app_installer" added_in_milestone="123" content_hash_code="0790ca69" os_list="chromeos" file_path="chrome/browser/apps/app_service/app_install/web_app_installer.cc" />
  <item id="remoting_corp_session_authz_generate_host_token" added_in_milestone="123" content_hash_code="045bc7d9" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_session_authz_service_client.cc" />
  <item id="remoting_corp_session_authz_verify_session_token" added_in_milestone="123" content_hash_code="04127f42" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_session_authz_service_client.cc" />
@@ -515,4 +513,5 @@ Refer to README.md for content description and update process.
  <item id="trusted_vault_cert_request" added_in_milestone="139" content_hash_code="04ea4a98" os_list="linux,windows,chromeos" file_path="components/trusted_vault/recovery_key_store_connection_impl.cc" />
  <item id="keepalive_fetch_retry" added_in_milestone="138" content_hash_code="023a2a10" os_list="linux,windows,android,chromeos" file_path="content/browser/loader/keep_alive_url_loader.cc" />
  <item id="iwa_dev_tools_installation_web_bundle" added_in_milestone="139" type="partial" second_id="iwa_bundle_downloader" content_hash_code="00669d7d" os_list="linux,windows,chromeos" semantics_fields="1,2,3" policy_fields="3,5" file_path="chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.cc" />
+ <item id="ntp_composebox_query_controller" added_in_milestone="139" content_hash_code="06439b42" os_list="linux,windows,chromeos,android" file_path="components/omnibox/composebox/composebox_query_controller.cc" />
 </annotations>

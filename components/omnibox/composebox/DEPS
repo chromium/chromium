@@ -1,0 +1,14 @@
+include_rules = [
+  "+components/endpoint_fetcher",
+  "+components/lens",
+  "+components/search",
+  "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
+  "+components/signin/public/identity_manager_factory",
+  "+components/version_info",
+  "+google_apis",
+  "+net",
+  "+services/network/public/cpp",
+  "+services/network/test",
+  "+third_party/lens_server_proto",
+]

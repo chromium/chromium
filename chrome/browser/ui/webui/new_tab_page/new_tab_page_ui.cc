@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
@@ -59,6 +60,7 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/url_constants.h"
@@ -91,6 +93,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "media/base/media_switches.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "skia/ext/skia_utils_base.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -748,7 +751,10 @@ void NewTabPageUI::BindInterface(
         pending_receiver) {
   composebox_handler_ = std::make_unique<ComposeboxHandler>(
       std::move(pending_receiver),
-      std::make_unique<ComposeboxQueryController>());
+      std::make_unique<ComposeboxQueryController>(
+          IdentityManagerFactory::GetForProfile(profile_),
+          g_browser_process->shared_url_loader_factory(),
+          chrome::GetChannel()));
 }
 
 void NewTabPageUI::BindInterface(

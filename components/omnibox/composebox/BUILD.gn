@@ -7,14 +7,48 @@ source_set("composebox") {
     "composebox_query_controller.cc",
     "composebox_query_controller.h",
   ]
-  deps = [ "//base:base" ]
+  deps = [
+    "//base:base",
+    "//components/endpoint_fetcher",
+    "//components/lens",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/version_info:channel",
+    "//google_apis/common",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//third_party/lens_server_proto:lens_overlay_proto",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_composebox_query_controller.cc",
+    "test_composebox_query_controller.h",
+  ]
+  deps = [
+    ":composebox",
+    "//base",
+    "//base/test:test_support",
+    "//components/endpoint_fetcher",
+    "//components/endpoint_fetcher:test_support",
+    "//components/lens",
+    "//google_apis/common",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [ "composebox_query_controller_unittest.cc" ]
   deps = [
-    ":composebox",
+    ":test_support",
     "//base/test:test_support",
+    "//components/endpoint_fetcher",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
   ]
 }

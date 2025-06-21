@@ -289,8 +289,6 @@ after discussions on the right group.
       <annotation id="help_me_write_model_execution"/>
       <annotation id="controlled_frame_content_scripts_download"/>
       <annotation id="essential_search_manager"/>
-      <annotation id="pepper_tcp_socket"/>
-      <annotation id="pepper_udp_socket"/>
       <annotation id="app_install_service_web_app_installer"/>
       <annotation id="remoting_corp_session_authz_generate_host_token"/>
       <annotation id="remoting_corp_session_authz_verify_session_token"/>
@@ -381,6 +379,7 @@ after discussions on the right group.
       <annotation id="certificate_verifier_2qwac_loader"/>
       <annotation id="trusted_vault_cert_request"/>
       <annotation id="keepalive_fetch_retry"/>
+      <annotation id="ntp_composebox_query_controller"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

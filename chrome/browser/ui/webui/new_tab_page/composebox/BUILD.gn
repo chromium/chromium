@@ -30,5 +30,7 @@ source_set("unit_tests") {
     ":composebox",
     "//base/test:test_support",
     "//components/omnibox/composebox",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
   ]
 }
