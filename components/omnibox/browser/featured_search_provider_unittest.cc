@@ -46,13 +46,15 @@ constexpr char16_t kTabsKeyword[] = u"@tabs";
 constexpr char16_t kGeminiKeyword[] = u"@gemini";
 
 const std::string kBookmarksUrl =
-    TemplateURLStarterPackData::bookmarks.destination_url;
+    template_url_starter_pack_data::bookmarks.destination_url;
 const std::string kHistoryUrl =
-    TemplateURLStarterPackData::history.destination_url;
-const std::string kTabsUrl = TemplateURLStarterPackData::tabs.destination_url;
+    template_url_starter_pack_data::history.destination_url;
+const std::string kTabsUrl =
+    template_url_starter_pack_data::tabs.destination_url;
 const std::string kGeminiUrl =
-    TemplateURLStarterPackData::Gemini.destination_url;
-const std::string kPageUrl = TemplateURLStarterPackData::page.destination_url;
+    template_url_starter_pack_data::gemini.destination_url;
+const std::string kPageUrl =
+    template_url_starter_pack_data::page.destination_url;
 
 struct TestData {
   const std::u16string input;
@@ -147,7 +149,7 @@ class FeaturedSearchProviderTest : public testing::Test {
   // Populate the TemplateURLService with starter pack entries.
   void AddStarterPackEntriesToTemplateUrlService() {
     std::vector<std::unique_ptr<TemplateURLData>> turls =
-        TemplateURLStarterPackData::GetStarterPackEngines();
+        template_url_starter_pack_data::GetStarterPackEngines();
     for (auto& turl : turls) {
       client_->GetTemplateURLService()->Add(
           std::make_unique<TemplateURL>(std::move(*turl)));
@@ -305,7 +307,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
   provider_->Start(input, false);
   EXPECT_TRUE(provider_->done());
   ACMatches matches = provider_->matches();
-  ASSERT_EQ(TemplateURLStarterPackData::GetStarterPackEngines().size(),
+  ASSERT_EQ(template_url_starter_pack_data::GetStarterPackEngines().size(),
             matches.size());
 
   // Sort the matches according to relevances (in descending order), and make

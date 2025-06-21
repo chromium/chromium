@@ -1904,7 +1904,7 @@ TEST_F(TemplateURLServiceSyncTest, MergeStarterPackEngine) {
   data.SetShortName(u"Bookmarks");
   data.SetKeyword(u"@bookmarks");
   data.SetURL("chrome://bookmarks/?q={searchTerms}");
-  data.starter_pack_id = TemplateURLStarterPackData::kBookmarks;
+  data.starter_pack_id = template_url_starter_pack_data::kBookmarks;
   data.date_created = Time::FromTimeT(100);
   data.last_modified = Time::FromTimeT(100);
   data.sync_guid = "bookmarks_guid";
@@ -1915,7 +1915,8 @@ TEST_F(TemplateURLServiceSyncTest, MergeStarterPackEngine) {
   invalid_data.SetShortName(u"Invalid starter pack");
   invalid_data.SetKeyword(u"@invalid");
   invalid_data.SetURL("chrome://bookmarks/?q={searchTerms}");
-  invalid_data.starter_pack_id = TemplateURLStarterPackData::kMaxStarterPackID;
+  invalid_data.starter_pack_id =
+      template_url_starter_pack_data::kMaxStarterPackId;
   invalid_data.date_created = Time::FromTimeT(100);
   invalid_data.last_modified = Time::FromTimeT(100);
   invalid_data.sync_guid = "invalid_guid";
@@ -3123,7 +3124,7 @@ TEST_F(TemplateURLServiceSyncTestWithoutSeparateLocalAndAccountSearchEngines,
           ->GetPrepopulatedEngines();
 
   std::vector<std::unique_ptr<TemplateURLData>> starter_pack_turls =
-      TemplateURLStarterPackData::GetStarterPackEngines();
+      template_url_starter_pack_data::GetStarterPackEngines();
 
   // We have to prematurely exit this test if for some reason this machine does
   // not have any prepopulate TemplateURLs.
@@ -4273,7 +4274,7 @@ TEST_F(TemplateURLServiceSyncTestWithSeparateLocalAndAccountSearchEngines,
           ->GetPrepopulatedEngines();
 
   std::vector<std::unique_ptr<TemplateURLData>> starter_pack_turls =
-      TemplateURLStarterPackData::GetStarterPackEngines();
+      template_url_starter_pack_data::GetStarterPackEngines();
 
   // We have to prematurely exit this test if for some reason this machine does
   // not have any prepopulate TemplateURLs.

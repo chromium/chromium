@@ -131,7 +131,8 @@ std::u16string KeywordProvider::GetKeywordForText(
   // The built-in history keyword mode is disabled in incognito mode. Don't
   // provide the "@history" keyword in that case.
   if (client_->IsOffTheRecord() &&
-      template_url->starter_pack_id() == TemplateURLStarterPackData::kHistory) {
+      template_url->starter_pack_id() ==
+          template_url_starter_pack_data::kHistory) {
     return std::u16string();
   }
 

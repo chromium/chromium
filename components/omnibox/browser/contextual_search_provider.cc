@@ -441,15 +441,15 @@ bool ContextualSearchProvider::MaybeAddToolbeltMatch(
   };
   if (config.show_history_action) {
     check_and_add.operator()<StarterPackHistoryAction>(
-        TemplateURLStarterPackData::StarterPackID::kHistory);
+        template_url_starter_pack_data::StarterPackId::kHistory);
   }
   if (config.show_bookmarks_action) {
     check_and_add.operator()<StarterPackBookmarksAction>(
-        TemplateURLStarterPackData::StarterPackID::kBookmarks);
+        template_url_starter_pack_data::StarterPackId::kBookmarks);
   }
   if (config.show_tabs_action) {
     check_and_add.operator()<StarterPackTabsAction>(
-        TemplateURLStarterPackData::StarterPackID::kTabs);
+        template_url_starter_pack_data::StarterPackId::kTabs);
   }
   matches_.push_back(match);
   return true;

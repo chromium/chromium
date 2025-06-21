@@ -9,6 +9,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -613,7 +614,7 @@ TEST_F(OmniboxEditModelPopupTest,
        GetPopupAccessibilityLabelForCurrentSelection_KeywordMode) {
   // Populate the TemplateURLService with starter pack entries.
   std::vector<std::unique_ptr<TemplateURLData>> turls =
-      TemplateURLStarterPackData::GetStarterPackEngines();
+      template_url_starter_pack_data::GetStarterPackEngines();
   for (auto& starter_turl : turls) {
     controller()->client()->GetTemplateURLService()->Add(
         std::make_unique<TemplateURL>(std::move(*starter_turl)));

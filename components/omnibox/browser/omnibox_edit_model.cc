@@ -1966,14 +1966,14 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       // For featured search engines, we also want to add the shortcut name.
       if (AutocompleteMatch::IsFeaturedSearchType(match.type)) {
         int message_id = (turl && turl->starter_pack_id() ==
-                                      TemplateURLStarterPackData::kGemini)
+                                      template_url_starter_pack_data::kGemini)
                              ? IDS_ACC_ASK_KEYWORD_MODE_WITH_SHORTCUT
                              : IDS_ACC_KEYWORD_MODE_WITH_SHORTCUT;
         return l10n_util::GetStringFUTF16(message_id, match.keyword,
                                           replacement_string);
       }
       int message_id = (turl && turl->starter_pack_id() ==
-                                    TemplateURLStarterPackData::kGemini)
+                                    template_url_starter_pack_data::kGemini)
                            ? IDS_ACC_ASK_KEYWORD_MODE
                            : IDS_ACC_KEYWORD_MODE;
       return l10n_util::GetStringFUTF16(message_id, replacement_string);

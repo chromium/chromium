@@ -120,9 +120,10 @@ void TemplateURLTableModel::Reload() {
     // Don't include the expanded set of starter pack keywords if the expansion
     // feature flag is not enabled.
     if ((template_url->starter_pack_id() ==
-             TemplateURLStarterPackData::kGemini &&
+             template_url_starter_pack_data::kGemini &&
          !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
-        (template_url->starter_pack_id() == TemplateURLStarterPackData::kPage &&
+        (template_url->starter_pack_id() ==
+             template_url_starter_pack_data::kPage &&
          !omnibox_feature_configs::ContextualSearch::Get().starter_pack_page)) {
       continue;
     }

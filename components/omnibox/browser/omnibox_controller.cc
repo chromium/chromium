@@ -4,6 +4,9 @@
 
 #include "components/omnibox/browser/omnibox_controller.h"
 
+#include <memory>
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/utf_string_conversions.h"
@@ -167,7 +170,7 @@ bool OmniboxController::IsSuggestionHidden(
     const TemplateURL* turl =
         match.GetTemplateURL(client_->GetTemplateURLService(), false);
     if (turl &&
-        turl->starter_pack_id() == TemplateURLStarterPackData::kGemini) {
+        turl->starter_pack_id() == template_url_starter_pack_data::kGemini) {
       return true;
     }
   }

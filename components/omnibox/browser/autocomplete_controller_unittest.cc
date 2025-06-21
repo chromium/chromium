@@ -2165,7 +2165,8 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
   }
 
   // Populate template URL service with starter pack entries.
-  for (auto& turl_data : TemplateURLStarterPackData::GetStarterPackEngines()) {
+  for (auto& turl_data :
+       template_url_starter_pack_data::GetStarterPackEngines()) {
     controller_.template_url_service_->Add(
         std::make_unique<TemplateURL>(std::move(*turl_data)));
   }
@@ -2267,7 +2268,7 @@ TEST_F(AutocompleteControllerTest, ShouldRunProvider_StarterPack) {
 
   // Populate template URL service with starter pack entries.
   std::vector<std::unique_ptr<TemplateURLData>> turls =
-      TemplateURLStarterPackData::GetStarterPackEngines();
+      template_url_starter_pack_data::GetStarterPackEngines();
   for (auto& turl : turls) {
     controller_.template_url_service_->Add(
         std::make_unique<TemplateURL>(std::move(*turl)));
@@ -2677,7 +2678,8 @@ TEST_F(AutocompleteControllerTest,
   EXPECT_NE(nullptr, provider_client()->GetPedalProvider());
 
   // Populate template URL service with starter pack entries.
-  for (auto& turl_data : TemplateURLStarterPackData::GetStarterPackEngines()) {
+  for (auto& turl_data :
+       template_url_starter_pack_data::GetStarterPackEngines()) {
     controller_.template_url_service_->Add(
         std::make_unique<TemplateURL>(std::move(*turl_data)));
   }

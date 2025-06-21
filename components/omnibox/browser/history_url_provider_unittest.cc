@@ -13,7 +13,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -1422,7 +1424,7 @@ TEST_F(HistoryURLProviderTest, KeywordModeExtractUserInput) {
 
   // Populate template URL with starter pack entries
   std::vector<std::unique_ptr<TemplateURLData>> turls =
-      TemplateURLStarterPackData::GetStarterPackEngines();
+      template_url_starter_pack_data::GetStarterPackEngines();
   for (auto& turl : turls) {
     client_->GetTemplateURLService()->Add(
         std::make_unique<TemplateURL>(std::move(*turl)));

@@ -554,7 +554,7 @@ TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
 TEST_F(BookmarkProviderTest, KeywordModeExtractUserInput) {
   // Populate template URL with starter pack entries
   std::vector<std::unique_ptr<TemplateURLData>> turls =
-      TemplateURLStarterPackData::GetStarterPackEngines();
+      template_url_starter_pack_data::GetStarterPackEngines();
   for (auto& turl : turls) {
     provider_client_->GetTemplateURLService()->Add(
         std::make_unique<TemplateURL>(std::move(*turl)));

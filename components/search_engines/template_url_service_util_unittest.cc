@@ -5,6 +5,8 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/files/scoped_temp_dir.h"
@@ -331,7 +333,7 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
                                              os_crypt_.get());
     size_t keyword_engines_count =
         template_urls.size() -
-        TemplateURLStarterPackData::GetStarterPackEngines().size();
+        template_url_starter_pack_data::GetStarterPackEngines().size();
 
     return {
         .data_version = resource_metadata.builtin_keyword_data_version,

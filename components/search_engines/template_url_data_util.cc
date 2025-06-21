@@ -4,8 +4,10 @@
 
 #include "components/search_engines/template_url_data_util.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -504,7 +506,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
 }
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromStarterPackEngine(
-    const TemplateURLStarterPackData::StarterPackEngine& engine) {
+    const template_url_starter_pack_data::StarterPackEngine& engine) {
   auto turl = std::make_unique<TemplateURLData>();
   turl->SetShortName(l10n_util::GetStringUTF16(engine.name_message_id));
   turl->SetKeyword(u"@" + l10n_util::GetStringUTF16(engine.keyword_message_id));

@@ -71,20 +71,20 @@ constexpr int kIphRelevance = 5000;
 
 // Returns relevance for starter pack suggestions.
 int StarterPackRelevance(
-    TemplateURLStarterPackData::StarterPackID starter_pack_id) {
+    template_url_starter_pack_data::StarterPackId starter_pack_id) {
   // TODO(crbug.com/421415393) 1460 reserved for ai mode starter pack.
   switch (starter_pack_id) {
-    case TemplateURLStarterPackData::StarterPackID::kGemini:
+    case template_url_starter_pack_data::StarterPackId::kGemini:
       return 1459;
-    case TemplateURLStarterPackData::StarterPackID::kHistory:
+    case template_url_starter_pack_data::StarterPackId::kHistory:
       return 1458;
-    case TemplateURLStarterPackData::StarterPackID::kBookmarks:
+    case template_url_starter_pack_data::StarterPackId::kBookmarks:
       return 1457;
-    case TemplateURLStarterPackData::StarterPackID::kPage:
+    case template_url_starter_pack_data::StarterPackId::kPage:
       return 1456;
-    case TemplateURLStarterPackData::StarterPackID::kTabs:
+    case template_url_starter_pack_data::StarterPackId::kTabs:
       return 1455;
-    case TemplateURLStarterPackData::StarterPackID::kMaxStarterPackID:
+    case template_url_starter_pack_data::StarterPackId::kMaxStarterPackId:
       break;
   }
   // Can occur when syncing between different chrome versions.
@@ -94,7 +94,8 @@ int StarterPackRelevance(
 // Returns description for starter pack suggestions.
 std::u16string StarterPackDescription(const AutocompleteInput& input,
                                       const TemplateURL& template_url) {
-  if (template_url.starter_pack_id() == TemplateURLStarterPackData::kGemini) {
+  if (template_url.starter_pack_id() ==
+      template_url_starter_pack_data::kGemini) {
     return l10n_util::GetStringFUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT,
                                       template_url.keyword(),
                                       template_url.short_name());
@@ -199,8 +200,8 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
       AutocompleteInput::GetSubstitutingTemplateURLForInput(
           template_url_service_, &keyword_input);
   bool is_history_scope =
-      keyword_turl &&
-      keyword_turl->starter_pack_id() == TemplateURLStarterPackData::kHistory;
+      keyword_turl && keyword_turl->starter_pack_id() ==
+                          template_url_starter_pack_data::kHistory;
 
   if (is_history_scope) {
     if (ShouldShowHistoryEmbeddingsDisclaimerIphMatch()) {
@@ -290,16 +291,16 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
         turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {
       // Don't add the expanded set of starter pack engines unless the feature
       // is enabled.
-      if ((turl->starter_pack_id() == TemplateURLStarterPackData::kGemini &&
+      if ((turl->starter_pack_id() == template_url_starter_pack_data::kGemini &&
            !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
-          (turl->starter_pack_id() == TemplateURLStarterPackData::kPage &&
+          (turl->starter_pack_id() == template_url_starter_pack_data::kPage &&
            !omnibox_feature_configs::ContextualSearch::Get()
                 .starter_pack_page)) {
         continue;
       }
       // The history starter pack engine is disabled in incognito mode.
       if (client_->IsOffTheRecord() &&
-          turl->starter_pack_id() == TemplateURLStarterPackData::kHistory) {
+          turl->starter_pack_id() == template_url_starter_pack_data::kHistory) {
         continue;
       }
       AddStarterPackMatch(*turl, input);
@@ -326,12 +327,12 @@ void FeaturedSearchProvider::AddStarterPackMatch(
   AutocompleteMatch match(
       this,
       StarterPackRelevance(
-          static_cast<TemplateURLStarterPackData::StarterPackID>(
+          static_cast<template_url_starter_pack_data::StarterPackId>(
               template_url.starter_pack_id())),
       false, AutocompleteMatchType::STARTER_PACK);
 
   const std::u16string destination_url =
-      TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(
+      template_url_starter_pack_data::GetDestinationUrlForStarterPackId(
           template_url.starter_pack_id());
   match.fill_into_edit = template_url.keyword();
   if (match.fill_into_edit.starts_with(input.text())) {
@@ -445,7 +446,7 @@ bool FeaturedSearchProvider::ShouldShowGeminiIPHMatch() const {
   // The @gemini IPH should no longer be shown once a user has successfully
   // used @gemini.
   TemplateURL* gemini_turl = template_url_service_->FindStarterPackTemplateURL(
-      TemplateURLStarterPackData::kGemini);
+      template_url_starter_pack_data::kGemini);
   if (gemini_turl && gemini_turl->usage_count() > 0) {
     return false;
   }

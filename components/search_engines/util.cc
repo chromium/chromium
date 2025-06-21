@@ -59,7 +59,7 @@ WDKeywordsResult::Metadata ComputeMergeEnginesRequirements(
   }
 
   const int starter_pack_data_version =
-      TemplateURLStarterPackData::GetDataVersion();
+      template_url_starter_pack_data::GetDataVersion();
   if (keywords_metadata.starter_pack_version < starter_pack_data_version) {
     out_metadata.starter_pack_version = starter_pack_data_version;
   }
@@ -384,7 +384,7 @@ void MergeEnginesFromStarterPackData(
   DCHECK(template_urls);
 
   std::vector<std::unique_ptr<TemplateURLData>> starter_pack_urls =
-      TemplateURLStarterPackData::GetStarterPackEngines();
+      template_url_starter_pack_data::GetStarterPackEngines();
 
   ActionsFromCurrentData actions(CreateActionsFromCurrentStarterPackData(
       &starter_pack_urls, *template_urls, merge_option));
@@ -562,7 +562,7 @@ void GetSearchProvidersUsingLoadedEngines(
   if (required_metadata.HasStarterPackData()) {
     bool overwrite_user_edits =
         (in_out_keywords_metadata.starter_pack_version <
-         TemplateURLStarterPackData::GetFirstCompatibleDataVersion());
+         template_url_starter_pack_data::GetFirstCompatibleDataVersion());
     MergeEnginesFromStarterPackData(
         service, template_urls, default_search_provider, removed_keyword_guids,
         (overwrite_user_edits ? TemplateURLMergeOption::kOverwriteUserEdits

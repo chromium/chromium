@@ -112,7 +112,7 @@ OmniboxActionId StarterPackBookmarksAction::ActionId() const {
 
 void StarterPackBookmarksAction::Execute(ExecutionContext& context) const {
   context.enter_starter_pack_id_ =
-      TemplateURLStarterPackData::StarterPackID::kBookmarks;
+      template_url_starter_pack_data::StarterPackId::kBookmarks;
 }
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
@@ -139,7 +139,7 @@ OmniboxActionId StarterPackHistoryAction::ActionId() const {
 
 void StarterPackHistoryAction::Execute(ExecutionContext& context) const {
   context.enter_starter_pack_id_ =
-      TemplateURLStarterPackData::StarterPackID::kHistory;
+      template_url_starter_pack_data::StarterPackId::kHistory;
 }
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
@@ -166,7 +166,7 @@ OmniboxActionId StarterPackTabsAction::ActionId() const {
 
 void StarterPackTabsAction::Execute(ExecutionContext& context) const {
   context.enter_starter_pack_id_ =
-      TemplateURLStarterPackData::StarterPackID::kTabs;
+      template_url_starter_pack_data::StarterPackId::kTabs;
 }
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)

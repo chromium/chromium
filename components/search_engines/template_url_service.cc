@@ -1464,7 +1464,7 @@ void TemplateURLService::RepairStarterPackEngines() {
   Scoper scoper(this);
 
   std::vector<std::unique_ptr<TemplateURLData>> starter_pack_engines =
-      TemplateURLStarterPackData::GetStarterPackEngines();
+      template_url_starter_pack_data::GetStarterPackEngines();
   DCHECK(!starter_pack_engines.empty());
   ActionsFromCurrentData actions(CreateActionsFromCurrentStarterPackData(
       &starter_pack_engines, template_urls_));
@@ -2360,7 +2360,7 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
   // might happen occasionally when the starter pack gets new entries that are
   // not yet supported in this version of Chrome.
   if (specifics.starter_pack_id() >=
-      TemplateURLStarterPackData::kMaxStarterPackID) {
+      template_url_starter_pack_data::kMaxStarterPackId) {
     return nullptr;
   }
 

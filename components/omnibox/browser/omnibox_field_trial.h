@@ -722,7 +722,7 @@ extern const base::FeatureParam<int>
 // DB or TemplateURLService's copy of the URL.
 extern const base::FeatureParam<std::string> kGeminiUrlOverride;
 
-// Whether the expansion pack (the StarterPackID::kGemini keyword/engine) for
+// Whether the expansion pack (the `StarterPackId::kGemini` keyword/engine) for
 // the site search starter pack is enabled.
 bool IsStarterPackExpansionEnabled();
 

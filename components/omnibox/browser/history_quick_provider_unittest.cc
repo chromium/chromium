@@ -924,7 +924,7 @@ TEST_F(HistoryQuickProviderTest, CorrectAutocompleteWithTrailingSlash) {
 TEST_F(HistoryQuickProviderTest, KeywordModeExtractUserInput) {
   // Populate template URL with starter pack entries
   std::vector<std::unique_ptr<TemplateURLData>> turls =
-      TemplateURLStarterPackData::GetStarterPackEngines();
+      template_url_starter_pack_data::GetStarterPackEngines();
   for (auto& turl : turls) {
     client().GetTemplateURLService()->Add(
         std::make_unique<TemplateURL>(std::move(*turl)));

@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
   std::vector<std::unique_ptr<TemplateURLData>> prepopulate_urls =
       prepopulate_data_resolver->GetPrepopulatedEngines();
   std::vector<std::unique_ptr<TemplateURLData>> starter_pack_urls =
-      TemplateURLStarterPackData::GetStarterPackEngines();
+      template_url_starter_pack_data::GetStarterPackEngines();
 
   EXPECT_EQ(prepopulate_urls.size() + starter_pack_urls.size(),
             all_urls.size());
