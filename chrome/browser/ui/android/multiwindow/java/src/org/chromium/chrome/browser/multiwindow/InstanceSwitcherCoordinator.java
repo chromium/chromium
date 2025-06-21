@@ -459,9 +459,10 @@ public class InstanceSwitcherCoordinator {
             }
         }
         assumeNonNull(mDialog);
-
         // Disable positive button as all items are now unselected.
         mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
+
+        mSelectedItem = null;
     }
 
     void dismissDialog(@DialogDismissalCause int cause) {

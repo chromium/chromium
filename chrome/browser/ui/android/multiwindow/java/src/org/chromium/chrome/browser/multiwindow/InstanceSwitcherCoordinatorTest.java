@@ -172,6 +172,16 @@ public class InstanceSwitcherCoordinatorTest {
                 .inRoot(isDialog())
                 .perform(actionOnItemAtPosition(1, click()));
 
+        // Switch to the the inactive instance tab, this should deselect the item.
+        onView(allOf(withText("Inactive (0)"), isDescendantOfA(withId(R.id.tabs))))
+                .perform(click());
+
+        // Switch back to the active instance tab and select the same item.
+        onView(allOf(withText("Active (3)"), isDescendantOfA(withId(R.id.tabs)))).perform(click());
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(1, click()));
+
         // Verify "Open" button is now enabled and open the selected instance.
         onView(allOf(withId(R.id.positive_button), withText(R.string.open)))
                 .inRoot(isDialog())
