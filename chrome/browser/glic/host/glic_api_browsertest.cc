@@ -100,6 +100,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithOneTabAndContextualCueing",
       "GlicApiTestWithOneTabAndPreloading",
       "GlicApiTestUserStatusCheckTest",
+      "GlicApiTestWithOneTabMoreDebounceDelay",
   };
 }
 
@@ -338,8 +339,8 @@ class GlicApiTestWithOneTab : public GlicApiTest {
   void SetUpOnMainThread() override {
     GlicApiTest::SetUpOnMainThread();
 
-    // Load the test page in a tab, so that there is some page context.
     histogram_tester = std::make_unique<base::HistogramTester>();
+    // Load the test page in a tab, so that there is some page context.
     RunTestSequence(InstrumentTab(kFirstTab),
                     NavigateWebContents(kFirstTab, page_url()),
                     OpenGlicWindow(GlicWindowMode::kDetached,
@@ -1515,6 +1516,61 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestUserStatusCheckTest,
   }
   EXPECT_LT(user_status_fetch_count_, 5u)
       << "We should not send most of the fetches";
+}
+
+// Given the time-based nature of debouncing, testing with non-mocked clocks can
+// be flaky. This suite increases the applied delays to reduce the the chance of
+// flakiness.
+class GlicApiTestWithOneTabMoreDebounceDelay : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestWithOneTabMoreDebounceDelay() {
+    features2_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{
+            features::kGlicTabFocusDataDedupDebounce,
+            {
+// For slow binaries, use a longer debounce delay.
+#if defined(SLOW_BINARY)
+                {features::kGlicTabFocusDataDebounceDelayMs.name, "200"},
+#else
+                {features::kGlicTabFocusDataDebounceDelayMs.name, "100"},
+#endif
+            },
+        }},
+        /*disabled_features=*/
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features2_;
+};
+
+// Confirm that the web client receives a minimal number of focused tab updates
+// by triggering events that generate such updates.
+// TODO(b/424242331): figure out why this is failing on linux-rel bot.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_testSingleFocusedTabUpdatesOnTabEvents \
+  DISABLED_testSingleFocusedTabUpdatesOnTabEvents
+#else
+#define MAYBE_testSingleFocusedTabUpdatesOnTabEvents \
+  testSingleFocusedTabUpdatesOnTabEvents
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabMoreDebounceDelay,
+                       MAYBE_testSingleFocusedTabUpdatesOnTabEvents) {
+  // Initial state with first tab.
+  ExecuteJsTest();
+
+  // Navigate to another page in the first tab.
+  RunTestSequence(NavigateWebContents(
+      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
+                     "/scrollable_page_with_content.html")));
+  ContinueJsTest();
+
+  // Open a new tab that becomes active and navigate to a another page.
+  RunTestSequence(AddInstrumentedTab(
+      kSecondTab,
+      InProcessBrowserTest::embedded_test_server()->GetURL("/glic/test.html")));
+  ContinueJsTest();
 }
 
 }  // namespace

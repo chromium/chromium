@@ -221,6 +221,7 @@ source_set("unit_tests") {
     "glic_enabling_unittest.cc",
     "glic_metrics_unittest.cc",
     "host/context/glic_screenshot_capturer_unittest.cc",
+    "host/context/glic_tab_data_unittest.cc",
     "host/glic_cookie_synchronizer_unittest.cc",
     "widget/local_hotkey_manager_unittest.cc",
   ]

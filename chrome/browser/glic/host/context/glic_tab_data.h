@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
+class SkBitmap;
 namespace glic {
 
 // TODO: Detect changes to windowID.
@@ -116,6 +117,12 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents);
 // Populates and returns a FocusedTabDataPtr from a given FocusedTabData.
 glic::mojom::FocusedTabDataPtr CreateFocusedTabData(
     const FocusedTabData& focused_tab_data);
+
+// Checks if two SkBitmap images -- used for favicons -- are visually the same.
+// This is not a highly optimized comparison but should be good enough for
+// comparing (small) favicon images.
+bool FaviconEquals(const ::SkBitmap& a, const ::SkBitmap& b);
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_TAB_DATA_H_

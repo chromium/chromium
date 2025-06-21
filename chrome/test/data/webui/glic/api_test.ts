@@ -7,7 +7,7 @@
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
 import {ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, ScrollToError, Subscriber} from '/glic/glic_api/glic_api.js';
 import {ObservableValue} from '/glic/observable.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
@@ -33,7 +33,9 @@ class SequencedSubscriber<T> {
     this.subscriber = observable.subscribe(this.change.bind(this));
   }
   next(): Promise<T> {
-    return this.getSignal(this.readIndex++).promise;
+    // Wrapping the returned value with `waitFor` improves failure logs
+    // on timeout.
+    return waitFor(this.getSignal(this.readIndex++).promise);
   }
   isEmpty(): boolean {
     return this.readIndex === this.writeIndex;
@@ -338,7 +340,8 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testGetFocusedTabStateV2() {
     assertTrue(!!this.host.getFocusedTabStateV2);
-    const sequence = observeSequence(this.host.getFocusedTabStateV2());
+    const sequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     const focus = await sequence.next();
     assertTrue(!!focus.hasFocus);
     assertTrue(
@@ -351,7 +354,8 @@ class ApiTests extends ApiTestFixtureBase {
   async testGetFocusedTabStateV2WithNavigation() {
     // Initial state.
     assertTrue(!!this.host.getFocusedTabStateV2);
-    const sequence = observeSequence(this.host.getFocusedTabStateV2());
+    const sequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     const focus = await sequence.next();
     assertTrue(!!focus.hasFocus);
     assertTrue(
@@ -394,7 +398,8 @@ class ApiTests extends ApiTestFixtureBase {
     // Initial state.
     assertTrue(!!this.host.getFocusedTabStateV2);
     await this.closePanelAndWaitUntilInactive();
-    const sequence = observeSequence(this.host.getFocusedTabStateV2());
+    const sequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     const focus = await sequence.next();
     assertTrue(!!focus.hasFocus);
     assertTrue(
@@ -437,9 +442,60 @@ class ApiTests extends ApiTestFixtureBase {
     assertFalse(!!focus2.hasNoFocus);
   }
 
+  async testSingleFocusedTabUpdatesOnTabEvents() {
+    assertTrue(!!this.host.getFocusedTabStateV2);
+    const sequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
+    // Check events from first tab.
+    {
+      const focus = await sequence.next();
+      assertTrue(
+          !!focus.hasFocus,
+          `#1: should have a focused tab; FocusedTabData=${
+              JSON.stringify(focus)}`);
+      assertTrue(
+          !!focus.hasFocus?.tabData.url.endsWith('glic/test.html'),
+          `#1: Unexpected URL; FocusedTabData=${JSON.stringify(focus)}`);
+      assertTrue(
+          sequence.isEmpty(), '#1: Spurious updates after first tab opened');
+    }
+
+    // After a navigation occurs in the first tab.
+    {
+      await this.advanceToNextStep();
+      const focus = await sequence.next();
+      assertTrue(
+          !!focus.hasFocus,
+          `#2: should have a focused tab; FocusedTabData=${
+              JSON.stringify(focus)}`);
+      assertTrue(
+          !!focus.hasFocus?.tabData.url.endsWith(
+              'scrollable_page_with_content.html'),
+          `#2: Unexpected URL; FocusedTabData=${JSON.stringify(focus)}`);
+      assertTrue(
+          sequence.isEmpty(), '#2: Spurious updates after first tab navigated');
+    }
+
+    // A new tab is opened and navigated.
+    {
+      await this.advanceToNextStep();
+      const focus = await sequence.next();
+      assertTrue(
+          !!focus.hasFocus,
+          `#3: should have a focused tab; FocusedTabData=${
+              JSON.stringify(focus)}`);
+      assertTrue(
+          !!focus.hasFocus?.tabData.url.endsWith('glic/test.html'),
+          `#3: Unexpected URL; FocusedTabData=${JSON.stringify(focus)}`);
+      assertTrue(
+          sequence.isEmpty(), '#3: Spurious updates after a new tab opened');
+    }
+  }
+
   async testGetFocusedTabStateV2BrowserClosed() {
     assertTrue(!!this.host.getFocusedTabStateV2);
-    const sequence = observeSequence(this.host.getFocusedTabStateV2());
+    const sequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     // Ignore the initial focus.
     await sequence.next();
     const focus = await sequence.next();
@@ -954,7 +1010,7 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     // Initial state.
     assertTrue(!!this.host.getFocusedTabStateV2);
     const focusedTabStateV2Sequence =
-        observeSequence(this.host.getFocusedTabStateV2());
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     let focusedTabState = await focusedTabStateV2Sequence.next();
     assertTrue(!!focusedTabState.hasNoFocus);
     const tabStatePromise = focusedTabStateV2Sequence.next();

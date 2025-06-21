@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_GLIC_PAGE_HANDLER_H_
 #define CHROME_BROWSER_GLIC_HOST_GLIC_PAGE_HANDLER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/callback_list.h"
