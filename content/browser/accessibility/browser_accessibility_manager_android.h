@@ -5,10 +5,10 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MANAGER_ANDROID_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MANAGER_ANDROID_H_
 
-#include <unordered_set>
 #include <utility>
 
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 
 namespace ui {
@@ -78,7 +78,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
     allow_image_descriptions_for_testing_ = is_allowed;
   }
 
-  const std::unordered_set<int32_t>& nodes_already_cleared_for_test() const {
+  const absl::flat_hash_set<int32_t>& nodes_already_cleared_for_test() const {
     return nodes_already_cleared_;
   }
 
@@ -192,10 +192,9 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // tree dumps for nodes without creating web_contents_accessibility_android.
   bool allow_image_descriptions_for_testing_ = false;
 
-  // An unordered_set of |unique_id| values for nodes cleared from the cache
+  // A set of |unique_id| values for nodes cleared from the cache
   // with each atomic update to prevent superfluous cache clear calls.
-  std::unordered_set<int32_t> nodes_already_cleared_ =
-      std::unordered_set<int32_t>();
+  absl::flat_hash_set<int32_t> nodes_already_cleared_;
 };
 
 }  // namespace content

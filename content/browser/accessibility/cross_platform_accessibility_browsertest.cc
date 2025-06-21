@@ -7,10 +7,10 @@
 
 #include <optional>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,6 +33,7 @@
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -75,8 +76,9 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
 
   // Make sure each node in the tree has a unique id.
   void RecursiveAssertUniqueIds(const ui::AXNode* node,
-                                std::unordered_set<int>* ids) const {
-    ASSERT_TRUE(ids->find(node->id()) == ids->end());
+                                absl::flat_hash_set<int>* ids) const {
+    ASSERT_TRUE(ids);
+    ASSERT_FALSE(base::Contains(*ids, node->id()));
     ids->insert(node->id());
     for (const ui::AXNode* child : node->children()) {
       RecursiveAssertUniqueIds(child, ids);
@@ -444,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   const ui::AXTree& tree = GetAXTree();
   const ui::AXNode* root = tree.root();
-  std::unordered_set<int> ids;
+  absl::flat_hash_set<int> ids;
   RecursiveAssertUniqueIds(root, &ids);
 }
 
@@ -1618,7 +1620,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   const ui::AXTree& tree = GetAXTree();
   const ui::AXNode* root = tree.root();
-  std::unordered_set<int> ids;
+  absl::flat_hash_set<int> ids;
   RecursiveAssertUniqueIds(root, &ids);
 }
 
