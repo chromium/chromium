@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
@@ -187,8 +188,17 @@ features::SoftNavigationHeuristicsMode GetPaintAttributionMode(
     return features::kSoftNavigationHeuristicsModeParam.Get();
   }
   // Without the feature flag enabled, query the runtime enabled feature
-  // directly. This allows the finch experiment to control the feature; it
-  // also enables the feature for tests (since it's 'experimental').
+  // directly. This allows the finch experiments to control the features; it
+  // also enables the feature for tests.
+  //
+  // But since the paint attribution modes are mutually exclusive and have
+  // different flags, we need to pick an order. Since the pre-paint-based
+  // attribution mode needs to be enabled intentionally from the command line or
+  // about:flags (it has no REF status), pick that first.
+  if (RuntimeEnabledFeatures::
+          SoftNavigationDetectionPrePaintBasedAttributionEnabled(context)) {
+    return features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution;
+  }
   if (RuntimeEnabledFeatures::
           SoftNavigationDetectionAdvancedPaintAttributionEnabled(context)) {
     return features::SoftNavigationHeuristicsMode::kAdvancedPaintAttribution;
@@ -220,6 +230,10 @@ SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow* window)
           scheduler::TaskAttributionTracker::From(window->GetIsolate())) {
   LocalFrame* frame = window->GetFrame();
   CHECK(frame && frame->View());
+  if (IsPrePaintBasedAttributionEnabled()) {
+    paint_attribution_tracker_ =
+        MakeGarbageCollected<SoftNavigationPaintAttributionTracker>();
+  }
 }
 
 SoftNavigationHeuristics* SoftNavigationHeuristics::CreateIfNeeded(
@@ -369,7 +383,13 @@ bool SoftNavigationHeuristics::ModifiedDOM(Node* node) {
   if (!context) {
     return false;
   }
-  context->AddModifiedNode(node);
+
+  if (IsPrePaintBasedAttributionEnabled()) {
+    CHECK(paint_attribution_tracker_);
+    paint_attribution_tracker_->MarkNodeAsDirectlyModified(node, context);
+  } else {
+    context->AddModifiedNode(node);
+  }
 
   EmitSoftNavigationEntryIfAllConditionsMet(context);
   return true;
@@ -432,10 +452,11 @@ SoftNavigationHeuristics::MaybeGetSoftNavigationContextForTiming(Node* node) {
       !context_for_current_url_->IsRecordingLargestContentfulPaint()) {
     return nullptr;
   }
-  if (context_for_current_url_->IsNeededForTiming(node)) {
-    return context_for_current_url_;
-  }
-  return nullptr;
+  bool attributable = IsPrePaintBasedAttributionEnabled()
+                          ? paint_attribution_tracker_->IsAttributable(
+                                node, context_for_current_url_)
+                          : context_for_current_url_->IsNeededForTiming(node);
+  return attributable ? context_for_current_url_ : nullptr;
 }
 
 void SoftNavigationHeuristics::OnPaintFinished() {
@@ -521,13 +542,14 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
 void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
   visitor->Trace(active_interaction_context_);
   visitor->Trace(context_for_current_url_);
+  visitor->Trace(window_);
+  visitor->Trace(paint_attribution_tracker_);
   // Register a custom weak callback, which runs after processing weakness for
   // the container. This allows us to observe the collection becoming empty
   // without needing to observe individual element disposal.
   visitor->RegisterWeakCallbackMethod<
       SoftNavigationHeuristics,
       &SoftNavigationHeuristics::ProcessCustomWeakness>(this);
-  visitor->Trace(window_);
 }
 
 // This is invoked when executing a callback with an active `EventScope`,

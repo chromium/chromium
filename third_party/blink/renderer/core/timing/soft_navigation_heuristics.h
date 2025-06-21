@@ -25,6 +25,7 @@ class TaskAttributionInfo;
 
 class ScriptState;
 class SoftNavigationContext;
+class SoftNavigationPaintAttributionTracker;
 
 // This class contains the logic for calculating Single-Page-App soft navigation
 // heuristics. See https://github.com/WICG/soft-navigations
@@ -131,6 +132,11 @@ class CORE_EXPORT SoftNavigationHeuristics
   // soft navigation tracking, otherwise it returns nullopt.
   std::optional<EventScope> MaybeCreateEventScopeForEvent(const Event&);
 
+  SoftNavigationPaintAttributionTracker* GetPaintAttributionTracker() {
+    CHECK_EQ(IsPrePaintBasedAttributionEnabled(), !!paint_attribution_tracker_);
+    return paint_attribution_tracker_.Get();
+  }
+
   // This method is called during the weakness processing stage of garbage
   // collection to remove items from `potential_soft_navigations_`.
   void ProcessCustomWeakness(const LivenessBroker& info);
@@ -153,6 +159,11 @@ class CORE_EXPORT SoftNavigationHeuristics
   EventScope CreateEventScope(EventScope::Type type, ScriptState*);
   uint64_t CalculateRequiredPaintArea() const;
   uint64_t CalculateViewportArea() const;
+
+  bool IsPrePaintBasedAttributionEnabled() const {
+    return paint_attribution_mode_ ==
+           features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution;
+  }
 
   Member<LocalDOMWindow> window_;
 
@@ -188,6 +199,10 @@ class CORE_EXPORT SoftNavigationHeuristics
   // paints, or it might have already been emitted, but we still want to
   // continue measuring paints for a while.
   Member<SoftNavigationContext> context_for_current_url_;
+
+  // Used to map DOM modifications to `SoftNavigationContext`s for paint
+  // attribution. Only set when `IsPrePaintBasedAttributionEnabled()` is true.
+  Member<SoftNavigationPaintAttributionTracker> paint_attribution_tracker_;
 
   uint32_t soft_navigation_count_ = 0;
   bool has_active_event_scope_ = false;

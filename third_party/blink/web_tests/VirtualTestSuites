@@ -4247,6 +4247,18 @@
     "expires": "Jul 1, 2025"
   },
   {
+    "prefix": "soft-navigation-heuristics-pre-paint-attribution",
+    "owners": ["shaseley@google.com", "mmocny@google.com"],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/soft-navigation-heuristics/"
+    ],
+    "args": [
+      "--enable-features=SoftNavigationDetectionPrePaintBasedAttribution"
+    ],
+    "expires": "Dec 1, 2025"
+  },
+  {
     "prefix": "speculation-rules-prerender-target-hint",
     "platforms": [
       "Linux",

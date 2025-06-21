@@ -1038,13 +1038,19 @@ const FeatureEntry::FeatureParam kSoftNavigationHeuristicsBasic[] = {
 const FeatureEntry::FeatureParam
     kSoftNavigationHeuristicsAdvancedPaintAttribution[] = {
         {"mode", "advanced_paint_attribution"}};
+const FeatureEntry::FeatureParam
+    kSoftNavigationHeuristicsPrePaintBasedAttribution[] = {
+        {"mode", "pre_paint_based_attriubution"}};
 
 const FeatureEntry::FeatureVariation kSoftNavigationHeuristicsVariations[] = {
     {"Basic (default)", kSoftNavigationHeuristicsBasic,
      std::size(kSoftNavigationHeuristicsBasic), nullptr},
-    {"Advanced Paint Attribution",
+    {"Advanced Paint Attribution (Lazy Uncached Paint Walk)",
      kSoftNavigationHeuristicsAdvancedPaintAttribution,
-     std::size(kSoftNavigationHeuristicsAdvancedPaintAttribution), nullptr}};
+     std::size(kSoftNavigationHeuristicsAdvancedPaintAttribution), nullptr},
+    {"Advanced Paint Attribution (Eager Cached Pre-Paint Walk)",
+     kSoftNavigationHeuristicsPrePaintBasedAttribution,
+     std::size(kSoftNavigationHeuristicsPrePaintBasedAttribution), nullptr}};
 
 const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},

@@ -13,6 +13,8 @@
 #include "cc/base/features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -37,6 +39,9 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -3584,5 +3589,368 @@ TEST_F(DisplayLockContextTest, ShouldForceUnlockObjectWithFallbackContent) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(target->GetDisplayLockContext()->IsLocked());
 }
+
+class SoftNavigationDisplayLockContextTest
+    : public DisplayLockContextTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  SoftNavigationDisplayLockContextTest() {
+    if (IsFeatureEnabled()) {
+      feature_list_.InitWithFeatures(
+          {features::kSoftNavigationDetectionPrePaintBasedAttribution}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {features::kSoftNavigationDetectionPrePaintBasedAttribution});
+    }
+    WebRuntimeFeatures::UpdateStatusFromBaseFeatures();
+  }
+
+  ~SoftNavigationDisplayLockContextTest() override = default;
+
+  bool IsFeatureEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(SoftNavigationDisplayLockContextTest, AncestorSoftNavigationContext) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    #locked {
+      width: 100px;
+      height: 100px;
+      contain: style layout paint;
+    }
+    </style>
+    <div id="ancestor">
+      <div id="target">
+        <div id="descendant">
+          <div id="locked">
+            <div id="lockedchild">Content</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* ancestor_element =
+      GetDocument().getElementById(AtomicString("ancestor"));
+  auto* target_element = GetDocument().getElementById(AtomicString("target"));
+  auto* descendant_element =
+      GetDocument().getElementById(AtomicString("descendant"));
+  auto* locked_element = GetDocument().getElementById(AtomicString("locked"));
+  auto* lockedchild_element =
+      GetDocument().getElementById(AtomicString("lockedchild"));
+
+  LockElement(*locked_element, false);
+  EXPECT_TRUE(locked_element->GetDisplayLockContext()->IsLocked());
+
+  auto* ancestor_object = ancestor_element->GetLayoutObject();
+  auto* target_object = target_element->GetLayoutObject();
+  auto* descendant_object = descendant_element->GetLayoutObject();
+  auto* locked_object = locked_element->GetLayoutObject();
+  auto* lockedchild_object = lockedchild_element->GetLayoutObject();
+
+  EXPECT_FALSE(ancestor_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(lockedchild_object->SoftNavigationContextChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(target_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(descendant_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(locked_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(
+      lockedchild_object->DescendantBlockingWheelEventHandlerChanged());
+
+  EXPECT_TRUE(ancestor_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(target_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(descendant_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(locked_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(lockedchild_object->ShouldInheritSoftNavigationContext());
+
+  SoftNavigationContext* context = nullptr;
+  SoftNavigationPaintAttributionTracker* tracker = nullptr;
+
+  if (IsFeatureEnabled()) {
+    context = MakeGarbageCollected<SoftNavigationContext>(
+        *GetDocument().domWindow(),
+        features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution);
+    SoftNavigationHeuristics* heuristics =
+        GetDocument().domWindow()->GetSoftNavigationHeuristics();
+    ASSERT_TRUE(heuristics);
+    tracker = heuristics->GetPaintAttributionTracker();
+    ASSERT_TRUE(tracker);
+    tracker->MarkNodeAsDirectlyModified(target_element, context);
+  }
+
+  EXPECT_FALSE(ancestor_object->SoftNavigationContextChanged());
+  EXPECT_EQ(target_object->SoftNavigationContextChanged(), IsFeatureEnabled());
+  EXPECT_FALSE(descendant_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(lockedchild_object->SoftNavigationContextChanged());
+
+  EXPECT_EQ(ancestor_object->DescendantSoftNavigationContextChanged(),
+            IsFeatureEnabled());
+  EXPECT_FALSE(target_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(lockedchild_object->DescendantSoftNavigationContextChanged());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(lockedchild_object->SoftNavigationContextChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(lockedchild_object->DescendantSoftNavigationContextChanged());
+
+  EXPECT_TRUE(ancestor_object->ShouldInheritSoftNavigationContext());
+  EXPECT_EQ(target_object->ShouldInheritSoftNavigationContext(),
+            !IsFeatureEnabled());
+  EXPECT_TRUE(descendant_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(locked_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(lockedchild_object->ShouldInheritSoftNavigationContext());
+
+  if (IsFeatureEnabled()) {
+    EXPECT_FALSE(tracker->IsAttributable(lockedchild_element, context));
+  }
+
+  // Manually commit the lock so that we can verify which dirty bits get
+  // propagated.
+  CommitElement(*locked_element, false);
+  UnlockImmediate(locked_element->GetDisplayLockContext());
+
+  EXPECT_FALSE(ancestor_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->SoftNavigationContextChanged());
+  EXPECT_EQ(locked_object->SoftNavigationContextChanged(), IsFeatureEnabled());
+  EXPECT_FALSE(lockedchild_object->SoftNavigationContextChanged());
+
+  EXPECT_EQ(ancestor_object->DescendantSoftNavigationContextChanged(),
+            IsFeatureEnabled());
+  EXPECT_EQ(target_object->DescendantSoftNavigationContextChanged(),
+            IsFeatureEnabled());
+  EXPECT_EQ(descendant_object->DescendantSoftNavigationContextChanged(),
+            IsFeatureEnabled());
+  EXPECT_FALSE(locked_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(lockedchild_object->DescendantSoftNavigationContextChanged());
+
+  EXPECT_TRUE(ancestor_object->ShouldInheritSoftNavigationContext());
+  EXPECT_EQ(target_object->ShouldInheritSoftNavigationContext(),
+            !IsFeatureEnabled());
+  EXPECT_TRUE(descendant_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(locked_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(lockedchild_object->ShouldInheritSoftNavigationContext());
+
+  if (IsFeatureEnabled()) {
+    EXPECT_FALSE(tracker->IsAttributable(lockedchild_element, context));
+  }
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(lockedchild_object->SoftNavigationContextChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(lockedchild_object->DescendantSoftNavigationContextChanged());
+
+  EXPECT_TRUE(ancestor_object->ShouldInheritSoftNavigationContext());
+  EXPECT_EQ(target_object->ShouldInheritSoftNavigationContext(),
+            !IsFeatureEnabled());
+  EXPECT_TRUE(descendant_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(locked_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(lockedchild_object->ShouldInheritSoftNavigationContext());
+
+  if (IsFeatureEnabled()) {
+    EXPECT_TRUE(tracker->IsAttributable(lockedchild_element, context));
+  }
+}
+
+TEST_P(SoftNavigationDisplayLockContextTest, DescendantSoftNavigationContext) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    #locked {
+      width: 100px;
+      height: 100px;
+      contain: style layout paint;
+    }
+    </style>
+    <div id="ancestor">
+      <div id="descendant">
+        <div id="locked">
+          <div id="target">
+            <div id="content">Content</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* ancestor_element =
+      GetDocument().getElementById(AtomicString("ancestor"));
+  auto* descendant_element =
+      GetDocument().getElementById(AtomicString("descendant"));
+  auto* locked_element = GetDocument().getElementById(AtomicString("locked"));
+  auto* target_element = GetDocument().getElementById(AtomicString("target"));
+  auto* content_element = GetDocument().getElementById(AtomicString("content"));
+
+  LockElement(*locked_element, false);
+  EXPECT_TRUE(locked_element->GetDisplayLockContext()->IsLocked());
+
+  auto* ancestor_object = ancestor_element->GetLayoutObject();
+  auto* descendant_object = descendant_element->GetLayoutObject();
+  auto* locked_object = locked_element->GetLayoutObject();
+  auto* target_object = target_element->GetLayoutObject();
+  auto* content_object = content_element->GetLayoutObject();
+
+  EXPECT_FALSE(ancestor_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(content_object->SoftNavigationContextChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(content_object->DescendantSoftNavigationContextChanged());
+
+  EXPECT_TRUE(ancestor_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(descendant_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(locked_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(target_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(content_object->ShouldInheritSoftNavigationContext());
+
+  // The rest of this test relies on the feature being enabled since nothing
+  // updates the "changed" bit without it.
+  if (!IsFeatureEnabled()) {
+    return;
+  }
+
+  auto* context = MakeGarbageCollected<SoftNavigationContext>(
+      *GetDocument().domWindow(),
+      features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution);
+  SoftNavigationHeuristics* heuristics =
+      GetDocument().domWindow()->GetSoftNavigationHeuristics();
+  ASSERT_TRUE(heuristics);
+  SoftNavigationPaintAttributionTracker* tracker =
+      heuristics->GetPaintAttributionTracker();
+  ASSERT_TRUE(tracker);
+  tracker->MarkNodeAsDirectlyModified(target_element, context);
+
+  EXPECT_FALSE(ancestor_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->SoftNavigationContextChanged());
+  EXPECT_TRUE(target_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(content_object->SoftNavigationContextChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->DescendantSoftNavigationContextChanged());
+  EXPECT_TRUE(locked_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(content_object->DescendantSoftNavigationContextChanged());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->SoftNavigationContextChanged());
+  EXPECT_TRUE(target_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(content_object->SoftNavigationContextChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->DescendantSoftNavigationContextChanged());
+  EXPECT_TRUE(locked_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(content_object->DescendantSoftNavigationContextChanged());
+
+  EXPECT_TRUE(ancestor_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(descendant_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(locked_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(target_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(content_object->ShouldInheritSoftNavigationContext());
+  EXPECT_FALSE(tracker->IsAttributable(content_element, context));
+
+  // Do the same check again. For now, nothing is expected to change. However,
+  // when we separate self and child layout, then some flags would be different.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->SoftNavigationContextChanged());
+  EXPECT_TRUE(target_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(content_object->SoftNavigationContextChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->DescendantSoftNavigationContextChanged());
+  EXPECT_TRUE(locked_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(content_object->DescendantSoftNavigationContextChanged());
+
+  EXPECT_TRUE(ancestor_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(descendant_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(locked_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(target_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(content_object->ShouldInheritSoftNavigationContext());
+  EXPECT_FALSE(tracker->IsAttributable(content_element, context));
+
+  // Manually commit the lock so that we can verify which dirty bits get
+  // propagated.
+  CommitElement(*locked_element, false);
+  UnlockImmediate(locked_element->GetDisplayLockContext());
+
+  EXPECT_FALSE(ancestor_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->SoftNavigationContextChanged());
+  EXPECT_TRUE(locked_object->SoftNavigationContextChanged());
+  EXPECT_TRUE(target_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(content_object->SoftNavigationContextChanged());
+
+  EXPECT_TRUE(ancestor_object->DescendantSoftNavigationContextChanged());
+  EXPECT_TRUE(descendant_object->DescendantSoftNavigationContextChanged());
+  EXPECT_TRUE(locked_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(content_object->DescendantSoftNavigationContextChanged());
+
+  EXPECT_TRUE(ancestor_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(descendant_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(locked_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(target_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(content_object->ShouldInheritSoftNavigationContext());
+  EXPECT_FALSE(tracker->IsAttributable(content_element, context));
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->SoftNavigationContextChanged());
+  EXPECT_FALSE(content_object->SoftNavigationContextChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(descendant_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(locked_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(target_object->DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(content_object->DescendantSoftNavigationContextChanged());
+
+  EXPECT_TRUE(ancestor_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(descendant_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(locked_object->ShouldInheritSoftNavigationContext());
+  EXPECT_FALSE(target_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(content_object->ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(tracker->IsAttributable(content_element, context));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SoftNavigationDisplayLockContextTest,
+                         testing::Bool());
 
 }  // namespace blink

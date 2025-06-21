@@ -7,6 +7,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
@@ -16,6 +18,9 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
@@ -529,5 +534,118 @@ TEST_P(PrePaintTreeWalkTest, ScrollTranslationNodeForNonZeroScrollPosition) {
   ASSERT_EQ(gfx::PointF(), scrollable_area->ScrollPosition());
   EXPECT_TRUE(object->FirstFragment().PaintProperties()->ScrollTranslation());
 }
+
+class SoftNavigationPrePaintTreeWalkTest
+    : public RenderingTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  SoftNavigationPrePaintTreeWalkTest() {
+    if (IsFeatureEnabled()) {
+      feature_list_.InitWithFeatures(
+          {features::kSoftNavigationDetectionPrePaintBasedAttribution}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {features::kSoftNavigationDetectionPrePaintBasedAttribution});
+    }
+    WebRuntimeFeatures::UpdateStatusFromBaseFeatures();
+  }
+
+  ~SoftNavigationPrePaintTreeWalkTest() override = default;
+
+  bool IsFeatureEnabled() { return GetParam(); }
+
+ private:
+  void SetUp() override {
+    EnableCompositing();
+    RenderingTest::SetUp();
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(SoftNavigationPrePaintTreeWalkTest,
+       ShouldInheritSoftNavigationContextUpdate) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='ancestor' style='width: 100px; height: 100px;'>
+      <div id='target' style='width: 100px; height: 100px;'>
+        <div id='descendant' style='width: 100px; height: 100px;'>
+          <div id='content' style='width: 100px; height: 100px;'>
+            Content
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  auto& ancestor = *GetLayoutObjectByElementId("ancestor");
+  auto& target = *GetLayoutObjectByElementId("target");
+  auto& descendant = *GetLayoutObjectByElementId("descendant");
+  auto& content = *GetLayoutObjectByElementId("content");
+
+  EXPECT_FALSE(ancestor.SoftNavigationContextChanged());
+  EXPECT_FALSE(target.SoftNavigationContextChanged());
+  EXPECT_FALSE(descendant.SoftNavigationContextChanged());
+  EXPECT_FALSE(content.SoftNavigationContextChanged());
+
+  EXPECT_FALSE(ancestor.DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(target.DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(descendant.DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(content.DescendantSoftNavigationContextChanged());
+
+  EXPECT_TRUE(ancestor.ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(target.ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(descendant.ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(content.ShouldInheritSoftNavigationContext());
+
+  // If the feature is disable, just make sure all the "changed" bits get
+  // cleared so we don't do unnecessary tree walks.
+  if (!IsFeatureEnabled()) {
+    return;
+  }
+
+  auto* context = MakeGarbageCollected<SoftNavigationContext>(
+      *GetDocument().domWindow(),
+      features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution);
+  SoftNavigationHeuristics* heuristics =
+      GetDocument().domWindow()->GetSoftNavigationHeuristics();
+  ASSERT_TRUE(heuristics);
+  SoftNavigationPaintAttributionTracker* tracker =
+      heuristics->GetPaintAttributionTracker();
+  ASSERT_TRUE(tracker);
+  tracker->MarkNodeAsDirectlyModified(target.GetNode(), context);
+
+  EXPECT_FALSE(ancestor.SoftNavigationContextChanged());
+  EXPECT_TRUE(target.SoftNavigationContextChanged());
+  EXPECT_FALSE(descendant.SoftNavigationContextChanged());
+  EXPECT_FALSE(content.SoftNavigationContextChanged());
+
+  EXPECT_TRUE(ancestor.DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(target.DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(descendant.DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(content.DescendantSoftNavigationContextChanged());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor.SoftNavigationContextChanged());
+  EXPECT_FALSE(target.SoftNavigationContextChanged());
+  EXPECT_FALSE(descendant.SoftNavigationContextChanged());
+  EXPECT_FALSE(content.SoftNavigationContextChanged());
+
+  EXPECT_FALSE(ancestor.DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(target.DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(descendant.DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(content.DescendantSoftNavigationContextChanged());
+
+  EXPECT_TRUE(ancestor.ShouldInheritSoftNavigationContext());
+  EXPECT_FALSE(target.ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(descendant.ShouldInheritSoftNavigationContext());
+  EXPECT_TRUE(content.ShouldInheritSoftNavigationContext());
+
+  EXPECT_TRUE(tracker->IsAttributable(content.GetNode(), context));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SoftNavigationPrePaintTreeWalkTest,
+                         testing::Bool());
 
 }  // namespace blink

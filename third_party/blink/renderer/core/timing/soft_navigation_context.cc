@@ -25,19 +25,25 @@ SoftNavigationContext::SoftNavigationContext(
           DOMWindowPerformance::performance(window))) {}
 
 void SoftNavigationContext::AddModifiedNode(Node* node) {
-  auto add_result = modified_nodes_.insert(node);
-  if (add_result.is_new_entry) {
-    ++num_modified_dom_nodes_;
-    TRACE_EVENT_INSTANT(
-        "loading", "SoftNavigationContext::AddedModifiedNodeInAnimationFrame",
-        perfetto::Track::FromPointer(this), "context", this, "nodeId",
-        node->GetDomNodeId(), "nodeDebugName", node->DebugName(),
-        "domModificationsThisAnimationFrame",
-        num_modified_dom_nodes_ - num_modified_dom_nodes_last_animation_frame_);
+  if (paint_attribution_mode_ !=
+      features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution) {
+    auto add_result = modified_nodes_.insert(node);
+    if (!add_result.is_new_entry) {
+      return;
+    }
   }
+  ++num_modified_dom_nodes_;
+  TRACE_EVENT_INSTANT(
+      "loading", "SoftNavigationContext::AddedModifiedNodeInAnimationFrame",
+      perfetto::Track::FromPointer(this), "context", this, "nodeId",
+      node->GetDomNodeId(), "nodeDebugName", node->DebugName(),
+      "domModificationsThisAnimationFrame",
+      num_modified_dom_nodes_ - num_modified_dom_nodes_last_animation_frame_);
 }
 
 bool SoftNavigationContext::IsNeededForTiming(Node* node) {
+  CHECK_NE(paint_attribution_mode_,
+           features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution);
   if (!node) {
     return false;
   }
@@ -98,18 +104,21 @@ bool SoftNavigationContext::AddPaintedAreaInternal(Node* node,
     return false;
   }
 
-  DCHECK(IsNeededForTiming(node));
-
   uint64_t painted_area = rect.size().GetArea();
 
-  if (already_painted_modified_nodes_.Contains(node)) {
-    // We are sometimes observing paints for the same node.
-    // Until we fix first-contentful-paint-only observation, let's ignore these.
-    repainted_area_ += painted_area;
-    return false;
+  if (paint_attribution_mode_ !=
+      features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution) {
+    DCHECK(IsNeededForTiming(node));
+    if (already_painted_modified_nodes_.Contains(node)) {
+      // We are sometimes observing paints for the same node.
+      // Until we fix first-contentful-paint-only observation, let's ignore
+      // these.
+      repainted_area_ += painted_area;
+      return false;
+    }
+    already_painted_modified_nodes_.insert(node);
   }
 
-  already_painted_modified_nodes_.insert(node);
   painted_area_ += painted_area;
   TRACE_EVENT_INSTANT(
       "loading", "SoftNavigationContext::AttributablePaintInAnimationFrame",

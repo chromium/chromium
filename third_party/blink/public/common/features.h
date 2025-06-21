@@ -1685,6 +1685,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 enum class SoftNavigationHeuristicsMode : uint8_t {
   kBasic,
   kAdvancedPaintAttribution,
+  kPrePaintBasedAttribution,
 };
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     SoftNavigationHeuristicsMode,

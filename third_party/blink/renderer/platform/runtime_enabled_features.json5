@@ -4671,6 +4671,10 @@
       depends_on: ["SoftNavigationDetection"],
     },
     {
+      name: "SoftNavigationDetectionPrePaintBasedAttribution",
+      depends_on: ["SoftNavigationDetection"],
+    },
+    {
       name: "SoftNavigationHeuristics",
       status: "experimental",
       origin_trial_allows_third_party: true,

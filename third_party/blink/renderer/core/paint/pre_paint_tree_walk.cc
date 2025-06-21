@@ -35,6 +35,8 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 #include "third_party/blink/renderer/core/paint/pre_paint_disable_side_effects_scope.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -48,6 +50,15 @@ bool IsLinkHighlighted(const LayoutObject& object) {
 
 bool IsInFragmentationContext(const PhysicalBoxFragment* fragment) {
   return fragment && fragment->IsFragmentainerBox();
+}
+
+SoftNavigationPaintAttributionTracker*
+GetSoftNavigationPaintAttrubutionTrackerIfEnabled(LocalFrameView& frame_view) {
+  if (auto* heuristics =
+          frame_view.GetFrame().DomWindow()->GetSoftNavigationHeuristics()) {
+    return heuristics->GetPaintAttributionTracker();
+  }
+  return nullptr;
 }
 
 }  // anonymous namespace
@@ -134,6 +145,11 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view,
 
   // Block fragmentation doesn't cross frame boundaries.
   context.ResetFragmentation();
+
+  // Soft navigation tracking doesn't cross frame boundaries.
+  context.ResetSoftNavigationContext();
+  context.soft_navigation_paint_attribution_tracker =
+      GetSoftNavigationPaintAttrubutionTrackerIfEnabled(frame_view);
 
   if (context.tree_builder_context) {
     PaintPropertyTreeBuilder::SetupContextForFrame(
@@ -270,6 +286,63 @@ void PrePaintTreeWalk::InvalidatePaintForHitTesting(
   // invalidate the display item client.
 }
 
+void PrePaintTreeWalk::UpdateSoftNavigationContext(
+    const LayoutObject& object,
+    PrePaintTreeWalk::PrePaintTreeWalkContext& context) {
+  if (!context.soft_navigation_paint_attribution_tracker) {
+    return;
+  }
+
+  if (object.SoftNavigationContextChanged()) {
+    context.soft_navigation_context_changed = true;
+  }
+
+  // For text nodes, text paint timing is aggregated up to the element that
+  // determines the containing block of the node
+  // (https://www.w3.org/TR/paint-timing/#sec-modifications-dom). We push such
+  // candidates down while walking the tree so that the soft navigations layer
+  // can associated text nodes with the containing box without walking up.
+  //
+  // TODO(crbug.com/423670827): Consider moving this check to
+  // TextPaintTimingDetector.
+  if (auto* node = object.GetNode(); node && object.IsBox()) {
+    context.soft_navigation_text_aggregation_node = node;
+  }
+
+  // This node is either a new "container root" (a node having a different
+  // `SoftNavigationContext` than its parent), or will inherit the context of
+  // the container root being propagated. This is determined by
+  // `SoftNavigationPaintAttributionTracker::UpdateOnPrePaint()`, the result of
+  // which is cached in the `LayoutObject`'s ShouldInheritSoftNavigationContext
+  // bit, so that subsequent tree walks can quickly determine which node should
+  // be propagated to children.
+  if (context.soft_navigation_context_changed) {
+    using PrePaintUpdateResult =
+        SoftNavigationPaintAttributionTracker::PrePaintUpdateResult;
+    PrePaintUpdateResult result =
+        context.soft_navigation_paint_attribution_tracker->UpdateOnPrePaint(
+            object, context.soft_navigation_context_container_root,
+            context.soft_navigation_text_aggregation_node);
+    switch (result) {
+      case PrePaintUpdateResult::kPropagateCurrentNode:
+        object.GetMutableForPainting().SetShouldInheritSoftNavigationContext(
+            false);
+        context.soft_navigation_context_container_root = object.GetNode();
+        break;
+      case PrePaintUpdateResult::kPropagateAncestorNode:
+        // No need to change the source node, just continue propagating it.
+        object.GetMutableForPainting().SetShouldInheritSoftNavigationContext(
+            true);
+        break;
+    }
+  } else if (!object.ShouldInheritSoftNavigationContext()) {
+    // Anonymous nodes should always inherit the parent context, so this should
+    // not be reached.
+    CHECK(object.GetNode());
+    context.soft_navigation_context_container_root = object.GetNode();
+  }
+}
+
 bool PrePaintTreeWalk::NeedsTreeBuilderContextUpdate(
     const LocalFrameView& frame_view,
     const PrePaintTreeWalkContext& context) {
@@ -295,14 +368,17 @@ bool PrePaintTreeWalk::ObjectRequiresPrePaint(const LayoutObject& object) {
          object.EffectiveAllowedTouchActionChanged() ||
          object.DescendantEffectiveAllowedTouchActionChanged() ||
          object.BlockingWheelEventHandlerChanged() ||
-         object.DescendantBlockingWheelEventHandlerChanged();
+         object.DescendantBlockingWheelEventHandlerChanged() ||
+         object.SoftNavigationContextChanged() ||
+         object.DescendantSoftNavigationContextChanged();
 }
 
 bool PrePaintTreeWalk::ContextRequiresChildPrePaint(
     const PrePaintTreeWalkContext& context) {
   return context.paint_invalidator_context.NeedsSubtreeWalk() ||
          context.effective_allowed_touch_action_changed ||
-         context.blocking_wheel_event_handler_changed;
+         context.blocking_wheel_event_handler_changed ||
+         context.soft_navigation_context_changed;
 }
 
 bool PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(
@@ -557,6 +633,8 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   // handlers.
   UpdateEffectiveAllowedTouchAction(object, context);
   UpdateBlockingWheelEventHandler(object, context);
+
+  UpdateSoftNavigationContext(object, context);
 
   if (paint_invalidator_.InvalidatePaint(
           object, pre_paint_info,
@@ -1337,13 +1415,15 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   // same bits on the context.
   if (child_walk_blocked && (ContextRequiresChildTreeBuilderContext(context) ||
                              ContextRequiresChildPrePaint(context))) {
-    // Note that |effective_allowed_touch_action_changed| and
-    // |blocking_wheel_event_handler_changed| are special in that they requires
-    // us to specifically recalculate this value on each subtree element. Other
-    // flags simply need a subtree walk.
+    // Note that |effective_allowed_touch_action_changed|,
+    // |blocking_wheel_event_handler_changed|, and
+    // |soft_navigation_context_changed| are special in that they requires us to
+    // specifically recalculate this value on each subtree element. Other flags
+    // simply need a subtree walk.
     object.GetDisplayLockContext()->SetNeedsPrePaintSubtreeWalk(
         context.effective_allowed_touch_action_changed,
-        context.blocking_wheel_event_handler_changed);
+        context.blocking_wheel_event_handler_changed,
+        context.soft_navigation_context_changed);
   }
 
   if (!child_walk_blocked) {

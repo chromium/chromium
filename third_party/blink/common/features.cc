@@ -2462,7 +2462,9 @@ const base::FeatureParam<SoftNavigationHeuristicsMode>::Option
     kSoftNavigationHeuristicsModes[] = {
         {SoftNavigationHeuristicsMode::kBasic, "basic"},
         {SoftNavigationHeuristicsMode::kAdvancedPaintAttribution,
-         "advanced_paint_attribution"}};
+         "advanced_paint_attribution"},
+        {SoftNavigationHeuristicsMode::kPrePaintBasedAttribution,
+         "pre_paint_based_attribution"}};
 BASE_FEATURE_ENUM_PARAM(SoftNavigationHeuristicsMode,
                         kSoftNavigationHeuristicsModeParam,
                         &kSoftNavigationHeuristics,
