@@ -2003,6 +2003,14 @@ public class RootUiCoordinator
     }
 
     /**
+     * @return The {@link ExtensionService} that handles extensions. null if extensions are not
+     *     supported on this build.
+     */
+    public @Nullable ExtensionService getExtensionService() {
+        return mExtensionService;
+    }
+
+    /**
      * Initializes a glue logic that suppresses Contextual Search and hides the Page Zoom slider
      * while a Bottom Sheet feature is in action.
      */

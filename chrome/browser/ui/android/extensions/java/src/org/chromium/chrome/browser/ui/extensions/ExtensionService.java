@@ -44,4 +44,7 @@ public interface ExtensionService extends Destroyable {
         service.initialize(profileSupplier);
         return service;
     }
+
+    /** Whether extensions are enabled. */
+    public boolean areExtensionsEnabled();
 }

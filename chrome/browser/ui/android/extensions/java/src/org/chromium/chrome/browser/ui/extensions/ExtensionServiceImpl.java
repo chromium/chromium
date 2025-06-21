@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionListCoordinator;
+import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionsBridge;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionsMenuButtonCoordinator;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -66,6 +67,17 @@ public class ExtensionServiceImpl implements ExtensionService {
                         container.findViewById(R.id.extensions_divider),
                         themeColorProvider,
                         mProfileSupplier);
+    }
+
+    @Override
+    public boolean areExtensionsEnabled() {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) {
+            return false;
+        }
+
+        ExtensionActionsBridge extensionActionsBridge = ExtensionActionsBridge.get(profile);
+        return extensionActionsBridge.extensionsEnabled();
     }
 
     @Override
