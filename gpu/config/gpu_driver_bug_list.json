@@ -2240,10 +2240,14 @@
     },
     {
       "id": 347,
-      "cr_bugs": [1119491],
-      "description": "Intel GPUs fail to report BGRA8 overlay support",
+      "cr_bugs": [1119491, 344343039],
+      "description": "Older Windows fails to report BGRA8 overlay support for Intel GPUs",
       "os": {
-        "type": "win"
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.26100.4061"
+        }
       },
       "vendor_id": "0x8086",
       "features": [
@@ -3587,6 +3591,23 @@
         "op": ">",
         "value": "32.0.101.6078"
       }
+    },
+    {
+      "id": 451,
+      "cr_bugs": [1119491, 344343039],
+      "description": "Older Intel GPU drivers fail to report BGRA8 overlay support on Windows",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+            "op": "<",
+            "value": "32.0.101.6314"
+      },
+      "features": [
+        "enable_bgra8_overlays_with_yuv_overlay_support"
+      ]
     }
   ]
 }

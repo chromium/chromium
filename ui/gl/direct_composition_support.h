@@ -133,9 +133,14 @@ struct DirectCompositionOverlayWorkarounds {
   // decoder textures are used or not.
   bool disable_decode_swap_chain = false;
 
-  // On Intel GPUs where YUV overlays are supported, BGRA8 overlays are
-  // supported as well but IDXGIOutput3::CheckOverlaySupport() returns
-  // unsupported. So allow manually enabling BGRA8 overlay support.
+  // This is a workaround for a long-known issue where older Intel GPU drivers
+  // fail to report BGRA8 overlay support on Windows, while Windows D3D API
+  // before 10.0.26100.4061 fails to deal with RGB pixel format in
+  // IDXGIOutput3::CheckOverlaySupport(). This also means that both newer
+  // Windows versions (10.0.26100.4061 and later) and newer Intel GPU drivers
+  // (32.0.101.6314 and later) are required to correctly report BGRA8 overlay
+  // support. Otherwise, this workaround is applied to manually allow BGRA8
+  // overlays to be used when YUV overlays are supported on Intel GPUs.
   bool enable_bgra8_overlays_with_yuv_overlay_support = false;
 
   // Forces to enable NV12 overlay support regardless of the query results from
