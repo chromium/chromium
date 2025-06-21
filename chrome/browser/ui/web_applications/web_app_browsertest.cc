@@ -2158,9 +2158,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle,
   EXPECT_EQ(app_title, app_browser->GetWindowTitleForCurrentTab(false));
   NavigateViaLinkClickToURLAndWait(
       app_browser, https_server()->GetURL("app.site.test", "/simple.html"));
-  // The page title is "OK" but the app title should be used instead
-  // for a single window instance of an app.
-  EXPECT_EQ(app_title, app_browser->GetWindowTitleForCurrentTab(false));
+  EXPECT_EQ(u"A Web App - OK", app_browser->GetWindowTitleForCurrentTab(false));
 }
 
 // Ensure that web app windows display the app title instead of the page
@@ -2180,9 +2178,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle,
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
-  // When we are within scope, show the app title for a single instance of an
-  // app.
-  EXPECT_EQ(app_title, app_browser->GetWindowTitleForCurrentTab(false));
+  // When we are within scope, show the page title.
+  EXPECT_EQ(u"A Web App - Google",
+            app_browser->GetWindowTitleForCurrentTab(false));
   NavigateViaLinkClickToURLAndWait(
       app_browser, https_server()->GetURL("app.site.test", "/simple.html"));
 
@@ -2210,44 +2208,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InScopeHttpUrlsDisplayAppTitle) {
   // The page title is "OK" but the page is being served over HTTP, so the app
   // title should be used instead.
   EXPECT_EQ(app_title, app_browser->GetWindowTitleForCurrentTab(false));
-}
-
-// Ensure that when a single PWA window is open, only the app name is shown
-// in the title.
-// When a second window is opened, it includes the page title as a suffix.
-// Navigating in the first window updates its title to include the page
-// title as a suffix.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MultipleAppWindowTitleTest) {
-  BrowserWaiter browser_waiter(nullptr);
-  const GURL app_url =
-      https_server()->GetURL("/banners/manifest_test_page.html");
-  NavigateViaLinkClickToURLAndWait(browser(), app_url);
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  const webapps::AppId app_id = test::InstallForWebContents(
-      browser()->profile(), web_contents,
-      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
-
-  Browser* app_browser = browser_waiter.AwaitAdded(FROM_HERE);
-  EXPECT_EQ(u"Manifest test app", app_browser->GetWindowTitleForCurrentTab(
-                                      /*include_app_name=*/false));
-
-  Browser* const second_browser = LaunchWebAppBrowserAndWait(app_id);
-  content::WebContents* const second_web_contents =
-      second_browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::WaitForLoadStop(second_web_contents));
-  ASSERT_TRUE(AppBrowserController::IsForWebApp(second_browser, app_id));
-
-  EXPECT_EQ(
-      u"Manifest test app - Web app banner test page",
-      second_browser->GetWindowTitleForCurrentTab(/*include_app_name=*/false));
-
-  // The first browser window should update title after navigation.
-  NavigateViaLinkClickToURLAndWait(app_browser, app_url);
-  EXPECT_EQ(
-      u"Manifest test app - Web app banner test page",
-      app_browser->GetWindowTitleForCurrentTab(/*include_app_name=*/false));
 }
 
 // WebApps should have origin text.
