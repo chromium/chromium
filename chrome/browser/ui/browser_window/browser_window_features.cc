@@ -426,6 +426,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   memory_saver_opt_in_iph_controller_.reset();
   lens_overlay_entry_point_controller_.reset();
   tab_search_toolbar_button_controller_.reset();
+  profile_menu_coordinator_.reset();
   toast_service_.reset();
   extension_window_controller_.reset();
 
