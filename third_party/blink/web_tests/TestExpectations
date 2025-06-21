@@ -2765,7 +2765,7 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/424798906 external/wpt/pointerevents/pointerevent_element_haspointercapture.html?touch [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win10.20h2 ] external/wpt/bluetooth/bidi/adapter/adapter-absent-getAvailability.https.window.html [ Pass Timeout ]
+crbug.com/426429658 [ Win10.20h2 ] external/wpt/bluetooth/bidi/adapter/adapter-absent-getAvailability.https.window.html [ Pass Timeout ]
 crbug.com/425716853 virtual/threaded/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
 crbug.com/425716853 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
 crbug.com/425716853 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
