@@ -62,7 +62,7 @@ class LocalTabHandlerTest : public testing::Test {
     params.type = Browser::TYPE_NORMAL;
     test_window_ = std::make_unique<TestBrowserWindow>();
     params.window = test_window_.get();
-    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
     handler_ = std::make_unique<LocalTabHandler>(&session_sync_service_,
                                                  profile_.get());
 

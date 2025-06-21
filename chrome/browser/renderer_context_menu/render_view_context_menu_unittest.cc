@@ -448,7 +448,7 @@ class RenderViewContextMenuPrefsTest
       Browser::CreateParams create_params(profile(), true);
       browser_window_ = std::make_unique<TestBrowserWindow>();
       create_params.window = browser_window_.get();
-      browser_.reset(Browser::Create(create_params));
+      browser_ = Browser::DeprecatedCreateOwnedForTesting(create_params);
     }
     return browser_.get();
   }
@@ -459,7 +459,7 @@ class RenderViewContextMenuPrefsTest
                                           true);
       browser_window_ = std::make_unique<TestBrowserWindow>();
       create_params.window = browser_window_.get();
-      browser_.reset(Browser::Create(create_params));
+      browser_ = Browser::DeprecatedCreateOwnedForTesting(create_params);
     }
     return browser_.get();
   }

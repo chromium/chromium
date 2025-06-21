@@ -69,7 +69,7 @@ class GlicWindowHotkeyDelegateTest : public testing::Test {
     // This Browser instance will be added to the BrowserList automatically.
     Browser::CreateParams params(profile_.get(), true);
     params.window = mock_browser_window_.get();  // Assign raw pointer
-    fake_browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+    fake_browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
     // Create other mocks
     mock_controller_ = std::make_unique<MockGlicWindowController>();

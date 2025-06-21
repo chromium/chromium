@@ -182,7 +182,7 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
     Browser::CreateParams params(profile_, true);
     params.type = Browser::TYPE_NORMAL;
     params.window = window_.get();
-    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
     security_view_info_ = std::make_unique<DownloadBubbleSecurityViewInfo>();
     anchor_widget_ =

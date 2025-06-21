@@ -146,7 +146,7 @@ class FamilyUserChromeActivityMetricsTest
     browser_window_ =
         std::make_unique<TestBrowserWindowAura>(std::move(window));
     params.window = browser_window_.get();
-    test_browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+    test_browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
   }
 
   void SetSessionState(session_manager::SessionState state) {
@@ -188,7 +188,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest, Basic) {
   auto another_browser_window =
       std::make_unique<TestBrowserWindowAura>(std::move(window));
   params.window = another_browser_window.get();
-  auto another_browser = std::unique_ptr<Browser>(Browser::Create(params));
+  auto another_browser = Browser::DeprecatedCreateOwnedForTesting(params);
 
   EXPECT_EQ(2U, BrowserList::GetInstance()->size());
 

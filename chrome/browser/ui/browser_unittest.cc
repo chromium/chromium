@@ -217,7 +217,7 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeDisabled) {
   Browser::CreateParams create_params(profile(), false);
   std::unique_ptr<BrowserWindow> test_window(CreateBrowserWindow());
   create_params.window = test_window.get();
-  std::unique_ptr<Browser> test_browser(Browser::Create(create_params));
+  auto test_browser = Browser::DeprecatedCreateOwnedForTesting(create_params);
   EXPECT_TRUE(test_browser);
 }
 
@@ -236,8 +236,8 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeForced) {
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), false);
   std::unique_ptr<BrowserWindow> test_window(CreateBrowserWindow());
   off_the_record_create_params.window = test_window.get();
-  std::unique_ptr<Browser> otr_browser(
-      Browser::Create(off_the_record_create_params));
+  auto otr_browser =
+      Browser::DeprecatedCreateOwnedForTesting(off_the_record_create_params);
   EXPECT_TRUE(otr_browser);
 }
 
@@ -250,7 +250,7 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeEnabled) {
   Browser::CreateParams create_params(profile(), false);
   std::unique_ptr<BrowserWindow> test_window(CreateBrowserWindow());
   create_params.window = test_window.get();
-  std::unique_ptr<Browser> test_browser(Browser::Create(create_params));
+  auto test_browser = Browser::DeprecatedCreateOwnedForTesting(create_params);
   EXPECT_TRUE(test_browser);
 
   // Creating a browser in OTR test profile should succeed.
@@ -258,8 +258,8 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeEnabled) {
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), false);
   std::unique_ptr<BrowserWindow> otr_test_window(CreateBrowserWindow());
   off_the_record_create_params.window = otr_test_window.get();
-  std::unique_ptr<Browser> otr_browser(
-      Browser::Create(off_the_record_create_params));
+  auto otr_browser =
+      Browser::DeprecatedCreateOwnedForTesting(off_the_record_create_params);
   EXPECT_TRUE(otr_browser);
 }
 
@@ -286,7 +286,7 @@ TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
   std::unique_ptr<BrowserWindow> window = CreateBrowserWindow();
   create_params.window = window.get();
   session_manager::SessionManager::Get()->SetSessionState(SessionState::ACTIVE);
-  std::unique_ptr<Browser> test_browser(Browser::Create(create_params));
+  auto test_browser = Browser::DeprecatedCreateOwnedForTesting(create_params);
   // Normal flow, creation succeeds.
   EXPECT_TRUE(test_browser);
 }
@@ -429,7 +429,6 @@ TEST_F(BrowserUnitTest, CreateGuestSessionBrowser) {
       Browser::CreateParams(guest_profile, false);
   std::unique_ptr<BrowserWindow> test_window = CreateBrowserWindow();
   create_params.window = test_window.get();
-  std::unique_ptr<Browser> browser =
-      std::unique_ptr<Browser>(Browser::Create(create_params));
+  auto browser = Browser::DeprecatedCreateOwnedForTesting(create_params);
   EXPECT_TRUE(browser);
 }

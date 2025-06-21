@@ -1430,7 +1430,7 @@ class V1App : public TestBrowserWindow {
         kCrxAppPrefix + app_name, true /* trusted_source */, gfx::Rect(),
         profile, true);
     params.window = this;
-    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
     chrome::AddTabAt(browser_.get(), GURL(), 0, true);
   }
   V1App(const V1App&) = delete;

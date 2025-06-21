@@ -84,7 +84,7 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     window_ = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams browser_params(profile_.get(), true);
     browser_params.window = window_.get();
-    browser_ = std::unique_ptr<Browser>(Browser::Create(browser_params));
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(browser_params);
     media_router_ = static_cast<MockMediaRouter*>(
         MediaRouterFactory::GetApiForBrowserContext(profile_.get()));
     logger_ = std::make_unique<LoggerImpl>();

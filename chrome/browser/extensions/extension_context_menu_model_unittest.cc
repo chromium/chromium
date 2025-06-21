@@ -349,7 +349,7 @@ Browser* ExtensionContextMenuModelTest::GetBrowser() {
     Browser::CreateParams params(profile(), true);
     test_window_ = std::make_unique<TestBrowserWindow>();
     params.window = test_window_.get();
-    browser_.reset(Browser::Create(params));
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
   }
   return browser_.get();
 }

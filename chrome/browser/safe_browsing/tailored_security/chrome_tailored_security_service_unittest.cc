@@ -190,7 +190,7 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;
     params.window = browser_window_.get();
-    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
     chrome_tailored_security_service_ =
         std::make_unique<TestChromeTailoredSecurityService>(profile_);
   }

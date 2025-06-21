@@ -146,7 +146,9 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   BrowserWindow* window() const { return window_.get(); }
 
   Browser* browser() const { return browser_.get(); }
-  void set_browser(Browser* browser) { browser_.reset(browser); }
+  void set_browser(std::unique_ptr<Browser> browser) {
+    browser_ = std::move(browser);
+  }
   std::unique_ptr<Browser> release_browser() { return std::move(browser_); }
 
   TestingProfile* profile() const { return profile_.get(); }

@@ -801,7 +801,7 @@ TEST_F(AppShimManagerTest, AppLaunchCancelled) {
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(
       app_name, true, browser_window->GetBounds(), &profile_a_, true);
   params.window = browser_window.get();
-  auto browser = std::unique_ptr<Browser>(Browser::Create(params));
+  auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
   manager_->OnBrowserAdded(browser.get());
 
   // Validate that OnAppLaunchCancelled does not close the app,
@@ -1506,7 +1506,7 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
   Browser::CreateParams params_a = Browser::CreateParams::CreateForApp(
       app_name, true, browser_window_a->GetBounds(), &profile_a_, true);
   params_a.window = browser_window_a.get();
-  auto browser_a = std::unique_ptr<Browser>(Browser::Create(params_a));
+  auto browser_a = Browser::DeprecatedCreateOwnedForTesting(params_a);
   manager_->OnBrowserAdded(browser_a.get());
 
   // Select profile B from the menu. This should request that the app be
@@ -1523,7 +1523,7 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
   Browser::CreateParams params_b = Browser::CreateParams::CreateForApp(
       app_name, true, browser_window_b->GetBounds(), &profile_b_, true);
   params_b.window = browser_window_b.get();
-  auto browser_b = std::unique_ptr<Browser>(Browser::Create(params_b));
+  auto browser_b = Browser::DeprecatedCreateOwnedForTesting(params_b);
   manager_->OnBrowserAdded(browser_b.get());
 
   EXPECT_FALSE(browser_window_a->did_show);
@@ -1897,7 +1897,7 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
     Browser::CreateParams params = Browser::CreateParams::CreateForApp(
         app_name, true, browser_window_a->GetBounds(), &profile_a_, true);
     params.window = browser_window_a.get();
-    browser_profile_a = std::unique_ptr<Browser>(Browser::Create(params));
+    browser_profile_a = Browser::DeprecatedCreateOwnedForTesting(params);
   }
 
   {
@@ -1905,7 +1905,7 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
     Browser::CreateParams params = Browser::CreateParams::CreateForApp(
         app_name, true, browser_window_b->GetBounds(), &profile_b_, true);
     params.window = browser_window_b.get();
-    browser_profile_b = std::unique_ptr<Browser>(Browser::Create(params));
+    browser_profile_b = Browser::DeprecatedCreateOwnedForTesting(params);
   }
 
   // Set profile A browser as last active, and validate the application dock

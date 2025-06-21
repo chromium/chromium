@@ -40,7 +40,7 @@ class WindowSizerChromeOSTest : public ChromeAshTestBase {
   std::unique_ptr<Browser> CreateWindowlessBrowser(
       Browser::CreateParams params) {
     params.skip_window_init_for_testing = true;
-    return std::unique_ptr<Browser>(Browser::Create(params));
+    return Browser::DeprecatedCreateOwnedForTesting(params);
   }
 
   // Similar to WindowSizerTestUtil::GetWindowBounds() but takes an existing

@@ -50,7 +50,7 @@ class AppTabHelperUnitTest : public ExtensionServiceTestWithInstall {
       Browser::CreateParams params(profile(), true);
       browser_window_ = std::make_unique<TestBrowserWindow>();
       params.window = browser_window_.get();
-      browser_.reset(Browser::Create(params));
+      browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
     }
     return browser_.get();
   }

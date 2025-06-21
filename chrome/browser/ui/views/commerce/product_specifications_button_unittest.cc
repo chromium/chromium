@@ -39,7 +39,7 @@ class ProductSpecificationsButtonTest : public ChromeViewsTestBase {
     profile_ = profile_builder.Build();
     Browser::CreateParams params(profile_.get(), true);
     params.window = &browser_window_;
-    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
     tab_strip_model_ = std::make_unique<TabStripModel>(
         &tab_strip_model_delegate_, profile_.get());

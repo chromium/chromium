@@ -305,7 +305,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     Browser::CreateParams browser_params(profile_.get(), true);
     browser_params.type = Browser::TYPE_NORMAL;
     browser_params.window = browser_window_.get();
-    browser_ = std::unique_ptr<Browser>(Browser::Create(browser_params));
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(browser_params);
 
     application_locale_storage_->Set("foo");
 

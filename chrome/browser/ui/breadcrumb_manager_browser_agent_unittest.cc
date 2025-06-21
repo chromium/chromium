@@ -59,7 +59,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, MultipleBrowsers) {
   Browser::CreateParams create_params(profile(), false);
   std::unique_ptr<BrowserWindow> test_window = CreateBrowserWindow();
   create_params.window = test_window.get();
-  std::unique_ptr<Browser> browser2(Browser::Create(create_params));
+  auto browser2 = Browser::DeprecatedCreateOwnedForTesting(create_params);
   EXPECT_TRUE(browser2);
 
   // Insert tab into `browser2`.

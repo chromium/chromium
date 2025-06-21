@@ -101,7 +101,7 @@ void SafeBrowsingPrivateApiUnitTest::SetUp() {
   Browser::CreateParams params(profile(), true);
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
-  browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+  browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
   ProfilePasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
       profile(),

@@ -55,7 +55,7 @@ class FakeGlicTabStripController : public FakeBaseTabStripController {
     Browser::CreateParams params(profile_.get(), /*user_gesture*/ true);
     params.type = Browser::TYPE_NORMAL;
     params.window = browser_window_.get();
-    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
   }
   void ShouldUseOtrProfile(bool use_otr_profile) {
     use_otr_profile_ = use_otr_profile;

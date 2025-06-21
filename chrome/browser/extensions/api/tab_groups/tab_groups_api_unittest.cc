@@ -144,7 +144,7 @@ void TabGroupsApiUnitTest::SetUp() {
   Browser::CreateParams params(profile(), /* user_gesture */ true);
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
-  browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+  browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
   BrowserList::SetLastActive(browser_.get());
 
   // Add several tabs to the browser and get their tab IDs and web contents.
@@ -194,7 +194,7 @@ TEST_F(TabGroupsApiUnitTest, TabStripModelWithNoTabGroupFails) {
   // |window2|.
   new TestBrowserWindowOwner(std::move(window2));
 
-  std::unique_ptr<Browser> browser2(Browser::Create(params));
+  auto browser2 = Browser::DeprecatedCreateOwnedForTesting(params);
   BrowserList::SetLastActive(browser2.get());
 
   ASSERT_FALSE(browser2->tab_strip_model()->SupportsTabGroups());
@@ -670,7 +670,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveAcrossWindows) {
   // |window2|.
   new TestBrowserWindowOwner(std::move(window2));
 
-  std::unique_ptr<Browser> browser2(Browser::Create(params));
+  auto browser2 = Browser::DeprecatedCreateOwnedForTesting(params);
   BrowserList::SetLastActive(browser2.get());
   int window_id2 = ExtensionTabUtil::GetWindowId(browser2.get());
 

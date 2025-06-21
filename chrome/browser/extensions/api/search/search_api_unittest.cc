@@ -89,7 +89,7 @@ void SearchApiUnitTest::SetUp() {
   Browser::CreateParams params(profile(), /*user_gesture*/ true);
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
-  browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+  browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
   // Mock TemplateURLService.
   auto* template_url_service = static_cast<TemplateURLService*>(

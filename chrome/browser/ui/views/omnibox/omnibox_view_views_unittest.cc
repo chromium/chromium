@@ -453,7 +453,7 @@ void OmniboxViewViewsTest::SetUp() {
   Browser::CreateParams params(profile(), /*user_gesture*/ true);
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
-  browser_.reset(Browser::Create(params));
+  browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
   util_ = std::make_unique<TemplateURLServiceFactoryTestUtil>(profile_.get());
 

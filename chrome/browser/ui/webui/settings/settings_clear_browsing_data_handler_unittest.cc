@@ -143,7 +143,7 @@ void ClearBrowsingDataHandlerUnitTest::SetUp() {
   Browser::CreateParams params(profile_.get(), /*user_gesture*/ true);
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
-  browser_.reset(Browser::Create(params));
+  browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
   std::unique_ptr<tabs::TabModel> tab_model = std::make_unique<tabs::TabModel>(
       content::WebContents::Create(

@@ -787,7 +787,7 @@ class PermissionsAPIHostAccessRequestsUnitTest : public PermissionsAPIUnitTest {
     Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;
     params.window = browser_window_.get();
-    browser_.reset(Browser::Create(params));
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
