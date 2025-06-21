@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] <color> values are computed correctly [currentcolor]
+  assert_equals: expected "rgb(0, 0, 255)" but got "currentcolor"
+[FAIL] <color> values are computed correctly [color-mix(in srgb, currentcolor, red)]
+  assert_equals: expected "color(srgb 0.5 0 0.5)" but got "color-mix(in srgb, currentcolor, rgb(255, 0, 0))"
+[FAIL] <color> values are computed correctly [color-mix(in srgb, currentcolor, #ffffff 70%)]
+  assert_equals: expected "color(srgb 0.7 0.7 1)" but got "color-mix(in srgb, currentcolor 30%, rgb(255, 255, 255))"
+[FAIL] <color> values are computed correctly [color-mix(in srgb, currentcolor 20%, #ffffff 20%)]
+  assert_equals: expected "color(srgb 0.5 0.5 1 / 0.4)" but got "color-mix(in srgb, currentcolor 20%, rgb(255, 255, 255) 20%)"
+[FAIL] <color> values are computed correctly [light-dark(currentcolor, red)]
+  assert_equals: expected "rgb(0, 0, 255)" but got "currentcolor"
+[FAIL] <color> values are computed correctly [color(from currentcolor srgb b g r)]
+  assert_equals: expected "color(srgb 1 0 0)" but got "color(from currentcolor srgb b g r)"
+Harness: the test ran to completion.
+

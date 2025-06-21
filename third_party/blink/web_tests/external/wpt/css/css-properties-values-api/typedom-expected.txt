@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Computed <image> is reified as CSSImageValue by iterator
+  assert_equals: expected "url(\\"http://web-platform.test:8001/css/css-properties-values-api/a\\")" but got "url(\\"a\\")"
+Harness: the test ran to completion.
+

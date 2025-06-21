@@ -2288,7 +2288,7 @@ crbug.com/1156408 [ Release Win11-arm64 ] external/wpt/webrtc/RTCPeerConnection-
 crbug.com/1074547 external/wpt/css/css-transitions/transitioncancel-002.html [ Timeout ]
 
 # Was failing only on Mac15, but then found the confidence to fail more broadly.
-crbug.com/419116790 external/wpt/webrtc/RTCDataChannel-close.html [ Failure Pass Crash Timeout ]
+crbug.com/419116790 external/wpt/webrtc/RTCDataChannel-close.html [ Crash Failure Pass Timeout ]
 
 crbug.com/1113004 external/wpt/css/css-pseudo/active-selection-043.html [ Failure ]
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-051.html [ Failure ]
@@ -2765,6 +2765,7 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/424798906 external/wpt/pointerevents/pointerevent_element_haspointercapture.html?touch [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win10.20h2 ] external/wpt/bluetooth/bidi/adapter/adapter-absent-getAvailability.https.window.html [ Pass Timeout ]
 crbug.com/425716853 virtual/threaded/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
 crbug.com/425716853 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
 crbug.com/425716853 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-transform-change-001.html [ Failure ]
@@ -2812,6 +2813,7 @@ crbug.com/421629752 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/
 crbug.com/421653974 [ Win10.20h2 ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Timeout ]
 crbug.com/421653974 [ Win10.20h2 ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash Timeout ]
 crbug.com/421653408 [ Win10.20h2 ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
+crbug.com/421653408 [ Win11 ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
 crbug.com/421653408 [ Win10.20h2 ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
 crbug.com/421402731 [ Win11 ] virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-nn.html [ Skip Timeout ]
 crbug.com/421228416 [ Win10.20h2 ] virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-nn.html [ Skip Timeout ]
@@ -6514,7 +6516,7 @@ crbug.com/40253999 virtual/indexeddb_sqlite/storage/indexeddb/blob-basics-metada
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor-direction-objectstore-keyrange.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor-direction-objectstore.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor_advance_objectstore.any.html [ Pass ]
-crbug.com/419208485 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor_continue_objectstore.any.html [ Crash Pass Failure ]
+crbug.com/419208485 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor_continue_objectstore.any.html [ Crash Failure Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbcursor_update_objectstore.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_openCursor.any.html [ Pass ]
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/IndexedDB/idbobjectstore_openKeyCursor.any.html [ Pass ]
