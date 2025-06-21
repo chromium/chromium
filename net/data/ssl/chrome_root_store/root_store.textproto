@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 19
+version_major: 21
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
