@@ -23,13 +23,16 @@ USER_SESSION_PATH="$INSTALL_DIR/user-session"
 HOST_PATH="$INSTALL_DIR/chrome-remote-desktop-host"
 CRD_GROUP="chrome-remote-desktop"
 
-restart_hosts() {
-  # Kill host processes. SIGKILL is used because the wrapper script will
-  # restart the host immediately (so any cleanup that might otherwise happen
-  # is not useful), and this ensures that hosts restart even if they are
-  # deadlocked.
-  echo "Restarting Chrome Remote Desktop hosts (sessions will be unaffected)..."
-  pkill -KILL -f "^$HOST_PATH" || true
+kill_processes() {
+  # Kill CRD processes except for the service script process. The script process
+  # command line conveniently starts with /usr/bin/python3, so the pkill pattern
+  # won't kill it. SIGKILL is used because the wrapper script will restart the
+  # host immediately (so any cleanup that might otherwise happen is not useful),
+  # and this ensures that hosts restart even if they are deadlocked.
+  # TODO: yuweih - see if it's possible to restart the service script process
+  # without resetting the session.
+  echo "Killing Chrome Remote Desktop processes so that they can be reloaded (sessions will be unaffected)..."
+  pkill -KILL -f "^$INSTALL_DIR" || true
 }
 
 case "$1" in
@@ -98,7 +101,7 @@ case "$1" in
       fi
     fi
 
-    restart_hosts
+    kill_processes
 
     # If any files have changed that require the user to restart their virtual
     # desktops (eg, the wrapper script itself) then notify them but don't do
@@ -117,7 +120,7 @@ case "$1" in
 
   "triggered")
     echo "Responding to dpkg trigger."
-    restart_hosts
+    kill_processes
     ;;
 esac
 
