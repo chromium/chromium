@@ -91,7 +91,22 @@
   // Stop tracing and log the SoftNavigation event.
   testRunner.log('\nStopping tracing and analyzing events.');
   let unfilteredEvents = await tracingHelper.stopTracing();
-  unfilteredEvents.sort((a, b) => a.ts - b.ts);
+
+  // Filter + sort to the set of events we care about.
+  // Primary sort: by timestamp.
+  // Secondary sort: by event name, to maintain a consistent order for events with the same timestamp.
+  // Note: SoftNavigationEntry TRACE macro is called first, but the LCP entry is serialized first.
+  // Both use the same presentation time value to mark the timestamp, explicitly.
+  const supportedTraceEventNames = ["SoftNavigationHeuristics::EmitSoftNavigationEntry", "largestContentfulPaint::Candidate"];
+
+  let filteredEvents = unfilteredEvents
+    .filter(event => supportedTraceEventNames.includes(event.name))
+    .sort((a, b) => {
+      if (a.ts !== b.ts) {
+        return a.ts - b.ts;
+      }
+      return supportedTraceEventNames.indexOf(a.name) - supportedTraceEventNames.indexOf(b.name);
+    });
 
 
   // Maps timestamps (monotonically increasing double) to a counter.
@@ -134,15 +149,18 @@
   const ids = new IdMapper();
   const softNavs = [];
   const lcpCandidates = [];
-  for (const event of unfilteredEvents) {
+  for (const event of filteredEvents) {
     if (event.name === 'SoftNavigationHeuristics::EmitSoftNavigationEntry') {
       testRunner.log('-> SoftNavigation event');
       testRunner.log(
           '   interactionTimestamp: ' +
           timestamps.map(event.args.context.interactionTimestamp));
       testRunner.log('   ts: ' + timestamps.map(event.ts));
+      testRunner.log(
+        '   firstContentfulPaint: ' +
+        timestamps.map(event.args.context.firstContentfulPaint));
       testRunner.log('   frame: ' + ids.map(event.args.frame));
-      testRunner.log('   navigationId: ' + ids.map(event.args.navigationId));
+      testRunner.log('   navigationId: ' + ids.map(event.args.context.navigationId));
       testRunner.log('   initialURL: ' + event.args.context.initialURL)
       testRunner.log('   mostRecentURL: ' + event.args.context.mostRecentURL)
       softNavs.push(event);

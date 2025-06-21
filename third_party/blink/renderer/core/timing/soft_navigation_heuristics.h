@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
@@ -115,6 +116,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   SoftNavigationContext* MaybeGetSoftNavigationContextForTiming(Node* node);
   void OnPaintFinished();
   void OnInputOrScroll();
+  OptionalPaintTimingCallback TakePaintTimingCallback();
   void UpdateSoftLcpCandidate();
 
   const LargestContentfulPaintDetails&
@@ -142,7 +144,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   void ProcessCustomWeakness(const LivenessBroker& info);
 
  private:
-  void ReportSoftNavigationToMetrics(LocalFrame*, SoftNavigationContext*) const;
+  void ReportSoftNavigationToMetrics(SoftNavigationContext*) const;
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
 
   // We can grab a context from the "running task", or sometimes from other
@@ -153,7 +155,7 @@ class CORE_EXPORT SoftNavigationHeuristics
       SoftNavigationContext*) const;
   SoftNavigationContext* GetSoftNavigationContextForCurrentTask() const;
 
-  bool EmitSoftNavigationEntryIfAllConditionsMet(SoftNavigationContext*);
+  void EmitSoftNavigationEntryIfAllConditionsMet(SoftNavigationContext*);
   LocalFrame* GetLocalFrameIfOutermostAndNotDetached() const;
   void OnSoftNavigationEventScopeDestroyed(const EventScope&);
   EventScope CreateEventScope(EventScope::Type type, ScriptState*);
@@ -206,6 +208,8 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   uint32_t soft_navigation_count_ = 0;
   bool has_active_event_scope_ = false;
+  bool needs_paint_timing_callback_ = false;
+
   const features::SoftNavigationHeuristicsMode paint_attribution_mode_;
   // `task_attribution_tracker_` is cleared during `Shutdown()` (frame detach),
   // which should happen before the tracker is destroyed, since its lifetime is

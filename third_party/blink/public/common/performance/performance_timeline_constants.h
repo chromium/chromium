@@ -13,6 +13,7 @@ inline constexpr uint32_t kSoftNavigationCountDefaultValue = 0;
 struct SoftNavigationMetrics {
   uint32_t count = kSoftNavigationCountDefaultValue;
   base::TimeDelta start_time;
+  base::TimeDelta first_contentful_paint;
   std::string navigation_id;
 };
 }  // namespace blink

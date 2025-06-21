@@ -216,11 +216,12 @@ void SoftNavigationContext::UpdateWebExposedLargestContentfulPaintIfNeeded() {
 }
 
 bool SoftNavigationContext::TryUpdateLcpCandidate() {
-  // After we are ready to start measuring LCP (was emitted soft-nav entry) and
+  // After we are ready to start measuring LCP (`HasNavigationId()`) and
   // before we want to stop (input or scroll), we update LCP candidate.
-  if (!WasEmitted() || !first_input_or_scroll_time_.is_null()) {
+  if (!HasNavigationId() || !first_input_or_scroll_time_.is_null()) {
     return false;
   }
+
   // TODO(crbug.com/425398556): Consider updating `lcp_calculator_` to accept
   // ImageRecord and TextRecord and to extract its own timings/sizes rather than
   // passing them manually here-- similar to how
@@ -256,10 +257,12 @@ void SoftNavigationContext::WriteIntoTrace(
   perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
 
   dict.Add("softNavContextId", context_id_);
-  dict.Add("interactionTimestamp", user_interaction_timestamp_);
+  dict.Add("navigationId", navigation_id_);
   dict.Add("initialURL", initial_url_);
   dict.Add("mostRecentURL", most_recent_url_);
-  dict.Add("wasEmitted", was_emitted_);
+
+  dict.Add("interactionTimestamp", user_interaction_timestamp_);
+  dict.Add("firstContentfulPaint", first_contentful_paint_);
 
   dict.Add("domModifications", num_modified_dom_nodes_);
   dict.Add("paintedArea", painted_area_);

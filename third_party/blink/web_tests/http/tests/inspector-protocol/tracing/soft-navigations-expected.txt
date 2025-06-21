@@ -17,12 +17,13 @@ Tracing complete
 -> SoftNavigation event
    interactionTimestamp: 2
    ts: 3
+   firstContentfulPaint: 3
    frame: id_0
    navigationId: id_2
    initialURL: http://127.0.0.1:8000/greeting
    mostRecentURL: http://127.0.0.1:8000/greeting
 -> LCP candidate event
-   ts: 4
+   ts: 3
    frame: id_0
    navigationId: id_2
 
@@ -31,16 +32,16 @@ Object: {
 	args: {
 		context: {
 			domModifications: number
+			firstContentfulPaint: number
 			initialURL: string
 			interactionTimestamp: number
 			mostRecentURL: string
+			navigationId: string
 			paintedArea: number
 			repaintedArea: number
 			softNavContextId: number
-			wasEmitted: boolean
 		}
 		frame: string
-		navigationId: string
 	}
 	cat: string
 	id2: {

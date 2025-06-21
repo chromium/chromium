@@ -21,11 +21,11 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
@@ -106,7 +106,7 @@ void OnSoftNavigationContextWasExhausted(const SoftNavigationContext& context,
   // TODO(crbug.com/351826232): Consider differentiating contexts that were
   // cleaned up before page was unloaded vs cleaned up because of page unload.
 
-  if (context.WasEmitted()) {
+  if (context.HasNavigationId()) {
     // We already report this outcome eagerly, as part of
     // `ReportSoftNavigationToMetrics`, so don't report again here.
     // However, we can report the final paint area metrics here.
@@ -395,55 +395,41 @@ bool SoftNavigationHeuristics::ModifiedDOM(Node* node) {
   return true;
 }
 
-bool SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
+// TODO(crbug.com/424448145): re-architect how we pick our FCP point, when we
+// "slice" navigationID, and when we actually Emit soft-navigation entry.  Then,
+// rename and re-organize these functions.
+void SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
     SoftNavigationContext* context) {
+  // We don't want to Emit for any context except the current URL.
+  // If we collect painted area for contexts other than this one, we still don't
+  // want to reach "Emit" criteria.
+  if (context != context_for_current_url_) {
+    return;
+  }
+
   // If we've already emitted this entry, we might still be tracking paints.
   // Skip the rest since we only want to emit new soft-navs.
-  if (context->WasEmitted()) {
-    return false;
+  if (context->HasNavigationId()) {
+    return;
   }
 
   // Are the basic criteria met (interaction, url, dom modification)?
   if (!context->SatisfiesSoftNavNonPaintCriteria()) {
-    return false;
+    return;
   }
 
   // Are we done?
   uint64_t required_paint_area = CalculateRequiredPaintArea();
   if (!context->SatisfiesSoftNavPaintCriteria(required_paint_area)) {
-    return false;
+    return;
   }
 
-  // We have met all criteria!  SetWasEmitted here, even though we might still
-  // constrain reporting (below).  That is because we do not want to test
-  // for meeting criteria ever again, once we meet it for the first time.
-  context->SetWasEmitted();
-
-  // TODO(crbug.com/40871933): We are already only marking dom nodes when we
-  // have a frame, and we are already limiting paints attribution to contexts
-  // that come from the same SNH/window instance.  So, this might be safe to
-  // CHECK().  However, potentially it is possible to meet paint criteria, then
-  // meet some other final criteria in a different frame?  Until we test that,
-  // let's just guard carefully.
-  LocalFrame* frame = GetLocalFrameIfOutermostAndNotDetached();
-  if (!frame) {
-    return false;
-  }
-
+  // We have met all criteria!
   ++soft_navigation_count_;
   window_->GenerateNewNavigationId();
-  auto* performance = DOMWindowPerformance::performance(*window_.Get());
-  performance->AddSoftNavigationEntry(AtomicString(context->InitialUrl()),
-                                      context->UserInteractionTimestamp());
-  ReportSoftNavigationToMetrics(frame, context);
+  context->SetNavigationId(window_->GetNavigationId());
 
-  TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
-                      "SoftNavigationHeuristics::EmitSoftNavigationEntry",
-                      perfetto::Track::FromPointer(context), "context",
-                      *context, "frame", GetFrameIdForTracing(frame),
-                      "navigationId", window_->GetNavigationId());
-
-  return true;
+  needs_paint_timing_callback_ = true;
 }
 
 SoftNavigationContext*
@@ -474,6 +460,61 @@ void SoftNavigationHeuristics::OnInputOrScroll() {
     // `potential_soft_navigations_`?
     context->OnInputOrScroll();
   }
+}
+
+OptionalPaintTimingCallback
+SoftNavigationHeuristics::TakePaintTimingCallback() {
+  // If we need paint timing, we must have a context that needs FCP.
+  CHECK(!needs_paint_timing_callback_ ||
+        (context_for_current_url_ &&
+         !context_for_current_url_->HasFirstContentfulPaint()));
+  if (!needs_paint_timing_callback_) {
+    return {};
+  }
+  needs_paint_timing_callback_ = false;
+
+  // TODO(crbug.com/40871933): We are already only marking dom nodes when we
+  // have a frame, and we are already limiting paints attribution to contexts
+  // that come from the same SNH/window instance.  So, this might be safe to
+  // CHECK().  However, potentially it is possible to meet paint criteria,
+  // then meet some other final criteria in a different frame?  Until we test
+  // that, let's just guard carefully.
+  LocalFrame* frame = GetLocalFrameIfOutermostAndNotDetached();
+  if (!frame) {
+    return {};
+  }
+  String frameIdForTracing = GetFrameIdForTracing(frame);
+
+  auto callback = WTF::BindOnce(
+      [](SoftNavigationHeuristics* self, Member<SoftNavigationContext> context,
+         String frameIdForTracing,
+         const base::TimeTicks& presentation_timestamp,
+         const DOMPaintTimingInfo& paint_timing_info) {
+        if (!self) {
+          return;
+        }
+        CHECK(context);
+        context->SetFirstContentfulPaint(presentation_timestamp,
+                                         paint_timing_info);
+
+        auto* performance =
+            DOMWindowPerformance::performance(*self->window_.Get());
+
+        performance->AddSoftNavigationEntry(AtomicString(context->InitialUrl()),
+                                            context->UserInteractionTimestamp(),
+                                            paint_timing_info);
+        self->ReportSoftNavigationToMetrics(context);
+
+        TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
+                            "SoftNavigationHeuristics::EmitSoftNavigationEntry",
+                            perfetto::Track::FromPointer(context),
+                            context->FirstContentfulPaint(), "context",
+                            *context, "frame", frameIdForTracing);
+      },
+      WrapWeakPersistent(this), WrapPersistent(context_for_current_url_.Get()),
+      frameIdForTracing);
+
+  return std::move(callback);
 }
 
 void SoftNavigationHeuristics::UpdateSoftLcpCandidate() {
@@ -511,25 +552,28 @@ void SoftNavigationHeuristics::UpdateSoftLcpCandidate() {
 }
 
 void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
-    LocalFrame* frame,
     SoftNavigationContext* context) const {
   CHECK(EnsureContextForCurrentWindow(context));
-  auto* loader = frame->Loader().GetDocumentLoader();
 
+  LocalFrame* frame = GetLocalFrameIfOutermostAndNotDetached();
+  if (!frame) {
+    return;
+  }
+
+  auto* loader = frame->Loader().GetDocumentLoader();
   if (!loader) {
     return;
   }
 
-  CHECK(!context->UserInteractionTimestamp().is_null());
-  auto soft_navigation_start_time =
-      loader->GetTiming().MonotonicTimeToPseudoWallTime(
-          context->UserInteractionTimestamp());
-
-  blink::SoftNavigationMetrics metrics = {soft_navigation_count_,
-                                          soft_navigation_start_time,
-                                          window_->GetNavigationId().Utf8()};
-
   if (LocalFrameClient* frame_client = frame->Client()) {
+    blink::SoftNavigationMetrics metrics = {
+        .count = soft_navigation_count_,
+        .start_time = loader->GetTiming().MonotonicTimeToPseudoWallTime(
+            context->UserInteractionTimestamp()),
+        .first_contentful_paint =
+            loader->GetTiming().MonotonicTimeToPseudoWallTime(
+                context->FirstContentfulPaint()),
+        .navigation_id = context->GetNavigationId().Utf8()};
     // This notifies UKM about this soft navigation.
     frame_client->DidObserveSoftNavigation(metrics);
   }

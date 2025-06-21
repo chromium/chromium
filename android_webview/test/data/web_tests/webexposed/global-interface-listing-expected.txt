@@ -9196,6 +9196,8 @@ interface SnapEvent : Event
     method constructor
 interface SoftNavigationEntry : PerformanceEntry
     attribute @@toStringTag
+    getter paintTime
+    getter presentationTime
     method constructor
 interface SourceBuffer : EventTarget
     attribute @@toStringTag

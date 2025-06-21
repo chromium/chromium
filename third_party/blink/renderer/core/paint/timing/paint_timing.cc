@@ -263,6 +263,11 @@ void PaintTiming::MarkPaintTimingInternal() {
   auto add_image_lcp_entries =
       detector->GetImagePaintTimingDetector().TakePaintTimingCallback();
 
+  OptionalPaintTimingCallback soft_nav_entries;
+  if (soft_navigation_heuristics) {
+    soft_nav_entries = soft_navigation_heuristics->TakePaintTimingCallback();
+  }
+
   // 7. Let reportedPaints be the document’s set of previously reported paints.
   PendingPaintTimingRecord paint_timing_record{
       .paint_events = pending_paint_events_,
@@ -285,7 +290,7 @@ void PaintTiming::MarkPaintTimingInternal() {
 
   if (paint_timing_record.paint_events.empty() && !frame_timing_info &&
       !add_painted_images_element_timing_entries && !add_painted_text_entries &&
-      !add_image_lcp_entries) {
+      !add_image_lcp_entries && !soft_nav_entries) {
     return;
   }
 
@@ -298,6 +303,7 @@ void PaintTiming::MarkPaintTimingInternal() {
              OptionalPaintTimingCallback image_lcp_callback,
              OptionalPaintTimingCallback painted_images_callback,
              OptionalPaintTimingCallback painted_text_callback,
+             OptionalPaintTimingCallback soft_navs_callback,
              PaintTimingDetector* paint_timing_detector,
              SoftNavigationHeuristics* soft_navigation_heuristics,
              const base::TimeTicks& raw_presentation_timestamp,
@@ -341,6 +347,10 @@ void PaintTiming::MarkPaintTimingInternal() {
               std::move(painted_text_callback.value())
                   .Run(raw_presentation_timestamp, paint_timing_info);
             }
+            if (soft_navs_callback) {
+              std::move(soft_navs_callback.value())
+                  .Run(raw_presentation_timestamp, paint_timing_info);
+            }
 
             if (paint_timing_detector && may_have_lcp) {
               paint_timing_detector->UpdateLcpCandidate();
@@ -362,7 +372,8 @@ void PaintTiming::MarkPaintTimingInternal() {
           paint_timing_record, WrapPersistent(frame_timing_info),
           std::move(add_image_lcp_entries),
           std::move(add_painted_images_element_timing_entries),
-          std::move(add_painted_text_entries), WrapWeakPersistent(detector),
+          std::move(add_painted_text_entries), std::move(soft_nav_entries),
+          WrapWeakPersistent(detector),
           WrapWeakPersistent(soft_navigation_heuristics));
 
   // 11. If the user-agent does not support implementation-defined presentation
