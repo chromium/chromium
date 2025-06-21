@@ -105,33 +105,30 @@ void ContextualSearchProvider::Start(
   // matches the behavior of the `ZeroSuggestProvider`.
   Stop(AutocompleteStopReason::kClobbered);
 
-  if (client()->IsOffTheRecord()) {
-    done_ = true;
-    return;
-  }
-
   const auto [input, starter_pack_engine] = AdjustInputForStarterPackKeyword(
       autocomplete_input, client()->GetTemplateURLService());
   const bool toolbelted = MaybeAddToolbeltMatch(input, starter_pack_engine);
-  if (!starter_pack_engine) {
-    // Note, the dedicated entrypoint match is not added if the toolbelt is
-    // included because the toolbelt will already have an action to serve
-    // as the Lens entrypoint.
-    if (!toolbelted && IsLensEntrypointAvailable(input, client())) {
-      AddLensEntrypointMatch(input);
-    }
+
+  // Note, the dedicated entrypoint match is not added if the toolbelt is
+  // included because the toolbelt will already have an action to serve as the
+  // Lens entrypoint.
+  if (!starter_pack_engine && !toolbelted &&
+      IsLensEntrypointAvailable(input, client())) {
+    AddLensEntrypointMatch(input);
+  }
+
+  if (!starter_pack_engine || client()->IsOffTheRecord()) {
     return;
   }
+
   input_keyword_ = starter_pack_engine->keyword();
-
   AddDefaultVerbatimMatch(input);
-
   // Exit early if the input is not in ZPS keyword mode or the autocomplete
   // input is not allowed to make asynchronous requests.
   if (!input.text().empty() || autocomplete_input.omit_asynchronous_matches()) {
-    done_ = true;
     return;
   }
+
   done_ = false;
   StartSuggestRequest(std::move(input));
 }
