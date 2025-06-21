@@ -439,11 +439,12 @@ std::optional<int> MaybeFindRowColumn(ui::BrowserAccessibility* start_node,
 // Converts RangePairs into a pair of int vectors.
 std::pair<std::vector<int>, std::vector<int>> ToVectorPair(
     const RangePairs& range_pairs) {
-  std::vector<int> starts(range_pairs.size());
-  std::vector<int> ends(range_pairs.size());
-  for (size_t i = 0; i < range_pairs.size(); ++i) {
-    starts[i] = range_pairs[i].first;
-    ends[i] = range_pairs[i].second;
+  std::vector<int> starts, ends;
+  starts.reserve(range_pairs.size());
+  ends.reserve(range_pairs.size());
+  for (const auto& range : range_pairs) {
+    starts.push_back(range.first);
+    ends.push_back(range.second);
   }
   return {starts, ends};
 }
