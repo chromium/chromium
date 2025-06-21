@@ -122,7 +122,8 @@ std::vector<std::string> CreatePassagesFromAnnotatedPageContent(
         base::StrAppend(&str, {" ", str_to_append});
       };
 
-  const int max_words_per_aggregate_passage = kMinWordsPerPassage.Get();
+  const int max_words_per_aggregate_passage =
+      kMaxWordsPerAggregatePassage.Get();
   const int min_words_per_passage = kMinWordsPerPassage.Get();
   const int max_passages_per_page = kMaxPassagesPerPage.Get();
 
