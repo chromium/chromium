@@ -47,8 +47,6 @@ class HoverButton : public views::LabelButton {
   METADATA_HEADER(HoverButton, views::LabelButton)
 
  public:
-  enum Style { STYLE_PROMINENT, STYLE_ERROR };
-
   HoverButton();
 
   // Creates a single line hover button with no icon.
