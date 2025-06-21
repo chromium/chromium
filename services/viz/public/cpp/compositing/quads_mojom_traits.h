@@ -497,11 +497,6 @@ struct StructTraits<viz::mojom::TileQuadStateDataView, viz::DrawQuad> {
     return quad->tex_coord_rect;
   }
 
-  static const gfx::Size& texture_size(const viz::DrawQuad& input) {
-    const viz::TileDrawQuad* quad = viz::TileDrawQuad::MaterialCast(&input);
-    return quad->texture_size;
-  }
-
   static bool nearest_neighbor(const viz::DrawQuad& input) {
     const viz::TileDrawQuad* quad = viz::TileDrawQuad::MaterialCast(&input);
     return quad->nearest_neighbor;

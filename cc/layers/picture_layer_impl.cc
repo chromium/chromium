@@ -299,9 +299,9 @@ void PictureLayerImpl::AppendQuads(const AppendQuadsContext& context,
     auto* quad = render_pass->CreateAndAppendDrawQuad<viz::PictureDrawQuad>();
     quad->SetNew(
         shared_quad_state, geometry_rect, visible_geometry_rect, needs_blending,
-        texture_rect, texture_size, nearest_neighbor_, quad_content_rect,
-        max_contents_scale, std::move(image_animation_map),
-        raster_source_->GetDisplayItemList(), GetRasterInducingScrollOffsets());
+        texture_rect, nearest_neighbor_, quad_content_rect, max_contents_scale,
+        std::move(image_animation_map), raster_source_->GetDisplayItemList(),
+        GetRasterInducingScrollOffsets());
     ValidateQuadResources(quad);
     return;
   }
@@ -491,7 +491,7 @@ void PictureLayerImpl::AppendQuads(const AppendQuadsContext& context,
               shared_quad_state, offset_geometry_rect,
               offset_visible_geometry_rect, needs_blending,
               draw_info.resource_id_for_export(), texture_rect,
-              draw_info.resource_size(), nearest_neighbor_,
+              nearest_neighbor_,
               !layer_tree_impl()->settings().enable_edge_anti_aliasing);
           ValidateQuadResources(quad);
           has_draw_quad = true;

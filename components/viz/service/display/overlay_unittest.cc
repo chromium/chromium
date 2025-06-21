@@ -888,8 +888,8 @@ class OverlayTest : public testing::Test {
 
     auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TileDrawQuad>();
     overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
-                         resource_id, gfx::RectF(0, 0, 1, 1), rect.size(),
-                         nearest_neighbor, force_anti_aliasing_off);
+                         resource_id, gfx::RectF(0, 0, 1, 1), nearest_neighbor,
+                         force_anti_aliasing_off);
 
     return overlay_quad;
   }

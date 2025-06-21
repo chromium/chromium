@@ -258,8 +258,7 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
   auto* scaled_tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
   scaled_tile_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                           resource2, gfx::RectF(0, 0, 50, 50),
-                           gfx::Size(50, 50), false, false);
+                           resource2, gfx::RectF(0, 0, 50, 50), false, false);
 
   viz::SharedQuadState* transformed_state =
       to_pass->CreateAndAppendSharedQuadState();
@@ -270,9 +269,9 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
       transformed_state->quad_to_target_transform * rotation;
   auto* transformed_tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-  transformed_tile_quad->SetNew(
-      transformed_state, rect, visible_rect, needs_blending, resource3,
-      gfx::RectF(0, 0, 100, 100), gfx::Size(100, 100), false, false);
+  transformed_tile_quad->SetNew(transformed_state, rect, visible_rect,
+                                needs_blending, resource3,
+                                gfx::RectF(0, 0, 100, 100), false, false);
 
   viz::SharedQuadState* shared_state2 =
       to_pass->CreateAndAppendSharedQuadState();
@@ -284,8 +283,7 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
 
   auto* tile_quad = to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
   tile_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
-                    resource4, gfx::RectF(0, 0, 100, 100), gfx::Size(100, 100),
-                    false, false);
+                    resource4, gfx::RectF(0, 0, 100, 100), false, false);
 
   return {resource1, resource2, resource3, resource4,
           resource5, resource6, resource8};
@@ -405,8 +403,8 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   viz::TileDrawQuad* scaled_tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
   scaled_tile_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
-                           mapped_resource2, gfx::RectF(0, 0, 50, 50),
-                           gfx::Size(50, 50), false, false);
+                           mapped_resource2, gfx::RectF(0, 0, 50, 50), false,
+                           false);
 
   viz::SharedQuadState* transformed_state =
       to_pass->CreateAndAppendSharedQuadState();
@@ -417,9 +415,9 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
       transformed_state->quad_to_target_transform * rotation;
   viz::TileDrawQuad* transformed_tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-  transformed_tile_quad->SetNew(
-      transformed_state, rect, visible_rect, needs_blending, mapped_resource3,
-      gfx::RectF(0, 0, 100, 100), gfx::Size(100, 100), false, false);
+  transformed_tile_quad->SetNew(transformed_state, rect, visible_rect,
+                                needs_blending, mapped_resource3,
+                                gfx::RectF(0, 0, 100, 100), false, false);
 
   viz::SharedQuadState* shared_state2 =
       to_pass->CreateAndAppendSharedQuadState();
@@ -432,8 +430,7 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   viz::TileDrawQuad* tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
   tile_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
-                    mapped_resource4, gfx::RectF(0, 0, 100, 100),
-                    gfx::Size(100, 100), false, false);
+                    mapped_resource4, gfx::RectF(0, 0, 100, 100), false, false);
 }
 
 std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(

@@ -194,7 +194,6 @@ void CreateTestTextureDrawQuad(ResourceId resource_id,
 
 void CreateTestTileDrawQuad(ResourceId resource_id,
                             const gfx::Rect& rect,
-                            const gfx::Size& texture_size,
                             const SharedQuadState* shared_state,
                             CompositorRenderPass* render_pass) {
   // TileDrawQuads are non-normalized texture coords, so assume it's 1-1 with
@@ -205,8 +204,7 @@ void CreateTestTileDrawQuad(ResourceId resource_id,
   const bool force_anti_aliasing_off = false;
   auto* quad = render_pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   quad->SetNew(shared_state, rect, rect, needs_blending, resource_id,
-               tex_coord_rect, texture_size, nearest_neighbor,
-               force_anti_aliasing_off);
+               tex_coord_rect, nearest_neighbor, force_anti_aliasing_off);
 }
 
 }  // namespace
@@ -347,6 +345,7 @@ class RendererPerfTest : public VizPerfTest {
 
   void SetUpRenderPassListResources(
       CompositorRenderPassList* render_pass_list) {
+    const gfx::Size kTextureSize(256, 256);
     base::flat_map<ResourceId, ResourceId> resource_map;
     for (auto& render_pass : *render_pass_list) {
       for (auto* quad : render_pass->quad_list) {
@@ -357,9 +356,11 @@ class RendererPerfTest : public VizPerfTest {
           case DrawQuad::Material::kTiledContent: {
             TileDrawQuad* tile_quad = reinterpret_cast<TileDrawQuad*>(quad);
             ResourceId recorded_id = tile_quad->resource_id;
-            ResourceId actual_id = this->MapResourceId(
-                &resource_map, recorded_id, tile_quad->texture_size,
-                SkColor4f{0.0f, 1.0f, 0.0f, 0.5f});
+            // We no longer record texture_size, but for testing purpose,
+            // use a generic size is OK.
+            ResourceId actual_id =
+                this->MapResourceId(&resource_map, recorded_id, kTextureSize,
+                                    SkColor4f{0.0f, 1.0f, 0.0f, 0.5f});
             tile_quad->resource_id = actual_id;
           } break;
           case DrawQuad::Material::kTextureContent: {
@@ -518,8 +519,8 @@ class RendererPerfTest : public VizPerfTest {
             gfx::MaskFilterInfo());
         ResourceId resource_id =
             share_resources ? resource_list_[0].id : resource_list_[i].id;
-        CreateTestTileDrawQuad(resource_id, gfx::Rect(kTileSize), kTextureSize,
-                               shared_state, pass.get());
+        CreateTestTileDrawQuad(resource_id, gfx::Rect(kTileSize), shared_state,
+                               pass.get());
 
         current_transform.PostConcat(transform_step);
       }

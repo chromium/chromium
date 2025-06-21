@@ -33,7 +33,6 @@ class VIZ_COMMON_EXPORT PictureDrawQuad : public ContentDrawQuadBase {
               const gfx::Rect& visible_rect,
               bool needs_blending,
               const gfx::RectF& tex_coord_rect,
-              const gfx::Size& texture_size,
               bool nearest_neighbor,
               const gfx::Rect& content,
               float scale,

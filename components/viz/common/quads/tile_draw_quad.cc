@@ -20,14 +20,13 @@ void TileDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                           bool needs_blending,
                           ResourceId resource,
                           const gfx::RectF& tex_coord_rect,
-                          const gfx::Size& texture_size,
                           bool nearest_neighbor,
                           bool force_anti_aliasing_off) {
   CHECK_NE(resource, kInvalidResourceId);
-  ContentDrawQuadBase::SetNew(
-      shared_quad_state, DrawQuad::Material::kTiledContent, rect, visible_rect,
-      needs_blending, tex_coord_rect, texture_size, nearest_neighbor,
-      force_anti_aliasing_off);
+  ContentDrawQuadBase::SetNew(shared_quad_state,
+                              DrawQuad::Material::kTiledContent, rect,
+                              visible_rect, needs_blending, tex_coord_rect,
+                              nearest_neighbor, force_anti_aliasing_off);
   resource_id = resource;
 }
 
@@ -37,14 +36,13 @@ void TileDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                           bool needs_blending,
                           ResourceId resource,
                           const gfx::RectF& tex_coord_rect,
-                          const gfx::Size& texture_size,
                           bool nearest_neighbor,
                           bool force_anti_aliasing_off) {
   CHECK_NE(resource, kInvalidResourceId);
-  ContentDrawQuadBase::SetAll(
-      shared_quad_state, DrawQuad::Material::kTiledContent, rect, visible_rect,
-      needs_blending, tex_coord_rect, texture_size, nearest_neighbor,
-      force_anti_aliasing_off);
+  ContentDrawQuadBase::SetAll(shared_quad_state,
+                              DrawQuad::Material::kTiledContent, rect,
+                              visible_rect, needs_blending, tex_coord_rect,
+                              nearest_neighbor, force_anti_aliasing_off);
   resource_id = resource;
 }
 

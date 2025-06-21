@@ -330,28 +330,24 @@ TEST(DrawQuadTest, CopyTileDrawQuad) {
   bool blending = true;
   ResourceId resource_id(104);
   gfx::RectF tex_coord_rect(31.f, 12.f, 54.f, 20.f);
-  gfx::Size texture_size(85, 32);
   bool nearest_neighbor = true;
   bool force_anti_aliasing_off = false;
   CREATE_SHARED_STATE();
 
   CREATE_QUAD_NEW(TileDrawQuad, visible_rect, blending, resource_id,
-                  tex_coord_rect, texture_size, nearest_neighbor,
-                  force_anti_aliasing_off);
+                  tex_coord_rect, nearest_neighbor, force_anti_aliasing_off);
   EXPECT_EQ(DrawQuad::Material::kTiledContent, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
   EXPECT_EQ(blending, copy_quad->needs_blending);
   EXPECT_EQ(resource_id, copy_quad->resource_id);
   EXPECT_EQ(tex_coord_rect, copy_quad->tex_coord_rect);
-  EXPECT_EQ(texture_size, copy_quad->texture_size);
   EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
 
-  CREATE_QUAD_ALL(TileDrawQuad, resource_id, tex_coord_rect, texture_size,
-                  nearest_neighbor, force_anti_aliasing_off);
+  CREATE_QUAD_ALL(TileDrawQuad, resource_id, tex_coord_rect, nearest_neighbor,
+                  force_anti_aliasing_off);
   EXPECT_EQ(DrawQuad::Material::kTiledContent, copy_quad->material);
   EXPECT_EQ(resource_id, copy_quad->resource_id);
   EXPECT_EQ(tex_coord_rect, copy_quad->tex_coord_rect);
-  EXPECT_EQ(texture_size, copy_quad->texture_size);
   EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
 }
 
@@ -374,7 +370,6 @@ TEST(DrawQuadTest, CopyPictureDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
   bool blending = true;
   gfx::RectF tex_coord_rect(31.f, 12.f, 54.f, 20.f);
-  gfx::Size texture_size(85, 32);
   bool nearest_neighbor = true;
   gfx::Rect content_rect(30, 40, 20, 30);
   float contents_scale = 3.141592f;
@@ -386,13 +381,12 @@ TEST(DrawQuadTest, CopyPictureDrawQuad) {
   CREATE_SHARED_STATE();
 
   CREATE_QUAD_NEW(PictureDrawQuad, visible_rect, blending, tex_coord_rect,
-                  texture_size, nearest_neighbor, content_rect, contents_scale,
-                  {}, display_item_list, raster_inducing_scroll_offsets);
+                  nearest_neighbor, content_rect, contents_scale, {},
+                  display_item_list, raster_inducing_scroll_offsets);
   EXPECT_EQ(DrawQuad::Material::kPictureContent, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
   EXPECT_EQ(blending, copy_quad->needs_blending);
   EXPECT_EQ(tex_coord_rect, copy_quad->tex_coord_rect);
-  EXPECT_EQ(texture_size, copy_quad->texture_size);
   EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
   EXPECT_EQ(content_rect, copy_quad->content_rect);
   EXPECT_EQ(contents_scale, copy_quad->contents_scale);
@@ -492,14 +486,12 @@ TEST_F(DrawQuadIteratorTest, TileDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
   ResourceId resource_id(104);
   gfx::RectF tex_coord_rect(31.f, 12.f, 54.f, 20.f);
-  gfx::Size texture_size(85, 32);
   bool nearest_neighbor = true;
   bool force_anti_aliasing_off = false;
 
   CREATE_SHARED_STATE();
   CREATE_QUAD_NEW(TileDrawQuad, visible_rect, needs_blending, resource_id,
-                  tex_coord_rect, texture_size, nearest_neighbor,
-                  force_anti_aliasing_off);
+                  tex_coord_rect, nearest_neighbor, force_anti_aliasing_off);
   EXPECT_EQ(resource_id, quad_new->resource_id);
 }
 

@@ -2095,11 +2095,10 @@ TEST_P(IntersectingQuadSoftwareTest, PictureQuads) {
   auto* blue_quad =
       this->render_pass_->template CreateAndAppendDrawQuad<PictureDrawQuad>();
 
-  blue_quad->SetNew(this->front_quad_state_, this->quad_rect_, this->quad_rect_,
-                    needs_blending, gfx::RectF(this->quad_rect_),
-                    this->quad_rect_.size(), false, this->quad_rect_, 1.f, {},
-                    blue_raster_source->GetDisplayItemList(),
-                    cc::ScrollOffsetMap());
+  blue_quad->SetNew(
+      this->front_quad_state_, this->quad_rect_, this->quad_rect_,
+      needs_blending, gfx::RectF(this->quad_rect_), false, this->quad_rect_,
+      1.f, {}, blue_raster_source->GetDisplayItemList(), cc::ScrollOffsetMap());
 
   cc::FakeRecordingSource green_recording(quad_rect_.size());
   green_recording.add_draw_rect_with_flags(outer_rect, green_flags);
@@ -2111,8 +2110,8 @@ TEST_P(IntersectingQuadSoftwareTest, PictureQuads) {
   auto* green_quad =
       this->render_pass_->template CreateAndAppendDrawQuad<PictureDrawQuad>();
   green_quad->SetNew(this->back_quad_state_, this->quad_rect_, this->quad_rect_,
-                     needs_blending, gfx::RectF(this->quad_rect_),
-                     this->quad_rect_.size(), false, this->quad_rect_, 1.f, {},
+                     needs_blending, gfx::RectF(this->quad_rect_), false,
+                     this->quad_rect_, 1.f, {},
                      green_raster_source->GetDisplayItemList(),
                      cc::ScrollOffsetMap());
   this->AppendBackgroundAndRunTest(
@@ -4316,7 +4315,7 @@ TEST_P(GPURendererPixelTest, TileDrawQuadForceAntiAliasingOff) {
                                 gfx::MaskFilterInfo());
   TileDrawQuad* hole = pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   hole->SetNew(hole_shared_state, rect, rect, needs_blending, mapped_resource,
-               gfx::RectF(gfx::Rect(tile_size)), tile_size, nearest_neighbor,
+               gfx::RectF(gfx::Rect(tile_size)), nearest_neighbor,
                force_anti_aliasing_off);
 
   gfx::Transform green_quad_to_target_transform;
@@ -4488,7 +4487,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadIdentityScale) {
   blue_quad->SetNew(blue_shared_state,
                     viewport,  // Intentionally bigger than clip.
                     viewport, needs_blending, gfx::RectF(viewport),
-                    viewport.size(), nearest_neighbor, viewport, 1.f, {},
+                    nearest_neighbor, viewport, 1.f, {},
                     blue_raster_source->GetDisplayItemList(),
                     cc::ScrollOffsetMap());
 
@@ -4502,14 +4501,14 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadIdentityScale) {
       green_recording.CreateRasterSource();
 
   gfx::Transform green_quad_to_target_transform;
-  SharedQuadState* green_shared_state = CreateTestSharedQuadState(
-      green_quad_to_target_transform, viewport, pass.get(), gfx::MaskFilterInfo());
+  SharedQuadState* green_shared_state =
+      CreateTestSharedQuadState(green_quad_to_target_transform, viewport,
+                                pass.get(), gfx::MaskFilterInfo());
 
   auto* green_quad = pass->CreateAndAppendDrawQuad<PictureDrawQuad>();
   green_quad->SetNew(green_shared_state, viewport, viewport, needs_blending,
-                     gfx::RectF(0.f, 0.f, 1.f, 1.f), viewport.size(),
-                     nearest_neighbor, viewport, 1.f, {},
-                     green_raster_source->GetDisplayItemList(),
+                     gfx::RectF(0.f, 0.f, 1.f, 1.f), nearest_neighbor, viewport,
+                     1.f, {}, green_raster_source->GetDisplayItemList(),
                      cc::ScrollOffsetMap());
 
   AggregatedRenderPassList pass_list;
@@ -4541,15 +4540,16 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacity) {
       green_recording.CreateRasterSource();
 
   gfx::Transform green_quad_to_target_transform;
-  SharedQuadState* green_shared_state = CreateTestSharedQuadState(
-      green_quad_to_target_transform, viewport, pass.get(), gfx::MaskFilterInfo());
+  SharedQuadState* green_shared_state =
+      CreateTestSharedQuadState(green_quad_to_target_transform, viewport,
+                                pass.get(), gfx::MaskFilterInfo());
   green_shared_state->opacity = 0.5f;
 
   auto* green_quad = pass->CreateAndAppendDrawQuad<PictureDrawQuad>();
-  green_quad->SetNew(
-      green_shared_state, viewport, viewport, needs_blending,
-      gfx::RectF(0, 0, 1, 1), viewport.size(), nearest_neighbor, viewport, 1.f,
-      {}, green_raster_source->GetDisplayItemList(), cc::ScrollOffsetMap());
+  green_quad->SetNew(green_shared_state, viewport, viewport, needs_blending,
+                     gfx::RectF(0, 0, 1, 1), nearest_neighbor, viewport, 1.f,
+                     {}, green_raster_source->GetDisplayItemList(),
+                     cc::ScrollOffsetMap());
 
   // One viewport-filling white quad.
   cc::FakeRecordingSource white_recording(viewport.size());
@@ -4565,10 +4565,10 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacity) {
       white_quad_to_target_transform, viewport, pass.get(), gfx::MaskFilterInfo());
 
   auto* white_quad = pass->CreateAndAppendDrawQuad<PictureDrawQuad>();
-  white_quad->SetNew(
-      white_shared_state, viewport, viewport, needs_blending,
-      gfx::RectF(0, 0, 1, 1), viewport.size(), nearest_neighbor, viewport, 1.f,
-      {}, white_raster_source->GetDisplayItemList(), cc::ScrollOffsetMap());
+  white_quad->SetNew(white_shared_state, viewport, viewport, needs_blending,
+                     gfx::RectF(0, 0, 1, 1), nearest_neighbor, viewport, 1.f,
+                     {}, white_raster_source->GetDisplayItemList(),
+                     cc::ScrollOffsetMap());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
@@ -4602,11 +4602,10 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacityWithAlpha) {
   transparent_shared_state->opacity = 0.5f;
 
   auto* transparent_quad = pass->CreateAndAppendDrawQuad<PictureDrawQuad>();
-  transparent_quad->SetNew(transparent_shared_state, viewport, viewport,
-                           needs_blending, gfx::RectF(0, 0, 1, 1),
-                           viewport.size(), nearest_neighbor, viewport, 1.f, {},
-                           transparent_raster_source->GetDisplayItemList(),
-                           cc::ScrollOffsetMap());
+  transparent_quad->SetNew(
+      transparent_shared_state, viewport, viewport, needs_blending,
+      gfx::RectF(0, 0, 1, 1), nearest_neighbor, viewport, 1.f, {},
+      transparent_raster_source->GetDisplayItemList(), cc::ScrollOffsetMap());
 
   // One viewport-filling white quad.
   cc::FakeRecordingSource white_recording(viewport.size());
@@ -4622,10 +4621,10 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadOpacityWithAlpha) {
       white_quad_to_target_transform, viewport, pass.get(), gfx::MaskFilterInfo());
 
   auto* white_quad = pass->CreateAndAppendDrawQuad<PictureDrawQuad>();
-  white_quad->SetNew(
-      white_shared_state, viewport, viewport, needs_blending,
-      gfx::RectF(0, 0, 1, 1), viewport.size(), nearest_neighbor, viewport, 1.f,
-      {}, white_raster_source->GetDisplayItemList(), cc::ScrollOffsetMap());
+  white_quad->SetNew(white_shared_state, viewport, viewport, needs_blending,
+                     gfx::RectF(0, 0, 1, 1), nearest_neighbor, viewport, 1.f,
+                     {}, white_raster_source->GetDisplayItemList(),
+                     cc::ScrollOffsetMap());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
@@ -4679,9 +4678,8 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNearestNeighbor) {
 
   auto* quad = pass->CreateAndAppendDrawQuad<PictureDrawQuad>();
   quad->SetNew(shared_state, viewport, viewport, needs_blending,
-               gfx::RectF(0, 0, 2, 2), viewport.size(), nearest_neighbor,
-               viewport, 1.f, {}, raster_source->GetDisplayItemList(),
-               cc::ScrollOffsetMap());
+               gfx::RectF(0, 0, 2, 2), nearest_neighbor, viewport, 1.f, {},
+               raster_source->GetDisplayItemList(), cc::ScrollOffsetMap());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
@@ -4782,8 +4780,8 @@ TEST_P(RendererPixelTest, PictureDrawQuadRasterInducingScroll) {
   };
   auto* quad = pass->CreateAndAppendDrawQuad<PictureDrawQuad>();
   quad->SetNew(shared_state, viewport, viewport, needs_blending,
-               gfx::RectF(viewport), viewport.size(), nearest_neighbor,
-               viewport, 1.f, {}, raster_source->GetDisplayItemList(),
+               gfx::RectF(viewport), nearest_neighbor, viewport, 1.f, {},
+               raster_source->GetDisplayItemList(),
                raster_inducing_scroll_offsets);
 
   AggregatedRenderPassList pass_list;
@@ -4846,7 +4844,7 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
 
   auto* quad = pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   quad->SetNew(shared_state, viewport, viewport, needs_blending,
-               mapped_resource, gfx::RectF(gfx::Rect(tile_size)), tile_size,
+               mapped_resource, gfx::RectF(gfx::Rect(tile_size)),
                nearest_neighbor, force_anti_aliasing_off);
 
   AggregatedRenderPassList pass_list;
@@ -5005,14 +5003,14 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNonIdentityScale) {
   green_quad1->SetNew(
       top_right_green_shared_quad_state, green_rect1, green_rect1,
       needs_blending, gfx::RectF(gfx::SizeF(green_rect1.size())),
-      green_rect1.size(), nearest_neighbor, green_rect1, 1.f, {},
+      nearest_neighbor, green_rect1, 1.f, {},
       green_raster_source->GetDisplayItemList(), cc::ScrollOffsetMap());
 
   auto* green_quad2 = pass->CreateAndAppendDrawQuad<PictureDrawQuad>();
   green_quad2->SetNew(
       top_right_green_shared_quad_state, green_rect2, green_rect2,
       needs_blending, gfx::RectF(gfx::SizeF(green_rect2.size())),
-      green_rect2.size(), nearest_neighbor, green_rect2, 1.f, {},
+      nearest_neighbor, green_rect2, 1.f, {},
       green_raster_source->GetDisplayItemList(), cc::ScrollOffsetMap());
 
   // Add a green clipped checkerboard in the bottom right to help test
@@ -5075,8 +5073,7 @@ TEST_F(SoftwareRendererPixelTest, PictureDrawQuadNonIdentityScale) {
   auto* blue_quad = pass->CreateAndAppendDrawQuad<PictureDrawQuad>();
   blue_quad->SetNew(blue_shared_state, quad_content_rect, quad_content_rect,
                     needs_blending, gfx::RectF(quad_content_rect),
-                    content_union_rect.size(), nearest_neighbor,
-                    content_union_rect, contents_scale, {},
+                    nearest_neighbor, content_union_rect, contents_scale, {},
                     raster_source->GetDisplayItemList(), cc::ScrollOffsetMap());
 
   // Fill left half of viewport with green.
@@ -5399,7 +5396,7 @@ TEST_P(GPURendererPixelTest, TileQuadClamping) {
                                 gfx::MaskFilterInfo());
   auto* quad = pass->CreateAndAppendDrawQuad<TileDrawQuad>();
   quad->SetNew(quad_shared, gfx::Rect(layer_size), gfx::Rect(layer_size),
-               needs_blending, mapped_resource, tex_coord_rect, tile_size,
+               needs_blending, mapped_resource, tex_coord_rect,
                nearest_neighbor, use_aa);
 
   // Green background.

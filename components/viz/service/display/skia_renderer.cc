@@ -2852,7 +2852,8 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
   // images won't be fully filled so use the unclipped texture coords. On
   // interior tiles or left/top tiles, the image has been filled with
   // overlapping content so the entire image is valid for sampling.
-  gfx::RectF valid_texel_bounds(gfx::SizeF(quad->texture_size));
+  gfx::RectF valid_texel_bounds(gfx::SizeF(
+      resource_provider()->GetResourceBackedSize(quad->resource_id)));
   if (quad->IsRightEdge()) {
     // Restrict the width to match far side of texture coords
     valid_texel_bounds.set_width(quad->tex_coord_rect.right());

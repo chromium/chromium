@@ -162,7 +162,6 @@ class VizSerializationPerfTest : public testing::Test {
     gfx::Rect arbitrary_rect1_inside_rect2(44, 23, 4, 2);
     gfx::Rect arbitrary_rect3(7, -53, 22, 19);
     gfx::Rect arbitrary_rect2_inside_rect3(12, -51, 5, 12);
-    gfx::Size arbitrary_size1(15, 19);
     gfx::RectF arbitrary_rectf1(4.2f, -922.1f, 15.6f, 29.5f);
     gfx::RRectF arbitrary_rrectf1(4.2f, -922.1f, 15.6f, 29.5f, 1.2f, 2.3f, 3.4f,
                                   4.5f, 5.6f, 6.7f, 7.8f, 8.9f);
@@ -271,7 +270,7 @@ class VizSerializationPerfTest : public testing::Test {
         tile_in->SetAll(shared_state2_in, arbitrary_rect2,
                         arbitrary_rect1_inside_rect2, arbitrary_bool1,
                         arbitrary_resourceid3, arbitrary_rectf1,
-                        arbitrary_size1, arbitrary_bool2, arbitrary_bool3);
+                        arbitrary_bool2, arbitrary_bool3);
       }
     }
 

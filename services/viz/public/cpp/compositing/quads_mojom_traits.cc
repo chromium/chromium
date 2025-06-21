@@ -192,7 +192,6 @@ bool StructTraits<viz::mojom::TileQuadStateDataView, viz::DrawQuad>::Read(
     viz::DrawQuad* out) {
   viz::TileDrawQuad* quad = static_cast<viz::TileDrawQuad*>(out);
   if (!data.ReadTexCoordRect(&quad->tex_coord_rect) ||
-      !data.ReadTextureSize(&quad->texture_size) ||
       !data.ReadResourceId(&quad->resource_id)) {
     return false;
   }
