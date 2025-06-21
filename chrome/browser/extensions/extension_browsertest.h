@@ -29,6 +29,7 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 
+class OwningTestTabModel;
 class Profile;
 
 namespace content {
@@ -418,8 +419,8 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   ExtensionId last_loaded_extension_id_;
 
 #if BUILDFLAG(IS_ANDROID)
-  class TestTabModel;
-  std::unique_ptr<TestTabModel> tab_model_;
+  // Tab model used for incognito tab support.
+  std::unique_ptr<OwningTestTabModel> incognito_tab_model_;
 #endif
 
   // Used for setting the default scoped current channel for extension browser

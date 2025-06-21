@@ -56,8 +56,10 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/check.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/test/base/android/android_ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -158,79 +160,6 @@ const auto kTestActivityType = chrome::android::ActivityType::kCustomTab;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
-
-#if BUILDFLAG(IS_ANDROID)
-// TestTabModel provides a means of creating a tab associated with a given
-// profile. The new tab can then be added to Android's TabModelList.
-class ExtensionBrowserTest::TestTabModel : public TabModel {
- public:
-  explicit TestTabModel(Profile* profile)
-      : TabModel(profile, kTestActivityType),
-        web_contents_(content::WebContents::Create(
-            content::WebContents::CreateParams(GetProfile()))) {}
-
-  ~TestTabModel() override = default;
-
-  // TabModel:
-  int GetTabCount() const override { return 0; }
-  int GetActiveIndex() const override { return 0; }
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override {
-    return nullptr;
-  }
-  content::WebContents* GetActiveWebContents() const override {
-    return web_contents_.get();
-  }
-  content::WebContents* GetWebContentsAt(int index) const override {
-    return web_contents_.get();
-  }
-  TabAndroid* GetTabAt(int index) const override { return nullptr; }
-  void SetActiveIndex(int index) override {}
-  void ForceCloseAllTabs() override {}
-  void CloseTabAt(int index) override {}
-  void CreateTab(TabAndroid* parent,
-                 content::WebContents* web_contents,
-                 bool select) override {}
-  void HandlePopupNavigation(TabAndroid* parent,
-                             NavigateParams* params) override {}
-  content::WebContents* CreateNewTabForDevTools(const GURL& url,
-                                                bool new_window) override {
-    return nullptr;
-  }
-  bool IsSessionRestoreInProgress() const override { return false; }
-  bool IsActiveModel() const override { return false; }
-  void AddObserver(TabModelObserver* observer) override {}
-  void RemoveObserver(TabModelObserver* observer) override {}
-  int GetTabCountNavigatedInTimeWindow(
-      const base::Time& begin_time,
-      const base::Time& end_time) const override {
-    return 0;
-  }
-  void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
-                                      const base::Time& end_time) override {}
-
-  // TODO(crbug.com/415351293): Implement these.
-  // TabListInterface implementation.
-  void OpenTab(const GURL& url, int index) override {}
-  void DiscardTab(int index) override {}
-  void DuplicateTab(int index) override {}
-  tabs::TabInterface* GetTab(int index) override { return nullptr; }
-  void HighlightTabs(std::set<int> indicies) override {}
-  void MoveTab(int from_index, int to_index) override {}
-  void CloseTab(int index) override {}
-  std::vector<tabs::TabInterface*> GetAllTabs() override { return {}; }
-  void PinTab(int index) override {}
-  void UnpinTab(int index) override {}
-  std::optional<tab_groups::TabGroupId> CreateGroup(
-      std::set<int> indicies) override {
-    return std::nullopt;
-  }
-  void MoveGroupTo(tab_groups::TabGroupId group_id, int index) override {}
-
- private:
-  // The WebContents associated with this tab's profile.
-  std::unique_ptr<content::WebContents> web_contents_;
-};
-#endif  // BUILDFLAG(IS_ANDROID)
 
 ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
     : context_type_(context_type),
@@ -362,10 +291,8 @@ void ExtensionBrowserTest::TearDownOnMainThread() {
   TearDownTestProtocolHandler();
 
 #if BUILDFLAG(IS_ANDROID)
-  if (tab_model_) {
-    TabModelList::RemoveTabModel(tab_model_.get());
-    tab_model_.reset();
-  }
+  // Close any incognito tabs.
+  incognito_tab_model_.reset();
 #endif
 
   // Stop observing any notifications when we're tearing down the test.
@@ -877,14 +804,16 @@ content::WebContents* ExtensionBrowserTest::PlatformOpenURLOffTheRecord(
   // Android doesn't have an OpenURLOffTheRecord() helper so we roll our own.
   Profile* incognito_profile =
       this->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  if (tab_model_) {
-    TabModelList::RemoveTabModel(tab_model_.get());
-    tab_model_.reset();
-  }
-  // Create a tab model for the incognito profile then navigate to the URL.
-  tab_model_ = std::make_unique<TestTabModel>(incognito_profile);
-  TabModelList::AddTabModel(tab_model_.get());
-  content::WebContents* web_contents = tab_model_->GetActiveWebContents();
+  // Close any old incognito tabs before creating the new tab model.
+  incognito_tab_model_.reset();
+  // Create a tab model for the incognito profile.
+  incognito_tab_model_ = std::make_unique<OwningTestTabModel>(
+      incognito_profile, kTestActivityType);
+  incognito_tab_model_->SetIsActiveModel(true);
+  incognito_tab_model_->AddEmptyTab(0, /*select=*/true);
+  content::WebContents* web_contents =
+      incognito_tab_model_->GetActiveWebContents();
+  TabAndroid::AttachTabHelpers(web_contents);
   // This blocks until the navigation completes. The return value is ignored
   // because some tests intentionally navigate to blocked URLs which fail to
   // load.

@@ -345,6 +345,7 @@ static_library("test_support") {
 
     if (is_android) {
       sources += [ "../browser/extensions/extension_browsertest_platform_delegate_android.cc" ]
+      deps += [ "../browser/ui/android/tab_model:test_support" ]
     } else {
       sources += [ "../browser/extensions/extension_browsertest_platform_delegate_non_android.cc" ]
     }
