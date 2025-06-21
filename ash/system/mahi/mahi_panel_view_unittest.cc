@@ -1754,15 +1754,16 @@ TEST_F(MahiPanelViewTest, RefreshSummaryContents_TransitionToSummaryView) {
   EXPECT_TRUE(question_answer_view->children().empty());
 }
 
-// TODO(crbug.com/333800096): Re-enable this test
-TEST_F(MahiPanelViewTest, DISABLED_ClickMetrics) {
+TEST_F(MahiPanelViewTest, ClickMetrics) {
   base::HistogramTester histogram;
 
   // Learn more button.
   histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
                               mahi_constants::PanelButton::kLearnMoreLink, 0);
-  LeftClickOn(
-      panel_view()->GetViewByID(mahi_constants::ViewId::kLearnMoreLink));
+  views::test::RunScheduledLayout(widget());
+  views::AsViewClass<views::StyledLabel>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kFooterLabel))
+      ->ClickFirstLinkForTesting();
   histogram.ExpectBucketCount(mahi_constants::kMahiButtonClickHistogramName,
                               mahi_constants::PanelButton::kLearnMoreLink, 1);
   histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 1);
@@ -1815,6 +1816,7 @@ TEST_F(MahiPanelViewTest, DISABLED_ClickMetrics) {
   histogram.ExpectBucketCount(
       mahi_constants::kMahiButtonClickHistogramName,
       mahi_constants::PanelButton::kGoToQuestionAndAnswerButton, 1);
+  histogram.ExpectTotalCount(mahi_constants::kMahiButtonClickHistogramName, 4);
 
   // Close button.
   views::test::RunScheduledLayout(widget());
