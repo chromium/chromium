@@ -234,7 +234,7 @@ public class CompositorViewHolder extends FrameLayout
     private final Set<Runnable> mDidSwapFrameCallbacks = new HashSet<>();
     private final Set<Runnable> mDidSwapBuffersCallbacks = new HashSet<>();
 
-    /** Used to remove the temporary tab strip on startup, once ready (or timed out). */
+    /** Used to remove the temporary tab strip on startup, once the composited one is ready. */
     private Runnable mSetBackgroundRunnable;
 
     private boolean mHasDrawnOnce;
@@ -557,17 +557,21 @@ public class CompositorViewHolder extends FrameLayout
                     R.id.control_container, mControlContainer.getToolbarResourceAdapter());
         }
 
-        mSetBackgroundRunnable =
-                () -> {
-                    // Wait until the second frame to turn off the placeholder background for the
-                    // CompositorView and the tab strip, to ensure the compositor frame has been
-                    // drawn.
-                    final ViewGroup controlContainerVG = (ViewGroup) mControlContainer;
-                    mCompositorView.setBackgroundResource(0);
-                    if (controlContainerVG != null) {
-                        mControlContainer.setCompositorBackgroundInitialized();
-                    }
-                };
+        // The set background runnable is only necessary when the tab strip will be visible.
+        if (mActivity != null && mLayoutManager.getStripLayoutHelperManager() != null) {
+            removeTempBackground();
+            return;
+        }
+
+        mSetBackgroundRunnable = this::removeTempBackground;
+        // Request a render. The temporary background will be removed once we are confident that the
+        // composited tab strip is ready to be drawn.
+        requestRender();
+    }
+
+    private void removeTempBackground() {
+        mCompositorView.setBackgroundResource(0);
+        if (mControlContainer != null) mControlContainer.setCompositorBackgroundInitialized();
     }
 
     /**
@@ -1251,6 +1255,7 @@ public class CompositorViewHolder extends FrameLayout
         TraceEvent.instant("didSwapFrame");
 
         mHasDrawnOnce = true;
+        if (mSetBackgroundRunnable != null) requestRender();
 
         mDidSwapBuffersCallbacks.addAll(mDidSwapFrameCallbacks);
         mDidSwapFrameCallbacks.clear();
@@ -1259,9 +1264,16 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public void didSwapBuffers(boolean swappedCurrentSize, int framesUntilHideBackground) {
-        if (mSetBackgroundRunnable != null && mHasDrawnOnce && framesUntilHideBackground == 0) {
-            // Remove temporary background if tab state is ready.
-            runSetBackgroundRunnable();
+        // Wait until the second frame to turn off the placeholder background for the CompositorView
+        // and the tab strip, to ensure the compositor frame has been drawn.
+        if (mSetBackgroundRunnable != null) {
+            if (mHasDrawnOnce && framesUntilHideBackground == 0) {
+                // Remove temporary background if tab state is ready.
+                runSetBackgroundRunnable();
+            } else {
+                // If tab state is not yet ready, request another render.
+                requestRender();
+            }
         }
 
         for (Runnable runnable : mDidSwapBuffersCallbacks) {
@@ -1928,7 +1940,8 @@ public class CompositorViewHolder extends FrameLayout
                 !mHasDrawnOnce
                         || !mOnCompositorLayoutCallbacks.isEmpty()
                         || !mDidSwapFrameCallbacks.isEmpty()
-                        || !mDidSwapBuffersCallbacks.isEmpty();
+                        || !mDidSwapBuffersCallbacks.isEmpty()
+                        || mSetBackgroundRunnable != null;
         mCompositorView.setRenderHostNeedsDidSwapBuffersCallback(needsSwapCallback);
     }
 
