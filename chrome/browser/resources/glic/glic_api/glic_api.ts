@@ -178,7 +178,7 @@ export declare interface GlicBrowserHost {
       (options: TabContextOptions): Promise<TabContextResult>;
 
   /**
-   * @todo Not yet implemented. https://crbug.com/402086021
+   * @deprecated Use CreateTask and PerformActions instead.
    *
    * Inform Chrome about an action. Chrome Takes an action based on the
    * action proto and returns new context based on the tab context options.
@@ -190,6 +190,27 @@ export declare interface GlicBrowserHost {
    */
   actInFocusedTab?
       (params: ActInFocusedTabParams): Promise<ActInFocusedTabResult>;
+
+  /**
+   * Creates a task and returns its ID.
+   *
+   * @throws {ActInFocusedTabError} on failure.
+   *
+   * @todo Not yet implemented. https://crbug.com/425681926
+   */
+  createTask?(): Promise<number>;
+
+  /**
+   * Performs actions on the task with the given ID.
+   *
+   * The input corresponds to the Actions proto in
+   * components/optimization_guide/proto/features/actions_data.proto.
+   *
+   * The output corresponds to the ActionsResult proto.
+   *
+   * @todo Not yet implemented. https://crbug.com/425681926
+   */
+  performActions?(actions: ArrayBuffer): Promise<ArrayBuffer>;
 
   /**
    * Stops the actor task with the given ID in the browser if it exists. No-op
@@ -247,6 +268,8 @@ export declare interface GlicBrowserHost {
   captureScreenshot?(): Promise<Screenshot>;
 
   /**
+   * @todo All actuation should eventually be moved onto PerformActions.
+   *
    * Creates a tab and navigates to a URL. It is made the active tab by default
    * but that can be changed using `options.openInBackground`.
    *
@@ -953,6 +976,7 @@ export declare interface ErrorReasonTypes {
   scrollTo: ScrollToErrorReason;
   webClientInitialize: WebClientInitializeErrorReason;
   actInFocusedTab: ActInFocusedTabErrorReason;
+  createTask: CreateTaskErrorReason;
 }
 
 /** Reason why the web client could not initialize. */
@@ -987,6 +1011,13 @@ export enum ActInFocusedTabErrorReason {
   TARGET_NOT_FOUND = 3,
   /** Failed to start a new task. */
   FAILED_TO_START_TASK = 4,
+}
+
+/** Reason for failure when trying to create a task. */
+export enum CreateTaskErrorReason {
+  UNKNOWN = 0,
+  /** Task system unavailable. */
+  TASK_SYSTEM_UNAVAILABLE = 1,
 }
 
 /**
@@ -1025,6 +1056,9 @@ export type CaptureScreenshotError = ErrorWithReason<'captureScreenshot'>;
 
 /** Error type used for actuation errors. */
 export type ActInFocusedTabError = ErrorWithReason<'actInFocusedTab'>;
+
+/** Error type used for create task errors. */
+export type CreateTaskError = ErrorWithReason<'createTask'>;
 
 /** Params for scrollTo(). */
 export declare interface ScrollToParams {
@@ -1319,5 +1353,6 @@ export interface ExtensibleEnums {
   webClientInitializeErrorReason: typeof WebClientInitializeErrorReason;
   invocationSource: typeof InvocationSource;
   actInFocusedTabErrorReason: typeof ActInFocusedTabErrorReason;
+  createTaskErrorReason: typeof CreateTaskErrorReason;
   settingsPageField: typeof SettingsPageField;
 }
