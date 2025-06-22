@@ -2621,6 +2621,7 @@
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{बहुत सारी सूचनाओं वाली 1 साइट मिली}one{बहुत सारी सूचनाओं वाली {NUM_SITES} साइट मिली}other{बहुत सारी सूचनाओं वाली {NUM_SITES} साइट मिलीं}}</translation>
 <translation id="2778471504622896352">ChromeOS लॉन्चर में रिमोट ऐप्लिकेशन जोड़ें</translation>
 <translation id="2779728796406650689">इससे Google Assistant, आपके सवाल पूछने पर ज़रूरत के हिसाब से जवाब दे पाती है.</translation>
+<translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux ऐप्लिकेशन इंस्टॉल करते समय गड़बड़ी</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> के ज़रिए अपनी 'सुरक्षा चाबी' का इस्तेमाल करें</translation>
@@ -4844,6 +4845,7 @@
 <translation id="435527878592612277">अपनी फ़ोटो चुनें</translation>
 <translation id="4356100841225547054">आवाज़ बंद करें</translation>
 <translation id="4357583358198801992">टैब ग्रुप दिखाएं</translation>
+<translation id="4357812592970409234">'नया टैब' पेज के बैकग्राउंड के बारे में ज़्यादा जानें</translation>
 <translation id="4358361163731478742">किसी भी ऐप्लिकेशन में, ऐप्लिकेशन की भाषा चुनने की सुविधा मौजूद नहीं है</translation>
 <translation id="4358643842961018282">आपका डिवाइस अप-टू-डेट है</translation>
 <translation id="4358995225307748864">वेबपेज खोलने के लिए कोई ऐप्लिकेशन चुनें</translation>

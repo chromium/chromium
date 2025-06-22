@@ -2609,6 +2609,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Koʻp bildirishnomali 1 ta sayt topildi}other{Koʻp bildirishnomali {NUM_SITES} ta sayt topildi}}</translation>
 <translation id="2778471504622896352">Ilovalarni masofadan ChromeOS ishga tushirgichiga qoʻshish</translation>
 <translation id="2779728796406650689">Bu Google Assistentga savollar berganingizda batafsil javoblarni taqdim etish imkonini beradi.</translation>
+<translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux ilovasini o‘rnatishda xatolik yuz berdi</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> hisobiga elektron kalit orqali kiring</translation>
@@ -4831,6 +4832,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="435527878592612277">Surat tanlang</translation>
 <translation id="4356100841225547054">Tovushni oʻchirish</translation>
 <translation id="4357583358198801992">Varaqlar guruhini koʻrsatish</translation>
+<translation id="4357812592970409234">Yangi varaq sahifangiz foni haqida batafsil</translation>
 <translation id="4358361163731478742">Ilova tilini tanlashni hech qanday ilova dastaklamaydi</translation>
 <translation id="4358643842961018282">Qurilmangiz dasturi yangilandi</translation>
 <translation id="4358995225307748864">Ilovani tanlang</translation>

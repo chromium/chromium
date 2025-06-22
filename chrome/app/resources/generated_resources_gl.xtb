@@ -1279,7 +1279,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1878477879455105085">Aberto</translation>
 <translation id="1878885068166344708">Destácase un determinado elemento cando moves o enfoque. Para cambiar o enfoque, preme Tabulador ou selecciona un elemento.</translation>
 <translation id="1879000426787380528">Iniciar sesión como</translation>
-<translation id="1880618477732738742">Cambia o acceso e concédeo a funcións como xeolocalización, micrófono, cámara, cookies etc. para todos os sitios web e extensións, mesmo esta extensión.</translation>
+<translation id="1880618477732738742">Cambiar o acceso e concédeo a funcións como xeolocalización, micrófono, cámara, cookies etc. para todos os sitios web e extensións, mesmo esta extensión.</translation>
 <translation id="1881445033931614352">Deseño do teclado</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Elemento}other{# elementos}}</translation>
 <translation id="1884340228047885921">Visibilidade actual configurada como Algúns contactos</translation>
@@ -3627,7 +3627,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3527085408025491307">Cartafol</translation>
 <translation id="3528498924003805721">Atallos</translation>
 <translation id="3529851166527095708">Enderezos e moito máis</translation>
-<translation id="3529871939841948730">Envía a ChromeOS Flex os informes de fallos, así como os datos de diagnóstico e de uso</translation>
+<translation id="3529871939841948730">Enviar a ChromeOS Flex os informes de fallos, así como os datos de diagnóstico e de uso</translation>
 <translation id="3531070080754387701">Microsoft 365 non pode abrir <ph name="FILE_NAMES" /> desde este cartafol</translation>
 <translation id="3531883061432162622">Podes atopar a túa lista de lectura e os teus marcadores en Marcadores e listas</translation>
 <translation id="3532273508346491126">Xestión da sincronización</translation>
@@ -7237,7 +7237,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6104929924898022309">Usar tecla de busca para modificar o comportamento das teclas de función</translation>
 <translation id="6106167152849320869">Se no paso anterior tamén indicaches que aceptas enviar datos de diagnóstico e de uso, recompilaranse estes datos para as aplicacións instaladas.</translation>
 <translation id="6108952804512516814">Crear con IA</translation>
-<translation id="6110303766838612983">Envía a ChromeOS os informes de fallos, así como os datos de diagnóstico e de uso</translation>
+<translation id="6110303766838612983">Enviar a ChromeOS os informes de fallos, así como os datos de diagnóstico e de uso</translation>
 <translation id="6111718295497931251">Quitar acceso a Google Drive</translation>
 <translation id="6111972606040028426">Activar Asistente de Google</translation>
 <translation id="6112727384379533756">Engadir tícket</translation>

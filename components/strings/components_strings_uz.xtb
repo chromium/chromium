@@ -2023,6 +2023,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4372948949327679948">Kutilgan <ph name="VALUE_TYPE" /> qiymati.</translation>
 <translation id="437620492464254965">Eshik va oynalar</translation>
 <translation id="4377125064752653719">Siz <ph name="DOMAIN" /> saytiga o‘tmoqchi bo‘ldingiz, lekin server taqdim qilgan sertifikat noshiri tomonidan bekor qilingan. Bu server bergan havfsizlik hisob ma’lumotlari ishonchsizligini bildiradi. Siz firibgarlar saytiga kirgan bo‘lishingiz mumkin.</translation>
+<translation id="4377869186417956230">Bu menyu bandi ostida barcha sodiq mijoz kartalariga oʻzgartirish mumkin.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Endi fayllaringiz bulutli xotirada saqlanadi</translation>
@@ -4653,6 +4654,7 @@ Batafsil axborot:
 <translation id="8926389886865778422">Qayta so‘ralmasin</translation>
 <translation id="8932102934695377596">Soatingiz orqada</translation>
 <translation id="893332455753468063">Ism qo‘shing</translation>
+<translation id="8938242527120341116">Qurilmaning kontent filtrlari blokladi: <ph name="BLOCKED_URL" /></translation>
 <translation id="8942355029279167844">Mahsulot sifatini yaxshilash maqsadida <ph name="APP_NAME" /> diagnostika maʼlumotlarini jamlashiga Administrator tomonidan ruxsat berildi. Batafsil: <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Laym</translation>
 <translation id="8949410982325929394">Tovush</translation>
@@ -4858,6 +4860,7 @@ Batafsil axborot:
 <translation id="963837307749850257">Barcha foydalanuvchilar</translation>
 <translation id="964050462028070434">Parol va kodlarni boshqarish…</translation>
 <translation id="969892804517981540">Rasmiy versiya</translation>
+<translation id="97054401902912338">Kontent filtrlari haqida batafsil</translation>
 <translation id="973788791897303708">Bu varaqlar guruhi toʻlgan</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Yo‘q}=1{1 ta element}other{# ta element}}</translation>
 <translation id="976522784004777030">5 x 8 in</translation>
