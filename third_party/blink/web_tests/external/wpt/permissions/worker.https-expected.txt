@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Worker can query the 'geolocation' permission and detect a transition to 'granted'
+  promise_test: Unhandled rejection with value: object "ReferenceError: messagePromise is not defined"
+Harness: the test ran to completion.
+

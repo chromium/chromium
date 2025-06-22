@@ -420033,7 +420033,11 @@
       "b0653f8c0cd7dbcb7d4be0617054685aa8fbb72a",
       []
      ]
-    }
+    },
+    "worker.https-expected.txt": [
+     "bad6c55bb0a568170265cbcab3ea8526eb0c414b",
+     []
+    ]
    },
    "permissions-policy": {
     "DIR_METADATA": [
@@ -687314,6 +687318,24 @@
       {}
      ]
     ],
+    "edge-cases.https.html": [
+     "e2dbe0dce404249583db5c90c3d168ecfbca130e",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "event-model.https.html": [
+     "f59dfb62d705a08ef79a5a53b94907dd0cfcd720",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "idlharness.any.js": [
      "ff0a969badace39c3c4466c4528e30c21355e132",
      [
@@ -687393,6 +687415,24 @@
      [
       null,
       {}
+     ]
+    ],
+    "revocation.https.html": [
+     "f86d69363734b9087d2f339978d67bbd456b7ac6",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "worker.https.html": [
+     "05b4e25c18d16eb39a03bdfe5042ab6240539257",
+     [
+      null,
+      {
+       "testdriver": true
+      }
      ]
     ]
    },

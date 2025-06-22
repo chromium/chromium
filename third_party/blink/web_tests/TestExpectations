@@ -3271,7 +3271,7 @@ crbug.com/381129856 [ Mac13 ] external/wpt/shadow-dom/focus/focus-pseudo-on-shad
 crbug.com/381129856 [ Win11-arm64 ] external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-1.html [ Failure ]
 crbug.com/380969341 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/SourceBuffer-appendWindowEnd-rounding.html [ Failure ]
 crbug.com/381127883 [ Linux ] external/wpt/webdriver/tests/bidi/network/before_request_sent/before_request_sent_cached.py [ Failure ]
-crbug.com/381127883 [ Linux ] external/wpt/webdriver/tests/bidi/network/before_request_sent/before_request_sent.py [ Failure ]
+crbug.com/381127883 external/wpt/webdriver/tests/bidi/network/before_request_sent/before_request_sent.py [ Failure ]
 crbug.com/381127883 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_request/headers.py [ Failure ]
 crbug.com/381127883 [ Linux ] external/wpt/webdriver/tests/bidi/network/response_completed/response_completed_cached.py [ Failure ]
 crbug.com/381127882 external/wpt/css/css-rhythm/content-based-height-rounds-up-to-step-unit.html [ Failure ]
