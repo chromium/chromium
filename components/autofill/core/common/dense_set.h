@@ -485,7 +485,7 @@ class DenseSet {
   }
 
   // Erases all values of |xs| into the present set.
-  void erase_all(const DenseSet& xs) { bitset_ &= ~xs.bitset_; }
+  constexpr void erase_all(const DenseSet& xs) { bitset_ &= ~xs.bitset_; }
 
   // Lookup.
 
@@ -503,17 +503,17 @@ class DenseSet {
   }
 
   // Returns true if some element of |xs| is an element, else |false|.
-  bool contains_none(const DenseSet& xs) const {
+  constexpr bool contains_none(const DenseSet& xs) const {
     return (bitset_ & xs.bitset_) == Bitset{};
   }
 
   // Returns true if some element of |xs| is an element, else |false|.
-  bool contains_any(const DenseSet& xs) const {
+  constexpr bool contains_any(const DenseSet& xs) const {
     return (bitset_ & xs.bitset_) != Bitset{};
   }
 
   // Returns true if every elements of |xs| is an element, else |false|.
-  bool contains_all(const DenseSet& xs) const {
+  constexpr bool contains_all(const DenseSet& xs) const {
     return (bitset_ & xs.bitset_) == xs.bitset_;
   }
 

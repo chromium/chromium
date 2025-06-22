@@ -28,31 +28,75 @@ using EntityMap =
     base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>;
 using SectionMap = base::flat_map<Section, EntityMap>;
 
-// AttributeType::field_type() must be injective: distinct AttributeTypes must
-// be mapped to distinct FieldTypes.
+// The set of all FieldTypes that have **more** than one associated
+// AttributeType.
+static constexpr FieldTypeSet kNonInjectiveFieldTypes = [] {
+  DenseSet<FieldType> hit;
+  DenseSet<FieldType> hit_once;
+  for (AttributeType a : DenseSet<AttributeType>::all()) {
+    for (FieldType ft : a.field_subtypes()) {
+      if (hit.contains(ft)) {
+        hit_once.erase(ft);
+      } else {
+        hit_once.insert(ft);
+      }
+      hit.insert(ft);
+    }
+  }
+  DenseSet<FieldType> hit_multiple = hit;
+  hit_multiple.erase_all(hit_once);
+  return hit_multiple;
+}();
+
+// Some plausibility checks.
+static_assert(kNonInjectiveFieldTypes.contains_all({NAME_FULL, NAME_FIRST,
+                                                    NAME_LAST, NAME_MIDDLE}));
+static_assert(!kNonInjectiveFieldTypes.contains_any(
+    {ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, CREDIT_CARD_NUMBER}));
+static_assert(!kNonInjectiveFieldTypes.contains_any(
+    {DRIVERS_LICENSE_EXPIRATION_DATE, PASSPORT_NUMBER, VEHICLE_MODEL}));
+
+// AttributeType::field_type() must be mostly injective: distinct AttributeTypes
+// other than `kNonInjectiveFieldTypes` must be mapped to distinct FieldTypes.
 static_assert(
     std::ranges::all_of(DenseSet<AttributeType>::all(), [](AttributeType a) {
       return std::ranges::all_of(
           DenseSet<AttributeType>::all(), [&a](AttributeType b) {
-            return a == b || a.field_type() != b.field_type();
+            return a == b || a.field_type() != b.field_type() ||
+                   kNonInjectiveFieldTypes.contains(a.field_type()) ||
+                   kNonInjectiveFieldTypes.contains(b.field_type());
           });
     }));
 
 std::optional<AttributeType> GetStaticAttributeType(
     const AutofillField& field) {
-  // This lookup table is the inverse of AttributeType::field_type().
-  static constexpr auto kTable = []() {
-    std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
-    for (AttributeType at : DenseSet<AttributeType>::all()) {
-      arr[at.field_type()] = at;
-    }
-    return arr;
-  }();
-
   std::optional<FieldType> ft = field.GetAutofillAiServerTypePredictions();
   if (!ft) {
     return std::nullopt;
   }
+
+  if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
+    static constexpr auto kTable = []() {
+      std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
+      for (AttributeType at : DenseSet<AttributeType>::all()) {
+        arr[at.field_type()] = at;
+      }
+      return arr;
+    }();
+    return 0 <= *ft && *ft < kTable.size() ? kTable[*ft] : std::nullopt;
+  }
+
+  // This lookup table is the inverse of AttributeType::field_type(), except
+  // for the `kNonInjectiveFieldTypes`.
+  static constexpr auto kTable = []() {
+    std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
+    for (AttributeType at : DenseSet<AttributeType>::all()) {
+      if (!kNonInjectiveFieldTypes.contains(at.field_type())) {
+        arr[at.field_type()] = at;
+      }
+    }
+    return arr;
+  }();
   return 0 <= *ft && *ft < kTable.size() ? kTable[*ft] : std::nullopt;
 }
 
