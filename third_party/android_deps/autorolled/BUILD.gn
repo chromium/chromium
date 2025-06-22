@@ -653,7 +653,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_robolectric_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_robolectric/robolectric-4.15.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_robolectric/robolectric-4.15.1.jar"
       output_name = "org_robolectric_robolectric"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1045,7 +1045,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_annotations_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_annotations/annotations-4.15.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_annotations/annotations-4.15.1.jar"
       output_name = "org_robolectric_annotations"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1061,7 +1061,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_junit_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_junit/junit-4.15.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_junit/junit-4.15.1.jar"
       output_name = "org_robolectric_junit"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1081,7 +1081,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_nativeruntime_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_nativeruntime/nativeruntime-4.15.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_nativeruntime/nativeruntime-4.15.1.jar"
       output_name = "org_robolectric_nativeruntime"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1120,7 +1120,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_pluginapi_java") {
       jar_path =
-          "autorolled/cipd/libs/org_robolectric_pluginapi/pluginapi-4.15.jar"
+          "autorolled/cipd/libs/org_robolectric_pluginapi/pluginapi-4.15.1.jar"
       output_name = "org_robolectric_pluginapi"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1140,7 +1140,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_plugins_maven_dependency_resolver_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_plugins_maven_dependency_resolver/plugins-maven-dependency-resolver-4.15.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_plugins_maven_dependency_resolver/plugins-maven-dependency-resolver-4.15.1.jar"
       output_name = "org_robolectric_plugins_maven_dependency_resolver"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1163,7 +1163,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_resources_java") {
       jar_path =
-          "autorolled/cipd/libs/org_robolectric_resources/resources-4.15.jar"
+          "autorolled/cipd/libs/org_robolectric_resources/resources-4.15.1.jar"
       output_name = "org_robolectric_resources"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1185,7 +1185,8 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_sandbox_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_sandbox/sandbox-4.15.jar"
+      jar_path =
+          "autorolled/cipd/libs/org_robolectric_sandbox/sandbox-4.15.1.jar"
       output_name = "org_robolectric_sandbox"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1213,7 +1214,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_shadowapi_java") {
       jar_path =
-          "autorolled/cipd/libs/org_robolectric_shadowapi/shadowapi-4.15.jar"
+          "autorolled/cipd/libs/org_robolectric_shadowapi/shadowapi-4.15.1.jar"
       output_name = "org_robolectric_shadowapi"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1233,7 +1234,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_shadows_framework_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_shadows_framework/shadows-framework-4.15.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_shadows_framework/shadows-framework-4.15.1.jar"
       output_name = "org_robolectric_shadows_framework"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1263,7 +1264,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_utils_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_utils/utils-4.15.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_utils/utils-4.15.1.jar"
       output_name = "org_robolectric_utils"
       requires_robolectric = true
       enable_bytecode_checks = false
@@ -1284,7 +1285,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_robolectric_utils_reflector_java") {
-      jar_path = "autorolled/cipd/libs/org_robolectric_utils_reflector/utils-reflector-4.15.jar"
+      jar_path = "autorolled/cipd/libs/org_robolectric_utils_reflector/utils-reflector-4.15.1.jar"
       output_name = "org_robolectric_utils_reflector"
       requires_robolectric = true
       enable_bytecode_checks = false
