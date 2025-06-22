@@ -32,6 +32,16 @@ std::u16string ConsumeU16String(FuzzedDataProvider& provider) {
       s8.size() / 2);
 }
 
+// A wrapper to ConsumeEnum<FormControlType> because FormControlType has gaps
+// in the used integers.
+FormControlType ConsumeFormControlType(FuzzedDataProvider& provider) {
+  FormControlType result;
+  do {
+    result = provider.ConsumeEnum<FormControlType>();
+  } while (!IsKnownEnumValue(result));
+  return result;
+}
+
 }  // namespace
 
 FieldRendererId FindNthUnusedRendererId(
@@ -76,7 +86,7 @@ FormData GenerateFormData(FuzzedDataProvider& provider) {
     const bool force_empty_value = bools[1];
     fields[i].set_is_focusable(bools[2]);
 
-    fields[i].set_form_control_type(provider.ConsumeEnum<FormControlType>());
+    fields[i].set_form_control_type(ConsumeFormControlType(provider));
     fields[i].set_autocomplete_attribute(provider.ConsumeRandomLengthString());
     fields[i].set_label(ConsumeU16String(provider));
     fields[i].set_name(ConsumeU16String(provider));
