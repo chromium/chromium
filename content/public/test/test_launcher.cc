@@ -396,8 +396,7 @@ int LaunchTestsInternal(TestLauncherDelegate* launcher_delegate,
 #if GTEST_HAS_DEATH_TEST
       // Ensure death test child processes don't reuse the user data dir of
       // their parent process.
-      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-              "gtest_internal_run_death_test")) {
+      if (command_line->HasSwitch("gtest_internal_run_death_test")) {
         command_line->RemoveSwitch(user_data_dir_switch);
       }
 #endif  // GTEST_HAS_DEATH_TEST
