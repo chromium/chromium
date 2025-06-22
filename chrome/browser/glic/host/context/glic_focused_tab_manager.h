@@ -123,8 +123,7 @@ class GlicFocusedTabManager : public BrowserListObserver,
   // Either a focused web contents, or a NoFocusedTabData.
   class FocusedTabDataImpl {
    public:
-    explicit FocusedTabDataImpl(
-        const base::WeakPtr<content::WebContents>& contents);
+    explicit FocusedTabDataImpl(base::WeakPtr<content::WebContents> contents);
     explicit FocusedTabDataImpl(const NoFocusedTabData& no_focused_tab_data);
     FocusedTabDataImpl(const FocusedTabDataImpl&);
     ~FocusedTabDataImpl();

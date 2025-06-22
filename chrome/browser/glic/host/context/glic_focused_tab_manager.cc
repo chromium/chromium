@@ -444,8 +444,8 @@ bool GlicFocusedTabManager::FocusedTabState::IsSame(
 }
 
 GlicFocusedTabManager::FocusedTabDataImpl::FocusedTabDataImpl(
-    const base::WeakPtr<content::WebContents>& contents)
-    : data_(contents) {}
+    base::WeakPtr<content::WebContents> contents)
+    : data_(std::move(contents)) {}
 
 GlicFocusedTabManager::FocusedTabDataImpl::FocusedTabDataImpl(
     const NoFocusedTabData& no_focused_tab_data)
