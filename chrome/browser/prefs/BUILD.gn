@@ -289,6 +289,7 @@ source_set("impl") {
     ]
   } else {
     deps += [
+      "//chrome/browser/contextual_cueing",
       "//chrome/browser/promos:utils",
       "//chrome/browser/screen_ai:prefs",
       "//chrome/browser/search/background",

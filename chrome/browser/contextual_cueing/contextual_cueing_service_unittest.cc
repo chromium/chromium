@@ -8,6 +8,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_prefs.h"
+#include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -33,8 +35,6 @@ using ::testing::_;
 using ::testing::An;
 using ::testing::ElementsAre;
 using ::testing::WithArgs;
-
-namespace {
 
 constexpr char kFooURL[] = "https://foo.com";
 constexpr char kBarURL[] = "https://bar.com";
@@ -412,6 +412,7 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     glic::prefs::RegisterProfilePrefs(pref_service_->registry());
+    prefs::RegisterProfilePrefs(pref_service_->registry());
   }
 
   void TearDown() override {
@@ -429,6 +430,16 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
         pref_service_.get(), /*template_url_service=*/nullptr);
   }
 
+  std::optional<optimization_guide::proto::ZeroStateSuggestionsRequest>
+  GetPendingZeroStateSuggestionsRequest() {
+    auto* zss_data = ZeroStateSuggestionsPageData::GetForPage(
+        web_contents()->GetPrimaryPage());
+    if (!zss_data) {
+      return std::nullopt;
+    }
+    return zss_data->pending_request();
+  }
+
   ContextualCueingService* service() { return service_.get(); }
 
   MockLoadingPredictor* loading_predictor() { return loading_predictor_.get(); }
@@ -438,6 +449,8 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
   }
 
   content::WebContents* web_contents() { return web_contents_.get(); }
+
+  PrefService* pref_service() { return pref_service_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -483,7 +496,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
   service()->GetContextualGlicZeroStateSuggestions(
-      web_contents(), /*is_fre=*/false, /*supported_tools=*/{},
+      web_contents(), /*is_fre=*/false, /*supported_tools=*/std::nullopt,
       future.GetCallback());
 
   EXPECT_NE(nullptr, ZeroStateSuggestionsPageData::GetForPage(
@@ -509,8 +522,61 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   EXPECT_EQ(nullptr, ZeroStateSuggestionsPageData::GetForPage(
                          web_contents()->GetPrimaryPage()));
 }
-#endif
 
-}  // namespace
+TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
+       InitializesPageDataWritesPrefWhenPassedTools) {
+  base::HistogramTester histogram_tester;
+  SetGlicTabContextEnabled(true);
+  EXPECT_CALL(mock_optimization_guide_keyed_service(),
+              RegisterOptimizationTypes(ElementsAre(
+                  optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS)))
+      .Times(1);
+  InitializeContextualCueingService();
+
+  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+  service()->GetContextualGlicZeroStateSuggestions(
+      web_contents(), /*is_fre=*/false, std::vector<std::string>({"tool"}),
+      future.GetCallback());
+
+  const base::Value::List& pref_value =
+      pref_service()->GetList(prefs::kZeroStateSuggestionsSupportedTools);
+  EXPECT_EQ(pref_value.size(), 1u);
+  EXPECT_EQ(base::Value::Type::STRING, pref_value[0].type());
+  EXPECT_EQ("tool", pref_value[0].GetString());
+
+  std::optional<optimization_guide::proto::ZeroStateSuggestionsRequest>
+      pending_request = GetPendingZeroStateSuggestionsRequest();
+  ASSERT_TRUE(pending_request.has_value());
+  EXPECT_EQ(pending_request->supported_tools_size(), 1);
+  EXPECT_EQ("tool", pending_request->supported_tools(0));
+}
+
+TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
+       InitializesPageDataReadsPrefWhenPassedNullOptTools) {
+  base::HistogramTester histogram_tester;
+  SetGlicTabContextEnabled(true);
+  EXPECT_CALL(mock_optimization_guide_keyed_service(),
+              RegisterOptimizationTypes(ElementsAre(
+                  optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS)))
+      .Times(1);
+  InitializeContextualCueingService();
+
+  base::Value::List tools_pref;
+  tools_pref.Append("tool");
+  pref_service()->SetList(prefs::kZeroStateSuggestionsSupportedTools,
+                          std::move(tools_pref));
+
+  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+  service()->GetContextualGlicZeroStateSuggestions(
+      web_contents(), /*is_fre=*/false, /*supported_tools=*/std::nullopt,
+      future.GetCallback());
+
+  std::optional<optimization_guide::proto::ZeroStateSuggestionsRequest>
+      pending_request = GetPendingZeroStateSuggestionsRequest();
+  ASSERT_TRUE(pending_request.has_value());
+  EXPECT_EQ(pending_request->supported_tools_size(), 1);
+  EXPECT_EQ("tool", pending_request->supported_tools(0));
+}
+#endif
 
 }  // namespace contextual_cueing

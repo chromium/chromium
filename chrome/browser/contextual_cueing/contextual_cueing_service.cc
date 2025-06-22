@@ -11,6 +11,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_prefs.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
@@ -56,6 +57,24 @@ void LogNudgeInteractionUKM(ukm::SourceId source_id,
 #if BUILDFLAG(ENABLE_GLIC)
 bool IsGlicTabContextEnabled(PrefService* pref_service) {
   return pref_service->GetBoolean(glic::prefs::kGlicTabContextEnabled);
+}
+
+base::Value::List ConvertSupportedToolsToPrefValue(
+    const std::vector<std::string>& supported_tools) {
+  base::Value::List pref_tools;
+  for (const auto& tool : supported_tools) {
+    pref_tools.Append(tool);
+  }
+  return pref_tools;
+}
+
+std::vector<std::string> GetSupportedToolsFromPref(
+    const base::Value::List& pref_value) {
+  std::vector<std::string> supported_tools;
+  for (const base::Value& value : pref_value) {
+    supported_tools.push_back(value.GetString());
+  }
+  return supported_tools;
 }
 #endif
 
@@ -301,15 +320,20 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
     return;
   }
 
-  // TODO: crbug.com/424473209 - If `supported_tools` is nullopt, get cached
-  // value.
-  // TODO: crbug.com/424473209 - If `supported_tools` is non-nullopt, cache
-  // value and use in fetch.
+  std::vector<std::string> req_supported_tools;
+  if (supported_tools) {
+    req_supported_tools = *supported_tools;
+    pref_service_->SetList(prefs::kZeroStateSuggestionsSupportedTools,
+                           ConvertSupportedToolsToPrefValue(*supported_tools));
+  } else {
+    req_supported_tools = GetSupportedToolsFromPref(
+        pref_service_->GetList(prefs::kZeroStateSuggestionsSupportedTools));
+  }
   ZeroStateSuggestionsPageData* page_data =
       ZeroStateSuggestionsPageData::GetOrCreateForPage(
           web_contents->GetPrimaryPage());
   page_data->FetchSuggestions(
-      is_fre, supported_tools.value_or(std::vector<std::string>({})),
+      is_fre, req_supported_tools,
       base::BindOnce(&ContextualCueingService::OnSuggestionsReceived,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
                      std::move(callback)));

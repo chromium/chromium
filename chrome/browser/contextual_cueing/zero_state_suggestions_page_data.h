@@ -55,6 +55,7 @@ class ZeroStateSuggestionsPageData
 
  private:
   friend class content::PageUserData<ZeroStateSuggestionsPageData>;
+  friend class ContextualCueingServiceTestZeroStateSuggestions;
   friend class ZeroStateSuggestionsPageDataTest;
 
   // Note that this constructor initiates extracting page content.
@@ -62,6 +63,12 @@ class ZeroStateSuggestionsPageData
 
   // Returns the URL of the primary main frame associated with this page.
   const GURL GetUrl();
+
+  // Returns the pending request if there is one.
+  std::optional<optimization_guide::proto::ZeroStateSuggestionsRequest>
+  pending_request() const {
+    return suggestions_request_;
+  }
 
   // Called when inner text is extracted.
   void OnReceivedInnerText(
