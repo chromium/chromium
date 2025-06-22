@@ -44,6 +44,7 @@ class CreditCardRiskBasedAuthenticator;
 class Iban;
 class IbanAccessManager;
 class IbanManager;
+class LoyaltyCard;
 class MerchantPromoCodeManager;
 struct OfferNotificationOptions;
 class OtpUnmaskDelegate;

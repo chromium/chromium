@@ -21,7 +21,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
@@ -104,6 +104,7 @@ class LogManager;
 class PersonalDataManager;
 class SingleFieldFillRouter;
 class StrikeDatabase;
+class ValuablesDataManager;
 class VotesUploader;
 struct Suggestion;
 enum class WebauthnDialogState;
