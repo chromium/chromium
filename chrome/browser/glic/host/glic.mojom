@@ -4,6 +4,7 @@
 
 module glic.mojom;
 
+import "chrome/browser/glic/host/glic_features.mojom";
 import "components/content_settings/core/common/content_settings_types.mojom";
 import "components/optimization_guide/content/mojom/ai_page_content_metadata.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
@@ -217,6 +218,8 @@ struct WebClientInitialState {
   // Whether features::kGlicUserStatusCheck is enabled with
   // features::kGlicUserStatusRefreshApi true.
   bool enable_maybe_refresh_user_status;
+  // Whether multi tab is enabled.
+  bool enable_multi_tab;
 };
 
 // Options for getting tab context.
@@ -401,6 +404,37 @@ interface WebClientHandler {
   // before data is collected.
   GetContextFromFocusedTab(GetTabContextOptions options)
       => (GetContextResult result);
+
+  // Returns the context from the tab associated with `tab_id`.
+  // `tab_context_result` is null if tab content could not be captured.
+  // This may fail if the tab is navigated while collecting data, or closed
+  // before data is collected.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  GetContextFromTab(int32 tab_id, GetTabContextOptions options)
+      => (GetContextResult result);
+
+  // Sets the maximum number of supported pinned tabs. Negative means that the
+  // client has no limit. Since the browser may only support so many, the
+  // effective limit is returned. The returned number may also differ from the
+  // requested number if the current number of pinned tabs exceeds the requested
+  // amount.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  SetMaximumNumberOfPinnedTabs(uint32 requested_max) => (uint32 effective_max);
+
+  // Pins the given tabs. Can fail if the tabs cannot be found, if the number of
+  // pinned tabs exceeds the allowed limit or if the tabs are already pinned.
+  // Returns true if all the given tabs were pinned.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  PinTabs(array<int32> tab_ids) => (bool pinned_all);
+
+  // Unpins the given tabs. Can fail if the tabs cannot be found, or if some of
+  // the given tabs aren't pinned.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  UnpinTabs(array<int32> tab_ids) => (bool unpinned_all);
+
+  // Unpins all currently pinned tabs.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  UnpinAllTabs();
 
   // Starts an action in the currently focused tab. `action_proto` is a
   // serialized proto of type optimization_guide::proto::BrowserAction. Returns
@@ -705,6 +739,14 @@ interface WebClient {
 
   // Notify that the closed captioning setting has changed.
   NotifyClosedCaptioningSettingChanged(bool enabled);
+
+  // Notify that the collection of shared tabs has changed.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  NotifyPinnedTabsChanged(array<TabData> tab_data);
+
+  // Notify that the TabData for a pinned tab has changed.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  NotifyPinnedTabDataChanged(TabData tab_data);
 };
 
 // Information extracted from a tab.
@@ -774,6 +816,8 @@ struct TabData {
   skia.mojom.BitmapN32? favicon;
   // MIME type of the main document in this tab.
   string document_mime_type;
+  // Whether the tab is observable (i.e., audible or visible).
+  bool? is_observable;
 };
 
 // Data about the focused tab state.

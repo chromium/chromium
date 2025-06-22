@@ -7,12 +7,9 @@
 #include <optional>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/glic/glic_metrics.h"
-#include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -32,21 +29,6 @@ namespace {
 
 constexpr base::TimeDelta kDebounceDelay = base::Seconds(0.1);
 
-// URLs allowed to be focused despite other URL validity checks.
-// Note: other, non-url-based focus checks still apply.
-const base::flat_set<GURL>& GetURLAllowList() {
-  static const base::flat_set<GURL> kURLAllowList = {
-      // Allow 'blank' pages to avoid flicker during tab creation.
-      GURL(),
-      GURL("about:blank"),
-      GURL(chrome::kChromeUINewTabPageThirdPartyURL),
-      GURL(chrome::kChromeUINewTabPageURL),
-      GURL(chrome::kChromeUINewTabURL),
-      GURL(chrome::kChromeUIWhatsNewURL)};
-
-  return kURLAllowList;
-}
-
 // Returns whether `a` and `b` both point to the same web contents.
 // Note that if both `a` and `b` are invalidated, this returns true, even if the
 // web contents they once pointed to is different. For our purposes, this is OK.
@@ -59,20 +41,17 @@ bool IsWeakWebContentsEqual(base::WeakPtr<content::WebContents> a,
 }  // namespace
 
 GlicFocusedTabManager::GlicFocusedTabManager(
-    Profile* profile,
-    GlicWindowController& window_controller,
-    Host* host,
-    GlicMetrics* metrics)
-    : profile_(profile),
-      window_controller_(window_controller),
-      metrics_(metrics),
+    GlicWindowController* window_controller,
+    GlicSharingManagerImpl* sharing_manager)
+    : window_controller_(*window_controller),
+      sharing_manager_(sharing_manager),
       focused_tab_data_(NoFocusedTabData()) {
   BrowserList::GetInstance()->AddObserver(this);
   window_activation_subscription_ =
-      window_controller.AddWindowActivationChangedCallback(base::BindRepeating(
+      window_controller->AddWindowActivationChangedCallback(base::BindRepeating(
           &GlicFocusedTabManager::OnGlicWindowActivationChanged,
           base::Unretained(this)));
-  window_controller.AddStateObserver(this);
+  window_controller->AddStateObserver(this);
 }
 
 GlicFocusedTabManager::~GlicFocusedTabManager() {
@@ -108,7 +87,7 @@ GlicFocusedTabManager::AddFocusedTabDataChangedCallback(
 
 void GlicFocusedTabManager::OnBrowserAdded(Browser* browser) {
   // Subscribe to active tab changes to this browser if it's valid.
-  if (IsBrowserValid(browser)) {
+  if (sharing_manager_->IsBrowserValidForSharing(browser)) {
     std::vector<base::CallbackListSubscription> subscriptions;
 
     subscriptions.push_back(browser->RegisterDidBecomeActive(
@@ -309,14 +288,14 @@ BrowserWindowInterface* GlicFocusedTabManager::ComputeBrowserCandidate() {
     Browser* const attached_browser = window_controller_->attached_browser();
     if (attached_browser &&
         (attached_browser->IsActive() || window_controller_->IsActive()) &&
-        IsBrowserValid(attached_browser)) {
+        sharing_manager_->IsBrowserValidForSharing(attached_browser)) {
       return attached_browser;
     }
     return nullptr;
   }
 
   Browser* const active_browser = BrowserList::GetInstance()->GetLastActive();
-  if (!IsBrowserValid(active_browser)) {
+  if (!sharing_manager_->IsBrowserValidForSharing(active_browser)) {
     return nullptr;
   }
 
@@ -329,7 +308,7 @@ BrowserWindowInterface* GlicFocusedTabManager::ComputeBrowserCandidate() {
 
 content::WebContents* GlicFocusedTabManager::ComputeTabCandidate(
     BrowserWindowInterface* browser_interface) {
-  if (IsBrowserValid(browser_interface) &&
+  if (sharing_manager_->IsBrowserValidForSharing(browser_interface) &&
       IsBrowserStateValid(browser_interface)) {
     content::WebContents* active_contents =
         browser_interface->GetActiveTabInterface()
@@ -362,41 +341,16 @@ void GlicFocusedTabManager::NotifyFocusedTabDataChanged(
   focused_data_callback_list_.Notify(tab_data ? tab_data.get() : nullptr);
 }
 
-void GlicFocusedTabManager::GetContextFromFocusedTab(
-    const mojom::GetTabContextOptions& options,
-    base::OnceCallback<void(glic::mojom::GetContextResultPtr)> callback) {
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled) ||
-      !window_controller_->IsShowing()) {
-    std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
-        std::string("permission denied")));
-    return;
-  }
-  FocusedTabData data = GetFocusedTabData();
-  if (!data.focus()) {
-    std::move(callback).Run(
-        mojom::GetContextResult::NewErrorReason(data.GetFocus().error()));
-    return;
-  }
-  metrics_->DidRequestContextFromFocusedTab();
-  FetchPageContext(data.focus(), options,
-                   /*include_actionable_data=*/false, std::move(callback));
-}
-
-bool GlicFocusedTabManager::IsBrowserValid(
-    BrowserWindowInterface* browser_interface) {
-  if (!browser_interface) {
+bool GlicFocusedTabManager::IsTabFocused(tabs::TabHandle tab_handle) const {
+  auto* tab = tab_handle.Get();
+  if (!tab) {
     return false;
   }
-
-  if (browser_interface->GetProfile() != profile_) {
+  content::WebContents* web_contents = focused_tab_data_.focus();
+  if (!web_contents) {
     return false;
   }
-
-  if (browser_interface->GetProfile()->IsOffTheRecord()) {
-    return false;
-  }
-
-  return true;
+  return tab->GetContents() == web_contents;
 }
 
 bool GlicFocusedTabManager::IsBrowserStateValid(
@@ -426,41 +380,30 @@ bool GlicFocusedTabManager::IsTabValid(content::WebContents* web_contents) {
 
 bool GlicFocusedTabManager::IsTabStateValid(
     content::WebContents* web_contents) {
-  if (!web_contents) {
-    return false;
-  }
-
-  auto url =
-      const_cast<content::WebContents*>(web_contents)->GetLastCommittedURL();
-  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile() ||
-      GetURLAllowList().contains(url)) {
-    return true;
-  }
-
-  return false;
+  return sharing_manager_->IsValidCandidateForSharing(web_contents);
 }
 
 GlicFocusedTabManager::FocusedTabDataImpl
 GlicFocusedTabManager::GetFocusedTabData(
     const GlicFocusedTabManager::FocusedTabState& focused_state) {
   if (focused_state.focused_tab) {
-    return {focused_state.focused_tab};
+    return FocusedTabDataImpl(focused_state.focused_tab);
   }
 
   if (focused_state.candidate_tab) {
-    return {NoFocusedTabData("no focusable tab",
-                             focused_state.candidate_tab.get())};
+    return FocusedTabDataImpl(NoFocusedTabData(
+        "no focusable tab", focused_state.candidate_tab.get()));
   }
 
   if (focused_state.focused_browser) {
-    return {NoFocusedTabData("no focusable tab")};
+    return FocusedTabDataImpl(NoFocusedTabData("no focusable tab"));
   }
 
   if (focused_state.candidate_browser) {
-    return {NoFocusedTabData("no focusable browser window")};
+    return FocusedTabDataImpl(NoFocusedTabData("no focusable browser window"));
   }
 
-  return {NoFocusedTabData("no browser window")};
+  return FocusedTabDataImpl(NoFocusedTabData("no browser window"));
 }
 
 FocusedTabData GlicFocusedTabManager::GetFocusedTabData() {
@@ -476,10 +419,12 @@ FocusedTabData GlicFocusedTabManager::ImplToPublic(FocusedTabDataImpl impl) {
     }
     return FocusedTabData(tabs::TabInterface::GetFromContents(contents));
   }
-  content::WebContents* contents = std::get<1>(impl).active_tab.get();
+  const NoFocusedTabData* no_focus = impl.no_focus();
+  CHECK(no_focus);
+  content::WebContents* contents = no_focus->active_tab.get();
   tabs::TabInterface* tab =
       contents ? tabs::TabInterface::GetFromContents(contents) : nullptr;
-  return FocusedTabData(std::string(std::get<1>(impl).no_focus_reason), tab);
+  return FocusedTabData(std::string(no_focus->no_focus_reason), tab);
 }
 
 GlicFocusedTabManager::FocusedTabState::FocusedTabState() = default;
@@ -498,16 +443,30 @@ bool GlicFocusedTabManager::FocusedTabState::IsSame(
          IsWeakPtrSame(focused_tab, other.focused_tab);
 }
 
+GlicFocusedTabManager::FocusedTabDataImpl::FocusedTabDataImpl(
+    const base::WeakPtr<content::WebContents>& contents)
+    : data_(contents) {}
+
+GlicFocusedTabManager::FocusedTabDataImpl::FocusedTabDataImpl(
+    const NoFocusedTabData& no_focused_tab_data)
+    : data_(no_focused_tab_data) {}
+
+GlicFocusedTabManager::FocusedTabDataImpl::~FocusedTabDataImpl() = default;
+
+GlicFocusedTabManager::FocusedTabDataImpl::FocusedTabDataImpl(
+    const FocusedTabDataImpl& other) = default;
+
 bool GlicFocusedTabManager::FocusedTabDataImpl::IsSame(
     const FocusedTabDataImpl& new_data) const {
-  if (index() != new_data.index()) {
+  if (data_.index() != new_data.data_.index()) {
     return false;
   }
-  switch (index()) {
+  switch (data_.index()) {
     case 0:
-      return IsWeakWebContentsEqual(std::get<0>(*this), std::get<0>(new_data));
+      return IsWeakWebContentsEqual(std::get<0>(data_),
+                                    std::get<0>(new_data.data_));
     case 1:
-      return std::get<1>(*this).IsSame(std::get<1>(new_data));
+      return std::get<1>(data_).IsSame(std::get<1>(new_data.data_));
   }
   NOTREACHED();
 }

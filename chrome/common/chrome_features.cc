@@ -659,8 +659,6 @@ extern const base::FeatureParam<std::string> kGlicParameterizedShaderColors{
 extern const base::FeatureParam<std::string> kGlicParameterizedShaderFloats{
     &kGlicParameterizedShader, "glic-parameterized-shader-floats", ""};
 
-BASE_FEATURE(kGlicMultiTab, "GlicMultiTab", base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGlicTabFocusDataDedupDebounce,
              "GlicTabFocusDataDedupDebounce",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -669,7 +667,6 @@ const base::FeatureParam<int> kGlicTabFocusDataDebounceDelayMs{
     5};
 const base::FeatureParam<int> kGlicTabFocusDataMaxDebounces{
     &kGlicTabFocusDataDedupDebounce, "glic-tab-focus-data-max-debounces", 5};
-
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 // Force Privacy Guide to be available even if it would be unavailable

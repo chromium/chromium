@@ -23,6 +23,14 @@
 
 namespace glic {
 
+namespace {
+
+bool IsForeground(content::Visibility visibility) {
+  return visibility != content::Visibility::HIDDEN;
+}
+
+}  // namespace
+
 TabDataObserver::TabDataObserver(
     content::WebContents* web_contents,
     base::RepeatingCallback<void(glic::mojom::TabDataPtr)> tab_data_changed)
@@ -121,11 +129,16 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
                   ->GetRepresentation(2.0f)
                   .GetBitmap();
   }
+  // TODO(b/426644734): investigate triggering updates due to changes to
+  // observability for focused tab data.
+  bool is_audible = web_contents->IsCurrentlyAudible();
+  bool is_foreground = IsForeground(web_contents->GetVisibility());
+  bool is_observable = is_audible || is_foreground;
   return glic::mojom::TabData::New(
       GetTabId(web_contents),
       sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id(),
       GetTabUrl(web_contents), base::UTF16ToUTF8(web_contents->GetTitle()),
-      favicon, web_contents->GetContentsMimeType());
+      favicon, web_contents->GetContentsMimeType(), is_observable);
 }
 
 // CreateFocusedTabData Implementation:

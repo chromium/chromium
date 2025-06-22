@@ -52,6 +52,8 @@ type WebClientMessageHandlerInterface = {
 };
 
 class WebClientMessageHandler implements WebClientMessageHandlerInterface {
+  private cachedPinnedTabs: TabData[]|undefined = undefined;
+
   constructor(
       private webClient: GlicWebClient, private host: GlicBrowserHostImpl) {}
 
@@ -148,6 +150,28 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   glicWebClientNotifyOsHotkeyStateChanged(payload: {hotkey: string}) {
     this.host.getOsHotkeyState().assignAndSignal(payload);
   }
+
+  glicWebClientNotifyPinnedTabsChanged(payload: {tabData: TabDataPrivate[]}):
+      void {
+    this.cachedPinnedTabs =
+        payload.tabData.map((x) => convertTabDataFromPrivate(x));
+    this.host.pinnedTabs?.assignAndSignal(this.cachedPinnedTabs);
+  }
+
+  glicWebClientNotifyPinnedTabDataChanged(payload: {tabData: TabDataPrivate}):
+      void {
+    if (!this.cachedPinnedTabs) {
+      return;
+    }
+    const tabData = convertTabDataFromPrivate(payload.tabData);
+    this.cachedPinnedTabs = this.cachedPinnedTabs.map((cachedTab) => {
+      if (cachedTab.tabId === tabData.tabId) {
+        return tabData;
+      }
+      return cachedTab;
+    });
+    this.host.pinnedTabs.assignAndSignal(this.cachedPinnedTabs);
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -176,6 +200,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private fitWindow = false;
   private metrics: GlicBrowserHostMetricsImpl;
   private manuallyResizing = ObservableValueImpl.withValue<boolean>(false);
+  pinnedTabs = ObservableValueImpl.withNoValue<TabData[]>();
 
   constructor(public webClient: GlicWebClient, windowProxy: WindowProxy) {
     // TODO(harringtond): Ideally, we could ensure we only process requests from
@@ -263,6 +288,15 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.enableMaybeRefreshUserStatus) {
       this.maybeRefreshUserStatus = undefined;
     }
+
+    if (!state.enableMultiTab) {
+      this.getContextFromTab = undefined;
+      this.getPinnedTabs = undefined;
+      this.pinTabs = undefined;
+      this.setMaximumNumberOfPinnedTabs = undefined;
+      this.unpinTabs = undefined;
+      this.unpinAllTabs = undefined;
+    }
   }
 
   webClientInitialized(
@@ -341,6 +375,19 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const context = await this.sender.requestWithResponse(
         'glicBrowserGetContextFromFocusedTab', {options});
     return convertTabContextResultFromPrivate(context.tabContextResult);
+  }
+
+  async setMaximumNumberOfPinnedTabs?(requestedMax: number): Promise<number> {
+    const result = await this.sender.requestWithResponse(
+        'glicBrowserSetMaximumNumberOfPinnedTabs', {requestedMax});
+    return result.effectiveMax;
+  }
+
+  async getContextFromTab?
+      (tabId: string, options: TabContextOptions): Promise<TabContextResult> {
+    const result = await this.sender.requestWithResponse(
+        'glicBrowserGetContextFromTab', {tabId, options});
+    return convertTabContextResultFromPrivate(result.tabContextResult);
   }
 
   async actInFocusedTab?(actInFocusedTabParams: ActInFocusedTabParams):
@@ -518,6 +565,26 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getOsHotkeyState(): ObservableValueImpl<{hotkey: string}> {
     return this.osHotkeyState;
+  }
+
+  getPinnedTabs?(): ObservableValueImpl<TabData[]> {
+    return this.pinnedTabs;
+  }
+
+  async pinTabs?(tabIds: string[]): Promise<boolean> {
+    return (await this.sender.requestWithResponse(
+                'glicBrowserPinTabs', {tabIds}))
+        .pinnedAll;
+  }
+
+  async unpinTabs?(tabIds: string[]): Promise<boolean> {
+    return (await this.sender.requestWithResponse(
+                'glicBrowserUnpinTabs', {tabIds}))
+        .unpinnedAll;
+  }
+
+  unpinAllTabs?(): void {
+    this.sender.requestNoResponse('glicBrowserUnpinAllTabs', undefined);
   }
 
   async getZeroStateSuggestionsForFocusedTab?

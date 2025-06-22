@@ -42,40 +42,6 @@ async function focusedTabChanged(newValue: TabData|undefined) {
   }
 }
 
-async function focusedTabChangedV2(focusedTabData: FocusedTabData|undefined) {
-  $.focusedUrlV2.value = '';
-  $.focusedFaviconV2.src = '';
-  $.focusedTabLogsV2.innerText = '';
-
-  if (!focusedTabData) {
-    $.focusedTabLogsV2.innerText = 'Focused Tab State Changed: undefined';
-    return;
-  }
-
-  if (focusedTabData.hasNoFocus) {
-    $.focusedTabLogsV2.innerText = `No focus reason: ${
-        focusedTabData.hasNoFocus.noFocusReason}\n Active tab url: ${
-        focusedTabData.hasNoFocus.tabFocusCandidateData?.url}`;
-    return;
-  }
-
-  if (focusedTabData.hasFocus) {
-    const focusedTab = focusedTabData.hasFocus.tabData;
-    $.focusedTabLogsV2.innerText =
-        'Focused Tab State Changed: TabData available';
-    $.focusedUrlV2.value = focusedTab.url || '';
-    if (focusedTab.favicon) {
-      const fav = await focusedTab.favicon();
-      if (fav) {
-        $.focusedFaviconV2.src = URL.createObjectURL(fav);
-      }
-    }
-    return;
-  }
-
-  $.focusedTabLogsV2.innerText = 'Focused Tab State Changed: Unknown State';
-}
-
 class TestInitFailure extends Error implements WebClientInitializeError {
   reason = WebClientInitializeErrorReason.UNKNOWN;
   readonly reasonType = 'webClientInitialize';
@@ -109,6 +75,11 @@ function updatePermissionSwitch(
 
 class WebClient implements GlicWebClient {
   browser: GlicBrowserHost|undefined;
+  initialized = false;
+  onInitializedCallbacks: Array<(() => void)> = [];
+  focusedTabId = '';
+  candidateTabId = '';
+  maxPinnedTabs = 5;
 
   async initialize(browser: GlicBrowserHost): Promise<void> {
     if (localStorage.getItem('test-init-failure')) {
@@ -136,7 +107,8 @@ class WebClient implements GlicWebClient {
     const focusedTabState = await this.browser.getFocusedTabState!();
     focusedTabState.subscribe(focusedTabChanged);
     const focusedTabStateV2 = await this.browser.getFocusedTabStateV2!();
-    focusedTabStateV2.subscribe(focusedTabChangedV2);
+    const boundFocusedChangedCallback = this.focusedTabChangedV2.bind(this);
+    focusedTabStateV2.subscribe(boundFocusedChangedCallback);
 
     // Initialize permission switches and subscribe for updates.
     const permissionStates:
@@ -177,6 +149,13 @@ class WebClient implements GlicWebClient {
     }
     $.enableDragResizeCheckbox.disabled =
         browser.enableDragResize === undefined;
+
+    this.initialized = true;
+    const cbs = this.onInitializedCallbacks;
+    this.onInitializedCallbacks = [];
+    for (const cb of cbs) {
+      cb();
+    }
   }
 
   async notifyPanelWillOpen(panelOpeningData: PanelOpeningData&PanelState):
@@ -201,12 +180,78 @@ class WebClient implements GlicWebClient {
     };
   }
 
+  private async focusedTabChangedV2(focusedTabData: FocusedTabData|undefined) {
+    $.focusedUrlV2.value = '';
+    $.focusedFaviconV2.src = '';
+    $.focusedTabLogsV2.innerText = '';
+
+    if (!focusedTabData) {
+      $.focusedTabLogsV2.innerText = 'Focused Tab State Changed: undefined';
+      this.focusedTabId = '';
+      return;
+    }
+
+    if (focusedTabData.hasNoFocus) {
+      $.focusedTabLogsV2.innerText = `No focus reason: ${
+          focusedTabData.hasNoFocus.noFocusReason}\n Active tab url: ${
+          focusedTabData.hasNoFocus.tabFocusCandidateData?.url}`;
+      this.focusedTabId = '';
+      this.candidateTabId =
+          focusedTabData.hasNoFocus.tabFocusCandidateData?.tabId || '';
+      return;
+    }
+
+    if (focusedTabData.hasFocus) {
+      const focusedTab = focusedTabData.hasFocus.tabData;
+      $.focusedTabLogsV2.innerText =
+          'Focused Tab State Changed: TabData available';
+      $.focusedUrlV2.value = focusedTab.url || '';
+      if (focusedTab.favicon) {
+        const fav = await focusedTab.favicon();
+        if (fav) {
+          $.focusedFaviconV2.src = URL.createObjectURL(fav);
+        }
+      }
+      this.focusedTabId = focusedTabData.hasFocus.tabData.tabId;
+      this.candidateTabId = '';
+      return;
+    }
+
+    $.focusedTabLogsV2.innerText = 'Focused Tab State Changed: Unknown State';
+  }
+
+
   async notifyPanelClosed() {
     logMessage('notifyPanelClosed called');
   }
 
   async checkResponsive() {
     // Nothing need to be checked on the test client.
+  }
+
+  getInitialized(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      if (this.initialized) {
+        resolve();
+      }
+      this.onInitializedCallbacks.push(resolve);
+    });
+  }
+
+  getFocusedTabId(): string {
+    return this.focusedTabId;
+  }
+
+  getCurrentTabId(): string {
+    return this.focusedTabId || this.candidateTabId;
+  }
+
+  getMaxPinnedTabs(): number {
+    return this.maxPinnedTabs;
+  }
+
+  setMaxPinnedTabs(numTabs: number): void {
+    this.maxPinnedTabs = numTabs;
   }
 }
 

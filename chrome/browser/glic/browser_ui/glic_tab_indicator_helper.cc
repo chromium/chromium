@@ -38,6 +38,12 @@ GlicTabIndicatorHelper::GlicTabIndicatorHelper(tabs::TabInterface* tab)
               &GlicTabIndicatorHelper::OnTabPinningStatusChanged,
               base::Unretained(this))));
 
+  subscriptions_.push_back(
+      service->sharing_manager().AddTabPinningStatusChangedCallback(
+          base::BindRepeating(
+              &GlicTabIndicatorHelper::OnTabPinningStatusChanged,
+              base::Unretained(this))));
+
   // TODO(crbug.com/393525654): This code should not be necessary.
   subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
       &GlicTabIndicatorHelper::OnTabWillDetach, base::Unretained(this))));

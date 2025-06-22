@@ -199,7 +199,10 @@ source_set("impl") {
 }
 
 mojom("mojo_bindings") {
-  sources = [ "host/glic.mojom" ]
+  sources = [
+    "host/glic.mojom",
+    "host/glic_features.mojom",
+  ]
   webui_module_path = "/"
 
   public_deps = [

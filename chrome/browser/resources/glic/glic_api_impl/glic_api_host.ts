@@ -207,6 +207,21 @@ class WebClientImpl implements WebClientInterface {
     this.sender.requestNoResponse(
         'glicWebClientNotifyOsHotkeyStateChanged', {hotkey});
   }
+
+  notifyPinnedTabsChanged(tabData: TabDataMojo[]): void {
+    const extras = new ResponseExtras();
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyPinnedTabsChanged',
+        {tabData: tabData.map((x) => tabDataToClient(x, extras))},
+        extras.transfers);
+  }
+
+  notifyPinnedTabDataChanged(tabData: TabDataMojo): void {
+    const extras = new ResponseExtras();
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyPinnedTabDataChanged',
+        {tabData: tabDataToClient(tabData, extras)}, extras.transfers);
+  }
 }
 
 // Handles all requests to the host.
@@ -343,6 +358,33 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     return {
       tabContextResult: tabContextResult,
     };
+  }
+
+  async glicBrowserGetContextFromTab(
+      request: {tabId: string, options: TabContextOptions},
+      extras: ResponseExtras):
+      Promise<{tabContextResult: TabContextResultPrivate}> {
+    const {result: {errorReason, tabContext}} =
+        await this.handler.getContextFromTab(
+            tabIdFromClient(request.tabId),
+            tabContextOptionsFromClient(request.options));
+    if (!tabContext) {
+      throw new Error(`tabContext failed: ${errorReason}`);
+    }
+    const tabContextResult = tabContextToClient(tabContext, extras);
+
+    return {
+      tabContextResult: tabContextResult,
+    };
+  }
+
+  async glicBrowserSetMaximumNumberOfPinnedTabs(request: {
+    requestedMax: number,
+  }): Promise<{effectiveMax: number}> {
+    const requestedMax = request.requestedMax >= 0 ? request.requestedMax : 0;
+    const {effectiveMax} =
+        await this.handler.setMaximumNumberOfPinnedTabs(requestedMax);
+    return {effectiveMax};
   }
 
   async glicBrowserActInFocusedTab(
@@ -601,6 +643,21 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
   glicBrowserGetOsMicrophonePermissionStatus(): Promise<{enabled: boolean}> {
     return this.handler.getOsMicrophonePermissionStatus();
+  }
+
+  glicBrowserPinTabs(request: {tabIds: string[]}):
+      Promise<{pinnedAll: boolean}> {
+    return this.handler.pinTabs(request.tabIds.map((x) => tabIdFromClient(x)));
+  }
+
+  glicBrowserUnpinTabs(request: {tabIds: string[]}):
+      Promise<{unpinnedAll: boolean}> {
+    return this.handler.unpinTabs(
+        request.tabIds.map((x) => tabIdFromClient(x)));
+  }
+
+  glicBrowserUnpinAllTabs(): void {
+    this.handler.unpinAllTabs();
   }
 
   async glicBrowserGetZeroStateSuggestionsForFocusedTab(request: {
@@ -932,6 +989,14 @@ function tabIdToClient(tabId: number): string {
   return `${tabId}`;
 }
 
+function tabIdFromClient(tabId: string): number {
+  const parsed = parseInt(tabId);
+  if (Number.isNaN(parsed)) {
+    return 0;
+  }
+  return parsed;
+}
+
 function optionalWindowIdToClient(windowId: number|null): string|undefined {
   if (windowId === null) {
     return undefined;
@@ -997,6 +1062,7 @@ function tabDataToClient(tabData: TabDataMojo|null, extras: ResponseExtras):
     }
   }
 
+  const isObservable = optionalToClient(tabData.isObservable);
   return {
     tabId: tabIdToClient(tabData.tabId),
     windowId: windowIdToClient(tabData.windowId),
@@ -1004,6 +1070,7 @@ function tabDataToClient(tabData: TabDataMojo|null, extras: ResponseExtras):
     title: optionalToClient(tabData.title),
     favicon,
     documentMimeType: tabData.documentMimeType,
+    isObservable,
   };
 }
 

@@ -47,6 +47,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #endif
 
@@ -963,7 +964,8 @@ IN_PROC_BROWSER_TEST_F(
 class TabMenuModelGlicMultiTabTest : public TabMenuModelBrowserTest {
  public:
   TabMenuModelGlicMultiTabTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kGlicMultiTab);
+    scoped_feature_list_.InitAndEnableFeature(
+        glic::mojom::features::kGlicMultiTab);
   }
 
  protected:

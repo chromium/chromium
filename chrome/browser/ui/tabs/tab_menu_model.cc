@@ -43,6 +43,7 @@
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #endif
 
@@ -123,7 +124,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                                           : IDS_TAB_CXMENU_NEWTABTORIGHT);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (base::FeatureList::IsEnabled(features::kGlicMultiTab) &&
+  if (base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab) &&
       glic::GlicEnabling::IsReadyForProfile(tab_strip->profile())) {
     auto* service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
         tab_strip->profile());

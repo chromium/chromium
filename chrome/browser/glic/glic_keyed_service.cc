@@ -99,7 +99,7 @@ GlicKeyedService::GlicKeyedService(
                                                      enabling_.get())),
       sharing_manager_(
           std::make_unique<GlicSharingManagerImpl>(profile,
-                                                   *window_controller_,
+                                                   window_controller_.get(),
                                                    host_.get(),
                                                    metrics_.get())),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),

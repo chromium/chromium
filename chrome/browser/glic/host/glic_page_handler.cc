@@ -36,6 +36,7 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
+#include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
@@ -69,6 +70,7 @@ namespace mojo {
 // that `FocusedTabData` can be compared for equality. Given the unoptimized
 // nature of the image comparison logic, this trait is being made available only
 // within this compilation unit.
+// TODO(b/426792593): avoid a glic-specific specialization here.
 template <>
 struct EqualsTraits<::SkBitmap> {
   static bool Equals(const ::SkBitmap& a, const ::SkBitmap& b) {
@@ -378,6 +380,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             base::BindRepeating(&GlicWebClientHandler::OnFocusedTabChanged,
                                 base::Unretained(this)));
 
+    pinned_tabs_changed_subscription_ =
+        glic_sharing_manager_->AddPinnedTabsChangedCallback(base::BindRepeating(
+            &GlicWebClientHandler::OnPinningChanged, base::Unretained(this)));
+
+    pinned_tab_data_changed_subscription_ =
+        glic_sharing_manager_->AddPinnedTabDataChangedCallback(
+            base::BindRepeating(&GlicWebClientHandler::OnPinnedTabDataChanged,
+                                base::Unretained(this)));
+
     focus_data_changed_subscription_ =
         glic_sharing_manager_->AddFocusedTabDataChangedCallback(
             base::BindRepeating(&GlicWebClientHandler::OnFocusedTabDataChanged,
@@ -419,6 +430,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     } else {
       state->focused_tab_data =
           CreateFocusedTabData(glic_sharing_manager_->GetFocusedTabData());
+      if (base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab)) {
+        OnPinningChanged(glic_sharing_manager_->GetPinnedTabs());
+      }
     }
 
     state->sizing_mode = GetWebClientSizingMode();
@@ -447,6 +461,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->enable_maybe_refresh_user_status =
         base::FeatureList::IsEnabled(features::kGlicUserStatusCheck) &&
         features::kGlicUserStatusRefreshApi.Get();
+    state->enable_multi_tab =
+        base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab);
 
     std::move(callback).Run(std::move(state));
   }
@@ -543,8 +559,58 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void GetContextFromFocusedTab(
       glic::mojom::GetTabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
-    glic_sharing_manager_->GetContextFromFocusedTab(*options,
-                                                    std::move(callback));
+    auto* tab = glic_sharing_manager_->GetFocusedTabData().focus();
+    auto tab_handle = tab ? tab->GetHandle() : tabs::TabHandle::Null();
+    glic_sharing_manager_->GetContextFromTab(tab_handle, *options,
+                                             std::move(callback));
+  }
+
+  void GetContextFromTab(int32_t tab_id,
+                         glic::mojom::GetTabContextOptionsPtr options,
+                         GetContextFromTabCallback callback) override {
+    // Activation gating is handled in this function.
+    glic_sharing_manager_->GetContextFromTab(tabs::TabHandle(tab_id), *options,
+                                             std::move(callback));
+  }
+
+  void SetMaximumNumberOfPinnedTabs(
+      uint32_t num_tabs,
+      SetMaximumNumberOfPinnedTabsCallback callback) override {
+    uint32_t effective_max = glic_sharing_manager_->SetMaxPinnedTabs(num_tabs);
+    std::move(callback).Run(effective_max);
+  }
+
+  void PinTabs(const std::vector<int32_t>& tab_ids,
+               PinTabsCallback callback) override {
+    if (ShouldDoApiActivationGating()) {
+      std::move(callback).Run(false);
+      return;
+    }
+    std::vector<tabs::TabHandle> tab_handles;
+    for (auto tab_id : tab_ids) {
+      tab_handles.push_back(tabs::TabHandle(tab_id));
+    }
+    std::move(callback).Run(glic_sharing_manager_->PinTabs(tab_handles));
+  }
+
+  void UnpinTabs(const std::vector<int32_t>& tab_ids,
+                 UnpinTabsCallback callback) override {
+    if (ShouldDoApiActivationGating()) {
+      std::move(callback).Run(false);
+      return;
+    }
+    std::vector<tabs::TabHandle> tab_handles;
+    for (auto tab_id : tab_ids) {
+      tab_handles.push_back(tabs::TabHandle(tab_id));
+    }
+    std::move(callback).Run(glic_sharing_manager_->UnpinTabs(tab_handles));
+  }
+
+  void UnpinAllTabs() override {
+    if (ShouldDoApiActivationGating()) {
+      return;
+    }
+    glic_sharing_manager_->UnpinAllTabs();
   }
 
   void ActInFocusedTab(const std::vector<uint8_t>& action_proto,
@@ -872,7 +938,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     CHECK(on_get_user_profile_info_activation_callbacks_.empty());
 
-    if (base::FeatureList::IsEnabled(features::kGlicApiActivationGating)) {
+    if (base::FeatureList::IsEnabled(features::kGlicApiActivationGating) &&
+        web_client_) {
+      if (base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab)) {
+        OnPinningChanged(glic_sharing_manager_->GetPinnedTabs());
+      }
       if (cached_focused_tab_data_) {
         MaybeNotifyFocusedTabChanged(std::move(cached_focused_tab_data_));
       }
@@ -940,6 +1010,29 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
+  void OnPinningChanged(
+      const std::vector<content::WebContents*>& pinned_contents) {
+    if (ShouldDoApiActivationGating()) {
+      return;
+    }
+    std::vector<glic::mojom::TabDataPtr> tab_data;
+    for (content::WebContents* web_contents : pinned_contents) {
+      tab_data.push_back(CreateTabData(web_contents));
+    }
+    web_client_->NotifyPinnedTabsChanged(std::move(tab_data));
+  }
+
+  void OnPinnedTabDataChanged(const glic::mojom::TabData* tab_data) {
+    if (!tab_data) {
+      return;
+    }
+    if (ShouldDoApiActivationGating()) {
+      // We will resend all pinned data when shown. No need to cache here.
+      return;
+    }
+    web_client_->NotifyPinnedTabDataChanged(tab_data->Clone());
+  }
+
  private:
   void Uninstall() {
     SetAudioDucking(false, base::DoNothing());
@@ -951,6 +1044,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     local_state_pref_change_registrar_.Reset();
     glic_service_->window_controller().RemoveStateObserver(this);
     focus_changed_subscription_ = {};
+    pinned_tabs_changed_subscription_ = {};
+    pinned_tab_data_changed_subscription_ = {};
     browser_attach_observation_.reset();
   }
 
@@ -1035,6 +1130,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   ActiveStateCalculator active_state_calculator_;
   BrowserIsOpenCalculator browser_is_open_calculator_;
   base::CallbackListSubscription focus_changed_subscription_;
+  base::CallbackListSubscription pinned_tabs_changed_subscription_;
+  base::CallbackListSubscription pinned_tab_data_changed_subscription_;
   base::CallbackListSubscription focus_data_changed_subscription_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;

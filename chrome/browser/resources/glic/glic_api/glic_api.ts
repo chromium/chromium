@@ -178,6 +178,20 @@ export declare interface GlicBrowserHost {
       (options: TabContextOptions): Promise<TabContextResult>;
 
   /**
+   * Similar to `getContextFromFocusedTab`, but returns context from the given
+   * tab. Can fail if the tab is not pinned or focused.
+   */
+  getContextFromTab?
+      (tabId: string, options: TabContextOptions): Promise<TabContextResult>;
+
+  /**
+   * Sets the maximum number of supported pinned tabs. Should not be called
+   * more than once. Chrome may not be able to support the given number, so
+   * the applied limit is returned.
+   */
+  setMaximumNumberOfPinnedTabs?(numTabs: number): Promise<number>;
+
+  /**
    * @deprecated Use CreateTask and PerformActions instead.
    *
    * Inform Chrome about an action. Chrome Takes an action based on the
@@ -542,6 +556,41 @@ export declare interface GlicBrowserHost {
    * disabled.
    */
   maybeRefreshUserStatus?(): void;
+
+  /**
+   * Attempts to pin the given tabs. Can fail if any of the tabs cannot be
+   * found, if the number of pinned tabs exceeds the allowed limit or if the tab
+   * is already pinned. Return value is true if all tabs were pinned, but if
+   * a false value does not mean that no tabs were pinned. The updated set of
+   * pinned tabs will asynchronously be available via getPinnedTabs.
+   */
+  pinTabs?(tabIds: string[]): Promise<boolean>;
+
+  /**
+   * Attempts to unpin the given tabs. Can fail if the any of the tabs cannot be
+   * found, or if the tab isn't pinned. Return value is true if all tabs were
+   * unpinned. A false value does not mean that no tabs were unpinned. The
+   * updated set of pinned tabs will asynchronously be available via
+   * getPinnedTabs.
+   */
+  unpinTabs?(tabIds: string[]): Promise<boolean>;
+
+  /**
+   * Unpins all currently pinned tabs.
+   */
+  unpinAllTabs?(): void;
+
+  /**
+   * Gets TabData for the current set of pinned tabs. The focused tab may also
+   * be pinned. That is getFocusedTabStateV2 could have a focused tab that is
+   * also in the set of focused tabs. Also fires when TabData for a pinned tab
+   * is updated (eg, due to a change of favicon, title, URL, or observability).
+   * There is a delay between pinning and unpinning and updates to the set of
+   * pinned tabs that will be vended by this API. Callers should not expect that
+   * this will be synchronously reflected since this will require a round trip
+   * to chrome in order to attempt to pin.
+   */
+  getPinnedTabs?(): ObservableValue<TabData[]>;
 }
 /** Fields of interest from the system settings page. */
 export type OsPermissionType = 'media'|'geolocation';
@@ -910,6 +959,13 @@ export declare interface TabData {
    * for it to be available.
    */
   documentMimeType?: string;
+  /**
+   * Whether the tab is audible or visible. Specifically this is the visibility
+   * of the WebContents as returned by: `WebContents::GetVisibility`. If the
+   * visibility is either VISIBLE or OCCLUDED, we consider the web contents to
+   * be visible.
+   */
+  isObservable?: boolean;
 }
 
 /**

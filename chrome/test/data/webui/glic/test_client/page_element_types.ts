@@ -122,6 +122,11 @@ export interface PageElementTypes {
   dropScrollToHighlightBtn: HTMLButtonElement;
   copyAPCToClipboardBtn: HTMLButtonElement;
   maybeRefreshUserStatusBn: HTMLButtonElement;
+  multiTabSection: HTMLElement;
+  pinnedTabs: HTMLElement;
+  pinFocusedTab: HTMLButtonElement;
+  fetchPinned: HTMLButtonElement;
+  unpin: HTMLButtonElement;
 }
 
 export const $: PageElementTypes = new Proxy({}, {
