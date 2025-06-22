@@ -49,8 +49,7 @@ void InputTypeView::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
 }
 
-bool InputTypeView::SizeShouldIncludeDecoration(int,
-                                                int& preferred_size) const {
+bool InputTypeView::GetSizeWithDecoration(int, int& preferred_size) const {
   preferred_size = GetElement().size();
   return false;
 }

@@ -58,8 +58,8 @@ class NumberInputType final : public TextFieldInputType {
                          TextFieldEventBehavior,
                          ExceptionState&) const override;
   bool TypeMismatch() const override;
-  bool SizeShouldIncludeDecoration(int default_size,
-                                   int& preferred_size) const override;
+  bool GetSizeWithDecoration(int default_size,
+                             int& preferred_size) const override;
   StepRange CreateStepRange(AnyStepHandling) const override;
   void HandleKeydownEvent(KeyboardEvent&) override;
   void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent&) override;

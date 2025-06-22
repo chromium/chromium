@@ -86,8 +86,8 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual ~InputTypeView();
   void Trace(Visitor*) const override;
 
-  virtual bool SizeShouldIncludeDecoration(int default_size,
-                                           int& preferred_size) const;
+  virtual bool GetSizeWithDecoration(int default_size,
+                                     int& preferred_size) const;
 
   // Event handling functions
 

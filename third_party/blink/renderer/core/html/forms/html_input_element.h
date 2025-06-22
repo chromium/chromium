@@ -149,7 +149,7 @@ class CORE_EXPORT HTMLInputElement
   RadioButtonGroupScope* GetRadioButtonGroupScope() const;
 
   unsigned size() const;
-  bool SizeShouldIncludeDecoration(int& preferred_size) const;
+  bool GetSizeWithDecoration(int& preferred_size) const;
 
   void setType(const AtomicString&);
 

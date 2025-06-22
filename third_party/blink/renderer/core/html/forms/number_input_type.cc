@@ -58,15 +58,15 @@ static const int kNumberStepScaleFactor = 1;
 
 struct RealNumberRenderSize {
   unsigned size_before_decimal_point;
-  unsigned size_afte_decimal_point;
+  unsigned size_after_decimal_point;
 
   RealNumberRenderSize(unsigned before, unsigned after)
-      : size_before_decimal_point(before), size_afte_decimal_point(after) {}
+      : size_before_decimal_point(before), size_after_decimal_point(after) {}
 
   RealNumberRenderSize Max(const RealNumberRenderSize& other) const {
     return RealNumberRenderSize(
         std::max(size_before_decimal_point, other.size_before_decimal_point),
-        std::max(size_afte_decimal_point, other.size_afte_decimal_point));
+        std::max(size_after_decimal_point, other.size_after_decimal_point));
   }
 };
 
@@ -185,8 +185,8 @@ StepRange NumberInputType::CreateStepRange(
                                     -double_max, double_max, step_description);
 }
 
-bool NumberInputType::SizeShouldIncludeDecoration(int default_size,
-                                                  int& preferred_size) const {
+bool NumberInputType::GetSizeWithDecoration(int default_size,
+                                            int& preferred_size) const {
   preferred_size = default_size;
 
   const String step_string =
@@ -211,8 +211,8 @@ bool NumberInputType::SizeShouldIncludeDecoration(int default_size,
       CalculateRenderSize(maximum).Max(CalculateRenderSize(step)));
 
   preferred_size = size.size_before_decimal_point +
-                   size.size_afte_decimal_point +
-                   (size.size_afte_decimal_point ? 1 : 0);
+                   size.size_after_decimal_point +
+                   (size.size_after_decimal_point ? 1 : 0);
 
   return true;
 }
