@@ -30,7 +30,6 @@
 
 @class OmniboxAutocompleteController;
 class OmniboxControllerIOS;
-class OmniboxPopupViewIOS;
 @class OmniboxTextController;
 
 class OmniboxEditModelIOS {
@@ -40,10 +39,6 @@ class OmniboxEditModelIOS {
   virtual ~OmniboxEditModelIOS();
   OmniboxEditModelIOS(const OmniboxEditModelIOS&) = delete;
   OmniboxEditModelIOS& operator=(const OmniboxEditModelIOS&) = delete;
-
-  void set_popup_view(OmniboxPopupViewIOS* popup_view);
-  OmniboxPopupViewIOS* get_popup_view() { return popup_view_; }
-  const OmniboxPopupViewIOS* get_popup_view() const { return popup_view_; }
 
   void set_omnibox_autocomplete_controller(
       OmniboxAutocompleteController* omnibox_autocomplete_controller) {
@@ -274,10 +269,6 @@ class OmniboxEditModelIOS {
 
   // The autocomplete controller.
   __weak OmniboxAutocompleteController* omnibox_autocomplete_controller_ = nil;
-
-  // The popup view is nullptr when there's no popup, and is non-null when
-  // a popup view exists (i.e. between calls to `set_popup_view`).
-  raw_ptr<OmniboxPopupViewIOS> popup_view_ = nullptr;
 
   base::WeakPtrFactory<OmniboxEditModelIOS> weak_factory_{this};
 };

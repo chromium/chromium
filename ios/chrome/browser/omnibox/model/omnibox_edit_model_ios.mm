@@ -68,7 +68,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "net/cookies/cookie_util.h"
 #import "third_party/icu/source/common/unicode/ubidi.h"
@@ -85,10 +84,6 @@ OmniboxEditModelIOS::OmniboxEditModelIOS(OmniboxControllerIOS* controller,
     : controller_(controller), text_model_(text_model) {}
 
 OmniboxEditModelIOS::~OmniboxEditModelIOS() = default;
-
-void OmniboxEditModelIOS::set_popup_view(OmniboxPopupViewIOS* popup_view) {
-  popup_view_ = popup_view;
-}
 
 void OmniboxEditModelIOS::set_text_controller(
     OmniboxTextController* text_controller) {
@@ -273,7 +268,7 @@ bool OmniboxEditModelIOS::OnAfterPossibleChange(
 }
 
 bool OmniboxEditModelIOS::PopupIsOpen() const {
-  return popup_view_ && popup_view_->IsOpen();
+  return omnibox_autocomplete_controller_.hasSuggestions;
 }
 
 void OmniboxEditModelIOS::SetAutocompleteInput(AutocompleteInput input) {
@@ -311,11 +306,9 @@ void OmniboxEditModelIOS::AcceptInput(
     match.transition = ui::PAGE_TRANSITION_LINK;
   }
 
-  if (popup_view_) {
-    OpenMatch(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), match,
-              disposition, alternate_nav_url, std::u16string(),
-              match_selection_timestamp);
-  }
+  OpenMatch(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), match,
+            disposition, alternate_nav_url, std::u16string(),
+            match_selection_timestamp);
 }
 
 void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,

@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/omnibox/debugger/omnibox_debugger_view_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_image_fetcher.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item_menu_provider.h"
@@ -52,9 +51,7 @@
 #import "ui/base/device_form_factor.h"
 
 @interface OmniboxPopupCoordinator () <OmniboxPopupMediatorProtocolProvider,
-                                       OmniboxPopupMediatorSharingDelegate> {
-  std::unique_ptr<OmniboxPopupViewIOS> _popupView;
-}
+                                       OmniboxPopupMediatorSharingDelegate>
 
 @property(nonatomic, strong) OmniboxPopupViewController* popupViewController;
 @property(nonatomic, strong) OmniboxPopupMediator* mediator;
@@ -80,16 +77,12 @@
                                    browser:(Browser*)browser
                     autocompleteController:
                         (AutocompleteController*)autocompleteController
-                                 popupView:
-                                     (std::unique_ptr<OmniboxPopupViewIOS>)
-                                         popupView
              omniboxAutocompleteController:
                  (OmniboxAutocompleteController*)omniboxAutocompleteController {
   self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
     DCHECK(autocompleteController);
     _autocompleteController = autocompleteController;
-    _popupView = std::move(popupView);
     _popupViewController = [[OmniboxPopupViewController alloc] init];
     _KeyboardDelegate = _popupViewController;
     _omniboxAutocompleteController = omniboxAutocompleteController;
@@ -168,7 +161,6 @@
 
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
-  _popupView.reset();
 }
 
 - (BOOL)isOpen {
