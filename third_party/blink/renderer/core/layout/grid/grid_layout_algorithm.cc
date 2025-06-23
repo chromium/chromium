@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
@@ -24,65 +25,32 @@ GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
 
   const auto& node = Node();
   const auto& constraint_space = GetConstraintSpace();
+  const auto border_scrollbar_padding = BorderScrollbarPadding();
 
   // At various stages of the algorithm we need to know the grid available-size.
   // If it's initially indefinite, we need to know the min/max sizes as well.
   // Initialize all these to the same value.
   grid_available_size_ = grid_min_available_size_ = grid_max_available_size_ =
       ChildAvailableSize();
+  ComputeAvailableSizes(border_scrollbar_padding, node, constraint_space,
+                        container_builder_, grid_available_size_,
+                        grid_min_available_size_, grid_max_available_size_);
 
-  // If our inline-size is indefinite, compute the min/max inline-sizes.
-  if (grid_available_size_.inline_size == kIndefiniteSize) {
-    const LayoutUnit border_scrollbar_padding =
-        BorderScrollbarPadding().InlineSum();
+  // If block-size containment applies compute the block-size ignoring
+  // children (just based on the row definitions).
+  if (grid_available_size_.block_size == kIndefiniteSize &&
+      node.ShouldApplyBlockSizeContainment()) {
+    contain_intrinsic_block_size_ = ComputeIntrinsicBlockSizeIgnoringChildren();
 
-    const MinMaxSizes sizes = ComputeMinMaxInlineSizes(
-        constraint_space, node, container_builder_.BorderPadding(),
-        /* auto_min_length */ nullptr, [](SizeType) -> MinMaxSizesResult {
-          // If we've reached here we are inside the |ComputeMinMaxSizes| pass,
-          // and also have something like "min-width: min-content". This is
-          // cyclic. Just return indefinite.
-          return {{kIndefiniteSize, kIndefiniteSize},
-                  /* depends_on_block_constraints */ false};
-        });
+    // Resolve the block-size, and set the available sizes.
+    const LayoutUnit block_size = ComputeBlockSizeForFragment(
+        constraint_space, node, BorderPadding(), *contain_intrinsic_block_size_,
+        container_builder_.InlineSize());
 
-    grid_min_available_size_.inline_size =
-        (sizes.min_size - border_scrollbar_padding).ClampNegativeToZero();
-    grid_max_available_size_.inline_size =
-        (sizes.max_size == LayoutUnit::Max())
-            ? sizes.max_size
-            : (sizes.max_size - border_scrollbar_padding).ClampNegativeToZero();
-  }
-
-  // And similar for the min/max block-sizes.
-  if (grid_available_size_.block_size == kIndefiniteSize) {
-    const LayoutUnit border_scrollbar_padding =
-        BorderScrollbarPadding().BlockSum();
-    const MinMaxSizes sizes = ComputeInitialMinMaxBlockSizes(
-        constraint_space, node, container_builder_.BorderPadding());
-
-    grid_min_available_size_.block_size =
-        (sizes.min_size - border_scrollbar_padding).ClampNegativeToZero();
-    grid_max_available_size_.block_size =
-        (sizes.max_size == LayoutUnit::Max())
-            ? sizes.max_size
-            : (sizes.max_size - border_scrollbar_padding).ClampNegativeToZero();
-
-    // If block-size containment applies compute the block-size ignoring
-    // children (just based on the row definitions).
-    if (node.ShouldApplyBlockSizeContainment()) {
-      contain_intrinsic_block_size_ =
-          ComputeIntrinsicBlockSizeIgnoringChildren();
-
-      // Resolve the block-size, and set the available sizes.
-      const LayoutUnit block_size = ComputeBlockSizeForFragment(
-          constraint_space, node, BorderPadding(),
-          *contain_intrinsic_block_size_, container_builder_.InlineSize());
-
-      grid_available_size_.block_size = grid_min_available_size_.block_size =
-          grid_max_available_size_.block_size =
-              (block_size - border_scrollbar_padding).ClampNegativeToZero();
-    }
+    grid_available_size_.block_size = grid_min_available_size_.block_size =
+        grid_max_available_size_.block_size =
+            (block_size - border_scrollbar_padding.BlockSum())
+                .ClampNegativeToZero();
   }
 }
 
@@ -1171,110 +1139,17 @@ wtf_size_t GridLayoutAlgorithm::ComputeAutomaticRepetitions(
                                                  track_direction);
   }
 
-  LayoutUnit available_size = is_for_columns ? grid_available_size_.inline_size
-                                             : grid_available_size_.block_size;
-  LayoutUnit max_available_size = available_size;
-
-  if (available_size == kIndefiniteSize) {
-    max_available_size = is_for_columns ? grid_max_available_size_.inline_size
-                                        : grid_max_available_size_.block_size;
-    available_size = is_for_columns ? grid_min_available_size_.inline_size
-                                    : grid_min_available_size_.block_size;
-  }
-
-  LayoutUnit auto_repeater_size;
-  LayoutUnit non_auto_specified_size;
-  const auto gutter_size = GridTrackSizingAlgorithm::CalculateGutterSize(
+  const LayoutUnit gutter_size = GridTrackSizingAlgorithm::CalculateGutterSize(
       style, grid_available_size_, track_direction);
 
-  for (wtf_size_t repeater_index = 0;
-       repeater_index < track_list.RepeaterCount(); ++repeater_index) {
-    const auto repeat_type = track_list.RepeatType(repeater_index);
-    const bool is_auto_repeater =
-        repeat_type == NGGridTrackRepeater::kAutoFill ||
-        repeat_type == NGGridTrackRepeater::kAutoFit;
-
-    LayoutUnit repeater_size;
-    const wtf_size_t repeater_track_count =
-        track_list.RepeatSize(repeater_index);
-
-    for (wtf_size_t i = 0; i < repeater_track_count; ++i) {
-      const auto& track_size = track_list.RepeatTrackSize(repeater_index, i);
-
-      std::optional<LayoutUnit> fixed_min_track_breadth;
-      if (track_size.HasFixedMinTrackBreadth()) {
-        fixed_min_track_breadth.emplace(MinimumValueForLength(
-            track_size.MinTrackBreadth(), available_size));
-      }
-
-      std::optional<LayoutUnit> fixed_max_track_breadth;
-      if (track_size.HasFixedMaxTrackBreadth()) {
-        fixed_max_track_breadth.emplace(MinimumValueForLength(
-            track_size.MaxTrackBreadth(), available_size));
-      }
-
-      LayoutUnit track_contribution;
-      if (fixed_max_track_breadth && fixed_min_track_breadth) {
-        track_contribution =
-            std::max(*fixed_max_track_breadth, *fixed_min_track_breadth);
-      } else if (fixed_max_track_breadth) {
-        track_contribution = *fixed_max_track_breadth;
-      } else if (fixed_min_track_breadth) {
-        track_contribution = *fixed_min_track_breadth;
-      }
-
-      // For the purpose of finding the number of auto-repeated tracks in a
-      // standalone axis, the UA must floor the track size to a UA-specified
-      // value to avoid division by zero. It is suggested that this floor be
-      // 1px.
-      if (is_auto_repeater)
-        track_contribution = std::max(LayoutUnit(1), track_contribution);
-
-      repeater_size += track_contribution + gutter_size;
-    }
-
-    if (!is_auto_repeater) {
-      non_auto_specified_size +=
-          repeater_size * track_list.RepeatCount(repeater_index, 0);
-    } else {
-      DCHECK_EQ(0, auto_repeater_size);
-      auto_repeater_size = repeater_size;
-    }
-  }
-
-  DCHECK_GT(auto_repeater_size, 0);
-
-  // We can compute the number of repetitions by satisfying the expression
-  // below. Notice that we subtract an extra |gutter_size| since it was included
-  // in the contribution for the last set in the collection.
-  //   available_size =
-  //       (repetitions * auto_repeater_size) +
-  //       non_auto_specified_size - gutter_size
-  //
-  // Solving for repetitions we have:
-  //   repetitions =
-  //       available_size - (non_auto_specified_size - gutter_size) /
-  //       auto_repeater_size
-  non_auto_specified_size -= gutter_size;
-
-  // First we want to allow as many repetitions as possible, up to the max
-  // available-size. Only do this if we have a definite max-size.
-  // If a definite available-size was provided, |max_available_size| will be
-  // set to that value.
-  if (max_available_size != LayoutUnit::Max()) {
-    // Use floor to ensure that the auto repeater sizes goes under the max
-    // available-size.
-    const int count = FloorToInt(
-        (max_available_size - non_auto_specified_size) / auto_repeater_size);
-    return (count <= 0) ? 1u : count;
-  }
-
-  // Next, consider the min available-size, which was already used to floor
-  // |available_size|. Use ceil to ensure that the auto repeater size goes
-  // above this min available-size.
-  const int count = CeilToInt((available_size - non_auto_specified_size) /
-                              auto_repeater_size);
-  return (count <= 0) ? 1u : count;
+  return CalculateAutomaticRepetitions(
+      track_list, gutter_size,
+      is_for_columns ? grid_available_size_.inline_size
+                     : grid_available_size_.block_size,
+      is_for_columns ? grid_min_available_size_.inline_size
+                     : grid_min_available_size_.block_size,
+      is_for_columns ? grid_max_available_size_.inline_size
+                     : grid_max_available_size_.block_size);
 }
 
 wtf_size_t GridLayoutAlgorithm::ComputeAutomaticRepetitionsForSubgrid(

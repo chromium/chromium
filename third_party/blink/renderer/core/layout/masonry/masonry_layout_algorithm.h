@@ -84,6 +84,10 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt) const;
 
   LayoutUnit intrinsic_block_size_;
+
+  LogicalSize masonry_available_size_;
+  LogicalSize masonry_min_available_size_;
+  LogicalSize masonry_max_available_size_;
 };
 
 }  // namespace blink

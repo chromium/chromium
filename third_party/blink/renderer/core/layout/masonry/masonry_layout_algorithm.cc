@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
@@ -19,6 +20,18 @@ MasonryLayoutAlgorithm::MasonryLayoutAlgorithm(
     const LayoutAlgorithmParams& params)
     : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
+
+  // At various stages of the algorithm we need to know the masonry
+  // available-size. If it's initially indefinite, we need to know the min/max
+  // sizes as well. Initialize all these to the same value.
+  masonry_available_size_ = masonry_min_available_size_ =
+      masonry_max_available_size_ = ChildAvailableSize();
+  ComputeAvailableSizes(BorderScrollbarPadding(), Node(), GetConstraintSpace(),
+                        container_builder_, masonry_available_size_,
+                        masonry_min_available_size_,
+                        masonry_max_available_size_);
+
+  // TODO(almaher): Apply block-size containment.
 }
 
 MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
@@ -48,7 +61,7 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
 
       MasonryRunningPositions running_positions(
           track_collection.EndLineOfImplicitGrid(), LayoutUnit(),
-          ResolveItemToleranceForMasonry(Style(), ChildAvailableSize()));
+          ResolveItemToleranceForMasonry(Style(), masonry_available_size_));
       PlaceMasonryItems(track_collection, masonry_items, start_offset,
                         running_positions);
       // `stacking_axis_gap` represents the space between each of the items
@@ -57,7 +70,7 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
       // addition should be deleted as there is no item after it.
       const auto stacking_axis_gap =
           GridTrackSizingAlgorithm::CalculateGutterSize(
-              Style(), ChildAvailableSize(), kForColumns);
+              Style(), masonry_available_size_, kForColumns);
       return running_positions.GetMaxPositionForSpan(
                  GridSpan::TranslatedDefiniteGridSpan(
                      /*start_line=*/0,
@@ -88,7 +101,7 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   if (!masonry_items.IsEmpty()) {
     MasonryRunningPositions running_positions(
         track_collection.EndLineOfImplicitGrid(), LayoutUnit(),
-        ResolveItemToleranceForMasonry(Style(), ChildAvailableSize()));
+        ResolveItemToleranceForMasonry(Style(), masonry_available_size_));
     PlaceMasonryItems(track_collection, masonry_items, start_offset,
                       running_positions);
   }
@@ -136,7 +149,6 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     GridItems& masonry_items,
     wtf_size_t start_offset,
     MasonryRunningPositions& running_positions) {
-  const auto& available_size = ChildAvailableSize();
   const auto& border_scrollbar_padding = BorderScrollbarPadding();
   const auto& container_space = GetConstraintSpace();
   const auto& style = Style();
@@ -146,9 +158,8 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
   const auto grid_axis_direction = track_collection.Direction();
   const bool is_for_columns = grid_axis_direction == kForColumns;
 
-
   const auto stacking_axis_gap = GridTrackSizingAlgorithm::CalculateGutterSize(
-      style, available_size, is_for_columns ? kForRows : kForColumns);
+      style, masonry_available_size_, is_for_columns ? kForRows : kForColumns);
 
   for (auto& masonry_item : masonry_items) {
     // Find the definite span that the masonry items should be placed in.
@@ -419,18 +430,16 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
     return range_builder.FinalizeRanges();
   };
 
-  const auto& available_size = ChildAvailableSize();
   GridSizingTrackCollection track_collection(BuildRanges(),
                                              grid_axis_direction);
-  track_collection.BuildSets(style, available_size);
+  track_collection.BuildSets(style, masonry_available_size_);
 
   if (track_collection.HasNonDefiniteTrack()) {
     GridTrackSizingAlgorithm::CacheGridItemsProperties(track_collection,
                                                        &virtual_items);
 
-    // TODO(ethavar): Compute the min available size and use it here.
     const GridTrackSizingAlgorithm track_sizing_algorithm(
-        style, available_size, /*container_min_available_size=*/LogicalSize(),
+        style, masonry_available_size_, masonry_min_available_size_,
         sizing_constraint);
 
     track_sizing_algorithm.ComputeUsedTrackSizes(
@@ -438,16 +447,46 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
   }
 
   auto first_set_geometry = GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
-      track_collection, style, available_size, BorderScrollbarPadding());
+      track_collection, style, masonry_available_size_,
+      BorderScrollbarPadding());
 
   track_collection.FinalizeSetsGeometry(first_set_geometry.start_offset,
                                         first_set_geometry.gutter_size);
   return track_collection;
 }
 
+// https://drafts.csswg.org/css-grid-2/#auto-repeat
 wtf_size_t MasonryLayoutAlgorithm::ComputeAutomaticRepetitions() const {
-  // TODO(ethavar): Compute the actual number of automatic repetitions.
-  return 1;
+  const ComputedStyle& style = Style();
+  GridTrackSizingDirection masonry_track_sizing_direction =
+      style.MasonryTrackSizingDirection();
+  const bool is_for_columns = masonry_track_sizing_direction == kForColumns;
+
+  // TODO(almaher): Update the name of NGGridTrackList to GridTrackList.
+  const NGGridTrackList& track_list =
+      is_for_columns ? style.GridTemplateColumns().track_list
+                     : style.GridTemplateRows().track_list;
+
+  if (!track_list.HasAutoRepeater()) {
+    return 0;
+  }
+
+  // TODO(almaher): We will need special computation of automatic repetitions
+  // for submasonry (see ComputeAutomaticRepetitionsForSubgrid()). Once this is
+  // supported, we can move more of this method to the helper in
+  // grid_layout_utils.cc.
+
+  const LayoutUnit gutter_size = GridTrackSizingAlgorithm::CalculateGutterSize(
+      style, masonry_available_size_, masonry_track_sizing_direction);
+
+  return CalculateAutomaticRepetitions(
+      track_list, gutter_size,
+      is_for_columns ? masonry_available_size_.inline_size
+                     : masonry_available_size_.block_size,
+      is_for_columns ? masonry_min_available_size_.inline_size
+                     : masonry_min_available_size_.block_size,
+      is_for_columns ? masonry_max_available_size_.inline_size
+                     : masonry_max_available_size_.block_size);
 }
 
 ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpace(
@@ -491,7 +530,7 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForLayout(
     LogicalRect* containing_rect) const {
   const bool is_for_columns = track_collection.Direction() == kForColumns;
 
-  auto containing_size = ChildAvailableSize();
+  auto containing_size = masonry_available_size_;
   auto& grid_axis_size =
       is_for_columns ? containing_size.inline_size : containing_size.block_size;
 
@@ -515,7 +554,7 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForLayout(
 ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     const GridItemData& masonry_item,
     std::optional<LayoutUnit> opt_fixed_inline_size) const {
-  LogicalSize containing_size = ChildAvailableSize();
+  LogicalSize containing_size = masonry_available_size_;
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
   const auto grid_axis_direction = Style().MasonryTrackSizingDirection();
 
