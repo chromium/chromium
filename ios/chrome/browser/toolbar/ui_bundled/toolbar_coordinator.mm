@@ -6,12 +6,14 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator.h"
+#import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator_parity.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
@@ -159,7 +161,12 @@
       self.toolbarHeightDelegate;
   [self.secondaryToolbarCoordinator start];
 
-  self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+    self.orchestrator = [[OmniboxFocusOrchestratorParity alloc] init];
+  } else {
+    self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];
+  }
+
   self.orchestrator.toolbarAnimatee =
       self.primaryToolbarCoordinator.toolbarAnimatee;
   self.orchestrator.locationBarAnimatee =
@@ -646,21 +653,46 @@
 /// an incognito browser, the NTP is displayed, and whether the fakebox was
 /// pinned if it was selected.
 - (OmniboxFocusTrigger)omniboxFocusTrigger {
-  if (self.isOffTheRecord || !IsSplitToolbarMode(self.traitEnvironment)) {
-    return _focusedFromFakebox ? OmniboxFocusTrigger::kUnpinnedFakebox
-                               : OmniboxFocusTrigger::kOther;
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdate)) {
+    web::WebState* webState =
+        self.browser->GetWebStateList()->GetActiveWebState();
+    if (!webState) {
+      return OmniboxFocusTrigger::kOther;
+    }
+    NewTabPageTabHelper* NTPHelper =
+        NewTabPageTabHelper::FromWebState(webState);
+    if (!NTPHelper || !NTPHelper->IsActive()) {
+      return OmniboxFocusTrigger::kOther;
+    }
+
+    // (De)focusing on NTP.
+
+    if (self.isOffTheRecord || !IsSplitToolbarMode(self.traitEnvironment)) {
+      return _focusedFromFakebox ? OmniboxFocusTrigger::kUnpinnedFakebox
+                                 : OmniboxFocusTrigger::kNTPOmnibox;
+    }
+
+    return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedFakebox
+                          : OmniboxFocusTrigger::kUnpinnedFakebox;
+
+  } else {
+    if (self.isOffTheRecord || !IsSplitToolbarMode(self.traitEnvironment)) {
+      return _focusedFromFakebox ? OmniboxFocusTrigger::kUnpinnedFakebox
+                                 : OmniboxFocusTrigger::kOther;
+    }
+    web::WebState* webState =
+        self.browser->GetWebStateList()->GetActiveWebState();
+    if (!webState) {
+      return OmniboxFocusTrigger::kOther;
+    }
+    NewTabPageTabHelper* NTPHelper =
+        NewTabPageTabHelper::FromWebState(webState);
+    if (!NTPHelper || !NTPHelper->IsActive()) {
+      return OmniboxFocusTrigger::kOther;
+    }
+    return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedFakebox
+                          : OmniboxFocusTrigger::kUnpinnedFakebox;
   }
-  web::WebState* webState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-  if (!webState) {
-    return OmniboxFocusTrigger::kOther;
-  }
-  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
-  if (!NTPHelper || !NTPHelper->IsActive()) {
-    return OmniboxFocusTrigger::kOther;
-  }
-  return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedFakebox
-                        : OmniboxFocusTrigger::kUnpinnedFakebox;
 }
 
 - (void)focusTransitionDidComplete:(BOOL)focused

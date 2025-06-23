@@ -1,29 +1,15 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_ORCHESTRATOR_UI_BUNDLED_OMNIBOX_FOCUS_ORCHESTRATOR_H_
-#define IOS_CHROME_BROWSER_ORCHESTRATOR_UI_BUNDLED_OMNIBOX_FOCUS_ORCHESTRATOR_H_
+#ifndef IOS_CHROME_BROWSER_ORCHESTRATOR_UI_BUNDLED_OMNIBOX_FOCUS_ORCHESTRATOR_PARITY_H_
+#define IOS_CHROME_BROWSER_ORCHESTRATOR_UI_BUNDLED_OMNIBOX_FOCUS_ORCHESTRATOR_PARITY_H_
 
-#import <UIKit/UIKit.h>
-
-#import "base/ios/block_types.h"
-
-@protocol EditViewAnimatee;
-@protocol LocationBarAnimatee;
-@protocol ToolbarAnimatee;
-
-// Specifies what triggered the omnibox focus transition.
-enum class OmniboxFocusTrigger {
-  kOther,
-  kPinnedFakebox,
-  kUnpinnedFakebox,
-  kNTPOmnibox,  // Note: only used when kOmniboxMobileParityUpdate is enabled.
-};
+#import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator.h"
 
 // Orchestrator for the animation occurring when the omnibox is
-// focused/unfocused.
-@interface OmniboxFocusOrchestrator : NSObject
+// focused/unfocused when the Parity flag is enabled.
+@interface OmniboxFocusOrchestratorParity : OmniboxFocusOrchestrator
 
 // Toolbar animatee, orchestrated by this object.
 @property(nonatomic, weak) id<ToolbarAnimatee> toolbarAnimatee;
@@ -44,4 +30,4 @@ enum class OmniboxFocusTrigger {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_ORCHESTRATOR_UI_BUNDLED_OMNIBOX_FOCUS_ORCHESTRATOR_H_
+#endif  // IOS_CHROME_BROWSER_ORCHESTRATOR_UI_BUNDLED_OMNIBOX_FOCUS_ORCHESTRATOR_PARITY_H_
