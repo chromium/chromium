@@ -2396,10 +2396,6 @@
         "name": "system_health.memory_desktop/load_accessibility:shopping:amazon:2018"
     },
     {
-        "duration": "23.0",
-        "name": "system_health.memory_desktop/load_accessibility:tech:codesearch:2025"
-    },
-    {
         "duration": "124.0",
         "name": "system_health.memory_desktop/long_running:tools:gmail-background"
     },

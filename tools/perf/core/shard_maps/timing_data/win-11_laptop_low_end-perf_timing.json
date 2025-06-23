@@ -516,10 +516,6 @@
         "name": "system_health.common_desktop/load_accessibility:shopping:amazon:2018"
     },
     {
-        "duration": "28.0",
-        "name": "system_health.common_desktop/load_accessibility:tech:codesearch:2025"
-    },
-    {
         "duration": "4.0",
         "name": "system_health.common_desktop/long_running:tools:gmail-background"
     },

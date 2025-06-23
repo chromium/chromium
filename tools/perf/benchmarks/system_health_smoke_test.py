@@ -76,9 +76,6 @@ _DISABLED_TESTS = frozenset({
     'system_health.memory_desktop/load:media:facebook_feed:desktop:2020',
     'system_health.memory_desktop/load:games:miniclip:2018',
 
-    # crbug.com/401513455
-    'system_health.memory_desktop/load_accessibility:tech:codesearch:2025',
-
     # crbug.com/418717796 - flaky
     'system_health.memory_desktop/load:media:youtubelivingroom:2020',
 

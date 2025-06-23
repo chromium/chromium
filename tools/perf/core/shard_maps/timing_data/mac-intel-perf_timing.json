@@ -2400,10 +2400,6 @@
         "name": "system_health.common_desktop/load_accessibility:shopping:amazon:2018"
     },
     {
-        "duration": "20.0",
-        "name": "system_health.common_desktop/load_accessibility:tech:codesearch:2025"
-    },
-    {
         "duration": "2.0",
         "name": "system_health.common_desktop/long_running:tools:gmail-background"
     },
@@ -2718,10 +2714,6 @@
     {
         "duration": "18.0",
         "name": "system_health.memory_desktop/load_accessibility:shopping:amazon:2018"
-    },
-    {
-        "duration": "21.0",
-        "name": "system_health.memory_desktop/load_accessibility:tech:codesearch:2025"
     },
     {
         "duration": "1.0",
