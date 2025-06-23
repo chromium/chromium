@@ -20,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_ui/InvalidationAwareThumbnailProvider.java",
     "java/src/org/chromium/chrome/browser/tab_ui/OnTabSelectingListener.java",
     "java/src/org/chromium/chrome/browser/tab_ui/RecyclerViewPosition.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/SuggestionLifecycleObserverHandler.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabCardThemeUtil.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabContentManager.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabContentManagerThumbnailProvider.java",
@@ -108,6 +109,7 @@ robolectric_library("junit") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/tab_ui/ActionConfirmationManagerUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_ui/SuggestionLifecycleObserverHandlerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabCardThemeUtilUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabListFaviconProviderTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherCustomViewManagerUnitTest.java",

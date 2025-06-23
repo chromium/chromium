@@ -4,12 +4,23 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
+import org.chromium.base.ValueChangedCallback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.visited_url_ranking.url_grouping.CachedSuggestions;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestion;
@@ -49,89 +60,130 @@ public class TabSwitcherGroupSuggestionService {
         default void onShowSuggestion(List<@TabId Integer> tabIds) {}
     }
 
-    /**
-     * Handles observer lifecycle events for tab group suggestions.
-     *
-     * <p>After a listener for a user response to a group suggestion in this handler has been called
-     * once, subsequent calls for such events are ignored.
-     */
-    public static class SuggestionLifecycleObserverHandler implements SuggestionLifecycleObserver {
-        private final int mSuggestionId;
-        private final Callback<UserResponseMetadata> mUserResponseCallback;
-        private final SuggestionLifecycleObserver mSuggestionLifecycleObserver;
-        private boolean mResponseObserverAlreadyCalled;
+    private final TabModelObserver mTabModelObserver =
+            new TabModelObserver() {
+                @Override
+                public void didMoveTab(Tab tab, int newIndex, int curIndex) {
+                    clearSuggestions();
+                }
 
-        /**
-         * Constructs an observer handler for a specific tab group suggestion.
-         *
-         * @param suggestionId The ID for the suggestion.
-         * @param userResponseCallback To be invoked with the user's response.
-         * @param suggestionResponseListener Listens for user responses to the suggestion.
-         */
-        public SuggestionLifecycleObserverHandler(
-                int suggestionId,
-                Callback<UserResponseMetadata> userResponseCallback,
-                SuggestionLifecycleObserver suggestionResponseListener) {
-            mSuggestionId = suggestionId;
-            mUserResponseCallback = userResponseCallback;
-            mSuggestionLifecycleObserver = suggestionResponseListener;
-        }
+                @Override
+                public void tabClosureUndone(Tab tab) {
+                    clearSuggestions();
+                }
 
-        @Override
-        public void onSuggestionAccepted() {
-            onSuggestionResponse(
-                    mSuggestionLifecycleObserver::onSuggestionAccepted,
-                    new UserResponseMetadata(mSuggestionId, UserResponse.ACCEPTED));
-        }
+                @Override
+                public void tabRemoved(Tab tab) {
+                    clearSuggestions();
+                }
 
-        @Override
-        public void onSuggestionDismissed() {
-            onSuggestionResponse(
-                    mSuggestionLifecycleObserver::onSuggestionDismissed,
-                    new UserResponseMetadata(mSuggestionId, UserResponse.REJECTED));
-        }
+                @Override
+                public void willCloseTab(Tab tab, boolean didCloseAlone) {
+                    clearSuggestions();
+                }
 
-        @Override
-        public void onSuggestionIgnored() {
-            onSuggestionResponse(
-                    mSuggestionLifecycleObserver::onSuggestionIgnored,
-                    new UserResponseMetadata(mSuggestionId, UserResponse.IGNORED));
-        }
+                @Override
+                public void willAddTab(Tab tab, @TabLaunchType int type) {
+                    clearSuggestions();
+                }
 
-        @Override
-        public void onShowSuggestion(List<@TabId Integer> tabIds) {
-            mSuggestionLifecycleObserver.onShowSuggestion(tabIds);
-        }
+                @Override
+                public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
+                    clearSuggestions();
+                }
+            };
 
-        private void onSuggestionResponse(
-                Runnable listener, UserResponseMetadata userResponseMetadata) {
-            if (mResponseObserverAlreadyCalled) return;
-            mResponseObserverAlreadyCalled = true;
+    private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
+            new TabGroupModelFilterObserver() {
+                @Override
+                public void willMergeTabToGroup(
+                        Tab movedTab, int newRootId, @Nullable Token tabGroupId) {
+                    clearSuggestions();
+                }
 
-            listener.run();
-            mUserResponseCallback.onResult(userResponseMetadata);
-            mSuggestionLifecycleObserver.onAnySuggestionResponse();
-        }
-    }
+                @Override
+                public void willMoveTabGroup(int tabModelOldIndex, int tabModelNewIndex) {
+                    clearSuggestions();
+                }
 
-    private final int mWindowId;
+                @Override
+                public void willMoveTabOutOfGroup(
+                        Tab movedTab, @Nullable Token destinationTabGroupId) {
+                    clearSuggestions();
+                }
+
+                @Override
+                public void didCreateGroup(
+                        List<Tab> tabs,
+                        List<Integer> tabOriginalIndex,
+                        List<Integer> tabOriginalRootId,
+                        List<Token> tabOriginalTabGroupId,
+                        @Nullable String destinationGroupTitle,
+                        int destinationGroupColorId,
+                        boolean destinationGroupTitleCollapsed) {
+                    clearSuggestions();
+                }
+
+                @Override
+                public void didRemoveTabGroup(
+                        int oldRootId,
+                        @Nullable Token oldTabGroupId,
+                        @DidRemoveTabGroupReason int removalReason) {
+                    clearSuggestions();
+                }
+
+                @Override
+                public void willCloseTabGroup(Token tabGroupId, boolean isHiding) {
+                    clearSuggestions();
+                }
+            };
+    private final @WindowId int mWindowId;
+    private final ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
     private final SuggestionLifecycleObserver mSuggestionLifecycleObserver;
     private final GroupSuggestionsService mGroupSuggestionsService;
+    private final ValueChangedCallback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
+            new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private @Nullable SuggestionLifecycleObserverHandler mSuggestionLifecycleObserverHandler;
 
     /**
      * @param windowId The ID of the current window.
+     * @param currentTabGroupModelFilterSupplier The supplier for the current {@link
+     *     TabGroupModelFilter}.
      * @param profile The profile used for tab group suggestions.
      * @param suggestionLifecycleObserver Listens for user responses to a group suggestion.
      */
     public TabSwitcherGroupSuggestionService(
             @WindowId int windowId,
+            ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             Profile profile,
             SuggestionLifecycleObserver suggestionLifecycleObserver) {
         mWindowId = windowId;
+        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
         mSuggestionLifecycleObserver = suggestionLifecycleObserver;
 
         mGroupSuggestionsService = GroupSuggestionsServiceFactory.getForProfile(profile);
+
+        mOnTabGroupModelFilterChanged.onResult(
+                assumeNonNull(
+                        mCurrentTabGroupModelFilterSupplier.addObserver(
+                                mOnTabGroupModelFilterChanged)));
+    }
+
+    public void destroy() {
+        mCurrentTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
+    }
+
+    private void onTabGroupModelFilterChanged(
+            @Nullable TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
+        if (oldFilter != null) {
+            oldFilter.removeObserver(mTabModelObserver);
+            oldFilter.removeTabGroupObserver(mTabGroupModelFilterObserver);
+        }
+
+        if (newFilter != null) {
+            newFilter.addObserver(mTabModelObserver);
+            newFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
+        }
     }
 
     /** Shows tab group suggestions if needed. */

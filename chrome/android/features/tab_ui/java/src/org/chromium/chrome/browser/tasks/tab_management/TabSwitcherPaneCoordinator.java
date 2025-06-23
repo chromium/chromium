@@ -473,6 +473,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                 mTabSwitcherGroupSuggestionService =
                         TabSwitcherGroupSuggestionServiceFactory.build(
                                 activity,
+                                mTabGroupModelFilterSupplier,
                                 profile,
                                 mTabListCoordinator.getTabListHighlighter(),
                                 messageManager.getTabGroupSuggestionMessageService());
@@ -508,6 +509,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         mTabGroupModelFilterSupplier.removeObserver(mOnFilterChange);
         if (mTabGroupListBottomSheetCoordinator != null) {
             mTabGroupListBottomSheetCoordinator.destroy();
+        }
+        if (mTabSwitcherGroupSuggestionService != null) {
+            mTabSwitcherGroupSuggestionService.destroy();
         }
     }
 
