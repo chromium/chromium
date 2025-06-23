@@ -445,8 +445,8 @@ linux_memory_builder(
             ),
             "content_browsertests": targets.mixin(
                 swarming = targets.swarming(
-                    # https://crbug.com/1471857
-                    shards = 14,
+                    # https://crbug.com/1471857, crbug.com/409823026
+                    shards = 28,
                 ),
             ),
             "gin_unittests": targets.remove(
