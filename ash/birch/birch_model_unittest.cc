@@ -722,17 +722,9 @@ TEST_F(BirchModelTest, IsDataFresh_Attachments) {
   EXPECT_TRUE(model->IsDataFresh());
 }
 
-// TODO(https://crbug.com/324963992): Fix `BirchModel*Test.DataFetchTimeout`
-// for debug builds.
-#if defined(NDEBUG)
-#define MAYBE_DataFetchTimeout DataFetchTimeout
-#else
-#define MAYBE_DataFetchTimeout DISABLED_DataFetchTimeout
-#endif
-
 // Test that consumer is notified when waiting a set amount of time after
 // requesting birch data.
-TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
+TEST_F(BirchModelTest, DataFetchTimeout) {
   BirchModel* model = Shell::Get()->birch_model();
   TestModelConsumer consumer;
   EXPECT_TRUE(model);
