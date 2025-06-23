@@ -3,18 +3,19 @@
 // found in the LICENSE file.
 
 #include "base/test/values_test_util.h"
-#include "components/proto_extras/test_proto/test_proto.extras.h"
 #include "components/proto_extras/test_proto/test_proto.pb.h"
-#include "components/proto_extras/test_proto/test_proto_dependency.extras.h"
+#include "components/proto_extras/test_proto/test_proto.to_value.h"
 #include "components/proto_extras/test_proto/test_proto_dependency.pb.h"
-#include "components/proto_extras/test_proto2/test_proto2.extras.h"
+#include "components/proto_extras/test_proto/test_proto_dependency.to_value.h"
+#include "components/proto_extras/test_proto2/test_proto2.ostream.h"
 #include "components/proto_extras/test_proto2/test_proto2.pb.h"
+#include "components/proto_extras/test_proto2/test_proto2.to_value.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace proto_extras {
 namespace {
 
-TEST(ProtoToValueTest, BasicField) {
+TEST(ProtoExtrasToValueTest, BasicField) {
   TestMessage message;
   message.set_double_field(1.0);
   message.set_int32_field(2);
@@ -36,7 +37,7 @@ TEST(ProtoToValueTest, BasicField) {
 })!"));
 }
 
-TEST(ProtoToValueTest, Uint64Field) {
+TEST(ProtoExtrasToValueTest, Uint64Field) {
   TestMessage message;
   message.set_uint64_field(std::numeric_limits<uint64_t>::max());
   EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
@@ -47,7 +48,7 @@ TEST(ProtoToValueTest, Uint64Field) {
     })!"));
 }
 
-TEST(ProtoToValueTest, RepeatedField) {
+TEST(ProtoExtrasToValueTest, RepeatedField) {
   TestMessage message;
 
   // Default fields only if empty
@@ -71,7 +72,7 @@ TEST(ProtoToValueTest, RepeatedField) {
 })!"));
 }
 
-TEST(ProtoToValueTest, DepedentFile) {
+TEST(ProtoExtrasToValueTest, DepedentFile) {
   TestMessage message;
   message.mutable_dependency_message()->set_int32_field(4);
 
@@ -86,7 +87,7 @@ TEST(ProtoToValueTest, DepedentFile) {
 })!"));
 }
 
-TEST(ProtoToValueTest, OneofField) {
+TEST(ProtoExtrasToValueTest, OneofField) {
   TestMessage message;
 
   // Test with maybe_int32_field set
@@ -141,7 +142,7 @@ TEST(ProtoToValueTest, OneofField) {
 })!"));
 }
 
-TEST(ProtoToValueTest, UnknownFields) {
+TEST(ProtoExtrasToValueTest, UnknownFields) {
   TestMessage message;
   *message.mutable_unknown_fields() = "unknownfielddata";
   EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
@@ -153,7 +154,7 @@ TEST(ProtoToValueTest, UnknownFields) {
   })!"));
 }
 
-TEST(Proto2ToValueTest, EmbeddedMessageToValue) {
+TEST(ProtoExtrasProto2ToValueTest, EmbeddedMessageToValue) {
   EmbeddedMessage message;
   base::Value::Dict result = Serialize(message);
   EXPECT_EQ(0ul, result.size());
@@ -164,7 +165,7 @@ TEST(Proto2ToValueTest, EmbeddedMessageToValue) {
   EXPECT_EQ(1ul, result.size());
 }
 
-TEST(Proto2ToValueTest, TestMessageToValue) {
+TEST(ProtoExtrasProto2ToValueTest, Basic) {
   TestMessageProto2 message;
   const std::string expected_empty_message_str = R"({})";
   EXPECT_EQ(Serialize(message),
@@ -214,7 +215,7 @@ TEST(Proto2ToValueTest, TestMessageToValue) {
   EXPECT_EQ(Serialize(message), base::JSONReader::Read(expected_json_str));
 }
 
-TEST(Proto2ToValueTest, TestMessageProto2OneofToValue) {
+TEST(ProtoExtrasProto2ToValueTest, OneofField) {
   TestMessageProto2 message;
   EXPECT_EQ(Serialize(message), base::JSONReader::Read(R"({})"));
   message.set_maybe_int(1);
@@ -241,21 +242,21 @@ TEST(Proto2ToValueTest, TestMessageProto2OneofToValue) {
 })"));
 }
 
-TEST(Proto2ToValueTest, TestMessageProto2StreamOperator) {
+TEST(ProtoExtrasProto2ToValueTest, Uint64Field) {
+  TestMessageProto2 message;
+  message.set_uint64_field(std::numeric_limits<uint64_t>::max());
+  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+    "uint64_field": "18446744073709551615"
+  })!"));
+}
+
+TEST(ProtoExtrasProto2StreamTest, Basic) {
   TestMessageProto2 message;
   message.set_maybe_int(1);
   std::ostringstream stream;
   stream << message;
   EXPECT_EQ(base::JSONReader::Read(stream.str()),
             base::JSONReader::Read(R"({"maybe_int": 1})"));
-}
-
-TEST(Proto2ToValueTest, Uint64Field) {
-  TestMessageProto2 message;
-  message.set_uint64_field(std::numeric_limits<uint64_t>::max());
-  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
-    "uint64_field": "18446744073709551615"
-  })!"));
 }
 
 }  // namespace

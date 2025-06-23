@@ -26,6 +26,8 @@ proto_extras("connectors_proto_extras") {
   deps = [
     ":connectors_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
+  ]
+  extras_deps = [
     "//components/safe_browsing/core/common/proto:csd_proto_extras",
   ]
 

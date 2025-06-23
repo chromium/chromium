@@ -46,9 +46,11 @@ proto_extras("realtimeapi_proto_extras") {
   sources = [ "realtimeapi.proto" ]
   deps = [
     ":csd_proto",
-    ":csd_proto_extras",
     ":realtimeapi_proto",
     "//components/enterprise/common/proto:connectors_proto",
+  ]
+  extras_deps = [
+    ":csd_proto_extras",
     "//components/enterprise/common/proto:connectors_proto_extras",
   ]
 
