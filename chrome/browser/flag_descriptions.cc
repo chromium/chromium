@@ -4420,13 +4420,6 @@ const char kV8VmFutureDescription[] =
     "This enables upcoming and experimental V8 VM features. "
     "This flag does not enable experimental JavaScript features.";
 
-#if BUILDFLAG(IS_ANDROID)
-const char kV8HighEndAndroidName[] = "V8 high-end device mode";
-const char kV8HighEndAndroidDescription[] =
-    "This enables V8 to use more memory on high-end Android devices. This "
-    "increases the new space size of the V8 heap from 8MB to 32MB.";
-#endif
-
 const char kGlobalVaapiLockName[] = "Global lock on the VA-API wrapper.";
 const char kGlobalVaapiLockDescription[] =
     "Enable or disable the global VA-API lock for platforms and paths that "

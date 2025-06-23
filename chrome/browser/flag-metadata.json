@@ -4486,14 +4486,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-v8-high-end-device-mode",
-    "owners": [
-      "darrenwu@google.com",
-      "clank-performance-team@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-variable-refresh-rate",
     "owners": [ "aswolfers@chromium.org", "chromeos-gfx-compositor@google.com" ],
     "expiry_milestone": 140

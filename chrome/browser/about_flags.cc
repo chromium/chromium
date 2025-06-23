@@ -5036,11 +5036,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-future-v8-vm-features", flag_descriptions::kV8VmFutureName,
      flag_descriptions::kV8VmFutureDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kV8VmFuture)},
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-v8-high-end-device-mode", flag_descriptions::kV8HighEndAndroidName,
-     flag_descriptions::kV8HighEndAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kV8HighEndAndroid)},
-#endif
     {"enable-gpu-rasterization", flag_descriptions::kGpuRasterizationName,
      flag_descriptions::kGpuRasterizationDescription, kOsAll,
      MULTI_VALUE_TYPE(kEnableGpuRasterizationChoices)},

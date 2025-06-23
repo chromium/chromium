@@ -2558,11 +2558,6 @@ extern const char kGroupPromoPrototypeDescription[];
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
 
-#if BUILDFLAG(IS_ANDROID)
-extern const char kV8HighEndAndroidName[];
-extern const char kV8HighEndAndroidDescription[];
-#endif
-
 extern const char kGlobalVaapiLockName[];
 extern const char kGlobalVaapiLockDescription[];
 

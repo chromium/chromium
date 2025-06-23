@@ -1256,9 +1256,14 @@ BASE_FEATURE(kValidateCommitOriginAtCommit,
 BASE_FEATURE(kV8VmFuture, "V8VmFuture", base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables V8 to use more memory on high-end Android devices.
-BASE_FEATURE(kV8HighEndAndroid,
-             "V8HighEndAndroid",
+// Enables V8 to use a set of experimental optimizations for Android Desktop.
+// This feature flag is intended to control various performance-related
+// tweaks.
+//
+// TODO(crbug.com/425860368): This feature may need to be updated or removed
+// based on the evolution of V8's performance features for high-end devices.
+BASE_FEATURE(kV8AndroidDesktopHighEndConfig,
+             "V8AndroidDesktopHighEndConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

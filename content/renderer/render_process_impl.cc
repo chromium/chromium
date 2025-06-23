@@ -155,8 +155,8 @@ RenderProcessImpl::RenderProcessImpl()
     SetV8FlagIfOverridden(features::kV8VmFuture, "--future", "--no-future");
 
 #if BUILDFLAG(IS_ANDROID)
-    SetV8FlagIfOverridden(features::kV8HighEndAndroid, "--high-end-android",
-                          "--no-high-end-android");
+    SetV8FlagIfOverridden(features::kV8AndroidDesktopHighEndConfig,
+                          "--high-end-android", "--no-high-end-android");
 #endif
 
     SetV8FlagIfOverridden(features::kWebAssemblyBaseline, "--liftoff",
