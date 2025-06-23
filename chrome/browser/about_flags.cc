@@ -2204,7 +2204,6 @@ const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-
 const FeatureEntry::FeatureParam kTabstripComboButtonBackground[] = {
     {"has_background", "true"}};
 
@@ -2230,7 +2229,6 @@ const FeatureEntry::FeatureVariation kTabstripComboButtonVariations[] = {
     {" - toolbar button", kTabSearchToolbarButton,
      std::size(kTabSearchToolbarButton)},
 };
-
 #endif
 
 const FeatureEntry::FeatureParam kTabScrollingButtonPositionRight[] = {
@@ -2276,6 +2274,22 @@ const FeatureEntry::FeatureVariation kScrollableTabStripOverflowVariations[] = {
      std::size(kScrollableTabStripOverflowFade), nullptr},  // Fade
     {" - Shadow", kScrollableTabStripOverflowShadow,
      std::size(kScrollableTabStripOverflowShadow), nullptr},  // Shadow
+};
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kMiniToolbarOnActiveView[] = {
+    {"mini_toolbar_active_config", "showall"}};
+
+const FeatureEntry::FeatureParam kMiniToolbarWithMenuOnlyOnActiveView[] = {
+    {"mini_toolbar_active_config", "showmenuonly"}};
+
+const FeatureEntry::FeatureVariation kSideBySideVariations[] = {
+    {" - show mini toolbar on active view", kMiniToolbarOnActiveView,
+     std::size(kMiniToolbarOnActiveView)},
+    {" - show mini toolbar with menu only on active view",
+     kMiniToolbarWithMenuOnlyOnActiveView,
+     std::size(kMiniToolbarWithMenuOnlyOnActiveView)},
 };
 #endif
 
@@ -12672,9 +12686,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kInstanceSwitcherV2)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
     {"side-by-side", flag_descriptions::kSideBySideName,
      flag_descriptions::kSideBySideDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSideBySide)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSideBySide,
+                                    kSideBySideVariations,
+                                    "SideBySide")},
+#endif
 
     {"enable-secure-payment-confirmation-fallback-ux",
      flag_descriptions::kSecurePaymentConfirmationFallbackName,

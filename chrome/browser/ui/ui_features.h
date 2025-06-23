@@ -145,18 +145,21 @@ BASE_DECLARE_FEATURE(KScrimForTabModal);
 
 BASE_DECLARE_FEATURE(kSideBySide);
 
-// The delay before showing the drop target for the side-by-side drag-and-drop
-// entrypoint.
-inline constexpr base::FeatureParam<base::TimeDelta>
-    kSideBySideShowDropTargetDelay(&kSideBySide,
-                                   "SideBySideShowDropTargetDelay",
-                                   base::Seconds(1));
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSideBySideShowDropTargetDelay);
 
-// The padding inside the drop target that determines the overall width.
-inline constexpr base::FeatureParam<int> kSideBySideDropTargetInnerPadding(
-    &kSideBySide,
-    "SideBySideDropTargetInnerPadding",
-    37);
+BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetInnerPadding);
+
+enum class MiniToolbarActiveConfiguration {
+  // Hides the toolbar in the active view.
+  Hide,
+  // Shows only the menu button in the active view.
+  ShowMenuOnly,
+  // Shows favicon, domain, alerts and menu button in the active view.
+  ShowAll
+};
+
+BASE_DECLARE_FEATURE_PARAM(MiniToolbarActiveConfiguration,
+                           kSideBySideMiniToolbarActiveConfiguration);
 
 BASE_DECLARE_FEATURE(kSideBySideLinkMenuNewBadge);
 
@@ -330,9 +333,11 @@ BASE_DECLARE_FEATURE(kInlineFullscreenPerfExperiment);
 // Controls whether the new page actions framework should be displaying page
 // actions.
 BASE_DECLARE_FEATURE(kPageActionsMigration);
+
 // For development only, set this to enable all page actions.
 inline constexpr base::FeatureParam<bool>
     kPageActionsMigrationEnableAll(&kPageActionsMigration, "enable_all", false);
+
 // The following feature params indicate whether individual features should
 // have their page actions controlled using the new framework.
 inline constexpr base::FeatureParam<bool> kPageActionsMigrationLensOverlay(

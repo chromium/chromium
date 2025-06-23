@@ -67,8 +67,8 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
   contents_view_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF{kContentCornerRadius});
   // Mini toolbar should only be visible for the inactive contents
-  // container view.
-  mini_toolbar_->SetVisible(!is_active);
+  // container view or both depending on configuration.
+  mini_toolbar_->UpdateState(is_active);
   // Scrim should only be allowed to show the scrim for inactive contents
   // container view.
   scrim_view_->SetVisible(!is_active && show_scrim);

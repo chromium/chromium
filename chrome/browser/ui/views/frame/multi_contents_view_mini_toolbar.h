@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -42,8 +43,7 @@ class MultiContentsViewMiniToolbar : public views::View,
                                ContentsWebView* web_view);
   ~MultiContentsViewMiniToolbar() override;
 
-  void UpdateWebContents(views::WebView* web_view);
-  void ClearWebContents(views::WebView*);
+  void UpdateState(bool is_active);
 
  private:
   // TabStripModelObserver:
@@ -55,6 +55,9 @@ class MultiContentsViewMiniToolbar : public views::View,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
+
+  void UpdateWebContents(views::WebView* web_view);
+  void ClearWebContents(views::WebView*);
 
   // Returns the bounding path for the MultiContentsViewMiniToolbar. If
   // |border_stroke_only| then only the part of the path for the border stroke
@@ -81,6 +84,7 @@ class MultiContentsViewMiniToolbar : public views::View,
 
   raw_ptr<BrowserView> browser_view_;
   raw_ptr<content::WebContents> web_contents_;
+  ui::ColorId stroke_color_ = kColorMulitContentsViewInactiveContentOutline;
   base::CallbackListSubscription web_contents_attached_subscription_;
   base::CallbackListSubscription web_contents_detached_subscription_;
   std::optional<base::CallbackListSubscription> tab_alert_status_subscription_;
