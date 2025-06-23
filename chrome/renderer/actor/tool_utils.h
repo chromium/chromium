@@ -28,7 +28,9 @@ class PointF;
 
 namespace actor {
 
-blink::WebNode GetNodeFromId(const content::RenderFrame& frame,
+// Returns the Blink node for the given DOMNodeId if one exists and its document
+// has the given frame as a local root. Returns a null WebNode otherwise.
+blink::WebNode GetNodeFromId(const content::RenderFrame& local_root_frame,
                              int32_t node_id);
 
 // Returns the center coordinates of the node's bounding box in widget space.

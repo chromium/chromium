@@ -82,7 +82,7 @@ std::string DragAndReleaseTool::DebugString() const {
 
 DragAndReleaseTool::ValidatedResult DragAndReleaseTool::Validate() const {
   CHECK(frame_->GetWebFrame());
-  CHECK(frame_->GetWebFrame()->LocalRoot()->FrameWidget());
+  CHECK(frame_->GetWebFrame()->FrameWidget());
 
   mojom::ToolTargetPtr& from_target = action_->from_target;
   mojom::ToolTargetPtr& to_target = action_->to_target;
@@ -125,7 +125,7 @@ bool DragAndReleaseTool::InjectMouseEvent(WebInputEvent::Type type,
   }
 
   WebInputEventResult result =
-      frame_->GetWebFrame()->LocalRoot()->FrameWidget()->HandleInputEvent(
+      frame_->GetWebFrame()->FrameWidget()->HandleInputEvent(
           WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
   return result != WebInputEventResult::kHandledSuppressed;
 }

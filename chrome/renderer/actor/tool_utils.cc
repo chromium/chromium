@@ -48,18 +48,21 @@ std::optional<gfx::PointF> InteractionPointFromWebNode(
   return gfx::PointF(rect.CenterPoint());
 }
 
-blink::WebNode GetNodeFromId(const content::RenderFrame& frame,
+blink::WebNode GetNodeFromId(const content::RenderFrame& local_root_frame,
                              int32_t node_id) {
-  const blink::WebLocalFrame* web_frame = frame.GetWebFrame();
+  const blink::WebLocalFrame* web_frame = local_root_frame.GetWebFrame();
   if (!web_frame) {
     return blink::WebNode();
   }
+
+  // The passed in frame must be a local root.
+  CHECK_EQ(web_frame, web_frame->LocalRoot());
 
   blink::WebNode node = blink::WebNode::FromDomNodeId(node_id);
   // Make sure the node we're getting belongs to a frame under the local root
   // frame.
   if (node.IsNull() || !node.GetDocument() || !node.GetDocument().GetFrame() ||
-      node.GetDocument().GetFrame()->LocalRoot() != web_frame->LocalRoot()) {
+      node.GetDocument().GetFrame()->LocalRoot() != web_frame) {
     return blink::WebNode();
   }
   return node;
@@ -75,8 +78,9 @@ bool IsNodeFocused(const content::RenderFrame& frame,
 
 bool IsPointWithinViewport(const gfx::PointF& point,
                            const content::RenderFrame& frame) {
-  gfx::Rect viewport(
-      frame.GetWebFrame()->LocalRoot()->FrameWidget()->VisibleViewportSize());
+  CHECK(frame.GetWebFrame());
+  CHECK_EQ(frame.GetWebFrame(), frame.GetWebFrame()->LocalRoot());
+  gfx::Rect viewport(frame.GetWebFrame()->FrameWidget()->VisibleViewportSize());
   return viewport.Contains(gfx::ToFlooredPoint(point));
 }
 

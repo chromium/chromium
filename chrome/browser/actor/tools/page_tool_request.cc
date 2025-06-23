@@ -32,6 +32,9 @@ PageToolRequest::Target::~Target() = default;
 
 // static
 mojom::ToolTargetPtr PageToolRequest::ToMojoToolTarget(const Target& target) {
+  // TODO(crbug.com/419037299): This needs to take in a target RenderFrameHost&
+  // and convert from WebContents-relative coordinates into Widget-local
+  // coordinates.
   if (target.is_coordinate()) {
     return actor::mojom::ToolTarget::NewCoordinate(target.coordinate());
   }

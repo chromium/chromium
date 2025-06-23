@@ -156,8 +156,7 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       break;
     }
     case State::kWaitForVisualStateRequest: {
-      WebFrameWidget* widget =
-          render_frame()->GetWebFrame()->LocalRoot()->FrameWidget();
+      WebFrameWidget* widget = render_frame()->GetWebFrame()->FrameWidget();
       if (!widget->InsertVisualStateRequest(
               PostMoveToStateClosure(State::kInvokeCallback))) {
         journal_entry_->EndEntry(

@@ -43,8 +43,12 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
       journal_->CreatePendingAsyncEntry(request->task_id, "InvokeTool", "");
 
   WebLocalFrame* web_frame = frame_->GetWebFrame();
+
+  // Tool calls should only be routed to local root frames.
+  CHECK(!web_frame || web_frame->LocalRoot() == web_frame);
+
   // Check LocalRoot in case the frame is a subframe.
-  if (!web_frame || !web_frame->LocalRoot()->FrameWidget()) {
+  if (!web_frame || !web_frame->FrameWidget()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ToolExecutor::ToolFinished,
