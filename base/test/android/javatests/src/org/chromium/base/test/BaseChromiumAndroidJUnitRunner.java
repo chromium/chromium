@@ -406,14 +406,14 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     /**
      * ClassLoader that translates NoClassDefFoundError into ClassNotFoundException.
      *
-     * Required because Android's TestLoader class tries to load all classes, but catches only
+     * <p>Required because Android's TestLoader class tries to load all classes, but catches only
      * ClassNotFoundException.
      *
-     * One way NoClassDefFoundError is triggered is on Android L when a class extends a non-existent
-     * class. See https://crbug.com/912690.
+     * <p>One way NoClassDefFoundError is triggered is on Android L when a class extends a
+     * non-existent class. See https://crbug.com/912690.
      */
-    private static class ForgivingClassLoader extends ClassLoader {
-        private final ClassLoader mDelegateLoader = getClass().getClassLoader();
+    private class ForgivingClassLoader extends ClassLoader {
+        private final ClassLoader mDelegateLoader = getContext().getClassLoader();
 
         @Override
         public Class<?> loadClass(String name) throws ClassNotFoundException {
@@ -425,7 +425,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                 // E.g.: https://chromium-review.googlesource.com/c/chromium/src/+/4738415/1
                 MinAndroidSdkLevel annotation = ret.getAnnotation(MinAndroidSdkLevel.class);
                 if (annotation != null && annotation.value() > VERSION.SDK_INT) {
-                    throw new ClassNotFoundException();
+                    throw new ClassNotFoundException("Skipping due to @MinAndroidSdkLevel");
                 }
                 return ret;
             } catch (NoClassDefFoundError e) {
