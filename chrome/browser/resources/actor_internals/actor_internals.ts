@@ -29,24 +29,34 @@ function stopLogging() {
 window.onload = function() {
   const proxy = BrowserProxy.getInstance();
   proxy.callbackRouter.journalEntryAdded.addListener((entry: JournalEntry) => {
-    const table = getRequiredElement('actor-events-table');
-    const tr = document.createElement('tr');
-    let td = document.createElement('td');
-    td.textContent = entry.url;
-    tr.appendChild(td);
-    td = document.createElement('td');
-    td.textContent = entry.event;
-    tr.appendChild(td);
-    td = document.createElement('td');
-    td.textContent = entry.type;
-    tr.appendChild(td);
-    td = document.createElement('td');
-    td.textContent = entry.details;
-    tr.appendChild(td);
-    td = document.createElement('td');
-    td.textContent = new Date(entry.timestamp).toUTCString();
-    tr.appendChild(td);
-    table.appendChild(tr);
+    const table = getRequiredElement<HTMLTableElement>('actor-events-table');
+
+    const template =
+        getRequiredElement<HTMLTemplateElement>('actor-events-row');
+    // Clone the new row and insert it into the table
+    const clone = (template.content.cloneNode(true) as DocumentFragment);
+    const tr = clone.children[0] as HTMLElement;
+    tr.dataset['timestamp'] = entry.timestamp.getTime().toString();
+    const td = clone.querySelectorAll('td');
+    td[0]!.textContent = entry.url;
+    td[1]!.textContent = entry.event;
+    td[2]!.textContent = entry.type;
+    td[3]!.textContent = entry.details;
+    td[4]!.textContent = new Date(entry.timestamp).toUTCString();
+
+    const rows = table.rows;
+    for (let i = rows.length - 1; i > 0; i--) {
+      const timestamp = Number(rows[i]!.dataset['timestamp']);
+      if (entry.timestamp.getTime() >= timestamp) {
+        if (i === rows.length - 1) {
+          break;
+        }
+        table.insertBefore(clone, rows[i + 1]!);
+        return;
+      }
+    }
+
+    table.appendChild(clone);
   });
 
   getRequiredElement('start-logging').onclick = startLogging;
