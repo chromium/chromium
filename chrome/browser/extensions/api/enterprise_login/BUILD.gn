@@ -13,14 +13,13 @@ source_set("enterprise_login") {
     "enterprise_login_api.h",
   ]
 
-  public_deps = [
-    "//chromeos/crosapi/mojom",
-    "//extensions/browser",
-  ]
+  public_deps = [ "//extensions/browser" ]
 
   deps = [
     "//base",
-    "//chrome/browser/ash/crosapi",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/common/extensions/api",
+    "//components/prefs",
   ]
 }

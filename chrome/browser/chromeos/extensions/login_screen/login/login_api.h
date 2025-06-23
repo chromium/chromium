@@ -19,20 +19,6 @@ class ExtensionFunctionWithOptionalErrorResult : public ExtensionFunction {
   void OnResult(const std::optional<std::string>& error);
 };
 
-class ExtensionFunctionWithStringResult : public ExtensionFunction {
- protected:
-  ~ExtensionFunctionWithStringResult() override;
-
-  void OnResult(const std::string& result);
-};
-
-class ExtensionFunctionWithVoidResult : public ExtensionFunction {
- protected:
-  ~ExtensionFunctionWithVoidResult() override;
-
-  void OnResult();
-};
-
 class LoginLaunchManagedGuestSessionFunction
     : public ExtensionFunctionWithOptionalErrorResult {
  public:
@@ -75,8 +61,7 @@ class LoginExitCurrentSessionFunction
   ResponseAction Run() override;
 };
 
-class LoginFetchDataForNextLoginAttemptFunction
-    : public ExtensionFunctionWithStringResult {
+class LoginFetchDataForNextLoginAttemptFunction : public ExtensionFunction {
  public:
   LoginFetchDataForNextLoginAttemptFunction();
 
@@ -283,8 +268,7 @@ class LoginEndSharedSessionFunction
   ResponseAction Run() override;
 };
 
-class LoginSetDataForNextLoginAttemptFunction
-    : public ExtensionFunctionWithVoidResult {
+class LoginSetDataForNextLoginAttemptFunction : public ExtensionFunction {
  public:
   LoginSetDataForNextLoginAttemptFunction();
 

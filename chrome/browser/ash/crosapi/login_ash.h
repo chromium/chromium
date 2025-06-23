@@ -42,18 +42,10 @@ class LoginAsh : public mojom::Login {
   void BindReceiver(mojo::PendingReceiver<mojom::Login> receiver);
 
   // crosapi::mojom::Login:
-  void ExitCurrentSession(
-      const std::optional<std::string>& data_for_next_login_attempt,
-      ExitCurrentSessionCallback callback) override;
-  void FetchDataForNextLoginAttempt(
-      FetchDataForNextLoginAttemptCallback callback) override;
   void LockManagedGuestSession(
       LockManagedGuestSessionCallback callback) override;
   void LockCurrentSession(LockCurrentSessionCallback callback) override;
   void EndSharedSession(EndSharedSessionCallback callback) override;
-  void SetDataForNextLoginAttempt(
-      const std::string& data_for_next_login_attempt,
-      SetDataForNextLoginAttemptCallback callback) override;
   void AddExternalLogoutRequestObserver(
       mojo::PendingRemote<mojom::ExternalLogoutRequestObserver> observer)
       override;

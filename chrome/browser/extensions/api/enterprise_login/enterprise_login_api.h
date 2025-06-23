@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_LOGIN_ENTERPRISE_LOGIN_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_LOGIN_ENTERPRISE_LOGIN_API_H_
 
-#include <optional>
-#include <string>
-
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -28,8 +25,6 @@ class EnterpriseLoginExitCurrentManagedGuestSessionFunction
 
  protected:
   ~EnterpriseLoginExitCurrentManagedGuestSessionFunction() override;
-
-  void OnResult(const std::optional<std::string>& error);
 
   // ExtensionFunction:
   ResponseAction Run() override;

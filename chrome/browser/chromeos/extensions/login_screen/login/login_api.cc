@@ -14,7 +14,11 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/login_ash.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/extensions/api/login.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace extensions {
@@ -36,19 +40,6 @@ void ExtensionFunctionWithOptionalErrorResult::OnResult(
   }
 
   return Respond(NoArguments());
-}
-
-ExtensionFunctionWithStringResult::~ExtensionFunctionWithStringResult() =
-    default;
-
-void ExtensionFunctionWithStringResult::OnResult(const std::string& result) {
-  Respond(WithArguments(result));
-}
-
-ExtensionFunctionWithVoidResult::~ExtensionFunctionWithVoidResult() = default;
-
-void ExtensionFunctionWithVoidResult::OnResult() {
-  Respond(NoArguments());
 }
 
 LoginLaunchManagedGuestSessionFunction::
@@ -80,17 +71,17 @@ ExtensionFunction::ResponseAction LoginExitCurrentSessionFunction::Run() {
   auto parameters = api::login::ExitCurrentSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  auto callback =
-      base::BindOnce(&LoginExitCurrentSessionFunction::OnResult, this);
+  PrefService* local_state = g_browser_process->local_state();
+  CHECK(local_state);
 
-  std::optional<std::string> data_for_next_login_attempt;
   if (parameters->data_for_next_login_attempt) {
-    data_for_next_login_attempt =
-        std::move(*parameters->data_for_next_login_attempt);
+    local_state->SetString(prefs::kLoginExtensionApiDataForNextLoginAttempt,
+                           std::move(*parameters->data_for_next_login_attempt));
+  } else {
+    local_state->ClearPref(prefs::kLoginExtensionApiDataForNextLoginAttempt);
   }
-  GetLoginApi()->ExitCurrentSession(data_for_next_login_attempt,
-                                    std::move(callback));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  chrome::AttemptUserExit();
+  return RespondNow(NoArguments());
 }
 
 LoginFetchDataForNextLoginAttemptFunction::
@@ -100,11 +91,13 @@ LoginFetchDataForNextLoginAttemptFunction::
 
 ExtensionFunction::ResponseAction
 LoginFetchDataForNextLoginAttemptFunction::Run() {
-  auto callback = base::BindOnce(
-      &LoginFetchDataForNextLoginAttemptFunction::OnResult, this);
+  PrefService* local_state = g_browser_process->local_state();
+  CHECK(local_state);
 
-  GetLoginApi()->FetchDataForNextLoginAttempt(std::move(callback));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  std::string data_for_next_login_attempt =
+      local_state->GetString(prefs::kLoginExtensionApiDataForNextLoginAttempt);
+  local_state->ClearPref(prefs::kLoginExtensionApiDataForNextLoginAttempt);
+  return RespondNow(WithArguments(std::move(data_for_next_login_attempt)));
 }
 
 LoginLockManagedGuestSessionFunction::LoginLockManagedGuestSessionFunction() =
@@ -255,12 +248,11 @@ LoginSetDataForNextLoginAttemptFunction::Run() {
       api::login::SetDataForNextLoginAttempt::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  auto callback =
-      base::BindOnce(&LoginSetDataForNextLoginAttemptFunction::OnResult, this);
-
-  GetLoginApi()->SetDataForNextLoginAttempt(
-      parameters->data_for_next_login_attempt, std::move(callback));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  PrefService* local_state = g_browser_process->local_state();
+  CHECK(local_state);
+  local_state->SetString(prefs::kLoginExtensionApiDataForNextLoginAttempt,
+                         parameters->data_for_next_login_attempt);
+  return RespondNow(NoArguments());
 }
 
 LoginRequestExternalLogoutFunction::LoginRequestExternalLogoutFunction() =

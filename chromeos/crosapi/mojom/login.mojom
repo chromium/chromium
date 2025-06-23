@@ -29,14 +29,9 @@ interface ExternalLogoutRequestObserver {
 // Next MinVersion: 5
 [Uuid="639e9f04-981f-46d1-91da-583c2958265b"]
 interface Login {
-  // Exits the current session. If |data_for_next_login_attempt| is provided,
-  // stores data which can be read by |FetchDataForNextLoginAttempt()|.
-  ExitCurrentSession@1(string? data_for_next_login_attempt) => (string? error);
-
-  // Reads the |data_for_next_login_attempt| set by |ExitCurrentSession()|.
-  // Clears the previously stored data after reading so it can only be read
-  // once.
-  FetchDataForNextLoginAttempt@2() => (string data);
+  // ExitCurrentSession@1 was removed.
+  // FetchDataForNextLoginAttempt@2 was removed.
+  // SetDataForNextLoginAttempt@9 was removed.
 
   // Deprecated. Use |LockCurrentSession()| below.
   LockManagedGuestSession@3() => (string? error);
@@ -46,10 +41,6 @@ interface Login {
   // Can be called from both the lock screen or in session.
   // Fails if there is no existing shared session.
   EndSharedSession@8() => (string? error);
-
-  // Sets data for the next login attempt. The data can be retrieved by
-  // calling |FetchDataForNextLoginAttempt()|.
-  SetDataForNextLoginAttempt@9(string data_for_next_login_attempt) => ();
 
   // Locks the current session. The session has to be either a user session or a
   // Managed Guest Session launched by |LaunchManagedGuestSession()| with a
