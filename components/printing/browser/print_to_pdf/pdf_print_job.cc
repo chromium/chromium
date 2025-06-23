@@ -61,9 +61,9 @@ void PdfPrintJob::StartJob(
 }
 
 void PdfPrintJob::OnDidPrintWithParams(
-    printing::mojom::PrintWithParamsResultPtr result) {
-  if (result->is_failure_reason()) {
-    switch (result->get_failure_reason()) {
+    printing::mojom::PrintRenderFrame::PrintWithParamsResult result) {
+  if (!result.has_value()) {
+    switch (result.error()) {
       case printing::mojom::PrintFailureReason::kGeneralFailure:
         FailJob(PdfPrintResult::kPrintFailure);
         return;
@@ -77,7 +77,7 @@ void PdfPrintJob::OnDidPrintWithParams(
   }
 
   const printing::mojom::DidPrintDocumentParamsPtr& params =
-      result->get_data()->params;
+      result.value()->params;
   const auto& content = *params->content;
   const auto& region = content.metafile_data_region;
   if (!region.IsValid()) {
@@ -95,8 +95,8 @@ void PdfPrintJob::OnDidPrintWithParams(
   printing::PrintCompositeClient::FromWebContents(web_contents())
       ->CompositeDocument(
           params->document_cookie, printing_rfh_, content,
-          result->get_data()->accessibility_tree,
-          result->get_data()->generate_document_outline,
+          result.value()->accessibility_tree,
+          result.value()->generate_document_outline,
           printing::mojom::PrintCompositor::DocumentType::kPDF,
           base::BindOnce(&PdfPrintJob::OnCompositeDocumentToPdfDone,
                          weak_ptr_factory_.GetWeakPtr()));
