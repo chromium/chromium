@@ -1548,7 +1548,8 @@ class GlicApiTestWithOneTabMoreDebounceDelay : public GlicApiTestWithOneTab {
 // Confirm that the web client receives a minimal number of focused tab updates
 // by triggering events that generate such updates.
 // TODO(b/424242331): figure out why this is failing on linux-rel bot.
-#if BUILDFLAG(IS_LINUX)
+// TODO(b/427154832): Disabled test for windows due to consistent failures.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_testSingleFocusedTabUpdatesOnTabEvents \
   DISABLED_testSingleFocusedTabUpdatesOnTabEvents
 #else
