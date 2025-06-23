@@ -810,6 +810,10 @@ class CONTENT_EXPORT PrefetchContainer {
     return should_disable_block_until_head_timeout_;
   }
 
+  std::optional<PrefetchPriority> GetPrefetchPriority() const {
+    return priority_;
+  }
+
  protected:
   friend class PrefetchContainerTestBase;
 

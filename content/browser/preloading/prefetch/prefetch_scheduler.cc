@@ -51,7 +51,19 @@ size_t GetActiveSetSizeLimitForBurst() {
 
 PrefetchSchedulerPriority CalculatePriorityImpl(
     const PrefetchContainer& prefetch_container) {
+  if (prefetch_container.GetPrefetchPriority().has_value()) {
+    switch (prefetch_container.GetPrefetchPriority().value()) {
+      case PrefetchPriority::kLow:
+      case PrefetchPriority::kMedium:
+      case PrefetchPriority::kHigh:
+        return PrefetchSchedulerPriority::kBase;
+      case PrefetchPriority::kHighest:
+        return PrefetchSchedulerPriority::kBurstForPrefetchPriority;
+    }
+  }
+
   // Burst/prioritize if ahead of prerender.
+  // TODO(crbug.com/426404355): Migrate to use `PrefetchPriority`.
   if (prefetch_container.IsLikelyAheadOfPrerender()) {
     switch (features::kPrerender2FallbackPrefetchSchedulerPolicy.Get()) {
       case features::Prerender2FallbackPrefetchSchedulerPolicy::kNotUse:

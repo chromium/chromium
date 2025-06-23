@@ -33,6 +33,7 @@ class PrefetchService;
 //
 // TODO(crbug.com/406403063): Rethink about granularity. We don't stick on the
 // above policy. More rough priorities e.g. kBase/kHigh/kBurst might work well.
+// This will eventually be done by `PrefetchPriority`(crbug.com/426404355).
 //
 // See also `PrefetchScheduler::NotifyAttributeMightChangedAndProgressAsync()`
 // when you add a new one.
@@ -49,8 +50,10 @@ enum class PrefetchSchedulerPriority {
   kBurstThreshold = 10,
   // For tests. Do not use outside tests.
   kBurstTest = 11,
+  // Priority derived from `PrefetchPriority`.
+  kBurstForPrefetchPriority = 12,
   // Burst priority for prefetch ahead of prerender.
-  kBurstAheadOfPrerender = 12,
+  kBurstAheadOfPrerender = 13,
 };
 
 // Priority queue for prefetches
