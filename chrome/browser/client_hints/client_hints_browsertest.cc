@@ -89,7 +89,6 @@
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
@@ -4490,11 +4489,6 @@ class ThirdPartyUaReductionBrowserTest : public UaReductionBrowserTest {
 
   // The URL that was used to register the Origin Trial token.
   static constexpr char kFirstPartyOriginUrl[] = "https://my-site.com:44444";
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    network::AddPublicIpAddressSpaceOverrideToCommandLine(https_server_,
-                                                          *command_line);
-  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
