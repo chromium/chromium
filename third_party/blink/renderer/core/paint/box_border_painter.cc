@@ -917,10 +917,15 @@ void ClipBorderSidePolygonFromCorners(GraphicsContext& context,
                                       AntiAliasingMode second_antialias,
                                       const gfx::Vector2dF& width_vector,
                                       bool needs_miters) {
-  const gfx::RectF opposite_bounding_box =
+  const gfx::RectF edge_bounding_box =
+      UnionInnerCornersAndEdge(corners[0], corners[1]);
+  const gfx::RectF opposite_edge_bounding_box =
       UnionInnerCornersAndEdge(corners[2], corners[3]);
-  if (UnionInnerCornersAndEdge(corners[0], corners[1])
-          .Intersects(opposite_bounding_box)) {
+  if (edge_bounding_box.Intersects(opposite_edge_bounding_box) ||
+      edge_bounding_box.Contains(corners[2].unadjusted_inner_edge) ||
+      edge_bounding_box.Contains(corners[3].unadjusted_inner_edge) ||
+      opposite_edge_bounding_box.Contains(corners[0].unadjusted_inner_edge) ||
+      opposite_edge_bounding_box.Contains(corners[1].unadjusted_inner_edge)) {
     // Clip the full side, including the two full corners, to avoid overlapping
     // with the other sides.
     context.ClipPath(PathBuilder()
@@ -942,7 +947,7 @@ void ClipBorderSidePolygonFromCorners(GraphicsContext& context,
                          .GetSkPath(),
                      kAntiAliased);
   } else {
-    context.ClipOut(opposite_bounding_box);
+    context.ClipOut(opposite_edge_bounding_box);
   }
 
   if (!needs_miters) {
