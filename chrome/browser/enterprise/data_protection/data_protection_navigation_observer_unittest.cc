@@ -103,6 +103,19 @@ safe_browsing::RTLookupResponse CreateRTLookupResponse(
   return response;
 }
 
+void OnRealtimeLookupComplete(
+    safe_browsing::RTLookupResponseCallback response_callback,
+    base::OnceClosure on_start_lookup_complete,
+    bool is_rt_lookup_successful,
+    std::unique_ptr<safe_browsing::RTLookupResponse> response) {
+  std::move(response_callback)
+      .Run(is_rt_lookup_successful,
+           /*is_cached_response=*/false, std::move(response));
+  if (!on_start_lookup_complete.is_null()) {
+    std::move(on_start_lookup_complete).Run();
+  }
+}
+
 class FakeRealTimeUrlLookupService
     : public safe_browsing::testing::FakeRealTimeUrlLookupService {
  public:
@@ -132,20 +145,9 @@ class FakeRealTimeUrlLookupService
 
     callback_task_runner->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            [](safe_browsing::RTLookupResponseCallback response_callback,
-               base::OnceClosure on_start_lookup_complete,
-               bool is_rt_lookup_successful,
-               std::unique_ptr<safe_browsing::RTLookupResponse> response) {
-              std::move(response_callback)
-                  .Run(is_rt_lookup_successful,
-                       /*is_cached_response=*/false, std::move(response));
-              if (!on_start_lookup_complete.is_null()) {
-                std::move(on_start_lookup_complete).Run();
-              }
-            },
-            std::move(response_callback), std::move(on_start_lookup_complete_),
-            is_rt_lookup_successful_, std::move(response)));
+        base::BindOnce(&OnRealtimeLookupComplete, std::move(response_callback),
+                       std::move(on_start_lookup_complete_),
+                       is_rt_lookup_successful_, std::move(response)));
   }
 
   void set_on_start_lookup_complete(base::OnceClosure closure) {
