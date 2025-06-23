@@ -1568,7 +1568,7 @@ fyi_ios_builder(
             "mac_beta_arm64",
             "mac_toolchain",
             "out_dir_arg",
-            "xcode_16_beta",
+            "xcode_26_beta",
             "xctest",
         ],
     ),
@@ -1579,7 +1579,7 @@ fyi_ios_builder(
         short_name = "ios-blk",
     ),
     execution_timeout = 3 * time.hour,
-    xcode = xcode.x16betabots,
+    xcode = xcode.x26betabots,
 )
 
 fyi_ios_builder(
