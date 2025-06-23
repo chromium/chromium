@@ -111,9 +111,19 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // kVulkan in case it becomes enabled by default.
   aw_feature_overrides.DisableFeature(::features::kVulkan);
 
+  // WebView does not support web-app (service-worker) based payment apps for
+  // Payment Request.
   aw_feature_overrides.DisableFeature(::features::kServiceWorkerPaymentApps);
+
+  // Payment Request on WebView does not send down the deprecated parameters to
+  // Android payment apps.
   aw_feature_overrides.EnableFeature(
       ::payments::android::kAndroidPaymentIntentsOmitDeprecatedParameters);
+
+  // WebView does not support Secure Payment Confirmation, and thus should not
+  // expose the PaymentRequest.securePaymentConfirmationAvailability API.
+  aw_feature_overrides.DisableFeature(
+      blink::features::kSecurePaymentConfirmationAvailabilityAPI);
 
   // WebView does not support overlay fullscreen yet for video overlays.
   aw_feature_overrides.DisableFeature(media::kOverlayFullscreenVideo);

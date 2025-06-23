@@ -4371,7 +4371,7 @@
     },
     {
       name: "SecurePaymentConfirmationAvailabilityAPI",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SecurePaymentConfirmationBrowserBoundKeys",
