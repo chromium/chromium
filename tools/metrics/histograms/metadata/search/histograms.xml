@@ -378,6 +378,19 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.ChoicePrefsCheck.WipeOnMissingDse" enum="Boolean"
+    expires_after="2025-10-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records whether the search engine choice preferences would be wiped due to
+    the missing default search engine pref. Checked on profile load, and
+    recorded when we both have choice metadata and no default search engine
+    pref. The recorded value indicates whether the feature to wipe this value is
+    enabled.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceReprompt{Category}"
     enum="SearchEngineChoiceReprompt" expires_after="2025-12-14">
   <owner>droger@chromium.org</owner>

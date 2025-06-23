@@ -172,10 +172,10 @@ class SearchEngineChoiceService : public KeyedService {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
  private:
-  // Checks if the search engine choice should be prompted again, based on
-  // experiment parameters. If a reprompt is needed, some preferences related to
-  // the choice are cleared, which triggers a reprompt on the next page load.
-  void PreprocessPrefsForReprompt();
+  // Checks if the search engine choice should be invalidated, based on pref
+  // inconsistencies, command line args, or experiment parameters. Returns a
+  // wipe reason if the choice should be cleared, or nullopt otherwise.
+  std::optional<SearchEngineChoiceWipeReason> CheckPrefsForWipeReason();
 
   void ProcessPendingChoiceScreenDisplayState();
 

@@ -156,8 +156,9 @@ enum class SearchEngineChoiceWipeReason {
   kCommandLineFlag = 4,
   kDeviceRestored = 5,
   kInvalidMetadata = 6,
+  kMissingDefaultSearchEngine = 7,
 
-  kMaxValue = kInvalidMetadata,
+  kMaxValue = kMissingDefaultSearchEngine,
 };
 
 // Exposed for testing.

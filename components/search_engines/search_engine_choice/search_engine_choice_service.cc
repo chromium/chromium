@@ -251,6 +251,11 @@ void RecordChoiceScreenCompletionDate(PrefService& profile_prefs) {
                            year * 100 + month);
 }
 
+void RecordWipeOnMissingDse(bool will_wipe) {
+  base::UmaHistogramBoolean("Search.ChoicePrefsCheck.WipeOnMissingDse",
+                            will_wipe);
+}
+
 }  // namespace
 
 // -- SearchEngineChoiceService::Client ---------------------------------------
@@ -285,7 +290,10 @@ SearchEngineChoiceService::SearchEngineChoiceService(
       regional_capabilities_service_(regional_capabilities),
       prepopulate_data_resolver_(prepopulate_data_resolver) {
   ProcessPendingChoiceScreenDisplayState();
-  PreprocessPrefsForReprompt();
+  if (auto maybe_wipe_reason = CheckPrefsForWipeReason();
+      maybe_wipe_reason.has_value()) {
+    WipeSearchEngineChoicePrefs(profile_prefs, maybe_wipe_reason.value());
+  }
   RecordChoiceScreenCompletionDate(profile_prefs);
 }
 
@@ -540,30 +548,33 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
   }
 }
 
-void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
+std::optional<SearchEngineChoiceWipeReason>
+SearchEngineChoiceService::CheckPrefsForWipeReason() {
   base::expected<ChoiceCompletionMetadata, ChoiceCompletionMetadata::ParseError>
       completion_metadata = GetChoiceCompletionMetadata(profile_prefs_.get());
   if (!completion_metadata.has_value()) {
     switch (completion_metadata.error()) {
       case ChoiceCompletionMetadata::ParseError::kAbsent:
         // No choice has been made at all, so there is nothing to reset.
-        return;
+        return std::nullopt;
       case ChoiceCompletionMetadata::ParseError::kMissingVersion:
-        WipeSearchEngineChoicePrefs(
-            profile_prefs_.get(),
-            SearchEngineChoiceWipeReason::kMissingMetadataVersion);
-        return;
+        return SearchEngineChoiceWipeReason::kMissingMetadataVersion;
       case ChoiceCompletionMetadata::ParseError::kInvalidVersion:
-        WipeSearchEngineChoicePrefs(
-            profile_prefs_.get(),
-            SearchEngineChoiceWipeReason::kInvalidMetadataVersion);
-        return;
+        return SearchEngineChoiceWipeReason::kInvalidMetadataVersion;
       case ChoiceCompletionMetadata::ParseError::kMissingTimestamp:
       case ChoiceCompletionMetadata::ParseError::kNullTimestamp:
-        WipeSearchEngineChoicePrefs(
-            profile_prefs_.get(),
-            SearchEngineChoiceWipeReason::kInvalidMetadata);
-        return;
+        return SearchEngineChoiceWipeReason::kInvalidMetadata;
+    }
+  }
+
+  if (!profile_prefs_->HasPrefPath(
+          DefaultSearchManager::kDefaultSearchProviderDataPrefName)) {
+    if (base::FeatureList::IsEnabled(
+            switches::kWipeChoicePrefsOnMissingDefaultSearchEngine)) {
+      RecordWipeOnMissingDse(true);
+      return SearchEngineChoiceWipeReason::kMissingDefaultSearchEngine;
+    } else {
+      RecordWipeOnMissingDse(false);
     }
   }
 
@@ -575,9 +586,7 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   // change if we want to re-enable the triggering.
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kForceSearchEngineChoiceScreen)) {
-    WipeSearchEngineChoicePrefs(profile_prefs_.get(),
-                                SearchEngineChoiceWipeReason::kCommandLineFlag);
-    return;
+    return SearchEngineChoiceWipeReason::kCommandLineFlag;
   }
 
   if (base::FeatureList::IsEnabled(
@@ -585,9 +594,7 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
       client_->DoesChoicePredateDeviceRestore(completion_metadata.value())) {
     if (switches::kInvalidateChoiceOnRestoreIsRetroactive.Get() ||
         client_->IsDeviceRestoreDetectedInCurrentSession()) {
-      WipeSearchEngineChoicePrefs(
-          profile_prefs_.get(), SearchEngineChoiceWipeReason::kDeviceRestored);
-      return;
+      return SearchEngineChoiceWipeReason::kDeviceRestored;
     }
   }
 
@@ -597,10 +604,9 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
               regional_capabilities::CountryAccessKey(
                   regional_capabilities::CountryAccessReason::
                       kSearchEngineChoiceServiceReprompting)))) {
-    WipeSearchEngineChoicePrefs(
-        profile_prefs_.get(),
-        SearchEngineChoiceWipeReason::kFinchBasedReprompt);
+    return SearchEngineChoiceWipeReason::kFinchBasedReprompt;
   }
+  return std::nullopt;
 }
 
 void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {

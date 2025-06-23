@@ -80,6 +80,16 @@ COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kClaySnackbar);
 #endif
 
+// Whether state consistency across choice metadata and DSE pref state should
+// be enforced.
+// The presence of DSE choice metadata implies that a DSE choice was made,
+// and in this case we also expect a DSE to be set in prefs. There are some
+// flows that can cause the DSE pref to be cleared, like pref tampering
+// detection. When this happens, we also wipe the DSE choice metadata to
+// trigger a new choice prompt.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kWipeChoicePrefsOnMissingDefaultSearchEngine);
+
 // Kill switch to revert the fix of using assistedQueryStats for prefetch source
 // component. See crbug.com/345275145.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

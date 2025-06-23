@@ -84,6 +84,11 @@ BASE_FEATURE(kClaySnackbar, "ClaySnackbar", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_FEATURE(kWipeChoicePrefsOnMissingDefaultSearchEngine,
+             "WipeChoicePrefsOnMissingDefaultSearchEngine",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_FEATURE(kPrefetchParameterFix,
              "PrefetchParameterFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
