@@ -86,7 +86,9 @@ class AttributeType final {
   //   For name types, `field_subtypes()` includes `NAME_FIRST` etc.
   // - `storable_field_types()` are the ones that may be physically stored in
   //   the database.
-  constexpr FieldType field_type() const;
+  FieldType field_type() const;
+  constexpr FieldType field_type_with_tag_types() const;
+  constexpr FieldType field_type_without_tag_types() const;
   constexpr FieldTypeSet field_subtypes() const;
   FieldTypeSet storable_field_types(base::PassKey<EntityTable> pass_key) const;
 
@@ -147,7 +149,7 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
   NOTREACHED();
 }
 
-constexpr FieldType AttributeType::field_type() const {
+constexpr FieldType AttributeType::field_type_with_tag_types() const {
   switch (name_) {
     case AttributeTypeName::kPassportName:
       return PASSPORT_NAME_TAG;
@@ -189,11 +191,18 @@ constexpr FieldType AttributeType::field_type() const {
   NOTREACHED();
 }
 
+constexpr FieldType AttributeType::field_type_without_tag_types() const {
+  if (data_type() == DataType::kName) {
+    return NAME_FULL;
+  }
+  return field_type_with_tag_types();
+}
+
 constexpr FieldTypeSet AttributeType::field_subtypes() const {
   if (data_type() == DataType::kName) {
     return FieldTypesOfGroup(FieldTypeGroup::kName);
   }
-  return {field_type()};
+  return {field_type_without_tag_types()};
 }
 
 template <>

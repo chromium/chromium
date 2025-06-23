@@ -60,15 +60,32 @@ static_assert(!kNonInjectiveFieldTypes.contains_any(
 static_assert(!kNonInjectiveFieldTypes.contains_any(
     {DRIVERS_LICENSE_EXPIRATION_DATE, PASSPORT_NUMBER, VEHICLE_MODEL}));
 
+// If kAutofillAiNoTagTypes is disabled:
+// AttributeType::field_type() must be injective: distinct AttributeTypes must
+// be mapped to distinct FieldTypes.
+static_assert(
+    std::ranges::all_of(DenseSet<AttributeType>::all(), [](AttributeType a) {
+      return std::ranges::all_of(
+          DenseSet<AttributeType>::all(), [&a](AttributeType b) {
+            return a == b || a.field_type_with_tag_types() !=
+                                 b.field_type_with_tag_types();
+          });
+    }));
+
+// If kAutofillAiNoTagTypes is enabled:
 // AttributeType::field_type() must be mostly injective: distinct AttributeTypes
 // other than `kNonInjectiveFieldTypes` must be mapped to distinct FieldTypes.
 static_assert(
     std::ranges::all_of(DenseSet<AttributeType>::all(), [](AttributeType a) {
       return std::ranges::all_of(
           DenseSet<AttributeType>::all(), [&a](AttributeType b) {
-            return a == b || a.field_type() != b.field_type() ||
-                   kNonInjectiveFieldTypes.contains(a.field_type()) ||
-                   kNonInjectiveFieldTypes.contains(b.field_type());
+            return a == b ||
+                   a.field_type_without_tag_types() !=
+                       b.field_type_without_tag_types() ||
+                   kNonInjectiveFieldTypes.contains(
+                       a.field_type_without_tag_types()) ||
+                   kNonInjectiveFieldTypes.contains(
+                       b.field_type_without_tag_types());
           });
     }));
 
@@ -85,7 +102,7 @@ std::optional<AttributeType> GetStaticAttributeType(
     static constexpr auto kTable = []() {
       std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
       for (AttributeType at : DenseSet<AttributeType>::all()) {
-        arr[at.field_type()] = at;
+        arr[at.field_type_with_tag_types()] = at;
       }
       return arr;
     }();
@@ -97,8 +114,9 @@ std::optional<AttributeType> GetStaticAttributeType(
   static constexpr auto kTable = []() {
     std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
     for (AttributeType at : DenseSet<AttributeType>::all()) {
-      if (!kNonInjectiveFieldTypes.contains(at.field_type())) {
-        arr[at.field_type()] = at;
+      if (!kNonInjectiveFieldTypes.contains(
+              at.field_type_without_tag_types())) {
+        arr[at.field_type_without_tag_types()] = at;
       }
     }
     return arr;

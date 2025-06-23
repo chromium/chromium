@@ -6,13 +6,21 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
+
+FieldType AttributeType::field_type() const {
+  return base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)
+             ? field_type_without_tag_types()
+             : field_type_with_tag_types();
+}
 
 FieldTypeSet AttributeType::storable_field_types(
     base::PassKey<EntityTable> pass_key) const {
