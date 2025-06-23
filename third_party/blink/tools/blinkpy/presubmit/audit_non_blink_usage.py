@@ -1628,6 +1628,8 @@ _CONFIG = [
         ],
         # This class needs access to ui/gl classes for driver loading.
         'allowed': [
+            'angle::InitializePlatform',
+            'angle::ResetPlatform',
             'dawn::wire::client::GetProcs',
             'gfx::ExtensionSet',
             'gfx::MakeExtensionSet',

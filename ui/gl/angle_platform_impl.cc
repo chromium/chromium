@@ -27,8 +27,6 @@ namespace angle {
 
 namespace {
 
-ResetDisplayPlatformFunc g_angle_reset_platform = nullptr;
-
 double ANGLEPlatformImpl_currentTime(PlatformMethods* platform) {
   return base::Time::Now().InSecondsFSinceUnixEpoch();
 }
@@ -150,16 +148,13 @@ void ANGLEPlatformImpl_recordShaderCacheUse(bool in_cache) {
 }  // anonymous namespace
 
 NO_SANITIZE("cfi-icall")
-bool InitializePlatform(EGLDisplay display) {
+bool InitializePlatform(EGLDisplay display,
+                        GLGetProcAddressProc get_proc_address) {
   GetDisplayPlatformFunc angle_get_platform =
       reinterpret_cast<GetDisplayPlatformFunc>(
-          eglGetProcAddress("ANGLEGetDisplayPlatform"));
+          get_proc_address("ANGLEGetDisplayPlatform"));
   if (!angle_get_platform)
     return false;
-
-  // Save the pointer to the destroy function here to avoid crash.
-  g_angle_reset_platform = reinterpret_cast<ResetDisplayPlatformFunc>(
-      eglGetProcAddress("ANGLEResetDisplayPlatform"));
 
   PlatformMethods* platformMethods = nullptr;
   if (!angle_get_platform(static_cast<EGLDisplayType>(display),
@@ -193,10 +188,14 @@ bool InitializePlatform(EGLDisplay display) {
 }
 
 NO_SANITIZE("cfi-icall")
-void ResetPlatform(EGLDisplay display) {
-  if (!g_angle_reset_platform)
+void ResetPlatform(EGLDisplay display, GLGetProcAddressProc get_proc_address) {
+  ResetDisplayPlatformFunc angle_reset_platform =
+      reinterpret_cast<ResetDisplayPlatformFunc>(
+          get_proc_address("ANGLEResetDisplayPlatform"));
+  if (!angle_reset_platform) {
     return;
-  g_angle_reset_platform(static_cast<EGLDisplayType>(display));
+  }
+  angle_reset_platform(static_cast<EGLDisplayType>(display));
 }
 
 }  // namespace angle

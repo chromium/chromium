@@ -20,6 +20,7 @@ include_rules = [
     "+third_party/blink/renderer/modules/webcodecs",
     "+ui/gfx/color_transform.h",
     "+ui/gfx/extension_set.h",
+    "+ui/gl/angle_platform_impl.h",
     "+ui/gl/egl_util.h",
     "+ui/gl/gl_bindings.h",
     "+ui/gl/gl_utils.h",
