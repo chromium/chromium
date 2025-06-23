@@ -43,6 +43,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -56,8 +57,11 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
@@ -180,6 +184,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     private @Nullable TabListCoordinator.DragObserver mDragObserver;
+    private @Nullable TabSwitcherGroupSuggestionService mTabSwitcherGroupSuggestionService;
 
     private int mEdgeToEdgeBottomInsets;
 
@@ -466,6 +471,14 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mIsContextMenuFocusableSupplier.set(CONTEXT_MENU_FOCUSABLE);
             mIsContextMenuFocusableSupplier.addObserver(mOnContextMenuFocusableChanged);
             tabListCoordinator.addDragObserver(mDragObserver);
+
+            if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()) {
+                @WindowId
+                int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
+                mTabSwitcherGroupSuggestionService =
+                        new TabSwitcherGroupSuggestionService(
+                                windowId, profile, new SuggestionLifecycleObserver() {});
+            }
         }
     }
 
@@ -732,6 +745,11 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     private void onTabSwitcherShown() {
+        if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()) {
+            assert mTabSwitcherGroupSuggestionService != null;
+            mTabSwitcherGroupSuggestionService.maybeShowSuggestions();
+        }
+
         mTabListCoordinator.attachEmptyView();
     }
 
@@ -766,6 +784,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mMessageManager.unbind(mTabListCoordinator);
             updateBottomPadding();
             mTabListCoordinator.postHiding();
+
+            if (mTabSwitcherGroupSuggestionService != null) {
+                mTabSwitcherGroupSuggestionService.clearSuggestions();
+            }
         }
     }
 

@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -27,7 +29,6 @@ import java.util.List;
 @NullMarked
 public class TabGroupSuggestionMessageService extends MessageService
         implements MessageUpdateObserver {
-
     /** This is the data type that this MessageService is serving to its Observer. */
     public static class TabGroupSuggestionMessageData implements MessageData {
         private final int mNumTabs;
@@ -100,19 +101,26 @@ public class TabGroupSuggestionMessageService extends MessageService
         mOnAddMessageListener = onAddMessageListener;
     }
 
-    /** Dismisses the suggestion message. */
-    public void dismissMessage() {
+    /**
+     * Dismisses the suggestion message.
+     *
+     * @param onDismissMessageListener The runnable to run on dismissing the message.
+     */
+    public void dismissMessage(Runnable onDismissMessageListener) {
         if (!mMessageCurrentlyShown) return;
         sendInvalidNotification();
         mMessageCurrentlyShown = false;
+        onDismissMessageListener.run();
     }
 
     /**
      * Attempts to show a group suggestion message for a given list of tabs.
      *
      * @param tabIds The list of tab IDs to be considered for the group suggestion.
+     * @param responseListener The listener watching user responses to messages.
      */
-    public void addGroupMessageForTabs(List<@TabId Integer> tabIds) {
+    public void addGroupMessageForTabs(
+            List<@TabId Integer> tabIds, SuggestionLifecycleObserver responseListener) {
         if (tabIds.isEmpty()) return;
         if (mMessageCurrentlyShown) return;
 
@@ -120,22 +128,27 @@ public class TabGroupSuggestionMessageService extends MessageService
                 new TabGroupSuggestionMessageData(
                         tabIds.size(),
                         mContext,
-                        () -> groupTabs(tabIds),
-                        ignored -> dismissMessage());
+                        () -> groupTabs(tabIds, responseListener::onSuggestionAccepted),
+                        ignored -> dismissMessage(responseListener::onSuggestionDismissed));
         sendAvailabilityNotification(data);
         mMessageCurrentlyShown = true;
         mOnAddMessageListener.run();
     }
 
-    private void groupTabs(List<@TabId Integer> tabIds) {
+    private void groupTabs(List<@TabId Integer> tabIds, Runnable onAcceptMessageListener) {
         assert !tabIds.isEmpty();
 
+        onAcceptMessageListener.run();
         TabGroupModelFilter tabGroupModelFilter = mCurrentTabGroupModelFilterSupplier.get();
         TabModel tabModel = tabGroupModelFilter.getTabModel();
         List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, false);
 
-        Tab tab = tabs.get(0);
-        tabGroupModelFilter.mergeListOfTabsToGroup(tabs, tab, /* notify= */ true);
-        dismissMessage();
+        // Just dismiss message if there are no tabs to group.
+        if (!tabs.isEmpty()) {
+            Tab tab = tabs.get(0);
+            tabGroupModelFilter.mergeListOfTabsToGroup(tabs, tab, /* notify= */ true);
+        }
+
+        dismissMessage(CallbackUtils.emptyRunnable());
     }
 }

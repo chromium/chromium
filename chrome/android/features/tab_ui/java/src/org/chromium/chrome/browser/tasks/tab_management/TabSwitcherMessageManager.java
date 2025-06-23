@@ -470,6 +470,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         }
     }
 
+    public @Nullable TabGroupSuggestionMessageService getTabGroupSuggestionMessageService() {
+        return mTabGroupSuggestionMessageService;
+    }
+
     private void appendNextMessage(@MessageService.MessageType int messageType) {
         assert mMessageCardProviderCoordinator != null;
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
