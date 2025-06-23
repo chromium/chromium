@@ -929,6 +929,7 @@ class AndroidSpareRendererProcessHostManagerTest
         features::kAndroidWarmUpSpareRendererWithTimeout,
         {
             {features::kAndroidSpareRendererKillWhenBackgrounded.name, "true"},
+            {features::kAndroidSpareRendererOnlyForNavigation.name, "true"},
         });
   }
 
@@ -957,6 +958,46 @@ IN_PROC_BROWSER_TEST_F(AndroidSpareRendererProcessHostManagerTest,
       rph, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
   process_watcher.Wait();
   EXPECT_TRUE(spare_manager.GetSpares().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidSpareRendererProcessHostManagerTest,
+                       OnlyForNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  BrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+  spare_manager.WarmupSpare(browser_context);
+  EXPECT_EQ(spare_manager.GetSpares().size(), 1u);
+
+  GURL test_url = embedded_test_server()->GetURL("/simple_page.html");
+  scoped_refptr<SiteInstance> test_site_instance =
+      SiteInstance::CreateForURL(browser_context, test_url);
+  base::HistogramTester histogram_tester;
+
+  // Emulate a non-navigation process allocation. The
+  // kServiceWorkerProcessManager source is only used for testing.
+  // Since the feature AndroidSpareRendererOnlyForNavigation is enabled,
+  // the allocation will not get a spare renderer.
+  EXPECT_FALSE(spare_manager.MaybeTakeSpare(
+      browser_context, static_cast<SiteInstanceImpl*>(test_site_instance.get()),
+      ProcessAllocationContext{
+          ProcessAllocationSource::kServiceWorkerProcessManager}));
+  // Also verify that the SpareProcessMaybeTakeAction UMA correctly records the
+  // reason.
+  histogram_tester.ExpectUniqueSample(
+      "BrowserRenderProcessHost.SpareProcessMaybeTakeAction",
+      content::RenderProcessHostImpl::SpareProcessMaybeTakeAction::
+          kRefusedNonNavigation,
+      1);
+  // Navigation request can still allocate a spare renderer.
+  EXPECT_TRUE(spare_manager.MaybeTakeSpare(
+      browser_context, static_cast<SiteInstanceImpl*>(test_site_instance.get()),
+      ProcessAllocationContext{
+          ProcessAllocationSource::kNavigationRequest,
+          NavigationProcessAllocationContext{
+              ProcessAllocationNavigationStage::kBeforeNetworkRequest, 0,
+              false}}));
 }
 #endif
 

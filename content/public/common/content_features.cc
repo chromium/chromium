@@ -72,6 +72,10 @@ const base::FeatureParam<int> kAndroidSpareRendererMemoryThreshold{
 const base::FeatureParam<bool> kAndroidSpareRendererKillWhenBackgrounded{
     &kAndroidWarmUpSpareRendererWithTimeout, "kill_when_backgrounded", false};
 
+// Only allow the navigation related allocation to use the spare renderer.
+const base::FeatureParam<bool> kAndroidSpareRendererOnlyForNavigation{
+    &kAndroidWarmUpSpareRendererWithTimeout, "only_for_navigation", false};
+
 // Whether to allow attaching an inner WebContents not owned by the outer
 // WebContents. This is for prototyping purposes and should not be enabled in
 // production.

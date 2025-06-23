@@ -566,9 +566,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
     kRefusedForPdfContent = 6,
     kRefusedForJitMismatch = 7,
     kRefusedForV8OptimizationMismatch = 8,
-    kMaxValue = kRefusedForV8OptimizationMismatch
+    kRefusedNonNavigation = 9,
+    kMaxValue = kRefusedNonNavigation
   };
-  // LINT.ThenChange(tools/metrics/histograms/metadata/browser/histograms.xml:SpareProcessMaybeTakeAction)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/histograms.xml:SpareProcessMaybeTakeAction)
 
   // Please keep in sync with "RenderProcessHostDelayShutdownReason" in
   // tools/metrics/histograms/metadata/browser/enums.xml. These values should
