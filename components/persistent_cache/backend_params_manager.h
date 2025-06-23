@@ -53,6 +53,12 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParamsManager {
   // Delete all managed files.
   void DeleteAllFiles();
 
+  // Use to reduce the total size of files on disk until it's equal or smaller
+  // than `target_footprint`. Use when enforcing a quota or proactively saving
+  // space. If the goal is to get rid of all files use `DeleteAllFiles()`
+  // instead. Returns the number of bytes deleted.
+  int64_t BringDownTotalFootprintOfFiles(int64_t target_footprint);
+
  private:
   struct BackendParamsKey {
     BackendType backend_type;

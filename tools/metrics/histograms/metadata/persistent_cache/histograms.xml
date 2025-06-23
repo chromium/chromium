@@ -26,6 +26,11 @@ chromium-metrics-reviews@google.com.
   <variant name="SQLite" summary="SQLite"/>
 </variants>
 
+<variants name="FileType">
+  <variant name="DbFile" summary="database file"/>
+  <variant name="JournalFile" summary="journal file"/>
+</variants>
+
 <variants name="Mode">
   <variant name="ReadOnly" summary="read only"/>
   <variant name="ReadWrite" summary="read/write"/>
@@ -42,6 +47,18 @@ chromium-metrics-reviews@google.com.
     Note: This metric is dropped for clients without high-precision clocks.
   </summary>
   <token key="Mode" variants="Mode"/>
+</histogram>
+
+<histogram name="PersistentCache.ParamsManager.{FileType}.DeleteSuccess"
+    enum="Boolean" expires_after="2026-06-09">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Whether BackendParams manager succeeded in deleting a {FileType}.
+
+    Logged every time there is an attempt to delete a {FileType}.
+  </summary>
+  <token key="FileType" variants="FileType"/>
 </histogram>
 
 </histograms>
