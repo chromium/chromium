@@ -19,6 +19,14 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
       <!-- TODO(crbug.com/40559214): Update to androidx ExifInterface. -->
       <ignore regexp="components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/BitmapUtils.java"/>
   </issue>
+  <!-- Linter is incorrectly treating existing APIs that are being deprecated
+    using a flag as if they were newly introduced, and also treating some APIs
+    that were released in SDK35/36 as still requiring a flag.
+    Until this is fixed we just disable the FlaggedApi lint for upstream code
+    which isn't likely to reference any genuinely flagged APIs anyway since
+    flagged APIs are not present in the public SDK jar.
+    See: b/404752927, b/425396018 -->
+  <issue id="FlaggedApi" severity="ignore"/>
   <issue id="IconDensities">
     <!-- Originals are gone, so ignore these specific ones: crbug.com/457918 -->
     <ignore regexp="btn_bg_holo_active_normal.png, btn_bg_holo_active_pressed.png, btn_bg_holo_pressed.png"/>
