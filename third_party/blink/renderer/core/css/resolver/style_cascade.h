@@ -549,11 +549,20 @@ class CORE_EXPORT StyleCascade {
                                  const CSSParserContext& context,
                                  FunctionContext*,
                                  bool& is_attr_tainted);
-  bool EvalIfKeyword(const CSSValue& value,
-                     CSSVariableData* query_value,
-                     const CustomProperty& property);
-  bool EvalIfInitial(CSSVariableData* value, const CustomProperty& property);
-  bool EvalIfInherit(CSSVariableData* value, const CustomProperty& property);
+
+  CSSVariableData* GetInitialVariableData(const CustomProperty&);
+  CSSVariableData* GetInheritedVariableData(const CustomProperty&);
+  // For a given variable name (which may either be a local variable or a custom
+  // property), get the value corresponding to the specified CSS-wide keyword.
+  // For example, passing a parameter name of '--x' and keyword_value
+  // of 'inherit' results in the inherited value of '--x'.
+  // Returns nullptr for cascade-dependent keywords (revert/revert-layer).
+  CSSVariableData* GetKeywordVariableData(const AtomicString& name,
+                                          const CSSValue& keyword_value,
+                                          CascadeResolver&,
+                                          const CSSParserContext&,
+                                          FunctionContext*);
+
   const CSSValue* CoerceIntoNumericValueInternal(
       const CSSUnparsedDeclarationValue&,
       const TreeScope*,
@@ -593,12 +602,18 @@ class CORE_EXPORT StyleCascade {
                               FunctionContext*,
                               TokenSequence& out);
 
-  CSSVariableData* ResolveFunctionExpression(CSSVariableData& unresolved,
-                                             const TreeScope*,
-                                             const CSSSyntaxDefinition* type,
-                                             CascadeResolver&,
-                                             const CSSParserContext&,
-                                             FunctionContext*);
+  CSSVariableData* ResolveTypedExpression(CSSVariableData& unresolved,
+                                          const TreeScope*,
+                                          const CSSSyntaxDefinition* type,
+                                          CascadeResolver&,
+                                          const CSSParserContext&,
+                                          FunctionContext*);
+
+  // Find the type associated with a given local variable (or custom property).
+  // The return value may be a pointer directly into a PropertyRegistration;
+  // registrations must remain stable while that pointer is held.
+  const CSSSyntaxDefinition* FindVariableType(const AtomicString& name,
+                                              FunctionContext*);
 
   // Application of Local Variables
   // ==============================
