@@ -1747,6 +1747,20 @@ void PrefetchContainer::MakeResourceRequest(
       net::SiteForCookies::FromOrigin(origin));
 
   auto priority = [&] {
+    if (GetPrefetchPriority().has_value()) {
+      switch (GetPrefetchPriority().value()) {
+        case PrefetchPriority::kLow:
+          return net::RequestPriority::IDLE;
+        case PrefetchPriority::kMedium:
+          return net::RequestPriority::LOW;
+        case PrefetchPriority::kHigh:
+          return net::RequestPriority::MEDIUM;
+        case PrefetchPriority::kHighest:
+          return net::RequestPriority::HIGHEST;
+      }
+    }
+
+    // TODO(crbug.com/426404355): Migrate to use `PrefetchPriority`.
     if (IsSpeculationRuleType(prefetch_type_.trigger_type())) {
       // This may seem inverted (surely immediate prefetches would be higher
       // priority), but the fact that we're doing this at all for more
