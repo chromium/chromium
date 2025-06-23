@@ -948,6 +948,11 @@ bool StyleCascade::TokenSequence::AppendFallback(const TokenSequence& sequence,
   size_t start = original_text_.length();
 
   StringView other_text = sequence.original_text_;
+  if (other_text.empty()) {
+    // There are no tokens, so this cannot affect anything.
+    // In particular, do not overwrite last_token_ with kEOFToken.
+    return true;
+  }
   other_text =
       CSSVariableParser::StripTrailingWhitespaceAndComments(other_text);
 
