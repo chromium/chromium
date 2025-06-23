@@ -133,12 +133,23 @@ bool GetExtensionInfo(content::WebContents* wc,
 
   auto view_type = extensions::GetViewType(wc);
   if (view_type == extensions::mojom::ViewType::kExtensionPopup ||
-      view_type == extensions::mojom::ViewType::kExtensionSidePanel ||
-      view_type == extensions::mojom::ViewType::kOffscreenDocument) {
+      view_type == extensions::mojom::ViewType::kExtensionSidePanel) {
     // Note that we are intentionally not setting name here, so that we can
     // construct a name based on the URL or page title in
     // RenderFrameDevToolsAgentHost::GetTitle()
     *type = ChromeDevToolsManagerDelegate::kTypePage;
+    return true;
+  }
+
+  if (view_type == extensions::mojom::ViewType::kOffscreenDocument) {
+    // Note that we are intentionally not setting name here, so that we can
+    // construct a name based on the URL or page title in
+    // RenderFrameDevToolsAgentHost::GetTitle()
+    //
+    // Use `kTypeBackgroundPage` for offscreen doc until devtools frontend is
+    // updated to support a new `offscreen_document` target type. Otherwise,
+    // DOM is not inspectable.
+    *type = ChromeDevToolsManagerDelegate::kTypeBackgroundPage;
     return true;
   }
 
