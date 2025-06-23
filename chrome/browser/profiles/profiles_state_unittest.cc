@@ -81,8 +81,7 @@ INSTANTIATE_TEST_SUITE_P(ProfilesState,
 class IsGuestModeEnabledTest : public testing::TestWithParam<bool> {
  public:
   IsGuestModeEnabledTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal(),
-                         &testing_local_state_),
+      : profile_manager_(TestingBrowserProcess::GetGlobal()),
         testing_local_state_(TestingBrowserProcess::GetGlobal()) {
     testing_local_state_.Get()->SetBoolean(prefs::kBrowserGuestModeEnabled,
                                            BrowserGuestModePrefValue());

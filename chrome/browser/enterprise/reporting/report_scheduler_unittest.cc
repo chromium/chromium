@@ -151,7 +151,7 @@ class ReportSchedulerTest : public ::testing::Test {
   ReportSchedulerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         local_state_(TestingBrowserProcess::GetGlobal()),
-        profile_manager_(TestingBrowserProcess::GetGlobal(), &local_state_) {}
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   ReportSchedulerTest(const ReportSchedulerTest&) = delete;
   ReportSchedulerTest& operator=(const ReportSchedulerTest&) = delete;

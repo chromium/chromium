@@ -280,8 +280,7 @@ class KioskBrowserSessionBaseTest
   KioskBrowserSessionBaseTest()
       : local_state_(std::make_unique<ScopedTestingLocalState>(
             TestingBrowserProcess::GetGlobal())),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal(),
-                                 local_state_.get()) {}
+        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   KioskBrowserSessionBaseTest(const KioskBrowserSessionBaseTest&) = delete;
   KioskBrowserSessionBaseTest& operator=(const KioskBrowserSessionBaseTest&) =

@@ -71,7 +71,7 @@ class CrosapiUtilTest : public testing::Test {
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal(), &local_state_);
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     testing_profile_ = profile_manager_->CreateTestingProfile(
         TestingProfile::kDefaultProfileUserName);

@@ -40,8 +40,6 @@ class PrefServiceSyncable;
 class TestingProfileManager : public ProfileObserver {
  public:
   explicit TestingProfileManager(TestingBrowserProcess* browser_process);
-  TestingProfileManager(TestingBrowserProcess* browser_process,
-                        ScopedTestingLocalState* local_state);
   TestingProfileManager(const TestingProfileManager&) = delete;
   TestingProfileManager& operator=(const TestingProfileManager&) = delete;
   ~TestingProfileManager() override;

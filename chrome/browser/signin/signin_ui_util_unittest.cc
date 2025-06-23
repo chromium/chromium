@@ -869,8 +869,7 @@ TEST(ShouldShowAnimatedIdentityOnOpeningWindow, ReturnsFalseForNewWindow) {
   content::BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
-  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal(),
-                                        &local_state);
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager.SetUp());
   std::string name("testing_profile");
   TestingProfile* profile = profile_manager.CreateTestingProfile(

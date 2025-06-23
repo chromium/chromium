@@ -354,7 +354,7 @@ class PrivacySandboxServiceTest : public testing::Test {
 
   void CreateDefaultProfile() {
     default_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal(), &local_state_);
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(default_profile_manager_->SetUp());
 
     default_profile_ = default_profile_manager_->CreateTestingProfile(

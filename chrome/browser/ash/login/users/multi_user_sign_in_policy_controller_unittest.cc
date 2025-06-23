@@ -137,7 +137,7 @@ class MultiUserSignInPolicyControllerTest : public testing::Test {
 
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal(), &local_state_);
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
     for (const auto& account_id : test_users_) {

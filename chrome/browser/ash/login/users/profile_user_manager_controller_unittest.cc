@@ -51,7 +51,7 @@ class ProfileUserManagerControllerTest : public testing::Test {
   // pointer first.
   std::unique_ptr<ProfileUserManagerController> controller_;
   TestingProfileManager testing_profile_manager_{
-      TestingBrowserProcess::GetGlobal(), &local_state_};
+      TestingBrowserProcess::GetGlobal()};
 };
 
 TEST_F(ProfileUserManagerControllerTest, GetProfilePrefs) {

@@ -210,7 +210,7 @@ class ExtensionUtilWithSigninProfileUnittest : public ExtensionUtilUnittest {
     ExtensionUtilUnittest::SetUp();
 
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal(), &testing_local_state_);
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
     auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
         std::vector<

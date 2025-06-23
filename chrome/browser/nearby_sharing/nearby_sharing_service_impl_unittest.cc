@@ -520,7 +520,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal(), &local_state_);
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     network_notifier_ = net::test::MockNetworkChangeNotifier::Create();
 

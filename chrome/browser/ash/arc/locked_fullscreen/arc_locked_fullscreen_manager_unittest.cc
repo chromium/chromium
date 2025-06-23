@@ -127,8 +127,7 @@ class ArcLockedFullscreenManagerTest
   ash::ScopedCrosSettingsTestHelper cros_settings_helper_;
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<user_manager::UserManagerImpl> user_manager_;
-  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal(),
-                                         &local_state_};
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   session_manager::SessionManager session_manager_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;

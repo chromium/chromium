@@ -57,7 +57,7 @@ class ExtensionEventObserverTest : public ChromeRenderViewHostTestHarness {
     testing_local_state_ = std::make_unique<ScopedTestingLocalState>(
         TestingBrowserProcess::GetGlobal());
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal(), testing_local_state_.get());
+        TestingBrowserProcess::GetGlobal());
 
     // Must be called from ::testing::Test::SetUp.
     ASSERT_TRUE(profile_manager_->SetUp());

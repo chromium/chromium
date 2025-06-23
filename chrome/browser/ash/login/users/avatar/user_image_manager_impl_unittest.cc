@@ -102,8 +102,7 @@ class UserImageManagerImplTest : public testing::Test {
  private:
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal(),
-                                         &local_state_};
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   user_manager::TypedScopedUserManager<FakeChromeUserManager>
       fake_chrome_user_manager_{std::make_unique<FakeChromeUserManager>()};
   raw_ptr<testing::StrictMock<test::MockUserImageLoaderDelegate>>

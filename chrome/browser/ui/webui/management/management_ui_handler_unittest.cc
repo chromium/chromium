@@ -489,7 +489,7 @@ class ManagementUIHandlerTests :
 #if BUILDFLAG(IS_CHROMEOS)
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal(), &local_state_);
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
@@ -630,7 +630,7 @@ class ManagementUIHandlerTests :
 #else
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal(), &local_state_);
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
   }
   void TearDown() override {

@@ -286,7 +286,7 @@ class ChromePasswordProtectionServiceTest
     : public ChromeRenderViewHostTestHarness {
  public:
   ChromePasswordProtectionServiceTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal(), &local_state_),
+      : profile_manager_(TestingBrowserProcess::GetGlobal()),
         local_state_(TestingBrowserProcess::GetGlobal()) {
     EXPECT_TRUE(profile_manager_.SetUp());
   }

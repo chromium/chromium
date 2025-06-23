@@ -52,7 +52,7 @@ class SigninPrepareUserListTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal(), &local_state_);
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
     for (size_t i = 0; i < std::size(kUsersPublic); ++i) {
