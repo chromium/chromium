@@ -7889,7 +7889,6 @@ test("unit_tests") {
       "../browser/hid/hid_policy_allowed_devices_unittest.cc",
       "../browser/hid/hid_test_utils.cc",
       "../browser/hid/hid_test_utils.h",
-      "../browser/lifetime/application_lifetime_unittest.cc",
       "../browser/lookalikes/lookalike_url_navigation_throttle_unittest.cc",
       "../browser/media/unified_autoplay_config_unittest.cc",
       "../browser/media/webrtc/current_tab_desktop_media_list_unittest.cc",
