@@ -2,21 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/ed25519_public_key.h"
 
 #include <utility>
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/cbor/writer.h"
+#include "crypto/evp.h"
 #include "device/fido/cbor_extract.h"
 #include "device/fido/fido_constants.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
@@ -81,18 +76,9 @@ std::unique_ptr<PublicKey> Ed25519PublicKey::ExtractFromCOSEKey(
     return nullptr;
   }
 
-  bssl::ScopedCBB cbb;
-  uint8_t* der_bytes = nullptr;
-  size_t der_bytes_len = 0;
-  CHECK(CBB_init(cbb.get(), /* initial size */ 128) &&
-        EVP_marshal_public_key(cbb.get(), pkey.get()) &&
-        CBB_finish(cbb.get(), &der_bytes, &der_bytes_len));
+  std::vector<uint8_t> der = crypto::evp::PublicKeyToBytes(pkey.get());
 
-  std::vector<uint8_t> der_bytes_vec(der_bytes, der_bytes + der_bytes_len);
-  OPENSSL_free(der_bytes);
-
-  return std::make_unique<PublicKey>(algorithm, cbor_bytes,
-                                     std::move(der_bytes_vec));
+  return std::make_unique<PublicKey>(algorithm, cbor_bytes, std::move(der));
 }
 
 }  // namespace device

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/p256_public_key.h"
 
 #include <utility>
@@ -14,11 +9,11 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
+#include "crypto/evp.h"
 #include "device/fido/cbor_extract.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/public_key.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -52,16 +47,7 @@ static std::vector<uint8_t> DERFromEC_POINT(const EC_POINT* point) {
   bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
   CHECK(EVP_PKEY_assign_EC_KEY(pkey.get(), ec_key.release()));
 
-  bssl::ScopedCBB cbb;
-  uint8_t* der_bytes = nullptr;
-  size_t der_bytes_len = 0;
-  CHECK(CBB_init(cbb.get(), /* initial size */ 128) &&
-        EVP_marshal_public_key(cbb.get(), pkey.get()) &&
-        CBB_finish(cbb.get(), &der_bytes, &der_bytes_len));
-
-  std::vector<uint8_t> ret(der_bytes, der_bytes + der_bytes_len);
-  OPENSSL_free(der_bytes);
-  return ret;
+  return crypto::evp::PublicKeyToBytes(pkey.get());
 }
 
 }  // namespace
@@ -182,11 +168,9 @@ std::unique_ptr<PublicKey> P256PublicKey::ParseX962Uncompressed(
 std::unique_ptr<PublicKey> P256PublicKey::ParseSpkiDer(
     int32_t algorithm,
     base::span<const uint8_t> spki_der) {
-  CBS cbs;
-  CBS_init(&cbs, spki_der.data(), spki_der.size());
-  bssl::UniquePtr<EVP_PKEY> public_key(EVP_parse_public_key(&cbs));
-  if (!public_key || CBS_len(&cbs) != 0 ||
-      EVP_PKEY_id(public_key.get()) != EVP_PKEY_EC) {
+  bssl::UniquePtr<EVP_PKEY> public_key =
+      crypto::evp::PublicKeyFromBytes(spki_der);
+  if (!public_key || EVP_PKEY_id(public_key.get()) != EVP_PKEY_EC) {
     return nullptr;
   }
   bssl::UniquePtr<EC_KEY> ec_key(EVP_PKEY_get1_EC_KEY(public_key.get()));

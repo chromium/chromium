@@ -21,6 +21,7 @@
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "crypto/evp.h"
 #include "device/fido/enclave/attestation_report.h"
 #include "device/fido/enclave/proto/evidence.pb.h"
 #include "device/fido/fido_constants.h"
@@ -227,11 +228,9 @@ base::expected<bssl::UniquePtr<EC_KEY>, const char*> EC_KEYFromCOSE(
 
   // If `ExtractFromCOSEKey` was happy with the key then none of the following
   // should fail.
-  CBS cbs;
-  CBS_init(&cbs, pubkey->der_bytes->data(), pubkey->der_bytes->size());
-  bssl::UniquePtr<EVP_PKEY> public_key(EVP_parse_public_key(&cbs));
+  bssl::UniquePtr<EVP_PKEY> public_key =
+      crypto::evp::PublicKeyFromBytes(*pubkey->der_bytes);
   CHECK(public_key);
-  CHECK(CBS_len(&cbs) == 0);
   CHECK(EVP_PKEY_id(public_key.get()) == EVP_PKEY_EC);
   bssl::UniquePtr<EC_KEY> ec_key(EVP_PKEY_get1_EC_KEY(public_key.get()));
   CHECK(ec_key && EC_GROUP_get_curve_name(EC_KEY_get0_group(ec_key.get())) ==
@@ -508,14 +507,10 @@ base::expected<void, const char*> VerifyAttestationReportSignature(
     return base::unexpected("Failed to extract SPKI from certificate");
   }
 
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(spki.data()), spki.size());
-  bssl::UniquePtr<EVP_PKEY> evp_key(EVP_parse_public_key(&cbs));
+  bssl::UniquePtr<EVP_PKEY> evp_key =
+      crypto::evp::PublicKeyFromBytes(base::as_byte_span(spki));
   if (!evp_key) {
     return base::unexpected("Failed to parse public key from SPKI.");
-  }
-  if (CBS_len(&cbs) != 0) {
-    return base::unexpected("Extra data found after parsing SPKI.");
   }
 
   bssl::UniquePtr<EC_KEY> ec_key(EVP_PKEY_get1_EC_KEY(evp_key.get()));
@@ -604,11 +599,8 @@ base::expected<void, const char*> VerifyVcekSignature(
     base::span<const uint8_t> tbs_cert,
     base::span<const uint8_t> signature,
     base::span<const uint8_t> spki) {
-  CBS cbs;
-  CBS_init(&cbs, spki.data(), spki.size());
-  bssl::UniquePtr<EVP_PKEY> public_key(EVP_parse_public_key(&cbs));
-  if (!public_key || CBS_len(&cbs) != 0 ||
-      EVP_PKEY_id(public_key.get()) != EVP_PKEY_RSA) {
+  bssl::UniquePtr<EVP_PKEY> public_key = crypto::evp::PublicKeyFromBytes(spki);
+  if (!public_key || EVP_PKEY_id(public_key.get()) != EVP_PKEY_RSA) {
     return base::unexpected("invalid SPKI");
   }
 
