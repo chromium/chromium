@@ -29,6 +29,9 @@ public class BottomSheetListContainerViewBinder {
             }
         } else if (propertyKey == MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE) {
             BottomSheetListItemView feedListItem = view.findViewById(R.id.feed_settings);
+            // The feedListItem could be null if Feeds is disabled. See https://crbug.com/426191805.
+            if (feedListItem == null) return;
+
             String subtitleText =
                     view.getContext().getString(model.get(MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE));
             feedListItem.setSubtitle(subtitleText);
