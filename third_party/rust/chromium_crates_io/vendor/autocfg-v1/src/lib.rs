@@ -91,6 +91,7 @@ pub struct AutoCfg {
     rustc_version: Version,
     target: Option<OsString>,
     no_std: bool,
+    edition: Option<String>,
     rustflags: Vec<String>,
     uuid: u64,
 }
@@ -203,11 +204,12 @@ impl AutoCfg {
             rustc_version: rustc_version,
             target: target,
             no_std: false,
+            edition: None,
             uuid: new_uuid(),
         };
 
         // Sanity check with and without `std`.
-        if !ac.probe_raw("").is_ok() {
+        if ac.probe_raw("").is_err() {
             if ac.probe_raw("#![no_std]").is_ok() {
                 ac.no_std = true;
             } else {
@@ -246,6 +248,36 @@ impl AutoCfg {
         self.no_std = no_std;
     }
 
+    /// Returns the `--edition` string that is currently being passed to `rustc`, if any,
+    /// as configured by the [`set_edition`][Self::set_edition] method.
+    pub fn edition(&self) -> Option<&str> {
+        match self.edition {
+            Some(ref edition) => Some(&**edition),
+            None => None,
+        }
+    }
+
+    /// Sets the `--edition` string that will be passed to `rustc`,
+    /// or `None` to leave the compiler at its default edition.
+    ///
+    /// See also [The Rust Edition Guide](https://doc.rust-lang.org/edition-guide/).
+    ///
+    /// **Warning:** Setting an unsupported edition will likely cause **all** subsequent probes to
+    /// fail! As of this writing, the known editions and their minimum Rust versions are:
+    ///
+    /// | Edition | Version    |
+    /// | ------- | ---------- |
+    /// | 2015    | 1.27.0[^1] |
+    /// | 2018    | 1.31.0     |
+    /// | 2021    | 1.56.0     |
+    /// | 2024    | 1.85.0     |
+    ///
+    /// [^1]: Prior to 1.27.0, Rust was effectively 2015 Edition by default, but the concept hadn't
+    /// been established yet, so the explicit `--edition` flag wasn't supported either.
+    pub fn set_edition(&mut self, edition: Option<String>) {
+        self.edition = edition;
+    }
+
     /// Tests whether the current `rustc` reports a version greater than
     /// or equal to "`major`.`minor`".
     pub fn probe_rustc_version(&self, major: usize, minor: usize) -> bool {
@@ -272,14 +304,19 @@ impl AutoCfg {
     }
 
     fn probe_fmt<'a>(&self, source: Arguments<'a>) -> Result<(), Error> {
+        let crate_name = self.new_crate_name();
         let mut command = self.rustc.command();
         command
             .arg("--crate-name")
-            .arg(self.new_crate_name())
+            .arg(&crate_name)
             .arg("--crate-type=lib")
             .arg("--out-dir")
             .arg(&self.out_dir)
             .arg("--emit=llvm-ir");
+
+        if let Some(edition) = self.edition.as_ref() {
+            command.arg("--edition").arg(edition);
+        }
 
         if let Some(target) = self.target.as_ref() {
             command.arg("--target").arg(target);
@@ -295,7 +332,16 @@ impl AutoCfg {
         drop(stdin);
 
         match child.wait() {
-            Ok(status) if status.success() => Ok(()),
+            Ok(status) if status.success() => {
+                // Try to remove the output file so it doesn't look like a build product for
+                // systems like bazel -- but this is best-effort, so we can ignore failure.
+                // The probe itself is already considered successful at this point.
+                let mut file = self.out_dir.join(crate_name);
+                file.set_extension("ll");
+                let _ = fs::remove_file(file);
+
+                Ok(())
+            }
             Ok(status) => Err(error::from_exit(status)),
             Err(error) => Err(error::from_io(error)),
         }

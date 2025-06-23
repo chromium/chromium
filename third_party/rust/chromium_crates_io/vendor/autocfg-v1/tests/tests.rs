@@ -136,3 +136,54 @@ fn probe_raw() {
         .probe_raw(&f("#![deny(dead_code)] pub fn x() {}"))
         .is_ok());
 }
+
+#[test]
+fn probe_cleanup() {
+    let dir = support::out_dir().join("autocfg_test_probe_cleanup");
+    std::fs::create_dir(&dir).unwrap();
+
+    let ac = AutoCfg::with_dir(&dir).unwrap();
+    assert!(ac.probe_type("i32"));
+
+    // NB: this is not `remove_dir_all`, so it will only work if the directory
+    // is empty -- i.e. the probe should have removed any output files.
+    std::fs::remove_dir(&dir).unwrap();
+}
+
+#[test]
+fn editions() {
+    let mut ac = autocfg_for_test();
+    assert!(ac.edition().is_none());
+    assert!(ac.probe_raw("").is_ok());
+
+    for (edition, minor) in vec![(2015, 27), (2018, 31), (2021, 56), (2024, 85)] {
+        let edition = edition.to_string();
+        ac.set_edition(Some(edition.clone()));
+        assert_eq!(ac.edition(), Some(&*edition));
+        assert_min(&ac, 1, minor, ac.probe_raw("").is_ok());
+    }
+
+    ac.set_edition(Some("invalid".into()));
+    assert_eq!(ac.edition(), Some("invalid"));
+    assert!(ac.probe_raw("").is_err());
+
+    ac.set_edition(None);
+    assert!(ac.edition().is_none());
+    assert!(ac.probe_raw("").is_ok());
+}
+
+#[test]
+fn edition_keyword_try() {
+    let mut ac = autocfg_for_test();
+
+    if ac.probe_rustc_version(1, 27) {
+        ac.set_edition(Some(2015.to_string()));
+    }
+    assert!(ac.probe_expression("{ let try = 0; try }"));
+
+    if ac.probe_rustc_version(1, 31) {
+        ac.set_edition(Some(2018.to_string()));
+        assert!(!ac.probe_expression("{ let try = 0; try }"));
+        assert!(ac.probe_expression("{ let r#try = 0; r#try }"));
+    }
+}

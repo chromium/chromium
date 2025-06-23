@@ -4,7 +4,7 @@ autocfg
 [![autocfg crate](https://img.shields.io/crates/v/autocfg.svg)](https://crates.io/crates/autocfg)
 [![autocfg documentation](https://docs.rs/autocfg/badge.svg)](https://docs.rs/autocfg)
 ![minimum rustc 1.0](https://img.shields.io/badge/rustc-1.0+-red.svg)
-![build status](https://github.com/cuviper/autocfg/workflows/master/badge.svg)
+![build status](https://github.com/cuviper/autocfg/workflows/CI/badge.svg)
 
 A Rust library for build scripts to automatically configure code based on
 compiler support.  Code snippets are dynamically tested to see if the `rustc`
@@ -42,6 +42,11 @@ should only be used when the compiler supports it.
 
 
 ## Release Notes
+
+- 1.5.0 (2025-06-17)
+
+  - Add `edition` and `set_edition` to control the Rust edition used in probes.
+  - Remove probe result files so they don't pollute the output directory.
 
 - 1.4.0 (2024-09-26)
 
