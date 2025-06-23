@@ -65,10 +65,12 @@ bool Install() {
       source_exe_path, install_directory->AppendUTF8(kExecutableName),
       temp_dir.GetPath(), WorkItem::ALWAYS);
 #if ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
-  install_list->AddCopyTreeWorkItem(
-      source_exe_path.DirName().Append(kIcuDataFileName),
-      install_directory->Append(kIcuDataFileName), temp_dir.GetPath(),
-      WorkItem::ALWAYS);
+  if (base::PathExists(source_exe_path.DirName().Append(kIcuDataFileName))) {
+    install_list->AddCopyTreeWorkItem(
+        source_exe_path.DirName().Append(kIcuDataFileName),
+        install_directory->Append(kIcuDataFileName), temp_dir.GetPath(),
+        WorkItem::ALWAYS);
+  }
 #endif
   install_list->AddCreateRegKeyWorkItem(HKEY_LOCAL_MACHINE, kAppRegKey,
                                         KEY_WOW64_32KEY);
