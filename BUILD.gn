@@ -1794,14 +1794,6 @@ if (!is_ios && !is_android && !is_castos && !is_cronet_build) {
       }
     }
 
-    if (!is_component_build) {
-      # See https://bugs.chromium.org/p/chromium/issues/detail?id=942546#c11.
-      deps += [
-        "//third_party/webrtc/rtc_tools:rtp_generator",
-        "//third_party/webrtc/rtc_tools:video_replay",
-      ]
-    }
-
     if (build_dawn_tests) {
       deps += [ "//third_party/dawn/src/tint:fuzzers" ]
     }
