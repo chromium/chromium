@@ -15,6 +15,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.Window;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -26,6 +27,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
 import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
@@ -106,6 +108,35 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         dismissDialog();
     }
 
+    // Calculate true top content offset to be used to compute the AnchorRect used by
+    // AnchoredPopupWindow, with origin below the system decoration which may or may not be merged
+    // with the tabstrip.
+    private static float topContentOffset(float offset, WindowAndroid windowAndroid) {
+        // If edge-to-edge mode is disabled, the input offset i.e. height of tabstrip plus toolbar
+        // is correct.
+        if (!EdgeToEdgeStateProvider.isEdgeToEdgeEnabledForWindow(windowAndroid)) return offset;
+
+        // Otherwise, the system decoration is tabstrip, so the input offset should only be height
+        // of toolbar.
+        // Compute the height of system decoration to get height of tabstrip, and subtract it from
+        // the input offset.
+        Window window = windowAndroid.getWindow();
+        if (window == null) return offset;
+        View view = window.getDecorView();
+        // The rect of the window without system decoration, see
+        // https://developer.android.com/reference/android/view/View#getWindowVisibleDisplayFrame(android.graphics.Rect)
+        Rect windowVisibleRect = new Rect();
+        view.getWindowVisibleDisplayFrame(windowVisibleRect);
+        // The coordinates of the window root (with system decoration), see
+        // https://developer.android.com/reference/android/view/View#getLocationOnScreen(int[])
+        int[] windowRootCoordinates = new int[2];
+        view.getLocationOnScreen(windowRootCoordinates);
+        // Difference of the two top-left y-coordinates is the height of the system decoration.
+        float systemDecorHeight = windowVisibleRect.top - windowRootCoordinates[1];
+
+        return offset - systemDecorHeight;
+    }
+
     // Shows the menu with chip.
     void displayMenuWithChip(
             final WindowAndroid window,
@@ -147,7 +178,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         window.getWindow(),
                         webContents,
                         params,
-                        mTopContentOffsetPx,
+                        topContentOffset(mTopContentOffsetPx, window),
                         usePopupWindow,
                         layout);
         boolean shouldRemoveScrim = ContextMenuUtils.isPopupSupported(activity);
