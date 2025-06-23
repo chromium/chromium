@@ -26,78 +26,6 @@
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 
-namespace {
-
-// Content size category to report UMA metrics.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class IOSContentSizeCategory {
-  kUnspecified = 0,
-  kExtraSmall = 1,
-  kSmall = 2,
-  kMedium = 3,
-  kLarge = 4,
-  kExtraLarge = 5,
-  kExtraExtraLarge = 6,
-  kExtraExtraExtraLarge = 7,
-  kAccessibilityMedium = 8,
-  kAccessibilityLarge = 9,
-  kAccessibilityExtraLarge = 10,
-  kAccessibilityExtraExtraLarge = 11,
-  kAccessibilityExtraExtraExtraLarge = 12,
-  kMaxValue = kAccessibilityExtraExtraExtraLarge,
-};
-
-// Converts a UIKit content size category to a content size category for
-// reporting.
-IOSContentSizeCategory IOSContentSizeCategoryForCurrentUIContentSizeCategory() {
-  UIContentSizeCategory size =
-      UIApplication.sharedApplication.preferredContentSizeCategory;
-  if ([size isEqual:UIContentSizeCategoryUnspecified]) {
-    return IOSContentSizeCategory::kUnspecified;
-  }
-  if ([size isEqual:UIContentSizeCategoryExtraSmall]) {
-    return IOSContentSizeCategory::kExtraSmall;
-  }
-  if ([size isEqual:UIContentSizeCategorySmall]) {
-    return IOSContentSizeCategory::kSmall;
-  }
-  if ([size isEqual:UIContentSizeCategoryMedium]) {
-    return IOSContentSizeCategory::kMedium;
-  }
-  if ([size isEqual:UIContentSizeCategoryLarge]) {
-    return IOSContentSizeCategory::kLarge;
-  }
-  if ([size isEqual:UIContentSizeCategoryExtraLarge]) {
-    return IOSContentSizeCategory::kExtraLarge;
-  }
-  if ([size isEqual:UIContentSizeCategoryExtraExtraLarge]) {
-    return IOSContentSizeCategory::kExtraExtraLarge;
-  }
-  if ([size isEqual:UIContentSizeCategoryExtraExtraExtraLarge]) {
-    return IOSContentSizeCategory::kExtraExtraExtraLarge;
-  }
-  if ([size isEqual:UIContentSizeCategoryAccessibilityMedium]) {
-    return IOSContentSizeCategory::kAccessibilityMedium;
-  }
-  if ([size isEqual:UIContentSizeCategoryAccessibilityLarge]) {
-    return IOSContentSizeCategory::kAccessibilityLarge;
-  }
-  if ([size isEqual:UIContentSizeCategoryAccessibilityExtraLarge]) {
-    return IOSContentSizeCategory::kAccessibilityExtraLarge;
-  }
-  if ([size isEqual:UIContentSizeCategoryAccessibilityExtraExtraLarge]) {
-    return IOSContentSizeCategory::kAccessibilityExtraExtraLarge;
-  }
-  if ([size isEqual:UIContentSizeCategoryAccessibilityExtraExtraExtraLarge]) {
-    return IOSContentSizeCategory::kAccessibilityExtraExtraExtraLarge;
-  }
-
-  return IOSContentSizeCategory::kUnspecified;
-}
-
-}  // namespace
-
 FontSizeTabHelper::FontSizeTabHelper(web::WebState* web_state)
     : web_state_(web_state), weak_factory_(this) {
   DCHECK(ios::provider::IsTextZoomEnabled());
@@ -142,8 +70,8 @@ void FontSizeTabHelper::UserZoom(Zoom zoom) {
 void FontSizeTabHelper::LogZoomEvent(Zoom zoom) const {
   // Log when the user zooms to see if there are certain websites that are
   // broken when zooming.
-  IOSContentSizeCategory content_size_category =
-      IOSContentSizeCategoryForCurrentUIContentSizeCategory();
+  ui_util::IOSContentSizeCategory content_size_category =
+      ui_util::GetPreferredContentSizeCategory();
   ukm::UkmRecorder* ukm_recorder = GetApplicationContext()->GetUkmRecorder();
   ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(web_state_);
   ukm::builders::IOS_PageZoomChanged(source_id)
