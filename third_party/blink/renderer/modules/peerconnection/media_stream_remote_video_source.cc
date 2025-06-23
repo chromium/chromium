@@ -16,7 +16,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
+#include "media/base/video_color_space.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "third_party/blink/public/common/features.h"
@@ -204,7 +206,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
   // WebRtcIgnoreUnspecifiedColorSpace. If the feature is enabled we won't try
   // to guess a color space if the webrtc::ColorSpace is unspecified. If the
   // feature is disabled (default), an unspecified color space will get
-  // converted into a gfx::ColorSpace set to BT709.
+  // converted into a gfx::ColorSpace set to BT601.
   if (incoming_frame.color_space() &&
       !(ignore_unspecified_color_space_ &&
         incoming_frame.color_space()->primaries() ==
@@ -213,8 +215,19 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
             webrtc::ColorSpace::TransferID::kUnspecified &&
         incoming_frame.color_space()->matrix() ==
             webrtc::ColorSpace::MatrixID::kUnspecified)) {
-    video_frame->set_color_space(
-        WebRtcToGfxColorSpace(*incoming_frame.color_space()));
+    gfx::ColorSpace color_space =
+        WebRtcToGfxColorSpace(*incoming_frame.color_space());
+    if (!color_space.IsValid()) {
+      color_space = media::VideoColorSpace::FromGfxColorSpace(color_space)
+                        .GuessGfxColorSpace();
+    }
+    if (color_space.IsValid()) {
+      video_frame->set_color_space(color_space);
+    }
+  }
+  if (base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy) &&
+      !incoming_frame.color_space()) {
+    video_frame->set_color_space(gfx::ColorSpace::CreateREC601());
   }
 
   // Run render smoothness algorithm only when we don't have to render
