@@ -7,7 +7,6 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
 import("//components/compose/features.gni")
-import("//components/nacl/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/sharing_message/buildflags.gni")
 import("//components/signin/features.gni")
@@ -91,7 +90,6 @@ chrome_grit_defines = [
   "enable_hangout_services_extension=$enable_hangout_services_extension",
   "enable_ink=$enable_ink",
   "enable_pdf_ink2=$enable_pdf_ink2",
-  "enable_nacl=$enable_nacl",
   "enable_dice_support=$enable_dice_support",
   "enable_pdf=$enable_pdf",
   "enable_print_preview=$enable_print_preview",

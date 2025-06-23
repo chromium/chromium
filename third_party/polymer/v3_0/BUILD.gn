@@ -119,7 +119,6 @@ ts_library("library") {
     # with //ui/webui/PLATFORM_OWNERS or g/chrome-webui if you think there is a
     # strong reason to use Polymer.
 
-    "//chrome/browser/resources/about_nacl:build_ts",
     "//chrome/browser/resources/access_code_cast:build_ts",
     "//chrome/browser/resources/app_service_internals:build_ts",
     "//chrome/browser/resources/certificate_manager:build_ts",
