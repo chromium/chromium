@@ -48,7 +48,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;
   virtual void UpdateMemoryUsage() = 0;
   virtual size_t GetMemoryUsage() const = 0;
-  virtual void PageVisibilityChanged() {}
   virtual CanvasResourceProvider*
   GetOrCreateCanvasResourceProviderForCanvas2D() = 0;
 

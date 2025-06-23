@@ -82,7 +82,6 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   void SetPageVisible(bool visible) {
     if (page_visible_ != visible) {
       page_visible_ = visible;
-      PageVisibilityChanged();
     }
   }
 
