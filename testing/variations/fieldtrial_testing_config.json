@@ -390,6 +390,29 @@
             ]
         }
     ],
+    "AccessibilityUseAXBitset": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityUseAXBitset"
+                    ]
+                }
+            ]
+        }
+    ],
     "AdaptiveChargingParamTuning": [
         {
             "platforms": [
