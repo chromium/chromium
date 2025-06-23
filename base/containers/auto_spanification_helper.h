@@ -24,6 +24,19 @@ constexpr size_t SpanificationSizeofForStdArray(const std::array<Element, N>&) {
   return sizeof(Element) * N;
 }
 
+// This helper is used to rewrite code that passes the address of a single
+// variable or object member (e.g. `&my_var` or `&obj.member`) to a function
+// that expects a `span` representing a single element.
+//
+// WARNING: This function should only be used by the auto-spanification tool.
+// Do not use this helper outside of the tool.
+template <typename T>
+span<T, 1> SpanFromSingleElement(T& ref) {
+  // This is a single element and the address is always valid as long as the
+  // reference is valid.
+  return UNSAFE_TODO(span<T, 1u>(&ref, 1u));
+}
+
 // Modifies the input span by removing its first element (if not empty)
 // and returns the modified span.
 // Used to rewrite pre-increment (++ptr).

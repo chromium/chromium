@@ -1302,15 +1302,13 @@ void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
 static void EmitSingleVariableSpan(const std::string& key,
                                    const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
-  const clang::ASTContext& ast_context = *result.Context;
-  const auto& lang_opts = ast_context.getLangOpts();
+  const auto& lang_opts = result.Context->getLangOpts();
 
-  const auto* expr = result.Nodes.getNodeAs<clang::Expr>("address_expr");
-  const auto* operand_decl = result.Nodes.getNodeAs<clang::DeclaratorDecl>(
-      "address_expr_operand_decl");
+  const auto* expr =
+      result.Nodes.getNodeAs<clang::UnaryOperator>("address_expr");
   const auto* operand_expr =
       result.Nodes.getNodeAs<clang::Expr>("address_expr_operand");
-  if (!expr || !operand_decl || !operand_expr) {
+  if (!expr || !operand_expr) {
     llvm::errs()
         << "\n"
            "Error: EmitSingleVariableSpan() encountered an unexpected match.\n";
@@ -1318,16 +1316,24 @@ static void EmitSingleVariableSpan(const std::string& key,
     assert(false && "Unexpected match in EmitSingleVariableSpan()");
   }
 
-  clang::SourceRange expr_range = {expr->getBeginLoc()};
-  std::string type = GetTypeAsString(operand_decl->getType(), ast_context);
-  std::string replacement_text = llvm::formatv("base::span<{0}, 1>(", type);
-  EmitReplacement(
-      key, GetReplacementDirective(expr_range, replacement_text, source_manager,
-                                   kEmitSingleVariableSpanPrecedence));
+  // This range is just one character, covering the '&' symbol.
+  clang::SourceLocation ampersand_loc = expr->getOperatorLoc();
+  clang::SourceRange ampersand_range = {
+      ampersand_loc, clang::Lexer::getLocForEndOfToken(
+                         ampersand_loc, 0u, source_manager, lang_opts)};
+
+  EmitReplacement(key, GetReplacementDirective(
+                           ampersand_range, "base::SpanFromSingleElement(",
+                           source_manager, kEmitSingleVariableSpanPrecedence));
   EmitReplacement(
       key, GetReplacementDirective(
                getExprRange(operand_expr, source_manager, lang_opts).getEnd(),
-               ", 1u)", source_manager, -kEmitSingleVariableSpanPrecedence));
+               ")", source_manager, -kEmitSingleVariableSpanPrecedence));
+
+  // Include the header for `base::SpanFromSingleElement()`.
+  EmitReplacement(
+      key, GetIncludeDirective(operand_expr->getSourceRange(), source_manager,
+                               kBaseAutoSpanificationHelperIncludePath));
 }
 
 // Rewrites unsafe third-party member function calls to helper macro calls.
@@ -2838,19 +2844,24 @@ class Spanifier {
             has(memberExpr().bind("data_member_expr")))
             .bind("member_data_call");
 
-    // Matchers |&var| where |var| is a local variable, a parameter or member
-    // field. Doesn't match when |var| is a function.
+    auto has_std_array_type = hasType(hasCanonicalType(hasDeclaration(
+        classTemplateSpecializationDecl(hasName("::std::array")))));
+
+    // Array excluded because it might be used as a buffer with >1 size.
+    auto single_var_span_exclusions =
+        unless(anyOf(exclusions, hasType(arrayType()), hasType(functionType()),
+                     has_std_array_type));
+
+    // Matches |&var| where |var| is a local variable, a parameter or member
+    // field. Doesn't match when |var| is a function or an array.
     auto buff_address_from_single_var =
         unaryOperator(
             hasOperatorName("&"),
             hasUnaryOperand(anyOf(
-                declRefExpr(to(anyOf(varDecl(unless(exclusions))
-                                         .bind("address_expr_operand_decl"),
-                                     parmVarDecl(unless(exclusions))
-                                         .bind("address_expr_operand_decl"))))
+                declRefExpr(to(anyOf(varDecl(single_var_span_exclusions),
+                                     parmVarDecl(single_var_span_exclusions))))
                     .bind("address_expr_operand"),
-                memberExpr(member(fieldDecl(unless(exclusions))
-                                      .bind("address_expr_operand_decl")))
+                memberExpr(member(fieldDecl(single_var_span_exclusions)))
                     .bind("address_expr_operand"))))
             .bind("address_expr");
 

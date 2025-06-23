@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+#include <cstdint>
 #include <vector>
 
 // Tests related to single_element_expr matcher.
@@ -10,11 +12,18 @@ void processIntBuffer(int* buf) {
   std::ignore = buf[0];
 }
 
+void processUint8Buffer(uint8_t* buf) {
+  std::ignore = buf[0];
+}
+
 void testPointerPassing() {
   int singleInt;
   // Expected rewrite:
-  // processIntBuffer(base::span<int, 1>(&singleInt, 1u))
+  // processIntBuffer(base::SpanFromSingleElement(singleInt));
   processIntBuffer(&singleInt);
+  // processUint8Buffer(base::as_writable_byte_span(
+  //    base::SpanFromSingleElement(singleInt)));
+  processUint8Buffer(reinterpret_cast<uint8_t*>(&singleInt));
 
   int intArray[10];
   // Not using &.
@@ -24,6 +33,14 @@ void testPointerPassing() {
   // Expected rewrite:
   // processIntBuffer(intArray);
   processIntBuffer(&intArray[0]);
+  // Do not rewrite because code may be expecting an buffer with >1 size.
+  // No rewrite expected.
+  processUint8Buffer(reinterpret_cast<uint8_t*>(&intArray));
+
+  std::array<int, 5> stdArray;
+  // Do not rewrite because code may be expecting an buffer with >1 size.
+  // No rewrite expected.
+  processUint8Buffer(reinterpret_cast<uint8_t*>(&stdArray));
 
   std::vector<int> intVector;
   // We know how to get size from Vector so just leave it alone to
@@ -31,6 +48,13 @@ void testPointerPassing() {
   // Expected rewrite:
   // processIntBuffer(intVector);
   processIntBuffer(&intVector[0]);
+
+  void* voidPtr;
+  // void** should get rewritten.
+  // Expected rewrite:
+  // processUint8Buffer(
+  //   base::as_writable_byte_span(base::SpanFromSingleElement(voidPtr)));
+  processUint8Buffer(reinterpret_cast<uint8_t*>(&voidPtr));
 }
 
 // Function that takes a pointer to an integer pointer.
@@ -41,7 +65,7 @@ void processIntPointerBuffer(int** pointerToData) {
 void testPointerToPointerPassing() {
   int* singleIntPointer;
   // Expected rewrite:
-  // processIntPointerBuffer(base::span<int*, 1>(&singleIntPointer, 1u));
+  // processIntPointerBuffer(base::SpanFromSingleElement(singleIntPointer));
   processIntPointerBuffer(&singleIntPointer);
 
   int* intArrayOfPointers[10];
@@ -67,12 +91,12 @@ struct MyStruct {
 void testFieldPointerPassing() {
   MyStruct myStruct;
   // Expected rewrite:
-  // processIntBuffer(base::span<int, 1>(&myStruct.field, 1u));
+  // processIntBuffer(base::SpanFromSingleElement(myStruct.field));
   processIntBuffer(&myStruct.field);
 }
 
 void testParamPointerPassing(int param) {
   // Expected rewrite:
-  // processIntBuffer(base::span<int, 1>(&param, 1u));
+  // processIntBuffer(base::SpanFromSingleElement(param));
   processIntBuffer(&param);
 }
