@@ -163,6 +163,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   _identityManager = nullptr;
   _identityManagerObserver.reset();
   _authenticationService = nullptr;
+  self.commandHandler = nullptr;
+  self.syncErrorHandler = nullptr;
   _chromeAccountManagerService = nullptr;
   _prefService = nullptr;
   _signedInIdentity = nil;
