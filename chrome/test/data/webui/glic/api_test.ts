@@ -329,15 +329,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(0, suggestions.suggestions.length);
   }
 
-  async testGetFocusedTabState() {
-    assertTrue(!!this.host.getFocusedTabState);
-    const sequence = observeSequence(this.host.getFocusedTabState());
-    const focus = await sequence.next();
-    assertTrue(!!focus);
-    assertTrue(focus.url.endsWith('glic/test.html'), `url=${focus.url}`);
-    assertEquals('Test Page', focus.title);
-  }
-
   async testGetFocusedTabStateV2() {
     assertTrue(!!this.host.getFocusedTabStateV2);
     const sequence =

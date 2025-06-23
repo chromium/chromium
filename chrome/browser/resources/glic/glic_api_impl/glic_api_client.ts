@@ -126,9 +126,6 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     const focusedTabData =
         convertFocusedTabDataFromPrivate(payload.focusedTabDataPrivate);
     this.host.getFocusedTabStateV2().assignAndSignal(focusedTabData);
-    // Keep below for backwards compatibility.
-    this.host.getFocusedTabState().assignAndSignal(
-        focusedTabData.hasFocus?.tabData);
   }
 
   glicWebClientNotifyPanelActiveChanged(payload: {panelActive: boolean}): void {
@@ -183,8 +180,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private chromeVersion?: ChromeVersion;
   private panelState = ObservableValueImpl.withNoValue<PanelState>();
   canAttachPanelValue = ObservableValueImpl.withNoValue<boolean>();
-  private focusedTabState =
-      ObservableValueImpl.withNoValue<TabData|undefined>();
   private focusedTabStateV2 = ObservableValueImpl.withNoValue<FocusedTabData>();
   private permissionStateMicrophone =
       ObservableValueImpl.withNoValue<boolean>();
@@ -238,7 +233,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.panelState.assignAndSignal(state.panelState);
     const focusedTabData =
         convertFocusedTabDataFromPrivate(state.focusedTabData);
-    this.focusedTabState.assignAndSignal(focusedTabData.hasFocus?.tabData);
     this.focusedTabStateV2.assignAndSignal(focusedTabData);
     this.permissionStateMicrophone.assignAndSignal(
         state.microphonePermissionEnabled);
@@ -456,10 +450,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   isBrowserOpen(): ObservableValue<boolean> {
     return this.isBrowserOpenValue;
-  }
-
-  getFocusedTabState(): ObservableValueImpl<TabData|undefined> {
-    return this.focusedTabState;
   }
 
   getFocusedTabStateV2(): ObservableValueImpl<FocusedTabData> {

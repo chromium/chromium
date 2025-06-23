@@ -382,22 +382,6 @@ export declare interface GlicBrowserHost {
   isBrowserOpen?(): ObservableValue<boolean>;
 
   /**
-   * @deprecated Use `getFocusedTabStateV2` instead. This function returns a
-   * TabData on success but no information at all on failure. V2 solves this by
-   * returning error codes to signal why no focus was available.
-   *
-   * Returns the observable state of the currently focused tab. Updates are sent
-   * whenever the focus changes due to the user switching tabs or navigating the
-   * current focused tab.
-   *
-   * @returns An ObservableValue for `TabData` values that will be updated when
-   *          a new tab is focused or the current tab is navigated. The value
-   *          will be `undefined` if there's no active tab or it cannot be
-   *          focused (i.e. the URL is ineligible for tab context sharing).
-   */
-  getFocusedTabState?(): ObservableValue<TabData|undefined>;
-
-  /**
    * Returns the observable state of the currently focused tab. Updates are sent
    * whenever:
    * - The user switches active tabs, which causes a change in `tabId`.

@@ -913,10 +913,6 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitiallyNotResizable) {
   RunTestSequence(InAnyContext(ExpectUserCanResize(false)));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabState) {
-  ExecuteJsTest();
-}
-
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
                        testGetZeroStateSuggestions) {
   EXPECT_CALL(*mock_cueing_service(),

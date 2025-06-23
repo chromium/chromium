@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FocusedTabData, GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, PanelState, TabData, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, PanelState, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
 import {WebClientInitializeErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
 
 import {$} from './page_element_types.js';
@@ -25,21 +25,6 @@ export function readStream(stream: ReadableStream<Uint8Array>):
 
 export function getBrowser(): GlicBrowserHost|undefined {
   return client?.browser;
-}
-
-async function focusedTabChanged(newValue: TabData|undefined) {
-  $.focusedUrl.value = '';
-  $.focusedFavicon.src = '';
-  logMessage(`Focused Tab State Changed: ${JSON.stringify(newValue)}`);
-  if (newValue?.url) {
-    $.focusedUrl.value = newValue.url;
-  }
-  if (newValue?.favicon) {
-    const fav = await newValue.favicon();
-    if (fav) {
-      $.focusedFavicon.src = URL.createObjectURL(fav);
-    }
-  }
 }
 
 class TestInitFailure extends Error implements WebClientInitializeError {
@@ -104,8 +89,6 @@ class WebClient implements GlicWebClient {
     const ver = await browser.getChromeVersion();
     logMessage(`Chrome version: ${JSON.stringify(ver)}`);
 
-    const focusedTabState = await this.browser.getFocusedTabState!();
-    focusedTabState.subscribe(focusedTabChanged);
     const focusedTabStateV2 = await this.browser.getFocusedTabStateV2!();
     const boundFocusedChangedCallback = this.focusedTabChangedV2.bind(this);
     focusedTabStateV2.subscribe(boundFocusedChangedCallback);
