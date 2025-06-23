@@ -53,10 +53,10 @@ const std::array<syncer::DataType, 5> kBatchUploadAvailableTypesOrder{
     // clang-format on
 };
 
-// Determines the primary type based on the entry point.
-// TODO(crbug.com/416219929): Future entry points may not be tied to a single
-// data type, this would need to return std::nullopt then.
-syncer::DataType PrimaryTypeFromEntryPoint(
+// Determines the primary type based on the entry point. Some entry point may be
+// generic and not tied to any data type - std::nullopt is returned in this
+// case.
+std::optional<syncer::DataType> PrimaryTypeFromEntryPoint(
     BatchUploadService::EntryPoint entry_point) {
   switch (entry_point) {
     case BatchUploadService::EntryPoint::kPasswordManagerSettings:
@@ -64,14 +64,36 @@ syncer::DataType PrimaryTypeFromEntryPoint(
       return syncer::PASSWORDS;
     case BatchUploadService::EntryPoint::kBookmarksManagerPromoCard:
       return syncer::BOOKMARKS;
+    case BatchUploadService::EntryPoint::kProfileMenu:
+      return std::nullopt;
   }
+}
+
+// Return the primary local data description after performing additional checks.
+syncer::LocalDataDescription GetPrimaryTypeLocalDataDescription(
+    const std::map<syncer::DataType, syncer::LocalDataDescription>&
+        local_data_descriptions_map,
+    syncer::DataType primary_type) {
+  CHECK(base::Contains(kBatchUploadAvailableTypesOrder, primary_type));
+  CHECK(local_data_descriptions_map.contains(primary_type));
+  const syncer::LocalDataDescription& primary_local_data_description =
+      local_data_descriptions_map.at(primary_type);
+  CHECK(!primary_local_data_description.local_data_models.empty())
+      << "Primary data type should have local data since the entry point "
+         "is available.";
+  CHECK_EQ(primary_type, primary_local_data_description.type)
+      << "Non empty data description's data type and the keyed mapping "
+         "value should always match.";
+  return primary_local_data_description;
 }
 
 // Returns the list of data descriptions in `local_data_descriptions_map`
 // following the expected displayed order in the dialog.
-// `entry_point` is used to determine the primary (first) type to be displayed,
-// overriding the expected order for the first type only. Primary type should
-// have local data - since the entry point was available.
+// `entry_point` is used to determine the primary (first) type, if any, to be
+// displayed, overriding the expected order for the first type only. Primary
+// type should have local data - since the entry point was available.
+// Generic entry points have no primary type associated with it, the regular
+// order will be displayed.
 // Other data descriptions with no local data will be filtered out.
 std::vector<syncer::LocalDataDescription>
 GetOrderedListOfNonEmptyDataDescriptions(
@@ -80,22 +102,16 @@ GetOrderedListOfNonEmptyDataDescriptions(
     BatchUploadService::EntryPoint entry_point) {
   std::vector<syncer::LocalDataDescription> local_data_description_list;
 
-  // Treat the primary type first to make sure it is the first type for display,
-  // overriding the expected order given in `kBatchUploadAvailableTypesOrder`.
-  syncer::DataType primary_type = PrimaryTypeFromEntryPoint(entry_point);
-  CHECK(base::Contains(kBatchUploadAvailableTypesOrder, primary_type));
-  CHECK(local_data_descriptions_map.contains(primary_type));
-  syncer::LocalDataDescription& primary_local_data_description =
-      local_data_descriptions_map[primary_type];
-  CHECK(!primary_local_data_description.local_data_models.empty())
-      << "Primary data type should have local data since the entry point "
-         "is available.";
-  CHECK_EQ(primary_type, primary_local_data_description.type)
-      << "Non empty data description's data type and the keyed mapping "
-         "value should always match.";
-  local_data_description_list.push_back(
-      std::move(primary_local_data_description));
-  local_data_descriptions_map.erase(primary_type);
+  std::optional<syncer::DataType> primary_type =
+      PrimaryTypeFromEntryPoint(entry_point);
+  if (primary_type.has_value()) {
+    // Treat the primary type first to make sure it is the first type for
+    // display, overriding the expected order given in
+    // `kBatchUploadAvailableTypesOrder`.
+    local_data_description_list.push_back(GetPrimaryTypeLocalDataDescription(
+        local_data_descriptions_map, *primary_type));
+    local_data_descriptions_map.erase(*primary_type);
+  }
 
   // Reorder the result from the `local_data_descriptions_map` based on the
   // available types order.

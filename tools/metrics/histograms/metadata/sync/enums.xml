@@ -77,6 +77,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Password manager settings"/>
   <int value="1" label="Password promo card"/>
   <int value="2" label="Bookmark manager promo card"/>
+  <int value="3" label="Profile menu button"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/profiles/batch_upload/batch_upload_service.h:EntryPoint) -->

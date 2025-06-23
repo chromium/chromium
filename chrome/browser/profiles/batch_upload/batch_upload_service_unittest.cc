@@ -237,10 +237,6 @@ TEST_F(BatchUploadServiceTest, GetLocalDataDescriptionsForAvailableTypes) {
   service.GetLocalDataDescriptionsForAvailableTypes(result_callback.Get());
 }
 
-// TODO(crbug.com/416219929): This test uses the password related entry point,
-// which is in line with the default primary data type. When adding a neutral
-// entry point (not tied to any specific data type), this entry point should be
-// used in this test to be able to more accurately test the order.
 TEST_F(BatchUploadServiceTest, LocalDataForAllAvailableTypesMainOrder) {
   SigninWithFullInfo();
   BatchUploadService& service = CreateService();
@@ -270,9 +266,8 @@ TEST_F(BatchUploadServiceTest, LocalDataForAllAvailableTypesMainOrder) {
   base::MockCallback<base::OnceCallback<void(bool)>> opened_callback;
   EXPECT_CALL(opened_callback, Run(true));
 
-  service.OpenBatchUpload(
-      nullptr, BatchUploadService::EntryPoint::kPasswordManagerSettings,
-      opened_callback.Get());
+  service.OpenBatchUpload(nullptr, BatchUploadService::EntryPoint::kProfileMenu,
+                          opened_callback.Get());
   EXPECT_TRUE(service.IsDialogOpened());
 }
 
