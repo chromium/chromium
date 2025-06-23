@@ -975,8 +975,9 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
                                    [BookmarkEarlGreyUI contextBarMoreString])]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                     IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
       performAction:grey_tap()];
 
   // Choose to move into a new folder. By tapping on the New Folder Cell.
