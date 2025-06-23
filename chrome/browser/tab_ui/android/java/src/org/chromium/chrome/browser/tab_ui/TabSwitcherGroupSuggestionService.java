@@ -12,6 +12,7 @@ import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsServiceF
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.visited_url_ranking.url_grouping.CachedSuggestions;
@@ -37,6 +39,7 @@ import java.util.Set;
 /** Orchestrates fetching and showing tab group suggestions in the Tab Switcher. */
 @NullMarked
 public class TabSwitcherGroupSuggestionService {
+    private static final int NUM_TABS_IN_FORCED_SUGGESTION = 3;
 
     /** Observes lifecycle events for tab group suggestions. */
     public interface SuggestionLifecycleObserver {
@@ -222,6 +225,40 @@ public class TabSwitcherGroupSuggestionService {
             mSuggestionLifecycleObserverHandler.onSuggestionIgnored();
             mSuggestionLifecycleObserverHandler = null;
         }
+    }
+
+    /** Forces a tab group suggestion for testing purposes. */
+    public void forceTabGroupSuggestion() {
+        assert ChromeFeatureList.sTabSwitcherGroupSuggestionsTestModeAndroid.isEnabled()
+                : "Forcing suggestions is only allowed in test mode.";
+
+        TabModel tabModel = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
+        List<Integer> tabIds = new ArrayList<>();
+
+        // Collect the bottom-most tabs that are not already in a group.
+        for (int i = tabModel.getCount() - 1;
+                i >= 0 && tabIds.size() < NUM_TABS_IN_FORCED_SUGGESTION;
+                i--) {
+            Tab tab = tabModel.getTabAtChecked(i);
+            if (tab.getTabGroupId() == null) {
+                tabIds.add(tab.getId());
+            }
+        }
+
+        int[] tabIdsArray = new int[tabIds.size()];
+        for (int i = 0; i < tabIds.size(); i++) {
+            tabIdsArray[i] = tabIds.get(i);
+        }
+
+        GroupSuggestion groupSuggestion =
+                new GroupSuggestion(
+                        tabIdsArray,
+                        /* suggestionId= */ 1,
+                        /* suggestionReason= */ 1,
+                        /* suggestedName= */ "",
+                        /* promoHeader= */ "",
+                        /* promoContents= */ "");
+        showSuggestion(groupSuggestion, ignored -> {});
     }
 
     /**

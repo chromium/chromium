@@ -749,7 +749,11 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private void onTabSwitcherShown() {
         if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()) {
             assert mTabSwitcherGroupSuggestionService != null;
-            mTabSwitcherGroupSuggestionService.maybeShowSuggestions();
+            if (ChromeFeatureList.sTabSwitcherGroupSuggestionsTestModeAndroid.isEnabled()) {
+                mTabSwitcherGroupSuggestionService.forceTabGroupSuggestion();
+            } else {
+                mTabSwitcherGroupSuggestionService.maybeShowSuggestions();
+            }
         }
 
         mTabListCoordinator.attachEmptyView();
