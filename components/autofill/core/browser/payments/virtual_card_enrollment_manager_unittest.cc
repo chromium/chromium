@@ -893,15 +893,14 @@ TEST_P(DownstreamLatencyMetricsTest, LatencySinceDownstream) {
       CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
   virtual_card_enrollment_manager_->ShouldOfferVirtualCardEnrollment(
       card, card.instrument_id(), card_unmasked_from_cache());
-  VirtualCardEnrollmentFields* virtual_card_enrollment_fields =
-      &virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState()
-           ->virtual_card_enrollment_fields;
-  virtual_card_enrollment_fields->virtual_card_enrollment_source =
-      VirtualCardEnrollmentSource::kDownstream;
+  virtual_card_enrollment_manager_->InitVirtualCardEnroll(
+      card, VirtualCardEnrollmentSource::kDownstream,
+      /*virtual_card_enrollment_fields_loaded_callback=*/base::DoNothing());
 
   task_environment_.FastForwardBy(base::Minutes(1));
   virtual_card_enrollment_manager_->ShowVirtualCardEnrollBubble(
-      virtual_card_enrollment_fields);
+      &virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState()
+           ->virtual_card_enrollment_fields);
 
   histogram_tester.ExpectTimeBucketCount(
       "Autofill.VirtualCardEnrollBubble.LatencySinceDownstream",

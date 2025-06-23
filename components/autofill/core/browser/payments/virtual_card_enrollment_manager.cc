@@ -395,7 +395,6 @@ void VirtualCardEnrollmentManager::Reset() {
   state_ = VirtualCardEnrollmentProcessState();
   enroll_response_details_received_ = false;
   virtual_card_enrollment_update_response_callback_.reset();
-  server_retrieved_eligible_card_extraction_timestamp_.reset();
 }
 
 VirtualCardEnrollmentStrikeDatabase*
