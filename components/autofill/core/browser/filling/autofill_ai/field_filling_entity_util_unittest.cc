@@ -47,8 +47,17 @@ using ::i18n::addressinput::Storage;
 using ::i18n::addressinput::TestdataSource;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
-using FieldPrediction = autofill::AutofillQueryResponse::FormSuggestion::
-    FieldSuggestion::FieldPrediction;
+using FieldPrediction =
+    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
+
+FieldPrediction CreatePrediction(
+    FieldType type,
+    FieldPrediction::Source source = FieldPrediction::SOURCE_AUTOFILL_AI) {
+  FieldPrediction prediction;
+  prediction.set_type(type);
+  prediction.set_source(source);
+  return prediction;
+}
 
 // Wrapper for GetFillValueForEntity() that calls DetermineAttributeTypes() for
 // the single `field`.
@@ -95,7 +104,7 @@ class GetFieldsFillableByAutofillAiTest : public testing::Test {
       features::kAutofillAiWithDataSchema};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  autofill::test::AutofillUnitTestEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_environment_;
   TestAutofillClient client_;
   AutofillWebDataServiceTestHelper helper_{std::make_unique<EntityTable>()};
   FormStructure form_{{}};
@@ -147,9 +156,6 @@ TEST_F(GetFieldsFillableByAutofillAiTest, FillingUnavailable) {
 }
 
 class GetFillValueForEntityTest : public testing::Test {
- public:
-  GetFillValueForEntityTest() = default;
-
  private:
   base::test::ScopedFeatureList feature_list_{
       features::kAutofillAiWithDataSchema};
@@ -158,40 +164,24 @@ class GetFillValueForEntityTest : public testing::Test {
 
 TEST_F(GetFillValueForEntityTest, UnobfuscatedAttributes) {
   auto field = std::make_unique<AutofillField>();
-  {
-    FieldPrediction prediction1;
-    prediction1.set_type(NAME_FIRST);
-    prediction1.set_source(
-        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-            FieldPrediction::SOURCE_AUTOFILL_DEFAULT);
-    FieldPrediction prediction2;
-    prediction1.set_type(PASSPORT_NAME_TAG);
-    prediction1.set_source(
-        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-            FieldPrediction::SOURCE_AUTOFILL_AI);
-    field->set_server_predictions({prediction1, prediction2});
-  }
+  field->set_server_predictions(
+      {CreatePrediction(NAME_FIRST, FieldPrediction::SOURCE_AUTOFILL_DEFAULT),
+       CreatePrediction(PASSPORT_NAME_TAG)});
+  field->SetTypeTo(NAME_FIRST, AutofillPredictionSource::kServerCrowdsourcing);
 
-  constexpr char16_t kName[] = u"John";
-  EntityInstance passport = test::GetPassportEntityInstance({.name = kName});
+  EntityInstance passport =
+      test::GetPassportEntityInstance({.name = u"John Doe"});
   EXPECT_EQ(GetFillValueForEntity(passport, field,
                                   mojom::ActionPersistence::kPreview),
-            kName);
+            u"John");
   EXPECT_EQ(
       GetFillValueForEntity(passport, field, mojom::ActionPersistence::kFill),
-      kName);
+      u"John");
 }
 
 TEST_F(GetFillValueForEntityTest, ObfuscatedAttributes) {
   auto field = std::make_unique<AutofillField>();
-  {
-    FieldPrediction prediction;
-    prediction.set_type(PASSPORT_NUMBER);
-    prediction.set_source(
-        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-            FieldPrediction::SOURCE_AUTOFILL_AI);
-    field->set_server_predictions({prediction});
-  }
+  field->set_server_predictions({CreatePrediction(PASSPORT_NUMBER)});
 
   constexpr char16_t kNumber[] = u"12";
   EntityInstance passport =
@@ -213,12 +203,7 @@ TEST_F(GetFillValueForEntityTest, FillingStructuredNames) {
            {NAME_FIRST, u"Pippi"},
            {NAME_LAST, u"Långstrump"}}) {
     auto field = std::make_unique<AutofillField>();
-    FieldPrediction prediction;
-    prediction.set_type(PASSPORT_NAME_TAG);
-    prediction.set_source(
-        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-            FieldPrediction::SOURCE_AUTOFILL_AI);
-    field->set_server_predictions({prediction});
+    field->set_server_predictions({CreatePrediction(PASSPORT_NAME_TAG)});
     field->SetTypeTo(type, AutofillPredictionSource::kServerCrowdsourcing);
 
     EXPECT_EQ(
@@ -240,12 +225,7 @@ TEST_F(GetFillValueForEntityTest, FillingLocalizedCountries) {
            {"de-DE", u"Libanon"},
            {"ar-LB", u"لبنان"}}) {
     auto field = std::make_unique<AutofillField>();
-    FieldPrediction prediction;
-    prediction.set_type(PASSPORT_ISSUING_COUNTRY);
-    prediction.set_source(
-        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-            FieldPrediction::SOURCE_AUTOFILL_AI);
-    field->set_server_predictions({prediction});
+    field->set_server_predictions({CreatePrediction(PASSPORT_ISSUING_COUNTRY)});
     field->SetTypeTo(ADDRESS_HOME_COUNTRY,
                      AutofillPredictionSource::kServerCrowdsourcing);
 
@@ -267,12 +247,7 @@ TEST_F(GetFillValueForEntityTest, FillingSelectControlWithCountries) {
            {{"France", "Sweden", "Canada", "Brazil"}, u"Sweden"}}) {
     auto field =
         std::make_unique<AutofillField>(test::CreateTestSelectField(options));
-    FieldPrediction prediction;
-    prediction.set_type(PASSPORT_ISSUING_COUNTRY);
-    prediction.set_source(
-        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-            FieldPrediction::SOURCE_AUTOFILL_AI);
-    field->set_server_predictions({prediction});
+    field->set_server_predictions({CreatePrediction(PASSPORT_ISSUING_COUNTRY)});
     field->SetTypeTo(ADDRESS_HOME_COUNTRY,
                      AutofillPredictionSource::kServerCrowdsourcing);
 
@@ -284,14 +259,7 @@ TEST_F(GetFillValueForEntityTest, FillingSelectControlWithCountries) {
 
 TEST_F(GetFillValueForEntityTest, DifferentEntities) {
   auto field = std::make_unique<AutofillField>();
-  {
-    FieldPrediction prediction;
-    prediction.set_type(VEHICLE_LICENSE_PLATE);
-    prediction.set_source(
-        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-            FieldPrediction::SOURCE_AUTOFILL_AI);
-    field->set_server_predictions({prediction});
-  }
+  field->set_server_predictions({CreatePrediction(VEHICLE_LICENSE_PLATE)});
 
   EntityInstance drivers_license = test::GetDriversLicenseEntityInstance();
   EXPECT_EQ(GetFillValueForEntity(drivers_license, field,
@@ -352,12 +320,7 @@ TEST_F(GetFillValueForEntityStateTest, FillingStateValueIntoInput) {
        std::vector<std::pair<size_t, std::u16string>>{{50u, u"California"},
                                                       {2u, u"CA"}}) {
     auto field = std::make_unique<AutofillField>();
-    FieldPrediction prediction;
-    prediction.set_type(DRIVERS_LICENSE_REGION);
-    prediction.set_source(
-        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-            FieldPrediction::SOURCE_AUTOFILL_AI);
-    field->set_server_predictions({prediction});
+    field->set_server_predictions({CreatePrediction(DRIVERS_LICENSE_REGION)});
     field->SetTypeTo(ADDRESS_HOME_STATE,
                      AutofillPredictionSource::kServerCrowdsourcing);
     field->set_max_length(max_length);
@@ -381,12 +344,7 @@ TEST_F(GetFillValueForEntityStateTest, FillingSelectControlWithState) {
            {{"New York", "California", "Illinois", "Nevada"}, u"California"}}) {
     auto field =
         std::make_unique<AutofillField>(test::CreateTestSelectField(options));
-    FieldPrediction prediction;
-    prediction.set_type(DRIVERS_LICENSE_REGION);
-    prediction.set_source(
-        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-            FieldPrediction::SOURCE_AUTOFILL_AI);
-    field->set_server_predictions({prediction});
+    field->set_server_predictions({CreatePrediction(DRIVERS_LICENSE_REGION)});
     field->SetTypeTo(ADDRESS_HOME_STATE,
                      AutofillPredictionSource::kServerCrowdsourcing);
 
@@ -412,7 +370,7 @@ class GetFillValueForEntityTest_Date : public GetFillValueForEntityTest {
         test::CreateTestFormField(/*label=*/"",
                                   /*name=*/"",
                                   /*value=*/"", form_control_type));
-    AddPrediction(*field);
+    field->set_server_predictions({CreatePrediction(PASSPORT_ISSUE_DATE)});
     return field;
   }
 
@@ -424,18 +382,8 @@ class GetFillValueForEntityTest_Date : public GetFillValueForEntityTest {
         /*autocomplete=*/"",
         /*values=*/base::ToVector(values, &std::string::c_str),
         /*contents=*/base::ToVector(texts, &std::string::c_str)));
-    AddPrediction(*field);
+    field->set_server_predictions({CreatePrediction(PASSPORT_ISSUE_DATE)});
     return field;
-  }
-
- private:
-  void AddPrediction(AutofillField& field) {
-    FieldPrediction prediction;
-    prediction.set_type(PASSPORT_ISSUE_DATE);
-    prediction.set_source(
-        autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-            FieldPrediction::SOURCE_AUTOFILL_AI);
-    field.set_server_predictions({prediction});
   }
 };
 
