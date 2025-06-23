@@ -331,7 +331,7 @@ class FrameSequenceTrackerTest : public testing::Test,
   FrameSorterMock sorter_;
   FrameSequenceTrackerCollection collection_;
   // Since CFRC destructor cleans up the FrameSorter's
-  // registered observers (in this case, DFC and FSTC)
+  // registered observers (in this case FSTC)
   // it needs to be declared last so that it will be
   // cleaned up first.
   std::unique_ptr<CompositorFrameReportingController>

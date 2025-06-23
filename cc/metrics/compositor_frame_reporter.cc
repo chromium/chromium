@@ -890,7 +890,6 @@ void CompositorFrameReporter::TerminateReporter() {
 
   global_trackers_.frame_sorter->AddFrameInfoToBuffer(frame_info);
   if (global_trackers_.frame_sorter->first_contentful_paint_received()) {
-    // Delegates call to DFC->OnEndFrame.
     global_trackers_.frame_sorter->AddFrameResult(args_, frame_info);
   }
 }

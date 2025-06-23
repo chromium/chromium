@@ -620,7 +620,7 @@ class SchedulerTest : public testing::Test {
   FrameSequenceTrackerCollection tracker_collection_;
   FrameSorter frame_sorter;
   // Since CFRC destructor cleans up the FrameSorter's
-  // registered observers (in this case, DFC and FSTC)
+  // registered observers (in this case FSTC)
   // it needs to be declared last so that it will be
   // cleaned up first.
   std::unique_ptr<CompositorFrameReportingController> reporting_controller;
