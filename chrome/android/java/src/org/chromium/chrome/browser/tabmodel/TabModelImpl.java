@@ -371,6 +371,16 @@ public class TabModelImpl extends TabModelJniBridge {
         for (TabModelObserver obs : mObservers) obs.didMoveTab(tab, newIndex, curIndex);
     }
 
+    @Override
+    public void pinTab(int tabId) {
+        // TODO(crbug.com/426530785): Implement this method.
+    }
+
+    @Override
+    public void unpinTab(int tabId) {
+        // TODO(crbug.com/426530785): Implement this method.
+    }
+
     private @Nullable Tab findTabInAllTabModels(int tabId) {
         Tab tab = mModelDelegate.getModel(isIncognito()).getTabById(tabId);
         if (tab != null) return tab;

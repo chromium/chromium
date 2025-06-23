@@ -292,6 +292,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public void moveTab(int id, int newIndex) {}
 
     @Override
+    public void pinTab(int tabId) {
+        // TODO(crbug.com/426530785): Implement this method.
+    }
+
+    @Override
+    public void unpinTab(int tabId) {
+        // TODO(crbug.com/426530785): Implement this method.
+    }
+
+    @Override
     public ObservableSupplier<Integer> getTabCountSupplier() {
         assertOnUiThread();
         return mTabCountSupplier;

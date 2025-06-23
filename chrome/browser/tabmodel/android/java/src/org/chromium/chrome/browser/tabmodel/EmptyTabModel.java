@@ -153,6 +153,12 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void moveTab(int id, int newIndex) {}
 
     @Override
+    public void pinTab(int tabId) {}
+
+    @Override
+    public void unpinTab(int tabId) {}
+
+    @Override
     public void destroy() {}
 
     @Override

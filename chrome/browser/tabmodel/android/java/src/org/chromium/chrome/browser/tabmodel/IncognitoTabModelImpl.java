@@ -257,6 +257,16 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
+    public void pinTab(int tabId) {
+        mDelegateModel.pinTab(tabId);
+    }
+
+    @Override
+    public void unpinTab(int tabId) {
+        mDelegateModel.unpinTab(tabId);
+    }
+
+    @Override
     public void destroy() {
         mDelegateModel.destroy();
     }
