@@ -1905,7 +1905,7 @@ void Widget::OnNativeBlur() {
 void Widget::OnNativeWidgetVisibilityChanged(bool visible) {
   View* root = GetRootView();
   if (root) {
-    root->PropagateVisibilityNotifications(root, visible);
+    root->PropagateVisibilityNotifications(nullptr, visible);
   }
   observers_.Notify(&WidgetObserver::OnWidgetVisibilityChanged, this, visible);
   if (GetCompositor() && root && root->layer()) {

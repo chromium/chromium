@@ -49,7 +49,8 @@ class VisibilityChangedWaiter : public views::ViewObserver {
   void Wait() { run_loop_.Run(); }
 
   void OnViewVisibilityChanged(views::View* view,
-                               views::View* starting_view) override {
+                               views::View* starting_view,
+                               bool visible) override {
     run_loop_.Quit();
   }
 

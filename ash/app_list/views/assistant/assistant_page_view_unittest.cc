@@ -139,7 +139,8 @@ class VisibilityObserver : public views::ViewObserver {
   ~VisibilityObserver() override { observed_view_->RemoveObserver(this); }
 
   void OnViewVisibilityChanged(views::View* view_or_ancestor,
-                               views::View* starting_view) override {
+                               views::View* starting_view,
+                               bool visible) override {
     UpdateWasDrawn();
   }
 

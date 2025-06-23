@@ -111,10 +111,12 @@ class HoldingSpaceScrollView : public views::ScrollView,
   }
 
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view) override {
+                               views::View* starting_view,
+                               bool visible) override {
     // Sync scroll view visibility with contents visibility.
-    if (GetVisible() != observed_view->GetVisible())
+    if (GetVisible() != observed_view->GetVisible()) {
       SetVisible(observed_view->GetVisible());
+    }
   }
 
   void OnViewIsDeleting(View* observed_view) override {

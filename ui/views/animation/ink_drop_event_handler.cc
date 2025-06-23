@@ -136,12 +136,14 @@ std::string_view InkDropEventHandler::GetLogContext() const {
 }
 
 void InkDropEventHandler::OnViewVisibilityChanged(View* observed_view,
-                                                  View* starting_view) {
+                                                  View* starting_view,
+                                                  bool visible) {
   DCHECK_EQ(host_view_, observed_view);
   // A View is *actually* visible if its visible flag is set, all its ancestors'
   // visible flags are set, it's in a Widget, and the Widget is
   // visible. |View::IsDrawn()| captures the first two conditions.
-  const bool is_visible = host_view_->IsDrawn() && host_view_->GetWidget() &&
+  const bool is_visible = visible && host_view_->IsDrawn() &&
+                          host_view_->GetWidget() &&
                           host_view_->GetWidget()->IsVisible();
   if (!is_visible && delegate_->HasInkDrop()) {
     delegate_->GetInkDrop()->AnimateToState(InkDropState::HIDDEN);

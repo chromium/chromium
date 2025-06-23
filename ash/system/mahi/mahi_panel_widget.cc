@@ -253,7 +253,8 @@ void MahiPanelWidget::OnShelfWorkAreaInsetsChanged() {
 }
 
 void MahiPanelWidget::OnViewVisibilityChanged(views::View* observed_view,
-                                              views::View* starting_view) {
+                                              views::View* starting_view,
+                                              bool visible) {
   CHECK_EQ(observed_view, refresh_view_);
 
   if (is_refresh_view_visible_ == observed_view->GetVisible()) {
