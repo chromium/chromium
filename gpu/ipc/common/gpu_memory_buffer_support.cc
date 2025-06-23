@@ -231,8 +231,7 @@ GpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
     gfx::BufferUsage usage,
     GpuMemoryBufferImpl::DestructionCallback callback,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    scoped_refptr<base::UnsafeSharedMemoryPool> pool,
-    base::span<uint8_t> premapped_memory) {
+    scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   switch (handle.type) {
     case gfx::SHARED_MEMORY_BUFFER:
       return GpuMemoryBufferImplSharedMemory::CreateFromHandle(
@@ -252,7 +251,7 @@ GpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
     case gfx::DXGI_SHARED_HANDLE:
       return GpuMemoryBufferImplDXGI::CreateFromHandle(
           std::move(handle), size, format, usage, std::move(callback),
-          gpu_memory_buffer_manager, std::move(pool), premapped_memory);
+          gpu_memory_buffer_manager, std::move(pool));
 #endif
 #if BUILDFLAG(IS_ANDROID)
     case gfx::ANDROID_HARDWARE_BUFFER:

@@ -134,8 +134,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
       gfx::BufferUsage usage,
       GpuMemoryBufferImpl::DestructionCallback callback,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager = nullptr,
-      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr,
-      base::span<uint8_t> premapped_memory = base::span<uint8_t>());
+      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr);
 
   // Returns whether the provided buffer format is supported.
   static bool IsNativeGpuMemoryBufferConfigurationSupported(

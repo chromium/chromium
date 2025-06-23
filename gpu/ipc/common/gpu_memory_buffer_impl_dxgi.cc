@@ -42,13 +42,12 @@ GpuMemoryBufferImplDXGI::CreateFromHandle(
     gfx::BufferUsage usage,
     DestructionCallback callback,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    scoped_refptr<base::UnsafeSharedMemoryPool> pool,
-    base::span<uint8_t> premapped_memory) {
+    scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   DCHECK(handle.dxgi_handle().IsValid());
-  return base::WrapUnique(new GpuMemoryBufferImplDXGI(
-      handle.id, size, format, std::move(callback),
-      std::move(handle).dxgi_handle(), gpu_memory_buffer_manager,
-      std::move(pool), premapped_memory));
+  return base::WrapUnique(
+      new GpuMemoryBufferImplDXGI(handle.id, size, format, std::move(callback),
+                                  std::move(handle).dxgi_handle(),
+                                  gpu_memory_buffer_manager, std::move(pool)));
 }
 
 base::OnceClosure GpuMemoryBufferImplDXGI::AllocateForTesting(
@@ -141,14 +140,11 @@ GpuMemoryBufferImplDXGI::DoMapAsync(base::OnceCallback<void(bool)> result_cb) {
     return base::BindOnce(std::move(result_cb), true);
   }
 
-  // Only client which uses premapped_memory is media capture code. When
-  // MappableSI is disabled, client provides |premapped_memory_| and
-  // |use_premapped_memory_| is set to true if it is valid. When MappableSI is
-  // enabled, client will first create a GpuMemoryBuffer via Mappable shared
-  // image and then set |use_premapped_memory_| flag via
-  // ClientSharedImage::SetPreMappedMemory().
-  // If |use_premapped_memory_| is set to true, |premapped_memory_| will be
-  // created here internally as below if its not already created.
+  // Only client which uses premapped_memory is media capture code.
+  // If |use_premapped_memory_| is set to true, we will use shared memory
+  // provided in GpuMemoryBufferHandle instead of allocating temporary one. In
+  // this case we also don't need to do a copy, because client already put data
+  // inside shmem.
   if (use_premapped_memory_) {
     if (!premapped_memory_.data()) {
       CHECK(dxgi_handle_.region().IsValid());
@@ -301,28 +297,10 @@ GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
     DestructionCallback callback,
     gfx::DXGIHandle dxgi_handle,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    scoped_refptr<base::UnsafeSharedMemoryPool> pool,
-    base::span<uint8_t> premapped_memory)
+    scoped_refptr<base::UnsafeSharedMemoryPool> pool)
     : GpuMemoryBufferImpl(id, size, format, std::move(callback)),
       dxgi_handle_(std::move(dxgi_handle)),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
-      shared_memory_pool_(std::move(pool)),
-      premapped_memory_(premapped_memory) {
-  // Note that |premapped_memory_| used here is the one supplied by the
-  // client. Once the clients are converted to use MappableSI,
-  // |premapped_memory_| will no longer be provided by clients. It will be
-  // created internally from the |region_| provided as a part of GMB
-  // handle by the client. Below code and |premapped_memory_| from above
-  // constructor will be removed after conversion.
-  use_premapped_memory_ = !!premapped_memory_.data();
-  if (premapped_memory_.data() &&
-      premapped_memory_.size() <
-          gfx::BufferSizeForBufferFormat(size_, format_)) {
-    LOG(ERROR)
-        << "GpuMemoryBufferImplDXGI: Premapped memory has insufficient size.";
-    premapped_memory_ = base::span<uint8_t>();
-    use_premapped_memory_ = false;
-  }
-}
+      shared_memory_pool_(std::move(pool)) {}
 
 }  // namespace gpu

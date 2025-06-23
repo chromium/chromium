@@ -89,8 +89,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
       gfx::BufferUsage usage,
       DestructionCallback callback,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      scoped_refptr<base::UnsafeSharedMemoryPool> pool,
-      base::span<uint8_t> premapped_memory = base::span<uint8_t>());
+      scoped_refptr<base::UnsafeSharedMemoryPool> pool);
 
   GpuMemoryBufferImplDXGI(gfx::GpuMemoryBufferId id,
                           const gfx::Size& size,
@@ -98,8 +97,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
                           DestructionCallback callback,
                           gfx::DXGIHandle dxgi_handle,
                           GpuMemoryBufferManager* gpu_memory_buffer_manager,
-                          scoped_refptr<base::UnsafeSharedMemoryPool> pool,
-                          base::span<uint8_t> premapped_memory);
+                          scoped_refptr<base::UnsafeSharedMemoryPool> pool);
 
   // Returns callback for reporting early result.
   // `DoMapAsync` can't invoke it directly as it holds a mapping lock.
