@@ -402,8 +402,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         ? new CustomTabToolbar.OmniboxParams(
                                 mCustomTabSearchClient,
                                 mIntentDataProvider.get().getClientPackageName(),
-                                connection.getAlternateOmniboxTapHandler(mIntentDataProvider.get()))
+                                connection.getAlternateOmniboxTapHandler(mIntentDataProvider.get()),
+                                connection.getAlternateOmniboxTapHandlerWithVerification(
+                                        mIntentDataProvider.get()))
                         : null;
+
         if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
             CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
             mToolbarButtonsCoordinator =

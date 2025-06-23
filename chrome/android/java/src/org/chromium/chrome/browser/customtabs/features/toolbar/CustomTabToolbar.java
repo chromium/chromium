@@ -152,6 +152,7 @@ import org.chromium.url.GURL;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /** The Toolbar layout to be used for a custom tab. This is used for both phone and tablet UIs. */
 public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickListener {
@@ -240,13 +241,22 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         /** A handler for taps on the omnibox, or null if the default handler should be used. */
         @Nullable public Consumer<Tab> tapHandler;
 
+        /**
+         * A handler for taps on the omnibox.
+         * The function returns true if the tap was handled, false otherwise.
+         */
+        public Function<Tab, Boolean> tapHandlerWithVerification;
+
+
         public OmniboxParams(
                 SearchActivityClient searchClient,
                 String clientPackageName,
-                @Nullable Consumer<Tab> tapHandler) {
+                @Nullable Consumer<Tab> tapHandler,
+                Function<Tab, Boolean> tapHandlerWithVerification) {
             this.searchClient = searchClient;
             this.clientPackageName = clientPackageName;
             this.tapHandler = tapHandler;
+            this.tapHandlerWithVerification = tapHandlerWithVerification;
         }
     }
 
@@ -2516,6 +2526,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     v -> {
                         RecordUserAction.record("CustomTabs.OmniboxClicked");
                         var tab = getCurrentTab();
+                        if (omniboxParams.tapHandlerWithVerification.apply(tab)) {
+                            return;
+                        }
                         if (omniboxParams.tapHandler != null) {
                             omniboxParams.tapHandler.accept(tab);
                         } else {
