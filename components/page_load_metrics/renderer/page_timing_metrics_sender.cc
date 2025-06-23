@@ -132,7 +132,7 @@ void PageTimingMetricsSender::DidObserveSoftNavigation(
   // increase by one, and the navigation_id to update, however, we have no
   // expectations about start_time values.  This is because soft-navs start_time
   // might not be monotonically increasing. See: crbug.com/418449366#comment3
-  CHECK(new_metrics.count > soft_navigation_metrics_->count);
+  CHECK(new_metrics.count >= soft_navigation_metrics_->count);
   CHECK(!new_metrics.start_time.is_zero());
   CHECK(new_metrics.navigation_id != soft_navigation_metrics_->navigation_id);
 

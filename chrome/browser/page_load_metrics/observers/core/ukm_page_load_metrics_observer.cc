@@ -838,25 +838,16 @@ void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
   // When the 1st soft navigation comes in, we record the
   // soft_navigation_interval_responsiveness_metrics_normalization_ as INP
   // before soft nav.
-  if (current_soft_navigation_metrics->count == 0 &&
-      new_soft_navigation_metrics.count == 1) {
+  if (current_soft_navigation_metrics->count == 0) {
     RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame();
     RecordLayoutShiftBeforeSoftNavigationForMainFrame();
+  } else {
+    // Even though a soft-nav arrived, we don't flush until the current one
+    // unloads (i.e. next soft nav arrives).  So the very first skips reporting.
+    RecordSoftNavigationMetrics(
+        GetDelegate().GetPreviousUkmSourceIdForSoftNavigation(),
+        *current_soft_navigation_metrics);
   }
-
-  // Record current soft navigation metrics into Ukm when a new soft navigation
-  // comes in. For example, when 2nd soft navigation with a larger count comes
-  // in, the 1st(current) soft metrics are recorded. The initial soft
-  // navigation metrics that have default values should not reported.
-  if (current_soft_navigation_metrics->count == 0 ||
-      current_soft_navigation_metrics->count >=
-          new_soft_navigation_metrics.count) {
-    return;
-  }
-
-  RecordSoftNavigationMetrics(
-      GetDelegate().GetPreviousUkmSourceIdForSoftNavigation(),
-      *current_soft_navigation_metrics);
 }
 
 const page_load_metrics::ContentfulPaintTimingInfo&

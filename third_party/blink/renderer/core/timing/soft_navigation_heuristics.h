@@ -202,13 +202,26 @@ class CORE_EXPORT SoftNavigationHeuristics
   // continue measuring paints for a while.
   Member<SoftNavigationContext> context_for_current_url_;
 
+  // Save a strong reference to the most recent context that painted for the
+  // first time, and needs an FCP presentation callback.  This will be picked
+  // up by PaintTimingMixin, cleared, but held strongly until presententation
+  // feedback.  Soft-navigation entries are not reported to the performance
+  // timeline until after FCP is measured.
+  // TODO(crbug.com/424448145): Needs some changes:
+  // - measure first paint update, not the update after criteria met.
+  // - measure first paint of first contentful candidate, not fully loaded
+  // paint.
+  // - support multiple context in a single animation frame, rather than
+  // single value here.  Will become more important when all interactions
+  // measure paint.
+  Member<SoftNavigationContext> context_for_first_contentful_paint_;
+
   // Used to map DOM modifications to `SoftNavigationContext`s for paint
   // attribution. Only set when `IsPrePaintBasedAttributionEnabled()` is true.
   Member<SoftNavigationPaintAttributionTracker> paint_attribution_tracker_;
 
   uint32_t soft_navigation_count_ = 0;
   bool has_active_event_scope_ = false;
-  bool needs_paint_timing_callback_ = false;
 
   const features::SoftNavigationHeuristicsMode paint_attribution_mode_;
   // `task_attribution_tracker_` is cleared during `Shutdown()` (frame detach),

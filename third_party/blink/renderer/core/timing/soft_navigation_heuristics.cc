@@ -424,12 +424,29 @@ void SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
     return;
   }
 
-  // We have met all criteria!
+  // We have met all Soft-Nav criteria!
+
+  // At this point, this navigation should be "committed" to the performance
+  // timeline. Thus, we increment the navigation id here, in the animation frame
+  // Paint where the criteria are first met. However, the navigation will not be
+  // ready for reporting until it also has an FCP measurement.
+  // We must *not* wait on this presentation time callback, because all other
+  // new performance entries created need to use this new navigation id, in
+  // order to match with the eventual soft-nav entry.
+  //
+  // TODO(crbug.com/424448145): Ideally, we should carefully ensure that this
+  // happens exactly where we want our timeOrigin, and also ensure that all
+  // performance entries are created at the time of the measurement they are
+  // reporting, rather than some time later, which risks assigning the wrong
+  // navigationId-- but this might be impossible.  Instead, we might need to
+  // re-write history when we get a new navigationId with a timeOrigin in the
+  // past.
   ++soft_navigation_count_;
   window_->GenerateNewNavigationId();
+
   context->SetNavigationId(window_->GetNavigationId());
 
-  needs_paint_timing_callback_ = true;
+  context_for_first_contentful_paint_ = context;
 }
 
 SoftNavigationContext*
@@ -464,14 +481,11 @@ void SoftNavigationHeuristics::OnInputOrScroll() {
 
 OptionalPaintTimingCallback
 SoftNavigationHeuristics::TakePaintTimingCallback() {
-  // If we need paint timing, we must have a context that needs FCP.
-  CHECK(!needs_paint_timing_callback_ ||
-        (context_for_current_url_ &&
-         !context_for_current_url_->HasFirstContentfulPaint()));
-  if (!needs_paint_timing_callback_) {
+  if (!context_for_first_contentful_paint_) {
     return {};
   }
-  needs_paint_timing_callback_ = false;
+  // If we need paint timing, we must have a context that needs FCP.
+  CHECK(!context_for_first_contentful_paint_->HasFirstContentfulPaint());
 
   // TODO(crbug.com/40871933): We are already only marking dom nodes when we
   // have a frame, and we are already limiting paints attribution to contexts
@@ -511,9 +525,11 @@ SoftNavigationHeuristics::TakePaintTimingCallback() {
                             context->FirstContentfulPaint(), "context",
                             *context, "frame", frameIdForTracing);
       },
-      WrapWeakPersistent(this), WrapPersistent(context_for_current_url_.Get()),
+      WrapWeakPersistent(this),
+      WrapPersistent(context_for_first_contentful_paint_.Get()),
       frameIdForTracing);
 
+  context_for_first_contentful_paint_ = nullptr;
   return std::move(callback);
 }
 
@@ -586,6 +602,7 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
 void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
   visitor->Trace(active_interaction_context_);
   visitor->Trace(context_for_current_url_);
+  visitor->Trace(context_for_first_contentful_paint_);
   visitor->Trace(window_);
   visitor->Trace(paint_attribution_tracker_);
   // Register a custom weak callback, which runs after processing weakness for
