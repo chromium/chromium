@@ -9,17 +9,18 @@
 
 #include <limits>
 #include <memory>
+#include <tuple>
+#include <type_traits>
+#include <variant>
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted_memory.h"
-#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,7 +30,6 @@
 #include "ui/base/test/skia_gold_matching_algorithm.h"
 #include "ui/base/test/skia_gold_pixel_diff.h"
 #include "ui/base/win/hidden_window.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
@@ -257,12 +257,86 @@ DCLayerOverlayParams CreateParamsFromImage(
 
 }  // namespace
 
-class DCompPresenterTestBase : public testing::Test {
+// Test parameters that affect all DCompPresenter tests.
+struct GlobalParam {
+  bool use_gpu_vsync = false;
+};
+
+void PrintTo(const GlobalParam& param, std::ostream* os) {
+  if (param.use_gpu_vsync) {
+    *os << "GpuVsyncOn";
+  } else {
+    *os << "GpuVsyncOff";
+  }
+}
+
+// Base class that provides test parameterization intended for all
+// DCompPresenter tests.
+//
+// If a test suite does not need its own parameterization, it should extend
+// `DCompPresenterTestBase<>`. Otherwise, it should provide a `Param` type and a
+// way for gtest to print it.
+//
+// Instantiations of derived test suites should look like:
+//
+//   INSTANTIATE_TEST_SUITE_P(DCompPresenterTest,
+//                            DCompPresenterTest,
+//                            DCompPresenterTest::GetValues(),
+//                            &DCompPresenterTest::GetParamName);
+template <class Param = std::monostate>
+class DCompPresenterTestBase
+    : public testing::TestWithParam<std::tuple<GlobalParam, Param>> {
  public:
+  // Combine the values generator for `Param` (if present) with the generator
+  // for the global parameters.
+  template <typename... Generator>
+  static auto GetValues(const Generator&... g) {
+    if constexpr (std::is_same_v<Param, std::monostate>) {
+      static_assert(sizeof...(g) == 0,
+                    "GetValues should take no parameters because the test "
+                    "suite is not parameterized.");
+      return testing::Combine(testing::ConvertGenerator(testing::Bool()),
+                              testing::Values(std::monostate()));
+    } else {
+      static_assert(sizeof...(g) == 1,
+                    "`GetValues` requires a values generator for `Param`.");
+      return testing::Combine(testing::ConvertGenerator(testing::Bool()), g...);
+    }
+  }
+
+  static const Param& GetTestParam() {
+    return std::get<1>(DCompPresenterTestBase<Param>::GetParam());
+  }
+
+  // Helper to generate human-friendly test parametrization names. This expects
+  // `Param` to be a type that is gtest-printable to a valid param string.
+  static std::string GetParamName(
+      const testing::TestParamInfo<
+          typename DCompPresenterTestBase<Param>::ParamType>& info) {
+    const std::string shared_param_name =
+        testing::PrintToString(std::get<0>(info.param));
+    if constexpr (std::is_same_v<Param, std::monostate>) {
+      return shared_param_name;
+    } else {
+      return base::JoinString(
+          {
+              shared_param_name,
+              testing::PrintToString(std::get<1>(info.param)),
+          },
+          "_");
+    }
+  }
+
   DCompPresenterTestBase() : parent_window_(ui::GetHiddenWindow()) {}
 
  protected:
   void SetUp() override {
+    if (std::get<0>(this->GetParam()).use_gpu_vsync) {
+      EnableFeature(features::kGpuVsync);
+    } else {
+      DisableFeature(features::kGpuVsync);
+    }
+
     enabled_features_.InitWithFeatures(enabled_features_list_,
                                        disabled_features_list_);
     display_ = GLTestSupport::InitializeGL(std::nullopt);
@@ -392,19 +466,7 @@ class DCompPresenterTestBase : public testing::Test {
   std::vector<DCLayerOverlayParams> pending_overlays_;
 };
 
-class DCompPresenterTest : public DCompPresenterTestBase,
-                           public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    if (GetParam()) {
-      EnableFeature(features::kGpuVsync);
-    } else {
-      DisableFeature(features::kGpuVsync);
-    }
-
-    DCompPresenterTestBase::SetUp();
-  }
-};
+class DCompPresenterTest : public DCompPresenterTestBase<> {};
 
 // Ensure that the overlay image isn't presented again unless it changes.
 TEST_P(DCompPresenterTest, NoPresentTwice) {
@@ -1175,9 +1237,10 @@ TEST_P(DCompPresenterTest, VeryLargeOnscreenSize) {
 
 INSTANTIATE_TEST_SUITE_P(DCompPresenterTest,
                          DCompPresenterTest,
-                         testing::Bool());
+                         DCompPresenterTest::GetValues(),
+                         &DCompPresenterTest::GetParamName);
 
-class DCompPresenterPixelTestBase : public DCompPresenterTestBase {
+class DCompPresenterPixelTestBase : public DCompPresenterTestBase<> {
  public:
   DCompPresenterPixelTestBase()
       : window_(&platform_delegate_, gfx::Rect(100, 100)) {
@@ -1421,31 +1484,16 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase {
   ui::WinWindow window_;
 };
 
-class DCompPresenterPixelTest : public DCompPresenterPixelTestBase,
-                                public testing::WithParamInterface<bool> {
+class DCompPresenterPixelTest : public DCompPresenterPixelTestBase {
  protected:
   void SetUp() override {
-    if (GetParam()) {
-      DCompPresenterTestBase::EnableFeature(features::kGpuVsync);
-    } else {
-      DCompPresenterTestBase::DisableFeature(features::kGpuVsync);
-    }
     static_cast<ui::PlatformWindow*>(&window_)->Show();
     DCompPresenterPixelTestBase::SetUp();
   }
 };
 
-class DCompPresenterVideoPixelTest : public DCompPresenterPixelTestBase,
-                                     public testing::WithParamInterface<bool> {
+class DCompPresenterVideoPixelTest : public DCompPresenterPixelTestBase {
  protected:
-  void SetUp() override {
-    if (GetParam()) {
-      DCompPresenterTestBase::EnableFeature(features::kGpuVsync);
-    } else {
-      DCompPresenterTestBase::DisableFeature(features::kGpuVsync);
-    }
-    DCompPresenterPixelTestBase::SetUp();
-  }
   void TestVideo(const gfx::ColorSpace& color_space,
                  SkColor expected_color,
                  bool check_color) {
@@ -1500,7 +1548,8 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTestBase,
 
 INSTANTIATE_TEST_SUITE_P(DCompPresenterVideoPixelTest,
                          DCompPresenterVideoPixelTest,
-                         testing::Bool());
+                         DCompPresenterVideoPixelTest::GetValues(),
+                         &DCompPresenterVideoPixelTest::GetParamName);
 
 TEST_P(DCompPresenterVideoPixelTest, BT601) {
   TestVideo(gfx::ColorSpace::CreateREC601(), SkColorSetRGB(0xdb, 0x81, 0xe8),
@@ -1529,7 +1578,8 @@ TEST_P(DCompPresenterVideoPixelTest, InvalidColorSpace) {
 
 INSTANTIATE_TEST_SUITE_P(DCompPresenterPixelTest,
                          DCompPresenterPixelTest,
-                         testing::Bool());
+                         DCompPresenterPixelTest::GetValues(),
+                         &DCompPresenterPixelTest::GetParamName);
 
 TEST_P(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
   gfx::Size window_size(100, 100);
@@ -2406,7 +2456,8 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
 
 INSTANTIATE_TEST_SUITE_P(DCompPresenterSkiaGoldTest,
                          DCompPresenterSkiaGoldTest,
-                         testing::Bool());
+                         DCompPresenterSkiaGoldTest::GetValues(),
+                         &DCompPresenterSkiaGoldTest::GetParamName);
 
 // Check that a translation transform works.
 TEST_P(DCompPresenterSkiaGoldTest, TransformTranslate) {
@@ -2983,7 +3034,8 @@ constexpr base::TimeDelta kMicrosecondsBetweenEachPoint =
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DCompPresenterDelegatedInkSkiaGoldTest,
-                         testing::Bool());
+                         DCompPresenterDelegatedInkSkiaGoldTest::GetValues(),
+                         &DCompPresenterDelegatedInkSkiaGoldTest::GetParamName);
 
 // This test validates the following:
 // The presentation area with a non-zero and non-integer origin is
@@ -3228,32 +3280,28 @@ TEST_P(DCompPresenterDelegatedInkSkiaGoldTest, InkTrailClippedDueToThickness) {
   PresentAndCheckScreenshot("blue-ink-trail-40");
 }
 
-class DCompPresenterBufferCountTest
-    : public DCompPresenterTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
- public:
-  static std::string GetParamName(
-      const testing::TestParamInfo<ParamType>& info) {
-    return base::StringPrintf(
-        "%s_%s",
-        std::get<0>(info.param) ? "DCompTripleBufferVideoSwapChain"
-                                : "DcompTripleBufferVideoSwapChain_default",
-        std::get<1>(info.param) ? "UseGpuVsync_On" : "UseGpuVsync_off");
-  }
+struct TripleBufferParam {
+  bool use_triple_buffer_video_swap_chain = false;
+};
 
+void PrintTo(const TripleBufferParam& param, std::ostream* os) {
+  if (param.use_triple_buffer_video_swap_chain) {
+    *os << "DCompTripleBufferVideoSwapChain";
+  } else {
+    *os << "DcompTripleBufferVideoSwapChain_default";
+  }
+}
+
+class DCompPresenterBufferCountTest
+    : public DCompPresenterTestBase<TripleBufferParam> {
  protected:
   void SetUp() override {
-    if (std::get<0>(GetParam())) {
+    if (GetTestParam().use_triple_buffer_video_swap_chain) {
       DCompPresenterTestBase::EnableFeature(
           features::kDCompTripleBufferVideoSwapChain);
     } else {
       DCompPresenterTestBase::DisableFeature(
           features::kDCompTripleBufferVideoSwapChain);
-    }
-    if (std::get<1>(GetParam())) {
-      DCompPresenterTestBase::EnableFeature(features::kGpuVsync);
-    } else {
-      DCompPresenterTestBase::DisableFeature(features::kGpuVsync);
     }
     DCompPresenterTestBase::SetUp();
   }
@@ -3293,7 +3341,7 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
   // The expected size is window_size(100, 100).
   EXPECT_EQ(100u, desc.Width);
   EXPECT_EQ(100u, desc.Height);
-  if (std::get<0>(GetParam())) {
+  if (GetTestParam().use_triple_buffer_video_swap_chain) {
     EXPECT_EQ(3u, desc.BufferCount);
   } else {
     EXPECT_EQ(2u, desc.BufferCount);
@@ -3302,7 +3350,8 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DCompPresenterBufferCountTest,
-                         testing::Combine(testing::Bool(), testing::Bool()),
+                         DCompPresenterBufferCountTest::GetValues(
+                             testing::ConvertGenerator(testing::Bool())),
                          &DCompPresenterBufferCountTest::GetParamName);
 
 enum class SwapChainPresentationMode {
@@ -3311,19 +3360,31 @@ enum class SwapChainPresentationMode {
 };
 
 struct LetterboxingTestParams {
-  LetterboxingTestParams(bool use_letterbox_video_optimization,
-                         SwapChainPresentationMode presentation_mode)
-      : use_letterbox_video_optimization(use_letterbox_video_optimization),
-        presentation_mode(presentation_mode) {}
-
   bool use_letterbox_video_optimization;
   SwapChainPresentationMode presentation_mode;
 };
 
+void PrintTo(const LetterboxingTestParams& param, std::ostream* os) {
+  if (param.use_letterbox_video_optimization) {
+    *os << "LetterboxOptOn";
+  } else {
+    *os << "LetterboxOptOff";
+  }
+
+  *os << "_";
+
+  switch (param.presentation_mode) {
+    case SwapChainPresentationMode::kDecodeSwapChain:
+      *os << "DecodeSwapChain";
+      break;
+    case SwapChainPresentationMode::kMFDCompSurface:
+      *os << "MFDCompSurface";
+      break;
+  }
+}
+
 class DCompPresenterLetterboxingTest
-    : public DCompPresenterTestBase,
-      public testing::WithParamInterface<
-          std::tuple<LetterboxingTestParams, bool>> {
+    : public DCompPresenterTestBase<LetterboxingTestParams> {
  protected:
   void SetUp() override {
     SetupScopedFeatureList();
@@ -3334,18 +3395,12 @@ class DCompPresenterLetterboxingTest
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
+    if (GetTestParam().use_letterbox_video_optimization) {
       DCompPresenterTestBase::EnableFeature(
           features::kDirectCompositionLetterboxVideoOptimization);
     } else {
       DCompPresenterTestBase::DisableFeature(
           features::kDirectCompositionLetterboxVideoOptimization);
-    }
-
-    if (std::get<1>(GetParam())) {
-      DCompPresenterTestBase::EnableFeature(features::kGpuVsync);
-    } else {
-      DCompPresenterTestBase::DisableFeature(features::kGpuVsync);
     }
   }
 
@@ -3369,7 +3424,7 @@ class DCompPresenterLetterboxingTest
       const gfx::Size& monitor_size,
       const gfx::Rect& clip_rect,
       std::optional<gfx::Rect> dcomp_surface_set_rect_override = std::nullopt) {
-    switch (std::get<0>(GetParam()).presentation_mode) {
+    switch (GetTestParam().presentation_mode) {
       case SwapChainPresentationMode::kDecodeSwapChain: {
         Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
             GetDirectCompositionD3D11Device();
@@ -3385,7 +3440,7 @@ class DCompPresenterLetterboxingTest
       }
     }
     NOTREACHED() << "Unexpected presentation_mode value: "
-                 << static_cast<int>(std::get<0>(GetParam()).presentation_mode);
+                 << static_cast<int>(GetTestParam().presentation_mode);
   }
 
   // `dcomp_surface_set_rect_override` can be optionally passed in to set an
@@ -3414,7 +3469,7 @@ class DCompPresenterLetterboxingTest
     if (dcomp_surface_set_rect_override.has_value()) {
       expected_rect = dcomp_surface_set_rect_override.value();
     } else {
-      expected_rect = std::get<0>(GetParam()).use_letterbox_video_optimization
+      expected_rect = GetTestParam().use_letterbox_video_optimization
                           ? gfx::Rect(monitor_size)
                           : clip_rect;
     }
@@ -3442,7 +3497,7 @@ class DCompPresenterLetterboxingTest
     std::optional<gfx::Rect> clip_rect =
         front_sub_tree->GetClipRectInRootForTesting();
 
-    if (std::get<0>(GetParam()).presentation_mode ==
+    if (GetTestParam().presentation_mode ==
         SwapChainPresentationMode::kDecodeSwapChain) {
       Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain;
       HRESULT hr = front_sub_tree->dcomp_visual_content()->QueryInterface(
@@ -3470,7 +3525,7 @@ class DCompPresenterLetterboxingTest
       if (clip_rect.has_value()) {
         onscreen_rect.Intersect(clip_rect.value());
       }
-    } else if (std::get<0>(GetParam()).presentation_mode ==
+    } else if (GetTestParam().presentation_mode ==
                SwapChainPresentationMode::kMFDCompSurface) {
       // TODO(crbug.com/414842426): The clip rect is the only rect information
       // we have about the dcomp surface. Add support for `SwapChainPresenter`
@@ -3514,7 +3569,7 @@ class DCompPresenterLetterboxingTest
     gfx::Rect monitor_rect(monitor_size);
     gfx::Rect onscreen_rect;
 
-    if (std::get<0>(GetParam()).presentation_mode ==
+    if (GetTestParam().presentation_mode ==
         SwapChainPresentationMode::kDecodeSwapChain) {
       Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain;
       HRESULT hr = front_sub_tree->dcomp_visual_content()->QueryInterface(
@@ -3528,7 +3583,7 @@ class DCompPresenterLetterboxingTest
       RECT target_rect;
       EXPECT_HRESULT_SUCCEEDED(decode_swap_chain->GetTargetRect(&target_rect));
       onscreen_rect = visual_transform.MapRect(gfx::Rect(target_rect));
-    } else if (std::get<0>(GetParam()).presentation_mode ==
+    } else if (GetTestParam().presentation_mode ==
                SwapChainPresentationMode::kMFDCompSurface) {
       // TODO(crbug.com/414842426): The clip rect is the only rect information
       // we have about the dcomp surface. Add support for `SwapChainPresenter`
@@ -3579,40 +3634,20 @@ class DCompPresenterLetterboxingTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    NoLetterBoxOpt,
+    ,
     DCompPresenterLetterboxingTest,
-    testing::Combine(
-        ::testing::Values(LetterboxingTestParams(
-            /*use_letterbox_video_optimization=*/false,
-            /*presentation_mode=*/SwapChainPresentationMode::kDecodeSwapChain)),
-        testing::Bool()));
-
-INSTANTIATE_TEST_SUITE_P(
-    LetterBoxOpt,
-    DCompPresenterLetterboxingTest,
-    testing::Combine(
-        ::testing::Values(LetterboxingTestParams(
-            /*use_letterbox_video_optimization=*/true,
-            /*presentation_mode=*/SwapChainPresentationMode::kDecodeSwapChain)),
-        testing::Bool()));
-
-INSTANTIATE_TEST_SUITE_P(
-    NoLetterBoxOptDCompSurface,
-    DCompPresenterLetterboxingTest,
-    testing::Combine(
-        ::testing::Values(LetterboxingTestParams(
-            /*use_letterbox_video_optimization=*/false,
-            /*presentation_mode=*/SwapChainPresentationMode::kMFDCompSurface)),
-        testing::Bool()));
-
-INSTANTIATE_TEST_SUITE_P(
-    LetterBoxOptDCompSurface,
-    DCompPresenterLetterboxingTest,
-    testing::Combine(
-        ::testing::Values(LetterboxingTestParams(
-            /*use_letterbox_video_optimization=*/true,
-            /*presentation_mode=*/SwapChainPresentationMode::kMFDCompSurface)),
-        testing::Bool()));
+    DCompPresenterLetterboxingTest::GetValues(testing::ConvertGenerator(
+        testing::Combine(
+            testing::Bool(),
+            testing::Values(SwapChainPresentationMode::kDecodeSwapChain,
+                            SwapChainPresentationMode::kMFDCompSurface)),
+        [](std::tuple<bool, SwapChainPresentationMode> t) {
+          return LetterboxingTestParams{
+              .use_letterbox_video_optimization = std::get<0>(t),
+              .presentation_mode = std::get<1>(t),
+          };
+        })),
+    &DCompPresenterLetterboxingTest::GetParamName);
 
 TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   // Define 1920x1200 monitor size.
@@ -3652,7 +3687,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
-  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
+  if (GetTestParam().use_letterbox_video_optimization) {
     EXPECT_TRUE(CheckVideoDisablesDesktopPlane(monitor_size));
     EXPECT_TRUE(CheckVideoIsLetterboxedCorrectly(monitor_size));
   } else {
@@ -3681,7 +3716,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
-  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
+  if (GetTestParam().use_letterbox_video_optimization) {
     EXPECT_TRUE(CheckVideoDisablesDesktopPlane(monitor_size));
     EXPECT_TRUE(CheckVideoIsLetterboxedCorrectly(monitor_size));
   } else {
@@ -3710,7 +3745,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
-  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
+  if (GetTestParam().use_letterbox_video_optimization) {
     EXPECT_TRUE(CheckVideoDisablesDesktopPlane(monitor_size));
     EXPECT_TRUE(CheckVideoIsLetterboxedCorrectly(monitor_size));
   } else {
@@ -3756,7 +3791,7 @@ TEST_P(DCompPresenterLetterboxingTest,
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
-  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
+  if (GetTestParam().use_letterbox_video_optimization) {
     EXPECT_TRUE(CheckVideoDisablesDesktopPlane(monitor_size));
     EXPECT_TRUE(CheckVideoIsLetterboxedCorrectly(monitor_size));
   } else {
@@ -3807,7 +3842,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
   UINT last_present_count;
-  if (std::get<0>(GetParam()).presentation_mode ==
+  if (GetTestParam().presentation_mode ==
       SwapChainPresentationMode::kDecodeSwapChain) {
     // Make sure it's a valid swap chain presentation
     swap_chain = presenter_->GetLayerSwapChainForTesting(
@@ -3822,7 +3857,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
     EXPECT_EQ(2u, last_present_count);
   }
 
-  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
+  if (GetTestParam().use_letterbox_video_optimization) {
     EXPECT_TRUE(CheckVideoDisablesDesktopPlane(monitor_size));
     EXPECT_TRUE(CheckVideoIsLetterboxedCorrectly(monitor_size));
   } else {
@@ -3855,7 +3890,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
-  if (std::get<0>(GetParam()).presentation_mode ==
+  if (GetTestParam().presentation_mode ==
       SwapChainPresentationMode::kDecodeSwapChain) {
     // It's the same image, so it should have the same swapchain.
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
@@ -3870,7 +3905,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
     EXPECT_EQ(2u, last_present_count);
   }
 
-  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
+  if (GetTestParam().use_letterbox_video_optimization) {
     EXPECT_TRUE(CheckVideoDisablesDesktopPlane(monitor_size));
     EXPECT_TRUE(CheckVideoIsLetterboxedCorrectly(monitor_size));
   } else {
@@ -3904,7 +3939,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
 
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
-  if (std::get<0>(GetParam()).presentation_mode ==
+  if (GetTestParam().presentation_mode ==
       SwapChainPresentationMode::kDecodeSwapChain) {
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
         presenter_->GetLayerSwapChainForTesting(
@@ -3915,7 +3950,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
     EXPECT_EQ(3u, last_present_count);
   }
 
-  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
+  if (GetTestParam().use_letterbox_video_optimization) {
     EXPECT_TRUE(CheckVideoDisablesDesktopPlane(monitor_size));
     EXPECT_TRUE(CheckVideoIsLetterboxedCorrectly(monitor_size));
   } else {
@@ -3963,7 +3998,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
-  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
+  if (GetTestParam().use_letterbox_video_optimization) {
     EXPECT_TRUE(CheckVideoDisablesDesktopPlane(monitor_size));
     EXPECT_TRUE(CheckVideoIsLetterboxedCorrectly(monitor_size));
   } else {
@@ -3993,7 +4028,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
-  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
+  if (GetTestParam().use_letterbox_video_optimization) {
     EXPECT_TRUE(CheckVideoDisablesDesktopPlane(monitor_size));
     EXPECT_TRUE(CheckVideoIsLetterboxedCorrectly(monitor_size));
   } else {
@@ -4023,7 +4058,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
-  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
+  if (GetTestParam().use_letterbox_video_optimization) {
     EXPECT_TRUE(CheckVideoDisablesDesktopPlane(monitor_size));
     EXPECT_TRUE(CheckVideoIsLetterboxedCorrectly(monitor_size));
   } else {
@@ -4069,7 +4104,7 @@ TEST_P(DCompPresenterLetterboxingTest,
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
-  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
+  if (GetTestParam().use_letterbox_video_optimization) {
     EXPECT_TRUE(CheckVideoDisablesDesktopPlane(monitor_size));
     EXPECT_TRUE(CheckVideoIsLetterboxedCorrectly(monitor_size));
   } else {
@@ -4112,7 +4147,7 @@ TEST_P(DCompPresenterLetterboxingTest,
     // Override expected value for `DCOMPSurfaceProxy->SetRect` because
     // letterboxing optimizations will not be used due to non-uniform scaling.
     std::optional<gfx::Rect> dcomp_surface_set_rect_override;
-    if (std::get<0>(GetParam()).presentation_mode ==
+    if (GetTestParam().presentation_mode ==
         SwapChainPresentationMode::kMFDCompSurface) {
       dcomp_surface_set_rect_override = target_letterboxed_rect;
     }
@@ -4131,11 +4166,11 @@ TEST_P(DCompPresenterLetterboxingTest,
     ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
-  if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
-    if (std::get<0>(GetParam()).presentation_mode ==
+  if (GetTestParam().use_letterbox_video_optimization) {
+    if (GetTestParam().presentation_mode ==
         SwapChainPresentationMode::kDecodeSwapChain) {
       EXPECT_TRUE(CheckVideoDisablesDesktopPlane(monitor_size));
-    } else if (std::get<0>(GetParam()).presentation_mode ==
+    } else if (GetTestParam().presentation_mode ==
                SwapChainPresentationMode::kMFDCompSurface) {
       // In dcomp surface case, letterboxing optimizations won't be used for
       // non-uniform transform, so desktop plane won't be able to be disabled.
@@ -4148,9 +4183,9 @@ TEST_P(DCompPresenterLetterboxingTest,
   }
 }
 
-class DCompPresenterFullscreenRoundingTest : public DCompPresenterTestBase {};
+class DCompPresenterFullscreenRoundingTest : public DCompPresenterTestBase<> {};
 
-TEST_F(DCompPresenterFullscreenRoundingTest,
+TEST_P(DCompPresenterFullscreenRoundingTest,
        FullScreenRoundingWithHalfPixelTranslation) {
   // Define 1920x1080 monitor size.
   const gfx::Size monitor_size(1920, 1080);
@@ -4234,7 +4269,7 @@ TEST_F(DCompPresenterFullscreenRoundingTest,
 // upper left portion of the frame being shown. When in full screen on a
 // 1920x1080 monitor the video at 200% scaling should have a swap chain size of
 // 3840 x 2160 but the clipping rect should match the monitor size of 1920x1080.
-TEST_F(DCompPresenterFullscreenRoundingTest, FullScreenContentWithClipping) {
+TEST_P(DCompPresenterFullscreenRoundingTest, FullScreenContentWithClipping) {
   // Define 1920x1080 monitor size.
   const gfx::Size monitor_size(1920, 1080);
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -4307,5 +4342,10 @@ TEST_F(DCompPresenterFullscreenRoundingTest, FullScreenContentWithClipping) {
   EXPECT_TRUE(visual_transform.IsIdentity());
   EXPECT_EQ(clip_rect, visual_clip_rect);
 }
+
+INSTANTIATE_TEST_SUITE_P(DCompPresenterFullscreenRoundingTest,
+                         DCompPresenterFullscreenRoundingTest,
+                         DCompPresenterFullscreenRoundingTest::GetValues(),
+                         &DCompPresenterFullscreenRoundingTest::GetParamName);
 
 }  // namespace gl
