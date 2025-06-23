@@ -6,7 +6,6 @@
 #define CC_INPUT_SCROLL_SNAP_DATA_H_
 
 #include <optional>
-#include <set>
 #include <utility>
 #include <vector>
 
@@ -14,7 +13,6 @@
 #include "cc/cc_export.h"
 #include "cc/paint/element_id.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range_f.h"
 
 namespace cc {
