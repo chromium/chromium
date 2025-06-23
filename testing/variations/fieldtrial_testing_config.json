@@ -7479,6 +7479,25 @@
             ]
         }
     ],
+    "DbdRevampDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DbdRevampDesktop"
+                    ]
+                }
+            ]
+        }
+    ],
     "DbscPhase1aStudy": [
         {
             "platforms": [

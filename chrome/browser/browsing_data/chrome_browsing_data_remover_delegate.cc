@@ -996,17 +996,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             CreateTaskCompletionClosureForMojo(
                 TracingDataType::kHttpAuthCache));
 
-    scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-        webdata_services::WebDataServiceWrapperFactory::
-            GetPaymentManifestWebDataServiceForBrowserContext(
-                profile_, ServiceAccessType::EXPLICIT_ACCESS);
-    if (web_data_service) {
-      web_data_service->ClearSecurePaymentConfirmationCredentials(
-          delete_begin_, delete_end_,
-          CreateTaskCompletionClosure(
-              TracingDataType::kSecurePaymentConfirmationCredentials));
-    }
-
 #if BUILDFLAG(IS_CHROMEOS)
     if (ash::SystemProxyManager::Get()) {
       // Sends a request to the System-proxy daemon to clear the proxy user
@@ -1136,23 +1125,26 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           FROM_HERE, base::DoNothing(),
           CreateTaskCompletionClosure(TracingDataType::kAutofillData));
     }
+  }
 
+  if ((remove_mask & constants::DATA_TYPE_PASSWORDS)
 #if !BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            browsing_data::features::kDbdRevampDesktop)) {
-      scoped_refptr<payments::PaymentManifestWebDataService>
-          payment_web_data_service =
-              webdata_services::WebDataServiceWrapperFactory::
-                  GetPaymentManifestWebDataServiceForBrowserContext(
-                      profile_, ServiceAccessType::EXPLICIT_ACCESS);
-      if (payment_web_data_service) {
-        payment_web_data_service->ClearSecurePaymentConfirmationCredentials(
-            delete_begin_, delete_end_,
-            CreateTaskCompletionClosure(
-                TracingDataType::kSecurePaymentConfirmationCredentials));
-      }
-    }
+      ||
+      ((remove_mask & constants::DATA_TYPE_FORM_DATA) &&
+       base::FeatureList::IsEnabled(browsing_data::features::kDbdRevampDesktop))
 #endif  // !BUILDFLAG(IS_ANDROID)
+  ) {
+    scoped_refptr<payments::PaymentManifestWebDataService>
+        payment_web_data_service =
+            webdata_services::WebDataServiceWrapperFactory::
+                GetPaymentManifestWebDataServiceForBrowserContext(
+                    profile_, ServiceAccessType::EXPLICIT_ACCESS);
+    if (payment_web_data_service) {
+      payment_web_data_service->ClearSecurePaymentConfirmationCredentials(
+          delete_begin_, delete_end_,
+          CreateTaskCompletionClosure(
+              TracingDataType::kSecurePaymentConfirmationCredentials));
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
