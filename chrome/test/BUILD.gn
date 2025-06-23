@@ -272,6 +272,13 @@ static_library("test_support") {
     "base/web_ui_test_data_source.h",
   ]
 
+  if (enable_dice_support) {
+    sources += [
+      "../browser/profiles/batch_upload/batch_upload_service_test_helper.cc",
+      "../browser/profiles/batch_upload/batch_upload_service_test_helper.h",
+    ]
+  }
+
   if (is_chromeos) {
     deps += [ "//ash/webui/common:trusted_types_util" ]
   }
