@@ -287,9 +287,9 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
   // Verify whether there is a management dialog and interact with it to
   // complete the sign-in flow if present.
-  id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:
-          IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL];
+  id<GREYMatcher> acceptButton =
+      chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+          IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL);
   GREYWaitForAppToIdle(@"App failed to idle");
   BOOL hasDialog =
       [ChromeEarlGrey testUIElementAppearanceWithMatcher:acceptButton];

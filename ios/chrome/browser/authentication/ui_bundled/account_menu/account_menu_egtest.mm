@@ -364,11 +364,9 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   // Confirm "Delete and Signout" alert dialog that data will be cleared is
   // shown. This dialog is only shown when multi profiles are not available.
   if (![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
-                           IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON)),
-                       grey_sufficientlyVisible(), nil)]
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                       IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON)]
         performAction:grey_tap()];
   }
   [SigninEarlGrey verifySignedOut];
