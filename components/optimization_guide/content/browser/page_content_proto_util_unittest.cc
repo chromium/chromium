@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace optimization_guide {
 namespace {
@@ -946,12 +947,8 @@ TEST(FindNodeAtPointTest, NoTargetFound) {
   SetGeometry(child1, gfx::Rect(10, 10, 20, 20));
   SetZOrder(child1, 1);
 
-  Coordinate coord;
-  // Coordinate outside any node
-  coord.set_x(500);
-  coord.set_y(500);
-
-  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  std::optional<TargetNodeInfo> result =
+      FindNodeAtPoint(page_content, gfx::Point(500, 500));
   EXPECT_EQ(result, std::nullopt);
 }
 
@@ -970,11 +967,8 @@ TEST(FindNodeAtPointTest, TargetInMainDocumentBasic) {
   SetGeometry(target_child, gfx::Rect(50, 50, 100, 100));
   SetZOrder(target_child, 1);
 
-  Coordinate coord;
-  coord.set_x(75);
-  coord.set_y(75);
-
-  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  std::optional<TargetNodeInfo> result =
+      FindNodeAtPoint(page_content, gfx::Point(75, 75));
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(result->document_identifier.serialized_token(), main_doc_token);
   EXPECT_EQ(result->node, target_child);
@@ -1000,12 +994,9 @@ TEST(FindNodeAtPointTest, TargetInMainDocumentZOrder) {
   // Higher Z-order
   SetZOrder(child_high_z, 2);
 
-  Coordinate coord;
   // Hits both child_low_z and child_high_z
-  coord.set_x(70);
-  coord.set_y(70);
-
-  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  std::optional<TargetNodeInfo> result =
+      FindNodeAtPoint(page_content, gfx::Point(70, 70));
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(result->document_identifier.serialized_token(), main_doc_token);
   EXPECT_EQ(result->node, child_high_z);
@@ -1043,11 +1034,8 @@ TEST(FindNodeAtPointTest, TargetInsideIframe) {
   SetGeometry(target_node_in_iframe, gfx::Rect(100, 100, 50, 50));
   SetZOrder(target_node_in_iframe, 1);
 
-  Coordinate coord;
-  coord.set_x(120);
-  coord.set_y(120);
-
-  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  std::optional<TargetNodeInfo> result =
+      FindNodeAtPoint(page_content, gfx::Point(120, 120));
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(result->document_identifier.serialized_token(),
             iframe_internal_token);
@@ -1092,11 +1080,8 @@ TEST(FindNodeAtPointTest, TargetInsideIframeLowerZthanParentOverlap) {
   SetGeometry(target_node_in_iframe, gfx::Rect(50, 50, 500, 500));
   SetZOrder(target_node_in_iframe, 1);
 
-  Coordinate coord;
-  coord.set_x(120);
-  coord.set_y(120);
-
-  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  std::optional<TargetNodeInfo> result =
+      FindNodeAtPoint(page_content, gfx::Point(120, 120));
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(result->document_identifier.serialized_token(),
             iframe_internal_token);
@@ -1139,11 +1124,8 @@ TEST(FindNodeAtPointTest, IframeHigherZThanOtherNode) {
   SetGeometry(target_node_in_iframe, gfx::Rect(150, 150, 50, 50));
   SetZOrder(target_node_in_iframe, 1);
 
-  Coordinate coord;
-  coord.set_x(160);
-  coord.set_y(160);
-
-  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  std::optional<TargetNodeInfo> result =
+      FindNodeAtPoint(page_content, gfx::Point(160, 160));
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(result->document_identifier.serialized_token(),
             iframe_internal_token);
@@ -1185,11 +1167,8 @@ TEST(FindNodeAtPointTest, TargetMatchesIframeNodeButNotIframeContents) {
   SetGeometry(child_node_in_iframe, gfx::Rect(100, 100, 400, 400));
   SetZOrder(child_node_in_iframe, 1);
 
-  Coordinate coord;
-  coord.set_x(60);
-  coord.set_y(60);
-
-  std::optional<TargetNodeInfo> result = FindNodeAtPoint(page_content, coord);
+  std::optional<TargetNodeInfo> result =
+      FindNodeAtPoint(page_content, gfx::Point(60, 60));
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(result->document_identifier.serialized_token(), "main_doc");
   EXPECT_EQ(result->node, iframe_node_in_main_doc);

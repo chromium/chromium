@@ -789,7 +789,7 @@ bool ConvertAIPageContentToProto(
 }
 
 bool IsCoordinateInNode(
-    const optimization_guide::proto::Coordinate& coordinate,
+    const gfx::Point& coordinate,
     const optimization_guide::proto::ContentAttributes& node_attributes) {
   if (!node_attributes.geometry().has_visible_bounding_box()) {
     return false;
@@ -807,7 +807,7 @@ std::optional<TargetNodeInfo> FindNodeAtPointRecursive(
     const optimization_guide::proto::DocumentIdentifier&
         current_document_identifier,
     const optimization_guide::proto::ContentNode* current_root_node,
-    const optimization_guide::proto::Coordinate& coordinate,
+    const gfx::Point& coordinate,
     std::optional<TargetNodeInfo> prev_target_node_info) {
   std::vector<const optimization_guide::proto::ContentNode*> nodes_for_walk;
   int highest_z_order = std::numeric_limits<int>::min();
@@ -880,7 +880,7 @@ std::optional<TargetNodeInfo> FindNodeAtPointRecursive(
 std::optional<optimization_guide::TargetNodeInfo> FindNodeAtPoint(
     const optimization_guide::proto::AnnotatedPageContent&
         annotated_page_content,
-    const optimization_guide::proto::Coordinate& coordinate) {
+    const gfx::Point& coordinate) {
   return FindNodeAtPointRecursive(
       annotated_page_content.main_frame_data().document_identifier(),
       &annotated_page_content.root_node(), coordinate, std::nullopt);

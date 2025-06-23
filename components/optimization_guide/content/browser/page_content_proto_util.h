@@ -13,6 +13,7 @@
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-forward.h"
+#include "ui/gfx/geometry/point.h"
 #include "url/origin.h"
 
 namespace optimization_guide {
@@ -63,7 +64,7 @@ bool ConvertAIPageContentToProto(
 std::optional<optimization_guide::TargetNodeInfo> FindNodeAtPoint(
     const optimization_guide::proto::AnnotatedPageContent&
         annotated_page_content,
-    const optimization_guide::proto::Coordinate& coordinate);
+    const gfx::Point& coordinate);
 
 }  // namespace optimization_guide
 

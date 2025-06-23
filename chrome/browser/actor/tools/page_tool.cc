@@ -141,18 +141,12 @@ bool ValidateTargetFrameCandidate(
     return true;
   }
 
-  // TODO(bokan): This helper should take a gfx::Point.
-  gfx::Point coordinate = target.coordinate();
-  optimization_guide::proto::Coordinate apc_coordinate;
-  apc_coordinate.set_x(coordinate.x());
-  apc_coordinate.set_y(coordinate.y());
-
   // TODO(crbug.com/426021822): FindNodeAtPoint does not handle corner cases
   // like clip paths. Need more checks to ensure we don't drop actions
   // unnecessarily.
   std::optional<optimization_guide::TargetNodeInfo> target_node_info =
       optimization_guide::FindNodeAtPoint(*last_observed_page_content,
-                                          apc_coordinate);
+                                          target.coordinate());
   if (!target_node_info) {
     return false;
   }
