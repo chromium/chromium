@@ -590,11 +590,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     // FirstRunPageDelegate:
     @Override
-    public @Nullable Bundle getProperties() {
-        return mFreProperties;
-    }
-
-    @Override
     public boolean advanceToNextPage() {
         return advanceToNextPageInternal(true);
     }
