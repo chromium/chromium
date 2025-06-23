@@ -250,14 +250,6 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   base::UmaHistogramEnumeration(
       kPrivacySandboxPromptHelperEventHistogram,
       SettingsPrivacySandboxPromptHelperEvent::kPromptShown);
-
-  if (auto* privacy_sandbox_service =
-          PrivacySandboxServiceFactory::GetForProfile(profile())) {
-    privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
-        privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager();
-
-    queue_manager.SetQueueHandleShown();
-  }
 }
 
 // static
