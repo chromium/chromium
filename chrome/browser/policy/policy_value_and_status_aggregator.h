@@ -13,10 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/policy/value_provider/policy_value_provider.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -34,7 +36,8 @@ extern const char kDeviceStatusKey[];
 // call GetStatus(), GetValues(), GetNames() on the available providers, merge
 // them and return the dictionary that contains all the available information.
 class PolicyValueAndStatusAggregator : public PolicyValueProvider::Observer,
-                                       public PolicyStatusProvider::Observer {
+                                       public PolicyStatusProvider::Observer,
+                                       public ProfileObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -76,6 +79,10 @@ class PolicyValueAndStatusAggregator : public PolicyValueProvider::Observer,
   // PolicyStatusProvider::Observer implementation.
   void OnPolicyStatusChanged() override;
 
+  // ProfileObserver implementation.
+  // Clears `value_providers_` as they depend on `profile`.
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   void AddPolicyValueProvider(
       std::unique_ptr<PolicyValueProvider> value_provider);
 
@@ -93,7 +100,7 @@ class PolicyValueAndStatusAggregator : public PolicyValueProvider::Observer,
   }
 
  private:
-  PolicyValueAndStatusAggregator();
+  explicit PolicyValueAndStatusAggregator(Profile* profile);
 
   void NotifyValueAndStatusChange();
 
@@ -118,6 +125,7 @@ class PolicyValueAndStatusAggregator : public PolicyValueProvider::Observer,
   base::ScopedMultiSourceObservation<PolicyStatusProvider,
                                      PolicyStatusProvider::Observer>
       policy_status_provider_observations_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 }  // namespace policy
 

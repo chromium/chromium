@@ -150,7 +150,7 @@ std::unique_ptr<PolicyValueAndStatusAggregator>
 PolicyValueAndStatusAggregator::CreateDefaultPolicyValueAndStatusAggregator(
     Profile* profile) {
   std::unique_ptr<PolicyValueAndStatusAggregator> aggregator =
-      base::WrapUnique(new PolicyValueAndStatusAggregator());
+      base::WrapUnique(new PolicyValueAndStatusAggregator(profile));
 
   // Add PolicyValueProviders.
   aggregator->AddPolicyValueProvider(
@@ -202,7 +202,13 @@ PolicyValueAndStatusAggregator::CreateDefaultPolicyValueAndStatusAggregator(
   return aggregator;
 }
 
-PolicyValueAndStatusAggregator::PolicyValueAndStatusAggregator() = default;
+PolicyValueAndStatusAggregator::PolicyValueAndStatusAggregator(
+    Profile* profile) {
+  if (profile) {
+    profile_observation_.Observe(profile);
+  }
+}
+
 PolicyValueAndStatusAggregator::~PolicyValueAndStatusAggregator() = default;
 
 base::Value::Dict PolicyValueAndStatusAggregator::GetAggregatedPolicyStatus() {
@@ -269,6 +275,14 @@ void PolicyValueAndStatusAggregator::OnPolicyValueChanged() {
 
 void PolicyValueAndStatusAggregator::OnPolicyStatusChanged() {
   NotifyValueAndStatusChange();
+}
+
+void PolicyValueAndStatusAggregator::OnProfileWillBeDestroyed(
+    Profile* profile) {
+  DCHECK(profile_observation_.IsObservingSource(profile));
+  profile_observation_.Reset();
+  policy_value_provider_observations_.RemoveAllObservations();
+  value_providers_.clear();
 }
 
 void PolicyValueAndStatusAggregator::NotifyValueAndStatusChange() {
