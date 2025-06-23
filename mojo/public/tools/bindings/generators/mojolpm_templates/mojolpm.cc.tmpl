@@ -317,7 +317,7 @@ bool HandleReceiverAction(
 {%-         set response_type = result_param.kind|get_qualified_name_for_kind %}
 static {{param_type}} {{interface.name}}_{{method.name}}Transform(base::expected<
     {{method.result_response.success_kind|cpp_wrapper_type(add_same_module_namespaces=true)}},
-    {{method.result_response.failure_kind|cpp_wrapper_type}}> in) {
+    {{method.result_response.failure_kind|cpp_wrapper_type(add_same_module_namespaces=true)}}> in) {
   return in.has_value() ? {{response_type}}::NewSuccess(std::move(in.value())) :
                           {{response_type}}::NewFailure(std::move(in.error()));
 }
