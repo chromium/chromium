@@ -272,6 +272,7 @@ JapaneseSettingsPtr ToMojomInputMethodSettings(const base::Value::Dict& prefs) {
   response->automatically_switch_to_halfwidth =
       prefs.FindBool(kJpPrefAutomaticallySwitchToHalfwidth)
           .value_or(response->automatically_switch_to_halfwidth);
+  RecordJapaneseSettingsMetrics(*response);
   return response;
 }
 
