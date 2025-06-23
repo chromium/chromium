@@ -170,10 +170,7 @@ void IOSCollaborationControllerDelegate::ShowError(const ErrorInfo& error,
   NSString* title = base::SysUTF8ToNSString(error.error_header);
   NSString* message = base::SysUTF8ToNSString(error.error_body);
 
-  auto alert_action = base::CallbackToBlock(
-      base::BindOnce(&IOSCollaborationControllerDelegate::ErrorAccepted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(result)));
-  // Make sure to present it on top of any visible view.
+  // Make sure to present the alert on top of any visible view.
   UIViewController* top_view_controller =
       top_view_controller::TopPresentedViewControllerFrom(
           base_view_controller_);
@@ -183,10 +180,37 @@ void IOSCollaborationControllerDelegate::ShowError(const ErrorInfo& error,
                                                    browser:browser_
                                                      title:title
                                                    message:message];
-  [alert_coordinator_
-      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_ERROR_GOT_IT)
-                action:alert_action
-                 style:UIAlertActionStyleDefault];
+
+  if (error.type() == ErrorInfo::Type::kUpdateChromeUiForVersionOutOfDate) {
+    auto update_action = base::CallbackToBlock(
+        base::BindOnce(&IOSCollaborationControllerDelegate::Update,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+    [alert_coordinator_
+        addItemWithTitle:
+            l10n_util::GetNSString(
+                IDS_COLLABORATION_CHROME_OUT_OF_DATE_ERROR_DIALOG_UPDATE_BUTTON)
+                  action:update_action
+                   style:UIAlertActionStyleDefault];
+
+    auto dismiss_action = base::CallbackToBlock(
+        base::BindOnce(&IOSCollaborationControllerDelegate::ErrorAccepted,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+    [alert_coordinator_
+        addItemWithTitle:
+            l10n_util::GetNSString(
+                IDS_COLLABORATION_CHROME_OUT_OF_DATE_ERROR_DIALOG_NOT_NOW_BUTTON)
+                  action:dismiss_action
+                   style:UIAlertActionStyleCancel];
+  } else {
+    auto alert_action = base::CallbackToBlock(
+        base::BindOnce(&IOSCollaborationControllerDelegate::ErrorAccepted,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+    [alert_coordinator_ addItemWithTitle:l10n_util::GetNSString(
+                                             IDS_IOS_SHARED_GROUP_ERROR_GOT_IT)
+                                  action:alert_action
+                                   style:UIAlertActionStyleDefault];
+  }
+
   [alert_coordinator_ start];
 }
 
@@ -573,6 +597,14 @@ void IOSCollaborationControllerDelegate::ErrorAccepted(ResultCallback result) {
   if (dismiss_join_screen_callback_) {
     std::move(dismiss_join_screen_callback_).Run();
   }
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
+}
+
+void IOSCollaborationControllerDelegate::Update(ResultCallback result) {
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<ApplicationCommands> application_handler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  [application_handler showAppStorePage];
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
 }
 

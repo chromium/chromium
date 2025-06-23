@@ -167,8 +167,11 @@ class IOSCollaborationControllerDelegate
   void DidUnshareGroup(std::optional<tab_groups::LocalTabGroupID> local_id,
                        NSError* error);
 
-  // Callback called when the user acknowledge the error.
+  // Callback called when the user acknowledges the error.
   void ErrorAccepted(ResultCallback result);
+
+  // Callback called when the user accepts to update the app.
+  void Update(ResultCallback result);
 
   // Returns the local tab group that matches `either_id`.
   const TabGroup* GetLocalGroup(const tab_groups::EitherGroupID& either_id);

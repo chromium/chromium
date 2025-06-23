@@ -259,6 +259,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // received.
 const char kContextsToOpen[] = "IOS.NumberOfContextsToOpen";
 
+// The App Store page for Google Chrome.
+NSString* const kChromeAppStoreURL = @"https://apps.apple.com/app/id535886823";
+
 // Enum for IOS.NumberOfContextsToOpen histogram.
 // Keep in sync with "ContextsToOpen" in tools/metrics/histograms/enums.xml.
 enum class ContextsToOpen {
@@ -2395,6 +2398,13 @@ using UserFeedbackDataCallback =
                    [safariDataImportCoordinator start];
                  }];
   _safariImportCoordinator = safariDataImportCoordinator;
+}
+
+- (void)showAppStorePage {
+  [[UIApplication sharedApplication]
+                openURL:[NSURL URLWithString:kChromeAppStoreURL]
+                options:@{}
+      completionHandler:nil];
 }
 
 #pragma mark - SettingsCommands
