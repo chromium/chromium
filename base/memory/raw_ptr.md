@@ -94,7 +94,7 @@ exclusions via:
       Make sure to look at
       [the "Extra pointer rules" section](#Extra-pointer-rules)
       before resorting to this exclusion.
-- [RawPtrManualPathsToIgnore.h](../../tools/clang/plugins/RawPtrManualPathsToIgnore.h)
+- [RawPtrManualPathsToIgnore.h](../../tools/clang/raw_ptr_plugin/RawPtrManualPathsToIgnore.h)
   to exclude at a directory level (NOTE, use it as last resort, and be aware
   it'll require a Clang plugin roll).  Examples:
     - Renderer-only code (i.e. code in paths that contain `/renderer/` or
