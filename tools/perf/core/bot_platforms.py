@@ -513,6 +513,13 @@ def _crossbench_loading(estimated_runtime=60, arguments=None):
                           arguments=arguments)
 
 
+def _crossbench_embedder(estimated_runtime=20, arguments=None):
+  return CrossbenchConfig('embedder.crossbench',
+                          'embedder',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
 _CROSSBENCH_JETSTREAM_SPEEDOMETER = frozenset([
     _jetstream2_crossbench(),
     _speedometer3_crossbench(),
@@ -575,6 +582,18 @@ _CROSSBENCH_WEBVIEW = frozenset([
             '"PageLoad.PaintTiming.NavigationToFirstContentfulPaint":["mean"]}}',
             '--repetitions=50',
             '--stories=cnn',
+        ]
+    ),
+    _crossbench_embedder(
+        estimated_runtime=900,
+        arguments=[
+            '--wpr=crossbench_android_embedder_000.wprgo',
+            '--embedder=com.google.android.googlequicksearchbox',
+            '--splashscreen=skip',
+            '--cuj-config=../../third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',
+            '--probe-config=../../clank/android_webview/tools/crossbench_config/'
+            'agsa_probe_config.hjson',
+            '--repetitions=50',
         ]
     ),
 ])
