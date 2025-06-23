@@ -122,6 +122,7 @@ HighlightBorderOverlay::HighlightBorderOverlay(
       window_(widget->GetNativeWindow()),
       delegate_(std::move(delegate)) {
   rounded_corner_radius_ = GetCornerRadius(window_, delegate_.get());
+  layer_.SetName("HighlightBorderOverlay");
   layer_.SetFillsBoundsOpaquely(false);
 
   UpdateNinePatchLayer();
