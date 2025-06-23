@@ -15,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
@@ -28,11 +27,17 @@
 #include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/command_constants.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 namespace {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 const char kBasicBrowserActionKeybinding[] = "Ctrl+Shift+F";
 const char kBasicNamedKeybinding[] = "Ctrl+Shift+Y";
 const char kBasicAlternateKeybinding[] = "Ctrl+Shift+G";
 const char kBasicNamedCommand[] = "toggle-feature";
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kAltNKeybinding[] = "Alt+N";
 constexpr char kAltZKeybinding[] = "Alt+Z";
 constexpr char kExtensionId[] = "pgoakhfeplldmjheffidklpoklkppipp";
@@ -47,6 +52,7 @@ constexpr char kManifestTemplate[] = R"({
     },
     "%s": {}})";
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Get another command platform, which is used for simulating a command has been
 // assigned with a shortcut on another platform.
 std::string GetAnotherCommandPlatform() {
@@ -62,6 +68,7 @@ std::string GetAnotherCommandPlatform() {
   return "";
 #endif
 }
+#endif
 
 // Parameters passed to CommandServiceMv3UpgradeTest parameterized tests.
 struct ManifestCommandTestParameters {
@@ -114,9 +121,7 @@ class CommandServiceMv3UpgradeTest
       const ui::KeyboardCode keyboard_code);
 
   TestExtensionDir& test_dir() { return test_dir_; }
-  CommandService* command_service() {
-    return CommandService::Get(browser()->profile());
-  }
+  CommandService* command_service() { return CommandService::Get(profile()); }
 
  private:
   TestExtensionDir test_dir_;
@@ -393,6 +398,8 @@ IN_PROC_BROWSER_TEST_P(CommandServiceMv3UpgradeTest,
                                         /*keyboard_code=*/ui::VKEY_U);
 }
 
+// TODO(crbug.com/404070124): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(CommandServiceTest, RemoveShortcutSurvivesUpdate) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir scoped_temp_dir;
@@ -412,8 +419,8 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, RemoveShortcutSurvivesUpdate) {
                                scoped_temp_dir.GetPath().AppendASCII("v2.crx"),
                                pem_path, base::FilePath());
 
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
-  CommandService* command_service = CommandService::Get(browser()->profile());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  CommandService* command_service = CommandService::Get(profile());
 
   // Install v1 of the extension.
   ASSERT_TRUE(InstallExtension(path_v1, 1));
@@ -462,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   const Extension* extension = InstallExtension(extension_dir, 1);
   ASSERT_TRUE(extension);
 
-  ScopedDictPrefUpdate updater(browser()->profile()->GetPrefs(),
+  ScopedDictPrefUpdate updater(profile()->GetPrefs(),
                                prefs::kExtensionCommands);
   base::Value::Dict& bindings = updater.Get();
 
@@ -476,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   keybinding.Set("global", false);
   bindings.Set(anotherPlatformKey, std::move(keybinding));
 
-  CommandService* command_service = CommandService::Get(browser()->profile());
+  CommandService* command_service = CommandService::Get(profile());
   command_service->RemoveKeybindingPrefs(extension->id(), kNamedCommandName);
 
   // Removal of keybinding preference should be platform-specific, so the key on
@@ -491,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   const Extension* extension = InstallExtension(extension_dir, 1);
   ASSERT_TRUE(extension);
 
-  CommandService* command_service = CommandService::Get(browser()->profile());
+  CommandService* command_service = CommandService::Get(profile());
 
   {
     Command command;
@@ -544,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   const Extension* extension = InstallExtension(extension_dir, 1);
   ASSERT_TRUE(extension);
 
-  CommandService* command_service = CommandService::Get(browser()->profile());
+  CommandService* command_service = CommandService::Get(profile());
 
   {
     Command command;
@@ -593,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   const Extension* extension = InstallExtension(extension_dir, 1);
   ASSERT_TRUE(extension);
 
-  CommandService* command_service = CommandService::Get(browser()->profile());
+  CommandService* command_service = CommandService::Get(profile());
 
   {
     ui::CommandMap command_map;
@@ -643,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, GetNamedCommandsQueryActive) {
   const Extension* extension = InstallExtension(extension_dir, 1);
   ASSERT_TRUE(extension);
 
-  CommandService* command_service = CommandService::Get(browser()->profile());
+  CommandService* command_service = CommandService::Get(profile());
 
   {
     ui::CommandMap command_map;
@@ -682,6 +689,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, GetNamedCommandsQueryActive) {
     EXPECT_EQ(0u, command_map.count(kBasicNamedCommand));
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test both browser and page actions for these tests.
 INSTANTIATE_TEST_SUITE_P(BrowserAction,
