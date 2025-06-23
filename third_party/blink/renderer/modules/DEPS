@@ -71,6 +71,9 @@ specific_include_rules = {
     ".*_stream_wrapper.cc": [
         "+net/base/ip_endpoint.h",
     ],
+    ".*_web_transport.cc": [
+        "+net/base/ip_endpoint.h",
+    ],
     ".*socket.cc": [
         "+base/functional/identity.h",
     ],

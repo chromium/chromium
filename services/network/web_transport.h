@@ -72,6 +72,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void Close(mojom::WebTransportCloseInfoPtr close_info) override;
 
   // WebTransportClientVisitor implementation:
+  void OnBeforeConnect(const net::IPEndPoint& server_address) override;
   void OnConnected(
       scoped_refptr<net::HttpResponseHeaders> response_headers) override;
   void OnConnectionFailed(const net::WebTransportError& error) override;

@@ -568,6 +568,18 @@ void WebTransport::CloseIfNonceMatches(base::UnguessableToken nonce) {
   transport_->CloseIfNonceMatches(nonce);
 }
 
+void WebTransport::OnBeforeConnect(const net::IPEndPoint& server_address) {
+  if (torn_down_ || closing_) {
+    return;
+  }
+
+  DCHECK(handshake_client_);
+
+  // Here we assume that the server_address is not going to handed to the
+  // initiator renderer.
+  handshake_client_->OnBeforeConnect(server_address);
+}
+
 void WebTransport::OnConnected(
     scoped_refptr<net::HttpResponseHeaders> response_headers) {
   if (torn_down_ || closing_) {

@@ -7,14 +7,21 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "net/base/features.h"
 
 namespace content {
 
 namespace {
+
+bool IsFineGrainedThrottlingEnabled() {
+  return base::FeatureList::IsEnabled(
+      net::features::kWebTransportFineGrainedThrottling);
+}
 
 bool ShouldQueueHandshakeFailurePenalty() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -22,13 +29,115 @@ bool ShouldQueueHandshakeFailurePenalty() {
          !command_line->HasSwitch(switches::kWebTransportDeveloperMode);
 }
 
+std::optional<net::IPAddress> GetSubnetAddress(
+    const net::IPEndPoint& endpoint) {
+  // We don't have a way to get the actual subnet mask, so assuming /24 and /64
+  // for IPv4 and IPv6 respectively.
+  const auto& address = endpoint.address();
+  if (!address.IsValid()) {
+    return std::nullopt;
+  }
+  size_t size = address.IsIPv4() ? 4 : 16;
+  size_t prefix_bytes = address.IsIPv4() ? 3 : 8;
+  base::span<const uint8_t> raw_bytes = address.bytes();
+  std::array<uint8_t, 16> subnet_bytes = {};
+  DCHECK_GE(raw_bytes.size(), prefix_bytes);
+  base::span(subnet_bytes).copy_prefix_from(raw_bytes.first(prefix_bytes));
+
+  return net::IPAddress(base::span<uint8_t>(subnet_bytes).first(size));
+}
+
 }  // namespace
+
+static constexpr base::TimeDelta kFailureForgivenessDuration =
+    base::Minutes(15);
 
 WebTransportThrottleContext::PenaltyManager::PenaltyManager(
     WebTransportThrottleContext* throttle_context)
     : throttle_context_(throttle_context) {}
 
 WebTransportThrottleContext::PenaltyManager::~PenaltyManager() = default;
+
+void WebTransportThrottleContext::PenaltyManager::CleanupFailedHandshakes() {
+  auto threshold = base::TimeTicks::Now() - kFailureForgivenessDuration;
+  std::erase_if(failed_handshakes_, [threshold](const auto& item) {
+    const auto& [_, last_failure_time] = item;
+    return last_failure_time <= threshold;
+  });
+
+  if (failed_handshakes_.empty()) {
+    failed_handshakes_timer_.Stop();
+  }
+}
+
+bool WebTransportThrottleContext::PenaltyManager::FailedHandshakeNeedsPenalty(
+    const net::IPAddress ip_address) {
+  auto now = base::TimeTicks::Now();
+  auto insert_result = failed_handshakes_.try_emplace(ip_address, now);
+  // The first failure doesn't cause penalty.
+  if (insert_result.second) {
+    return false;
+  }
+  auto it = insert_result.first;
+  auto threshold = now - kFailureForgivenessDuration;
+  // An obsolete failure doesn't cause penalty
+  bool needs_penalty = it->second > threshold;
+  failed_handshakes_[ip_address] = now;
+  return needs_penalty;
+}
+
+base::TimeDelta
+WebTransportThrottleContext::PenaltyManager::ComputeHandshakePenalty(
+    const std::optional<net::IPEndPoint>& server_address) {
+  DVLOG(1) << "WebTransportThrottleContext::ComputeHandshakePenalty() this="
+           << this;
+
+  if (!failed_handshakes_timer_.IsRunning()) {
+    failed_handshakes_timer_.Start(
+        FROM_HERE, base::Minutes(5),
+        base::BindRepeating(&PenaltyManager::CleanupFailedHandshakes,
+                            base::Unretained(this)));
+  }
+
+  if (!server_address) {
+    // TODO(https://crbug.com/40069954): Some decentralized apps may need to
+    // cancel requests to unresponsive hosts, so this penalty could cause too
+    // much impact on those use cases. Usually well-behaving apps might refer to
+    // hosts by plain IPs thather than DNS names, hence we can reduce the impact
+    // by checking GURL::HostIsIPAddress().
+    if (FailedHandshakeNeedsPenalty(net::IPAddress())) {
+      DVLOG(1)
+          << "Return max penalty when several requests are cancelled abruptly.";
+      return base::Minutes(5);
+    }
+    DVLOG(1) << "Return min penalty for a requested cancelled before the "
+                "handshake was completed.";
+    return base::Milliseconds(50);
+  }
+
+  DVLOG(1) << " server_address=" << server_address->address().ToString();
+
+  if (FailedHandshakeNeedsPenalty(server_address->address())) {
+    DVLOG(1) << "Return max penalty for a request targetting the same address "
+                "and failed several times.";
+    return base::Minutes(5);
+  }
+
+  auto net_address = GetSubnetAddress(*server_address);
+  if (net_address) {
+    DVLOG(1) << " subnet_address=" << net_address->ToString();
+
+    if (FailedHandshakeNeedsPenalty(*net_address)) {
+      DVLOG(1) << "Return mid penalty for a request targetting the same subnet "
+                  "and failed several times.";
+      return base::Minutes(2);
+    }
+  }
+
+  DVLOG(1)
+      << "Return default penalty for a request that failed for the first time.";
+  return base::Milliseconds(100);
+}
 
 void WebTransportThrottleContext::PenaltyManager::QueuePending(
     base::TimeDelta after) {
@@ -99,7 +208,17 @@ WebTransportThrottleContext::Tracker::Tracker(
 
 WebTransportThrottleContext::Tracker::~Tracker() {
   if (throttle_context_) {
-    throttle_context_->MaybeQueueHandshakeFailurePenalty();
+    throttle_context_->MaybeQueueHandshakeFailurePenalty(std::nullopt);
+  }
+}
+
+void WebTransportThrottleContext::Tracker::OnBeforeConnect(
+    const net::IPEndPoint& server_address) {
+  DVLOG(1) << "WebTransportThrottleContext::Tracker::OnBeforeConnect()"
+           << " this=" << this;
+
+  if (server_address.address().IsValid()) {
+    server_address_ = server_address;
   }
 }
 
@@ -126,7 +245,7 @@ void WebTransportThrottleContext::Tracker::OnHandshakeFailed() {
 
   DVLOG(1) << "    pending_handshakes_= "
            << throttle_context_->penalty_mgr_.PendingHandshakes();
-  throttle_context_->MaybeQueueHandshakeFailurePenalty();
+  throttle_context_->MaybeQueueHandshakeFailurePenalty(server_address_);
   throttle_context_ = nullptr;
 }
 
@@ -169,9 +288,14 @@ WebTransportThrottleContext::PerformThrottle(
   return ThrottleResult::kOk;
 }
 
-void WebTransportThrottleContext::MaybeQueueHandshakeFailurePenalty() {
+void WebTransportThrottleContext::MaybeQueueHandshakeFailurePenalty(
+    const std::optional<net::IPEndPoint>& server_address) {
   if (should_queue_handshake_failure_penalty_) {
-    penalty_mgr_.QueuePending(base::Minutes(5));
+    auto penalty = base::Minutes(5);
+    if (IsFineGrainedThrottlingEnabled()) {
+      penalty = penalty_mgr_.ComputeHandshakePenalty(server_address);
+    }
+    penalty_mgr_.QueuePending(penalty);
     return;
   }
   CHECK_GE(penalty_mgr_.PendingHandshakes(), 0);

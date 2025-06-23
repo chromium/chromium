@@ -147,6 +147,8 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
 
   // WebTransportHandshakeClient implementation:
   // Proxing should be finished with either of below functions.
+  void OnBeforeConnect(const net::IPEndPoint& server_address) override {}
+
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::WebTransport> transport,
       mojo::PendingReceiver<network::mojom::WebTransportClient> client,

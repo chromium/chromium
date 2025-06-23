@@ -22,6 +22,7 @@ namespace net {
 
 class HttpResponseHeaders;
 class URLRequestContext;
+class IPEndPoint;
 
 // Diagram of allowed state transitions:
 //
@@ -75,6 +76,7 @@ class NET_EXPORT WebTransportClientVisitor {
 
   // State change notifiers.
   // CONNECTING -> CONNECTED
+  virtual void OnBeforeConnect(const IPEndPoint& server_address) = 0;
   virtual void OnConnected(
       scoped_refptr<HttpResponseHeaders> response_headers) = 0;
   // CONNECTING -> FAILED

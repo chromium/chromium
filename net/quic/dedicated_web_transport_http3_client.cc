@@ -585,6 +585,7 @@ int DedicatedWebTransportHttp3Client::DoConnect() {
 
   IPEndPoint server_address =
       *resolve_host_request_->GetAddressResults()->begin();
+  visitor_->OnBeforeConnect(server_address);
   return socket_->ConnectAsync(
       server_address, base::BindOnce(&DedicatedWebTransportHttp3Client::DoLoop,
                                      base::Unretained(this)));

@@ -49,6 +49,7 @@ class MockVisitor : public WebTransportClientVisitor {
               (scoped_refptr<HttpResponseHeaders>),
               (override));
   MOCK_METHOD(void, OnConnectionFailed, (const WebTransportError&), (override));
+  MOCK_METHOD(void, OnBeforeConnect, (const IPEndPoint&), (override));
   MOCK_METHOD(void,
               OnClosed,
               (const std::optional<WebTransportCloseInfo>&),
@@ -211,6 +212,7 @@ TEST_F(DedicatedWebTransportHttp3Test, Connect) {
       GetURL("/echo"), origin_, &visitor_, anonymization_key_, context_.get(),
       WebTransportParameters());
 
+  EXPECT_CALL(visitor_, OnBeforeConnect);
   EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
   client_->Connect();
   Run();
@@ -252,6 +254,7 @@ TEST_F(DedicatedWebTransportHttp3Test, MAYBE_CloseTimeout) {
       GetURL("/echo"), origin_, &visitor_, anonymization_key_, context_.get(),
       WebTransportParameters());
 
+  EXPECT_CALL(visitor_, OnBeforeConnect);
   EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
   client_->Connect();
   Run();
@@ -278,6 +281,7 @@ TEST_F(DedicatedWebTransportHttp3Test, CloseReason) {
       GetURL("/session-close"), origin_, &visitor_, anonymization_key_,
       context_.get(), WebTransportParameters());
 
+  EXPECT_CALL(visitor_, OnBeforeConnect);
   EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
   client_->Connect();
   Run();

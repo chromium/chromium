@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
+#include "net/base/ip_endpoint.h"
 
 namespace content {
 
@@ -43,6 +44,10 @@ class CONTENT_EXPORT WebTransportThrottleContext final
     // like handshake failure.
     ~Tracker();
 
+    // Collects information about a WebTransport handshake that is about to
+    // start.
+    void OnBeforeConnect(const net::IPEndPoint& server_address);
+
     // Records the successful end of a WebTransport handshake.
     void OnHandshakeEstablished();
 
@@ -51,6 +56,7 @@ class CONTENT_EXPORT WebTransportThrottleContext final
 
    private:
     base::WeakPtr<WebTransportThrottleContext> throttle_context_;
+    net::IPEndPoint server_address_;
   };
 
   using ThrottleDoneCallback =
@@ -78,7 +84,8 @@ class CONTENT_EXPORT WebTransportThrottleContext final
 
   // Called when a handshake fails. Adds handshake delays unless it is
   // explicitly suppressed.
-  void MaybeQueueHandshakeFailurePenalty();
+  void MaybeQueueHandshakeFailurePenalty(
+      const std::optional<net::IPEndPoint>& server_address);
 
   void OnPendingQueueReady();
 
@@ -87,10 +94,15 @@ class CONTENT_EXPORT WebTransportThrottleContext final
  private:
   class PenaltyManager final {
    public:
+    using FailedHandshakesMap = std::map<net::IPAddress, base::TimeTicks>;
+
     explicit PenaltyManager(WebTransportThrottleContext*);
     PenaltyManager(const PenaltyManager&) = delete;
     PenaltyManager& operator=(const PenaltyManager&) = delete;
     ~PenaltyManager();
+
+    base::TimeDelta ComputeHandshakePenalty(
+        const std::optional<net::IPEndPoint>& server_address);
 
     // Queues a pending handshake to be considered complete after `after`.
     void QueuePending(base::TimeDelta after);
@@ -119,6 +131,14 @@ class CONTENT_EXPORT WebTransportThrottleContext final
     // after `after` has passed.
     void StartPendingQueueTimer(base::TimeDelta after);
 
+    // Removes any obsolete item in the failed_handshakes_ map.
+    void CleanupFailedHandshakes();
+
+    // Checks if there is a previous, non-obsolete, item in the
+    // failed_handshakes_ map for the given ip address and updates
+    // the map with the current time.
+    bool FailedHandshakeNeedsPenalty(const net::IPAddress ip_address);
+
     const raw_ptr<WebTransportThrottleContext> throttle_context_;
 
     int pending_handshakes_ = 0;
@@ -136,6 +156,11 @@ class CONTENT_EXPORT WebTransportThrottleContext final
     // `pending_queue_`. The timer doesn't run when `throttled_connections_` is
     // empty.
     base::OneShotTimer pending_queue_timer_;
+
+    FailedHandshakesMap failed_handshakes_;
+
+    // A timer to cleanup the obsolete failed_handshakes.
+    base::RepeatingTimer failed_handshakes_timer_;
   };
 
   // Starts a connection immediately if there are none pending, or sets a timer

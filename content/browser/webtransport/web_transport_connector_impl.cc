@@ -74,6 +74,15 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
   ~InterceptingHandshakeClient() override = default;
 
   // WebTransportHandshakeClient implementation:
+  void OnBeforeConnect(const net::IPEndPoint& server_address) override {
+    if (tracker_) {
+      tracker_->OnBeforeConnect(server_address);
+    }
+
+    // Here we pass an invalid IPEndPoint instance because it is dangerous to
+    // pass the error details to the initiator renderer.
+    remote_->OnBeforeConnect(net::IPEndPoint());
+  }
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::WebTransport> transport,
       mojo::PendingReceiver<network::mojom::WebTransportClient> client,

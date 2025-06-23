@@ -147,6 +147,8 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
   }
   ~TestHandshakeClient() override = default;
 
+  void OnBeforeConnect(const net::IPEndPoint& server_address) override {}
+
   void OnConnectionEstablished(
       mojo::PendingRemote<mojom::WebTransport> transport,
       mojo::PendingReceiver<mojom::WebTransportClient> client_receiver,

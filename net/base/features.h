@@ -620,6 +620,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableEarlyHintsOnHttp11);
 // Enables draft-07 version of WebTransport over HTTP/3.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebTransportDraft07);
 
+// Enables a smarter throttling strategy based in the server's IP.
+NET_EXPORT BASE_DECLARE_FEATURE(kWebTransportFineGrainedThrottling);
+
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault);
 
 // Enables a more efficient implementation of SpdyHeadersToHttpResponse().

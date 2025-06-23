@@ -2197,6 +2197,15 @@ _CONFIG = [
         ]
     },
     {
+        'paths': [
+            'third_party/blink/renderer/modules/webtransport/',
+        ],
+        'allowed': [
+            'net::Error',
+            'net::IPEndPoint',
+        ]
+    },
+    {
         'paths': ['third_party/blink/renderer/modules/manifest/'],
         'allowed': [
             'net::IsValidTopLevelMimeType',

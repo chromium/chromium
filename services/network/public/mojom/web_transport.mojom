@@ -6,6 +6,7 @@ module network.mojom;
 
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/network_param.mojom";
 
 // Represents a WebTransport error.
@@ -180,6 +181,11 @@ interface WebTransportClient {
 // which ensures that a WebTransportHandshakeClient implemented in renderers
 // doesn't see such information.
 interface WebTransportHandshakeClient {
+  // Called before the handshake starts, to collect information about the
+  // target server that can be used later for implementing throttling
+  // strategies.
+  OnBeforeConnect(IPEndPoint server_address);
+
   // Called when the handshake succeeds.
   OnConnectionEstablished(pending_remote<WebTransport> transport,
                           pending_receiver<WebTransportClient> client,

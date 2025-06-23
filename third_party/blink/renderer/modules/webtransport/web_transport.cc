@@ -1014,6 +1014,11 @@ void WebTransport::OnConnectionEstablished(
 
 WebTransport::~WebTransport() = default;
 
+void WebTransport::OnBeforeConnect(const net::IPEndPoint& server_address) {
+  // |server_address| should be invalid from security/privacy reasons.
+  DCHECK_EQ(server_address, net::IPEndPoint());
+}
+
 void WebTransport::OnHandshakeFailed(
     network::mojom::blink::WebTransportErrorPtr error) {
   // |error| should be null from security/privacy reasons.
