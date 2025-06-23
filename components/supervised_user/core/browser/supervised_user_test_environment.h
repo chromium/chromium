@@ -160,6 +160,14 @@ class SupervisedUserTestEnvironment {
   void Shutdown();
 
  private:
+#if BUILDFLAG(IS_ANDROID)
+  // Two fake content filters observers are created for testing purposes. One
+  // for the browser content filters and one for the search content filters.
+  std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
+      std::string_view setting_name,
+      base::RepeatingClosure on_enabled,
+      base::RepeatingClosure on_disabled);
+#endif  // BUILDFLAG(IS_ANDROID)
   SupervisedUserPrefStoreTestEnvironment pref_store_environment_;
 
   signin::IdentityTestEnvironment identity_test_env_;

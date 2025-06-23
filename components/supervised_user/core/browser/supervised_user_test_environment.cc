@@ -154,34 +154,6 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment() {
       std::make_unique<safe_search_api::FakeURLCheckerClient>();
   url_checker_client_ = client.get();
 
-#if BUILDFLAG(IS_ANDROID)
-  // Bound to properties exactly as in SupervisedUserService.
-  std::unique_ptr<FakeContentFiltersObserverBridge>
-      browser_content_filters_observer =
-          std::make_unique<FakeContentFiltersObserverBridge>(
-              kBrowserContentFiltersSettingName,
-              base::BindRepeating(
-                  &EnableBrowserContentFilters,
-                  std::ref(*pref_store_environment_.pref_service())),
-              base::BindRepeating(
-                  &DisableBrowserContentFilters,
-                  std::ref(*pref_store_environment_.pref_service())));
-  browser_content_filters_observer_ = browser_content_filters_observer.get();
-
-  // Bound to properties exactly as in SupervisedUserService.
-  std::unique_ptr<FakeContentFiltersObserverBridge>
-      search_content_filters_observer =
-          std::make_unique<FakeContentFiltersObserverBridge>(
-              kSearchContentFiltersSettingName,
-              base::BindRepeating(
-                  &EnableSearchContentFilters,
-                  std::ref(*pref_store_environment_.pref_service())),
-              base::BindRepeating(
-                  &DisableSearchContentFilters,
-                  std::ref(*pref_store_environment_.pref_service())));
-  search_content_filters_observer_ = search_content_filters_observer.get();
-#endif  // BUILDFLAG(IS_ANDROID)
-
   service_ = std::make_unique<SupervisedUserService>(
       identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
@@ -193,8 +165,8 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment() {
       std::make_unique<FakePlatformDelegate>()
 #if BUILDFLAG(IS_ANDROID)
           ,
-      std::move(browser_content_filters_observer),
-      std::move(search_content_filters_observer)
+      base::BindRepeating(&SupervisedUserTestEnvironment::CreateBridge,
+                          base::Unretained(this))
 #endif  // BUILDFLAG(IS_ANDROID)
   );
   metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
@@ -306,6 +278,22 @@ SupervisedUserTestEnvironment::url_checker_client() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+
+std::unique_ptr<ContentFiltersObserverBridge>
+SupervisedUserTestEnvironment::CreateBridge(
+    std::string_view setting_name,
+    base::RepeatingClosure on_enabled,
+    base::RepeatingClosure on_disabled) {
+  std::unique_ptr<FakeContentFiltersObserverBridge> bridge =
+      std::make_unique<FakeContentFiltersObserverBridge>(
+          setting_name, on_enabled, on_disabled);
+  if (setting_name == kBrowserContentFiltersSettingName) {
+    browser_content_filters_observer_ = bridge.get();
+  } else if (setting_name == kSearchContentFiltersSettingName) {
+    search_content_filters_observer_ = bridge.get();
+  }
+  return bridge;
+}
 
 FakeContentFiltersObserverBridge*
 SupervisedUserTestEnvironment::browser_content_filters_observer() {

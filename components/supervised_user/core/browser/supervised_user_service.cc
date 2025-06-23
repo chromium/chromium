@@ -76,26 +76,6 @@ std::optional<Custodian> GetCustodianFromPrefs(
 void PrefChangeNotAllowed(const std::string& pref_name) {
   NOTREACHED() << "Preference change (" << pref_name << ") not allowed.";
 }
-
-#if BUILDFLAG(IS_ANDROID)
-// Convenience factories to create the content filters observer bridges. Android
-// code calls these bridges, which in turn call the native side pref service to
-// enable or disable supervision features.
-std::unique_ptr<ContentFiltersObserverBridge> BrowserContentFiltersObserver(
-    PrefService& user_prefs) {
-  return std::make_unique<ContentFiltersObserverBridge>(
-      kBrowserContentFiltersSettingName,
-      base::BindRepeating(&EnableBrowserContentFilters, std::ref(user_prefs)),
-      base::BindRepeating(&DisableBrowserContentFilters, std::ref(user_prefs)));
-}
-std::unique_ptr<ContentFiltersObserverBridge> SearchContentFiltersObserver(
-    PrefService& user_prefs) {
-  return std::make_unique<ContentFiltersObserverBridge>(
-      kSearchContentFiltersSettingName,
-      base::BindRepeating(&EnableSearchContentFilters, std::ref(user_prefs)),
-      base::BindRepeating(&DisableSearchContentFilters, std::ref(user_prefs)));
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace
 
 Custodian::Custodian(std::string_view name,
@@ -186,10 +166,8 @@ SupervisedUserService::SupervisedUserService(
     std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate
 #if BUILDFLAG(IS_ANDROID)
     ,
-    std::unique_ptr<ContentFiltersObserverBridge>
-        browser_content_filters_observer,
-    std::unique_ptr<ContentFiltersObserverBridge>
-        search_content_filters_observer
+    ContentFiltersObserverBridge::Factory
+        content_filters_observer_bridge_factory
 #endif
     )
     : user_prefs_(user_prefs),
@@ -214,13 +192,20 @@ SupervisedUserService::SupervisedUserService(
 #if BUILDFLAG(IS_ANDROID)
       ,
       browser_content_filters_observer_(
-          browser_content_filters_observer == nullptr
-              ? BrowserContentFiltersObserver(user_prefs_.get())
-              : std::move(browser_content_filters_observer)),
+          content_filters_observer_bridge_factory.Run(
+              kBrowserContentFiltersSettingName,
+              base::BindRepeating(&EnableBrowserContentFilters,
+                                  std::ref(user_prefs)),
+              base::BindRepeating(&DisableBrowserContentFilters,
+                                  std::ref(user_prefs)))),
       search_content_filters_observer_(
-          search_content_filters_observer == nullptr
-              ? SearchContentFiltersObserver(user_prefs_.get())
-              : std::move(search_content_filters_observer))
+          content_filters_observer_bridge_factory.Run(
+              kSearchContentFiltersSettingName,
+              base::BindRepeating(
+                  &SupervisedUserService::EnableSearchContentFilters,
+                  base::Unretained(this)),
+              base::BindRepeating(&DisableSearchContentFilters,
+                                  std::ref(user_prefs))))
 #endif  // BUILDFLAG(IS_ANDROID)
 {
   CHECK(settings_service_->IsReady())
@@ -421,5 +406,13 @@ void SupervisedUserService::Shutdown() {
   // allow all url classifications). On the other hand, if supervision is
   // disabled, then the settings service is already inactive.
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void SupervisedUserService::EnableSearchContentFilters() {
+  supervised_user::EnableSearchContentFilters(user_prefs_.get());
+  observer_list_.Notify(
+      &SupervisedUserServiceObserver::OnSearchContentFiltersEnabled);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace supervised_user

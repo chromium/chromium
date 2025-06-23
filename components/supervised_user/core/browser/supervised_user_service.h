@@ -162,12 +162,8 @@ class SupervisedUserService : public KeyedService {
       std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate
 #if BUILDFLAG(IS_ANDROID)
       ,
-      // The default arguments are substituted with live
-      // ContentFiltersObserverBridge instances.
-      std::unique_ptr<ContentFiltersObserverBridge>
-          browser_content_filters_observer = nullptr,
-      std::unique_ptr<ContentFiltersObserverBridge>
-          search_content_filters_observer = nullptr
+      ContentFiltersObserverBridge::Factory
+          content_filters_observer_bridge_factory
 #endif
   );
 
@@ -211,6 +207,11 @@ class SupervisedUserService : public KeyedService {
   // is intentionally idempotent.
   void AddCustodianPrefChangeHandlers();
   void RemoveCustodianPrefChangeHandlers();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Enables search content filters and then notifies observers that the search content filters are enabled.
+  void EnableSearchContentFilters();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   const raw_ref<PrefService> user_prefs_;
 

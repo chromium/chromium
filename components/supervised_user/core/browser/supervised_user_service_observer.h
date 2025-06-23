@@ -15,6 +15,9 @@ class SupervisedUserServiceObserver {
   // e.g. the display name.
   virtual void OnCustodianInfoChanged() {}
 
+  // Called when the supervised user's search content filters are enabled
+  virtual void OnSearchContentFiltersEnabled() {}
+
  protected:
   virtual ~SupervisedUserServiceObserver() = default;
 };

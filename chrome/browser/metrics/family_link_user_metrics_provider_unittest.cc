@@ -553,26 +553,19 @@ class FamilyLinkUserMetricsProviderWithContentFiltersTest
                                 /*is_opted_in_to_parental_supervision=*/false);
   }
 
-  // Fake content filters observer for search settings.
-  std::unique_ptr<FakeContentFiltersObserverBridge>
-  MakeSearchContentFiltersObserverBridge(PrefService& pref_service) {
-    return std::make_unique<FakeContentFiltersObserverBridge>(
-        kSearchContentFiltersSettingName,
-        base::BindRepeating(&EnableSearchContentFilters,
-                            std::ref(pref_service)),
-        base::BindRepeating(&DisableSearchContentFilters,
-                            std::ref(pref_service)));
-  }
-
-  // Fake content filters observer for browser content settings.
-  std::unique_ptr<FakeContentFiltersObserverBridge>
-  MakeBrowserContentFiltersObserverBridge(PrefService& pref_service) {
-    return std::make_unique<FakeContentFiltersObserverBridge>(
-        kBrowserContentFiltersSettingName,
-        base::BindRepeating(&EnableBrowserContentFilters,
-                            std::ref(pref_service)),
-        base::BindRepeating(&DisableBrowserContentFilters,
-                            std::ref(pref_service)));
+  std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
+      std::string_view setting_name,
+      base::RepeatingClosure on_enabled,
+      base::RepeatingClosure on_disabled) {
+    std::unique_ptr<FakeContentFiltersObserverBridge> bridge =
+        std::make_unique<FakeContentFiltersObserverBridge>(
+            setting_name, on_enabled, on_disabled);
+    if (setting_name == kBrowserContentFiltersSettingName) {
+      browser_content_filters_observers_.push_back(bridge.get());
+    } else if (setting_name == kSearchContentFiltersSettingName) {
+      search_content_filters_observers_.push_back(bridge.get());
+    }
+    return bridge;
   }
 
   // Builds the `SupervisedUserService` and captures the content observers onto
@@ -582,14 +575,6 @@ class FamilyLinkUserMetricsProviderWithContentFiltersTest
   std::unique_ptr<KeyedService> BuildSupervisedUserService(
       content::BrowserContext* browser_context) override {
     Profile* profile = Profile::FromBrowserContext(browser_context);
-
-    std::unique_ptr<FakeContentFiltersObserverBridge> browser_filter =
-        MakeBrowserContentFiltersObserverBridge(*profile->GetPrefs());
-    browser_content_filters_observers_.push_back(browser_filter.get());
-
-    std::unique_ptr<FakeContentFiltersObserverBridge> search_filter =
-        MakeSearchContentFiltersObserverBridge(*profile->GetPrefs());
-    search_content_filters_observers_.push_back(search_filter.get());
 
     std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
         std::make_unique<SupervisedUserServicePlatformDelegate>(*profile);
@@ -611,7 +596,9 @@ class FamilyLinkUserMetricsProviderWithContentFiltersTest
                 *profile->GetPrefs(), platform_delegate->GetCountryCode(),
                 platform_delegate->GetChannel())),
         std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
-        std::move(browser_filter), std::move(search_filter));
+        base::BindRepeating(
+            &FamilyLinkUserMetricsProviderWithContentFiltersTest::CreateBridge,
+            base::Unretained(this)));
   }
 
   // Enables or disables the browser content filters for all profiles.

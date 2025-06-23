@@ -36,6 +36,7 @@ static_library("test_support") {
     deps += [
       ":test_support_jni_headers",
       "//components/signin/public/identity_manager:test_support",
+      "//components/supervised_user/core/browser/android:content_filters_observer_bridge",
       "//services/network:test_support",
     ]
   }
@@ -223,5 +224,25 @@ if (is_android) {
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit:junit",
     ]
+  }
+
+  if (is_android) {
+    source_set("android_browser_tests") {
+      testonly = true
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+      sources = [ "supervised_user_navigation_observer_android_browsertest.cc" ]
+      deps = [
+        "//base",
+        "//chrome/browser/profiles:profile",
+        "//chrome/browser/sync:sync",
+        "//chrome/test:test_support",
+        "//components/messages/android/test:test_support_cpp",
+        "//components/supervised_user/core/browser:test_support",
+        "//components/supervised_user/core/browser/android:content_filters_observer_bridge",
+        "//content/test:test_support",
+        "//net:test_support",
+        "//net/android:net_java_test_support_enums_srcjar",
+      ]
+    }
   }
 }

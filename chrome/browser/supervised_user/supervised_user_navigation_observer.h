@@ -78,6 +78,7 @@ class SupervisedUserNavigationObserver
 
   // SupervisedUserServiceObserver:
   void OnURLFilterChanged() override;
+  void OnSearchContentFiltersEnabled() override;
 
   // Called when interstitial error page is no longer being shown in the main
   // frame.
@@ -136,11 +137,11 @@ class SupervisedUserNavigationObserver
   // clear up  entries in |requested_hosts_| which have been allowed.
   void MaybeUpdateRequestedHosts();
 
-  // Owned by SupervisedUserService.
-  raw_ptr<supervised_user::SupervisedUserURLFilter> url_filter_;
+  supervised_user::SupervisedUserService* supervised_user_service() const;
 
-  // Owned by SupervisedUserServiceFactory (lifetime of Profile).
-  raw_ptr<supervised_user::SupervisedUserService> supervised_user_service_;
+  base::ScopedObservation<supervised_user::SupervisedUserService,
+                          SupervisedUserServiceObserver>
+      supervised_user_service_observation_{this};
 
   // Keeps track of the blocked frames. It maps the frame's globally unique
   // id to its corresponding |SupervisedUserInterstitial| instance.

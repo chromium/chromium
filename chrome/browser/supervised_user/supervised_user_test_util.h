@@ -22,6 +22,10 @@
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "content/public/browser/storage_partition.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 struct AccountInfo;
 
 namespace supervised_user_test_util {
@@ -102,7 +106,13 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
               identity_manager, url_loader_factory, *profile->GetPrefs(),
               platform_delegate->GetCountryCode(),
               platform_delegate->GetChannel())),
-      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile));
+      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile)
+#if BUILDFLAG(IS_ANDROID)
+          ,
+      base::BindRepeating(
+          &supervised_user::ContentFiltersObserverBridge::Create)
+#endif  // BUILDFLAG(IS_ANDROID)
+  );
 }
 
 }  // namespace supervised_user_test_util

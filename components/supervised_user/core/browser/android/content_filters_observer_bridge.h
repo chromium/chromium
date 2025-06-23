@@ -20,6 +20,21 @@ namespace supervised_user {
 // are available from SupervisedUserTestEnvironment.
 class ContentFiltersObserverBridge {
  public:
+  // Factory for creating ContentFiltersObserverBridge instances. They should
+  // accept the setting name, two callbacks to be called when the setting is
+  // enabled or disabled.
+  using Factory =
+      base::RepeatingCallback<std::unique_ptr<ContentFiltersObserverBridge>(
+          std::string_view,
+          base::RepeatingClosure,
+          base::RepeatingClosure)>;
+
+  // Creates a ContentFiltersObserverBridge instance.
+  static std::unique_ptr<ContentFiltersObserverBridge> Create(
+      std::string_view setting_name,
+      base::RepeatingClosure on_enabled,
+      base::RepeatingClosure on_disabled);
+
   ContentFiltersObserverBridge(std::string_view setting_name,
                                base::RepeatingClosure on_enabled,
                                base::RepeatingClosure on_disabled);

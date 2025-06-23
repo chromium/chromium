@@ -16,6 +16,14 @@
 #include "components/supervised_user/android/jni_headers/ContentFiltersObserverBridge_jni.h"
 
 namespace supervised_user {
+std::unique_ptr<ContentFiltersObserverBridge>
+ContentFiltersObserverBridge::Create(std::string_view setting_name,
+                                     base::RepeatingClosure on_enabled,
+                                     base::RepeatingClosure on_disabled) {
+  return std::make_unique<ContentFiltersObserverBridge>(
+      setting_name, on_enabled, on_disabled);
+}
+
 ContentFiltersObserverBridge::ContentFiltersObserverBridge(
     std::string_view setting_name,
     base::RepeatingClosure on_enabled,

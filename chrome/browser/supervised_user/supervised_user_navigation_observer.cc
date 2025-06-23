@@ -23,6 +23,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "components/favicon/core/large_icon_service.h"
+#include "components/google/core/common/google_util.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -77,9 +78,7 @@ std::unique_ptr<supervised_user::WebContentHandler> CreateWebContentHandler(
 
 using content::NavigationEntry;
 
-SupervisedUserNavigationObserver::~SupervisedUserNavigationObserver() {
-  supervised_user_service_->RemoveObserver(this);
-}
+SupervisedUserNavigationObserver::~SupervisedUserNavigationObserver() = default;
 
 SupervisedUserNavigationObserver::SupervisedUserNavigationObserver(
     content::WebContents* web_contents)
@@ -89,10 +88,8 @@ SupervisedUserNavigationObserver::SupervisedUserNavigationObserver(
       receivers_(web_contents, this) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  supervised_user_service_ =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-  url_filter_ = supervised_user_service_->GetURLFilter();
-  supervised_user_service_->AddObserver(this);
+  supervised_user_service_observation_.Observe(
+      SupervisedUserServiceFactory::GetForProfile(profile));
 }
 
 // static
@@ -160,13 +157,15 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
     bool skip_manual_parent_filter =
         supervised_user::ShouldContentSkipParentAllowlistFiltering(
             web_contents());
-    url_filter_->GetFilteringBehaviorWithAsyncChecks(
-        web_contents()->GetLastCommittedURL(),
-        base::BindOnce(
-            &SupervisedUserNavigationObserver::URLFilterCheckCallback,
-            weak_ptr_factory_.GetWeakPtr(), process_id, routing_id),
-        skip_manual_parent_filter,
-        supervised_user::FilteringContext::kNavigationObserver);
+    supervised_user_service()
+        ->GetURLFilter()
+        ->GetFilteringBehaviorWithAsyncChecks(
+            web_contents()->GetLastCommittedURL(),
+            base::BindOnce(
+                &SupervisedUserNavigationObserver::URLFilterCheckCallback,
+                weak_ptr_factory_.GetWeakPtr(), process_id, routing_id),
+            skip_manual_parent_filter,
+            supervised_user::FilteringContext::kNavigationObserver);
   }
 }
 
@@ -199,7 +198,7 @@ void SupervisedUserNavigationObserver::RecordPageLoadUKM(
 
   // To avoid the user potentially being identified based on parent-configured
   // allow/block lists, only output a UKM for page loads that were blocked or
-  // partially blocked due to the aync checks (but not due to allow/block list
+  // partially blocked due to the async checks (but not due to allow/block list
   // configuration).
   const content::FrameTreeNodeId main_frame_id =
       render_frame_host->GetFrameTreeNodeId();
@@ -239,13 +238,16 @@ void SupervisedUserNavigationObserver::OnURLFilterChanged() {
   bool skip_manual_parent_filter =
       supervised_user::ShouldContentSkipParentAllowlistFiltering(
           web_contents());
-  url_filter_->GetFilteringBehaviorWithAsyncChecks(
-      web_contents()->GetLastCommittedURL(),
-      base::BindOnce(&SupervisedUserNavigationObserver::URLFilterCheckCallback,
-                     weak_ptr_factory_.GetWeakPtr(), main_frame_process_id,
-                     routing_id),
-      skip_manual_parent_filter,
-      supervised_user::FilteringContext::kFamilyLinkSettingsUpdated);
+  supervised_user_service()
+      ->GetURLFilter()
+      ->GetFilteringBehaviorWithAsyncChecks(
+          web_contents()->GetLastCommittedURL(),
+          base::BindOnce(
+              &SupervisedUserNavigationObserver::URLFilterCheckCallback,
+              weak_ptr_factory_.GetWeakPtr(), main_frame_process_id,
+              routing_id),
+          skip_manual_parent_filter,
+          supervised_user::FilteringContext::kFamilyLinkSettingsUpdated);
 
   MaybeUpdateRequestedHosts();
 
@@ -254,6 +256,14 @@ void SupervisedUserNavigationObserver::OnURLFilterChanged() {
       [this](content::RenderFrameHost* render_frame_host) {
         FilterRenderFrame(render_frame_host);
       });
+}
+
+void SupervisedUserNavigationObserver::OnSearchContentFiltersEnabled() {
+  GURL url = web_contents()->GetLastCommittedURL();
+  if (google_util::IsGoogleSearchUrl(url)) {
+    web_contents()->GetController().Reload(content::ReloadType::NORMAL,
+                                           /*check_for_repost=*/false);
+  }
 }
 
 void SupervisedUserNavigationObserver::OnInterstitialDone(
@@ -339,7 +349,7 @@ void SupervisedUserNavigationObserver::URLFilterCheckCallback(
   if (is_showing_interstitial != should_show_interstitial) {
     if (render_frame_host->IsInPrimaryMainFrame()) {
       web_contents()->GetController().Reload(content::ReloadType::NORMAL,
-                                             /* check_for_repost */ false);
+                                             /*=check_for_repost=*/false);
       return;
     }
     render_frame_host->Reload();
@@ -361,7 +371,7 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
   CHECK(web_content_handler);
   std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial =
       supervised_user::SupervisedUserInterstitial::Create(
-          std::move(web_content_handler), *supervised_user_service_, url,
+          std::move(web_content_handler), *supervised_user_service(), url,
           base::UTF8ToUTF16(supervised_user::GetAccountGivenName(*profile)),
           reason);
   supervised_user_interstitials_[frame_id] = std::move(interstitial);
@@ -386,13 +396,16 @@ void SupervisedUserNavigationObserver::FilterRenderFrame(
     return;
 
   const GURL& last_committed_url = render_frame_host->GetLastCommittedURL();
-  url_filter_->GetFilteringBehaviorForSubFrameWithAsyncChecks(
-      last_committed_url, web_contents()->GetLastCommittedURL(),
-      base::BindOnce(&SupervisedUserNavigationObserver::URLFilterCheckCallback,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     render_frame_host->GetProcess()->GetDeprecatedID(),
-                     render_frame_host->GetRoutingID()),
-      supervised_user::FilteringContext::kNavigationObserver);
+  supervised_user_service()
+      ->GetURLFilter()
+      ->GetFilteringBehaviorForSubFrameWithAsyncChecks(
+          last_committed_url, web_contents()->GetLastCommittedURL(),
+          base::BindOnce(
+              &SupervisedUserNavigationObserver::URLFilterCheckCallback,
+              weak_ptr_factory_.GetWeakPtr(),
+              render_frame_host->GetProcess()->GetDeprecatedID(),
+              render_frame_host->GetRoutingID()),
+          supervised_user::FilteringContext::kNavigationObserver);
 }
 
 void SupervisedUserNavigationObserver::GoBack() {
@@ -453,7 +466,8 @@ void SupervisedUserNavigationObserver::RequestCreated(
 void SupervisedUserNavigationObserver::MaybeUpdateRequestedHosts() {
   for (auto iter = requested_hosts_.begin(); iter != requested_hosts_.end();) {
     supervised_user::SupervisedUserURLFilter::Result result =
-        url_filter_->GetFilteringBehavior(GURL(*iter));
+        supervised_user_service()->GetURLFilter()->GetFilteringBehavior(
+            GURL(*iter));
 
     if (result.IsFromManualList() && result.IsAllowed()) {
       iter = requested_hosts_.erase(iter);
@@ -461,6 +475,12 @@ void SupervisedUserNavigationObserver::MaybeUpdateRequestedHosts() {
       iter++;
     }
   }
+}
+
+supervised_user::SupervisedUserService*
+SupervisedUserNavigationObserver::supervised_user_service() const {
+  return SupervisedUserServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SupervisedUserNavigationObserver);

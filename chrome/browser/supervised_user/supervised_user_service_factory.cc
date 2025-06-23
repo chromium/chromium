@@ -88,7 +88,13 @@ std::unique_ptr<KeyedService> SupervisedUserServiceFactory::BuildInstanceFor(
               identity_manager, url_loader_factory, *profile->GetPrefs(),
               platform_delegate->GetCountryCode(),
               platform_delegate->GetChannel())),
-      std::move(platform_delegate));
+      std::move(platform_delegate)
+#if BUILDFLAG(IS_ANDROID)
+          ,
+      base::BindRepeating(
+          &supervised_user::ContentFiltersObserverBridge::Create)
+#endif  // BUILDFLAG(IS_ANDROID)
+  );
 }
 
 SupervisedUserServiceFactory::SupervisedUserServiceFactory()
