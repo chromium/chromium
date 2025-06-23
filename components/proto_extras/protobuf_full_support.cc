@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "components/proto_extras/proto_extras_lib.h"
 #include "third_party/protobuf/src/google/protobuf/unknown_field_set.h"
+#include "third_party/protobuf/src/google/protobuf/util/message_differencer.h"
 
 namespace proto_extras {
 
@@ -36,6 +37,11 @@ base::DictValue Serialize(
     }
   }
   return dict;
+}
+
+bool MessageDifferencerEquals(const google::protobuf::Message& lhs,
+                              const google::protobuf::Message& rhs) {
+  return google::protobuf::util::MessageDifferencer::Equals(lhs, rhs);
 }
 
 }  // namespace proto_extras

@@ -3,16 +3,24 @@
 // found in the LICENSE file.
 
 #include "base/test/values_test_util.h"
+#include "components/proto_extras/test_proto/test_proto.equal.h"
+#include "components/proto_extras/test_proto/test_proto.ostream.h"
 #include "components/proto_extras/test_proto/test_proto.pb.h"
 #include "components/proto_extras/test_proto/test_proto.to_value.h"
 #include "components/proto_extras/test_proto/test_proto_dependency.pb.h"
 #include "components/proto_extras/test_proto/test_proto_dependency.to_value.h"
+#include "components/proto_extras/test_proto2/test_proto2.equal.h"
 #include "components/proto_extras/test_proto2/test_proto2.ostream.h"
 #include "components/proto_extras/test_proto2/test_proto2.pb.h"
 #include "components/proto_extras/test_proto2/test_proto2.to_value.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace proto_extras {
+
+void PrintTo(const TestMessage& msg, std::ostream* os) {
+  *os << msg;
+}
+
 namespace {
 
 TEST(ProtoExtrasToValueTest, BasicField) {
@@ -257,6 +265,249 @@ TEST(ProtoExtrasProto2StreamTest, Basic) {
   stream << message;
   EXPECT_EQ(base::JSONReader::Read(stream.str()),
             base::JSONReader::Read(R"({"maybe_int": 1})"));
+}
+
+TEST(ProtoExtrasEquality, Basic) {
+  TestMessage msg1;
+  TestMessage msg2;
+
+  // Test default messages are equal.
+  EXPECT_EQ(msg1, msg2);
+
+  // Test setting a field makes them unequal.
+  msg1.set_int32_field(1);
+  EXPECT_NE(msg1, msg2);
+
+  // Test setting the same field to the same value makes them equal.
+  msg2.set_int32_field(1);
+  EXPECT_EQ(msg1, msg2);
+
+  // Test setting different values makes them unequal.
+  msg2.set_int32_field(2);
+  EXPECT_NE(msg1, msg2);
+}
+
+TEST(ProtoExtrasEquality, RepeatedField) {
+  TestMessage msg1;
+  TestMessage msg2;
+
+  // Test repeated fields.
+  msg1.add_repeated_int32_field(1);
+  EXPECT_NE(msg1, msg2);
+  msg2.add_repeated_int32_field(1);
+  EXPECT_EQ(msg1, msg2);
+  msg1.add_repeated_int32_field(2);
+  EXPECT_NE(msg1, msg2);
+  msg2.add_repeated_int32_field(3);
+  EXPECT_NE(msg1, msg2);
+  msg2.set_repeated_int32_field(1, 2);
+  EXPECT_EQ(msg1, msg2);
+}
+
+TEST(ProtoExtrasEquality, OneofField) {
+  TestMessage msg1;
+  TestMessage msg2;
+
+  // Test oneof fields.
+  msg1.set_maybe_int32_field(100);
+  EXPECT_NE(msg1, msg2);
+  msg2.set_maybe_int32_field(100);
+  EXPECT_EQ(msg1, msg2);
+  msg2.set_maybe_string_field("test");
+  EXPECT_NE(msg1, msg2);
+  msg1.set_maybe_string_field("test");
+  EXPECT_EQ(msg1, msg2);
+}
+
+TEST(ProtoExtrasEquality, NestedMessage) {
+  TestMessage msg1;
+  TestMessage msg2;
+
+  // Test nested message
+  msg1.mutable_nested_message_field()->set_int32_field(1);
+  EXPECT_NE(msg1, msg2);
+  msg2.mutable_nested_message_field()->set_int32_field(1);
+  EXPECT_EQ(msg1, msg2);
+  msg1.mutable_nested_message_field()->set_int32_field(2);
+  EXPECT_NE(msg1, msg2);
+}
+
+TEST(ProtoExtrasEquality, EnumField) {
+  TestMessage msg1;
+  TestMessage msg2;
+  // Test enum
+  msg1.set_enum_field(TestMessage::ENUM_A);
+  EXPECT_NE(msg1, msg2);
+  msg2.set_enum_field(TestMessage::ENUM_A);
+  EXPECT_EQ(msg1, msg2);
+  msg2.set_enum_field(TestMessage::ENUM_B);
+  EXPECT_NE(msg1, msg2);
+}
+
+TEST(ProtoExtrasProtoEqualityProto2, Basic) {
+  TestMessageProto2 msg1;
+  TestMessageProto2 msg2;
+
+  // Test default messages are equal.
+  EXPECT_EQ(msg1, msg2);
+
+  // Test setting a field makes them unequal.
+  msg1.set_int32_field(1);
+  EXPECT_NE(msg1, msg2);
+
+  // Test setting the same field to the same value makes them equal.
+  msg2.set_int32_field(1);
+  EXPECT_EQ(msg1, msg2);
+
+  // Test setting different values makes them unequal.
+  msg2.set_int32_field(2);
+  EXPECT_NE(msg1, msg2);
+
+  msg2.set_int32_field(1);
+  EXPECT_EQ(msg1, msg2);
+
+  // Test other basic types
+  msg1.set_int64_field(100);
+  msg2.set_int64_field(200);
+  EXPECT_NE(msg1, msg2);
+  msg2.set_int64_field(100);
+  EXPECT_EQ(msg1, msg2);
+
+  msg1.set_bytes_field("abc");
+  msg2.set_bytes_field("def");
+  EXPECT_NE(msg1, msg2);
+  msg2.set_bytes_field("abc");
+  EXPECT_EQ(msg1, msg2);
+
+  msg1.set_bool_field(true);
+  msg2.set_bool_field(false);
+  EXPECT_NE(msg1, msg2);
+  msg2.set_bool_field(true);
+  EXPECT_EQ(msg1, msg2);
+
+  msg1.set_uint64_field(std::numeric_limits<uint64_t>::max());
+  msg2.set_uint64_field(0);
+  EXPECT_NE(msg1, msg2);
+  msg2.set_uint64_field(std::numeric_limits<uint64_t>::max());
+  EXPECT_EQ(msg1, msg2);
+}
+
+TEST(ProtoExtrasProtoEqualityProto2, RepeatedField) {
+  TestMessageProto2 msg1;
+  TestMessageProto2 msg2;
+
+  // Test repeated int32
+  msg1.add_repeated_int32_field(1);
+  EXPECT_NE(msg1, msg2);
+  msg2.add_repeated_int32_field(1);
+  EXPECT_EQ(msg1, msg2);
+  msg1.add_repeated_int32_field(2);
+  EXPECT_NE(msg1, msg2);
+  msg2.add_repeated_int32_field(3);
+  EXPECT_NE(msg1, msg2);
+  msg2.set_repeated_int32_field(1, 2);
+  EXPECT_EQ(msg1, msg2);
+
+  // Test repeated embedded message
+  msg1.add_repeated_embedded_message()->set_str_field("a");
+  EXPECT_NE(msg1, msg2);
+  msg2.add_repeated_embedded_message()->set_str_field("a");
+  EXPECT_EQ(msg1, msg2);
+  msg1.add_repeated_embedded_message()->set_str_field("b");
+  EXPECT_NE(msg1, msg2);
+  msg2.add_repeated_embedded_message()->set_str_field("c");
+  EXPECT_NE(msg1, msg2);
+  msg2.mutable_repeated_embedded_message(1)->set_str_field("b");
+  EXPECT_EQ(msg1, msg2);
+
+  // Test repeated inner enum
+  msg1.add_repeated_inner_enum(TestMessageProto2::INNER_ENUM_OPTION1);
+  EXPECT_NE(msg1, msg2);
+  msg2.add_repeated_inner_enum(TestMessageProto2::INNER_ENUM_OPTION1);
+  EXPECT_EQ(msg1, msg2);
+  msg1.add_repeated_inner_enum(TestMessageProto2::INNER_ENUM_OPTION2);
+  EXPECT_NE(msg1, msg2);
+  msg2.add_repeated_inner_enum(TestMessageProto2::INNER_ENUM_UNSPECIFIED);
+  EXPECT_NE(msg1, msg2);
+  msg2.set_repeated_inner_enum(1, TestMessageProto2::INNER_ENUM_OPTION2);
+  EXPECT_EQ(msg1, msg2);
+}
+
+TEST(ProtoExtrasProtoEqualityProto2, OneofField) {
+  TestMessageProto2 msg1;
+  TestMessageProto2 msg2;
+
+  // Test oneof fields.
+  msg1.set_maybe_int(100);
+  EXPECT_NE(msg1, msg2);
+  msg2.set_maybe_int(100);
+  EXPECT_EQ(msg1, msg2);
+
+  msg2.set_maybe_bool(true);
+  EXPECT_NE(msg1, msg2);
+  msg1.set_maybe_bool(true);
+  EXPECT_EQ(msg1, msg2);
+
+  msg2.mutable_maybe_message()->set_str_field("test");
+  EXPECT_NE(msg1, msg2);
+  msg1.mutable_maybe_message()->set_str_field("test");
+  EXPECT_EQ(msg1, msg2);
+
+  msg2.set_maybe_enum(OUTER_ENUM_OPTION1);
+  EXPECT_NE(msg1, msg2);
+  msg1.set_maybe_enum(OUTER_ENUM_OPTION1);
+  EXPECT_EQ(msg1, msg2);
+
+  msg2.set_maybe_bytes("bytes");
+  EXPECT_NE(msg1, msg2);
+  msg1.set_maybe_bytes("bytes");
+  EXPECT_EQ(msg1, msg2);
+}
+
+TEST(ProtoExtrasProtoEqualityProto2, NestedMessage) {
+  TestMessageProto2 msg1;
+  TestMessageProto2 msg2;
+
+  // Test embedded message
+  msg1.mutable_embedded_message()->set_str_field("a");
+  EXPECT_NE(msg1, msg2);
+  msg2.mutable_embedded_message()->set_str_field("a");
+  EXPECT_EQ(msg1, msg2);
+  msg1.mutable_embedded_message()->set_str_field("b");
+  EXPECT_NE(msg1, msg2);
+  msg2.mutable_embedded_message()->set_str_field("b");
+  EXPECT_EQ(msg1, msg2);
+
+  // Test inner message
+  msg1.mutable_inner_message()->set_int_field(1);
+  EXPECT_NE(msg1, msg2);
+  msg2.mutable_inner_message()->set_int_field(1);
+  EXPECT_EQ(msg1, msg2);
+  msg1.mutable_inner_message()->set_int_field(2);
+  EXPECT_NE(msg1, msg2);
+}
+
+TEST(ProtoExtrasProtoEqualityProto2, EnumField) {
+  TestMessageProto2 msg1;
+  TestMessageProto2 msg2;
+
+  // Test outer enum
+  msg1.set_outer_enum(OUTER_ENUM_OPTION1);
+  EXPECT_NE(msg1, msg2);
+  msg2.set_outer_enum(OUTER_ENUM_OPTION1);
+  EXPECT_EQ(msg1, msg2);
+  msg2.set_outer_enum(OUTER_ENUM_OPTION2);
+  EXPECT_NE(msg1, msg2);
+
+  msg2.set_outer_enum(OUTER_ENUM_OPTION1);
+
+  // Test inner enum
+  msg1.set_inner_enum(TestMessageProto2::INNER_ENUM_OPTION1);
+  EXPECT_NE(msg1, msg2);
+  msg2.set_inner_enum(TestMessageProto2::INNER_ENUM_OPTION1);
+  EXPECT_EQ(msg1, msg2);
+  msg2.set_inner_enum(TestMessageProto2::INNER_ENUM_OPTION2);
+  EXPECT_NE(msg1, msg2);
 }
 
 }  // namespace

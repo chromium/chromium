@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/values.h"
 #include "third_party/protobuf/src/google/protobuf/message.h"
-#include "third_party/protobuf/src/google/protobuf/unknown_field_set.h"
 
 namespace google::protobuf {
 class UnknownFieldSet;
@@ -18,6 +17,9 @@ namespace proto_extras {
 
 base::DictValue Serialize(
     const google::protobuf::UnknownFieldSet& unknown_fields);
+
+bool MessageDifferencerEquals(const google::protobuf::Message& lhs,
+                              const google::protobuf::Message& rhs);
 
 template <typename MessageType>
   requires std::is_base_of_v<google::protobuf::Message, MessageType>
