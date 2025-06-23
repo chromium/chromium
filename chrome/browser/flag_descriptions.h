@@ -2359,8 +2359,8 @@ extern const char kTabGroupParityBottomSheetAndroidDescription[];
 extern const char kTabletTabStripAnimationName[];
 extern const char kTabletTabStripAnimationDescription[];
 
-extern const char kToolbarPhoneCleanupName[];
-extern const char kToolbarPhoneCleanupDescription[];
+extern const char kToolbarPhoneAnimationRefactorName[];
+extern const char kToolbarPhoneAnimationRefactorDescription[];
 
 extern const char kCommerceDeveloperName[];
 extern const char kCommerceDeveloperDescription[];

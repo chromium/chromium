@@ -4136,10 +4136,6 @@ const char kTabletTabStripAnimationName[] = "Tablet Tab Strip Animation";
 const char kTabletTabStripAnimationDescription[] =
     "Enables new tablet tab strip animations.";
 
-const char kToolbarPhoneCleanupName[] = "Toolbar Phone cleanup";
-const char kToolbarPhoneCleanupDescription[] =
-    "Enables cleanup on toolbar phone class.";
-
 const char kCommerceDeveloperName[] = "Commerce developer mode";
 const char kCommerceDeveloperDescription[] =
     "Allows users in the allowlist to enter the developer mode";
@@ -4225,6 +4221,12 @@ const char kTopControlsRefactorName[] = "Top Controls Refactor";
 const char kTopControlsRefactorDescription[] =
     "Enables the alternative code path in Android for the top controls layout "
     "control.";
+
+const char kToolbarPhoneAnimationRefactorName[] =
+    "Toolbar Phone Animation Refactor";
+const char kToolbarPhoneAnimationRefactorDescription[] =
+    "Enables the refactored animation code path in Android for the toolbar "
+    "phone class.";
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

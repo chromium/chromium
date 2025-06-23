@@ -628,6 +628,7 @@ public abstract class ChromeFeatureList {
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String TINKER_TANK_BOTTOM_SHEET = "TinkerTankBottomSheet";
+    public static final String TOOLBAR_PHONE_ANIMATION_REFACTOR = "ToolbarPhoneAnimationRefactor";
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
     public static final String TOP_CONTROLS_REFACTOR = "TopControlsRefactor";
     public static final String TOUCH_TO_SEARCH_CALLOUT = "TouchToSearchCallout";
@@ -1248,6 +1249,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_SWITCHER_GROUP_SUGGESTIONS_TEST_MODE_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherForeignFaviconSupport =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT, true);
+    public static final MutableFlagWithSafeDefault sToolbarPhoneAnimationRefactor =
+            newMutableFlagWithSafeDefault(TOOLBAR_PHONE_ANIMATION_REFACTOR, false);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
             newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION, false);
 

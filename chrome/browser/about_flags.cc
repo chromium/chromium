@@ -6111,6 +6111,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabCollectionAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabCollectionAndroid)},
 
+    {"toolbar-phone-animation-refactor",
+     flag_descriptions::kToolbarPhoneAnimationRefactorName,
+     flag_descriptions::kToolbarPhoneAnimationRefactorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kToolbarPhoneAnimationRefactor)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
     {"disallow-doc-written-script-loads",
      flag_descriptions::kDisallowDocWrittenScriptsUiName,

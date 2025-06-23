@@ -13409,6 +13409,7 @@ from previous Chrome versions.
       label="WebIdentityDigitalCredentialsCreation:enabled"/>
   <int value="-213518852" label="protect-sync-credential:enabled"/>
   <int value="-213214894" label="enable-chromevox-arc-support"/>
+  <int value="-211590646" label="ToolbarPhoneAnimationRefactor:disabled"/>
   <int value="-211162053" label="OmniboxHeaderPaddingUpdate:enabled"/>
   <int value="-208587977" label="OmniboxMaterialDesignWeatherIcons:enabled"/>
   <int value="-208435024" label="EnableUsernameCorrection:enabled"/>
@@ -13553,6 +13554,7 @@ from previous Chrome versions.
   <int value="-157983843" label="CrostiniUseLxd5:disabled"/>
   <int value="-157036790" label="CrosPrivacyHubAppPermissions:disabled"/>
   <int value="-156983642" label="ByDateHistoryInSidePanel:disabled"/>
+  <int value="-155494963" label="ToolbarPhoneAnimationRefactor:enabled"/>
   <int value="-154842647" label="ShowTabListAnimations:enabled"/>
   <int value="-154632776" label="HelpAppWelcomeTips:disabled"/>
   <int value="-154071189"

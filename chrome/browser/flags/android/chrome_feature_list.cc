@@ -384,7 +384,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabGroupEntryPointsAndroid,
     &kTabGroupParityBottomSheetAndroid,
     &kTabletTabStripAnimation,
-    &kToolbarPhoneCleanup,
     &kTabFreezeOnUndoableClosureKillSwitch,
     &kTabStateFlatBuffer,
     &kTabStripContextMenuAndroid,
@@ -404,6 +403,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabWindowManagerReportIndicesMismatch,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
+    &kToolbarPhoneAnimationRefactor,
     &kTopControlsRefactor,
     &kTouchToSearchCallout,
     &kTraceBinderIpc,
@@ -1268,10 +1268,6 @@ BASE_FEATURE(kTabletTabStripAnimation,
              "TabletTabStripAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kToolbarPhoneCleanup,
-             "ToolbarPhoneCleanup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabFreezeOnUndoableClosureKillSwitch,
              "TabFreezeOnUndoableClosureKillSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1347,6 +1343,10 @@ BASE_FEATURE(kTestDefaultDisabled,
 BASE_FEATURE(kTestDefaultEnabled,
              "TestDefaultEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kToolbarPhoneAnimationRefactor,
+             "ToolbarPhoneAnimationRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the use of the refactored Top Controls approach on Android.
 BASE_FEATURE(kTopControlsRefactor,
