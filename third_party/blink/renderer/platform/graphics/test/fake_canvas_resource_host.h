@@ -44,8 +44,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     return old_provider;
   }
 
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D()
-      override {
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D() {
     if (GetResourceProviderForCanvas2D()) {
       return GetResourceProviderForCanvas2D();
     }

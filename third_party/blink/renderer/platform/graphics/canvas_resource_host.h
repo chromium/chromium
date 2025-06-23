@@ -46,8 +46,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual bool IsContextLost() const = 0;
   virtual void SetNeedsCompositingUpdate() = 0;
   virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;
-  virtual CanvasResourceProvider*
-  GetOrCreateCanvasResourceProviderForCanvas2D() = 0;
 
   // Initialize the indicated cc::Layer with the HTMLCanvasElement's CSS
   // properties. This is a no-op if `this` is not an HTMLCanvasElement.
