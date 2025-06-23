@@ -439,25 +439,22 @@ void GraphicsContext::SetPrintingInternalHeadersAndFooters(
 void GraphicsContext::DrawLine(const gfx::Point& point1,
                                const gfx::Point& point2,
                                const StyledStrokeData& styled_stroke,
-                               const AutoDarkMode& auto_dark_mode,
-                               bool is_text_line,
-                               const cc::PaintFlags* paint_flags) {
+                               const AutoDarkMode& auto_dark_mode) {
   DCHECK(canvas_);
 
-  gfx::PointF p1 = gfx::PointF(point1);
-  gfx::PointF p2 = gfx::PointF(point2);
-  bool is_vertical_line = (p1.x() == p2.x());
-  int width = roundf(styled_stroke.Thickness());
+  const bool is_vertical_line = (point1.x() == point2.x());
+  const int width = roundf(styled_stroke.Thickness());
 
   // We know these are vertical or horizontal lines, so the length will just
   // be the sum of the displacement component vectors give or take 1 -
   // probably worth the speed up of no square root, which also won't be exact.
-  gfx::Vector2dF disp = p2 - p1;
-  int length = SkScalarRoundToInt(disp.x() + disp.y());
-  cc::PaintFlags flags =
-      paint_flags ? *paint_flags : ImmutableState()->StrokeFlags();
+  const gfx::Vector2d disp = point2 - point1;
+  const int length = disp.x() + disp.y();
+  cc::PaintFlags flags = ImmutableState()->StrokeFlags();
   styled_stroke.SetupPaint(&flags, {length, width, false});
 
+  gfx::PointF p1 = gfx::PointF(point1);
+  gfx::PointF p2 = gfx::PointF(point2);
   const StrokeStyle pen_style = styled_stroke.Style();
   if (pen_style == kDottedStroke) {
     if (StyledStrokeData::StrokeIsDashed(width, pen_style)) {
@@ -465,12 +462,8 @@ void GraphicsContext::DrawLine(const gfx::Point& point1,
       // work well because we get dots at each end of the line, but if the
       // length is anything else, we get gaps or partial dots at the end of the
       // line. Fix that by explicitly enforcing full dots at the ends of lines.
-      // Note that we don't enforce end points when it's text line as enforcing
-      // is to improve border line quality.
-      if (!is_text_line) {
-        EnforceDotsAtEndpoints(*this, p1, p2, length, width, flags,
-                               is_vertical_line, auto_dark_mode);
-      }
+      EnforceDotsAtEndpoints(*this, p1, p2, length, width, flags,
+                             is_vertical_line, auto_dark_mode);
     } else {
       // We draw thick dotted lines with 0 length dash strokes and round
       // endcaps, producing circles. The endcaps extend beyond the line's
@@ -485,7 +478,23 @@ void GraphicsContext::DrawLine(const gfx::Point& point1,
     }
   }
 
-  AdjustLineToPixelBoundaries(p1, p2, width);
+  // For odd widths, we add in 0.5 to the appropriate x/y so that the float
+  // arithmetic works out.  For example, with a border width of 3, painting will
+  // pass us (y1+y2)/2, e.g., (50+53)/2 = 103/2 = 51 when we want 51.5.  It is
+  // always true that an even width gave us a perfect position, but an odd width
+  // gave us a position that is off by exactly 0.5.
+  if (width % 2) {  // odd
+    if (is_vertical_line) {
+      // We're a vertical line.  Adjust our x.
+      p1.set_x(p1.x() + 0.5f);
+      p2.set_x(p2.x() + 0.5f);
+    } else {
+      // We're a horizontal line. Adjust our y.
+      p1.set_y(p1.y() + 0.5f);
+      p2.set_y(p2.y() + 0.5f);
+    }
+  }
+
   DrawLine(p1, p2, flags, auto_dark_mode);
 }
 
@@ -1072,27 +1081,6 @@ void GraphicsContext::SetURLDestinationLocation(const String& name,
 
 void GraphicsContext::ConcatCTM(const AffineTransform& affine) {
   Concat(affine.ToSkM44());
-}
-
-void GraphicsContext::AdjustLineToPixelBoundaries(gfx::PointF& p1,
-                                                  gfx::PointF& p2,
-                                                  float stroke_width) {
-  // For odd widths, we add in 0.5 to the appropriate x/y so that the float
-  // arithmetic works out.  For example, with a border width of 3, painting will
-  // pass us (y1+y2)/2, e.g., (50+53)/2 = 103/2 = 51 when we want 51.5.  It is
-  // always true that an even width gave us a perfect position, but an odd width
-  // gave us a position that is off by exactly 0.5.
-  if (static_cast<int>(stroke_width) % 2) {  // odd
-    if (p1.x() == p2.x()) {
-      // We're a vertical line.  Adjust our x.
-      p1.set_x(p1.x() + 0.5f);
-      p2.set_x(p2.x() + 0.5f);
-    } else {
-      // We're a horizontal line. Adjust our y.
-      p1.set_y(p1.y() + 0.5f);
-      p2.set_y(p2.y() + 0.5f);
-    }
-  }
 }
 
 }  // namespace blink

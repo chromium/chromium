@@ -41,8 +41,32 @@ void DrawLineAsStroke(GraphicsContext& context,
                       const AutoDarkMode& auto_dark_mode,
                       const cc::PaintFlags* paint_flags) {
   auto [start, end] = GetSnappedPointsForTextLine(line_rect);
-  context.DrawLine(start, end, styled_stroke, auto_dark_mode, true,
-                   paint_flags);
+
+  const int thickness = roundf(styled_stroke.Thickness());
+  StyledStrokeData::GeometryInfo geometry_info;
+  geometry_info.path_length = end.x() - start.x();
+  geometry_info.dash_thickness = thickness;
+
+  gfx::PointF p1 = gfx::PointF(start);
+  gfx::PointF p2 = gfx::PointF(end);
+  // For odd widths, shift the line down by 0.5 to align it with the pixel grid
+  // vertically.
+  if (thickness % 2) {
+    p1.set_y(p1.y() + 0.5f);
+    p2.set_y(p2.y() + 0.5f);
+  }
+
+  if (!StyledStrokeData::StrokeIsDashed(thickness, styled_stroke.Style())) {
+    // We draw thick dotted lines with 0 length dash strokes and round endcaps,
+    // producing circles. The endcaps extend beyond the line's endpoints, so
+    // move the start and end in.
+    p1.set_x(p1.x() + thickness / 2.f);
+    p2.set_x(p2.x() - thickness / 2.f);
+  }
+
+  cc::PaintFlags flags = paint_flags ? *paint_flags : context.StrokeFlags();
+  styled_stroke.SetupPaint(&flags, geometry_info);
+  context.DrawLine(p1, p2, flags, auto_dark_mode);
 }
 
 void DrawLineAsRect(GraphicsContext& context,
