@@ -842,6 +842,11 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     builder.SetWordSpacing(0);
   }
 
+  if (builder.GetDisplayStyle().Display() != EDisplay::kNone &&
+      builder.GetDisplayStyle().Display() != EDisplay::kInlineBlock) {
+    builder.SetDisplay(EDisplay::kInlineBlock);
+  }
+
   if (builder.GetFontDescription().LetterSpacing() >
       kMaximumLetterSpacingToFontSizeRatio * builder.FontSize()) {
     builder.SetLetterSpacing(Length::Fixed(
@@ -1495,26 +1500,14 @@ void HTMLPermissionElement::OnIntersectionChanged(
 }
 
 bool HTMLPermissionElement::IsStyleValid() {
-  const ComputedStyle* style = GetComputedStyle();
-
   // No computed style when using `display: none`.
-  if (!style) {
+  if (!GetComputedStyle()) {
     base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
                                   InvalidStyleReason::kNoComputedStyle);
     return false;
   }
 
-  if (style->GetDisplayStyle().Display() != EDisplay::kNone &&
-      style->GetDisplayStyle().Display() != EDisplay::kInlineBlock) {
-    AddConsoleWarning(StrCat(
-        {"Invalid display style of the permission element ", GetType(),
-         ". Only 'display: inline-block' or 'display: none' is allowed"}));
-    base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
-                                  InvalidStyleReason::kInvalidDisplayProperty);
-    return false;
-  }
-
-  if (AreColorsNonOpaque(style)) {
+  if (AreColorsNonOpaque(GetComputedStyle())) {
     AddConsoleWarning(
         StrCat({"Color or background color of the permission element '",
                 GetType(), "' is non-opaque"}));
@@ -1524,7 +1517,8 @@ bool HTMLPermissionElement::IsStyleValid() {
     return false;
   }
 
-  if (ContrastBetweenColorAndBackgroundColor(style) < kMinimumAllowedContrast) {
+  if (ContrastBetweenColorAndBackgroundColor(GetComputedStyle()) <
+      kMinimumAllowedContrast) {
     AddConsoleWarning(
         StrCat({"Contrast between color and background color of the permission "
                 "element '",
@@ -1547,9 +1541,11 @@ bool HTMLPermissionElement::IsStyleValid() {
       GetDocument().GetFrame()->LocalFrameRoot().LayoutZoomFactor() /
       GetDocument().GetFrame()->LocalFrameRoot().CssZoomFactor();
 
-  float font_size_dip = style->ComputedFontSize() / non_css_layout_zoom_factor;
+  float font_size_dip =
+      GetComputedStyle()->ComputedFontSize() / non_css_layout_zoom_factor;
 
-  bool is_font_monospace = style->GetFontDescription().IsMonospace();
+  bool is_font_monospace =
+      GetComputedStyle()->GetFontDescription().IsMonospace();
 
   // The min size is what `font-size:small` looks like when rendered in the
   // document element of the local root frame, without any intervening
