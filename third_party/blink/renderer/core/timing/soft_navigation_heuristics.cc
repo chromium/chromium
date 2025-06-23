@@ -570,17 +570,16 @@ void SoftNavigationHeuristics::UpdateSoftLcpCandidate() {
 
 void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
     SoftNavigationContext* context) const {
-  CHECK(EnsureContextForCurrentWindow(context));
-
   LocalFrame* frame = GetLocalFrameIfOutermostAndNotDetached();
   if (!frame) {
     return;
   }
-
   auto* loader = frame->Loader().GetDocumentLoader();
   if (!loader) {
     return;
   }
+
+  CHECK(EnsureContextForCurrentWindow(context));
 
   if (LocalFrameClient* frame_client = frame->Client()) {
     blink::SoftNavigationMetrics metrics = {
