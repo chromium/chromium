@@ -39,10 +39,12 @@ BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
 
 void BookmarkBarPreloadPipelineManager::StartPrerender(const GURL& url) {
   if (pipeline_) {
-    // Prerender is expected to be reset when mouseExit happens or every primary
-    // page changed, so if a pipeline is present, the url is expected to be the
-    // same.
-    CHECK_EQ(url, pipeline_->url());
+    // TODO(https://crbug.com/413259638) Adds back the CHECK which checks `url
+    // == pipeline_->url()` when the investigation is done. Prerender is
+    // expected to be reset when mouseExit happens or every primary page
+    // changed, so if a pipeline is present, the url is expected to be the same.
+    // But the CHECK is causing https://crbug.com/425612820 unexpectedly, the
+    // CHECK is removed at the moment.
     return;
   }
 
