@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
-#include "skia/fontations_feature.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -62,24 +61,14 @@ static sk_sp<SkFontMgr> fontmgr_factory() {
     return sk_ref_sp(g_fontmgr_override);
   }
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(skia::kFontationsAndroidSystemFonts)) {
-    return SkFontMgr_New_Android(nullptr, SkFontScanner_Make_Fontations());
-  } else {
-    return SkFontMgr_New_Android(nullptr, SkFontScanner_Make_FreeType());
-  }
+  return SkFontMgr_New_Android(nullptr, SkFontScanner_Make_Fontations());
 #elif BUILDFLAG(IS_APPLE)
   return SkFontMgr_New_CoreText(nullptr);
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   sk_sp<SkFontConfigInterface> fci(SkFontConfigInterface::RefGlobal());
-  if (base::FeatureList::IsEnabled(skia::kFontationsLinuxSystemFonts)) {
-    return fci ? SkFontMgr_New_FCI(std::move(fci),
-                                   SkFontScanner_Make_Fontations())
-               : nullptr;
-  } else {
-    return fci ? SkFontMgr_New_FCI(std::move(fci),
-                                   SkFontScanner_Make_FreeType())
-               : nullptr;
-  }
+  return fci ? SkFontMgr_New_FCI(std::move(fci),
+                                 SkFontScanner_Make_Fontations())
+             : nullptr;
 #elif BUILDFLAG(IS_FUCHSIA)
   fuchsia::fonts::ProviderSyncPtr provider;
   base::ComponentContextForProcess()->svc()->Connect(provider.NewRequest());
