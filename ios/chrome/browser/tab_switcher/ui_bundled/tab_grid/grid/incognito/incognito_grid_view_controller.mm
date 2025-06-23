@@ -24,6 +24,10 @@
   // see it.
   IncognitoReauthView* _blockingView;
 
+  // A view to obscure incognito tabs to hide empty state strings during close
+  // incognito animations.
+  UIView* _blackBackgroundView;
+
   // The object responsible for animating the tabs closure.
   TabsClosureAnimation* _tabsClosureAnimation;
 }
@@ -156,6 +160,7 @@
     _blockingView.alpha = 1;
   } else {
     [_blockingView removeFromSuperview];
+    [_blackBackgroundView removeFromSuperview];
   }
 }
 
@@ -163,6 +168,16 @@
 - (void)animateClosure {
   UIWindow* window = self.view.window;
   [window setUserInteractionEnabled:NO];
+  if (!_blackBackgroundView) {
+    _blackBackgroundView = [[UIView alloc] init];
+    _blackBackgroundView.backgroundColor = UIColor.blackColor;
+    _blackBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    _blackBackgroundView.layer.zPosition = FLT_MAX;
+  }
+  [self.view insertSubview:_blackBackgroundView belowSubview:_blockingView];
+  AddSameConstraints(self.collectionView.frameLayoutGuide,
+                     _blackBackgroundView);
+
   NSMutableArray<UIView*>* gridCells =
       [[NSMutableArray alloc] initWithObjects:_blockingView, nil];
   _tabsClosureAnimation =
