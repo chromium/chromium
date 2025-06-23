@@ -56,7 +56,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     kFailedToExecute = 10,
     kInvalidData = 11,
     kAlreadyExists = 12,
-    kMaxValue = kAlreadyExists
+    kNotFound = 13,
+    kMaxValue = kNotFound
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheStoreError)
 
@@ -124,6 +125,29 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // `kAlreadyExists` error.
   virtual void CreateEntry(const CacheEntryKey& key,
                            EntryInfoOrErrorCallback callback) = 0;
+
+  // Marks an entry for future deletion. When an entry is "doomed", it is
+  // immediately removed from the cache's entry count and total size, but its
+  // data remains on disk until `DeleteDoomedEntry()` is called. The `token`
+  // ensures that only the correct instance of an entry is doomed.
+  virtual void DoomEntry(const CacheEntryKey& key,
+                         const base::UnguessableToken& token,
+                         ErrorCallback callback) = 0;
+
+  // Physically deletes an entry that has been previously marked as doomed. This
+  // operation completes the deletion process by removing the entry's data from
+  // the database. The `token` ensures that only a specific, doomed instance of
+  // the entry is deleted.
+  virtual void DeleteDoomedEntry(const CacheEntryKey& key,
+                                 const base::UnguessableToken& token,
+                                 ErrorCallback callback) = 0;
+
+  // Deletes a "live" entry, i.e., an entry whose `doomed` flag is not set.
+  // This is for use for entries which are not open; open entries should have
+  // `DoomEntry()` called, and then `DeleteDoomedEntry()` once they're no longer
+  // in used.
+  virtual void DeleteLiveEntry(const CacheEntryKey& key,
+                               ErrorCallback callback) = 0;
 
   // Deletes all entries from the cache. `callback` is invoked on completion.
   virtual void DeleteAllEntries(ErrorCallback callback) = 0;

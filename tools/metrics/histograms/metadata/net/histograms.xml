@@ -134,6 +134,9 @@ chromium-metrics-reviews@google.com.
 <variants name="SqlPersistentStoreMethodName">
   <variant name="CreateEntry"/>
   <variant name="DeleteAllEntries"/>
+  <variant name="DeleteDoomedEntry"/>
+  <variant name="DeleteLiveEntry"/>
+  <variant name="DoomEntry"/>
   <variant name="Initialize"/>
   <variant name="OpenEntry"/>
   <variant name="OpenOrCreateEntry"/>
