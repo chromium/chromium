@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.firstrun;
 
 import static androidx.annotation.VisibleForTesting.PRIVATE;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
@@ -18,7 +20,6 @@ import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
@@ -30,6 +31,10 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -73,6 +78,7 @@ import java.util.function.BooleanSupplier;
  *
  * The activity might be run more than once, e.g. 1) for ToS and sign-in, and 2) for intro.
  */
+@NullMarked
 public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPageDelegate {
 
     /**
@@ -176,7 +182,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     private final BitSet mFreProgressStepsRecorded = new BitSet(MobileFreProgress.MAX);
 
-    @Nullable private static FirstRunActivityObserver sObserver;
+    private static @Nullable FirstRunActivityObserver sObserver;
 
     private static boolean sIsAnimationDisabled;
 
@@ -187,11 +193,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private boolean mPostNativeAndPolicyPagesCreated;
 
     /** Use {@link Promise#isFulfilled()} to verify whether the native has been initialized. */
-    private final Promise<Void> mNativeInitializationPromise = new Promise<>();
+    private final Promise<@Nullable Void> mNativeInitializationPromise = new Promise<>();
 
     private FirstRunFlowSequencer mFirstRunFlowSequencer;
 
-    private Bundle mFreProperties;
+    private @MonotonicNonNull Bundle mFreProperties;
 
     /**
      * Whether the first run activity was launched as a result of the user launching Chrome from the
@@ -213,7 +219,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private FirstRunPageTransformer mPageTransformer;
     private ViewPager2 mPager;
 
-    private ValueAnimator mAnimator;
+    private @Nullable ValueAnimator mAnimator;
 
     /** The pager adapter, which provides the pages to the view pager widget. */
     private FirstRunPagerAdapter mPagerAdapter;
@@ -252,6 +258,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // FullscreenSigninMediator#handleContinueWithNative} rather than relying on SigninChecker.
         SigninCheckerProvider.get(getProfileProviderSupplier().get().getOriginalProfile());
 
+        assumeNonNull(mFreProperties);
         mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
 
         BooleanSupplier showSearchEnginePromo =
@@ -331,7 +338,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    protected Bundle transformSavedInstanceStateForOnCreate(Bundle savedInstanceState) {
+    protected @Nullable Bundle transformSavedInstanceStateForOnCreate(Bundle savedInstanceState) {
         // We pass null to Activity.onCreate() so that it doesn't automatically restore
         // the FragmentManager state - as that may cause fragments to be loaded that have
         // dependencies on native before native has been loaded (and then crash). Instead,
@@ -362,6 +369,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
+    @Initializer
     public void triggerLayoutInflation() {
         super.triggerLayoutInflation();
 
@@ -476,7 +484,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // Debounce page changes while animation is in flight.
         if (mAnimator != null) return false;
 
-        mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
+        mFirstRunFlowSequencer.updateFirstRunProperties(assumeNonNull(mFreProperties));
 
         int position = mPager.getCurrentItem() + 1;
         while (position < mPagerAdapter.getItemCount() && !mPages.get(position).shouldShow()) {
@@ -510,7 +518,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle state) {
+    public void onRestoreInstanceState(@Nullable Bundle state) {
         // Don't automatically restore state here. This is a counterpart to the override
         // of transformSavedInstanceStateForOnCreate() as the two need to be consistent.
         // The default implementation of this would restore the state of the views, which
@@ -549,7 +557,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             return BackPressResult.SUCCESS;
         }
 
-        mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
+        mFirstRunFlowSequencer.updateFirstRunProperties(assumeNonNull(mFreProperties));
 
         int position = mPager.getCurrentItem() - 1;
         while (position > 0 && !mPages.get(position).shouldShow()) {
@@ -582,7 +590,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     // FirstRunPageDelegate:
     @Override
-    public Bundle getProperties() {
+    public @Nullable Bundle getProperties() {
         return mFreProperties;
     }
 
@@ -826,11 +834,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    public Promise<Void> getNativeInitializationPromise() {
+    public Promise<@Nullable Void> getNativeInitializationPromise() {
         return mNativeInitializationPromise;
     }
 
-    public FirstRunFragment getCurrentFragmentForTesting() {
+    public @Nullable FirstRunFragment getCurrentFragmentForTesting() {
         return mPagerAdapter.getFirstRunFragment(mPager.getCurrentItem());
     }
 

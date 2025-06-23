@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.firstrun;
 import android.app.Activity;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -14,10 +15,12 @@ import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 
 /** A helper to delay opening sync settings for an FRE advanced sync setup. */
+@NullMarked
 public final class FirstRunSignInProcessor {
     /**
      * If scheduleOpeningSettings() was previously called, this will open sync settings so the user
      * can complete their advanced sync setup.
+     *
      * @param activity The context for the FRE parameters processor.
      */
     public static void openSyncSettingsIfScheduled(Activity activity) {

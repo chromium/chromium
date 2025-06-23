@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +22,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
@@ -38,6 +42,7 @@ import org.chromium.components.crash.CrashKeys;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /**
  * A helper to determine what should be the sequence of First Run Experience screens, and whether it
@@ -46,6 +51,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
  * <p>Usage: new FirstRunFlowSequencer(activity, launcherProvidedProperties) { override
  * onFlowIsKnown }.start();
  */
+@NullMarked
 public abstract class FirstRunFlowSequencer {
     private static final String TAG = "firstrun";
 
@@ -73,9 +79,10 @@ public abstract class FirstRunFlowSequencer {
                 return false;
             }
             // Show the page only to signed-in users.
-            return IdentityServicesProvider.get()
-                    .getIdentityManager(profile)
-                    .hasPrimaryAccount(ConsentLevel.SIGNIN);
+            IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(profile);
+            assumeNonNull(identityManager);
+            return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
         }
 
         /** @return true if the Search Engine promo page should be shown. */
@@ -102,11 +109,11 @@ public abstract class FirstRunFlowSequencer {
     private final FirstRunFlowSequencerDelegate mDelegate;
 
     /** If not null, creates {@code mDelegate} for this object during tests. */
-    private static DelegateFactoryForTesting sDelegateFactoryForTesting;
+    private static @Nullable DelegateFactoryForTesting sDelegateFactoryForTesting;
 
     private boolean mIsFlowKnown;
     private boolean mAccountsAvailable;
-    private Boolean mIsChild;
+    private @Nullable Boolean mIsChild;
 
     /**
      * Callback that is called once the flow is determined. If the properties is null, the First Run
@@ -155,7 +162,7 @@ public abstract class FirstRunFlowSequencer {
     }
 
     private boolean shouldShowHistorySyncOptIn() {
-        return mDelegate.shouldShowHistorySyncOptIn(mIsChild);
+        return mDelegate.shouldShowHistorySyncOptIn(assumeNonNull(mIsChild));
     }
 
     private void setChildAccountStatus(boolean isChild) {

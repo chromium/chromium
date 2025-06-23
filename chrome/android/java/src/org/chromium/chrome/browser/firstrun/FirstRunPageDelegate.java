@@ -18,11 +18,12 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public interface FirstRunPageDelegate {
     /** Returns FRE properties bundle. */
-    Bundle getProperties();
+    @Nullable Bundle getProperties();
 
     /**
-     * Advances the First Run Experience to the next page.
-     * Successfully finishes FRE if the current page is the last page.
+     * Advances the First Run Experience to the next page. Successfully finishes FRE if the current
+     * page is the last page.
+     *
      * @return Whether advancing to the next page succeeded.
      */
     boolean advanceToNextPage();

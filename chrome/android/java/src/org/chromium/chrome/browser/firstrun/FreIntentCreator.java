@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -12,10 +14,10 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -27,6 +29,7 @@ import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
  * This class makes a decision what FRE type to launch and creates a corresponding intent. Should be
  * instantiated using {@link AppHooks#createFreIntentCreator}.
  */
+@NullMarked
 public class FreIntentCreator {
     /**
      * Creates an intent to launch the First Run Experience.
@@ -42,8 +45,7 @@ public class FreIntentCreator {
             Intent fromIntent,
             boolean preferLightweightFre,
             boolean usePendingIntent) {
-        @Nullable
-        BrowserServicesIntentDataProvider webApkIntentDataProvider =
+        @Nullable BrowserServicesIntentDataProvider webApkIntentDataProvider =
                 WebappLauncherActivity.maybeSlowlyGenerateWebApkIntentDataProviderFromIntent(
                         fromIntent);
 
@@ -51,7 +53,7 @@ public class FreIntentCreator {
         Intent intentToLaunchAfterFreComplete = fromIntent;
         if (webApkIntentDataProvider != null
                 && webApkIntentDataProvider.getWebApkExtras() != null) {
-            WebappExtras webappExtras = webApkIntentDataProvider.getWebappExtras();
+            WebappExtras webappExtras = assumeNonNull(webApkIntentDataProvider.getWebappExtras());
             associatedAppName = webappExtras.shortName;
 
             WebApkExtras webApkExtras = webApkIntentDataProvider.getWebApkExtras();

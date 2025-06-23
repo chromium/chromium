@@ -451,10 +451,10 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     }
 
     /**
-     * Allows subclasses to override the instance state passed to super.onCreate().
-     * The original instance state will still be available via getSavedInstanceState().
+     * Allows subclasses to override the instance state passed to super.onCreate(). The original
+     * instance state will still be available via getSavedInstanceState().
      */
-    protected Bundle transformSavedInstanceStateForOnCreate(Bundle savedInstanceState) {
+    protected @Nullable Bundle transformSavedInstanceStateForOnCreate(Bundle savedInstanceState) {
         return savedInstanceState;
     }
 

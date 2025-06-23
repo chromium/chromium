@@ -13,6 +13,7 @@ import android.os.Bundle;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.metrics.UmaUtils;
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.signin.FullscreenSigninAndHistorySyncActivity
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /** Base class for First Run Experience. */
+@NullMarked
 public abstract class FirstRunActivityBase extends FullscreenSigninAndHistorySyncActivityBase
         implements BackPressHandler {
     private static final String TAG = "FirstRunActivity";
