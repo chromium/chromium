@@ -1094,15 +1094,22 @@ public class ChildProcessConnection {
         mService = null;
         mConnectionParams = null;
         mUnbound = true;
-        mStrongBinding.unbindServiceConnection();
+        if (BaseFeatureList.sUpdateStateBeforeUnbinding.isEnabled()) {
+            // Update binding state to ChildBindingState.UNBOUND before unbinding
+            // actual bindings below.
+            updateBindingState();
+        }
+        mStrongBinding.unbindServiceConnection(null);
         // We must clear shared waived binding when we unbind a waived binding.
         clearSharedWaivedBinding();
-        mWaivedBinding.unbindServiceConnection();
+        mWaivedBinding.unbindServiceConnection(null);
         if (mNotPerceptibleBinding != null) {
-            mNotPerceptibleBinding.unbindServiceConnection();
+            mNotPerceptibleBinding.unbindServiceConnection(null);
         }
-        mVisibleBinding.unbindServiceConnection();
-        updateBindingState();
+        mVisibleBinding.unbindServiceConnection(null);
+        if (!BaseFeatureList.sUpdateStateBeforeUnbinding.isEnabled()) {
+            updateBindingState();
+        }
 
         if (mMemoryPressureCallback != null) {
             final MemoryPressureCallback callback = mMemoryPressureCallback;
@@ -1171,8 +1178,12 @@ public class ChildProcessConnection {
         assert mStrongBindingCount > 0;
         mStrongBindingCount--;
         if (mStrongBindingCount == 0) {
-            mStrongBinding.unbindServiceConnection();
-            updateBindingState();
+            if (BaseFeatureList.sUpdateStateBeforeUnbinding.isEnabled()) {
+                mStrongBinding.unbindServiceConnection(() -> updateBindingState());
+            } else {
+                mStrongBinding.unbindServiceConnection(null);
+                updateBindingState();
+            }
         }
     }
 
@@ -1207,8 +1218,12 @@ public class ChildProcessConnection {
         assert mVisibleBindingCount > 0;
         mVisibleBindingCount--;
         if (mVisibleBindingCount == 0) {
-            mVisibleBinding.unbindServiceConnection();
-            updateBindingState();
+            if (BaseFeatureList.sUpdateStateBeforeUnbinding.isEnabled()) {
+                mVisibleBinding.unbindServiceConnection(() -> updateBindingState());
+            } else {
+                mVisibleBinding.unbindServiceConnection(null);
+                updateBindingState();
+            }
         }
     }
 
@@ -1245,8 +1260,13 @@ public class ChildProcessConnection {
         assert mNotPerceptibleBindingCount > 0;
         mNotPerceptibleBindingCount--;
         if (mNotPerceptibleBindingCount == 0) {
-            assumeNonNull(mNotPerceptibleBinding).unbindServiceConnection();
-            updateBindingState();
+            if (BaseFeatureList.sUpdateStateBeforeUnbinding.isEnabled()) {
+                assumeNonNull(mNotPerceptibleBinding)
+                        .unbindServiceConnection(() -> updateBindingState());
+            } else {
+                assumeNonNull(mNotPerceptibleBinding).unbindServiceConnection(null);
+                updateBindingState();
+            }
         }
     }
 

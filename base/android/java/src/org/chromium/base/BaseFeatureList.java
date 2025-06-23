@@ -11,6 +11,12 @@ import org.chromium.build.annotations.NullMarked;
 public class BaseFeatureList {
     private BaseFeatureList() {}
 
+    public static final MutableFlagWithSafeDefault sUpdateStateBeforeUnbinding =
+            new MutableFlagWithSafeDefault(
+                    BaseFeatureMap.getInstance(),
+                    BaseFeatures.UPDATE_STATE_BEFORE_UNBINDING,
+                    false);
+
     public static final MutableFlagWithSafeDefault sUseSharedRebindServiceConnection =
             new MutableFlagWithSafeDefault(
                     BaseFeatureMap.getInstance(),

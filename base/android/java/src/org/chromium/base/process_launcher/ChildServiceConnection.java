@@ -5,13 +5,20 @@
 package org.chromium.base.process_launcher;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Interface representing a connection to the Android service. Can be mocked in unit-tests. */
 @NullMarked
 /* package */ interface ChildServiceConnection {
     boolean bindServiceConnection();
 
-    void unbindServiceConnection();
+    /**
+     * Unbinds the underlying service connection.
+     *
+     * @param onUnbindCallback A callback to be run after isBound() become false and before the
+     *     service is unbound.
+     */
+    void unbindServiceConnection(@Nullable Runnable onStateChangeCallback);
 
     boolean isBound();
 

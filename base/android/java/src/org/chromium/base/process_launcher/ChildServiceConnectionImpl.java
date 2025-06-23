@@ -70,10 +70,13 @@ import java.util.concurrent.Executor;
     }
 
     @Override
-    public void unbindServiceConnection() {
+    public void unbindServiceConnection(@Nullable Runnable onStateChangeCallback) {
         if (mBound) {
-            mContext.unbindService(this);
             mBound = false;
+            if (onStateChangeCallback != null) {
+                onStateChangeCallback.run();
+            }
+            mContext.unbindService(this);
         }
     }
 
@@ -109,7 +112,7 @@ import java.util.concurrent.Executor;
     @Override
     public void retire() {
         mDelegate = null;
-        unbindServiceConnection();
+        unbindServiceConnection(null);
     }
 
     @Override

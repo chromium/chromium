@@ -133,6 +133,11 @@ BASE_FEATURE(kPostGetMyMemoryStateToBackground,
              "PostGetMyMemoryStateToBackground",
              FEATURE_ENABLED_BY_DEFAULT);
 
+// Update child process binding state before unbinding.
+BASE_FEATURE(kUpdateStateBeforeUnbinding,
+            "UpdateStateBeforeUnbinding",
+            FEATURE_DISABLED_BY_DEFAULT);
+
 // Use shared service connection to rebind a service binding to update the LRU
 // in the ProcessList of OomAdjuster.
 BASE_FEATURE(kUseSharedRebindServiceConnection,

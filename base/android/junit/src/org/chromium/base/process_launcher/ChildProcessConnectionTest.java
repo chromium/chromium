@@ -44,6 +44,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -73,8 +74,11 @@ public class ChildProcessConnectionTest {
         }
 
         @Override
-        public void unbindServiceConnection() {
+        public void unbindServiceConnection(@Nullable Runnable onStateChangeCallback) {
             mBound = false;
+            if (onStateChangeCallback != null) {
+                onStateChangeCallback.run();
+            }
         }
 
         @Override
@@ -604,7 +608,92 @@ public class ChildProcessConnectionTest {
         // Kill and verify state.
         connection.kill();
         verify(mIChildProcessService).forceKill();
+        assertEquals(ChildBindingState.UNBOUND, connection.bindingStateCurrent());
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
+        Assert.assertTrue(connection.isKilledByUs());
+    }
+
+    @Test
+    public void testBindingDowngrade() throws RemoteException {
+        ChildProcessConnection connection = createDefaultTestConnection();
+        assertNotNull(mFirstServiceConnection);
+        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        connection.setupConnection(
+                /* childProcessArgs= */ null,
+                /* clientInterfaces= */ null,
+                /* binderBox= */ null,
+                mConnectionCallback,
+                /* zygoteInfoCallback= */ null);
+        verify(mConnectionCallback, never()).onConnected(any());
+        ShadowLooper.runUiThreadTasks();
+        assertNotNull(mConnectionParentProcess);
+        sendPid(34);
+        verify(mConnectionCallback, times(1)).onConnected(connection);
+        connection.removeVisibleBinding();
+
+        // Add all bindings
+        connection.addStrongBinding();
+        connection.addVisibleBinding();
+        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
+            connection.addNotPerceptibleBinding();
+        }
+        assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
+        assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
+
+        // Remove binding from the highest.
+        connection.removeStrongBinding();
+        assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrent());
+        assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrentOrWhenDied());
+        connection.removeVisibleBinding();
+        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
+            assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrent());
+            assertEquals(
+                    ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
+
+            connection.removeNotPerceptibleBinding();
+        }
+        assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrent());
+        assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrentOrWhenDied());
+
+        // Add all bindings
+        connection.addStrongBinding();
+        connection.addVisibleBinding();
+        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
+            connection.addNotPerceptibleBinding();
+        }
+        assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
+        assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
+
+        // Remove the binding in the middle priority.
+        connection.removeVisibleBinding();
+        assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
+        assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
+        connection.removeStrongBinding();
+        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
+            assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrent());
+            assertEquals(
+                    ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
+
+            connection.removeNotPerceptibleBinding();
+        }
+        assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrent());
+        assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrentOrWhenDied());
+
+        // Add strong binding only
+        connection.addStrongBinding();
+        assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
+        assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
+        // Remove the strong binding
+        connection.removeStrongBinding();
+        assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrent());
+        assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrentOrWhenDied());
+
+        // Kill and verify state from waived binding only.
+        connection.kill();
+        verify(mIChildProcessService).forceKill();
+        assertEquals(ChildBindingState.UNBOUND, connection.bindingStateCurrent());
+        assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrentOrWhenDied());
         Assert.assertTrue(connection.isKilledByUs());
     }
 
