@@ -1124,6 +1124,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_SYNC_PASSPHRASE_RECOVER" desc="Message about how to recover from a lost passphrase. [Length:100em, may be multiple lines] [iOS only]">
         If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chromium data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
+      <message name="IDS_IOS_TAB_GROUPS_PANEL_OUT_OF_DATE_MESSAGE_CELL_TEXT" desc="Text for the out-of-date cell that can appear at the top of the tab groups panel when the app is out-of-date to support shared tab groups.">
+        Update Chromium to continue using your shared tab groups
+      </message>
       <message name="IDS_IOS_TAB_SWITCHER_NO_TABS_TO_SYNC_PROMO" desc="The title of the paragraph IDS_OPEN_TABS_NO_SESSION_INSTRUCTIONS_IOS. The paragraph explains that tabs opened on other devices where the user is signed in will appear here, in the Tab Switcher. [iOS only]">
         Use Chromium everywhere
       </message>
