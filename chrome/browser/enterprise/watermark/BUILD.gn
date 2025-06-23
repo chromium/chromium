@@ -16,7 +16,7 @@ source_set("watermark_view_lib") {
 
   deps = [
     "//chrome/common:channel_info",
-    "//components/enterprise/connectors/core:core",
+    "//components/enterprise/connectors/core",
     "//components/enterprise/watermarking",
     "//components/policy/core/browser",
     "//components/prefs",

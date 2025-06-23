@@ -3,12 +3,17 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/watermark/settings.h"
+#include "chrome/browser/enterprise/watermark/watermark_features.h"
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -104,4 +109,52 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(kMultilingualWatermarkMessage,
                                          kLongLinesWatermarkMessage));
 
+class WatermarkSettingsBrowserTest : public InProcessBrowserTest,
+                                     public testing::WithParamInterface<bool> {
+ public:
+  WatermarkSettingsBrowserTest() {
+    if (IsCustomizationEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(kEnableWatermarkCustomization);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(kEnableWatermarkCustomization);
+    }
+  }
+
+  bool IsCustomizationEnabled() const { return GetParam(); }
+
+  SkAlpha PercentageToSkAlpha(int percent_value) {
+    return std::clamp(percent_value, 0, 100) * 255 / 100;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(WatermarkSettingsBrowserTest, GetColors) {
+  PrefService* prefs = browser()->profile()->GetPrefs();
+
+  // Test with default pref values.
+  SkColor expected_fill_color = GetDefaultFillColor();
+  SkColor expected_outline_color = GetDefaultOutlineColor();
+
+  EXPECT_EQ(GetFillColor(prefs), expected_fill_color);
+  EXPECT_EQ(GetOutlineColor(prefs), expected_outline_color);
+
+  // Test with custom pref values.
+  prefs->SetInteger(enterprise_connectors::kWatermarkStyleFillOpacityPref, 30);
+  prefs->SetInteger(enterprise_connectors::kWatermarkStyleOutlineOpacityPref,
+                    40);
+
+  if (IsCustomizationEnabled()) {
+    expected_fill_color =
+        SkColorSetA(SkColorSetRGB(0x00, 0x00, 0x00), PercentageToSkAlpha(30));
+    expected_outline_color =
+        SkColorSetA(SkColorSetRGB(0xff, 0xff, 0xff), PercentageToSkAlpha(40));
+  }
+
+  EXPECT_EQ(GetFillColor(prefs), expected_fill_color);
+  EXPECT_EQ(GetOutlineColor(prefs), expected_outline_color);
+}
+
+INSTANTIATE_TEST_SUITE_P(All, WatermarkSettingsBrowserTest, testing::Bool());
 }  // namespace enterprise_watermark
