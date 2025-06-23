@@ -792,7 +792,7 @@ BASE_FEATURE(kFencedFramesAutomaticBeaconCredentials,
 
 BASE_FEATURE(kFencedFramesCrossOriginAutomaticBeaconData,
              "FencedFramesCrossOriginAutomaticBeaconData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls functionality related to network revocation/local unpartitioned
 // data access in fenced frames.
