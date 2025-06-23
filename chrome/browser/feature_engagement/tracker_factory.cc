@@ -6,11 +6,13 @@
 
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_paths.h"
 #include "components/feature_engagement/public/configuration_provider.h"
 #include "components/feature_engagement/public/field_trial_configuration_provider.h"
 #include "components/feature_engagement/public/local_configuration_provider.h"
@@ -72,6 +74,11 @@ TrackerFactory::BuildServiceInstanceForBrowserContext(
   base::FilePath storage_dir = profile->GetPath().Append(
       chrome::kFeatureEngagementTrackerStorageDirname);
 
+  base::FilePath device_storage_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &device_storage_dir);
+  device_storage_dir = device_storage_dir.Append(
+      chrome::kFeatureEngagementTrackerStorageDirname);
+
   leveldb_proto::ProtoDatabaseProvider* db_provider =
       profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
   auto providers =
@@ -86,8 +93,8 @@ TrackerFactory::BuildServiceInstanceForBrowserContext(
 #endif
 
   return feature_engagement::Tracker::Create(
-      storage_dir, background_task_runner, db_provider, nullptr,
-      std::move(providers));
+      storage_dir, device_storage_dir, background_task_runner, db_provider,
+      nullptr, std::move(providers));
 }
 
 }  // namespace feature_engagement

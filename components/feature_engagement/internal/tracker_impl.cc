@@ -34,6 +34,8 @@
 #include "components/feature_engagement/internal/feature_config_event_storage_validator.h"
 #include "components/feature_engagement/internal/in_memory_event_store.h"
 #include "components/feature_engagement/internal/init_aware_event_model.h"
+#include "components/feature_engagement/internal/multiple_event_model_provider.h"
+#include "components/feature_engagement/internal/multiple_event_model_writer.h"
 #include "components/feature_engagement/internal/never_availability_model.h"
 #include "components/feature_engagement/internal/never_event_storage_validator.h"
 #include "components/feature_engagement/internal/noop_display_lock_controller.h"
@@ -143,6 +145,7 @@ std::unique_ptr<Tracker> CreateDemoModeTracker(
 // static
 std::unique_ptr<Tracker> Tracker::Create(
     const base::FilePath& storage_dir,
+    const base::FilePath& device_storage_dir,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
     std::unique_ptr<TrackerEventExporter> event_exporter,
@@ -184,8 +187,7 @@ std::unique_ptr<Tracker> Tracker::Create(
 
   auto event_model =
       std::make_unique<InitAwareEventModel>(std::move(raw_event_model));
-  auto event_model_provider =
-      std::make_unique<SingleEventModelProvider>(std::move(event_model));
+
   auto condition_validator =
       std::make_unique<FeatureConfigConditionValidator>();
   auto time_provider = std::make_unique<SystemTimeProvider>();
@@ -201,6 +203,35 @@ std::unique_ptr<Tracker> Tracker::Create(
 
   auto availability_model = std::make_unique<AvailabilityModelImpl>(
       std::move(availability_store_loader));
+
+  std::unique_ptr<EventModelProvider> event_model_provider;
+  if (IsOnDeviceStorageEnabled()) {
+    base::FilePath device_event_storage_dir =
+        device_storage_dir.AppendASCII(std::string(kEventDBName));
+    auto device_event_db = db_provider->GetUniqueDB<Event>(
+        leveldb_proto::ProtoDbType::FEATURE_ENGAGEMENT_EVENT,
+        device_event_storage_dir, background_task_runner);
+
+    auto device_event_store =
+        std::make_unique<PersistentEventStore>(std::move(device_event_db));
+
+    auto device_event_storage_validator =
+        std::make_unique<FeatureConfigEventStorageValidator>();
+    device_event_storage_validator->InitializeFeatures(
+        GetAllFeatures(), GetAllGroups(), *configuration);
+
+    auto device_raw_event_model = std::make_unique<EventModelImpl>(
+        std::move(device_event_store),
+        std::move(device_event_storage_validator));
+
+    auto device_event_model = std::make_unique<InitAwareEventModel>(
+        std::move(device_raw_event_model));
+    event_model_provider = std::make_unique<MultipleEventModelProvider>(
+        std::move(event_model), std::move(device_event_model));
+  } else {
+    event_model_provider =
+        std::make_unique<SingleEventModelProvider>(std::move(event_model));
+  }
 
   return std::make_unique<TrackerImpl>(
       std::move(event_model_provider), std::move(availability_model),

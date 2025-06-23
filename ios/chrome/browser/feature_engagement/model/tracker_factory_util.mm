@@ -6,6 +6,7 @@
 
 #import "base/memory/ptr_util.h"
 #import "base/memory/ref_counted.h"
+#import "base/path_service.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "components/feature_engagement/public/feature_activation.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/feature_engagement/model/event_exporter.h"
 #import "ios/chrome/browser/feature_engagement/model/ios_tracker_session_controller.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
@@ -44,6 +46,11 @@ std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
   base::FilePath storage_dir = profile->GetStatePath().Append(
       kIOSFeatureEngagementTrackerStorageDirname);
 
+  base::FilePath device_storage_dir;
+  base::PathService::Get(ios::DIR_USER_DATA, &device_storage_dir);
+  device_storage_dir =
+      device_storage_dir.Append(kIOSFeatureEngagementTrackerStorageDirname);
+
   leveldb_proto::ProtoDatabaseProvider* db_provider =
       profile->GetProtoDatabaseProvider();
 
@@ -52,7 +59,7 @@ std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
   auto session_controller = std::make_unique<IOSTrackerSessionController>();
 
   return feature_engagement::Tracker::Create(
-      storage_dir, background_task_runner, db_provider,
+      storage_dir, device_storage_dir, background_task_runner, db_provider,
       std::move(event_exporter),
       feature_engagement::Tracker::GetDefaultConfigurationProviders(),
       std::move(session_controller));

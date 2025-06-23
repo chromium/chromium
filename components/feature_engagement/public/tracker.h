@@ -160,6 +160,7 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // will be provided.
   static std::unique_ptr<Tracker> Create(
       const base::FilePath& storage_dir,
+      const base::FilePath& device_storage_dir,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       leveldb_proto::ProtoDatabaseProvider* db_provider,
       std::unique_ptr<TrackerEventExporter> event_exporter,
