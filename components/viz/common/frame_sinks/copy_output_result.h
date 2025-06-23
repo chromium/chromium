@@ -10,9 +10,13 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/viz_common_export.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_space.h"
@@ -132,6 +136,10 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // array. The vector will be empty iff the CopyOutputResult |IsEmpty()| is
   // true.
   virtual ReleaseCallbacks TakeTextureOwnership();
+
+  // Get the shared image belonging to this output result;
+  // null if not available.
+  virtual scoped_refptr<gpu::ClientSharedImage> GetSharedImage();
 
   //
   // Subsampled YUV format result description
@@ -265,6 +273,8 @@ class VIZ_COMMON_EXPORT CopyOutputTextureResult : public CopyOutputResult {
 
   const TextureResult* GetTextureResult() const override;
   ReleaseCallbacks TakeTextureOwnership() override;
+
+  scoped_refptr<gpu::ClientSharedImage> GetSharedImage() override;
 
  private:
   TextureResult texture_result_;

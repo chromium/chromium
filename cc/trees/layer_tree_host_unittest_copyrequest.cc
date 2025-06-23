@@ -901,7 +901,7 @@ class LayerTreeHostCopyRequestTestDeleteSharedImage
     EXPECT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
     EXPECT_EQ(result->destination(),
               viz::CopyOutputResult::Destination::kNativeTextures);
-    EXPECT_NE(result->GetTextureResult(), nullptr);
+    EXPECT_NE(result->GetSharedImage().get(), nullptr);
 
     // Save the result for later.
     EXPECT_FALSE(result_);
@@ -1133,7 +1133,7 @@ class LayerTreeHostCopyRequestTestCreatesSharedImage
     EXPECT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
     EXPECT_EQ(result->destination(),
               viz::CopyOutputResult::Destination::kNativeTextures);
-    ASSERT_NE(nullptr, result->GetTextureResult());
+    ASSERT_NE(result->GetSharedImage().get(), nullptr);
     release_ = result->TakeTextureOwnership();
     EXPECT_EQ(1u, release_.size());
   }

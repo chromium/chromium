@@ -313,7 +313,7 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
   }
   // Get the source texture - RGBA format is guaranteed to have 1 valid texture
   // if the CopyOutputRequest succeeded:
-  gpu::Mailbox result_mailbox = result->GetTextureResult()->mailbox;
+  gpu::Mailbox result_mailbox = result->GetSharedImage()->mailbox();
   CHECK(!result_mailbox.IsZero());
 
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =

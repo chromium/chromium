@@ -39,6 +39,10 @@ namespace media {
 class VideoFrame;
 }  // namespace media
 
+namespace viz {
+class CopyOutputTextureResult;
+}  // namespace viz
+
 namespace gpu {
 
 namespace gles2 {
@@ -54,6 +58,7 @@ class TestSharedImageInterface;
 
 struct ExportedSharedImage;
 
+// Wrapper around Mailbox and metadata for efficient sharing between threads
 class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
     : public base::RefCountedThreadSafe<ClientSharedImage> {
  public:
@@ -128,7 +133,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   const Mailbox& mailbox() { return mailbox_; }
   viz::SharedImageFormat format() const { return metadata_.format; }
   gfx::Size size() const { return metadata_.size; }
-  gfx::ColorSpace color_space() const { return metadata_.color_space; }
+  const gfx::ColorSpace& color_space() const { return metadata_.color_space; }
   GrSurfaceOrigin surface_origin() const { return metadata_.surface_origin; }
   SkAlphaType alpha_type() const { return metadata_.alpha_type; }
   SharedImageUsageSet usage() const { return metadata_.usage; }
@@ -333,6 +338,11 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   // in which case this ClientSharedImage is not associated with a
   // SharedImageInterface.
   explicit ClientSharedImage(ExportedSharedImage exported_si);
+
+  friend class ::viz::CopyOutputTextureResult;
+  // Creates unowned (no `sii_holder`) `ClientSharedImage`
+  explicit ClientSharedImage(const Mailbox& mailbox,
+                             const SharedImageInfo& info);
 
   // VideoFrame needs this info currently for MappableSI.
   // TODO(crbug.com/40263579): Once MappableSI is fully launched for VideoFrame,

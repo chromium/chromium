@@ -18,8 +18,11 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -412,6 +415,12 @@ ClientSharedImage::ClientSharedImage(
   CHECK(gpu_memory_buffer_);
   texture_target_ = ComputeTextureTargetForSharedImage(
       metadata_, gpu_memory_buffer_->GetType(), sii_holder_->Get());
+}
+
+ClientSharedImage::ClientSharedImage(const Mailbox& mailbox,
+                                     const SharedImageInfo& info)
+    : mailbox_(mailbox), metadata_(info.meta), debug_label_(info.debug_label) {
+  CHECK(!mailbox.IsZero());
 }
 
 ClientSharedImage::~ClientSharedImage() {

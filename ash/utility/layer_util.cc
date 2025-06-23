@@ -5,8 +5,10 @@
 #include "ash/utility/layer_util.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
@@ -22,10 +24,11 @@ void CopyCopyOutputResultToLayer(
   DCHECK_EQ(copy_result->destination(),
             viz::CopyOutputResult::Destination::kNativeTextures);
 
-  const auto& texture_result = *copy_result->GetTextureResult();
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      copy_result->GetSharedImage();
   viz::TransferableResource transferable_resource =
       viz::TransferableResource::MakeGpu(
-          texture_result.mailbox, GL_TEXTURE_2D, gpu::SyncToken(),
+          shared_image->mailbox(), GL_TEXTURE_2D, gpu::SyncToken(),
           copy_result->size(), viz::SinglePlaneFormat::kRGBA_8888,
           /*is_overlay_candidate=*/false,
           viz::TransferableResource::ResourceSource::kUI);

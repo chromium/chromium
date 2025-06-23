@@ -4,16 +4,40 @@
 
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 
+#include <cstddef>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "ui/gfx/color_space.h"
 
 namespace viz {
+
+namespace {
+
+// Translate `CopyOutputResult::Format to `SharedImageFormat`
+SharedImageFormat GetSharedImageFormatFor(CopyOutputResult::Format format) {
+  switch (format) {
+    case CopyOutputResult::Format::RGBA:
+      return SinglePlaneFormat::kRGBA_8888;
+    case CopyOutputResult::Format::I420_PLANES:
+      return MultiPlaneFormat::kI420;
+    case CopyOutputResult::Format::NV12:
+      return MultiPlaneFormat::kNV12;
+  }
+}
+
+}  // namespace
 
 CopyOutputResult::TextureResult::TextureResult(
     const CopyOutputResult::TextureResult& other) = default;
@@ -68,6 +92,10 @@ const CopyOutputResult::TextureResult* CopyOutputResult::GetTextureResult()
 
 CopyOutputResult::ReleaseCallbacks CopyOutputResult::TakeTextureOwnership() {
   return {};
+}
+
+scoped_refptr<gpu::ClientSharedImage> CopyOutputResult::GetSharedImage() {
+  return nullptr;
 }
 
 bool CopyOutputResult::ReadI420Planes(base::span<uint8_t> y_out,
@@ -251,6 +279,22 @@ CopyOutputTextureResult::TakeTextureOwnership() {
   release_callbacks_.clear();
 
   return result;
+}
+
+scoped_refptr<gpu::ClientSharedImage>
+CopyOutputTextureResult::GetSharedImage() {
+  // matches usage from
+  // `SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia()`
+  constexpr gpu::SharedImageUsageSet kUsage =
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+
+  return {new gpu::ClientSharedImage(
+      texture_result_.mailbox,
+      gpu::SharedImageInfo{GetSharedImageFormatFor(format()), size(),
+                           texture_result_.color_space, kUsage,
+                           "CopyOutputResults"})};
 }
 
 CopyOutputResult::ScopedSkBitmap::ScopedSkBitmap() = default;

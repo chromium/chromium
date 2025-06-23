@@ -1343,7 +1343,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_EmptyBitmap) {
   auto scoped_bitmap = output->ScopedAccessSkBitmap();
   auto bitmap = scoped_bitmap.bitmap();
   EXPECT_FALSE(bitmap.readyToDraw());
-  EXPECT_EQ(output->GetTextureResult(), nullptr);
+  EXPECT_EQ(output->GetSharedImage().get(), nullptr);
 }
 
 TEST_F(StructTraitsTest, CopyOutputResult_EmptyTexture) {
@@ -1363,7 +1363,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_EmptyTexture) {
   EXPECT_EQ(output->destination(),
             CopyOutputResult::Destination::kNativeTextures);
   EXPECT_TRUE(output->rect().IsEmpty());
-  EXPECT_EQ(output->GetTextureResult(), nullptr);
+  EXPECT_EQ(output->GetSharedImage().get(), nullptr);
 }
 
 TEST_F(StructTraitsTest, CopyOutputResult_Bitmap) {
@@ -1385,7 +1385,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_Bitmap) {
   EXPECT_EQ(output->destination(),
             CopyOutputResult::Destination::kSystemMemory);
   EXPECT_EQ(output->rect(), result_rect);
-  EXPECT_EQ(output->GetTextureResult(), nullptr);
+  EXPECT_EQ(output->GetSharedImage().get(), nullptr);
 
   auto scoped_bitmap = output->ScopedAccessSkBitmap();
   auto out_bitmap = scoped_bitmap.bitmap();
@@ -1444,9 +1444,9 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
   EXPECT_EQ(output->destination(),
             CopyOutputResult::Destination::kNativeTextures);
   EXPECT_EQ(output->rect(), result_rect);
-  ASSERT_NE(output->GetTextureResult(), nullptr);
-  EXPECT_EQ(output->GetTextureResult()->mailbox, mailbox);
-  EXPECT_EQ(output->GetTextureResult()->color_space, result_color_space);
+  ASSERT_NE(output->GetSharedImage().get(), nullptr);
+  EXPECT_EQ(output->GetSharedImage()->mailbox(), mailbox);
+  EXPECT_EQ(output->GetSharedImage()->color_space(), result_color_space);
 
   CopyOutputResult::ReleaseCallbacks out_callbacks =
       output->TakeTextureOwnership();
