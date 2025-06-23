@@ -133,15 +133,13 @@ class JavacOutputProcessor:
     """
     previous_line = next(lines, None)
     line = next(lines, None)
-    while previous_line != None:
+    while previous_line is not None:
       try:
         self._LookForUnknownSymbol(previous_line, line)
       except Exception:
-        elaborated_lines = ['Error in _LookForUnknownSymbol ---']
-        elaborated_lines += traceback.format_exc().splitlines()
-        elaborated_lines += ['--- end _LookForUnknownSymbol error']
-        for elaborated_line in elaborated_lines:
-          yield elaborated_line
+        yield 'Error in _LookForUnknownSymbol ---'
+        yield from traceback.format_exc().splitlines()
+        yield '--- end _LookForUnknownSymbol error'
 
       yield previous_line
       previous_line = line

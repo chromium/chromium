@@ -18,12 +18,13 @@ from typing import Sequence
 
 
 @contextlib.contextmanager
-def atomic_output(path, mode='w+b', only_if_changed=True):
+def atomic_output(path, mode='w+b', encoding=None, only_if_changed=True):
   """Prevent half-written files and dirty mtimes for unchanged files.
 
   Args:
     path: Path to the final output file, which will be written atomically.
     mode: The mode to open the file in (str).
+    encoding: Encoding to use if using non-binary mode.
     only_if_changed: Whether to maintain the mtime if the file has not changed.
   Returns:
     A Context Manager that yields a NamedTemporaryFile instance. On exit, the
@@ -37,7 +38,10 @@ def atomic_output(path, mode='w+b', only_if_changed=True):
   # Create in same directory to ensure same filesystem when moving.
   dirname = os.path.dirname(path) or '.'
   os.makedirs(dirname, exist_ok=True)
+  if encoding is not None and mode == 'w+b':
+    mode = 'w+'
   with tempfile.NamedTemporaryFile(mode,
+                                   encoding=encoding,
                                    prefix=".tempfile.",
                                    suffix="." + os.path.basename(path),
                                    dir=dirname,

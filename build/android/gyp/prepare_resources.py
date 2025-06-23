@@ -60,7 +60,7 @@ def _ParseArgs(args):
 
   options = parser.parse_args(args)
 
-  with open(options.res_sources_path) as f:
+  with open(options.res_sources_path, encoding='utf-8') as f:
     options.sources = f.read().splitlines()
   options.resource_dirs = resource_utils.DeduceResourceDirsFromFileList(
       options.sources)

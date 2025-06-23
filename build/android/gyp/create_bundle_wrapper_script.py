@@ -83,7 +83,7 @@ def main(args):
 
   wrapped_script_dir = os.path.join(os.path.dirname(__file__), os.path.pardir)
   wrapped_script_dir = relativize(wrapped_script_dir)
-  with open(args.script_output_path, 'w') as script:
+  with open(args.script_output_path, 'w', encoding='utf-8') as script:
     script_dict = {
         'WRAPPED_SCRIPT_DIR':
         repr(wrapped_script_dir),

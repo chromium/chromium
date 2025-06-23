@@ -114,14 +114,6 @@ class CppConstantParser:
     self._current_value = ''
     self._constants = []
 
-  def _ExtractVariable(self, line):
-    match = StringFileParser.STRING_RE.match(line)
-    return match.group(1) if match else None
-
-  def _ExtractValue(self, line):
-    match = StringFileParser.VALUE_RE.search(line)
-    return match.group(1) if match else None
-
   def _Reset(self):
     self._current_comments = []
     self._current_name = ''

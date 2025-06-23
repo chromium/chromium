@@ -10,7 +10,6 @@ import dex
 
 class DexTest(unittest.TestCase):
   def testStdErrFilter(self):
-    # pylint: disable=line-too-long
     output = """\
 some initial message
 Warning in ../../clank/third_party/google3/pg_confs/java_com_google_protobuf_lite_proguard.pgcfg:
@@ -28,7 +27,6 @@ some initial message
 Warning: some message
 Missing class com.google.android.gms.feedback.ApplicationProperties (referenced from: com.google.protobuf.GeneratedMessageLite$GeneratedExtension com.google.protobuf.BaseGeneratedExtensionRegistryLite.findLiteExtensionByNumber(com.google.protobuf.MessageLite, int))
 """
-    # pylint: enable=line-too-long
     filters = (dex.DEFAULT_IGNORE_WARNINGS +
                ('CONTAINING_TYPE_', 'libcore', 'PublicStopClientEvent'))
     filter_func = dex.CreateStderrFilter(filters)

@@ -8,7 +8,6 @@ import argparse
 import json
 import logging
 import os
-import pathlib
 import re
 import shutil
 import sys
@@ -57,7 +56,7 @@ _IGNORE_WARNINGS = (
     # We enforce that this class is removed via -checkdiscard.
     r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',
     # Happens on internal builds. It's a real failure, but happens in dead code.
-    r'(?:GeneratedExtensionRegistryLoader|ExtensionRegistryLite)\.class:.*Could not inline ServiceLoader\.load',  # pylint: disable=line-too-long
+    r'(?:GeneratedExtensionRegistryLoader|ExtensionRegistryLite)\.class:.*Could not inline ServiceLoader\.load',
     # This class is referenced by kotlinx-coroutines-core-jvm but it does not
     # depend on it. Not actually needed though.
     r'Missing class org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement',
@@ -71,9 +70,9 @@ _IGNORE_WARNINGS = (
     # Full error: "Warning: InnerClasses attribute has entries missing a
     # corresponding EnclosingMethod attribute. Such InnerClasses attribute
     # entries are ignored."
-    r'Warning: InnerClasses attribute has entries missing a corresponding EnclosingMethod attribute',  # pylint: disable=line-too-long
-    # Warning in obj/third_party/android_deps/google_play_services_fido_java/classes.jar:com/google/android/gms/internal/fido/zzel$zza.class:  # pylint: disable=line-too-long
-    # Classes with missing EnclosingMethod: com.google.android.gms.internal.fido.zzel$zza  # pylint: disable=line-too-long
+    r'Warning: InnerClasses attribute has entries missing a corresponding EnclosingMethod attribute',
+    # Warning in obj/third_party/android_deps/google_play_services_fido_java/classes.jar:com/google/android/gms/internal/fido/zzel$zza.class:
+    # Classes with missing EnclosingMethod: com.google.android.gms.internal.fido.zzel$zza
     r'Classes with missing EnclosingMethod',
     # Full error example: "Warning in <path to target prebuilt>:
     # androidx/test/espresso/web/internal/deps/guava/collect/Maps$1.class:"
@@ -306,7 +305,7 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
   with build_utils.TempDir() as tmp_dir:
     if dynamic_config_data:
       dynamic_config_path = os.path.join(tmp_dir, 'dynamic_config.flags')
-      with open(dynamic_config_path, 'w') as f:
+      with open(dynamic_config_path, 'w', encoding='utf-8') as f:
         f.write(dynamic_config_data)
       config_paths = config_paths + [dynamic_config_path]
 
@@ -524,7 +523,7 @@ def _CombineConfigs(configs,
     if any(entry in config for entry in _BLOCKLISTED_EXPECTATION_PATHS):
       continue
 
-    with open(config) as config_file:
+    with open(config, encoding='utf-8') as config_file:
       contents = config_file.read().rstrip()
 
     ret.extend(format_config_contents(config, contents))

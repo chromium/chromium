@@ -143,6 +143,7 @@ def _SplitLocaleResourceType(_type, allowed_resource_names):
 
 def _HardcodeInTable(table, is_bundle_module, shared_resources_allowlist):
   translations_package = None
+  allowed_resource_names = set()
   if is_bundle_module:
     # A separate top level package will be added to the resources, which
     # contains only locale specific resources. The package ID of the locale
@@ -158,7 +159,6 @@ def _HardcodeInTable(table, is_bundle_module, shared_resources_allowlist):
 
     # These resources are allowed in the base resources, since they are needed
     # by WebView.
-    allowed_resource_names = set()
     if shared_resources_allowlist:
       allowed_resource_names = set(
           resource_utils.GetRTxtStringResourceNames(shared_resources_allowlist))
@@ -266,12 +266,12 @@ class _ResourceStripper:
     return self._has_changes
 
 
-def _TableFromFlatBytes(data):
+def _TableFromFlatBytes(filename, data):
   # https://cs.android.com/search?q=f:aapt2.*Container.cpp
   size_idx = len(_FLAT_ARSC_HEADER)
   proto_idx = size_idx + 8
   if data[:size_idx] != _FLAT_ARSC_HEADER:
-    raise Exception('Error parsing {} in {}'.format(info.filename, zip_path))
+    raise Exception(f'Wrong header bytes in {filename}')
   # Size is stored as uint64.
   size = struct.unpack('<Q', data[size_idx:proto_idx])[0]
   table = Resources_pb2.ResourceTable()
@@ -300,7 +300,7 @@ def StripUnwantedResources(partial_path, keep_predicate):
 
   def process_file(filename, data):
     if filename.endswith('.arsc.flat'):
-      table = _TableFromFlatBytes(data)
+      table = _TableFromFlatBytes(filename, data)
       if stripper.StripTable(table):
         data = _FlatBytesFromTable(table)
     return data

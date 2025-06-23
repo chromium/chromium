@@ -12,7 +12,6 @@ import sys
 import time
 import zipfile
 
-import compile_java
 import javac_output_processor
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
@@ -123,7 +122,7 @@ def main(argv):
   if java_files:
     # Use jar_path to ensure paths are relative (needed for rbe).
     files_rsp_path = options.jar_path + '.java_files_list.txt'
-    with open(files_rsp_path, 'w') as f:
+    with open(files_rsp_path, 'w', encoding='utf-8') as f:
       f.write('\n'.join(java_files))
     # Pass source paths as response files to avoid extremely long command
     # lines that are tedius to debug.

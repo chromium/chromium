@@ -113,7 +113,7 @@ class RTxtGenerator:
 
   def _CollectResourcesListFromDirectory(self, res_dir):
     ret = set()
-    globs = resource_utils._GenerateGlobs(self.ignore_pattern)
+    globs = resource_utils.GenerateGlobs(self.ignore_pattern)
     for root, _, files in os.walk(res_dir):
       resource_type = os.path.basename(root)
       if '-' in resource_type:

@@ -43,7 +43,7 @@ def _DexFilesFromPath(path):
           if re.match(r'.*classes[0-9]*\.dex$', name)
       ]
   else:
-    with open(path) as f:
+    with open(path, 'rb') as f:
       return dex_parser.DexFile(bytearray(f.read()))
 
 

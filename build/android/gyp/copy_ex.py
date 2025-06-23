@@ -72,7 +72,7 @@ def DoRenaming(options, deps):
           action_helpers.parse_gn_list(f)
           for f in options.renaming_destinations))
 
-  if (len(src_files) != len(dest_files)):
+  if len(src_files) != len(dest_files):
     print('Renaming source and destination files not match.')
     sys.exit(-1)
 

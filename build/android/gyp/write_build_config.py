@@ -9,6 +9,7 @@
 See //build/android/docs/build_config.md
 """
 
+
 import argparse
 import collections
 import itertools
@@ -86,7 +87,7 @@ class AndroidManifest:
 
 
 def ReadJson(path):
-  with open(path) as f:
+  with open(path, encoding='utf-8') as f:
     return json.load(f)
 
 
@@ -342,7 +343,7 @@ def _DepsFromPathsWithFilters(dep_paths, blocklist=None, allowlist=None):
 
 def _ExtractSharedLibsFromRuntimeDeps(runtime_deps_file):
   ret = []
-  with open(runtime_deps_file) as f:
+  with open(runtime_deps_file, encoding='utf-8') as f:
     for line in f:
       line = line.rstrip()
       if not line.endswith('.so'):
@@ -547,6 +548,8 @@ def main():
     # for these libraries will get pulled in along with the resources.
     android_resources_library_deps = _DepsFromPathsWithFilters(
         deps_configs_paths, allowlist=['java_library']).All('java_library')
+  else:
+    android_resources_library_deps = None
 
   base_module_build_config = None
   if path := params.get('base_module_config'):
@@ -630,6 +633,7 @@ def main():
                         '\n'.join('* ' + d['gn_target']
                                   for d in deps_not_support_android))
 
+  all_dex_files = []
   if is_apk_or_module or target_type == 'dist_jar':
     all_dex_files = [c['dex_path'] for c in all_library_deps]
 

@@ -649,7 +649,7 @@ enum TerminationStatus {
     self.assertEqual(collections.OrderedDict([('A', 0)]),
                      definition.entries)
 
-  def testParseFixedTypeEnum(self):
+  def testParseFixedTypeEnumWithOverride(self):
     test_data = """
       // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
       // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SigninAccessPoint

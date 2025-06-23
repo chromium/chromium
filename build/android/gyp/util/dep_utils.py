@@ -3,9 +3,7 @@
 # found in the LICENSE file.
 """Methods for managing deps based on .params.json files."""
 
-from __future__ import annotations
 import collections
-
 import dataclasses
 import json
 import logging
@@ -21,7 +19,7 @@ _SRC_PATH = pathlib.Path(__file__).resolve().parents[4]
 
 sys.path.append(str(_SRC_PATH / 'build/android'))
 # Import list_java_targets so that the dependency is found by print_python_deps.
-import list_java_targets
+import list_java_targets  # pylint: disable=unused-import
 
 
 @dataclasses.dataclass(frozen=True)
@@ -150,7 +148,7 @@ class ClassLookupIndex:
         assert not self._should_build
         continue
 
-      with open(params_path) as data:
+      with open(params_path, encoding='utf-8') as data:
         params_json: Dict = json.load(data)
 
       # Checking the library type here instead of in list_java_targets.py avoids
@@ -204,7 +202,8 @@ class ClassLookupIndex:
     sources_path = params_json.get('target_sources_file')
     if sources_path:
       # Read the target_sources_file, indexing the classes found
-      with open(self._abs_build_output_dir / sources_path) as sources_contents:
+      with open(self._abs_build_output_dir / sources_path,
+                encoding='utf-8') as sources_contents:
         for source_line in sources_contents:
           source_path = pathlib.Path(source_line.strip())
           java_class = jar_utils.parse_full_java_class(source_path)

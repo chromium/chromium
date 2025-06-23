@@ -30,7 +30,7 @@ def _MergeRTxt(r_paths, include_globs, exclude_globs):
     if include_globs and not build_utils.MatchesGlob(r_path, include_globs) or \
        exclude_globs and build_utils.MatchesGlob(r_path, exclude_globs):
       continue
-    with open(r_path) as f:
+    with open(r_path, encoding='utf-8') as f:
       all_lines.update(f.readlines())
   return ''.join(sorted(all_lines))
 
@@ -40,7 +40,7 @@ def _MergeProguardConfigs(proguard_configs):
   ret = []
   for config in proguard_configs:
     ret.append('# FROM: {}'.format(config))
-    with open(config) as f:
+    with open(config, encoding='utf-8') as f:
       ret.append(f.read())
   return '\n'.join(ret)
 
@@ -82,9 +82,10 @@ def main(args):
       '--android-manifest',
       help='Path to AndroidManifest.xml to include.',
       default=os.path.join(_ANDROID_BUILD_DIR, 'AndroidManifest.xml'))
-  parser.add_argument('--native-libraries', default='',
-                      help='GN list of native libraries. If non-empty then '
-                      'ABI must be specified.')
+  parser.add_argument('--native-libraries',
+                      default='',
+                      help='GN list of native libraries. If non-empty then \
+                      ABI must be specified.')
   parser.add_argument('--abi',
                       help='ABI (e.g. armeabi-v7a) for native libraries.')
   parser.add_argument(

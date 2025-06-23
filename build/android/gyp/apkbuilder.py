@@ -10,9 +10,7 @@ import argparse
 import logging
 import os
 import posixpath
-import shutil
 import sys
-import tempfile
 import zipfile
 import zlib
 

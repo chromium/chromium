@@ -8,10 +8,9 @@ import hashlib
 import itertools
 import json
 import os
-import sys
 import zipfile
 
-from util import build_utils
+from util import build_utils  # pylint: disable=unused-import
 import action_helpers  # build_utils adds //build to sys.path.
 import print_python_deps
 
@@ -129,7 +128,7 @@ def CallAndRecordIfStale(function,
   old_metadata = None
 
   if not missing_outputs and os.path.exists(record_path):
-    with open(record_path, 'r') as jsonfile:
+    with open(record_path, 'r', encoding='utf-8') as jsonfile:
       try:
         old_metadata = _Metadata.FromFile(jsonfile)
       except:  # pylint: disable=bare-except
@@ -148,7 +147,7 @@ def CallAndRecordIfStale(function,
   args = (changes,) if pass_changes else ()
   function(*args)
 
-  with open(record_path, 'w') as f:
+  with open(record_path, 'w', encoding='utf-8') as f:
     new_metadata.ToFile(f)
 
 
@@ -190,11 +189,11 @@ class Changes:
 
   def IterAllPaths(self):
     """Generator for paths."""
-    return self.new_metadata.IterPaths();
+    return self.new_metadata.IterPaths()
 
   def IterAllSubpaths(self, path):
     """Generator for subpaths."""
-    return self.new_metadata.IterSubpaths(path);
+    return self.new_metadata.IterSubpaths(path)
 
   def IterAddedPaths(self):
     """Generator for paths that were added."""
@@ -430,11 +429,11 @@ class _Metadata:
 
 
 def _ComputeTagForPath(path):
-  stat = os.stat(path)
-  if stat.st_size > 1 * 1024 * 1024:
+  stat_result = os.stat(path)
+  if stat_result.st_size > 1 * 1024 * 1024:
     # Fallback to mtime for large files so that md5_check does not take too long
     # to run.
-    return stat.st_mtime
+    return stat_result.st_mtime
   md5 = hashlib.md5()
   with open(path, 'rb') as f:
     md5.update(f.read())

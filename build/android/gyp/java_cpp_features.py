@@ -5,12 +5,11 @@
 # found in the LICENSE file.
 
 import argparse
-import os
 import re
 import sys
 import zipfile
 
-from util import build_utils
+from util import build_utils  # pylint: disable=unused-import
 from util import java_cpp_utils
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
@@ -61,14 +60,14 @@ def _GenerateOutput(template, source_paths, template_path, features):
 
 
 def _ParseFeatureFile(path):
-  with open(path) as f:
+  with open(path, encoding='utf-8') as f:
     feature_file_parser = java_cpp_utils.CppConstantParser(
         FeatureParserDelegate(), f.readlines())
   return feature_file_parser.Parse()
 
 
 def _Generate(source_paths, template_path):
-  with open(template_path) as f:
+  with open(template_path, encoding='utf-8') as f:
     lines = f.readlines()
 
   template = ''.join(lines)

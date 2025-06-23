@@ -110,7 +110,7 @@ def _CreateSourcesJsonFile(source_dirs, input_path, sources_json_file, src_root,
   data['output_dir'] = build_dir
   if input_path:
     data['input_path'].append(os.path.abspath(input_path))
-  with open(sources_json_file, 'w') as f:
+  with open(sources_json_file, 'w', encoding='utf-8') as f:
     json.dump(data, f)
   return 0
 

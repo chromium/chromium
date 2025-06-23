@@ -378,11 +378,11 @@ def _ConcatTextFiles(in_paths, out_path):
     in_paths: List of input file paths.
     out_path: Path to output file.
   """
-  with open(out_path, 'w') as out_file:
+  with open(out_path, 'w', encoding='utf-8') as out_file:
     for in_path in in_paths:
       if not os.path.exists(in_path):
         continue
-      with open(in_path, 'r') as in_file:
+      with open(in_path, 'r', encoding='utf-8') as in_file:
         out_file.write('-- Contents of {}\n'.format(os.path.basename(in_path)))
         out_file.write(in_file.read())
 
@@ -397,7 +397,7 @@ def _LoadPathmap(pathmap_path):
     return {}
 
   pathmap = {}
-  with open(pathmap_path, 'r') as f:
+  with open(pathmap_path, 'r', encoding='utf-8') as f:
     for line in f:
       line = line.strip()
       if line.startswith('--') or line == '':
@@ -415,7 +415,7 @@ def _WriteBundlePathmap(module_pathmap_paths, module_names,
   to the bundle pathmap. So res/a.xml inside the base module pathmap would be
   base/res/a.xml in the bundle pathmap.
   """
-  with open(bundle_pathmap_path, 'w') as bundle_pathmap_file:
+  with open(bundle_pathmap_path, 'w', encoding='utf-8') as bundle_pathmap_file:
     for module_pathmap_path, module_name in zip(module_pathmap_paths,
                                                 module_names):
       if not os.path.exists(module_pathmap_path):
@@ -566,7 +566,7 @@ def main(args):
     # named with a .pb.json extension.
     tmp_bundle_config = tmp_bundle + '.BundleConfig.pb.json'
 
-    with open(tmp_bundle_config, 'w') as f:
+    with open(tmp_bundle_config, 'w', encoding='utf-8') as f:
       f.write(bundle_config)
 
     logging.info('Running bundletool')

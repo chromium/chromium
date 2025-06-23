@@ -74,7 +74,8 @@ class _FuncWrapper:
     try:
       if _fork_kwargs is None:  # Clarifies _fork_kwargs is map for pylint.
         _fork_kwargs = {}
-      return self._func(*_fork_params[index], **_fork_kwargs)
+      params = _fork_params[index]  # pylint: disable=unsubscriptable-object
+      return self._func(*params, **_fork_kwargs)
     except Exception as e:
       # Only keep the exception type for builtin exception types or else risk
       # further marshalling exceptions.
@@ -84,7 +85,7 @@ class _FuncWrapper:
       # multiprocessing is supposed to catch and return exceptions automatically
       # but it doesn't seem to work properly :(.
       return _ExceptionWrapper(traceback.format_exc(), exception_type)
-    except:  # pylint: disable=bare-except
+    except BaseException:
       return _ExceptionWrapper(traceback.format_exc())
 
 
@@ -134,7 +135,7 @@ def _TerminatePools():
   def close_pool(pool):
     try:
       pool.terminate()
-    except:  # pylint: disable=bare-except
+    except BaseException:
       pass
 
   for i, pool in enumerate(_all_pools):

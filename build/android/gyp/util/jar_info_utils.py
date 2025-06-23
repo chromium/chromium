@@ -16,7 +16,7 @@ import os
 def ReadAarSourceInfo(info_path):
   """Returns the source= path from an .aar's source.info file."""
   # The .info looks like: "source=path/to/.aar\n".
-  with open(info_path) as f:
+  with open(info_path, encoding='utf-8') as f:
     return f.read().rstrip().split('=', 1)[1]
 
 
@@ -28,9 +28,9 @@ def ParseJarInfoFile(info_path):
   Returns:
     A new dictionary mapping fully-qualified Java class names to file paths.
   """
-  info_data = dict()
+  info_data = {}
   if os.path.exists(info_path):
-    with open(info_path, 'r') as info_file:
+    with open(info_path, 'r', encoding='utf-8') as info_file:
       for line in info_file:
         line = line.strip()
         if line:
@@ -54,6 +54,5 @@ def WriteJarInfoFile(output_obj, info_data, source_file_map=None):
     if source_file_map and path in source_file_map:
       path = source_file_map[path]
       assert not path.startswith('/tmp'), (
-          'Java file path should not be in temp dir: {}'.format(path))
-    output_obj.write(('{},{}\n'.format(fully_qualified_name,
-                                       path)).encode('utf8'))
+          f'Java file path should not be in temp dir: {path}')
+    output_obj.write(f'{fully_qualified_name},{path}\n')

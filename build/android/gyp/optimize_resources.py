@@ -60,9 +60,9 @@ def _ParseArgs(args):
 
 
 def _CombineResourceConfigs(resources_config_paths, out_config_path):
-  with open(out_config_path, 'w') as out_config:
+  with open(out_config_path, 'w', encoding='utf-8') as out_config:
     for config_path in resources_config_paths:
-      with open(config_path) as config:
+      with open(config_path, encoding='utf-8') as config:
         out_config.write(config.read())
         out_config.write('\n')
 
@@ -84,7 +84,7 @@ def _ExtractNonCollapsableResources(rtxt_path):
   """
   resources = []
   _NO_COLLAPSE_TYPES = ['id', 'mipmap']
-  with open(rtxt_path) as rtxt:
+  with open(rtxt_path, encoding='utf-8') as rtxt:
     for line in rtxt:
       for resource_type in _NO_COLLAPSE_TYPES:
         if ' {} '.format(resource_type) in line:
@@ -118,7 +118,7 @@ def _OptimizeApk(output, options, temp_dir, unoptimized_path, r_txt_path):
     gen_config_path = os.path.join(temp_dir, 'aapt2.config')
     if options.resources_config_paths:
       _CombineResourceConfigs(options.resources_config_paths, gen_config_path)
-    with open(gen_config_path, 'a') as config:
+    with open(gen_config_path, 'a', encoding='utf-8') as config:
       for resource in no_collapse_resources:
         config.write('{}#no_collapse\n'.format(resource))
 

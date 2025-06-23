@@ -67,7 +67,7 @@ def main(args):
   apk_operations_dir = os.path.join(os.path.dirname(__file__), os.path.pardir)
   apk_operations_dir = relativize(apk_operations_dir)
 
-  with open(args.script_output_path, 'w') as script:
+  with open(args.script_output_path, 'w', encoding='utf-8') as script:
     script_dict = {
         'APK_OPERATIONS_DIR': repr(apk_operations_dir),
         'OUTPUT_DIR': repr(relativize('.')),

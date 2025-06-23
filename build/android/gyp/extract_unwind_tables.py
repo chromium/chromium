@@ -64,7 +64,6 @@ import re
 import struct
 import subprocess
 import sys
-import tempfile
 
 
 _CFA_REG = '.cfa'
@@ -78,12 +77,12 @@ _CANT_UNWIND = 0xFFFF
 
 def _Write4Bytes(output_file, val):
   """Writes a 32 bit unsigned integer to the given output file."""
-  output_file.write(struct.pack('<L', val));
+  output_file.write(struct.pack('<L', val))
 
 
 def _Write2Bytes(output_file, val):
   """Writes a 16 bit unsigned integer to the given output file."""
-  output_file.write(struct.pack('<H', val));
+  output_file.write(struct.pack('<H', val))
 
 
 def _FindRuleForRegister(cfi_row, reg):
@@ -125,7 +124,7 @@ def _GetCfaAndRaOffset(cfi_row):
   return (cfa_offset, ra_offset)
 
 
-def _GetAllCfiRows(symbol_file):
+def GetAllCfiRows(symbol_file):
   """Returns parsed CFI data from given symbol_file.
 
   Each entry in the cfi data dictionary returned is a map from function start
@@ -135,7 +134,6 @@ def _GetAllCfiRows(symbol_file):
   cfi_data = {}
   current_func = []
   for line in symbol_file:
-    line = line.decode('utf8')
     if 'STACK CFI' not in line:
       continue
 
@@ -185,7 +183,7 @@ def _GetAllCfiRows(symbol_file):
   return cfi_data
 
 
-def _WriteCfiData(cfi_data, out_file):
+def WriteCfiData(cfi_data, out_file):
   """Writes the CFI data in defined format to out_file."""
   # Stores the final data that will be written to UNW_DATA table, in order
   # with 2 byte items.
@@ -269,14 +267,14 @@ def main():
 
   args = parser.parse_args()
   cmd = ['./' + args.dump_syms_path, args.input_path, '-v']
-  proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-  cfi_data = _GetAllCfiRows(proc.stdout)
-  if proc.wait():
+  with subprocess.Popen(cmd, stdout=subprocess.PIPE, encoding='utf-8') as proc:
+    cfi_data = GetAllCfiRows(proc.stdout)
+  if proc.returncode:
     sys.stderr.write('dump_syms exited with code {} after {} symbols\n'.format(
         proc.returncode, len(cfi_data)))
     sys.exit(proc.returncode)
   with open(args.output_path, 'wb') as out_file:
-    _WriteCfiData(cfi_data, out_file)
+    WriteCfiData(cfi_data, out_file)
 
 
 if __name__ == '__main__':

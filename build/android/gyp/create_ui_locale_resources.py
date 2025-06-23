@@ -25,7 +25,6 @@ sys.path.insert(
     os.path.join(
         os.path.dirname(__file__), '..', '..', '..', 'build', 'android', 'gyp'))
 
-from util import build_utils
 from util import resource_utils
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers

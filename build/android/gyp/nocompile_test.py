@@ -44,6 +44,7 @@ def _run_command(args, cwd=None):
   p = subprocess.Popen(args,
                        stdout=subprocess.PIPE,
                        stderr=subprocess.STDOUT,
+                       encoding='utf-8',
                        cwd=cwd)
   pout, _ = p.communicate()
   if p.returncode != 0:
@@ -56,16 +57,16 @@ def _run_command_get_failure_output(args):
   Returns:
       Command output if command fails, None if command succeeds.
   """
-  p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  p = subprocess.Popen(args,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.STDOUT,
+                       encoding='utf-8')
   pout, _ = p.communicate()
 
   if p.returncode == 0:
     return None
 
-  # For Python3 only:
-  if isinstance(pout, bytes) and sys.version_info >= (3, ):
-    pout = pout.decode('utf-8')
-  return '' if pout is None else pout
+  return pout or ''
 
 
 def _copy_and_append_gn_args(src_args_path, dest_args_path, extra_args):
@@ -76,10 +77,11 @@ def _copy_and_append_gn_args(src_args_path, dest_args_path, extra_args):
       dest_args_path: Copy file destination.
       extra_args: Text to append to args.gn after copy.
     """
-  with open(src_args_path) as f_in, open(dest_args_path, 'w') as f_out:
-    f_out.write(f_in.read())
-    f_out.write('\n')
-    f_out.write('\n'.join(extra_args))
+  with open(src_args_path, encoding='utf-8') as f_in:
+    with open(dest_args_path, 'w', encoding='utf-8') as f_out:
+      f_out.write(f_in.read())
+      f_out.write('\n')
+      f_out.write('\n'.join(extra_args))
 
 
 def _find_regex_in_test_failure_output(test_output, regex):
@@ -142,11 +144,12 @@ def main():
   parser.add_argument('--stamp', help='Path to touch.')
   options = parser.parse_args()
 
-  with open(options.test_configs_path) as f:
+  with open(options.test_configs_path, encoding='utf-8') as f:
     # Escape '\' in '\.' now. This avoids having to do the escaping in the test
     # specification.
     config_text = f.read().replace(r'\.', r'\\.')
     test_configs = json.loads(config_text)
+
 
   if not os.path.exists(options.out_dir):
     os.makedirs(options.out_dir)

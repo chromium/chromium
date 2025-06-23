@@ -133,7 +133,7 @@ def _PerformExtract(aar_file, output_dir, name_allowlist):
     build_utils.ExtractAll(
         aar_file, path=tmp_dir, predicate=name_allowlist.__contains__)
     # Write a breadcrumb so that SuperSize can attribute files back to the .aar.
-    with open(os.path.join(tmp_dir, 'source.info'), 'w') as f:
+    with open(os.path.join(tmp_dir, 'source.info'), 'w', encoding='utf-8') as f:
       f.write('source={}\n'.format(aar_file))
 
     shutil.rmtree(output_dir, ignore_errors=True)
@@ -207,14 +207,15 @@ def main():
       # under third_party/android_deps/repository. To deal with these, first
       # that its content is correct, and if it is, exit without touching
       # the file system.
-      file_info = open(args.output, 'r').read()
+      with open(args.output, 'r', encoding='utf-8') as f:
+        file_info = f.read()
       if file_info == formatted_info:
         return
 
     # Try to write the file. This may fail for read-only ones that were
     # not updated.
     try:
-      with open(args.output, 'w') as f:
+      with open(args.output, 'w', encoding='utf-8') as f:
         f.write(formatted_info)
     except IOError as e:
       if not aar_output_present:

@@ -87,7 +87,7 @@ def main():
 
   native_libraries = []
   if options.native_libraries_list:
-    with open(options.native_libraries_list) as f:
+    with open(options.native_libraries_list, encoding='utf-8') as f:
       native_libraries.extend(l.strip() for l in f)
 
   if options.enable_chromium_linker and len(native_libraries) > 1:

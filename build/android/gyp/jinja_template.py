@@ -21,7 +21,7 @@ from pylib.constants import host_paths
 
 # Import jinja2 from third_party/jinja2
 sys.path.append(os.path.join(host_paths.DIR_SOURCE_ROOT, 'third_party'))
-import jinja2  # pylint: disable=F0401
+import jinja2
 
 
 class _RecordingFileSystemLoader(jinja2.FileSystemLoader):

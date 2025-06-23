@@ -8,13 +8,12 @@ import argparse
 import collections
 from datetime import date
 import re
-import os
 from string import Template
 import sys
 import textwrap
 import zipfile
 
-from util import build_utils
+from util import build_utils  # pylint: disable=unused-import
 from util import java_cpp_utils
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
@@ -412,7 +411,7 @@ def DoGenerate(source_paths):
 
 
 def DoParseHeaderFile(path):
-  with open(path) as f:
+  with open(path, encoding='utf-8') as f:
     return HeaderParser(f.readlines(), path).ParseDefinitions()
 
 

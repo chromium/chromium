@@ -41,9 +41,9 @@ def _TransformAarPaths(path):
 
 def _MergeResInfoFiles(res_info_path, info_paths):
   # Concatenate them all.
-  with action_helpers.atomic_output(res_info_path, 'w+') as dst:
+  with action_helpers.atomic_output(res_info_path, encoding='utf-8') as dst:
     for p in info_paths:
-      with open(p) as src:
+      with open(p, encoding='utf-8') as src:
         dst.writelines(_TransformAarPaths(l) for l in src)
 
 
@@ -55,12 +55,12 @@ def _PakInfoPathsForAssets(assets):
 def _MergePakInfoFiles(merged_path, pak_infos):
   info_lines = set()
   for pak_info_path in pak_infos:
-    with open(pak_info_path, 'r') as src_info_file:
+    with open(pak_info_path, 'r', encoding='utf-8') as src_info_file:
       info_lines.update(_TransformAarPaths(x) for x in src_info_file)
   # only_if_changed=False since no build rules depend on this as an input.
   with action_helpers.atomic_output(merged_path,
                                     only_if_changed=False,
-                                    mode='w+') as f:
+                                    encoding='utf-8') as f:
     f.writelines(sorted(info_lines))
 
 
@@ -87,7 +87,7 @@ def _MergeJarInfoFiles(output, inputs):
     output: output file path.
     inputs: List of .jar.info or .jar files.
   """
-  info_data = dict()
+  info_data = {}
   for path in inputs:
     # For non-prebuilts: .jar.info files are written by compile_java.py and map
     # .class files to .java source paths.
@@ -122,7 +122,9 @@ def _MergeJarInfoFiles(output, inputs):
                 attributed_path, name))
 
   # only_if_changed=False since no build rules depend on this as an input.
-  with action_helpers.atomic_output(output, only_if_changed=False) as f:
+  with action_helpers.atomic_output(output,
+                                    encoding='utf-8',
+                                    only_if_changed=False) as f:
     jar_info_utils.WriteJarInfoFile(f, info_data)
 
 

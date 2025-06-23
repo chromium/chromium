@@ -8,11 +8,10 @@ import hashlib
 import os
 import re
 import shlex
-import sys
-import xml.dom.minidom as minidom
+from xml.dom import minidom
 from xml.etree import ElementTree
 
-from util import build_utils
+from util import build_utils  # pylint: disable=unused-import
 import action_helpers  # build_utils adds //build to sys.path.
 
 ANDROID_NAMESPACE = 'http://schemas.android.com/apk/res/android'

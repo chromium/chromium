@@ -5,7 +5,6 @@
 
 import argparse
 
-from util import build_utils
 from util import diff_utils
 
 IGNORE_FLAG_PREFIXES = [
@@ -99,7 +98,7 @@ def _MergeFlagsHelper(flags):
 
 def ParseFlags(flag_file_path):
   flags = []
-  with open(flag_file_path) as f:
+  with open(flag_file_path, encoding='utf-8') as f:
     for flag in f.read().splitlines():
       if KeepFlag(flag):
         flags.append(flag)

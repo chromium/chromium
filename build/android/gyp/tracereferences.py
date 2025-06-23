@@ -7,9 +7,8 @@
 import argparse
 import json
 import logging
-import os
 import pathlib
-import re
+import shutil
 import sys
 
 from util import build_utils
@@ -140,7 +139,7 @@ def main():
                       help='Do not filter output')
   args = parser.parse_args()
 
-  with open(args.tracerefs_json) as f:
+  with open(args.tracerefs_json, encoding='utf-8') as f:
     spec = json.load(f)
   r8jar = spec['r8jar']
   libs = spec['libs']

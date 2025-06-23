@@ -12,7 +12,6 @@ import contextlib
 import os
 import sys
 import tempfile
-import xml.etree.ElementTree as ElementTree
 
 from util import build_utils
 from util import manifest_utils

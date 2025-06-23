@@ -35,7 +35,7 @@ def _FilterUnusedResources(r_text_in, r_text_out, unused_resources_config):
 
 
 def _WritePaths(dest_path, lines):
-  pathlib.Path(dest_path).write_text('\n'.join(lines) + '\n')
+  pathlib.Path(dest_path).write_text('\n'.join(lines) + '\n', encoding='utf-8')
 
 
 def main(args):

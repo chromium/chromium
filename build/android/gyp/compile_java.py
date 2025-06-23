@@ -231,7 +231,7 @@ class _MetadataParser:
     logging.info('Collecting info file entries')
     entries = {}
     for path in itertools.chain(java_files, kt_files or []):
-      data = pathlib.Path(path).read_text()
+      data = pathlib.Path(path).read_text(encoding='utf-8')
       package_name, class_names = ParseJavaSource(data,
                                                   self.services_map,
                                                   path=path)
@@ -242,7 +242,7 @@ class _MetadataParser:
           entries[fully_qualified_name] = path
 
     logging.info('Writing info file: %s', output_path)
-    with action_helpers.atomic_output(output_path, mode='wb') as f:
+    with action_helpers.atomic_output(output_path, encoding='utf-8') as f:
       jar_info_utils.WriteJarInfoFile(f, entries, self._srcjar_files)
     logging.info('Completed info file: %s', output_path)
 
@@ -380,8 +380,8 @@ def _RunCompiler(changes,
             and (jar_info_path is None or os.path.exists(jar_info_path))):
           # Log message is used by tests to determine whether partial javac
           # optimization was used.
-          logging.info('Using partial javac optimization for %s compile' %
-                       (jar_path))
+          logging.info('Using partial javac optimization for %s compile',
+                       jar_path)
 
           # Header jar corresponding to |java_files| did not change.
           # As a build speed optimization (crbug.com/1170778), re-compile only
@@ -430,7 +430,7 @@ def _RunCompiler(changes,
       # Pass source paths as response files to avoid extremely long command
       # lines that are tedius to debug.
       java_files_rsp_path = os.path.join(temp_dir, 'files_list.txt')
-      with open(java_files_rsp_path, 'w') as f:
+      with open(java_files_rsp_path, 'w', encoding='utf-8') as f:
         f.write(' '.join(java_files))
       cmd += ['@' + java_files_rsp_path]
 

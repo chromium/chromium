@@ -5,6 +5,7 @@
 import collections
 import contextlib
 import itertools
+import logging
 import os
 import re
 import shutil
@@ -12,9 +13,8 @@ import subprocess
 import sys
 import tempfile
 import zipfile
-from xml.etree import ElementTree
 
-import util.build_utils as build_utils
+from util import build_utils
 
 _SOURCE_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
@@ -179,7 +179,7 @@ _TextSymbolEntry = collections.namedtuple('RTextEntry',
     ('java_type', 'resource_type', 'name', 'value'))
 
 
-def _GenerateGlobs(pattern):
+def GenerateGlobs(pattern):
   # This function processes the aapt ignore assets pattern into a list of globs
   # to be used to exclude files using build_utils.MatchesGlob. It removes the
   # '!', which is used by aapt to mean 'not chatty' so it does not output if the
@@ -223,7 +223,7 @@ All resource files must follow a structure of "$ROOT/$SUBDIR/$FILE"."""
 
 def IterResourceFilesInDirectories(directories,
                                    ignore_pattern=AAPT_IGNORE_PATTERN):
-  globs = _GenerateGlobs(ignore_pattern)
+  globs = GenerateGlobs(ignore_pattern)
   for d in directories:
     for root, _, files in os.walk(d):
       for f in files:
@@ -276,7 +276,7 @@ class ResourceInfoFile:
     """
     assert not self._add_mapping_was_called
     # Allows clobbering, which is used when overriding resources.
-    with open(info_file_path) as f:
+    with open(info_file_path, encoding='utf-8') as f:
       self._entries.update(l.rstrip().split('\t') for l in f)
 
   def _ApplyRenames(self):
@@ -306,7 +306,7 @@ class ResourceInfoFile:
     lines = []
     for archive_path, source_path in entries.items():
       lines.append('{}\t{}\n'.format(archive_path, source_path))
-    with open(info_file_path, 'w') as info_file:
+    with open(info_file_path, 'w', encoding='utf-8') as info_file:
       info_file.writelines(sorted(lines))
 
 
@@ -323,7 +323,7 @@ def _ParseTextSymbolsFile(path, fix_package_ids=False):
     Exception: An unexpected line was detected in the input.
   """
   ret = []
-  with open(path) as f:
+  with open(path, encoding='utf-8') as f:
     for line in f:
       m = re.match(r'(int(?:\[\])?) (\w+) (\w+) (.+)$', line)
       if not m:
@@ -356,7 +356,7 @@ def ResolveStyleableReferences(r_txt_path):
   lookup_table = {(e.resource_type, e.name): e.value for e in entries}
 
   sb = []
-  with open(r_txt_path, encoding='utf8') as f:
+  with open(r_txt_path, encoding='utf-8') as f:
     for l in f:
       if l.startswith('int[] styleable'):
         brace_start = l.index('{') + 2
@@ -376,7 +376,7 @@ def ResolveStyleableReferences(r_txt_path):
         l = l[:brace_start] + ', '.join(new_values) + l[brace_end:]
       sb.append(l)
 
-  with open(r_txt_path, 'w', encoding='utf8') as f:
+  with open(r_txt_path, 'w', encoding='utf-8') as f:
     f.writelines(sb)
 
 
@@ -487,7 +487,7 @@ class RJavaBuildOptions:
     """Sets a package ID to be used for resources marked final."""
     self.final_package_id = package_id
 
-  def _MaybeRewriteRTxtPackageIds(self, r_txt_path):
+  def MaybeRewriteRTxtPackageIds(self, r_txt_path):
     """Rewrites package IDs in the R.txt file if necessary.
 
     If SetFinalPackageId() was called, some of the resource IDs may have had
@@ -498,16 +498,16 @@ class RJavaBuildOptions:
       return
 
     entries = _ParseTextSymbolsFile(r_txt_path)
-    with open(r_txt_path, 'w') as f:
+    with open(r_txt_path, 'w', encoding='utf-8') as f:
       for entry in entries:
         value = entry.value
-        if self._IsResourceFinal(entry):
+        if self.IsResourceFinal(entry):
           value = re.sub(r'0x(?:00|7f)',
                          '0x{:02x}'.format(self.final_package_id), value)
         f.write('{} {} {} {}\n'.format(entry.java_type, entry.resource_type,
                                        entry.name, value))
 
-  def _IsResourceFinal(self, entry):
+  def IsResourceFinal(self, entry):
     """Determines whether a resource should be final or not.
 
   Args:
@@ -562,7 +562,7 @@ def CreateRJavaFiles(srcjar_dir,
   Raises:
     Exception if a package name appears several times in |extra_res_packages|
   """
-  rjava_build_options._MaybeRewriteRTxtPackageIds(main_r_txt_file)
+  rjava_build_options.MaybeRewriteRTxtPackageIds(main_r_txt_file)
 
   packages = list(extra_res_packages)
 
@@ -607,7 +607,7 @@ def CreateRJavaFiles(srcjar_dir,
   root_java_file_contents = _RenderRootRJavaSource(
       root_r_java_package, all_resources_by_type, rjava_build_options,
       grandparent_custom_package_name)
-  with open(root_r_java_path, 'w') as f:
+  with open(root_r_java_path, 'w', encoding='utf-8') as f:
     f.write(root_java_file_contents)
 
   for p in packages:
@@ -623,7 +623,7 @@ def _CreateRJavaSourceFile(srcjar_dir, package, root_r_java_package,
   package_r_java_path = os.path.join(package_r_java_dir, 'R.java')
   java_file_contents = _RenderRJavaSource(package, root_r_java_package,
                                           rjava_build_options)
-  with open(package_r_java_path, 'w') as f:
+  with open(package_r_java_path, 'w', encoding='utf-8') as f:
     f.write(java_file_contents)
 
 
@@ -684,7 +684,7 @@ def _RenderRootRJavaSource(package, all_resources_by_type, rjava_build_options,
     for entry in resources:
       # Entries in stylable that are not int[] are not actually resource ids
       # but constants.
-      if rjava_build_options._IsResourceFinal(entry):
+      if rjava_build_options.IsResourceFinal(entry):
         final_resources_by_type[res_type].append(entry)
       else:
         non_final_resources_by_type[res_type].append(entry)
@@ -791,7 +791,8 @@ def ExtractBinaryManifestValues(aapt2_path, apk_path):
   """Returns (version_code, version_name, package_name) for the given apk."""
   output = subprocess.check_output([
       aapt2_path, 'dump', 'xmltree', apk_path, '--file', 'AndroidManifest.xml'
-  ]).decode('utf-8')
+  ],
+                                   encoding='utf-8')
   version_code = re.search(r'versionCode.*?=(\d*)', output).group(1)
   version_name = re.search(r'versionName.*?="(.*?)"', output).group(1)
   package_name = re.search(r'package.*?="(.*?)"', output).group(1)
@@ -809,9 +810,9 @@ def ExtractArscPackage(aapt2_path, apk_path):
   """
   proc = subprocess.Popen([aapt2_path, 'dump', 'resources', apk_path],
                           stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE)
+                          stderr=subprocess.PIPE,
+                          encoding='utf-8')
   for line in proc.stdout:
-    line = line.decode('utf-8')
     # Package name=org.chromium.webview_shell id=7f
     if line.startswith('Package'):
       proc.kill()
@@ -822,7 +823,7 @@ def ExtractArscPackage(aapt2_path, apk_path):
 
   # aapt2 currently crashes when dumping webview resources, but not until after
   # it prints the "Package" line (b/130553900).
-  stderr_output = proc.stderr.read().decode('utf-8')
+  stderr_output = proc.stderr.read()
   if stderr_output:
     sys.stderr.write(stderr_output)
     raise Exception('Failed to find arsc package name')
@@ -1025,7 +1026,7 @@ def GenerateAndroidResourceStringsXml(names_to_utf8_text, namespaces=None):
     for name, utf8_text in sorted(names_to_utf8_text.items()):
       result += '<string name="%s">"%s"</string>\n' % (name, utf8_text)
   result += '</resources>\n'
-  return result.encode('utf8')
+  return result
 
 
 def FilterAndroidResourceStringsXml(xml_file_path, string_predicate):
@@ -1040,7 +1041,7 @@ def FilterAndroidResourceStringsXml(xml_file_path, string_predicate):
     string_predicate: A predicate function which will receive the string name
       and shal
   """
-  with open(xml_file_path) as f:
+  with open(xml_file_path, encoding='utf-8') as f:
     xml_data = f.read()
   strings_map, namespaces = ParseAndroidResourceStringsFromXml(xml_data)
 
@@ -1052,5 +1053,5 @@ def FilterAndroidResourceStringsXml(xml_file_path, string_predicate):
 
   if string_deletion:
     new_xml_data = GenerateAndroidResourceStringsXml(strings_map, namespaces)
-    with open(xml_file_path, 'wb') as f:
+    with open(xml_file_path, 'w', encoding='utf-8') as f:
       f.write(new_xml_data)

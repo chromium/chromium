@@ -84,7 +84,7 @@ def main():
     symbol_list.append('JNI_OnLoad_*')
 
   for allowlist in options.allowlists:
-    with open(allowlist, 'rt') as f:
+    with open(allowlist, 'rt', encoding='utf-8') as f:
       for line in f:
         line = line.strip()
         if not line or line[0] == '#':

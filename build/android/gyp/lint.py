@@ -19,7 +19,7 @@ from util import manifest_utils
 from util import server_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
-_LINT_MD_URL = 'https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md'  # pylint: disable=line-too-long
+_LINT_MD_URL = 'https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md'
 
 # These checks are not useful for chromium.
 _DISABLED_ALWAYS = [
@@ -129,7 +129,7 @@ def _GenerateProjectFile(android_manifest,
 
 
 def _RetrieveBackportedMethods(backported_methods_path):
-  with open(backported_methods_path) as f:
+  with open(backported_methods_path, encoding='utf-8') as f:
     methods = f.read().splitlines()
   # Methods look like:
   #   java/util/Set#of(Ljava/lang/Object;)Ljava/util/Set;
@@ -180,12 +180,12 @@ def _GenerateAndroidManifest(original_manifest_path, extra_manifest_paths,
 def _WriteXmlFile(root, path):
   logging.info('Writing xml file %s', path)
   build_utils.MakeDirectory(os.path.dirname(path))
-  with action_helpers.atomic_output(path) as f:
+  with action_helpers.atomic_output(path, encoding='utf-8') as f:
     # Although we can write it just with ElementTree.tostring, using minidom
     # makes it a lot easier to read as a human (also on code search).
     f.write(
         minidom.parseString(ElementTree.tostring(
-            root, encoding='utf-8')).toprettyxml(indent='  ').encode('utf-8'))
+            root, encoding='utf-8')).toprettyxml(indent='  '))
 
 
 def _RunLint(custom_lint_jar_path,

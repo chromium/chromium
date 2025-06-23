@@ -16,9 +16,9 @@ import zip_helpers
 def _ConcatRTxts(rtxt_in_paths, combined_out_path):
   all_lines = set()
   for rtxt_in_path in rtxt_in_paths:
-    with open(rtxt_in_path) as rtxt_in:
+    with open(rtxt_in_path, encoding='utf-8') as rtxt_in:
       all_lines.update(rtxt_in.read().splitlines())
-  with open(combined_out_path, 'w') as combined_out:
+  with open(combined_out_path, 'w', encoding='utf-8') as combined_out:
     combined_out.write('\n'.join(sorted(all_lines)))
 
 

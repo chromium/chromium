@@ -22,7 +22,6 @@ import zip_helpers
 def do_native(options, files):
 
   for i, f in enumerate(files):
-    f = files[i]
     with build_utils.TempDir() as temp_dir:
       aidl_cmd = [options.aidl_path, '--lang=ndk']
       aidl_cmd += [
@@ -59,7 +58,7 @@ def main(argv):
 
   if options.header_output_dir or options.cpp_output:
     if not (options.header_output_dir and options.cpp_output):
-      option_parser.error(
+      parser.error(
           'Native generation requires header-output-dir and cpp-output')
 
 
@@ -81,7 +80,7 @@ def main(argv):
     with action_helpers.atomic_output(options.srcjar) as f:
       with zipfile.ZipFile(f, 'w') as srcjar:
         for path in build_utils.FindInDirectory(temp_dir, '*.java'):
-          with open(path) as fileobj:
+          with open(path, encoding='utf-8') as fileobj:
             data = fileobj.read()
           pkg_name = re.search(r'^\s*package\s+(.*?)\s*;', data, re.M).group(1)
           arcname = '%s/%s' % (
