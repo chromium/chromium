@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/common/content_features.h"
 
 // Has to come after all the FromJniType() / ToJniType() headers.
 #include "android_webview/browser_jni_headers/AwPrefetchManager_jni.h"
@@ -144,7 +145,11 @@ int AwPrefetchManager::StartPrefetchRequest(
         browser_context_->StartBrowserPrefetchRequest(
             pf_url, AW_PREFETCH_METRICS_SUFFIX,
             GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
-            expected_no_vary_search, /*priority=*/std::nullopt,
+            expected_no_vary_search,
+            base::FeatureList::IsEnabled(
+                features::kWebViewPrefetchHighestPrefetchPriority)
+                ? std::optional(content::PrefetchPriority::kHighest)
+                : std::nullopt,
             additional_headers, std::move(request_status_listener),
             base::Seconds(ttl_in_sec_),
             /*should_append_variations_header=*/false,

@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
+#include "content/public/common/content_features.h"
 
 namespace content {
 
@@ -43,6 +44,11 @@ size_t GetActiveSetSizeLimitForBurst() {
   if (features::kPrerender2FallbackPrefetchSchedulerPolicy.Get() ==
       features::Prerender2FallbackPrefetchSchedulerPolicy::kBurst) {
     return GetActiveSetSizeLimitForBase() + 1;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewPrefetchHighestPrefetchPriority)) {
+    return features::kWebViewPrefetchHighestPrefetchPriorityBurstLimit.Get();
   }
 
   // No additional room for burst.

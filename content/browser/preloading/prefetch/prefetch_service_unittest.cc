@@ -556,7 +556,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       bool should_disable_block_until_head_timeout = false) {
     return browser_context()->StartBrowserPrefetchRequest(
         url, test::kPreloadingEmbedderHistgramSuffixForTesting, true,
-        no_vary_search_data, /*priority=*/std::nullopt, additional_headers,
+        no_vary_search_data, PrefetchPriority::kHighest, additional_headers,
         std::move(request_status_listener), ttl,
         /*should_append_variations_header=*/true,
         should_disable_block_until_head_timeout);
@@ -586,15 +586,24 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     VerifyCommonRequestState(url, {});
   }
 
-  void VerifyCommonRequestStateForEmbedders(
+  void VerifyCommonRequestStateForWebContentsPrefetch(
       const GURL& url,
       const VerifyCommonRequestStateOptions& options) {
-    VerifyCommonRequestState(
-        url, {.expected_priority =
-                  base::FeatureList::IsEnabled(
-                      features::kPrefetchNetworkPriorityForEmbedders)
-                      ? net::RequestPriority::MEDIUM
-                      : net::RequestPriority::IDLE});
+    VerifyCommonRequestStateOptions options_override = options;
+    options_override.expected_priority =
+        base::FeatureList::IsEnabled(
+            features::kPrefetchNetworkPriorityForEmbedders)
+            ? net::RequestPriority::MEDIUM
+            : net::RequestPriority::IDLE;
+    VerifyCommonRequestState(url, options_override);
+  }
+
+  void VerifyCommonRequestStateForBrowserContextPrefetch(
+      const GURL& url,
+      const VerifyCommonRequestStateOptions& options) {
+    VerifyCommonRequestStateOptions options_override = options;
+    options_override.expected_priority = net::RequestPriority::HIGHEST;
+    VerifyCommonRequestState(url, options_override);
   }
 
   void VerifyCommonRequestState(
@@ -1330,7 +1339,7 @@ TEST_P(PrefetchServiceTest, SuccessCase_Browser) {
                                      std::move(request_status_listener));
   task_environment()->RunUntilIdle();
 
-  VerifyCommonRequestStateForEmbedders(
+  VerifyCommonRequestStateForBrowserContextPrefetch(
       GURL("https://example.com?b=1"),
       {.use_prefetch_proxy = false,
        .additional_headers = request_additional_headers});
@@ -1408,7 +1417,7 @@ TEST_P(PrefetchServiceTest, SuccessCase_Browser_NoVarySearch) {
                                      std::move(request_status_listener));
   task_environment()->RunUntilIdle();
 
-  VerifyCommonRequestStateForEmbedders(
+  VerifyCommonRequestStateForBrowserContextPrefetch(
       GURL("https://example.com?a=1"),
       {.use_prefetch_proxy = false,
        .additional_headers = request_additional_headers});
@@ -1473,8 +1482,8 @@ TEST_P(PrefetchServiceTest, FailureCase_Browser_ServerErrorResponseCode) {
                                      std::move(request_status_listener));
   task_environment()->RunUntilIdle();
 
-  VerifyCommonRequestStateForEmbedders(GURL("https://example.com?b=1"),
-                                       {.use_prefetch_proxy = false});
+  VerifyCommonRequestStateForBrowserContextPrefetch(
+      GURL("https://example.com?b=1"), {.use_prefetch_proxy = false});
 
   EXPECT_FALSE(probe_listener->GetPrefetchStartFailedCalled());
   EXPECT_FALSE(probe_listener->GetPrefetchResponseCompletedCalled());
@@ -1533,8 +1542,8 @@ TEST_P(PrefetchServiceTest, FailureCase_Browser_NetError) {
                                      std::move(request_status_listener));
   task_environment()->RunUntilIdle();
 
-  VerifyCommonRequestStateForEmbedders(GURL("https://example.com?c=1"),
-                                       {.use_prefetch_proxy = false});
+  VerifyCommonRequestStateForBrowserContextPrefetch(
+      GURL("https://example.com?c=1"), {.use_prefetch_proxy = false});
   MakeResponseAndWait(net::HTTP_OK, net::ERR_FAILED, kHTMLMimeType,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -1620,7 +1629,7 @@ TEST_P(PrefetchServiceTest, BrowserContextPrefetchRespectsTTL) {
                                      base::Minutes(5));
   task_environment()->RunUntilIdle();
 
-  VerifyCommonRequestStateForEmbedders(
+  VerifyCommonRequestStateForBrowserContextPrefetch(
       GURL("https://example.com?b=1"),
       {.use_prefetch_proxy = false,
        .additional_headers = request_additional_headers});
@@ -1682,8 +1691,8 @@ TEST_P(PrefetchServiceTest, SuccessCase_Embedder) {
       MakePrefetchFromEmbedder(GURL("https://example.com"), prefetch_type);
   task_environment()->RunUntilIdle();
 
-  VerifyCommonRequestStateForEmbedders(GURL("https://example.com"),
-                                       {.use_prefetch_proxy = false});
+  VerifyCommonRequestStateForWebContentsPrefetch(GURL("https://example.com"),
+                                                 {.use_prefetch_proxy = false});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -1736,8 +1745,8 @@ TEST_P(PrefetchServiceTest,
                                             /*use_prefetch_proxy=*/false));
   task_environment()->RunUntilIdle();
 
-  VerifyCommonRequestStateForEmbedders(GURL("https://example.com"),
-                                       {.use_prefetch_proxy = false});
+  VerifyCommonRequestStateForWebContentsPrefetch(GURL("https://example.com"),
+                                                 {.use_prefetch_proxy = false});
   MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
@@ -3474,8 +3483,8 @@ TEST_P(PrefetchServiceTest, NoVarySearchSuccessCase_Embedder) {
                                             /*use_prefetch_proxy=*/false));
   task_environment()->RunUntilIdle();
 
-  VerifyCommonRequestStateForEmbedders(GURL("https://example.com?a=1"),
-                                       {.use_prefetch_proxy = false});
+  VerifyCommonRequestStateForWebContentsPrefetch(
+      GURL("https://example.com?a=1"), {.use_prefetch_proxy = false});
   MakeResponseAndWait(
       net::HTTP_OK, net::OK, kHTMLMimeType,
       /*use_prefetch_proxy=*/false,
@@ -5495,8 +5504,8 @@ TEST_P(PrefetchServiceDisableBlockUntilHeadTimeoutTest,
           /*should_disable_block_until_head_timeout=*/false);
   task_environment()->RunUntilIdle();
 
-  VerifyCommonRequestStateForEmbedders(GURL("https://example.com"),
-                                       {.use_prefetch_proxy = false});
+  VerifyCommonRequestStateForBrowserContextPrefetch(
+      GURL("https://example.com"), {.use_prefetch_proxy = false});
 
   // Simulate a navigation. The prefetch should not be served after a timeout.
   std::unique_ptr<NavigationResult> navigation_result =
@@ -5549,8 +5558,8 @@ TEST_P(PrefetchServiceDisableBlockUntilHeadTimeoutTest,
           /*should_disable_block_until_head_timeout=*/true);
   task_environment()->RunUntilIdle();
 
-  VerifyCommonRequestStateForEmbedders(GURL("https://example.com"),
-                                       {.use_prefetch_proxy = false});
+  VerifyCommonRequestStateForBrowserContextPrefetch(
+      GURL("https://example.com"), {.use_prefetch_proxy = false});
 
   // Simulate a navigation. The prefetch still blocks the navigation, after the
   // default timeout/

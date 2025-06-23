@@ -117,7 +117,7 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
         /*javascript_enabled=*/true,
         /*referring_origin=*/std::nullopt,
         /*no_vary_search_hint=*/std::nullopt,
-        /*priority=*/std::nullopt,
+        /*priority=*/PrefetchPriority::kHighest,
         /*attempt=*/nullptr, additional_headers,
         /*request_status_listener=*/nullptr, base::Minutes(10),
         should_append_additional_headers);

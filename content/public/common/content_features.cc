@@ -1378,6 +1378,18 @@ BASE_FEATURE(kWebUIJSErrorReportingExtended,
 // https://wicg.github.io/webusb
 BASE_FEATURE(kWebUsb, "WebUSB", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Apply `PrefetchPriority::kHighest` for Webview Prefetch API.
+BASE_FEATURE(kWebViewPrefetchHighestPrefetchPriority,
+             "WebViewPrefetchHighestPrefetchPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Set an additional `PrefetchScheduler` burst limit for
+// `PrefetchPriority::kHighest` prefetches.
+constexpr base::FeatureParam<size_t>
+    kWebViewPrefetchHighestPrefetchPriorityBurstLimit{
+        &kWebViewPrefetchHighestPrefetchPriority,
+        "WebViewPrefetchHighestPrefetchPriorityBurstLimit", 1};
+
 // Controls whether the WebXR Device API is enabled.
 BASE_FEATURE(kWebXr, "WebXR", base::FEATURE_ENABLED_BY_DEFAULT);
 
