@@ -949,8 +949,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
     [bottomToolbar
         setScrollViewScrolledToEdge:self.gridViewController.scrolledToBottom];
   }
-  [bottomToolbar setEditButtonHidden:YES];
-  [bottomToolbar setDoneButtonHidden:YES];
+  bottomToolbar.isInTabGroupView = YES;
 
   [_container addSubview:bottomToolbar];
 

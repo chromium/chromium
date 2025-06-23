@@ -125,6 +125,14 @@
 
 #pragma mark - Public
 
+- (void)setIsInTabGroupView:(BOOL)isInTabGroupView {
+  if (_isInTabGroupView == isInTabGroupView) {
+    return;
+  }
+  _isInTabGroupView = isInTabGroupView;
+  [self updateLayout];
+}
+
 - (void)setPage:(TabGridPage)page {
   if (_page == page) {
     return;
@@ -159,10 +167,6 @@
 
 - (void)setDoneButtonEnabled:(BOOL)enabled {
   _doneButton.enabled = enabled;
-}
-
-- (void)setDoneButtonHidden:(BOOL)hidden {
-  _doneButton.hidden = hidden;
 }
 
 - (void)setCloseAllButtonEnabled:(BOOL)enabled {
@@ -263,10 +267,6 @@
 
 - (void)setEditButtonEnabled:(BOOL)enabled {
   _editButton.enabled = enabled;
-}
-
-- (void)setEditButtonHidden:(BOOL)hidden {
-  _editButton.hidden = hidden;
 }
 
 #pragma mark - Private
@@ -436,10 +436,13 @@
     [_largeNewTabButton removeFromSuperview];
 
     // For incognito/regular pages, display all 3 buttons;
-    // For Tab Groups and remote tabs page, only display trailing button.
+    // For Remote tabs page/TabGroup panel, only display trailing button.
+    // For Tab Group view only display the new tab button
     if (self.page == TabGridPageRemoteTabs ||
         self.page == TabGridPageTabGroups) {
       [_toolbar setItems:@[ _spaceItem, trailingButton ]];
+    } else if (self.isInTabGroupView) {
+      [_toolbar setItems:@[ _spaceItem, _newTabButtonItem, _spaceItem ]];
     } else {
       [_toolbar setItems:@[
         leadingButton, _spaceItem, _newTabButtonItem, _spaceItem, trailingButton
@@ -452,7 +455,7 @@
   } else {
     [NSLayoutConstraint deactivateConstraints:_compactConstraints];
     [_toolbar removeFromSuperview];
-    // Do not display new tab button for Tab Groups and remote tabs page.
+    // Do not display new tab button for remote tabs page/TabGroup panel.
     if (self.page == TabGridPageRemoteTabs ||
         self.page == TabGridPageTabGroups) {
       [NSLayoutConstraint deactivateConstraints:_floatingConstraints];

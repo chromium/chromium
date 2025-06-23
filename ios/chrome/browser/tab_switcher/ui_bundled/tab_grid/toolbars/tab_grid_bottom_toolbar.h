@@ -35,6 +35,8 @@
 // shown in toolbar and its background color. Setting this property will also
 // set it on `newTabButton`.
 @property(nonatomic, assign) TabGridPage page;
+// Whether the toolbar is in a tab group view or not.
+@property(nonatomic, assign) BOOL isInTabGroupView;
 // This property together with `page` and self.traitCollection control the
 // items shown in toolbar and its background color.
 @property(nonatomic, assign) TabGridMode mode;
@@ -51,8 +53,6 @@
 - (void)setNewTabButtonEnabled:(BOOL)enabled;
 // Sets `enabled` on the done button.
 - (void)setDoneButtonEnabled:(BOOL)enabled;
-// Sets the visibility of the Done button.
-- (void)setDoneButtonHidden:(BOOL)hidden;
 // Sets `enabled` on the closeAll button.
 - (void)setCloseAllButtonEnabled:(BOOL)enabled;
 // Uses undo or closeAll text on the close all button based on `useUndo` value.
@@ -73,8 +73,6 @@
 - (void)setEditButtonMenu:(UIMenu*)menu;
 // Sets `enabled` on the Edit button.
 - (void)setEditButtonEnabled:(BOOL)enabled;
-// Sets the visibility of the Edit button.
-- (void)setEditButtonHidden:(BOOL)hidden;
 
 // Hides components and uses a black background color for tab grid transition
 // animation.
