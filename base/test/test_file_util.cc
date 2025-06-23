@@ -6,8 +6,10 @@
 
 #include <vector>
 
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -53,6 +55,13 @@ class PathDeleterOnTestEnd : public testing::EmptyTestEventListener {
     ScopedAllowBlockingForTesting allow_blocking;
     for (const FilePath& file_path : file_paths_to_delete_) {
       if (!DieFileDie(file_path, /*recurse=*/true)) {
+        base::FileEnumerator enumerator(
+            file_path, true,
+            base::FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
+        for (base::FilePath failed_to_delete = enumerator.Next();
+             !failed_to_delete.empty(); failed_to_delete = enumerator.Next()) {
+          LOG(WARNING) << "failed to delete " << failed_to_delete;
+        }
         ADD_FAILURE() << "Failed to delete temporary directory for testing: "
                       << file_path;
       }
@@ -67,6 +76,21 @@ class PathDeleterOnTestEnd : public testing::EmptyTestEventListener {
 
 // static
 PathDeleterOnTestEnd* PathDeleterOnTestEnd::instance_ = nullptr;
+
+FilePath RegisterPathDeleter(const FilePath& path) {
+  if (!PathDeleterOnTestEnd::GetInstance()) {
+    // Append() transfers ownership of the listener. This means
+    // PathDeleterOnTestEnd::GetInstance() will return non-null until all tests
+    // are run and the test suite destroyed.
+    testing::UnitTest::GetInstance()->listeners().Append(
+        new PathDeleterOnTestEnd());
+    DCHECK(PathDeleterOnTestEnd::GetInstance());
+  }
+
+  PathDeleterOnTestEnd::GetInstance()->DeletePathRecursivelyUponTestEnd(path);
+
+  return path;
+}
 
 }  // namespace
 
@@ -95,19 +119,17 @@ FilePath CreateUniqueTempDirectoryScopedToTest() {
     ADD_FAILURE() << "Failed to create unique temporary directory for testing.";
     return FilePath();
   }
+  return RegisterPathDeleter(path);
+}
 
-  if (!PathDeleterOnTestEnd::GetInstance()) {
-    // Append() transfers ownership of the listener. This means
-    // PathDeleterOnTestEnd::GetInstance() will return non-null until all tests
-    // are run and the test suite destroyed.
-    testing::UnitTest::GetInstance()->listeners().Append(
-        new PathDeleterOnTestEnd());
-    DCHECK(PathDeleterOnTestEnd::GetInstance());
+FilePath CreateUniqueTempDirectoryScopedToTestInDir(const base::FilePath& dir) {
+  ScopedAllowBlockingForTesting allow_blocking;
+  FilePath path;
+  if (!CreateTemporaryDirInDir(dir, kDirPrefix, &path)) {
+    ADD_FAILURE() << "Failed to create unique temporary directory for testing.";
+    return FilePath();
   }
-
-  PathDeleterOnTestEnd::GetInstance()->DeletePathRecursivelyUponTestEnd(path);
-
-  return path;
+  return RegisterPathDeleter(path);
 }
 
 }  // namespace base

@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
+#include "base/test/test_file_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -54,7 +55,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsUnderDriveMountPoint) {
 }
 
 TEST_F(ProfileRelatedFileSystemUtilTest, GetCacheRootPath) {
-  TestingProfile profile;
+  TestingProfile profile(base::CreateUniqueTempDirectoryScopedToTest());
   base::FilePath profile_path = profile.GetPath();
   EXPECT_EQ(profile_path.AppendASCII("GCache/v1"),
             util::GetCacheRootPath(&profile));

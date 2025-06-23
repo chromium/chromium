@@ -57,6 +57,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -294,7 +295,8 @@ TestingProfile::TestingProfile(
 
   // If no profile path was supplied, create one.
   if (profile_path_.empty()) {
-    profile_path_ = base::CreateUniqueTempDirectoryScopedToTest();
+    profile_path_ = base::CreateUniqueTempDirectoryScopedToTestInDir(
+        base::PathService::CheckedGet(chrome::DIR_USER_DATA));
   }
 
   // Set any testing factories prior to initializing the services.
