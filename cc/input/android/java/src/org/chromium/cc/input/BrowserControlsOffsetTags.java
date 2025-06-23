@@ -11,6 +11,8 @@ import org.jni_zero.CalledByNative;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.Objects;
+
 /** Java counterpart to the native cc::BrowserControlsOffsetTags. */
 @DoNotMock("This is a simple value object.")
 @NullMarked
@@ -59,5 +61,13 @@ public final class BrowserControlsOffsetTags {
     @CalledByNative
     public @Nullable OffsetTag getTopControlsOffsetTag() {
         return mTopControlsOffsetTag;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object other) {
+        return other instanceof BrowserControlsOffsetTags that
+                && Objects.equals(mTopControlsOffsetTag, that.getTopControlsOffsetTag())
+                && Objects.equals(mContentOffsetTag, that.getContentOffsetTag())
+                && Objects.equals(mBottomControlsOffsetTag, that.getBottomControlsOffsetTag());
     }
 }

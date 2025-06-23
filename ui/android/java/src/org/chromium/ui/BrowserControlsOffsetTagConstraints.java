@@ -11,6 +11,8 @@ import org.jni_zero.CalledByNative;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.Objects;
+
 /** Java counterpart to the native ui::android::BrowserControlsOffsetTagConstraints. */
 @DoNotMock("This is a simple value object.")
 @NullMarked
@@ -64,5 +66,13 @@ public final class BrowserControlsOffsetTagConstraints {
     @CalledByNative
     public @Nullable OffsetTagConstraints getBottomControlsConstraints() {
         return mBottomControlsConstraints;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object other) {
+        return other instanceof BrowserControlsOffsetTagConstraints that
+                && Objects.equals(mTopControlsConstraints, that.getTopControlsConstraints())
+                && Objects.equals(mContentConstraints, that.getContentConstraints())
+                && Objects.equals(mBottomControlsConstraints, that.getBottomControlsConstraints());
     }
 }
