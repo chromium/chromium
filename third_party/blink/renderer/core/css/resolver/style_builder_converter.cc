@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/css/css_unresolved_color_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
@@ -89,6 +90,7 @@
 #include "third_party/blink/renderer/core/style/scroll_start_data.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
+#include "third_party/blink/renderer/core/style/style_border_shape.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_group.h"
@@ -257,6 +259,24 @@ StyleSVGResource* StyleBuilderConverter::ConvertElementReference(
   return MakeGarbageCollected<StyleSVGResource>(
       state.GetSVGResource(property_id, url_value),
       url_value.ValueForSerialization());
+}
+
+StyleBorderShape* StyleBuilderConverter::ConvertBorderShape(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  if (value.IsIdentifierValue()) {
+    CHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
+    return nullptr;
+  }
+
+  if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
+    return MakeGarbageCollected<StyleBorderShape>(
+        *BasicShapeForValue(state, pair->First()),
+        BasicShapeForValue(state, pair->Second()));
+  }
+
+  return MakeGarbageCollected<StyleBorderShape>(
+      *BasicShapeForValue(state, value));
 }
 
 LengthBox StyleBuilderConverter::ConvertClip(StyleResolverState& state,

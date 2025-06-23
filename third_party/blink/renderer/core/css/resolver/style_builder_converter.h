@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/style/ordered_named_grid_lines.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/style_anchor_scope.h"
+#include "third_party/blink/renderer/core/style/style_border_shape.h"
 #include "third_party/blink/renderer/core/style/style_offset_rotation.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_reflection.h"
@@ -122,6 +123,8 @@ class StyleBuilderConverter {
   STATIC_ONLY(StyleBuilderConverter);
 
  public:
+  static StyleBorderShape* ConvertBorderShape(StyleResolverState&,
+                                              const CSSValue&);
   static StyleReflection* ConvertBoxReflect(StyleResolverState&,
                                             const CSSValue&);
   template <typename T>

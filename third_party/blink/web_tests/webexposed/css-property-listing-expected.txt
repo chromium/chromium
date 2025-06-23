@@ -117,6 +117,7 @@ All changes to this list should go through Blink's feature review process: http:
     border-right-color
     border-right-style
     border-right-width
+    border-shape
     border-start-end-radius
     border-start-start-radius
     border-top-color

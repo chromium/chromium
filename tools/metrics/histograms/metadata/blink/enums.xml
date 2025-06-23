@@ -7828,6 +7828,7 @@ Called by update_use_counter_css.py.-->
   <int value="866" label="corner-inline-start-shape"/>
   <int value="867" label="corner-inline-end-shape"/>
   <int value="868" label="corners"/>
+  <int value="869" label="border-shape"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

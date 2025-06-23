@@ -1317,6 +1317,8 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool BorderImageSlicesFill() const { return BorderImage().Fill(); }
 
+  bool HasBorderShape() const { return BorderShape(); }
+
   bool BorderSizeEquals(const ComputedStyle& o) const {
     return BorderLeftWidth() == o.BorderLeftWidth() &&
            BorderTopWidth() == o.BorderTopWidth() &&

@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
+#include "third_party/blink/renderer/core/style/style_border_shape.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
@@ -1839,6 +1840,48 @@ const CSSValue* BorderTopWidth::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ZoomAdjustedPixelValue(style.BorderTopWidth(), style);
+}
+
+const CSSValue* BorderShape::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (stream.Peek().GetType() == kIdentToken &&
+      stream.Peek().Id() == CSSValueID::kNone) {
+    return css_parsing_utils::ConsumeIdent(stream);
+  }
+
+  // TODO(nrosenthal) parse the <<geometry-box>>.
+  CSSValue* outer_shape = css_parsing_utils::ConsumeBasicShape(stream, context);
+  if (!outer_shape) {
+    return nullptr;
+  }
+
+  CSSValue* inner_shape = css_parsing_utils::ConsumeBasicShape(stream, context);
+  return inner_shape
+             ? MakeGarbageCollected<CSSValuePair>(
+                   outer_shape, inner_shape, CSSValuePair::kDropIdenticalValues)
+             : outer_shape;
+}
+
+const CSSValue* BorderShape::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  if (!style.HasBorderShape()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  const StyleBorderShape& border_shape = *style.BorderShape();
+  const CSSValue* outer_shape =
+      ValueForBasicShape(style, &border_shape.OuterShape());
+  if (!border_shape.HasSeparateInnerShape()) {
+    return outer_shape;
+  }
+
+  return MakeGarbageCollected<CSSValuePair>(
+      outer_shape, ValueForBasicShape(style, &border_shape.InnerShape()),
+      CSSValuePair::kDropIdenticalValues);
 }
 
 const CSSValue* Bottom::ParseSingleValue(
