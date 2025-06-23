@@ -33,6 +33,7 @@ static_library("omnibox") {
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/search/ranking",
+    "//chrome/browser/autocomplete",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",

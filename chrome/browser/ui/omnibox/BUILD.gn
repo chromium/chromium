@@ -78,6 +78,7 @@ source_set("impl") {
       "//chrome/app:command_ids",
       "//chrome/browser:browser_process",
       "//chrome/browser:primitives",
+      "//chrome/browser/autocomplete",
       "//chrome/browser/bitmap_fetcher",
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/favicon",
@@ -162,6 +163,7 @@ if (!is_android) {
     deps = [
       ":omnibox",
       "//base/test:test_support",
+      "//chrome/browser/autocomplete",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/search",
@@ -193,6 +195,7 @@ if (!is_android) {
       sources = [ "omnibox_metrics_browsertest.cc" ]
       deps = [
         "//base/test:test_support",
+        "//chrome/browser/autocomplete",
         "//chrome/browser/profiles:profile",
         "//chrome/browser/search_engines",
         "//chrome/browser/ui/search",

@@ -34,6 +34,7 @@ source_set("searchbox") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/autocomplete",
     "//chrome/browser/omnibox",
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/profiles:profile",

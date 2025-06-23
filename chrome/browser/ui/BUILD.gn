@@ -313,6 +313,7 @@ static_library("ui") {
     "//chrome/browser:font_pref",
     "//chrome/browser:global_features",
     "//chrome/browser/affiliations",
+    "//chrome/browser/autocomplete",
     "//chrome/browser/autofill",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
