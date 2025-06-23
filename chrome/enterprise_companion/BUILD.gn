@@ -516,8 +516,15 @@ if (is_mac && !is_component_build && enable_dsyms) {
   }
 }
 
-# The contents of this zip are uploaded by archivers (//infra/archive_config).
-artifact_zip("enterprise_companion_zip") {
+# Zip files uploaded by archivers (//infra/archive_config).
+group("enterprise_companion_zip") {
+  deps = [
+    ":prod_zip",
+    ":test_zip",
+  ]
+}
+
+artifact_zip("prod_zip") {
   output = "$root_build_dir/enterprise_companion.zip"
 
   if (is_linux) {
@@ -545,6 +552,35 @@ artifact_zip("enterprise_companion_zip") {
   } else if (is_win) {
     inputs = [ "$root_build_dir/enterprise_companion.exe" ]
     deps = [ ":enterprise_companion" ]
+
+    if (icu_use_data_file) {
+      inputs += [ "$root_out_dir/icudtl.dat" ]
+    }
+  }
+}
+
+# Test builds of the application to support version-skewed integration tests.
+# Currently, this is only archived for Chromium-branded builds.
+artifact_zip("test_zip") {
+  output = "$root_build_dir/enterprise_companion_test.zip"
+
+  if (is_linux) {
+    inputs = [ "$root_build_dir/enterprise_companion_test" ]
+    deps = [ ":enterprise_companion_test" ]
+  } else if (is_mac) {
+    inputs = [
+      "$root_build_dir/${enterprise_companion_product_full_name}_test.app/Contents/Info.plist",
+      "$root_build_dir/${enterprise_companion_product_full_name}_test.app/Contents/MacOS/${enterprise_companion_product_full_name}_test",
+      "$root_build_dir/${enterprise_companion_product_full_name}_test.app/Contents/PkgInfo",
+    ]
+    deps = [ "//chrome/enterprise_companion/mac:test_bundle" ]
+
+    if (is_asan) {
+      inputs += [ "$root_build_dir/${enterprise_companion_product_full_name}_test.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+    }
+  } else if (is_win) {
+    inputs = [ "$root_build_dir/enterprise_companion_test.exe" ]
+    deps = [ ":enterprise_companion_test" ]
 
     if (icu_use_data_file) {
       inputs += [ "$root_out_dir/icudtl.dat" ]
