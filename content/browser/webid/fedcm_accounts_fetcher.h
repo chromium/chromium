@@ -128,6 +128,10 @@ class FedCmAccountsFetcher {
   void ComputeLoginStates(const GURL& idp_config_url,
                           std::vector<IdentityRequestAccountPtr>& accounts);
 
+  void ComputeAccountFields(
+      const std::vector<IdentityRequestDialogDisclosureField>& rp_fields,
+      std::vector<IdentityRequestAccountPtr>& accounts);
+
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
   // failure UI if applicable.
   void HandleAccountsFetchFailure(

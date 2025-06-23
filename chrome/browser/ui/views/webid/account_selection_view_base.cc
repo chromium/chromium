@@ -477,7 +477,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
 
 std::unique_ptr<views::StyledLabel>
 AccountSelectionViewBase::CreateDisclosureLabel(
-    const content::IdentityProviderData& idp_data) {
+    const IdentityRequestAccountPtr& account) {
   // It requires a StyledLabel so that we can add the links
   // to the privacy policy and terms of service URLs.
   std::unique_ptr<views::StyledLabel> disclosure_label =
@@ -491,6 +491,7 @@ AccountSelectionViewBase::CreateDisclosureLabel(
       views::CreateEmptyBorder(gfx::Insets::TLBR(5, 0, 0, 0)));
   disclosure_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
 
+  const content::IdentityProviderData& idp_data = *account->identity_provider;
   const content::ClientMetadata& client_metadata = idp_data.client_metadata;
   int disclosure_resource_id = SelectDisclosureTextResourceId(
       client_metadata.privacy_policy_url, client_metadata.terms_of_service_url);
@@ -510,7 +511,7 @@ AccountSelectionViewBase::CreateDisclosureLabel(
   // Each link has both <ph name="BEGIN_LINK"> and <ph name="END_LINK">.
   std::vector<std::u16string> replacements = {
       base::UTF8ToUTF16(idp_data.idp_for_display),
-      GetPermissionFieldsString(idp_data.disclosure_fields)};
+      GetPermissionFieldsString(account->fields)};
   replacements.insert(replacements.end(), link_data.size() * 2,
                       std::u16string());
 

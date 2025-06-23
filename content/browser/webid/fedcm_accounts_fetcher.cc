@@ -364,6 +364,8 @@ void FedCmAccountsFetcher::OnAccountsResponseReceived(
   }
   RecordReadyToShowAccountsSize(accounts.size());
   ComputeLoginStates(idp_info->provider->config->config_url, accounts);
+  ComputeAccountFields(GetDisclosureFields(idp_info->provider->fields),
+                       accounts);
 
   OnAccountsFetchSucceeded(std::move(idp_info), status, std::move(accounts));
 }
@@ -594,6 +596,20 @@ void FedCmAccountsFetcher::ComputeLoginStates(
       // permission is obsolete.
       account->browser_trusted_login_state = account->login_state.value();
     }
+  }
+}
+
+void FedCmAccountsFetcher::ComputeAccountFields(
+    const std::vector<IdentityRequestDialogDisclosureField>& rp_fields,
+    std::vector<IdentityRequestAccountPtr>& accounts) {
+  for (const auto& account : accounts) {
+    if (account->login_state == LoginState::kSignIn) {
+      // We only show fields for signups.
+      continue;
+    }
+    // TODO(crbug.com/412969669): Don't include fields that the IDP did not
+    // include in the accounts response.
+    account->fields = rp_fields;
   }
 }
 

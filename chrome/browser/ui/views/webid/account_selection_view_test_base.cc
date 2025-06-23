@@ -75,6 +75,9 @@ AccountSelectionViewTestBase::CreateTestIdentityRequestAccount(
           /*browser_trusted_login_state=*/
           content::IdentityRequestAccount::LoginState::kSignUp,
           last_used_timestamp);
+  if (login_state == content::IdentityRequestAccount::LoginState::kSignUp) {
+    account->fields = idp->disclosure_fields;
+  }
   account->identity_provider = std::move(idp);
   return account;
 }

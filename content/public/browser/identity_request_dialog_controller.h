@@ -22,17 +22,6 @@
 namespace content {
 class WebContents;
 
-// A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.webid
-// GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogDisclosureField
-enum class IdentityRequestDialogDisclosureField {
-  kName,
-  kEmail,
-  kPicture,
-  kPhoneNumber,
-  kUsername
-};
-
 // The client metadata that will be used to display a FedCM dialog. This data is
 // extracted from the client metadata endpoint from the FedCM API, where
 // 'client' is essentially the relying party which invoked the API.

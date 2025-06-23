@@ -188,7 +188,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mTestEtldPlusOne,
                 Arrays.asList(),
                 Arrays.asList(mIdpData),
-                mNewAccountsSingleNewAccount);
+                Arrays.asList(mNewUserAccountWithoutFields));
 
         // Account chooser dialog is shown for a single newly signed-in new account where request
         // permission is false. Since this is a new account and request permission is false, we need

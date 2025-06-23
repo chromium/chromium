@@ -224,7 +224,7 @@ class AccountSelectionViewBase {
   // Returns a StyledLabel containing a disclosure label. The label links to
   // privacy policy and terms of service URLs, if available.
   std::unique_ptr<views::StyledLabel> CreateDisclosureLabel(
-      const content::IdentityProviderData& idp_data);
+      const IdentityRequestAccountPtr& account);
 
   // Gets the summary and description string of the error.
   std::pair<std::u16string, std::u16string> GetErrorDialogText(

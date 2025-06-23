@@ -46,5 +46,8 @@ generate_jni("jni_headers") {
 }
 
 java_cpp_enum("java_enums_srcjar") {
-  sources = [ "//content/public/browser/identity_request_dialog_controller.h" ]
+  sources = [
+    "//content/public/browser/identity_request_account.h",
+    "//content/public/browser/identity_request_dialog_controller.h",
+  ]
 }

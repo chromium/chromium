@@ -443,7 +443,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         mIdpData.setDisclosureFields(new int[0]);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                Arrays.asList(mNewUserAccount),
+                Arrays.asList(mNewUserAccountWithoutFields),
                 Arrays.asList(mIdpData),
                 /* newAccounts= */ Collections.EMPTY_LIST);
         // Because disclosureFields are empty, we expect header + account + continue btn, and drag
@@ -460,11 +460,11 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         mIdpData.setDisclosureFields(new int[0]);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                Arrays.asList(mNewUserAccount, mBobAccount),
+                Arrays.asList(mNewUserAccountWithoutFields, mBobAccount),
                 Arrays.asList(mIdpData),
                 /* newAccounts= */ Collections.EMPTY_LIST);
-        mMediator.onAccountSelected(new ButtonData(mNewUserAccount, /* idpMetadata= */ null));
-        verify(mMockDelegate).onAccountSelected(mNewUserAccount);
+        mMediator.onAccountSelected(new ButtonData(mNewUserAccountWithoutFields, /* idpMetadata= */ null));
+        verify(mMockDelegate).onAccountSelected(mNewUserAccountWithoutFields);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
         assertTrue(mMediator.wasDismissed());

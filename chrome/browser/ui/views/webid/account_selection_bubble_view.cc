@@ -577,15 +577,13 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   views::MdTextButton* button_ptr = button.get();
   row->AddChildView(std::move(button));
 
-  // Do not add disclosure text if this is a sign in or if we were requested
-  // to skip it.
-  if (account->login_state == Account::LoginState::kSignIn ||
-      idp_data.disclosure_fields.empty()) {
+  // Do not add disclosure text if fields is empty.
+  if (account->fields.empty()) {
     return std::make_pair(std::move(row), button_ptr);
   }
 
   // Add disclosure text.
-  row->AddChildView(CreateDisclosureLabel(idp_data));
+  row->AddChildView(CreateDisclosureLabel(account));
   return std::make_pair(std::move(row), button_ptr);
 }
 

@@ -657,7 +657,7 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
   if (account->login_state == Account::LoginState::kSignUp) {
     // Add disclosure label.
     std::unique_ptr<views::StyledLabel> disclosure_label =
-        CreateDisclosureLabel(*account->identity_provider);
+        CreateDisclosureLabel(account);
     disclosure_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
     disclosure_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         /*top=*/kVerticalSpacing, /*left=*/0, /*bottom=*/0,

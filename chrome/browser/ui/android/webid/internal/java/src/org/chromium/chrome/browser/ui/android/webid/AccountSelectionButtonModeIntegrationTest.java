@@ -205,6 +205,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ false,
                         /* isFilteredOut= */ false,
+                        new int[0],
                         mIdpDataWithAddAccount);
 
         runOnUiThreadBlocking(
@@ -496,7 +497,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            Arrays.asList(mNewBobWithAddAccount),
+                            Arrays.asList(mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* newAccounts= */ Collections.EMPTY_LIST);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);

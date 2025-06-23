@@ -331,6 +331,9 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
         /*labels=*/std::vector<std::string>(),
         /*login_state=*/idp_claimed_login_state,
         /*browser_trusted_login_state=*/browser_trusted_login_state);
+    if (idp_claimed_login_state == LoginState::kSignUp) {
+      account->fields = idp->disclosure_fields;
+    }
     account->identity_provider = std::move(idp);
     return account;
   }
@@ -347,6 +350,9 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
           /*labels=*/std::vector<std::string>(),
           /*login_state=*/account_info.second,
           /*browser_trusted_login_state=*/account_info.second));
+      if (account_info.second == LoginState::kSignUp) {
+        accounts.back()->fields = idp_data->disclosure_fields;
+      }
       accounts.back()->identity_provider = idp_data;
     }
     return accounts;
@@ -2276,6 +2282,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        RequestPermissionFalseAndNewIdpDataDisclosureText) {
   idp_data_->disclosure_fields = {};
+  for (auto& account : accounts_) {
+    account->fields = {};
+  }
+  for (auto& account : new_accounts_) {
+    account->fields = {};
+  }
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowAccountsModalThroughPopupWindow(accounts_, new_accounts_);
 

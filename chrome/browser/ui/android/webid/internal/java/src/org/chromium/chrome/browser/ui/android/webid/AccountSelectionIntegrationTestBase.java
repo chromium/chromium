@@ -136,6 +136,7 @@ public class AccountSelectionIntegrationTestBase {
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
                         /* isFilteredOut= */ false,
+                        /* fields= */ new int[0],
                         mIdpData);
         mNewBob =
                 new Account(
@@ -149,6 +150,7 @@ public class AccountSelectionIntegrationTestBase {
                         /* isSignIn= */ false,
                         /* isBrowserTrustedSignIn= */ false,
                         /* isFilteredOut= */ false,
+                        DEFAULT_DISCLOSURE_FIELDS,
                         mIdpData);
 
         mReturningAnaWithAddAccount =
@@ -163,6 +165,7 @@ public class AccountSelectionIntegrationTestBase {
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
                         /* isFilteredOut= */ false,
+                        /* fields= */ new int[0],
                         mIdpDataWithAddAccount);
         mNewBobWithAddAccount =
                 new Account(
@@ -176,6 +179,7 @@ public class AccountSelectionIntegrationTestBase {
                         /* isSignIn= */ false,
                         /* isBrowserTrustedSignIn= */ false,
                         /* isFilteredOut= */ false,
+                        DEFAULT_DISCLOSURE_FIELDS,
                         mIdpDataWithAddAccount);
 
         mNewAccountsReturningAna = Arrays.asList(mReturningAna);

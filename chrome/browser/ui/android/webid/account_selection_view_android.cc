@@ -47,6 +47,16 @@ namespace {
 // from badging.
 constexpr int kCircleCroppedBadgedAvatarSize = 40;
 
+inline ScopedJavaLocalRef<jintArray> ConvertFieldsToJavaArray(
+    JNIEnv* env,
+    const std::vector<content::IdentityRequestDialogDisclosureField>& fields) {
+  std::vector<int> int_array;
+  for (auto field : fields) {
+    int_array.push_back(static_cast<int>(field));
+  }
+  return base::android::ToJavaIntArray(env, int_array);
+}
+
 ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
     JNIEnv* env,
     content::IdentityRequestAccount* account,
@@ -80,7 +90,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
       decoded_picture, circle_cropped_badged_picture,
       account->login_state == Account::LoginState::kSignIn,
       account->browser_trusted_login_state == Account::LoginState::kSignIn,
-      account->is_filtered_out, identity_provider);
+      account->is_filtered_out, ConvertFieldsToJavaArray(env, account->fields),
+      identity_provider);
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
@@ -145,16 +156,6 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
     env->SetObjectArrayElement(array.obj(), i, item.obj());
   }
   return array;
-}
-
-inline ScopedJavaLocalRef<jintArray> ConvertFieldsToJavaArray(
-    JNIEnv* env,
-    const std::vector<content::IdentityRequestDialogDisclosureField>& fields) {
-  std::vector<int> int_array;
-  for (auto field : fields) {
-    int_array.push_back(static_cast<int>(field));
-  }
-  return base::android::ToJavaIntArray(env, int_array);
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderData(

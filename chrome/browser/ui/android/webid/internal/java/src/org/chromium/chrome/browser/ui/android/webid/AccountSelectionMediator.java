@@ -822,16 +822,10 @@ class AccountSelectionMediator {
                 return showVerifySheet(mSelectedAccount);
             }
 
-            // The IDP claimed login state controls whether we show disclosure text,
-            // if we do not skip the next dialog. Also skip when request_permission
-            // is false (controlled by the fields API).
-            boolean shouldShowRequestPermissionDialog =
-                    !newlySignedInAccount.isSignIn()
-                            && newlySignedInAccount
-                                            .getIdentityProviderData()
-                                            .getDisclosureFields()
-                                            .length
-                                    > 0;
+            // We should show the permission dialog / disclosure text if fields
+            // is not empty. This is affected by the login status as well as
+            // the requested fields.
+            boolean shouldShowRequestPermissionDialog = newlySignedInAccount.getFields().length > 0;
             if (shouldShowRequestPermissionDialog) {
                 return showRequestPermissionModalSheet(mSelectedAccount);
             }
@@ -852,15 +846,12 @@ class AccountSelectionMediator {
         }
 
         // We want the accounts to be clickable if there is no preselected account or if we're not
-        // going to show the disclosure text, which happens when the account is a signIn or when
-        // fields is empty.
+        // going to show the disclosure text, which happens when fields is empty.
         if (!updateSheet(
                 mSelectedAccount != null ? Arrays.asList(mSelectedAccount) : mAccounts,
                 mSelectedAccount != null ? Collections.emptyList() : mIdpDataListForShowAccounts,
                 /* areAccountsClickable= */ mSelectedAccount == null
-                        || mSelectedAccount.isSignIn()
-                        || mSelectedAccount.getIdentityProviderData().getDisclosureFields().length
-                                == 0)) {
+                        || mSelectedAccount.getFields().length == 0)) {
             return false;
         }
         updateBackPressBehavior();
@@ -938,15 +929,7 @@ class AccountSelectionMediator {
         boolean isDataSharingConsentVisible = false;
         Callback<ButtonData> continueButtonCallback = null;
         if (mHeaderType == HeaderType.SIGN_IN && mSelectedAccount != null) {
-            // Only show the user data sharing consent text for sign up and only
-            // if we're asked to request permission.
-            isDataSharingConsentVisible =
-                    !mSelectedAccount.isSignIn()
-                            && mSelectedAccount
-                                            .getIdentityProviderData()
-                                            .getDisclosureFields()
-                                            .length
-                                    > 0;
+            isDataSharingConsentVisible = mSelectedAccount.getFields().length > 0;
             continueButtonCallback = this::onClickAccountSelected;
         }
 
@@ -989,9 +972,7 @@ class AccountSelectionMediator {
                             ? createDataSharingConsentItem(
                                     mIdpForDisplay,
                                     mSelectedAccount.getIdentityProviderData().getClientMetadata(),
-                                    mSelectedAccount
-                                            .getIdentityProviderData()
-                                            .getDisclosureFields())
+                                    mSelectedAccount.getFields())
                             : null);
         }
         mModel.set(
@@ -1017,9 +998,7 @@ class AccountSelectionMediator {
                             ? createDataSharingConsentItem(
                                     mIdpForDisplay,
                                     mSelectedAccount.getIdentityProviderData().getClientMetadata(),
-                                    mSelectedAccount
-                                            .getIdentityProviderData()
-                                            .getDisclosureFields())
+                                    mSelectedAccount.getFields())
                             : null);
         }
         mModel.set(
@@ -1204,14 +1183,12 @@ class AccountSelectionMediator {
         Account oldSelectedAccount = mSelectedAccount;
         mSelectedAccount = buttonData.mAccount;
 
-        // If the account is a returning user or if the account is selected from UI which shows the
-        // disclosure text or if the browser doesn't need to request permission because the IDP
-        // prefers asking for permission by themselves, skip the disclosure UI and proceed to the
-        // verifying sheet.
+        // If the account is selected from UI which shows the disclosure text or
+        // if the browser doesn't need to request permission, skip the
+        // disclosure UI and proceed to the verifying sheet.
         if ((mRpMode == RpMode.PASSIVE && oldSelectedAccount != null)
-                || mSelectedAccount.isSignIn()
                 || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
-                || mSelectedAccount.getIdentityProviderData().getDisclosureFields().length == 0) {
+                || mSelectedAccount.getFields().length == 0) {
             mDelegate.onAccountSelected(mSelectedAccount);
             showVerifySheet(mSelectedAccount);
             return;

@@ -21,6 +21,17 @@ namespace content {
 
 class IdentityProviderData;
 
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.webid
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogDisclosureField
+enum class IdentityRequestDialogDisclosureField : int32_t {
+  kName,
+  kEmail,
+  kPicture,
+  kPhoneNumber,
+  kUsername
+};
+
 // Represents a federated user account which is used when displaying the FedCM
 // account selector.
 class CONTENT_EXPORT IdentityRequestAccount
@@ -89,6 +100,11 @@ class CONTENT_EXPORT IdentityRequestAccount
   std::vector<std::string> login_hints;
   std::vector<std::string> domain_hints;
   std::vector<std::string> labels;
+
+  // The list of fields the UI should prompt the user for. This is based on the
+  // fields that the RP requested and affected by the login state and the
+  // actual available fields in the IDP accounts response.
+  std::vector<IdentityRequestDialogDisclosureField> fields;
 
   // The account login state. Unlike the other fields this one can be populated
   // either by the IDP or by the browser based on its stored permission grants.

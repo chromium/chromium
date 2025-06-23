@@ -11,6 +11,7 @@ import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 
 /**
  * This class holds the data used to represent a selectable account in the Account Selection sheet.
@@ -32,6 +33,7 @@ public class Account {
     private final boolean mIsSignIn;
     private final boolean mIsBrowserTrustedSignIn;
     private final boolean mIsFilteredOut;
+    private final @IdentityRequestDialogDisclosureField int[] mFields;
     private final IdentityProviderData mIdentityProviderData;
 
     /**
@@ -67,6 +69,7 @@ public class Account {
             boolean isSignIn,
             boolean isBrowserTrustedSignIn,
             boolean isFilteredOut,
+            @IdentityRequestDialogDisclosureField int[] fields,
             IdentityProviderData identityProviderData) {
         mId = id;
         mDisplayIdentifier = displayIdentifier;
@@ -78,6 +81,7 @@ public class Account {
         mIsSignIn = isSignIn;
         mIsBrowserTrustedSignIn = isBrowserTrustedSignIn;
         mIsFilteredOut = isFilteredOut;
+        mFields = fields;
         mIdentityProviderData = identityProviderData;
     }
 
@@ -119,6 +123,10 @@ public class Account {
 
     public boolean isFilteredOut() {
         return mIsFilteredOut;
+    }
+
+    public @IdentityRequestDialogDisclosureField int[] getFields() {
+        return mFields;
     }
 
     public IdentityProviderData getIdentityProviderData() {
