@@ -430,7 +430,6 @@ CanvasRenderingContextHost::ReplaceResourceProviderForCanvas2D(
 void CanvasRenderingContextHost::DiscardResources() {
   resource_provider_for_canvas2d_ = nullptr;
   resource_provider_for_image_bitmap_ = nullptr;
-  resource_provider_for_webgl_ = nullptr;
   resource_provider_for_webgpu_ = nullptr;
   UpdateMemoryUsage();
 }

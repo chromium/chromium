@@ -143,18 +143,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   bool IsContextLost() const override;
 
-  // `resource_provider_` must be null.
-  void SetResourceProviderForWebGL(
-      std::unique_ptr<CanvasResourceProvider> resource_provider) {
-    CHECK(IsWebGL());
-    CHECK(!resource_provider_for_webgl_);
-    resource_provider_for_webgl_ = std::move(resource_provider);
-    UpdateMemoryUsage();
-  }
-  CanvasResourceProvider* GetResourceProviderForWebGL() const {
-    CHECK(IsWebGL());
-    return resource_provider_for_webgl_.get();
-  }
   CanvasResourceProvider* GetResourceProviderForWebGPU() const {
     CHECK(IsWebGPU());
     return resource_provider_for_webgpu_.get();
@@ -217,7 +205,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
 
   std::unique_ptr<CanvasResourceProvider> resource_provider_for_canvas2d_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_for_image_bitmap_;
-  std::unique_ptr<CanvasResourceProvider> resource_provider_for_webgl_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_for_webgpu_;
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = HostType::kNone;

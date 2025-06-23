@@ -1695,6 +1695,11 @@ bool WebGLRenderingContextBase::PushFrameNoCopy() {
   return submitted_frame;
 }
 
+void WebGLRenderingContextBase::Dispose() {
+  resource_provider_.reset();
+  CanvasRenderingContext::Dispose();
+}
+
 bool WebGLRenderingContextBase::PushFrameWithCopy() {
   bool submitted_frame = false;
 
@@ -1868,7 +1873,7 @@ void WebGLRenderingContextBase::MarkLayerComposited() {
 }
 
 bool WebGLRenderingContextBase::IsAccelerated() const {
-  auto* resource_provider = Host()->GetResourceProviderForWebGL();
+  auto* resource_provider = resource_provider_.get();
   return resource_provider ? resource_provider->IsAccelerated()
                            : Host()->ShouldTryToUseGpuRaster();
 }
@@ -1884,6 +1889,7 @@ void WebGLRenderingContextBase::PageVisibilityChanged() {
 
 void WebGLRenderingContextBase::SizeChanged() {
   did_fail_to_create_resource_provider_ = false;
+  resource_provider_.reset();
 }
 
 scoped_refptr<StaticBitmapImage>
@@ -1907,7 +1913,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
   }
   PaintRenderingResultsToCanvas(source_buffer);
   if (has_dispatcher && was_dirty && GetOrCreateCanvasResourceProvider()) {
-    return Host()->GetResourceProviderForWebGL()->ProduceCanvasResource(reason);
+    return resource_provider_.get()->ProduceCanvasResource(reason);
   }
   return nullptr;
 }
@@ -1992,11 +1998,12 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
 
 CanvasResourceProvider*
 WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
-  auto* provider = Host()->GetResourceProviderForWebGL();
+  auto* provider = resource_provider_.get();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (Host()->IsValidImageSize()) {
-      Host()->SetResourceProviderForWebGL(CreateCanvasResourceProvider());
-      provider = Host()->GetResourceProviderForWebGL();
+      resource_provider_ = CreateCanvasResourceProvider();
+      Host()->UpdateMemoryUsage();
+      provider = resource_provider_.get();
     }
     if (!provider) {
       did_fail_to_create_resource_provider_ = true;
@@ -2021,23 +2028,22 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   }
 
   if (isContextLost() || !GetDrawingBuffer()) {
-    return Host()->GetResourceProviderForWebGL();
+    return resource_provider_.get();
   }
 
   bool must_clear_now = ClearIfComposited(kClearCallerOther) != kSkipped;
 
-  if (Host()->GetResourceProviderForWebGL() &&
-      Host()->GetResourceProviderForWebGL()->Size() !=
-          GetDrawingBuffer()->Size()) {
+  if (resource_provider_.get() &&
+      resource_provider_.get()->Size() != GetDrawingBuffer()->Size()) {
+    resource_provider_.reset();
     Host()->DiscardResources();
   }
 
   // The host's ResourceProvider is purged to save memory when the tab
   // is backgrounded.
 
-  if (!must_paint_to_canvas_ && !must_clear_now &&
-      Host()->GetResourceProviderForWebGL()) {
-    return Host()->GetResourceProviderForWebGL();
+  if (!must_paint_to_canvas_ && !must_clear_now && resource_provider_.get()) {
+    return resource_provider_.get();
   }
 
   must_paint_to_canvas_ = false;
@@ -2076,7 +2082,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     return resource_provider;
 
   bool copy_succeeded = CopyRenderingResultsFromDrawingBuffer(
-      Host()->GetResourceProviderForWebGL(), source_buffer);
+      resource_provider_.get(), source_buffer);
   if (resource_provider_was_updated != nullptr) {
     *resource_provider_was_updated = copy_succeeded;
   }
@@ -9174,7 +9180,7 @@ int WebGLRenderingContextBase::AllocatedBufferCountPerPixel() {
     return buffer_count;
   }
 
-  auto* provider = Host()->GetResourceProviderForWebGL();
+  auto* provider = resource_provider_.get();
   if (provider) {
     buffer_count++;
     if (provider->IsAccelerated()) {

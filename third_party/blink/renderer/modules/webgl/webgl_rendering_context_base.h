@@ -1996,6 +1996,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
                                            GLenum precision_type,
                                            WebGLShaderPrecisionFormat* format);
 
+  void Dispose() override;
+
   // PushFrameWithCopy will make a potential copy if the resource is accelerated
   // or a drawImage if the resource is non accelerated.
   bool PushFrameWithCopy();
@@ -2003,6 +2005,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // ExtenralCanvasResource.
   bool PushFrameNoCopy();
 
+  std::unique_ptr<CanvasResourceProvider> resource_provider_;
   static bool webgl_context_limits_initialized_;
   static unsigned max_active_webgl_contexts_;
   static unsigned max_active_webgl_contexts_on_worker_;
