@@ -32,9 +32,9 @@ const char kAidaEndpointUrl[] =
 
 constexpr auto kLoggingDisallowedCountries =
     base::MakeFixedFlatSet<std::string_view>(
-        {"at", "be", "bg", "ch", "cy", "cz", "de", "dk", "ee", "es", "fi",
-         "fr", "gb", "gr", "hr", "hu", "ie", "is", "it", "li", "lt", "lu",
-         "lv", "mt", "nl", "no", "pl", "pt", "ro", "se", "si", "sk"});
+        {"at", "be", "bg", "cy", "cz", "de", "dk", "ee", "es", "fi", "fr",
+         "gb", "gr", "hr", "hu", "ie", "is", "it", "li", "lt", "lu", "lv",
+         "mt", "nl", "no", "pl", "pt", "ro", "se", "si", "sk"});
 
 constexpr auto kAidaSupportedCountries =
     base::MakeFixedFlatSet<std::string_view>(
