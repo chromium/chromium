@@ -1029,6 +1029,9 @@
           =1 {Move tab to new window}
           other {Move tab to another window}}
       </message>
+      <message name="IDS_PIN_TAB" desc="Content description for an action which pins a singular tab.">
+        Pin tab
+      </message>
 
       <!-- Tab Group List Bottom Sheet -->
       <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_TITLE" desc="Title text for a bottom sheet which is used to add a tab to a tab group.">

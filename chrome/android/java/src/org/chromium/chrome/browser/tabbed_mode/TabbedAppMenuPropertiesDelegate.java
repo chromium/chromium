@@ -520,7 +520,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 buildModelForStandardMenuItem(
                         R.id.pin_tab_menu_id,
                         R.string.menu_pin_tab,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_offline_pin_24dp : 0));
+                        shouldShowIconBeforeItem() ? R.drawable.ic_keep_24dp : 0));
     }
 
     private MVCListAdapter.ListItem buildNewWindowItem() {

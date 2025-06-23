@@ -20,6 +20,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareUtils;
@@ -253,6 +254,13 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 BrowserUiListMenuUtils.buildMenuListItem(
                         R.string.select_tab, R.id.select_tabs, R.drawable.ic_edit_24dp));
 
+        // TODO(crbug.com/425953251): Add tests once callback is established.
+        if (shouldBuildPinTabMenuItem()) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItem(
+                            R.string.pin_tab, R.id.pin_tab, R.drawable.ic_keep_24dp));
+        }
+
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItem(
                         R.string.close_tab, R.id.close_tab, R.drawable.material_ic_close_24dp));
@@ -281,5 +289,9 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
 
     private static void recordUserActionWithPrefix(String action) {
         RecordUserAction.record(MENU_USER_ACTION_PREFIX + action);
+    }
+
+    private static boolean shouldBuildPinTabMenuItem() {
+        return ChromeFeatureList.sAndroidPinnedTabs.isEnabled();
     }
 }
