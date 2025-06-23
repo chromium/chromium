@@ -30,6 +30,9 @@
     <message name="IDS_IDLE_DETECTION_INFOBAR_TEXT" desc="Text requesting permission for a site to know when the user is idle.">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to know when you're actively using this device
     </message>
+    <message name="IDS_LOCAL_NETWORK_ACCESS_INFOBAR_TEXT" desc="Text requesting permission for a site to access the user's local network.">
+      <ph name="URL">$1<ex>google.com</ex></ph> wants to look for and connect to any device on your local network
+    </message>
     <message name="IDS_NOTIFICATION_QUIET_PERMISSION_PROMPT_TITLE" desc="Text used as notification title when requesting permission for Web Notifications via a notification.">
       Notifications for <ph name="ORIGIN">$1<ex>example.com</ex></ph> are blocked
     </message>

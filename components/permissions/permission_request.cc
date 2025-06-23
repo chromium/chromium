@@ -95,6 +95,9 @@ PermissionRequest::GetDialogAnnotatedMessageText(
     case RequestType::kIdleDetection:
       message_id = IDS_IDLE_DETECTION_INFOBAR_TEXT;
       break;
+    case RequestType::kLocalNetworkAccess:
+      message_id = IDS_LOCAL_NETWORK_ACCESS_INFOBAR_TEXT;
+      break;
     case RequestType::kMicStream:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_INFOBAR_TEXT;
       break;

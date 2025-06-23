@@ -426,18 +426,11 @@ const FeatureEntry::Choice kPullToRefreshChoices[] = {
      switches::kPullToRefresh, "2"}};
 #endif  // USE_AURA
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS)
-
 const FeatureEntry::FeatureParam kLocalNetworkAccessChecksBlock[] = {
     {"LocalNetworkAccessChecksWarn", "false"}};
-
 const FeatureEntry::FeatureVariation kLocalNetworkAccessChecksVariations[] = {
     {"(Blocking)", kLocalNetworkAccessChecksBlock,
      std::size(kLocalNetworkAccessChecksBlock), nullptr}};
-
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROMEOS)
 
 const FeatureEntry::Choice kEnableBenchmarkingChoices[] = {
     {flag_descriptions::kEnableBenchmarkingChoiceDisabled, "", ""},
@@ -12497,18 +12490,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDisplayEdgeToEdgeFullscreen)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS)
     {"local-network-access-check",
      flag_descriptions::kLocalNetworkAccessChecksName,
-     flag_descriptions::kLocalNetworkAccessChecksDescription, kOsDesktop,
+     flag_descriptions::kLocalNetworkAccessChecksDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          network::features::kLocalNetworkAccessChecks,
          kLocalNetworkAccessChecksVariations,
          "LocalNetworkAccessChecks")},
-
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"notebook-lm-app-preinstall",

@@ -146,10 +146,9 @@ RequestTypeForUma PermissionUtil::GetUmaValueForRequestType(
     // TODO(crbug.com/40214907): Enable on Android
     case RequestType::kLocalFonts:
       return RequestTypeForUma::PERMISSION_LOCAL_FONTS;
-    // TODO(crbug.com/400455013): Enable on Android.
+#endif
     case RequestType::kLocalNetworkAccess:
       return RequestTypeForUma::PERMISSION_LOCAL_NETWORK_ACCESS;
-#endif
     case RequestType::kGeolocation:
       return RequestTypeForUma::PERMISSION_GEOLOCATION;
     case RequestType::kHandTracking:

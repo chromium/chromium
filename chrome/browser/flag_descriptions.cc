@@ -8373,13 +8373,13 @@ const char kZeroCopyVideoCaptureDescription[] =
 const char kFollowingFeedSidepanelName[] = "Following feed in the sidepanel";
 const char kFollowingFeedSidepanelDescription[] =
     "Enables the following feed in the sidepanel.";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 const char kLocalNetworkAccessChecksName[] = "Local Network Access Checks";
 const char kLocalNetworkAccessChecksDescription[] =
     "Enables Local Network Access checks. "
     "See: https://chromestatus.com/feature/5152728072060928";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 const char kTaskManagerClankName[] = "Task Manager on Clank";

@@ -141,11 +141,6 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::LOCAL_FONTS] =
       std::make_unique<LocalFontsPermissionContext>(profile);
 
-  // TODO(crbug.com/400455013): Move to CreateDefaultPermissionContexts() once
-  // support for Android is ready.
-  permission_contexts[ContentSettingsType::LOCAL_NETWORK_ACCESS] =
-      std::make_unique<LocalNetworkAccessPermissionContext>(profile);
-
   // Depends on Chrome specific policies not available on WebLayer.
   permission_contexts[ContentSettingsType::MEDIASTREAM_CAMERA] =
       std::make_unique<MediaStreamDevicePermissionContext>(

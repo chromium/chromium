@@ -154,10 +154,7 @@ ContentSettingsType kPermissionType[] = {
 #if BUILDFLAG(IS_CHROMEOS)
     ContentSettingsType::WEB_PRINTING,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if !BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/400455013): Enable on Android.
     ContentSettingsType::LOCAL_NETWORK_ACCESS,
-#endif  // BUIDLFLAG(IS_ANDROID)
 };
 
 // The list of setting types which request permission for a pair of requesting

@@ -29,6 +29,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "services/network/public/cpp/features.h"
 #include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -162,7 +163,11 @@ void PageInfoControllerAndroid::SetPermissionInfo(
     permissions_to_display.push_back(
         ContentSettingsType::FEDERATED_IDENTITY_API);
   }
-    permissions_to_display.push_back(ContentSettingsType::STORAGE_ACCESS);
+  permissions_to_display.push_back(ContentSettingsType::STORAGE_ACCESS);
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks)) {
+    permissions_to_display.push_back(ContentSettingsType::LOCAL_NETWORK_ACCESS);
+  }
 
   std::map<ContentSettingsType, ContentSetting>
       user_specified_settings_to_display;

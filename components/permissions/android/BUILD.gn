@@ -88,6 +88,8 @@ android_resources("java_resources") {
     "res/drawable/nfc_off_24px.xml",
     "res/drawable/open_in_new_off_24px.xml",
     "res/drawable/permission_icon_background.xml",
+    "res/drawable/router_24.xml",
+    "res/drawable/router_off_24.xml",
     "res/drawable/sensors_off_24px.xml",
     "res/drawable/smartphone_24px.xml",
     "res/drawable/sync_24px.xml",

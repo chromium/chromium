@@ -78,6 +78,7 @@ public class SiteSettingsCategory {
         Type.FILE_EDITING,
         Type.JAVASCRIPT_OPTIMIZER,
         Type.SERIAL_PORT,
+        Type.LOCAL_NETWORK_ACCESS,
         Type.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -119,9 +120,10 @@ public class SiteSettingsCategory {
         int FILE_EDITING = 32;
         int JAVASCRIPT_OPTIMIZER = 33;
         int SERIAL_PORT = 34;
+        int LOCAL_NETWORK_ACCESS = 35;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 35;
+        int NUM_ENTRIES = 36;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -242,6 +244,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.JAVASCRIPT;
             case Type.JAVASCRIPT_OPTIMIZER:
                 return ContentSettingsType.JAVASCRIPT_OPTIMIZER;
+            case Type.LOCAL_NETWORK_ACCESS:
+                return ContentSettingsType.LOCAL_NETWORK_ACCESS;
             case Type.MICROPHONE:
                 return ContentSettingsType.MEDIASTREAM_MIC;
             case Type.NFC:
@@ -333,6 +337,8 @@ public class SiteSettingsCategory {
                 return "javascript";
             case Type.JAVASCRIPT_OPTIMIZER:
                 return "javascript_optimizer";
+            case Type.LOCAL_NETWORK_ACCESS:
+                return "local_network_access";
             case Type.MICROPHONE:
                 return "microphone";
             case Type.NFC:

@@ -167,6 +167,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 return !BuildConfig.IS_DESKTOP_ANDROID;
             case SiteSettingsCategory.Type.SERIAL_PORT:
                 return DeviceFeatureMap.isEnabled(DeviceFeatureList.BLUETOOTH_RFCOMM_ANDROID);
+            case SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS:
+                return ChromeFeatureList.isEnabled(ChromeFeatureList.LOCAL_NETWORK_ACCESS);
             default:
                 return true;
         }

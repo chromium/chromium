@@ -4,7 +4,8 @@
       "win",
       "linux",
       "mac",
-      "chromeos"
+      "chromeos",
+      "android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "managed_local_network_access_restrictions_enabled",

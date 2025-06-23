@@ -7670,15 +7670,12 @@ ChromeContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
   }
 #endif
 
-// TODO(crbug.com/400455013): Add LNA support on Android
-#if !BUILDFLAG(IS_ANDROID)
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (profile->GetPrefs()->GetBoolean(
           prefs::kManagedLocalNetworkAccessRestrictionsEnabled)) {
     return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
         kBlockInsteadOfWarn;
   }
-#endif
 
   return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
       kDefault;

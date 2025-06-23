@@ -22,6 +22,7 @@ desc: |-
 supported_on:
 - chrome.*:138-
 - chrome_os:138-
+- android:139-
 
 features:
   dynamic_refresh: true

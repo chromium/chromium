@@ -1588,7 +1588,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(35, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(36, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -2307,6 +2307,26 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesIdleDetection() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.IDLE_DETECTION,
+                BINARY_RADIO_BUTTON_AND_INFO_TEXT,
+                BINARY_RADIO_BUTTON_AND_INFO_TEXT);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testOnlyExpectedPreferencesLocalNetworkAccessWithToggle() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS, BINARY_TOGGLE, BINARY_TOGGLE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testOnlyExpectedPreferencesLocalNetworkAccess() {
+        testExpectedPreferences(
+                SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS,
                 BINARY_RADIO_BUTTON_AND_INFO_TEXT,
                 BINARY_RADIO_BUTTON_AND_INFO_TEXT);
     }
@@ -3193,6 +3213,34 @@ public class SiteSettingsTest {
                         "IdleDetection",
                         SiteSettingsCategory.Type.IDLE_DETECTION,
                         ContentSettingsType.IDLE_DETECTION,
+                        false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testAllowLocalNetworkAccess() {
+        new TwoStatePermissionTestCaseWithRadioButton(
+                        "LocalNetworkAccess",
+                        SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS,
+                        ContentSettingsType.LOCAL_NETWORK_ACCESS,
+                        true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
+    public void testBlockLocalNetworkAccess() {
+        new TwoStatePermissionTestCaseWithRadioButton(
+                        "LocalNetworkAccess",
+                        SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS,
+                        ContentSettingsType.LOCAL_NETWORK_ACCESS,
                         false)
                 .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
                 .run();

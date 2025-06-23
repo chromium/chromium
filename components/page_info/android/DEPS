@@ -20,6 +20,7 @@ include_rules = [
   "+device/vr/buildflags/buildflags.h",
   "+device/vr/public/cpp",
   "+net/cert",
+  "+services/network/public/cpp/features.h",
   "+ui/android",
   "+ui/base/l10n/l10n_util.h",
 ]

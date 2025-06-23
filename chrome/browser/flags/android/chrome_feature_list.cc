@@ -415,6 +415,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kWebApkMinShellVersion,
     &kGridTabSwitcherUpdate,
     &kAndroidPinnedTabs,
+    &network::features::kLocalNetworkAccessChecks,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
     &language::kCctAutoTranslate,
