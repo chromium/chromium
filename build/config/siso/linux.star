@@ -10,7 +10,6 @@ load("./clang_linux.star", "clang")
 load("./config.star", "config")
 load("./cros.star", "cros")
 load("./devtools_frontend.star", "devtools_frontend")
-load("./nacl_linux.star", "nacl")
 load("./nasm_linux.star", "nasm")
 load("./proto_linux.star", "proto")
 load("./reproxy.star", "reproxy")
@@ -23,7 +22,6 @@ def __filegroups(ctx):
     fg.update(clang.filegroups(ctx))
     fg.update(cros.filegroups(ctx))
     fg.update(devtools_frontend.filegroups(ctx))
-    fg.update(nacl.filegroups(ctx))
     fg.update(nasm.filegroups(ctx))
     fg.update(proto.filegroups(ctx))
     fg.update(typescript.filegroups(ctx))
@@ -42,7 +40,6 @@ __handlers.update(android.handlers)
 __handlers.update(clang.handlers)
 __handlers.update(cros.handlers)
 __handlers.update(devtools_frontend.handlers)
-__handlers.update(nacl.handlers)
 __handlers.update(nasm.handlers)
 __handlers.update(proto.handlers)
 __handlers.update(typescript.handlers)
@@ -52,9 +49,6 @@ def __step_config(ctx, step_config):
 
     if android.enabled(ctx):
         step_config = android.step_config(ctx, step_config)
-
-    # nacl and cros rules should be added before clang rules for link action.
-    step_config = nacl.step_config(ctx, step_config)
 
     # cros rules are necessary only for the Siso's builtin RBE client mode.
     if not reproxy.enabled(ctx):

@@ -256,17 +256,6 @@ def __step_config(ctx, step_config):
         exec_strategy = "remote_local_fallback"
 
     for rule in step_config["rules"]:
-        # Replace nacl-clang/clang++ rules without command_prefix, because they will incorrectly match rewrapper.
-        # Replace the original step rule with one that only rewrites rewrapper and convert its rewrapper config to reproxy config.
-        if rule["name"].find("nacl-clang") >= 0 and not rule.get("command_prefix"):
-            new_rule = {
-                "name": rule["name"],
-                "action": rule["action"],
-                "handler": "rewrite_rewrapper",
-            }
-            new_rules.append(new_rule)
-            continue
-
         # clang cxx/cc/objcxx/objc will always have rewrapper config when use_remoteexec=true.
         # Remove the native siso handling and replace with custom rewrapper-specific handling.
         # All other rule values are not reused, instead use rewrapper config via handler.
