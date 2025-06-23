@@ -353,30 +353,28 @@ public class ReaderModeTest implements CustomMainActivityStart {
         DistilledPagePrefs prefs = getDistilledPagePrefs();
         prefs.addObserver(mTestObserver);
 
-        noopTo().waitForConditions(new TabBackgroundColorCondition(tab, "\"rgb(255, 255, 255)\""));
+        noopTo().waitFor(new TabBackgroundColorCondition(tab, "\"rgb(255, 255, 255)\""));
 
         ReaderModePreferencesDialog dialog = ReaderModePreferencesDialog.open(activity);
 
         // Test setting background color
         dialog.darkButtonElement
                 .clickTo()
-                .waitForConditions(new TabBackgroundColorCondition(tab, "\"rgb(32, 33, 36)\""));
+                .waitFor(new TabBackgroundColorCondition(tab, "\"rgb(32, 33, 36)\""));
         dialog.sepiaButtonElement
                 .clickTo()
-                .waitForConditions(new TabBackgroundColorCondition(tab, "\"rgb(254, 247, 224)\""));
+                .waitFor(new TabBackgroundColorCondition(tab, "\"rgb(254, 247, 224)\""));
         dialog.lightButtonElement
                 .clickTo()
-                .waitForConditions(new TabBackgroundColorCondition(tab, "\"rgb(255, 255, 255)\""));
+                .waitFor(new TabBackgroundColorCondition(tab, "\"rgb(255, 255, 255)\""));
         verify(mTestObserver, times(3)).onChangeTheme(anyInt());
 
         // Test setting font size
-        noopTo().waitForConditions(new TabFontSizeCondition(tab, "\"14px\""));
+        noopTo().waitFor(new TabFontSizeCondition(tab, "\"14px\""));
         // Max is 200% font size.
-        dialog.setFontSizeSliderToMaxTo()
-                .waitForConditions(new TabFontSizeCondition(tab, "\"28px\""));
+        dialog.setFontSizeSliderToMaxTo().waitFor(new TabFontSizeCondition(tab, "\"28px\""));
         // Min is 50% font size.
-        dialog.setFontSizeSliderToMinTo()
-                .waitForConditions(new TabFontSizeCondition(tab, "\"7px\""));
+        dialog.setFontSizeSliderToMinTo().waitFor(new TabFontSizeCondition(tab, "\"7px\""));
         verify(mTestObserver, times(2)).onChangeFontScaling(anyFloat());
 
         // TODO(crbug.com/40125950): change font family as well.

@@ -6,9 +6,13 @@ package org.chromium.chrome.test.transit;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.test.util.MenuUtils;
 
 /** Collection of Chrome-specific Triggers to start Transitions. */
@@ -21,6 +25,7 @@ public class ChromeTriggers {
      * handler directly and doesn't actually open the app menu. The direct call is faster since no
      * UI is involved and a good shortcut to speed up tests.
      */
+    @CheckReturnValue
     public static TripBuilder invokeCustomMenuActionTo(
             int menuId, Station<? extends ChromeActivity> station) {
         return station.runTo(
@@ -29,5 +34,27 @@ public class ChromeTriggers {
                                 InstrumentationRegistry.getInstrumentation(),
                                 station.getActivity(),
                                 menuId));
+    }
+
+    /** Switch to the browsing layout programmatically. */
+    @CheckReturnValue
+    public static TripBuilder showBrowsingLayoutTo(
+            Station<? extends ChromeTabbedActivity> station) {
+        return station.runOnUiThreadTo(
+                () ->
+                        station.getActivity()
+                                .getLayoutManager()
+                                .showLayout(LayoutType.BROWSING, /* animate= */ false));
+    }
+
+    /** Switch to the tab switcher layout programmatically. */
+    @CheckReturnValue
+    public static TripBuilder showTabSwitcherLayoutTo(
+            Station<? extends ChromeTabbedActivity> station) {
+        return station.runOnUiThreadTo(
+                () ->
+                        station.getActivity()
+                                .getLayoutManager()
+                                .showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false));
     }
 }

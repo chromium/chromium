@@ -15,20 +15,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
@@ -195,25 +192,19 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     public void testHideMenuOnToggleOverview() {
         WebPageStation page = mCtaTestRule.startOnBlankPage();
-        ChromeTabbedActivity activity = mCtaTestRule.getActivity();
-        LayoutManagerChrome layoutManager = activity.getLayoutManager();
 
         page.openRegularTabAppMenu();
 
         // Go to Tab Switcher programmatically because the App Menu covers the button.
         RegularTabSwitcherStation tabSwitcher =
-                page.travelToSync(
-                        RegularTabSwitcherStation.from(activity.getTabModelSelector()),
-                        Transition.runTriggerOnUiThreadOption(),
-                        () -> layoutManager.showLayout(LayoutType.TAB_SWITCHER, false));
+                RegularTabSwitcherStation.from(page.getTabModelSelector());
+        ChromeTriggers.showTabSwitcherLayoutTo(page).arriveAt(tabSwitcher);
 
         tabSwitcher.openAppMenu();
 
         // Go to a Web Page programmatically because tapping outside the app menu causes it to
         // capture the event and close.
-        tabSwitcher.travelToSync(
-                WebPageStation.newBuilder().initFrom(page).build(),
-                Transition.runTriggerOnUiThreadOption(),
-                () -> layoutManager.showLayout(LayoutType.BROWSING, false));
+        ChromeTriggers.showBrowsingLayoutTo(tabSwitcher)
+                .arriveAt(WebPageStation.newBuilder().initFrom(page).build());
     }
 }

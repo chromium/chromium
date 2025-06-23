@@ -83,10 +83,8 @@ public class QuickDeleteDialogFacility extends ModalDialogFacility {
                 new RegularTabSwitcherStation(
                         /* regularTabsExist= */ true, /* incognitoTabsExist= */ false);
         QuickDeleteSnackbarFacility snackbar = new QuickDeleteSnackbarFacility(mTimePeriod);
-        tabSwitcher.addInitialFacility(snackbar);
 
-        mHostStation.travelToSync(tabSwitcher, positiveButtonElement.getClickTrigger());
-
+        positiveButtonElement.clickTo().arriveAt(tabSwitcher, snackbar);
         return Pair.create(tabSwitcher, snackbar);
     }
 

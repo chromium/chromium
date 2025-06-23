@@ -132,19 +132,6 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     }
 
     /**
-     * @deprecated Use {@link TripBuilder#arriveAt(Station, Facility[])} instead.
-     */
-    @Deprecated
-    public final <T extends Station<?>> T travelToSync(
-            T destination, TransitionOptions options, @Nullable Trigger trigger) {
-        destination.requireToBeInSameTask(this);
-        StationToStationTrip trip =
-                new StationToStationTrip(List.of(this), List.of(destination), options, trigger);
-        trip.transitionSync();
-        return destination;
-    }
-
-    /**
      * @deprecated Use {@link TripBuilder#enterFacility(Facility)} instead.
      */
     @Deprecated
@@ -298,19 +285,6 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
         }
         FacilitySwap swap = new FacilitySwap(facilitiesToExit, facilitiesToEnter, options, trigger);
         swap.transitionSync();
-    }
-
-    /**
-     * Add a Facility which will be entered together with this Station. Both will become ACTIVE in
-     * the same Trip.
-     *
-     * @deprecated Use {@link TripBuilder#arriveAt(Station, Facility[])} instead.
-     */
-    @Deprecated
-    public <F extends Facility<?>> F addInitialFacility(F facility) {
-        assertInPhase(Phase.NEW);
-        registerFacility(facility);
-        return facility;
     }
 
     /** Get the activity element associate with this station, if there's any. */

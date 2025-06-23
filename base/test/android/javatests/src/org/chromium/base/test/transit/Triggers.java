@@ -33,9 +33,7 @@ public class Triggers {
      * @return a {@link TripBuilder} to perform the Transition.
      */
     public static TripBuilder runOnUiThreadTo(Runnable runnable) {
-        return new TripBuilder()
-                .withRunnableTrigger(runnable)
-                .withOptions(Transition.runTriggerOnUiThreadOption());
+        return new TripBuilder().withRunnableTrigger(runnable).withRunOnUiThread();
     }
 
     /**

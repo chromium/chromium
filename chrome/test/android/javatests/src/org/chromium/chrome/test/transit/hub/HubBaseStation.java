@@ -13,12 +13,9 @@ import static org.chromium.base.test.transit.ViewElement.unscopedOption;
 
 import android.view.View;
 
-import androidx.test.espresso.Espresso;
-
 import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -28,7 +25,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.layouts.LayoutTypeVisibleCondition;
-import org.chromium.chrome.test.transit.page.PageStation;
 
 /** The base station for Hub, with several panes and a toolbar. */
 public abstract class HubBaseStation
@@ -83,15 +79,6 @@ public abstract class HubBaseStation
 
     /** Returns the station's {@link PaneId}. */
     public abstract @PaneId int getPaneId();
-
-    /**
-     * Returns to the previous tab via the back button.
-     *
-     * @return the {@link PageStation} that Hub returned to.
-     */
-    public <T extends PageStation> T leaveHubToPreviousTabViaBack(T destination) {
-        return travelToSync(destination, Transition.retryOption(), () -> Espresso.pressBack());
-    }
 
     /**
      * Selects the tab switcher pane on the Hub.

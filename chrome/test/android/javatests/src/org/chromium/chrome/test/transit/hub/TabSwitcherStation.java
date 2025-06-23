@@ -20,10 +20,11 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 import org.hamcrest.Matcher;
 
-import org.chromium.base.test.transit.Condition;
-import org.chromium.base.test.transit.Transition;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.base.test.util.ViewActionOnDescendant;
@@ -160,17 +161,21 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                                         : PaneId.TAB_SWITCHER,
                                 expectedRegularTabs > 0,
                                 expectedIncognitoTabs > 0));
-        Condition tabCountDecremented =
-                new TabCountChangedCondition(
-                        tabModelSelector.getModel(incognitoModelSelected),
-                        /* expectedChange= */ -1);
-        return travelToSync(
-                tabSwitcher,
-                Transition.conditionOption(tabCountDecremented),
-                () -> {
-                    ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
-                            is(recyclerViewElement.get()), index, TAB_CLOSE_BUTTON, click());
-                });
+        return clickCloseTabOnCardIndexTo(index)
+                .waitForAnd(
+                        new TabCountChangedCondition(
+                                tabModelSelector.getModel(incognitoModelSelected),
+                                /* expectedChange= */ -1))
+                .arriveAt(tabSwitcher);
+    }
+
+    /** Click the close tab button on the tab card at the given |index| to start a Trip. */
+    @CheckReturnValue
+    public TripBuilder clickCloseTabOnCardIndexTo(int index) {
+        return runTo(
+                () ->
+                        ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
+                                is(recyclerViewElement.get()), index, TAB_CLOSE_BUTTON, click()));
     }
 
     /**
@@ -187,7 +192,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                         .withIsSelectingTabs(1)
                         .withIncognito(mIsIncognito)
                         .build();
-        return leaveHubToPreviousTabViaBack(destination);
+        return pressBackTo().withRetry().arriveAt(destination);
     }
 
     /** Expect a tab group card to exist. */
@@ -216,8 +221,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
     public TabSwitcherSearchStation openTabSwitcherSearch() {
         TabSwitcherSearchStation searchStation = new TabSwitcherSearchStation(mIsIncognito);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-        searchStation.addInitialFacility(softKeyboard);
-        travelToSync(searchStation, searchElement.getClickTrigger());
+        searchElement.clickTo().arriveAt(searchStation, softKeyboard);
         softKeyboard.close();
         return searchStation;
     }

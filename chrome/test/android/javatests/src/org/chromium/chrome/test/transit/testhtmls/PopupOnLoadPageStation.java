@@ -32,14 +32,14 @@ public class PopupOnLoadPageStation extends WebPageStation {
                     ChromeTabbedActivityTestRule activityTestRule, PageStation currentPageStation) {
         // TODO(crbug.com/329307093): Add condition that no new tabs were opened.
         String url = activityTestRule.getTestServer().getURL(PATH);
+        PopupOnLoadPageStation newPage =
+                new Builder<>(PopupOnLoadPageStation::new)
+                        .initForLoadingUrlOnSameTab(url, currentPageStation)
+                        .build();
         PopupBlockedMessageFacility<PopupOnLoadPageStation> popupBlockedMessage =
                 new PopupBlockedMessageFacility<>(2);
-        PopupOnLoadPageStation newPage =
-                currentPageStation.loadPageProgrammatically(
-                        url,
-                        new Builder<>(PopupOnLoadPageStation::new)
-                                .withFacility(popupBlockedMessage));
 
+        currentPageStation.loadUrlTo(url).arriveAt(newPage, popupBlockedMessage);
         return Pair.create(newPage, popupBlockedMessage);
     }
 

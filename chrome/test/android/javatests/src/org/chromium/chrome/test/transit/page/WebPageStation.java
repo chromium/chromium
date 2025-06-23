@@ -141,7 +141,7 @@ public class WebPageStation extends PageStation {
     /** Trigger to scroll WebContents to the bottom. */
     public TripBuilder scrollToBottomTo() {
         return runJsTo("window.scrollTo(0, document.body.scrollHeight)")
-                .waitForConditionsAnd(new ScrollToBottomCondition(webContentsElement));
+                .waitForAnd(new ScrollToBottomCondition(webContentsElement));
     }
 
     /** Starts a Transition triggered by running |jsCode| in the WebContents. */

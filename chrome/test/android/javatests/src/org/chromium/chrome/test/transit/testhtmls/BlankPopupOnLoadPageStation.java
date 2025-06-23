@@ -33,10 +33,11 @@ public class BlankPopupOnLoadPageStation extends WebPageStation {
         PopupBlockedMessageFacility<BlankPopupOnLoadPageStation> popupBlockedMessage =
                 new PopupBlockedMessageFacility<>(1);
         BlankPopupOnLoadPageStation newPage =
-                currentPageStation.loadPageProgrammatically(
-                        url,
-                        new Builder<>(BlankPopupOnLoadPageStation::new)
-                                .withFacility(popupBlockedMessage));
+                new Builder<>(BlankPopupOnLoadPageStation::new)
+                        .initForLoadingUrlOnSameTab(url, currentPageStation)
+                        .build();
+
+        currentPageStation.loadUrlTo(url).arriveAt(newPage, popupBlockedMessage);
 
         return Pair.create(newPage, popupBlockedMessage);
     }

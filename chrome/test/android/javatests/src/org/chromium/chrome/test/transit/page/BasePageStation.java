@@ -6,6 +6,8 @@ package org.chromium.chrome.test.transit.page;
 
 import static org.chromium.base.test.transit.Condition.whether;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.CallbackCondition;
@@ -14,9 +16,7 @@ import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
-import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.Transition;
-import org.chromium.base.test.transit.Transition.Trigger;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -50,7 +50,6 @@ public class BasePageStation<HostActivity extends ChromeActivity>
         protected Tab mTabAlreadySelected;
         protected String mExpectedUrlSubstring;
         protected String mExpectedTitle;
-        protected List<Facility<?>> mFacilities;
 
         public Config withIncognito(boolean incognito) {
             mIncognito = incognito;
@@ -92,14 +91,6 @@ public class BasePageStation<HostActivity extends ChromeActivity>
 
         public Config withExpectedTitle(String title) {
             mExpectedTitle = title;
-            return this;
-        }
-
-        public Config withFacility(Facility<?> facility) {
-            if (mFacilities == null) {
-                mFacilities = new ArrayList<>();
-            }
-            mFacilities.add(facility);
             return this;
         }
 
@@ -171,13 +162,17 @@ public class BasePageStation<HostActivity extends ChromeActivity>
             return this;
         }
 
-        public Builder<PageT> withFacility(Facility<?> facility) {
-            mConfig.withFacility(facility);
+        public Builder<PageT> initFrom(BasePageStation<?> previousStation) {
+            mConfig.initFrom(previousStation);
             return this;
         }
 
-        public Builder<PageT> initFrom(BasePageStation<?> previousStation) {
-            mConfig.initFrom(previousStation);
+        public Builder<PageT> initForLoadingUrlOnSameTab(
+                String url, BasePageStation<?> previousStation) {
+            initFrom(previousStation);
+            if (mConfig.mExpectedUrlSubstring == null) {
+                mConfig.withExpectedUrlSubstring(url);
+            }
             return this;
         }
 
@@ -209,12 +204,6 @@ public class BasePageStation<HostActivity extends ChromeActivity>
                 : String.format(
                         "mTabAlreadySelected=%s mNumTabsBeingSelected=%s",
                         config.mTabAlreadySelected, config.mNumTabsBeingSelected);
-
-        if (config.mFacilities != null) {
-            for (Facility<?> facility : config.mFacilities) {
-                addInitialFacility(facility);
-            }
-        }
 
         if (config.mNumTabsBeingOpened > 0) {
             declareEnterCondition(
@@ -269,30 +258,25 @@ public class BasePageStation<HostActivity extends ChromeActivity>
         return loadedTabElement.get();
     }
 
-    /** Loads a |url| in the same tab and waits to transition. */
+    /** Loads a |url| in the same tab and waits to transition to the Station built by |builder|. */
     public <DestinationT extends BasePageStation<HostActivity>>
             DestinationT loadPageProgrammatically(String url, Builder<DestinationT> builder) {
-        Config config = builder.mConfig;
-        config.initFrom(this);
-        if (config.mExpectedUrlSubstring == null) {
-            config.mExpectedUrlSubstring = url;
-        }
+        return loadUrlTo(url).arriveAt(builder.initForLoadingUrlOnSameTab(url, this).build());
+    }
 
-        DestinationT destination = builder.build();
-        Trigger trigger =
-                () -> {
-                    @PageTransition
-                    int transitionType = PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
-                    loadedTabElement.get().loadUrl(new LoadUrlParams(url, transitionType));
-                };
-        Transition.TransitionOptions options =
-                Transition.newOptions()
-                        .withCondition(new PageLoadCallbackCondition(loadedTabElement.get()))
-                        .withTimeout(10000)
-                        .withPossiblyAlreadyFulfilled()
-                        .withRunTriggerOnUiThread()
-                        .build();
-        return travelToSync(destination, options, trigger);
+    /** Loads a |url| in the same tab to start a Trip. */
+    @CheckReturnValue
+    public TripBuilder loadUrlTo(String url) {
+        return runOnUiThreadTo(
+                        () -> {
+                            @PageTransition
+                            int transitionType =
+                                    PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
+                            loadedTabElement.get().loadUrl(new LoadUrlParams(url, transitionType));
+                        })
+                .withTimeout(10000)
+                .withPossiblyAlreadyFulfilled()
+                .waitForAnd(new PageLoadCallbackCondition(loadedTabElement.get()));
     }
 
     /** Condition to check the page url contains a certain substring. */
