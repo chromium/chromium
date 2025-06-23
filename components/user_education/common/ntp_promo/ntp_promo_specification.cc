@@ -10,9 +10,8 @@
 
 namespace user_education {
 
+NtpPromoContent::NtpPromoContent(const NtpPromoContent&) = default;
 NtpPromoContent::NtpPromoContent(NtpPromoContent&&) noexcept = default;
-NtpPromoSpecification::NtpPromoSpecification(NtpPromoSpecification&&) noexcept =
-    default;
 NtpPromoContent::~NtpPromoContent() = default;
 
 NtpPromoContent::NtpPromoContent(std::string_view icon_name,
@@ -23,6 +22,8 @@ NtpPromoContent::NtpPromoContent(std::string_view icon_name,
       action_button_text_string_id_(action_button_text_string_id) {}
 
 NtpPromoSpecification::~NtpPromoSpecification() = default;
+NtpPromoSpecification::NtpPromoSpecification(NtpPromoSpecification&&) noexcept =
+    default;
 
 NtpPromoSpecification::NtpPromoSpecification(
     NtpPromoIdentifier id,

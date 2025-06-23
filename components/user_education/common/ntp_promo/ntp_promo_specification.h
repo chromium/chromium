@@ -26,6 +26,7 @@ namespace user_education {
 class NtpPromoContent {
  public:
   NtpPromoContent() = delete;
+  NtpPromoContent(const NtpPromoContent&);
   NtpPromoContent(NtpPromoContent&&) noexcept;
   ~NtpPromoContent();
   NtpPromoContent(std::string_view icon_name,
@@ -69,6 +70,10 @@ class NtpPromoSpecification {
                         user_education::Metadata);
 
   const NtpPromoContent& content() const { return content_; }
+  EligibilityCallback eligibility_callback() const {
+    return eligibility_callback_;
+  }
+  ActionCallback action_callback() const { return action_callback_; }
   const std::string& id() const { return id_; }
   const base::flat_set<NtpPromoIdentifier>& show_after() const {
     return show_after_;
