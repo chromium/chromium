@@ -65,7 +65,6 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
-#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
@@ -85,7 +84,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     SettingsNavigationControllerDelegate,
     SignoutActionSheetCoordinatorDelegate,
     SyncErrorSettingsCommandHandler,
-    SyncObserverModelBridge,
     TrustedVaultReauthenticationCoordinatorDelegate> {
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
@@ -116,7 +114,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 // Displays the sign-out options for a syncing user.
 @property(nonatomic, strong)
     SignoutActionSheetCoordinator* signoutActionSheetCoordinator;
-@property(nonatomic, assign) BOOL signOutFlowInProgress;
 
 @end
 
@@ -189,7 +186,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   CHECK(_baseNavigationController);
   [self.baseNavigationController pushViewController:viewController
                                            animated:YES];
-  _syncObserver = std::make_unique<SyncObserverBridge>(self, self.syncService);
 }
 
 - (void)stop {
@@ -509,14 +505,14 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 - (void)signoutActionSheetCoordinatorPreventUserInteraction:
     (SignoutActionSheetCoordinator*)coordinator {
-  self.signOutFlowInProgress = YES;
+  self.mediator.signOutFlowInProgress = YES;
   [self.viewController preventUserInteraction];
 }
 
 - (void)signoutActionSheetCoordinatorAllowUserInteraction:
     (SignoutActionSheetCoordinator*)coordinator {
   [self.viewController allowUserInteraction];
-  self.signOutFlowInProgress = NO;
+  self.mediator.signOutFlowInProgress = NO;
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler
@@ -638,17 +634,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 - (void)bulkUploadCoordinatorShouldStop:(BulkUploadCoordinator*)coordinator {
   DCHECK_EQ(coordinator, _bulkUploadCoordinator);
   [self stopBulkUpload];
-}
-
-#pragma mark - SyncObserverModelBridge
-
-- (void)onSyncStateChanged {
-  if (self.signOutFlowInProgress) {
-    return;
-  }
-  if (!self.syncService->GetDisableReasons().empty()) {
-    [self closeManageSyncSettings];
-  }
 }
 
 #pragma mark - SettingsNavigationControllerDelegate

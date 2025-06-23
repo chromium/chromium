@@ -914,8 +914,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  if (_ignoreSyncStateChanges) {
+  if (_ignoreSyncStateChanges || self.signOutFlowInProgress) {
     // The UI should not updated so the switch animations can run smoothly.
+    return;
+  }
+  if (!_syncService->GetDisableReasons().empty()) {
+    [self.commandHandler closeManageSyncSettings];
     return;
   }
   [self updateSyncErrorsSection:YES];

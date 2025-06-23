@@ -43,6 +43,9 @@
 // Opens the account menu to switch account.
 - (void)openAccountMenu;
 
+// Close the manage sync settings view.
+- (void)closeManageSyncSettings;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_COMMAND_HANDLER_H_

@@ -49,6 +49,8 @@ class SyncService;
 @property(nonatomic, assign) NSInteger localItemsToUpload;
 // Number of local passwords to upload.
 @property(nonatomic, assign) NSInteger localPasswordsToUpload;
+// Whether the sign-out is in progress
+@property(nonatomic, assign) BOOL signOutFlowInProgress;
 
 // Designated initializer.
 // `syncService`: Sync service. Should not be null.
