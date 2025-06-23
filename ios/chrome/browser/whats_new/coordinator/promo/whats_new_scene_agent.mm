@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/whats_new/coordinator/promo/whats_new_scene_agent.h"
 
-#import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
@@ -37,17 +36,6 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   switch (level) {
     case SceneActivationLevelForegroundActive: {
-      if (WasWhatsNewUsed()) {
-        return;
-      }
-
-      // Special case for What's New M132 for Price Insights. Only register a
-      // promo is Price Insights is enabled.
-      if (!IsPriceInsightsRegionEnabled()) {
-        self.promosManager->DeregisterPromo(promos_manager::Promo::WhatsNew);
-        return;
-      }
-
       DCHECK(self.promosManager);
       self.promosManager->RegisterPromoForContinuousDisplay(
           promos_manager::Promo::WhatsNew);

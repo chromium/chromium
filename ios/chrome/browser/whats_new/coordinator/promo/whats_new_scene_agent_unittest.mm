@@ -44,11 +44,6 @@ class WhatsNewSceneAgentTest : public PlatformTest {
     agent_.sceneState = scene_state_;
   }
 
-  void TearDown() override {
-    [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:kWhatsNewM116UsageEntryKey];
-  }
-
  protected:
   WhatsNewSceneAgent* agent_;
   // SceneState only weakly holds AppState, so keep it alive here.
@@ -65,16 +60,5 @@ TEST_F(WhatsNewSceneAgentTest, TestWhatsNewPromoRegistration) {
   EXPECT_CALL(*promos_manager_.get(), RegisterPromoForContinuousDisplay(
                                           promos_manager::Promo::WhatsNew))
       .Times(1);
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-}
-
-// Tests that the What's New promo did not register in the promo manager if the
-// user viewed What's New M116 prior to the migration to FET.
-TEST_F(WhatsNewSceneAgentTest, TestWhatsNewDoesNotRegisterWhenDefaultM116Used) {
-  [[NSUserDefaults standardUserDefaults] setBool:YES
-                                          forKey:kWhatsNewM116UsageEntryKey];
-  EXPECT_CALL(*promos_manager_.get(), RegisterPromoForContinuousDisplay(
-                                          promos_manager::Promo::WhatsNew))
-      .Times(0);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }
