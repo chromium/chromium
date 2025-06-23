@@ -9,7 +9,9 @@
 
 namespace tabs {
 
-// TODO(346837232) move all flags to this file.
+// TODO(crbug.com/346837232): move all flags to this file.
+
+BASE_DECLARE_FEATURE(kDebugUITabStrip);
 
 BASE_DECLARE_FEATURE(kSplitTabStrip);
 
