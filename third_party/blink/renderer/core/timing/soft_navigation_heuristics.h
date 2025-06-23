@@ -173,7 +173,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   // objects are added when they are the active context during an event handler
   // running in an `EventScope`. Entries are stored as untraced members to do
   // custom weak processing (see `ProcessCustomWeakness()`).
-  Vector<UntracedMember<SoftNavigationContext>> potential_soft_navigations_;
+  HashSet<UntracedMember<SoftNavigationContext>> potential_soft_navigations_;
 
   // The `SoftNavigationContext` of the "active interaction", if any.
   //

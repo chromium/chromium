@@ -654,7 +654,7 @@ void SoftNavigationHeuristics::ProcessCustomWeakness(
   // Note: This is not allowed to do Oilpan allocations. If that's needed, this
   // can schedule a task or microtask to reset the heuristic.
   const auto required_paint_area = CalculateRequiredPaintArea();
-  WTF::EraseIf(potential_soft_navigations_, [&](const auto& context) {
+  potential_soft_navigations_.erase_if([&](const auto& context) {
     if (!info.IsHeapObjectAlive(context)) {
       OnSoftNavigationContextWasExhausted(
           *context.Get(), CalculateViewportArea(), required_paint_area);
@@ -710,7 +710,7 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
     if (IsInteractionStart(type) || !active_interaction_context_) {
       active_interaction_context_ = MakeGarbageCollected<SoftNavigationContext>(
           *window_, paint_attribution_mode_);
-      potential_soft_navigations_.push_back(active_interaction_context_);
+      potential_soft_navigations_.insert(active_interaction_context_);
       TRACE_EVENT_BEGIN(
           "loading", "SoftNavigationHeuristics::SoftNavigation",
           perfetto::Track::FromPointer(active_interaction_context_));
