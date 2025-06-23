@@ -136,6 +136,20 @@ export class SettingsOtherGoogleDataDialogElement extends
   private shouldShowGoogleSearchHistoryLink_() {
     return isSignedIn(this.syncStatus_) && this.isGoogleDse_;
   }
+
+  private getMyActivityLinkCssClass_() {
+    if (!this.isGoogleDse_) {
+      return 'middle-link-row';
+    }
+    return 'last-link-row';
+  }
+
+  private getPasswordsLinkCssClass_() {
+    if (this.isGoogleDse_ && !isSignedIn(this.syncStatus_)) {
+      return 'only-link-row';
+    }
+    return 'first-link-row';
+  }
 }
 
 declare global {

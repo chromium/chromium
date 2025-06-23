@@ -184,4 +184,49 @@ suite('OtherGoogleDataDialog', function() {
     assertEquals(
         loadTimeData.getString('otherDataTitle'), title.textContent!.trim());
   });
+
+  test('LinkRowsCssClass', async function() {
+    // Case 1: User is signed in and Google is DSE, passwords > Google search
+    // history > my activity rows should be shown in this order.
+    setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
+    await flushTasks();
+    assertTrue(
+        dialog.$.passwordManagerLink.classList.contains('first-link-row'));
+    assertTrue(
+        dialog.$.googleSearchHistoryLink.classList.contains('middle-link-row'));
+    assertTrue(dialog.$.myActivityLink.classList.contains('last-link-row'));
+    assertFalse(isVisible(dialog.$.nonGoogleSearchHistoryLink));
+
+    // Case 2: User is signed in and Google is not the DSE, passwords  > my
+    // activity > non Google search history rows should be shown in this order.
+    setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ false);
+    await flushTasks();
+    assertTrue(
+        dialog.$.passwordManagerLink.classList.contains('first-link-row'));
+    assertFalse(isVisible(dialog.$.googleSearchHistoryLink));
+    assertTrue(dialog.$.myActivityLink.classList.contains('middle-link-row'));
+    assertTrue(dialog.$.nonGoogleSearchHistoryLink.classList.contains(
+        'last-link-row'));
+
+    // Case 3: User is not signed in and Google is not the DSE, passwords  > non
+    // Google search history rows should be shown in this order.
+    setSignedInAndDseState(SignedInState.SIGNED_OUT, /*isGoogleDse=*/ false);
+    await flushTasks();
+    assertTrue(
+        dialog.$.passwordManagerLink.classList.contains('first-link-row'));
+    assertFalse(isVisible(dialog.$.googleSearchHistoryLink));
+    assertFalse(isVisible(dialog.$.myActivityLink));
+    assertTrue(dialog.$.nonGoogleSearchHistoryLink.classList.contains(
+        'last-link-row'));
+
+    // Case 4: User is not signed in and Google is the DSE, only passwords row
+    // should be shown.
+    setSignedInAndDseState(SignedInState.SIGNED_OUT, /*isGoogleDse=*/ true);
+    await flushTasks();
+    assertTrue(
+        dialog.$.passwordManagerLink.classList.contains('only-link-row'));
+    assertFalse(isVisible(dialog.$.googleSearchHistoryLink));
+    assertFalse(isVisible(dialog.$.myActivityLink));
+    assertFalse(isVisible(dialog.$.nonGoogleSearchHistoryLink));
+  });
 });

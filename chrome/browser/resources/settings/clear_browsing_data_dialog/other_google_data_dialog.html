@@ -17,14 +17,12 @@
     font-weight: 500;
   }
 
-  .link-row {
+  .link-rows-block > * {
     background-color: var(--dbd-container-color);
     padding: 4px 16px;
   }
 
-  /* TODO(crbug.com/397187800): Fix broken border logic due to conditional
-    visibility of the .link-row. */
-  .link-row:first-child {
+  .first-link-row {
     border-bottom-left-radius: var(--dbd-container-stacked-border-radius);
     border-bottom-right-radius: var(--dbd-container-stacked-border-radius);
     border-top-left-radius: var(--dbd-container-border-radius);
@@ -32,7 +30,7 @@
     margin-bottom: 2px;
   }
 
-  .link-row:last-child {
+  .last-link-row {
     border-bottom-left-radius: var(--dbd-container-border-radius);
     border-bottom-right-radius: var(--dbd-container-border-radius);
     border-top-left-radius: var(--dbd-container-stacked-border-radius);
@@ -40,12 +38,12 @@
     margin-bottom: 0;
   }
 
-  .link-row:not(:first-child):not(:last-child) {
+  .middle-link-row {
     border-radius: var(--dbd-container-stacked-border-radius);
     margin-bottom: 2px;
   }
 
-  .link-row:only-child {
+  .only-link-row {
     border-radius: var(--dbd-container-border-radius);
     margin-bottom: 0;
   }
@@ -70,26 +68,27 @@
     <div id="subpageDescription">$i18n{otherDataDescription}
     </div>
     <div class="link-rows-block">
-      <cr-link-row class="link-row" external
+      <cr-link-row external using-slotted-label
+          class$="[[getPasswordsLinkCssClass_(syncStatus_, isGoogleDse_)]]"
           sub-label="$i18n{manageInGooglePasswordManager}"
-          id="passwordManagerLink" on-click="onPasswordManagerClick_"
-          using-slotted-label>
+          id="passwordManagerLink" on-click="onPasswordManagerClick_">
         <div slot="label" class="label">$i18n{passwordsAndPasskeys}</div>
       </cr-link-row>
-      <cr-link-row id="googleSearchHistoryLink" class="link-row" external
-          hidden="[[!shouldShowGoogleSearchHistoryLink_(
+      <cr-link-row id="googleSearchHistoryLink" class="middle-link-row"
+          external hidden="[[!shouldShowGoogleSearchHistoryLink_(
               syncStatus_, isGoogleDse_)]]"
           on-click="onGoogleSearchHistoryLinkClick_"
           sub-label="$i18n{manageInYourGoogleAccount}" using-slotted-label>
         <div slot="label" class="label">$i18n{searchHistory}</div>
       </cr-link-row>
-      <cr-link-row id="myActivityLink" class="link-row" external
+      <cr-link-row id="myActivityLink" external using-slotted-label
+          class$="[[getMyActivityLinkCssClass_(isGoogleDse_)]]"
           hidden="[[!shouldShowMyActivityLink_(syncStatus_)]]"
           sub-label="$i18n{manageInYourGoogleAccount}"
-          on-click="onMyActivityLinkClick_" using-slotted-label>
+          on-click="onMyActivityLinkClick_">
         <div slot="label" class="label">$i18n{myActivity}</div>
       </cr-link-row>
-      <div id="nonGoogleSearchHistoryLink" class="cr-row first link-row"
+      <div id="nonGoogleSearchHistoryLink" class="cr-row first last-link-row"
           hidden="[[isGoogleDse_]]">
         <div class="flex cr-padded-text">
           <div class="label">$i18n{searchHistory}</div>
