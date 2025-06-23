@@ -108,13 +108,6 @@ int NetworkServiceNetworkDelegate::OnBeforeURLRequest(
         request->traffic_annotation());
   }
 
-  if (!loader)
-    return net::OK;
-
-  if (network_service) {
-    loader->SetEnableReportingRawHeaders(network_service->HasRawHeadersAccess(
-        loader->GetProcessId(), *effective_url));
-  }
   return net::OK;
 }
 

@@ -289,8 +289,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     return shared_storage_request_helper_.get();
   }
 
-  void SetEnableReportingRawHeaders(bool enable);
-
   void set_partial_decoder_decoding_buffer_size_for_testing(
       int partial_decoder_decoding_buffer_size) {
     partial_decoder_decoding_buffer_size_ =
