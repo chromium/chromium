@@ -202,6 +202,9 @@ class CC_EXPORT PictureLayerImpl
   using TileUpdateSet = std::map<float, std::set<TileIndex>>;
   TileUpdateSet TakeUpdatedTiles();
 
+  bool IsDirectlyCompositedImage() const;
+  bool nearest_neighbor() const { return nearest_neighbor_; }
+
  protected:
   friend class RasterizeAndRecordBenchmarkImpl;
 
@@ -242,7 +245,6 @@ class CC_EXPORT PictureLayerImpl
       const PaintWorkletRecordMap* pending_paint_worklet_records,
       const DiscardableImageMap* pending_discardable_image_map);
 
-  bool IsDirectlyCompositedImage() const;
   void UpdateDirectlyCompositedImageFromRasterSource();
 
   void SanityCheckTilingState() const;

@@ -1753,6 +1753,108 @@ TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
   EXPECT_FALSE(tile_display_layer_impl->is_backdrop_filter_mask_for_testing());
 }
 
+TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
+       UpdateIsDirectlyCompositedImage) {
+  constexpr int kLayerId = 2;
+
+  // Initial update: Create TileDisplayLayer with default properties.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kTileDisplay,
+                          kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  cc::LayerImpl* layer_impl_base = GetLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, layer_impl_base);
+  ASSERT_EQ(layer_impl_base->GetLayerType(),
+            cc::mojom::LayerType::kTileDisplay);
+  auto* tile_display_layer_impl =
+      static_cast<cc::TileDisplayLayerImpl*>(layer_impl_base);
+
+  EXPECT_FALSE(tile_display_layer_impl->is_directly_composited_image());
+
+  // Second update: Set is_directly_composited_image to true.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 =
+      CreateManualLayer(kLayerId, cc::mojom::LayerType::kTileDisplay);
+  auto tile_extra2 = mojom::TileDisplayLayerExtra::New();
+  tile_extra2->is_directly_composited_image = true;
+  layer_props2->layer_extra =
+      mojom::LayerExtra::NewTileDisplayLayerExtra(std::move(tile_extra2));
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+
+  EXPECT_TRUE(tile_display_layer_impl->is_directly_composited_image());
+
+  // Third update: Set is_directly_composited_image to false.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 =
+      CreateManualLayer(kLayerId, cc::mojom::LayerType::kTileDisplay);
+  auto tile_extra3 = mojom::TileDisplayLayerExtra::New();
+  tile_extra3->is_directly_composited_image = false;
+  layer_props3->layer_extra =
+      mojom::LayerExtra::NewTileDisplayLayerExtra(std::move(tile_extra3));
+  update3->layers.push_back(std::move(layer_props3));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+
+  EXPECT_FALSE(tile_display_layer_impl->is_directly_composited_image());
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
+       UpdateNearestNeighbor) {
+  constexpr int kLayerId = 2;
+
+  // Initial update: Create TileDisplayLayer with default properties.
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kTileDisplay,
+                          kLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  cc::LayerImpl* layer_impl_base = GetLayerFromActiveTree(kLayerId);
+  ASSERT_NE(nullptr, layer_impl_base);
+  ASSERT_EQ(layer_impl_base->GetLayerType(),
+            cc::mojom::LayerType::kTileDisplay);
+  auto* tile_display_layer_impl =
+      static_cast<cc::TileDisplayLayerImpl*>(layer_impl_base);
+
+  EXPECT_FALSE(tile_display_layer_impl->nearest_neighbor());
+
+  // Second update: Set nearest_neighbor to true.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 =
+      CreateManualLayer(kLayerId, cc::mojom::LayerType::kTileDisplay);
+  auto tile_extra2 = mojom::TileDisplayLayerExtra::New();
+  tile_extra2->nearest_neighbor = true;
+  layer_props2->layer_extra =
+      mojom::LayerExtra::NewTileDisplayLayerExtra(std::move(tile_extra2));
+  update2->layers.push_back(std::move(layer_props2));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+
+  EXPECT_TRUE(tile_display_layer_impl->nearest_neighbor());
+
+  // Third update: Set nearest_neighbor to false.
+  auto update3 = CreateDefaultUpdate();
+  auto layer_props3 =
+      CreateManualLayer(kLayerId, cc::mojom::LayerType::kTileDisplay);
+  auto tile_extra3 = mojom::TileDisplayLayerExtra::New();
+  tile_extra3->nearest_neighbor = false;
+  layer_props3->layer_extra =
+      mojom::LayerExtra::NewTileDisplayLayerExtra(std::move(tile_extra3));
+  update3->layers.push_back(std::move(layer_props3));
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+
+  EXPECT_FALSE(tile_display_layer_impl->nearest_neighbor());
+}
+
 TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
   constexpr int kLayerId = 2;
   constexpr float kScaleKey1 = 1.0f;

@@ -914,6 +914,9 @@ void SerializeLayer(LayerImpl& layer,
       }
       tile_display_extra->is_backdrop_filter_mask =
           picture_layer.is_backdrop_filter_mask();
+      tile_display_extra->is_directly_composited_image =
+          picture_layer.IsDirectlyCompositedImage();
+      tile_display_extra->nearest_neighbor = picture_layer.nearest_neighbor();
       wire.layer_extra = viz::mojom::LayerExtra::NewTileDisplayLayerExtra(
           std::move(tile_display_extra));
       SerializePictureLayerTileUpdates(picture_layer, resource_provider,

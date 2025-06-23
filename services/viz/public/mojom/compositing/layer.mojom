@@ -112,6 +112,12 @@ struct TileDisplayLayerExtra {
 
   // Will be set to true for PictureLayers that are backdrop filter masks.
   bool is_backdrop_filter_mask;
+
+  // Will be set to true for PictureLayers that are directly composited images.
+  bool is_directly_composited_image;
+
+  // Will be set to true for PictureLayers that use nearest neighbor filtering.
+  bool nearest_neighbor;
 };
 
 // Extra fields in a cc::ScrollbarLayerImplBase that has been added

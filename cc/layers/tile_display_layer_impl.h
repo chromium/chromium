@@ -145,6 +145,16 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   void SetIsBackdropFilterMask(bool is_backdrop_filter_mask) {
     is_backdrop_filter_mask_ = is_backdrop_filter_mask;
   }
+  void SetIsDirectlyCompositedImage(bool is_directly_composited_image) {
+    is_directly_composited_image_ = is_directly_composited_image;
+  }
+  void SetNearestNeighbor(bool nearest_neighbor) {
+    nearest_neighbor_ = nearest_neighbor;
+  }
+  bool is_directly_composited_image() const {
+    return is_directly_composited_image_;
+  }
+  bool nearest_neighbor() const { return nearest_neighbor_; }
 
   // LayerImpl overrides:
   mojom::LayerType GetLayerType() const override;
@@ -176,6 +186,8 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
  private:
   std::optional<SkColor4f> solid_color_;
   bool is_backdrop_filter_mask_ = false;
+  bool is_directly_composited_image_ = false;
+  bool nearest_neighbor_ = false;
 
   // Denotes an area that is damaged and needs redraw. This is in the layer's
   // space.
