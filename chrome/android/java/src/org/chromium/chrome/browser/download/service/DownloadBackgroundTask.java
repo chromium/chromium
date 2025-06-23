@@ -14,6 +14,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadNotificationService;
+import org.chromium.chrome.browser.download.DownloadUserInitiatedTaskManager;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
 import org.chromium.chrome.browser.profiles.ProfileKey;
@@ -65,6 +66,9 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
             ensureNotificationBridgeInitialized();
             DownloadNotificationService.getInstance()
                     .setBackgroundTaskNotificationCallback(taskParameters.getTaskId(), callback);
+            DownloadUserInitiatedTaskManager.recordNotificationAttachEevent(
+                    DownloadUserInitiatedTaskManager.NotificationAttachEvent
+                            .RESUMPTION_JOB_STARTED);
         }
         DownloadBackgroundTaskJni.get()
                 .startBackgroundTask(

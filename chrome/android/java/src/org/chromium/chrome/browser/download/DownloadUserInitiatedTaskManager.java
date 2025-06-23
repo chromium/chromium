@@ -35,14 +35,16 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
     @IntDef({
         NotificationAttachEvent.ATTACHED_ON_JOB_START,
         NotificationAttachEvent.ATTACHED_AFTER_JOB_START,
-        NotificationAttachEvent.NEVER_ATTACHED_BEFORE_JOB_COMPLETE
+        NotificationAttachEvent.NEVER_ATTACHED_BEFORE_JOB_COMPLETE,
+        NotificationAttachEvent.RESUMPTION_JOB_STARTED,
     })
     public @interface NotificationAttachEvent {
         int ATTACHED_ON_JOB_START = 0;
         int ATTACHED_AFTER_JOB_START = 1;
         int NEVER_ATTACHED_BEFORE_JOB_COMPLETE = 2;
+        int RESUMPTION_JOB_STARTED = 3;
 
-        int COUNT = 3;
+        int COUNT = 4;
     }
 
     /**
@@ -164,7 +166,7 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
         mPinnedNotificationId = notificationId;
     }
 
-    private static void recordNotificationAttachEevent(@NotificationAttachEvent int event) {
+    public static void recordNotificationAttachEevent(@NotificationAttachEvent int event) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Download.Android.NotificationAttachEvent", event, NotificationAttachEvent.COUNT);
     }
