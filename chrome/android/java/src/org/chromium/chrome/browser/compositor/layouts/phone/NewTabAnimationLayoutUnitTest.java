@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayerJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.browser.hub.ShrinkExpandImageView;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
@@ -331,12 +330,13 @@ public class NewTabAnimationLayoutUnitTest {
         assertEquals(NEW_TAB_ID, layoutTabs[1].getId());
         verify(mNewTabAnimationLayout, times(1)).forceNewTabAnimationToFinish();
         assertTrue(mNewTabAnimationLayout.isRunningAnimations());
-        verify(mAnimationHostView, times(1)).addView(any(ShrinkExpandImageView.class));
+        verify(mAnimationHostView, times(1)).addView(any(NewForegroundTabAnimationHostView.class));
 
         ShadowLooper.runUiThreadTasks();
 
         assertFalse(mNewTabAnimationLayout.isRunningAnimations());
-        verify(mAnimationHostView, times(1)).removeView(any(ShrinkExpandImageView.class));
+        verify(mAnimationHostView, times(1))
+                .removeView(any(NewForegroundTabAnimationHostView.class));
         verify(mTabModelSelector).selectModel(false);
         assertTrue(mNewTabAnimationLayout.isStartingToHide());
     }

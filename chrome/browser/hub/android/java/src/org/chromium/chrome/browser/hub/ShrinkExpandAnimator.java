@@ -40,6 +40,9 @@ public class ShrinkExpandAnimator {
     /**
      * Create an animator that scales and translates a view from one rect to another.
      *
+     * <p>Note: This needs to be a field to prevent the {@link java.lang.ref.WeakReference} in
+     * {@link android.animation.ObjectAnimator} from being GC'd.
+     *
      * @param view the ShrinkExpandImageView to apply the translation and scaling to. It should have
      *     a default scale of 1.0f and translation of 0.0f and be the size of {@code initialRect}.
      * @param initialRect the initial rect that view encompasses in global coordinates.

@@ -105,6 +105,7 @@ public class NewTabAnimationLayout extends Layout {
     private ShrinkExpandAnimator mExpandAnimator;
     private ShrinkExpandImageView mRectView;
     private NewBackgroundTabAnimationHostView mBackgroundHostView;
+    private NewForegroundTabAnimationHostView mForegroundHostView;
     private Runnable mAnimationRunnable;
     private Runnable mTimeoutRunnable;
     private Callback<Boolean> mVisibilityObserver;
@@ -453,7 +454,7 @@ public class NewTabAnimationLayout extends Layout {
             mHandler.removeCallbacks(mTimeoutRunnable);
             mTimeoutRunnable.run();
         } else if (mAnimationRunnable != null) {
-            if (mRectView != null) mRectView.runOnNextLayoutRunnables();
+            if (mForegroundHostView != null) mForegroundHostView.runOnNextLayoutRunnables();
             if (mBackgroundHostView != null) mBackgroundHostView.runOnNextLayoutRunnables();
         }
         assert mTimeoutRunnable == null : "Timeout runnable exists";
@@ -479,7 +480,8 @@ public class NewTabAnimationLayout extends Layout {
         // animation to finish.
         runQueuedRunnableIfExists();
         if (mTabCreatedForegroundAnimation != null) {
-            mAnimationHostView.removeView(mRectView);
+            mAnimationHostView.removeView(mForegroundHostView);
+            mForegroundHostView = null;
             mRectView = null;
             mFadeAnimator = null;
             mTabCreatedForegroundAnimation.end();
@@ -602,8 +604,9 @@ public class NewTabAnimationLayout extends Layout {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mFadeAnimator = null;
-                        mAnimationHostView.removeView(mRectView);
+                        mAnimationHostView.removeView(mForegroundHostView);
                         mRectView = null;
+                        mForegroundHostView = null;
                     }
                 });
 
@@ -633,9 +636,11 @@ public class NewTabAnimationLayout extends Layout {
 
         // {@link View#INVISIBLE} is needed to generate the geometry information.
         mRectView.setVisibility(View.INVISIBLE);
-        mAnimationHostView.addView(mRectView);
+        mForegroundHostView = new NewForegroundTabAnimationHostView(context);
+        mForegroundHostView.addView(mRectView);
+        mAnimationHostView.addView(mForegroundHostView);
         mRectView.reset(initialRect);
-        setRunOnNextLayout(mRectView, mAnimationRunnable);
+        setRunOnNextLayout(mForegroundHostView, mAnimationRunnable);
     }
 
     /**
