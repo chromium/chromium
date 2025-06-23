@@ -283,18 +283,18 @@ void GetAcceptLanguagesForLocale(const std::string& display_locale,
 COMPONENT_EXPORT(UI_BASE)
 void GetAcceptLanguages(std::vector<std::string>* locale_codes);
 
-// Returns true if |locale| is in a predefined |AcceptLanguageList|.
+// Returns true if `locale` is in a predefined `kAcceptLanguageList`.
 COMPONENT_EXPORT(UI_BASE)
 bool IsPossibleAcceptLanguage(std::string_view locale);
 
-// Returns true if |locale| is in a predefined |AcceptLanguageList| and
-// a display name for the |locale| is available in the locale |display_locale|.
+// Returns true if `locale` is in a predefined `kAcceptLanguageList` and
+// a display name for the `locale` is available in the locale `display_locale`.
 COMPONENT_EXPORT(UI_BASE)
-bool IsAcceptLanguageDisplayable(const std::string& display_locale,
-                                 const std::string& locale);
+bool IsAcceptLanguageDisplayable(std::string_view display_locale,
+                                 std::string_view locale);
 
 // Filters the input vector of languages. Returns only those in the
-// |AcceptLanguageList|.
+// `kAcceptLanguageList`.
 COMPONENT_EXPORT(UI_BASE)
 std::vector<std::string> KeepAcceptedLanguages(
     base::span<const std::string> languages);
