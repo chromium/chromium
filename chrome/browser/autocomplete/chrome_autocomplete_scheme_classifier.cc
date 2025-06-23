@@ -15,6 +15,11 @@
 #include "content/public/common/url_constants.h"
 #include "url/url_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/app_service/publisher_helper.h"
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 // Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/ui/android/omnibox/jni_headers/ChromeAutocompleteSchemeClassifier_jni.h"
@@ -39,10 +44,21 @@ static void JNI_ChromeAutocompleteSchemeClassifier_DeleteAutocompleteClassifier(
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+namespace {
+bool IsCustomSchemeHandledByWebApp(Profile* profile,
+                                   const std::string& scheme) {
+  return chromeos::features::IsWebAppManifestProtocolHandlerSupportEnabled() &&
+         !web_app::GetWebAppIdsForProtocolUrl(
+              profile, GURL(scheme + url::kStandardSchemeSeparator))
+              .empty();
+}
+}  // namespace
+#endif
+
 ChromeAutocompleteSchemeClassifier::ChromeAutocompleteSchemeClassifier(
     Profile* profile)
-    : profile_(profile) {
-}
+    : profile_(profile) {}
 
 ChromeAutocompleteSchemeClassifier::~ChromeAutocompleteSchemeClassifier() =
     default;
@@ -88,11 +104,15 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
       return metrics::OmniboxInputType::QUERY;
 
     case ExternalProtocolHandler::UNKNOWN: {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX)
       // Linux impl of GetApplicationNameForScheme doesn't distinguish
       // between URL schemes with handers and those without. This will
       // make the default behaviour be search on Linux.
       return metrics::OmniboxInputType::EMPTY;
+#elif BUILDFLAG(IS_CHROMEOS)
+      return IsCustomSchemeHandledByWebApp(profile_, scheme)
+                 ? metrics::OmniboxInputType::URL
+                 : metrics::OmniboxInputType::EMPTY;
 #else
       // If block state is unknown, check if there is an application registered
       // for the url scheme.
