@@ -358,8 +358,7 @@ public class TabSwitcherStation extends Station<ChromeTabbedActivity> {
     }
 
     public NewTabPageStation openNewTabFromButton() {
-        NewTabPageStation newTab = new NewTabPageStation();
-        return travelToSync(this, newTab, newTabButtonElement.getClickTrigger())
+        return newTabButtonElement.clickTo().arriveAt(new NewTabPageStation()))
     }
 }
 ```
@@ -480,22 +479,27 @@ a `Station` or `Facility` is returned by one of those methods, it is always
 
 #### Transition APIs
 
-Transitions between `Stations` are done by calling `travelToSync()`.
+Transitions are triggered by methods that end in `To()`. Some common ones are
+`clickTo()`, `runTo()`, `pressBackTo()`. This doesn't execute the transition,
+but creates a `TripBuilder`. When `arriveAt()`, `enterFacility()`,
+`waitForConditions()` or other methods are called in the `TripBuilder`, the
+transition is executed.
 
-Transitions into and out of `Facilities` are done by calling
-`enterFacilitySync()`, `exitFacilitySync()` or `swapFacilitySync()`. If the app
-moves to another `Station`, any active `Facilities` have their exit conditions
-added to the transition conditions.
+Transitions between `Stations` are done by calling `arriveAt()`.
 
-Transitions into and out of `CarryOns` are done by calling `CarryOn#pickUp()`
-and `CarryOn#drop()`. `Condition#runAndWaitFor()` is a convenience shortcut for
-`CarryOn#pickUp()`.
+Transitions into and out of `Facilities` are done by calling `enterFacility()`,
+`enterFacilities()` `exitFacility()` or `exitFacilities()`. If the app moves to
+another `Station`, any active `Facilities` have their exit conditions added to
+the transition conditions.
 
-These methods takes as parameter a [`Trigger`], which is the code that should be
-run to actually make the app move to the next state. Often this will be a UI
-interaction like `() -> BUTTON_ELEMENT.perform(click())`.
+Transitions into and out of `CarryOns` are done by calling `pickUpCarryOn()` and
+`dropCarryOn()`.
 
-[`Trigger`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Transition.Trigger%5Cb&ss=chromium
+Conditions not tied to Conditional States can be checked with
+`waitForConditions()`.
+
+Multiple expectations can be chained by the methods ending with `And()`, e.g.
+`clickTo().waitForConditionsAnd(c1, c2).exitFacilityAnd(e).enterFacility(f)`.
 
 #### Enter, Exit and Transition Conditions {#transition-conditions}
 
@@ -504,7 +508,7 @@ The Conditions of a transition are the aggregation of:
 * The **enter Conditions** of a `ConditionalState` being entered.
 * The **exit Conditions** of a `ConditionalState` being exited unless the same
   Element is in a state being entered too.
-* Any extra **transition Conditions** specific to that transition.
+* Any extra **transition Conditions** added to the `TripBuilder`.
   * Most transitions don't need to add extra special Conditions.
 
 

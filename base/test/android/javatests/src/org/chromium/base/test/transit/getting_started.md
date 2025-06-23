@@ -26,7 +26,6 @@ package org.chromium.chrome.browser;
 [imports]
 
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)  // Batching is recommended for faster tests.
 public class MyPTTest {
     // Reuse the Activity between test cases when possible so the batched test
@@ -225,7 +224,8 @@ org.junit.ComparisonFailure: expected:<I[]> but was:<I[I]>
 
 ### Option 1: Reset State "Manually"
 
-In batched tests, the order of tests is arbitrary unless `@FixMethodOrder` is used. Additionally, either:
+In batched tests, the order of tests is arbitrary unless `@FixMethodOrder` is
+used. Additionally, either:
 
 1. Each test must leave the app in a state where the other tests can run or;
 2. Each test must reset the app to a state where it can run.
@@ -240,7 +240,9 @@ public class MyPTTest {
 -       TransitAsserts.assertFinalDestination(ntp);
 
 +       // Reset tab model for batching
-+       page = ntp.openTabSwitcherActionMenu().selectCloseTab(PageStation.class);
++       page = ntp
++               .openTabSwitcherActionMenu()
++               .selectCloseTabAndDisplayAnotherTab(WebPageStation.newBuilder());
 +       TransitAsserts.assertFinalDestination(page);
     }
 }
@@ -250,8 +252,8 @@ public class MyPTTest {
 
 Manually resetting in each test doesn't scale very well in many cases. There are
 some shortcuts for undoing state set during a test, and for tabs specifically,
-we are going to use `AutoResetCtaTransitTestRule`, which resets
-Chrome to a single blank page at the start of each test:
+we are going to use `AutoResetCtaTransitTestRule`, which resets Chrome to a
+single blank page at the start of each test:
 
 ```java
 public class MyPTTest {
@@ -339,13 +341,13 @@ after all its Enter Conditions are met:
 ```java
 public class PageStation extends Station {
 +   public TabSwitcherButtonFacility focusOnTabSwitcherButton() {
-+       return enterFacilitySync(new TabSwitcherButtonFacility(), /* trigger= */ null);
++       return noopTo().enterFacility(new TabSwitcherButtonFacility());
 +   }
 }
 ```
 
-The trigger is null since we expect no input to be necessary for the Conditions
-to be fulfilled; they should already be fulfilled.
+We use a no-op trigger since we expect no input to be necessary for the
+Conditions to be fulfilled; they should already be fulfilled.
 
 After calling the transition method `focusOnTabSwitcherButton()`, as soon as
 this View is fully displayed, the transition is completed and the active
@@ -410,7 +412,7 @@ public class TabSwitcherButtonFacility extends Facility<PageStation> {
 ```java
 public class PageStation extends Station {
 +   public TabSwitcherButtonFacility focusOnTabSwitcherButton(String expectedText) {
-+       return enterFacilitySync(new TabSwitcherButtonFacility(expectedText), /* trigger= */ null);
++       return noopTo().enterFacility(new TabSwitcherButtonFacility(expectedText));
 +   }
 }
 ```
@@ -446,13 +448,13 @@ case where Facilities have transition methods:
 ```java
 public class TabSwitcherButtonFacility extends Facility<PageStation> {
 +   public HubTabSwitcherStation clickToOpenHub() {
-+       return mHostStation.travelToSync(
-+               new HubTabSwitcherStation(), buttonElement.getClickTrigger());
++       return buttonElement.clickTo().arriveAt(new HubTabSwitcherStation());
 +   }
 +
 +   public TabSwitcherActionMenuFacility longClickToOpenActionMenu() {
-+       return mHostStation.enterFacilitySync(
-+               new TabSwitcherActionMenuFacility(), buttonElement.getLongPressTrigger());
++       return buttonElement
++               .longPressTo()
++               .enterFacility(new TabSwitcherActionMenuFacility());
 +   }
 }
 ```
