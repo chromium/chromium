@@ -16,16 +16,10 @@ cargo_crate("lib") {
   sources = [ "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/lib.rs" ]
   inputs = [
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_chinese_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_chinese_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_dangi_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_dangi_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_hijri_simulated_mecca_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_hijri_simulated_mecca_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_japanese_extended_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_japanese_extended_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_japanese_modern_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_japanese_modern_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_week_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/calendar_week_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_calendar_data-v2/src/../data/mod.rs",
   ]

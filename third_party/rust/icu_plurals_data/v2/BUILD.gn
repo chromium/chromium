@@ -17,10 +17,7 @@ cargo_crate("lib") {
   inputs = [
     "//third_party/rust/chromium_crates_io/vendor/icu_plurals_data-v2/src/../data/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/icu_plurals_data-v2/src/../data/plurals_cardinal_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals_data-v2/src/../data/plurals_cardinal_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_plurals_data-v2/src/../data/plurals_ordinal_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals_data-v2/src/../data/plurals_ordinal_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_plurals_data-v2/src/../data/plurals_ranges_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_plurals_data-v2/src/../data/plurals_ranges_v1.rs.data",
   ]
 

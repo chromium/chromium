@@ -316,12 +316,16 @@ impl CrateFiles {
     }
 
     /// Sorts the CrateFiles for a deterministic output.
-    fn sort(&mut self) {
-        self.sources.sort_unstable();
-        self.inputs.sort_unstable();
-        self.native_libs.sort_unstable();
-        self.build_script_sources.sort_unstable();
-        self.build_script_inputs.sort_unstable();
+    fn sort_and_dedup(&mut self) {
+        fn doit(vec: &mut Vec<PathBuf>) {
+            vec.sort_unstable();
+            vec.dedup();
+        }
+        doit(&mut self.sources);
+        doit(&mut self.inputs);
+        doit(&mut self.native_libs);
+        doit(&mut self.build_script_sources);
+        doit(&mut self.build_script_inputs);
     }
 }
 
@@ -396,7 +400,7 @@ pub fn collect_crate_files(
             )
         })?;
     }
-    files.sort();
+    files.sort_and_dedup();
 
     let crate_id = VendoredCrate { name: p.package_name.clone(), version: p.version.clone() };
     Ok((crate_id, files))

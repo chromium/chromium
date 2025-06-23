@@ -16,8 +16,6 @@ cargo_crate("lib") {
   sources = [ "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-v2/src/lib.rs" ]
   inputs = [
     "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-v2/src/../data/decimal_digits_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-v2/src/../data/decimal_digits_v1.rs.data",
-    "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-v2/src/../data/decimal_symbols_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-v2/src/../data/decimal_symbols_v1.rs.data",
     "//third_party/rust/chromium_crates_io/vendor/icu_decimal_data-v2/src/../data/mod.rs",
   ]
