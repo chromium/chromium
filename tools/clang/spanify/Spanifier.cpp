@@ -1103,15 +1103,17 @@ static void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
 static void DecaySpanToBooleanOp(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const std::string& key = GetRHS(result);
-  const auto* operand =
-      result.Nodes.getNodeAs<clang::Expr>("boolean_op_operand");
 
   if (const auto* logical_not_op =
           result.Nodes.getNodeAs<clang::UnaryOperator>("logical_not_op")) {
+    const clang::SourceRange logical_not_range{
+        logical_not_op->getBeginLoc(),
+        logical_not_op->getBeginLoc().getLocWithOffset(1)};
     EmitReplacement(
-        key, GetReplacementDirective(logical_not_op->getSourceRange(), "",
-                                     source_manager));
+        key, GetReplacementDirective(logical_not_range, "", source_manager));
   } else {
+    const auto* operand =
+        result.Nodes.getNodeAs<clang::Expr>("boolean_op_operand");
     EmitReplacement(key, GetReplacementDirective(operand->getBeginLoc(), "!",
                                                  source_manager));
   }
@@ -2996,15 +2998,6 @@ class Spanifier {
             .bind("deref_expr"));
     Match(deref_expression, DecaySpanToPointer);
 
-    auto rhs_exprs_without_size_nodes_ignoring_non_spelled_nodes =
-        traverse(clang::TK_IgnoreUnlessSpelledInSource,
-                 expr(rhs_exprs_without_size_nodes));
-    auto raw_ptr_op_bool = cxxMemberCallExpr(
-        on(expr().bind("boolean_op_operand")),
-        callee(cxxMethodDecl(hasName("operator bool"),
-                             ofClass(hasName("raw_ptr")))),
-        has(memberExpr(has(expr(ignoringParenCasts(
-            rhs_exprs_without_size_nodes_ignoring_non_spelled_nodes))))));
     // Handles boolean operations that need to be adapted after a span rewrite.
     //   if(expr) => if(!expr.empty())
     //   if(!expr) => if(expr.empty())
@@ -3015,17 +3008,21 @@ class Spanifier {
     // `clang::TK_IgnoreUnlessSpelledInSource`, while very useful in simplifying
     // the matchers, wouldn't detect boolean operations on pointers hence the
     // need for a hybrid traversal mode in this matcher.
-    auto boolean_op = expr(
-        anyOf(
-            implicitCastExpr(
-                hasCastKind(clang::CastKind::CK_PointerToBoolean),
-                hasSourceExpression(
-                    expr(
-                        rhs_exprs_without_size_nodes_ignoring_non_spelled_nodes)
-                        .bind("boolean_op_operand"))),
-            raw_ptr_op_bool),
-        optionally(hasParent(
-            unaryOperator(hasOperatorName("!")).bind("logical_not_op"))));
+    auto boolean_op_operand =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 expr(rhs_exprs_without_size_nodes).bind("boolean_op_operand"));
+    auto raw_ptr_op_bool_call_expr =
+        cxxMemberCallExpr(on(boolean_op_operand),
+                          callee(cxxMethodDecl(hasName("operator bool"),
+                                               ofClass(hasName("raw_ptr")))));
+    auto boolean_op = traverse(
+        clang::TK_AsIs,
+        expr(anyOf(implicitCastExpr(
+                       hasCastKind(clang::CastKind::CK_PointerToBoolean),
+                       hasSourceExpression(boolean_op_operand)),
+                   implicitCastExpr(has(raw_ptr_op_bool_call_expr))),
+             optionally(hasParent(
+                 unaryOperator(hasOperatorName("!")).bind("logical_not_op")))));
     Match(boolean_op, DecaySpanToBooleanOp);
 
     // This is needed to remove the `.get()` call on raw_ptr from rewritten

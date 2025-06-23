@@ -68,6 +68,47 @@ void implicit_call_to_operator_bool() {
   // IMPLICITLY_CONVERT_TO_BOOL(!buf.empty());
   IMPLICITLY_CONVERT_TO_BOOL(buf);
   // Expected rewrite:
+  // IMPLICITLY_CONVERT_TO_BOOL(buf.empty());
+  IMPLICITLY_CONVERT_TO_BOOL(!buf);
+  // Expected rewrite:
+  // IMPLICITLY_CONVERT_TO_BOOL(!buf.empty());
+  IMPLICITLY_CONVERT_TO_BOOL(!!buf);
+
+  // Expected rewrite:
   // IMPLICITLY_CONVERT_TO_BOOL(!ptr.empty());
   IMPLICITLY_CONVERT_TO_BOOL(ptr);
+  // Expected rewrite:
+  // IMPLICITLY_CONVERT_TO_BOOL(ptr.empty());
+  IMPLICITLY_CONVERT_TO_BOOL(!ptr);
+  // Expected rewrite:
+  // IMPLICITLY_CONVERT_TO_BOOL(!ptr.empty());
+  IMPLICITLY_CONVERT_TO_BOOL(!!ptr);
+}
+
+// A function that will return a base::span.
+// Expected rewrite:
+// base::span<int> get_span() {
+int* get_span() {
+  static int buf[] = {1, 2, 3};
+  return buf;
+}
+
+void test_get_span() {
+  // Expected rewrite:
+  // base::span<int> buf = get_span();
+  int* buf = get_span();
+  buf[0] = 0;
+
+  // Expected rewrite:
+  // if (!get_span().empty()) {
+  if (get_span()) {
+  }
+  // Expected rewrite:
+  // if (get_span().empty()) {
+  if (!get_span()) {
+  }
+  // Expected rewrite:
+  // if (!get_span().empty()) {
+  if (!!get_span()) {
+  }
 }
