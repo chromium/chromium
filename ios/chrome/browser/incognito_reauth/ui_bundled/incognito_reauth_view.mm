@@ -28,7 +28,7 @@ const CGFloat kAuthenticateButtonBagroundMaxCornerRadius = 30.0f;
 // Distance from top and bottom to content (buttons/logos).
 const CGFloat kVerticalContentPadding = 70.0f;
 // Distance from the Logo to the primary button.
-const CGFloat kLogoToPrimaryButtonMargin = 54.0f;
+const CGFloat kLogoToPrimaryButtonMargin = 32.0f;
 // Optimal content width to use for button sizing.
 const CGFloat kContentOptimalWidth = 327;
 }  // namespace
