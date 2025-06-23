@@ -35,9 +35,9 @@ TEST(PaymentsServiceSandboxUrl, CheckProdUrls) {
       switches::kWalletServiceUseSandbox, "0");
 
   const char kExpectedURL[] =
-      "https://pay.google.com/"
-      "pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
-      "payment_methods";
+      "https://wallet.google.com/wallet?"
+      "p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
+      "paymentmethods";
 
   EXPECT_EQ(kExpectedURL, GetManageInstrumentsUrl().spec());
   EXPECT_EQ(kExpectedURL, GetManageAddressesUrl().spec());
@@ -45,9 +45,9 @@ TEST(PaymentsServiceSandboxUrl, CheckProdUrls) {
 
 TEST(PaymentsServiceUrl, UrlWithInstrumentId) {
   const char kExpectedURL[] =
-      "https://pay.google.com/"
-      "pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
-      "payment_methods&id=123";
+      "https://wallet.google.com/wallet?"
+      "p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
+      "paymentmethods&id=123";
 
   EXPECT_EQ(kExpectedURL, GetManageInstrumentUrl(/*instrument_id=*/123).spec());
 }

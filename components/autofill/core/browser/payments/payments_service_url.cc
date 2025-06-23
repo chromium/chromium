@@ -36,19 +36,18 @@ const char kSandboxGooglePayScriptOrigin[] = "https://pay.sandbox.google.com/";
 // URLs used when opening the Payment methods management page from
 // chrome://settings/payments.
 const char kProdPaymentsManageCardsUrl[] =
-    "https://pay.google.com/"
-    "pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
-    "payment_methods";
+    "https://wallet.google.com/wallet?"
+    "p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
+    "paymentmethods";
 const char kSandboxPaymentsManageCardsUrl[] =
     "https://pay.sandbox.google.com/"
     "pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
     "payment_methods";
 
 // URL used when opening the Loyalty cards page from chrome://settings/payments.
-// TODO(crbug.com/416662510): Update the UTM params to be the correct one.
 const char kManageLoyaltyCardsUrl[] =
-    "https://pay.google.com/"
-    "pay?p=passes&utm_source=chrome&utm_medium=settings";
+    "https://wallet.google.com/wallet?"
+    "p=passes&utm_source=chrome&utm_medium=settings&utm_campaign=loyalty";
 
 // LINT.IfChange
 const char kVirtualCardEnrollmentSupportUrl[] =
