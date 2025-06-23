@@ -61,6 +61,7 @@ const char* kSensitivePolicies[] = {
     key::kCommandLineFlagSecurityWarningsEnabled,
     key::kEnterpriseCustomLabelForBrowser,
     key::kEnterpriseLogoUrlForBrowser,
+    key::kNTPFooterManagementNoticeEnabled,
 #endif
 #if !BUILDFLAG(IS_IOS)
     key::kFirstPartySetsOverrides,
