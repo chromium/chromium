@@ -12,7 +12,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {recordOccurence as recordOccurrence} from '../../metrics_utils.js';
+import {recordBoolean, recordOccurrence, recordSmallCount, recordSparseValueWithPersistentHash} from '../../metrics_utils.js';
 import type {ModuleIdName, PageCallbackRouter, PageHandlerRemote} from '../../new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from '../../new_tab_page_proxy.js';
 import {WindowProxy} from '../../window_proxy.js';
@@ -214,7 +214,6 @@ export class ModulesElement extends CrLitElement {
     this.callbackRouter_.removeListener(this.setModulesLoadableListenerId_);
 
     this.eventTracker_.removeAll();
-
   }
 
   override firstUpdated() {
@@ -281,17 +280,16 @@ export class ModulesElement extends CrLitElement {
 
   private recordInitialLoadMetrics_(
       modules: Module[], modulesIdNames: ModuleIdName[]) {
-    chrome.metricsPrivate.recordSmallCount(
-        'NewTabPage.Modules.LoadedModulesCount', modules.length);
+    recordSmallCount('NewTabPage.Modules.LoadedModulesCount', modules.length);
     modulesIdNames.forEach(({id}) => {
-      chrome.metricsPrivate.recordBoolean(
+      recordBoolean(
           `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
           !this.disabledModules_.all &&
               !this.disabledModules_.ids.includes(id));
     });
-    chrome.metricsPrivate.recordSmallCount(
+    recordSmallCount(
         'NewTabPage.Modules.InstanceCount', this.moduleInstances_.length);
-    chrome.metricsPrivate.recordBoolean(
+    recordBoolean(
         'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
     this.recordModuleLoadedWithModules_(/*onNtpLoad=*/ true);
   }
@@ -306,7 +304,7 @@ export class ModulesElement extends CrLitElement {
     for (const moduleDescriptorId of moduleDescriptorIds) {
       moduleDescriptorIds.forEach(id => {
         if (id !== moduleDescriptorId) {
-          chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+          recordSparseValueWithPersistentHash(
               `${histogramBase}.${moduleDescriptorId}`, id);
         }
       });
@@ -373,7 +371,7 @@ export class ModulesElement extends CrLitElement {
       }
 
       this.moduleInstances_ = newModuleInstances;
-      chrome.metricsPrivate.recordSmallCount(
+      recordSmallCount(
           'NewTabPage.Modules.ReloadedModulesCount',
           this.moduleInstances_.length);
       this.recordModuleLoadedWithModules_(/*onNtpLoad=*/ false);
@@ -440,18 +438,16 @@ export class ModulesElement extends CrLitElement {
           restoreCallback();
         }
         this.pageHandler_.setModuleDisabled(id, false);
-        chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-            'NewTabPage.Modules.Enabled', id);
-        chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+        recordSparseValueWithPersistentHash('NewTabPage.Modules.Enabled', id);
+        recordSparseValueWithPersistentHash(
             'NewTabPage.Modules.Enabled.Toast', id);
       },
     };
 
     this.pageHandler_.setModuleDisabled(id, true);
     this.$.undoToast.show();
-    chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-        METRIC_NAME_MODULE_DISABLED, id);
-    chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+    recordSparseValueWithPersistentHash(METRIC_NAME_MODULE_DISABLED, id);
+    recordSparseValueWithPersistentHash(
         `${METRIC_NAME_MODULE_DISABLED}.ModuleRequest`, id);
   }
 

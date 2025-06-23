@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from './i18n_setup.js';
+import {recordEnumeration} from './metrics_utils.js';
 import type {PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {getCss} from './voice_search_overlay.css.js';
@@ -113,7 +114,7 @@ export enum Error {
 }
 
 export function recordVoiceAction(action: Action) {
-  chrome.metricsPrivate.recordEnumerationValue(
+  recordEnumeration(
       'NewTabPage.VoiceActions', action, Object.keys(Action).length);
 }
 

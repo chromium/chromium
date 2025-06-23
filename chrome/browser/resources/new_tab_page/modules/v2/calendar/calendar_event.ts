@@ -9,6 +9,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CalendarEvent} from '../../../calendar_data.mojom-webui.js';
 import {I18nMixinLit} from '../../../i18n_setup.js';
+import {recordSmallCount} from '../../../metrics_utils.js';
 import {WindowProxy} from '../../../window_proxy.js';
 
 import {getCss} from './calendar_event.css.js';
@@ -180,7 +181,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
       action = CalendarAction.DOUBLE_BOOKED_EVENT_HEADER_CLICKED;
     }
     recordCalendarAction(action, this.moduleName);
-    chrome.metricsPrivate.recordSmallCount(
+    recordSmallCount(
         `NewTabPage.${this.moduleName}.EventClickIndex`, this.index);
   }
 

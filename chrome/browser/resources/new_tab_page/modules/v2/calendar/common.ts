@@ -4,6 +4,8 @@
 
 import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
+import {recordEnumeration} from '../../../metrics_utils.js';
+
 // Microseconds between windows and unix epoch.
 const kWindowsToUnixEpochOffset: bigint = 11644473600000000n;
 
@@ -27,7 +29,7 @@ export enum CalendarAction {
 
 export function recordCalendarAction(
     action: CalendarAction, moduleName: string) {
-  chrome.metricsPrivate.recordEnumerationValue(
+  recordEnumeration(
       `NewTabPage.${moduleName}.UserAction`, action,
       CalendarAction.MAX_VALUE + 1);
 }

@@ -15,6 +15,7 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './middle_slot_promo.css.js';
 import {getHtml} from './middle_slot_promo.html.js';
+import {recordEnumeration} from './metrics_utils.js';
 import type {PageHandlerRemote, Promo} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
@@ -30,7 +31,7 @@ export enum PromoDismissAction {
 }
 
 export function recordPromoDismissAction(action: PromoDismissAction) {
-  chrome.metricsPrivate.recordEnumerationValue(
+  recordEnumeration(
       'NewTabPage.Promos.DismissAction', action,
       Object.keys(PromoDismissAction).length);
 }

@@ -4,7 +4,7 @@
 
 import {CrLitElement, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {recordLoadDuration, recordOccurence, recordPerdecage} from '../metrics_utils.js';
+import {recordLoadDuration, recordOccurrence, recordPerdecage, recordSparseValueWithPersistentHash} from '../metrics_utils.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 import {WindowProxy} from '../window_proxy.js';
 
@@ -91,8 +91,8 @@ export class ModuleWrapperElement extends CrLitElement {
       NewTabPageProxy.getInstance().handler.onModuleUsed(
           this.module.descriptor.id);
 
-      recordOccurence('NewTabPage.Modules.Usage');
-      recordOccurence(`NewTabPage.Modules.Usage.${this.module.descriptor.id}`);
+      recordOccurrence('NewTabPage.Modules.Usage');
+      recordOccurrence(`NewTabPage.Modules.Usage.${this.module.descriptor.id}`);
     }, {once: true});
 
     // Dispatch at most one interaction event for a module's `More Actions` menu
@@ -105,13 +105,13 @@ export class ModuleWrapperElement extends CrLitElement {
 
     // Log module's id when module's info button is clicked.
     this.module.element.addEventListener('info-button-click', () => {
-      chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+      recordSparseValueWithPersistentHash(
           'NewTabPage.Modules.InfoButtonClicked', this.module.descriptor.id);
     }, {once: true});
 
     // Track whether the user hovered on the module.
     this.module.element.addEventListener('mouseover', () => {
-      chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+      recordSparseValueWithPersistentHash(
           'NewTabPage.Modules.Hover', this.module.descriptor.id);
     }, {
       capture: true,  // So that modules cannot swallow event.

@@ -35,7 +35,7 @@ import {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
 import type {IframeElement} from './iframe.js';
 import type {LogoElement} from './logo.js';
-import {recordDuration, recordLoadDuration} from './metrics_utils.js';
+import {recordBoolean, recordDuration, recordEnumeration, recordLoadDuration, recordSparseValueWithPersistentHash, recordValue} from './metrics_utils.js';
 import {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connector.js';
 import type {PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {IphFeature, NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
@@ -113,12 +113,11 @@ const realboxCanShowSecondarySideMediaQueryList =
     window.matchMedia('(min-width: 900px)');
 
 function recordClick(element: NtpElement) {
-  chrome.metricsPrivate.recordEnumerationValue(
-      'NewTabPage.Click', element, NtpElement.MAX_VALUE + 1);
+  recordEnumeration('NewTabPage.Click', element, NtpElement.MAX_VALUE + 1);
 }
 
 function recordCustomizeChromeOpen(element: NtpCustomizeChromeEntryPoint) {
-  chrome.metricsPrivate.recordEnumerationValue(
+  recordEnumeration(
       'NewTabPage.CustomizeChromeOpened', element,
       NtpCustomizeChromeEntryPoint.MAX_VALUE + 1);
 }
@@ -356,7 +355,7 @@ export class AppElement extends AppElementBase {
      */
     this.backgroundImageLoadStartEpoch_ = performance.timeOrigin;
 
-    chrome.metricsPrivate.recordValue(
+    recordValue(
         {
           metricName: 'NewTabPage.Height',
           type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
@@ -365,7 +364,7 @@ export class AppElement extends AppElementBase {
           buckets: 200,
         },
         Math.floor(window.innerHeight));
-    chrome.metricsPrivate.recordValue(
+    recordValue(
         {
           metricName: 'NewTabPage.Width',
           type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
@@ -481,8 +480,7 @@ export class AppElement extends AppElementBase {
     }
     FocusOutlineManager.forDocument(document);
     if (this.composeButtonEnabled) {
-      chrome.metricsPrivate.recordBoolean(
-          'NewTabPage.ComposeEntrypoint.Shown', true);
+      recordBoolean('NewTabPage.ComposeEntrypoint.Shown', true);
       this.pageHandler_.incrementComposeButtonShownCount();
     }
   }
@@ -750,16 +748,16 @@ export class AppElement extends AppElementBase {
   }
 
   private onThemeLoaded_(theme: Theme) {
-    chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+    recordSparseValueWithPersistentHash(
         'NewTabPage.Collections.IdOnLoad',
         theme.backgroundImageCollectionId ?? '');
 
     if (!theme.backgroundImage) {
-      chrome.metricsPrivate.recordEnumerationValue(
+      recordEnumeration(
           'NewTabPage.BackgroundImageSource', NtpBackgroundImageSource.kNoImage,
           NtpBackgroundImageSource.MAX_VALUE + 1);
     } else {
-      chrome.metricsPrivate.recordEnumerationValue(
+      recordEnumeration(
           'NewTabPage.BackgroundImageSource', theme.backgroundImage.imageSource,
           NtpBackgroundImageSource.MAX_VALUE + 1);
     }

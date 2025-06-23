@@ -4,8 +4,14 @@
 
 import {loadTimeData} from './i18n_setup.js';
 
-/** Records |durationMs| in the |metricName| histogram. */
+/** Records `durationMs` in the `metricName` histogram. */
 export function recordDuration(metricName: string, durationMs: number) {
+  // In rare cases, chrome.metricsPrivate is not available.
+  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+
   chrome.metricsPrivate.recordValue(
       {
         metricName,
@@ -18,8 +24,8 @@ export function recordDuration(metricName: string, durationMs: number) {
 }
 
 /**
- * Records the duration between navigation start and |msSinceEpoch| in the
- * |metricName| histogram.
+ * Records the duration between navigation start and `msSinceEpoch` in the
+ * `metricName` histogram.
  */
 export function recordLoadDuration(metricName: string, msSinceEpoch: number) {
   recordDuration(
@@ -27,10 +33,16 @@ export function recordLoadDuration(metricName: string, msSinceEpoch: number) {
 }
 
 /**
- * Records |value| (expected to be between 0 and 10) into the ten-bucket
- * |metricName| histogram.
+ * Records `value` (expected to be between 0 and 10) into the ten-bucket
+ * `metricName` histogram.
  */
 export function recordPerdecage(metricName: string, value: number) {
+  // In rare cases, chrome.metricsPrivate is not available.
+  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+
   chrome.metricsPrivate.recordValue(
       {
         metricName,
@@ -43,10 +55,16 @@ export function recordPerdecage(metricName: string, value: number) {
 }
 
 /**
- * Records that an event has happened rather than a value in the |metricName|
+ * Records that an event has happened rather than a value in the `metricName`
  * histogram.
  */
-export function recordOccurence(metricName: string) {
+export function recordOccurrence(metricName: string) {
+  // In rare cases, chrome.metricsPrivate is not available.
+  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+
   chrome.metricsPrivate.recordValue(
       {
         metricName,
@@ -56,4 +74,57 @@ export function recordOccurence(metricName: string) {
         buckets: 1,
       },
       1);
+}
+
+export function recordEnumeration(
+    metricName: string, value: number, enumSize: number) {
+  // In rare cases, chrome.metricsPrivate is not available.
+  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+
+  chrome.metricsPrivate.recordEnumerationValue(metricName, value, enumSize);
+}
+
+export function recordValue(
+    metric: chrome.metricsPrivate.MetricType, value: number) {
+  // In rare cases, chrome.metricsPrivate is not available.
+  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+
+  chrome.metricsPrivate.recordValue(metric, value);
+}
+
+export function recordBoolean(metricName: string, value: boolean) {
+  // In rare cases, chrome.metricsPrivate is not available.
+  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+
+  chrome.metricsPrivate.recordBoolean(metricName, value);
+}
+
+export function recordSparseValueWithPersistentHash(
+    metricName: string, value: string) {
+  // In rare cases, chrome.metricsPrivate is not available.
+  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+
+  chrome.metricsPrivate.recordSparseValueWithPersistentHash(metricName, value);
+}
+
+export function recordSmallCount(metricName: string, value: number) {
+  // In rare cases, chrome.metricsPrivate is not available.
+  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+
+  chrome.metricsPrivate.recordSmallCount(metricName, value);
 }

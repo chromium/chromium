@@ -13,6 +13,7 @@ import type {LensFormElement} from './lens_form.js';
 import {LensErrorType, LensSubmitType} from './lens_form.js';
 import {getCss} from './lens_upload_dialog.css.js';
 import {getHtml} from './lens_upload_dialog.html.js';
+import {recordEnumeration} from './metrics_utils.js';
 import {WindowProxy} from './window_proxy.js';
 
 enum DialogState {
@@ -96,13 +97,13 @@ export enum LensUploadDialogError {
 }
 
 export function recordLensUploadDialogAction(action: LensUploadDialogAction) {
-  chrome.metricsPrivate.recordEnumerationValue(
+  recordEnumeration(
       'NewTabPage.Lens.UploadDialog.DialogAction', action,
       Object.keys(LensUploadDialogAction).length);
 }
 
 export function recordLensUploadDialogError(action: LensUploadDialogError) {
-  chrome.metricsPrivate.recordEnumerationValue(
+  recordEnumeration(
       'NewTabPage.Lens.UploadDialog.DialogError', action,
       Object.keys(LensUploadDialogError).length);
 }

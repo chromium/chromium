@@ -11,7 +11,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
-import {recordOccurence as recordOccurrence} from '../../../metrics_utils.js';
+import {recordEnumeration, recordOccurrence, recordSmallCount, recordValue} from '../../../metrics_utils.js';
 import {ScoredURLUserAction} from '../../../most_relevant_tab_resumption.mojom-webui.js';
 import type {URLVisit} from '../../../url_visit_types.mojom-webui.js';
 import {FormFactor, VisitSource} from '../../../url_visit_types.mojom-webui.js';
@@ -146,13 +146,12 @@ export class ModuleElement extends I18nMixinLit
     const urlVisit = this.urlVisits[index];
     assert(urlVisit);
 
-    chrome.metricsPrivate.recordSmallCount(
-        'NewTabPage.TabResumption.VisitDismissIndex', index);
+    recordSmallCount('NewTabPage.TabResumption.VisitDismissIndex', index);
     MostRelevantTabResumptionProxyImpl.getInstance().handler.dismissURLVisit(
         urlVisit);
 
     this.urlVisits =
-      [...this.urlVisits.slice(0, index), ...this.urlVisits.slice(index + 1)];
+        [...this.urlVisits.slice(0, index), ...this.urlVisits.slice(index + 1)];
     assert(this.urlVisits.length >= 0);
 
     const eventName = this.urlVisits.length > 0 ? 'dismiss-module-element' :
@@ -160,8 +159,7 @@ export class ModuleElement extends I18nMixinLit
     this.fire(eventName, {
       message: loadTimeData.getString('modulesTabResumptionSingleDismiss'),
       restoreCallback: () => {
-        chrome.metricsPrivate.recordSmallCount(
-            'NewTabPage.TabResumption.VisitRestoreIndex', index);
+        recordSmallCount('NewTabPage.TabResumption.VisitRestoreIndex', index);
         this.urlVisits = [
           ...this.urlVisits.slice(0, index),
           urlVisit,
@@ -180,14 +178,13 @@ export class ModuleElement extends I18nMixinLit
     const urlVisit = this.urlVisits[index];
     assert(urlVisit);
 
-    chrome.metricsPrivate.recordSmallCount(
-        'NewTabPage.TabResumption.ClickIndex', index);
-    chrome.metricsPrivate.recordEnumerationValue(
+    recordSmallCount('NewTabPage.TabResumption.ClickIndex', index);
+    recordEnumeration(
         'NewTabPage.TabResumption.Visit.ClickSource', urlVisit.source,
         VisitSource.MAX_VALUE);
 
     // Calculate the number of milliseconds in the difference. Max is 4 days.
-    chrome.metricsPrivate.recordValue(
+    recordValue(
         {
           metricName: 'NewTabPage.TabResumption.TimeElapsedSinceLastVisit',
           type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
