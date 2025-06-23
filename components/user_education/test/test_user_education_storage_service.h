@@ -42,6 +42,11 @@ class TestUserEducationStorageService : public UserEducationStorageService {
   void SaveProductMessagingData(
       const ProductMessagingData& product_messaging_data) override;
   void ResetProductMessagingData() override;
+  std::optional<KeyedNtpPromoData> ReadNtpPromoData(
+      const NtpPromoIdentifier& id) const override;
+  void SaveNtpPromoData(const NtpPromoIdentifier& id,
+                        const KeyedNtpPromoData& data) override;
+  void ResetNtpPromoData() override;
 
  private:
   std::map<const base::Feature*, FeaturePromoData> promo_data_;
@@ -49,6 +54,7 @@ class TestUserEducationStorageService : public UserEducationStorageService {
   FeaturePromoPolicyData policy_data_;
   std::map<const base::Feature*, NewBadgeData> new_badge_data_;
   ProductMessagingData product_messaging_data_;
+  NtpPromoData ntp_promo_data_;
 };
 
 }  // namespace user_education::test

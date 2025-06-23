@@ -4,6 +4,7 @@
 
 #include "components/user_education/test/test_user_education_storage_service.h"
 
+#include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
 #include "components/user_education/common/user_education_data.h"
 
 namespace user_education::test {
@@ -84,6 +85,24 @@ void TestUserEducationStorageService::SaveProductMessagingData(
 
 void TestUserEducationStorageService::ResetProductMessagingData() {
   product_messaging_data_ = ProductMessagingData();
+}
+
+std::optional<KeyedNtpPromoData>
+TestUserEducationStorageService::ReadNtpPromoData(
+    const NtpPromoIdentifier& id) const {
+  const auto it = ntp_promo_data_.promos.find(id);
+  return it == ntp_promo_data_.promos.end() ? std::nullopt
+                                            : std::make_optional(it->second);
+}
+
+void TestUserEducationStorageService::SaveNtpPromoData(
+    const NtpPromoIdentifier& id,
+    const KeyedNtpPromoData& ntp_promo_data) {
+  ntp_promo_data_.promos[id] = ntp_promo_data;
+}
+
+void TestUserEducationStorageService::ResetNtpPromoData() {
+  ntp_promo_data_ = user_education::NtpPromoData();
 }
 
 }  // namespace user_education::test

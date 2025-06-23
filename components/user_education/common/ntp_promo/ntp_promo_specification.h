@@ -14,13 +14,13 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"
 #include "components/user_education/common/user_education_metadata.h"
 
 class Browser;
 class Profile;
-namespace user_education {
 
-using NtpPromoIdentifier = std::string;
+namespace user_education {
 
 // Visual content of the promo, for consumption by the UI.
 class NtpPromoContent {

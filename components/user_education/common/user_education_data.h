@@ -149,6 +149,44 @@ struct ProductMessagingData {
   std::set<std::string> shown_notices;
 };
 
+// Data pertaining to a single NTP promo.
+struct KeyedNtpPromoData {
+  KeyedNtpPromoData();
+  KeyedNtpPromoData(const KeyedNtpPromoData&);
+  KeyedNtpPromoData(KeyedNtpPromoData&&) noexcept;
+  KeyedNtpPromoData& operator=(const KeyedNtpPromoData&);
+  KeyedNtpPromoData& operator=(KeyedNtpPromoData&&) noexcept;
+  ~KeyedNtpPromoData();
+
+  bool operator<=>(const KeyedNtpPromoData& other) const = default;
+
+  // Time at which the promo was first seen to be complete.
+  base::Time completed;
+
+  // The session in which this promo was last shown in the top spot.
+  int last_top_spot_session = 0;
+
+  // The number of session this promo has been shown in the top spot, since
+  // it most recently claimed the top spot. When reclaiming top spot,
+  // this value must be reset.
+  int top_spot_session_count = 0;
+};
+
+using KeyedNtpPromoDataMap = std::map<std::string, KeyedNtpPromoData>;
+
+// Data pertaining to the complete NTP promo system.
+struct NtpPromoData {
+  NtpPromoData();
+  NtpPromoData(const NtpPromoData&);
+  NtpPromoData(NtpPromoData&&) noexcept;
+  NtpPromoData& operator=(const NtpPromoData&);
+  NtpPromoData& operator=(NtpPromoData&&) noexcept;
+  ~NtpPromoData();
+
+  // Per-promo data.
+  KeyedNtpPromoDataMap promos;
+};
+
 }  // namespace user_education
 
 #endif  // COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_DATA_H_

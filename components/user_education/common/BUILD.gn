@@ -54,6 +54,7 @@ source_set("common") {
     "new_badge/new_badge_policy.h",
     "new_badge/new_badge_specification.cc",
     "new_badge/new_badge_specification.h",
+    "ntp_promo/ntp_promo_identifier.h",
     "ntp_promo/ntp_promo_registry.cc",
     "ntp_promo/ntp_promo_registry.h",
     "ntp_promo/ntp_promo_specification.cc",

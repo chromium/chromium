@@ -97,4 +97,20 @@ ProductMessagingData& ProductMessagingData::operator=(
     ProductMessagingData&&) noexcept = default;
 ProductMessagingData::~ProductMessagingData() = default;
 
+KeyedNtpPromoData::KeyedNtpPromoData() = default;
+KeyedNtpPromoData::KeyedNtpPromoData(const KeyedNtpPromoData&) = default;
+KeyedNtpPromoData::KeyedNtpPromoData(KeyedNtpPromoData&&) noexcept = default;
+KeyedNtpPromoData& KeyedNtpPromoData::operator=(const KeyedNtpPromoData&) =
+    default;
+KeyedNtpPromoData& KeyedNtpPromoData::operator=(KeyedNtpPromoData&&) noexcept =
+    default;
+KeyedNtpPromoData::~KeyedNtpPromoData() = default;
+
+NtpPromoData::NtpPromoData() = default;
+NtpPromoData::NtpPromoData(const NtpPromoData&) = default;
+NtpPromoData::NtpPromoData(NtpPromoData&&) noexcept = default;
+NtpPromoData& NtpPromoData::operator=(const NtpPromoData&) = default;
+NtpPromoData& NtpPromoData::operator=(NtpPromoData&&) noexcept = default;
+NtpPromoData::~NtpPromoData() = default;
+
 }  // namespace user_education

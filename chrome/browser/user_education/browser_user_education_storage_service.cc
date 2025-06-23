@@ -90,6 +90,14 @@ constexpr char kKeyedPromoKey[] = "key";
 constexpr char kKeyedPromoShowCount[] = "show_count";
 constexpr char kKeyedPromoLastShownTime[] = "last_show_time";
 
+// Path to NTP keyed promo data.
+constexpr char kKeyedNtpPromosPath[] = "in_product_help.ntp_promos.promos";
+
+// NTP keyed promo data elements.
+constexpr char kKeyedNtpPromoCompleted[] = "completed";
+constexpr char kKeyedNtpPromoLastTopSpotSession[] = "last_top_spot_session";
+constexpr char kKeyedNtpPromoTopSpotSessionCount[] = "top_spot_session_count";
+
 // Tries to read keyed promo data from a `base::Value`. Returns null on failure;
 // on old or missing/corrupt data, writes in sensible default values.
 std::optional<user_education::KeyedFeaturePromoDataMap::value_type> ReadKeyData(
@@ -177,6 +185,7 @@ void BrowserUserEducationStorageService::RegisterProfilePrefs(
   registry->RegisterListPref(kProductMessagingShownNoticesPath);
   registry->RegisterListPref(kRecentSessionStartTimesPath);
   registry->RegisterTimePref(kRecentSessionEnabledTimePath, base::Time());
+  registry->RegisterDictionaryPref(kKeyedNtpPromosPath);
 }
 
 // static
@@ -433,6 +442,48 @@ void BrowserUserEducationStorageService::SaveProductMessagingData(
 
 void BrowserUserEducationStorageService::ResetProductMessagingData() {
   profile_->GetPrefs()->ClearPref(kProductMessagingShownNoticesPath);
+}
+
+std::optional<user_education::KeyedNtpPromoData>
+BrowserUserEducationStorageService::ReadNtpPromoData(
+    const user_education::NtpPromoIdentifier& id) const {
+  const auto& ntp_prefs = profile_->GetPrefs()->GetDict(kKeyedNtpPromosPath);
+  const base::Value::Dict* promo_prefs = ntp_prefs.FindDict(id);
+  if (!promo_prefs) {
+    return std::nullopt;
+  }
+
+  user_education::KeyedNtpPromoData data;
+
+  const auto* const time_value = promo_prefs->Find(kKeyedNtpPromoCompleted);
+  const std::optional<base::Time> completed_time =
+      time_value ? base::ValueToTime(*time_value) : std::nullopt;
+  data.completed = completed_time.value_or(base::Time());
+
+  data.last_top_spot_session =
+      promo_prefs->FindInt(kKeyedNtpPromoLastTopSpotSession).value_or(0);
+  data.top_spot_session_count =
+      promo_prefs->FindInt(kKeyedNtpPromoTopSpotSessionCount).value_or(0);
+
+  return data;
+}
+
+void BrowserUserEducationStorageService::SaveNtpPromoData(
+    const user_education::NtpPromoIdentifier& id,
+    const user_education::KeyedNtpPromoData& data) {
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), kKeyedNtpPromosPath);
+  base::Value::Dict& pref_data = update.Get();
+
+  base::Value::Dict promo_pref;
+  promo_pref.Set(kKeyedNtpPromoCompleted, base::TimeToValue(data.completed));
+  promo_pref.Set(kKeyedNtpPromoLastTopSpotSession, data.last_top_spot_session);
+  promo_pref.Set(kKeyedNtpPromoTopSpotSessionCount,
+                 data.top_spot_session_count);
+  pref_data.Set(id, std::move(promo_pref));
+}
+
+void BrowserUserEducationStorageService::ResetNtpPromoData() {
+  profile_->GetPrefs()->ClearPref(kKeyedNtpPromosPath);
 }
 
 RecentSessionData BrowserUserEducationStorageService::ReadRecentSessionData()
