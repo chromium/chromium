@@ -1131,14 +1131,15 @@ void BubbleDialogDelegate::UpdateFrameColor() {
     frame_view->SetBackgroundColor(background_color());
   }
 
-  // When there's an opaque layer, the bubble border background won't show
-  // through, so explicitly paint a background color.
   const bool contents_layer_opaque =
-      contents_view->layer() && contents_view->layer()->fills_bounds_opaquely();
-  contents_view->SetBackground(contents_layer_opaque ||
-                                       force_create_contents_background_
-                                   ? CreateSolidBackground(background_color())
-                                   : nullptr);
+      contents_view->layer() &&
+      contents_view->layer()->type() != ui::LAYER_NOT_DRAWN &&
+      contents_view->layer()->fills_bounds_opaquely();
+  if (contents_layer_opaque) {
+    CHECK(contents_view->background())
+        << "If contents paint to an opaque layer, the bubble border background "
+           "won't show through, so explicitly paint a background color";
+  }
 }
 
 void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {

@@ -450,11 +450,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   ui::ColorVariant background_color() const { return color_; }
   void SetBackgroundColor(ui::ColorVariant color);
 
-  void set_force_create_contents_background(
-      bool force_create_contents_background) {
-    force_create_contents_background_ = force_create_contents_background;
-  }
-
   void set_title_margins(const gfx::Insets& title_margins) {
     title_margins_ = title_margins;
   }
@@ -656,10 +651,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   // Pointer to this bubble's ClientView.
   raw_ptr<ClientView> client_view_ = nullptr;
-
-  // If true, contents view will be forced to create a solid color background in
-  // `UpdateFrameColor()`.
-  bool force_create_contents_background_ = false;
 
 #if BUILDFLAG(IS_MAC)
   // Special handler for close_on_deactivate() on Mac. Window (de)activation is

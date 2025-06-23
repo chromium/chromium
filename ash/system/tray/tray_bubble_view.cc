@@ -49,6 +49,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
@@ -320,9 +321,6 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   // an alert dialog. This would make screen readers announce the whole of the
   // system tray which is undesirable.
   SetAccessibleWindowRole(ax::mojom::Role::kDialog);
-  // We force to create contents background since the bubble border background
-  // is not shown in this view.
-  set_force_create_contents_background(true);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   DCHECK(delegate_);
@@ -339,7 +337,8 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   set_close_on_deactivate(init_params.close_on_deactivate);
   set_margins(init_params.margin.has_value() ? init_params.margin.value()
                                              : gfx::Insets());
-  set_corner_radius(params_.corner_radius);
+  set_use_round_corners(false);
+  SetBackgroundColor(SK_ColorTRANSPARENT);
 
   // Always create a layer so that the layer for FocusRing stays in this view's
   // layer. Without it, the layer for FocusRing goes above the NativeViewHost
@@ -349,26 +348,29 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   SetPaintToLayer(init_params.transparent ? ui::LAYER_NOT_DRAWN
                                           : ui::LAYER_TEXTURED);
 
-  if (init_params.transparent) {
-    set_use_round_corners(false);
-    SetBackgroundColor(SK_ColorTRANSPARENT);
-  } else {
+  if (!init_params.transparent) {
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{static_cast<float>(params_.corner_radius)});
     layer()->SetIsFastRoundedCorner(true);
-
-    SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevatedOpaque);
     SetBorder(std::make_unique<views::HighlightBorder>(
         params_.corner_radius,
         views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  }
 
-  if (init_params.translucent && chromeos::features::IsSystemBlurEnabled()) {
-    CHECK(!init_params.transparent);
-    SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevated);
-    layer()->SetFillsBoundsOpaquely(false);
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    const bool is_translucent =
+        init_params.translucent && chromeos::features::IsSystemBlurEnabled();
+
+    // A translucent TrayBubbleView initializes the widget with NOT_DRAWN_LAYER.
+    // Therefore the BubbleFrameView(NonClientFrameView) that provides the
+    // background will not be painted. Therefore TrayBubbleView should paint its
+    // own background.
+    SetBackground(views::CreateSolidBackground(
+        is_translucent ? cros_tokens::kCrosSysSystemBaseElevated
+                       : cros_tokens::kCrosSysSystemBaseElevatedOpaque));
+    layer()->SetFillsBoundsOpaquely(!is_translucent);
+    if (is_translucent) {
+      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    }
   }
 
   if (params_.has_shadow) {

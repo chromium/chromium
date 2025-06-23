@@ -142,7 +142,7 @@ TEST_P(OngoingProcessViewPixelTest, MultilineLabels) {
   test_api()->ToggleBubble();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateTestName(), /*revision_number=*/3,
+      GenerateTestName(), /*revision_number=*/4,
       test_api()->GetNotificationCenterView()));
 }
 
