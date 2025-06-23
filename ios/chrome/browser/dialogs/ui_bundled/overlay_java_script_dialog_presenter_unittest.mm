@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/dialogs/ui_bundled/overlay_java_script_dialog_presenter.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"

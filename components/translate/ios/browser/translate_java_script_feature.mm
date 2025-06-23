@@ -5,6 +5,7 @@
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 
 #import "base/check_op.h"
+#import "base/functional/callback_helpers.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/translate/ios/browser/translate_controller.h"
 #import "ios/web/public/js_messaging/script_message.h"

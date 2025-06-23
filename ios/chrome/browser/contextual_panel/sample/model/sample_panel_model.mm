@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_model.h"
 
+#import "base/task/sequenced_task_runner.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_item_configuration.h"

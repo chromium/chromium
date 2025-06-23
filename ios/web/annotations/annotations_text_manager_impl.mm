@@ -5,6 +5,7 @@
 #import "ios/web/annotations/annotations_text_manager_impl.h"
 
 #import "base/strings/string_util.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/web/annotations/annotations_java_script_feature.h"
 #import "ios/web/common/features.h"
 #import "ios/web/common/url_scheme_util.h"

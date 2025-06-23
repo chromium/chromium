@@ -4,6 +4,8 @@
 
 #import "ios/web/public/web_state_delegate_bridge.h"
 
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "ios/web/public/ui/context_menu_params.h"
 
 namespace web {
