@@ -120,14 +120,10 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
 #else
       base::NullCallback(),
 #endif
-      base::FeatureList::IsEnabled(
-          safe_browsing::kSafetyHubAbusiveNotificationRevocation)
-          ? base::BindOnce(
-                &MaybeIgnoreAbusiveNotificationAutoRevocation,
-                base::WrapRefCounted(
-                    HostContentSettingsMapFactory::GetForProfile(profile)),
-                main_frame_url)
-          : base::NullCallback(),
+      base::BindOnce(&MaybeIgnoreAbusiveNotificationAutoRevocation,
+                     base::WrapRefCounted(
+                         HostContentSettingsMapFactory::GetForProfile(profile)),
+                     main_frame_url),
       /*url_loader_for_testing=*/nullptr);
 }
 

@@ -2171,9 +2171,6 @@ extern const char kSafetyHubHaTSOneOffSurveyName[];
 extern const char kSafetyHubHaTSOneOffSurveyDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
-extern const char kSafetyHubAbusiveNotificationRevocationName[];
-extern const char kSafetyHubAbusiveNotificationRevocationDescription[];
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kSafetyHubServicesOnStartUpName[];
 extern const char kSafetyHubServicesOnStartUpDescription[];

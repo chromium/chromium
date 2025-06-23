@@ -68,8 +68,7 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler,
 
  private:
   friend class SafetyHubHandlerTest;
-  friend class
-      SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest;
+  friend class SafetyHubHandlerUnusedPermissionRevocationDisabledTest;
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            PopulateUnusedSitePermissionsData);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
@@ -112,13 +111,13 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            ExtensionPrefAndInitialization);
   FRIEND_TEST_ALL_PREFIXES(
-      SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest,
+      SafetyHubHandlerUnusedPermissionRevocationDisabledTest,
       PopulateSitePermissionsData);
   FRIEND_TEST_ALL_PREFIXES(
-      SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest,
+      SafetyHubHandlerUnusedPermissionRevocationDisabledTest,
       HandleAllowPermissionsAgainForSite);
   FRIEND_TEST_ALL_PREFIXES(
-      SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest,
+      SafetyHubHandlerUnusedPermissionRevocationDisabledTest,
       HandleAcknowledgeRevokedSitePermissionsList);
 
   // SettingsPageUIHandler implementation.

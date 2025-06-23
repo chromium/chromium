@@ -3812,13 +3812,6 @@ const char kSafetyHubHaTSOneOffSurveyDescription[] =
     "Enables one-off HaTS surveys for Safety Check v2 on Desktop.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const char kSafetyHubAbusiveNotificationRevocationName[] =
-    "Include abusive notification sites in the Permissions Module of Safety "
-    "Hub";
-const char kSafetyHubAbusiveNotificationRevocationDescription[] =
-    "When enabled, includes abusive notification permission revocation in the "
-    "site permission module of Safety Hub on desktop.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kSafetyHubServicesOnStartUpName[] =
     "Create Safety Hub services on start up";

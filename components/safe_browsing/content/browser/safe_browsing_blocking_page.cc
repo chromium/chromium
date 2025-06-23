@@ -168,8 +168,6 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
   // If the user proceeded past a social engineering threat interstitial,
   // ignore the origin in future auto-revocation of abusive notifications.
   if (ignore_auto_revocation_notifications_trigger_) {
-    DCHECK(base::FeatureList::IsEnabled(
-        safe_browsing::kSafetyHubAbusiveNotificationRevocation));
     std::move(ignore_auto_revocation_notifications_trigger_)
         .Run(proceeded(), threat_type_);
   }

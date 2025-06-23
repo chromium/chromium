@@ -405,25 +405,22 @@ RevokedPermissionsService::RevokedPermissionsService(
           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
-    abusive_notification_manager_ =
-        std::make_unique<AbusiveNotificationPermissionsManager>(
+  abusive_notification_manager_ =
+      std::make_unique<AbusiveNotificationPermissionsManager>(
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-            g_browser_process->safe_browsing_service()
-                ? g_browser_process->safe_browsing_service()->database_manager()
-                : nullptr,
+          g_browser_process->safe_browsing_service()
+              ? g_browser_process->safe_browsing_service()->database_manager()
+              : nullptr,
 #else
-            nullptr,
+          nullptr,
 #endif
-            hcsm(), pref_change_registrar_->prefs());
+          hcsm(), pref_change_registrar_->prefs());
 
-    pref_change_registrar_->Add(
-        prefs::kSafeBrowsingEnabled,
-        base::BindRepeating(&RevokedPermissionsService::
-                                OnPermissionsAutorevocationControlChanged,
-                            base::Unretained(this)));
-  }
+  pref_change_registrar_->Add(
+      prefs::kSafeBrowsingEnabled,
+      base::BindRepeating(
+          &RevokedPermissionsService::OnPermissionsAutorevocationControlChanged,
+          base::Unretained(this)));
 
   if (base::FeatureList::IsEnabled(
           features::kSafetyHubDisruptiveNotificationRevocation)) {
@@ -1200,9 +1197,7 @@ bool RevokedPermissionsService::IsUnusedSiteAutoRevocationEnabled() {
 }
 
 bool RevokedPermissionsService::IsAbusiveNotificationAutoRevocationEnabled() {
-  return base::FeatureList::IsEnabled(
-             safe_browsing::kSafetyHubAbusiveNotificationRevocation) &&
-         safe_browsing::IsSafeBrowsingEnabled(*pref_change_registrar_->prefs());
+  return safe_browsing::IsSafeBrowsingEnabled(*pref_change_registrar_->prefs());
 }
 
 const std::set<ContentSettingsType>

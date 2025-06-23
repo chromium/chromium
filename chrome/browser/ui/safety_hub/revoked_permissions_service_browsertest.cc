@@ -295,8 +295,7 @@ class AbusiveNotificationPermissionsRevocationBrowserTest
         std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>();
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {safe_browsing::kSafetyHubAbusiveNotificationRevocation,
-         content_settings::features::kSafetyCheckUnusedSitePermissions},
+        {content_settings::features::kSafetyCheckUnusedSitePermissions},
         /*disabled_features=*/{});
   }
 
@@ -517,54 +516,6 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
               map->GetContentSetting(abusive_url, abusive_url,
                                      ContentSettingsType::NOTIFICATIONS));
   }
-}
-
-class AbusiveNotificationPermissionsRevocationDisabledBrowserTest
-    : public AbusiveNotificationPermissionsRevocationBrowserTest {
- public:
-  AbusiveNotificationPermissionsRevocationDisabledBrowserTest() {
-    safe_browsing_factory_ =
-        std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>();
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {content_settings::features::kSafetyCheckUnusedSitePermissions},
-        /*disabled_features=*/
-        {safe_browsing::kSafetyHubAbusiveNotificationRevocation});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
-      safe_browsing_factory_;
-};
-
-// Test that revocation is happen correctly when auto-revoke is on.
-IN_PROC_BROWSER_TEST_F(
-    AbusiveNotificationPermissionsRevocationDisabledBrowserTest,
-    TestNoRevokeAbusiveNotificationPermissions) {
-  auto* map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  auto* service =
-      RevokedPermissionsServiceFactory::GetForProfile(browser()->profile());
-  const GURL url("https://example1.com");
-  AddDangerousUrl(url);
-
-  // Create granted abusive notification permission.
-  map->SetContentSettingDefaultScope(
-      url, url, ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
-  ASSERT_EQ(
-      safety_hub_util::GetRevokedAbusiveNotificationPermissions(map).size(),
-      0u);
-
-  // Check if the content setting is still ALLOW and that auto-revocation does
-  // not happen.
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
-  ASSERT_EQ(
-      safety_hub_util::GetRevokedAbusiveNotificationPermissions(map).size(),
-      0u);
-  EXPECT_EQ(
-      CONTENT_SETTING_ALLOW,
-      map->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
 }
 
 class DisruptiveNotificationPermissionsRevocationShadowRunBrowserTest

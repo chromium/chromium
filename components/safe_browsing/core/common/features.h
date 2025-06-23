@@ -290,9 +290,6 @@ extern const base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB;
 BASE_DECLARE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist);
 #endif
 
-// Automatically revoke abusive notifications in Safety Hub.
-BASE_DECLARE_FEATURE(kSafetyHubAbusiveNotificationRevocation);
-
 // Enables saving gaia password hash from the Profile Picker sign-in flow.
 BASE_DECLARE_FEATURE(kSavePasswordHashFromProfilePicker);
 

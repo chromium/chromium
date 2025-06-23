@@ -353,11 +353,9 @@ class SafeBrowsingBlockingPageBrowserTest
         safe_browsing::kAddWarningShownTSToClientSafeBrowsingReport, {});
     base::test::FeatureRefAndParams create_warning_shown_csbrrs(
         safe_browsing::kCreateWarningShownClientSafeBrowsingReports, {});
-    base::test::FeatureRefAndParams abusive_notification_revocation(
-        safe_browsing::kSafetyHubAbusiveNotificationRevocation, {});
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {tag_and_attribute, add_warning_shown_timestamp_csbrrs,
-         create_warning_shown_csbrrs, abusive_notification_revocation},
+         create_warning_shown_csbrrs},
         {});
   }
 

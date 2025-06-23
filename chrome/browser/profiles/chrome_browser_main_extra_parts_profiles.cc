@@ -1392,15 +1392,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   TurnSyncOnHelper::EnsureFactoryBuilt();
 #endif
   UnifiedConsentServiceFactory::GetInstance();
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kSafetyHub) ||
-      base::FeatureList::IsEnabled(
-          safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
-    RevokedPermissionsServiceFactory::GetInstance();
-  }
-#else
   RevokedPermissionsServiceFactory::GetInstance();
-#endif
   UrlLanguageHistogramFactory::GetInstance();
   UsbChooserContextFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)

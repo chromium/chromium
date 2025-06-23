@@ -296,10 +296,6 @@ BASE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kSafetyHubAbusiveNotificationRevocation,
-             "SafetyHubAbusiveNotificationRevocation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSavePasswordHashFromProfilePicker,
              "SavePasswordHashFromProfilePicker",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -368,7 +364,6 @@ base::Value::List GetFeatureStatusList() {
       &kLocalIpAddressInEvents,
       &kLocalListsUseSBv5,
       &kReportNotificationContentDetectionData,
-      &kSafetyHubAbusiveNotificationRevocation,
       &kShowWarningsForSuspiciousNotifications,
       &kSuspiciousSiteTriggerQuotaFeature,
       &kTailoredSecurityIntegration,
