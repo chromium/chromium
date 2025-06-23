@@ -317,10 +317,13 @@ void ScreenManager::RemoveDisplayControllers(
 
       bool is_mirrored = (*it)->IsMirrored();
 
-      std::unique_ptr<CrtcController> crtc = (*it)->RemoveCrtc(drm, crtc_id);
-      if (crtc->is_enabled()) {
-        commit_request.push_back(CrtcCommitRequest::DisableCrtcRequest(
-            crtc->crtc(), crtc->connector()));
+      if ((*it)->IsTiled()) {
+        // Disable all CRTCs/connectors for a tiled display if any CRTC is
+        // removed. DrmGpuDisplayManager will create a new controller if any of
+        // the connectors are still connected.
+        (*it)->RemoveAllCrtcs(&commit_request);
+      } else {
+        (*it)->RemoveCrtc(drm, crtc_id, &commit_request);
       }
 
       if (!is_mirrored) {

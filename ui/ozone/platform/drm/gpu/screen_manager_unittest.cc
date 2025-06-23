@@ -2335,6 +2335,66 @@ TEST_F(ScreenManagerTest, TileDisplay) {
                        Optional(EqTileProperty(nonprimary_tile_prop)))))));
 }
 
+TEST_F(ScreenManagerTest, PartialTiledCrtcRemovalRemovesAllTiledControllers) {
+  std::vector<CrtcState> crtc_states = {
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}},
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}}};
+  InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true);
+
+  uint32_t crtc_id_1 = drm_->crtc_property(0).id;
+  uint32_t connector_id_1 = drm_->connector_property(0).id;
+  uint32_t crtc_id_2 = drm_->crtc_property(1).id;
+  uint32_t connector_id_2 = drm_->connector_property(1).id;
+
+  TileProperty primary_tile_prop = {.group_id = 1,
+                                    .scale_to_fit_display = true,
+                                    .tile_size = gfx::Size(3840, 4320),
+                                    .tile_layout = gfx::Size(2, 1),
+                                    .location = gfx::Point(0, 0)};
+  std::unique_ptr<ui::HardwareDisplayControllerInfo> primary_info =
+      GetDisplayInfo(connector_id_1, crtc_id_1, /*index=*/1, primary_tile_prop);
+
+  TileProperty nonprimary_tile_prop = primary_tile_prop;
+  nonprimary_tile_prop.location = gfx::Point(1, 0);
+  primary_info->AcquireNonprimaryTileInfo(GetDisplayInfo(
+      connector_id_2, crtc_id_2, /*index=*/2, nonprimary_tile_prop));
+
+  std::unique_ptr<display::FakeDisplaySnapshot> snapshot =
+      display::FakeDisplaySnapshot::Builder()
+          .SetId(kPrimaryDisplayId)
+          .SetBaseConnectorId(primary_info->connector()->connector_id)
+          .SetNativeMode(gfx::Size(3840, 4320))
+          .SetCurrentMode(gfx::Size(3840, 4320))
+          .Build();
+
+  DrmDisplay drm_display(drm_.get(), primary_info.get(), *snapshot);
+
+  screen_manager_->AddDisplayControllersForDisplay(drm_display);
+
+  std::vector<ControllerConfigParams> controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, crtc_id_1, connector_id_1, gfx::Point(0, 0),
+      std::make_unique<drmModeModeInfo>(
+          drmModeModeInfo{.hdisplay = 3840, .vdisplay = 4320}));
+  ASSERT_TRUE(screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kTestModeset,
+                              display::ModesetFlag::kCommitModeset}));
+
+  const gfx::Rect display_bounds = gfx::Rect(0, 0, 3840 * 2, 4320);
+  HardwareDisplayController* hdc =
+      screen_manager_->GetDisplayController(display_bounds);
+  // This is the full tile composited size.
+  ASSERT_NE(hdc, nullptr);
+  ASSERT_TRUE(hdc->IsTiled());
+
+  // Remove the non-primary CRTC, it should remove the entire controller from
+  // the ScreenManager.
+  ScreenManager::CrtcsWithDrmList controllers_to_remove;
+  controllers_to_remove.emplace_back(crtc_id_2, drm_);
+  screen_manager_->RemoveDisplayControllers(controllers_to_remove);
+  ASSERT_EQ(screen_manager_->GetDisplayController(display_bounds), nullptr);
+}
+
 TEST_F(ScreenManagerTest, DetachPlanesFromAllControllersSuccess) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
   uint32_t crtc_id = drm_->crtc_property(0).id;

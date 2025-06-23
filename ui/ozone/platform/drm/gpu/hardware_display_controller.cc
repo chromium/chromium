@@ -459,7 +459,8 @@ void HardwareDisplayController::AddCrtc(
 
 std::unique_ptr<CrtcController> HardwareDisplayController::RemoveCrtc(
     const scoped_refptr<DrmDevice>& drm,
-    uint32_t crtc) {
+    uint32_t crtc,
+    CommitRequest* commit_request) {
   auto controller_it = std::ranges::find_if(
       crtc_controllers_,
       [drm, crtc](const std::unique_ptr<CrtcController>& crtc_controller) {
@@ -492,7 +493,25 @@ std::unique_ptr<CrtcController> HardwareDisplayController::RemoveCrtc(
   owned_hardware_planes_.old_plane_list.erase(
       first_plane_to_disable_it, owned_hardware_planes_.old_plane_list.end());
 
+  if (commit_request && controller->is_enabled()) {
+    commit_request->push_back(CrtcCommitRequest::DisableCrtcRequest(
+        controller->crtc(), controller->connector()));
+  }
+
   return controller;
+}
+
+void HardwareDisplayController::RemoveAllCrtcs(CommitRequest* commit_request) {
+  std::vector<std::pair<scoped_refptr<DrmDevice>, uint32_t /*crtc*/>>
+      controllers_to_remove;
+  for (const auto& controller : crtc_controllers_) {
+    controllers_to_remove.push_back({controller->drm(), controller->crtc()});
+  }
+
+  for (const auto& [drm, crtc] : controllers_to_remove) {
+    std::unique_ptr<CrtcController> removed_crtc =
+        RemoveCrtc(drm, crtc, commit_request);
+  }
 }
 
 bool HardwareDisplayController::HasCrtc(const scoped_refptr<DrmDevice>& drm,

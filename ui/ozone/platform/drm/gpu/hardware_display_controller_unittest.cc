@@ -1274,6 +1274,140 @@ TEST_F(HardwareDisplayControllerTest, RemoveCrtcMidPageFlip) {
   EXPECT_EQ(1, successful_page_flips_count_);
 }
 
+TEST_F(HardwareDisplayControllerTest, RemoveEnabledCrtcCommitRequest) {
+  DrmOverlayPlaneList planes;
+  planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+  EXPECT_TRUE(ModesetWithPlanes(planes));
+
+  CommitRequest commit_request;
+  controller_->RemoveCrtc(drm_, primary_crtc_, &commit_request);
+  EXPECT_THAT(
+      commit_request,
+      ElementsAre(AllOf(Property(&CrtcCommitRequest::should_enable_crtc, false),
+                        Property(&CrtcCommitRequest::crtc_id, primary_crtc_))));
+}
+
+TEST_F(HardwareDisplayControllerTest, RemoveDisabledCrtcCommitRequestEmpty) {
+  CommitRequest commit_request;
+  controller_->RemoveCrtc(drm_, primary_crtc_, &commit_request);
+  EXPECT_THAT(commit_request, testing::IsEmpty());
+}
+
+TEST_F(HardwareDisplayControllerTest, RemoveAllCrtcs) {
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/2);
+  TileProperty primary_tile_property = {.group_id = 123,
+                                        .scale_to_fit_display = true,
+                                        .tile_size = gfx::Size(300, 200),
+                                        .tile_layout = gfx::Size(2, 1),
+                                        .location = gfx::Point(0, 0)};
+
+  auto primary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), primary_crtc_, drm_->connector_property(0).id,
+      primary_tile_property);
+
+  TileProperty nonprimary_tile_property = primary_tile_property;
+  nonprimary_tile_property.location = gfx::Point(1, 0);
+  auto nonprimary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), secondary_crtc_, drm_->connector_property(1).id,
+      nonprimary_tile_property);
+
+  controller_ = std::make_unique<HardwareDisplayController>(
+      std::move(primary_tiled_crtc_controller), gfx::Point(), nullptr);
+  controller_->AddCrtc(std::move(nonprimary_tiled_crtc_controller));
+
+  DrmOverlayPlaneList modeset_planes;
+  modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+  modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+
+  // Modeset to a tile mode first so that both CRTCs are enabled.
+  drmModeModeInfo tile_mode = {.hdisplay = 300, .vdisplay = 200};
+  EXPECT_TRUE(ModesetWithPlanes(modeset_planes, tile_mode));
+
+  CommitRequest commit_request;
+  controller_->RemoveAllCrtcs(&commit_request);
+
+  EXPECT_THAT(controller_->crtc_controllers(), testing::IsEmpty());
+  EXPECT_THAT(
+      commit_request,
+      UnorderedElementsAre(
+          AllOf(Property(&CrtcCommitRequest::should_enable_crtc, false),
+                Property(&CrtcCommitRequest::crtc_id, primary_crtc_)),
+          AllOf(Property(&CrtcCommitRequest::should_enable_crtc, false),
+                Property(&CrtcCommitRequest::crtc_id, secondary_crtc_))));
+}
+
+TEST_F(HardwareDisplayControllerTest, RemoveAllCrtcsPartiallyEnabled) {
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/2);
+  TileProperty primary_tile_property = {.group_id = 123,
+                                        .scale_to_fit_display = true,
+                                        .tile_size = gfx::Size(300, 200),
+                                        .tile_layout = gfx::Size(2, 1),
+                                        .location = gfx::Point(0, 0)};
+
+  auto primary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), primary_crtc_, drm_->connector_property(0).id,
+      primary_tile_property);
+
+  TileProperty nonprimary_tile_property = primary_tile_property;
+  nonprimary_tile_property.location = gfx::Point(1, 0);
+  auto nonprimary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), secondary_crtc_, drm_->connector_property(1).id,
+      nonprimary_tile_property);
+
+  controller_ = std::make_unique<HardwareDisplayController>(
+      std::move(primary_tiled_crtc_controller), gfx::Point(), nullptr);
+  controller_->AddCrtc(std::move(nonprimary_tiled_crtc_controller));
+
+  DrmOverlayPlaneList modeset_planes;
+  modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+  modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+
+  // Modeset to non-tile mode - should disable the nonprimary tiles.
+  drmModeModeInfo nontile_mode = {.hdisplay = 1920, .vdisplay = 1080};
+  EXPECT_TRUE(ModesetWithPlanes(modeset_planes, nontile_mode));
+
+  CommitRequest commit_request;
+  controller_->RemoveAllCrtcs(&commit_request);
+
+  EXPECT_THAT(controller_->crtc_controllers(), testing::IsEmpty());
+
+  EXPECT_THAT(commit_request,
+              UnorderedElementsAre(
+                  AllOf(Property(&CrtcCommitRequest::should_enable_crtc, false),
+                        Property(&CrtcCommitRequest::crtc_id, primary_crtc_))));
+}
+
+TEST_F(HardwareDisplayControllerTest, RemoveAllCrtcsAllDisabled) {
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/2);
+  TileProperty primary_tile_property = {.group_id = 123,
+                                        .scale_to_fit_display = true,
+                                        .tile_size = gfx::Size(300, 200),
+                                        .tile_layout = gfx::Size(2, 1),
+                                        .location = gfx::Point(0, 0)};
+
+  auto primary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), primary_crtc_, drm_->connector_property(0).id,
+      primary_tile_property);
+
+  TileProperty nonprimary_tile_property = primary_tile_property;
+  nonprimary_tile_property.location = gfx::Point(1, 0);
+  auto nonprimary_tiled_crtc_controller = std::make_unique<CrtcController>(
+      drm_.get(), secondary_crtc_, drm_->connector_property(1).id,
+      nonprimary_tile_property);
+
+  controller_ = std::make_unique<HardwareDisplayController>(
+      std::move(primary_tiled_crtc_controller), gfx::Point(), nullptr);
+  controller_->AddCrtc(std::move(nonprimary_tiled_crtc_controller));
+
+  // No modeset
+
+  CommitRequest commit_request;
+  controller_->RemoveAllCrtcs(&commit_request);
+
+  EXPECT_THAT(controller_->crtc_controllers(), testing::IsEmpty());
+  EXPECT_THAT(commit_request, testing::IsEmpty());
+}
+
 TEST_F(HardwareDisplayControllerTest, Disable) {
   // Page flipping overlays is only supported on atomic configurations.
   InitializeDrmDevice(/* use_atomic= */ true);
