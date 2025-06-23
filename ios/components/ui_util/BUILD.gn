@@ -1,7 +1,5 @@
 source_set("ui_util") {
   sources = [
-    "content_size_category_description.h",
-    "content_size_category_description.mm",
     "dynamic_type_util.h",
     "dynamic_type_util.mm",
   ]

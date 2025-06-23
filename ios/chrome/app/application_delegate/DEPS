@@ -1,3 +1,0 @@
-include_rules = [
- "+ios/components/ui_util/dynamic_type_util.h"
-]
