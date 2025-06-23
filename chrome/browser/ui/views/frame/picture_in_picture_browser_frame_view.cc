@@ -859,6 +859,20 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
   GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark,
                                     /*background_color=*/std::nullopt);
 
+// Fade in animation is disabled for Document and Video Picture-in-Picture on
+// Windows. On Windows, resizable windows can not be translucent. See
+// crbug.com/425711450.
+#if !BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(
+          media::kPictureInPictureShowWindowAnimation)) {
+    if (!fade_animator_) {
+      fade_animator_ = std::make_unique<PictureInPictureWidgetFadeAnimator>();
+    }
+    fade_animator_->AnimateShowWindow(
+        GetWidget(), PictureInPictureWidgetFadeAnimator::WidgetShowType::kNone);
+  }
+#endif
+
   // If the AutoPiP setting overlay is set, then post a task to show it.  Don't
   // do this here, since not all observers might have found out about the new
   // widget yet.  Specifically, on cros, the BrowserViewAsh immediately does a
@@ -893,6 +907,10 @@ void PictureInPictureBrowserFrameView::RemovedFromWidget() {
   // Clear the AutoPiP setting overlay view.
   if (auto_pip_setting_overlay_) {
     auto_pip_setting_overlay_ = nullptr;
+  }
+
+  if (fade_animator_) {
+    fade_animator_->CancelAndReset();
   }
 
   PictureInPictureWindowManager::GetInstance()->OnPictureInPictureWindowHidden(
@@ -1443,6 +1461,11 @@ views::View* PictureInPictureBrowserFrameView::GetCloseButtonForTesting() {
 
 views::Label* PictureInPictureBrowserFrameView::GetWindowTitleForTesting() {
   return window_title_;
+}
+
+PictureInPictureWidgetFadeAnimator*
+PictureInPictureBrowserFrameView::GetFadeAnimatorForTesting() {
+  return fade_animator_.get();
 }
 
 void PictureInPictureBrowserFrameView::OnMouseEnteredOrExitedWindow(

@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_widget_fade_animator.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
@@ -185,6 +186,7 @@ class PictureInPictureBrowserFrameView
   views::View* GetBackToTabButtonForTesting();
   views::View* GetCloseButtonForTesting();
   views::Label* GetWindowTitleForTesting();
+  PictureInPictureWidgetFadeAnimator* GetFadeAnimatorForTesting();
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -387,6 +389,9 @@ class PictureInPictureBrowserFrameView
   // `resizeBy()` calls).
   std::unique_ptr<PictureInPictureBoundsChangeAnimation>
       bounds_change_animation_;
+
+  // Used to animate the Picture-in-Picture window creation.
+  std::unique_ptr<PictureInPictureWidgetFadeAnimator> fade_animator_;
 
   // Used to tuck/untuck this widget into the side of the screen.
   std::unique_ptr<PictureInPictureTucker> tucker_;

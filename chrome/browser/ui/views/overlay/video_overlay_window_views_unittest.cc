@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_widget_fade_animator.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/picture_in_picture/scoped_tuck_picture_in_picture.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -49,6 +50,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
@@ -1358,4 +1360,96 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption) {
   EXPECT_TRUE(live_caption_toggle_button->GetIsOn());
   EXPECT_TRUE(live_translate_toggle_button->GetEnabled());
   EXPECT_FALSE(live_translate_toggle_button->GetIsOn());
+}
+
+class VideoOverlayWindowWithShowAnimationTest
+    : public VideoOverlayWindowViewsTest {
+ public:
+  void SetUp() override {
+    AddEnabledFeature(media::kPictureInPictureShowWindowAnimation);
+    VideoOverlayWindowViewsTest::SetUp();
+#if BUILDFLAG(IS_WIN)
+    GTEST_SKIP() << "Fade in animation is disabled on Windows.";
+#endif
+  }
+};
+
+TEST_F(VideoOverlayWindowWithShowAnimationTest,
+       FadeInAnimationIsUsedOnWindowShow) {
+  // ShowInactive should trigger the fade-in animation.
+  overlay_window().ShowInactive();
+
+  // Get the PiP fade animator.
+  PictureInPictureWidgetFadeAnimator* pip_fade_animator =
+      overlay_window().get_fade_animator_for_testing();
+  EXPECT_NE(nullptr, pip_fade_animator);
+
+  // Get the widget fade animator and verify that it is fading in.
+  views::WidgetFadeAnimator* widget_fade_animator =
+      pip_fade_animator->GetWidgetFadeAnimatorForTesting();
+  EXPECT_NE(nullptr, widget_fade_animator);
+  EXPECT_TRUE(widget_fade_animator->IsFadingIn());
+}
+
+TEST_F(VideoOverlayWindowWithShowAnimationTest,
+       FadeInAnimationIsCancelledOnHide) {
+  overlay_window().ShowInactive();
+
+  // Get the PiP fade animator.
+  PictureInPictureWidgetFadeAnimator* pip_fade_animator =
+      overlay_window().get_fade_animator_for_testing();
+  EXPECT_NE(nullptr, pip_fade_animator);
+
+  // Get the widget fade animator and verify that it is fading in.
+  views::WidgetFadeAnimator* widget_fade_animator =
+      pip_fade_animator->GetWidgetFadeAnimatorForTesting();
+  EXPECT_NE(nullptr, widget_fade_animator);
+  EXPECT_TRUE(widget_fade_animator->IsFadingIn());
+
+  // Hiding the window should cancel the animation.
+  overlay_window().Hide();
+  EXPECT_EQ(nullptr, overlay_window()
+                         .get_fade_animator_for_testing()
+                         ->GetWidgetFadeAnimatorForTesting());
+}
+
+TEST_F(VideoOverlayWindowWithShowAnimationTest,
+       FadeInAnimationIsCancelledOnClose) {
+  overlay_window().ShowInactive();
+
+  // Get the PiP fade animator.
+  PictureInPictureWidgetFadeAnimator* pip_fade_animator =
+      overlay_window().get_fade_animator_for_testing();
+  EXPECT_NE(nullptr, pip_fade_animator);
+
+  // Get the widget fade animator and verify that it is fading in.
+  views::WidgetFadeAnimator* widget_fade_animator =
+      pip_fade_animator->GetWidgetFadeAnimatorForTesting();
+  EXPECT_NE(nullptr, widget_fade_animator);
+  EXPECT_TRUE(widget_fade_animator->IsFadingIn());
+
+  // Closing the window should cancel the animation.
+  overlay_window().Close();
+  EXPECT_EQ(nullptr, overlay_window()
+                         .get_fade_animator_for_testing()
+                         ->GetWidgetFadeAnimatorForTesting());
+}
+
+TEST_F(VideoOverlayWindowWithShowAnimationTest,
+       AnimatorIsResetWhenWidgetIsDestroyedDuringAnimation) {
+  overlay_window().ShowInactive();
+
+  // Get the PiP fade animator.
+  PictureInPictureWidgetFadeAnimator* pip_fade_animator =
+      overlay_window().get_fade_animator_for_testing();
+  EXPECT_NE(nullptr, pip_fade_animator);
+
+  // Get the widget fade animator and verify that it is fading in.
+  views::WidgetFadeAnimator* widget_fade_animator =
+      pip_fade_animator->GetWidgetFadeAnimatorForTesting();
+  EXPECT_NE(nullptr, widget_fade_animator);
+  EXPECT_TRUE(widget_fade_animator->IsFadingIn());
+
+  // Destroying the widget during the animation should not crash.
+  DestroyOverlayWindow();
 }

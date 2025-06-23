@@ -28,7 +28,18 @@ void WidgetFadeAnimator::FadeIn() {
 
   // Widgets cannot be shown when visible and fully transparent.
   widget_->SetOpacity(0.01f);
-  widget_->Show();
+
+  switch (show_type_) {
+    case WidgetShowType::kNone:
+      break;
+    case WidgetShowType::kShowActive:
+      widget_->Show();
+      break;
+    case WidgetShowType::kShowInactive:
+      widget_->ShowInactive();
+      break;
+  }
+
   fade_animation_.Start();
 }
 

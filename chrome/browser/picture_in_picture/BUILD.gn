@@ -36,6 +36,7 @@ source_set("picture_in_picture") {
       "picture_in_picture_occlusion_observer.h",
       "picture_in_picture_occlusion_tracker.h",
       "picture_in_picture_occlusion_tracker_observer.h",
+      "picture_in_picture_widget_fade_animator.h",
       "picture_in_picture_window.h",
       "picture_in_picture_window_manager_uma_helper.h",
       "scoped_disallow_picture_in_picture.h",
@@ -101,6 +102,7 @@ source_set("impl") {
       "picture_in_picture_occlusion_observer.cc",
       "picture_in_picture_occlusion_tracker.cc",
       "picture_in_picture_occlusion_tracker_observer.cc",
+      "picture_in_picture_widget_fade_animator.cc",
       "picture_in_picture_window_manager_uma_helper.cc",
       "scoped_disallow_picture_in_picture.cc",
       "scoped_picture_in_picture_occlusion_observation.cc",
@@ -149,6 +151,7 @@ source_set("unit_tests") {
       "auto_pip_setting_overlay_view_unittest.cc",
       "auto_pip_setting_view_unittest.cc",
       "picture_in_picture_occlusion_tracker_unittest.cc",
+      "picture_in_picture_widget_fade_animator_unittest.cc",
       "picture_in_picture_window_manager_uma_helper_unittest.cc",
     ]
     deps += [

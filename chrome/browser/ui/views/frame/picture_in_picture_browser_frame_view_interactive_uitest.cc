@@ -13,6 +13,7 @@
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_widget_fade_animator.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -33,6 +34,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/widget/widget_utils.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -152,7 +154,8 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kDocumentPictureInPictureAPI,
-                              media::kPictureInPictureOcclusionTracking},
+                              media::kPictureInPictureOcclusionTracking,
+                              media::kPictureInPictureShowWindowAnimation},
         /*disabled_features=*/{});
     InProcessBrowserTest::SetUp();
   }
@@ -742,6 +745,20 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   // The back-to-tab button should exist when `disallowReturnToOpener` is false.
   EXPECT_NE(nullptr, pip_frame_view()->GetBackToTabButtonForTesting());
 }
+
+#if !BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       FadeInAnimationIsUsedOnWindowShow) {
+  // Set up document PiP.
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+
+  // Get the PiP fade animator and verify the expected fade in calls count.
+  PictureInPictureWidgetFadeAnimator* pip_fade_animator =
+      pip_frame_view()->GetFadeAnimatorForTesting();
+  EXPECT_NE(nullptr, pip_fade_animator);
+  EXPECT_EQ(1, pip_fade_animator->GetFadeInCallsCountForTesting());
+}
+#endif
 
 IN_PROC_BROWSER_TEST_P(PictureInPictureBrowserFrameViewTest,
                        TestAnimationTiming) {

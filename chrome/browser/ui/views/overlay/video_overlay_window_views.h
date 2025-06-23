@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_widget_fade_animator.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
 #include "content/public/browser/overlay_window.h"
@@ -221,6 +222,10 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   AutoPipSettingOverlayView* get_overlay_view_for_testing() {
     return overlay_view_;
+  }
+
+  PictureInPictureWidgetFadeAnimator* get_fade_animator_for_testing() {
+    return fade_animator_.get();
   }
 
   // Determines whether a layout of the window controls has been scheduled but
@@ -474,6 +479,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // Callback to get / create an overlay view.  This is a callback to let tests
   // provide alternate implementations.
   GetOverlayViewCb get_overlay_view_cb_;
+
+  // Used to animate the Picture-in-Picture window creation.
+  std::unique_ptr<PictureInPictureWidgetFadeAnimator> fade_animator_;
 
   base::WeakPtrFactory<VideoOverlayWindowViews> weak_factory_{this};
 };

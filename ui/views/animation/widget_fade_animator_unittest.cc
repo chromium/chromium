@@ -274,4 +274,32 @@ TEST_F(WidgetFadeAnimatorTest, FadeOutCallback) {
   EXPECT_EQ(WidgetFadeAnimator::FadeType::kFadeOut, anim_type);
 }
 
+TEST_F(WidgetFadeAnimatorTest, FadeInDefaultIsShowActive) {
+  EXPECT_FALSE(widget_->IsVisible());
+  delegate_->FadeIn();
+
+  // Widget should be shown and active.
+  EXPECT_TRUE(widget_->IsVisible());
+  EXPECT_TRUE(widget_->IsActive());
+}
+
+TEST_F(WidgetFadeAnimatorTest, FadeInShowTypeShowInactive) {
+  EXPECT_FALSE(widget_->IsVisible());
+  delegate_->set_show_type(WidgetFadeAnimator::WidgetShowType::kShowInactive);
+  delegate_->FadeIn();
+
+  // Widget should be shown and inactive.
+  EXPECT_TRUE(widget_->IsVisible());
+  EXPECT_FALSE(widget_->IsActive());
+}
+
+TEST_F(WidgetFadeAnimatorTest, FadeInShowTypeNone) {
+  EXPECT_FALSE(widget_->IsVisible());
+  delegate_->set_show_type(WidgetFadeAnimator::WidgetShowType::kNone);
+  delegate_->FadeIn();
+
+  // Widget should not be shown.
+  EXPECT_FALSE(widget_->IsVisible());
+}
+
 }  // namespace views
