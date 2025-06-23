@@ -372,10 +372,10 @@ EntityTable::LoadAttributes() const {
     }
     std::underlying_type_t<VerificationStatus> underlying_verification_status =
         s.ColumnInt(4);
-    attribute_records[entity_guid][attribute_type_name].push_back(
-        {.field_type = underlying_field_type,
-         .value = decrypted_value,
-         .verification_status = underlying_verification_status});
+    attribute_records[std::move(entity_guid)][std::move(attribute_type_name)]
+        .push_back({.field_type = underlying_field_type,
+                    .value = std::move(decrypted_value),
+                    .verification_status = underlying_verification_status});
   }
   if (!s.Succeeded()) {
     return {};
