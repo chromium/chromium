@@ -1197,6 +1197,11 @@ base::WeakPtr<SpdySession> HttpStreamPool::AttemptManager::
     return nullptr;
   }
 
+  if (pool()->RequiresHTTP11(stream_key().destination(),
+                             stream_key().network_anonymization_key())) {
+    return nullptr;
+  }
+
   if (HasAvailableSpdySession()) {
     base::WeakPtr<SpdySession> spdy_session = pool()->FindAvailableSpdySession(
         stream_key(), spdy_session_key(), IsIpBasedPoolingEnabled(), net_log());

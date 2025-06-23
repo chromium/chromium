@@ -3145,6 +3145,52 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   ASSERT_EQ(pool().TotalActiveStreamCount(), 2u);
 }
 
+// Test that an IP pooled SPDY session is not used if the destination requires
+// HTTP/1.1.
+TEST_F(HttpStreamPoolAttemptManagerTest, SpdyMatchingIpSessionRequiresHttp11) {
+  const IPEndPoint kCommonEndPoint = MakeIPEndPoint("192.0.2.1", 443);
+
+  // Create a SPDY session for www.example.org.
+  StreamRequester requester_a;
+  requester_a.set_destination("https://www.example.org");
+  CreateFakeSpdySession(requester_a.GetStreamKey(), kCommonEndPoint);
+  requester_a.RequestStream(pool());
+  requester_a.WaitForResult();
+  EXPECT_THAT(requester_a.result(), Optional(IsOk()));
+  EXPECT_EQ(requester_a.negotiated_protocol(), NextProto::kProtoHTTP2);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
+
+  // Mark example.test as requiring HTTP/1.1.
+  const HttpStreamKey stream_key_b =
+      StreamKeyBuilder().set_destination("https://example.test").Build();
+  http_server_properties()->SetHTTP11Required(
+      stream_key_b.destination(), stream_key_b.network_anonymization_key());
+
+  // Set up DNS resolution for example.test to resolve to the same IP.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // Set up socket data for a new TCP connection for example.test.
+  SequencedSocketData data;
+  socket_factory()->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_protos_expected_in_ssl_config = {NextProto::kProtoHTTP11};
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  // Request a stream for example.test.
+  StreamRequester requester_b(stream_key_b);
+  requester_b.RequestStream(pool());
+  requester_b.WaitForResult();
+
+  // The request should succeed by creating a new HTTP/1.1 connection.
+  EXPECT_THAT(requester_b.result(), Optional(IsOk()));
+  EXPECT_NE(requester_b.negotiated_protocol(), NextProto::kProtoHTTP2);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 2u);
+}
+
 // Regression test for crbug.com/385296757.
 // If an IP matching SPDY session is created during the stream attempt delay,
 // use that session instead of attempting a new connection after the delay.
