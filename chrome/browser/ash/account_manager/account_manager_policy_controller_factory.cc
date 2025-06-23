@@ -7,10 +7,10 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/user_manager/user.h"
 
 namespace ash {
@@ -55,7 +55,7 @@ AccountManagerPolicyControllerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
 
   auto* account_manager_facade =
-      ::GetAccountManagerFacade(profile->GetPath().value());
+      GetAccountManagerFacade(profile->GetPath().value());
 
   if (!account_manager_facade)
     return nullptr;

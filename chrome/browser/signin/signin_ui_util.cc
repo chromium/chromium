@@ -55,8 +55,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/signin/signin_ui_chromeos_util.h"
+#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/user_manager/user.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -187,7 +187,7 @@ void ShowReauthForAccount(Profile* profile,
                           const std::string& email,
                           signin_metrics::AccessPoint access_point) {
 #if BUILDFLAG(IS_CHROMEOS)
-  ::GetAccountManagerFacade(profile->GetPath().value())
+  ash::GetAccountManagerFacade(profile->GetPath().value())
       ->ShowReauthAccountDialog(
           GetAccountReauthSourceFromAccessPoint(access_point), email,
           base::DoNothing());

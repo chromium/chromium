@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
 
 #include <limits>
 #include <map>
@@ -15,6 +15,7 @@
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 
+namespace ash {
 namespace {
 
 crosapi::AccountManagerMojoService* GetAccountManagerMojoService(
@@ -62,3 +63,5 @@ account_manager::AccountManagerFacade* GetAccountManagerFacade(
 
   return it->second.get();
 }
+
+}  // namespace ash

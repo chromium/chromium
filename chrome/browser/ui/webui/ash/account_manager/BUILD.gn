@@ -34,6 +34,7 @@ static_library("account_manager") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/signin/ash",
     "//chrome/common:constants",
+    "//chromeos/ash/components/account_manager",
     "//components/account_manager_core",
     "//components/prefs",
     "//net",

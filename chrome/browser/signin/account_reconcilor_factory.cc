@@ -27,8 +27,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/user_manager/user_manager.h"
@@ -144,7 +144,7 @@ AccountReconcilorFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<AccountReconcilor> reconcilor =
       std::make_unique<AccountReconcilor>(
           identity_manager, signin_client,
-          ::GetAccountManagerFacade(profile->GetPath().value()),
+          ash::GetAccountManagerFacade(profile->GetPath().value()),
           CreateAccountReconcilorDelegate(profile));
 #else
   std::unique_ptr<AccountReconcilor> reconcilor =

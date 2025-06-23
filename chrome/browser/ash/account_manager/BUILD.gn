@@ -14,7 +14,6 @@ static_library("account_manager") {
     "account_apps_availability_factory.h",
     "account_manager_edu_coexistence_controller.cc",
     "account_manager_edu_coexistence_controller.h",
-    "account_manager_facade_factory_ash.cc",
     "account_manager_policy_controller.cc",
     "account_manager_policy_controller.h",
     "account_manager_policy_controller_factory.cc",

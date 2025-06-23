@@ -21,11 +21,11 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -151,7 +151,7 @@ class AccountManagerUIHandlerTest
     SetUpEnvironment();
 
     auto* account_manager_facade =
-        ::GetAccountManagerFacade(profile_->GetPath().value());
+        GetAccountManagerFacade(profile_->GetPath().value());
     account_apps_availability_ =
         AccountAppsAvailabilityFactory::GetForProfile(profile());
 
@@ -401,7 +401,7 @@ class AccountManagerUIHandlerTestWithManagedArcAccountRestriction
     SetUpEnvironment();
 
     auto* account_manager_facade =
-        ::GetAccountManagerFacade(profile()->GetPath().value());
+        GetAccountManagerFacade(profile()->GetPath().value());
 
     account_apps_availability_ =
         AccountAppsAvailabilityFactory::GetForProfile(profile());

@@ -20,8 +20,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/projector/projector_soda_installation_controller.h"
+#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -179,7 +179,7 @@ void ProjectorAppClientImpl::ToggleFileSyncingNotificationForPaths(
 }
 
 void ProjectorAppClientImpl::HandleAccountReauth(const std::string& email) {
-  ::GetAccountManagerFacade(
+  ash::GetAccountManagerFacade(
       ProfileManager::GetActiveUserProfile()->GetPath().value())
       ->ShowReauthAccountDialog(
           account_manager::AccountManagerFacade::AccountAdditionSource::

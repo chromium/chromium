@@ -46,11 +46,11 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -497,7 +497,7 @@ PeopleSection::PeopleSection(Profile* profile,
     account_manager_ = factory->GetAccountManager(profile->GetPath().value());
     DCHECK(account_manager_);
     account_manager_facade_ =
-        ::GetAccountManagerFacade(profile->GetPath().value());
+        GetAccountManagerFacade(profile->GetPath().value());
     DCHECK(account_manager_facade_);
     account_manager_facade_observation_.Observe(account_manager_facade_.get());
     account_apps_availability_ =
