@@ -4,6 +4,7 @@ include_rules = [
   "+components/signin/public/identity_manager",
   "+components/sync",
   "+components/sync_preferences",
+  "+components/variations",
   "+components/unified_consent",
   "+google_apis",
   "+net",

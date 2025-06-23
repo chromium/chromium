@@ -37,14 +37,12 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/lens/lens_request_construction.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/variations/variations.mojom.h"
-#include "components/variations/variations_client.h"
-#include "components/variations/variations_ids_provider.h"
 #include "components/version_info/channel.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -84,10 +82,8 @@ using LatencyType = LensOverlayGen204Controller::LatencyType;
 namespace {
 
 // The name string for the header for variations information.
-constexpr char kClientDataHeader[] = "X-Client-Data";
 constexpr char kContentTypeKey[] = "Content-Type";
 constexpr char kContentType[] = "application/x-protobuf";
-constexpr char kDeveloperKey[] = "X-Developer-Key";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kOAuthConsumerName[] = "LensOverlayQueryController";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
@@ -178,37 +174,6 @@ lens::CenterRotatedBox ConvertToServerCenterRotatedBox(
   out_box.set_coordinate_type(
       ConvertToServerCoordinateType(box->coordinate_type));
   return out_box;
-}
-
-std::vector<std::string> CreateOAuthHeader(
-    GoogleServiceAuthError error,
-    signin::AccessTokenInfo access_token_info) {
-  std::vector<std::string> headers;
-  if (error.state() == GoogleServiceAuthError::NONE) {
-    headers.push_back(kDeveloperKey);
-    headers.push_back(GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-    headers.push_back(net::HttpRequestHeaders::kAuthorization);
-    headers.push_back(
-        base::StringPrintf("Bearer %s", access_token_info.token.c_str()));
-  }
-  return headers;
-}
-
-std::vector<std::string> CreateVariationsHeaders(
-    variations::VariationsClient* variations_client) {
-  std::vector<std::string> headers;
-  variations::mojom::VariationsHeadersPtr variations =
-      variations_client->GetVariationsHeaders();
-  if (variations_client->IsOffTheRecord() || variations.is_null()) {
-    return headers;
-  }
-
-  headers.push_back(kClientDataHeader);
-  // The endpoint is always a Google property.
-  headers.push_back(variations->headers_map.at(
-      variations::mojom::GoogleWebVisibility::FIRST_PARTY));
-
-  return headers;
 }
 
 std::string VitQueryParamValueForMimeType(lens::MimeType mime_type) {

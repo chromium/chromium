@@ -12,6 +12,10 @@ namespace signin {
 struct AccessTokenInfo;
 }  // namespace signin
 
+namespace variations {
+class VariationsClient;
+}  // namespace variations
+
 class GoogleServiceAuthError;
 
 namespace lens {
@@ -20,6 +24,10 @@ namespace lens {
 std::vector<std::string> CreateOAuthHeader(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info);
+
+// Creates the variations headers for Lens requests.
+std::vector<std::string> CreateVariationsHeaders(
+    variations::VariationsClient* variations_client);
 
 }  // namespace lens
 

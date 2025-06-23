@@ -6,6 +6,9 @@
 
 #include "base/strings/stringprintf.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/variations/variations.mojom.h"
+#include "components/variations/variations_client.h"
+#include "components/variations/variations_ids_provider.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -15,10 +18,9 @@
 #include "net/http/http_request_headers.h"
 
 namespace lens {
+constexpr char kClientDataHeader[] = "X-Client-Data";
 constexpr char kDeveloperKey[] = "X-Developer-Key";
 
-// TODO(crbug.com/424869589): Clean up code duplication with
-// LensOverlayQueryController.
 std::vector<std::string> CreateOAuthHeader(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
@@ -32,4 +34,22 @@ std::vector<std::string> CreateOAuthHeader(
   }
   return headers;
 }
+
+std::vector<std::string> CreateVariationsHeaders(
+    variations::VariationsClient* variations_client) {
+  std::vector<std::string> headers;
+  variations::mojom::VariationsHeadersPtr variations =
+      variations_client->GetVariationsHeaders();
+  if (variations_client->IsOffTheRecord() || variations.is_null()) {
+    return headers;
+  }
+
+  headers.push_back(kClientDataHeader);
+  // The endpoint is always a Google property.
+  headers.push_back(variations->headers_map.at(
+      variations::mojom::GoogleWebVisibility::FIRST_PARTY));
+
+  return headers;
+}
+
 }  // namespace lens

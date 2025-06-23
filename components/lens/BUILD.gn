@@ -48,6 +48,8 @@ static_library("lens") {
     "//components/lens:lens_mojo",
     "//components/lens/proto/v1:lens_latencies_metadata_proto",
     "//components/signin/public/identity_manager",
+    "//components/variations",
+    "//components/variations:variations_mojom",
     "//google_apis/common",
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
