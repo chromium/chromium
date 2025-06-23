@@ -274,8 +274,6 @@ copy("common_packaging_files") {
     sources += [ "common/chromium-browser.info" ]
   }
 
-  sources += [ "//buildtools/third_party/eu-strip/bin/eu-strip" ]
-
   outputs = [ "$root_out_dir/installer/common/{{source_file_part}}" ]
 }
 
