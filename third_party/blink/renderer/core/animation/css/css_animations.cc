@@ -1552,7 +1552,8 @@ AnimationTrigger* CSSAnimations::ComputeTrigger(
     const CSSAnimationData* data,
     wtf_size_t animation_index,
     const CSSAnimationUpdate& update,
-    AnimationTrigger* existing_trigger) {
+    AnimationTrigger* existing_trigger,
+    float zoom) {
   const StyleTimeline& style_trigger_timeline =
       data->GetTriggerTimeline(animation_index);
   AnimationTimeline* existing_timeline =
@@ -1579,17 +1580,14 @@ AnimationTrigger* CSSAnimations::ComputeTrigger(
       CSSAnimationData::GetRepeated(data->TriggerExitRangeEndList(),
                                     animation_index);
 
-  // TODO(crbug.com/424448496): Verify the spaces of animation triggers:
-  // internally we should store things in physical space, and only expose CSS
-  // space for consistency with the rest of the code.
   Animation::RangeBoundary* new_range_start =
-      Animation::ToRangeBoundary(new_start_offset, 1.f);
+      Animation::ToRangeBoundary(new_start_offset, zoom);
   Animation::RangeBoundary* new_range_end =
-      Animation::ToRangeBoundary(new_end_offset, 1.f);
+      Animation::ToRangeBoundary(new_end_offset, zoom);
   Animation::RangeBoundary* new_exit_range_start =
-      Animation::ToRangeBoundary(new_exit_start_offset, 1.f);
+      Animation::ToRangeBoundary(new_exit_start_offset, zoom);
   Animation::RangeBoundary* new_exit_range_end =
-      Animation::ToRangeBoundary(new_exit_end_offset, 1.f);
+      Animation::ToRangeBoundary(new_exit_end_offset, zoom);
 
   bool need_new_trigger = !existing_trigger ||
                           existing_timeline != new_timeline ||
@@ -1921,8 +1919,9 @@ void CSSAnimations::CalculateAnimationUpdate(
         AnimationTrigger* existing_trigger = animation->GetTrigger();
         AnimationTrigger* trigger = nullptr;
         if (RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
-          trigger = ComputeTrigger(&animating_element, animation_data, i,
-                                   update, existing_trigger);
+          trigger =
+              ComputeTrigger(&animating_element, animation_data, i, update,
+                             existing_trigger, style_builder.EffectiveZoom());
         }
         if (keyframes_rule != existing_animation->style_rule ||
             keyframes_rule->Version() !=
@@ -1957,7 +1956,8 @@ void CSSAnimations::CalculateAnimationUpdate(
         AnimationTrigger* trigger =
             RuntimeEnabledFeatures::AnimationTriggerEnabled()
                 ? ComputeTrigger(&animating_element, animation_data, i, update,
-                                 /* existing_trigger */ nullptr)
+                                 /* existing_trigger */ nullptr,
+                                 style_builder.EffectiveZoom())
                 : nullptr;
         CSSAnimationProxy animation_proxy(timeline, trigger,
                                           /* animation */ nullptr, is_paused,

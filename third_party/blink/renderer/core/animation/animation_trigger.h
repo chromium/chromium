@@ -137,6 +137,7 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
 
   Member<AnimationTimeline> timeline_;
   Type type_;
+  // The range boundaries at which the trigger takes action, in CSS pixels.
   Member<const RangeBoundary> range_start_;
   Member<const RangeBoundary> range_end_;
   Member<const RangeBoundary> exit_range_start_;

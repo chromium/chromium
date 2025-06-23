@@ -1953,4 +1953,52 @@ TEST_P(CSSAnimationsTriggerTest, NonTriggerChange) {
   VerifyTriggerRangeBoundary(animation->rangeStart(), cover1);
 }
 
+TEST_P(CSSAnimationsTriggerTest, DeviceScaleFactor) {
+  using RangeBoundary = AnimationTrigger::RangeBoundary;
+
+  GetFrame().SetLayoutZoomFactor(2.0f);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes stretch {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+      .target {
+        height: 10px;
+        width: 10px;
+        animation: stretch linear 0.5s forwards;
+        animation-trigger: view() once 100px 300px;
+      }
+    </style>
+    <div id="target" class="target"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ElementAnimations* animations = target->GetElementAnimations();
+  CSSAnimation* animation =
+      DynamicTo<CSSAnimation>((*animations->Animations().begin()).key.Get());
+
+  AnimationTrigger* trigger = animation->GetTrigger();
+  const RangeBoundary* range_start = trigger->rangeStart(nullptr);
+  const RangeBoundary* range_end = trigger->rangeEnd(nullptr);
+
+  EXPECT_TRUE(range_start->IsTimelineRangeOffset());
+  EXPECT_TRUE(range_end->IsTimelineRangeOffset());
+
+  TimelineRangeOffset* start_offset = range_start->GetAsTimelineRangeOffset();
+  TimelineRangeOffset* end_offset = range_end->GetAsTimelineRangeOffset();
+
+  CSSPrimitiveValue* value_100px =
+      CSSNumericLiteralValue::Create(100, CSSPrimitiveValue::UnitType::kPixels);
+  CSSNumericValue* offset_100px = CSSNumericValue::FromCSSValue(*value_100px);
+  EXPECT_TRUE(start_offset->offset()->Equals(*offset_100px));
+
+  CSSPrimitiveValue* value_300px =
+      CSSNumericLiteralValue::Create(300, CSSPrimitiveValue::UnitType::kPixels);
+  CSSNumericValue* offset_300px = CSSNumericValue::FromCSSValue(*value_300px);
+  EXPECT_TRUE(end_offset->offset()->Equals(*offset_300px));
+}
+
 }  // namespace blink

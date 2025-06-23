@@ -469,7 +469,8 @@ class CORE_EXPORT CSSAnimations final {
                                           const CSSAnimationData* data,
                                           wtf_size_t animation_index,
                                           const CSSAnimationUpdate& update,
-                                          AnimationTrigger* existing_trigger);
+                                          AnimationTrigger* existing_trigger,
+                                          float zoom);
 
   class AnimationEventDelegate final : public AnimationEffect::EventDelegate {
    public:
