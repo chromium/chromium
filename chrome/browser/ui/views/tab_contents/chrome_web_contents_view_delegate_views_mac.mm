@@ -68,9 +68,9 @@ void ChromeWebContentsViewDelegateViewsMac::ShowContextMenu(
   // manually configured. This is tied to the `kSideBySide` experiment because
   // it is common to right click an inactive `WebContents` in split view.
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    std::optional<tabs::TabInterface*> tab_interface =
+    tabs::TabInterface* tab_interface =
         tabs::TabInterface::MaybeGetFromContents(web_contents_);
-    if (tab_interface.has_value() && !tab_interface.value()->IsActivated()) {
+    if (tab_interface && !tab_interface->IsActivated()) {
       web_contents_->Focus();
     }
   }
