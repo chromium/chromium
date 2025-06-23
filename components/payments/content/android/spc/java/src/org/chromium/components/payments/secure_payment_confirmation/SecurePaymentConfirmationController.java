@@ -305,6 +305,15 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
                 case SPCTransactionMode.AUTOACCEPT:
                     onContinue();
                     break;
+                case SPCTransactionMode.AUTOAUTHANOTHERWAY:
+                    // To best mimic the underlying dialog, in mInformOnly mode we still click on
+                    // the 'Continue' button.
+                    if (mInformOnly) {
+                        onContinue();
+                    } else {
+                        onVerifyAnotherWay();
+                    }
+                    break;
                 case SPCTransactionMode.AUTOOPTOUT:
                     onOptOut();
                     break;

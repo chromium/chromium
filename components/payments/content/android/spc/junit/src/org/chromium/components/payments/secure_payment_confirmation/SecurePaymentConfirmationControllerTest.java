@@ -501,6 +501,32 @@ public class SecurePaymentConfirmationControllerTest {
     }
 
     @Test
+    public void testTransactionMode_autoVerifyAnotherWay() {
+        createController(
+                /* showOptOut= */ false,
+                /* informOnly= */ false,
+                SPCTransactionMode.AUTOAUTHANOTHERWAY);
+        assertTrue(mController.show());
+
+        // The automation should run immediately when show is called, and choose to verify another
+        // way.
+        verify(mResponseCallback).onResult(eq(SpcResponseStatus.ANOTHER_WAY));
+    }
+
+    @Test
+    public void testTransactionMode_autoVerifyAnotherWay_withInformOnly() {
+        createController(
+                /* showOptOut= */ false,
+                /* informOnly= */ true,
+                SPCTransactionMode.AUTOAUTHANOTHERWAY);
+        assertTrue(mController.show());
+
+        // The automation should run immediately when show is called, and choose to verify another
+        // way.
+        verify(mResponseCallback).onResult(eq(SpcResponseStatus.ANOTHER_WAY));
+    }
+
+    @Test
     public void testTransactionMode_autoReject() {
         createController(
                 /* showOptOut= */ false, /* informOnly= */ false, SPCTransactionMode.AUTOREJECT);

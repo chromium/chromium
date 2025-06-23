@@ -15,6 +15,7 @@ namespace payments {
 enum class SPCTransactionMode {
   NONE,
   AUTOACCEPT,
+  AUTOAUTHANOTHERWAY,
   AUTOREJECT,
   AUTOOPTOUT,
 };
