@@ -101,6 +101,15 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
     QuicSessionAliasKey quic_key;
   };
 
+  struct StreamWithProtocol {
+    StreamWithProtocol(std::unique_ptr<HttpStream> stream,
+                       NextProto negotiated_protocol);
+    ~StreamWithProtocol();
+
+    std::unique_ptr<HttpStream> stream;
+    NextProto negotiated_protocol;
+  };
+
   // Calculate an alternative endpoint for the request.
   static std::optional<Alternative> CalculateAlternative(
       HttpStreamPool* pool,
@@ -110,6 +119,11 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
 
   QuicSessionPool* quic_session_pool();
   SpdySessionPool* spdy_session_pool();
+
+  // Returns an HttpStream and its negotiated protocol if there is an
+  // existing session or an idle stream that can serve the request. Otherwise,
+  // returns std::nullopt.
+  std::optional<StreamWithProtocol> MaybeCreateStreamFromExistingSession();
 
   // When there is a QUIC session that can serve an HttpStream for the request,
   // creates an HttpStream and returns it.
