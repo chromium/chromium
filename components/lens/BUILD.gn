@@ -30,6 +30,8 @@ static_library("lens") {
     "lens_overlay_metrics.h",
     "lens_overlay_mime_type.h",
     "lens_overlay_new_tab_source.h",
+    "lens_overlay_request_id_generator.cc",
+    "lens_overlay_request_id_generator.h",
     "lens_overlay_side_panel_menu_option.h",
     "lens_overlay_side_panel_result.h",
     "lens_permission_user_action.h",
@@ -42,6 +44,7 @@ static_library("lens") {
   ]
   deps = [
     "//base:base",
+    "//components/base32",
     "//components/lens:lens_mojo",
     "//components/lens/proto/v1:lens_latencies_metadata_proto",
     "//components/signin/public/identity_manager",
@@ -49,6 +52,7 @@ static_library("lens") {
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/lens_server_proto:lens_overlay_proto",
     "//url",
   ]
   public_deps = [ ":features" ]
@@ -78,14 +82,19 @@ mojom("lens_mojo") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "lens_url_utils_unittest.cc" ]
+  sources = [
+    "lens_overlay_request_id_generator_unittest.cc",
+    "lens_url_utils_unittest.cc",
+  ]
 
   deps = [
     ":lens",
     "//base",
     "//base/test:test_support",
+    "//components/base32",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/lens_server_proto:lens_overlay_proto",
     "//url",
   ]
 }

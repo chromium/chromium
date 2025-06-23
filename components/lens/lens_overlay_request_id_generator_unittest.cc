@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/lens/lens_overlay_request_id_generator.h"
+#include "components/lens/lens_overlay_request_id_generator.h"
 
 #include <memory>
 #include <string>
@@ -48,10 +48,12 @@ TEST_F(
   ASSERT_EQ(first_id->image_sequence_id(), 1);
   ASSERT_EQ(first_id->long_context_id(), 0);
 
+  #if !BUILDFLAG(IS_IOS)
   // Verify that the initial request id is only generated once.
   EXPECT_DEATH(request_id_generator.GetNextRequestId(
                    RequestIdUpdateMode::kInitialRequest),
                "");
+  #endif
 }
 
 TEST_F(LensOverlayRequestIdGeneratorTest,
@@ -69,10 +71,12 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
   ASSERT_EQ(first_id->image_sequence_id(), 1);
   ASSERT_EQ(first_id->long_context_id(), 1);
 
+  #if !BUILDFLAG(IS_IOS)
   // Verify that the initial request id is only generated once.
   EXPECT_DEATH(request_id_generator.GetNextRequestId(
                    RequestIdUpdateMode::kInitialRequest),
                "");
+  #endif
 }
 
 TEST_F(LensOverlayRequestIdGeneratorTest,
