@@ -1070,7 +1070,7 @@ if (is_android) {
     # External code should depend on ":ui_gfx_java" instead.
     visibility = [ ":*" ]
     sources = [ "switches.cc" ]
-    template = "android/java/src/org/chromium/ui/gfx/GfxSwitches.java.tmpl"
+    class_name = "org.chromium.ui.gfx.GfxSwitches"
   }
 
   android_library("ui_gfx_java") {

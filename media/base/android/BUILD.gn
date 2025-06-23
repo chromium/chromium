@@ -142,12 +142,12 @@ if (is_android) {
 
   java_cpp_strings("java_switches") {
     sources = [ "//media/base/media_switches.cc" ]
-    template = "//media/base/android/java_templates/MediaSwitches.java.tmpl"
+    template = "java_templates/MediaSwitches.java.tmpl"
   }
 
   java_cpp_features("java_features") {
     sources = [ "//media/base/media_switches.cc" ]
-    template = "//media/base/android/java_templates/MediaFeatures.java.tmpl"
+    class_name = "org.chromium.media.MediaFeatures"
   }
 
   android_resources("media_java_resources") {

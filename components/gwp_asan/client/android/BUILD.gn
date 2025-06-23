@@ -13,7 +13,7 @@ java_cpp_features("java_features_srcjar") {
   # External code should depend on `:gwp_asan_java` instead.
   visibility = [ ":*" ]
   sources = [ "//components/gwp_asan/client/gwp_asan_features.cc" ]
-  template = "org/chromium/components/gwp_asan/GwpAsanFeatures.java.tmpl"
+  class_name = "org.chromium.components.gwp_asan.GwpAsanFeatures"
 }
 
 android_library("gwp_asan_java") {

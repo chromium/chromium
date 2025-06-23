@@ -65,7 +65,7 @@ android_library("java") {
 java_cpp_features("signin_java_features_srcjar") {
   visibility = [ ":*" ]
   sources = [ "//components/signin/public/base/signin_switches.cc" ]
-  template = "java/src/org/chromium/components/signin/SigninFeatures.java.tmpl"
+  class_name = "org.chromium.components.signin.SigninFeatures"
 }
 
 generate_jni("jni_headers") {
@@ -93,7 +93,7 @@ java_cpp_template("account_capabilities_constants_javagen") {
 
 java_cpp_strings("java_constants") {
   sources = [ "//components/signin/public/identity_manager/signin_constants.h" ]
-  template = "java_templates/SigninConstants.java.tmpl"
+  class_name = "org.chromium.components.signin.SigninConstants"
 }
 
 java_cpp_enum("java_enums") {

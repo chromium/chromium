@@ -141,7 +141,7 @@ public any sort of class MyClass {{
 {NATIVE_STRINGS}
 
 }}
-""".split('\n')
+"""
     package, class_name = java_cpp_utils.ParseTemplateFile(test_data)
     self.assertEqual('my.java.package', package)
     self.assertEqual('MyClass', class_name)

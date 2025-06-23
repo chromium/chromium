@@ -17,7 +17,7 @@ java_cpp_strings("java_switches_srcjar") {
   # External code should depend on ":policy_java" instead.
   visibility = [ ":*" ]
   sources = [ "//components/policy/core/common/policy_switches.cc" ]
-  template = "java_templates/PolicySwitches.java.tmpl"
+  class_name = "org.chromium.components.policy.PolicySwitches"
 }
 
 android_library("policy_java") {

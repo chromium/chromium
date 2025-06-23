@@ -175,7 +175,7 @@ if (is_android) {
     # External code should depend on ":variations_java" instead.
     visibility = [ ":*" ]
     sources = [ "variations_switches.cc" ]
-    template = "//components/variations/android/java_templates/VariationsSwitches.java.tmpl"
+    class_name = "org.chromium.components.variations.VariationsSwitches"
   }
 
   android_library("variations_java") {

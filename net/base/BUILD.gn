@@ -9,7 +9,7 @@ if (is_android) {
     # External code should depend on ":features_java" instead.
     visibility = [ ":*" ]
     sources = [ "features.cc" ]
-    template = "android/java_templates/NetFeatures.java.tmpl"
+    class_name = "org.chromium.net.NetFeatures"
   }
 
   android_library("features_java") {

@@ -95,7 +95,8 @@ if (is_android) {
   java_cpp_features("java_features_srcjar") {
     visibility = [ ":*" ]
     sources = [ "//components/sensitive_content/features.cc" ]
-    template = "//components/sensitive_content/java_templates/SensitiveContentFeatures.java.tmpl"
+    class_name =
+        "org.chromium.components.sensitive_content.SensitiveContentFeatures"
   }
 
   # Used to expose the features to the WebView flag UI (the equivalent of

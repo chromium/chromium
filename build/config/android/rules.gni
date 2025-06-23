@@ -240,7 +240,8 @@ if (!is_robolectric && enable_java_templates) {
   #     sources = [
   #       "src/foo_switches.cc",
   #     ]
-  #     template = "src/templates/FooSwitches.java.tmpl
+  #     class_name = "org.chromium.chrome.FooStrings"
+  #     # Or a custom template via: template = "FooSwitches.java.tmpl"
   #   }
   #
   # foo_switches.cc:
@@ -278,20 +279,26 @@ if (!is_robolectric && enable_java_templates) {
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false
       script = "//build/android/gyp/java_cpp_strings.py"
-
-      _srcjar_path = "${target_gen_dir}/${target_name}.srcjar"
-      _rebased_srcjar_path = rebase_path(_srcjar_path, root_build_dir)
-      _rebased_sources = rebase_path(invoker.sources, root_build_dir)
-      _rebased_template = rebase_path(invoker.template, root_build_dir)
+      outputs = [ "${target_gen_dir}/${target_name}.srcjar" ]
 
       args = [
-        "--srcjar=$_rebased_srcjar_path",
-        "--template=$_rebased_template",
+        "--srcjar",
+        rebase_path(outputs[0], root_build_dir),
       ]
-      args += _rebased_sources
-      sources += [ invoker.template ]
-
-      outputs = [ _srcjar_path ]
+      if (defined(invoker.template)) {
+        assert(!defined(invoker.class_name))
+        sources += [ invoker.template ]
+        args += [
+          "--template",
+          rebase_path(invoker.template, root_build_dir),
+        ]
+      } else {
+        args += [
+          "--class-name",
+          invoker.class_name,
+        ]
+      }
+      args += rebase_path(invoker.sources, root_build_dir)
     }
   }
 
@@ -312,7 +319,8 @@ if (!is_robolectric && enable_java_templates) {
   #     sources = [
   #       "src/foo_features.cc",
   #     ]
-  #     template = "src/templates/FooFeatures.java.tmpl
+  #     class_name = "org.chromium.chrome.FooFeatures"
+  #     # Or a custom template via: template = "FooSwitches.java.tmpl"
   #   }
   #
   # foo_features.cc:
@@ -351,20 +359,26 @@ if (!is_robolectric && enable_java_templates) {
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false
       script = "//build/android/gyp/java_cpp_features.py"
-
-      _srcjar_path = "${target_gen_dir}/${target_name}.srcjar"
-      _rebased_srcjar_path = rebase_path(_srcjar_path, root_build_dir)
-      _rebased_sources = rebase_path(invoker.sources, root_build_dir)
-      _rebased_template = rebase_path(invoker.template, root_build_dir)
+      outputs = [ "${target_gen_dir}/${target_name}.srcjar" ]
 
       args = [
-        "--srcjar=$_rebased_srcjar_path",
-        "--template=$_rebased_template",
+        "--srcjar",
+        rebase_path(outputs[0], root_build_dir),
       ]
-      args += _rebased_sources
-      sources += [ invoker.template ]
-
-      outputs = [ _srcjar_path ]
+      if (defined(invoker.template)) {
+        assert(!defined(invoker.class_name))
+        sources += [ invoker.template ]
+        args += [
+          "--template",
+          rebase_path(invoker.template, root_build_dir),
+        ]
+      } else {
+        args += [
+          "--class-name",
+          invoker.class_name,
+        ]
+      }
+      args += rebase_path(invoker.sources, root_build_dir)
     }
   }
 

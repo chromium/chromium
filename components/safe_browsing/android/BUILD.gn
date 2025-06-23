@@ -33,7 +33,7 @@ android_library("safe_browsing_java") {
 java_cpp_features("sb_java_features_srcjar") {
   visibility = [ ":*" ]
   sources = [ "//components/safe_browsing/core/common/features.cc" ]
-  template = "java/src/org/chromium/components/safe_browsing/SafeBrowsingFeatures.java.tmpl"
+  class_name = "org.chromium.components.safe_browsing.SafeBrowsingFeatures"
 }
 
 fuzzable_proto_library("realtimeallowlist_proto") {
@@ -223,5 +223,5 @@ java_cpp_enum("java_enums") {
 java_cpp_strings("switches_srcjar") {
   sources =
       [ "//components/safe_browsing/core/common/safebrowsing_switches.cc" ]
-  template = "java_templates/SafeBrowsingSwitches.java.tmpl"
+  class_name = "org.chromium.chrome.browser.safe_browsing.SafeBrowsingSwitches"
 }

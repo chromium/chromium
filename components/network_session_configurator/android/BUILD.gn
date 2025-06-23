@@ -11,7 +11,7 @@ java_cpp_strings("java_switches_srcjar") {
   visibility = [ ":*" ]
   sources =
       [ "//components/network_session_configurator/common/network_switches.cc" ]
-  template = "NetworkSessionSwitches.java.tmpl"
+  class_name = "org.chromium.components.network_session_configurator.NetworkSessionSwitches"
 }
 
 # If there's already an android_library target, you can add

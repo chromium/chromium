@@ -121,7 +121,7 @@ java_cpp_features("java_features_srcjar") {
   # External code should depend on ":android_java" instead.
   visibility = [ ":*" ]
   sources = [ "//ui/android/ui_android_features.cc" ]
-  template = "//ui/android/java_templates/UiAndroidFeatures.java.tmpl"
+  class_name = "org.chromium.ui.base.UiAndroidFeatures"
 }
 
 # A minimal library used to expose ui features to webview

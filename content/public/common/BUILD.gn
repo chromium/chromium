@@ -454,7 +454,7 @@ if (is_android) {
     # External code should depend on ":common_java" instead.
     visibility = [ ":*" ]
     sources = [ "//content/public/common/content_features.cc" ]
-    template = "//content/public/common/android/java_templates/ContentFeatures.java.tmpl"
+    class_name = "org.chromium.content_public.common.ContentFeatures"
   }
 
   android_library("common_java") {

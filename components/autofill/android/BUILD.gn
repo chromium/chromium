@@ -214,14 +214,13 @@ java_cpp_features("java_features_srcjar") {
     "//components/autofill/core/common/autofill_features.cc",
     "//components/autofill/core/common/autofill_payments_features.cc",
   ]
-  template =
-      "//components/autofill/android/java_templates/AutofillFeatures.java.tmpl"
+  class_name = "org.chromium.components.autofill.AutofillFeatures"
 }
 
 java_cpp_strings("java_switches_srcjar") {
   visibility = [ ":*" ]
   sources = [ "//components/autofill/core/common/autofill_switches.cc" ]
-  template = "java_templates/AutofillSwitches.java.tmpl"
+  class_name = "org.chromium.components.autofill.AutofillSwitches"
 }
 
 # We intentionally do not include :autofill_payments_java_resources not to

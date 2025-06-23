@@ -41,7 +41,7 @@ if (is_android) {
   java_cpp_features("java_features_srcjar") {
     visibility = [ ":*" ]
     sources = [ "//components/omnibox/common/omnibox_features.cc" ]
-    template = "//components/omnibox/common/java_templates/OmniboxFeatureList.java.tmpl"
+    class_name = "org.chromium.components.omnibox.OmniboxFeatureList"
   }
 
   android_library("features_java") {

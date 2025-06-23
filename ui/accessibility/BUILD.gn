@@ -508,7 +508,7 @@ if (is_android) {
     # External code should depend on ":accessibility_features_java" instead.
     visibility = [ ":*" ]
     sources = [ "//ui/accessibility/accessibility_features.cc" ]
-    template = "//ui/accessibility/android/java_templates/AccessibilityFeatures.java.tmpl"
+    class_name = "org.chromium.ui.accessibility.AccessibilityFeatures"
   }
 
   # A minimal library used to expose accessibility features to webview.

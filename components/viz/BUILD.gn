@@ -95,7 +95,7 @@ if (is_android) {
     # External code should depend on ":viz_java" instead.
     visibility = [ ":*" ]
     sources = [ "common/features.cc" ]
-    template = "common/java/src/org/chromium/components/viz/common/VizFeatures.java.tmpl"
+    class_name = "org.chromium.components.viz.common.VizFeatures"
   }
 
   android_library("viz_java") {

@@ -75,7 +75,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//components/translate/core/browser/translate_pref_names.h",
   ]
 
-  template = "android/java_templates/Pref.java.tmpl"
+  class_name = "org.chromium.chrome.browser.preferences.Pref"
 }
 
 generate_jni("jni_headers") {

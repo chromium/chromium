@@ -50,16 +50,14 @@ if (!is_cronet_build && is_android) {
     # External code should depend on ":foo_java" instead.
     visibility = [ ":*" ]
     sources = [ "//components/metrics/metrics_features.cc" ]
-    template =
-        "//components/metrics/android/java_templates/MetricsFeatures.java.tmpl"
+    class_name = "org.chromium.components.metrics.MetricsFeatures"
   }
 
   java_cpp_strings("java_switches_srcjar") {
     # External code should depend on ":metrics_java" instead.
     visibility = [ ":*" ]
     sources = [ "//components/metrics/metrics_switches.cc" ]
-    template =
-        "//components/metrics/android/java_templates/MetricsSwitches.java.tmpl"
+    class_name = "org.chromium.components.metrics.MetricsSwitches"
   }
 
   java_cpp_enum("java_enum_srcjar") {

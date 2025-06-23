@@ -732,16 +732,14 @@ if (_is_default_toolchain) {
     # External code should depend on "common_java" instead.
     visibility = [ ":*" ]
     sources = [ "common/aw_switches.cc" ]
-    template =
-        "java/src/org/chromium/android_webview/common/AwSwitches.java.tmpl"
+    class_name = "org.chromium.android_webview.common.AwSwitches"
   }
 
   java_cpp_features("common_java_features_srcjar") {
     # External code should depend on "common_java" instead.
     visibility = [ ":*" ]
     sources = [ "common/aw_features.cc" ]
-    template =
-        "java/src/org/chromium/android_webview/common/AwFeatures.java.tmpl"
+    class_name = "org.chromium.android_webview.common.AwFeatures"
   }
 
   android_library("common_java") {
