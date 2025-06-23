@@ -135,7 +135,9 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
     // This is needed to avoid anti-aliasing artifacts around the border itself.
     UIView* plusXContainerView =
         [self createCircularContainerWithSize:containerSize];
-    plusXContainerView.layer.cornerRadius = containerSize / 2.0;
+    [UIView performWithoutAnimation:^{
+      plusXContainerView.layer.cornerRadius = containerSize / 2.0;
+    }];
     [plusXContainerView addSubview:plusXLabel];
 
     [_facesStackView addArrangedSubview:plusXContainerView];
@@ -174,7 +176,7 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
         [isDarkMode ? [UIColor colorNamed:kSolidWhiteColor]
                     : [UIColor colorNamed:kSolidBlackColor]
             colorWithAlphaComponent:kPlusXlabelContainerBackgroundAlpha];
-    _plusXLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+    _plusXLabel.textColor = [UIColor colorNamed:kSolidWhiteColor];
     return;
   }
   if (isDarkMode) {
@@ -231,12 +233,19 @@ const CGFloat kPlusXlabelContainerBackgroundAlpha = 0.2;
   plusXLabel.textAlignment = NSTextAlignmentCenter;
   plusXLabel.font = [UIFont systemFontOfSize:kPlusXlabelFontSize
                                       weight:UIFontWeightMedium];
+  [plusXLabel setContentHuggingPriority:UILayoutPriorityRequired
+                                forAxis:UILayoutConstraintAxisHorizontal];
+  [plusXLabel
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
 
   // Configure a container in order to add an inner horizontal margin around the
   // label.
   UIView* plusXLabelContainer = [[UIView alloc] init];
   plusXLabelContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  plusXLabelContainer.layer.cornerRadius = _avatarSize / 2.0;
+  [UIView performWithoutAnimation:^{
+    plusXLabelContainer.layer.cornerRadius = _avatarSize / 2.0;
+  }];
   plusXLabelContainer.layer.masksToBounds = YES;
   [plusXLabelContainer addSubview:plusXLabel];
 
