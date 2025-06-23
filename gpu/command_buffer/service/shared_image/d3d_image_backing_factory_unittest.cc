@@ -828,12 +828,20 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
   }
 
   // Find a Dawn D3D12 adapter
+#ifdef WGPU_BREAKING_CHANGE_INSTANCE_FEATURES_LIMITS
+  static constexpr auto kTimedWaitAny = wgpu::InstanceFeatureName::TimedWaitAny;
+  wgpu::InstanceDescriptor instance_desc = {
+      .requiredFeatureCount = 1,
+      .requiredFeatures = &kTimedWaitAny,
+  };
+#else
   wgpu::InstanceDescriptor instance_desc = {
       .capabilities =
           {
               .timedWaitAnyEnable = true,
           },
   };
+#endif
   dawn::native::Instance instance(&instance_desc);
   wgpu::RequestAdapterOptions adapter_options;
   adapter_options.backendType = wgpu::BackendType::D3D12;
@@ -2311,12 +2319,20 @@ class D3DImageBackingFactoryBufferTest : public D3DImageBackingFactoryTestBase {
 // Verifies that creating a shared image backed by a D3D12 buffer works and can
 // be imported into Dawn.
 TEST_F(D3DImageBackingFactoryBufferTest, CreateSharedImageImportToDawn) {
+#ifdef WGPU_BREAKING_CHANGE_INSTANCE_FEATURES_LIMITS
+  static constexpr auto kTimedWaitAny = wgpu::InstanceFeatureName::TimedWaitAny;
+  wgpu::InstanceDescriptor instance_desc = {
+      .requiredFeatureCount = 1,
+      .requiredFeatures = &kTimedWaitAny,
+  };
+#else
   wgpu::InstanceDescriptor instance_desc = {
       .capabilities =
           {
               .timedWaitAnyEnable = true,
           },
   };
+#endif
   dawn::native::Instance instance(&instance_desc);
   wgpu::RequestAdapterOptions adapter_options;
   adapter_options.backendType = wgpu::BackendType::D3D12;
