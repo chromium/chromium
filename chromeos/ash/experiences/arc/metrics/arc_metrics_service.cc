@@ -564,6 +564,7 @@ void ArcMetricsService::ReportBootProgress(
   if (metrics_anr_) {
     metrics_anr_->set_uma_suffix(BootTypeToString(boot_type));
   }
+  ReportUnreportedGmsAppKill();
 
   if (IsArcVmEnabled()) {
     // For VM builds, do not call into session_manager since we don't use it
@@ -624,12 +625,29 @@ void ArcMetricsService::ReportAppKill(mojom::AppKillPtr app_kill) {
       break;
     case mojom::AppKillType::GMS_UPDATE_KILL:
     case mojom::AppKillType::GMS_START_KILL:
-      for (uint32_t i = 0; i < app_kill->count; i++) {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Arc.App.GmsCoreKill" + BootTypeToString(boot_type_),
-            app_kill->type);
+      if (boot_type_ == mojom::BootType::UNKNOWN) {
+        gms_app_kills_to_report_.push_back({app_kill->type, app_kill->count});
+        break;
       }
+      ReportGmsAppKill(app_kill->type, app_kill->count);
       break;
+  }
+}
+
+void ArcMetricsService::ReportUnreportedGmsAppKill() {
+  for (auto gms_app_kill : gms_app_kills_to_report_) {
+    ReportGmsAppKill(gms_app_kill.first, gms_app_kill.second);
+  }
+  gms_app_kills_to_report_.clear();
+}
+
+void ArcMetricsService::ReportGmsAppKill(mojom::AppKillType gms_app_kill,
+                                         int count) {
+  DCHECK_NE(mojom::BootType::UNKNOWN, boot_type_);
+  const auto histogram_name =
+      "Arc.App.GmsCoreKill" + BootTypeToString(boot_type_);
+  for (int i = 0; i < count; i++) {
+    UMA_HISTOGRAM_ENUMERATION(histogram_name, gms_app_kill);
   }
 }
 

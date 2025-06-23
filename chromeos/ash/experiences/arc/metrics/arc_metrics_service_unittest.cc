@@ -510,6 +510,53 @@ TEST_F(ArcMetricsServiceTest,
       1);
 }
 
+TEST_F(ArcMetricsServiceTest, ReportGmsAppKill_ValidBootType) {
+  constexpr uint64_t kArcStartTimeMs = 10;
+  SetArcStartTimeInMs(kArcStartTimeMs);
+  std::vector<mojom::BootProgressEventPtr> events(
+      GetBootProgressEvents(kArcStartTimeMs, 1 /* step_in_ms */));
+  service()->ReportBootProgress(std::move(events), mojom::BootType::FIRST_BOOT);
+  base::HistogramTester tester;
+  int expected_count = 1;
+  mojom::AppKillType expected_type = mojom::AppKillType::GMS_UPDATE_KILL;
+
+  service()->ReportAppKill(mojom::AppKill::New(expected_type, expected_count));
+
+  tester.ExpectUniqueSample("Arc.App.GmsCoreKill.FirstBoot",
+                            static_cast<int>(expected_type), expected_count);
+}
+
+TEST_F(ArcMetricsServiceTest, ReportGmsAppKill_NoBootType) {
+  base::HistogramTester tester;
+  base::HistogramTester::CountsMap empty_counts;
+
+  service()->ReportAppKill(
+      mojom::AppKill::New(mojom::AppKillType::GMS_UPDATE_KILL, 1));
+
+  EXPECT_THAT(tester.GetTotalCountsForPrefix("Arc.App.GmsCoreKill."),
+              testing::ContainerEq(empty_counts));
+}
+
+TEST_F(ArcMetricsServiceTest, ReportGmsAppKill_ReportSavedMetrics) {
+  base::HistogramTester tester;
+  // Boot type is empty so this metric will be saved to be reported later.
+  int expected_count = 1;
+  mojom::AppKillType expected_type = mojom::AppKillType::GMS_UPDATE_KILL;
+  service()->ReportAppKill(mojom::AppKill::New(expected_type, expected_count));
+  constexpr uint64_t kArcStartTimeMs = 10;
+  SetArcStartTimeInMs(kArcStartTimeMs);
+  std::vector<mojom::BootProgressEventPtr> events(
+      GetBootProgressEvents(kArcStartTimeMs, 1 /* step_in_ms */));
+
+  // Update boot type and call ReportBootProgress multiple times.
+  service()->ReportBootProgress(std::move(events), mojom::BootType::FIRST_BOOT);
+  service()->ReportBootProgress(std::move(events), mojom::BootType::FIRST_BOOT);
+
+  // Ensure only one metric was reported.
+  tester.ExpectUniqueSample("Arc.App.GmsCoreKill.FirstBoot",
+                            static_cast<int>(expected_type), expected_count);
+}
+
 class ArcVmArcMetricsServiceTest
     : public ArcMetricsServiceTest,
       public testing::WithParamInterface<

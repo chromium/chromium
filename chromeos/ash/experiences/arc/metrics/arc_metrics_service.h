@@ -338,6 +338,9 @@ class ArcMetricsService : public KeyedService,
   // Records load average with the appropriate histogram name if ready.
   void MaybeRecordLoadAveragePerProcessor();
 
+  void ReportGmsAppKill(mojom::AppKillType gms_app_kill, int count);
+  void ReportUnreportedGmsAppKill();
+
   THREAD_CHECKER(thread_checker_);
 
   const raw_ptr<ArcBridgeService>
@@ -391,6 +394,8 @@ class ArcMetricsService : public KeyedService,
   std::map<size_t, int> load_averages_after_arc_start_;
 
   mojom::BootType boot_type_ = mojom::BootType::UNKNOWN;
+
+  std::vector<std::pair<mojom::AppKillType, int>> gms_app_kills_to_report_;
 
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.
