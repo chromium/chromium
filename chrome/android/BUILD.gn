@@ -492,6 +492,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/sync/android:ui_java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tab_group_suggestion:java",
+      "//chrome/browser/tab_group_suggestion:toolbar_java",
       "//chrome/browser/tab_group_sync:factory_java",
       "//chrome/browser/tab_group_sync:features_java",
       "//chrome/browser/tab_group_sync:java",
