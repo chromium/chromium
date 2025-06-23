@@ -12,15 +12,12 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
 
-@protocol ApplicationCommands;
-@protocol BrowserCoordinatorCommands;
 @protocol FakeboxFocuser;
 @protocol HelpCommands;
-@protocol HomeCustomizationDelegate;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageHeaderCommands;
+@protocol NewTabPageShortcutsHandler;
 @class NewTabPageMetricsRecorder;
-@protocol LensCommands;
 @class LayoutGuideCenter;
 @class PrimaryToolbarViewController;
 @class TabGroupIndicatorView;
@@ -44,10 +41,6 @@
 
 // Handlers for dispatched commands.
 @property(nonatomic, weak) id<FakeboxFocuser> fakeboxFocuserHandler;
-@property(nonatomic, weak) id<LensCommands> lensHandler;
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
-@property(nonatomic, weak) id<BrowserCoordinatorCommands>
-    browserCoordinatorHandler;
 @property(nonatomic, weak) id<HelpCommands> helpHandler;
 
 @property(nonatomic, weak) id<NewTabPageHeaderViewControllerDelegate> delegate;
@@ -84,8 +77,8 @@
 // font scale, for example, during a fakebox defocus animation.
 @property(nonatomic, assign) BOOL allowFontScaleAnimation;
 
-// The delegate for the Home Customization menu.
-@property(nonatomic, weak) id<HomeCustomizationDelegate> customizationDelegate;
+// Handles the actions for the NTP shortcuts, like Lens or voice search.
+@property(nonatomic, weak) id<NewTabPageShortcutsHandler> NTPShortcutsHandler;
 
 // Animation to expand this header in response to focusing the omnibox to match
 // the fake omnibox with the omnibox's.

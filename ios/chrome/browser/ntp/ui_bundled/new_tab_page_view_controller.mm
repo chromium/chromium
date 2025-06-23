@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -215,6 +216,7 @@ CGFloat SpaceBetweenModules() {
 
   _quickActionsViewController =
       [[NewTabPageQuickActionsViewController alloc] init];
+  _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
 
   // TODO(crbug.com/40799579): Remove this when bug is fixed.
   [self.feedWrapperViewController loadViewIfNeeded];
@@ -1066,6 +1068,12 @@ CGFloat SpaceBetweenModules() {
 }
 
 #pragma mark - Private
+
+- (void)setNTPShortcutsHandler:
+    (id<NewTabPageShortcutsHandler>)NTPShortcutsHandler {
+  _NTPShortcutsHandler = NTPShortcutsHandler;
+  _quickActionsViewController.NTPShortcutsHandler = NTPShortcutsHandler;
+}
 
 // Whether the quick actions button row is visible.
 - (BOOL)quickActionsVisible {

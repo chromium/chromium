@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
@@ -85,6 +86,8 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mediator.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service_factory.h"
@@ -104,6 +107,7 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -111,6 +115,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
@@ -159,7 +164,8 @@
                                      OverscrollActionsControllerDelegate,
                                      ProfileStateObserver,
                                      SceneStateObserver,
-                                     FamilyLinkUserCapabilitiesObserving> {
+                                     FamilyLinkUserCapabilitiesObserving,
+                                     NewTabPageShortcutsHandler> {
   // Observes changes in the IdentityManager.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
@@ -719,17 +725,12 @@
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   headerViewController.fakeboxFocuserHandler =
       HandlerForProtocol(dispatcher, FakeboxFocuser);
-  headerViewController.lensHandler =
-      HandlerForProtocol(dispatcher, LensCommands);
-  headerViewController.applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
-  headerViewController.browserCoordinatorHandler =
-      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
   headerViewController.helpHandler =
       HandlerForProtocol(dispatcher, HelpCommands);
 
+  headerViewController.NTPShortcutsHandler = self;
+
   headerViewController.commandHandler = self;
-  headerViewController.customizationDelegate = self;
   headerViewController.delegate = self.NTPViewController;
   headerViewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
@@ -784,7 +785,7 @@
       self.contentSuggestionsCoordinator.magicStackCollectionView;
   self.NTPViewController.contentSuggestionsViewController =
       self.contentSuggestionsCoordinator.viewController;
-
+  self.NTPViewController.NTPShortcutsHandler = self;
   self.NTPViewController.feedVisible = [self isFeedVisible];
 
   self.feedWrapperViewController = [self.componentFactory
@@ -1917,6 +1918,58 @@
   }
   [_customizationCoordinator stop];
   _customizationCoordinator = nil;
+}
+
+#pragma mark - NewTabPageShortcutsHandler
+
+- (void)openLensViewFinder {
+  [self.NTPMetricsRecorder recordLensTapped];
+  TriggerHapticFeedbackForSelectionChange();
+  OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
+      alloc]
+          initWithEntryPoint:LensEntrypoint::NewTabPage
+           presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
+      presentationCompletion:nil];
+  [self dismissCustomizationMenu];
+  id<LensCommands> lensHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
+  [lensHandler openLensInputSelection:command];
+}
+
+- (void)openMIA {
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:GetURLForMIA()];
+  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationHandler openURLInNewTab:command];
+}
+
+- (void)preloadVoiceSearch {
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [browserCoordinatorHandler preloadVoiceSearch];
+}
+
+- (void)loadVoiceSearchFromView:(UIView*)voiceSearchSourceView {
+  [self.NTPMetricsRecorder recordVoiceSearchTapped];
+  [self dismissCustomizationMenu];
+
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  [layoutGuideCenter referenceView:voiceSearchSourceView
+                         underName:kVoiceSearchButtonGuide];
+
+  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationHandler startVoiceSearch];
+}
+
+- (void)openIncognitoSearch {
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithIncognito:YES];
+  command.shouldFocusOmnibox = YES;
+  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationHandler openURLInNewTab:command];
 }
 
 @end

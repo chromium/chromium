@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -46,6 +47,19 @@ const CGFloat kSymbolPointSize = 18.0;
   [_buttonStackView addArrangedSubview:_incognitoButton];
   [_buttonStackView addArrangedSubview:_voiceSearchButton];
   [_buttonStackView addArrangedSubview:_lensButton];
+
+  [_lensButton addTarget:self
+                  action:@selector(openLensViewFinder)
+        forControlEvents:UIControlEventTouchUpInside];
+  [_voiceSearchButton addTarget:self
+                         action:@selector(loadVoiceSearch)
+               forControlEvents:UIControlEventTouchUpInside];
+  [_voiceSearchButton addTarget:self
+                         action:@selector(preloadVoiceSearch:)
+               forControlEvents:UIControlEventTouchDown];
+  [_incognitoButton addTarget:self
+                       action:@selector(openIncognitoSearch)
+             forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (CGSize)preferredContentSize {
@@ -77,6 +91,27 @@ const CGFloat kSymbolPointSize = 18.0;
   [button setImage:MakeSymbolMonochrome(icon) forState:UIControlStateNormal];
 
   return button;
+}
+
+#pragma mark - Button actions
+
+- (void)openLensViewFinder {
+  [self.NTPShortcutsHandler openLensViewFinder];
+}
+
+- (void)loadVoiceSearch {
+  [self.NTPShortcutsHandler loadVoiceSearchFromView:_voiceSearchButton];
+}
+
+- (void)preloadVoiceSearch:(id)sender {
+  [sender removeTarget:self
+                action:@selector(preloadVoiceSearch:)
+      forControlEvents:UIControlEventTouchDown];
+  [self.NTPShortcutsHandler preloadVoiceSearch];
+}
+
+- (void)openIncognitoSearch {
+  [self.NTPShortcutsHandler openIncognitoSearch];
 }
 
 @end

@@ -18,6 +18,7 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 @protocol HelpCommands;
 @class MagicStackCollectionViewController;
 @protocol NewTabPageContentDelegate;
+@protocol NewTabPageShortcutsHandler;
 @class NewTabPageHeaderViewController;
 @protocol NewTabPageMutator;
 @protocol OverscrollActionsControllerDelegate;
@@ -87,6 +88,9 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 
 // Layout guide for NTP modules.
 @property(nonatomic, readonly) UILayoutGuide* moduleLayoutGuide;
+
+// Handles the actions for the NTP shortcuts, like Lens or voice search.
+@property(nonatomic, weak) id<NewTabPageShortcutsHandler> NTPShortcutsHandler;
 
 // `YES` if the NTP is currently visible.
 @property(nonatomic, assign) BOOL NTPVisible;
