@@ -5,19 +5,27 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SERVICE_WORKER_REGISTRATION_INFORMATION_H_
 #define CONTENT_PUBLIC_BROWSER_SERVICE_WORKER_REGISTRATION_INFORMATION_H_
 
+#include <vector>
+
 #include "content/common/content_export.h"
 #include "url/gurl.h"
 
 namespace content {
 
 struct CONTENT_EXPORT ServiceWorkerRegistrationInformation {
-  ServiceWorkerRegistrationInformation() noexcept;
+  ServiceWorkerRegistrationInformation();
   ServiceWorkerRegistrationInformation(
-      const ServiceWorkerRegistrationInformation& other) noexcept;
+      ServiceWorkerRegistrationInformation&&) noexcept;
+  ServiceWorkerRegistrationInformation& operator=(
+      ServiceWorkerRegistrationInformation&&) noexcept;
+  ServiceWorkerRegistrationInformation(
+      const ServiceWorkerRegistrationInformation&) = delete;
+  ServiceWorkerRegistrationInformation& operator=(
+      const ServiceWorkerRegistrationInformation&) = delete;
   ~ServiceWorkerRegistrationInformation();
 
-  // URLs of scripts imported by the service worker via the importScripts function and import
-  // keyword.
+  // URLs of scripts imported by the service worker via the importScripts
+  // function and import keyword.
   std::vector<GURL> resources;
 };
 

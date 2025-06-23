@@ -6,10 +6,16 @@
 
 namespace content {
 
-ServiceWorkerRegistrationInformation::
-    ServiceWorkerRegistrationInformation() noexcept = default;
+ServiceWorkerRegistrationInformation::ServiceWorkerRegistrationInformation() =
+    default;
+
 ServiceWorkerRegistrationInformation::ServiceWorkerRegistrationInformation(
-    const ServiceWorkerRegistrationInformation& other) noexcept = default;
+    ServiceWorkerRegistrationInformation&&) noexcept = default;
+
+ServiceWorkerRegistrationInformation&
+ServiceWorkerRegistrationInformation::operator=(
+    ServiceWorkerRegistrationInformation&&) noexcept = default;
+
 ServiceWorkerRegistrationInformation::~ServiceWorkerRegistrationInformation() =
     default;
 

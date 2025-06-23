@@ -19,6 +19,7 @@
 #include "components/safe_browsing/content/browser/notification_content_detection/mock_safe_browsing_database_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "content/public/browser/service_worker_registration_information.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"

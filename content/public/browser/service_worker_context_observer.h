@@ -9,12 +9,12 @@
 
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_client_info.h"
-#include "content/public/browser/service_worker_registration_information.h"
 #include "url/gurl.h"
 
 namespace content {
 class ServiceWorkerContext;
 struct ConsoleMessage;
+struct ServiceWorkerRegistrationInformation;
 struct ServiceWorkerRunningInfo;
 
 class ServiceWorkerContextObserver {

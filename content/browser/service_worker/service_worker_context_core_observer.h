@@ -15,7 +15,6 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context_observer.h"
-#include "content/public/browser/service_worker_registration_information.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
@@ -29,6 +28,7 @@ class StorageKey;
 namespace content {
 
 struct ConsoleMessage;
+struct ServiceWorkerRegistrationInformation;
 
 class ServiceWorkerContextCoreObserver {
  public:

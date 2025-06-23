@@ -1110,28 +1110,29 @@ void ServiceWorkerContextCore::NotifyRegistrationStored(
     uint64_t stored_resources_total_size_bytes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  scoped_refptr<ServiceWorkerRegistration> registration =
-      GetLiveRegistration(registration_id);
   ServiceWorkerRegistrationInformation service_worker_info;
 
-  if (registration) {
+  if (scoped_refptr<ServiceWorkerRegistration> registration =
+          GetLiveRegistration(registration_id);
+      registration) {
     registration->SetStored();
     registration->set_resources_total_size_bytes(
         stored_resources_total_size_bytes);
 
-    ServiceWorkerVersion* version = registration->GetNewestVersion();
-    content::ServiceWorkerRegistry::ResourceList resources;
-    if (version) {
+    ServiceWorkerRegistry::ResourceList resources;
+    if (ServiceWorkerVersion* version = registration->GetNewestVersion();
+        version) {
       resources = version->script_cache_map()->GetResources();
-    }
-    for (const auto& resource : resources) {
-      service_worker_info.resources.push_back(resource->url);
+      service_worker_info.resources.reserve(resources.size());
+      for (const auto& resource : resources) {
+        service_worker_info.resources.push_back(resource->url);
+      }
     }
   }
 
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnRegistrationStored,
-      registration_id, scope, key, service_worker_info);
+      registration_id, scope, key, std::move(service_worker_info));
 }
 
 void ServiceWorkerContextCore::NotifyAllRegistrationsDeletedForStorageKey(
