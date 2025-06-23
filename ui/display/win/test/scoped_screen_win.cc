@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "ui/display/win/test/scoped_screen_win.h"
+
+#include <optional>
+
 #include "ui/display/win/display_info.h"
 #include "ui/display/win/test/screen_util_win.h"
 
@@ -16,8 +19,8 @@ ScopedScreenWin::ScopedScreenWin() : ScreenWin(false) {
   const MONITORINFOEX monitor_info =
       CreateMonitorInfo(kPixelBounds, kPixelWork, L"primary");
   UpdateFromDisplayInfos(
-      {{monitor_info, /*device_scale_factor=*/1.0f, 1.0f, Display::ROTATE_0,
-        60.0f, gfx::Vector2dF(96.0, 96.0),
+      {{std::nullopt, monitor_info, /*device_scale_factor=*/1.0f, 1.0f,
+        Display::ROTATE_0, 60.0f, gfx::Vector2dF(96.0, 96.0),
         DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER, std::string()}});
 }
 

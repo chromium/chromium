@@ -9,6 +9,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "ui/display/display.h"
 #include "ui/display/display_export.h"
 
@@ -17,7 +19,8 @@ namespace display::win::internal {
 // Gathers the parameters necessary to create a win::ScreenWinDisplay.
 class DISPLAY_EXPORT DisplayInfo final {
  public:
-  DisplayInfo(const MONITORINFOEX& monitor_info,
+  DisplayInfo(std::optional<HMONITOR> hmonitor,
+              const MONITORINFOEX& monitor_info,
               float device_scale_factor,
               float sdr_white_level,
               Display::Rotation rotation,
@@ -57,6 +60,7 @@ class DISPLAY_EXPORT DisplayInfo final {
   }
   const std::string& label() const { return label_; }
   const std::wstring& device_name() const { return device_name_; }
+  const std::optional<HMONITOR>& hmonitor() const { return hmonitor_; }
 
   bool operator==(const DisplayInfo& rhs) const;
 
@@ -80,6 +84,9 @@ class DISPLAY_EXPORT DisplayInfo final {
   std::string label_;
   // The MONITORINFOEX::szDevice device name representing the display.
   std::wstring device_name_;
+  // The handle of the display. This will become invalid whenever a
+  // WM_DISPLAYCHANGE message is sent.
+  std::optional<HMONITOR> hmonitor_;
 };
 
 }  // namespace display::win::internal

@@ -68,6 +68,10 @@ class DISPLAY_EXPORT ScreenWinHeadless : public ScreenWin {
   bool IsHeadless() const override;
 
   // ScreenWin:
+  HMONITOR HMONITORFromScreenPoint(
+      const gfx::Point& screen_point) const override;
+  HMONITOR HMONITORFromScreenRect(const gfx::Rect& screen_rect) const override;
+  HMONITOR HMONITORFromWindow(HWND hwnd, DWORD default_options) const override;
   std::optional<MONITORINFOEX> MonitorInfoFromScreenPoint(
       const gfx::Point& screen_point) const override;
   std::optional<MONITORINFOEX> MonitorInfoFromScreenRect(
@@ -75,6 +79,8 @@ class DISPLAY_EXPORT ScreenWinHeadless : public ScreenWin {
   std::optional<MONITORINFOEX> MonitorInfoFromWindow(
       HWND hwnd,
       DWORD default_options) const override;
+  std::optional<MONITORINFOEX> MonitorInfoFromHMONITOR(
+      HMONITOR monitor) const override;
   int64_t GetDisplayIdFromMonitorInfo(
       const MONITORINFOEX& monitor_info) const override;
   HWND GetRootWindow(HWND hwnd) const override;
@@ -82,9 +88,15 @@ class DISPLAY_EXPORT ScreenWinHeadless : public ScreenWin {
   void UpdateAllDisplaysIfPrimaryMonitorChanged() override;
 
   ScreenWinDisplay GetScreenWinDisplayNearestHWND(HWND hwnd) const override;
+  ScreenWinDisplay GetScreenWinDisplayNearestScreenRect(
+      const gfx::Rect& screen_rect) const override;
+  ScreenWinDisplay GetScreenWinDisplayNearestScreenPoint(
+      const gfx::Point& screen_point) const override;
   ScreenWinDisplay GetPrimaryScreenWinDisplay() const override;
   ScreenWinDisplay GetScreenWinDisplay(
       std::optional<MONITORINFOEX> monitor_info) const override;
+  ScreenWinDisplay GetScreenWinDisplayForHMONITOR(
+      HMONITOR monitor) const override;
 
   // ColorProfileReader::Client:
   void OnColorProfilesChanged() override;

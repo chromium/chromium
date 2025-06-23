@@ -28,6 +28,7 @@ std::wstring_view FixedArrayToStringView(
 }  // namespace
 
 DisplayInfo::DisplayInfo(
+    std::optional<HMONITOR> hmonitor,
     const MONITORINFOEX& monitor_info,
     float device_scale_factor,
     float sdr_white_level,
@@ -46,7 +47,8 @@ DisplayInfo::DisplayInfo(
       pixels_per_inch_(pixels_per_inch),
       output_technology_(output_technology),
       label_(label),
-      device_name_(FixedArrayToStringView(monitor_info.szDevice)) {}
+      device_name_(FixedArrayToStringView(monitor_info.szDevice)),
+      hmonitor_(hmonitor) {}
 
 DisplayInfo::DisplayInfo(
     int64_t id,

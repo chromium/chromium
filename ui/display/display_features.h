@@ -76,6 +76,12 @@ BASE_DECLARE_FEATURE(kOpsDisplayScaleFactor);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsOpsDisplayScaleFactorEnabled();
 
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+BASE_DECLARE_FEATURE(kScreenWinDisplayLookupByHMONITOR);
+
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+bool IsScreenWinDisplayLookupByHMONITOREnabled();
+
 }  // namespace features
 }  // namespace display
 

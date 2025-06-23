@@ -5,6 +5,7 @@
 #include "ui/display/display_features.h"
 
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "build/build_config.h"
 
 namespace display {
@@ -141,6 +142,19 @@ BASE_FEATURE(kOpsDisplayScaleFactor,
 
 bool IsOpsDisplayScaleFactorEnabled() {
   return base::FeatureList::IsEnabled(kOpsDisplayScaleFactor);
+}
+
+// Optimizes ScreenWinDisplay lookup by caching an HMONITOR for each display.
+// This is part of a combined performance experiment so requires both this flag
+// and "ReducePPMs". In case of errors this flag can be disabled without
+// affecting the rest of the experiment.
+BASE_FEATURE(kScreenWinDisplayLookupByHMONITOR,
+             "ScreenWinDisplayLookupByHMONITOR",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsScreenWinDisplayLookupByHMONITOREnabled() {
+  return base::FeatureList::IsEnabled(base::features::kReducePPMs) &&
+         base::FeatureList::IsEnabled(kScreenWinDisplayLookupByHMONITOR);
 }
 
 }  // namespace features

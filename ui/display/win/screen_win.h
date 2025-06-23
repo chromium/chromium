@@ -237,6 +237,10 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
       const std::vector<internal::DisplayInfo>& display_infos);
 
   // Virtual to support mocking by unit tests and headless screen.
+  virtual HMONITOR HMONITORFromScreenPoint(
+      const gfx::Point& screen_point) const;
+  virtual HMONITOR HMONITORFromScreenRect(const gfx::Rect& screen_rect) const;
+  virtual HMONITOR HMONITORFromWindow(HWND hwnd, DWORD default_options) const;
   virtual std::optional<MONITORINFOEX> MonitorInfoFromScreenPoint(
       const gfx::Point& screen_point) const;
   virtual std::optional<MONITORINFOEX> MonitorInfoFromScreenRect(
@@ -244,6 +248,9 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   virtual std::optional<MONITORINFOEX> MonitorInfoFromWindow(
       HWND hwnd,
       DWORD default_options) const;
+  virtual std::optional<MONITORINFOEX> MonitorInfoFromHMONITOR(
+      HMONITOR monitor) const;
+
   virtual int64_t GetDisplayIdFromMonitorInfo(
       const MONITORINFOEX& monitor_info) const;
   virtual HWND GetRootWindow(HWND hwnd) const;
@@ -255,11 +262,11 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   virtual ScreenWinDisplay GetScreenWinDisplayNearestHWND(HWND hwnd) const;
 
   // Returns the ScreenWinDisplay closest to or enclosing |screen_rect|.
-  ScreenWinDisplay GetScreenWinDisplayNearestScreenRect(
+  virtual ScreenWinDisplay GetScreenWinDisplayNearestScreenRect(
       const gfx::Rect& screen_rect) const;
 
   // Returns the ScreenWinDisplay closest to or enclosing |screen_point|.
-  ScreenWinDisplay GetScreenWinDisplayNearestScreenPoint(
+  virtual ScreenWinDisplay GetScreenWinDisplayNearestScreenPoint(
       const gfx::Point& screen_point) const;
 
   // Returns the ScreenWinDisplay closest to or enclosing |dip_point|.
@@ -276,6 +283,12 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Returns the ScreenWinDisplay corresponding to the given monitor info.
   virtual ScreenWinDisplay GetScreenWinDisplay(
       std::optional<MONITORINFOEX> monitor_info) const;
+
+  // Returns the ScreenWinDisplay for the given `monitor`, first by matching on
+  // ScreenWinDisplay::hmonitor(), then by looking up the monitor info if
+  // there's no match.
+  virtual ScreenWinDisplay GetScreenWinDisplayForHMONITOR(
+      HMONITOR monitor) const;
 
   // Returns the result of GetSystemMetrics for |metric| scaled to the specified
   // |scale_factor|.

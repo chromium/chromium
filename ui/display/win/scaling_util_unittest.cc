@@ -4,6 +4,8 @@
 
 #include "ui/display/win/scaling_util.h"
 
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/win/test/screen_util_win.h"
 #include "ui/gfx/geometry/rect.h"
@@ -24,7 +26,7 @@ internal::DisplayInfo CreateDisplayInfo(int x,
                                                  gfx::Rect(x, y, width, height),
                                                  kFakeDisplayName);
   return internal::DisplayInfo(
-      monitor_info, scale_factor, 1.0f, Display::ROTATE_0, 60.0f,
+      std::nullopt, monitor_info, scale_factor, 1.0f, Display::ROTATE_0, 60.0f,
       gfx::Vector2dF(), DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER, std::string());
 }
 

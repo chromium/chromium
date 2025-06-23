@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include <optional>
+
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -32,7 +34,15 @@ class ScreenWinDisplay final {
   const gfx::Rect& screen_rect() const { return screen_rect_; }
   const gfx::Rect& screen_work_rect() const { return screen_work_rect_; }
 
+  // Returns a cached HMONITOR for the display, if any. Fake and headless
+  // displays won't have an HMONITOR.
+  const std::optional<HMONITOR>& hmonitor() const { return hmonitor_; }
+
   Display& modifiable_display() { return display_; }
+
+  // Clear the cached HMONITOR. This should be called whenever WM_DISPLAYCHANGE
+  // is received since the handle may no longer be valid.
+  void InvalidateHMONITOR();
 
  private:
   Display display_;
@@ -45,6 +55,8 @@ class ScreenWinDisplay final {
   // These are display bounds that exclude system UI, like the Windows taskbar.
   // Used to derive display::Display work areas, and for window placement logic.
   gfx::Rect screen_work_rect_;
+  // A cached HMONITOR. This may become invalid on WM_DISPLAYCHANGE.
+  std::optional<HMONITOR> hmonitor_;
 };
 
 }  // namespace win

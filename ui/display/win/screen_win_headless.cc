@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -146,6 +147,21 @@ Display ScreenWinHeadless::GetPrimaryDisplay() const {
   return GetNumDisplays() ? GetAllDisplays()[0] : Display::GetDefaultDisplay();
 }
 
+HMONITOR ScreenWinHeadless::HMONITORFromScreenPoint(
+    const gfx::Point& screen_point) const {
+  NOTREACHED();
+}
+
+HMONITOR ScreenWinHeadless::HMONITORFromScreenRect(
+    const gfx::Rect& screen_rect) const {
+  NOTREACHED();
+}
+
+HMONITOR ScreenWinHeadless::HMONITORFromWindow(HWND hwnd,
+                                               DWORD default_options) const {
+  NOTREACHED();
+}
+
 std::optional<MONITORINFOEX> ScreenWinHeadless::MonitorInfoFromScreenPoint(
     const gfx::Point& screen_point) const {
   // ScreenWin::MonitorInfoFromScreenPoint() uses Win32 ::MonitorFromPoint()
@@ -155,6 +171,11 @@ std::optional<MONITORINFOEX> ScreenWinHeadless::MonitorInfoFromScreenPoint(
     return GetMONITORINFOFromDisplayId(display->id());
   }
 
+  return std::nullopt;
+}
+
+std::optional<MONITORINFOEX> ScreenWinHeadless::MonitorInfoFromHMONITOR(
+    HMONITOR monitor) const {
   return std::nullopt;
 }
 
@@ -275,6 +296,16 @@ ScreenWinDisplay ScreenWinHeadless::GetScreenWinDisplayNearestHWND(
       MonitorInfoFromWindow(hwnd, MONITOR_DEFAULTTONEAREST));
 }
 
+ScreenWinDisplay ScreenWinHeadless::GetScreenWinDisplayNearestScreenRect(
+    const gfx::Rect& screen_rect) const {
+  return GetScreenWinDisplay(MonitorInfoFromScreenRect(screen_rect));
+}
+
+ScreenWinDisplay ScreenWinHeadless::GetScreenWinDisplayNearestScreenPoint(
+    const gfx::Point& screen_point) const {
+  return GetScreenWinDisplay(MonitorInfoFromScreenPoint(screen_point));
+}
+
 ScreenWinDisplay ScreenWinHeadless::GetPrimaryScreenWinDisplay() const {
   // ScreenWin::GetPrimaryScreenWinDisplay() searches the ScreenWinDisplay
   // table for a display with origin at (0,0), however, for headless primary
@@ -295,6 +326,13 @@ ScreenWinDisplay ScreenWinHeadless::GetScreenWinDisplay(
   }
 
   return GetPrimaryScreenWinDisplay();
+}
+
+ScreenWinDisplay ScreenWinHeadless::GetScreenWinDisplayForHMONITOR(
+    HMONITOR monitor) const {
+  // Headless displays don't have a real HMONITOR, so all paths that call this
+  // method should be overridden.
+  NOTREACHED();
 }
 
 std::vector<internal::DisplayInfo>
