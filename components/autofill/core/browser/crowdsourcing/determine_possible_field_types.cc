@@ -185,7 +185,9 @@ FieldTypeSet GetAvailableAutofillAiFieldTypes(
         bool is_empty = comparator.HasOnlySkippableCharacters(attribute.GetInfo(
             field_type, comparator.app_locale(), std::nullopt));
         if (!is_empty) {
-          types.insert(attribute.type().field_type());
+          if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
+            types.insert(attribute.type().field_type());
+          }
           types.insert(field_type);
         }
       }
@@ -226,7 +228,9 @@ FieldTypeSet GetPossibleAutofillAiFieldTypes(
                               std::nullopt),
             AutofillProfileComparator::DISCARD_WHITESPACE);
         if (matches) {
-          types.insert(attribute.type().field_type());
+          if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
+            types.insert(attribute.type().field_type());
+          }
           types.insert(field_type);
         }
       }
