@@ -291,6 +291,12 @@ TrackerImpl::TrackerImpl(
     return;
   }
 
+  if (IsOnDeviceStorageEnabled()) {
+    // If the migration was completed, log the status.
+    EventStorageMigration::RecordMigrationStatus(
+        EventStorageMigration::EventStorageMigrationStatus::kNotRequired);
+  }
+
   event_model_provider_->Initialize(
       base::BindOnce(&TrackerImpl::OnEventModelInitializationFinished,
                      weak_ptr_factory_.GetWeakPtr()),

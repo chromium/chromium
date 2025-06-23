@@ -17,6 +17,27 @@ namespace feature_engagement {
 // the migration is completed.
 class EventStorageMigration {
  public:
+  // Represents the status of the profile to device migration.
+  // These enums are persisted as histogram entries, so this enum should be
+  // treated as append-only and kept in sync with
+  // InProductHelpEventStorageMigrationStatus in enums.xml.
+  enum class EventStorageMigrationStatus : int {
+    // The migration is not required.
+    kNotRequired = 0,
+    // The migration has started.
+    kStarted = 1,
+    // The migration has completed successfully.
+    kCompleted = 2,
+    // The migration failed to initialize.
+    kFailedToInitialize = 3,
+    // The migration failed to load.
+    kFailedToLoad = 4,
+    // The migration failed to write.
+    kFailedToWrite = 5,
+    // The maximum value of the enum.
+    kMaxValue = kFailedToWrite
+  };
+
   explicit EventStorageMigration(
       raw_ptr<leveldb_proto::ProtoDatabase<Event>> profile_db,
       raw_ptr<leveldb_proto::ProtoDatabase<Event>> device_db);
@@ -25,6 +46,8 @@ class EventStorageMigration {
   EventStorageMigration& operator=(const EventStorageMigration&) = delete;
 
   ~EventStorageMigration();
+
+  static void RecordMigrationStatus(EventStorageMigrationStatus status);
 
   // Callback for when migration has finished. The |success|
   // argument denotes whether the migration was successful.

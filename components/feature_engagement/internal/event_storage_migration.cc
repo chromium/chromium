@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace feature_engagement {
 
@@ -30,6 +31,8 @@ void EventStorageMigration::Migrate(MigrationCallback callback) {
   if (migration_callback_) {
     return;
   }
+
+  RecordMigrationStatus(EventStorageMigrationStatus::kStarted);
 
   // Set the callback to be invoked once overall initialization is complete.
   migration_callback_ = std::move(callback);
@@ -68,6 +71,7 @@ void EventStorageMigration::OnInitializationComplete(
 
 void EventStorageMigration::OnDBsInitializationCompleted() {
   if (!initialization_success_) {
+    RecordMigrationStatus(EventStorageMigrationStatus::kFailedToInitialize);
     std::move(migration_callback_).Run(false);
     return;
   }
@@ -81,6 +85,7 @@ void EventStorageMigration::OnLoadEntriesComplete(
     bool success,
     std::unique_ptr<std::vector<Event>> entries) {
   if (!success) {
+    RecordMigrationStatus(EventStorageMigrationStatus::kFailedToLoad);
     std::move(migration_callback_).Run(false);
     return;
   }
@@ -99,7 +104,17 @@ void EventStorageMigration::OnLoadEntriesComplete(
 }
 
 void EventStorageMigration::OnEventWrittenCompleted(bool success) {
+  RecordMigrationStatus(success ? EventStorageMigrationStatus::kCompleted
+                                : EventStorageMigrationStatus::kFailedToWrite);
+
   std::move(migration_callback_).Run(success);
+}
+
+// static
+void EventStorageMigration::RecordMigrationStatus(
+    EventStorageMigrationStatus status) {
+  base::UmaHistogramEnumeration("InProductHelp.EventStorageMigration.Status",
+                                status);
 }
 
 }  // namespace feature_engagement

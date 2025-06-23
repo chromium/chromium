@@ -5,6 +5,7 @@
 #include "components/feature_engagement/internal/event_storage_migration.h"
 
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/internal/test/event_util.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -14,6 +15,11 @@
 namespace feature_engagement {
 
 namespace {
+
+// Name of the histogram that records the status of the migration of events from
+// profile storage to event storage.
+const char kEventStorageMigrationStatusHistogramName[] =
+    "InProductHelp.EventStorageMigration.Status";
 
 // Verifies that two event maps are equal. It checks that they have the same
 // size and that for every key in map1, the corresponding Event value in map2
@@ -73,6 +79,8 @@ class EventStorageMigrationTest : public testing::Test {
 
 TEST_F(EventStorageMigrationTest,
        SuccessfullyMigrateProfileEventsToDeviceStorage) {
+  base::HistogramTester histogram_tester;
+
   // Populate fake Event entries.
   Event event1;
   event1.set_name("event1");
@@ -95,9 +103,16 @@ TEST_F(EventStorageMigrationTest,
   // Validate that the events from profile db have been copied to device db.
   VerifyEventMapsEqual(device_events_, profile_events_);
   EXPECT_TRUE(migration_success_);
+  histogram_tester.ExpectBucketCount(
+      kEventStorageMigrationStatusHistogramName,
+      static_cast<int>(
+          EventStorageMigration::EventStorageMigrationStatus::kCompleted),
+      1);
 }
 
 TEST_F(EventStorageMigrationTest, InitializationErrorDuringMigration) {
+  base::HistogramTester histogram_tester;
+
   // Populate fake Event entries.
   Event event1;
   event1.set_name("event1");
@@ -115,9 +130,16 @@ TEST_F(EventStorageMigrationTest, InitializationErrorDuringMigration) {
   profile_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   device_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kError);
   EXPECT_FALSE(migration_success_);
+  histogram_tester.ExpectBucketCount(
+      kEventStorageMigrationStatusHistogramName,
+      static_cast<int>(EventStorageMigration::EventStorageMigrationStatus::
+                           kFailedToInitialize),
+      1);
 }
 
 TEST_F(EventStorageMigrationTest, EventLoadingErrorDuringMigration) {
+  base::HistogramTester histogram_tester;
+
   // Populate fake Event entries.
   Event event1;
   event1.set_name("event1");
@@ -136,9 +158,16 @@ TEST_F(EventStorageMigrationTest, EventLoadingErrorDuringMigration) {
   device_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   profile_db_->LoadCallback(false);
   EXPECT_FALSE(migration_success_);
+  histogram_tester.ExpectBucketCount(
+      kEventStorageMigrationStatusHistogramName,
+      static_cast<int>(
+          EventStorageMigration::EventStorageMigrationStatus::kFailedToLoad),
+      1);
 }
 
 TEST_F(EventStorageMigrationTest, WritingEventErrorDuringMigration) {
+  base::HistogramTester histogram_tester;
+
   // Populate fake Event entries.
   Event event1;
   event1.set_name("event1");
@@ -158,6 +187,11 @@ TEST_F(EventStorageMigrationTest, WritingEventErrorDuringMigration) {
   profile_db_->LoadCallback(true);
   device_db_->UpdateCallback(false);
   EXPECT_FALSE(migration_success_);
+  histogram_tester.ExpectBucketCount(
+      kEventStorageMigrationStatusHistogramName,
+      static_cast<int>(
+          EventStorageMigration::EventStorageMigrationStatus::kFailedToWrite),
+      1);
 }
 
 }  // namespace feature_engagement

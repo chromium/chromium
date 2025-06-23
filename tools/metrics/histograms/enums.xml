@@ -6404,6 +6404,15 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="10" label="Swiped As Instructed By Gesture IPH"/>
 </enum>
 
+<enum name="InProductHelpEventStorageMigrationStatus">
+  <int value="0" label="kNotRequired"/>
+  <int value="1" label="kStarted"/>
+  <int value="2" label="kCompleted"/>
+  <int value="3" label="kFailedToInitialize"/>
+  <int value="4" label="kFailedToLoad"/>
+  <int value="5" label="kFailedToWrite"/>
+</enum>
+
 <enum name="InProductHelpSnoozeAction">
   <int value="0" label="Unknown"/>
   <int value="1" label="Snooze"/>

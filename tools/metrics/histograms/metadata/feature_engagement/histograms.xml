@@ -745,6 +745,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InProductHelp.EventStorageMigration.Status"
+    enum="InProductHelpEventStorageMigrationStatus" expires_after="2025-12-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    Records the status of the migration of events from profile storage to event
+    storage. This is recorded once per profile on startup. It is not recorded if
+    the OnDeviceStorage feature flag is not enabled, and this feature is only
+    enabled for iOS.
+  </summary>
+</histogram>
+
 <histogram name="InProductHelp.Gestural.DismissalReason.iOS"
     enum="InProductHelpDismissalReason" expires_after="2025-10-19">
   <owner>ginnyhuang@chromium.org</owner>
