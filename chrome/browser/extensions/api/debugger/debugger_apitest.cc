@@ -834,6 +834,10 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, Debugger) {
   ASSERT_TRUE(RunExtensionTest("debugger")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, DebuggerMv3) {
+  ASSERT_TRUE(RunExtensionTest("debugger_mv3")) << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, ParentTargetPermissions) {
   // Run test with file access disabled.
   ASSERT_TRUE(RunExtensionTest("parent_target_permissions")) << message_;
