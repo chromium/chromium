@@ -34,10 +34,6 @@ namespace tab_groups {
 class TabGroupId;
 }
 
-namespace split_tabs {
-enum class SplitTabCreatedSource;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // TabStripModelDelegate
@@ -195,8 +191,7 @@ class TabStripModelDelegate {
   // Creates a split view with the active tab and the tabs at `indices`. If
   // `indices` is empty, a new tab navigated to the split tab empty state page
   // will be used for the split view instead.
-  virtual void NewSplitTab(std::vector<int> indices,
-                           split_tabs::SplitTabCreatedSource source) = 0;
+  virtual void NewSplitTab(std::vector<int> indices) = 0;
 
   // When performing actions to groups, some features may need to show
   // interstitials before allowing deletion. `groups` is a list of all of the

@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
-#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
@@ -161,8 +160,7 @@ void SplitTabsToolbarButton::ButtonPressed(const ui::Event& event) {
         GetAnchorBoundsInScreen(), views::MenuAnchorPosition::kTopLeft,
         ui::GetMenuSourceTypeForEvent(event));
   } else {
-    chrome::NewSplitTab(browser_,
-                        split_tabs::SplitTabCreatedSource::kToolbarButton);
+    chrome::NewSplitTab(browser_);
   }
 }
 

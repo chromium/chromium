@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
@@ -59,8 +58,7 @@ class SplitTabsInteractiveTestMixin : public T {
     auto result = T::Steps(
         T::SelectTab(kTabStripElementId, active_tab), T::Do([&, other_tab]() {
           T::browser()->tab_strip_model()->AddToNewSplit(
-              {other_tab}, split_tabs::SplitTabVisualData(),
-              split_tabs::SplitTabCreatedSource::kToolbarButton);
+              {other_tab}, split_tabs::SplitTabVisualData());
         }),
         T::PollView(kResizeLoadObserver,
                     MultiContentsResizeArea::kMultiContentsResizeAreaElementId,

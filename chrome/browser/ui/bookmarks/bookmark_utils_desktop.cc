@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
-#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -292,9 +291,8 @@ void OpenAllIfAllowed(
           auto* const single_web_contents = *(opened_web_contents.begin());
           const int opened_web_contents_index =
               model->GetIndexOfWebContents(single_web_contents);
-          model->AddToNewSplit(
-              {opened_web_contents_index}, split_tabs::SplitTabVisualData(),
-              split_tabs::SplitTabCreatedSource::kBookmarkContextMenu);
+          model->AddToNewSplit({opened_web_contents_index},
+                               split_tabs::SplitTabVisualData());
         } else if (folder_title.has_value()) {
           TabStripModel* model = browser->tab_strip_model();
 

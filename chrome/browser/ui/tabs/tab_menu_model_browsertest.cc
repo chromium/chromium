@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/split_tab_swap_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -401,8 +400,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, SwapWithActiveTab) {
   tab_strip_model->ActivateTabAt(0);
   tab_strip_model->AddToNewSplit(
       {1},
-      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical),
-      split_tabs::SplitTabCreatedSource::kToolbarButton);
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical));
   EXPECT_TRUE(tab_strip_model->GetSplitForTab(0).has_value());
   EXPECT_TRUE(tab_strip_model->GetSplitForTab(1).has_value());
   EXPECT_FALSE(tab_strip_model->GetSplitForTab(2).has_value());
@@ -431,8 +429,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, SwapWithInactiveTab) {
   // tab active.
   tab_strip_model->AddToNewSplit(
       {1},
-      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical),
-      split_tabs::SplitTabCreatedSource::kToolbarButton);
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical));
   EXPECT_FALSE(tab_strip_model->GetSplitForTab(0).has_value());
   EXPECT_TRUE(tab_strip_model->GetSplitForTab(1).has_value());
   EXPECT_TRUE(tab_strip_model->GetSplitForTab(2).has_value());

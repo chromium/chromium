@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -1352,8 +1351,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   AddTabsAndResetBrowser(browser(), 3);
   model->ActivateTabAt(0);
   split_tabs::SplitTabId split_id =
-      model->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
-                           split_tabs::SplitTabCreatedSource::kToolbarButton);
+      model->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
   StopAnimating(tab_strip);
 
   ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
@@ -2808,8 +2806,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   AddTabsAndResetBrowser(browser(), 1);
   browser()->tab_strip_model()->ActivateTabAt(0);
   split_tabs::SplitTabId split_id = browser()->tab_strip_model()->AddToNewSplit(
-      {1}, split_tabs::SplitTabVisualData(),
-      split_tabs::SplitTabCreatedSource::kToolbarButton);
+      {1}, split_tabs::SplitTabVisualData());
   StopAnimating(tab_strip);
 
   // Create another browser.
@@ -3120,8 +3117,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   tab_groups::TabGroupId group = model->AddToNewGroup({0, 1});
 
   model->ActivateTabAt(0);
-  model->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
-                       split_tabs::SplitTabCreatedSource::kToolbarButton);
+  model->AddToNewSplit({1}, split_tabs::SplitTabVisualData());
 
   tab_groups::TabGroupColorId group_color = tab_strip->GetGroupColorId(group);
   StopAnimating(tab_strip);

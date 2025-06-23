@@ -55,7 +55,6 @@ namespace split_tabs {
 class SplitTabData;
 class SplitTabVisualData;
 enum class SplitTabLayout;
-enum class SplitTabCreatedSource;
 }
 
 namespace tabs {
@@ -625,8 +624,7 @@ class TabStripModel {
   // must be sorted in ascending order.
   split_tabs::SplitTabId AddToNewSplit(
       const std::vector<int> indices,
-      split_tabs::SplitTabVisualData visual_data,
-      split_tabs::SplitTabCreatedSource source);
+      split_tabs::SplitTabVisualData visual_data);
 
   // Create a new tab group and add the set of tabs pointed to be |indices| to
   // it. Pins all of the tabs if any of them were pinned, and reorders the tabs

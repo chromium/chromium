@@ -16,7 +16,6 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/split_tab_visual_data.h"
@@ -429,8 +428,7 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
     navigate_params.navigated_or_inserted_contents->SetInitialFocus();
 
   if (split) {
-    tab_strip->AddToNewSplit({new_index}, split_tabs::SplitTabVisualData(),
-                             split_tabs::SplitTabCreatedSource::kExtensionsApi);
+    tab_strip->AddToNewSplit({new_index}, split_tabs::SplitTabVisualData());
   }
 
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
