@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/payments/test/mock_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -304,25 +305,6 @@ class MockAutofillClient : public TestAutofillClient {
         std::make_unique<MockPaymentsAutofillClient>(this));
   }
   ~MockAutofillClient() override = default;
-};
-
-class MockVirtualCardEnrollmentManager
-    : public TestVirtualCardEnrollmentManager {
- public:
-  using TestVirtualCardEnrollmentManager::TestVirtualCardEnrollmentManager;
-  MOCK_METHOD(
-      void,
-      InitVirtualCardEnroll,
-      (const CreditCard& credit_card,
-       VirtualCardEnrollmentSource virtual_card_enrollment_source,
-       VirtualCardEnrollmentManager::VirtualCardEnrollmentFieldsLoadedCallback
-           virtual_card_enrollment_fields_loaded_callback,
-       std::optional<payments::GetDetailsForEnrollmentResponseDetails>
-           get_details_for_enrollment_response_details,
-       PrefService* user_prefs,
-       VirtualCardEnrollmentManager::RiskAssessmentFunction
-           risk_assessment_function),
-      (override));
 };
 
 }  // namespace

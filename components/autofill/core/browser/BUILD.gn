@@ -1105,6 +1105,8 @@ static_library("test_support") {
     "payments/test/mock_payments_window_manager.h",
     "payments/test/mock_save_and_fill_manager.cc",
     "payments/test/mock_save_and_fill_manager.h",
+    "payments/test/mock_virtual_card_enrollment_manager.cc",
+    "payments/test/mock_virtual_card_enrollment_manager.h",
     "payments/test/test_credit_card_otp_authenticator.cc",
     "payments/test/test_credit_card_otp_authenticator.h",
     "payments/test/test_credit_card_risk_based_authenticator.cc",

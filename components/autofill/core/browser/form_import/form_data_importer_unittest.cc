@@ -53,6 +53,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
@@ -481,31 +482,6 @@ auto UnorderedElementsCompareEqual(Matchers... matchers) {
   return ::testing::UnorderedElementsAre(
       ::testing::Pointee(ComparesEqual(std::move(matchers)))...);
 }
-
-class MockVirtualCardEnrollmentManager
-    : public TestVirtualCardEnrollmentManager {
- public:
-  MockVirtualCardEnrollmentManager(
-      PaymentsDataManager* payments_data_manager,
-      payments::TestPaymentsNetworkInterface* payments_network_interface,
-      TestAutofillClient* autofill_client)
-      : TestVirtualCardEnrollmentManager(payments_data_manager,
-                                         payments_network_interface,
-                                         autofill_client) {}
-  MOCK_METHOD(
-      void,
-      InitVirtualCardEnroll,
-      (const CreditCard& credit_card,
-       VirtualCardEnrollmentSource virtual_card_enrollment_source,
-       VirtualCardEnrollmentManager::VirtualCardEnrollmentFieldsLoadedCallback
-           virtual_card_enrollment_fields_loaded_callback,
-       std::optional<payments::GetDetailsForEnrollmentResponseDetails>
-           get_details_for_enrollment_response_details,
-       PrefService* user_prefs,
-       VirtualCardEnrollmentManager::RiskAssessmentFunction
-           risk_assessment_function),
-      (override));
-};
 
 // TODO(crbug.com/40270301): Move MockCreditCardSaveManager to new header and cc
 // file.
