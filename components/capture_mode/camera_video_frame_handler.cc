@@ -175,8 +175,8 @@ class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
     auto& frame_info = buffer->frame_info;
     auto frame = media::VideoFrame::WrapExternalData(
         frame_info->pixel_format, frame_info->coded_size,
-        frame_info->visible_rect, frame_info->visible_rect.size(),
-        mapping.GetMemoryAs<uint8_t>(), mapping.size(), frame_info->timestamp);
+        frame_info->visible_rect, frame_info->visible_rect.size(), mapping,
+        frame_info->timestamp);
 
     if (frame) {
       frame->AddDestructionObserver(base::DoNothingWithBoundArgs(mapping_));

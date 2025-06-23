@@ -486,14 +486,14 @@ TEST(VideoFrame, WrapVideoFrame) {
 
 // Create a frame that wraps unowned memory.
 TEST(VideoFrame, WrapExternalData) {
-  uint8_t memory[2 * 256 * 256];
+  std::array<uint8_t, 2 * 256 * 256> memory{};
   gfx::Size coded_size(256, 256);
   gfx::Rect visible_rect(coded_size);
-  CreateTestY16Frame(coded_size, visible_rect, memory);
+  CreateTestY16Frame(coded_size, visible_rect, memory.data());
   auto timestamp = base::Milliseconds(1);
-  auto frame = VideoFrame::WrapExternalData(PIXEL_FORMAT_Y16, coded_size,
-                                            visible_rect, visible_rect.size(),
-                                            memory, sizeof(memory), timestamp);
+  auto frame =
+      VideoFrame::WrapExternalData(PIXEL_FORMAT_Y16, coded_size, visible_rect,
+                                   visible_rect.size(), memory, timestamp);
 
   EXPECT_EQ(frame->coded_size(), coded_size);
   EXPECT_EQ(frame->visible_rect(), visible_rect);
@@ -513,8 +513,7 @@ TEST(VideoFrame, WrapSharedMemory) {
   auto timestamp = base::Milliseconds(1);
   auto frame = VideoFrame::WrapExternalData(
       PIXEL_FORMAT_Y16, coded_size, visible_rect, visible_rect.size(),
-      mapped_region.mapping.GetMemoryAsSpan<uint8_t>().data(), kDataSize,
-      timestamp);
+      mapped_region.mapping.GetMemoryAsSpan<uint8_t>(), timestamp);
   EXPECT_EQ(frame->storage_type(), VideoFrame::STORAGE_UNOWNED_MEMORY);
 
   frame->BackWithSharedMemory(&mapped_region.region);
@@ -967,9 +966,9 @@ TEST(VideoFrame, AccessPlaneDataSpans) {
     pixels.resize(coded_size.GetArea() * 4);
 
     auto timestamp = base::Milliseconds(0);
-    auto frame = VideoFrame::WrapExternalData(
-        format, coded_size, visible_rect, visible_rect.size(), pixels.data(),
-        pixels.size(), timestamp);
+    auto frame =
+        VideoFrame::WrapExternalData(format, coded_size, visible_rect,
+                                     visible_rect.size(), pixels, timestamp);
 
     int plane_offset = 0;
     for (size_t plane = 0; plane < VideoFrame::NumPlanes(format); ++plane) {

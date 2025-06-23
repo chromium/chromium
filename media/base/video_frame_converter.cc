@@ -34,9 +34,7 @@ scoped_refptr<VideoFrame> WrapTempFrameForABGRToARGB(
     scoped_refptr<VideoFrame> tmp_frame) {
   return VideoFrame::WrapExternalData(
       override_format, tmp_frame->coded_size(), tmp_frame->visible_rect(),
-      tmp_frame->natural_size(),
-      tmp_frame->writable_data(VideoFrame::Plane::kARGB),
-      VideoFrame::AllocationSize(override_format, tmp_frame->coded_size()),
+      tmp_frame->natural_size(), tmp_frame->data_span(VideoFrame::Plane::kARGB),
       tmp_frame->timestamp());
 }
 

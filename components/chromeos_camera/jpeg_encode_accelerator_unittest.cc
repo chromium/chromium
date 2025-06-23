@@ -658,8 +658,9 @@ void JpegClient::StartEncode(int32_t bitstream_buffer_id) {
       media::VideoFrame::WrapExternalData(
           media::PIXEL_FORMAT_I420, test_image->visible_size,
           gfx::Rect(test_image->visible_size), test_image->visible_size,
-          static_cast<uint8_t*>(in_shm_->mapping.memory()),
-          test_image->image_data.size(), base::TimeDelta());
+          in_shm_->mapping.GetMemoryAsSpan<uint8_t>().first(
+              test_image->image_data.size()),
+          base::TimeDelta());
   LOG_ASSERT(input_frame_.get());
   input_frame_->BackWithSharedMemory(&in_shm_->region);
 

@@ -273,8 +273,7 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
       ASSERT_LE(required_bytes_to_hold_planes, mapping.size());
       frame = media::VideoFrame::WrapExternalData(
           info->pixel_format, info->coded_size, info->visible_rect,
-          info->visible_rect.size(), mapping.GetMemoryAs<const uint8_t>(),
-          mapping.size(), info->timestamp);
+          info->visible_rect.size(), mapping, info->timestamp);
       ASSERT_TRUE(frame);
       frame->AddDestructionObserver(
           base::BindOnce([](base::ReadOnlySharedMemoryMapping mapping) {},

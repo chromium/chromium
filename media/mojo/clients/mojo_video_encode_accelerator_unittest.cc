@@ -286,8 +286,8 @@ TEST_F(MojoVideoEncodeAcceleratorTest, EncodeOneFrame) {
     ASSERT_TRUE(shmem.IsValid());
     const scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
         PIXEL_FORMAT_I420, kInputVisibleSize, gfx::Rect(kInputVisibleSize),
-        kInputVisibleSize, static_cast<uint8_t*>(shmem.mapping.memory()),
-        shmem.mapping.size(), base::TimeDelta());
+        kInputVisibleSize, shmem.mapping.GetMemoryAsSpan<uint8_t>(),
+        base::TimeDelta());
     video_frame->BackWithSharedMemory(&shmem.region);
     const bool is_keyframe = true;
 

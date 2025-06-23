@@ -178,7 +178,7 @@ void DevToolsVideoConsumer::OnFrameCaptured(
   // portion of the frame that contains content is used.
   scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapExternalData(
       info->pixel_format, info->coded_size, content_rect, content_rect.size(),
-      mapping_memory.data(), mapping_memory.size(), info->timestamp);
+      mapping_memory, info->timestamp);
   if (!frame) {
     DLOG(ERROR) << "Unable to create VideoFrame wrapper around the shmem.";
     return;
