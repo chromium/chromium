@@ -969,7 +969,7 @@ const std::vector<std::string>& GetAvailableICULocales() {
   return g_available_locales.Get();
 }
 
-bool IsUserFacingUILocale(const std::string& locale) {
+bool IsUserFacingUILocale(std::string_view locale) {
   // As there are many callers of IsUserFacingUILocale and
   // GetUserFacingUILocaleList from threads where I/O is prohibited, do not
   // perform I/O here.
@@ -1006,9 +1006,8 @@ const std::vector<std::string>& GetUserFacingUILocaleList() {
   static base::NoDestructor<std::vector<std::string>> available_locales([] {
     std::vector<std::string> locales;
     for (std::string_view accept_language : kAcceptLanguageList) {
-      std::string locale(accept_language);
-      if (IsUserFacingUILocale(locale)) {
-        locales.push_back(locale);
+      if (IsUserFacingUILocale(accept_language)) {
+        locales.emplace_back(accept_language);
       }
     }
     return locales;

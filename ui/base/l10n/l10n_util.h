@@ -266,7 +266,7 @@ const std::vector<std::string>& GetAvailableICULocales();
 // This is similar to CheckAndResolveLocale, except that it excludes some
 // languages from being shown.
 COMPONENT_EXPORT(UI_BASE)
-bool IsUserFacingUILocale(const std::string& locale);
+bool IsUserFacingUILocale(std::string_view locale);
 
 // Returns the subset of locales from GetAcceptLanguages which we should show
 // to the user as a supported UI locale.
