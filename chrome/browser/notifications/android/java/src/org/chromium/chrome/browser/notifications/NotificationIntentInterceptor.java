@@ -204,6 +204,7 @@ public class NotificationIntentInterceptor {
      * @param metadata The metadata including notification id, tag, type, etc.
      * @param pendingIntentProvider Provides the {@link PendingIntent} to launch Chrome.
      */
+    @SuppressWarnings("WrongConstant") // Triggers for |flags| on PendingIntent.getService().
     public static PendingIntent createInterceptPendingIntent(
             @IntentType int intentType,
             @NotificationUmaTracker.ActionType int actionType,
