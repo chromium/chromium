@@ -4,13 +4,7 @@
 
 #include "content/browser/indexed_db/instance/sqlite/record_iterator.h"
 
-#include <memory>
-#include <optional>
-#include <string>
-#include <utility>
-
 #include "base/check.h"
-#include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "content/browser/indexed_db/instance/record.h"
 #include "content/browser/indexed_db/status.h"
@@ -34,18 +28,13 @@ StatusOr<std::unique_ptr<Record>> RecordIterator::Iterate(
   }
 
   statement->Reset(/*clear_bound_vars=*/false);
-  BindParameters(*statement, key, primary_key,
-                 /*offset=*/0);
+  BindParameters(*statement, key, primary_key, /*offset=*/0);
   if (!statement->Step()) {
     TRANSIENT_CHECK(statement->Succeeded());
     // End of range.
-    current_position_.reset();
     return nullptr;
   }
-  return ReadRow(*statement).transform([this](PositionAndRecord result) {
-    current_position_ = std::move(result.first);
-    return std::move(result.second);
-  });
+  return ReadRow(*statement);
 }
 
 StatusOr<std::unique_ptr<Record>> RecordIterator::Iterate(uint32_t count) {
@@ -67,14 +56,10 @@ StatusOr<std::unique_ptr<Record>> RecordIterator::Iterate(uint32_t count) {
   if (!statement->Step()) {
     TRANSIENT_CHECK(statement->Succeeded());
     // End of range.
-    current_position_.reset();
     return nullptr;
   }
 
-  return ReadRow(*statement).transform([this](PositionAndRecord result) {
-    current_position_ = std::move(result.first);
-    return std::move(result.second);
-  });
+  return ReadRow(*statement);
 }
 
 }  // namespace content::indexed_db::sqlite

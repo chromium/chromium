@@ -92,6 +92,9 @@ class DatabaseConnection {
                            bool auto_increment);
   Status DeleteObjectStore(base::PassKey<BackingStoreTransactionImpl>,
                            int64_t object_store_id);
+  Status CreateIndex(base::PassKey<BackingStoreTransactionImpl>,
+                     int64_t object_store_id,
+                     blink::IndexedDBIndexMetadata index);
 
   StatusOr<int64_t> GetKeyGeneratorCurrentNumber(
       base::PassKey<BackingStoreTransactionImpl>,
@@ -111,8 +114,6 @@ class DatabaseConnection {
   StatusOr<IndexedDBValue> GetValue(base::PassKey<BackingStoreTransactionImpl>,
                                     int64_t object_store_id,
                                     const blink::IndexedDBKey& key);
-  // Inserts a new record, removing the older one corresponding to
-  // (`object_store_id`, `key`) if it existed.
   StatusOr<BackingStore::RecordIdentifier> PutRecord(
       base::PassKey<BackingStoreTransactionImpl>,
       int64_t object_store_id,
@@ -123,10 +124,32 @@ class DatabaseConnection {
       base::PassKey<BackingStoreTransactionImpl>,
       int64_t object_store_id,
       blink::IndexedDBKeyRange key_range);
+  Status PutIndexDataForRecord(base::PassKey<BackingStoreTransactionImpl>,
+                               int64_t object_store_id,
+                               int64_t index_id,
+                               const blink::IndexedDBKey& key,
+                               const BackingStore::RecordIdentifier& record);
+  StatusOr<blink::IndexedDBKey> GetFirstPrimaryKeyForIndexKey(
+      base::PassKey<BackingStoreTransactionImpl>,
+      int64_t object_store_id,
+      int64_t index_id,
+      const blink::IndexedDBKey& key);
+  StatusOr<uint32_t> GetIndexKeyCount(
+      base::PassKey<BackingStoreTransactionImpl>,
+      int64_t object_store_id,
+      int64_t index_id,
+      blink::IndexedDBKeyRange key_range);
 
   StatusOr<std::unique_ptr<BackingStore::Cursor>> OpenObjectStoreCursor(
       base::PassKey<BackingStoreTransactionImpl>,
       int64_t object_store_id,
+      const blink::IndexedDBKeyRange& key_range,
+      blink::mojom::IDBCursorDirection direction,
+      bool key_only);
+  StatusOr<std::unique_ptr<BackingStore::Cursor>> OpenIndexCursor(
+      base::PassKey<BackingStoreTransactionImpl>,
+      int64_t object_store_id,
+      int64_t index_id,
       const blink::IndexedDBKeyRange& key_range,
       blink::mojom::IDBCursorDirection direction,
       bool key_only);

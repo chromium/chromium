@@ -6,11 +6,7 @@
 #define CONTENT_BROWSER_INDEXED_DB_INSTANCE_SQLITE_RECORD_ITERATOR_H_
 
 #include <memory>
-#include <optional>
-#include <string>
-#include <utility>
 
-#include "base/functional/callback.h"
 #include "content/browser/indexed_db/status.h"
 
 namespace blink {
@@ -35,8 +31,6 @@ namespace sqlite {
 // closed will result in error values being returned.
 class RecordIterator {
  public:
-  using PositionAndRecord = std::pair<std::string, std::unique_ptr<Record>>;
-
   virtual ~RecordIterator();
 
   RecordIterator(const RecordIterator&) = delete;
@@ -58,7 +52,10 @@ class RecordIterator {
                               const blink::IndexedDBKey& target_key,
                               const blink::IndexedDBKey& target_primary_key,
                               uint32_t offset) = 0;
-  virtual StatusOr<PositionAndRecord> ReadRow(sql::Statement& statement) = 0;
+  // Updates the current position in the range and returns the record from the
+  // current row.
+  virtual StatusOr<std::unique_ptr<Record>> ReadRow(
+      sql::Statement& statement) = 0;
   // Returns the parsed and bound statement that embeds the SQL query for this
   // iterator. Because the records contained in the range can change between
   // `Iterate()` calls, the query needs to be typically re-executed every time.
@@ -69,17 +66,6 @@ class RecordIterator {
   //
   // May return null if the SQLite database was closed e.g. due to an error.
   virtual sql::Statement* GetStatement() = 0;
-
-  void set_current_position(std::string position) {
-    current_position_ = std::move(position);
-  }
-  const std::string& current_position() const { return *current_position_; }
-
- private:
-  // Opaque value tracking the position in the range. Typically, this is the
-  // encoded key from the current record. Null when and only when `this` has
-  // iterated past the end of its range.
-  std::optional<std::string> current_position_;
 };
 
 }  // namespace sqlite

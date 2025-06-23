@@ -37,4 +37,35 @@ IndexedDBValue& ObjectStoreKeyOnlyRecord::value() {
   NOTREACHED();
 }
 
+IndexRecord::IndexRecord(blink::IndexedDBKey key,
+                         blink::IndexedDBKey primary_key,
+                         IndexedDBValue value)
+    : key_(std::move(key)),
+      primary_key_(std::move(primary_key)),
+      value_(std::move(value)) {}
+
+IndexRecord::~IndexRecord() = default;
+
+blink::IndexedDBKey& IndexRecord::key() {
+  return key_;
+}
+
+blink::IndexedDBKey& IndexRecord::primary_key() {
+  return primary_key_;
+}
+
+IndexedDBValue& IndexRecord::value() {
+  return value_;
+}
+
+IndexKeyOnlyRecord::IndexKeyOnlyRecord(blink::IndexedDBKey key,
+                                       blink::IndexedDBKey primary_key)
+    : IndexRecord(std::move(key), std::move(primary_key), /*value=*/{}) {}
+
+IndexKeyOnlyRecord::~IndexKeyOnlyRecord() = default;
+
+IndexedDBValue& IndexKeyOnlyRecord::value() {
+  NOTREACHED();
+}
+
 }  // namespace content::indexed_db
