@@ -143,7 +143,7 @@ message GetHintsResponse {
 // enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 32, 66, 72, 73, 89, 94, 95, 96, 98, 99;
+  reserved 11, 12, 16, 29, 32, 66, 72, 73, 89, 94, 95, 96, 98, 99, 101;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -327,6 +327,12 @@ enum OptimizationType {
   DIGITAL_CREDENTIALS_LOW_FRICTION = 97;
   // Merchant blocklist for card flat rate benefits.
   SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST = 100;
+
+  // TODO(crbug.com/423826272): Add enum 101 for READALOUD_AUDIO_OVERVIEWS.
+
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling buy now pay later flow with Klarna.
+  BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA = 102;
 }
 
 // Presents semantics for how page load URLs should be matched.

@@ -292,6 +292,10 @@ chromium-metrics-reviews@google.com.
       summary="This optimization helps determine if this merchant page is a
                good candidate for enabling buy now pay later flow with
                Affirm."/>
+  <variant name="BuyNowPayLaterAllowlistKlarna"
+      summary="This optimization helps determine if this merchant page is a
+               good candidate for enabling buy now pay later flow with
+               Klarna."/>
   <variant name="BuyNowPayLaterAllowlistZip"
       summary="This optimization helps determine if this merchant page is a
                good candidate for enabling buy now pay later flow with Zip."/>
