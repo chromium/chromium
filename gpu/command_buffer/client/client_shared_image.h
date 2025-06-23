@@ -26,12 +26,10 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 class ProcessMemoryDump;
 class MemoryAllocatorDumpGuid;
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event
 
 namespace gfx {
 class GpuMemoryBuffer;
