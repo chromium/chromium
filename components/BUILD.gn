@@ -1053,8 +1053,8 @@ if (use_blink) {
       "dom_distiller/content/browser/test/dom_distiller_js_browsertest.cc",
       "dom_distiller/content/browser/test/test_util.cc",
       "dom_distiller/content/browser/test/test_util.h",
-      "optimization_guide/content/browser/page_content_proto_provider_browsertest.cc",
       "optimization_guide/content/browser/frame_metadata_observer_browsertest.cc",
+      "optimization_guide/content/browser/page_content_proto_provider_browsertest.cc",
       "optimization_guide/content/renderer/page_text_agent_browsertest.cc",
       "paint_preview/renderer/paint_preview_recorder_browsertest.cc",
       "ukm/content/source_url_recorder_browsertest.cc",
@@ -1153,6 +1153,7 @@ if (use_blink) {
     if (is_ios) {
       entitlements_path = "//content/app/ios/appex/app.entitlements"
       deps += [
+        "//components/test:optimization_guide_test_bundle_data",
         "//content/test/ios/appex:test_content_process_bundle",
         "//content/test/ios/appex:test_gpu_process_bundle",
         "//content/test/ios/appex:test_network_process_bundle",
