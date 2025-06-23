@@ -50,9 +50,12 @@ constexpr base::cstring_view kOpTypeCast = "Cast";
 constexpr base::cstring_view kOpTypeClamp = "Clip";
 constexpr base::cstring_view kOpTypeConv2d = "Conv";
 constexpr base::cstring_view kOpTypeConvTranspose2d = "ConvTranspose";
+constexpr base::cstring_view kOpTypeExpand = "Expand";
 constexpr base::cstring_view kOpTypeGelu = "Gelu";
 constexpr base::cstring_view kOpTypeGemm = "Gemm";
+constexpr base::cstring_view kOpTypeLeakyRelu = "LeakyRelu";
 constexpr base::cstring_view kOpTypeHardSwish = "HardSwish";
+constexpr base::cstring_view kOpTypePRelu = "PRelu";
 constexpr base::cstring_view kOpTypeRelu = "Relu";
 constexpr base::cstring_view kOpTypeReshape = "Reshape";
 constexpr base::cstring_view kOpTypeSigmoid = "Sigmoid";
@@ -229,6 +232,39 @@ template <typename DataType>
 std::string GraphBuilderOrt::CreateScalarInitializer(const DataType& value) {
   return CreateInitializer<DataType>(
       /*shape=*/{}, base::span_from_ref(value));
+}
+
+std::string GraphBuilderOrt::CreateInitializerForShape(
+    base::span<const uint32_t> shape) {
+  std::array<int64_t, 1> new_shape_dims = {
+      base::checked_cast<int64_t>(shape.size())};
+  std::vector<int64_t> new_shape_value(shape.begin(), shape.end());
+  return CreateInitializer<int64_t>(new_shape_dims, new_shape_value);
+}
+
+void GraphBuilderOrt::AddExpandNode(base::cstring_view node_name,
+                                    base::cstring_view input,
+                                    base::cstring_view output,
+                                    base::span<const uint32_t> shape) {
+  // `new_shape` should be the name of an int64 tensor that specifies the
+  // output's shape.
+  const std::string new_shape = CreateInitializerForShape(shape);
+
+  std::array<const char*, 2> inputs = {input.c_str(), new_shape.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeExpand, node_name, inputs, outputs);
+}
+
+std::string GraphBuilderOrt::CreateExpandNode(
+    base::cstring_view input,
+    base::span<const uint32_t> shape) {
+  const std::string node_name = GenerateNodeName(
+      base::JoinString({kInserted, kOpTypeExpand}, kUnderscore));
+  const std::string output = GenerateOperandName();
+
+  AddExpandNode(node_name, input, output, shape);
+  return output;
 }
 
 template <typename T>
@@ -585,6 +621,20 @@ void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
   model_editor_.AddNode(kOpTypeClamp, node_name, inputs, outputs);
 }
 
+void GraphBuilderOrt::AddExpandOperation(const mojom::Expand& expand) {
+  const std::string node_name = GenerateNodeName(expand.label);
+  const std::string input = GetOperandNameById(expand.input_operand_id);
+  const std::string output = GetOperandNameById(expand.output_operand_id);
+
+  CHECK(context_properties_.data_type_limits.expand_input.Supports(
+      GetOperand(expand.input_operand_id).descriptor));
+
+  const std::vector<uint32_t>& output_shape =
+      GetOperand(expand.output_operand_id).descriptor.shape();
+
+  AddExpandNode(node_name, input, output, output_shape);
+}
+
 void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
   const std::string node_name = GenerateNodeName(gemm.label);
   const std::string input_a = GetOperandNameById(gemm.a_operand_id);
@@ -626,6 +676,25 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
                                     static_cast<int64_t>(gemm.b_transpose))};
 
   model_editor_.AddNode(kOpTypeGemm, node_name, inputs, outputs, attributes);
+}
+
+void GraphBuilderOrt::AddLeakyReluOperation(
+    const mojom::LeakyRelu& leaky_relu) {
+  const std::string node_name = GenerateNodeName(leaky_relu.label);
+  const std::string input = GetOperandNameById(leaky_relu.input_operand_id);
+  const std::string output = GetOperandNameById(leaky_relu.output_operand_id);
+
+  CHECK(context_properties_.data_type_limits.leaky_relu_input.Supports(
+      GetOperand(leaky_relu.input_operand_id).descriptor));
+
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  constexpr base::cstring_view kAttrAlpha = "alpha";
+  std::array<ScopedOrtOpAttr, 1> attributes = {
+      model_editor_.CreateAttribute(kAttrAlpha, leaky_relu.alpha)};
+  model_editor_.AddNode(kOpTypeLeakyRelu, node_name, inputs, outputs,
+                        attributes);
 }
 
 void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
@@ -721,15 +790,11 @@ void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   CHECK(context_properties_.data_type_limits.reshape_input.Supports(
       GetOperand(reshape.input_operand_id).descriptor));
 
-  // `new_shape` should be an int64 tensor that specifies the output's shape.
   const std::vector<uint32_t>& output_shape =
       GetOperand(reshape.output_operand_id).descriptor.shape();
-  std::array<int64_t, 1> new_shape_dims = {
-      base::checked_cast<int64_t>(output_shape.size())};
-  std::vector<int64_t> new_shape_value(output_shape.begin(),
-                                       output_shape.end());
-  const std::string new_shape =
-      CreateInitializer<int64_t>(new_shape_dims, new_shape_value);
+  // `new_shape` should be the name of an int64 tensor that specifies the
+  // output's shape.
+  const std::string new_shape = CreateInitializerForShape(output_shape);
 
   std::array<const char*, 2> inputs = {input.c_str(), new_shape.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
@@ -753,6 +818,34 @@ void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
       kAttrAxis, static_cast<int64_t>(softmax.axis))};
 
   model_editor_.AddNode(kOpTypeSoftmax, node_name, inputs, outputs, attributes);
+}
+
+void GraphBuilderOrt::AddPreluOperation(const mojom::Prelu& prelu) {
+  const std::string node_name = GenerateNodeName(prelu.label);
+  std::string input = GetOperandNameById(prelu.input_operand_id);
+  const std::string slope = GetOperandNameById(prelu.slope_operand_id);
+  const std::string output = GetOperandNameById(prelu.output_operand_id);
+
+  const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
+  const OperandDescriptor& input_descriptor =
+      GetOperand(prelu.input_operand_id).descriptor;
+  CHECK(data_type_limits.prelu_input.Supports(input_descriptor));
+  const OperandDescriptor& slope_descriptor =
+      GetOperand(prelu.slope_operand_id).descriptor;
+  CHECK(data_type_limits.prelu_input.Supports(slope_descriptor));
+
+  const std::vector<uint32_t>& input_shape = input_descriptor.shape();
+  const std::vector<uint32_t>& slope_shape = slope_descriptor.shape();
+  // ONNX Prelu requires slope's shape to be unidirectionally broadcastable to
+  // input when the shape of slope is smaller than the input. While WebNN allows
+  // input and slope to be bidirectionally broadcastable.
+  if (!BroadcastShapes(slope_shape, input_shape, /*bidirectional=*/false)) {
+    input = CreateExpandNode(input, slope_shape);
+  }
+  std::array<const char*, 2> inputs = {input.c_str(), slope.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypePRelu, node_name, inputs, outputs);
 }
 
 void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
@@ -809,6 +902,10 @@ GraphBuilderOrt::BuildModel() {
         AddElementWiseUnaryOperation(*operation->get_element_wise_unary());
         break;
       }
+      case mojom::Operation::Tag::kExpand: {
+        AddExpandOperation(*operation->get_expand());
+        break;
+      }
       case mojom::Operation::Tag::kGelu: {
         CHECK(data_type_limits.gelu_input.Supports(
             GetOperand(operation->get_gelu()->input_operand_id).descriptor));
@@ -828,6 +925,14 @@ GraphBuilderOrt::BuildModel() {
       }
       case mojom::Operation::Tag::kPool2d: {
         AddPool2dOperation(*operation->get_pool2d());
+        break;
+      }
+      case mojom::Operation::Tag::kLeakyRelu: {
+        AddLeakyReluOperation(*operation->get_leaky_relu());
+        break;
+      }
+      case mojom::Operation::Tag::kPrelu: {
+        AddPreluOperation(*operation->get_prelu());
         break;
       }
       case mojom::Operation::Tag::kRelu: {
@@ -873,7 +978,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kElu:
-      case mojom::Operation::Tag::kExpand:
       case mojom::Operation::Tag::kGather:
       case mojom::Operation::Tag::kGatherElements:
       case mojom::Operation::Tag::kGatherNd:
@@ -886,9 +990,7 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kMatmul:
-      case mojom::Operation::Tag::kLeakyRelu:
       case mojom::Operation::Tag::kPad:
-      case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kReduce:
       case mojom::Operation::Tag::kResample2d:

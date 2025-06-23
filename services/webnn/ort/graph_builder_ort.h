@@ -107,6 +107,18 @@ class GraphBuilderOrt {
     requires internal::IsSupportedTensorType<DataType>
   std::string CreateScalarInitializer(const DataType& value);
 
+  // A helper method creating an int64 tensor with the given shape value.
+  // It can be used by `reshape` and `expand` to create an initializer that
+  // specifies the output's shape.
+  std::string CreateInitializerForShape(base::span<const uint32_t> shape);
+
+  void AddExpandNode(base::cstring_view node_name,
+                     base::cstring_view input,
+                     base::cstring_view output,
+                     base::span<const uint32_t> shape);
+
+  std::string CreateExpandNode(base::cstring_view input,
+                               base::span<const uint32_t> shape);
   template <typename T>
   void AddBinaryOperation(const T& operation, base::cstring_view op_type);
   template <typename T>
@@ -120,8 +132,11 @@ class GraphBuilderOrt {
       const mojom::ElementWiseBinary& element_wise_binary);
   void AddElementWiseUnaryOperation(
       const mojom::ElementWiseUnary& element_wise_unary);
+  void AddExpandOperation(const mojom::Expand& expand);
   void AddGemmOperation(const mojom::Gemm& gemm);
+  void AddLeakyReluOperation(const mojom::LeakyRelu& leaky_relu);
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
+  void AddPreluOperation(const mojom::Prelu& prelu);
   void AddReshapeOperation(const mojom::Reshape& reshape);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
   void AddTransposeOperation(const mojom::Transpose& transpose);

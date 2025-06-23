@@ -114,7 +114,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*sqrt_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*tan_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*elu_input=*/{},
-       /*expand_input=*/{},
+       /*expand_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*gather_input=*/{},
        /*gather_indices=*/{},
        /*gather_elements_input=*/{},
@@ -135,7 +136,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*instance_normalization_input=*/{},
        /*instance_normalization_scale=*/{},
        /*layer_normalization_input=*/{},
-       /*leaky_relu_input=*/{},
+       /*leaky_relu_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*linear_input=*/{},
        /*lstm_input=*/{},
        /*lstm_bias=*/{},
@@ -149,7 +150,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, {3, 8}},
        /*max_pool2d_input=*/
        {kInts8Float16To32, {3, 8}},
-       /*prelu_input=*/{},
+       /*prelu_input=*/{DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
        /*quantize_linear_input=*/{},
        /*quantize_linear_zero_point=*/{},
        /*reduce_l1_input=*/{},
