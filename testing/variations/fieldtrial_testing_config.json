@@ -16340,6 +16340,21 @@
             ]
         }
     ],
+    "OnDeviceStorage": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OnDeviceStorage"
+                    ]
+                }
+            ]
+        }
+    ],
     "OneGroupPerRenderer": [
         {
             "platforms": [
