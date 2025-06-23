@@ -10,7 +10,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
-- fuchsia
+- android
 items:
 - caption: Allow WebRTC event log collection from Google services
   value: true

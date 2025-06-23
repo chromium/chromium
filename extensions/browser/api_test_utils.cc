@@ -135,7 +135,8 @@ std::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     FunctionMode mode) {
   RunFunction(function, std::move(args), std::move(dispatcher), mode);
   EXPECT_TRUE(function->GetError().empty())
-      << "Unexpected error: " << function->GetError();
+      << "Function " << function->name()
+      << " had unexpected error: " << function->GetError();
   const base::Value::List* results = function->GetResultListForTest();
   if (!results || results->empty()) {
     return std::nullopt;
