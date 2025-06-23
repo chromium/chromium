@@ -12,7 +12,8 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -40,6 +41,15 @@ constexpr gfx::Size kMaxWebContentsSize(2000, 2000);
 constexpr gfx::Size kAutoResizeModeInitialSize(1, 1);
 
 ClipboardImageModelRequest::TestParams* g_test_params = nullptr;
+
+content::BrowserContext* GetBrowserContextByAccountId(
+    const AccountId& account_id) {
+  auto* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  CHECK(browser_context);
+  return browser_context;
+}
 
 }  // namespace
 
@@ -108,14 +118,12 @@ ClipboardImageModelRequest::ScopedClipboardModifier::
 }
 
 ClipboardImageModelRequest::ClipboardImageModelRequest(
-    Profile* profile,
+    const AccountId& account_id,
     base::RepeatingClosure on_request_finished_callback)
     : widget_(std::make_unique<views::Widget>()),
-      web_view_(new views::WebView(profile)),
+      web_view_(new views::WebView(GetBrowserContextByAccountId(account_id))),
       on_request_finished_callback_(std::move(on_request_finished_callback)),
       request_creation_time_(base::TimeTicks::Now()) {
-  CHECK(profile);
-
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);

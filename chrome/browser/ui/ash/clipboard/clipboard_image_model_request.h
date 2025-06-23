@@ -17,6 +17,8 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/image_model.h"
 
+class AccountId;
+
 namespace ash {
 class ScopedClipboardHistoryPause;
 }  // namespace ash
@@ -29,8 +31,6 @@ namespace views {
 class WebView;
 class Widget;
 }  // namespace views
-
-class Profile;
 
 // Renders html in an off-screen WebView, copies the rendered surface, and
 // passes the copy through |deliver_image_model_callback_|. If the request takes
@@ -105,7 +105,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   };
 
   ClipboardImageModelRequest(
-      Profile* profile,
+      const AccountId& account_id,
       base::RepeatingClosure on_request_finished_callback);
   ClipboardImageModelRequest(const ClipboardImageModelRequest&) = delete;
   ClipboardImageModelRequest operator=(const ClipboardImageModelRequest&) =
