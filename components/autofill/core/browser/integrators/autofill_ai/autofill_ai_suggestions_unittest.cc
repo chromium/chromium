@@ -17,11 +17,13 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -81,32 +83,22 @@ class AutofillAiSuggestionsTest : public testing::Test {
     entities_ = std::move(entities);
   }
 
-  // Sets the form to one whose `i`th field has types `multiple_field_types[i]`.
-  void SetForm(
-      const std::vector<std::vector<FieldType>>& multiple_field_types) {
+  // Sets the form to one whose `i`th field has type `field_types[i]`.
+  void SetForm(const std::vector<FieldType>& field_types) {
     test::FormDescription form_description;
-    for (std::vector<FieldType> field_types : multiple_field_types) {
-      FieldType type = field_types.empty() ? UNKNOWN_TYPE : field_types[0];
+    for (FieldType type : field_types) {
       form_description.fields.emplace_back(
           test::FieldDescription({.role = type}));
     }
     form_structure_.emplace(test::GetFormData(form_description));
-    CHECK_EQ(multiple_field_types.size(), form_structure_->field_count());
+    CHECK_EQ(field_types.size(), form_structure_->field_count());
     for (size_t i = 0; i < form_structure_->field_count(); i++) {
-      form_structure_->field(i)->set_server_predictions(
-          base::ToVector(multiple_field_types[i], [](FieldType type) {
-            FieldPrediction prediction;
-            prediction.set_type(type);
-            return prediction;
-          }));
+      form_structure_->field(i)->set_server_predictions({[&] {
+        FieldPrediction prediction;
+        prediction.set_type(field_types[i]);
+        return prediction;
+      }()});
     }
-  }
-
-  // Sets the form to one whose `i`th field has type `field_types[i]`.
-  void SetForm(const std::vector<FieldType>& field_types) {
-    SetForm(base::ToVector(field_types, [](FieldType type) {
-      return std::vector<FieldType>({type});
-    }));
   }
 
   AutofillField& field(size_t i) { return *form_structure_->fields()[i]; }
@@ -114,21 +106,31 @@ class AutofillAiSuggestionsTest : public testing::Test {
   std::optional<std::u16string> GetFillValueForField(
       const Suggestion::AutofillAiPayload& payload,
       const AutofillField& field) {
-    auto entity_it =
-        std::ranges::find(entities_, payload.guid, &EntityInstance::guid);
-    if (entity_it == entities_.end()) {
+    auto it = std::ranges::find(entities_, payload.guid, &EntityInstance::guid);
+    if (it == entities_.end()) {
       return std::nullopt;
     }
-    auto attribute_it = std::ranges::find_if(
-        entity_it->attributes(), [&field](const AttributeInstance& attribute) {
-          return attribute.type().field_type() ==
-                 field.GetAutofillAiServerTypePredictions();
-        });
-    if (attribute_it == entity_it->attributes().end()) {
+    const EntityInstance& entity = *it;
+
+    std::vector<AutofillFieldWithAttributeType> fields_and_types =
+        DetermineAttributeTypes(*form_structure_, field.section(),
+                                entity.type());
+    auto jt = std::ranges::find(fields_and_types, field.global_id(),
+                                [](const AutofillFieldWithAttributeType& f) {
+                                  return f.field->global_id();
+                                });
+    if (jt == fields_and_types.end()) {
       return std::nullopt;
     }
-    return attribute_it->GetInfo(field.Type().GetStorableType(), kAppLocaleUS,
-                                 field.format_string());
+    const AttributeType type = jt->type;
+
+    base::optional_ref<const AttributeInstance> attribute =
+        entity.attribute(type);
+    if (!attribute) {
+      return std::nullopt;
+    }
+    return attribute->GetInfo(field.Type().GetStorableType(), kAppLocaleUS,
+                              field.format_string());
   }
 
   std::vector<Suggestion> CreateFillingSuggestions(const AutofillField& field) {
@@ -137,6 +139,8 @@ class AutofillAiSuggestionsTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillAiNoTagTypes};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::vector<EntityInstance> entities_;
   std::optional<FormStructure> form_structure_;
@@ -163,12 +167,12 @@ TEST_F(AutofillAiSuggestionsTest, NoSuggestionsOnNonAiField) {
 TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PassportEntity) {
   EntityInstance passport_entity = MakePassportWithRandomGuid();
   SetEntities({passport_entity});
-  SetForm({PASSPORT_NAME_TAG, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
+  SetForm({NAME_FULL, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
 
   std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
 
   // There should be only one suggestion whose main text matches the entity
-  // value for the PASSPORT_NAME_TAG.
+  // value for the passport name.
   EXPECT_THAT(suggestions,
               SuggestionsAre(HasMainText(GetPassportName(passport_entity))));
 
@@ -194,7 +198,7 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PrefixMatching) {
       MakePassportWithRandomGuid({.name = u"Harry Potter"});
 
   SetEntities({passport_prefix_matches, passport_prefix_does_not_match});
-  SetForm({PASSPORT_NAME_TAG, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
+  SetForm({NAME_FULL, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
   field(0).set_value(u"J");
 
   // There should be only one suggestion whose main text matches is a prefix of
@@ -219,7 +223,7 @@ TEST_F(AutofillAiSuggestionsTest,
        GetFillingSuggestion_SkipFieldsThatDoNotMatchTheTriggeringFieldSection) {
   EntityInstance passport_entity = MakePassportWithRandomGuid();
   SetEntities({passport_entity});
-  SetForm({PASSPORT_NAME_TAG, PASSPORT_NUMBER});
+  SetForm({PASSPORT_NUMBER, PASSPORT_EXPIRATION_DATE});
 
   field(0).set_section(Section::FromAutocomplete(Section::Autocomplete("foo")));
   field(1).set_section(Section::FromAutocomplete(Section::Autocomplete("bar")));
@@ -227,14 +231,15 @@ TEST_F(AutofillAiSuggestionsTest,
 
   std::vector<Suggestion> suggestions = CreateFillingSuggestions(field(0));
   EXPECT_THAT(suggestions,
-              SuggestionsAre(HasMainText(GetPassportName(passport_entity))));
+              SuggestionsAre(HasMainText(GetPassportNumber(passport_entity))));
+  EXPECT_THAT(suggestions, SuggestionsAre(HasLabel(u"Passport")));
 
   const Suggestion::AutofillAiPayload* payload =
       std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
   ASSERT_TRUE(payload);
   // The triggering/first field is of Autofill AI type.
   EXPECT_EQ(GetFillValueForField(*payload, field(0)),
-            GetPassportName(passport_entity));
+            GetPassportNumber(passport_entity));
 }
 
 // Tests that there are no suggestions if the existing entities don't match the
@@ -243,7 +248,7 @@ TEST_F(AutofillAiSuggestionsTest, NonMatchingEntity_DoNoReturnSuggestions) {
   EntityInstance drivers_license_entity =
       test::GetDriversLicenseEntityInstance();
   SetEntities({drivers_license_entity});
-  SetForm({PASSPORT_NAME_TAG});
+  SetForm({NAME_FULL, PASSPORT_NUMBER});
   EXPECT_THAT(CreateFillingSuggestions(field(0)), IsEmpty());
 }
 
@@ -259,9 +264,7 @@ TEST_F(AutofillAiSuggestionsTest, EmptyMainTextForStructuredAttribute) {
   ASSERT_EQ(name->GetInfo(NAME_FIRST, kAppLocaleUS, std::nullopt), u"");
   ASSERT_EQ(name->GetInfo(NAME_LAST, kAppLocaleUS, std::nullopt), u"Miller");
 
-  SetForm({{NAME_FIRST, PASSPORT_NAME_TAG},
-           {NAME_LAST, PASSPORT_NAME_TAG},
-           {PASSPORT_NUMBER}});
+  SetForm({NAME_FIRST, NAME_LAST, PASSPORT_NUMBER});
 
   EXPECT_THAT(CreateFillingSuggestions(field(0)), IsEmpty());
   EXPECT_THAT(CreateFillingSuggestions(field(1)), Not(IsEmpty()));
@@ -276,7 +279,7 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_DedupeSuggestions) {
   EntityInstance passport4 =
       MakePassportWithRandomGuid({.expiry_date = nullptr});
   SetEntities({passport1, passport2, passport3, passport4});
-  SetForm({PASSPORT_NAME_TAG, PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY});
+  SetForm({NAME_FULL, PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY});
 
   // `passport3` is deduped because there is no expiry date in the form and its
   // remaining attributes are a subset of `passport1`.
@@ -301,7 +304,7 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestions_Undo) {
 
 TEST_F(AutofillAiSuggestionsTest, LabelGeneration_SingleEntity_NoLabelAdded) {
   SetEntities({MakePassportWithRandomGuid()});
-  SetForm({PASSPORT_NUMBER, PASSPORT_NAME_TAG});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
   EXPECT_THAT(CreateFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport")));
 }
@@ -329,7 +332,7 @@ TEST_F(AutofillAiSuggestionsTest,
   SetEntities({MakePassportWithRandomGuid(),
                MakePassportWithRandomGuid(
                    {.name = u"Machado de Assis", .number = u"123"})});
-  SetForm({PASSPORT_NUMBER, PASSPORT_NAME_TAG});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
   EXPECT_THAT(CreateFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport · Pippi Långstrump"),
                              HasLabel(u"Passport · Machado de Assis")));
@@ -345,7 +348,7 @@ TEST_F(
                    {.name = u"Machado de Assis", .country = u"Brazil"})});
 
   // Note that passport name is the first at the rank of disambiguating texts.
-  SetForm({PASSPORT_NAME_TAG, PASSPORT_ISSUING_COUNTRY});
+  SetForm({NAME_FULL, PASSPORT_ISSUING_COUNTRY});
   EXPECT_THAT(CreateFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport"), HasLabel(u"Passport")));
 }
@@ -359,7 +362,7 @@ TEST_F(
                MakePassportWithRandomGuid({.country = u"Brazil"})});
 
   // Note that passport name is the first at the rank of disambiguating texts.
-  SetForm({PASSPORT_NAME_TAG, PASSPORT_ISSUING_COUNTRY});
+  SetForm({NAME_FULL, PASSPORT_ISSUING_COUNTRY});
   EXPECT_THAT(CreateFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport · Sweden"),
                              HasLabel(u"Passport · Brazil")));
@@ -392,7 +395,7 @@ TEST_F(AutofillAiSuggestionsTest,
   SetEntities({MakeVehicleWithRandomGuid(),
                MakeVehicleWithRandomGuid({.model = u"Series 3"}),
                MakeVehicleWithRandomGuid({.name = u"Diego Maradona"})});
-  SetForm({VEHICLE_LICENSE_PLATE, VEHICLE_MODEL, VEHICLE_OWNER_TAG});
+  SetForm({VEHICLE_LICENSE_PLATE, VEHICLE_MODEL, NAME_FULL});
   EXPECT_THAT(CreateFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Vehicle · Series 2 · Knecht Ruprecht"),
                              HasLabel(u"Vehicle · Series 3 · Knecht Ruprecht"),
@@ -422,7 +425,7 @@ TEST_F(
     LabelGeneration_TwoSuggestions_PassportsWithDifferentExpiryDates_DoNotAddDifferentiatingLabel) {
   SetEntities({MakePassportWithRandomGuid(),
                MakePassportWithRandomGuid({.expiry_date = u"2018-12-29"})});
-  SetForm({PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY, PASSPORT_NAME_TAG,
+  SetForm({PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY, NAME_FULL,
            PASSPORT_EXPIRATION_DATE});
   EXPECT_THAT(CreateFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport"), HasLabel(u"Passport")));

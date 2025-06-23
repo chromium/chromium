@@ -127,8 +127,10 @@ class AutofillAiManagerTest : public testing::Test {
  public:
   AutofillAiManagerTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillAiWithDataSchema, features::kAutofillAiServerModel},
-        {});
+        /*enabled_features=*/{features::kAutofillAiWithDataSchema,
+                              features::kAutofillAiNoTagTypes,
+                              features::kAutofillAiServerModel},
+        /*disabled_features=*/{});
     autofill_client().GetPersonalDataManager().SetPrefService(
         autofill_client().GetPrefs());
     autofill_client().set_entity_data_manager(
@@ -201,11 +203,10 @@ class AutofillAiManagerTest : public testing::Test {
 TEST_F(AutofillAiManagerTest,
        GetSuggestionsTriggeringFieldIsAutofillAi_ReturnFillingSuggestion) {
   test::FormDescription form_description = {
-      .fields = {{.role = NAME_FIRST, .heuristic_type = NAME_FIRST}}};
+      .fields = {{.role = PASSPORT_NUMBER}}};
   FormData form = test::GetFormData(form_description);
   FormStructure form_structure = FormStructure(form);
-  AddPredictionsToFormStructure(form_structure,
-                                {{NAME_FIRST, PASSPORT_NAME_TAG}});
+  AddPredictionsToFormStructure(form_structure, {{PASSPORT_NUMBER}});
 
   AddOrUpdateEntityInstance(test::GetPassportEntityInstance());
   EXPECT_THAT(manager().GetSuggestions(form_structure, form.fields().front()),
@@ -302,8 +303,7 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
       std::u16string passport_number = std::u16string(kDefaultPassportNumber),
       std::string url = std::string(kDefaultUrl)) {
     std::unique_ptr<FormStructure> form = CreateFormStructure(
-        {PASSPORT_NAME_TAG, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER},
-        std::move(url));
+        {NAME_FULL, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER}, std::move(url));
     form->field(0)->set_value(u"Jon Doe");
     form->field(1)->set_value(std::move(passport_number));
     return form;
@@ -312,8 +312,8 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
   [[nodiscard]] std::unique_ptr<FormStructure> CreateVehicleForm(
       std::u16string license_plate = std::u16string(kDefaultLicensePlate),
       std::string url = std::string(kDefaultUrl)) {
-    std::unique_ptr<FormStructure> form = CreateFormStructure(
-        {VEHICLE_OWNER_TAG, VEHICLE_LICENSE_PLATE}, std::move(url));
+    std::unique_ptr<FormStructure> form =
+        CreateFormStructure({NAME_FULL, VEHICLE_LICENSE_PLATE}, std::move(url));
     form->field(0)->set_value(u"Jane Doe");
     form->field(1)->set_value(std::move(license_plate));
     return form;
@@ -642,7 +642,7 @@ TEST_F(AutofillAiManagerImportFormTest, AcceptingResetsStrikesPerAttribute) {
 TEST_F(AutofillAiManagerImportFormTest,
        EntityContainsRequiredAttributes_ShowPromptAndAccept) {
   std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {PASSPORT_NAME_TAG, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
+      {NAME_FULL, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
   form->field(0)->set_value(u"Jon Doe");
   form->field(1)->set_value(u"1234321");
 
@@ -678,7 +678,7 @@ TEST_F(AutofillAiManagerImportFormTest,
 TEST_F(AutofillAiManagerImportFormTest,
        EntityContainsRequiredAttributes_ShowPromptAndDecline) {
   std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {PASSPORT_NAME_TAG, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
+      {NAME_FULL, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
   // Set the filled values to be the same as the ones already stored.
   form->field(0)->set_value(u"Jon Doe");
   form->field(1)->set_value(u"1234321");
@@ -699,7 +699,7 @@ TEST_F(AutofillAiManagerImportFormTest,
 TEST_F(AutofillAiManagerImportFormTest,
        EntityDoesNotContainRequiredAttributes_DoNotShowPrompt) {
   std::unique_ptr<FormStructure> form =
-      CreateFormStructure({PASSPORT_ISSUING_COUNTRY, PASSPORT_NAME_TAG});
+      CreateFormStructure({PASSPORT_ISSUING_COUNTRY, NAME_FULL});
   // Set the filled values to be the same as the ones already stored.
   form->field(0)->set_value(u"Germany");
   form->field(1)->set_value(u"1234321");
@@ -717,7 +717,7 @@ TEST_F(AutofillAiManagerImportFormTest,
 TEST_F(AutofillAiManagerImportFormTest, EntityAlreadyStored_DoNotShowPrompt) {
   using enum AttributeTypeName;
   std::unique_ptr<FormStructure> form =
-      CreateFormStructure({DRIVERS_LICENSE_NAME_TAG, DRIVERS_LICENSE_NUMBER});
+      CreateFormStructure({NAME_FULL, DRIVERS_LICENSE_NUMBER});
   EntityInstance entity = test::GetDriversLicenseEntityInstance();
   // Set the filled values to be the same as the ones already stored.
   form->field(0)->set_value(
@@ -736,7 +736,7 @@ TEST_F(AutofillAiManagerImportFormTest, EntityAlreadyStored_DoNotShowPrompt) {
 
 TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
   std::unique_ptr<FormStructure> form = CreateFormStructure(
-      {PASSPORT_NAME_TAG, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
+      {NAME_FULL, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
   EntityInstance existing_entity = test::GetPassportEntityInstance();
   AddOrUpdateEntityInstance(existing_entity);
   // Set the filled values to be different to the ones already stored.
@@ -780,9 +780,9 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
   using enum AttributeTypeName;
   // The submitted form will have issue date info.
   std::unique_ptr<FormStructure> form =
-      CreateFormStructure({PASSPORT_NAME_TAG, PASSPORT_NUMBER,
-                           PASSPORT_ISSUE_DATE, PASSPORT_EXPIRATION_DATE,
-                           PASSPORT_EXPIRATION_DATE, PASSPORT_EXPIRATION_DATE});
+      CreateFormStructure({NAME_FULL, PASSPORT_NUMBER, PASSPORT_ISSUE_DATE,
+                           PASSPORT_EXPIRATION_DATE, PASSPORT_EXPIRATION_DATE,
+                           PASSPORT_EXPIRATION_DATE});
 
   // The current entity however does not.
   EntityInstance existing_entity_without_issue_and_expiry_dates =

@@ -108,9 +108,16 @@ std::unique_ptr<AutofillField> CreateSelect(std::vector<std::string> values,
 }
 
 class AutofillAiImportUtilsTest : public testing::Test {
+ public:
+  AutofillAiImportUtilsTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillAiWithDataSchema,
+                              features::kAutofillAiNoTagTypes},
+        /*disabled_features=*/{});
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillAiWithDataSchema};
+  base::test::ScopedFeatureList feature_list_;
   test::AutofillUnitTestEnvironment autofill_environment_;
 };
 
@@ -121,8 +128,7 @@ TEST_F(AutofillAiImportUtilsTest, ImportFromInput) {
   fields.push_back(CreateInput(FormControlType::kInputText,
                                FieldType::PASSPORT_NUMBER, "123"));
   fields.push_back(CreateInput(FormControlType::kInputText,
-                               FieldType::PASSPORT_NAME_TAG,
-                               "Karlsson on the Roof"));
+                               FieldType::NAME_FULL, "Karlsson on the Roof"));
   // Input fields for which the initial value is the same as the current value
   // are ignored during import.
   fields.push_back(CreateInput(FormControlType::kInputText,
