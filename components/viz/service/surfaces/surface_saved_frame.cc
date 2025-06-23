@@ -154,18 +154,17 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
   // If we're using BlitRequests, then we need to create the result bundle
   // immediately, since it can be imported before the copy output results
   // arrive.
-    for (auto& [index, shared_image] : blit_shared_images_) {
-      OutputCopyResult* slot = &frame_result_->shared_results[index].emplace();
+  for (auto& [index, shared_image] : blit_shared_images_) {
+    OutputCopyResult* slot = &frame_result_->shared_results[index].emplace();
 
-      slot->sync_token = shared_image->creation_sync_token();
-      slot->shared_image = shared_image;
-      slot->release_callback = base::BindOnce(
-          [](scoped_refptr<gpu::ClientSharedImage> image,
-             const gpu::SyncToken& sync_token, bool is_lost) {
-            image->UpdateDestructionSyncToken(sync_token);
-          },
-          std::move(shared_image));
-    }
+    slot->sync_token = shared_image->creation_sync_token();
+    slot->shared_image = shared_image;
+    slot->release_callback = base::BindOnce(
+        [](scoped_refptr<gpu::ClientSharedImage> image,
+           const gpu::SyncToken& sync_token,
+           bool is_lost) { image->UpdateDestructionSyncToken(sync_token); },
+        std::move(shared_image));
+  }
 
   if (copy_request_count_ == 0) {
     DispatchCopyDoneCallback();
@@ -200,36 +199,35 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
                      weak_factory_.GetMutableWeakPtr(), shared_pass_index));
   request->set_result_task_runner(
       base::SingleThreadTaskRunner::GetCurrentDefault());
-    scoped_refptr<gpu::ClientSharedImage>& shared_image =
-        blit_shared_images_[shared_pass_index];
+  scoped_refptr<gpu::ClientSharedImage>& shared_image =
+      blit_shared_images_[shared_pass_index];
 
-    const auto& display_color_spaces = directive_.display_color_spaces();
-    bool has_transparent_background = render_pass.has_transparent_background;
+  const auto& display_color_spaces = directive_.display_color_spaces();
+  bool has_transparent_background = render_pass.has_transparent_background;
 
-    auto image_format =
-        GetSharedImageFormat(display_color_spaces.GetOutputBufferFormat(
-            content_color_usage, has_transparent_background));
-    auto color_space = ColorSpaceUtils::CompositingColorSpace(
-        display_color_spaces, content_color_usage, has_transparent_background);
+  auto image_format =
+      GetSharedImageFormat(display_color_spaces.GetOutputBufferFormat(
+          content_color_usage, has_transparent_background));
+  auto color_space = ColorSpaceUtils::CompositingColorSpace(
+      display_color_spaces, content_color_usage, has_transparent_background);
 
-    if (is_software) {
-      gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
-      shared_image =
-          shared_image_interface_->CreateSharedImageForSoftwareCompositor(
-              {image_format, size, color_space, flags,
-               "ViewTransitionTexture"});
-    } else {
-      gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                       gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
-      shared_image = shared_image_interface_->CreateSharedImage(
-          {image_format, size, color_space, flags, "ViewTransitionTexture"},
-          gpu::kNullSurfaceHandle);
-    }
-    request->set_result_selection(gfx::Rect(size));
-    request->set_blit_request(BlitRequest(
-        gfx::Point(), LetterboxingBehavior::kDoNotLetterbox,
-        shared_image->mailbox(), shared_image->creation_sync_token(),
-        /*populates_gpu_memory_buffer=*/false));
+  if (is_software) {
+    gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
+    shared_image =
+        shared_image_interface_->CreateSharedImageForSoftwareCompositor(
+            {image_format, size, color_space, flags, "ViewTransitionTexture"});
+  } else {
+    gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                     gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+    shared_image = shared_image_interface_->CreateSharedImage(
+        {image_format, size, color_space, flags, "ViewTransitionTexture"},
+        gpu::kNullSurfaceHandle);
+  }
+  request->set_result_selection(gfx::Rect(size));
+  request->set_blit_request(
+      BlitRequest(gfx::Point(), LetterboxingBehavior::kDoNotLetterbox,
+                  shared_image->mailbox(), shared_image->creation_sync_token(),
+                  /*populates_gpu_memory_buffer=*/false));
 
   return request;
 }
