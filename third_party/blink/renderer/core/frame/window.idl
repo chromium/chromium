@@ -135,8 +135,8 @@
     [HighEntropy=Direct, MeasureAs=WindowPageXOffset, Replaceable] readonly attribute double pageXOffset;
     [HighEntropy=Direct, MeasureAs=WindowScrollY, Replaceable] readonly attribute double scrollY;
     [HighEntropy=Direct, MeasureAs=WindowPageYOffset, Replaceable] readonly attribute double pageYOffset;
-    void scroll(optional ScrollToOptions options = {});
-    void scroll(unrestricted double x, unrestricted double y);
+    [ImplementedAs=scrollTo] void scroll(optional ScrollToOptions options = {});
+    [ImplementedAs=scrollTo] void scroll(unrestricted double x, unrestricted double y);
     void scrollTo(optional ScrollToOptions options = {});
     void scrollTo(unrestricted double x, unrestricted double y);
     void scrollBy(optional ScrollToOptions options = {});
