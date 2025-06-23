@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "components/nacl/common/buildflags.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -20,11 +19,6 @@
 #include "extensions/shell/renderer/api/shell_extensions_renderer_api_provider.h"
 #include "extensions/shell/renderer/shell_extensions_renderer_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-
-#if BUILDFLAG(ENABLE_NACL)
-#include "components/nacl/common/nacl_constants.h"
-#include "components/nacl/renderer/nacl_helper.h"
-#endif
 
 using blink::WebFrame;
 using blink::WebString;
@@ -56,13 +50,6 @@ void ShellContentRendererClient::RenderFrameCreated(
   new ExtensionFrameHelper(render_frame, dispatcher);
 
   dispatcher->OnRenderFrameCreated(render_frame);
-
-  // TODO(jamescook): Do we need to add a new PepperHelper(render_frame) here?
-  // It doesn't seem necessary for either Pepper or NaCl.
-  // http://crbug.com/403004
-#if BUILDFLAG(ENABLE_NACL)
-  new nacl::NaClHelper(render_frame);
-#endif
 }
 
 bool ShellContentRendererClient::OverrideCreatePlugin(
@@ -89,18 +76,6 @@ void ShellContentRendererClient::WillSendRequest(
     const url::Origin* initiator_origin,
     GURL* new_url) {
   // TODO(jamescook): Cause an error for bad extension scheme requests?
-}
-
-bool ShellContentRendererClient::IsExternalPepperPlugin(
-    const std::string& module_name) {
-#if BUILDFLAG(ENABLE_NACL)
-  // TODO(bbudge) remove this when the trusted NaCl plugin has been removed.
-  // We must defer certain plugin events for NaCl instances since we switch
-  // from the in-process to the out-of-process proxy after instantiating them.
-  return module_name == nacl::kNaClPluginName;
-#else
-  return false;
-#endif
 }
 
 void ShellContentRendererClient::RunScriptsAtDocumentStart(

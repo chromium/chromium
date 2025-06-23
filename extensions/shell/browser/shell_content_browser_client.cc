@@ -14,7 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/guest_view/common/guest_view.mojom.h"
-#include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -61,16 +60,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_NACL)
-#include "components/nacl/browser/nacl_browser.h"
-#include "components/nacl/browser/nacl_host_message_filter.h"
-#include "components/nacl/browser/nacl_process_host.h"
-#include "components/nacl/common/nacl_process_type.h"  // nogncheck
-#include "components/nacl/common/nacl_switches.h"      // nogncheck
-#include "content/public/browser/browser_child_process_host.h"
-#include "content/public/browser/child_process_data.h"
-#endif
-
 using base::CommandLine;
 using content::BrowserContext;
 namespace extensions {
@@ -109,20 +98,6 @@ ShellContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
   browser_main_parts_ = browser_main_parts.get();
 
   return browser_main_parts;
-}
-
-void ShellContentBrowserClient::RenderProcessWillLaunch(
-    content::RenderProcessHost* host) {
-#if BUILDFLAG(ENABLE_NACL)
-  int render_process_id = host->GetDeprecatedID();
-  BrowserContext* browser_context = browser_main_parts_->browser_context();
-
-  // PluginInfoMessageFilter is not required because app_shell does not have
-  // the concept of disabled plugins.
-  host->AddFilter(new nacl::NaClHostMessageFilter(
-      render_process_id, browser_context->IsOffTheRecord(),
-      browser_context->GetPath()));
-#endif
 }
 
 bool ShellContentBrowserClient::ShouldUseProcessPerSite(
@@ -184,24 +159,6 @@ void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
 content::SpeechRecognitionManagerDelegate*
 ShellContentBrowserClient::CreateSpeechRecognitionManagerDelegate() {
   return new speech::ShellSpeechRecognitionManagerDelegate();
-}
-
-content::BrowserPpapiHost*
-ShellContentBrowserClient::GetExternalBrowserPpapiHost(int plugin_process_id) {
-#if BUILDFLAG(ENABLE_NACL)
-  content::BrowserChildProcessHostIterator iter(PROCESS_TYPE_NACL_LOADER);
-  while (!iter.Done()) {
-    nacl::NaClProcessHost* host = static_cast<nacl::NaClProcessHost*>(
-        iter.GetDelegate());
-    if (host->process() &&
-        host->process()->GetData().id == plugin_process_id) {
-      // Found the plugin.
-      return host->browser_ppapi_host();
-    }
-    ++iter;
-  }
-#endif
-  return nullptr;
 }
 
 void ShellContentBrowserClient::GetAdditionalAllowedSchemesForFileSystem(
@@ -408,14 +365,6 @@ void ShellContentBrowserClient::AppendRendererSwitches(
   };
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                                  kSwitchNames);
-
-#if BUILDFLAG(ENABLE_NACL)
-  static const char* const kNaclSwitchNames[] = {
-      ::switches::kEnableNaClDebug,
-  };
-  command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                 kNaclSwitchNames);
-#endif  // BUILDFLAG(ENABLE_NACL)
 }
 
 const Extension* ShellContentBrowserClient::GetExtension(

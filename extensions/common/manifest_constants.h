@@ -109,9 +109,6 @@ inline constexpr char kMatches[] = "matches";
 inline constexpr char kMIMETypes[] = "mime_types";
 inline constexpr char kMimeTypesHandler[] = "mime_types_handler";
 inline constexpr char kMinimumChromeVersion[] = "minimum_chrome_version";
-inline constexpr char kNaClModules[] = "nacl_modules";
-inline constexpr char kNaClModulesMIMEType[] = "mime_type";
-inline constexpr char kNaClModulesPath[] = "path";
 inline constexpr char kName[] = "name";
 inline constexpr char kNativelyConnectable[] = "natively_connectable";
 inline constexpr char kOfflineEnabled[] = "offline_enabled";
@@ -513,12 +510,6 @@ inline constexpr char16_t kInvalidMimeTypesHandler[] =
     u"Invalid value for 'mime_types'.";
 inline constexpr char16_t kInvalidMinimumChromeVersion[] =
     u"Invalid value for 'minimum_chrome_version'.";
-inline constexpr char16_t kInvalidNaClModules[] =
-    u"Invalid value for 'nacl_modules'.";
-inline constexpr char kInvalidNaClModulesMIMEType[] =
-    "Invalid value for 'nacl_modules[*].mime_type'.";
-inline constexpr char kInvalidNaClModulesPath[] =
-    "Invalid value for 'nacl_modules[*].path'.";
 inline constexpr char kInvalidName[] =
     "Required value 'name' is missing or invalid.";
 inline constexpr char16_t kInvalidName16[] =

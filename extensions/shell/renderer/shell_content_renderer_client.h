@@ -46,7 +46,6 @@ class ShellContentRendererClient : public content::ContentRendererClient {
                        const net::SiteForCookies& site_for_cookies,
                        const url::Origin* initiator_origin,
                        GURL* new_url) override;
-  bool IsExternalPepperPlugin(const std::string& module_name) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame) override;
 

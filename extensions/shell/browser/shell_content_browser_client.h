@@ -66,7 +66,6 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
   // content::ContentBrowserClient overrides.
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
       bool is_integration_test) override;
-  void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
   bool ShouldUseProcessPerSite(content::BrowserContext* browser_context,
                                const GURL& site_url) override;
   bool IsHandledURL(const GURL& url) override;
@@ -76,8 +75,6 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
                                       int child_process_id) override;
   content::SpeechRecognitionManagerDelegate*
   CreateSpeechRecognitionManagerDelegate() override;
-  content::BrowserPpapiHost* GetExternalBrowserPpapiHost(
-      int plugin_process_id) override;
   void GetAdditionalAllowedSchemesForFileSystem(
       std::vector<std::string>* additional_schemes) override;
   std::unique_ptr<content::DevToolsManagerDelegate>

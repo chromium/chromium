@@ -8,7 +8,6 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
-import("//components/nacl/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
@@ -47,7 +46,6 @@ source_set("app_shell_lib") {
     "//components/guest_view/renderer",
     "//components/keep_alive_registry",
     "//components/keyed_service/content:content",
-    "//components/nacl/common:buildflags",
     "//components/network_session_configurator/common",
     "//components/origin_trials:browser",
     "//components/origin_trials:common",
@@ -249,31 +247,6 @@ source_set("app_shell_lib") {
       "//ui/display/manager",
     ]
   }
-
-  if (enable_nacl) {
-    sources += [
-      "browser/shell_nacl_browser_delegate.cc",
-      "browser/shell_nacl_browser_delegate.h",
-    ]
-
-    deps += [
-      "//components/nacl/browser",
-      "//components/nacl/common",
-      "//components/nacl/renderer",
-      "//components/nacl/renderer/plugin:nacl_trusted_plugin",
-      "//ppapi/shared_impl:shared_impl",
-    ]
-
-    # TODO(https://crbug.com/1299021): These dependencies might be
-    # redundant given that we were able to disable them, apparently without
-    # negative consequences, for the ARM32-NaCl-on-ARM64 case.
-    if (target_cpu != "arm64") {
-      deps += [ "//components/nacl/loader" ]
-      if (is_linux || is_chromeos) {
-        deps += [ "//components/nacl/loader:nacl_helper" ]
-      }
-    }
-  }
 }
 
 executable("app_shell") {
@@ -376,10 +349,6 @@ test("app_shell_unittests") {
       "//chromeos/ash/components/dbus:test_support",
       "//chromeos/ash/components/dbus/audio",
     ]
-  }
-
-  if (enable_nacl) {
-    sources += [ "browser/shell_nacl_browser_delegate_unittest.cc" ]
   }
 }
 
