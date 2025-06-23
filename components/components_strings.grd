@@ -378,6 +378,9 @@
       <message name="IDS_ADD" desc="Used for Add on buttons">
         Add
       </message>
+      <message name="IDS_MOVE" desc="Used for Move on buttons" formatter_data="android_java">
+        Move
+      </message>
       <message name="IDS_REMOVE" desc="Used for Remove on buttons">
         Remove
       </message>

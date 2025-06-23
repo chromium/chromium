@@ -32,6 +32,21 @@ public class TargetSelectorItemProperties {
     public static final PropertyModel.WritableBooleanPropertyKey CHECK_TARGET =
             new PropertyModel.WritableBooleanPropertyKey();
 
+    public static final PropertyModel.WritableObjectPropertyKey<String> LAST_ACCESSED =
+            new PropertyModel.WritableObjectPropertyKey<>();
+
+    public static final PropertyModel.WritableBooleanPropertyKey IS_SELECTED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {FAVICON, TITLE, DESC, INSTANCE_ID, CLICK_LISTENER, CHECK_TARGET};
+            new PropertyKey[] {
+                FAVICON,
+                TITLE,
+                DESC,
+                INSTANCE_ID,
+                CLICK_LISTENER,
+                CHECK_TARGET,
+                LAST_ACCESSED,
+                IS_SELECTED
+            };
 }

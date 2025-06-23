@@ -7,10 +7,15 @@ package org.chromium.chrome.browser.multiwindow;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.not;
 
 import androidx.test.filters.SmallTest;
 
@@ -25,6 +30,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -95,7 +101,8 @@ public class TargetSelectorCoordinatorTest {
                             mModalDialogManager,
                             mIconBridge,
                             moveCallback,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            R.string.menu_move_to_other_window);
                 });
 
         // Choose a target window.
@@ -107,6 +114,47 @@ public class TargetSelectorCoordinatorTest {
                         .getActivity()
                         .getResources()
                         .getString(R.string.target_selector_move);
+        onView(withText(moveTab)).perform(click());
+        itemClickCallbackHelper.waitForCallback(itemClickCount);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    public void testTargetSelectorCoordinatorTest_moveWindow_V2() throws Exception {
+        InstanceInfo[] instances =
+                new InstanceInfo[] {
+                    new InstanceInfo(
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false, 0)
+                };
+        final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
+        final int itemClickCount = itemClickCallbackHelper.getCallCount();
+        Callback<InstanceInfo> moveCallback = (item) -> itemClickCallbackHelper.notifyCalled();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TargetSelectorCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            moveCallback,
+                            Arrays.asList(instances),
+                            R.string.menu_move_tab_to_other_window);
+                });
+
+        // Verify "Move" button is disabled before a selection is made.
+        onView(withText(R.string.move)).inRoot(isDialog()).check(matches(not(isEnabled())));
+
+        // Select the first item.
+        onView(withId(R.id.targets_list))
+                .inRoot(isDialog())
+                .perform(actionOnItemAtPosition(0, click()));
+
+        // Click 'move'.
+        String moveTab = mActivityTestRule.getActivity().getResources().getString(R.string.move);
         onView(withText(moveTab)).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
     }

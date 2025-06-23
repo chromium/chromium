@@ -216,7 +216,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     // Close the source instance window, if needed.
                     closeChromeWindowIfEmpty(mInstanceId);
                 },
-                getInstanceInfo());
+                getInstanceInfo(),
+                UiUtils.isInstanceSwitcherV2Enabled()
+                        ? R.string.menu_move_tab_to_other_window
+                        : R.string.menu_move_to_other_window);
     }
 
     @Override
@@ -236,7 +239,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     // Close the source instance window, if needed.
                     closeChromeWindowIfEmpty(mInstanceId);
                 },
-                getInstanceInfo());
+                getInstanceInfo(),
+                UiUtils.isInstanceSwitcherV2Enabled()
+                        ? R.string.menu_move_group_to_other_window
+                        : R.string.menu_move_to_other_window);
     }
 
     @VisibleForTesting
