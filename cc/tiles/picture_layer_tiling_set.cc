@@ -611,7 +611,6 @@ PictureLayerTilingSet::TilingRange PictureLayerTilingSet::GetTilingRange(
   // compute them only when the tiling set has changed instead.
   size_t tilings_size = tilings_.size();
   TilingRange high_res_range(0, 0);
-  TilingRange low_res_range(tilings_size, tilings_size);
   for (size_t i = 0; i < tilings_size; ++i) {
     const PictureLayerTiling* tiling = tilings_[i].get();
     if (tiling->resolution() == HIGH_RESOLUTION)
@@ -627,22 +626,13 @@ PictureLayerTilingSet::TilingRange PictureLayerTilingSet::GetTilingRange(
       range = high_res_range;
       break;
     case BETWEEN_HIGH_AND_LOW_RES:
-      // TODO(vmpstr): This code assumes that high res tiling will come before
-      // low res tiling, however there are cases where this assumption is
-      // violated. As a result, it's better to be safe in these situations,
-      // since otherwise we can end up accessing a tiling that doesn't exist.
-      // See crbug.com/429397 for high res tiling appearing after low res
-      // tiling discussion/fixes.
-      if (high_res_range.start <= low_res_range.start)
-        range = TilingRange(high_res_range.end, low_res_range.start);
-      else
-        range = TilingRange(low_res_range.end, high_res_range.start);
+      range = TilingRange(high_res_range.end, tilings_size);
       break;
     case LOW_RES:
-      range = low_res_range;
+      range = TilingRange(tilings_size, tilings_size);
       break;
     case LOWER_THAN_LOW_RES:
-      range = TilingRange(low_res_range.end, tilings_size);
+      range = TilingRange(tilings_size, tilings_size);
       break;
   }
 
