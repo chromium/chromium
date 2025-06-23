@@ -399,8 +399,9 @@ String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
           while (source.data() < aligned_end) {
             MachineWord chunk =
                 *reinterpret_cast_ptr<const MachineWord*>(source.data());
-            if (!IsAllASCII<LChar>(chunk))
+            if (!IsAllAscii<LChar>(chunk)) {
               break;
+            }
             CopyAsciiMachineWord(
                 destination.take_first<sizeof(MachineWord)>().data(),
                 source.take_first<sizeof(MachineWord)>().data());
@@ -485,8 +486,9 @@ upConvertTo16Bit:
           while (source.data() < aligned_end) {
             MachineWord chunk =
                 *reinterpret_cast_ptr<const MachineWord*>(source.data());
-            if (!IsAllASCII<LChar>(chunk))
+            if (!IsAllAscii<LChar>(chunk)) {
               break;
+            }
 
             CopyAsciiMachineWord(
                 destination16.take_first<sizeof(MachineWord)>().data(),

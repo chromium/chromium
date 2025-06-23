@@ -165,7 +165,7 @@ bool StringView::IsLowerASCII() const {
     return impl->IsLowerASCII();
   }
   return VisitCharacters(*this,
-                         [](auto chars) { return WTF::IsLowerASCII(chars); });
+                         [](auto chars) { return blink::IsLowerAscii(chars); });
 }
 
 bool StringView::ContainsOnlyASCIIOrEmpty() const {
@@ -173,8 +173,8 @@ bool StringView::ContainsOnlyASCIIOrEmpty() const {
     return impl->ContainsOnlyASCIIOrEmpty();
   if (empty())
     return true;
-  ASCIIStringAttributes attrs = VisitCharacters(
-      *this, [](auto chars) { return CharacterAttributes(chars); });
+  blink::AsciiStringAttributes attrs = VisitCharacters(
+      *this, [](auto chars) { return blink::CharacterAttributes(chars); });
   return attrs.contains_only_ascii;
 }
 
@@ -298,8 +298,8 @@ bool EqualIgnoringASCIICase(const StringView& a, const StringView& b) {
 
 StringView StringView::LowerASCIIMaybeUsingBuffer(
     StackBackingStore& buffer) const {
-  return ConvertASCIICase(*this, LowerConverter(),
-                          StackStringViewAllocator(buffer));
+  return blink::ConvertAsciiCase(*this, blink::LowerConverter(),
+                                 StackStringViewAllocator(buffer));
 }
 
 UChar32 StringView::CodepointAt(unsigned i) const {

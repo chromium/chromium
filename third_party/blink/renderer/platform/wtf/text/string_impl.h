@@ -160,7 +160,7 @@ class WTF_EXPORT StringImpl {
   static scoped_refptr<StringImpl> Create(base::span<const LChar>);
   static scoped_refptr<StringImpl> Create(
       base::span<const LChar>,
-      ASCIIStringAttributes ascii_attributes);
+      blink::AsciiStringAttributes ascii_attributes);
   static scoped_refptr<StringImpl> Create8BitIfPossible(
       base::span<const UChar>);
 
@@ -545,8 +545,8 @@ class WTF_EXPORT StringImpl {
                : kAsciiPropertyCheckDone | kContainsOnlyAscii | kIsLowerAscii;
   }
 
-  static inline uint32_t ASCIIStringAttributesToFlags(
-      ASCIIStringAttributes ascii_attributes) {
+  static inline uint32_t AsciiStringAttributesToFlags(
+      blink::AsciiStringAttributes ascii_attributes) {
     uint32_t flags = kAsciiPropertyCheckDone;
     if (ascii_attributes.contains_only_ascii)
       flags |= kContainsOnlyAscii;

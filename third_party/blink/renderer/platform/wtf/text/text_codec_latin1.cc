@@ -132,8 +132,9 @@ String TextCodecLatin1::Decode(base::span<const uint8_t> bytes,
         while (source < aligned_end) {
           MachineWord chunk = *reinterpret_cast_ptr<const MachineWord*>(source);
 
-          if (!IsAllASCII<LChar>(chunk))
+          if (!IsAllAscii<LChar>(chunk)) {
             goto useLookupTable;
+          }
 
           CopyAsciiMachineWord(destination, source);
           source += sizeof(MachineWord);
@@ -184,8 +185,9 @@ upConvertTo16Bit:
         while (source < aligned_end) {
           MachineWord chunk = *reinterpret_cast_ptr<const MachineWord*>(source);
 
-          if (!IsAllASCII<LChar>(chunk))
+          if (!IsAllAscii<LChar>(chunk)) {
             goto useLookupTable16;
+          }
 
           CopyAsciiMachineWord(destination16, source);
           source += sizeof(MachineWord);

@@ -84,11 +84,11 @@ struct UCharByteFiller<8> {
 };
 
 inline void CopyAsciiMachineWord(LChar* destination, const uint8_t* source) {
-  UCharByteFiller<sizeof(WTF::MachineWord)>::Copy(destination, source);
+  UCharByteFiller<sizeof(MachineWord)>::Copy(destination, source);
 }
 
 inline void CopyAsciiMachineWord(UChar* destination, const uint8_t* source) {
-  UCharByteFiller<sizeof(WTF::MachineWord)>::Copy(destination, source);
+  UCharByteFiller<sizeof(MachineWord)>::Copy(destination, source);
 }
 
 }  // namespace blink

@@ -468,7 +468,7 @@ String String::FromUTF8(base::span<const uint8_t> bytes) {
   if (!length)
     return g_empty_string;
 
-  ASCIIStringAttributes attributes = CharacterAttributes(bytes);
+  blink::AsciiStringAttributes attributes = blink::CharacterAttributes(bytes);
   if (attributes.contains_only_ascii)
     return StringImpl::Create(bytes, attributes);
 
