@@ -503,8 +503,7 @@ void ViewVisibilityChangeWaiter::Wait() {
 
 void ViewVisibilityChangeWaiter::OnViewVisibilityChanged(
     views::View* observed_view,
-    views::View* starting_view,
-    bool visible) {
+    views::View* starting_view) {
   wait_loop_.Quit();
 }
 

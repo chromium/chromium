@@ -68,8 +68,7 @@ void BlurredBackgroundShield::OnViewAddedToWidget(views::View* observed_view) {
 
 void BlurredBackgroundShield::OnViewVisibilityChanged(
     views::View* observed_view,
-    views::View* starting_view,
-    bool visible) {
+    views::View* starting_view) {
   background_layer_.SetVisible(host_->GetVisible());
 }
 

@@ -190,8 +190,7 @@ class SidePanelCoordinator final : public TabStripModelObserver,
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_from,
-                               bool visible) override;
+                               views::View* starting_from) override;
 
   // PinnedToolbarActionsModel::Observer:
   void OnActionsChanged() override;

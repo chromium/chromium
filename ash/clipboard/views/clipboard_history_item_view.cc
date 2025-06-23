@@ -82,8 +82,7 @@ ClipboardHistoryItemView::ContentsView::~ContentsView() = default;
 
 void ClipboardHistoryItemView::ContentsView::OnViewVisibilityChanged(
     views::View* observed_view,
-    views::View* starting_view,
-    bool visible) {
+    views::View* starting_view) {
   is_delete_button_visible_ = observed_view->GetVisible();
   SetClipPath(GetClipPath());
 }

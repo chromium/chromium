@@ -241,8 +241,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view,
-                               bool visible) override;
+                               views::View* starting_view) override;
 
   // views::Widget:
   void OnMouseEvent(ui::MouseEvent* event) override;

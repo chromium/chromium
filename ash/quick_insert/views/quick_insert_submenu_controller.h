@@ -33,8 +33,7 @@ class ASH_EXPORT QuickInsertSubmenuController : public views::ViewObserver {
 
   // ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view,
-                               bool visible) override;
+                               views::View* starting_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;
 
   // Shows the submenu with `items`, anchoring it to `anchor_view`.

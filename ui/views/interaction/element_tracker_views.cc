@@ -160,11 +160,8 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
 
   // ViewObserver:
   void OnViewVisibilityChanged(View* observed_view,
-                               View* starting_view,
-                               bool visible) override {
-    // TODO(https://crbug.com/426560497): change this logic now that
-    // `OnViewVisibilityChanged()` specifies intended visibility.
-    UpdateVisible(observed_view, starting_view
+                               View* starting_view) override {
+    UpdateVisible(observed_view, starting_view->parent()
                                      ? UpdateReason::kGeneral
                                      : UpdateReason::kVisibilityFromRoot);
   }

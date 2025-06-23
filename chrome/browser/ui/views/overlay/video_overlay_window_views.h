@@ -121,8 +121,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view,
-                               bool visible) override;
+                               views::View* starting_view) override;
 
   // PictureInPictureWindow:
   void SetForcedTucking(bool tuck) override;

@@ -133,8 +133,7 @@ class PwaInstallIconChangeWaiter : public views::ViewObserver {
 
   // ViewObserver
   void OnViewVisibilityChanged(views::View* observation_view,
-                               views::View* starting_view,
-                               bool visible) override {
+                               views::View* starting_view) override {
     run_loop_.Quit();
   }
 

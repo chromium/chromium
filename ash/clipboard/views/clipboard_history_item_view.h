@@ -92,8 +92,7 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
    private:
     // views::ViewObserver:
     void OnViewVisibilityChanged(views::View* observed_view,
-                                 views::View* starting_view,
-                                 bool visible) override;
+                                 views::View* starting_view) override;
 
     // Determines whether the contents need to be clipped to avoid overlapping
     // with the delete button.

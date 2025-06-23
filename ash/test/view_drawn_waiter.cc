@@ -40,11 +40,9 @@ void ViewDrawnWaiter::Wait(views::View* view) {
 }
 
 void ViewDrawnWaiter::OnViewVisibilityChanged(views::View* view,
-                                              views::View* starting_view,
-                                              bool visible) {
-  if (IsDrawn(view)) {
+                                              views::View* starting_view) {
+  if (IsDrawn(view))
     wait_loop_->Quit();
-  }
 }
 
 void ViewDrawnWaiter::OnViewBoundsChanged(views::View* view) {

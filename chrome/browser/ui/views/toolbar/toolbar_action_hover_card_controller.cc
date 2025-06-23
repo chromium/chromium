@@ -385,14 +385,19 @@ void ToolbarActionHoverCardController::OnViewIsDeleting(
 
 void ToolbarActionHoverCardController::OnViewVisibilityChanged(
     views::View* observed_view,
-    views::View* starting_view,
-    bool visible) {
+    views::View* starting_view) {
   // Only care about target action view becoming invisible.
   if (observed_view != target_action_view_) {
     return;
   }
-  // If visibility anywhere in the hierarchy changed to false, then the target
-  // view is not visible, so treat it as if it is going away.
+  // Visibility comes from `starting_view` or the widget, if no starting view;
+  // see documentation for ViewObserver::OnViewVisibilityChanged().
+  const bool visible = starting_view
+                           ? starting_view->GetVisible()
+                           : (observed_view->GetWidget() &&
+                              observed_view->GetWidget()->IsVisible());
+  // If visibility changed to false, treat it as if the target action view had
+  // gone away.
   if (!visible) {
     OnViewIsDeleting(observed_view);
   }

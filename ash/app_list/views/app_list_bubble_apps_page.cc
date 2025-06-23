@@ -641,12 +641,11 @@ void AppListBubbleAppsPage::OnActiveAppListModelsChanged(
   recent_apps_->SetModels(search_model, model);
 }
 
-void AppListBubbleAppsPage::OnViewVisibilityChanged(views::View* observed_view,
-                                                    views::View* starting_view,
-                                                    bool visible) {
-  if (starting_view == continue_section_ || starting_view == recent_apps_) {
+void AppListBubbleAppsPage::OnViewVisibilityChanged(
+    views::View* observed_view,
+    views::View* starting_view) {
+  if (starting_view == continue_section_ || starting_view == recent_apps_)
     UpdateSeparatorVisibility();
-  }
 }
 
 void AppListBubbleAppsPage::OnNudgeRemoved() {

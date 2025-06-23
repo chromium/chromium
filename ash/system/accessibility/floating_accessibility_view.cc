@@ -305,11 +305,9 @@ void FloatingAccessibilityView::OnPositionButtonPressed() {
 
 void FloatingAccessibilityView::OnViewVisibilityChanged(
     views::View* observed_view,
-    views::View* starting_view,
-    bool visible) {
-  if (observed_view != starting_view) {
+    views::View* starting_view) {
+  if (observed_view != starting_view)
     return;
-  }
   delegate_->OnLayoutChanged();
 }
 

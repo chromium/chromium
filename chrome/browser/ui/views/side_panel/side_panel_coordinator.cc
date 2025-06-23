@@ -1051,8 +1051,7 @@ void SidePanelCoordinator::UpdatePanelIconAndTitle(
 }
 
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
-                                                   views::View* starting_from,
-                                                   bool visible) {
+                                                   views::View* starting_from) {
   // This method is called in 3 situations:
   //   (1) The SidePanel was previously invisible, and Show() is called. This is
   //   independent of the /*suppress_animations*/ parameter, and is re-entrant.

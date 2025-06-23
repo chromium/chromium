@@ -70,8 +70,7 @@ class ToolbarActionHoverCardController : public views::ViewObserver {
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view,
-                               bool visible) override;
+                               views::View* starting_view) override;
 
   // Timestamp of the last time the hover card is hidden by the mouse leaving
   // the tab strip. This is used for reshowing the hover card without delay if

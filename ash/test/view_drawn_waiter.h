@@ -34,8 +34,7 @@ class ViewDrawnWaiter : public views::ViewObserver {
  private:
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* view,
-                               views::View* starting_view,
-                               bool visible) override;
+                               views::View* starting_view) override;
   void OnViewBoundsChanged(views::View* view) override;
   void OnViewIsDeleting(views::View* view) override;
 

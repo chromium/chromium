@@ -224,8 +224,7 @@ class ViewVisibilityChangeWaiter : public views::ViewObserver {
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view,
-                               bool visible) override;
+                               views::View* starting_view) override;
 
  private:
   const raw_ptr<views::View> view_;

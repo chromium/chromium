@@ -154,8 +154,7 @@ class ControlVisibilityObserver : views::ViewObserver {
 
   // views::ViewObserver overrides.
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view,
-                               bool visible) override {
+                               views::View* starting_view) override {
     MaybeNotifyOfVisibilityChange(observed_view);
   }
   void OnViewBoundsChanged(views::View* observed_view) override {
@@ -237,8 +236,7 @@ class OverlayControlsBecomingVisibleObserver : public views::ViewObserver {
   ~OverlayControlsBecomingVisibleObserver() override = default;
 
   void OnViewVisibilityChanged(views::View*,
-                               views::View* controls_container,
-                               bool visible) override {
+                               views::View* controls_container) override {
     if (controls_container->GetVisible()) {
       std::move(visibility_changed_callback_).Run();
     } else {

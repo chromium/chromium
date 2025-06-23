@@ -686,8 +686,7 @@ void StatusAreaWidget::OnViewIsDeleting(views::View* observed_view) {
 }
 
 void StatusAreaWidget::OnViewVisibilityChanged(views::View* observed_view,
-                                               views::View* starting_view,
-                                               bool visible) {
+                                               views::View* starting_view) {
   CHECK(observed_view == notification_center_tray_);
   UpdateDateTrayRoundedCorners();
 }

@@ -48,8 +48,7 @@ class ASH_EXPORT MahiPanelWidget : public views::Widget,
 
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view,
-                               bool visible) override;
+                               views::View* starting_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;
 
   bool is_refresh_view_visible_ = false;
