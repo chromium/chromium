@@ -2675,6 +2675,10 @@ BASE_FEATURE(kWebRtcAudioSinkUseTimestampAligner,
              "WebRtcAudioSinkUseTimestampAligner",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebRtcPqcForDtls,
+             "WebRtcPqcForDtls",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable borderless mode for desktop PWAs. go/borderless-mode
 BASE_FEATURE(kWebAppBorderless,
              "WebAppBorderless",

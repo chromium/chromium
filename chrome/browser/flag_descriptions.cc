@@ -4561,6 +4561,10 @@ const char kWebrtcHwEncodingName[] = "WebRTC hardware video encoding";
 const char kWebrtcHwEncodingDescription[] =
     "Support in WebRTC for encoding video streams using platform hardware.";
 
+const char kWebRtcPqcForDtlsName[] = "WebRTC PQC for DTLS";
+const char kWebRtcPqcForDtlsDescription[] =
+    "Support in WebRTC to enable PQC for DTLS";
+
 const char kWebrtcUseMinMaxVEADimensionsName[] =
     "WebRTC Min/Max Video Encode Accelerator dimensions";
 const char kWebrtcUseMinMaxVEADimensionsDescription[] =

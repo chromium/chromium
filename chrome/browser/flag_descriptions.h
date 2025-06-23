@@ -2639,6 +2639,9 @@ extern const char kWebrtcHwDecodingDescription[];
 extern const char kWebrtcHwEncodingName[];
 extern const char kWebrtcHwEncodingDescription[];
 
+extern const char kWebRtcPqcForDtlsName[];
+extern const char kWebRtcPqcForDtlsDescription[];
+
 extern const char kWebrtcUseMinMaxVEADimensionsName[];
 extern const char kWebrtcUseMinMaxVEADimensionsDescription[];
 

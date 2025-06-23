@@ -10493,6 +10493,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "webrtc-pqc-for-dtls",
+    "owners": [ "agpalak@chromium.org", "guidou@chromium.org"],
+    "expiry_milestone": 170
+  },
+  {
     "name": "webrtc-wgc-require-border",
     "owners": [ "eladalon@chromium.org", "kron@chromium.org" ],
     "expiry_milestone": 180

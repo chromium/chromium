@@ -10387,6 +10387,7 @@ from previous Chrome versions.
   <int value="-1338237485" label="HardwareSecureDecryptionExperiment:disabled"/>
   <int value="-1337873095" label="CompareManagementInterface:disabled"/>
   <int value="-1337433513" label="FilesGoogleDriveSettingsPage:disabled"/>
+  <int value="-1337331698" label="WebRtcPqcForDtls:enabled"/>
   <int value="-1337185440" label="enable-webvr"/>
   <int value="-1336110789" label="CastMediaRouteProvider:disabled"/>
   <int value="-1335360580" label="ReduceTransferSizeUpdatedIPC:enabled"/>
@@ -16173,6 +16174,7 @@ from previous Chrome versions.
   <int value="816907702" label="GlobalMediaControlsSeamlessTransfer:disabled"/>
   <int value="817080398" label="PreinstalledWebAppDuplicationFixer:disabled"/>
   <int value="817393533" label="GlobalMediaControlsModernUI:disabled"/>
+  <int value="818248688" label="WebRtcPqcForDtls:disabled"/>
   <int value="819620541"
       label="AccessibilityManifestV3AccessibilityCommon:enabled"/>
   <int value="820645399"

@@ -885,7 +885,7 @@ bool RTCPeerConnectionHandler::Initialize(
   configuration_.crypto_options->srtp.enable_encrypted_rtp_header_extensions =
       base::FeatureList::IsEnabled(kWebRtcEncryptedRtpHeaderExtensions);
   configuration_.enable_implicit_rollback = true;
-  if (base::FeatureList::IsEnabled(kWebRtcPQCForDTLS)) {
+  if (base::FeatureList::IsEnabled(features::kWebRtcPqcForDtls)) {
     configuration_.crypto_options->ephemeral_key_exchange_cipher_groups
         .AddFirst(webrtc::CryptoOptions::EphemeralKeyExchangeCipherGroups::
                       kX25519_MLKEM768);
