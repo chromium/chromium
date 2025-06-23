@@ -4791,6 +4791,12 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
   web_prefs->always_show_context_menu_on_touch =
       base::FeatureList::IsEnabled(::features::kContextMenuEmptySpace);
 #endif
+
+  web_prefs->api_based_fingerprinting_interventions_enabled =
+      base::FeatureList::IsEnabled(
+          features::kIncognitoFingerprintingInterventions) &&
+      Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          ->IsIncognitoProfile();
 }
 
 bool ChromeContentBrowserClientParts::OverrideWebPreferencesAfterNavigation(

@@ -986,6 +986,12 @@ BASE_FEATURE(kImmersiveFullscreenPWAs,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
+// If enabled, enables API-specific interventions for web content rendered in
+// Incognito profiles.
+BASE_FEATURE(kIncognitoFingerprintingInterventions,
+             "IncognitoFingerprintingInterventions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // A feature that controls whether Chrome warns about incompatible applications.
 // This feature requires Windows 10 or higher to work because it depends on

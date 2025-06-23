@@ -822,6 +822,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.payment_request_enabled;
   }
 
+  static bool api_based_fingerprinting_interventions_enabled(
+      const blink::web_pref::WebPreferences& r) {
+    return r.api_based_fingerprinting_interventions_enabled;
+  }
+
   static bool Read(blink::mojom::WebPreferencesDataView r,
                    blink::web_pref::WebPreferences* out);
 };

@@ -452,6 +452,10 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // WebView and by `kWebPayments` feature flag everywhere.
   bool payment_request_enabled = false;
 
+  // Whether API-specific interventions aimed at reducing the efficacy of
+  // fingerprinting are enabled.
+  bool api_based_fingerprinting_interventions_enabled = false;
+
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for
   // the embedder to use the same default value.
