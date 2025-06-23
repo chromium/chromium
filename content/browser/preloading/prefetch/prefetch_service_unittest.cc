@@ -5589,6 +5589,74 @@ TEST_P(PrefetchServiceDisableBlockUntilHeadTimeoutTest,
       0);
 }
 
+// Tests that browsing data removal for prefetch is performed per 1) its
+// `referring_origin` 2) if that is std::nullopt, then prefetch url.
+TEST_P(PrefetchServiceTest, PrefetchEviction) {
+  base::HistogramTester histogram_tester;
+
+  struct TestCase {
+    const std::optional<url::Origin> referring_origin;
+    const GURL prefetch_url;
+  };
+  const std::vector<TestCase> test_cases = {
+      {url::Origin::Create(GURL("https://a.test")), GURL("https://a.test/0")},
+      {url::Origin::Create(GURL("https://a.test")), GURL("https://b.test/1")},
+      {url::Origin::Create(GURL("https://b.test")), GURL("https://a.test/2")},
+      {url::Origin::Create(GURL("https://b.test")), GURL("https://b.test/3")},
+      {std::nullopt, GURL("https://a.test/4")},
+      {std::nullopt, GURL("https://b.test/5")},
+  };
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/std::nullopt));
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(browser_context())->GetPrefetchService();
+
+  std::vector<std::unique_ptr<PrefetchHandle>> handles;
+  for (const auto& test_case : test_cases) {
+    handles.push_back(
+        MakePrefetchFromEmbedder(test_case.prefetch_url,
+                                 PrefetchType(PreloadingTriggerType::kEmbedder,
+                                              /*use_prefetch_proxy=*/false),
+                                 /*referrer=*/{}, test_case.referring_origin));
+  }
+  task_environment()->RunUntilIdle();
+
+  // Evict prefetches from "a.test". The prefetch for "a.test" with no
+  // `referring_origin` should also be removed.
+  auto filter_builder = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter_builder->AddOrigin(url::Origin::Create(GURL("https://a.test")));
+  auto filter = filter_builder->BuildStorageKeyFilter();
+  prefetch_service->EvictPrefetchesForBrowsingDataRemoval(
+      filter, PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved);
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(handles[0]->IsAlive());
+  EXPECT_FALSE(handles[1]->IsAlive());
+  EXPECT_FALSE(handles[4]->IsAlive());
+  EXPECT_TRUE(handles[2]->IsAlive());
+  EXPECT_TRUE(handles[3]->IsAlive());
+  EXPECT_TRUE(handles[5]->IsAlive());
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved, 3);
+
+  // Attempt to clear all the cache. The remaining prefetches are also removed.
+  prefetch_service->EvictPrefetchesForBrowsingDataRemoval(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kPreserve)
+          ->BuildStorageKeyFilter(),
+      PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved);
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(handles[2]->IsAlive());
+  EXPECT_FALSE(handles[3]->IsAlive());
+  EXPECT_FALSE(handles[5]->IsAlive());
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved, 6);
+}
+
 // Tests that the prefetch eviction for eligible but not started triggers (i.e.
 // `PreloadingAttempt`'s `PreloadingHoldbackStatus` is `kUnspecified`) causes no
 // crash. This is a regression test of crbug.com/404703517.
