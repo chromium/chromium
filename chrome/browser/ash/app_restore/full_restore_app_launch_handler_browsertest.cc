@@ -36,6 +36,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
@@ -942,8 +943,13 @@ class FullRestoreAppLaunchHandlerChromeAppBrowserTest
     ResetRestoreForTesting();
     set_launch_browser_for_testing(
         std::make_unique<ScopedLaunchBrowserForTesting>());
+    scoped_feature_list_.InitAndEnableFeature(
+        apps::chrome_app_deprecation::kAllowUserInstalledChromeApps);
   }
   ~FullRestoreAppLaunchHandlerChromeAppBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,

@@ -33,7 +33,7 @@ namespace apps::chrome_app_deprecation {
 
 BASE_FEATURE(kAllowUserInstalledChromeApps,
              "AllowUserInstalledChromeApps",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAllowChromeAppsInKioskSessions,
              "AllowChromeAppsInKioskSessions",
@@ -185,15 +185,17 @@ constexpr auto kTestAllowlist = {
 // conditions. We do not risk memory leaks because the following variables are
 // always valid while Chrome is running.
 static base::NoDestructor<std::unordered_set<std::string>>
-    commonAllowlistFromComponentUpdater;
+    common_allowlist_from_component_updater;
 static base::NoDestructor<std::unordered_set<std::string>>
-    userInstalledAllowlistFromComponentUpdater;
+    user_installed_allowlist_from_component_updater;
 static base::NoDestructor<std::unordered_set<std::string>>
-    kioskSessionAllowlistFromComponentUpdater;
-static base::NoDestructor<std::unordered_set<std::string>> testAllowlistedApps(
-    std::unordered_set<std::string>(kTestAllowlist.begin(),
-                                    kTestAllowlist.end()));
-static base::NoDestructor<base::Version> lastAllowlistComponentVersion("0.0.0");
+    kiosk_session_allowlist_from_component_updater;
+static base::NoDestructor<std::unordered_set<std::string>>
+    test_allowlisted_apps(
+        std::unordered_set<std::string>(kTestAllowlist.begin(),
+                                        kTestAllowlist.end()));
+static base::NoDestructor<base::Version> last_allowlist_component_version(
+    "0.0.0");
 
 // This enum lists the possible outcomes of the deprecation checks performed
 // during the launch of a ChromeApp.
@@ -236,18 +238,18 @@ bool IsAllowlisted(std::string_view app_id, AllowlistContext context) {
   switch (context) {
     case AllowlistContext::UserInstalled:
       return kCommonAllowlist.contains(app_id) ||
-             commonAllowlistFromComponentUpdater->contains(app_id.data()) ||
+             common_allowlist_from_component_updater->contains(app_id.data()) ||
              kUserInstalledAllowlist.contains(app_id) ||
-             userInstalledAllowlistFromComponentUpdater->contains(
+             user_installed_allowlist_from_component_updater->contains(
                  app_id.data()) ||
-             testAllowlistedApps->contains(app_id.data());
+             test_allowlisted_apps->contains(app_id.data());
     case AllowlistContext::KioskSession:
       return kCommonAllowlist.contains(app_id) ||
-             commonAllowlistFromComponentUpdater->contains(app_id.data()) ||
+             common_allowlist_from_component_updater->contains(app_id.data()) ||
              kKioskSessionAllowlist.contains(app_id) ||
-             kioskSessionAllowlistFromComponentUpdater->contains(
+             kiosk_session_allowlist_from_component_updater->contains(
                  app_id.data()) ||
-             testAllowlistedApps->contains(app_id.data());
+             test_allowlisted_apps->contains(app_id.data());
   }
 }
 
@@ -328,7 +330,6 @@ bool IsUserInstalled(std::string_view app_id, Profile* profile) {
 
 DeprecationStatus HandleUserInstalledApp(const extensions::Extension& app,
                                          Profile* profile) {
-  // TODO(crbug.com/379261516): Block the execution in M139.
   if (IsAllowlisted(app.id(), AllowlistContext::UserInstalled)) {
     ReportMetric(DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist);
     return DeprecationStatus::kLaunchAllowed;
@@ -389,7 +390,7 @@ void AssignComponentUpdaterAllowlists(
     std::optional<const ChromeAppDeprecation::DynamicAllowlists>
         component_data) {
   if (!component_version.IsValid() ||
-      !(component_version > *lastAllowlistComponentVersion)) {
+      !(component_version > *last_allowlist_component_version)) {
     return;
   }
 
@@ -397,16 +398,16 @@ void AssignComponentUpdaterAllowlists(
     return;
   }
 
-  (*commonAllowlistFromComponentUpdater) = std::unordered_set<std::string>(
+  (*common_allowlist_from_component_updater) = std::unordered_set<std::string>(
       component_data->common_allowlist().begin(),
       component_data->common_allowlist().end());
 
-  (*userInstalledAllowlistFromComponentUpdater) =
+  (*user_installed_allowlist_from_component_updater) =
       std::unordered_set<std::string>(
           component_data->user_installed_allowlist().begin(),
           component_data->user_installed_allowlist().end());
 
-  (*kioskSessionAllowlistFromComponentUpdater) =
+  (*kiosk_session_allowlist_from_component_updater) =
       std::unordered_set<std::string>(
           component_data->kiosk_session_allowlist().begin(),
           component_data->kiosk_session_allowlist().end());
@@ -415,7 +416,7 @@ void AssignComponentUpdaterAllowlists(
 void LoadComponentUpdaterAllowlists(const base::Version& component_version,
                                     const base::FilePath& file_path) {
   if (!component_version.IsValid() ||
-      !(component_version > *lastAllowlistComponentVersion)) {
+      !(component_version > *last_allowlist_component_version)) {
     return;
   }
 
@@ -425,6 +426,26 @@ void LoadComponentUpdaterAllowlists(const base::Version& component_version,
       base::BindOnce(&AssignComponentUpdaterAllowlists, component_version));
 }
 }  // namespace
+
+ScopedSkipSystemDialogForTesting::ScopedSkipSystemDialogForTesting() {
+  g_skip_system_dialog_for_testing = true;
+}
+
+ScopedSkipSystemDialogForTesting::~ScopedSkipSystemDialogForTesting() {
+  g_skip_system_dialog_for_testing = false;
+}
+
+ScopedAddAppToAllowlistForTesting::ScopedAddAppToAllowlistForTesting(
+    std::string app_id)
+    : app_id_(std::move(app_id)) {
+  CHECK(!test_allowlisted_apps->contains(app_id_));
+  test_allowlisted_apps->emplace(app_id_);
+}
+
+ScopedAddAppToAllowlistForTesting::~ScopedAddAppToAllowlistForTesting() {
+  test_allowlisted_apps->erase(app_id_);
+  CHECK(!test_allowlisted_apps->contains(app_id_));
+}
 
 DeprecationStatus HandleDeprecation(std::string_view app_id, Profile* profile) {
   const extensions::Extension* app =
@@ -463,10 +484,6 @@ void RegisterAllowlistComponentUpdater(
       ->Register(cus, base::DoNothing());
 }
 
-void AddAppToAllowlistForTesting(std::string_view app_id) {
-  testAllowlistedApps->emplace(app_id.data());
-}
-
 void SetKioskSessionForTesting(bool value) {
   g_fake_kiosk_session_for_testing = value;
 }
@@ -476,10 +493,6 @@ void AssignComponentUpdaterAllowlistsForTesting(
     std::optional<const ChromeAppDeprecation::DynamicAllowlists>
         component_data) {
   AssignComponentUpdaterAllowlists(component_version, component_data);
-}
-
-void SkipSystemDialogForTesting(bool value) {
-  g_skip_system_dialog_for_testing = value;
 }
 
 }  // namespace apps::chrome_app_deprecation

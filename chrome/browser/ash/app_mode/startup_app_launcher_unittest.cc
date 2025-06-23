@@ -29,6 +29,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
@@ -768,6 +769,10 @@ TEST_F(StartupAppLauncherTest, PrimaryAppLaunchFlow) {
   EXPECT_TRUE(external_apps_loader_handler_->pending_update_urls().empty());
 
   scoped_refptr<const Extension> primary_app = PrimaryAppBuilder().Build();
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      primary_app->id());
+
   ASSERT_TRUE(DownloadPrimaryApp(*primary_app));
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
@@ -951,6 +956,9 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
           .AddSecondaryExtensionWithEnabledOnLaunch(kExtraSecondaryAppId, false)
           .Build();
 
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      primary_app->id());
+
   ASSERT_TRUE(DownloadPrimaryApp(*primary_app));
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
@@ -998,6 +1006,9 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryExtension) {
 
   scoped_refptr<const Extension> primary_app =
       PrimaryAppBuilder().AddSecondaryExtension(kSecondaryAppId).Build();
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      primary_app->id());
 
   ASSERT_TRUE(DownloadPrimaryApp(*primary_app));
 
@@ -1067,6 +1078,9 @@ TEST_F(StartupAppLauncherTest, OfflineWithPrimaryAndSecondaryAppInstalled) {
 TEST_F(StartupAppLauncherTest, OfflineInstallPreCachedExtension) {
   scoped_refptr<const Extension> primary_app = PrimaryAppBuilder().Build();
 
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      primary_app->id());
+
   ASSERT_TRUE(kiosk_app_manager_overrides().PrecachePrimaryApp(*primary_app));
 
   startup_app_launcher_->Initialize();
@@ -1090,6 +1104,9 @@ TEST_F(StartupAppLauncherTest,
        OfflineInstallPreCachedExtensionNotOfflineEnabled) {
   scoped_refptr<const Extension> primary_app =
       PrimaryAppBuilder().set_offline_enabled(false).Build();
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      primary_app->id());
 
   ASSERT_TRUE(kiosk_app_manager_overrides().PrecachePrimaryApp(*primary_app));
 
@@ -1136,6 +1153,9 @@ TEST_F(StartupAppLauncherTest,
           .AddSecondaryExtension(kSecondaryAppId)
           .Build();
 
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      primary_app->id());
+
   scoped_refptr<const Extension> secondary_extension =
       SecondaryAppBuilder(kSecondaryAppId).Build();
 
@@ -1180,6 +1200,9 @@ TEST_F(StartupAppLauncherTest,
        OfflineInstallUncachedExtensionShouldForceNetwork) {
   scoped_refptr<const Extension> primary_app = PrimaryAppBuilder().Build();
 
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      primary_app->id());
+
   startup_app_launcher_->Initialize();
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
@@ -1212,6 +1235,9 @@ TEST_F(StartupAppLauncherTest, IgnoreSecondaryAppsSecondaryApps) {
 
   scoped_refptr<const Extension> primary_app =
       PrimaryAppBuilder().AddSecondaryExtension(kSecondaryAppId).Build();
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      primary_app->id());
 
   ASSERT_TRUE(DownloadAndInstallPrimaryApp(*primary_app));
 
@@ -1285,6 +1311,9 @@ TEST_F(StartupAppLauncherTest,
           .AddSecondaryExtensionWithEnabledOnLaunch(kExtraSecondaryAppId, true)
           .Build();
 
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      primary_app->id());
+
   // Add the secondary app that should be disabled on startup - make it enabled
   // initially, so the test can verify the app gets disabled regardless of the
   // initial state.
@@ -1322,6 +1351,9 @@ TEST_F(StartupAppLauncherTest,
           .AddSecondaryExtension(kSecondaryAppId)
           .AddSecondaryExtension(kExtraSecondaryAppId)
           .Build();
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      primary_app->id());
 
   PreinstallApp(*SecondaryAppBuilder(kSecondaryAppId).Build());
 
@@ -1365,6 +1397,10 @@ TEST_F(StartupAppLauncherTest,
                         extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY});
 
   InitializeLauncherWithNetworkReady();
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      primary_app->id());
+
   ASSERT_TRUE(DownloadAndInstallPrimaryApp(*primary_app));
 
   EXPECT_TRUE(external_apps_loader_handler_->pending_crx_files().empty());
@@ -1398,6 +1434,9 @@ TEST_F(StartupAppLauncherTest, PrimaryAppUpdatesToDisabledOnLaunch) {
           .AddSecondaryExtensionWithEnabledOnLaunch(kSecondaryAppId, false)
           .set_version("1.1")
           .Build();
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      primary_app_update->id());
 
   InitializeLauncherWithNetworkReady();
   ASSERT_TRUE(DownloadPrimaryApp(*primary_app_update));
@@ -1433,6 +1472,9 @@ TEST_F(StartupAppLauncherTest, PrimaryAppUpdatesToEnabledOnLaunch) {
           .AddSecondaryExtensionWithEnabledOnLaunch(kSecondaryAppId, true)
           .set_version("1.1")
           .Build();
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      primary_app_update->id());
 
   InitializeLauncherWithNetworkReady();
   ASSERT_TRUE(DownloadPrimaryApp(*primary_app_update));

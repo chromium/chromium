@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
@@ -574,6 +575,11 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest, IsNewInstall) {
       LoadExtension(test_data_dir_.AppendASCII("app2"))->id();
   ASSERT_FALSE(app2_id.empty());
 
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist1(
+      app1_id);
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist2(
+      app2_id);
+
   // Both apps are new installs.
   ChromeAppListItem* item1 = model_updater->FindItem(app1_id);
   ASSERT_TRUE(item1);
@@ -606,6 +612,11 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest, IsNewInstallInFolder) {
   const std::string app2_id =
       LoadExtension(test_data_dir_.AppendASCII("app2"))->id();
   ASSERT_FALSE(app2_id.empty());
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist1(
+      app1_id);
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist2(
+      app2_id);
 
   ShowAppList();
 

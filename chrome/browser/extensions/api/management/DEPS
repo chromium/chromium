@@ -7,4 +7,18 @@ specific_include_rules = {
     "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
     "+chrome/browser/apps/app_service/browser_app_launcher.h",
   ],
+
+  # This DEPS violation is a temporary workaround to continue supporting Chrome
+  # Apps tests while the Chrome Apps deprecation is finalised.
+  # TODO(crbug.com/379262505) - Remove this.
+  "management_apitest\\.cc": [
+    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+  ],
+
+  # This DEPS violation is a temporary workaround to continue supporting Chrome
+  # Apps tests while the Chrome Apps deprecation is finalised.
+  # TODO(crbug.com/379262505) - Remove this.
+  "management_api_browsertest\\.cc": [
+    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+  ],
 }

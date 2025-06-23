@@ -44,6 +44,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
@@ -193,6 +194,10 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsExtensionAppOpen) {
   base::FilePath extension_path = test_data_dir_.AppendASCII("app");
   const extensions::Extension* extension_app = LoadExtension(extension_path);
   ASSERT_NE(nullptr, extension_app);
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      extension_app->id());
+
   EXPECT_FALSE(delegate->IsAppOpen(extension_app->id()));
   {
     content::CreateAndLoadWebContentsObserver app_loaded_observer;

@@ -29,13 +29,34 @@ DeprecationStatus HandleDeprecation(std::string_view app_id, Profile* profile);
 void RegisterAllowlistComponentUpdater(
     component_updater::ComponentUpdateService* cus);
 
-void AddAppToAllowlistForTesting(std::string_view app_id);
 void SetKioskSessionForTesting(bool value);
 void AssignComponentUpdaterAllowlistsForTesting(
     const base::Version& component_version,
     std::optional<const ChromeAppDeprecation::DynamicAllowlists>
         component_data);
-void SkipSystemDialogForTesting(bool value);
+
+class ScopedSkipSystemDialogForTesting {
+ public:
+  ScopedSkipSystemDialogForTesting();
+  ScopedSkipSystemDialogForTesting(const ScopedSkipSystemDialogForTesting&) =
+      delete;
+  ScopedSkipSystemDialogForTesting& operator=(
+      const ScopedSkipSystemDialogForTesting&) = delete;
+  ~ScopedSkipSystemDialogForTesting();
+};
+
+class ScopedAddAppToAllowlistForTesting {
+ public:
+  explicit ScopedAddAppToAllowlistForTesting(std::string app_id_);
+  ScopedAddAppToAllowlistForTesting(const ScopedAddAppToAllowlistForTesting&) =
+      delete;
+  ScopedAddAppToAllowlistForTesting& operator=(
+      const ScopedAddAppToAllowlistForTesting&) = delete;
+  ~ScopedAddAppToAllowlistForTesting();
+
+ private:
+  std::string app_id_;
+};
 
 BASE_DECLARE_FEATURE(kAllowUserInstalledChromeApps);
 BASE_DECLARE_FEATURE(kAllowChromeAppsInKioskSessions);

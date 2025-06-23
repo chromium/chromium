@@ -23,3 +23,12 @@ include_rules = [
   "+chrome/browser/ui/browser.h",
   "+chrome/common",
 ]
+
+# This DEPS violation is a temporary workaround to continue supporting Chrome
+# Apps tests while the Chrome Apps deprecation is finalised.
+# TODO(crbug.com/379262505) - Remove this.
+specific_include_rules = {
+  "file_system_provider_apitest\\.cc": [
+    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+  ],
+}

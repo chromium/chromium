@@ -15,6 +15,7 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -150,6 +151,9 @@ class AppNotificationsExtensionApiTest : public extensions::ExtensionApiTest {
     base::FilePath extdir = test_data_dir_.AppendASCII(test_name);
     const extensions::Extension* extension = LoadExtension(extdir);
     EXPECT_TRUE(extension);
+
+    apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+        extension->id());
 
     ExtensionTestMessageListener launched_listener("launched",
                                                    ReplyBehavior::kWillReply);

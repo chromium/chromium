@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppDeprecationKioskDefaultFlagTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeAppDeprecationKioskDefaultFlagTest,
                        AllowlistedAppCanBeLaunched) {
-  chrome_app_deprecation::AddAppToAllowlistForTesting(
+  chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
       OfflineEnabledChromeAppV1().app_id);
 
   ASSERT_FALSE(base::FeatureList::IsEnabled(

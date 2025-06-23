@@ -1820,6 +1820,10 @@ static_library("ui") {
       "//chrome/browser/ui/webui/on_device_internals",
     ]
 
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/apps/app_service" ]
+    }
+
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     # Non-android circular dependencies
     allow_circular_includes_from += [

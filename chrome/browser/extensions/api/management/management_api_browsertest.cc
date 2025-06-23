@@ -35,6 +35,10 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_message_listener.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+#endif
+
 namespace keys = extension_management_api_constants;
 
 namespace extensions {
@@ -88,7 +92,12 @@ class ExtensionManagementApiTestWithBackgroundType
       : ExtensionManagementApiBrowserTest(GetParam()),
         enable_chrome_apps_(
             &extensions::testing::g_enable_chrome_apps_for_testing,
-            true) {}
+            true) {
+#if BUILDFLAG(IS_CHROMEOS)
+    scoped_feature_list_.InitAndEnableFeature(
+        apps::chrome_app_deprecation::kAllowUserInstalledChromeApps);
+#endif
+  }
   ~ExtensionManagementApiTestWithBackgroundType() override = default;
   ExtensionManagementApiTestWithBackgroundType(
       const ExtensionManagementApiTestWithBackgroundType&) = delete;
@@ -97,6 +106,9 @@ class ExtensionManagementApiTestWithBackgroundType
 
  private:
   base::AutoReset<bool> enable_chrome_apps_;
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

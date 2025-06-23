@@ -4,8 +4,10 @@
 
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -37,12 +39,26 @@ class AppListWithRecentAppBrowserTest
     base::RunLoop().RunUntilIdle();
 
     // Install enough apps to show the recent apps view.
-    LoadExtension(test_data_dir_.AppendASCII("app1"));
-    LoadExtension(test_data_dir_.AppendASCII("app2"));
+    auto* app1 = LoadExtension(test_data_dir_.AppendASCII("app1"));
+    allowlist_1_ = std::make_unique<
+        apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting>(
+        app1->id());
+
+    auto* app2 = LoadExtension(test_data_dir_.AppendASCII("app2"));
+    allowlist_2_ = std::make_unique<
+        apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting>(
+        app2->id());
 
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         browser()->window()->GetNativeWindow()->GetRootWindow());
     app_list_test_api_.ShowBubbleAppListAndWait();
+  }
+
+  void TearDownOnMainThread() override {
+    allowlist_1_.reset();
+    allowlist_2_.reset();
+
+    ExtensionBrowserTest::TearDownOnMainThread();
   }
 
   void EnsureZeroStateSearchDone() {
@@ -55,6 +71,14 @@ class AppListWithRecentAppBrowserTest
 
   ash::AppListTestApi app_list_test_api_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
+
+ private:
+  std::unique_ptr<
+      apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting>
+      allowlist_1_;
+  std::unique_ptr<
+      apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting>
+      allowlist_2_;
 };
 
 // TODO(crbug.com/335362001): Re-enable this test

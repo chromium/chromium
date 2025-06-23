@@ -4,25 +4,24 @@
 
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 
-#include "base/notreached.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
-#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/test/test_extension_dir.h"
 #include "ui/message_center/message_center.h"
-
-namespace apps {
 
 using extensions::Extension;
 
+namespace apps::chrome_app_deprecation {
+
 class ChromeAppDeprecationUserInstalledAppsBrowserTest
     : public extensions::PlatformAppBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowUserInstalledChromeApps));
+  }
+
  protected:
   const Extension* LoadPlatformApp() {
     const base::FilePath& root_path = test_data_dir_;
@@ -51,8 +50,12 @@ IN_PROC_BROWSER_TEST_F(ChromeAppDeprecationUserInstalledAppsBrowserTest,
   const Extension* app = LoadPlatformApp();
   ASSERT_TRUE(app);
 
+  ScopedSkipSystemDialogForTesting skip_system_dialog;
+
   RunPlatformApp(app);
-  ASSERT_TRUE(center->GetNotifications().size() == notifications_count + 1);
+
+  // No notifications are displayed when the launch is blocked.
+  ASSERT_TRUE(center->GetNotifications().size() == notifications_count);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAppDeprecationUserInstalledAppsBrowserTest,
@@ -63,10 +66,13 @@ IN_PROC_BROWSER_TEST_F(ChromeAppDeprecationUserInstalledAppsBrowserTest,
   const Extension* app = LoadPlatformApp();
   ASSERT_TRUE(app);
 
-  chrome_app_deprecation::AddAppToAllowlistForTesting(app->id());
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      app->id());
 
   RunPlatformApp(app);
+
+  // No notifications are displayed when the launch is allowed.
   ASSERT_TRUE(center->GetNotifications().size() == notifications_count);
 }
 
-}  // namespace apps
+}  // namespace apps::chrome_app_deprecation

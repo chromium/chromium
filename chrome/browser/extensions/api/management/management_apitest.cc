@@ -47,6 +47,10 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+#endif
+
 using extensions::Extension;
 using extensions::Manifest;
 using extensions::mojom::ManifestLocation;
@@ -96,7 +100,13 @@ class ExtensionManagementApiTest
       : ExtensionApiTest(GetParam()),
         enable_chrome_apps_(
             &extensions::testing::g_enable_chrome_apps_for_testing,
-            true) {}
+            true) {
+#if BUILDFLAG(IS_CHROMEOS)
+    scoped_feature_list_.InitAndEnableFeature(
+        apps::chrome_app_deprecation::kAllowUserInstalledChromeApps);
+
+#endif
+  }
   ~ExtensionManagementApiTest() override = default;
   ExtensionManagementApiTest& operator=(const ExtensionManagementApiTest&) =
       delete;
@@ -157,6 +167,9 @@ class ExtensionManagementApiTest
  protected:
   base::AutoReset<bool> enable_chrome_apps_;
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -534,17 +547,20 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest,
   // Load an extension that calls launchApp() on any app that gets
   // installed.
   ExtensionTestMessageListener launcher_loaded("launcher loaded");
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("management/launch_on_install")));
+  auto* extension =
+      LoadExtension(test_data_dir_.AppendASCII("management/launch_on_install"));
+  ASSERT_TRUE(extension);
   ASSERT_TRUE(launcher_loaded.WaitUntilSatisfied());
 
   // Load an app with app.launch.container = "panel". This is a chrome app, so
   // it shouldn't be launched where that functionality has been deprecated.
   ExtensionTestMessageListener launched_app("launched app");
   ExtensionTestMessageListener chrome_apps_error("got_chrome_apps_error");
-  ASSERT_TRUE(
+  auto* app =
       LoadExtension(test_data_dir_.AppendASCII("management/launch_app_panel"),
-                    {.context_type = ContextType::kFromManifest}));
+                    {.context_type = ContextType::kFromManifest});
+  ASSERT_TRUE(app);
+
   if (ExpectChromeAppsDefaultEnabled()) {
     EXPECT_TRUE(launched_app.WaitUntilSatisfied());
     EXPECT_FALSE(chrome_apps_error.was_satisfied());
@@ -573,9 +589,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, NoLaunchTabAppDeprecated) {
   // it shouldn't be launched where that functionality has been deprecated.
   ExtensionTestMessageListener launched_app("launched app");
   ExtensionTestMessageListener chrome_apps_error("got_chrome_apps_error");
-  ASSERT_TRUE(
+  auto* app =
       LoadExtension(test_data_dir_.AppendASCII("management/launch_app_tab"),
-                    {.context_type = ContextType::kFromManifest}));
+                    {.context_type = ContextType::kFromManifest});
+  ASSERT_TRUE(app);
+
   if (ExpectChromeAppsDefaultEnabled()) {
     EXPECT_TRUE(launched_app.WaitUntilSatisfied());
     EXPECT_FALSE(chrome_apps_error.was_satisfied());

@@ -50,6 +50,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -343,6 +344,9 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
             last_loaded_extension_id());
     EXPECT_TRUE(extension);
 
+    apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+        extension->id());
+
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     proxy->Launch(extension->id(), event_flags, apps::LaunchSource::kFromTest,
                   std::make_unique<apps::WindowInfo>(
@@ -358,6 +362,9 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
         extension_registry()->enabled_extensions().GetByID(
             last_loaded_extension_id());
     const std::string app_id = extension->id();
+
+    apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+        app_id);
 
     // Then create a shortcut.
     int item_count = shelf_model()->item_count();
@@ -429,7 +436,10 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
 
 class ShelfAppBrowserTestNoDefaultBrowser : public ShelfAppBrowserTest {
  protected:
-  ShelfAppBrowserTestNoDefaultBrowser() = default;
+  ShelfAppBrowserTestNoDefaultBrowser() {
+    scoped_feature_list_.InitAndEnableFeature(
+        apps::chrome_app_deprecation::kAllowUserInstalledChromeApps);
+  }
   ShelfAppBrowserTestNoDefaultBrowser(
       const ShelfAppBrowserTestNoDefaultBrowser&) = delete;
   ShelfAppBrowserTestNoDefaultBrowser& operator=(
@@ -440,6 +450,9 @@ class ShelfAppBrowserTestNoDefaultBrowser : public ShelfAppBrowserTest {
     ShelfAppBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kNoStartupWindow);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ShelfWebAppBrowserTest : public ShelfAppBrowserTest {
@@ -528,6 +541,9 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, LaunchPinned) {
   EXPECT_EQ(ash::STATUS_CLOSED, item.status);
 
   // Open a window. Confirm the item is now running.
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      extension->id());
   AppWindow* window = CreateAppWindow(browser()->profile(), extension);
   window->GetBaseWindow()->Activate();
   ASSERT_EQ(item_count, shelf_model()->item_count());
@@ -1011,6 +1027,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchPinned) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   int tab_count = tab_strip->count();
   ash::ShelfID shortcut_id = CreateShortcut("app1");
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      shortcut_id.app_id);
   EXPECT_EQ(ash::STATUS_CLOSED, shelf_model()->ItemByID(shortcut_id)->status);
   SelectItem(shortcut_id);
   EXPECT_EQ(++tab_count, tab_strip->count());
@@ -1066,6 +1085,10 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchAppFromDisplayWithoutFocus0) {
   // Launches an app from the shelf of display 0 and expects a new tab is opened
   // in the uppermost browser in display 0.
   ash::ShelfID shortcut_id = CreateShortcut("app1");
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      shortcut_id.app_id);
+
   SelectItem(shortcut_id, ui::EventType::kMousePressed, displays[1].id());
   EXPECT_EQ(browser0->tab_strip_model()->count(), 1);
   EXPECT_EQ(browser1->tab_strip_model()->count(), 1);
@@ -1104,6 +1127,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchAppFromDisplayWithoutFocus1) {
   // Launches an app from the shelf of display 0 and expects a new browser with
   // one tab is opened in display 0.
   ash::ShelfID shortcut_id = CreateShortcut("app1");
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      shortcut_id.app_id);
   SelectItem(shortcut_id, ui::EventType::kMousePressed, displays[1].id());
   Browser* browser1 = browser_list->GetLastActive();
   EXPECT_EQ(browser_list->size(), 2U);
@@ -1275,6 +1301,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchInBackground) {
       "app1", apps::GetEventFlags(WindowOpenDisposition::NEW_BACKGROUND_TAB,
                                   true /* prefer_containner */));
   EXPECT_EQ(++tab_count, tab_strip->count());
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      last_loaded_extension_id());
   controller_->LaunchApp(ash::ShelfID(last_loaded_extension_id()),
                          ash::LAUNCH_FROM_UNKNOWN, 0,
                          display::kInvalidDisplayId);
@@ -1292,6 +1321,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchMaximized) {
   browser2->window()->Maximize();
 
   ash::ShelfID shortcut_id = CreateShortcut("app1");
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      shortcut_id.app_id);
   SelectItem(shortcut_id);
   EXPECT_EQ(++tab_count, tab_strip->count());
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(shortcut_id)->status);
@@ -1310,6 +1342,10 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchApp) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   int tab_count = tab_strip->count();
   ash::ShelfID id(LoadExtension(test_data_dir_.AppendASCII("app1"))->id());
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      id.app_id);
+
   LaunchApp(id, ash::LAUNCH_FROM_UNKNOWN, 0, display::kInvalidDisplayId);
   EXPECT_EQ(++tab_count, tab_strip->count());
   LaunchApp(id, ash::LAUNCH_FROM_UNKNOWN, 0, display::kInvalidDisplayId);
@@ -1369,6 +1405,10 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, NoDemoModeAppLaunchSourceReported) {
   histogram_tester.ExpectTotalCount("DemoMode.AppLaunchSource", 0);
 
   ash::ShelfID id(LoadExtension(test_data_dir_.AppendASCII("app1"))->id());
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      id.app_id);
+
   controller_->LaunchApp(id, ash::LAUNCH_FROM_SHELF, 0,
                          display::kInvalidDisplayId);
 
@@ -1389,6 +1429,10 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DemoModeAppLaunchSourceReported) {
   histogram_tester.ExpectTotalCount("DemoMode.AppLaunchSource", 0);
 
   ash::ShelfID id(LoadExtension(test_data_dir_.AppendASCII("app1"))->id());
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      id.app_id);
+
   controller_->LaunchApp(id, ash::LAUNCH_FROM_SHELF, 0,
                          display::kInvalidDisplayId);
 
@@ -1401,6 +1445,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DemoModeAppLaunchSourceReported) {
 // correct running state.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, Navigation) {
   ash::ShelfID shortcut_id = CreateShortcut("app1_https");
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      shortcut_id.app_id);
   EXPECT_EQ(ash::STATUS_CLOSED, shelf_model()->ItemByID(shortcut_id)->status);
   SelectItem(shortcut_id);
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(shortcut_id)->status);
@@ -1427,6 +1474,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, TabDragAndDrop) {
 
   // Create a shortcut for app1.
   ash::ShelfID shortcut_id = CreateShortcut("app1");
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      shortcut_id.app_id);
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->items()[browser_index].status);
   EXPECT_EQ(ash::STATUS_CLOSED, shelf_model()->ItemByID(shortcut_id)->status);
 
@@ -1463,6 +1513,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, RefocusFilterLaunch) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   int tab_count = tab_strip->count();
   ash::ShelfID shortcut_id = CreateShortcut("app1");
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      shortcut_id.app_id);
   SetRefocusURL(shortcut_id, GURL("http://www.example.com/path1/*"));
 
   // Create new tab.
@@ -1572,6 +1625,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   EXPECT_EQ(++running_browser, chrome::GetTotalBrowserCount());
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+
   proxy->Launch(extension->id(),
                 apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                     true /* prefer_containner */),
@@ -1599,6 +1653,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
       extension_registry()->enabled_extensions().GetByID(
           last_loaded_extension_id());
   EXPECT_TRUE(extension);
+
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
       apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerTab,
@@ -2205,6 +2260,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, MatchingShelfIDAndActiveTab) {
   EXPECT_EQ(browser_id.app_id, *window_app_id);
 
   ash::ShelfID app_id = CreateShortcut("app1");
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      app_id.app_id);
   EXPECT_EQ(2, shelf_model()->item_count());
 
   // Create and activate a new tab for "app1" and expect an application ShelfID.
@@ -2370,6 +2428,9 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
   ASSERT_TRUE(hosted_app);
   PinAppWithIDToShelf(hosted_app->id());
   const ash::ShelfID hosted_app_shelf_id(hosted_app->id());
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      hosted_app->id());
 
   // Load and pin a web app.
   const GURL web_app_url = GetSecureAppURL();
@@ -2705,7 +2766,14 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest,
 
   // Create two apps, then extend the hotseat.
   ash::ShelfID shortcut_id_1 = CreateShortcut("app1");
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist_1(
+      shortcut_id_1.app_id);
+
   ash::ShelfID shortcut_id_2 = CreateShortcut("app2");
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist_2(
+      shortcut_id_2.app_id);
   ExtendHotseat(browser());
 
   // Launch app1, the hotseat should hide.

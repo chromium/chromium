@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -1596,6 +1597,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   }
 
   const extensions::Extension* app = installer->extension();
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      app->id());
 
   // Start the platform app, causing it to open a window.
   run_loop_ = std::make_unique<base::RunLoop>();
