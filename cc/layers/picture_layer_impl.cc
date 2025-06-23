@@ -1314,9 +1314,6 @@ bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTransform(
            !layer_tree_impl()->IsReadyToActivate());
     return true;
   }
-  // We can recreate the tiling if we would invalidate all of its tiles.
-  if (high_res.may_contain_low_resolution_tiles())
-    return true;
   // Keep the non-ideal raster translation unchanged for transform animations
   // to avoid re-rasterization during animation.
   if (draw_properties().screen_space_transform_is_animating ||
@@ -1397,13 +1394,6 @@ void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
     // We always need a high res tiling, so create one if it doesn't exist.
     high_res = AddTiling(gfx::AxisTransform2d::FromScaleAndTranslation(
         raster_contents_scale_, raster_translation));
-  } else if (high_res->may_contain_low_resolution_tiles()) {
-    // If the tiling we find here was LOW_RESOLUTION previously, it may not be
-    // fully rastered, so destroy the old tiles.
-    high_res->Reset();
-    // Reset the flag now that we'll make it high res, it will have fully
-    // rastered content.
-    high_res->reset_may_contain_low_resolution_tiles();
   }
   high_res->set_resolution(HIGH_RESOLUTION);
 
