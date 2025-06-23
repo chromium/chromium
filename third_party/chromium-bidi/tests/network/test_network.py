@@ -416,15 +416,11 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'acceptInsecureCerts': True
-}],
-                         indirect=True)
 async def test_network_sends_only_included_cookies(websocket, context_id,
                                                    url_example_another_origin,
-                                                   url_bad_ssl):
+                                                   url_secure_context):
 
-    await goto_url(websocket, context_id, url_bad_ssl)
+    await goto_url(websocket, context_id, url_secure_context)
 
     await execute_command(
         websocket, {

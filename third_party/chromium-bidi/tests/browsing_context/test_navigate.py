@@ -913,3 +913,49 @@ async def test_speculationrules_disable_prerender(websocket, context_id, html):
         'params': {}
     })
     assert len(response["contexts"]) == 1
+
+
+@pytest.mark.asyncio
+async def test_browsing_context_navigate_ssl_bad(websocket, context_id,
+                                                 local_server_bad_ssl):
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "unknown error",
+                           "message": "net::ERR_CERT_AUTHORITY_INVALID"
+                       })):
+        await execute_command(
+            websocket, {
+                'method': "browsingContext.navigate",
+                'params': {
+                    'url': local_server_bad_ssl.url_200(),
+                    'wait': 'complete',
+                    'context': context_id
+                }
+            })
+
+
+@pytest.mark.asyncio
+async def test_browsing_context_navigate_ssl_good(websocket, context_id,
+                                                  local_server_good_ssl):
+    await execute_command(
+        websocket, {
+            'method': "browsingContext.navigate",
+            'params': {
+                'url': local_server_good_ssl.url_200(),
+                'wait': 'complete',
+                'context': context_id
+            }
+        })
+
+    resp = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.body.innerText",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+    assert resp["result"]["value"] == local_server_good_ssl.content_200

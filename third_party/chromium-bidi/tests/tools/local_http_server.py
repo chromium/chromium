@@ -95,28 +95,26 @@ class LocalHttpServer:
     def __html_doc(self, content: str) -> str:
         return f"<!DOCTYPE html><html><head><link rel='shortcut icon' href='data:image/x-icon;,' type='image/x-icon'></head><body>{content}</body></html>"
 
-    def __init__(self,
-                 host: str = 'localhost',
-                 protocol: Literal['http', 'https'] = 'http') -> None:
+    def __init__(self, host: str = 'localhost', ssl_cert_prefix=None) -> None:
         self.__app = Flask(__name__)
         # Important for some Flask behaviors in a test context
         self.__app.testing = True
         self.__host = host
-        self.__protocol = protocol
+        self.__protocol = 'http' if ssl_cert_prefix is None else "https"
         self.__port = find_free_port()
 
         ssl_context = None
-        if protocol == 'https':
+        if ssl_cert_prefix is not None:
             current_dir = Path(__file__).parent
-            cert_file = current_dir / "cert.pem"
-            key_file = current_dir / "key.pem"
-            if not cert_file.exists() or not key_file.exists():
+            cert_file = current_dir / f"certs/{ssl_cert_prefix}.crt"
+            key_file = current_dir / f"certs/{ssl_cert_prefix}.key"
+            if not cert_file.exists():
                 raise FileNotFoundError(
-                    f"SSL certificate or key file not found. Expected cert.pem and key.pem in {current_dir}"
-                )
+                    f"SSL certificate file not found in {cert_file}")
+            if not key_file.exists():
+                raise FileNotFoundError(
+                    f"SSL key file not found in {key_file}")
             ssl_context = (str(cert_file), str(key_file))
-        elif protocol != 'http':
-            raise ValueError(f"Unsupported protocol: {protocol}")
 
         self.__start_time = datetime.now(timezone.utc)
         self._dynamic_responses = {}
