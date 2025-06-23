@@ -27,7 +27,7 @@ from typing import Any, Literal
 
 from flask import Flask
 from flask import Response as FlaskResponse
-from flask import redirect, request
+from flask import redirect, request, stream_with_context
 
 
 # Helper to find a free port
@@ -52,6 +52,7 @@ class LocalHttpServer:
     __path_permanent_redirect = "/301"
     __path_basic_auth = "/401"
     __path_hang_forever = "/hang_forever"
+    __path_hang_forever_download = "/hang_forever_download"
     __path_cacheable = "/cacheable"
 
     content_200: str = 'default 200 page'
@@ -186,6 +187,27 @@ class LocalHttpServer:
             return FlaskResponse("Request unblocked.",
                                  status=200,
                                  mimetype="text/html")
+
+        @self.__app.route(self.__path_hang_forever_download)
+        def hang_forever_download():
+            def content_stream():
+                """
+                Returns a part of the content, waits for the
+                `hang_forever_stop_flag` and then returns the rest.
+                """
+                yield "CONTENT_START"
+                self.hang_forever_stop_flag.clear()
+                self.hang_forever_stop_flag.wait()
+                return "\nCONTENT_END"
+
+            return FlaskResponse(
+                stream_with_context(content_stream()),
+                status=200,
+                mimetype="text/html",
+                headers={
+                    'Content-Disposition': 'attachment; filename="partially_downloaded_file.txt"',
+                    'Content-Type': 'text/plain',
+                })
 
         @self.__app.route(self.__path_cacheable)
         def cache():
@@ -338,6 +360,10 @@ class LocalHttpServer:
     def url_hang_forever(self) -> str:
         """Returns the URL for a page that will hang until `hang_forever_stop()` is called."""
         return self._build_url(self.__path_hang_forever)
+
+    def url_hang_forever_download(self) -> str:
+        """Returns the URL for a page that will hang until `hang_forever_stop()` is called."""
+        return self._build_url(self.__path_hang_forever_download)
 
     def url_cacheable(self) -> str:
         """Returns the URL for a cacheable page (using Last-Modified and If-Modified-Since)."""

@@ -14,6 +14,7 @@
 #  limitations under the License.
 
 import sys
+import time
 from pathlib import Path
 
 # Current directory is not a module, so to import `LocalHttpServer`, its path
@@ -36,3 +37,7 @@ print(f"""Local http server started...
   - hangs forever: {local_server_http.url_hang_forever()}
   - bad ssl: {local_server_bad_ssl.url_200()}
 """)
+
+while True:
+    # Run server until stopped by user.
+    time.sleep(1)

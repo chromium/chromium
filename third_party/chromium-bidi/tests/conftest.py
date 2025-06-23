@@ -593,12 +593,21 @@ def url_download(local_server_http):
     def url_download(file_name="file-name.txt", content="download content"):
         return local_server_http.url_200(
             content,
-            content_type="text/html",
+            content_type="application/octet-stream",
             headers={
                 "Content-Disposition": f"attachment;  filename=\"{file_name}\""
             })
 
     return url_download
+
+
+@pytest.fixture
+def url_hang_forever_download(local_server_http):
+    """Return a URL that triggers a download which hangs forever."""
+    try:
+        yield local_server_http.url_hang_forever_download
+    finally:
+        local_server_http.hang_forever_stop()
 
 
 @pytest.fixture
