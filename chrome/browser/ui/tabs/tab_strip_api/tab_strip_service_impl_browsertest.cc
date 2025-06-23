@@ -69,7 +69,19 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     }
   }
 
+  void OnTabGroupCreated(
+      tabs_api::mojom::OnTabGroupCreatedEventPtr event) override {
+    // TODO(crbug.com/412955607): implement this.
+    group_events.push_back(std::move(event));
+  }
+
+  void OnTabGroupVisualsChanged(
+      tabs_api::mojom::OnTabGroupVisualsChangedEventPtr event) override {
+    // TODO(crbug.com/412955607): implement this.
+  }
+
   std::vector<tabs_api::mojom::OnTabMovedEventPtr> move_events;
+  std::vector<tabs_api::mojom::OnTabGroupCreatedEventPtr> group_events;
   // Tabs is a vector containing a tab id and a url in the form of a string.
   std::vector<std::pair<tabs_api::NodeId, std::string>> tabs;
 };

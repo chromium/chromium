@@ -30,6 +30,14 @@ class EventVisitor {
     (*target_)->OnTabDataChanged(event.Clone());
   }
 
+  void operator()(const mojom::OnTabGroupCreatedEventPtr& event) {
+    (*target_)->OnTabGroupCreated(event.Clone());
+  }
+
+  void operator()(const mojom::OnTabGroupVisualsChangedEventPtr& event) {
+    (*target_)->OnTabGroupVisualsChanged(event.Clone());
+  }
+
  private:
   raw_ptr<const mojo::AssociatedRemote<tabs_api::mojom::TabsObserver>> target_;
 };

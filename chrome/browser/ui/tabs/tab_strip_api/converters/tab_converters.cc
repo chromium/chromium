@@ -63,4 +63,14 @@ tabs_api::mojom::TabCollectionPtr BuildMojoTabCollection(
   }
   return tab_collection;
 }
+
+tabs_api::mojom::TabGroupVisualDataPtr BuildMojoTabGroupVisualData(
+    const tab_groups::TabGroupVisualData& visual_data) {
+  auto tab_group_visual_data = tabs_api::mojom::TabGroupVisualData::New();
+  tab_group_visual_data->title = base::UTF16ToUTF8(visual_data.title());
+  tab_group_visual_data->color = visual_data.color();
+  tab_group_visual_data->is_collapsed = visual_data.is_collapsed();
+  return tab_group_visual_data;
+}
+
 }  // namespace tabs_api::converters

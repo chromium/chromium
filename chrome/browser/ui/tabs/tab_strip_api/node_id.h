@@ -8,6 +8,9 @@
 #include <string>
 #include <string_view>
 
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_interface.h"
+
 namespace tabs_api {
 
 // A discrete object representing the id of a node in the tab tree.
@@ -26,6 +29,11 @@ class NodeId {
   NodeId() : NodeId(Type::kInvalid, "") {}
   NodeId(enum Type type, std::string_view id) : type_(type), id_(id) {}
   ~NodeId() = default;
+
+  static NodeId FromTabHandle(const tabs::TabHandle& handle);
+  // TODO(crbug.com/425390972): remove this helper and use TabCollectionHandle
+  // everywhere.
+  static NodeId FromTabGroupId(const tab_groups::TabGroupId& group_id);
 
   std::string_view Id() const { return id_; }
 

@@ -9,8 +9,11 @@ import '../tab_group.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from '../tab_list.html.js';
-import type {Container, OnTabDataChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent, Position, Tab, TabCollectionContainer, TabCreatedContainer, NodeId, TabsSnapshot} from '../tab_strip_api.mojom-webui.js';
+import type {Container, OnTabDataChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent, OnTabGroupCreatedEvent, OnTabGroupVisualsChangedEvent, Position, Tab, TabCollectionContainer, TabCreatedContainer, TabGroupVisualData as TabsAPI_TabGroupVisualData, NodeId, TabsSnapshot} from '../tab_strip_api.mojom-webui.js';
+import type {TabGroupVisualData} from '../tab_strip.mojom-webui.js';
+import {Color as TabGroupColor} from '../tab_group_types.mojom-webui.js';
 import {TabCollection_CollectionType} from '../tab_strip_api.mojom-webui.js';
+import {TabGroupElement} from '../tab_group.js';
 
 import {TabElement} from './tab_playground.js';
 import type {TabStripApiProxy} from './tab_strip_api.js';
@@ -18,8 +21,8 @@ import {TabStripApiProxyImpl} from './tab_strip_api.js';
 
 export class TabListPlaygroundElement extends CustomElement {
   animationPromises: Promise<void>;
-  private pinnedTabsElement_: HTMLElement;
   private tabStripApi_: TabStripApiProxy;
+  private pinnedTabsElement_: HTMLElement;
   private unpinnedTabsElement_: HTMLElement;
 
   static override get template() {
@@ -40,7 +43,7 @@ export class TabListPlaygroundElement extends CustomElement {
 
   placeTabElement(
       element: TabElement, index: number, pinned: boolean,
-      groupId: string|null) {
+      groupId: string|null|undefined) {
     console.info(
         'Placing TabElement. ID:', element.tab?.id.id, 'at index:', index,
         'Pinned:', pinned, 'GroupId:', groupId);
@@ -52,9 +55,10 @@ export class TabListPlaygroundElement extends CustomElement {
     let targetParent: HTMLElement;
     if (pinned) {
       targetParent = this.pinnedTabsElement_;
+    } else if (groupId) {
+      targetParent = this.findOrCreateTabGroupElement_(groupId);
     } else {
-      // TODO: Implement tab group handling. For now, all unpinned tabs go
-      // directly into the unpinnedTabsElement_. If groupId is present, in a
+      // Directly into the unpinnedTabsElement_. If groupId is present, in a
       // full implementation, you would find or create a TabGroupElement and
       // targetParent would become that group element.
       targetParent = this.unpinnedTabsElement_;
@@ -90,6 +94,10 @@ export class TabListPlaygroundElement extends CustomElement {
     callbackRouter.onTabDataChanged.addListener(
         this.onTabDataChanged_.bind(this));
     callbackRouter.onTabMoved.addListener(this.onTabMoved_.bind(this));
+    callbackRouter.onTabGroupCreated.addListener(
+        this.onTabGroupCreated_.bind(this));
+    callbackRouter.onTabGroupVisualsChanged.addListener(
+        this.onTabGroupVisualsChanged_.bind(this));
   }
 
   private addAnimationPromise_(promise: Promise<void>) {
@@ -129,9 +137,23 @@ export class TabListPlaygroundElement extends CustomElement {
   }
 
   private onTabMoved_(event: OnTabMovedEvent) {
+    console.info('onTabMoved_', event);
     const element = this.findTabElement_(event.id.id)!;
     element.remove();
-    this.placeTabElement(element, event.to.index, false, null);
+    this.placeTabElement(element, event.to.index, false, event.to.parentId?.id);
+  }
+
+  private onTabGroupCreated_(event: OnTabGroupCreatedEvent) {
+    console.info('onTabGroupCreated_', event);
+    // Intentiaonlly not creating a TabGroupElement here. The TabGroupElement
+    // will be created when a tab is added to the group in onTabMoved_, which
+    // is fired after this event.
+  }
+
+  private onTabGroupVisualsChanged_(event: OnTabGroupVisualsChangedEvent) {
+    console.info('onTabGroupVisualsChanged_', event);
+    this.findOrCreateTabGroupElement_(event.groupId.id).updateVisuals(
+      this.toTabGroupVisualData_(event.visualData));
   }
 
   private createTabElement_(tab: Tab, isPinned: boolean): TabElement {
@@ -148,7 +170,8 @@ export class TabListPlaygroundElement extends CustomElement {
       }
       targetIdx =
           Math.min(targetIdx, this.unpinnedTabsElement_.childElementCount - 1);
-      this.tabStripApi_.moveTab(tab.id, {index: targetIdx});
+      // TODO(crbug.com/412709271): Set the correct parent id.
+      this.tabStripApi_.moveTab(tab.id, {parentId: null, index: targetIdx});
     };
     return tabElement;
   }
@@ -221,6 +244,48 @@ export class TabListPlaygroundElement extends CustomElement {
         console.info('invalid tab_strip');
       }
     });
+  }
+
+  private findTabGroupElement_(groupId: string): TabGroupElement|null {
+    return this.$<TabGroupElement>(
+        `tabstrip-tab-group[data-group-id="${groupId}"]`);
+  }
+
+  private createTabGroupElement_(groupId: string): TabGroupElement {
+    const tabGroupElement = new TabGroupElement();
+    tabGroupElement.setAttribute('data-group-id', groupId);
+    // Adds tab group element under the unpinned tabs element. This follows
+    // Monstrudal's implementation.
+    this.unpinnedTabsElement_.appendChild(tabGroupElement);
+    return tabGroupElement;
+  }
+
+  private findOrCreateTabGroupElement_(groupId: string): TabGroupElement {
+    let tabGroupElement = this.findTabGroupElement_(groupId);
+    if (!tabGroupElement) {
+      tabGroupElement = this.createTabGroupElement_(groupId);
+    }
+    return tabGroupElement;
+  }
+
+  private toTabGroupVisualData_(visualData: TabsAPI_TabGroupVisualData): TabGroupVisualData {
+    const colorMap = new Map<TabGroupColor, string>([
+      [TabGroupColor.kGrey, '128, 128, 128'],
+      [TabGroupColor.kBlue, '0, 0, 255'],
+      [TabGroupColor.kRed, '255, 0, 0'],
+      [TabGroupColor.kYellow, '255, 255, 0'],
+      [TabGroupColor.kGreen, '0, 128, 0'],
+      [TabGroupColor.kPink, '255, 192, 203'],
+      [TabGroupColor.kPurple, '128, 0, 128'],
+      [TabGroupColor.kCyan, '0, 255, 255'],
+      [TabGroupColor.kOrange, '255, 165, 0'],
+   ]);
+
+    return {
+      title: visualData.title,
+      color: colorMap.get(visualData.color)!,
+      textColor: '255, 255, 255' /*white*/,
+    };
   }
 }
 

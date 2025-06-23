@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -18,6 +19,9 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
 tabs_api::mojom::TabCollectionPtr BuildMojoTabCollection(
     tabs::TabCollectionHandle handle,
     tabs::TabCollection::Type collection_type);
+
+tabs_api::mojom::TabGroupVisualDataPtr BuildMojoTabGroupVisualData(
+    const tab_groups::TabGroupVisualData& visual_data);
 
 }  // namespace tabs_api::converters
 

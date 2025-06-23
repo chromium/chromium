@@ -5,6 +5,7 @@
 module tabs_api.mojom;
 
 import "chrome/browser/ui/webui/tabs/tabs.mojom";
+import "components/tab_groups/public/mojom/tab_group_types.mojom";
 import "mojo/public/mojom/base/empty.mojom";
 import "mojo/public/mojom/base/error.mojom";
 import "url/mojom/url.mojom";
@@ -49,7 +50,13 @@ struct Tab {
 // identifier. It is purely used in this API to determine the position within
 // the TabstripModel.
 struct Position {
-  // TODO(crbug.com/409086859): add the reference for the relative position.
+  // The parent of the tab. This is only set if the tab is a child of a
+  // collection.
+  // TODO(crbug.com/412935315): make this a required field. All nodes should
+  // have a parent, except for the TabStripCollection which is the root. The
+  // root should never need to be moved, doing so should trigger a CHECK error.
+  NodeId? parent_id;
+  // The index of the tab within the parent.
   uint32 index;
 };
 
@@ -81,6 +88,16 @@ struct TabCollection {
   // kCollection.
   NodeId id;
   CollectionType collection_type;
+};
+
+// TODO(crbug.com/425652802): This should be merged with struct
+// TabGroupVisualData in
+// //chrome/browser/ui/webui/tab_strip/tab_strip.mojom and moved to
+// //components/tab_groups/public/mojom/tab_group_types.mojom
+struct TabGroupVisualData {
+  string title;
+  tab_groups.mojom.Color color;
+  bool is_collapsed;
 };
 
 // The TabCollection tree has child nodes that can be a Tab or a
@@ -174,6 +191,22 @@ struct OnTabDataChangedEvent {
   Tab tab;
 };
 
+struct OnTabGroupCreatedEvent {
+  // The ID of the newly created group.
+  NodeId group_id;
+  // The visual data of the newly created group.
+  TabGroupVisualData visual_data;
+  // Position of the group in the tab strip.
+  Position position;
+};
+
+struct OnTabGroupVisualsChangedEvent {
+  // The ID of the group whose visuals have changed.
+  NodeId group_id;
+  // The new visual data of the group.
+  TabGroupVisualData visual_data;
+};
+
 struct OnTabMovedEvent {
   // The id of the tab that moved.
   NodeId id;
@@ -199,4 +232,10 @@ interface TabsObserver {
 
   // When tab data has been updated.
   OnTabDataChanged(OnTabDataChangedEvent tab);
+
+  // When a new tab group has been created.
+  OnTabGroupCreated(OnTabGroupCreatedEvent event);
+
+  // When a tab group's visuals have been changed.
+  OnTabGroupVisualsChanged(OnTabGroupVisualsChangedEvent event);
 };
