@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/texture_utils.h"
+#include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/image_extractor.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -76,6 +77,21 @@ wgpu::TextureFormat SkColorTypeToDawnColorFormat(SkColorType sk_color_type) {
     default:
       NOTREACHED();
   }
+}
+
+wgpu::TextureFormat VizToWGPUFormat(const viz::SharedImageFormat& format) {
+  // This function provides the inverse mapping of `WGPUFormatToViz` (located in
+  // webgpu_swap_buffer_provider.cc).
+  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return wgpu::TextureFormat::BGRA8Unorm;
+  }
+  if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+    return wgpu::TextureFormat::RGBA8Unorm;
+  }
+  if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return wgpu::TextureFormat::RGBA16Float;
+  }
+  NOTREACHED() << "Unexpected canvas format: " << format.ToString();
 }
 
 static constexpr uint64_t kDawnBytesPerRowAlignmentBits = 8;
@@ -887,6 +903,45 @@ bool GPUQueue::CopyFromCanvasSourceImage(
   // - If success, Issue Dawn::queueCopyTextureForBrowser to upload contents
   //   to WebGPU texture.
   if (use_webgpu_mailbox_texture) {
+    if (image->IsTextureBacked()) {
+      auto* accelerated_image =
+          static_cast<AcceleratedStaticBitmapImage*>(image);
+      if (accelerated_image->GetSharedImage()->usage().Has(
+              gpu::SHARED_IMAGE_USAGE_WEBGPU_READ)) {
+        wgpu::TextureDescriptor texture_desc = {
+            .usage = wgpu::TextureUsage::CopySrc |
+                     wgpu::TextureUsage::TextureBinding,
+            .size = {base::checked_cast<uint32_t>(source_image_info.width()),
+                     base::checked_cast<uint32_t>(source_image_info.height()),
+                     1},
+            .format = VizToWGPUFormat(image->GetSharedImageFormat()),
+        };
+
+        scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
+            WebGPUMailboxTexture::FromExistingSharedImage(
+                GetDawnControlClient(), device_->GetHandle(), texture_desc,
+                accelerated_image->GetSharedImage(),
+                accelerated_image->GetSyncToken());
+
+        wgpu::TexelCopyTextureInfo src = {
+            .texture = mailbox_texture->GetTexture(),
+            .origin = {
+                .x = base::checked_cast<uint32_t>(image_source_copy_rect.x()),
+                .y = base::checked_cast<uint32_t>(image_source_copy_rect.y())}};
+
+        wgpu::CopyTextureForBrowserOptions options =
+            CreateCopyTextureForBrowserOptions(
+                image, &paint_image, dst_color_space, dst_premultiplied_alpha,
+                flipY, &color_space_conversion_constants);
+
+        GetHandle().CopyTextureForBrowser(&src, &destination, &copy_size,
+                                          &options);
+
+        accelerated_image->UpdateSyncToken(mailbox_texture->Dissociate());
+        return true;
+      }
+    }
+
     // The copy rect might be a small part from a large source image. Instead of
     // copying large source image, clipped to the small copy rect is more
     // performant. The clip rect should be chosen carefully when a flipY op is
@@ -894,9 +949,8 @@ bool GPUQueue::CopyFromCanvasSourceImage(
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
         WebGPUMailboxTexture::FromStaticBitmapImage(
             GetDawnControlClient(), device_->GetHandle(),
-            static_cast<wgpu::TextureUsage>(wgpu::TextureUsage::CopyDst |
-                                            wgpu::TextureUsage::CopySrc |
-                                            wgpu::TextureUsage::TextureBinding),
+            wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc |
+                wgpu::TextureUsage::TextureBinding,
             image, source_image_info, image_source_copy_rect, noop);
 
     if (mailbox_texture != nullptr) {

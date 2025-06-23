@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/strings/stringprintf.h"
@@ -56,6 +57,21 @@
 #include "ui/gfx/color_space.h"
 
 namespace blink {
+
+namespace {
+// Controls whether we add SHARED_IMAGE_USAGE_WEBGPU_READ by default to shared
+// image backed CanvasResources so that they can be imported into WebGPU without
+// an intermediate copy. This could cause a different shared image backing type
+// to be used in the GPU process based on the OS platform.
+BASE_FEATURE(kCanvasResourceIsWebGPUCompatible,
+             "CanvasResourceIsWebGPUCompatible",
+#if BUILDFLAG(IS_APPLE)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+}  // namespace
 
 CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider)
     : owning_thread_ref_(base::PlatformThread::CurrentRef()),
@@ -277,13 +293,15 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
   shared_image_usage_flags =
       shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+  // Add WEBGPU_READ usage to allow importing into WebGPU without a copy.
+  if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
+    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
+  }
   if (use_oop_rasterization_) {
-    shared_image_usage_flags =
-        shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   } else {
     // The GLES2_WRITE flag is needed due to raster being over GL.
-    shared_image_usage_flags =
-        shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   }
 
   scoped_refptr<gpu::ClientSharedImage> client_shared_image;
