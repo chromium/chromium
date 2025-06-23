@@ -79,6 +79,8 @@ bundle_data("unit_tests_resources") {
 screenshots_lists = [
   "tips/DockingBling.json",
   "tips/DockingBling_darkmode.json",
+  "tips/LensSearchWhatYouSee.json",
+  "tips/LensSearchWhatYouSee_darkmode.json",
   "m128/PackageTracking.json",
   "m128/PackageTracking_darkmode.json",
   "m128/PasswordSharing.json",
@@ -91,8 +93,6 @@ screenshots_lists = [
   "m132/PriceHistory_darkmode.json",
   "m132/OtherBuyingOptions.json",
   "m132/OtherBuyingOptions_darkmode.json",
-  "m134/LensSearchWhatYouSee.json",
-  "m134/LensSearchWhatYouSee_darkmode.json",
   "m134/LensTranslate.json",
   "m134/LensTranslate_darkmode.json",
   "m134/LensQuestion.json",
