@@ -29,7 +29,8 @@ IOSPasskeyModelFactory* IOSPasskeyModelFactory::GetInstance() {
 }
 
 IOSPasskeyModelFactory::IOSPasskeyModelFactory()
-    : ProfileKeyedServiceFactoryIOS("PasskeyModel") {
+    : ProfileKeyedServiceFactoryIOS("PasskeyModel",
+                                    ProfileSelection::kRedirectedInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
 }
