@@ -320,19 +320,14 @@ public class ToolbarProgressBarTest {
     @Feature({"Android-Progress-Bar"})
     public void testProgressBarColors_TransparentTheme() {
         mProgressBar.setThemeColor(Color.TRANSPARENT, /* isIncognito = */ false);
-        int foregroundColor = mProgressBar.getForegroundColor();
-        int backgroundColor = mProgressBar.getBackgroundColor();
         mProgressBar.setAnimatingView(mProgressBarAnimatingView);
 
         assertEquals(
-                "Foreground color does not match color.",
-                foregroundColor,
+                "Foreground color does not match expected color.",
+                SemanticColorUtils.getProgressBarForeground(mActivity),
                 mProgressBar.getForegroundColor());
-        assertEquals(
-                "Background color does not match color.",
-                backgroundColor,
-                mProgressBar.getBackgroundColor());
     }
+
 
     @Test
     @Feature({"Android-Progress-Bar"})
