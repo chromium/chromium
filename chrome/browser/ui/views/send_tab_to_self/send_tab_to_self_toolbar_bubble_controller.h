@@ -18,6 +18,7 @@ class SendTabToSelfEntry;
 class SendTabToSelfToolbarBubbleController {
  public:
   explicit SendTabToSelfToolbarBubbleController(Browser* browser);
+  ~SendTabToSelfToolbarBubbleController();
 
   void ShowBubble(const SendTabToSelfEntry& entry, views::View* anchor_view);
   void HideBubble();

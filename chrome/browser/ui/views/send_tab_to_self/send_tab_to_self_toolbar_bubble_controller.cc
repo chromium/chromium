@@ -15,6 +15,10 @@ SendTabToSelfToolbarBubbleController::SendTabToSelfToolbarBubbleController(
     Browser* browser)
     : browser_(browser) {}
 
+SendTabToSelfToolbarBubbleController::~SendTabToSelfToolbarBubbleController() {
+  HideBubble();
+}
+
 void SendTabToSelfToolbarBubbleController::ShowBubble(
     const SendTabToSelfEntry& entry,
     views::View* anchor_view) {
@@ -33,7 +37,7 @@ void SendTabToSelfToolbarBubbleController::HideBubble() {
   if (!IsBubbleShowing()) {
     return;
   }
-  bubble_tracker_.view()->GetWidget()->Close();
+  bubble_tracker_.view()->GetWidget()->CloseNow();
 }
 
 bool SendTabToSelfToolbarBubbleController::IsBubbleShowing() const {
