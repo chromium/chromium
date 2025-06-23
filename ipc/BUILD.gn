@@ -21,6 +21,7 @@ component("ipc") {
   sources = [
     # These are the param_traits sources needed by all platforms,
     # including ios. The rest are added in a conditional block below.
+    "ipc_channel.cc",
     "ipc_message_utils.cc",
     "ipc_message_utils.h",
     "ipc_mojo_param_traits.cc",
@@ -76,15 +77,6 @@ component("ipc") {
       "trace_ipc_message.h",
       "urgent_message_observer.h",
     ]
-  }
-
-  if (is_nacl) {
-    sources += [
-      "ipc_channel_nacl.cc",
-      "ipc_channel_nacl.h",
-    ]
-  } else {
-    sources += [ "ipc_channel.cc" ]
   }
 
   defines = [ "IS_IPC_IMPL" ]

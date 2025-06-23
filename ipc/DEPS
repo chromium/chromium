@@ -1,8 +1,6 @@
 include_rules = [
   "+crypto",
   "+mojo/public",
-  # For ipc_channel_nacl.cc:
-  "+native_client/src/public",
   "+sandbox/mac/seatbelt.h",
   "+services/tracing/public/cpp",
   "+third_party/perfetto/protos/perfetto/trace/track_event",
