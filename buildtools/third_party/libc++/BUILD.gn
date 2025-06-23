@@ -89,8 +89,6 @@ if (use_libcxx_modules) {
 
   sysroot_modules("sysroot_types") {
     public_deps = [
-      ":_Builtin_stddef",
-      ":std_config",
       ":sysroot_bits",
       ":sysroot_features",
       ":sysroot_time",
@@ -120,7 +118,6 @@ if (use_libcxx_modules) {
   }
 
   builtin_modules("_Builtin_inttypes") {
-    public_deps = [ ":_Builtin_stdint" ]
   }
 
   builtin_modules("_Builtin_limits") {
@@ -134,10 +131,6 @@ if (use_libcxx_modules) {
   }
 
   builtin_modules("_Builtin_stdatomic") {
-    public_deps = [
-      ":_Builtin_stddef",
-      ":_Builtin_stdint",
-    ]
   }
 
   builtin_modules("_Builtin_stdbool") {
@@ -198,9 +191,6 @@ if (use_libcxx_modules) {
 
   libcxx_modules("std") {
     public_deps = [
-      ":_Builtin_stdarg",
-      ":_Builtin_stddef",
-      ":std_config",
       ":std_core",
       ":std_ctype_h",
       ":std_errno_h",
@@ -211,12 +201,7 @@ if (use_libcxx_modules) {
       ":std_private_mbstate_t",
       ":std_string_h",
       ":std_uchar_h",
-      ":std_wchar_h",
       ":std_wctype_h",
-      ":sysroot_bits",
-      ":sysroot_features",
-      ":sysroot_time",
-      ":sysroot_types",
     ]
   }
 
@@ -224,11 +209,6 @@ if (use_libcxx_modules) {
   }
 
   libcxx_modules("std_core") {
-    public_deps = [
-      ":sysroot_bits",
-      ":sysroot_features",
-      ":sysroot_time",
-    ]
   }
 
   libcxx_modules("std_ctype_h") {
@@ -244,40 +224,16 @@ if (use_libcxx_modules) {
   }
 
   libcxx_modules("std_inttypes_h") {
-    public_deps = [
-      ":sysroot_bits",
-      ":sysroot_features",
-      ":sysroot_time",
-    ]
   }
 
   libcxx_modules("std_math_h") {
-    public_deps = [
-      ":std_core",
-      ":sysroot_bits",
-      ":sysroot_features",
-      ":sysroot_time",
-    ]
+    public_deps = [ ":std_core" ]
   }
 
   libcxx_modules("std_private_mbstate_t") {
-    public_deps = [
-      ":_Builtin_stdarg",
-      ":_Builtin_stddef",
-      ":std_config",
-      ":sysroot_bits",
-      ":sysroot_features",
-      ":sysroot_time",
-      ":sysroot_types",
-    ]
   }
 
   libcxx_modules("std_stdatomic_h") {
-    public_deps = [
-      ":sysroot_bits",
-      ":sysroot_features",
-      ":sysroot_time",
-    ]
   }
 
   libcxx_modules("std_stdbool_h") {
@@ -290,30 +246,10 @@ if (use_libcxx_modules) {
   }
 
   libcxx_modules("std_uchar_h") {
-    public_deps = [
-      ":_Builtin_stddef",
-      ":std_config",
-      ":sysroot_bits",
-      ":sysroot_features",
-      ":sysroot_time",
-      ":sysroot_types",
-    ]
-    if (is_mac) {
-      public_deps += [ ":std_private_mbstate_t" ]
-    }
+    public_deps = [ ":std_private_mbstate_t" ]
   }
 
   libcxx_modules("std_wchar_h") {
-    public_deps = [
-      ":_Builtin_stdarg",
-      ":_Builtin_stddef",
-      ":std_config",
-      ":std_private_mbstate_t",
-      ":sysroot_bits",
-      ":sysroot_features",
-      ":sysroot_time",
-      ":sysroot_types",
-    ]
   }
 
   libcxx_modules("std_wctype_h") {
