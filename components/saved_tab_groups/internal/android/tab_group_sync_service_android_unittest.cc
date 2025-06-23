@@ -57,6 +57,8 @@ class MockVersioningMessageController : public VersioningMessageController {
   MockVersioningMessageController() = default;
   ~MockVersioningMessageController() override = default;
 
+  MOCK_METHOD(bool, IsInitialized, (), (override));
+  MOCK_METHOD(bool, ShouldShowMessageUi, (MessageType), (override));
   MOCK_METHOD(void,
               ShouldShowMessageUiAsync,
               (MessageType, base::OnceCallback<void(bool)>),

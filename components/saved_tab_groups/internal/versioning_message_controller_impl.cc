@@ -91,20 +91,6 @@ void VersioningMessageControllerImpl::ComputePrefsOnStartup() {
   }
 }
 
-void VersioningMessageControllerImpl::ShouldShowMessageUiAsync(
-    MessageType message_type,
-    base::OnceCallback<void(bool)> callback) {
-  if (!is_initialized_) {
-    pending_callbacks_.push_back(base::BindOnce(
-        &VersioningMessageControllerImpl::ShouldShowMessageUiAsync,
-        weak_ptr_factory_.GetWeakPtr(), message_type, std::move(callback)));
-
-    return;
-  }
-
-  std::move(callback).Run(ShouldShowMessageUi(message_type));
-}
-
 bool VersioningMessageControllerImpl::ShouldShowMessageUi(
     MessageType message_type) {
   CHECK(is_initialized_);
@@ -122,6 +108,24 @@ bool VersioningMessageControllerImpl::ShouldShowMessageUi(
     default:
       return false;
   }
+}
+
+bool VersioningMessageControllerImpl::IsInitialized() {
+  return is_initialized_;
+}
+
+void VersioningMessageControllerImpl::ShouldShowMessageUiAsync(
+    MessageType message_type,
+    base::OnceCallback<void(bool)> callback) {
+  if (!is_initialized_) {
+    pending_callbacks_.push_back(base::BindOnce(
+        &VersioningMessageControllerImpl::ShouldShowMessageUiAsync,
+        weak_ptr_factory_.GetWeakPtr(), message_type, std::move(callback)));
+
+    return;
+  }
+
+  std::move(callback).Run(ShouldShowMessageUi(message_type));
 }
 
 void VersioningMessageControllerImpl::OnMessageUiShown(

@@ -28,6 +28,8 @@ class VersioningMessageControllerImpl : public VersioningMessageController,
   ~VersioningMessageControllerImpl() override;
 
   // VersioningMessageController implementation.
+  bool IsInitialized() override;
+  bool ShouldShowMessageUi(MessageType message_type) override;
   void ShouldShowMessageUiAsync(
       MessageType message_type,
       base::OnceCallback<void(bool)> callback) override;
@@ -38,7 +40,6 @@ class VersioningMessageControllerImpl : public VersioningMessageController,
   void OnInitialized() override;
 
  private:
-  bool ShouldShowMessageUi(MessageType message_type);
   void ComputePrefsOnStartup();
 
   raw_ptr<PrefService> pref_service_;
