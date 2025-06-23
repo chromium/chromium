@@ -1171,11 +1171,6 @@ BASE_FEATURE(kOverridePrefetchOnSingleton,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Skips requesting the Parent Access Code for reauth.
-BASE_FEATURE(kSkipParentAccessCodeForReauth,
-             "SkipParentAccessCodeForReauth",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable support for "Plugin VMs" on Chrome OS.
 BASE_FEATURE(kPluginVm, "PluginVm", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
@@ -1837,10 +1832,6 @@ BASE_FEATURE(kWin10AcceleratedDefaultBrowserFlow,
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
-bool IsParentAccessCodeForReauthEnabled() {
-  return !base::FeatureList::IsEnabled(kSkipParentAccessCodeForReauth);
-}
-
 // A feature to indicate whether setting wake time >24hours away is supported by
 // the platform's RTC.
 // TODO(b/187516317): Remove when the issue is resolved in FW.

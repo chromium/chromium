@@ -23557,21 +23557,6 @@
             ]
         }
     ],
-    "SkipParentAccessCodeForReauth": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SkipParentAccessCodeForReauth"
-                    ]
-                }
-            ]
-        }
-    ],
     "SkyVaultGA": [
         {
             "platforms": [
