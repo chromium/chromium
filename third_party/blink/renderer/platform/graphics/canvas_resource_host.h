@@ -46,7 +46,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual bool IsContextLost() const = 0;
   virtual void SetNeedsCompositingUpdate() = 0;
   virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;
-  virtual void UpdateMemoryUsage() = 0;
   virtual size_t GetMemoryUsage() const = 0;
   virtual CanvasResourceProvider*
   GetOrCreateCanvasResourceProviderForCanvas2D() = 0;

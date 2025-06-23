@@ -27,7 +27,6 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   bool IsContextLost() const override { return false; }
   void SetNeedsCompositingUpdate() override {}
   void InitializeForRecording(cc::PaintCanvas*) const override {}
-  void UpdateMemoryUsage() override {}
   bool PrintedInCurrentTask() const override { return false; }
   bool IsPageVisible() const override { return page_visible_; }
   bool IsHibernating() const override { return is_hibernating_; }
