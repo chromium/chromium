@@ -339,6 +339,9 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
                                              : gfx::Insets());
   set_use_round_corners(false);
   SetBackgroundColor(SK_ColorTRANSPARENT);
+  set_layer_type((params_.translucent || params_.transparent)
+                     ? ui::LAYER_NOT_DRAWN
+                     : ui::LAYER_TEXTURED);
 
   // Always create a layer so that the layer for FocusRing stays in this view's
   // layer. Without it, the layer for FocusRing goes above the NativeViewHost
@@ -544,13 +547,6 @@ void TrayBubbleView::OnWidgetActivationChanged(Widget* widget, bool active) {
 void TrayBubbleView::OnWidgetBoundsChanged(views::Widget* widget,
                                            const gfx::Rect& bounds) {
   Shell::Get()->system_tray_notifier()->NotifyTrayBubbleBoundsChanged(this);
-}
-
-ui::LayerType TrayBubbleView::GetLayerType() const {
-  if (params_.translucent || params_.transparent) {
-    return ui::LAYER_NOT_DRAWN;
-  }
-  return ui::LAYER_TEXTURED;
 }
 
 std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(

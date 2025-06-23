@@ -236,7 +236,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& bounds) override;
-  ui::LayerType GetLayerType() const override;
 
   // views::View:
   void AddedToWidget() override;

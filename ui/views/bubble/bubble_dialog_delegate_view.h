@@ -12,6 +12,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "base/check.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
@@ -25,6 +26,8 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_variant.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -462,8 +465,13 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // Sets the content margins to a default picked for smaller bubbles.
   void UseCompactMargins();
 
-  // Override to configure the layer type of the bubble widget.
-  virtual ui::LayerType GetLayerType() const;
+  // Set/Get the layer type of the bubble widget and client view.
+  ui::LayerType layer_type() const { return layer_type_; }
+  void set_layer_type(ui::LayerType layer_type) {
+    CHECK(layer_type == ui::LAYER_TEXTURED ||
+          layer_type == ui::LAYER_NOT_DRAWN);
+    layer_type_ = layer_type;
+  }
 
   // Override to provide custom parameters before widget initialization.
   virtual void OnBeforeBubbleWidgetInit(Widget::InitParams* params,
@@ -628,6 +636,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   ui::ImageModel main_image_;
   std::u16string subtitle_;
   bool subtitle_allow_character_break_ = false;
+  ui::LayerType layer_type_ = ui::LayerType::LAYER_TEXTURED;
 
   // Whether the bubble should automatically resize to match its contents'
   // preferred size.

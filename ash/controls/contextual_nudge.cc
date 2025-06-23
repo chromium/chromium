@@ -16,6 +16,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
@@ -54,6 +55,7 @@ ContextualNudge::ContextualNudge(views::View* anchor,
   SetCanActivate(false);
   set_shadow(views::BubbleBorder::NO_SHADOW);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  set_layer_type(ui::LAYER_NOT_DRAWN);
 
   if (parent_window) {
     set_parent_window(parent_window);
@@ -92,10 +94,6 @@ ContextualNudge::~ContextualNudge() = default;
 
 void ContextualNudge::UpdateAnchorRect(const gfx::Rect& rect) {
   SetAnchorRect(rect);
-}
-
-ui::LayerType ContextualNudge::GetLayerType() const {
-  return ui::LAYER_NOT_DRAWN;
 }
 
 void ContextualNudge::OnGestureEvent(ui::GestureEvent* event) {
