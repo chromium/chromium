@@ -62,6 +62,8 @@ def ParseTemplateFile(lines):
     if class_line:
       class_name = class_line.groups()[0]
       break
+  if not package:
+    raise Exception('Could not find java package.')
   return package, class_name
 
 
