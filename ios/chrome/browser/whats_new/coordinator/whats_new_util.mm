@@ -80,6 +80,12 @@ const char* WhatsNewTypeToString(WhatsNewType type) {
       return "LensTranslate";
     case WhatsNewType::kLensQuestion:
       return "LensQuestion";
+    case WhatsNewType::kPasskeys:
+      return "Passkeys";
+    case WhatsNewType::kChooseFromDrive:
+      return "ChooseFromDrive";
+    case WhatsNewType::kSaveToDrive:
+      return "SaveToDrive";
     case WhatsNewType::kError:
       return nil;
   };

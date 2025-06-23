@@ -41,7 +41,10 @@ enum class WhatsNewType {
   kLensSearchWhatYouSee = 25,
   kLensTranslate = 26,
   kLensQuestion = 27,
-  kMaxValue = kLensQuestion
+  kPasskeys = 28,
+  kChooseFromDrive = 29,
+  kSaveToDrive = 30,
+  kMaxValue = kSaveToDrive
 };
 
 // An enum representing the different primary button actions for features in

@@ -1714,6 +1714,16 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Package Tracking"/>
   <int value="19" label="Password Sharing"/>
   <int value="20" label="Customizable Overflow Menu"/>
+  <int value="21" label="Docking Bling"/>
+  <int value="22" label="Price Tracking"/>
+  <int value="23" label="Price History"/>
+  <int value="24" label="Other Buying Options"/>
+  <int value="25" label="Lens Search What You See"/>
+  <int value="26" label="Lens Translate"/>
+  <int value="27" label="Lens Question"/>
+  <int value="28" label="Passkeys"/>
+  <int value="29" label="Choose From Drive"/>
+  <int value="30" label="Save To Drive"/>
 </enum>
 
 <enum name="WindowActivityOrigin">

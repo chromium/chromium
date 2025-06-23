@@ -183,7 +183,7 @@
   <release seq="1">
     <messages fallback_to_english="true">
       <!-- What's New milestone specific strings -->
-      <part file="m134_strings.grdp" />
+      <part file="m139_strings.grdp" />
       <part file="m132_strings.grdp" />
 
       <!-- Tips specific strings -->

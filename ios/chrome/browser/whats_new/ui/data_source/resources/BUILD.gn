@@ -97,6 +97,12 @@ screenshots_lists = [
   "m134/LensTranslate_darkmode.json",
   "m134/LensQuestion.json",
   "m134/LensQuestion_darkmode.json",
+  "m139/Passkeys.json",
+  "m139/Passkeys_darkmode.json",
+  "m139/ChooseFromDrive.json",
+  "m139/ChooseFromDrive_darkmode.json",
+  "m139/SaveToDrive.json",
+  "m139/SaveToDrive_darkmode.json",
 ]
 
 bundle_data("screenshots_files") {
