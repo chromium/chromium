@@ -6,14 +6,44 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_DECORATION_LINE_PAINTER_H_
 
 #include "cc/paint/paint_flags.h"
-#include "third_party/blink/renderer/core/paint/text_decoration_info.h"
+#include "cc/paint/paint_record.h"
+#include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
 struct AutoDarkMode;
+class Color;
 class GraphicsContext;
 class StyledStrokeData;
+class TextDecorationInfo;
+
+struct DecorationGeometry {
+  STACK_ALLOCATED();
+
+ public:
+  static DecorationGeometry Make(StrokeStyle style,
+                                 const gfx::RectF& line,
+                                 float zoom,
+                                 float double_offset,
+                                 int wavy_offset_factor,
+                                 bool is_spelling_or_grammar,
+                                 const Color& line_color);
+
+  float Thickness() const { return line.height(); }
+
+  StrokeStyle style = kSolidStroke;
+  gfx::RectF line;
+  float double_offset = 0;
+
+  // Only used for kWavy lines.
+  int wavy_offset_factor = 0;
+  gfx::RectF wavy_pattern_rect;
+  cc::PaintRecord wavy_tile_record;
+
+  bool antialias = false;
+};
 
 // Helper class for painting a text decorations. Each instance paints a single
 // decoration.
@@ -25,7 +55,7 @@ class DecorationLinePainter final {
                         const TextDecorationInfo& decoration_info)
       : context_(context), decoration_info_(decoration_info) {}
 
-  static gfx::RectF Bounds(const TextDecorationInfo&);
+  static gfx::RectF Bounds(const DecorationGeometry&);
 
   void Paint(const Color& color, const cc::PaintFlags* flags = nullptr);
 
@@ -34,15 +64,9 @@ class DecorationLinePainter final {
                               const StyledStrokeData& styled_stroke,
                               const AutoDarkMode& auto_dark_mode,
                               const cc::PaintFlags* paint_flags = nullptr);
-  static void DrawLineForText(GraphicsContext&,
-                              const gfx::PointF& pt,
-                              float width,
-                              const StyledStrokeData& styled_stroke,
-                              const AutoDarkMode& auto_dark_mode,
-                              const cc::PaintFlags* paint_flags = nullptr);
 
  private:
-  void PaintWavyTextDecoration(const AutoDarkMode&);
+  void PaintWavyTextDecoration(const DecorationGeometry&, const AutoDarkMode&);
 
   GraphicsContext& context_;
   const TextDecorationInfo& decoration_info_;

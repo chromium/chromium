@@ -10,6 +10,7 @@
 #include "base/types/strong_alias.h"
 #include "cc/paint/paint_record.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
@@ -134,20 +135,12 @@ class CORE_EXPORT TextDecorationInfo {
   }
   Color LineColor() const;
   float ResolvedThickness() const { return resolved_thickness_; }
-  enum StrokeStyle StrokeStyle() const;
 
   // SetLineData must be called before using the remaining methods.
-  gfx::PointF StartPoint() const;
-  float DoubleOffset() const;
-  bool ShouldAntialias() const;
+  const DecorationGeometry& GetGeometry() const { return line_geometry_; }
 
   // Compute bounds for the given line and the current decoration.
   gfx::RectF Bounds() const;
-
-  // Returns tile record and coordinates for wavy decorations.
-  cc::PaintRecord WavyTileRecord() const;
-  gfx::RectF WavyPaintRect() const;
-  gfx::RectF WavyTileRect() const;
 
   // Overrides the line color with the given topmost active highlight ‘color’
   // (for originating decorations being painted in highlight overlays), or the
@@ -161,13 +154,6 @@ class CORE_EXPORT TextDecorationInfo {
   float ComputeUnderlineThickness(
       const TextDecorationThickness& applied_decoration_thickness,
       const ComputedStyle* decorating_box_style) const;
-  void ComputeWavyLineData(gfx::RectF& pattern_rect,
-                           cc::PaintRecord& tile_record) const;
-
-  bool IsSpellingOrGrammarError() const {
-    return line_data_.line == TextDecorationLine::kSpellingError ||
-           line_data_.line == TextDecorationLine::kGrammarError;
-  }
 
   void UpdateForDecorationIndex();
 
@@ -227,20 +213,7 @@ class CORE_EXPORT TextDecorationInfo {
   const bool minimum_thickness_is_one_ = false;
   bool antialias_ = false;
 
-  struct LineData {
-    STACK_ALLOCATED();
-
-   public:
-    TextDecorationLine line;
-    float line_offset;
-    float double_offset;
-
-    // Only used for kWavy lines.
-    int wavy_offset_factor;
-    gfx::RectF wavy_pattern_rect;
-    cc::PaintRecord wavy_tile_record;
-  };
-  LineData line_data_;
+  DecorationGeometry line_geometry_;
   std::optional<Color> highlight_override_;
 };
 

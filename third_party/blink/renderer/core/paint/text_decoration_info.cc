@@ -13,8 +13,6 @@
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
-#include "third_party/blink/renderer/platform/geometry/path_builder.h"
-#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -112,159 +110,21 @@ static float ComputeDecorationThickness(
 
 static enum StrokeStyle TextDecorationStyleToStrokeStyle(
     ETextDecorationStyle decoration_style) {
-  enum StrokeStyle stroke_style = kSolidStroke;
   switch (decoration_style) {
     case ETextDecorationStyle::kSolid:
-      stroke_style = kSolidStroke;
-      break;
+      return kSolidStroke;
     case ETextDecorationStyle::kDouble:
-      stroke_style = kDoubleStroke;
-      break;
+      return kDoubleStroke;
     case ETextDecorationStyle::kDotted:
-      stroke_style = kDottedStroke;
-      break;
+      return kDottedStroke;
     case ETextDecorationStyle::kDashed:
-      stroke_style = kDashedStroke;
-      break;
+      return kDashedStroke;
     case ETextDecorationStyle::kWavy:
-      stroke_style = kWavyStroke;
-      break;
+      return kWavyStroke;
   }
-
-  return stroke_style;
 }
 
-struct WavyParams {
-  float resolved_thickness;
-  float effective_zoom;
-  bool spelling_grammar;
-  Color color;
-  DISALLOW_NEW();
-};
-
-float WavyControlPointDistance(const WavyParams& params) {
-  // Distance between decoration's axis and Bezier curve's control points. The
-  // height of the curve is based on this distance. Increases the curve's height
-  // as strokeThickness increases to make the curve look better.
-  if (params.spelling_grammar)
-    return 5 * params.effective_zoom;
-
-  // Setting the distance to half-pixel values gives better antialiasing
-  // results, particularly for small values.
-  return 0.5 + roundf(3 * std::max<float>(1, params.resolved_thickness) + 0.5);
-}
-
-float WavyStep(const WavyParams& params) {
-  // Increment used to form the diamond shape between start point (p1), control
-  // points and end point (p2) along the axis of the decoration. Makes the curve
-  // wider as strokeThickness increases to make the curve look better.
-  if (params.spelling_grammar)
-    return 3 * params.effective_zoom;
-
-  // Setting the step to half-pixel values gives better antialiasing
-  // results, particularly for small values.
-  return 0.5 + roundf(2 * std::max<float>(1, params.resolved_thickness) + 0.5);
-}
-
-// Computes the wavy pattern rect, which is where the desired wavy pattern would
-// be found when painting the wavy stroke path at the origin, or in other words,
-// how far PrepareWavyTileRecord needs to translate in the opposite direction
-// when painting to ensure that nothing is painted at y<0.
-gfx::RectF ComputeWavyPatternRect(const WavyParams& params,
-                                  const Path& stroke_path) {
-  StrokeData stroke_data;
-  stroke_data.SetThickness(params.resolved_thickness);
-
-  // Expand the stroke rect to integer y coordinates in both directions, to
-  // avoid messing with the vertical antialiasing.
-  gfx::RectF stroke_rect = stroke_path.StrokeBoundingRect(stroke_data);
-  float top = floorf(stroke_rect.y());
-  float bottom = ceilf(stroke_rect.bottom());
-  return {0.f, top, 2.f * WavyStep(params), bottom - top};
-}
-
-// Prepares a path for a cubic Bezier curve repeated three times, yielding a
-// wavy pattern that we can cut into a tiling shader (PrepareWavyTileRecord).
-//
-// The result ignores the local origin, line offset, and (wavy) double offset,
-// so the midpoints are always at y=0.5, while the phase is shifted for either
-// wavy or spelling/grammar decorations so the desired pattern starts at x=0.
-//
-// The start point, control points (cp1 and cp2), and end point of each curve
-// form a diamond shape:
-//
-//            cp2                      cp2                      cp2
-// ---         +                        +                        +
-// |               x=0
-// | control         |--- spelling/grammar ---|
-// | point          . .                      . .                      . .
-// | distance     .     .                  .     .                  .     .
-// |            .         .              .         .              .         .
-// +-- y=0.5   .            +           .            +           .            +
-//  .         .              .         .              .         .
-//    .     .                  .     .                  .     .
-//      . .                      . .                      . .
-//                          |-------- other ---------|
-//                        x=0
-//             +                        +                        +
-//            cp1                      cp1                      cp1
-// |-----------|------------|
-//     step         step
-Path PrepareWavyStrokePath(const WavyParams& params) {
-  float control_point_distance = WavyControlPointDistance(params);
-  float step = WavyStep(params);
-
-  // We paint the wave before and after the text line (to cover the whole length
-  // of the line) and then we clip it at
-  // AppliedDecorationPainter::StrokeWavyTextDecoration().
-  // Offset the start point, so the bezier curve starts before the current line,
-  // that way we can clip it exactly the same way in both ends.
-  // For spelling and grammar errors we offset by half a step less, to get a
-  // result closer to Microsoft Word circa 2021.
-  float phase_shift = (params.spelling_grammar ? -1.5f : -2.f) * step;
-
-  // Midpoints at y=0.5, to reduce vertical antialiasing.
-  gfx::PointF start{phase_shift, 0.5f};
-  gfx::PointF end{start + gfx::Vector2dF(2.f * step, 0.0f)};
-  gfx::PointF cp1{start + gfx::Vector2dF(step, +control_point_distance)};
-  gfx::PointF cp2{start + gfx::Vector2dF(step, -control_point_distance)};
-
-  PathBuilder result;
-  result.MoveTo(start);
-
-  result.CubicTo(cp1, cp2, end);
-  cp1.set_x(cp1.x() + 2.f * step);
-  cp2.set_x(cp2.x() + 2.f * step);
-  end.set_x(end.x() + 2.f * step);
-  result.CubicTo(cp1, cp2, end);
-  cp1.set_x(cp1.x() + 2.f * step);
-  cp2.set_x(cp2.x() + 2.f * step);
-  end.set_x(end.x() + 2.f * step);
-  result.CubicTo(cp1, cp2, end);
-
-  return result.Finalize();
-}
-
-cc::PaintRecord PrepareWavyTileRecord(const WavyParams& params,
-                                      const Path& stroke_path,
-                                      const gfx::RectF& pattern_rect) {
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setColor(params.color.Rgb());
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setStrokeWidth(params.resolved_thickness);
-
-  PaintRecorder recorder;
-  cc::PaintCanvas* canvas = recorder.beginRecording();
-
-  // Translate the wavy pattern so that nothing is painted at y<0.
-  canvas->translate(-pattern_rect.x(), -pattern_rect.y());
-  canvas->drawPath(stroke_path.GetSkPath(), flags);
-
-  return recorder.finishRecordingAsPicture();
-}
-
-}  // anonymous namespace
+}  // namespace
 
 TextDecorationInfo::TextDecorationInfo(
     LineRelativeOffset local_origin,
@@ -430,24 +290,36 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
       double_offset = floorf(double_offset_from_thickness);
       wavy_offset_factor = 0;
       break;
-    default:
+    case TextDecorationLine::kNone:
+    case TextDecorationLine::kBlink:
       NOTREACHED();
   }
 
-  line_data_.line = line;
-  line_data_.line_offset = line_offset;
-  line_data_.double_offset = double_offset;
-  line_data_.wavy_offset_factor = wavy_offset_factor;
+  const bool is_spelling_or_grammar =
+      line == TextDecorationLine::kSpellingError ||
+      line == TextDecorationLine::kGrammarError;
 
-  switch (DecorationStyle()) {
-    case ETextDecorationStyle::kWavy:
-      ComputeWavyLineData(line_data_.wavy_pattern_rect,
-                          line_data_.wavy_tile_record);
-      break;
-    default:
-      line_data_.wavy_tile_record = cc::PaintRecord();
-      break;
+  StrokeStyle style;
+  bool antialias = antialias_;
+  if (is_spelling_or_grammar) {
+#if BUILDFLAG(IS_APPLE)
+    style = kDottedStroke;
+    antialias = true;
+#else
+    style = kWavyStroke;
+#endif
+  } else {
+    DCHECK(applied_text_decoration_);
+    style = TextDecorationStyleToStrokeStyle(applied_text_decoration_->Style());
   }
+
+  const gfx::PointF start_point =
+      gfx::PointF(local_origin_) + gfx::Vector2dF(0, line_offset);
+  line_geometry_ = DecorationGeometry::Make(
+      style, gfx::RectF(start_point, gfx::SizeF(width_, ResolvedThickness())),
+      decorating_box_style_->EffectiveZoom(), double_offset, wavy_offset_factor,
+      is_spelling_or_grammar, LineColor());
+  line_geometry_.antialias = antialias;
 }
 
 // Returns the offset of the target text/box (|local_origin_|) from the
@@ -528,29 +400,6 @@ void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
               paint_underline_offset);
 }
 
-bool TextDecorationInfo::ShouldAntialias() const {
-#if BUILDFLAG(IS_APPLE)
-  if (line_data_.line == TextDecorationLine::kSpellingError ||
-      line_data_.line == TextDecorationLine::kGrammarError) {
-    return true;
-  }
-#endif
-  return antialias_;
-}
-
-ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
-  if (IsSpellingOrGrammarError()) {
-#if BUILDFLAG(IS_APPLE)
-    return ETextDecorationStyle::kDotted;
-#else
-    return ETextDecorationStyle::kWavy;
-#endif
-  }
-
-  DCHECK(applied_text_decoration_);
-  return applied_text_decoration_->Style();
-}
-
 Color TextDecorationInfo::LineColor() const {
   if (HasSpellingError()) {
     return LayoutTheme::GetTheme().PlatformSpellingMarkerUnderlineColor();
@@ -570,17 +419,6 @@ Color TextDecorationInfo::LineColor() const {
   }
 
   return applied_text_decoration_->GetColor();
-}
-
-gfx::PointF TextDecorationInfo::StartPoint() const {
-  return gfx::PointF(local_origin_) + gfx::Vector2dF(0, line_data_.line_offset);
-}
-float TextDecorationInfo::DoubleOffset() const {
-  return line_data_.double_offset;
-}
-
-enum StrokeStyle TextDecorationInfo::StrokeStyle() const {
-  return TextDecorationStyleToStrokeStyle(DecorationStyle());
 }
 
 float TextDecorationInfo::ComputeThickness() const {
@@ -629,62 +467,8 @@ float TextDecorationInfo::ComputeUnderlineThickness(
   return thickness;
 }
 
-void TextDecorationInfo::ComputeWavyLineData(
-    gfx::RectF& pattern_rect,
-    cc::PaintRecord& tile_record) const {
-  struct WavyCache {
-    WavyParams key;
-    gfx::RectF pattern_rect;
-    cc::PaintRecord tile_record;
-    DISALLOW_NEW();
-  };
-
-  DEFINE_STATIC_LOCAL(std::optional<WavyCache>, wavy_cache, (std::nullopt));
-
-  if (wavy_cache && wavy_cache->key.resolved_thickness == ResolvedThickness() &&
-      wavy_cache->key.effective_zoom ==
-          decorating_box_style_->EffectiveZoom() &&
-      wavy_cache->key.spelling_grammar == IsSpellingOrGrammarError() &&
-      wavy_cache->key.color == LineColor()) {
-    pattern_rect = wavy_cache->pattern_rect;
-    tile_record = wavy_cache->tile_record;
-    return;
-  }
-
-  WavyParams params{ResolvedThickness(), decorating_box_style_->EffectiveZoom(),
-                    IsSpellingOrGrammarError(), LineColor()};
-  Path stroke_path = PrepareWavyStrokePath(params);
-  pattern_rect = ComputeWavyPatternRect(params, stroke_path);
-  tile_record = PrepareWavyTileRecord(params, stroke_path, pattern_rect);
-  wavy_cache = WavyCache{params, pattern_rect, tile_record};
-}
-
 gfx::RectF TextDecorationInfo::Bounds() const {
-  return DecorationLinePainter::Bounds(*this);
-}
-
-// Returns the wavy paint rect, which has the height of the wavy tile rect but
-// the width needed by the actual decoration, for the DrawRect operation.
-gfx::RectF TextDecorationInfo::WavyPaintRect() const {
-  // The origin is the sum of the local origin, line offset, (wavy) double
-  // offset, and the origin of the wavy pattern rect (around minus half the
-  // amplitude).
-  gfx::PointF origin =
-      StartPoint() + line_data_.wavy_pattern_rect.OffsetFromOrigin() +
-      gfx::Vector2dF{0.f, DoubleOffset() * line_data_.wavy_offset_factor};
-  // Get the height of the wavy tile, and the width of the decoration.
-  gfx::SizeF size(width_, line_data_.wavy_pattern_rect.height());
-  return {origin, size};
-}
-
-// Returns the wavy tile rect, which is the same size as the wavy pattern rect
-// but at origin (0,0), for converting the PaintRecord to a PaintShader.
-gfx::RectF TextDecorationInfo::WavyTileRect() const {
-  return gfx::RectF(line_data_.wavy_pattern_rect.size());
-}
-
-cc::PaintRecord TextDecorationInfo::WavyTileRecord() const {
-  return line_data_.wavy_tile_record;
+  return DecorationLinePainter::Bounds(GetGeometry());
 }
 
 void TextDecorationInfo::SetHighlightOverrideColor(
