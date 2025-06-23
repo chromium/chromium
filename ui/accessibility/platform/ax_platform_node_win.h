@@ -1175,6 +1175,10 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   // depth-first pre-order traversal.
   AXPlatformNodeWin* GetFirstTextOnlyDescendant();
 
+  void OnAriaNotificationIA2Fallback(
+      const std::string& announcement,
+      ax::mojom::AriaNotificationPriority priority);
+
   // Clear the computed hypertext.
   void ResetComputedHypertext();
 

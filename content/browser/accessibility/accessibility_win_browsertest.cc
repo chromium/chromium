@@ -6629,4 +6629,34 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   EXPECT_EQ(role_button_2, ROLE_SYSTEM_PUSHBUTTON);
 }
 
+class AccessibilityWinAriaNotifyBrowserTest
+    : public AccessibilityWinBrowserTest {
+ private:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    AccessibilityWinBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "AriaNotify");
+    scoped_feature_list_.InitAndDisableFeature(features::kUiaProvider);
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// IA2 Fallback for Aria-Notify.
+IN_PROC_BROWSER_TEST_F(AccessibilityWinAriaNotifyBrowserTest,
+                       AriaNotification) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <p>Hello world.</p>
+      <p>Another paragraph.</p>
+      <p id="goodbye">Goodbye world.</p>)HTML");
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  ui::BrowserAccessibilityManager* manager =
+      web_contents->GetRootBrowserAccessibilityManager();
+  NativeWinEventWaiter win_event_waiter(
+      manager, "EVENT_OBJECT_LIVEREGIONCHANGED on role=ROLE_SYSTEM_TEXT*");
+  ExecuteScript(
+      u"document.getElementById('goodbye').ariaNotify('hello again');");
+  win_event_waiter.Wait();
+}
+
 }  // namespace content
