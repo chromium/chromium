@@ -11,6 +11,7 @@ namespace blink {
 mojom::CommonNavigationParamsPtr CreateCommonNavigationParams() {
   auto common_params = mojom::CommonNavigationParams::New();
   common_params->referrer = mojom::Referrer::New();
+  common_params->actual_navigation_start = base::TimeTicks::Now();
   common_params->navigation_start = base::TimeTicks::Now();
   common_params->source_location = network::mojom::SourceLocation::New();
 

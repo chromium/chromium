@@ -120,6 +120,8 @@ target(link_target_type, "renderer") {
     "renderer_blink_platform_impl.h",
     "renderer_main.cc",
     "renderer_main_platform_delegate.h",
+    "renderer_navigation_metrics_manager.cc",
+    "renderer_navigation_metrics_manager.h",
     "sad_plugin.cc",
     "sad_plugin.h",
     "service_worker/controller_service_worker_connector.cc",

@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/types/pass_key.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/public/common/content_client.h"
@@ -20,6 +21,7 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
+#include "content/renderer/renderer_navigation_metrics_manager.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sync_channel.h"
@@ -264,13 +266,19 @@ void AgentSchedulingGroup::DidUnloadRenderFrame(
 }
 
 void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
+  base::ElapsedTimer timer;
   RenderThreadImpl& renderer = ToImpl(*render_thread_);
   renderer.SetScrollAnimatorEnabled(
       params->web_preferences.enable_scroll_animator, PassKey());
 
+  const auto navigation_metrics_token = params->navigation_metrics_token;
   CreateWebView(std::move(params),
                 /*was_created_by_renderer=*/false,
                 /*base_url=*/blink::WebURL());
+
+  RendererNavigationMetricsManager::Instance().AddCreateViewEvent(
+      navigation_metrics_token, timer.start_time(), timer.Elapsed());
+  // Add any new code above the AddCreateViewEvent call.
 }
 
 blink::WebView* AgentSchedulingGroup::CreateWebView(

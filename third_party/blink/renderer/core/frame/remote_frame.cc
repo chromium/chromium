@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 
+#include "base/timer/elapsed_timer.h"
 #include "base/types/optional_util.h"
 #include "cc/layers/surface_layer.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
@@ -1168,7 +1169,11 @@ void RemoteFrame::CreateRemoteChild(
 void RemoteFrame::CreateRemoteChildren(
     Vector<mojom::blink::CreateRemoteChildParamsPtr> params,
     const std::optional<base::UnguessableToken>& navigation_metrics_token) {
+  base::ElapsedTimer timer;
   Client()->CreateRemoteChildren(params);
+  Platform::Current()->AddCreateRemoteChildrenEvent(
+      navigation_metrics_token, timer.start_time(), timer.Elapsed());
+  // Add any new code above the AddCreateRemoteChildrenEvent call.
 }
 
 void RemoteFrame::ForwardFencedFrameEventToEmbedder(

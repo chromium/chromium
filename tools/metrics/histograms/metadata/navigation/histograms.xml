@@ -2000,6 +2000,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.Renderer.Timeline.{DurationFromTo}.Duration"
+    units="ms" expires_after="2026-06-20">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    Measures the duration {DurationFromTo}. Recorded at the point when a
+    navigation finishes committing in the renderer process, i.e. after
+    processing the CommitNavigation message. A corresponding event is also
+    emitted for tracing.
+  </summary>
+  <token key="DurationFromTo">
+    <variant name="CommitToDidCommit"
+        summary="between when the renderer process receives a
+                 CommitNavigation IPC to when the renderer process finishes
+                 processing that IPC and sends a DidCommitNavigation reply."/>
+    <variant name="CreateChildProxies"
+        summary="of creating all proxies for subframes of a given page,
+                 possibly including a proxy for the navigating frame if it is
+                 a subframe"/>
+    <variant name="CreateFrame"
+        summary="of creating the provisional local frame in which the
+                 navigation is occurring. This frame will be swapped into the
+                 frame tree when the navigation commits"/>
+    <variant name="CreateView"
+        summary="of creating the RenderView for a particular frame tree,
+                 which could be a frame tree for the navigating frame or one
+                 of the frame trees on its opener chain. This includes the
+                 time to create the view's main frame, which could be either
+                 a local frame or a remote frame (proxy)"/>
+    <variant name="WaitingForProcessReady"
+        summary="between the navigation start time and when the renderer
+                 process has finished initializing and starting its RunLoop.
+                 Only recorded for navigations where the navigation started
+                 before the RunLoop was ready"/>
+  </token>
+</histogram>
+
 <histogram name="Navigation.RendererCommitDelay.{FrameType}" units="ms"
     expires_after="2025-12-14">
   <owner>cduvall@chromium.org</owner>
