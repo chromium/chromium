@@ -957,8 +957,15 @@ int TreeDepth(const optimization_guide::proto::ContentNode& node) {
   return depth + 1;
 }
 
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DeepTree DISABLED_DeepTree
+#else
+#define MAYBE_DeepTree DeepTree
+#endif
+// TODO(crbug.com/425717554): This test is flaking on windows due to a renderer
+// crash.
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
-                       DeepTree) {
+                       MAYBE_DeepTree) {
   // Listen for ukm metrics.
   base::test::TestFuture<void> future;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
