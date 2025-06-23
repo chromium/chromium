@@ -41,8 +41,8 @@ int GetOpacity(const PrefService* prefs,
   int percent_value = prefs->GetInteger(pref_name);
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
   if (cmd->HasSwitch(cmd_opacity_percent_flag) &&
-      (chrome::GetChannel() != version_info::Channel::STABLE ||
-       chrome::GetChannel() != version_info::Channel::BETA)) {
+      chrome::GetChannel() != version_info::Channel::STABLE &&
+      chrome::GetChannel() != version_info::Channel::BETA) {
     int percent_from_flag;
     if (base::StringToInt(cmd->GetSwitchValueASCII(cmd_opacity_percent_flag),
                           &percent_from_flag)) {
