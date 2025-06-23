@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_text_util.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
@@ -254,6 +255,51 @@ const char kOmniboxFocusResultedInNavigation[] =
   [self setCaretPos:std::min(current_permanent_url.length(), start)];
 
   _omniboxController->client()->OnRevert();
+}
+
+- (void)getInfoForCurrentText:(AutocompleteMatch*)match
+       alternateNavigationURL:(GURL*)alternateNavigationURL {
+  DCHECK(match);
+
+  // If there's a query in progress or the popup is open, pick out the default
+  // match or selected match, if there is one.
+  bool found_match_for_text = false;
+  if (!_omniboxController->autocomplete_controller()->done() ||
+      _omniboxAutocompleteController.hasSuggestions) {
+    if (!_omniboxController->autocomplete_controller()->done() &&
+        _omniboxController->autocomplete_controller()
+            ->result()
+            .default_match()) {
+      // The user cannot have manually selected a match, or the query would have
+      // stopped. So the default match must be the desired selection.
+      *match = *_omniboxController->autocomplete_controller()
+                    ->result()
+                    .default_match();
+      found_match_for_text = true;
+    }
+    if (found_match_for_text && alternateNavigationURL) {
+      AutocompleteProviderClient* provider_client =
+          _omniboxController->autocomplete_controller()
+              ->autocomplete_provider_client();
+      *alternateNavigationURL = AutocompleteResult::ComputeAlternateNavUrl(
+          _omniboxTextModel->input, *match, provider_client);
+    }
+  }
+
+  if (!found_match_for_text) {
+    // For match generation, we use the unelided `url_for_editing_`, unless the
+    // user input is in progress.
+    std::u16string text_for_match_generation =
+        _omniboxTextModel->user_input_in_progress
+            ? _omniboxTextModel->user_text
+            : _omniboxTextModel->url_for_editing;
+
+    _omniboxController->client()->GetAutocompleteClassifier()->Classify(
+        text_for_match_generation, false, true,
+        _omniboxController->client()->GetPageClassification(
+            /*is_prefetch=*/false),
+        match, alternateNavigationURL);
+  }
 }
 
 #pragma mark - Autocomplete events

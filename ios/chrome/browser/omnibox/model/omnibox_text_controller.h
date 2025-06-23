@@ -85,6 +85,12 @@ class OmniboxEditModelIOS;
 /// no user input in progress).
 - (void)revertState;
 
+/// Copies a match corresponding to the current text into `match`, and
+/// populates `alternate_nav_url` as well if it's not nullptr. If the popup
+/// is closed, the match is generated from the autocomplete classifier.
+- (void)getInfoForCurrentText:(AutocompleteMatch*)match
+       alternateNavigationURL:(GURL*)alternateNavigationURL;
+
 #pragma mark - Autocomplete event
 
 /// Sets the additional text.

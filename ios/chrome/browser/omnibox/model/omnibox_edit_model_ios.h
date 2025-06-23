@@ -259,12 +259,6 @@ class OmniboxEditModelIOS {
                  const std::u16string& pasted_text,
                  base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
-  // Copies a match corresponding to the current text into `match`, and
-  // populates `alternate_nav_url` as well if it's not nullptr. If the popup
-  // is closed, the match is generated from the autocomplete classifier.
-  void GetInfoForCurrentText(AutocompleteMatch* match,
-                             GURL* alternate_nav_url) const;
-
   // Returns view text if there is a view. Until the model is made the
   // primary data source, this should not be called when there's no view.
   std::u16string GetText() const;

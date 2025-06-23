@@ -105,7 +105,8 @@ AutocompleteMatch OmniboxEditModelIOS::CurrentMatch(
   // If we have a valid match use it. Otherwise get one for the current text.
   AutocompleteMatch match = text_model_->current_match;
   if (!match.destination_url.is_valid()) {
-    GetInfoForCurrentText(&match, alternate_nav_url);
+    [text_controller_ getInfoForCurrentText:&match
+                     alternateNavigationURL:alternate_nav_url];
   } else if (alternate_nav_url) {
     AutocompleteProviderClient* provider_client =
         autocomplete_controller()->autocomplete_provider_client();
@@ -140,7 +141,8 @@ std::u16string OmniboxEditModelIOS::GetPermanentDisplayText() const {
 void OmniboxEditModelIOS::SetUserText(const std::u16string& text) {
   [text_controller_ setInputInProgress:YES];
   text_model_->UpdateUserText(text);
-  GetInfoForCurrentText(&text_model_->current_match, nullptr);
+  [text_controller_ getInfoForCurrentText:&text_model_->current_match
+                   alternateNavigationURL:nullptr];
   text_model_->paste_state = OmniboxPasteState::kNone;
 }
 
@@ -268,46 +270,6 @@ bool OmniboxEditModelIOS::OnAfterPossibleChange(
   [text_controller_ startAutocompleteAfterEdit];
 
   return true;
-}
-
-// static
-const char OmniboxEditModelIOS::kCutOrCopyAllTextHistogram[] =
-    "Omnibox.CutOrCopyAllText";
-
-void OmniboxEditModelIOS::GetInfoForCurrentText(AutocompleteMatch* match,
-                                                GURL* alternate_nav_url) const {
-  DCHECK(match);
-
-  // If there's a query in progress or the popup is open, pick out the default
-  // match or selected match, if there is one.
-  bool found_match_for_text = false;
-  if (!autocomplete_controller()->done() || PopupIsOpen()) {
-    if (!autocomplete_controller()->done() &&
-        autocomplete_controller()->result().default_match()) {
-      // The user cannot have manually selected a match, or the query would have
-      // stopped. So the default match must be the desired selection.
-      *match = *autocomplete_controller()->result().default_match();
-      found_match_for_text = true;
-    }
-    if (found_match_for_text && alternate_nav_url) {
-      AutocompleteProviderClient* provider_client =
-          autocomplete_controller()->autocomplete_provider_client();
-      *alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
-          text_model_->input, *match, provider_client);
-    }
-  }
-
-  if (!found_match_for_text) {
-    // For match generation, we use the unelided `url_for_editing_`, unless the
-    // user input is in progress.
-    std::u16string text_for_match_generation =
-        text_model_->user_input_in_progress ? text_model_->user_text
-                                            : text_model_->url_for_editing;
-
-    controller_->client()->GetAutocompleteClassifier()->Classify(
-        text_for_match_generation, false, true, GetPageClassification(), match,
-        alternate_nav_url);
-  }
 }
 
 bool OmniboxEditModelIOS::PopupIsOpen() const {
