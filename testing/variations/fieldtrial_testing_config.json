@@ -6475,9 +6475,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_NoAutoFocus_PdfChunking_20250527_10pc",
+                    "name": "Enabled_AutoFocus_ApcOnly_UiUpdates_20250613",
                     "params": {
-                        "auto-focus-searchbox": "false",
+                        "auto-focus-searchbox": "true",
                         "page-content-request-id-fix": "true",
                         "pdf-text-character-limit": "5000",
                         "send-page-url-for-contextualization": "true",
@@ -6485,7 +6485,7 @@
                         "update-viewport-each-query": "true",
                         "use-apc-as-context": "true",
                         "use-inner-html-as-context": "false",
-                        "use-inner-text-as-context": "true",
+                        "use-inner-text-as-context": "false",
                         "use-pdf-interaction-type": "true",
                         "use-pdf-vit-param": "true",
                         "use-pdfs-as-context": "true",
@@ -6494,8 +6494,7 @@
                         "use-webpage-vit-param": "true"
                     },
                     "enable_features": [
-                        "LensOverlayContextualSearchbox",
-                        "LensOverlayUploadChunking"
+                        "LensOverlayContextualSearchbox"
                     ]
                 }
             ]
