@@ -13024,6 +13024,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(user_education::features::kEnableNtpBrowserPromos)},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"enable-multi-capture-notification-update",
+     flag_descriptions::kMultiCaptureUsageIndicatorUpdateName,
+     flag_descriptions::kMultiCaptureUsageIndicatorUpdateDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kMultiCaptureReworkedUsageIndicators)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

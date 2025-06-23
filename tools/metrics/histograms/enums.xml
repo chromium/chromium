@@ -13137,6 +13137,7 @@ from previous Chrome versions.
   <int value="-304886342" label="QuickAnswersTranslation:disabled"/>
   <int value="-304841801" label="AccessibilityFlashScreenFeature:enabled"/>
   <int value="-304777110" label="PreconnectToSearch:disabled"/>
+  <int value="-304764890" label="MultiCaptureReworkedUsageIndicators:disabled"/>
   <int value="-304502255" label="DiscardRingImprovements:enabled"/>
   <int value="-304329578" label="OmniboxContextualSearchActionsAtTop:enabled"/>
   <int value="-303992327" label="SwipeToMoveCursor:disabled"/>
@@ -13584,6 +13585,7 @@ from previous Chrome versions.
   <int value="-141516902" label="UseModernMediaControls:enabled"/>
   <int value="-140763100"
       label="EnableServiceWorkersForChromeUntrusted:disabled"/>
+  <int value="-140665765" label="MultiCaptureReworkedUsageIndicators:enabled"/>
   <int value="-138983372" label="DesktopPWAWindowing:disabled"/>
   <int value="-138820512" label="DesktopPWAsTabStrip:enabled"/>
   <int value="-138773929" label="PassiveDocumentEventListeners:enabled"/>

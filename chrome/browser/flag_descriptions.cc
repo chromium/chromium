@@ -7615,6 +7615,13 @@ const char kMultiCalendarSupportDescription[] =
     "Enables the Quick Settings Calendar to display Google Calendar events for "
     "up to 10 of the user's calendars.";
 
+#if BUILDFLAG(IS_CHROMEOS)
+const char kMultiCaptureUsageIndicatorUpdateName[] =
+    "Use reworked multi capture usage indicators";
+const char kMultiCaptureUsageIndicatorUpdateDescription[] =
+    "Enables the reworked usage indicators for the getAllScreensMedia API.";
+#endif
+
 const char kMultiZoneRgbKeyboardName[] =
     "Enable multi-zone RGB keyboard customization";
 const char kMultiZoneRgbKeyboardDescription[] =
