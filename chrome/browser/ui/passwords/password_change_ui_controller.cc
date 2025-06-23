@@ -335,14 +335,9 @@ void PasswordChangeUIController::StartPasswordChangeFlow() {
 }
 
 void PasswordChangeUIController::ShowPasswordDetails() {
-  // TODO(crbug.com/338254375): Open password changed successfully bubble when
-  // applicable.
-  NavigateToPasswordDetailsPage(
-      chrome::FindBrowserWithTab(tab_interface_->GetContents()),
-      base::UTF16ToUTF8(password_change_delegate_->GetDisplayOrigin()),
-      password_manager::ManagePasswordsReferrer::kPasswordChangeInfoBubble);
-
   CHECK(password_change_delegate_);
+
+  password_change_delegate_->OpenPasswordDetails();
   password_change_delegate_->Stop();
 }
 

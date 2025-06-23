@@ -70,6 +70,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   State GetCurrentState() const override;
   void Stop() override;
   void OpenPasswordChangeTab() override;
+  void OpenPasswordDetails() override;
   void OnPasswordFormSubmission(content::WebContents* web_contents) override;
   void OnOtpFieldDetected(content::WebContents* web_contents) override;
   void OnPrivacyNoticeAccepted() override;
@@ -121,6 +122,10 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
 
   // The controller for password change views.
   std::unique_ptr<PasswordChangeUIController> ui_controller_;
+
+  // URL of the last committed page in `originator_` on the password change flow
+  // startup.
+  const GURL last_committed_url_;
 
   base::CallbackListSubscription tab_will_detach_subscription_;
 

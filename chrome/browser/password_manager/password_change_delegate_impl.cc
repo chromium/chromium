@@ -18,9 +18,11 @@
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/form_data.h"
@@ -131,7 +133,8 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
       originator_(tab_interface->GetContents()),
       profile_(Profile::FromBrowserContext(originator_->GetBrowserContext())),
       ui_controller_(
-          std::make_unique<PasswordChangeUIController>(this, tab_interface)) {
+          std::make_unique<PasswordChangeUIController>(this, tab_interface)),
+      last_committed_url_(originator_->GetLastCommittedURL()) {
   tab_will_detach_subscription_ = tab_interface->RegisterWillDetach(
       base::BindRepeating(&PasswordChangeDelegateImpl::OnTabWillDetach,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -268,6 +271,20 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
   auto* tabs_strip =
       tab_interface->GetBrowserWindowInterface()->GetTabStripModel();
   tabs_strip->AppendWebContents(std::move(executor_), /*foreground*/ true);
+}
+
+void PasswordChangeDelegateImpl::OpenPasswordDetails() {
+  CHECK(originator_);
+
+  if (last_committed_url_ == originator_->GetLastCommittedURL()) {
+    ManagePasswordsUIController::FromWebContents(originator_)
+        ->ShowChangePasswordBubble();
+  } else {
+    NavigateToPasswordDetailsPage(
+        chrome::FindBrowserWithTab(originator_),
+        base::UTF16ToUTF8(GetDisplayOrigin()),
+        password_manager::ManagePasswordsReferrer::kPasswordChangeInfoBubble);
+  }
 }
 
 void PasswordChangeDelegateImpl::AddObserver(Observer* observer) {

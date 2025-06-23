@@ -819,7 +819,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, CancelFromToast) {
   EXPECT_FALSE(ui_controller->toast_view()->action_button()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, ViewDetailsFromToast) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       ViewDetailsFromToastAfterPageNavigation) {
   SetPrivacyNoticeAcceptedPref();
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
@@ -842,6 +843,13 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, ViewDetailsFromToast) {
   }));
 
   EXPECT_TRUE(delegate);
+
+  // Navigate to some other website before pressing the button.
+  GURL url = embedded_test_server()->GetURL(
+      kMainHost, "/password/update_form_empty_fields.html");
+  ASSERT_TRUE(content::NavigateToURL(WebContents(), url));
+  ASSERT_TRUE(content::WaitForLoadStop(WebContents()));
+
   auto* toast = static_cast<PasswordChangeDelegateImpl*>(delegate)
                     ->ui_controller()
                     ->toast_view();
@@ -867,6 +875,49 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, ViewDetailsFromToast) {
   // Verify Password Management UI is opened.
   EXPECT_EQ(url::Origin::Create(GURL("chrome://password-manager/")),
             url::Origin::Create(tab_strip->GetActiveWebContents()->GetURL()));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, ViewPasswordBubbleFromToast) {
+  SetPrivacyNoticeAcceptedPref();
+  const GURL main_url = WebContents()->GetLastCommittedURL();
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+
+  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
+                                                   u"pa$$word", WebContents());
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  delegate->StartPasswordChangeFlow();
+
+  MockPasswordChangeOutcome(
+      PasswordChangeOutcome::
+          PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME);
+
+  EXPECT_TRUE(base::test::RunUntil([delegate]() {
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kPasswordSuccessfullyChanged;
+  }));
+  EXPECT_TRUE(delegate);
+
+  BubbleObserver prompt_observer(WebContents());
+
+  PasswordChangeToast* toast =
+      static_cast<PasswordChangeDelegateImpl*>(delegate)
+          ->ui_controller()
+          ->toast_view();
+  EXPECT_TRUE(toast);
+  // Verify action button is present and visible.
+  EXPECT_TRUE(toast->action_button());
+  EXPECT_TRUE(toast->action_button()->GetVisible());
+
+  // Click action button, this should open the password bubble.
+  views::test::ButtonTestApi clicker(toast->action_button());
+  delegate = nullptr;
+  toast = nullptr;
+
+  clicker.NotifyClick(ui::test::TestEvent());
+  EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
